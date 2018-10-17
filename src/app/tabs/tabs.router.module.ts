@@ -1,14 +1,14 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
-import { TabsPage } from './tabs.page';
-import { HomePage } from '../home/home.page';
-import { SettingPage } from '../setting/setting.page';
+import { TabsComponent } from './tabs.component';
+import { HomeComponent } from '../home/home.component';
+import { SettingComponent } from '../setting/setting.component';
 
 const routes: Routes = [
   {
     path: 'tabs',
-    component: TabsPage,
+    component: TabsComponent,
     children: [
       {
         path: '',
@@ -18,12 +18,12 @@ const routes: Routes = [
       {
         path: 'home',
         outlet: 'home',
-        component: HomePage
+        component: HomeComponent
       },
       {
         path: 'setting',
         outlet: 'setting',
-        component: SettingPage
+        component: SettingComponent
       }
     ]
   },
@@ -38,4 +38,4 @@ const routes: Routes = [
   imports: [RouterModule.forChild(routes)],
   exports: [RouterModule]
 })
-export class TabsPageRoutingModule {}
+export class TabsRoutingModule {}
