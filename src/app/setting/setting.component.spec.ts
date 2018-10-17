@@ -1,10 +1,10 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { SettingPage } from './setting.page';
+import { SettingComponent } from './setting.component';
 
-describe('SettingPage', () => {
-  let component: SettingPage;
+describe('SettingComponent', () => {
+  let component: SettingComponent;
   let fixture: ComponentFixture<SettingPage>;
 
   beforeEach(async(() => {

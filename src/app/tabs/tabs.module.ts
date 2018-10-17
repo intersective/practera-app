@@ -4,21 +4,21 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
-import { TabsPageRoutingModule } from './tabs.router.module';
+import { TabsRoutingModule } from './tabs.router.module';
 
-import { TabsPage } from './tabs.page';
-import { SettingPageModule } from '../setting/setting.module';
-import { HomePageModule } from '../home/home.module';
+import { TabsComponent } from './tabs.component';
+import { SettingModule } from '../setting/setting.module';
+import { HomeModule } from '../home/home.module';
 
 @NgModule({
   imports: [
     IonicModule,
     CommonModule,
     FormsModule,
-    TabsPageRoutingModule,
-    HomePageModule,
-    SettingPageModule
+    TabsRoutingModule,
+    HomeModule,
+    SettingModule
   ],
-  declarations: [TabsPage]
+  declarations: [TabsComponent]
 })
-export class TabsPageModule {}
+export class TabsModule {}
