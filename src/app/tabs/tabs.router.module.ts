@@ -3,7 +3,9 @@ import { RouterModule, Routes } from '@angular/router';
 
 import { TabsComponent } from './tabs.component';
 import { HomeComponent } from '../home/home.component';
-import { SettingComponent } from '../setting/setting.component';
+import { ActivitiesComponent } from '../activities/activities.component';
+import { ChatComponent } from '../chat/chat.component';
+import { HelpComponent } from '../help/help.component';
 
 const routes: Routes = [
   {
@@ -21,9 +23,19 @@ const routes: Routes = [
         component: HomeComponent
       },
       {
-        path: 'setting',
-        outlet: 'setting',
-        component: SettingComponent
+        path: 'activities',
+        outlet: 'activities',
+        component: ActivitiesComponent
+      },
+      {
+        path: 'chat',
+        outlet: 'chat',
+        component: ChatComponent
+      },
+      {
+        path: 'help',
+        outlet: 'help',
+        component: HelpComponent
       }
     ]
   },
