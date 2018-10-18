@@ -3,15 +3,15 @@ import { RouterModule } from '@angular/router';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { SettingComponent } from './setting.component';
+import { HelpComponent } from './help.component';
 
 @NgModule({
   imports: [
     IonicModule,
     CommonModule,
     FormsModule,
-    RouterModule.forChild([{ path: '', component: SettingComponent }])
+    RouterModule.forChild([{ path: '', component: HelpComponent }])
   ],
-  declarations: [SettingComponent]
+  declarations: [HelpComponent]
 })
-export class SettingModule {}
+export class HelpModule {}
