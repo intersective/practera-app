@@ -7,8 +7,11 @@ import { FormsModule } from '@angular/forms';
 import { TabsRoutingModule } from './tabs.router.module';
 
 import { TabsComponent } from './tabs.component';
-import { SettingModule } from '../setting/setting.module';
+
 import { HomeModule } from '../home/home.module';
+import { ActivitiesModule } from '../activities/activities.module';
+import { ChatModule } from '../chat/chat.module';
+import { HelpModule } from '../help/help.module';
 
 @NgModule({
   imports: [
@@ -17,7 +20,9 @@ import { HomeModule } from '../home/home.module';
     FormsModule,
     TabsRoutingModule,
     HomeModule,
-    SettingModule
+    ActivitiesModule,
+    ChatModule,
+    HelpModule
   ],
   declarations: [TabsComponent]
 })
