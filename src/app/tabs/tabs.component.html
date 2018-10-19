@@ -5,7 +5,13 @@
   <ion-tab label="Activities" icon="list-box" href="/tabs/(activities:activities)">
     <ion-router-outlet name="activities"></ion-router-outlet>
   </ion-tab>
+  <ion-tab *ngIf="showReview" label="Review" icon="clipboard" href="/tabs/(chat:chat)">
+    <ion-router-outlet name="chat"></ion-router-outlet>
+  </ion-tab>
   <ion-tab label="Chat" icon="chatboxes" href="/tabs/(chat:chat)">
+    <ion-router-outlet name="chat"></ion-router-outlet>
+  </ion-tab>
+  <ion-tab *ngIf="showTeam" label="Team" icon="people" href="/tabs/(chat:chat)">
     <ion-router-outlet name="chat"></ion-router-outlet>
   </ion-tab>
   <ion-tab label="Help" icon="help-circle" href="/tabs/(help:help)">
