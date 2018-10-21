@@ -14,12 +14,16 @@ import { NgCircleProgressModule } from 'ng-circle-progress';
     FormsModule,
     NgCircleProgressModule.forRoot({
       // set defaults here
-      radius: 100,
-      outerStrokeWidth: 16,
-      innerStrokeWidth: 8,
-      outerStrokeColor: "#2bbfd4",
-      innerStrokeColor: "#2bbfd4",
-      animationDuration: 300,
+      "backgroundColor": "#f5f6fa",
+      "backgroundPadding": -10,
+      "radius": 60,
+      "maxPercent": 80,
+      "outerStrokeWidth": 10,
+      "outerStrokeColor": "#2bbfd4",
+      "innerStrokeWidth": 0,
+      "subtitleColor": "#444444",
+      "showInnerStroke": false,
+      "startFromZero": false
     
     }),
     
