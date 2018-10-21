@@ -5,6 +5,18 @@
 </ion-header>
 
 <ion-content padding>
-  This is the start of Practera App V2
-  <p>If you get lost, the <a target="_blank" rel="noopener" href="https://ionicframework.com/docs">docs</a> will be your guide.</p>
+  <div class="progress-container">
+    <circle-progress 
+    [percent]="85"
+    [radius]="100"
+    [outerStrokeWidth]="16"
+    [innerStrokeWidth]="8"
+    [outerStrokeColor]="primary"
+    [innerStrokeColor]="primary"
+    [animation]="true"
+    [animationDuration]="300">
+    </circle-progress>
+  </div>     
+  <ion-label color="medium">Current Activity</ion-label>
+  <app-activity-card></app-activity-card>
 </ion-content>
