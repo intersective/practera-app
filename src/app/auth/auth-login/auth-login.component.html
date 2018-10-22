@@ -1,0 +1,22 @@
+<div class="div-login-page">
+  <div class="div-logo">
+    <img src="/assets/logo.svg" width="60%">
+  </div>
+  <form>
+    <ion-list margin-horizontal>
+      <ion-item>
+        <ion-input name="email" [(ngModel)]="email" required type="text" placeholder="email"></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-input name="password" [(ngModel)]="password" required type="password" placeholder="password"></ion-input>
+      </ion-item>
+    </ion-list>
+    <button class="btn-login" (click)="login()"><img src="/assets/login-button.svg" width="100%"></button>
+  </form>
+  <div style="margin:40px 0;">
+    <a>Problem signing in?</a>
+  </div>
+  <div>
+    <a>Powered by</a><img src="/assets/logo.svg" height="25" style="margin-left: 10px;vertical-align: middle;">
+  </div>
+</div>
