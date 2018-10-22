@@ -3,6 +3,10 @@ import { RouterModule } from '@angular/router';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+
+import { AuthRoutingModule } from './auth-routing.module';
+
+import { AuthComponent } from './auth.component';
 import { AuthLoginComponent } from './auth-login/auth-login.component';
 
 @NgModule({
@@ -10,7 +14,11 @@ import { AuthLoginComponent } from './auth-login/auth-login.component';
     IonicModule,
     CommonModule,
     FormsModule,
+    AuthRoutingModule
   ],
-  declarations: [AuthLoginComponent]
+  declarations: [
+    AuthComponent, 
+    AuthLoginComponent
+  ]
 })
 export class AuthModule {}

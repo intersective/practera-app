@@ -2,7 +2,8 @@ import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 
 const routes: Routes = [
-  { path: '', loadChildren: './tabs/tabs.module#TabsModule' }
+  { path: '', loadChildren: './auth/auth.module#AuthModule' },
+  { path: 'tabs', loadChildren: './tabs/tabs.module#TabsModule' }
 ];
 @NgModule({
   imports: [RouterModule.forRoot(routes)],
