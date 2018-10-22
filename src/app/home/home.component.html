@@ -1,11 +1,7 @@
-<ion-header>
-  <ion-toolbar>
-    <ion-title>Home</ion-title>
-  </ion-toolbar>
-</ion-header>
 
 <ion-content padding>
-  <div class="progress-container">
+  <h1 text-center>Program Name</h1>
+  <div text-center padding >
     <circle-progress 
     [percent]="85"
     [radius]="100"
@@ -14,9 +10,12 @@
     [outerStrokeColor]="primary"
     [innerStrokeColor]="primary"
     [animation]="true"
-    [animationDuration]="300">
+    [animationDuration]="500">
     </circle-progress>
   </div>     
-  <ion-label color="medium">Current Activity</ion-label>
+  <ion-label padding color="medium">Thins to do </ion-label>
+    <app-feedback></app-feedback>
+
+  <ion-label padding color="medium">Current Activity</ion-label>
   <app-activity-card></app-activity-card>
 </ion-content>
