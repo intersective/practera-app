@@ -9,13 +9,13 @@ import { HelpComponent } from '../help/help.component';
 
 const routes: Routes = [
   {
-    path: 'tabs',
+    path: '',
     component: TabsComponent,
     children: [
       {
         path: '',
         redirectTo: '/tabs/(home:home)',
-        pathMatch: 'full',
+        pathMatch: 'full'
       },
       {
         path: 'home',
