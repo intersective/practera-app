@@ -8,6 +8,7 @@ import { AuthRoutingModule } from './auth-routing.module';
 
 import { AuthComponent } from './auth.component';
 import { AuthLoginComponent } from './auth-login/auth-login.component';
+import { AuthSwitcherComponent } from './auth-switcher/auth-switcher.component';
 
 @NgModule({
   imports: [
@@ -18,7 +19,8 @@ import { AuthLoginComponent } from './auth-login/auth-login.component';
   ],
   declarations: [
     AuthComponent, 
-    AuthLoginComponent
+    AuthLoginComponent,
+    AuthSwitcherComponent
   ]
 })
 export class AuthModule {}

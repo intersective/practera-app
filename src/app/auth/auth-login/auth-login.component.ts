@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-auth-login',
@@ -8,6 +9,11 @@ import { Component } from '@angular/core';
 export class AuthLoginComponent {
   email = '';
   password = '';
+
+  constructor(
+    private router: Router
+  ) {}
+
 	login() {
     // -- todo
     // call API to do authentication
