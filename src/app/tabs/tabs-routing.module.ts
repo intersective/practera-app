@@ -38,11 +38,6 @@ const routes: Routes = [
         component: HelpComponent
       }
     ]
-  },
-  {
-    path: '',
-    redirectTo: '/tabs/(home:home)',
-    pathMatch: 'full'
   }
 ];
 
