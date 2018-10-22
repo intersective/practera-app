@@ -30,7 +30,7 @@ export class AuthSwitcherComponent {
     // -- todo
     // call API to get program detail
 		console.log("Program Choosen, Id: ", id);
-    this.router.navigate(['/tabs']);
+    this.router.navigate(['/pages/tabs']);
 	}
 
   logout() {
