@@ -4,10 +4,10 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content padding>
+<ion-content padding color="light">
   <ion-card class="div-card">
     <ion-list *ngFor="let program of programs">
-      <ion-item (click)="switch(program.id)">
+      <ion-item (click)="switch(program.id)" color="light">
         <img src="/assets/thumbs/practera_icon.png" height="25" width="25" class="img-icon"> {{ program.name }}
       </ion-item>
     </ion-list>
