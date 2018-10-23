@@ -20,4 +20,8 @@ export class AuthLoginComponent {
 		console.log("Email: ", this.email, "\nPassword: ", this.password);
     this.router.navigate(['/switcher']);
 	}
+
+  forgotPassword() {
+    this.router.navigate(['/forgot_password']); 
+  }
 }
