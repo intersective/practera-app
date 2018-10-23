@@ -4,18 +4,18 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { HomeComponent } from './home.component';
 
 describe('HomeComponent', () => {
-  let component: HomePage;
-  let fixture: ComponentFixture<HomePage>;
+  let component: HomeComponent;
+  let fixture: ComponentFixture<HomeComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [HomePage],
+      declarations: [HomeComponent],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
     }).compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(HomePage);
+    fixture = TestBed.createComponent(HomeComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

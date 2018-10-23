@@ -1,0 +1,20 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Select A Program</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content padding color="light">
+  <ion-card class="div-card">
+    <ion-list *ngFor="let program of programs">
+      <ion-item (click)="switch(program.id)" color="light">
+        <img src="/assets/thumbs/practera_icon.png" height="25" width="25" class="img-icon"> {{ program.name }}
+      </ion-item>
+    </ion-list>
+  </ion-card>
+  <ion-card class="div-card">
+    <ion-item (click)="logout()">
+      <ion-icon name="log-out" margin-end></ion-icon> Logout
+    </ion-item>
+  </ion-card>
+</ion-content>
