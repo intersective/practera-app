@@ -1546,6 +1546,10 @@ webpackContext.id = "./node_modules/@ionic/core/dist/ionic/svg sync ./!./!./node
 /***/ (function(module, exports, __webpack_require__) {
 
 var map = {
+	"./auth/auth.module": [
+		"./src/app/auth/auth.module.ts",
+		"auth-auth-module"
+	],
 	"./tabs/tabs.module": [
 		"./src/app/tabs/tabs.module.ts",
 		"tabs-tabs-module"
@@ -1594,7 +1598,8 @@ var __decorate = (undefined && undefined.__decorate) || function (decorators, ta
 
 
 var routes = [
-    { path: '', loadChildren: './tabs/tabs.module#TabsPageModule' }
+    { path: '', loadChildren: './auth/auth.module#AuthModule' },
+    { path: 'pages', loadChildren: './tabs/tabs.module#TabsModule' }
 ];
 var AppRoutingModule = /** @class */ (function () {
     function AppRoutingModule() {
