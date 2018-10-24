@@ -9,6 +9,7 @@ import { Router } from '@angular/router';
 export class HelpComponent {
   
   email = "test@test.com";
+  contact_number= "+61 420000000";
   countryModel = "AUS";
   countryCodes = [
     {
