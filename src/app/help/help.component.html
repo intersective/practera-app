@@ -4,29 +4,28 @@
 		<ion-card>
 			<ion-item class="item-divider mb-blue">
 				My Account
-				<p *ngIf="email">
-					<label>Email: </label>
-					<span>{{email}}</span>
-				</p>
+				<div *ngIf="email">
+					<ion-label>Email: </ion-label>
+					<p>{{email}}</p>
+				</div>
 			</ion-item>
 
 			<ion-item>
-				<label class="item item-input item-select">
-					<div class="input-label">Select Country</div>
-					<select name="country" id="country" [(ngModel)]="countryModel" (change)="updateCountry(countryModel)">
-						<option *ngFor="let countryCode of countryCodes" [value]="countryCode.code">{{countryCode.name}}</option>
-					</select>
-				</label>
+				<ion-label>Select Country</ion-label>
+					<ion-select name="country" id="country" [(ngModel)]="countryModel" (change)="updateCountry(countryModel)">
+						<ion-select-option *ngFor="let countryCode of countryCodes" [value]="countryCode.code">{{countryCode.name}}</ion-select-option>
+					</ion-select>
 			</ion-item>
 
 			<ion-item>
 				<div class="item-input-inset col col-75">
 					<label class="item-input-wrapper">
 						Contact No.:
-						<!-- <input ng-model="contact_number"
+						<ion-input [(ng-model)]="contact_number"
 							name="contact_number"
 							type="text"
-							ui-mask="{{mask}}"> -->
+							>
+						</ion-input>
 
 					</label>
 				</div>
@@ -34,8 +33,8 @@
 			</ion-item>
 
 			<ion-item class='item-icon-left' [routerLink]="['switcher']">
-				<ion-icon padding name="ion-ios-circle-filled"></ion-icon>
-				Switch to another program
+					<ion-icon padding name="radio-button-on"></ion-icon>
+					Switch to another program
 			</ion-item>
     </ion-card>
 
@@ -54,7 +53,7 @@
 
 		<ion-card>
 			<ion-item  (click)="logout()">
-          <ion-icon padding ios="ios-log-out"></ion-icon>
+          <ion-icon padding name="log-out"></ion-icon>
 				Logout
 			</ion-item>
     </ion-card>
