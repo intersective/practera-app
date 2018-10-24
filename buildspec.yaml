@@ -3,18 +3,8 @@ version: 0.2
 phases:
   install:
     commands:
-      # Install dependencies needed for running tests
-      - npm install
-
       # Upgrade AWS CLI to the latest version
       - pip install --upgrade awscli
-  post_build:
-    commands:
-      # Remove existing node_modules to clear dev dependencies
-      - rm -r node_modules
-
-      # Install runtime dependencies
-      - npm install --production
 artifacts:
   type: zip
   files:
@@ -23,5 +13,4 @@ artifacts:
     - package.json
     - appspec.yml
     - src/*
-    - node_modules/**/*
     - scripts/*
