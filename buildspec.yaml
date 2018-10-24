@@ -24,3 +24,4 @@ artifacts:
     - appspec.yml
     - src/*
     - node_modules/**/*
+    - scripts/*
