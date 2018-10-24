@@ -41,4 +41,7 @@ export class HelpComponent {
   };
   updateProfile (number) {};
   updateCountry (){};
+  logout () {
+    this.router.navigate (['/login']);
+  }
 }
