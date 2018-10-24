@@ -1,13 +1,13 @@
-<ion-app title="Settings" class="jsmbp-settings-container">
+<ion-app title="Settings">
 	<ion-content padding color="light">
-      <h1 text-center>Settings</h1>
+    <h1 text-center>Settings</h1>
 		<ion-card>
-			<ion-item class="item-divider mb-blue">
-				My Account
-				<div *ngIf="email">
-					<ion-label>Email: </ion-label>
-					<p>{{email}}</p>
-				</div>
+			<ion-item >
+				<ion-label>My Account
+					<div *ngIf="email" >
+						<ion-label color="medium">Email: {{email}}</ion-label>
+					</div>
+				</ion-label>
 			</ion-item>
 
 			<ion-item>
@@ -18,21 +18,18 @@
 			</ion-item>
 
 			<ion-item>
-				<div class="item-input-inset col col-75">
-					<label class="item-input-wrapper">
-						Contact No.:
-						<ion-input [(ng-model)]="contact_number"
-							name="contact_number"
-							type="text"
-							>
-						</ion-input>
-
-					</label>
-				</div>
-				<button  (click)="updateProfile(contact_number)">Update</button>
+				<ion-label >
+					Contact No.:
+				</ion-label>
+				<ion-input color="medium" [(ngModel)]="contact_number"
+					name="contact_number"
+					type="text"
+					>
+				</ion-input>
+				<ion-button  background= "medium-shade" color="color-dark" (click)="updateProfile(contact_number)">Update</ion-button>
 			</ion-item>
 
-			<ion-item class='item-icon-left' [routerLink]="['switcher']">
+			<ion-item class='item-icon-left' (click)="switchProgram()">
 					<ion-icon padding name="radio-button-on"></ion-icon>
 					Switch to another program
 			</ion-item>
@@ -42,11 +39,11 @@
 			<ion-item >Support</ion-item>
 			<ion-item 
 				href="mailto:{{helpline}}?subject={{email.supportTitle}}">
-				<ion-icon padding ios="ios-mail" md="md-mail"></ion-icon>
+				<ion-icon padding name="mail"></ion-icon>
 				Email Help
 			</ion-item>
-			<ion-item class='item-icon-left' (click)="openLink(termsUrl)">
-      <ion-icon padding ios="ios-clipboard" md="md-clipboard"></ion-icon>
+			<ion-item  (click)="openLink(termsUrl)">
+      	<ion-icon padding name="clipboard"></ion-icon>
 				Terms of Use
 			</ion-item>
     </ion-card>
