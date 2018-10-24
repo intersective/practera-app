@@ -150,7 +150,7 @@ module.exports = ".div-logo {\n  margin-top: 10vh;\n  margin-bottom: 7vh;\n}\n.b
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "<ion-content color=\"light\" text-center>\n  <div class=\"div-logo\">\n    <img src=\"./assets/logo.svg\" width=\"60%\">\n  </div>\n  <ion-list margin-horizontal>\n    <ion-item>\n      <ion-input name=\"email\" [(ngModel)]=\"email\" required type=\"text\" placeholder=\"Email\"></ion-input>\n    </ion-item>\n    <ion-item>\n      <ion-input name=\"password\" [(ngModel)]=\"password\" required type=\"password\" placeholder=\"Password\"></ion-input>\n    </ion-item>\n  </ion-list>\n  <button class=\"btn-login\" (click)=\"login()\"><img src=\"./assets/login-button.svg\" width=\"100%\"></button>\n  <div style=\"margin:40px 0;\">\n    <a (click)=\"forgotPassword()\">Problem signing in?</a>\n  </div>\n  <div>\n    <a>Powered by</a><img src=\"./assets/logo.svg\" height=\"25\" style=\"margin-left: 10px;vertical-align: middle;\">\n  </div>\n</ion-content>"
+module.exports = "<ion-content color=\"light\" text-center>\n  <div class=\"div-logo\">\n    <img src=\"/assets/logo.svg\" width=\"60%\">\n  </div>\n  <ion-list margin-horizontal>\n    <ion-item>\n      <ion-input name=\"email\" [(ngModel)]=\"email\" required type=\"text\" placeholder=\"Email\"></ion-input>\n    </ion-item>\n    <ion-item>\n      <ion-input name=\"password\" [(ngModel)]=\"password\" required type=\"password\" placeholder=\"Password\"></ion-input>\n    </ion-item>\n  </ion-list>\n  <button class=\"btn-login\" (click)=\"login()\"><img src=\"/assets/login-button.svg\" width=\"100%\"></button>\n  <div style=\"margin:40px 0;\">\n    <a (click)=\"forgotPassword()\">Problem signing in?</a>\n  </div>\n  <div>\n    <a>Powered by</a><img src=\"/assets/logo.svg\" height=\"25\" style=\"margin-left: 10px;vertical-align: middle;\">\n  </div>\n</ion-content>"
 
 /***/ }),
 
@@ -294,7 +294,7 @@ module.exports = ".img-icon {\n  vertical-align: middle; \n  margin-right: 10px;
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "<ion-header>\n  <ion-toolbar>\n    <ion-title>Select A Program</ion-title>\n  </ion-toolbar>\n</ion-header>\n\n<ion-content padding color=\"light\">\n  <ion-card class=\"div-card\">\n    <ion-list *ngFor=\"let program of programs\">\n      <ion-item (click)=\"switch(program.id)\" color=\"light\">\n        <img src=\"./assets/thumbs/practera_icon.png\" height=\"25\" width=\"25\" class=\"img-icon\"> {{ program.name }}\n      </ion-item>\n    </ion-list>\n  </ion-card>\n  <ion-card class=\"div-card\">\n    <ion-item (click)=\"logout()\">\n      <ion-icon name=\"log-out\" margin-end></ion-icon> Logout\n    </ion-item>\n  </ion-card>\n</ion-content>"
+module.exports = "<ion-header>\n  <ion-toolbar>\n    <ion-title>Select A Program</ion-title>\n  </ion-toolbar>\n</ion-header>\n\n<ion-content padding color=\"light\">\n  <ion-card class=\"div-card\">\n    <ion-list *ngFor=\"let program of programs\">\n      <ion-item (click)=\"switch(program.id)\" color=\"light\">\n        <img src=\"/assets/thumbs/practera_icon.png\" height=\"25\" width=\"25\" class=\"img-icon\"> {{ program.name }}\n      </ion-item>\n    </ion-list>\n  </ion-card>\n  <ion-card class=\"div-card\">\n    <ion-item (click)=\"logout()\">\n      <ion-icon name=\"log-out\" margin-end></ion-icon> Logout\n    </ion-item>\n  </ion-card>\n</ion-content>"
 
 /***/ }),
 
