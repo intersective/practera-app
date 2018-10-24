@@ -1,20 +1,23 @@
 
-<ion-content padding>
+<ion-content padding color="light">
   <h1 text-center>Program Name</h1>
   <div text-center padding >
     <circle-progress 
-    [percent]="85"
-    [radius]="100"
-    [outerStrokeWidth]="16"
-    [innerStrokeWidth]="8"
-    [outerStrokeColor]="primary"
-    [innerStrokeColor]="primary"
-    [animation]="true"
-    [animationDuration]="500">
+      [percent]="progress">
     </circle-progress>
   </div>     
   <ion-label padding color="medium">Thins to do </ion-label>
-    <app-feedback></app-feedback>
+  <ion-card *ngIf="!todo" color="primary-contrast" class="notification-card">
+      <ion-item href="#" class="activated">
+          <ion-icon name="notifications" slot="start" color="primary"></ion-icon>
+          You have no new notifications.
+      </ion-item>
+  </ion-card>
+  <ion-list *ngIf="todo">
+    <div *ngFor="let notification of notifications">
+      <app-todo-notification-card></app-todo-notification-card>
+    </div>  
+  </ion-list>  
 
   <ion-label padding color="medium">Current Activity</ion-label>
   <app-activity-card></app-activity-card>
