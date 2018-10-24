@@ -5,6 +5,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HelpComponent } from './help.component';
 
+
 @NgModule({
   imports: [
     IonicModule,
