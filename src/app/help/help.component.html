@@ -1,25 +1,25 @@
 <ion-app title="Settings" class="jsmbp-settings-container">
-	<ion-content padding class="has-header">
+	<ion-content padding color="light">
       <h1 text-center>Settings</h1>
 		<ion-card>
 			<ion-item class="item-divider mb-blue">
 				My Account
-				<p ng-if="email">
+				<p *ngIf="email">
 					<label>Email: </label>
-					<span ng-bind="email"></span>
+					<span>{{email}}</span>
 				</p>
 			</ion-item>
 
-			<ion-item class="row">
+			<ion-item>
 				<label class="item item-input item-select">
 					<div class="input-label">Select Country</div>
-					<select name="country" id="country" ng-model="countryModel" ng-change="updateCountry(countryModel)">
-						<option ng-repeat="countryCode in countryCodes" value="{{countryCode.code}}">{{countryCode.name}}</option>
+					<select name="country" id="country" [(ngModel)]="countryModel" (change)="updateCountry(countryModel)">
+						<option *ngFor="let countryCode of countryCodes" [value]="countryCode.code">{{countryCode.name}}</option>
 					</select>
 				</label>
 			</ion-item>
 
-			<ion-item class="row">
+			<ion-item>
 				<div class="item-input-inset col col-75">
 					<label class="item-input-wrapper">
 						Contact No.:
@@ -30,31 +30,31 @@
 
 					</label>
 				</div>
-				<button class="button button-light button-small col" ng-click="updateProfile(contact_number)">Update</button>
+				<button  (click)="updateProfile(contact_number)">Update</button>
 			</ion-item>
 
-			<ion-item class='item-icon-left' ng-click="goto('switcher')">
+			<ion-item class='item-icon-left' [routerLink]="['switcher']">
 				<ion-icon padding name="ion-ios-circle-filled"></ion-icon>
 				Switch to another program
 			</ion-item>
     </ion-card>
 
 		<ion-card>
-			<ion-item class="item-divider mb-red">Support</ion-item>
-			<ion-item class='item-icon-left no-bottom-border'
+			<ion-item >Support</ion-item>
+			<ion-item 
 				href="mailto:{{helpline}}?subject={{email.supportTitle}}">
 				<ion-icon padding ios="ios-mail" md="md-mail"></ion-icon>
 				Email Help
 			</ion-item>
-			<ion-item class='item-icon-left' ng-click="openLink(termsUrl)">
+			<ion-item class='item-icon-left' (click)="openLink(termsUrl)">
       <ion-icon padding ios="ios-clipboard" md="md-clipboard"></ion-icon>
 				Terms of Use
 			</ion-item>
     </ion-card>
 
 		<ion-card>
-			<ion-item class='item-icon-left' ng-click="logout()">
-          <ion-icon padding ios="ios-log-out" md="md-log-out"></ion-icon>
+			<ion-item  (click)="logout()">
+          <ion-icon padding ios="ios-log-out"></ion-icon>
 				Logout
 			</ion-item>
     </ion-card>
