@@ -1,0 +1,6 @@
+#!/bin/bash
+if pgrep node
+then pkill -f node
+else
+echo " node is not running"
+fi
