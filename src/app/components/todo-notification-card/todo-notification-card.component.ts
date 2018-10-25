@@ -13,7 +13,12 @@ export class TodoNotificationCardComponent implements OnInit {
     name: 'name1'
   };
   todo ='';
-  
+  isInTeam = true;
+  role = 'participant';
+  reviewer = {
+    name:'mentor1',
+    assignOn: 'today'
+  };
   constructor() { 
   }
 

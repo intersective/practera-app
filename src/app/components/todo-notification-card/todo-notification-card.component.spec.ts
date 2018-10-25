@@ -1,6 +1,6 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { TodoNotificationCardComponent } from './todo-notification-card';
+import { TodoNotificationCardComponent } from './todo-notification-card.component';
 
 describe('FeedbackComponent', () => {
   let component: TodoNotificationCardComponent;

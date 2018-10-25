@@ -6,6 +6,10 @@ import { Component } from '@angular/core';
   styleUrls: ['home.component.scss']
 })
 export class HomeComponent {
-  public todo:boolean  = false;
-  public progress:number = 80; 
+  public todo:boolean  = true;
+  public progress:number = 80;
+  notifications=[{
+    AssessmentName :'demo assessmnet',
+    TeamName: 'Team1'
+  }];
 }

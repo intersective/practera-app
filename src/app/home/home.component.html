@@ -7,17 +7,19 @@
     </circle-progress>
   </div>     
   <ion-label padding color="medium">Thins to do </ion-label>
-  <ion-card *ngIf="!todo" color="primary-contrast" class="notification-card">
+  <ion-card *ngIf="!todo; else notificationList" color="primary-contrast" class="notification-card">
       <ion-item href="#" class="activated">
           <ion-icon name="notifications" slot="start" color="primary"></ion-icon>
-          You have no new notifications.
+          <ion-label  color="medium">You have no new notifications.</ion-label>
       </ion-item>
   </ion-card>
-  <ion-list *ngIf="todo">
-    <div *ngFor="let notification of notifications">
-      <app-todo-notification-card></app-todo-notification-card>
-    </div>  
-  </ion-list>  
+  <ng-template #notificationList>
+    <ion-list class="notification-list">
+      <div *ngFor="let notification of notifications">
+        <app-todo-notification-card></app-todo-notification-card>
+      </div>  
+    </ion-list>
+  </ng-template>  
 
   <ion-label padding color="medium">Current Activity</ion-label>
   <app-activity-card></app-activity-card>
