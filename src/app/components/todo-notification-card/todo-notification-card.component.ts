@@ -14,7 +14,7 @@ export class TodoNotificationCardComponent implements OnInit {
   };
   todo ='';
   isInTeam = true;
-  role = 'participant';
+  role = 'mentor';
   reviewer = {
     name:'mentor1',
     assignOn: 'today'

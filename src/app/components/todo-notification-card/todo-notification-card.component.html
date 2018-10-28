@@ -4,7 +4,8 @@
       <div class="todo-card">
         <h4>{{Assessment.name}}</h4>
         <p>Please review the assessment</p>
-      </div> 
+      </div>
+      <ion-text float-right color="medium" class="timeStamp">today</ion-text> 
     </ion-item>
   </ion-card>
 <ng-template #feedbackCard>
@@ -15,6 +16,7 @@
         <h4>{{Assessment.name}}</h4>
         <p>{{reviewer.name}} has provided feedback</p>
       </div> 
+      <ion-text float-right color="medium" class="timeStamp">today</ion-text>
     </ion-item>
   </ion-card>
  </ng-template> 
