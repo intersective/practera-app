@@ -17,9 +17,9 @@ import { TodoNotificationCardComponent } from '../components/todo-notification-c
       // set defaults here
       "backgroundColor": "#f5f6fa",
       "backgroundPadding": -10,
-      "radius": 60,
+      "radius": 70,
       "maxPercent": 100,
-      "outerStrokeWidth": 10,
+      "outerStrokeWidth": 12,
       "outerStrokeColor": "#2bbfd4",
       "innerStrokeWidth": 0,
       "subtitleColor": "#444444",

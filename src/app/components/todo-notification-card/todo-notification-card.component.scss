@@ -9,6 +9,10 @@
 }
 .notification-item {
   --border-width: 0px !important;
+  .timeStamp {
+    right: 20px;
+    position: absolute;
+  } 
 }
 .todo-card {
   padding-left: 10px;
@@ -30,5 +34,6 @@
     white-space: nowrap;
     text-overflow: ellipsis;
     margin-top: 0px;
-  } 
+  }
+  
 }
