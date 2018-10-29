@@ -32,7 +32,4 @@ export class AuthForgotPasswordComponent {
     return await modal.present();
 	}
 
-  login() {
-    this.router.navigate(['/login']); 
-  }
 }
