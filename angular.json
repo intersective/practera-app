@@ -38,6 +38,9 @@
               },
               {
                 "input": "src/global.scss"
+              },
+              {
+                "input": "src/styles.scss"
               }
             ],
             "scripts": []
