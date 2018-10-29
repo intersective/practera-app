@@ -5,7 +5,7 @@
         <h4>{{Assessment.name}}</h4>
         <p>Please review the assessment</p>
       </div>
-    <ion-text float-right color="medium" class="time-stamp">today</ion-text> 
+      <ion-text float-right color="medium" class="timeStamp">{{time}}</ion-text>
   </ion-item>
 </ion-card>
 <ng-template #feedbackCard>
@@ -16,7 +16,7 @@
         <h4>{{Assessment.name}}</h4>
         <p>{{reviewer.name}} has provided feedback</p>
       </div> 
-      <ion-text float-right color="medium" class="timeStamp">today</ion-text>
+      <ion-text float-right color="medium" class="timeStamp">{{time}}</ion-text>
     </ion-item>
   </ion-card>
 </ng-template> 
