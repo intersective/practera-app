@@ -4,7 +4,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { TabsComponent } from './tabs.component';
 import { HomeComponent } from '../home/home.component';
 import { ActivitiesComponent } from '../activities/activities.component';
-import { ChatComponent } from '../chat/chat.component';
+import { ChatListComponent } from '../chat/chat-list/chat-list.component';
 import { HelpComponent } from '../help/help.component';
 
 const routes: Routes = [
@@ -30,7 +30,7 @@ const routes: Routes = [
       {
         path: 'chat',
         outlet: 'chat',
-        component: ChatComponent
+        component: ChatListComponent
       },
       {
         path: 'help',
