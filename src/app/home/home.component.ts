@@ -11,8 +11,11 @@ export class HomeComponent {
   Program = {
     Name : 'Demo program'
   };
-  notifications=[{
-    AssessmentName :'demo assessmnet',
-    TeamName: 'Team1'
-  }];
+  notifications= [
+    {
+      AssessmentName :'demo assessmnet',
+      TeamName: 'Team1',
+      time : 'today'
+    }
+  ];
 }
