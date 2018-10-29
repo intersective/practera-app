@@ -1,5 +1,5 @@
 <ion-content color="light" text-center>
-    <div [ngSwitch]="type">
+    <ng-container [ngSwitch]="type">
 
       <ng-container *ngSwitchCase="'forgotPasswordConfirmation'">
         <div class="div-logo"></div>
@@ -9,7 +9,7 @@
         </div>
       </ng-container>
 
-    </div> 
+    </ng-container> 
     <div class="div-after-logo">
       <ion-button (click)="confirmed()" shape="round" color="primary" expand="full">OK</ion-button>
     </div>
