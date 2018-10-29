@@ -1,11 +1,17 @@
 <ion-content color="light" text-center>
-  <div style="margin: 50px 30px 0;">
+    <ng-container [ngSwitch]="type">
 
-    <div *ngIf="type == 'forgotPasswordConfirmation'">
-      <p>We have sent an email to "<i>{{ data.email }}</i>" with a link to log into the system - please check your inbox. 
-      <p style="margin: 20px 0 50px;">If you haven't received an email in a few minutes, please make sure the email you entered is correct and check your spam folder. Thank you.</p>
+      <ng-container *ngSwitchCase="'forgotPasswordConfirmation'">
+        <div class="div-logo"></div>
+        <div class="div-after-logo">
+          <p>We have sent an email to "<i>{{ data.email }}</i>" with a link to log into the system - please check your inbox. </p>
+          <p>If you haven't received an email in a few minutes, please make sure the email you entered is correct and check your spam folder. Thank you.</p>
+        </div>
+      </ng-container>
+
+    </ng-container> 
+    <div class="div-after-logo">
+      <ion-button (click)="confirmed()" shape="round" color="primary" expand="full">OK</ion-button>
     </div>
-    
-    <ion-button (click)="confirmed()" shape="round" color="primary" expand="full">OK</ion-button>
-  </div>
+
 </ion-content>
