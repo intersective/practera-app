@@ -5,6 +5,7 @@ import { TabsComponent } from './tabs.component';
 import { HomeComponent } from '../home/home.component';
 import { ActivitiesComponent } from '../activities/activities.component';
 import { ChatListComponent } from '../chat/chat-list/chat-list.component';
+import { ChatRoomComponent } from '../chat/chat-room/chat-room.component';
 import { HelpComponent } from '../help/help.component';
 
 const routes: Routes = [
