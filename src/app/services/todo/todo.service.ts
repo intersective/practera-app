@@ -4,6 +4,18 @@ import { Injectable } from '@angular/core';
   providedIn: 'root'
 })
 export class TodoService {
+  todo = [
+    {
+      assessmentName :'demo assessmnet',
+      teamName: 'Team1',
+      time: 'today',
+      reviewer : {
+        name:'mentor1',
+        assignOn: 'today'
 
-  constructor() { }
+      }
+    }
+];
+
+  constructor() {};
 }

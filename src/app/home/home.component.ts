@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { TodoService } from '../services/todo/todo.service';
 
 @Component({
   selector: 'app-home',
@@ -11,8 +12,11 @@ export class HomeComponent {
   Program = {
     Name : 'Demo program'
   };
-  notifications=[{
-    AssessmentName :'demo assessmnet',
-    TeamName: 'Team1'
-  }];
+  notifications= [];
+   
+  constructor ( public todoList: TodoService ) {
+    this. notifications = todoList.todo;
+    this.todo = (todoList.todo.length? true : false)   
+  };
+  
 }
