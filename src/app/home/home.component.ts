@@ -15,7 +15,7 @@ export class HomeComponent {
   notifications= [];
    
   constructor ( public todoList: TodoService ) {
-    this. notifications = todoList.todo;
+    this.notifications = todoList.todo;
     this.todo = (todoList.todo.length? true : false)   
   };
   
