@@ -1,3 +1,79 @@
-<p>
-  chat-room works!
-</p>
+<ion-header>
+  <ion-toolbar>
+    <!-- <ion-buttons slot="start">
+      <ion-back-button></ion-back-button>
+    </ion-buttons> -->
+    <ion-title>Beenish Chat <small>- Team 12</small></ion-title>
+  </ion-toolbar>
+</ion-header>
+<ion-content>
+  <ion-list lines="none" class="chat-list">
+    <ion-item>
+      <ion-avatar class="color-1" slot="start">
+        <p class="chat-avatar">BC</p>
+      </ion-avatar>
+      <ion-label class="reserved-messages">
+        <div class="time">
+          <p>1.30 PM</p>
+        </div>
+        <div class="message-body">
+          <p>Pokémon Yellow</p>
+        </div>
+        <div class="seen-text">
+          <p>Beenish Chat</p>
+        </div>
+      </ion-label>
+    </ion-item>
+    <ion-item>
+      <ion-label class="send-messages">
+        <div class="time">
+          <p>1.30 PM</p>
+        </div>
+        <div class="message-body">
+          <p>Pokémon Yellow</p>
+        </div>
+      </ion-label>
+    </ion-item>
+    <ion-item>
+      <ion-label class="reserved-messages no-avatar">
+        <div class="time">
+          <p>1.30 PM</p>
+        </div>
+        <div class="message-body">
+          <p>Pokémon Yellow</p>
+        </div>
+      </ion-label>
+    </ion-item>
+    <ion-item>
+      <ion-avatar class="color-1 no-time" slot="start">
+        <p class="chat-avatar">BC</p>
+      </ion-avatar>
+      <ion-label class="reserved-messages">
+        <div class="message-body">
+          <p>Pokémon Yellow</p>
+        </div>
+        <div class="seen-text">
+          <p>Beenish Chat</p>
+        </div>
+      </ion-label>
+    </ion-item>
+    <ion-item>
+      <ion-label class="send-messages">
+        <div class="time">
+          <p>1.30 PM</p>
+        </div>
+        <div class="message-body">
+          <p>Pokémon Yellow</p>
+        </div>
+      </ion-label>
+    </ion-item>
+  </ion-list>
+</ion-content>
+<ion-footer>
+  <ion-item lines="none">
+    <ion-input type="text" placeholder="Enter you'r message"></ion-input>
+    <ion-button slot="end" fill="clear" color="light">
+      <ion-icon name="send"></ion-icon>
+    </ion-button>
+  </ion-item>
+</ion-footer>
