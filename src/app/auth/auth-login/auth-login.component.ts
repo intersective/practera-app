@@ -21,7 +21,4 @@ export class AuthLoginComponent {
     this.router.navigate(['/switcher']);
 	}
 
-  forgotPassword() {
-    this.router.navigate(['/forgot_password']); 
-  }
 }
