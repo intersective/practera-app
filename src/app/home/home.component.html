@@ -8,7 +8,7 @@
   </div>     
   <ion-label padding color="medium">Thins to do </ion-label>
   <ion-card *ngIf="!todo; else notificationList" color="primary-contrast" class="notification-card">
-      <ion-item href="#" class="activated">
+      <ion-item class="activated">
           <ion-icon name="notifications" slot="start" color="primary"></ion-icon>
           <ion-label  color="medium">You have no new notifications.</ion-label>
       </ion-item>
@@ -16,7 +16,7 @@
   <ng-template #notificationList>
     <ion-list class="notification-list">
       <div *ngFor="let notification of notifications">
-        <app-todo-notification-card></app-todo-notification-card>
+        <app-todo-notification-card [notification] = notification></app-todo-notification-card>
       </div>  
     </ion-list>
   </ng-template>  
