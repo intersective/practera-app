@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 
 @Component({
   selector: 'app-activity-card',
@@ -6,10 +6,10 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./activity-card.component.scss']
 })
 export class ActivityCardComponent implements OnInit {
-  activity = {
-    name : 'Activity Demo'
-  };
+  
   constructor() { }
+
+  @Input() activity: {};
 
   ngOnInit() {
   }
