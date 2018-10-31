@@ -1,4 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
+import { RoleService } from '../../services/role.service';
+
 
 @Component({
   selector: 'app-todo-notification-card',
@@ -6,22 +8,13 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./todo-notification-card.component.scss']
 })
 export class TodoNotificationCardComponent implements OnInit {
-  Team = {
-    name :'team 1'
-  }
-  Assessment = {
-    name: 'name1'
-  };
-  todo ='';
-  isInTeam = true;
-  role = 'mentor';
-  reviewer = {
-    name:'mentor1',
-    assignOn: 'today'
+   
+  role: string = '';
+  constructor(public memberRole: RoleService) {
+    this.role = memberRole.role;
   };
   
-  constructor() { 
-  }
+  @Input() notification: {};
 
   ngOnInit() {
   }
