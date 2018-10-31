@@ -1,58 +1,61 @@
 <ion-app title="Settings">
-	<ion-content padding color="light">
+  <ion-content padding color="light">
     <h1 text-center>Settings</h1>
-		<ion-card>
-			<ion-item >
-				<ion-label>My Account
-					<div *ngIf="email" >
-						<ion-label color="medium">Email: {{email}}</ion-label>
-					</div>
-				</ion-label>
-			</ion-item>
+    <ion-card>
+      <ion-item >
+        <ion-label>My Account
+          <div *ngIf="email" >
+            <ion-label color="medium">Email: {{email}}</ion-label>
+          </div>
+        </ion-label>
+      </ion-item>
 
-			<ion-item>
-				<ion-label>Select Country</ion-label>
-					<ion-select name="country" id="country" [(ngModel)]="countryModel" (change)="updateCountry(countryModel)">
-						<ion-select-option *ngFor="let countryCode of countryCodes" [value]="countryCode.code">{{countryCode.name}}</ion-select-option>
-					</ion-select>
-			</ion-item>
+      <ion-item>
+        <ion-label>Select Country</ion-label>
+          <ion-select name="country" id="country" [(ngModel)]="countryModel" (change)="updateCountry(countryModel)">
+            <ion-select-option *ngFor="let countryCode of countryCodes" [value]="countryCode.code">{{countryCode.name}}</ion-select-option>
+          </ion-select>
+      </ion-item>
 
-			<ion-item>
-				<ion-label >
-					Contact No.:
-				</ion-label>
-				<ion-input color="medium" [(ngModel)]="contact_number"
-					name="contact_number"
-					type="text"
-					>
-				</ion-input>
-				<ion-button  background= "medium-shade" color="color-dark" (click)="updateProfile(contact_number)">Update</ion-button>
-			</ion-item>
+      <ion-item>
+        <ion-label>
+          Contact No.
+          <div>
+            <ion-input 
+              color="medium" 
+              [(ngModel)]="contact_number"
+              name="contact_number"
+              type="text"
+              >
+            </ion-input>
+            <ion-button background="medium-shade" (click)="updateProfile(contact_number)">Update</ion-button>
+          </div>
+        </ion-label>
+      </ion-item>
 
-			<ion-item class='item-icon-left' (click)="switchProgram()">
-					<ion-icon padding name="radio-button-on"></ion-icon>
-					Switch to another program
-			</ion-item>
+      <ion-item (click)="switchProgram()">
+        <ion-icon padding name="radio-button-on"></ion-icon>
+        Switch to another program
+      </ion-item>
     </ion-card>
 
-		<ion-card>
-			<ion-item >Support</ion-item>
-			<ion-item 
-				href="mailto:{{helpline}}?subject={{email.supportTitle}}">
-				<ion-icon padding name="mail"></ion-icon>
-				Email Help
-			</ion-item>
-			<ion-item  (click)="openLink(termsUrl)">
-      	<ion-icon padding name="clipboard"></ion-icon>
-				Terms of Use
-			</ion-item>
+    <ion-card>
+      <ion-item>Support</ion-item>
+      <ion-item (click)="mailTo()">
+        <ion-icon padding name="mail"></ion-icon>
+        Email Help
+      </ion-item>
+      <ion-item (click)="openLink(termsUrl)">
+        <ion-icon padding name="clipboard"></ion-icon>
+        Terms of Use
+      </ion-item>
     </ion-card>
 
-		<ion-card>
-			<ion-item  (click)="logout()">
-          <ion-icon padding name="log-out"></ion-icon>
-				Logout
-			</ion-item>
+    <ion-card>
+      <ion-item (click)="logout()">
+        <ion-icon padding name="log-out"></ion-icon>
+        Logout
+      </ion-item>
     </ion-card>
-	</ion-content>
+  </ion-content>
 </ion-app>
