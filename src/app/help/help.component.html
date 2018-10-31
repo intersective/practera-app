@@ -24,13 +24,16 @@
       <ion-label>
         Contact No.
         <ion-button class="btn-right" color="medium" (click)="updateProfile(contact_number)">Update</ion-button>
-        <ion-input 
+      </ion-label>
+      <div>
+      <ion-input 
           color="medium" 
           [(ngModel)]="contact_number"
           placeholder="contact number"
+          type="text"
           >
         </ion-input>
-      </ion-label>
+      </div>  
     </ion-item>
 
     <ion-item (click)="switchProgram()">
