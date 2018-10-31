@@ -1,4 +1,6 @@
 import { Component } from '@angular/core';
+import { TodoService } from '../services/todo/todo.service';
+import { ActivityService } from '../services/activity.service';
 
 @Component({
   selector: 'app-home',
@@ -11,11 +13,13 @@ export class HomeComponent {
   Program = {
     Name : 'Demo program'
   };
-  notifications= [
-    {
-      AssessmentName :'demo assessmnet',
-      TeamName: 'Team1',
-      time : 'today'
-    }
-  ];
+  notifications= [];
+  activity = {};
+   
+  constructor ( public todoList: TodoService, public activityObject: ActivityService  ) {
+    this.notifications = todoList.todo;
+    this.todo = (todoList.todo.length? true : false) ;
+    this.activity = activityObject.activity;  
+  };
+  
 }
