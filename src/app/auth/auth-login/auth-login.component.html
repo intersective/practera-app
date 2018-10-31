@@ -11,7 +11,8 @@
         <ion-input name="password" [(ngModel)]="password" required type="password" placeholder="Password"></ion-input>
       </ion-item>
     </ion-list>
-    <button class="btn-login" (click)="login()"><img src="/assets/login-button.svg" width="100%"></button>
+    <ion-button (click)="login()" shape="round" color="primary">LOGIN</ion-button>
+    <!-- <button class="btn-login" (click)="login()"><img src="/assets/login-button.svg" width="100%"></button> -->
   </div>
   <div class="text-split">
     <a routerLink="/forgot_password">Problem signing in?</a>
