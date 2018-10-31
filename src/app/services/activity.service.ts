@@ -5,7 +5,7 @@ import { Injectable } from '@angular/core';
 })
 export class ActivityService {
   public activity = {
-          name :'Activity Name 1'
-    }
+    name :'Activity Name 1'
+  }
   constructor() {};
 }

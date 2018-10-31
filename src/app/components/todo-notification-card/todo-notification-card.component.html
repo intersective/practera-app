@@ -4,14 +4,25 @@
       <div class="todo-card">
         <h4>{{notification.assessmentName}}</h4>
         <ion-text color="medium">
+<<<<<<< HEAD
           <ng-container>
             <p *ngIf="role ==='mentor'; else feedbackCard">Please review the assessment</p>
           </ng-container>
           <ng-template #feedbackCard>
+=======
+          <ng-container *ngIf="role ==='mentor'; else feedbackHint">
+            <p>Please review the assessment</p>
+          </ng-container>
+          <ng-template #feedbackHint>
+>>>>>>> 9b413317f9d02bdf1ad00308412945c2b77a0f3d
             <p>{{notification.reviewer.name}} has provided feedback</p>
           </ng-template>
         </ion-text>
       </div>
     <ion-text float-right color="medium" class="time-stamp">{{notification.time}}</ion-text> 
   </ion-item>
+<<<<<<< HEAD
 </ion-card>
+=======
+</ion-card>
+>>>>>>> 9b413317f9d02bdf1ad00308412945c2b77a0f3d
