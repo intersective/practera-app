@@ -38,15 +38,15 @@ export class HelpComponent {
     console.log('open the file');
   };
 
-  switchProgram () {
-    this.router.navigate (['/switcher']);
+  switchProgram() {
+    this.router.navigate(['/switcher']);
   };
 
-  updateProfile (number) {
+  updateProfile(number) {
 
   };
 
-  updateCountry (){
+  updateCountry() {
 
   };
 
@@ -56,7 +56,7 @@ export class HelpComponent {
     //mailto:{{helpline}}?subject={{email.supportTitle}}
   }
 
-  logout () {
-    this.router.navigate (['/login']);
+  logout() {
+    this.router.navigate(['/login']);
   }
 }
