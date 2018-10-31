@@ -1,22 +1,17 @@
-<ion-card *ngIf="role ==='mentor'; else feedbackCard"color="primary-contrast" class="notification-card">
+<ion-card color="primary-contrast" class="notification-card">
   <ion-item  class="notification-item">
     <ion-icon name="text" slot="start" color="primary"></ion-icon>
       <div class="todo-card">
         <h4>{{notification.assessmentName}}</h4>
-        <p>Please review the assessment</p>
+        <ion-text color="medium">
+          <ng-container *ngIf="role ==='mentor'; else feedbackHint">
+            <p>Please review the assessment</p>
+          </ng-container>
+          <ng-template #feedbackHint>
+            <p>{{notification.reviewer.name}} has provided feedback</p>
+          </ng-template>
+        </ion-text>
       </div>
     <ion-text float-right color="medium" class="time-stamp">{{notification.time}}</ion-text> 
   </ion-item>
 </ion-card>
-<ng-template #feedbackCard>
-  <ion-card color="primary-contrast" class="notification-card">
-    <ion-item  class="notification-item">
-      <ion-icon name="text" slot="start" color="primary"></ion-icon>
-      <div class="todo-card">
-        <h4>{{notification.assessmentName}}</h4>
-        <p>{{notification.reviewer.name}} has provided feedback</p>
-      </div> 
-      <ion-text float-right color="medium" class="time-stamp">{{notification.time}}</ion-text>
-    </ion-item>
-  </ion-card>
-</ng-template> 

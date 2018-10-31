@@ -10,11 +10,12 @@
   --border-width: 0px !important;
   .time-stamp {
     right: 20px;
+    top: 20px;
+    font-size: 13px;
     position: absolute;
   } 
 }
 .todo-card {
-  padding-left: 10px;
   h4 {
     font-size: 16px;
     line-height: 20px;
@@ -24,7 +25,6 @@
     margin-bottom: 0px;
   }
   p {
-    color: #afb5d2;
     font-size: 14px;
     font-weight: 500;
     line-height: 20px;

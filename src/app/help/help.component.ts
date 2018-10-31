@@ -24,7 +24,8 @@ export class HelpComponent {
         prefix: "+1",
         mask: "+1 999 999 9999",
     },
-];
+  ];
+  helpline = 'help@practera.com';
   
   termsUrl = 'https://images.practera.com/terms_and_conditions/practera_terms_conditions.pdf';
   
@@ -36,11 +37,25 @@ export class HelpComponent {
   openLink(link) {
     console.log('open the file');
   };
+
   switchProgram () {
     this.router.navigate (['/switcher']);
   };
-  updateProfile (number) {};
-  updateCountry (){};
+
+  updateProfile (number) {
+
+  };
+
+  updateCountry (){
+
+  };
+
+  // send email to Help request
+  mailTo() {
+    console.log("Send Email to:", this.helpline);
+    //mailto:{{helpline}}?subject={{email.supportTitle}}
+  }
+
   logout () {
     this.router.navigate (['/login']);
   }
