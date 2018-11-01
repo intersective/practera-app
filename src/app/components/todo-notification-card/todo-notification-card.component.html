@@ -1,0 +1,15 @@
+<ion-card color="primary-contrast" class="notification-card">
+  <ion-item  class="notification-item">
+    <ion-icon name="text" slot="start" color="primary"></ion-icon>
+      <div class="todo-card">
+        <h4>{{notification.assessmentName}}</h4>
+        <ng-container [ngSwitch]="notification.todoType">
+            <ion-text color="medium">
+              <p *ngSwitchCase="'review'">Please review the assessment</p>
+              <p *ngSwitchCase="'feedback'">{{notification.reviewer.name}} has provided feedback</p>
+            </ion-text>  
+        </ng-container>
+      </div>
+    <ion-text float-right color="medium" class="time-stamp">{{notification.time}}</ion-text> 
+  </ion-item>
+</ion-card>
