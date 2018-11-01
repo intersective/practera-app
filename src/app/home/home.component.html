@@ -1,12 +1,25 @@
-<ion-header>
-  <ion-toolbar>
-    <ion-title>Home</ion-title>
-  </ion-toolbar>
-</ion-header>
+<ion-content padding color="light">
+  <h1 text-center>{{Program.Name}}</h1>
+  <div text-center padding >
+    <circle-progress 
+      [percent]="progress">
+    </circle-progress>
+  </div>     
+  <ion-label color="medium">Thins to do </ion-label>
+  <ion-card *ngIf="!todo; else notificationList" class="notification-card">
+      <ion-item class="activated">
+          <ion-icon name="notifications" slot="start" color="primary"></ion-icon>
+          <ion-label  color="medium">You have no new notifications.</ion-label>
+      </ion-item>
+  </ion-card>
+  <ng-template #notificationList>
+    <ion-list class="notification-list">
+      <div *ngFor="let notification of notifications">
+        <app-todo-notification-card [notification] = notification></app-todo-notification-card>
+      </div>  
+    </ion-list>
+  </ng-template>  
 
-<ion-content padding>
-	<ion-button color="success">This is for test</ion-button>
-  <ion-button color="warning">This is for test</ion-button>
-  This is the start of Practera App V2
-  <p>If you get lost, the <a target="_blank" rel="noopener" href="https://ionicframework.com/docs">docs</a> will be your guide.</p>
+  <ion-label color="medium">Current Activity</ion-label>
+  <app-activity-card [activity] = "activity"></app-activity-card>
 </ion-content>
