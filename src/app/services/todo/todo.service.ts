@@ -15,14 +15,14 @@ export class TodoService {
         assignOn: 'today'
       }
     },
-    { todoType: 'review',
+    { 
+      todoType: 'review',
       assessmentName :'demo assessmnet2',
       teamName: 'Team1',
       time: '1/1/2009',
       reviewer : {
         name:'mentor1',
         assignOn: 'today'
-
       }
     }
   ];
