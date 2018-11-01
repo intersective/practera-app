@@ -11,7 +11,7 @@ export class TodoNotificationCardComponent implements OnInit {
   constructor() {};
   
   @Input() notification: {};
-
+  @Input() ngSwitch: any
   ngOnInit() {
   }
 
