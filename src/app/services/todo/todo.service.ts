@@ -5,7 +5,7 @@ import { Injectable } from '@angular/core';
 })
 export class TodoService {
   todo = [
-    {
+    { todoType: 'feedback',
       assessmentName :'demo assessmnet',
       teamName: 'Team1',
       time: 'today',
