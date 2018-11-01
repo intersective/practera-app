@@ -4,7 +4,7 @@
       <div class="todo-card">
         <h4>{{notification.assessmentName}}</h4>
         
-          <ng-container *ngIf="role ==='mentor'; else feedbackHint">
+          <ng-container *ngIf="notification.todoType ==='review'; else feedbackHint">
             <ion-text color="medium">
               <p>Please review the assessment</p>
             </ion-text>  
