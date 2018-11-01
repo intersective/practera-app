@@ -3,18 +3,12 @@
     <ion-icon name="text" slot="start" color="primary"></ion-icon>
       <div class="todo-card">
         <h4>{{notification.assessmentName}}</h4>
-        
-          <ng-container *ngIf="notification.todoType ==='review'; else feedbackHint">
+        <ng-container [ngSwitch]="notification.todoType">
             <ion-text color="medium">
-              <p>Please review the assessment</p>
+              <p *ngSwitchCase="'review'">Please review the assessment</p>
+              <p *ngSwitchCase="'feedback'">{{notification.reviewer.name}} has provided feedback</p>
             </ion-text>  
-          </ng-container>
-          <ng-template #feedbackHint>
-            <ion-text color="medium">
-              <p>{{notification.reviewer.name}} has provided feedback</p>
-            </ion-text>  
-          </ng-template>
-       
+        </ng-container>
       </div>
     <ion-text float-right color="medium" class="time-stamp">{{notification.time}}</ion-text> 
   </ion-item>
