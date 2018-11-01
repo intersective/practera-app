@@ -5,14 +5,14 @@ import { Injectable } from '@angular/core';
 })
 export class TodoService {
   todo = [
-    { todoType: 'review',
+    { 
+      todoType: 'review',
       assessmentName :'demo assessmnet',
       teamName: 'Team1',
       time: 'today',
       reviewer : {
         name:'mentor1',
         assignOn: 'today'
-
       }
     },
     { todoType: 'review',
@@ -25,7 +25,7 @@ export class TodoService {
 
       }
     }
-];
+  ];
 
   constructor() {};
 }
