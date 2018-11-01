@@ -20,7 +20,7 @@ import { TodoNotificationCardComponent } from '../components/todo-notification-c
       "radius": 70,
       "maxPercent": 100,
       "outerStrokeWidth": 12,
-      "outerStrokeColor": "#2bbfd4",
+      "outerStrokeColor": "var(--ion-color-primary)",
       "innerStrokeWidth": 0,
       "subtitleColor": "#444444",
       "showInnerStroke": false,
