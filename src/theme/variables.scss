@@ -14,7 +14,7 @@
   --ion-color-primary-tint: #40c5d8;
 
   /** customised colors **/
-  --ion-tabbar-text-color-active: #2bbfd4;
+  --ion-tabbar-text-color-active: var(--ion-color-primary);
 
   /** secondary **/
   --ion-color-secondary: #0cd1e8;
