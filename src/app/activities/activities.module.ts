@@ -1,17 +1,19 @@
 import { IonicModule } from '@ionic/angular';
-import { RouterModule } from '@angular/router';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivitiesComponent } from './activities.component';
+import { ActivityDetailComponent } from './activity-detail/activity-detail.component';
 
 @NgModule({
   imports: [
     IonicModule,
     CommonModule,
-    FormsModule,
-    RouterModule.forChild([{ path: '', component: ActivitiesComponent }])
+    FormsModule
   ],
-  declarations: [ActivitiesComponent]
+  declarations: [
+    ActivitiesComponent,
+    ActivityDetailComponent
+  ]
 })
 export class ActivitiesModule {}
