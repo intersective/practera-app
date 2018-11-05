@@ -9,7 +9,7 @@ import { AuthRoutingModule } from './auth-routing.module';
 import { AuthComponent } from './auth.component';
 import { AuthLoginComponent } from './auth-login/auth-login.component';
 import { AuthForgotPasswordComponent } from './auth-forgot-password/auth-forgot-password.component';
-import { NotificationComponent } from '../components/notification/notification.component';
+import { PopUpComponent } from '../components/pop-up/pop-up.component';
 
 @NgModule({
   imports: [
@@ -22,10 +22,10 @@ import { NotificationComponent } from '../components/notification/notification.c
     AuthComponent, 
     AuthLoginComponent,
     AuthForgotPasswordComponent,
-    NotificationComponent
+    PopUpComponent
   ],
   entryComponents: [
-    NotificationComponent
+    PopUpComponent
   ]
 })
 export class AuthModule {}
