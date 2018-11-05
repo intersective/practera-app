@@ -15,7 +15,7 @@
   <ng-template #notificationList>
     <ion-list class="notification-list">
       <div *ngFor="let notification of notifications">
-        <app-todo-notification-card [notification] = notification></app-todo-notification-card>
+        <app-todo-card [notification] = notification></app-todo-card>
       </div>  
     </ion-list>
   </ng-template>  
