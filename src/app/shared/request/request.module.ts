@@ -1,13 +1,11 @@
 import { ModuleWithProviders, NgModule, Optional, SkipSelf } from '@angular/core';
 
-import { CommonModule } from '@angular/common';
 import { RequestConfig } from './request.service';
 import { RequestService } from './request.service';
 import { RequestInterceptor } from './request.interceptor';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 
 @NgModule({
-  imports: [ CommonModule ],
   providers: [
     RequestService,
     {
