@@ -1,0 +1,15 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title text-center>Activity</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content padding color="light">
+  <ion-card class="div-card">
+    <ion-list *ngFor="let program of programs">
+      <ion-item (click)="switch(program.id)" color="light">
+        
+      </ion-item>
+    </ion-list>
+  </ion-card>
+</ion-content>
