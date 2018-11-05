@@ -4,25 +4,20 @@ import { switchMap } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 
 @Component({
-  selector: 'app-activity-detail',
-  templateUrl: './activity-detail.component.html',
-  styleUrls: ['./activity-detail.component.scss']
+  selector: 'app-activity',
+  templateUrl: './activity.component.html',
+  styleUrls: ['./activity.component.scss']
 })
 export class ActivityDetailComponent implements OnInit {
    
-  activity$: Observable<Activity>; 
+  activity: {}; 
 
   constructor(
     private route: ActivatedRoute,
     private service: ActivitiesService
   ) { }
 
-
   ngOnInit() {
-    this.activity$ = this.route.paramMap.pipe(
-      switchMap((params: ParamMap) =>
-        this.service.getActivity(params.get('id')))
-    );
   }
 
 }
