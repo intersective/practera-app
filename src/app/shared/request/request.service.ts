@@ -2,6 +2,7 @@ import { Injectable, Optional } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams, HttpErrorResponse } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
+
 import * as _ from 'lodash';
 
 export class RequestConfig {
@@ -9,7 +10,9 @@ export class RequestConfig {
   prefixUrl = 'http://local.practera.com/';
 }
 
-@Injectable()
+@Injectable({
+  providedIn: 'root',
+})
 export class RequestService {
   private appkey: string;
   private prefixUrl: string;
