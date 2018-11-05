@@ -9,11 +9,11 @@ import { DOCUMENT } from '@angular/common';
 })
 
 @Component({
-  selector: 'app-auth-switcher',
-  templateUrl: 'auth-switcher.component.html',
-  styleUrls: ['auth-switcher.component.css']
+  selector: 'app-switcher-program',
+  templateUrl: 'switcher-program.component.html',
+  styleUrls: ['switcher-program.component.css']
 })
-export class AuthSwitcherComponent {
+export class SwitcherProgramComponent {
   programs = [
     {
       id: 1,

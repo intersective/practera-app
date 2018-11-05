@@ -9,7 +9,6 @@ import { AuthRoutingModule } from './auth-routing.module';
 import { AuthComponent } from './auth.component';
 import { AuthLoginComponent } from './auth-login/auth-login.component';
 import { AuthForgotPasswordComponent } from './auth-forgot-password/auth-forgot-password.component';
-import { AuthSwitcherComponent } from './auth-switcher/auth-switcher.component';
 import { NotificationComponent } from '../components/notification/notification.component';
 
 @NgModule({
@@ -23,7 +22,6 @@ import { NotificationComponent } from '../components/notification/notification.c
     AuthComponent, 
     AuthLoginComponent,
     AuthForgotPasswordComponent,
-    AuthSwitcherComponent,
     NotificationComponent
   ],
   entryComponents: [
