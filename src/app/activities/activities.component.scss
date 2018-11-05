@@ -1,0 +1,9 @@
+.milestone-bar {
+  list-style: none;
+  width: 100%;
+  li {
+    width: calc(100%/ 5);
+    float: left;
+
+  }
+}
