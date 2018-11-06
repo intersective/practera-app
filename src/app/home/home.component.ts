@@ -11,7 +11,7 @@ export class HomeComponent implements OnInit {
   Program = {
     Name : 'Demo program'
   };
-  todoItems= [];
+  todoItems = [];
   activity = {};
   
   constructor ( 

@@ -10,6 +10,7 @@ import { TabsComponent } from './tabs.component';
 
 import { HomeModule } from '../home/home.module';
 import { ProjectModule } from '../project/project.module';
+import { ActivityModule } from '../activity/activity.module';
 import { ChatModule } from '../chat/chat.module';
 import { HelpModule } from '../help/help.module';
 
@@ -21,6 +22,7 @@ import { HelpModule } from '../help/help.module';
     TabsRoutingModule,
     HomeModule,
     ProjectModule,
+    ActivityModule,
     ChatModule,
     HelpModule
   ],
