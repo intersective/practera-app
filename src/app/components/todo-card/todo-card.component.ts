@@ -6,11 +6,10 @@ import { Component, OnInit, Input } from '@angular/core';
   styleUrls: ['./todo-card.component.scss']
 })
 export class TodoCardComponent implements OnInit {
-   
-  role: string = '';
+  
   constructor() {};
   
-  @Input() notification: {};
+  @Input() todoItem: {};
   
   ngOnInit() {
   }
