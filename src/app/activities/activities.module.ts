@@ -12,7 +12,10 @@ import { NgCircleProgressModule } from 'ng-circle-progress';
     IonicModule,
     CommonModule,
     FormsModule,
-    NgCircleProgressModule,
+    NgCircleProgressModule.forRoot({
+      "outerStrokeLinecap": "butt",
+      "toFixed": 0,
+    }),
     RouterModule.forChild([{ path: '', component: ActivitiesComponent }])
   ],
   declarations: [ActivitiesComponent]
