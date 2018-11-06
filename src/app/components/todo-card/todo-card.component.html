@@ -1,5 +1,6 @@
 <ion-card color="primary-contrast" class="todo-card practera-card">
   <ion-item class="todo-item">
+
     <ng-container *ngIf="todoItem; else noItems">
       <ion-icon name="text" slot="start" color="primary"></ion-icon>
       <div>
@@ -15,8 +16,10 @@
     </ng-container>
 
     <ng-template #noItems>
-      <ion-icon name="todos" slot="start" color="primary"></ion-icon>
-      <ion-label color="medium">You have no new todos.</ion-label>
+      <ion-icon name="notifications" slot="start" color="primary"></ion-icon>
+      <div>
+        <ion-text color="medium">You have no new notifications.</ion-text>
+      </div>
     </ng-template>
 
   </ion-item>
