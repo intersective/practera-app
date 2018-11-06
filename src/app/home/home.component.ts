@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { HomeService } from './home.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-home',
@@ -9,12 +10,13 @@ import { HomeService } from './home.service';
 export class HomeComponent implements OnInit {
   progress:number = 80;
   Program = {
-    Name : 'Demo program'
+    Name: 'Demo program'
   };
   todoItems = [];
   activity = {};
   
-  constructor ( 
+  constructor (
+    private router: Router,
     private homeService: HomeService 
   ) {}
 
@@ -22,5 +24,9 @@ export class HomeComponent implements OnInit {
     this.todoItems = this.homeService.getTodoItems();
     this.activity = this.homeService.getCurrentActivity();  
   };
+
+  activityRedirection(id) {
+    this.router.navigate(['pages', 'tabs', { outlets: { activity: ['activity', id] } }]);
+  }
   
 }
