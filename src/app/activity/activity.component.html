@@ -1,14 +1,46 @@
 <ion-header>
   <ion-toolbar>
+    <ion-icon name="arrow-back" (click)="back()" color="primary" slot="start" margin-start></ion-icon>
     <ion-title text-center>Activity</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content padding color="light">
-  <ion-card class="div-card">
-    <ion-list *ngFor="let program of programs">
-      <ion-item (click)="switch(program.id)" color="light">
-        
+<ion-content padding color="light" text-center>
+  <h1>{{ activity.name }}</h1>
+  <p>{{ activity.description }}</p>
+  <ion-label color="medium" text-left padding-top class="label">
+    Tasks
+  </ion-label>
+
+  <ion-card class="practera-card">
+    <ion-list *ngFor="let task of activity.tasks">
+      <ion-item (click)="goto(task.type, task.id)">
+        <ng-container [ngSwitch]="task.type">
+
+          <ng-container *ngSwitchCase="'Topic'">
+            <ion-icon name="list-box" slot="start" color="primary"></ion-icon>
+          </ng-container>
+          <ng-container *ngSwitchCase="'Comm'">
+            <ion-icon name="list-box" slot="start" color="primary"></ion-icon>
+          </ng-container>
+          <ng-container *ngSwitchCase="'Assessment'">
+            <ion-icon name="clipboard" slot="start" color="primary"></ion-icon>
+          </ng-container>
+
+          <div class="icon-item">
+            <h4>{{ task.name }}</h4>
+            <ion-text color="medium">
+              <p>{{ task.type }} <ng-container *ngIf="task.status">{{ task.status }}</ng-container></p>
+            </ion-text>
+          </div>
+          <ng-container *ngIf="task.status; else arrowForward">
+            <ion-icon name="checkmark" slot="end" color="primary" class="icon-check"></ion-icon>
+          </ng-container>
+          <ng-template #arrowForward>
+            <ion-icon name="arrow-forward" slot="end" color="primary" class="icon-forward"></ion-icon>
+          </ng-template>
+
+        </ng-container>
       </ion-item>
     </ion-list>
   </ion-card>

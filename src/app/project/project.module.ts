@@ -8,8 +8,7 @@ import { ProjectComponent } from './project.component';
   imports: [
     IonicModule,
     CommonModule,
-    FormsModule,
-    RouterModule.forChild([{ path: '', component: ProjectComponent }])
+    FormsModule
   ],
   declarations: [ProjectComponent]
 })
