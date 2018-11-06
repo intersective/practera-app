@@ -3,11 +3,11 @@ import { Router } from '@angular/router';
 import { ModalController } from '@ionic/angular';
 
 @Component({
-  selector: 'app-notification',
-  templateUrl: 'notification.component.html',
-  styleUrls: ['notification.component.css']
+  selector: 'app-pop-up',
+  templateUrl: 'pop-up.component.html',
+  styleUrls: ['pop-up.component.css']
 })
-export class NotificationComponent {
+export class PopUpComponent {
   type = '';
   redirect = '/pages/tabs';
   data = {};

@@ -3,9 +3,8 @@ import { RouterModule, Routes } from '@angular/router';
 
 import { TabsComponent } from './tabs.component';
 import { HomeComponent } from '../home/home.component';
-import { ActivitiesComponent } from '../activities/activities.component';
-import { ChatListComponent } from '../chat/chat-list/chat-list.component';
-import { ChatRoomComponent } from '../chat/chat-room/chat-room.component';
+import { ProjectComponent } from '../project/project.component';
+import { ChatComponent } from '../chat/chat.component';
 import { HelpComponent } from '../help/help.component';
 
 const routes: Routes = [
@@ -24,14 +23,14 @@ const routes: Routes = [
         component: HomeComponent
       },
       {
-        path: 'activities',
-        outlet: 'activities',
-        component: ActivitiesComponent
+        path: 'project',
+        outlet: 'project',
+        component: ProjectComponent
       },
       {
         path: 'chat',
         outlet: 'chat',
-        component: ChatListComponent
+        component: ChatComponent
       },
       {
         path: 'help',
