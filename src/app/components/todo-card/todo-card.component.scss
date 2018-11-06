@@ -1,12 +1,11 @@
-.notification-card {
-  border-radius: 12px;
+.todo-card {
   border: .5px solid #d8dbeb;
   overflow: hidden;
   text-overflow: ellipsis;
   background: #fff;
   min-height: 58px;
 }
-.notification-item {
+.todo-item {
   --border-width: 0px !important;
   .time-stamp {
     right: 20px;
@@ -17,22 +16,20 @@
     font-size: 12px;
   } 
 }
-.todo-card {
-  h4 {
-    font-size: 16px;
-    line-height: 20px;
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    margin-bottom: 0px;
-  }
-  p {
-    font-size: 14px;
-    font-weight: 500;
-    line-height: 20px;
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    margin-top: 0px;
-  }
+h4 {
+  font-size: 16px;
+  line-height: 20px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  margin-bottom: 0px;
+}
+p {
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 20px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  margin-top: 0px;
 }
