@@ -3,7 +3,8 @@ import { Injectable } from '@angular/core';
 @Injectable({
   providedIn: 'root'
 })
-export class TodoService {
+
+export class HomeService {
   todo = [
     { 
       todoType: 'review',
@@ -26,6 +27,17 @@ export class TodoService {
       }
     }
   ];
+  activity = {
+    name :'Activity Name 1'
+  };
 
   constructor() {};
+
+  getTodoItems() {
+    return this.todo;
+  }
+
+  getCurrentActivity() {
+    return this.activity;
+  }
 }
