@@ -3,24 +3,30 @@
     <ion-title center>Settings</ion-title>
   </ion-toolbar>
 </ion-header>
-<ion-list class="milestone-bar">
+<ion-content padding class="milestone-bar">
 <li *ngFor="let level of levels">
-  <div class="touch-area" id="touch-{{level.id}}" ng-click="scrollTo(level, index)" ng-class="active(level)">
-    <!-- add class 'complete' when milestone done -->
-    <div *ngIf="!level.is_locked" class="steps" ng-class="level.progress >= 1 ? 'complete': 'unlock'">
-        <!--<div class="progress"></div>-->
-        <!-- remove comment when milestone done -->
-        <ion-icon *ngIf="level.progress >= 1" name="done"></ion-icon>
+  <ion-icon *ngIf="level.progress >= 1" name="done"></ion-icon>
         <!--{{level.progress}}-->
-        <circle-progress  *ngIf="level.progress < 1" 
+        <circle-progress
           [percent]="level.progress * 100"
-          [maxPercent]="100"
-          [radius]="9"
-          [outerStrokeWidth]=9
-          
-          ></circle-progress >
-    </div>
+          [backgroundStrokeWidth]= "0"
+          [radius]= "9"
+          [space]= "-20"
+          [maxPercent]= 100
+          [backgroundColor]= "'#11dafd'"
+          [unitsColor]= "'#483500'"
+          [outerStrokeColor]= "'#47aeff'"
+          [innerStrokeColor]= "'#FFFFFF'"
+          [outerStrokeWidth]= "39"
+          [innerStrokeWidth]= "25"
+          [showTitle]= false
+          [showSubtitle]= false
+          [showUnits]= false
+          [showInnerStroke]= false
+          [startFromZero]= false
+           ></circle-progress >
+  
     <ion-icon *ngIf="level.is_locked" name="lock"></ion-icon>
-</div>
+
 </li>
-</ion-list>
+</ion-content>

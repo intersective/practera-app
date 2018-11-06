@@ -14,26 +14,11 @@ import { TodoNotificationCardComponent } from '../components/todo-notification-c
     CommonModule,
     FormsModule,
     NgCircleProgressModule.forRoot({
-      // set defaults here
       "backgroundColor": "#f5f6fa",
-      "backgroundPadding": -10,
-      "radius": 70,
-      "maxPercent": 100,
-      "outerStrokeWidth": 12,
-      "outerStrokeColor": "var(--ion-color-primary)",
-      "innerStrokeWidth": 0,
+      "outerStrokeColor": "#47aeff",
       "subtitleColor": "#444444",
-      "showInnerStroke": false,
-      "startFromZero": false,
-      "subtitle": [
-        "COMPLETE"
-      ],
-      "animation": true,
-      "animationDuration": 1000,
-      "titleFontSize": "32",
-      "subtitleFontSize": "18",
+      "outerStrokeLinecap": "circle"
     }),
-    
     RouterModule.forChild([{ path: '', component: HomeComponent }])
   ],
   declarations: [HomeComponent, ActivityCardComponent, TodoNotificationCardComponent],
