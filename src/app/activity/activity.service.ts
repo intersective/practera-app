@@ -46,7 +46,7 @@ export class ActivityService {
 
   constructor() {};
 
-  getActivity(id): Observable {
+  getActivity(id): Observable<any> {
     return of(this.activity);
   }
 }
