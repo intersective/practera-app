@@ -5,7 +5,7 @@
 </ion-header>
 <ion-content>
     <ion-list>
-        <ion-item [routerLink]="chatroom" [class]="chat.unread_messages > 0 ? 'unread' : ''" *ngFor="let chat of chatList">
+        <ion-item href="/pages/tabs/(chat:chatroom)" [class]="chat.unread_messages > 0 ? 'unread' : ''" *ngFor="let chat of chatList">
             <ion-avatar [ngClass]="chat.chat_color" slot="start">
                 <ion-icon name="people" *ngIf="chat.is_team"></ion-icon>
                 <p class="chat-avatar" *ngIf="!chat.is_team">{{getChatAvatarText(chat.name)}}</p>
