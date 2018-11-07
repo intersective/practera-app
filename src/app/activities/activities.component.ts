@@ -15,7 +15,7 @@ export class ActivitiesComponent {
       Activity :{
 
       },
-      is_locked: false
+      is_locked: true
     },
     
 
@@ -33,12 +33,12 @@ export class ActivitiesComponent {
     {
       id: 3,
       name: 'communication',
-      progress: 0.3334,
+      progress: 1,
       project_id: 55,
       Activity :{
         
       },
-      is_locked: true
+      is_locked: false
 
     }
   ];
