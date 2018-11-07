@@ -1,19 +1,22 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, OnInit } from '@angular/core';
+
+import { ChatService } from './chat.service';
 
 @Component({
-  selector: "app-chat-list",
-  templateUrl: "chat-list.component.html",
-  styleUrls: ["chat-list.component.scss"]
+  selector: 'app-chat',
+  templateUrl: 'chat.component.html',
+  styleUrls: ['chat.component.scss']
 })
-export class ChatListComponent implements OnInit {
+export class ChatComponent implements OnInit {
   chatList: any[];
 
-  constructor() {}
+  constructor(private _ChatService: ChatService) {}
 
   ngOnInit() {
     this.loadChatData();
   }
 
+  // @TODO need to create method to convert chat time to local time. also need to use in chat room
   loadChatData() {
     this.chatList = [
       {
@@ -80,19 +83,7 @@ export class ChatListComponent implements OnInit {
   }
 
   getChatAvatarText(chatName) {
-    let chatNameArray = chatName.split(" ");
-    let avatarText = "";
-    if (chatNameArray[0] && chatNameArray[1]) {
-      avatarText += chatNameArray[0].charAt(0).toUpperCase();
-      avatarText += chatNameArray[1].charAt(0).toUpperCase();
-    } else if (chatNameArray[0]) {
-      avatarText += chatNameArray[0].charAt(0).toUpperCase();
-      avatarText += chatNameArray[0].charAt(1).toUpperCase();
-    } else {
-      avatarText += chatNameArray[1].charAt(0).toUpperCase();
-      avatarText += chatNameArray[1].charAt(1).toUpperCase();
-    }
-
-    return avatarText;
+    return this._ChatService.generateChatAvatarText(chatName);
   }
+
 }
