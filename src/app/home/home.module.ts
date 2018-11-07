@@ -14,10 +14,9 @@ import { TodoNotificationCardComponent } from '../components/todo-notification-c
     CommonModule,
     FormsModule,
     NgCircleProgressModule.forRoot({
-      "backgroundColor": "#f5f6fa",
-      "outerStrokeColor": "#47aeff",
+      "backgroundColor": "#f4f5f8",
       "subtitleColor": "#444444",
-      "outerStrokeLinecap": "circle"
+      
     }),
     RouterModule.forChild([{ path: '', component: HomeComponent }])
   ],
