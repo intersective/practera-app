@@ -24,7 +24,7 @@ export class ActivityComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    this.id = this.route.snapshot.paramMap.get('id');
+    this.id = parseInt(this.route.snapshot.paramMap.get('id'));
     this.activityService.getActivity(this.id)
       .subscribe(activity => this.activity = activity);
   }
