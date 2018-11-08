@@ -38,9 +38,13 @@ export class AssessmentService {
   submission = {
     1: {
       answer: 'answer for question 1'
-    },
-    2: {
-      answer: 'answer for question 1'
+    }
+  };
+
+  review = {
+    1: {
+      answer: 'review answer for question 1',
+      comment: 'review comment for question 1'
     }
   };
 
@@ -51,6 +55,9 @@ export class AssessmentService {
   }
 
   getSubmission(id): Observable<any> {
-    return of(this.submission);
+    return of({
+      submission: this.submission,
+      review: this.review
+    });
   }
 }
