@@ -5,6 +5,9 @@ import { Injectable } from '@angular/core';
 })
 export class ChatService {
 
+  // chat object select to chat
+  private selectedChat:any;
+
   constructor() { }
 
 
@@ -23,6 +26,16 @@ export class ChatService {
     }
 
     return avatarText;
+  }
+
+  // set chat object for chat
+  setSelectedChat(chatObject) {
+    this.selectedChat = chatObject;
+  }
+
+  // get selected chat object for chat
+  getSelectedChat():any {
+    return this.selectedChat;
   }
 
 }

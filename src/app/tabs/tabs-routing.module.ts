@@ -5,7 +5,6 @@ import { TabsComponent } from './tabs.component';
 import { HomeComponent } from '../home/home.component';
 import { ProjectComponent } from '../project/project.component';
 import { ChatComponent } from '../chat/chat.component';
-import { ChatRoomComponent } from '../chat/chat-room/chat-room.component';
 import { HelpComponent } from '../help/help.component';
 
 const routes: Routes = [
@@ -32,11 +31,6 @@ const routes: Routes = [
         path: 'chat',
         outlet: 'chat',
         component: ChatComponent
-      },
-      {
-        path: 'chatroom',
-        outlet: 'chat',
-        component: ChatRoomComponent
       },
       {
         path: 'help',
