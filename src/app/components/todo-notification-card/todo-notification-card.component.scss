@@ -6,17 +6,7 @@
   background: #fff;
   min-height: 58px;
 }
-.notification-item {
-  --border-width: 0px !important;
-  .time-stamp {
-    right: 20px;
-    top: 20px;
-    font-size: 13px;
-    position: absolute;
-    top: 18px;
-    font-size: 12px;
-  } 
-}
+
 .todo-card {
   h4 {
     font-size: 16px;
@@ -35,4 +25,15 @@
     text-overflow: ellipsis;
     margin-top: 0px;
   }
+}
+.notification-item {
+  --border-width: 0px !important;
+  .time-stamp {
+    right: 20px;
+    top: 20px;
+    font-size: 13px;
+    position: absolute;
+    top: 18px;
+    font-size: 12px;
+  } 
 }
