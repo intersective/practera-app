@@ -3,26 +3,22 @@
 }
 .milestone-bar {
   list-style: none;
-  width: 100%;
   margin: 0px;
+  background: var(--ion-color-light);
+  border-bottom: 0.5px solid var( --ion-color-light-shade);
+  top: 44px;
+  height: 54px;
   
   .bubbles-top {
     padding-top: 5px;
-    --inner-border-width: 0px !important;
-    vertical-align: baseline; 
-    &:last-child {
-      --border-width: 0px !important;
+    text-align: center;
+    ion-icon {
+      padding-top: 5px;
     }
   }
   
 }
-.bar-subheader {
-  background: var(--ion-color-light);
-  border-bottom: 0.5px solid var( --ion-color-light-shade);
-  top: 44px;
-  height: 44px;
-  
-}
+
 .project-list {
   background: transparent; 
   .project-card {
@@ -51,15 +47,19 @@
 }
 .activity-item {
   --border-width: 0px !important;
+  --inner-border-width: 0px !important;
 }
 .icon-done {
   color: var(--ion-color-primary);
   font-size: 29px;
   margin-left: 10px;
+}
 
+.icon-lock {
+  font-size: 24px;
 }
 .card {
-  margin-top: 20px;
+  margin-top: 10px;
   max-height: 120px;
   height: 120px;
   background-size: cover;
