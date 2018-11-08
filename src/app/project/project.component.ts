@@ -21,7 +21,7 @@ export class ProjectComponent {
         },
         {
           name: 'Activity two',
-          is_locked: false,
+          is_locked: true,
           progress: 0.74
           
         }
@@ -77,6 +77,22 @@ export class ProjectComponent {
         }
     ],
       is_locked: true
+
+    },
+    {
+      id: 4,
+      name: 'last',
+      description: 'The deliver phase of a project is all about getting the work done. During this phase your team will likely work both independently and collectively to research and ultimately present your findings. Throughout this phase you will also complete a second employability skill assessment to see how you feel your skills are development and reflect on the journey so far in a reflection journal entry.',
+      progress: 0.45,
+      project_id: 65,
+      Activity :[
+        {
+          name: 'Test Activity six',
+          is_locked: false,
+          progress: 1
+        },
+    ],
+      is_locked: false
 
     }
   ];
