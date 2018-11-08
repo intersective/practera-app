@@ -1,0 +1,60 @@
+.project-toolbar {
+  --border-width: 0px !important;
+}
+.milestone-bar {
+  list-style: none;
+  width: 100%;
+  margin: 0px;
+  
+  .bubbles-top {
+    padding-top: 5px;
+    --inner-border-width: 0px !important;
+    vertical-align: baseline; 
+    &:last-child {
+      --border-width: 0px !important;
+    }
+  }
+  
+}
+.bar-subheader {
+  background: var(--ion-color-light);
+  border-bottom: 0.5px solid var( --ion-color-light-shade);
+  top: 44px;
+  height: 44px;
+  
+}
+.project-list {
+  background: transparent; 
+  .project-card {
+    width: 100%;
+    p {
+      color: var(--practera-milestone-name-font-color);
+      text-transform: capitalize;
+      margin-top: 5px;
+      margin-bottom: 10px;
+      font-weight: 400;
+      height: 39.67px;
+      font-size: 16px;
+    }
+    .milestone-description {
+      color: var(--practera-milestone-name-font-color);
+      overflow: hidden;
+      line-height: 20px;
+      max-height: 100px;
+    }
+  }
+} 
+.activity-list {
+  background: transparent;
+  width: 100%;
+  margin-left: -29px;
+}
+.activity-item {
+  --border-width: 0px !important;
+}
+.icon-done {
+  color: var(--ion-color-primary);
+  font-size: 29px;
+  margin-left: 10px;
+
+}

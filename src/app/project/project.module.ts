@@ -3,9 +3,8 @@ import { RouterModule } from '@angular/router';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { ActivitiesComponent } from './activities.component';
+import { ProjectComponent } from './project.component';
 import { NgCircleProgressModule } from 'ng-circle-progress';
-
 
 @NgModule({
   imports: [
@@ -16,8 +15,8 @@ import { NgCircleProgressModule } from 'ng-circle-progress';
       "outerStrokeLinecap": "butt",
       "toFixed": 0,
     }),
-    RouterModule.forChild([{ path: '', component: ActivitiesComponent }])
+    RouterModule.forChild([{ path: '', component: ProjectComponent }])
   ],
-  declarations: [ActivitiesComponent]
+  declarations: [ProjectComponent]
 })
-export class ActivitiesModule {}
+export class ProjectModule {}
