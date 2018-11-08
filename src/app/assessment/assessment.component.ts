@@ -43,6 +43,10 @@ export class AssessmentComponent implements OnInit {
   submission = {
 
   };
+
+  review = {
+
+  };
   doAssessment = false;
   doReview = false;
 
@@ -57,7 +61,20 @@ export class AssessmentComponent implements OnInit {
     this.assessmentService.getAssessment(this.id)
       .subscribe(assessment => this.assessment = assessment);
     this.assessmentService.getSubmission(this.id)
-      .subscribe(submission => this.submission = submission);
+      .subscribe(result => {
+
+        this.submission = result.submission;
+        // this page is for doing assessment if submission is empty
+        if (!this.submission) {
+          return this.doAssessment = true;
+        }
+        this.review = result.review;
+        // this page is for doing review if review is empty
+        if (!this.review) {
+          return this.doReview = true;
+        }
+        
+      });
   };
 
   back() {
