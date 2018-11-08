@@ -6,7 +6,7 @@ import { FormsModule } from '@angular/forms';
 import { HomeComponent } from './home.component';
 import { ActivityCardComponent } from '../components/activity-card/activity-card.component';
 import { NgCircleProgressModule } from 'ng-circle-progress';
-import { TodoNotificationCardComponent } from '../components/todo-notification-card/todo-notification-card.component';
+import { TodoCardComponent } from '../components/todo-card/todo-card.component';
 
 @NgModule({
   imports: [
@@ -20,7 +20,7 @@ import { TodoNotificationCardComponent } from '../components/todo-notification-c
     }),
     RouterModule.forChild([{ path: '', component: HomeComponent }])
   ],
-  declarations: [HomeComponent, ActivityCardComponent, TodoNotificationCardComponent],
+  declarations: [HomeComponent, ActivityCardComponent, TodoCardComponent],
  
 })
 export class HomeModule {
