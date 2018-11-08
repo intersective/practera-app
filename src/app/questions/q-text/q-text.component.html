@@ -1,3 +1,25 @@
-<ion-card class="practera-card">
-  this is a text question
+<ion-card class="practera-card" text-left>
+  <ion-card-header class="q-title">
+    {{ question.name }}
+    <ion-text color="danger" *ngIf="question.isRequired">*</ion-text>
+  </ion-card-header>
+  <ion-card-content padding>
+
+    <ng-container *ngIf="submission">
+      <ion-text>{{ submission.answer }}</ion-text>
+    </ng-container>
+
+    <ng-container *ngIf="review">
+      <ion-label>Reviewer</ion-label>
+      <b>Answer</b>
+      <ion-text>{{ review.answer ? review.answer : '' }}</ion-text>
+      <b>Comment</b>
+      <ion-text>{{ review.comment ? review.comment : '' }}</ion-text>
+    </ng-container>
+
+    <ng-container *ngIf="doAssessment || doReview">
+      <ion-textarea class="background-white" [name]="'q-' + question.id" rows="4"></ion-textarea>
+    </ng-container>
+
+  </ion-card-content>
 </ion-card>

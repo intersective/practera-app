@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
 
 @Component({
   selector: 'app-q-text',
@@ -8,5 +8,11 @@ import { Component } from '@angular/core';
 export class QTextComponent {
 
   constructor() {}
+
+  @Input() question: {};
+  @Input() submission: {};
+  @Input() review: {};
+  @Input() doAssessment: Boolean;
+  @Input() doReview: Boolean;
 
 }
