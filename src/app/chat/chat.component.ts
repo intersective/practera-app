@@ -86,4 +86,8 @@ export class ChatComponent implements OnInit {
     return this.chatService.generateChatAvatarText(chatName);
   }
 
+  setChatObjectToService(chat) {
+    this.chatService.setSelectedChat(chat);
+  }
+
 }

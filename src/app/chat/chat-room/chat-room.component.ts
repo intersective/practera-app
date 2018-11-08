@@ -1,4 +1,5 @@
 import { Component, OnInit } from "@angular/core";
+import { Router } from '@angular/router';
 
 import { ChatService } from '../chat.service';
 
@@ -9,11 +10,13 @@ import { ChatService } from '../chat.service';
 })
 export class ChatRoomComponent implements OnInit {
   messageList: any[];
+  private chatObject: any;
 
-  constructor(private chatService: ChatService) {}
+  constructor(private chatService: ChatService, private router: Router) {}
 
   ngOnInit() {
     this.loadMessages();
+    this.chatObject = this.chatService.getSelectedChat();
   }
 
   // @TODO need to create method to convert chat time to local time. also need to use in chat
@@ -39,4 +42,9 @@ export class ChatRoomComponent implements OnInit {
   getChatAvatarText(senderName) {
     return this.chatService.generateChatAvatarText(senderName);
   }
+
+  goBack() {
+    this.router.navigateByUrl('/pages/tabs/(chat:chat)');
+  }
+
 }
