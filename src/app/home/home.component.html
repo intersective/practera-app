@@ -22,5 +22,5 @@
   </ion-list>
 
   <ion-label color="medium">Current Activity</ion-label>
-  <app-activity-card [activity]="activity"></app-activity-card>
+  <app-activity-card [activity]="activity" (click)="activityRedirection(activity.id)"></app-activity-card>
 </ion-content>
