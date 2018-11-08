@@ -6,6 +6,32 @@
 </ion-header>
 <ion-content padding color="light" text-center>
   <h1>{{ assessment.name }}</h1>
-  <p>{{ assessment.description }}</p>
-  <app-q-text></app-q-text>
+  <ion-text color="medium" text-left>
+    <p>{{ assessment.description }}</p>
+  </ion-text>
+
+  <ng-container *ngFor="let group of assessment.groups">
+    <h3>{{ group.name }}</h3>
+    <ng-container *ngFor="let question of group.questions">
+
+      <ng-container [ngSwitch]="question.type">
+
+        <app-q-text 
+          *ngSwitchCase="'text'" 
+          [doAssessment]="doAssessment"
+          [question]="question" 
+          [submission]="(submission[question.id]) ? submission[question.id] : {}"
+        ></app-q-text>
+        <!-- <app-q-oneof *ngSwitchCase="'oneof'" [question]="question"></app-q-oneof>
+        <app-q-multiple *ngSwitchCase="'multiple'" [question]="question"></app-q-multiple>
+        <app-q-file *ngSwitchCase="'file'" [question]="question"></app-q-file>
+        <app-q-video *ngSwitchCase="'video'" [question]="question"></app-q-video> -->
+
+      </ng-container>
+      
+    </ng-container>
+  </ng-container>
+
+  <ion-button *ngIf="submission" (click)="submit()" shape="round" color="primary" expand="full">Submit</ion-button>
+
 </ion-content>

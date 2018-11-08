@@ -23,9 +23,11 @@ export class AssessmentComponent implements OnInit {
         name: '',
         questions: [
           {
+            id: '',
             name: '',
             type: '',
             description: '',
+            isRequired: false,
             choices: [
               {
                 id: '',
@@ -37,6 +39,12 @@ export class AssessmentComponent implements OnInit {
       }
     ]
   };
+  // structure of submission
+  submission = {
+
+  };
+  doAssessment = false;
+  doReview = false;
 
   constructor (
     private route: ActivatedRoute,
@@ -48,6 +56,8 @@ export class AssessmentComponent implements OnInit {
     this.id = parseInt(this.route.snapshot.paramMap.get('id'));
     this.assessmentService.getAssessment(this.id)
       .subscribe(assessment => this.assessment = assessment);
+    this.assessmentService.getSubmission(this.id)
+      .subscribe(submission => this.submission = submission);
   };
 
   back() {
