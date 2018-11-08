@@ -3,33 +3,37 @@
     <ion-title center>Project</ion-title>
   </ion-toolbar>
 </ion-header>
-<ion-list align-self-center class="milestone-bar bar-subheader">
-  <ion-item class="bubbles-top" *ngFor="let level of levels" float-left >
-    <div *ngIf="!level.is_locked">
-      <ion-icon *ngIf="level.progress >= 1" name="checkmark-circle" class="icon-done" ></ion-icon>
-      <!--{{level.progress}}-->
-      <circle-progress *ngIf="level.progress < 1"
-        [percent]="level.progress * 100"
-        [backgroundStrokeWidth]= "0"
-        [radius]= "5"
-        [space]= "-20"
-        [maxPercent]= 100
-        [backgroundColor]= "'#eaeaea'"
-        [backgroundStroke]= "'#004987'"
-        [backgroundStrokeWidth]= "0"
-        [outerStrokeColor]= "'#2bbfd4'"
-        [outerStrokeWidth]= "10"
-        [showTitle]= false
-        [showSubtitle]= false
-        [showUnits]= false
-        [showInnerStroke]= false
-        [startFromZero]= false
-        >
-        </circle-progress >
-      </div>
-    <ion-icon *ngIf="level.is_locked" name="lock" color="medium" ></ion-icon>
-  </ion-item>
-</ion-list>
+
+    <ion-grid class="milestone-bar">
+      <ion-row>
+        <ion-col class="bubbles-top" *ngFor="let level of levels">
+          <div *ngIf="!level.is_locked" >
+            <ion-icon *ngIf="level.progress >= 1" name="checkmark-circle" class="icon-done" ></ion-icon>
+            <!--{{level.progress}}-->
+            <circle-progress *ngIf="level.progress < 1"
+              [percent]="level.progress * 100"
+              [backgroundStrokeWidth]= "0"
+              [radius]= "5"
+              [space]= "-20"
+              [maxPercent]= 100
+              [backgroundColor]= "'#eaeaea'"
+              [backgroundStroke]= "'#004987'"
+              [backgroundStrokeWidth]= "0"
+              [outerStrokeColor]= "'#2bbfd4'"
+              [outerStrokeWidth]= "10"
+              [showTitle]= false
+              [showSubtitle]= false
+              [showUnits]= false
+              [showInnerStroke]= false
+              [startFromZero]= false
+              >
+              </circle-progress >
+          </div>
+          <ion-icon *ngIf="level.is_locked" name="lock" color="medium" class="icon-lock"></ion-icon>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+    
 
 <ion-content color="light">
   <ion-list class="project-list">
@@ -44,9 +48,9 @@
               <ion-item class="activity-item" *ngFor="let activity of level.Activity">
                 <div *ngIf="!activity.is_locked">
                   <!-- remove comment when milestone done -->
-                  <ion-icon *ngIf="activity.progress >= 1" name="checkmark-circle" class="icon-done"></ion-icon>
+                  <ion-icon *ngIf="activity.progress >= 1" name="checkmark-circle" class="icon-done" margin-end></ion-icon>
     
-                  <circle-progress *ngIf="activity.progress < 1"
+                  <circle-progress margin-end *ngIf="activity.progress < 1"
                   [percent]="activity.progress * 100"
                   [backgroundStrokeWidth]= "0"
                   [radius]= "5"
@@ -64,7 +68,7 @@
                   [startFromZero]= false 
                   ></circle-progress>
                 </div>
-                <ion-icon *ngIf="activity.is_locked" name="lock" color="medium"></ion-icon>
+                <ion-icon *ngIf="activity.is_locked" name="lock" color="medium" margin-end></ion-icon>
                 <ion-card color="primary" class="card practera-card">
                   <ion-card-content>
                     <h4 color="primary-contrast">Activity</h4>
