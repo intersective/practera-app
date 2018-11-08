@@ -10,7 +10,7 @@ import { ChatService } from './chat.service';
 export class ChatComponent implements OnInit {
   chatList: any[];
 
-  constructor(private _ChatService: ChatService) {}
+  constructor(private chatService: ChatService) {}
 
   ngOnInit() {
     this.loadChatData();
@@ -83,7 +83,7 @@ export class ChatComponent implements OnInit {
   }
 
   getChatAvatarText(chatName) {
-    return this._ChatService.generateChatAvatarText(chatName);
+    return this.chatService.generateChatAvatarText(chatName);
   }
 
 }
