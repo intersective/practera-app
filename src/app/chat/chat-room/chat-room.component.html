@@ -1,29 +1,35 @@
 <ion-header>
   <ion-toolbar>
-    <!-- <ion-buttons slot="start">
-      <ion-back-button></ion-back-button>
-    </ion-buttons> -->
+    <ion-buttons slot="start">
+      <ion-back-button (click)="goBack()"></ion-back-button>
+    </ion-buttons>
     <ion-title>Beenish Chat <small>- Team 12</small></ion-title>
   </ion-toolbar>
 </ion-header>
 <ion-content>
   <ion-list lines="none" class="chat-list">
-    <ion-item *ngFor="let message of messageList">
-      <ion-avatar *ngIf="!message.is_sender" class="color-1" slot="start">
-        <p class="chat-avatar">{{getChatAvatarText(message.sender_name)}}</p>
-      </ion-avatar>
-      <ion-label [class]="message.is_sender ? 'send-messages' : 'reserved-messages'">
+    <ng-container *ngFor="let message of messageList">
+      <ion-item>
+        <ng-container *ngIf="!message.is_sender">
+          <ion-avatar class="color-1" slot="start">
+            <p class="chat-avatar">{{getChatAvatarText(message.sender_name)}}</p>
+          </ion-avatar>
+        </ng-container>
+        <ion-label [class]="message.is_sender ? 'send-messages' : 'reserved-messages'">
           <div class="time">
             <p>1.30 PM</p>
           </div>
-          <div *ngIf="message.message" class="message-body">
+          <div class="message-body">
             <p>{{message.message}}</p>
           </div>
-          <div *ngIf="message.sender_name && !message.is_sender" class="seen-text">
-            <p>{{message.sender_name}}</p>
-          </div>
+          <ng-container *ngIf="message.sender_name && !message.is_sender">
+            <div class="seen-text">
+              <p>{{message.sender_name}}</p>
+            </div>
+          </ng-container>
         </ion-label>
-    </ion-item>
+      </ion-item>
+    </ng-container>
   </ion-list>
 </ion-content>
 <ion-footer>

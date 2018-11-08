@@ -1,27 +1,31 @@
 <ion-header>
-    <ion-toolbar>
-        <ion-title>Chat</ion-title>
-    </ion-toolbar>
+  <ion-toolbar>
+    <ion-title>Chat</ion-title>
+  </ion-toolbar>
 </ion-header>
 <ion-content>
-    <ion-list>
-        <ion-item [routerLink]="['/pages/tabs/(chat:chatroom)']" [class]="chat.unread_messages > 0 ? 'unread' : ''" *ngFor="let chat of chatList">
-            <ion-avatar [ngClass]="chat.chat_color" slot="start">
-                <ion-icon name="people" *ngIf="chat.is_team"></ion-icon>
-                <p class="chat-avatar" *ngIf="!chat.is_team">{{getChatAvatarText(chat.name)}}</p>
-            </ion-avatar>
-            <ion-label>
-                <div class="chat-name-container">
-                    <h2>{{chat.is_team ? chat.team_name : chat.name}}</h2>
-                    <span *ngIf="chat.role === 'mentor'">mentor - {{chat.team_name}}</span>
-                </div>
-                <p *ngIf="chat.last_message">{{chat.last_message}}</p>
-                <p *ngIf="!chat.last_message">No messages.</p>
-            </ion-label>
-            <div slot="end" class="time-container">
-                <span>yesterday</span>
-                <ion-badge *ngIf="chat.unread_messages > 0">{{chat.unread_messages}}</ion-badge>
-            </div>
-        </ion-item>
-    </ion-list>
+  <ion-list>
+    <ng-container *ngFor="let chat of chatList">
+      <ion-item [routerLink]="['/chat/chat-room']" (click)="setChatObjectToService(chat)" [class]="chat.unread_messages > 0 ? 'unread' : ''">
+        <ion-avatar [ngClass]="chat.chat_color" slot="start">
+          <ng-container *ngIf="chat.is_team; else avatarElseBlock"><ion-icon name="people"></ion-icon></ng-container>
+          <ng-template #avatarElseBlock><p class="chat-avatar">{{getChatAvatarText(chat.name)}}</p></ng-template>
+        </ion-avatar>
+        <ion-label>
+          <div class="chat-name-container">
+            <h2>{{chat.is_team ? chat.team_name : chat.name}}</h2>
+            <ng-container *ngIf="chat.role === 'mentor'"><span>mentor - {{chat.team_name}}</span></ng-container>
+          </div>
+          <ng-container *ngIf="chat.last_message; else messgeElseBlock"><p>{{chat.last_message}}</p></ng-container>
+          <ng-template #messgeElseBlock><p>No messages.</p></ng-template>
+        </ion-label>
+        <div slot="end" class="time-container">
+          <span>yesterday</span>
+          <ng-container *ngIf="chat.unread_messages > 0">
+              <ion-badge>{{chat.unread_messages}}</ion-badge>
+          </ng-container>
+        </div>
+      </ion-item>
+    </ng-container>
+  </ion-list>
 </ion-content>
