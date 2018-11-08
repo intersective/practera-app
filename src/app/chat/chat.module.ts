@@ -3,7 +3,7 @@ import { RouterModule } from '@angular/router';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { ChatListComponent } from './chat-list/chat-list.component';
+import { ChatComponent } from './chat.component';
 import { ChatRoomComponent } from './chat-room/chat-room.component';
 
 @NgModule({
@@ -11,8 +11,8 @@ import { ChatRoomComponent } from './chat-room/chat-room.component';
     IonicModule,
     CommonModule,
     FormsModule,
-    RouterModule.forChild([{ path: '', component: ChatListComponent }])
+    RouterModule.forChild([{ path: '', component: ChatComponent }])
   ],
-  declarations: [ChatListComponent, ChatRoomComponent]
+  declarations: [ChatComponent, ChatRoomComponent]
 })
 export class ChatModule {}
