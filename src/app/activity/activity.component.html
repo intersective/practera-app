@@ -33,12 +33,18 @@
               <p>{{ task.type }} <ng-container *ngIf="task.status">{{ task.status }}</ng-container></p>
             </ion-text>
           </div>
-          <ng-container *ngIf="task.status; else arrowForward">
+
+          <ng-container *ngIf="!task.status || (task.status == 'published' && !task.reviewFeedback)">
+            <ion-icon name="arrow-forward" slot="end" color="primary" class="icon-forward"></ion-icon>
+          </ng-container>
+
+          <ng-container *ngIf="task.status == 'done' || (task.status == 'published' && task.reviewFeedback)">
             <ion-icon name="checkmark" slot="end" color="primary" class="icon-check"></ion-icon>
           </ng-container>
-          <ng-template #arrowForward>
-            <ion-icon name="arrow-forward" slot="end" color="primary" class="icon-forward"></ion-icon>
-          </ng-template>
+
+          <ng-container *ngIf="task.status == 'pending review' || task.status == 'pending approval'">
+            <ion-icon name="hourglass" slot="end" color="primary"></ion-icon>
+          </ng-container>
 
         </ng-container>
       </ion-item>

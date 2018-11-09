@@ -27,19 +27,27 @@ export class ActivityService {
         id: 3,
         type: 'Assessment',
         name: 'Assessment name',
-        status: 'pending review'
+        status: ''
       },
       {
         id: 4,
         type: 'Assessment',
         name: 'Assessment name',
-        status: ''
+        status: 'pending review'
       },
       {
         id: 5,
         type: 'Assessment',
         name: 'Assessment name',
-        status: 'published'
+        status: 'published',
+        reviewFeedback: false
+      },
+      {
+        id: 6,
+        type: 'Assessment',
+        name: 'Assessment name',
+        status: 'published',
+        reviewFeedback: true
       }
     ]
   };
