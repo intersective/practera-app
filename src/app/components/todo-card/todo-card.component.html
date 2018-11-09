@@ -3,7 +3,7 @@
 
     <ng-container *ngIf="todoItem; else noItems">
       <ion-icon name="text" slot="start" color="primary"></ion-icon>
-      <div>
+      <div class="icon-item">
         <h4>{{todoItem.assessmentName}}</h4>
         <ng-container [ngSwitch]="todoItem.todoType">
           <ion-text color="medium">
