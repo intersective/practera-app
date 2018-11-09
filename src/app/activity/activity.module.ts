@@ -2,7 +2,8 @@ import { IonicModule } from '@ionic/angular';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { ProjectComponent } from './project.component';
+import { ActivityComponent } from './activity.component';
+import { ActivityService } from './activity.service';
 
 @NgModule({
   imports: [
@@ -10,6 +11,11 @@ import { ProjectComponent } from './project.component';
     CommonModule,
     FormsModule
   ],
-  declarations: [ProjectComponent]
+  declarations: [
+    ActivityComponent
+  ],
+  providers: [
+    ActivityService
+  ]
 })
-export class ProjectModule {}
+export class ActivityModule {}
