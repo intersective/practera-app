@@ -10,6 +10,7 @@ import { AuthComponent } from './auth.component';
 import { AuthLoginComponent } from './auth-login/auth-login.component';
 import { AuthForgotPasswordComponent } from './auth-forgot-password/auth-forgot-password.component';
 import { PopUpComponent } from '../components/pop-up/pop-up.component';
+import { AuthRegistrationComponent } from './auth-registration/auth-registration.component';
 
 @NgModule({
   imports: [
@@ -22,7 +23,8 @@ import { PopUpComponent } from '../components/pop-up/pop-up.component';
     AuthComponent, 
     AuthLoginComponent,
     AuthForgotPasswordComponent,
-    PopUpComponent
+    PopUpComponent,
+    AuthRegistrationComponent
   ],
   entryComponents: [
     PopUpComponent
