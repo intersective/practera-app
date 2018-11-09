@@ -3,6 +3,7 @@ import { Router, ActivatedRoute, ParamMap } from '@angular/router';
 import { switchMap } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import { ActivityService } from './activity.service';
+import { UtilsService } from '../services/utils.service';
 
 @Component({
   selector: 'app-activity',
@@ -21,13 +22,15 @@ export class ActivityComponent implements OnInit {
   constructor(
     private router: Router,
     private route: ActivatedRoute,
-    private activityService: ActivityService
+    private activityService: ActivityService,
+    private utils: UtilsService,
   ) { }
 
   ngOnInit() {
     this.id = parseInt(this.route.snapshot.paramMap.get('id'));
     this.activityService.getActivity(this.id)
       .subscribe(activity => this.activity = activity);
+     console.log('Is Empty?::', this.utils.isEmpty({}));
   }
 
   back() {
