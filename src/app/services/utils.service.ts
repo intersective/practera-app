@@ -6,9 +6,19 @@ import * as _ from 'lodash';
 })
 
 export class UtilsService {
-  isEmpty(value: any): boolean {
-    return _.isEmpty(value);
+  private lodash;
+
+  constructor() {
+  	if (_) {
+	  	this.lodash = _;
+  	} else {
+  		throw "Lodash not available";
+  	}
   }
 
-  each = _.each
+  isEmpty(value: any): boolean {
+    return this.lodash.isEmpty(value);
+  }
+
+  each = this.lodash.each
 }
