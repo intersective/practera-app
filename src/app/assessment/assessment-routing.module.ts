@@ -5,7 +5,7 @@ import { AssessmentComponent } from './assessment.component';
 
 const routes: Routes = [
   { 
-    path: 'assessment/:id', 
+    path: 'assessment/:activityId/:id',
     component: AssessmentComponent, 
     data: {
       action: 'assessment'

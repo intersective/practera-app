@@ -31,6 +31,10 @@
   font-weight: bold;
   // border-bottom: 1px solid var(--ion-color-light);
 }
+.border-top {
+  border-top: 1px solid var(--ion-color-medium);
+  padding-top: 10px;
+}
 
 // used for todo-card & tasks list
 .icon-item {

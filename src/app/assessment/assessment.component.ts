@@ -11,6 +11,8 @@ export class AssessmentComponent implements OnInit {
   
   // assessment id
   id = 0;
+  // activity id
+  activityId = 0;
   // action = 'assessment' is for user to do assessment
   // action = 'reivew' is for user to do review for this assessment
   action = '';
@@ -39,18 +41,13 @@ export class AssessmentComponent implements OnInit {
       }
     ]
   };
-  // structure of submission
-  submission = {
-
-  };
-
-  review = {
-
-  };
+  submission = {};
+  review = {};
   doAssessment = false;
   doReview = false;
 
   constructor (
+    private router: Router,
     private route: ActivatedRoute,
     private assessmentService: AssessmentService 
   ) {}
@@ -58,27 +55,30 @@ export class AssessmentComponent implements OnInit {
   ngOnInit() {
     this.action = this.route.snapshot.data.action;
     this.id = parseInt(this.route.snapshot.paramMap.get('id'));
+    this.activityId = parseInt(this.route.snapshot.paramMap.get('activityId'));
+
     this.assessmentService.getAssessment(this.id)
       .subscribe(assessment => this.assessment = assessment);
-    this.assessmentService.getSubmission(this.id)
+    this.assessmentService.getSubmission(this.id, this.action)
       .subscribe(result => {
 
         this.submission = result.submission;
         // this page is for doing assessment if submission is empty
-        if (!this.submission) {
-          return this.doAssessment = true;
+        if (Object.keys(this.submission).length == 0) {
+          this.doAssessment = true;
+          this.doReview = false;
+          return ;
         }
         this.review = result.review;
-        // this page is for doing review if review is empty
-        if (!this.review) {
-          return this.doReview = true;
+        // this page is for doing review if review is empty and action is review
+        if (Object.keys(this.review).length == 0 && this.action == 'review') {
+          this.doReview = true;
         }
-        
       });
   };
 
   back() {
-
+    this.router.navigate(['pages', 'tabs', { outlets: { activity: ['activity', this.activityId] } }]);
   }
   
 }
