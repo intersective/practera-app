@@ -1,7 +1,7 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { Router, ActivatedRoute, ParamMap } from '@angular/router';
 import { AssessmentService } from './assessment.service';
-import * as _ from "lodash";
+import { UtilsService } from '../services/utils.service';
 
 @Component({
   selector: 'app-assessment',
@@ -50,7 +50,8 @@ export class AssessmentComponent implements OnInit {
   constructor (
     private router: Router,
     private route: ActivatedRoute,
-    private assessmentService: AssessmentService 
+    private assessmentService: AssessmentService,
+    private utils: UtilsService
   ) {}
 
   ngOnInit() {
@@ -65,14 +66,14 @@ export class AssessmentComponent implements OnInit {
 
         this.submission = result.submission;
         // this page is for doing assessment if submission is empty
-        if (_.isEmpty(this.submission)) {
+        if (this.utils.isEmpty(this.submission)) {
           this.doAssessment = true;
           this.doReview = false;
           return ;
         }
         this.review = result.review;
         // this page is for doing review if review is empty and action is review
-        if (_.isEmpty(this.review) && this.action == 'review') {
+        if (this.utils.isEmpty(this.review) && this.action == 'review') {
           this.doReview = true;
         }
       });

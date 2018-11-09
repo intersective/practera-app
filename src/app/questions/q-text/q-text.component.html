@@ -9,13 +9,13 @@
       <ion-text>{{ submission.answer }}</ion-text>
     </ng-container>
 
-    <ng-container *ngIf="review.answer || review.comment">
-      <ion-label class="q-title border-top">Reviewer</ion-label>
+    <div *ngIf="review.answer || review.comment" class="q-reviews">
+      <ion-label class="q-title">Reviewer</ion-label>
       <b>Answer</b>
       <p>{{ review.answer ? review.answer : '' }}</p>
       <b>Comment</b>
       <p>{{ review.comment ? review.comment : '' }}</p>
-    </ng-container>
+    </div>
 
     <ng-container *ngIf="doAssessment || doReview">
       <ion-textarea class="background-white" [name]="'q-' + question.id" rows="4"></ion-textarea>
