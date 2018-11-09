@@ -9,4 +9,6 @@ export class UtilsService {
   isEmpty(value: any): boolean {
     return _.isEmpty(value);
   }
+
+  each = _.each
 }
