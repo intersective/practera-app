@@ -2,12 +2,12 @@ import { Injectable, Optional } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams, HttpErrorResponse } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
-
-import * as _ from 'lodash';
+import { UtilsService } from '../../services/utils.service';
 
 export class RequestConfig {
   appkey = '';
-  prefixUrl = 'http://local.practera.com/';
+  prefixUrl = 'https://sandbox.practera.com/';
+  // prefixUrl = 'http://local.practera.com/';
 }
 
 @Injectable({
@@ -19,6 +19,7 @@ export class RequestService {
 
   constructor(
     private http: HttpClient,
+    private utils: UtilsService,
     @Optional() config: RequestConfig
   ) {
     if (config) {
@@ -44,9 +45,9 @@ export class RequestService {
    */
   setParams(options) {
     let params: any;
-    if (!_.isEmpty(options)) {
+    if (!this.utils.isEmpty(options)) {
       params = new HttpParams();
-      _.each(options, (value, key) => {
+      this.utils.each(options, (value, key) => {
         params = params.append(key, value);
       });
     }
@@ -60,19 +61,19 @@ export class RequestService {
    * @param headers
    * @returns {Observable<any>}
    */
-  get(endPoint: string = '', options?: any, headers?: any): Observable<any> {
+  get(endPoint: string = '', httpOptions?: any): Observable<any> {
     return this.http.get<any>(this.prefixUrl + endPoint, {
-      headers: this.appendHeaders(headers),
-      params: this.setParams(options)
+      headers: this.appendHeaders(httpOptions.headers),
+      params: this.setParams(httpOptions.params)
     }).pipe(
       catchError(this.handleError<any>('API Request'))
     );
   }
 
-  post(endPoint: string = '', data, options?: any, headers?: any): Observable<any> {
+  post(endPoint: string = '', data, httpOptions?: any): Observable<any> {
     return this.http.post<any>(this.prefixUrl + endPoint, data, {
-      headers: this.appendHeaders(headers),
-      params: this.setParams(options)
+      headers: this.appendHeaders(httpOptions.headers),
+      params: this.setParams(httpOptions.params)
     }).pipe(
       catchError(this.handleError<any>('API Request'))
     );
