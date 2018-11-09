@@ -1,25 +1,32 @@
-import { Component } from '@angular/core';
-import { TodoService } from '../services/todo/todo.service';
-import { ActivityService } from '../services/activity.service';
+import { Component, OnInit } from '@angular/core';
+import { HomeService } from './home.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-home',
   templateUrl: 'home.component.html',
   styleUrls: ['home.component.scss']
 })
-export class HomeComponent {
-  public todo:boolean  = true;
-  public progress:number = 80;
+export class HomeComponent implements OnInit {
+  progress:number = 80;
   Program = {
-    Name : 'Demo program'
+    Name: 'Demo program'
   };
-  notifications= [];
+  todoItems = [];
   activity = {};
   
-  constructor ( public todoList: TodoService, public activityObject: ActivityService  ) {
-    this.notifications = todoList.todo;
-    this.todo = (todoList.todo.length? true : false) ;
-    this.activity = activityObject.activity;  
+  constructor (
+    private router: Router,
+    private homeService: HomeService 
+  ) {}
+
+  ngOnInit() {
+    this.todoItems = this.homeService.getTodoItems();
+    this.activity = this.homeService.getCurrentActivity();  
   };
+
+  activityRedirection(id) {
+    this.router.navigate(['pages', 'tabs', { outlets: { activity: ['activity', id] } }]);
+  }
   
 }

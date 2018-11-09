@@ -4,22 +4,23 @@
     <circle-progress 
       [percent]="progress">
     </circle-progress>
-  </div>     
-  <ion-label color="medium">Thins to do </ion-label>
-  <ion-card *ngIf="!todo; else notificationList" class="notification-card">
-      <ion-item class="activated">
-          <ion-icon name="notifications" slot="start" color="primary"></ion-icon>
-          <ion-label  color="medium">You have no new notifications.</ion-label>
-      </ion-item>
-  </ion-card>
-  <ng-template #notificationList>
-    <ion-list class="notification-list">
-      <div *ngFor="let notification of notifications">
-        <app-todo-notification-card [notification] = notification></app-todo-notification-card>
+  </div>
+
+  <ion-label color="medium">Things to do</ion-label>
+  <ion-list class="todo-list">
+
+    <ng-container *ngIf="todoItems.length; else noItems">
+      <div *ngFor="let todoItem of todoItems">
+        <app-todo-card [todoItem]="todoItem"></app-todo-card>
       </div>  
-    </ion-list>
-  </ng-template>  
+    </ng-container>
+
+    <ng-template #noItems>
+      <app-todo-card [todoItem]="false"></app-todo-card>
+    </ng-template>
+
+  </ion-list>
 
   <ion-label color="medium">Current Activity</ion-label>
-  <app-activity-card [activity] = "activity"></app-activity-card>
+  <app-activity-card [activity]="activity" (click)="activityRedirection(activity.id)"></app-activity-card>
 </ion-content>

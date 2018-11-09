@@ -9,7 +9,8 @@ import { TabsRoutingModule } from './tabs-routing.module';
 import { TabsComponent } from './tabs.component';
 
 import { HomeModule } from '../home/home.module';
-import { ActivitiesModule } from '../activities/activities.module';
+import { ProjectModule } from '../project/project.module';
+import { ActivityModule } from '../activity/activity.module';
 import { ChatModule } from '../chat/chat.module';
 import { HelpModule } from '../help/help.module';
 
@@ -20,7 +21,8 @@ import { HelpModule } from '../help/help.module';
     FormsModule,
     TabsRoutingModule,
     HomeModule,
-    ActivitiesModule,
+    ProjectModule,
+    ActivityModule,
     ChatModule,
     HelpModule
   ],
