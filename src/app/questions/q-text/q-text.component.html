@@ -5,16 +5,16 @@
   </ion-card-header>
   <ion-card-content padding>
 
-    <ng-container *ngIf="submission">
+    <ng-container *ngIf="submission.answer">
       <ion-text>{{ submission.answer }}</ion-text>
     </ng-container>
 
-    <ng-container *ngIf="review">
-      <ion-label>Reviewer</ion-label>
+    <ng-container *ngIf="review.answer || review.comment">
+      <ion-label class="q-title border-top">Reviewer</ion-label>
       <b>Answer</b>
-      <ion-text>{{ review.answer ? review.answer : '' }}</ion-text>
+      <p>{{ review.answer ? review.answer : '' }}</p>
       <b>Comment</b>
-      <ion-text>{{ review.comment ? review.comment : '' }}</ion-text>
+      <p>{{ review.comment ? review.comment : '' }}</p>
     </ng-container>
 
     <ng-container *ngIf="doAssessment || doReview">

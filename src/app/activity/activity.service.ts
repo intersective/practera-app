@@ -24,26 +24,32 @@ export class ActivityService {
         status: ''
       },
       {
-        id: 3,
+        id: 1,
         type: 'Assessment',
         name: 'Assessment name',
         status: ''
       },
       {
-        id: 4,
+        id: 2,
+        type: 'Assessment',
+        name: 'Assessment name',
+        status: 'done'
+      },
+      {
+        id: 3,
         type: 'Assessment',
         name: 'Assessment name',
         status: 'pending review'
       },
       {
-        id: 5,
+        id: 4,
         type: 'Assessment',
         name: 'Assessment name',
         status: 'published',
         reviewFeedback: false
       },
       {
-        id: 6,
+        id: 5,
         type: 'Assessment',
         name: 'Assessment name',
         status: 'published',

@@ -19,6 +19,7 @@ export class ActivityComponent implements OnInit {
   };
 
   constructor(
+    private router: Router,
     private route: ActivatedRoute,
     private activityService: ActivityService
   ) { }
@@ -30,10 +31,21 @@ export class ActivityComponent implements OnInit {
   }
 
   back() {
-    console.log('go back');
+    
   }
 
   goto(type, id) {
+    switch (type) {
+      case 'Assessment':
+        this.router.navigate(['/assessment/assessment', this.id , id]);
+        break;
+      case 'Topic':
+
+        break;
+      case 'Comm':
+
+        break;
+    }
     console.log('go to ', type, ' with id ', id);
   }
 
