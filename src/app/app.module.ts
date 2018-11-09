@@ -11,6 +11,7 @@ import { RequestModule } from './shared/request/request.module';
 import { AppComponent } from './app.component';
 
 import { HttpClientInMemoryWebApiModule } from 'angular-in-memory-web-api';
+import { UtilsService } from './services/utils.service';
 
 @NgModule({
   declarations: [AppComponent],
@@ -27,7 +28,10 @@ import { HttpClientInMemoryWebApiModule } from 'angular-in-memory-web-api';
   providers: [
     // StatusBar,
     // SplashScreen,
-    { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }
+    { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
+
+    // Custom
+    UtilsService,
   ],
   bootstrap: [AppComponent]
 })
