@@ -1,12 +1,12 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { ModalController } from '@ionic/angular';
-import { NotificationComponent } from '../../components/notification/notification.component';
+import { PopUpComponent } from '../../components/pop-up/pop-up.component';
 
 @Component({
   selector: 'app-auth-forgot-password',
   templateUrl: 'auth-forgot-password.component.html',
-  styleUrls: ['auth-forgot-password.component.css']
+  styleUrls: ['auth-forgot-password.component.scss']
 })
 export class AuthForgotPasswordComponent {
   email = '';
@@ -20,7 +20,7 @@ export class AuthForgotPasswordComponent {
     // -- todo
     // call API to do forgot password logic
     const modal = await this.modalController.create({
-      component: NotificationComponent,
+      component: PopUpComponent,
       componentProps: { 
         type: 'forgotPasswordConfirmation',
         data: {

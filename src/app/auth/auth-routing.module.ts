@@ -4,7 +4,6 @@ import { RouterModule, Routes } from '@angular/router';
 import { AuthComponent } from './auth.component';
 import { AuthLoginComponent } from './auth-login/auth-login.component';
 import { AuthForgotPasswordComponent } from './auth-forgot-password/auth-forgot-password.component';
-import { AuthSwitcherComponent } from './auth-switcher/auth-switcher.component';
 
 const routes: Routes = [
   {
@@ -23,10 +22,6 @@ const routes: Routes = [
       {
         path: 'forgot_password',
         component: AuthForgotPasswordComponent
-      },
-      {
-        path: 'switcher',
-        component: AuthSwitcherComponent
       }
     ]
   }

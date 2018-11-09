@@ -11,8 +11,7 @@ import { AuthService } from './auth.service';
 import { AuthComponent } from './auth.component';
 import { AuthLoginComponent } from './auth-login/auth-login.component';
 import { AuthForgotPasswordComponent } from './auth-forgot-password/auth-forgot-password.component';
-import { AuthSwitcherComponent } from './auth-switcher/auth-switcher.component';
-import { NotificationComponent } from '../components/notification/notification.component';
+import { PopUpComponent } from '../components/pop-up/pop-up.component';
 
 @NgModule({
   imports: [
@@ -25,11 +24,10 @@ import { NotificationComponent } from '../components/notification/notification.c
     AuthComponent, 
     AuthLoginComponent,
     AuthForgotPasswordComponent,
-    AuthSwitcherComponent,
-    NotificationComponent
+    PopUpComponent
   ],
   entryComponents: [
-    NotificationComponent
+    PopUpComponent
   ],
   providers: [ AuthService ],
 })
