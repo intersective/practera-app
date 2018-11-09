@@ -35,16 +35,41 @@ export class AssessmentService {
     ]
   };
 
-  submission = {
-    1: {
-      answer: 'answer for question 1'
+  submissions = {
+    2: {
+      1: {
+        answer: 'answer for question 1'
+      }
+    },
+    3: {
+      1: {
+        answer: 'answer for question 1'
+      }
+    },
+    4: {
+      1: {
+        answer: 'answer for question 1'
+      }
+    },
+    5: {
+      1: {
+        answer: 'answer for question 1'
+      }
     }
   };
 
-  review = {
-    1: {
-      answer: 'review answer for question 1',
-      comment: 'review comment for question 1'
+  reviews = {
+    4: {
+      1: {
+        answer: 'review answer for question 1',
+        comment: 'review comment for question 1'
+      }
+    },
+    5: {
+      1: {
+        answer: 'review answer for question 1',
+        comment: 'review comment for question 1'
+      }
     }
   };
 
@@ -54,10 +79,11 @@ export class AssessmentService {
     return of(this.assessment);
   }
 
-  getSubmission(id): Observable<any> {
+  // the id passed in is assessment id
+  getSubmission(id, action): Observable<any> {
     return of({
-      submission: this.submission,
-      review: this.review
+      submission: this.submissions[id] ? this.submissions[id] : {},
+      review: this.reviews[id] ? this.reviews[id] : {}
     });
   }
 }

@@ -18,9 +18,11 @@
 
         <app-q-text 
           *ngSwitchCase="'text'" 
-          [doAssessment]="doAssessment"
           [question]="question" 
+          [doAssessment]="doAssessment"
+          [doReview]="doReview"
           [submission]="(submission[question.id]) ? submission[question.id] : {}"
+          [review]="(review[question.id]) ? review[question.id] : {}"
         ></app-q-text>
         <!-- <app-q-oneof *ngSwitchCase="'oneof'" [question]="question"></app-q-oneof>
         <app-q-multiple *ngSwitchCase="'multiple'" [question]="question"></app-q-multiple>
