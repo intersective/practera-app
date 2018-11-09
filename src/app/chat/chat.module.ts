@@ -6,6 +6,7 @@ import { FormsModule } from '@angular/forms';
 import { ChatComponent } from './chat.component';
 import { ChatRoomComponent } from './chat-room/chat-room.component';
 import { ChatRoutingModule } from './chat-routing.module';
+import { ChatService } from './chat.service';
 
 @NgModule({
   imports: [
@@ -14,6 +15,7 @@ import { ChatRoutingModule } from './chat-routing.module';
     FormsModule,
     ChatRoutingModule
   ],
-  declarations: [ChatComponent, ChatRoomComponent]
+  declarations: [ChatComponent, ChatRoomComponent],
+  providers:[ChatService]
 })
 export class ChatModule {}

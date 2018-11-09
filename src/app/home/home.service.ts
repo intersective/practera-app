@@ -28,6 +28,7 @@ export class HomeService {
     }
   ];
   activity = {
+    id: 1,
     name :'Activity Name 1'
   };
 

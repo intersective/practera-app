@@ -14,7 +14,9 @@
         <ion-label>
           <div class="chat-name-container">
             <h2>{{chat.is_team ? chat.team_name : chat.name}}</h2>
-            <ng-container *ngIf="chat.role === 'mentor'"><span>mentor - {{chat.team_name}}</span></ng-container>
+            <ng-container *ngIf="(chat.role === 'mentor') && (haveMoreTeam)"><span>mentor - {{chat.team_name}}</span></ng-container>
+            <ng-container *ngIf="(chat.role === 'mentor') && (!haveMoreTeam)"><span>mentor</span></ng-container>
+            <ng-container *ngIf="(chat.role !== 'mentor') && (!chat.is_team) && (haveMoreTeam)"><span>{{chat.team_name}}</span></ng-container>
           </div>
           <ng-container *ngIf="chat.last_message; else messgeElseBlock"><p>{{chat.last_message}}</p></ng-container>
           <ng-template #messgeElseBlock><p>No messages.</p></ng-template>
