@@ -25,7 +25,7 @@ export class AuthLoginComponent {
       password: this.password,
     }).subscribe(res => console.log, err => console.log);
 
-    // this.router.navigate(['/switcher']);
+    this.router.navigate(['/switcher']);
 	}
 
 }
