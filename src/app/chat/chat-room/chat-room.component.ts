@@ -1,7 +1,9 @@
-import { Component, OnInit } from "@angular/core";
-import { Router } from '@angular/router';
+import { Component, OnInit, ViewChild } from "@angular/core";
+import { Router, ActivatedRoute } from "@angular/router";
+import { Content } from "@ionic/angular";
+import { Storage } from "@ionic/storage";
 
-import { ChatService } from '../chat.service';
+import { ChatService } from "../chat.service";
 
 @Component({
   selector: "app-chat-room",
@@ -9,34 +11,40 @@ import { ChatService } from '../chat.service';
   styleUrls: ["./chat-room.component.scss"]
 })
 export class ChatRoomComponent implements OnInit {
-  messageList: any[];
-  private chatObject: any;
+  // @TODO need to create method to convert chat time to local time.
+  @ViewChild(Content) content: Content;
 
-  constructor(private chatService: ChatService, private router: Router) {}
+  message: any;
+  messageList: any[];
+  selectedChat: any = {
+    name: ""
+  };
+  chatColors: any[];
+
+  constructor(
+    private chatService: ChatService,
+    private router: Router,
+    private storage: Storage
+  ) {}
 
   ngOnInit() {
-    this.loadMessages();
-    this.chatObject = this.chatService.getSelectedChat();
+    this.loadStorageData();
   }
 
-  // @TODO need to create method to convert chat time to local time. also need to use in chat
+  loadStorageData() {
+    this.storage.get("chatAvatarColors").then(avatorColors => {
+      this.chatColors = avatorColors;
+      this.storage.get("selectedChatObject").then(chat => {
+        this.selectedChat = chat;
+        this.loadMessages();
+      });
+    });
+  }
+
   loadMessages() {
-    this.messageList = [
-      {
-        id: 14949,
-        sender_name: "test student1",
-        message: "coming from student 1 to student 2",
-        sent_time: "2018-08-16 05:18:29",
-        is_sender: true
-      },
-      {
-        id: 14950,
-        sender_name: "test student2",
-        message: "second chat from student 2 to student 1",
-        sent_time: "2018-08-16 05:17:10",
-        is_sender: false
-      }
-    ];
+    this.chatService.getMessageList(null).subscribe(response => {
+      this.updateMessageListResponse(response, false);
+    });
   }
 
   getChatAvatarText(senderName) {
@@ -44,7 +52,91 @@ export class ChatRoomComponent implements OnInit {
   }
 
   goBack() {
-    this.router.navigateByUrl('/pages/tabs/(chat:chat)');
+    this.router.navigateByUrl("/pages/tabs/(chat:chat)");
   }
 
+  sendMessage() {
+    if (this.message) {
+      const message = this.message;
+      this.message = "";
+      let data = {
+        id: 300,
+        sender_name: this.selectedChat.name,
+        message: message,
+        is_sender: true,
+        team_id: this.selectedChat.team_id,
+        to: null,
+        team_name: this.selectedChat.team_name,
+        sent_time: '1.30 PM'
+      };
+      if (this.selectedChat.is_team) {
+        data.to = "team";
+      } else {
+        data.to = this.selectedChat.team_member_id;
+      }
+      this.chatService.postNewMessage(data).subscribe((response) => {
+        this.messageList.push(response);
+      }, (error) => {});
+    }
+  }
+
+  private updateMessageListResponse(response, loadMore): void {
+    let index = 0;
+    let tempRes = null;
+    if (response.length > 0) {
+      this.messageList = [];
+      for (index = 0; index < response.length; index++) {
+        if (response[index] && !response[index].is_sender) {
+          if (this.selectedChat.is_team) {
+            this.getValidChatColors(this.chatColors, response, index);
+          } else {
+            response[index].chat_color = this.selectedChat.chat_color;
+          }
+        }
+        if (index === response.length - 1) {
+          tempRes = response;
+          tempRes.reverse();
+          if (loadMore) {
+            this.messageList = tempRes.concat(this.messageList);
+          } else {
+            this.messageList = tempRes;
+            this.content.scrollToBottom();
+          }
+          this.markAsSeen(tempRes);
+        }
+      }
+    }
+  }
+
+  private getValidChatColors(chatColors, response, index) {
+    let chatcolor = chatColors.find(function(chat) {
+      return chat.name === response[index].sender_name;
+    });
+    if (chatcolor) {
+      response[index].chat_color = chatcolor.chat_color;
+    } else {
+      response[index].chat_color = this.chatService.getRandomColor();
+    }
+  }
+
+  private markAsSeen(messageList) {
+    let messageIdList = [];
+    let index = 0;
+    for (index = 0; index < messageList.length; index++) {
+      messageIdList.push(messageList[index].id);
+    }
+    this.chatService
+      .markMessagesAsSeen({
+        ids: JSON.stringify(messageIdList),
+        team_id: this.selectedChat.team_id
+      })
+      .subscribe(
+        response => {
+          console.log("marked");
+        },
+        error => {
+          console.log("error");
+        }
+      );
+  }
 }

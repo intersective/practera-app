@@ -6,7 +6,7 @@
 <ion-content>
   <ion-list>
     <ng-container *ngFor="let chat of chatList">
-      <ion-item [routerLink]="['/chat/chat-room']" (click)="setChatObjectToService(chat)" [class]="chat.unread_messages > 0 ? 'unread' : ''">
+      <ion-item (click)="navigateToChatRoom(chat)" [class]="chat.unread_messages > 0 ? 'unread' : ''">
         <ion-avatar [ngClass]="chat.chat_color" slot="start">
           <ng-container *ngIf="chat.is_team; else avatarElseBlock"><ion-icon name="people"></ion-icon></ng-container>
           <ng-template #avatarElseBlock><p class="chat-avatar">{{getChatAvatarText(chat.name)}}</p></ng-template>
@@ -22,7 +22,7 @@
           <ng-template #messgeElseBlock><p>No messages.</p></ng-template>
         </ion-label>
         <div slot="end" class="time-container">
-          <span>yesterday</span>
+          <span>{{chat.last_message_created}}</span>
           <ng-container *ngIf="chat.unread_messages > 0">
               <ion-badge>{{chat.unread_messages}}</ion-badge>
           </ng-container>
