@@ -1,6 +1,9 @@
 <ion-card color="primary" class="card practera-card">
-  <ion-card-content padding>
+  <ion-card-content padding [ngClass]="{'feedback-card': activity.hasFeedback }">
     <h4 color="primary-contrast">Activity</h4>
-    <h1 color="primary-contrast">{{activity.name}}</h1>
+    <h2 color="primary-contrast" class="activity-name">{{activity.name}}</h2>
+    <div class="feedback-label" *ngIf="activity.hasFeedback">
+      <p>Feedback Available</p>
+    </div>
   </ion-card-content>
 </ion-card>
