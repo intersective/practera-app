@@ -22,7 +22,8 @@ export class ProjectComponent {
         {
           name: 'Test Activity one',
           is_locked: false,
-          progress: 0.34
+          progress: 0.34,
+          hasFeedback: true
         },
         {
           name: 'Activity two',
@@ -72,12 +73,14 @@ export class ProjectComponent {
         {
           name: 'Test Activity six',
           is_locked: false,
-          progress: 1
+          progress: 1,
+          hasFeedback: false
         },
         {
           name: 'Activity seven',
           is_locked: false,
-          progress:0.48
+          progress:0.48,
+          hasFeedback: true
           
         }
     ],
