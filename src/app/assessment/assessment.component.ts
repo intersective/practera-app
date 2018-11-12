@@ -2,6 +2,7 @@ import { Component, OnInit, Input } from '@angular/core';
 import { Router, ActivatedRoute, ParamMap } from '@angular/router';
 import { AssessmentService } from './assessment.service';
 import { UtilsService } from '../services/utils.service';
+import { FormGroup, FormControl } from '@angular/forms';
 
 @Component({
   selector: 'app-assessment',
@@ -46,6 +47,7 @@ export class AssessmentComponent implements OnInit {
   review = {};
   doAssessment = false;
   doReview = false;
+  questionsForm = new FormGroup({});
 
   constructor (
     private router: Router,
@@ -60,7 +62,9 @@ export class AssessmentComponent implements OnInit {
     this.activityId = parseInt(this.route.snapshot.paramMap.get('activityId'));
 
     this.assessmentService.getAssessment(this.id)
-      .subscribe(assessment => this.assessment = assessment);
+      .subscribe(assessment => {
+        this.assessment = assessment
+      });
     this.assessmentService.getSubmission(this.id, this.action)
       .subscribe(result => {
 
@@ -78,6 +82,17 @@ export class AssessmentComponent implements OnInit {
         }
       });
   };
+
+  populateQuestionsForm() {
+    let questionsFormObject = {};
+    this.assessment.groups.forEach(group => {
+      group.questions.forEach(question => {
+        questionsFormObject['q-' + question.id] = new FormControl('');
+      })
+    });
+    this.questionsForm = new FormGroup(questionsFormObject);
+    console.log('questionsForm', this.questionsForm);
+  }
 
   back() {
     this.router.navigate(['pages', 'tabs', { outlets: { activity: ['activity', this.activityId] } }]);
