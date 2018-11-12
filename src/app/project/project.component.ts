@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, EventEmitter, Output  } from '@angular/core';
+import { Location } from  '@angular/common';
 
 @Component({
   selector: 'app-project',
@@ -6,6 +7,10 @@ import { Component } from '@angular/core';
   styleUrls: ['project.component.scss']
 })
 export class ProjectComponent {
+
+  constructor(location: Location) {};
+  location: Location;
+  
   public levels = [
     {
       id: 1,
@@ -96,5 +101,5 @@ export class ProjectComponent {
 
     }
   ];
-  
+
 }
