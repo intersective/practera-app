@@ -1,15 +1,13 @@
 import { Injectable } from "@angular/core";
-import { Observable, of } from "rxjs";
+import { Observable, of, BehaviorSubject } from "rxjs";
 
 @Injectable({
   providedIn: "root"
 })
 export class ChatService {
-  // chat object select to chat
-  private selectedChat: any;
+
   private chatList: any[];
   private messageList: any[];
-  private chatAvatarColors: any[];
 
   constructor() {
     this.initDemoData();
@@ -24,7 +22,7 @@ export class ChatService {
         name: "Team",
         role: null,
         unread_messages: 2,
-        last_message_created: "2018-08-20 04:52:33",
+        last_message_created: "Nov 7",
         last_message: "this is the team chat for dream team",
         is_team: true
       },
@@ -35,7 +33,7 @@ export class ChatService {
         name: "Team",
         role: null,
         unread_messages: 2,
-        last_message_created: "2018-08-20 04:52:33",
+        last_message_created: "Nov 5",
         last_message: "this is the team chat for sleep team",
         is_team: true
       },
@@ -46,7 +44,7 @@ export class ChatService {
         name: "test student2",
         role: "participant",
         unread_messages: 0,
-        last_message_created: "2018-08-16 05:18:29",
+        last_message_created: "Nov 1",
         last_message: "coming from student 1 to student 2",
         is_team: false
       },
@@ -56,7 +54,7 @@ export class ChatService {
         team_member_id: 3,
         name: "mob studtest",
         role: "participant",
-        last_message_created: "2018-08-16 05:18:52",
+        last_message_created: "Oct 23",
         last_message: "Message to team meber in sleep team",
         unread_messages: null,
         is_team: false
@@ -78,14 +76,14 @@ export class ChatService {
         id: 14949,
         sender_name: "test student1",
         message: "coming from student 1 to student 2",
-        sent_time: "2018-08-16 05:18:29",
+        sent_time: "11.30 AM",
         is_sender: true
       },
       {
         id: 14950,
         sender_name: "test student2",
         message: "second chat from student 2 to student 1",
-        sent_time: "2018-08-16 05:17:10",
+        sent_time: "1.00 PM",
         is_sender: false
       }
     ];
@@ -96,6 +94,24 @@ export class ChatService {
    */
   getchatList(): Observable<any> {
     return of(this.chatList);
+  }
+
+  getchatById(id): Observable<any> {
+    let teamMemberChatObject = this.chatList.find(function(chat) {
+      return chat.team_member_id === id;
+    });
+    if (teamMemberChatObject) {
+      return of(teamMemberChatObject);
+    } else {
+      let teamChatObject = this.chatList.find(function(chat) {
+        return (chat.team_id === id) && (chat.role === null);
+      });
+      if (teamChatObject) {
+        return of(teamChatObject);
+      } else {
+        return of(null);
+      }
+    }
   }
 
   /**
@@ -113,29 +129,12 @@ export class ChatService {
     return of(this.messageList);
   }
 
-  // set chat object for chat
-  setSelectedChat(chatObject) {
-    this.selectedChat = chatObject;
+  markMessagesAsSeen(data): Observable<any> {
+    return of("maked");
   }
 
-  // get selected chat object for chat
-  getSelectedChat(): any {
-    return this.selectedChat;
-  }
-
-  /**
-   * set avatar color in service
-   * @param colors chat avatar color array
-   */
-  setChatAvatarColors(colors) {
-    this.chatAvatarColors = colors;
-  }
-
-  /**
-   * get chat avatar color array.
-   */
-  getChatAvatarColors() {
-    return this.chatAvatarColors;
+  postNewMessage(data): Observable<any> {
+    return of(data);
   }
 
   generateChatAvatarText(text) {
