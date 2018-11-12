@@ -12,17 +12,12 @@ import { HelpComponent } from '../help/help.component';
 
 const routes: Routes = [
   {
-    path: 'tabs',
+    path: '',
     component: TabsComponent,
     canActivate: [AuthGuard],
     children: [
       {
         path: '',
-        redirectTo: '/pages/tabs/(home:home)',
-        pathMatch: 'full'
-      },
-      {
-        path: 'home',
         outlet: 'home',
         canActivateChild: [AuthGuard],
         component: HomeComponent
