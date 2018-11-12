@@ -1,6 +1,8 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
+import { AuthGuard } from '../auth/auth.guard';
+
 import { TabsComponent } from './tabs.component';
 import { HomeComponent } from '../home/home.component';
 import { ProjectComponent } from '../project/project.component';
@@ -12,6 +14,7 @@ const routes: Routes = [
   {
     path: 'tabs',
     component: TabsComponent,
+    canActivate: [AuthGuard],
     children: [
       {
         path: '',
@@ -21,6 +24,7 @@ const routes: Routes = [
       {
         path: 'home',
         outlet: 'home',
+        canActivateChild: [AuthGuard],
         component: HomeComponent
       },
       {
@@ -31,11 +35,13 @@ const routes: Routes = [
       {
         path: 'activity/:id',
         outlet: 'activity',
+        canActivateChild: [AuthGuard],
         component: ActivityComponent
       },
       {
         path: 'chat',
         outlet: 'chat',
+        canActivateChild: [AuthGuard],
         component: ChatComponent
       },
       {

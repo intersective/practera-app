@@ -6,6 +6,7 @@ import { HttpParams } from '@angular/common/http';
   providedIn: 'root',
 })
 export class AuthService {
+  isLoggedIn: boolean = false;
 
   constructor(private request: RequestService) { }
 
