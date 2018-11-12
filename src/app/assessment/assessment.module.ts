@@ -4,6 +4,7 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AssessmentRoutingModule } from './assessment-routing.module';
+import { ReactiveFormsModule } from '@angular/forms';
 
 import { AssessmentComponent } from './assessment.component';
 import { QuestionsModule } from '../questions/questions.module';
@@ -14,6 +15,7 @@ import { QuestionsModule } from '../questions/questions.module';
     CommonModule,
     FormsModule,
     AssessmentRoutingModule,
+    ReactiveFormsModule,
     QuestionsModule
   ],
   declarations: [

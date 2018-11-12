@@ -10,30 +10,35 @@
     <p>{{ assessment.description }}</p>
   </ion-text>
 
-  <ng-container *ngFor="let group of assessment.groups">
-    <h3>{{ group.name }}</h3>
-    <ng-container *ngFor="let question of group.questions">
+  <form [formGroup]="questionsForm">
 
-      <ng-container [ngSwitch]="question.type">
+    <ng-container *ngFor="let group of assessment.groups">
+      <h3>{{ group.name }}</h3>
+      <ng-container *ngFor="let question of group.questions">
 
-        <app-q-text 
-          *ngSwitchCase="'text'" 
-          [question]="question" 
-          [doAssessment]="doAssessment"
-          [doReview]="doReview"
-          [submission]="(submission[question.id]) ? submission[question.id] : {}"
-          [review]="(review[question.id]) ? review[question.id] : {}"
-        ></app-q-text>
-        <!-- <app-q-oneof *ngSwitchCase="'oneof'" [question]="question"></app-q-oneof>
-        <app-q-multiple *ngSwitchCase="'multiple'" [question]="question"></app-q-multiple>
-        <app-q-file *ngSwitchCase="'file'" [question]="question"></app-q-file>
-        <app-q-video *ngSwitchCase="'video'" [question]="question"></app-q-video> -->
+        <ng-container [ngSwitch]="question.type">
 
+          <app-q-text 
+            *ngSwitchCase="'text'" 
+            [question]="question" 
+            [doAssessment]="doAssessment"
+            [doReview]="doReview"
+            [submission]="(submission[question.id]) ? submission[question.id] : {}"
+            [review]="(review[question.id]) ? review[question.id] : {}"
+          ></app-q-text>
+          <!-- <app-q-oneof *ngSwitchCase="'oneof'" [question]="question"></app-q-oneof>
+          <app-q-multiple *ngSwitchCase="'multiple'" [question]="question"></app-q-multiple>
+          <app-q-file *ngSwitchCase="'file'" [question]="question"></app-q-file>
+          <app-q-video *ngSwitchCase="'video'" [question]="question"></app-q-video> -->
+
+        </ng-container>
+        
       </ng-container>
-      
     </ng-container>
-  </ng-container>
 
-  <ion-button *ngIf="doAssessment || doReview" (click)="submit()" shape="round" color="primary" expand="full">Submit</ion-button>
+    <ion-button *ngIf="doAssessment || doReview" (click)="submit()" shape="round" color="primary" expand="full">Submit</ion-button>
+
+  </form>
+
 
 </ion-content>

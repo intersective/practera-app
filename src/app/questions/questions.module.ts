@@ -3,6 +3,7 @@ import { RouterModule } from '@angular/router';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { ReactiveFormsModule } from '@angular/forms';
 import { QuestionsComponent } from './questions.component';
 import { QTextComponent } from './q-text/q-text.component';
 
@@ -10,7 +11,8 @@ import { QTextComponent } from './q-text/q-text.component';
   imports: [
     IonicModule,
     CommonModule,
-    FormsModule
+    FormsModule,
+    ReactiveFormsModule
   ],
   declarations: [
     QuestionsComponent,
