@@ -20,5 +20,7 @@ export class UtilsService {
     return this.lodash.isEmpty(value);
   }
 
-  each = this.lodash.each
+  each(collections, callback) {
+    return this.lodash.each(collections, callback);
+  }
 }
