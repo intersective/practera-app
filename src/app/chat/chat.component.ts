@@ -1,4 +1,6 @@
 import { Component, OnInit } from "@angular/core";
+import { NavController } from "@ionic/angular";
+import { Storage } from "@ionic/storage";
 
 import { ChatService } from "./chat.service";
 
@@ -8,17 +10,20 @@ import { ChatService } from "./chat.service";
   styleUrls: ["chat.component.scss"]
 })
 export class ChatComponent implements OnInit {
+  // @TODO need to create method to convert chat time to local time.
   chatList: any[];
   haveMoreTeam:Boolean;
+  private chatColors:any[];
+  private colorArray = [];
 
-  constructor(private chatService: ChatService) {}
+  constructor(private chatService: ChatService, private navCtrl: NavController, private storage: Storage) {
+  }
 
   ngOnInit() {
     this.haveMoreTeam = false;
     this.loadChatData();
   }
 
-  // @TODO need to create method to convert chat time to local time. also need to use in chat room
   loadChatData():void {
     this.chatService.getchatList().subscribe(response => {
       this.updateChatListResponse(response);
@@ -33,11 +38,11 @@ export class ChatComponent implements OnInit {
   private updateChatListResponse(response):void {
     if ((response)) {
       this.chatList = [];
-      let chatColors = this.chatService.getChatAvatarColors();
-      if ((!chatColors)) {
+      // let chatColors = this.chatService.getChatAvatarColors();
+      if ((!this.chatColors)) {
         this.setChatAvatarColors(response, null, 'nocolor');
       } else {
-        this.setChatAvatarColors(response, chatColors, 'havecolor');
+        this.setChatAvatarColors(response, this.chatColors, 'havecolor');
       }
       this.checkHaveMoreTeam(response);
     }
@@ -52,13 +57,12 @@ export class ChatComponent implements OnInit {
    */
   private setChatAvatarColors(response, chatColors, status):void {
     let index = 0;
-    let colorArray = [];
     for (index = 0; index < response.length; index++) {
       if ((response[index])) {
         switch (status) {
           case "nocolor":
             response[index].chat_color = this.chatService.getRandomColor();
-            colorArray.push({
+            this.colorArray.push({
               team_member_id: response[index].team_member_id,
               name: response[index].name,
               chat_color: response[index].chat_color
@@ -78,8 +82,8 @@ export class ChatComponent implements OnInit {
         this.chatList.push(response[index]);
       }
     }
-    if ((colorArray.length > 0)) {
-      this.chatService.setChatAvatarColors(colorArray);
+    if ((this.colorArray.length > 0)) {
+      this.storage.set('chatAvatarColors', this.colorArray);
     }
   }
 
@@ -106,7 +110,8 @@ export class ChatComponent implements OnInit {
     return this.chatService.generateChatAvatarText(chatName);
   }
 
-  setChatObjectToService(chat) {
-    this.chatService.setSelectedChat(chat);
+  navigateToChatRoom(chat) {
+    this.storage.set('selectedChatObject', chat);
+    this.navCtrl.navigateForward('/chat/chat-room');
   }
 }
