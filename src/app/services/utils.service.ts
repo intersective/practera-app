@@ -6,7 +6,21 @@ import * as _ from 'lodash';
 })
 
 export class UtilsService {
+  private lodash;
+
+  constructor() {
+  	if (_) {
+	  	this.lodash = _;
+  	} else {
+  		throw "Lodash not available";
+  	}
+  }
+
   isEmpty(value: any): boolean {
-    return _.isEmpty(value);
+    return this.lodash.isEmpty(value);
+  }
+
+  each(collections, callback) {
+    return this.lodash.each(collections, callback);
   }
 }
