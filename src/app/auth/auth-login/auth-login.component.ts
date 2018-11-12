@@ -23,9 +23,14 @@ export class AuthLoginComponent {
     this.authService.login({
       email: this.email,
       password: this.password,
-    }).subscribe(res => console.log, err => console.log);
-
-    this.router.navigate(['/switcher']);
+    }).subscribe(res => {
+      console.log(res);
+      this.router.navigate(['/switcher']);
+    }, err => {
+      console.log(err);
+      // should popup something instead
+      this.router.navigate(['/switcher']);
+    });
 	}
 
 }
