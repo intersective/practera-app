@@ -23,23 +23,24 @@
   background: transparent; 
   .project-card {
     width: 100%;
-    p {
-      color: var(--practera-milestone-name-font-color);
-      text-transform: capitalize;
-      margin-top: 5px;
-      margin-bottom: 10px;
-      font-weight: 400;
-      height: 39.67px;
-      font-size: 16px;
-    }
     .milestone-description {
       color: var(--practera-milestone-name-font-color);
       overflow: hidden;
       line-height: 20px;
       max-height: 100px;
+      font-size: 14px;
     }
   }
 } 
+.project-title {
+  color: var(--practera-milestone-name-font-color);
+  text-transform: capitalize;
+  margin-top: 5px;
+  margin-bottom: 10px;
+  font-weight: 400;
+  height: 39.67px;
+  font-size: 16px;
+}
 .activity-list {
   background: transparent;
   width: 100%;
@@ -69,3 +70,11 @@
     font-weight: 500;
   }
 }
+.touch-area {
+   &:active {
+    background-color: rgba(0,73,135,.21);
+    border-radius: 50%;
+
+  }
+}
+
