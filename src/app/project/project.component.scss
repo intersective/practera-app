@@ -15,6 +15,9 @@
     ion-icon {
       padding-top: 5px;
     }
+    .icon-lock {
+      font-size: 24px;
+    }
   }
   
 }
@@ -44,6 +47,11 @@
   background: transparent;
   width: 100%;
   margin-left: -29px;
+  .icon-lock {
+    margin-right: 18px;
+    font-size: 32px;
+
+  }
 }
 .activity-item {
   --border-width: 0px !important;
@@ -55,9 +63,7 @@
   margin-left: 10px;
 }
 
-.icon-lock {
-  font-size: 24px;
-}
+
 .card {
   margin-top: 10px;
   max-height: 120px;
@@ -67,5 +73,8 @@
   .activity-name {
     font-size: 20px;
     font-weight: 500;
+  }
+  &:last-child {
+    margin-bottom: 5px;
   }
 }
