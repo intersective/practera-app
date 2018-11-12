@@ -11,14 +11,17 @@ const routes: Routes = [
   	loadChildren: './switcher/switcher.module#SwitcherModule',
   },
   { 
-  	path: '', 
+  	path: 'tabs',  
   	loadChildren: './tabs/tabs.module#TabsModule',
   	canLoad: [AuthGuard],
   },
+  { path: '', redirectTo: 'tabs', pathMatch: 'full' },
   { path: '**', component: PageNotFoundComponent }
 ];
 @NgModule({
-  imports: [RouterModule.forRoot(routes)],
+  imports: [RouterModule.forRoot(routes, {
+    enableTracing: false, // <-- debugging purposes only
+  })],
   exports: [RouterModule]
 })
 export class AppRoutingModule {}
