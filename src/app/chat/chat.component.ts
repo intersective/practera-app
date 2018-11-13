@@ -1,5 +1,5 @@
 import { Component, OnInit } from "@angular/core";
-import { NavController } from "@ionic/angular";
+import { Router } from '@angular/router';
 import { Storage } from "@ionic/storage";
 
 import { ChatService } from "./chat.service";
@@ -16,7 +16,7 @@ export class ChatComponent implements OnInit {
   private chatColors:any[];
   private colorArray = [];
 
-  constructor(private chatService: ChatService, private navCtrl: NavController, private storage: Storage) {
+  constructor(private chatService: ChatService, private router: Router, private storage: Storage) {
   }
 
   ngOnInit() {
@@ -112,6 +112,6 @@ export class ChatComponent implements OnInit {
 
   navigateToChatRoom(chat) {
     this.storage.set('selectedChatObject', chat);
-    this.navCtrl.navigateForward('/chat/chat-room');
+    this.router.navigate(['/chat/chat-room']);
   }
 }
