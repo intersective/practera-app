@@ -1,30 +1,35 @@
 <ion-header>
   <ion-toolbar>
-      <ion-title>Registration</ion-title>
+    <ion-title>Registration</ion-title>
   </ion-toolbar>
 </ion-header>
 <ion-content color="light" text-center>
-  <div class="div-logo">
+  <div class="div-logo registration">
     <img src="/assets/logo.svg" width="60%">
   </div>
   <div class="div-after-logo">
-    <h2>Your Login Email Address</h2>
-    <h4>test@test.com</h4>
+    <ng-container *ngIf="!hide_password">
+        <h4>Your Login Email Address</h4>
+        <p>{{user.email}}</p>
+    </ng-container>
+    <ng-container *ngIf="hide_password">
+        <h4>Your Mobile Number</h4>
+        <p>{{user.contact}}</p>
+    </ng-container>
     <ion-list margin>
       <ion-item>
-        <ion-input name="email" [(ngModel)]="email" required type="text" placeholder="Email"></ion-input>
+        <ion-input name="passowrd" [(ngModel)]="password" required type="password" placeholder="password"></ion-input>
       </ion-item>
       <ion-item>
-        <ion-input name="password" [(ngModel)]="password" required type="password" placeholder="Password"></ion-input>
+        <ion-input name="password" [(ngModel)]="rePassword" required type="password" placeholder="Conform Password"></ion-input>
+      </ion-item>
+      <ion-item lines="none">
+        <ion-checkbox color="primary" slot="start" [(ngModel)]="isAgreed"></ion-checkbox>
+        <ion-label class="terms-and-conditions">I agree to the Terms & Conditions</ion-label>
       </ion-item>
     </ion-list>
-    <ion-button (click)="login()" shape="round" color="primary">LOGIN</ion-button>
-    <!-- <button class="btn-login" (click)="login()"><img src="/assets/login-button.svg" width="100%"></button> -->
-  </div>
-  <div class="text-split">
-    <a routerLink="/forgot_password">Problem signing in?</a>
-  </div>
-  <div>
-    <a>Powered by</a><img src="/assets/logo.svg" height="25" class="img-inline">
+    <p><a (click)="openLink()">Terms & Conditions</a></p>
+    <p>You need a password! You need to agree with terms and Conditions.</p>
+    <ion-button (click)="login()" shape="round" expand="block" color="primary">REGISTER</ion-button>
   </div>
 </ion-content>
