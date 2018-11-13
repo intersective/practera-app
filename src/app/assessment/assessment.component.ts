@@ -63,7 +63,8 @@ export class AssessmentComponent implements OnInit {
 
     this.assessmentService.getAssessment(this.id)
       .subscribe(assessment => {
-        this.assessment = assessment
+        this.assessment = assessment;
+        this.populateQuestionsForm();
       });
     this.assessmentService.getSubmission(this.id, this.action)
       .subscribe(result => {
@@ -91,11 +92,14 @@ export class AssessmentComponent implements OnInit {
       })
     });
     this.questionsForm = new FormGroup(questionsFormObject);
-    console.log('questionsForm', this.questionsForm);
   }
 
   back() {
     this.router.navigate(['pages', 'tabs', { outlets: { activity: ['activity', this.activityId] } }]);
+  }
+
+  submit() {
+    console.log(this.questionsForm.value);
   }
   
 }
