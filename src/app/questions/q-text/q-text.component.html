@@ -18,7 +18,7 @@
     </div>
 
     <ng-container *ngIf="doAssessment || doReview">
-      <ion-textarea class="background-white" formControlName="'q-' + question.id" rows="4"></ion-textarea>
+      <ion-textarea class="background-white" #input rows="4"></ion-textarea>
     </ng-container>
 
   </ion-card-content>
