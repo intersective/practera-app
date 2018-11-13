@@ -25,6 +25,8 @@
             [doReview]="doReview"
             [submission]="(submission[question.id]) ? submission[question.id] : {}"
             [review]="(review[question.id]) ? review[question.id] : {}"
+            [formControlName]="'q-' + question.id"
+            [control]="questionsForm.controls['q-' + question.id]"
           ></app-q-text>
           <!-- <app-q-oneof *ngSwitchCase="'oneof'" [question]="question"></app-q-oneof>
           <app-q-multiple *ngSwitchCase="'multiple'" [question]="question"></app-q-multiple>
