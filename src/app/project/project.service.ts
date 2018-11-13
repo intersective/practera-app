@@ -22,7 +22,8 @@ export class MilestoneService {
       {
         name: 'Activity two',
         is_locked: true,
-        progress: 0.74
+        progress: 0.74,
+        lead_image: '/src/assets/home-page-img/header-bg.jpg'
         
       }
   ],
