@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
+import { AuthService } from '../auth.service';
 
 @Component({
   selector: 'app-auth-login',
@@ -11,14 +12,25 @@ export class AuthLoginComponent {
   password = '';
 
   constructor(
-    private router: Router
+    private router: Router,
+    private authService: AuthService,
   ) {}
 
 	login() {
     // -- todo
     // call API to do authentication
 		console.log("Email: ", this.email, "\nPassword: ", this.password);
-    this.router.navigate(['/switcher']);
+    this.authService.login({
+      email: this.email,
+      password: this.password,
+    }).subscribe(res => {
+      console.log(res);
+      this.router.navigate(['/switcher']);
+    }, err => {
+      console.log(err);
+      // should popup something instead
+      this.router.navigate(['/switcher']);
+    });
 	}
 
 }
