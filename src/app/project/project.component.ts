@@ -5,6 +5,7 @@ import { switchMap } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import { MilestoneService } from './project.service';
 
+
 @Component({
   selector: 'app-project',
   templateUrl: 'project.component.html',
@@ -14,7 +15,7 @@ export class ProjectComponent implements OnInit{
 
   constructor(
     location: Location,
-    // private route: ActivatedRoute,
+    private router: Router,
     private milestoneService: MilestoneService) {};
 
   location: Location;
@@ -28,5 +29,7 @@ export class ProjectComponent implements OnInit{
     this.milestoneService.getMilestons()
       .subscribe(levels => this.levels = levels);
   }
-
+  // activityRedirection(id) {
+  //   this.router.navigate(['pages', 'tabs', { outlets: { activity: ['activity', id] } }]);
+  // }
 }
