@@ -18,7 +18,10 @@
     </div>
 
     <ng-container *ngIf="doAssessment || doReview">
-      <ion-textarea class="background-white" #input rows="4"></ion-textarea>
+      <ion-textarea class="background-white" #answer rows="4" (blur)="onChange(answer.value)"></ion-textarea>
+      <ion-text *ngFor="let error of errors" color="danger">
+        <p>{{error}}</p>
+      </ion-text>
     </ng-container>
 
   </ion-card-content>
