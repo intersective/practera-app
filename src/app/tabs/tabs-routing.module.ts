@@ -12,14 +12,18 @@ import { HelpComponent } from '../help/help.component';
 
 const routes: Routes = [
   {
-    path: '',
+    path: 'app',
     component: TabsComponent,
-    canActivate: [AuthGuard],
+    canActivate: [AuthGuard],    
     children: [
       {
         path: '',
+        redirectTo: '/app/(home:home)',
+        pathMatch: 'full'
+      },
+      {
+        path: 'home',
         outlet: 'home',
-        canActivateChild: [AuthGuard],
         component: HomeComponent
       },
       {
@@ -29,15 +33,16 @@ const routes: Routes = [
       },
       {
         path: 'activity/:id',
-        outlet: 'activity',
+        outlet: 'project',
         canActivateChild: [AuthGuard],
         component: ActivityComponent
       },
       {
         path: 'chat',
         outlet: 'chat',
-        canActivateChild: [AuthGuard],
-        component: ChatComponent
+        // canActivateChild: [AuthGuard],
+        // component: ChatComponent
+        loadChildren: '../chat/chat.module#ChatModule',
       },
       {
         path: 'help',
@@ -49,7 +54,7 @@ const routes: Routes = [
 ];
 
 @NgModule({
-  imports: [RouterModule.forChild(routes)],
-  exports: [RouterModule]
+  imports: [ RouterModule.forChild(routes) ],
+  exports: [ RouterModule ]
 })
 export class TabsRoutingModule {}

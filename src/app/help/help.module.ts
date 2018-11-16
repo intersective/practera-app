@@ -13,6 +13,7 @@ import { HelpComponent } from './help.component';
     FormsModule,
     RouterModule.forChild([{ path: '', component: HelpComponent }])
   ],
-  declarations: [HelpComponent]
+  declarations: [HelpComponent],
+  exports: [ RouterModule ]
 })
 export class HelpModule {}

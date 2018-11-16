@@ -1,0 +1,70 @@
+<ion-header>
+    <ion-toolbar>
+        <ion-title>Chat</ion-title>
+    </ion-toolbar>
+</ion-header>
+
+<ion-content>
+    <ion-list>
+        <ion-item [routerLink]="chatroom" class="unread">
+            <ion-avatar class="color-1" slot="start">
+                <p class="chat-avatar">BC</p>
+            </ion-avatar>
+            <ion-label>
+                <div class="chat-name-container">
+                    <h2>Beenish Chat</h2>
+                    <span>mentor - team 12</span>
+                </div>
+                <p>Listen, I've had a pretty messed up day...</p>
+            </ion-label>
+            <div slot="end" class="time-container">
+                <span>yesterday</span>
+                <ion-badge>22</ion-badge>
+            </div>
+        </ion-item>
+        <ion-item [routerLink]="chatroom">
+            <ion-avatar class="color-2" slot="start">
+                <p class="chat-avatar">AC</p>
+            </ion-avatar>
+            <ion-label>
+                <div class="chat-name-container">
+                    <h2>Anu Chat</h2>
+                    <span>mentor - team 2</span>
+                </div>
+                <p>Listen, I've had a pretty messed up day...</p>
+            </ion-label>
+            <div slot="end" class="time-container">
+                <span>yesterday</span>
+            </div>
+        </ion-item>
+        <ion-item [routerLink]="chatroom">
+            <ion-avatar class="color-3" slot="start">
+                <p class="chat-avatar">CC</p>
+            </ion-avatar>
+            <ion-label>
+                <div class="chat-name-container">
+                    <h2>Chaw Chat</h2>
+                    <span>team 2</span>
+                </div>
+                <p>Listen, I've had a pretty messed up day...</p>
+            </ion-label>
+            <div slot="end" class="time-container">
+                <span>yesterday</span>
+            </div>
+        </ion-item>
+        <ion-item [routerLink]="chatroom">
+            <ion-avatar class="color-6" slot="start">
+                <ion-icon name="people"></ion-icon>
+            </ion-avatar>
+            <ion-label>
+                <div class="chat-name-container">
+                    <h2>Team 12</h2>
+                </div>
+                <p>Listen, I've had a pretty messed up day...</p>
+            </ion-label>
+            <div slot="end" class="time-container">
+                <span>yesterday</span>
+            </div>
+        </ion-item>
+    </ion-list>
+</ion-content>
