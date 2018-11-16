@@ -25,24 +25,28 @@ export class ActivityService {
       },
       {
         id: 1,
+        contextId: 1,
         type: 'Assessment',
         name: 'Assessment name',
         status: ''
       },
       {
         id: 2,
+        contextId: 2,
         type: 'Assessment',
         name: 'Assessment name',
         status: 'done'
       },
       {
         id: 3,
+        contextId: 3,
         type: 'Assessment',
         name: 'Assessment name',
         status: 'pending review'
       },
       {
         id: 4,
+        contextId: 4,
         type: 'Assessment',
         name: 'Assessment name',
         status: 'published',
@@ -50,6 +54,7 @@ export class ActivityService {
       },
       {
         id: 5,
+        contextId: 5,
         type: 'Assessment',
         name: 'Assessment name',
         status: 'published',

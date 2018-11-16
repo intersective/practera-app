@@ -17,7 +17,7 @@ export class AssessmentService {
             type: 'text',
             description: 'this is a text question description',
             isRequired: true,
-            allowComment: true,
+            allowComment: false,
             canDo: true
           }
         ]
@@ -31,7 +31,7 @@ export class AssessmentService {
             type: 'text',
             description: 'this is a text question description',
             isRequired: false,
-            allowComment: false,
+            allowComment: true,
             canDo: false
           }
         ]
@@ -63,6 +63,9 @@ export class AssessmentService {
   };
 
   reviews = {
+    3: {
+
+    },
     4: {
       1: {
         answer: 'review answer for question 1',
@@ -83,11 +86,43 @@ export class AssessmentService {
     return of(this.assessment);
   }
 
-  // the id passed in is assessment id
-  getSubmission(id, action): Observable<any> {
+  getSubmission(assessmentId, contextId, action): Observable<any> {
     return of({
-      submission: this.submissions[id] ? this.submissions[id] : {},
-      review: this.reviews[id] ? this.reviews[id] : {}
+      submission: this.submissions[assessmentId] ? {
+        id: 1,
+        answers: this.submissions[assessmentId] 
+      } : {},
+      review: this.reviews[assessmentId] ? {
+        id: 1,
+        answers: this.reviews[assessmentId]
+      } : {}
+    });
+  }
+
+  saveAnswers(assessment, answers, action) {
+    let postData;
+    switch (action) {
+      case 'assessment':
+        postData = {
+          Assessment: assessment,
+          AssessmentSubmissionAnswer: answers
+        }
+        console.log('Submit submission with data:', postData);
+        break;
+
+      case 'review':
+        postData = {
+          Assessment: assessment,
+          AssessmentReviewAnswer: answers
+        }
+        console.log('Submit feedback with data:', postData);
+        break;
+    }
+    return of({
+      success: true,
+      status: "success"
     });
   }
 }
+
+

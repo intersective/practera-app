@@ -40,7 +40,14 @@ export class ActivityComponent implements OnInit {
   goto(type, id) {
     switch (type) {
       case 'Assessment':
-        this.router.navigate(['/assessment/assessment', this.id , id]);
+        // get the context id of this assessment
+        let contextId = 0;
+        this.utils.each(this.activity.tasks, task => {
+          if (task.type === 'Assessment' && task.id == this.id) {
+            contextId = task.contextId;
+          }
+        });
+        this.router.navigate(['/assessment/assessment', this.id , contextId, id]);
         break;
       case 'Topic':
 
