@@ -17,11 +17,16 @@
       <p>{{ review.comment ? review.comment : '' }}</p>
     </div>
 
-    <ng-container *ngIf="doAssessment || doReview">
-      <ion-textarea class="background-white" #answer rows="4" (blur)="onChange(answer.value)"></ion-textarea>
+    <ng-container *ngIf="doAssessment">
+      <ion-textarea class="background-white" margin-vertical #answer rows="4" (blur)="onChange(answer.value)"></ion-textarea>
       <ion-text *ngFor="let error of errors" color="danger">
         <p>{{error}}</p>
       </ion-text>
+    </ng-container>
+
+    <ng-container *ngIf="doReview">
+      <ion-textarea class="background-white" margin-vertical #answer rows="4" (blur)="onChange(answer.value, 'answer')" placeholder="Please put your answer here"></ion-textarea>
+      <ion-textarea class="background-white" margin-vertical #comment rows="4" (blur)="onChange(comment.value, 'comment')" placeholder="Please put your feedback here"></ion-textarea>
     </ng-container>
 
   </ion-card-content>

@@ -32,6 +32,8 @@ export class AssessmentComponent implements OnInit {
             type: '',
             description: '',
             isRequired: false,
+            allowComment: true,
+            canDo: true,
             choices: [
               {
                 id: '',
@@ -110,7 +112,8 @@ export class AssessmentComponent implements OnInit {
   }
 
   submit() {
-    console.log(this.questionsForm.value);
+    let answers = this.questionsForm.value;
+    console.log(answers);
   }
   
 }
