@@ -26,6 +26,6 @@ import { HelpModule } from '../help/help.module';
     ChatModule,
     HelpModule
   ],
-  declarations: [TabsComponent]
+  declarations: [ TabsComponent ]
 })
 export class TabsModule {}
