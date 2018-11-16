@@ -23,4 +23,8 @@ export class UtilsService {
   each(collections, callback) {
     return this.lodash.each(collections, callback);
   }
+
+  unset(object, path) {
+    return this.lodash.unset(object, path);
+  }
 }

@@ -15,6 +15,8 @@ export class AssessmentComponent implements OnInit {
   id = 0;
   // activity id
   activityId = 0;
+  // context id
+  contextId = 0;
   // action = 'assessment' is for user to do assessment
   // action = 'reivew' is for user to do review for this assessment
   action = '';
@@ -45,8 +47,14 @@ export class AssessmentComponent implements OnInit {
       }
     ]
   };
-  submission = {};
-  review = {};
+  submission = {
+    id: 0,
+    answers: {}
+  };
+  review = {
+    id: 0,
+    answers: {}
+  };
   doAssessment = false;
   doReview = false;
   questionsForm = new FormGroup({});
@@ -62,6 +70,7 @@ export class AssessmentComponent implements OnInit {
     this.action = this.route.snapshot.data.action;
     this.id = parseInt(this.route.snapshot.paramMap.get('id'));
     this.activityId = parseInt(this.route.snapshot.paramMap.get('activityId'));
+    this.contextId = parseInt(this.route.snapshot.paramMap.get('contextId'));
 
     // get assessment structure and populate the question form
     this.assessmentService.getAssessment(this.id)
@@ -71,7 +80,7 @@ export class AssessmentComponent implements OnInit {
       });
 
     // get the submission answers &/| review answers
-    this.assessmentService.getSubmission(this.id, this.action)
+    this.assessmentService.getSubmission(this.id, this.contextId, this.action)
       .subscribe(result => {
         this.submission = result.submission;
         // this page is for doing assessment if submission is empty
@@ -81,8 +90,8 @@ export class AssessmentComponent implements OnInit {
           return ;
         }
         this.review = result.review;
-        // this page is for doing review if review is empty and action is review
-        if (this.utils.isEmpty(this.review) && this.action == 'review') {
+        // this page is for doing review if review answer is empty and action is review
+        if (this.utils.isEmpty(this.review.answers) && this.action == 'review') {
           this.doReview = true;
         }
       });
@@ -111,9 +120,75 @@ export class AssessmentComponent implements OnInit {
     this.router.navigate(['pages', 'tabs', { outlets: { activity: ['activity', this.activityId] } }]);
   }
 
-  submit() {
-    let answers = this.questionsForm.value;
-    console.log(answers);
+  getRequiredQuestions() {
+    let requiredQuestions = {};
+    this.assessment.groups.forEach(group => {
+      group.questions.forEach(question => {
+        if (question.isRequired) {
+          requiredQuestions[question.id] = true;
+        }
+      });
+    });
+    return requiredQuestions;
   }
+
+  submit() {
+    let answers = [];
+    let assessment = {};
+    let requiredQuestions = this.getRequiredQuestions();
+    let questionId = 0;
+
+    // save submission answers
+    if (this.doAssessment) {
+      assessment = {
+        id: this.id,
+        context_id: this.contextId
+      }
+      this.utils.each(this.questionsForm.value, (value, key) => {
+        questionId = parseInt(key.replace('q-', ''));
+        answers.push({
+          assessment_question_id: questionId,
+          answer: value
+        });
+        // unset the required questions object
+        if (requiredQuestions[questionId] && value) {
+          this.utils.unset(requiredQuestions, questionId);
+        }
+      });
+      // check if all required questions have answer
+      if (!this.utils.isEmpty(requiredQuestions)) {
+        console.log("Required question answer missing!");
+        return ;
+      }
+    }
+
+    // save feedback answers
+    if (this.doReview) {
+      assessment = {
+        id: this.id,
+        review_id: this.review.id,
+        submission_id: this.submission.id
+      }
+      this.utils.each(this.questionsForm.value, (value, key) => {
+        if (value) {
+          let answer = JSON.parse(value);
+          answer.assessment_question_id = parseInt(key.replace('q-', ''));
+          answers.push(answer);
+        }
+      });
+    }
+
+    // save the submission/feedback
+    this.assessmentService.saveAnswers(assessment, answers, this.action)
+      .subscribe(result => {
+        if (result.success) {
+          console.log('submitted!');
+        } else {
+          console.log('submission Failed!')
+        }
+      });
+  }
+
+
   
 }

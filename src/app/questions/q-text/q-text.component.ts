@@ -36,19 +36,7 @@ export class QTextComponent implements ControlValueAccessor {
 
   constructor() {}
 
-  ngAfterViewInit(){
-    // RESET the custom input form control UI when the form control is RESET
-    this.control.valueChanges.subscribe(() => {
-      // check condition if the form control is RESET
-      if (this.control.value == "" || this.control.value == null || this.control.value == undefined) {
-        this.innerValue = "";
-        this.answerRef.value = "";
-        // set comment field value to null for reviewer
-        if (this.commentRef) {
-          this.commentRef.value = "";
-        }
-      }
-    });
+  ngAfterViewInit() {
   }
 
   //propagate changes into the form control
