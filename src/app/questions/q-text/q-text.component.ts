@@ -24,10 +24,13 @@ export class QTextComponent implements ControlValueAccessor {
   @Input() doReview: Boolean;
   // FormControl that is passed in from parent component
   @Input() control: FormControl;
+  // answer field for submitter & reviewer
   @ViewChild('answer') answerRef: ElementRef;
+  // comment field for reviewer
+  @ViewChild('comment') commentRef: ElementRef;
 
   // the value of answer
-  innerValue;
+  innerValue = '';
   // validation errors array
   errors: Array<any> = [];
 
@@ -40,6 +43,10 @@ export class QTextComponent implements ControlValueAccessor {
       if (this.control.value == "" || this.control.value == null || this.control.value == undefined) {
         this.innerValue = "";
         this.answerRef.value = "";
+        // set comment field value to null for reviewer
+        if (this.commentRef) {
+          this.commentRef.value = "";
+        }
       }
     });
   }
@@ -48,9 +55,19 @@ export class QTextComponent implements ControlValueAccessor {
   propagateChange = (_: any) => {}
 
   // event fired when input/textarea value is changed. propagate the change up to the form control using the custom value accessor interface
-  onChange(value:any){
+  onChange(value, type){
     //set changed value
-    this.innerValue = value;
+    if (type) {
+      let innerValueObj = {};
+      if (this.innerValue) {
+        innerValueObj = JSON.parse(this.innerValue);
+      } 
+      innerValueObj[type] = value;
+      this.innerValue = JSON.stringify(innerValueObj);
+    } else {
+      this.innerValue = value;
+    }
+
     // propagate value into form control using control value accessor interface
     this.propagateChange(this.innerValue);
 
@@ -70,7 +87,7 @@ export class QTextComponent implements ControlValueAccessor {
 
   //From ControlValueAccessor interface
   writeValue(value: any) {
-      this.innerValue = value;
+    this.innerValue = value;
   }
 
   //From ControlValueAccessor interface
