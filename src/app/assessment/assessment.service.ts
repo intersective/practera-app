@@ -16,7 +16,9 @@ export class AssessmentService {
             name: 'question1',
             type: 'text',
             description: 'this is a text question description',
-            isRequired: true
+            isRequired: true,
+            allowComment: true,
+            canDo: true
           }
         ]
       },
@@ -28,7 +30,9 @@ export class AssessmentService {
             name: 'question2',
             type: 'text',
             description: 'this is a text question description',
-            isRequired: false
+            isRequired: false,
+            allowComment: false,
+            canDo: false
           }
         ]
       }
