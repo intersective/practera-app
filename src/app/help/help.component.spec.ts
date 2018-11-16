@@ -1,7 +1,7 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { HelpComponent } from './setting.component';
+import { HelpComponent } from './help.component';
 
 describe('HelpComponent', () => {
   let component: HelpComponent;
