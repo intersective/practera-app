@@ -12,9 +12,10 @@ import { AppComponent } from './app.component';
 
 import { HttpClientInMemoryWebApiModule } from 'angular-in-memory-web-api';
 import { UtilsService } from './services/utils.service';
+import { TopicComponent } from './topic/topic/topic.component';
 
 @NgModule({
-  declarations: [AppComponent],
+  declarations: [AppComponent, TopicComponent],
   entryComponents: [],
   imports: [
   	BrowserModule, 
