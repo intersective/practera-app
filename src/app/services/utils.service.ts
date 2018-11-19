@@ -32,6 +32,14 @@ export class UtilsService {
     return this.lodash.unset(object, path);
   }
 
+  find(collections, callback) {
+    return this.lodash.find(collections, callback);
+  }
+
+  remove(collections, callback) {
+    return this.lodash.remove(collections, callback);
+  }
+
   // show pop up message 
   // this is using pop-up.component.ts as the view
   // put redirect = false if don't need to redirect

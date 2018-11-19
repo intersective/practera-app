@@ -44,7 +44,7 @@ export class QTextComponent implements ControlValueAccessor {
 
   // event fired when input/textarea value is changed. propagate the change up to the form control using the custom value accessor interface
   onChange(value, type){
-    //set changed value
+    //set changed value (answer or comment)
     if (type) {
       let innerValueObj = {};
       if (this.innerValue) {
