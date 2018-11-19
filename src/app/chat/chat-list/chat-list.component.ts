@@ -1,13 +1,15 @@
-import { Component, OnInit } from '@angular/core';
-import { ChatService } from './chat.service';
+import { Component, OnInit } from "@angular/core";
 import { Router } from '@angular/router';
+import { Storage } from "@ionic/storage";
+
+import { ChatService } from "../chat.service";
 
 @Component({
-  selector: 'app-chat',
-  templateUrl: 'chat-list.component.html',
-  styleUrls: ['chat-list.component.scss']
+  selector: "app-chat",
+  templateUrl: "chat.component.html",
+  styleUrls: ["chat.component.scss"]
 })
-export class ChatListComponent implements OnInit {
+export class ChatComponent implements OnInit {
   // @TODO need to create method to convert chat time to local time.
   chatList: any[];
   haveMoreTeam:Boolean;
