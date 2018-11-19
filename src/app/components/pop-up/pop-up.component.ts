@@ -9,7 +9,7 @@ import { ModalController } from '@ionic/angular';
 })
 export class PopUpComponent {
   type = '';
-  redirect = '/pages/tabs';
+  redirect = '/';
   data = {};
 
   constructor(
