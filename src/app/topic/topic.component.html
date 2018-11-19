@@ -4,10 +4,31 @@
     <ion-title text-center>Topic</ion-title>
   </ion-toolbar>
 </ion-header>
-<ion-content>
+<ion-content color="light">
   <h3 text-center>{{topic.title}}</h3>
+  <ion-card >
 
-  <div *ngIf="topic.videolink && topic.videolink !=='magiclink'" class="text-center">
-    <iframe [src]="topic.videolink" width="95%" height="auto" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
-</div>
+    <div *ngIf="topic.videolink && topic.videolink !=='magiclink'" class="text-center">
+      <div text-center padding [innerHtml]="iframeHtml"></div>
+    </div>
+    <p *ngIf="topic.content" [innerHtml]="topic.content" padding></p>
+
+    
+    <ion-list *ngIf="topic.files.length>0" padding color="light">
+		  <h3>Supporting Downloads</h3>
+			<ion-item *ngFor="let file of topic.files" >
+				<div>
+					<ion-icon name="document" padding-right></ion-icon>
+					<label>{{file.name}}</label>
+				</div>
+				<div>
+					<ion-icon *ngIf="file.slug.length > 0" name="search" (click)="previewFile(file)"></ion-icon>
+					<a *ngIf="file.slug.length > 0" href="{{file.slug }}" download class="text-right">
+						<ion-icon name="download" float-right></ion-icon>
+					</a>
+				</div>
+			</ion-item>
+    </ion-list>
+</ion-card> 
+
 </ion-content>
