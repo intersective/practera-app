@@ -1,22 +1,22 @@
-import { Component, OnInit } from "@angular/core";
-import { Router } from '@angular/router';
-import { Storage } from "@ionic/storage";
+import { Component, OnInit } from '@angular/core';
+import { Router, NavigationExtras } from '@angular/router';
+import { BrowserStorageService } from '@services/storage.service';
 
-import { ChatService } from "../chat.service";
+import { ChatService } from '../chat.service';
 
 @Component({
-  selector: "app-chat",
-  templateUrl: "chat.component.html",
-  styleUrls: ["chat.component.scss"]
+  selector: 'app-chat',
+  templateUrl: 'chat-list.component.html',
+  styleUrls: ['chat-list.component.scss']
 })
-export class ChatComponent implements OnInit {
+export class ChatListComponent implements OnInit {
   // @TODO need to create method to convert chat time to local time.
   chatList: any[];
   haveMoreTeam:Boolean;
   private chatColors:any[];
   private colorArray = [];
 
-  constructor(private chatService: ChatService, private router: Router, private storage: Storage) {
+  constructor(private chatService: ChatService, private router: Router, private storage: BrowserStorageService) {
   }
 
   ngOnInit() {
@@ -60,7 +60,7 @@ export class ChatComponent implements OnInit {
     for (index = 0; index < response.length; index++) {
       if ((response[index])) {
         switch (status) {
-          case "nocolor":
+          case 'nocolor':
             response[index].chat_color = this.chatService.getRandomColor();
             this.colorArray.push({
               team_member_id: response[index].team_member_id,
@@ -68,7 +68,7 @@ export class ChatComponent implements OnInit {
               chat_color: response[index].chat_color
             });
             break;
-          case "havecolor":
+          case 'havecolor':
             let colorObject = chatColors.find(function(chat) {
               return chat.team_member_id === response[index].team_member_id;
             });
@@ -112,6 +112,11 @@ export class ChatComponent implements OnInit {
 
   navigateToChatRoom(chat) {
     this.storage.set('selectedChatObject', chat);
-    this.router.navigate(['/chat/chat-room']);
+
+    const extra: NavigationExtras = {
+      queryParams: { chat },
+    };
+    console.log(chat)
+    this.router.navigateByUrl('/app/(chat:chat-room)');
   }
 }
