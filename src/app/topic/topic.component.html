@@ -4,6 +4,10 @@
     <ion-title text-center>Topic</ion-title>
   </ion-toolbar>
 </ion-header>
-<ion-content padding color="light" text-center>
-  <h1>{{ activity.name }}</h1>
-</ion-content>  
+<ion-content>
+  <h3 text-center>{{topic.title}}</h3>
+
+  <div *ngIf="topic.videolink && topic.videolink !=='magiclink'" class="text-center">
+    <iframe [src]="topic.videolink" width="95%" height="auto" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
+</div>
+</ion-content>
