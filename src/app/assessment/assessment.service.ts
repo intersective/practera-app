@@ -17,8 +17,8 @@ export class AssessmentService {
             type: 'text',
             description: 'this is a text question description',
             isRequired: true,
-            allowComment: false,
-            canDo: true
+            canComment: false,
+            canAnswer: true
           }
         ]
       },
@@ -31,8 +31,8 @@ export class AssessmentService {
             type: 'text',
             description: 'this is a text question description',
             isRequired: false,
-            allowComment: true,
-            canDo: false
+            canComment: true,
+            canAnswer: false
           }
         ]
       }
@@ -154,7 +154,9 @@ export class AssessmentService {
     return of(this.feedbackReviewed[reviewId] ? this.feedbackReviewed[reviewId] : false);
   }
 
-
+  saveFeedbackReviewed(reviewId) {
+    console.log('feedback reviewed');
+  }
 
 
 }
