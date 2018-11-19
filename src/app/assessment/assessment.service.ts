@@ -19,6 +19,29 @@ export class AssessmentService {
             isRequired: true,
             canComment: false,
             canAnswer: true
+          },
+          {
+            id: 3,
+            name: 'question3',
+            type: 'oneof',
+            description: 'this is a oneof question description',
+            isRequired: true,
+            canComment: true,
+            canAnswer: true,
+            choices: [
+              {
+                id: 1,
+                name: 'Choose me, I am choice 1'
+              },
+              {
+                id: 2,
+                name: 'Choose me, I am choice 2'
+              },
+              {
+                id: 3,
+                name: 'Choose me, I am choice 3'
+              }
+            ]
           }
         ]
       },
@@ -33,6 +56,29 @@ export class AssessmentService {
             isRequired: false,
             canComment: true,
             canAnswer: false
+          },
+          {
+            id: 4,
+            name: 'question4',
+            type: 'multiple',
+            description: 'this is a multiple question description',
+            isRequired: true,
+            canComment: true,
+            canAnswer: true,
+            choices: [
+              {
+                id: 1,
+                name: 'Choose me, I am choice 1'
+              },
+              {
+                id: 2,
+                name: 'Choose me, I am choice 2'
+              },
+              {
+                id: 3,
+                name: 'Choose me, I am choice 3'
+              }
+            ]
           }
         ]
       }
@@ -47,24 +93,60 @@ export class AssessmentService {
       status: 'done',
       1: {
         answer: 'answer for question 1'
+      },
+      3: {
+        answer: 2
+      },
+      4: {
+        answer: [
+          1,
+          2
+        ]
       }
     },
     3: {
       status: 'pending review',
       1: {
         answer: 'answer for question 1'
+      },
+      3: {
+        answer: 2
+      },
+      4: {
+        answer: [
+          1,
+          2
+        ]
       }
     },
     4: {
       status: 'published',
       1: {
         answer: 'answer for question 1'
+      },
+      3: {
+        answer: 2
+      },
+      4: {
+        answer: [
+          1,
+          2
+        ]
       }
     },
     5: {
       status: 'published',
       1: {
         answer: 'answer for question 1'
+      },
+      3: {
+        answer: 2
+      },
+      4: {
+        answer: [
+          1,
+          2
+        ]
       }
     }
   };
@@ -77,14 +159,25 @@ export class AssessmentService {
   // }
   reviews = {
     3: {
-
+      id: 1
     },
     4: {
       id: 1,
       answers: {
         1: {
-          answer: 'review answer for question 1',
-          comment: 'review comment for question 1'
+          answer: 'reviewer answer for question 1',
+          comment: 'reviewer comment for question 1'
+        },
+        3: {
+          answer: 1,
+          comment: 'reviewer comment. You are wrong'
+        },
+        2: {
+          comment: 'it will be better if you answer this question'
+        },
+        4: {
+          answer: [2,3],
+          comment: 'reviewer comment. Not 100% correct'
         }
       }
     },
@@ -92,8 +185,19 @@ export class AssessmentService {
       id: 2,
       answers: {
         1: {
-          answer: 'review answer for question 1',
-          comment: 'review comment for question 1'
+          answer: 'reviewer answer for question 1',
+          comment: 'reviewer comment for question 1'
+        },
+        3: {
+          answer: 1,
+          comment: 'reviewer comment. You are wrong'
+        },
+        2: {
+          comment: 'it will be better if you answer this question'
+        },
+        4: {
+          answer: [2,3],
+          comment: 'reviewer comment. Not 100% correct'
         }
       }
     }
