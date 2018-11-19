@@ -11,8 +11,6 @@ import { ChatComponent } from './chat/chat.component';
 import { HelpComponent } from './help/help.component';
 
 const routes: Routes = [
-  // { path: '', reidr}
-  // { path: '', loadChildren: './auth/auth.module#AuthModule' },
   { 
   	path: 'switcher', 
   	loadChildren: './switcher/switcher.module#SwitcherModule',
