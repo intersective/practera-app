@@ -50,7 +50,7 @@ export class ActivityService {
         type: 'Assessment',
         name: 'Assessment name',
         status: 'published',
-        reviewFeedback: false
+        feedbackReviewed: false
       },
       {
         id: 5,
@@ -58,7 +58,7 @@ export class ActivityService {
         type: 'Assessment',
         name: 'Assessment name',
         status: 'published',
-        reviewFeedback: true
+        feedbackReviewed: true
       }
     ]
   };
