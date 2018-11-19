@@ -19,8 +19,8 @@
         <ng-container [ngSwitch]="question.type">
 
           <app-q-text 
-            *ngSwitchCase="'text'" 
-            [question]="question" 
+            *ngSwitchCase="'text'"
+            [question]="question"
             [doAssessment]="doAssessment"
             [doReview]="doReview"
             [submission]="(submission.answers && submission.answers[question.id]) ? submission.answers[question.id] : {}"
@@ -39,6 +39,11 @@
     </ng-container>
 
     <ion-button *ngIf="doAssessment || doReview" (click)="submit()" shape="round" color="primary" expand="full">Submit</ion-button>
+
+    <div *ngIf="submission.status == 'published'" class="text-right">
+      <span class="vertical-middle">Mark feedback as read</span>
+      <ion-toggle [checked]="feedbackReviewed" [disabled]="feedbackReviewed" (ionChange)="reviewFeedback()" margin-start class="vertical-middle"></ion-toggle>
+    </div>
 
   </form>
 

@@ -30,7 +30,6 @@ export class ActivityComponent implements OnInit {
     this.id = parseInt(this.route.snapshot.paramMap.get('id'));
     this.activityService.getActivity(this.id)
       .subscribe(activity => this.activity = activity);
-     console.log('Is Empty?::', this.utils.isEmpty({}));
   }
 
   back() {
