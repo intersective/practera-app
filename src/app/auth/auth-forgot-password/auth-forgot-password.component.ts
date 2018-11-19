@@ -1,7 +1,6 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
-import { ModalController } from '@ionic/angular';
-import { PopUpComponent } from '../../components/pop-up/pop-up.component';
+import { UtilsService } from '@services/utils.service';
 
 @Component({
   selector: 'app-auth-forgot-password',
@@ -13,23 +12,17 @@ export class AuthForgotPasswordComponent {
 
   constructor(
     private router: Router,
-    public modalController: ModalController
+    private utils: UtilsService
   ) {}
 
 	async send() {
     // -- todo
     // call API to do forgot password logic
-    const modal = await this.modalController.create({
-      component: PopUpComponent,
-      componentProps: { 
-        type: 'forgotPasswordConfirmation',
-        data: {
-          email: this.email
-        },
-        redirect: "/login"
-      }
-    });
-    return await modal.present();
+    
+    // show pop up message for confirmation
+    return this.utils.popUp('forgotPasswordConfirmation', {
+      email: this.email
+    }, ['login']);
 	}
 
 }

@@ -39,46 +39,71 @@ export class AssessmentService {
     ]
   };
 
+  // assessment_id: {
+  //  question_id: {}
+  // }
   submissions = {
     2: {
+      status: 'done',
       1: {
         answer: 'answer for question 1'
       }
     },
     3: {
+      status: 'pending review',
       1: {
         answer: 'answer for question 1'
       }
     },
     4: {
+      status: 'published',
       1: {
         answer: 'answer for question 1'
       }
     },
     5: {
+      status: 'published',
       1: {
         answer: 'answer for question 1'
       }
     }
   };
 
+  // assessment_id: {
+  //  id:
+  //  answers: {
+  //    question_id: {}
+  //  }
+  // }
   reviews = {
     3: {
 
     },
     4: {
-      1: {
-        answer: 'review answer for question 1',
-        comment: 'review comment for question 1'
+      id: 1,
+      answers: {
+        1: {
+          answer: 'review answer for question 1',
+          comment: 'review comment for question 1'
+        }
       }
     },
     5: {
-      1: {
-        answer: 'review answer for question 1',
-        comment: 'review comment for question 1'
+      id: 2,
+      answers: {
+        1: {
+          answer: 'review answer for question 1',
+          comment: 'review comment for question 1'
+        }
       }
     }
   };
+
+  // review id: 
+  feedbackReviewed = {
+    1: false,
+    2: true
+  }
 
   constructor() {};
 
@@ -90,11 +115,12 @@ export class AssessmentService {
     return of({
       submission: this.submissions[assessmentId] ? {
         id: 1,
+        status: this.submissions[assessmentId].status,
         answers: this.submissions[assessmentId] 
       } : {},
       review: this.reviews[assessmentId] ? {
-        id: 1,
-        answers: this.reviews[assessmentId]
+        id: this.reviews[assessmentId].id,
+        answers: this.reviews[assessmentId].answers
       } : {}
     });
   }
@@ -123,6 +149,14 @@ export class AssessmentService {
       status: "success"
     });
   }
+
+  getFeedbackReviewed(reviewId) {
+    return of(this.feedbackReviewed[reviewId] ? this.feedbackReviewed[reviewId] : false);
+  }
+
+
+
+
 }
 
 

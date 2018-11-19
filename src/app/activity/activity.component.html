@@ -34,11 +34,11 @@
             </ion-text>
           </div>
 
-          <ng-container *ngIf="!task.status || (task.status == 'published' && !task.reviewFeedback)">
+          <ng-container *ngIf="!task.status || (task.status == 'published' && !task.feedbackReviewed)">
             <ion-icon name="arrow-forward" slot="end" color="primary" class="icon-forward"></ion-icon>
           </ng-container>
 
-          <ng-container *ngIf="task.status == 'done' || (task.status == 'published' && task.reviewFeedback)">
+          <ng-container *ngIf="task.status == 'done' || (task.status == 'published' && task.feedbackReviewed)">
             <ion-icon name="checkmark" slot="end" color="primary" class="icon-check"></ion-icon>
           </ng-container>
 

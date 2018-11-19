@@ -49,6 +49,7 @@ export class AssessmentComponent implements OnInit {
   };
   submission = {
     id: 0,
+    status: '',
     answers: {}
   };
   review = {
@@ -57,6 +58,7 @@ export class AssessmentComponent implements OnInit {
   };
   doAssessment = false;
   doReview = false;
+  feedbackReviewed = false;
   questionsForm = new FormGroup({});
 
   constructor (
@@ -90,9 +92,17 @@ export class AssessmentComponent implements OnInit {
           return ;
         }
         this.review = result.review;
-        // this page is for doing review if review answer is empty and action is review
-        if (this.utils.isEmpty(this.review.answers) && this.action == 'review') {
+        // this page is for doing review if the submission status is 'pending review' and action is review
+        if (this.submission.status == 'pending review' && this.action == 'review') {
           this.doReview = true;
+        }
+        // call todo item to check if the feedback has been reviewed or not
+        if (this.submission.status == 'published') {
+          this.assessmentService.getFeedbackReviewed(this.review.id)
+            .subscribe(result => {
+              this.feedbackReviewed = result;
+              console.log(this.feedbackReviewed);
+            });
         }
       });
   };
@@ -138,7 +148,7 @@ export class AssessmentComponent implements OnInit {
     let requiredQuestions = this.getRequiredQuestions();
     let questionId = 0;
 
-    // save submission answers
+    // form submission answers
     if (this.doAssessment) {
       assessment = {
         id: this.id,
@@ -157,12 +167,12 @@ export class AssessmentComponent implements OnInit {
       });
       // check if all required questions have answer
       if (!this.utils.isEmpty(requiredQuestions)) {
-        console.log("Required question answer missing!");
-        return ;
+        // display a pop up if required question not answered
+        return this.utils.popUp('shortMessage', {message: 'Required question answer missing!'}, false);
       }
     }
 
-    // save feedback answers
+    // form feedback answers
     if (this.doReview) {
       assessment = {
         id: this.id,
@@ -182,13 +192,33 @@ export class AssessmentComponent implements OnInit {
     this.assessmentService.saveAnswers(assessment, answers, this.action)
       .subscribe(result => {
         if (result.success) {
-          console.log('submitted!');
+          let redirect = [];
+          // redirect to activity page if it is doing assessment
+          if (this.doAssessment) {
+            redirect = ['pages', 'tabs', { outlets: { activity: ['activity', this.activityId] } }];
+          }
+          // redirect to reviews page if it is doing review
+          if (this.doReview) {
+            redirect = ['reviews'];
+          }
+          // display a pop up for successful submission
+          return this.utils.popUp('shortMessage', {
+            message: 'Submitted Successfully!'
+          }, redirect);
         } else {
-          console.log('submission Failed!')
+          // display a pop up if submission failed
+          return this.utils.popUp('shortMessage', {
+            message: 'Submission Failed, please try again later.'
+          }, false);
         }
       });
   }
 
+  reviewFeedback() {
+    this.feedbackReviewed = true;
+    console.log('feedback reviewed');
+  }
 
+  
   
 }
