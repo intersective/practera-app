@@ -5,10 +5,7 @@ import { AuthGuard } from '../auth/auth.guard';
 
 import { TabsComponent } from './tabs.component';
 import { HomeComponent } from '../home/home.component';
-import { ProjectComponent } from '../project/project.component';
 import { ActivityComponent } from '../activity/activity.component';
-import { ChatComponent } from '../chat/chat.component';
-import { HelpComponent } from '../help/help.component';
 
 const routes: Routes = [
   {
@@ -29,7 +26,8 @@ const routes: Routes = [
       {
         path: 'project',
         outlet: 'project',
-        component: ProjectComponent
+        loadChildren: '../project/project.module#ProjectModule',
+        // component: ProjectComponent,
       },
       {
         path: 'activity/:id',
@@ -41,13 +39,13 @@ const routes: Routes = [
         path: 'chat',
         outlet: 'chat',
         // canActivateChild: [AuthGuard],
-        // component: ChatComponent
         loadChildren: '../chat/chat.module#ChatModule',
       },
       {
         path: 'help',
         outlet: 'help',
-        component: HelpComponent
+        loadChildren: '../help/help.module#HelpModule',
+        // component: HelpComponent
       }
     ]
   }
