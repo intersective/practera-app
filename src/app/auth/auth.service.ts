@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
 import { RequestService } from '@shared/request/request.service';
 import { HttpParams } from '@angular/common/http';
-import { map } from 'rxjs/operators';
+import { map,  } from 'rxjs/operators';
 import { BrowserStorageService } from '@services/storage.service';
+import { Observable, of } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -33,4 +34,9 @@ export class AuthService {
       return response;
     }));
   }
+
+  saveRegistration(data): Observable<any> {
+    return of(true);
+  }
+
 }
