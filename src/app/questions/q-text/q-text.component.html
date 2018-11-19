@@ -25,8 +25,8 @@
     </ng-container>
 
     <ng-container *ngIf="doReview">
-      <ion-textarea *ngIf="question.canDo" class="background-white" #answer margin-vertical rows="4" (blur)="onChange(answer.value, 'answer')" placeholder="Please put your answer here"></ion-textarea>
-      <ion-textarea *ngIf="question.allowComment" class="background-white" #comment margin-vertical rows="4" (blur)="onChange(comment.value, 'comment')" placeholder="Please put your feedback here"></ion-textarea>
+      <ion-textarea *ngIf="question.canAnswer" class="background-white" #answer margin-vertical rows="4" (blur)="onChange(answer.value, 'answer')" placeholder="Please put your answer here"></ion-textarea>
+      <ion-textarea *ngIf="question.canComment" class="background-white" #comment margin-vertical rows="4" (blur)="onChange(comment.value, 'comment')" placeholder="Please put your feedback here"></ion-textarea>
     </ng-container>
 
   </ion-card-content>

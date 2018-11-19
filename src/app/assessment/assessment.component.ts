@@ -34,8 +34,8 @@ export class AssessmentComponent implements OnInit {
             type: '',
             description: '',
             isRequired: false,
-            allowComment: true,
-            canDo: true,
+            canComment: true,
+            canAnswer: true,
             choices: [
               {
                 id: '',
@@ -101,7 +101,6 @@ export class AssessmentComponent implements OnInit {
           this.assessmentService.getFeedbackReviewed(this.review.id)
             .subscribe(result => {
               this.feedbackReviewed = result;
-              console.log(this.feedbackReviewed);
             });
         }
       });
@@ -130,6 +129,7 @@ export class AssessmentComponent implements OnInit {
     this.router.navigate(['pages', 'tabs', { outlets: { activity: ['activity', this.activityId] } }]);
   }
 
+  // form an object of required questions
   getRequiredQuestions() {
     let requiredQuestions = {};
     this.assessment.groups.forEach(group => {
@@ -216,7 +216,7 @@ export class AssessmentComponent implements OnInit {
 
   reviewFeedback() {
     this.feedbackReviewed = true;
-    console.log('feedback reviewed');
+    this.assessmentService.saveFeedbackReviewed(this.review.id);
   }
 
   
