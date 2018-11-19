@@ -9,7 +9,6 @@ const routes: Routes = [
   {
     path: '',
     component: ChatComponent,
-    outlet: 'chat',
     children: [
       {
         path: '',
