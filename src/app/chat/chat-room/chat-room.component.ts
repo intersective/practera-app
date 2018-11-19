@@ -52,7 +52,7 @@ export class ChatRoomComponent implements OnInit {
   }
 
   goBack() {
-    this.router.navigateByUrl("/pages/tabs/(chat:chat)");
+    this.router.navigateByUrl("/app/(chat:chat)");
   }
 
   sendMessage() {
