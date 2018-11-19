@@ -1,35 +1,37 @@
-<ion-header>
-  <ion-toolbar>
-    <ion-title>Registration</ion-title>
-  </ion-toolbar>
-</ion-header>
 <ion-content color="light" text-center>
+  <h2>Registration</h2>
   <div class="div-logo registration">
     <img src="/assets/logo.svg" width="60%">
   </div>
   <div class="div-after-logo">
-    <ng-container *ngIf="!hide_password">
-        <h4>Your Login Email Address</h4>
-        <p>{{user.email}}</p>
+    <ng-container>
+      <h4>Your Login Email Address</h4>
+      <p>{{user.email}}</p>
     </ng-container>
-    <ng-container *ngIf="hide_password">
+    <!-- <ng-container>
         <h4>Your Mobile Number</h4>
         <p>{{user.contact}}</p>
-    </ng-container>
-    <ion-list margin>
-      <ion-item>
-        <ion-input name="passowrd" [(ngModel)]="password" required type="password" placeholder="password"></ion-input>
-      </ion-item>
-      <ion-item>
-        <ion-input name="password" [(ngModel)]="rePassword" required type="password" placeholder="Conform Password"></ion-input>
-      </ion-item>
-      <ion-item lines="none">
-        <ion-checkbox color="primary" slot="start" [(ngModel)]="isAgreed"></ion-checkbox>
-        <ion-label class="terms-and-conditions">I agree to the Terms & Conditions</ion-label>
-      </ion-item>
-    </ion-list>
-    <p><a (click)="openLink()">Terms & Conditions</a></p>
-    <p>You need a password! You need to agree with terms and Conditions.</p>
-    <ion-button (click)="login()" shape="round" expand="block" color="primary">REGISTER</ion-button>
+    </ng-container> -->
+    <form (submit)="register()">
+      <ion-list margin>
+        <ion-item>
+          <ion-input name="passowrd" [(ngModel)]="password" (focus)="removeErrorMessages()" [ngModelOptions]="{standalone: true}" required type="password" placeholder="password"></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-input name="rePassword" [(ngModel)]="rePassword" (focus)="removeErrorMessages()" [ngModelOptions]="{standalone: true}" required type="password" placeholder="Conform Password"></ion-input>
+        </ion-item>
+        <ion-item lines="none">
+          <ion-checkbox color="primary" slot="start" (click)="validateRegistration('agree')" [(ngModel)]="isAgreed" [ngModelOptions]="{standalone: true}"></ion-checkbox>
+          <ion-label class="terms-and-conditions">I agree to the Terms & Conditions</ion-label>
+        </ion-item>
+      </ion-list>
+      <p><a (click)="openLink()">Terms & Conditions</a></p>
+      <p class="error-message" *ngIf="formValidationErrors.needPassword">You need a password !</p>
+      <p class="error-message" *ngIf="formValidationErrors.lengthError">Your password needs to be more than 8 characters.</p>
+      <p class="error-message" *ngIf="formValidationErrors.passwordMismatch">Your passwords don't match.</p>
+      <p class="error-message" *ngIf="formValidationErrors.checkAgree">You need a password! You need to agree with terms and Conditions.</p>
+      <ion-button shape="round" expand="block" type="submit" color="primary">REGISTER</ion-button>
+    </form>
+
   </div>
 </ion-content>

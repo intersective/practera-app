@@ -25,7 +25,7 @@ const routes: Routes = [
         component: AuthForgotPasswordComponent
       },
       {
-        path: 'registration/:email',
+        path: 'registration',
         component: AuthRegistrationComponent
       }
     ]
