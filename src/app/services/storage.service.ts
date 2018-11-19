@@ -12,11 +12,11 @@ export class BrowserStorageService {
   constructor(@Inject(BROWSER_STORAGE) public storage: Storage) {}
 
   get(key: string) {
-    this.storage.getItem(key);
+    return JSON.parse(this.storage.getItem(key) || null);
   }
 
   set(key: string, value: string) {
-    this.storage.setItem(key, value);
+    this.storage.setItem(key, JSON.stringify(value));
   }
 
   remove(key: string) {
