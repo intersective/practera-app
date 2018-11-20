@@ -11,7 +11,6 @@ import { AuthService } from './auth.service';
 import { AuthComponent } from './auth.component';
 import { AuthLoginComponent } from './auth-login/auth-login.component';
 import { AuthForgotPasswordComponent } from './auth-forgot-password/auth-forgot-password.component';
-import { PopUpComponent } from '../components/pop-up/pop-up.component';
 
 @NgModule({
   imports: [
@@ -23,11 +22,9 @@ import { PopUpComponent } from '../components/pop-up/pop-up.component';
   declarations: [
     AuthComponent, 
     AuthLoginComponent,
-    AuthForgotPasswordComponent,
-    PopUpComponent
+    AuthForgotPasswordComponent
   ],
   entryComponents: [
-    PopUpComponent
   ],
   providers: [ AuthService ],
 })
