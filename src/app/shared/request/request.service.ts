@@ -3,6 +3,7 @@ import { HttpClient, HttpHeaders, HttpParams, HttpErrorResponse } from '@angular
 import { Observable, of } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 import { UtilsService } from '../../services/utils.service';
+import { BrowserStorageService } from '@services/storage.service';
 
 export class RequestConfig {
   appkey = '';
@@ -20,6 +21,7 @@ export class RequestService {
   constructor(
     private http: HttpClient,
     private utils: UtilsService,
+    private storage: BrowserStorageService,
     @Optional() config: RequestConfig
   ) {
     if (config) {

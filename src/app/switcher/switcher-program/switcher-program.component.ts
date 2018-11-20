@@ -51,7 +51,7 @@ export class SwitcherProgramComponent {
     if (color) {
       this.changeThemeColor(color);
     }
-    this.router.navigate(['/pages/tabs']);
+    this.router.navigate(['/tabs']);
 	}
 
   logout() {
