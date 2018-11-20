@@ -8,16 +8,27 @@ import { StatusBar } from '@ionic-native/status-bar/ngx';
 
 import { AppRoutingModule } from './app-routing.module';
 import { RequestModule } from '@shared/request/request.module'; 
+import { AuthModule } from './auth/auth.module';
+
 import { AppComponent } from './app.component';
+import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
+import { PopUpComponent } from '@components/pop-up/pop-up.component';
 
 import { HttpClientInMemoryWebApiModule } from 'angular-in-memory-web-api';
 import { UtilsService } from './services/utils.service';
 
 @NgModule({
-  declarations: [AppComponent],
-  entryComponents: [],
+  declarations: [
+    AppComponent,
+    PageNotFoundComponent,
+    PopUpComponent
+  ],
+  entryComponents: [
+    PopUpComponent
+  ],
   imports: [
   	BrowserModule, 
+    AuthModule,
   	IonicModule.forRoot(), 
   	AppRoutingModule,
   	RequestModule.forRoot({ 

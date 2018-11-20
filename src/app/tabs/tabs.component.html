@@ -1,29 +1,63 @@
 <ion-tabs>
 
-  <ion-tab label="Home" icon="home" href="/pages/tabs/(home:home)">
+  <ion-tab tab="home">
     <ion-router-outlet name="home"></ion-router-outlet>
   </ion-tab>
 
-  <ion-tab label="Activities" icon="list-box" href="/pages/tabs/(project:project)">
+  <ion-tab tab="project">
     <ion-router-outlet name="project"></ion-router-outlet>
     <ion-router-outlet name="activity"></ion-router-outlet>
   </ion-tab>
 
-  <ion-tab *ngIf="showReview" label="Review" icon="clipboard" href="/pages/tabs/(chat:chat)">
+  <ion-tab tab="review">
+    <ion-router-outlet name="review"></ion-router-outlet>
+  </ion-tab>
+
+  <ion-tab tab="chat">
     <ion-router-outlet name="chat"></ion-router-outlet>
   </ion-tab>
 
-  <ion-tab label="Chat" icon="chatboxes" href="/pages/tabs/(chat:chat)">
-    <ion-router-outlet name="chat"></ion-router-outlet>
+  <ion-tab tab="team">
+    <ion-router-outlet name="team"></ion-router-outlet>
   </ion-tab>
 
-  <ion-tab *ngIf="showTeam" label="Team" icon="people" href="/pages/tabs/(chat:chat)">
-    <ion-router-outlet name="chat"></ion-router-outlet>
-  </ion-tab>
-
-  <ion-tab label="Help" icon="help-circle" href="/pages/tabs/(help:help)">
+  <ion-tab tab="help">
     <ion-router-outlet name="help"></ion-router-outlet>
   </ion-tab>
+
+  <ion-tab-bar slot="bottom">
+
+    <ion-tab-button tab="home" href="/app/(home:home)">
+      <ion-icon name="home"></ion-icon>
+      <ion-label>Home</ion-label>
+    </ion-tab-button>
+
+    <ion-tab-button tab="project" href="/app/(project:project)">
+      <ion-icon name="list-box"></ion-icon>
+      <ion-label>Activities</ion-label>
+    </ion-tab-button>
+
+    <ion-tab-button *ngIf="showReview" tab="review" href="/app/(review:review)">
+      <ion-icon name="clipboard"></ion-icon>
+      <ion-label>Review</ion-label>
+    </ion-tab-button>
+
+    <ion-tab-button tab="chat" href="/app/(chat:chat)">
+      <ion-icon name="chatboxes"></ion-icon>
+      <ion-label>Chat</ion-label>
+    </ion-tab-button>
+
+    <ion-tab-button *ngIf="showTeam" tab="team" href="/app/(team:team)">
+      <ion-icon name="people"></ion-icon>
+      <ion-label>Team</ion-label>
+    </ion-tab-button>
+
+    <ion-tab-button tab="help" href="/app/(help:help)">
+      <ion-icon name="help-circle"></ion-icon>
+      <ion-label>Help</ion-label>
+    </ion-tab-button>
+
+  </ion-tab-bar>
   
 </ion-tabs> 
 
