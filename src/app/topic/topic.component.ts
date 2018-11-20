@@ -10,6 +10,7 @@ import { EmbedVideoService } from 'ngx-embed-video';
 export class TopicComponent implements OnInit {
   topic : any;
   iframeHtml: any;
+  btnToggleTopicIsDone: boolean = false;
   
   constructor( 
     private topicService: TopicService,
@@ -23,5 +24,12 @@ export class TopicComponent implements OnInit {
       .subscribe(topic => this.topic = topic);
       this.iframeHtml = this.embedService.embed(this.topic.videolink);  
   }
-  
+  markAsDone () {
+    this.btnToggleTopicIsDone = true;
+    console.log('topic is marked as read.');
+  }
+  previewFile () {
+    console.log('show the file');
+  }
+
 }
