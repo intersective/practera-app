@@ -9,13 +9,19 @@ import { StatusBar } from '@ionic-native/status-bar/ngx';
 import { AppRoutingModule } from './app-routing.module';
 import { RequestModule } from '@shared/request/request.module'; 
 import { AppComponent } from './app.component';
+import { PopUpComponent } from '@components/pop-up/pop-up.component';
 
 import { HttpClientInMemoryWebApiModule } from 'angular-in-memory-web-api';
 import { UtilsService } from './services/utils.service';
 
 @NgModule({
-  declarations: [AppComponent],
-  entryComponents: [],
+  declarations: [
+    AppComponent,
+    PopUpComponent
+  ],
+  entryComponents: [
+    PopUpComponent
+  ],
   imports: [
   	BrowserModule, 
   	IonicModule.forRoot(), 
