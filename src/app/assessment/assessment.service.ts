@@ -17,7 +17,7 @@ export class AssessmentService {
             type: 'text',
             description: 'this is a text question description',
             isRequired: true,
-            canComment: false,
+            canComment: true,
             canAnswer: true
           },
           {
