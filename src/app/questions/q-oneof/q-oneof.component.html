@@ -2,8 +2,9 @@
   <ion-card-header class="q-title">
     {{ question.name }}
     <ion-text color="danger" *ngIf="question.isRequired">*</ion-text>
+    <ion-text color="medium"><p><i>{{ question.description }}</i></p></ion-text>
   </ion-card-header>
-  <ion-card-content padding>
+  <ion-card-content padding-horizontal class="q-content">
 
     <ng-container *ngIf="submission.answer">
       <ion-list>
@@ -58,7 +59,7 @@
           </ion-item>
         </ion-radio-group>
       </ion-list>
-      <ion-textarea *ngIf="question.canComment" class="background-white" #comment margin-vertical rows="4" (blur)="onChange(comment.value, 'comment')" placeholder="Please put your feedback here"></ion-textarea>
+      <ion-textarea *ngIf="question.canComment" class="background-white" #comment margin-top rows="4" (blur)="onChange(comment.value, 'comment')" placeholder="Please put your feedback here"></ion-textarea>
     </ng-container>
 
   </ion-card-content>
