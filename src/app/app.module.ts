@@ -13,6 +13,7 @@ import { TabsModule } from './tabs/tabs.module';
 
 import { AppComponent } from './app.component';
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
+import { PopUpComponent } from '@components/pop-up/pop-up.component';
 
 import { HttpClientInMemoryWebApiModule } from 'angular-in-memory-web-api';
 import { UtilsService } from './services/utils.service';
@@ -21,8 +22,11 @@ import { UtilsService } from './services/utils.service';
   declarations: [
     AppComponent, 
     PageNotFoundComponent,
+    PopUpComponent
   ],
-  entryComponents: [],
+  entryComponents: [
+    PopUpComponent
+  ],
   imports: [
   	BrowserModule, 
     AuthModule,
