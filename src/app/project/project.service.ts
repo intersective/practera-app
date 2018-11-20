@@ -17,13 +17,15 @@ export class MilestoneService {
         name: 'Test Activity one',
         is_locked: false,
         progress: 0.34,
-        hasFeedback: true
+        hasFeedback: true,
+        is_hidden: false
       },
       {
         name: 'Activity two',
         is_locked: true,
         progress: 0.74,
-        lead_image: '/src/assets/home-page-img/header-bg.jpg'
+        lead_image: '/src/assets/home-page-img/header-bg.jpg',
+        is_hidden: false
         
       }
   ],
@@ -41,17 +43,20 @@ export class MilestoneService {
       {
         name: 'Test Activity three',
         is_locked: false,
-        progress: 0.47
+        progress: 0.47,
+        is_hidden: true
       },
       {
         name: 'Activity four',
         is_locked: false,
-        progress:0.98
+        progress:0.98,
+        is_hidden: false
       },
       {
         name: 'Test Activity five',
         is_locked: false,
-        progress: 0.47
+        progress: 0.47,
+        is_hidden: false
       },
   ],
     
@@ -69,13 +74,15 @@ export class MilestoneService {
         name: 'Test Activity six',
         is_locked: false,
         progress: 1,
-        hasFeedback: false
+        hasFeedback: false,
+        is_hidden: false
       },
       {
         name: 'Activity seven',
         is_locked: false,
         progress:0.48,
-        hasFeedback: true
+        hasFeedback: true,
+        is_hidden: false
         
       }
   ],
@@ -92,7 +99,8 @@ export class MilestoneService {
       {
         name: 'Test Activity six',
         is_locked: false,
-        progress: 1
+        progress: 1,
+        is_hidden: false
       },
   ],
     is_locked: false

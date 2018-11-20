@@ -49,6 +49,7 @@
             <div *ngIf="level.Activity">
               <ion-list class="activity-list">
                 <ion-item class="activity-item" *ngFor="let activity of level.Activity">
+                  <ng-container *ngIf="!activity.is_hidden">
                   <div *ngIf="!activity.is_locked">
                     <!-- remove comment when milestone done -->
                     <ion-icon *ngIf="activity.progress >= 1" name="checkmark-circle" class="icon-done" margin-end></ion-icon>
@@ -94,8 +95,8 @@
                       </div>
                     </ion-card-content>
                   </ion-card>
+                  </ng-container>
                 </ion-item>
-              
               </ion-list>
             </div>
           </div>
