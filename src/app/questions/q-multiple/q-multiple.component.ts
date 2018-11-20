@@ -45,35 +45,50 @@ export class QMultipleComponent implements ControlValueAccessor {
   //propagate changes into the form control
   propagateChange = (_: any) => {}
 
-  // event fired when checkbox is selected. propagate the change up to the form control using the custom value accessor interface
+  // event fired when checkbox is selected/unselected. propagate the change up to the form control using the custom value accessor interface
   onChange(value, type){
+    let position;
     //set changed value (answer or comment)
     if (type) {
       let innerValueObj = {};
-      if (this.innerValue) {
+      if (this.innerValue != "") {
         innerValueObj = JSON.parse(this.innerValue);
-      } 
-      innerValueObj[type] = value;
+      }
+      if (type == 'comment') {
+        // just pass the value for comment since comment is always just text
+        innerValueObj[type] = value;
+      } else {
+        if (!innerValueObj[type]) {
+          innerValueObj[type] = [];
+        }
+        position = this.utils.indexOf(innerValueObj[type], value);
+        if (position > -1) {
+          // find the position of this value and remove it
+          innerValueObj[type].splice(position, 1);
+        } else {
+          // add it to the value array
+          innerValueObj[type].push(value);
+        }
+      }
       this.innerValue = JSON.stringify(innerValueObj);
     } else {
       let innerValueArray = [];
-      if (this.innerValue) {
+      if (this.innerValue != "") {
         innerValueArray = JSON.parse(this.innerValue);
       }
-console.log('array', innerValueArray);
-console.log('value', value);
-// todo: find() doesn't work like this
-      if (this.utils.find(innerValueArray, String(value))) {
-        this.innerValue = JSON.stringify(this.utils.remove(innerValueArray, value));
+      position = this.utils.indexOf(innerValueArray, value);
+      if (position > -1) {
+        // find the position of this value and remove it
+        innerValueArray.splice(position, 1);
       } else {
+        // add it to the value array
         innerValueArray.push(value);
-        this.innerValue = JSON.stringify(innerValueArray);
       }
-console.log('inner', this.innerValue);      
+      this.innerValue = JSON.stringify(innerValueArray);
     }
-console.log(this.innerValue);
+
     // propagate value into form control using control value accessor interface
-    this.propagateChange(this.innerValue);
+    this.propagateChange(JSON.parse(this.innerValue));
 
     //reset errors 
     this.errors = [];
@@ -91,7 +106,9 @@ console.log(this.innerValue);
 
   //From ControlValueAccessor interface
   writeValue(value: any) {
-    this.innerValue = value;
+    if (value) {
+      this.innerValue = JSON.stringify(value);
+    }
   }
 
   //From ControlValueAccessor interface

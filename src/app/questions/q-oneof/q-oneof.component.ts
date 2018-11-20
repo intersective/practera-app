@@ -57,7 +57,11 @@ export class QOneofComponent implements ControlValueAccessor {
     }
 
     // propagate value into form control using control value accessor interface
-    this.propagateChange(this.innerValue);
+    if (type) {
+      this.propagateChange(JSON.parse(this.innerValue));
+    } else {
+      this.propagateChange(this.innerValue);
+    }
 
     //reset errors 
     this.errors = [];
