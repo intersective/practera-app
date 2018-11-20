@@ -7,12 +7,10 @@
 
     <ng-container *ngIf="submission.answer">
       <ion-list>
-        <ion-radio-group [value]="submission.answer">
-          <ion-item *ngFor="let choice of question.choices" color="light">
-            <ion-label>{{ choice.name }}</ion-label>
-            <ion-radio [value]="choice.id" disabled mode="md"></ion-radio>
-          </ion-item>
-        </ion-radio-group>
+        <ion-item *ngFor="let choice of question.choices" color="light">
+          <ion-label>{{ choice.name }}</ion-label>
+          <ion-checkbox [checked]="submission.answer.includes(choice.id)" disabled mode="md"></ion-checkbox>
+        </ion-item>
       </ion-list>
     </ng-container>
 
@@ -21,12 +19,10 @@
       <ng-container *ngIf="review.answer">
         <b>Answer</b>
         <ion-list>
-          <ion-radio-group [value]="review.answer">
-            <ion-item *ngFor="let choice of question.choices" color="light">
-              <ion-label>{{ choice.name }}</ion-label>
-              <ion-radio [value]="choice.id" disabled mode="md"></ion-radio>
-            </ion-item>
-          </ion-radio-group>
+          <ion-item *ngFor="let choice of question.choices" color="light">
+            <ion-label>{{ choice.name }}</ion-label>
+            <ion-checkbox [checked]="review.answer.includes(choice.id)" disabled mode="md"></ion-checkbox>
+          </ion-item>
         </ion-list>
       </ng-container>
       <ng-container *ngIf="review.comment">
@@ -39,7 +35,7 @@
       <ion-list>
         <ion-item *ngFor="let choice of question.choices">
           <ion-label>{{ choice.name }}</ion-label>
-          <ion-checkbox [value]="choice.id" #answer (ionChange)="onChange(answer.value)"></ion-checkbox>
+          <ion-checkbox [value]="choice.id" mode="md" (ionChange)="onChange(choice.id)"></ion-checkbox>
         </ion-item>
       </ion-list>
       <ion-text *ngFor="let error of errors" color="danger">
@@ -49,15 +45,13 @@
 
     <ng-container *ngIf="doReview">
       <ion-list *ngIf="question.canAnswer">
-        <ion-radio-group #answer (ionChange)="onChange(answer.value, 'answer')">
-          <ion-list-header>
-            <ion-label>Your Answer is</ion-label>
-          </ion-list-header>
-          <ion-item *ngFor="let choice of question.choices">
-            <ion-label>{{ choice.name }}</ion-label>
-            <ion-radio [value]="choice.id" mode="md"></ion-radio>
-          </ion-item>
-        </ion-radio-group>
+        <ion-list-header>
+          <ion-label>Your Answer is</ion-label>
+        </ion-list-header>
+        <ion-item *ngFor="let choice of question.choices">
+          <ion-label>{{ choice.name }}</ion-label>
+          <ion-checkbox [value]="choice.id" mode="md" (ionChange)="onChange(choice.id, 'answer')"></ion-checkbox>
+        </ion-item>
       </ion-list>
       <ion-textarea *ngIf="question.canComment" class="background-white" #comment margin-vertical rows="4" (blur)="onChange(comment.value, 'comment')" placeholder="Please put your feedback here"></ion-textarea>
     </ng-container>

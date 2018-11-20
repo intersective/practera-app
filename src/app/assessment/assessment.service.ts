@@ -98,10 +98,7 @@ export class AssessmentService {
         answer: 2
       },
       4: {
-        answer: [
-          1,
-          2
-        ]
+        answer: [1,2]
       }
     },
     3: {
@@ -113,10 +110,7 @@ export class AssessmentService {
         answer: 2
       },
       4: {
-        answer: [
-          1,
-          2
-        ]
+        answer: [1,2]
       }
     },
     4: {
@@ -128,10 +122,7 @@ export class AssessmentService {
         answer: 2
       },
       4: {
-        answer: [
-          1,
-          2
-        ]
+        answer: [1,2]
       }
     },
     5: {
@@ -143,10 +134,7 @@ export class AssessmentService {
         answer: 2
       },
       4: {
-        answer: [
-          1,
-          2
-        ]
+        answer: [1,2]
       }
     }
   };
@@ -237,7 +225,7 @@ export class AssessmentService {
           Assessment: assessment,
           AssessmentSubmissionAnswer: answers
         }
-        console.log('Submit submission with data:', postData);
+        console.log("Submit submission with data:\n", postData);
         break;
 
       case 'review':
@@ -245,7 +233,7 @@ export class AssessmentService {
           Assessment: assessment,
           AssessmentReviewAnswer: answers
         }
-        console.log('Submit feedback with data:', postData);
+        console.log("Submit feedback with data:\n", postData);
         break;
     }
     return of({

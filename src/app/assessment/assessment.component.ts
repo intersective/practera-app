@@ -181,7 +181,7 @@ export class AssessmentComponent implements OnInit {
       }
       this.utils.each(this.questionsForm.value, (value, key) => {
         if (value) {
-          let answer = JSON.parse(value);
+          let answer = value;
           answer.assessment_question_id = parseInt(key.replace('q-', ''));
           answers.push(answer);
         }

@@ -36,6 +36,10 @@ export class UtilsService {
     return this.lodash.find(collections, callback);
   }
 
+  indexOf(array, value, fromIndex=0) {
+    return this.lodash.indexOf(array, value, fromIndex);
+  }
+
   remove(collections, callback) {
     return this.lodash.remove(collections, callback);
   }
