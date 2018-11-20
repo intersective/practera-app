@@ -19,7 +19,6 @@ import { UtilsService } from './services/utils.service';
 
 @NgModule({
   declarations: [
-    AppComponent,
     PageNotFoundComponent,
     PopUpComponent
   ],
@@ -34,7 +33,7 @@ import { UtilsService } from './services/utils.service';
   	RequestModule.forRoot({ 
   		appkey: 'b11e7c189b',
   		prefixUrl: 'https://sandbox.practera.com/',
-  	}),
+  	})
   ],
   providers: [
     // StatusBar,
