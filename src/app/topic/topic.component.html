@@ -16,21 +16,26 @@
     <div *ngIf="topic.files.length > 0"  color="light" >
 			<label padding>Supporting Downloads</label>
 			
-			<div *ngFor="let file of topic.files">
-				<ion-grid padding>
+			<div *ngFor="let file of topic.files" padding>
+				<ion-grid >
 					<ion-row>
-						<ion-col size="10">
+						<ion-col size="10" class="file-name-view">
 							<ion-icon name="document"></ion-icon>
-							<small class="file-name-view">{{file.name}}</small>
+							<span> {{file.name}} </span>
 						</ion-col>
 						<ion-col size="2">
 							<ion-icon *ngIf="file.slug.length > 0" name="search" (click)="previewFile(file)"></ion-icon>
-							<a *ngIf="file.slug.length > 0" href="{{file.slug }}" download class="text-right">
+							<a *ngIf="file.slug.length > 0" [href]="file.slug"  download class="text-right">
 								<ion-icon name="download" float-right></ion-icon>
 							</a>
 						</ion-col>
 					</ion-row>
 				</ion-grid>
 			</div>
-    </div>
+		</div>
+		<div padding class="toggle-mark">
+			<span>Mark topic as read</span>
+			<ion-toggle float-right  [(ngModel)]="btnToggleTopicIsDone" (click)="markAsDone()" disabled="{{btnToggleTopicIsDone}}" ></ion-toggle>
+		</div>
+	
 </ion-content>
