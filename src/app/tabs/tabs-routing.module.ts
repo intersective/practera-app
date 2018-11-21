@@ -6,6 +6,7 @@ import { AuthGuard } from '../auth/auth.guard';
 import { TabsComponent } from './tabs.component';
 import { HomeComponent } from '../home/home.component';
 import { ActivityComponent } from '../activity/activity.component';
+import { ChatListComponent } from '../chat/chat-list/chat-list.component';
 
 const routes: Routes = [
   {
@@ -40,7 +41,8 @@ const routes: Routes = [
         path: 'chat',
         outlet: 'chat',
         // canActivateChild: [AuthGuard],
-        loadChildren: '../chat/chat.module#ChatModule',
+        // loadChildren: '../chat/chat.module#ChatModule',
+        component: ChatListComponent
       },
       {
         path: 'help',

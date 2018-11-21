@@ -117,6 +117,6 @@ export class ChatListComponent implements OnInit {
       queryParams: { chat },
     };
     console.log(chat)
-    this.router.navigateByUrl('/app/(chat:chat-room)');
+    this.router.navigate(['/chat/chat-room']);
   }
 }
