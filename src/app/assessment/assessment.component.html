@@ -51,6 +51,17 @@
             [control]="questionsForm.controls['q-' + question.id]"
           ></app-q-multiple>
 
+          <app-q-file 
+            *ngSwitchCase="'file'"
+            [question]="question"
+            [doAssessment]="doAssessment"
+            [doReview]="doReview"
+            [submission]="(submission.answers && submission.answers[question.id]) ? submission.answers[question.id] : {}"
+            [review]="(review.answers && review.answers[question.id]) ? review.answers[question.id] : {}"
+            [formControlName]="'q-' + question.id"
+            [control]="questionsForm.controls['q-' + question.id]"
+          ></app-q-file>
+
         </ng-container>
         
       </ng-container>
