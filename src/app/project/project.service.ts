@@ -14,6 +14,7 @@ export class MilestoneService {
     description: ' You are now part of the learning community. Whether you are a Project Stakeholder, Consulting Mentor or a University Student about to embark on your first consulting project, welcome. This Fundamentals milestone will provide you with an overview, explain your role and provide you with tips and tricks for a successful learning experience ',
     Activity :[
       {
+        id: 101,
         name: 'Test Activity one',
         is_locked: false,
         progress: 0.34,
@@ -21,6 +22,16 @@ export class MilestoneService {
         is_hidden: false
       },
       {
+        id: 102,
+        name: 'Activity two',
+        is_locked: true,
+        progress: 0.74,
+        lead_image: '/src/assets/home-page-img/header-bg.jpg',
+        is_hidden: false
+        
+      },
+      {
+        id: 102,
         name: 'Activity two',
         is_locked: true,
         progress: 0.74,
@@ -28,6 +39,10 @@ export class MilestoneService {
         is_hidden: false
         
       }
+
+
+
+      
   ],
     is_locked: false
   },
@@ -40,19 +55,22 @@ export class MilestoneService {
     project_id: 55,
     progress: 0.62,
     Activity :[
-      {
+      { 
+        id: 103,
         name: 'Test Activity three',
         is_locked: false,
         progress: 0.47,
-        is_hidden: true
+        is_hidden: false
       },
       {
+        id: 104,
         name: 'Activity four',
         is_locked: false,
         progress:0.98,
         is_hidden: false
       },
       {
+        id: 105,
         name: 'Test Activity five',
         is_locked: false,
         progress: 0.47,
@@ -71,6 +89,7 @@ export class MilestoneService {
     project_id: 55,
     Activity :[
       {
+        id: 106,
         name: 'Test Activity six',
         is_locked: false,
         progress: 1,
@@ -78,6 +97,7 @@ export class MilestoneService {
         is_hidden: false
       },
       {
+        id: 107,
         name: 'Activity seven',
         is_locked: false,
         progress:0.48,
@@ -97,6 +117,7 @@ export class MilestoneService {
     project_id: 65,
     Activity :[
       {
+        id: 108,
         name: 'Test Activity six',
         is_locked: false,
         progress: 1,
