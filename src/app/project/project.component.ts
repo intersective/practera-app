@@ -14,7 +14,7 @@ import { Content } from '@ionic/angular';
 })
 export class ProjectComponent implements OnInit{
   @ViewChild("milestones") milstones: ElementRef<any>;
-  
+
   constructor(
     location: Location,
     private router: Router,
@@ -22,6 +22,7 @@ export class ProjectComponent implements OnInit{
 
   location: Location;
   public activeMileStoneId = '';
+  public milestonesHeigth = [];
 
   
   public levels = [];
@@ -32,6 +33,9 @@ export class ProjectComponent implements OnInit{
       .subscribe(levels => this.levels = levels);
       
   }
+  goto(id) {
+    console.log ('activity.id is:', id);
+  }
   activityRedirection(id) {
     this.router.navigate(['pages', 'tabs', { outlets: { activity: ['activity', id] } }]);
   }
@@ -39,31 +43,28 @@ export class ProjectComponent implements OnInit{
   scroll(ev) {
     var scrollTopCurrent = ev.detail.scrollTop;
     var scrollTopMax = ev.detail.event.path[0].clientHeight;
-    // distance from the bottom to scroll
     var scrollBottom = scrollTopMax - scrollTopCurrent;
-    //var scrollLength = 286;
+
+    console.log(ev.detail);
     console.log('scrollTopCurrent', scrollTopCurrent);
     console.log('scrollTopMax', scrollTopMax);
     console.log('scrollBottom', scrollBottom);
+    // for (let i=0; i< this.milestonesHeigth.length; i++ ) {
+    //   console.log();
+    // }
     
    }
-
+   
    ngAfterViewChecked() {
     let elementRef = this.milstones;
-    let length = this.milstones.nativeElement.children.length;
-    let milestonesHeigth = [];
+    let length = elementRef.nativeElement.children.length;
     
-    //console.log('element ref is:',elementRef);
-    
-    //console.log('element offsetHeight is:',elementRef.nativeElement.children[length-1].offsetHeight);
-    //console.log('element relative position is:',elementRef.nativeElement.getBoundingClientRect().top);
     
     if (elementRef) {
       for (let i=0; i< length; i++) {
-        milestonesHeigth[i] = this.milstones.nativeElement.children[i].clientHeight;
+        this.milestonesHeigth[i] = this.milstones.nativeElement.children[i].clientHeight;
       } 
     }
-    console.log('milestonesHeigth:', milestonesHeigth);  
   }
    
 }
