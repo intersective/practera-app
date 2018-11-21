@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewChild } from "@angular/core";
 import { Router, ActivatedRoute } from "@angular/router";
 import { Content } from "@ionic/angular";
-import { Storage } from "@ionic/storage";
+import { BrowserStorageService } from "@services/storage.service";
 
 import { ChatService } from "../chat.service";
 
@@ -24,7 +24,7 @@ export class ChatRoomComponent implements OnInit {
   constructor(
     private chatService: ChatService,
     private router: Router,
-    private storage: Storage
+    private storage: BrowserStorageService
   ) {}
 
   ngOnInit() {
@@ -32,13 +32,9 @@ export class ChatRoomComponent implements OnInit {
   }
 
   loadStorageData() {
-    this.storage.get("chatAvatarColors").then(avatorColors => {
-      this.chatColors = avatorColors;
-      this.storage.get("selectedChatObject").then(chat => {
-        this.selectedChat = chat;
-        this.loadMessages();
-      });
-    });
+    this.chatColors = this.storage.get("chatAvatarColors");
+    this.selectedChat = this.storage.get("selectedChatObject");
+    this.loadMessages();
   }
 
   loadMessages() {
@@ -52,7 +48,7 @@ export class ChatRoomComponent implements OnInit {
   }
 
   goBack() {
-    this.router.navigateByUrl("/app/(chat:chat)");
+    this.router.navigateByUrl('/app/(chat:chat)');
   }
 
   sendMessage() {

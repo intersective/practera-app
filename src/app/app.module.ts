@@ -20,7 +20,8 @@ import { UtilsService } from './services/utils.service';
 @NgModule({
   declarations: [
     PageNotFoundComponent,
-    PopUpComponent
+    PopUpComponent,
+    AppComponent
   ],
   entryComponents: [
     PopUpComponent

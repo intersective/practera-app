@@ -15,6 +15,10 @@ const routes: Routes = [
     loadChildren: './tabs/tabs.module#TabsModule',
     canLoad: [AuthGuard]
   },
+  { 
+    path: 'chat', 
+    loadChildren: './chat/chat.module#ChatModule' 
+  },
   { path: '**', component: PageNotFoundComponent }
 ];
 @NgModule({
