@@ -8,24 +8,29 @@ import { QuestionsComponent } from './questions.component';
 import { QTextComponent } from './q-text/q-text.component';
 import { QOneofComponent } from './q-oneof/q-oneof.component';
 import { QMultipleComponent } from './q-multiple/q-multiple.component';
+import { QFileComponent } from './q-file/q-file.component';
+import { FilestackModule } from '@shared/filestack/filestack.module';
 
 @NgModule({
   imports: [
     IonicModule,
     CommonModule,
     FormsModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    FilestackModule
   ],
   declarations: [
     QuestionsComponent,
     QTextComponent,
     QOneofComponent,
-    QMultipleComponent
+    QMultipleComponent,
+    QFileComponent
   ],
   exports: [
     QTextComponent,
     QOneofComponent,
-    QMultipleComponent
+    QMultipleComponent,
+    QFileComponent
   ]
  
 })

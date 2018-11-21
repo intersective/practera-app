@@ -79,6 +79,15 @@ export class AssessmentService {
                 name: 'Choose me, I am choice 3'
               }
             ]
+          },
+          {
+            id: 5,
+            name: 'question5',
+            type: 'file',
+            description: 'this is a file question description',
+            isRequired: false,
+            canComment: true,
+            canAnswer: false
           }
         ]
       }
