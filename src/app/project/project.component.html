@@ -40,7 +40,7 @@
 <ion-content color="light" (ionScroll)="scroll($event)"   [scrollEvents]="true" delegate-handle="myPageDelegate">
  <ion-list class="project-list" >
     <div #milestones >
-      <ion-item *ngFor="let level of levels ; trackBy:trackLevel()" >
+      <ion-item *ngFor="let level of levels ; trackBy:trackLevel" >
         <div color="light" class="project-card">
           <div class="milestone" padding >
             <ion-text color="medium">MILESTONE</ion-text>
