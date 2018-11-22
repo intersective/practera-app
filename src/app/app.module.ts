@@ -12,10 +12,9 @@ import { HttpClientInMemoryWebApiModule } from 'angular-in-memory-web-api';
 import { UtilsService } from './services/utils.service';
 
 @NgModule({
-
   declarations: [AppComponent],
   entryComponents: [],
- imports: [
+  imports: [
   	BrowserModule, 
     AuthModule,
   	IonicModule.forRoot(), 
@@ -25,7 +24,6 @@ import { UtilsService } from './services/utils.service';
   		prefixUrl: 'https://sandbox.practera.com/',
     }),
     NgCircleProgressModule
-
   ],
   providers: [
     // StatusBar,
