@@ -31,7 +31,7 @@ export class QMultipleComponent implements ControlValueAccessor {
   @ViewChild('comment') commentRef: ElementRef;
 
   // the value of answer
-  innerValue = '';
+  innerValue: any;
   // validation errors array
   errors: Array<any> = [];
 
@@ -46,49 +46,33 @@ export class QMultipleComponent implements ControlValueAccessor {
   propagateChange = (_: any) => {}
 
   // event fired when checkbox is selected/unselected. propagate the change up to the form control using the custom value accessor interface
+  // if 'type' is set, it means it comes from reviewer doing review, otherwise it comes from submitter doing assessment
   onChange(value, type){
     let position;
     //set changed value (answer or comment)
     if (type) {
-      let innerValueObj = {};
-      if (this.innerValue != "") {
-        innerValueObj = JSON.parse(this.innerValue);
+      // initialise innerValue if not set
+      if (!this.innerValue) {
+        this.innerValue = {
+          answer: [],
+          comment: ''
+        };
       }
       if (type == 'comment') {
         // just pass the value for comment since comment is always just text
-        innerValueObj[type] = value;
+        this.innerValue.comment = value;
       } else {
-        if (!innerValueObj[type]) {
-          innerValueObj[type] = [];
-        }
-        position = this.utils.indexOf(innerValueObj[type], value);
-        if (position > -1) {
-          // find the position of this value and remove it
-          innerValueObj[type].splice(position, 1);
-        } else {
-          // add it to the value array
-          innerValueObj[type].push(value);
-        }
+        this.innerValue.answer = this.utils.addOrRemove(this.innerValue.answer, value);
       }
-      this.innerValue = JSON.stringify(innerValueObj);
     } else {
-      let innerValueArray = [];
-      if (this.innerValue != "") {
-        innerValueArray = JSON.parse(this.innerValue);
+      if (!this.innerValue) {
+        this.innerValue = [];
       }
-      position = this.utils.indexOf(innerValueArray, value);
-      if (position > -1) {
-        // find the position of this value and remove it
-        innerValueArray.splice(position, 1);
-      } else {
-        // add it to the value array
-        innerValueArray.push(value);
-      }
-      this.innerValue = JSON.stringify(innerValueArray);
+      this.innerValue = this.utils.addOrRemove(this.innerValue, value);
     }
 
     // propagate value into form control using control value accessor interface
-    this.propagateChange(JSON.parse(this.innerValue));
+    this.propagateChange(this.innerValue);
 
     //reset errors 
     this.errors = [];
