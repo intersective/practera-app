@@ -1,5 +1,4 @@
 import { Component, OnInit, ViewChild, ElementRef  } from '@angular/core';
-import { Location } from  '@angular/common';
 import { Router, ActivatedRoute, ParamMap } from '@angular/router';
 import { switchMap } from 'rxjs/operators';
 import { Observable } from 'rxjs';
@@ -16,8 +15,7 @@ export class ProjectComponent implements OnInit{
 
   constructor(
     private router: Router,
-    private projectService: ProjectService,
-    private location: Location ) {};
+    private projectService: ProjectService) {};
 
     public milestonesHeigth = [];
     public levels = [];
@@ -35,21 +33,7 @@ export class ProjectComponent implements OnInit{
     //do what ever logic you need to come up with the unique identifier of your item in loop, I will just return the object id.
     return level.id ? level.id : undefined;
    }
-  
-  scroll(ev) {
-    var scrollTopCurrent = ev.detail.scrollTop;
-    var scrollTopMax = ev.detail.event.path[0].clientHeight;
-    var scrollBottom = scrollTopMax - scrollTopCurrent;
-
-    console.log(ev.detail);
-    console.log('scrollTopCurrent', scrollTopCurrent);
-    console.log('scrollTopMax', scrollTopMax);
-    console.log('scrollBottom', scrollBottom);
-    
-  }
-  scrollTo (level) {
-    console.log('go to milestone-id',level.id);
-  }
+ 
    
    ngAfterViewChecked() {
     let elementRef = this.milstones;

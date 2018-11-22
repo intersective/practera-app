@@ -7,7 +7,7 @@
 <ion-grid class="milestone-bar">
   <ion-row >
     <ion-col class="bubbles-top" *ngFor="let level of levels;">
-      <div class="touch-area" id="touch-{{level.id}}" (click)="scrollTo(level)" [ngClass]="active">
+      <div>
       <div *ngIf="!level.is_locked" >
         <ion-icon *ngIf="level.progress >= 1" name="checkmark-circle" class="icon-done" ></ion-icon>
         <!--{{level.progress}}-->
@@ -37,7 +37,7 @@
 </ion-grid>
     
 
-<ion-content color="light" (ionScroll)="scroll($event)"   [scrollEvents]="true" delegate-handle="myPageDelegate">
+<ion-content color="light">
  <ion-list class="project-list" >
     <div #milestones >
       <ion-item *ngFor="let level of levels ; trackBy:trackLevel" >
