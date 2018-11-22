@@ -11,10 +11,15 @@ import { NgCircleProgressModule } from 'ng-circle-progress';
 import { HttpClientInMemoryWebApiModule } from 'angular-in-memory-web-api';
 import { UtilsService } from './services/utils.service';
 import { AuthModule } from './auth/auth.module';
+import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
+import { ProjectModule } from './project/project.module';
 
 @NgModule({
 
-  declarations: [AppComponent],
+  declarations: [
+    AppComponent,
+    PageNotFoundComponent
+  ],
   entryComponents: [],
  imports: [
   	BrowserModule, 
@@ -25,7 +30,8 @@ import { AuthModule } from './auth/auth.module';
   		appkey: 'b11e7c189b',
   		prefixUrl: 'https://sandbox.practera.com/',
     }),
-    NgCircleProgressModule
+    NgCircleProgressModule,
+    ProjectModule
 
   ],
   providers: [
