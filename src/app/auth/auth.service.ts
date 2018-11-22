@@ -4,6 +4,7 @@ import { HttpParams } from '@angular/common/http';
 import { map } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import { BrowserStorageService } from '@services/storage.service';
+import { UtilsService } from '@services/utils.service';
 
 /**
  * @name api
@@ -37,7 +38,8 @@ export class AuthService {
 
   constructor(
     private request: RequestService,
-    private storage: BrowserStorageService
+    private storage: BrowserStorageService,
+    private utils: UtilsService
   ) { }
 
   private _clearCache():any {
@@ -114,13 +116,22 @@ export class AuthService {
   // Activity ID is no longer used as a parameter,
   // but needs to be there so just pass in a 1
   connectToLinkedIn () {
-    /*var url = baseURL + '/api/auth_linkedin.json?activity_id=1&apikey=' + this.storage.set('token') + '&appkey=' + appkey + '&timeline_id=' + this.storage.set('timeline_id');
-    Utils.openUrl(url);*/
+    const url = '/api/auth_linkedin.json?apikey=' + this.storage.get('token') + '&appkey=' + this.storage.get('appkey') + '&timeline_id=' + this.storage.get('timeline_id');
+    
+    this.utils.openUrl(url);
     return;
   }
 
-  directLink(data): Observable<any> {
-    return this.request.post(api.directLink, data).pipe(map(response => {
+  /**
+   * @name directLink
+   * @description fast/quick login with contact number
+   * @param  {string}}        data [description]
+   * @return {Observable<any>}      [description]
+   */
+  directLink(data: {contactNumber: string}): Observable<any> {
+    return this.request.post(api.directLink, {
+      contact_number: data.contactNumber, // API accepts contact_numebr
+    }).pipe(map(response => {
       if (response.data) {
         const data = response.data;
         this.storage.set('token', data.apikey);
