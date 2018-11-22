@@ -1,10 +1,9 @@
-import { Component, OnInit, EventEmitter, Output, ViewChild, ElementRef  } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef  } from '@angular/core';
 import { Location } from  '@angular/common';
 import { Router, ActivatedRoute, ParamMap } from '@angular/router';
 import { switchMap } from 'rxjs/operators';
 import { Observable } from 'rxjs';
-import { MilestoneService } from './project.service';
-import { Content } from '@ionic/angular';
+import { ProjectService } from './project.service';
 
 
 @Component({
@@ -16,30 +15,27 @@ export class ProjectComponent implements OnInit{
   @ViewChild("milestones") milstones: ElementRef<any>;
 
   constructor(
-    location: Location,
     private router: Router,
-    private milestoneService: MilestoneService) {};
+    private projectService: ProjectService,
+    private location: Location ) {};
 
-  location: Location;
-  public activeMileStoneId = '';
-  public milestonesHeigth = [];
-
-  
-  public levels = [];
+    public milestonesHeigth = [];
+    public levels = [];
     
   ngOnInit() {
     // this.id = parseInt(this.route.snapshot.paramMap.get('id'));
-    this.milestoneService.getMilestons()
+    this.projectService.getMilestons()
       .subscribe(levels => this.levels = levels);
       
   }
   goto(id) {
     console.log ('activity.id is:', id);
   }
-  activityRedirection(id) {
-    this.router.navigate(['pages', 'tabs', { outlets: { activity: ['activity', id] } }]);
-  }
-
+  trackLevel(index,level){
+    //do what ever logic you need to come up with the unique identifier of your item in loop, I will just return the object id.
+    return level.id ? level.id : undefined;
+   }
+  
   scroll(ev) {
     var scrollTopCurrent = ev.detail.scrollTop;
     var scrollTopMax = ev.detail.event.path[0].clientHeight;
@@ -49,11 +45,11 @@ export class ProjectComponent implements OnInit{
     console.log('scrollTopCurrent', scrollTopCurrent);
     console.log('scrollTopMax', scrollTopMax);
     console.log('scrollBottom', scrollBottom);
-    // for (let i=0; i< this.milestonesHeigth.length; i++ ) {
-    //   console.log();
-    // }
     
-   }
+  }
+  scrollTo (level) {
+    console.log('go to milestone-id',level.id);
+  }
    
    ngAfterViewChecked() {
     let elementRef = this.milstones;
