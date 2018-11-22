@@ -6,8 +6,8 @@
 
 <ion-grid class="milestone-bar">
   <ion-row >
-    <ion-col class="bubbles-top" *ngFor="let level of levels">
-      <div class="touch-area" id="touch-{{level.id}}" (click)="scrollTo(level, index)" [ngClass]="active">
+    <ion-col class="bubbles-top" *ngFor="let level of levels;">
+      <div class="touch-area" id="touch-{{level.id}}" (click)="scrollTo(level)" [ngClass]="active">
       <div *ngIf="!level.is_locked" >
         <ion-icon *ngIf="level.progress >= 1" name="checkmark-circle" class="icon-done" ></ion-icon>
         <!--{{level.progress}}-->
@@ -37,10 +37,10 @@
 </ion-grid>
     
 
-<ion-content color="light" (ionScroll)="scroll($event)"   [scrollEvents]="true">
+<ion-content color="light" (ionScroll)="scroll($event)"   [scrollEvents]="true" delegate-handle="myPageDelegate">
  <ion-list class="project-list" >
     <div #milestones >
-      <ion-item *ngFor="let level of levels" >
+      <ion-item *ngFor="let level of levels ; trackBy:trackLevel()" >
         <div color="light" class="project-card">
           <div class="milestone" padding >
             <ion-text color="medium">MILESTONE</ion-text>
@@ -74,11 +74,11 @@
                     </div>
                     <ion-icon *ngIf="activity.is_locked" name="lock" color="medium" class="icon-lock"></ion-icon>
                     <ion-card *ngIf="!activity.lead_image"
-                               color="primary"
-                               class="card practera-card"
-                               [ngClass]="activity.is_locked ? 'locked-card': ''"
-                               (click)="goto(activity.id)"
-                               >
+                      color="primary"
+                      class="card practera-card"
+                      [ngClass]="activity.is_locked ? 'locked-card': ''"
+                      (click)="!activity.is_locked && goto(activity.id)"
+                      >
                       <ion-card-content [ngClass]="{'feedback-card': activity.hasFeedback }">
                         <h4 color="primary-contrast">Activity</h4>
                         <h2 color="primary-contrast" class="activity-name">{{activity.name}}</h2>
@@ -88,11 +88,11 @@
                       </ion-card-content>
                     </ion-card>
                     <ion-card *ngIf="activity.lead_image"
-                                color="primary"
-                                class="card practera-card image-card"
-                                [ngClass]="activity.is_locked ? 'locked-card': ''"
-                                (click)="goto(activity.id)"
-                                >         
+                      color="primary"
+                      class="card practera-card image-card"
+                      [ngClass]="activity.is_locked ? 'locked-card': ''"
+                      (click)="!activity.is_locked && goto(activity.id)"
+                      >         
                       <ion-card-content [ngClass]="{'feedback-card': activity.hasFeedback }">
                         <h4 color="primary-contrast">Activity</h4>
                         <h2 color="primary-contrast" class="activity-name">{{activity.name}}</h2>
