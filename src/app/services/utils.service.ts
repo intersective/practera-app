@@ -31,13 +31,16 @@ export class UtilsService {
   unset(object, path) {
     return this.lodash.unset(object, path);
   }
-   find(collections, callback) {
+  
+  find(collections, callback) {
     return this.lodash.find(collections, callback);
   }
-   indexOf(array, value, fromIndex=0) {
+  
+  indexOf(array, value, fromIndex=0) {
     return this.lodash.indexOf(array, value, fromIndex);
   }
-   remove(collections, callback) {
+  
+  remove(collections, callback) {
     return this.lodash.remove(collections, callback);
   }
 
