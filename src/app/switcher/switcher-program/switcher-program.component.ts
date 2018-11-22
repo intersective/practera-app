@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
-
+import { AuthService } from '../../auth/auth.service';
 import { Injectable, Inject } from '@angular/core';
 import { DOCUMENT } from '@angular/common';
 
@@ -33,6 +33,7 @@ export class SwitcherProgramComponent {
 
   constructor(
     private router: Router,
+    private authService: AuthService,
     @Inject(DOCUMENT) private document: Document
   ) {}
 
@@ -55,10 +56,11 @@ export class SwitcherProgramComponent {
 	}
 
   logout() {
-    // -- todo
-    // clear local storage data, log user out
-    console.log("User logged out");
-    this.router.navigate(['/login']);
+    // @TODO: clear local storage data, log user out
+    return this.authService.logout().subscribe(() => {
+      console.log("User logged out");
+      return this.router.navigate(['/login']);
+    });
   }
 
   changeThemeColor(color) {

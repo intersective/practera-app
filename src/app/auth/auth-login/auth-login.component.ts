@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '../auth.service';
+import { Observable, concat } from 'rxjs';
 
 @Component({
   selector: 'app-auth-login',
@@ -34,5 +35,4 @@ export class AuthLoginComponent {
       this.router.navigate(['/switcher']);
     });
 	}
-
 }
