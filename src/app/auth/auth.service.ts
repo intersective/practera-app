@@ -5,10 +5,6 @@ import { map } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import { BrowserStorageService } from '@services/storage.service';
 
-@Injectable({
-  providedIn: 'root',
-})
-
 /**
  * @name api
  * @description list of api endpoint involved in this service
@@ -29,11 +25,13 @@ interface ConfigParams {
   apikey: string;
 }
 
-
 interface UserProfile {
   contactNumber: string; 
 }
 
+@Injectable({
+  providedIn: 'root',
+})
 export class AuthService {
   private isLoggedIn: boolean = false;
 
