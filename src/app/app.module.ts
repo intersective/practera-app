@@ -10,6 +10,7 @@ import { AppComponent } from './app.component';
 import { NgCircleProgressModule } from 'ng-circle-progress';
 import { HttpClientInMemoryWebApiModule } from 'angular-in-memory-web-api';
 import { UtilsService } from './services/utils.service';
+import { AuthModule } from './auth/auth.module';
 
 @NgModule({
 
