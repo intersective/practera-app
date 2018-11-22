@@ -68,11 +68,17 @@ export class QFileComponent implements ControlValueAccessor, OnInit {
   onChange(type, value = ''){
     //set changed value (answer or comment)
     if (type) {
+      if (!this.innerValue) {
+        this.innerValue = {
+          answer: [],
+          comment: ''
+        };
+      }
       if (type == 'comment') {
         // just pass the value for comment since comment is always just text
-        this.innerValue[type] = value;
+        this.innerValue.comment = value;
       } else {
-        this.innerValue[type] = this.uploadedFiles;
+        this.innerValue.answer = this.uploadedFiles;
       }
     } else {
       // this is for submitter, just pass the uploaded file as the answer
@@ -85,7 +91,9 @@ export class QFileComponent implements ControlValueAccessor, OnInit {
 
   //From ControlValueAccessor interface
   writeValue(value: any) {
-    this.innerValue = value;
+    if (value) {
+      this.innerValue = value;
+    }
   }
 
   //From ControlValueAccessor interface

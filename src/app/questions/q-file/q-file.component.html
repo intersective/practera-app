@@ -26,19 +26,15 @@
       <file-stack 
         [accept]="fileTypes"
         (complete)="onFileUploadCompleted($event)">
-        <button>
-          <i>Upload File</i>
-        </button>
       </file-stack>
       <ion-text *ngFor="let error of errors" color="danger">
         <p>{{error}}</p>
       </ion-text>
-      <span *ngFor='let file of uploadedFiles; let i = index;'>
-        <a href='{{file.url}}'class="font-red" target="_blank">
-        <ion-icon name="document" margin-end></ion-icon>File {{file.originalPath}}
+      <div *ngFor='let file of uploadedFiles; let i = index;'>
+        <a [href]="file.url" class="font-red" target="_blank">
+          <ion-icon name="document" margin-end></ion-icon>{{ file.filename }}
         </a>
-        <br>
-      </span>
+      </div>
     </ng-container>
 
     <ng-container *ngIf="doReview">
