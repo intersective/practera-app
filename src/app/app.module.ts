@@ -8,16 +8,16 @@ import { AppRoutingModule } from './app-routing.module';
 import { RequestModule } from './shared/request/request.module'; 
 import { AppComponent } from './app.component';
 import { NgCircleProgressModule } from 'ng-circle-progress';
-
 import { HttpClientInMemoryWebApiModule } from 'angular-in-memory-web-api';
 import { UtilsService } from './services/utils.service';
 
 @NgModule({
+
   declarations: [AppComponent],
   entryComponents: [],
-
-  imports: [
+ imports: [
   	BrowserModule, 
+    AuthModule,
   	IonicModule.forRoot(), 
   	AppRoutingModule,
   	RequestModule.forRoot({ 
@@ -25,6 +25,7 @@ import { UtilsService } from './services/utils.service';
   		prefixUrl: 'https://sandbox.practera.com/',
     }),
     NgCircleProgressModule
+
   ],
   providers: [
     // StatusBar,

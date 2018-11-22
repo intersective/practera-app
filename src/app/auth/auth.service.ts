@@ -1,13 +1,19 @@
 import { Injectable } from '@angular/core';
 import { RequestService } from '@shared/request/request.service';
 import { HttpParams } from '@angular/common/http';
+import { map } from 'rxjs/operators';
+import { BrowserStorageService } from '@services/storage.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
+  isLoggedIn: boolean = false;
 
-  constructor(private request: RequestService) { }
+  constructor(
+    private request: RequestService,
+    private storage: BrowserStorageService
+  ) { }
 
   /**
    * @name login
@@ -21,6 +27,10 @@ export class AuthService {
 
     return this.request.post('api/auth.json', body.toString(), { 
     	headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
-    });
+    }).pipe(map(response => {
+      console.log('Auth Response::', response);
+      this.storage.set('apikey', response.data.apikey);
+      return response;
+    }));
   }
 }

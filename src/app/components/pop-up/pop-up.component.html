@@ -9,6 +9,13 @@
         </div>
       </ng-container>
 
+      <ng-container *ngSwitchCase="'shortMessage'">
+        <div class="div-logo"></div>
+        <div class="div-after-logo">
+          <p>{{ data.message }} </p>
+        </div>
+      </ng-container>
+
     </ng-container> 
     <div class="div-after-logo">
       <ion-button (click)="confirmed()" shape="round" color="primary" expand="full">OK</ion-button>
