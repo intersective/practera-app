@@ -8,7 +8,7 @@ import { BrowserStorageService } from '@services/storage.service';
   providedIn: 'root',
 })
 export class AuthService {
-  isLoggedIn: boolean = false;
+  isLoggedIn: boolean = true;
 
   constructor(
     private request: RequestService,
