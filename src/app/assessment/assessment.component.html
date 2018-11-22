@@ -63,11 +63,11 @@
           ></app-q-file>
 
         </ng-container>
-        
+
       </ng-container>
     </ng-container>
 
-    <ion-button *ngIf="doAssessment || doReview" (click)="submit()" shape="round" color="primary" expand="full">Submit</ion-button>
+    <ion-button *ngIf="doAssessment || doReview" (click)="submit()" shape="round" expand="full">Submit</ion-button>
 
     <div *ngIf="submission.status == 'published'" class="text-right">
       <span class="vertical-middle">Mark feedback as read</span>

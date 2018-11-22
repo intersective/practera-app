@@ -5,7 +5,7 @@ import { FilestackService } from "./filestack.service";
 
 @Component({
   selector: "file-stack",
-  template: "<ng-content></ng-content>"
+  templateUrl: "filestack.component.html"
 })
 export class FilestackComponent implements OnInit, OnDestroy {
   @Input("accept") private fileTypes: any;
@@ -20,11 +20,7 @@ export class FilestackComponent implements OnInit, OnDestroy {
 
   ngOnInit() {}
 
-  //open filestack on click event
-  @HostListener("click", ['$event'])
-
-  onFileStackFieldClick(event: MouseEvent) {
-    let accept = (this.fileTypes || "").split(",");
+  uploadFile() {
     if (this.filestackSubscriber) {
       this.filestackSubscriber.unsubscribe();
       this.filestackSubscriber = null;
@@ -32,8 +28,7 @@ export class FilestackComponent implements OnInit, OnDestroy {
     let filestackConfig = this.filestackService.getFilestackConfig().key;
     const fileStackClient = filestack.init(filestackConfig);
     let s3Config = this.filestackService.getS3Config();
-    fileStackClient.picker({
-      accept: accept,
+    let pickerOptions = {
       // we don't limit the max number of files now
       // maxFiles: parseInt(this.maxFiles),
       dropPane: {},
@@ -57,8 +52,13 @@ export class FilestackComponent implements OnInit, OnDestroy {
           data: data
         });
       }
-    })
-    .open();
+    };
+    if (this.fileTypes) {
+      pickerOptions['accept'] = this.fileTypes;
+    }
+
+    fileStackClient.picker(pickerOptions)
+      .open();
   }
 
   ngOnDestroy() {
