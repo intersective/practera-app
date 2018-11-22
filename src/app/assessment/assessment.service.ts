@@ -84,7 +84,8 @@ export class AssessmentService {
             id: 5,
             name: 'question5',
             type: 'file',
-            description: 'this is a file question description',
+            fileType: 'any',
+            description: 'this is a file(any) question description',
             isRequired: false,
             canComment: true,
             canAnswer: false

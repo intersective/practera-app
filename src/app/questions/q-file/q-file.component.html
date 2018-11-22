@@ -23,13 +23,16 @@
     </div>
 
     <ng-container *ngIf="doAssessment">
-      <file-stack [data-accept]="Litterals.uploadOthers" data-maxFiles="1" (complete)="onFileStackUploadComplete($event)">
-          <button>
-            <i>Upload File</i>
-          </button>
-          <br>
-          <br>
+      <file-stack 
+        [accept]="fileTypes"
+        (complete)="onFileUploadCompleted($event)">
+        <button>
+          <i>Upload File</i>
+        </button>
       </file-stack>
+      <ion-text *ngFor="let error of errors" color="danger">
+        <p>{{error}}</p>
+      </ion-text>
       <span *ngFor='let file of uploadedFiles; let i = index;'>
         <a href='{{file.url}}'class="font-red" target="_blank">
         <ion-icon name="document" margin-end></ion-icon>File {{file.originalPath}}
