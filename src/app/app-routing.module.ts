@@ -15,6 +15,11 @@ const routes: Routes = [
   	loadChildren: './tabs/tabs.module#TabsModule',
   	canLoad: [AuthGuard],
   },
+  { 
+  	path: 'project',  
+  	loadChildren: './project/project.module#ProjectModule',
+  	
+  },
   { path: '', redirectTo: 'tabs', pathMatch: 'full' },
   { path: '**', component: PageNotFoundComponent }
 ];
