@@ -58,4 +58,17 @@ export class UtilsService {
     });
     return await modal.present();
   }
+
+  // given an array and a value, check if this value is in this array, if it is, remove it, if not, add it to the array
+  addOrRemove(array: Array<any>, value) {
+    let position = this.indexOf(array, value);
+    if (position > -1) {
+      // find the position of this value and remove it
+      array.splice(position, 1);
+    } else {
+      // add it to the value array
+      array.push(value);
+    }
+    return array;
+  }
 }

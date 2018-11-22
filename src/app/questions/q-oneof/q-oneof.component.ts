@@ -30,7 +30,7 @@ export class QOneofComponent implements ControlValueAccessor {
   @ViewChild('comment') commentRef: ElementRef;
 
   // the value of answer
-  innerValue = '';
+  innerValue: any;
   // validation errors array
   errors: Array<any> = [];
 
@@ -43,25 +43,24 @@ export class QOneofComponent implements ControlValueAccessor {
   propagateChange = (_: any) => {}
 
   // event fired when radio is selected. propagate the change up to the form control using the custom value accessor interface
+  // if 'type' is set, it means it comes from reviewer doing review, otherwise it comes from submitter doing assessment
   onChange(value, type){
     //set changed value (answer or comment)
     if (type) {
-      let innerValueObj = {};
-      if (this.innerValue) {
-        innerValueObj = JSON.parse(this.innerValue);
-      } 
-      innerValueObj[type] = value;
-      this.innerValue = JSON.stringify(innerValueObj);
+      // initialise innerValue if not set
+      if (!this.innerValue) {
+        this.innerValue = {
+          answer: '',
+          comment: ''
+        };
+      }
+      this.innerValue[type] = value;
     } else {
       this.innerValue = value;
     }
 
     // propagate value into form control using control value accessor interface
-    if (type) {
-      this.propagateChange(JSON.parse(this.innerValue));
-    } else {
-      this.propagateChange(this.innerValue);
-    }
+    this.propagateChange(this.innerValue);
 
     //reset errors 
     this.errors = [];
@@ -79,7 +78,9 @@ export class QOneofComponent implements ControlValueAccessor {
 
   //From ControlValueAccessor interface
   writeValue(value: any) {
-    this.innerValue = value;
+    if (value) {
+      this.innerValue = value;
+    }
   }
 
   //From ControlValueAccessor interface
