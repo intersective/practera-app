@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { RequestService } from '@shared/request/request.service';
 import { HttpParams } from '@angular/common/http';
 import { map } from 'rxjs/operators';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { BrowserStorageService } from '@services/storage.service';
 import { UtilsService } from '@services/utils.service';
 
@@ -100,9 +100,9 @@ export class AuthService {
     }));
   }
 
-  logout(): any {
+  logout(): Observable<any> {
     // @TODO: clear ionic view history too
-    return this.storage.clear();
+    return of(this.storage.clear());
   }
 
   /**
