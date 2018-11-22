@@ -17,13 +17,13 @@ const routes: Routes = [
     canActivate: [AuthGuard],
     children: [
       {
-        path: '',
+        path: 'home',
         outlet: 'home',
         canActivateChild: [AuthGuard],
         component: HomeComponent
       },
       {
-        path: 'project',
+        path: '',
         outlet: 'project',
         component: ProjectComponent
       },
