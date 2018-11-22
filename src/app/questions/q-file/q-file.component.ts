@@ -36,7 +36,7 @@ export class QFileComponent implements ControlValueAccessor, OnInit {
   fileTypes = '';
 
   // the value of answer
-  innerValue = '';
+  innerValue: any;
   // validation errors array
   errors: Array<any> = [];
 
@@ -64,30 +64,23 @@ export class QFileComponent implements ControlValueAccessor, OnInit {
   }
 
   // event fired when file is uploaded. propagate the change up to the form control using the custom value accessor interface
+  // if 'type' is set, it means it comes from reviewer doing review, otherwise it comes from submitter doing assessment
   onChange(type, value = ''){
     //set changed value (answer or comment)
     if (type) {
-      let innerValueObj = {
-        answer: [],
-        comment: ''
-      };
-      if (this.innerValue) {
-        innerValueObj = JSON.parse(this.innerValue);
-      }
       if (type == 'comment') {
         // just pass the value for comment since comment is always just text
-        innerValueObj.comment = value;
+        this.innerValue[type] = value;
       } else {
-        innerValueObj.answer = this.uploadedFiles;
+        this.innerValue[type] = this.uploadedFiles;
       }
-      this.innerValue = JSON.stringify(innerValueObj);
     } else {
       // this is for submitter, just pass the uploaded file as the answer
-      this.innerValue = JSON.stringify(this.uploadedFiles);
+      this.innerValue = this.uploadedFiles;
     }
 
     // propagate value into form control using control value accessor interface
-    this.propagateChange(JSON.parse(this.innerValue));
+    this.propagateChange(this.innerValue);
   }
 
   //From ControlValueAccessor interface
