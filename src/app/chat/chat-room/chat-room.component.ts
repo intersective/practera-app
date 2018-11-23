@@ -20,27 +20,52 @@ export class ChatRoomComponent implements OnInit {
     name: ""
   };
   chatColors: any[];
+  routeTeamId:number = 0;
+  routeTeamMemberId:number = 0;
+  routeIsTeam:boolean = false;
+  messagePageNumber:number = 0;
+  messagePagesize:number = 20;
 
   constructor(
     private chatService: ChatService,
     private router: Router,
-    private storage: BrowserStorageService
+    private storage: BrowserStorageService,
+    private activatedRoute: ActivatedRoute
   ) {}
 
   ngOnInit() {
-    this.loadStorageData();
-  }
-
-  loadStorageData() {
     this.chatColors = this.storage.get("chatAvatarColors");
     this.selectedChat = this.storage.get("selectedChatObject");
-    this.loadMessages();
+    this.validateRoutePrams();
+  }
+
+  private validateRoutePrams() {
+    this.activatedRoute.queryParams.subscribe(params => {
+      this.routeTeamId = +params['teamId']; // (+) converts string 'teamId' to a number
+      this.routeTeamMemberId = +params['memberId']; // (+) converts string 'memberId' to a number
+      this.routeIsTeam = JSON.parse(params['isTeam']);// (JSON.parse()) converts string 'isTeam' to a boolean
+      this.loadMessages();
+   });
   }
 
   loadMessages() {
-    this.chatService.getMessageList(null).subscribe(response => {
+    // creating params need to load messages.
+    let param = {
+      team_id : this.routeTeamId,
+      page: this.getMessagePageNumber(),
+      size: this.messagePagesize,
+      team_member_id: null
+    }
+    if (!this.routeIsTeam) {
+      param.team_member_id = this.routeTeamMemberId
+    }
+    this.chatService.getMessageList(param).subscribe(response => {
       this.updateMessageListResponse(response, false);
     });
+  }
+
+  private getMessagePageNumber() {
+    return (this.messagePageNumber += 1);
   }
 
   getChatAvatarText(senderName) {
@@ -54,7 +79,8 @@ export class ChatRoomComponent implements OnInit {
   sendMessage() {
     if (this.message) {
       const message = this.message;
-      this.message = "";
+      this.message = ""; // remove typed message from text field.
+      // createing prams need to send message
       let data = {
         sender_name: this.selectedChat.name,
         message: message,
@@ -116,6 +142,7 @@ export class ChatRoomComponent implements OnInit {
   private markAsSeen(messageList) {
     let messageIdList = [];
     let index = 0;
+    // createing id array to mark as read.
     for (index = 0; index < messageList.length; index++) {
       messageIdList.push(messageList[index].id);
     }
