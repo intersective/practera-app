@@ -135,41 +135,53 @@ export class AssessmentService {
       4: {
         answer: [1,2]
       },
+      5: {
+        answer: {
+          container: "practera-aus",
+          filename: "sample.jpg",
+          handle: "EjdSc3EJSLmJnu4WVJnh",
+          key: "case/uploads/public/4S5U3B8TKWcRpifXA6ym_sample.jpg",
+          mimetype: "image/jpeg",
+          originalFile: {name: "sample.jpg", type: "image/jpeg", size: 51085},
+          originalPath: "sample.jpg",
+          size: 51085,
+          source: "local_file_system",
+          status: "Stored",
+          uploadId: "ca9dc1b2f1ae59d14f242b691f4bc6a7",
+          url: "https://cdn.filestackcontent.com/EjdSc3EJSLmJnu4WVJnh"
+        }
+      },
       6: {
-        answer: [
-          {
-            container: "practera-aus",
-            filename: "Screen Shot 2018-11-22 at 3.26.03 pm.png",
-            handle: "X4nYkCpVRzCwRGCKQzqP",
-            key: "case/uploads/public/yIops3X5Qi2kVuoEvEOq_Screen Shot 2018-11-22 at 3.26.03 pm.png",
-            mimetype: "image/png",
-            originalFile: {name: "Screen Shot 2018-11-22 at 3.26.03 pm.png", type: "image/png", size: 6512},
-            originalPath: "Screen Shot 2018-11-22 at 3.26.03 pm.png",
-            size: 4060,
-            source: "local_file_system",
-            status: "Stored",
-            uploadId: "c29bec3dcffef31bef40eedf3aef2a79f",
-            url: "https://cdn.filestackcontent.com/X4nYkCpVRzCwRGCKQzqP"
-          }
-        ]
+        answer: {
+          container: "practera-aus",
+          filename: "sample.jpg",
+          handle: "EjdSc3EJSLmJnu4WVJnh",
+          key: "case/uploads/public/4S5U3B8TKWcRpifXA6ym_sample.jpg",
+          mimetype: "image/jpeg",
+          originalFile: {name: "sample.jpg", type: "image/jpeg", size: 51085},
+          originalPath: "sample.jpg",
+          size: 51085,
+          source: "local_file_system",
+          status: "Stored",
+          uploadId: "ca9dc1b2f1ae59d14f242b691f4bc6a7",
+          url: "https://cdn.filestackcontent.com/EjdSc3EJSLmJnu4WVJnh"
+        }
       },
       7: {
-        answer: [
-          {
-            container: "practera-aus",
-            filename: "sample2.mp4",
-            handle: "1OJvu3EQTZmjDgrHPDzj",
-            key: "case/uploads/public/WsLzxK4R3CX1QYGekIau_sample2.mp4",
-            mimetype: "video/mp4",
-            originalFile: {name: "sample2.mp4", type: "video/mp4", size: 788493},
-            originalPath: "sample2.mp4",
-            size: 788493,
-            source: "local_file_system",
-            status: "Stored",
-            uploadId: "75d47c172b9b7f73073fbadd691f3b4f1",
-            url: "https://cdn.filestackcontent.com/1OJvu3EQTZmjDgrHPDzj"
-          }
-        ]
+        answer: {
+          container: "practera-aus",
+          filename: "sample2.mp4",
+          handle: "1OJvu3EQTZmjDgrHPDzj",
+          key: "case/uploads/public/WsLzxK4R3CX1QYGekIau_sample2.mp4",
+          mimetype: "video/mp4",
+          originalFile: {name: "sample2.mp4", type: "video/mp4", size: 788493},
+          originalPath: "sample2.mp4",
+          size: 788493,
+          source: "local_file_system",
+          status: "Stored",
+          uploadId: "75d47c172b9b7f73073fbadd691f3b4f1",
+          url: "https://cdn.filestackcontent.com/1OJvu3EQTZmjDgrHPDzj"
+        }
       }
     },
     3: {
@@ -183,41 +195,53 @@ export class AssessmentService {
       4: {
         answer: [1,2]
       },
+      5: {
+        answer: {
+          container: "practera-aus",
+          filename: "sample2.mp4",
+          handle: "1OJvu3EQTZmjDgrHPDzj",
+          key: "case/uploads/public/WsLzxK4R3CX1QYGekIau_sample2.mp4",
+          mimetype: "video/mp4",
+          originalFile: {name: "sample2.mp4", type: "video/mp4", size: 788493},
+          originalPath: "sample2.mp4",
+          size: 788493,
+          source: "local_file_system",
+          status: "Stored",
+          uploadId: "75d47c172b9b7f73073fbadd691f3b4f1",
+          url: "https://cdn.filestackcontent.com/1OJvu3EQTZmjDgrHPDzj"
+        }
+      },
       6: {
-        answer: [
-          {
-            container: "practera-aus",
-            filename: "Screen Shot 2018-11-22 at 3.26.03 pm.png",
-            handle: "X4nYkCpVRzCwRGCKQzqP",
-            key: "case/uploads/public/yIops3X5Qi2kVuoEvEOq_Screen Shot 2018-11-22 at 3.26.03 pm.png",
-            mimetype: "image/png",
-            originalFile: {name: "Screen Shot 2018-11-22 at 3.26.03 pm.png", type: "image/png", size: 6512},
-            originalPath: "Screen Shot 2018-11-22 at 3.26.03 pm.png",
-            size: 4060,
-            source: "local_file_system",
-            status: "Stored",
-            uploadId: "c29bec3dcffef31bef40eedf3aef2a79f",
-            url: "https://cdn.filestackcontent.com/X4nYkCpVRzCwRGCKQzqP"
-          }
-        ]
+        answer: {
+          container: "practera-aus",
+          filename: "sample.jpg",
+          handle: "EjdSc3EJSLmJnu4WVJnh",
+          key: "case/uploads/public/4S5U3B8TKWcRpifXA6ym_sample.jpg",
+          mimetype: "image/jpeg",
+          originalFile: {name: "sample.jpg", type: "image/jpeg", size: 51085},
+          originalPath: "sample.jpg",
+          size: 51085,
+          source: "local_file_system",
+          status: "Stored",
+          uploadId: "ca9dc1b2f1ae59d14f242b691f4bc6a7",
+          url: "https://cdn.filestackcontent.com/EjdSc3EJSLmJnu4WVJnh"
+        }
       },
       7: {
-        answer: [
-          {
-            container: "practera-aus",
-            filename: "sample2.mp4",
-            handle: "1OJvu3EQTZmjDgrHPDzj",
-            key: "case/uploads/public/WsLzxK4R3CX1QYGekIau_sample2.mp4",
-            mimetype: "video/mp4",
-            originalFile: {name: "sample2.mp4", type: "video/mp4", size: 788493},
-            originalPath: "sample2.mp4",
-            size: 788493,
-            source: "local_file_system",
-            status: "Stored",
-            uploadId: "75d47c172b9b7f73073fbadd691f3b4f1",
-            url: "https://cdn.filestackcontent.com/1OJvu3EQTZmjDgrHPDzj"
-          }
-        ]
+        answer: {
+          container: "practera-aus",
+          filename: "sample2.mp4",
+          handle: "1OJvu3EQTZmjDgrHPDzj",
+          key: "case/uploads/public/WsLzxK4R3CX1QYGekIau_sample2.mp4",
+          mimetype: "video/mp4",
+          originalFile: {name: "sample2.mp4", type: "video/mp4", size: 788493},
+          originalPath: "sample2.mp4",
+          size: 788493,
+          source: "local_file_system",
+          status: "Stored",
+          uploadId: "75d47c172b9b7f73073fbadd691f3b4f1",
+          url: "https://cdn.filestackcontent.com/1OJvu3EQTZmjDgrHPDzj"
+        }
       }
     },
     4: {
@@ -231,41 +255,53 @@ export class AssessmentService {
       4: {
         answer: [1,2]
       },
+      5: {
+        answer: {
+          container: "practera-aus",
+          filename: "sample2.mp4",
+          handle: "1OJvu3EQTZmjDgrHPDzj",
+          key: "case/uploads/public/WsLzxK4R3CX1QYGekIau_sample2.mp4",
+          mimetype: "video/mp4",
+          originalFile: {name: "sample2.mp4", type: "video/mp4", size: 788493},
+          originalPath: "sample2.mp4",
+          size: 788493,
+          source: "local_file_system",
+          status: "Stored",
+          uploadId: "75d47c172b9b7f73073fbadd691f3b4f1",
+          url: "https://cdn.filestackcontent.com/1OJvu3EQTZmjDgrHPDzj"
+        }
+      },
       6: {
-        answer: [
-          {
-            container: "practera-aus",
-            filename: "Screen Shot 2018-11-22 at 3.26.03 pm.png",
-            handle: "X4nYkCpVRzCwRGCKQzqP",
-            key: "case/uploads/public/yIops3X5Qi2kVuoEvEOq_Screen Shot 2018-11-22 at 3.26.03 pm.png",
-            mimetype: "image/png",
-            originalFile: {name: "Screen Shot 2018-11-22 at 3.26.03 pm.png", type: "image/png", size: 6512},
-            originalPath: "Screen Shot 2018-11-22 at 3.26.03 pm.png",
-            size: 4060,
-            source: "local_file_system",
-            status: "Stored",
-            uploadId: "c29bec3dcffef31bef40eedf3aef2a79f",
-            url: "https://cdn.filestackcontent.com/X4nYkCpVRzCwRGCKQzqP"
-          }
-        ]
+        answer: {
+          container: "practera-aus",
+          filename: "sample.jpg",
+          handle: "EjdSc3EJSLmJnu4WVJnh",
+          key: "case/uploads/public/4S5U3B8TKWcRpifXA6ym_sample.jpg",
+          mimetype: "image/jpeg",
+          originalFile: {name: "sample.jpg", type: "image/jpeg", size: 51085},
+          originalPath: "sample.jpg",
+          size: 51085,
+          source: "local_file_system",
+          status: "Stored",
+          uploadId: "ca9dc1b2f1ae59d14f242b691f4bc6a7",
+          url: "https://cdn.filestackcontent.com/EjdSc3EJSLmJnu4WVJnh"
+        }
       },
       7: {
-        answer: [
-          {
-            container: "practera-aus",
-            filename: "sample2.mp4",
-            handle: "1OJvu3EQTZmjDgrHPDzj",
-            key: "case/uploads/public/WsLzxK4R3CX1QYGekIau_sample2.mp4",
-            mimetype: "video/mp4",
-            originalFile: {name: "sample2.mp4", type: "video/mp4", size: 788493},
-            originalPath: "sample2.mp4",
-            size: 788493,
-            source: "local_file_system",
-            status: "Stored",
-            uploadId: "75d47c172b9b7f73073fbadd691f3b4f1",
-            url: "https://cdn.filestackcontent.com/1OJvu3EQTZmjDgrHPDzj"
-          }
-        ]
+        answer: {
+          container: "practera-aus",
+          filename: "sample2.mp4",
+          handle: "1OJvu3EQTZmjDgrHPDzj",
+          key: "case/uploads/public/WsLzxK4R3CX1QYGekIau_sample2.mp4",
+          mimetype: "video/mp4",
+          originalFile: {name: "sample2.mp4", type: "video/mp4", size: 788493},
+          originalPath: "sample2.mp4",
+          size: 788493,
+          source: "local_file_system",
+          status: "Stored",
+          uploadId: "75d47c172b9b7f73073fbadd691f3b4f1",
+          url: "https://cdn.filestackcontent.com/1OJvu3EQTZmjDgrHPDzj"
+        }
       }
     },
     5: {
@@ -279,41 +315,53 @@ export class AssessmentService {
       4: {
         answer: [1,2]
       },
+      5: {
+        answer: {
+          container: "practera-aus",
+          filename: "sample2.mp4",
+          handle: "1OJvu3EQTZmjDgrHPDzj",
+          key: "case/uploads/public/WsLzxK4R3CX1QYGekIau_sample2.mp4",
+          mimetype: "video/mp4",
+          originalFile: {name: "sample2.mp4", type: "video/mp4", size: 788493},
+          originalPath: "sample2.mp4",
+          size: 788493,
+          source: "local_file_system",
+          status: "Stored",
+          uploadId: "75d47c172b9b7f73073fbadd691f3b4f1",
+          url: "https://cdn.filestackcontent.com/1OJvu3EQTZmjDgrHPDzj"
+        }
+      },
       6: {
-        answer: [
-          {
-            container: "practera-aus",
-            filename: "Screen Shot 2018-11-22 at 3.26.03 pm.png",
-            handle: "X4nYkCpVRzCwRGCKQzqP",
-            key: "case/uploads/public/yIops3X5Qi2kVuoEvEOq_Screen Shot 2018-11-22 at 3.26.03 pm.png",
-            mimetype: "image/png",
-            originalFile: {name: "Screen Shot 2018-11-22 at 3.26.03 pm.png", type: "image/png", size: 6512},
-            originalPath: "Screen Shot 2018-11-22 at 3.26.03 pm.png",
-            size: 4060,
-            source: "local_file_system",
-            status: "Stored",
-            uploadId: "c29bec3dcffef31bef40eedf3aef2a79f",
-            url: "https://cdn.filestackcontent.com/X4nYkCpVRzCwRGCKQzqP"
-          }
-        ]
+        answer: {
+          container: "practera-aus",
+          filename: "sample.jpg",
+          handle: "EjdSc3EJSLmJnu4WVJnh",
+          key: "case/uploads/public/4S5U3B8TKWcRpifXA6ym_sample.jpg",
+          mimetype: "image/jpeg",
+          originalFile: {name: "sample.jpg", type: "image/jpeg", size: 51085},
+          originalPath: "sample.jpg",
+          size: 51085,
+          source: "local_file_system",
+          status: "Stored",
+          uploadId: "ca9dc1b2f1ae59d14f242b691f4bc6a7",
+          url: "https://cdn.filestackcontent.com/EjdSc3EJSLmJnu4WVJnh"
+        }
       },
       7: {
-        answer: [
-          {
-            container: "practera-aus",
-            filename: "sample2.mp4",
-            handle: "1OJvu3EQTZmjDgrHPDzj",
-            key: "case/uploads/public/WsLzxK4R3CX1QYGekIau_sample2.mp4",
-            mimetype: "video/mp4",
-            originalFile: {name: "sample2.mp4", type: "video/mp4", size: 788493},
-            originalPath: "sample2.mp4",
-            size: 788493,
-            source: "local_file_system",
-            status: "Stored",
-            uploadId: "75d47c172b9b7f73073fbadd691f3b4f1",
-            url: "https://cdn.filestackcontent.com/1OJvu3EQTZmjDgrHPDzj"
-          }
-        ]
+        answer: {
+          container: "practera-aus",
+          filename: "sample2.mp4",
+          handle: "1OJvu3EQTZmjDgrHPDzj",
+          key: "case/uploads/public/WsLzxK4R3CX1QYGekIau_sample2.mp4",
+          mimetype: "video/mp4",
+          originalFile: {name: "sample2.mp4", type: "video/mp4", size: 788493},
+          originalPath: "sample2.mp4",
+          size: 788493,
+          source: "local_file_system",
+          status: "Stored",
+          uploadId: "75d47c172b9b7f73073fbadd691f3b4f1",
+          url: "https://cdn.filestackcontent.com/1OJvu3EQTZmjDgrHPDzj"
+        }
       }
     }
   };

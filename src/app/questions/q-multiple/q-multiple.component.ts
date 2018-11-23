@@ -16,9 +16,9 @@ import { UtilsService } from '@services/utils.service';
 })
 export class QMultipleComponent implements ControlValueAccessor {
 
-  @Input() question: {};
-  @Input() submission: {};
-  @Input() review: {};
+  @Input() question;
+  @Input() submission;
+  @Input() review;
   // this is for doing an assessment or not
   @Input() doAssessment: Boolean;
   // this is for doing review or not

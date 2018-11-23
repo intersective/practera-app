@@ -16,11 +16,11 @@ import { FilestackService } from '@shared/filestack/filestack.service';
 })
 export class QFileComponent implements ControlValueAccessor, OnInit {
 
-  @Input() question: {
+  @Input() question = {
     fileType: 'any'
   };
-  @Input() submission: {};
-  @Input() review: {};
+  @Input() submission;
+  @Input() review;
   // this is for doing an assessment or not
   @Input() doAssessment: Boolean;
   // this is for doing review or not
@@ -32,7 +32,7 @@ export class QFileComponent implements ControlValueAccessor, OnInit {
   // comment field for reviewer
   @ViewChild('comment') commentRef: ElementRef;
 
-  uploadedFiles: Array<any> = [];
+  uploadedFile;
   fileTypes = '';
 
   // the value of answer
@@ -55,7 +55,9 @@ export class QFileComponent implements ControlValueAccessor, OnInit {
     if (file.success) {
       // reset errors 
       this.errors = [];
-      this.uploadedFiles.push(file.data);
+      // currently we only support one file upload per question, if we need to support multiple file upload later, we need to change this to: 
+      // this.uploadedFiles = push(file.data);
+      this.uploadedFile = file.data;
       this.onChange(type);
     } else {
       // display error message for user
@@ -70,7 +72,7 @@ export class QFileComponent implements ControlValueAccessor, OnInit {
     if (type) {
       if (!this.innerValue) {
         this.innerValue = {
-          answer: [],
+          answer: {},
           comment: ''
         };
       }
@@ -78,11 +80,11 @@ export class QFileComponent implements ControlValueAccessor, OnInit {
         // just pass the value for comment since comment is always just text
         this.innerValue.comment = value;
       } else {
-        this.innerValue.answer = this.uploadedFiles;
+        this.innerValue.answer = this.uploadedFile;
       }
     } else {
       // this is for submitter, just pass the uploaded file as the answer
-      this.innerValue = this.uploadedFiles;
+      this.innerValue = this.uploadedFile;
     }
 
     // propagate value into form control using control value accessor interface
