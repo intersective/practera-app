@@ -9,7 +9,6 @@ import { FilestackService } from "./filestack.service";
 })
 export class FilestackComponent implements OnInit, OnDestroy {
   @Input("accept") private fileTypes: any;
-  @Input("maxFiles") private maxFiles: any;
   @Output("complete") private output: EventEmitter<any> = new EventEmitter();
   private filestackSubscriber: Subscription;
 
@@ -29,8 +28,6 @@ export class FilestackComponent implements OnInit, OnDestroy {
     const fileStackClient = filestack.init(filestackConfig);
     let s3Config = this.filestackService.getS3Config();
     let pickerOptions = {
-      // we don't limit the max number of files now
-      // maxFiles: parseInt(this.maxFiles),
       dropPane: {},
       fromSources: [
         'local_file_system',

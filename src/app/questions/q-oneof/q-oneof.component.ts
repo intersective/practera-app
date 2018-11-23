@@ -15,9 +15,9 @@ import { NG_VALUE_ACCESSOR, ControlValueAccessor, FormControl } from '@angular/f
 })
 export class QOneofComponent implements ControlValueAccessor {
 
-  @Input() question: {};
-  @Input() submission: {};
-  @Input() review: {};
+  @Input() question;
+  @Input() submission;
+  @Input() review;
   // this is for doing an assessment or not
   @Input() doAssessment: Boolean;
   // this is for doing review or not

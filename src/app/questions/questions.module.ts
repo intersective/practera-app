@@ -9,6 +9,7 @@ import { QTextComponent } from './q-text/q-text.component';
 import { QOneofComponent } from './q-oneof/q-oneof.component';
 import { QMultipleComponent } from './q-multiple/q-multiple.component';
 import { QFileComponent } from './q-file/q-file.component';
+import { QFileDisplayComponent } from './q-file/q-file-display/q-file-display.component';
 import { FilestackModule } from '@shared/filestack/filestack.module';
 
 @NgModule({
@@ -24,7 +25,8 @@ import { FilestackModule } from '@shared/filestack/filestack.module';
     QTextComponent,
     QOneofComponent,
     QMultipleComponent,
-    QFileComponent
+    QFileComponent,
+    QFileDisplayComponent
   ],
   exports: [
     QTextComponent,
