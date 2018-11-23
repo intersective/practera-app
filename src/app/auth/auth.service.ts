@@ -46,22 +46,48 @@ export class AuthService {
     // do clear user cache here
   }
 
+  private _normaliseAuth(rawData):any {
+    var data = rawData.data;
+
+    return {
+      success: rawData.success,
+      tutorial: data.tutorial,
+      apikey: data.apikey,
+      timelines: data.Timelines.map(function(timeline) {
+        timeline.Program.title = timeline.Program.name || '';
+
+        return {
+          enrolment: timeline.Enrolment,
+          program: timeline.Program,
+          project: timeline.Project,
+          timeline: timeline.Timeline,
+        };
+      }),
+      config: (data.Experience || {}).config || {},
+      _raw: rawData,
+    };
+  }
+
   /**
    * @name login
    * @description login API specifically only accept request data in encodedUrl formdata, so must conver them into compatible formdata before submission
    * @param {object} { email, password } in string for each of the value
    */
   login({ email, password }): Observable<any> {
-  	const body = new HttpParams()
-  		.set('data[User][email]', email)
-  		.set('data[User][password]', password);
+    const body = new HttpParams()
+      .set('data[User][email]', email)
+      .set('data[User][password]', password);
 
-    return this.request.post(api.login, body.toString(), { 
-    	headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+    return this.request.post(api.login, body.toString(), {
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
     }).pipe(map(response => {
+      const norm = this._normaliseAuth(response);
+
       console.log('Auth Response::', response);
+      console.log('Auth Response::', norm);
       if (response.data) {
-        this.storage.set('apikey', response.data.apikey);
+        this.storage.set('apikey', norm.apikeys);
+        this.storage.set('timelines', norm.timelines);
         this.storage.set('isLoggedIn', true);
       }
       return response;
@@ -128,7 +154,7 @@ export class AuthService {
    * @param  {string}}        data [description]
    * @return {Observable<any>}      [description]
    */
-  directLink(data: {contactNumber: string}): Observable<any> {
+  directLink(data: { contactNumber: string }): Observable<any> {
     return this.request.post(api.directLink, {
       contact_number: data.contactNumber, // API accepts contact_numebr
     }).pipe(map(response => {
