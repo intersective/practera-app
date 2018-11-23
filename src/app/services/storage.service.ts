@@ -15,7 +15,7 @@ export class BrowserStorageService {
     return JSON.parse(this.storage.getItem(key) || null);
   }
 
-  set(key: string, value: string) {
+  set(key: string, value: any) {
     this.storage.setItem(key, JSON.stringify(value));
   }
 

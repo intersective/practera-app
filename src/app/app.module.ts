@@ -9,7 +9,6 @@ import { StatusBar } from '@ionic-native/status-bar/ngx';
 import { AppRoutingModule } from './app-routing.module';
 import { RequestModule } from '@shared/request/request.module'; 
 import { AuthModule } from './auth/auth.module';
-import { TabsModule } from './tabs/tabs.module';
 
 import { AppComponent } from './app.component';
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
@@ -20,9 +19,9 @@ import { UtilsService } from './services/utils.service';
 
 @NgModule({
   declarations: [
-    AppComponent, 
     PageNotFoundComponent,
-    PopUpComponent
+    PopUpComponent,
+    AppComponent
   ],
   entryComponents: [
     PopUpComponent
@@ -35,8 +34,7 @@ import { UtilsService } from './services/utils.service';
   	RequestModule.forRoot({ 
   		appkey: 'b11e7c189b',
   		prefixUrl: 'https://sandbox.practera.com/',
-  	}),
-    TabsModule,
+  	})
   ],
   providers: [
     // StatusBar,
