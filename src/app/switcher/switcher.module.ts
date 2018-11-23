@@ -14,13 +14,11 @@ import { SwitcherProgramComponent } from './switcher-program/switcher-program.co
     IonicModule,
     CommonModule,
     FormsModule,
-    SwitcherRoutingModule
+    SwitcherRoutingModule,
   ],
   declarations: [
     SwitcherComponent, 
     SwitcherProgramComponent
-  ],
-  entryComponents: [
   ]
 })
 export class SwitcherModule {}

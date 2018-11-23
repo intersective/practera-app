@@ -10,12 +10,15 @@ const routes: Routes = [
   	path: 'switcher', 
   	loadChildren: './switcher/switcher.module#SwitcherModule',
   },
-  { 
-  	path: 'tabs',  
-  	loadChildren: './tabs/tabs.module#TabsModule',
-  	canLoad: [AuthGuard],
+  {
+    path: '',
+    loadChildren: './tabs/tabs.module#TabsModule',
+    canLoad: [AuthGuard]
   },
-  { path: '', redirectTo: 'tabs', pathMatch: 'full' },
+  { 
+    path: 'chat', 
+    loadChildren: './chat/chat.module#ChatModule' 
+  },
   { path: '**', component: PageNotFoundComponent }
 ];
 @NgModule({
