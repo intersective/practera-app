@@ -115,6 +115,6 @@ export class ChatListComponent implements OnInit {
     const extra: NavigationExtras = {
       queryParams: { chat },
     };
-    this.router.navigate(['/chat/chatroom'],{ queryParams: {teamId: chat.team_id, memberId: chat.team_member_id, isTeam: chat.is_team} });
+    this.router.navigate(['/chat/chatroom'],{ queryParams: {teamId: chat.team_id, memberId: chat.team_member_id} });
   }
 }

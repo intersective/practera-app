@@ -1,6 +1,27 @@
 import { Injectable } from "@angular/core";
 import { Observable, of, BehaviorSubject } from "rxjs";
 
+
+interface newMessage {
+  to: number | string;
+  message: string;
+  team_id: number;
+  env?: string;
+}
+
+interface messageListPrams {
+  team_id: number;
+  team_member_id: number | null;
+  page: number;
+  size: number;
+}
+
+interface markAsSeenPrams {
+  team_id: number;
+  id: string | number;
+  action?: string;
+}
+
 @Injectable({
   providedIn: "root"
 })
@@ -107,18 +128,28 @@ export class ChatService {
    *  size:20
    * }
    */
-  getMessageList(prams): Observable<any> {
+  getMessageList(prams: messageListPrams): Observable<any> {
     return of(this.messageList);
   }
 
-  markMessagesAsSeen(data): Observable<any> {
+  markMessagesAsSeen(prams: markAsSeenPrams): Observable<any> {
+    prams.action = 'mark_seen';
     return of("maked");
   }
 
-  postNewMessage(data): Observable<any> {
-    data.sent_time = '1.30 PM';
-    data.id = 300;
-    return of(data);
+  postNewMessage(data: newMessage): Observable<any> {
+    data.env = 'develop';
+    let returnData = {
+      id: 300,
+      sender_name: 'Chathumal',
+      is_sender: true,
+      team_name: 'dream team',
+      sent_time: '1.30 PM',
+      message: data.message,
+      team_id: data.team_id,
+      to: data.to
+    };
+    return of(returnData);
   }
 
   generateChatAvatarText(text) {
