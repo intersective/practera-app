@@ -38,7 +38,6 @@ export class ChatListComponent implements OnInit {
   private updateChatListResponse(response):void {
     if ((response)) {
       this.chatList = [];
-      // let chatColors = this.chatService.getChatAvatarColors();
       if ((!this.chatColors)) {
         this.setChatAvatarColors(response, null, 'nocolor');
       } else {
@@ -116,7 +115,6 @@ export class ChatListComponent implements OnInit {
     const extra: NavigationExtras = {
       queryParams: { chat },
     };
-    console.log(chat)
-    this.router.navigate(['/chat/chat-room']);
+    this.router.navigate(['/chat/chatroom'],{ queryParams: {teamId: chat.team_id, memberId: chat.team_member_id, isTeam: chat.is_team} });
   }
 }
