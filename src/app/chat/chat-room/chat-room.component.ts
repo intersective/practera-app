@@ -56,14 +56,12 @@ export class ChatRoomComponent implements OnInit {
       const message = this.message;
       this.message = "";
       let data = {
-        id: 300,
         sender_name: this.selectedChat.name,
         message: message,
         is_sender: true,
         team_id: this.selectedChat.team_id,
         to: null,
-        team_name: this.selectedChat.team_name,
-        sent_time: '1.30 PM'
+        team_name: this.selectedChat.team_name
       };
       if (this.selectedChat.is_team) {
         data.to = "team";
