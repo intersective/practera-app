@@ -7,14 +7,19 @@
   <ion-card-content padding-horizontal class="q-content">
 
     <ng-container *ngIf="submission.answer">
-      <ion-text>{{ submission.answer }}</ion-text>
+      <app-q-file-display
+        [file]="submission.answer"
+        [fileType]="question.fileType"
+      ></app-q-file-display>
     </ng-container>
 
     <div *ngIf="review.answer || review.comment" class="q-reviews">
       <ion-label class="q-title">Reviewer:</ion-label>
       <ng-container *ngIf="review.answer">
-        <b>Answer</b>
-        <p>{{ review.answer }}</p>
+        <app-q-file-display
+          [file]="review.answer"
+          [fileType]="question.fileType"
+        ></app-q-file-display>
       </ng-container>
       <ng-container *ngIf="review.comment">
         <b>Comment</b>
@@ -23,22 +28,33 @@
     </div>
 
     <ng-container *ngIf="doAssessment">
-      <file-stack 
+      <file-stack
         [accept]="fileTypes"
-        (complete)="onFileUploadCompleted($event)">
+        (complete)="onFileUploadCompleted($event)"
+      >
       </file-stack>
       <ion-text *ngFor="let error of errors" color="danger">
         <p>{{error}}</p>
       </ion-text>
-      <div *ngFor='let file of uploadedFiles; let i = index;'>
-        <a [href]="file.url" class="font-red" target="_blank">
-          <ion-icon name="document" margin-end></ion-icon>{{ file.filename }}
-        </a>
-      </div>
+      <app-q-file-display
+        [file]="uploadedFile"
+        [fileType]="question.fileType"
+      ></app-q-file-display>
+
     </ng-container>
 
     <ng-container *ngIf="doReview">
-      <ion-textarea *ngIf="question.canAnswer" class="background-white" #answer margin-top rows="4" (blur)="onChange(answer.value, 'answer')" placeholder="Please put your answer here"></ion-textarea>
+      <ng-container *ngIf="question.canAnswer">
+        <file-stack 
+          [accept]="fileTypes"
+          (complete)="onFileUploadCompleted($event, 'answer')"
+        >
+        </file-stack>
+        <app-q-file-display
+          [file]="uploadedFile"
+          [fileType]="question.fileType"
+        ></app-q-file-display>
+      </ng-container>
       <ion-textarea *ngIf="question.canComment" class="background-white" #comment margin-top rows="4" (blur)="onChange(comment.value, 'comment')" placeholder="Please put your feedback here"></ion-textarea>
     </ng-container>
 
