@@ -96,24 +96,6 @@ export class ChatService {
     return of(this.chatList);
   }
 
-  getchatById(id): Observable<any> {
-    let teamMemberChatObject = this.chatList.find(function(chat) {
-      return chat.team_member_id === id;
-    });
-    if (teamMemberChatObject) {
-      return of(teamMemberChatObject);
-    } else {
-      let teamChatObject = this.chatList.find(function(chat) {
-        return (chat.team_id === id) && (chat.role === null);
-      });
-      if (teamChatObject) {
-        return of(teamChatObject);
-      } else {
-        return of(null);
-      }
-    }
-  }
-
   /**
    * this method return message for one chat.
    * @param prams
