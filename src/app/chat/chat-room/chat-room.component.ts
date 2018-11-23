@@ -22,7 +22,6 @@ export class ChatRoomComponent implements OnInit {
   chatColors: any[];
   routeTeamId:number = 0;
   routeTeamMemberId:number = 0;
-  routeIsTeam:boolean = false;
   messagePageNumber:number = 0;
   messagePagesize:number = 20;
 
@@ -43,7 +42,6 @@ export class ChatRoomComponent implements OnInit {
     this.activatedRoute.queryParams.subscribe(params => {
       this.routeTeamId = +params['teamId']; // (+) converts string 'teamId' to a number
       this.routeTeamMemberId = +params['memberId']; // (+) converts string 'memberId' to a number
-      this.routeIsTeam = JSON.parse(params['isTeam']);// (JSON.parse()) converts string 'isTeam' to a boolean
       this.loadMessages();
    });
   }
@@ -54,10 +52,7 @@ export class ChatRoomComponent implements OnInit {
       team_id : this.routeTeamId,
       page: this.getMessagePageNumber(),
       size: this.messagePagesize,
-      team_member_id: null
-    }
-    if (!this.routeIsTeam) {
-      param.team_member_id = this.routeTeamMemberId
+      team_member_id: this.routeTeamMemberId
     }
     this.chatService.getMessageList(param).subscribe(response => {
       this.updateMessageListResponse(response, false);
@@ -82,12 +77,9 @@ export class ChatRoomComponent implements OnInit {
       this.message = ""; // remove typed message from text field.
       // createing prams need to send message
       let data = {
-        sender_name: this.selectedChat.name,
         message: message,
-        is_sender: true,
         team_id: this.selectedChat.team_id,
         to: null,
-        team_name: this.selectedChat.team_name
       };
       if (this.selectedChat.is_team) {
         data.to = "team";
@@ -148,7 +140,7 @@ export class ChatRoomComponent implements OnInit {
     }
     this.chatService
       .markMessagesAsSeen({
-        ids: JSON.stringify(messageIdList),
+        id: JSON.stringify(messageIdList),
         team_id: this.selectedChat.team_id
       })
       .subscribe(
