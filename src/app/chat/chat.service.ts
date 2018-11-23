@@ -134,6 +134,8 @@ export class ChatService {
   }
 
   postNewMessage(data): Observable<any> {
+    data.sent_time = '1.30 PM';
+    data.id = 300;
     return of(data);
   }
 
