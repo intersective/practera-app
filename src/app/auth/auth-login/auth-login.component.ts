@@ -24,9 +24,15 @@ export class AuthLoginComponent {
       email: this.email,
       password: this.password,
     }).subscribe(res => {
+      // hardcode login status
+      this.authService.isLoggedIn = true; 
+
       console.log(res);
       this.router.navigate(['/switcher']);
     }, err => {
+      // hardcode login status
+      this.authService.isLoggedIn = true; 
+      
       console.log(err);
       // should popup something instead
       this.router.navigate(['/switcher']);
