@@ -1,54 +1,61 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
+import { AuthGuard } from '../auth/auth.guard';
+
 import { TabsComponent } from './tabs.component';
 import { HomeComponent } from '../home/home.component';
-import { ProjectComponent } from '../project/project.component';
 import { ActivityComponent } from '../activity/activity.component';
-import { ChatComponent } from '../chat/chat.component';
-import { HelpComponent } from '../help/help.component';
+import { ChatListComponent } from '../chat/chat-list/chat-list.component';
 
 const routes: Routes = [
   {
-    path: 'tabs',
+    path: 'app',
     component: TabsComponent,
+    canActivate: [AuthGuard],    
     children: [
       {
         path: '',
-        redirectTo: '/pages/tabs/(home:home)',
+        redirectTo: '/app/(home:home)',
         pathMatch: 'full'
       },
       {
         path: 'home',
         outlet: 'home',
+        canActivateChild: [AuthGuard],
         component: HomeComponent
       },
       {
         path: 'project',
         outlet: 'project',
-        component: ProjectComponent
+        loadChildren: '../project/project.module#ProjectModule',
+        // component: ProjectComponent,
       },
       {
         path: 'activity/:id',
-        outlet: 'activity',
+        outlet: 'project',
+        canActivateChild: [AuthGuard],
         component: ActivityComponent
       },
       {
         path: 'chat',
         outlet: 'chat',
-        component: ChatComponent
+        // canActivateChild: [AuthGuard],
+        // loadChildren: '../chat/chat.module#ChatModule',
+        component: ChatListComponent
       },
       {
         path: 'help',
         outlet: 'help',
-        component: HelpComponent
+        loadChildren: '../help/help.module#HelpModule',
+        // component: HelpComponent
       }
     ]
   }
 ];
 
 @NgModule({
-  imports: [RouterModule.forChild(routes)],
-  exports: [RouterModule]
+  imports: [ RouterModule.forChild(routes) ],
+  exports: [ RouterModule ]
 })
 export class TabsRoutingModule {}
