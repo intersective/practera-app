@@ -32,12 +32,9 @@ import { TodoCardComponent } from '../components/todo-card/todo-card.component';
       "animationDuration": 1000,
       "titleFontSize": "32",
       "subtitleFontSize": "18",
-    }),
-    
-    RouterModule.forChild([{ path: '', component: HomeComponent }])
+    })
   ],
-  declarations: [HomeComponent, ActivityCardComponent, TodoCardComponent],
- 
+  declarations: [HomeComponent, ActivityCardComponent, TodoCardComponent]
 })
 export class HomeModule {
 }
