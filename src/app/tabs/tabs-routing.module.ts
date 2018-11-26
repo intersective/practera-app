@@ -12,7 +12,7 @@ const routes: Routes = [
   {
     path: 'app',
     component: TabsComponent,
-    canActivate: [AuthGuard],    
+    canActivate: [AuthGuard],
     children: [
       {
         path: '',
@@ -34,7 +34,7 @@ const routes: Routes = [
       {
         path: 'activity/:id',
         outlet: 'project',
-        canActivateChild: [AuthGuard],
+        // canActivateChild: [AuthGuard],
         component: ActivityComponent
       },
       {
