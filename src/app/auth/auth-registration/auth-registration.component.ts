@@ -39,10 +39,10 @@ export class AuthRegistrationComponent implements OnInit {
 
   ngOnInit() {
     this.domain = (this.domain.indexOf('127.0.0.1') !== -1) ? 'appdev.practera.com' :  this.domain;
-    this.asseccQueryParams();
+    this.validateQueryParams();
   }
 
-  asseccQueryParams() {
+  validateQueryParams() {
     // access query params
     this.route.queryParamMap.subscribe(queryParams => {
       let email = queryParams.get("email");
