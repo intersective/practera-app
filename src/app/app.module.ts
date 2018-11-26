@@ -13,26 +13,31 @@ import { TabsModule } from './tabs/tabs.module';
 
 import { AppComponent } from './app.component';
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
+import { PopUpComponent } from '@components/pop-up/pop-up.component';
 
 import { HttpClientInMemoryWebApiModule } from 'angular-in-memory-web-api';
 import { UtilsService } from './services/utils.service';
 
 @NgModule({
   declarations: [
-    AppComponent, 
+    AppComponent,
     PageNotFoundComponent,
+    PopUpComponent,
+    AppComponent
   ],
-  entryComponents: [],
+  entryComponents: [
+    PopUpComponent
+  ],
   imports: [
   	BrowserModule, 
     AuthModule,
-  	IonicModule.forRoot(), 
-  	AppRoutingModule,
-  	RequestModule.forRoot({ 
-  		appkey: 'b11e7c189b',
-  		prefixUrl: 'https://sandbox.practera.com/',
-  	}),
     TabsModule,
+  	IonicModule.forRoot(), 
+    RequestModule.forRoot({ 
+      appkey: 'b11e7c189b',
+      prefixUrl: 'https://sandbox.practera.com/',
+    }),
+  	AppRoutingModule,
   ],
   providers: [
     // StatusBar,
