@@ -12,7 +12,12 @@ export class BrowserStorageService {
   constructor(@Inject(BROWSER_STORAGE) public storage: Storage) {}
 
   get(key: string) {
-    return JSON.parse(this.storage.getItem(key) || null);
+    const cached = this.storage.getItem(key);
+    if (cached) {
+      return JSON.parse(this.storage.getItem(key) || null);
+    }
+
+    return null;
   }
 
   set(key: string, value: any) {
