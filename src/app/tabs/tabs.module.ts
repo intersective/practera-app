@@ -9,6 +9,7 @@ import { TabsComponent } from './tabs.component';
 
 import { HomeModule } from '../home/home.module';
 import { ActivityModule } from '../activity/activity.module';
+import { ProjectModule } from '../project/project.module';
 import { ChatModule } from '../chat/chat.module';
 
 @NgModule({
@@ -19,6 +20,7 @@ import { ChatModule } from '../chat/chat.module';
     TabsRoutingModule,
     HomeModule,
     ActivityModule,
+    ProjectModule,
     ChatModule
   ],
   declarations: [ TabsComponent ]
