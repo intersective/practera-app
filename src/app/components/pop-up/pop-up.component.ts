@@ -9,7 +9,7 @@ import { ModalController } from '@ionic/angular';
 })
 export class PopUpComponent {
   type = '';
-  redirect = '/';
+  redirect = ['/'];
   data = {};
 
   constructor(
@@ -19,6 +19,9 @@ export class PopUpComponent {
 
   confirmed() {
     this.modalController.dismiss();
-    this.router.navigate([this.redirect]);
+    // if this.redirect == false, don't redirect to another page
+    if (this.redirect) {
+      this.router.navigate(this.redirect);
+    }
   }
 }

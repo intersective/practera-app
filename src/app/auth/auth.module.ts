@@ -11,7 +11,6 @@ import { AuthService } from './auth.service';
 import { AuthComponent } from './auth.component';
 import { AuthLoginComponent } from './auth-login/auth-login.component';
 import { AuthForgotPasswordComponent } from './auth-forgot-password/auth-forgot-password.component';
-import { PopUpComponent } from '../components/pop-up/pop-up.component';
 import { AuthRegistrationComponent } from './auth-registration/auth-registration.component';
 
 @NgModule({
@@ -26,11 +25,10 @@ import { AuthRegistrationComponent } from './auth-registration/auth-registration
     AuthComponent, 
     AuthLoginComponent,
     AuthForgotPasswordComponent,
-    PopUpComponent,
     AuthRegistrationComponent
   ],
   entryComponents: [
-    PopUpComponent
+    AuthComponent
   ],
   providers: [ AuthService ],
 })
