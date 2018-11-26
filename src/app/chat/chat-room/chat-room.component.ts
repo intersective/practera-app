@@ -5,6 +5,14 @@ import { BrowserStorageService } from "@services/storage.service";
 
 import { ChatService } from "../chat.service";
 
+interface Chat {
+  name: string;
+  team_name?: string;
+  is_team?: boolean;
+  team_id: number;
+  team_member_id: number;
+}
+
 @Component({
   selector: "app-chat-room",
   templateUrl: "./chat-room.component.html",
@@ -16,9 +24,7 @@ export class ChatRoomComponent implements OnInit {
 
   message: any;
   messageList: any[];
-  selectedChat: any = {
-    name: ""
-  };
+  selectedChat: Chat;
   chatColors: any[];
   routeTeamId:number = 0;
   routeTeamMemberId:number = 0;
@@ -30,11 +36,17 @@ export class ChatRoomComponent implements OnInit {
     private router: Router,
     private storage: BrowserStorageService,
     private activatedRoute: ActivatedRoute
-  ) {}
+  ) {
+  }
 
   ngOnInit() {
     this.chatColors = this.storage.get("chatAvatarColors");
-    this.selectedChat = this.storage.get("selectedChatObject");
+    this.selectedChat = this.storage.get("selectedChatObject") || {
+      name: '',
+      is_team: false,
+      team_id: null,
+      team_member_id: null,
+    };
     this.validateRoutePrams();
   }
 
