@@ -12,7 +12,8 @@ const routes: Routes = [
   },
   {
     path: '',
-    loadChildren: './tabs/tabs.module#TabsModule',
+    redirectTo: '/app',
+    pathMatch: 'full',
     canLoad: [AuthGuard]
   },
   { 
