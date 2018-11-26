@@ -4,20 +4,20 @@
     <img src="/assets/logo.svg" width="60%">
   </div>
   <div class="div-after-logo">
-    <ng-container>
+    <ng-container *ngIf="!hide_password">
       <h4>Your Login Email Address</h4>
       <p>{{user.email}}</p>
     </ng-container>
-    <!-- <ng-container>
+    <ng-container *ngIf="hide_password">
         <h4>Your Mobile Number</h4>
         <p>{{user.contact}}</p>
-    </ng-container> -->
+    </ng-container>
     <form (submit)="register()">
       <ion-list margin>
-        <ion-item>
+        <ion-item *ngIf="!hide_password">
           <ion-input name="passowrd" [(ngModel)]="password" (focus)="removeErrorMessages()" [ngModelOptions]="{standalone: true}" required type="password" placeholder="password"></ion-input>
         </ion-item>
-        <ion-item>
+        <ion-item *ngIf="!hide_password">
           <ion-input name="rePassword" [(ngModel)]="rePassword" (focus)="removeErrorMessages()" [ngModelOptions]="{standalone: true}" required type="password" placeholder="Conform Password"></ion-input>
         </ion-item>
         <ion-item lines="none">
