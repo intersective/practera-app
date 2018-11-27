@@ -5,19 +5,21 @@ import { AuthGuard } from '../auth/auth.guard';
 
 import { TabsComponent } from './tabs.component';
 import { HomeComponent } from '../home/home.component';
-import { ProjectComponent } from '../project/project.component';
-import { ActivityComponent } from '../activity/activity.component';
-import { ChatComponent } from '../chat/chat.component';
-import { HelpComponent } from '../help/help.component';
+import { ChatListComponent } from '../chat/chat-list/chat-list.component';
 
 const routes: Routes = [
   {
-    path: '',
+    path: 'app',
     component: TabsComponent,
     canActivate: [AuthGuard],
     children: [
       {
         path: '',
+        redirectTo: '/app/(home:home)',
+        pathMatch: 'full'
+      },
+      {
+        path: 'home',
         outlet: 'home',
         canActivateChild: [AuthGuard],
         component: HomeComponent
@@ -25,31 +27,29 @@ const routes: Routes = [
       {
         path: 'project',
         outlet: 'project',
-        component: ProjectComponent
+        loadChildren: '../project/project.module#ProjectModule'
       },
       {
-        path: 'activity/:id',
-        outlet: 'activity',
-        canActivateChild: [AuthGuard],
-        component: ActivityComponent
+        path: 'activity',
+        outlet: 'project',
+        loadChildren: '../activity/activity.module#ActivityModule'
       },
       {
         path: 'chat',
         outlet: 'chat',
-        canActivateChild: [AuthGuard],
-        component: ChatComponent
+        component: ChatListComponent
       },
       {
-        path: 'help',
-        outlet: 'help',
-        component: HelpComponent
+        path: 'settings',
+        outlet: 'settings',
+        loadChildren: '../settings/settings.module#SettingsModule'
       }
     ]
   }
 ];
 
 @NgModule({
-  imports: [RouterModule.forChild(routes)],
-  exports: [RouterModule]
+  imports: [ RouterModule.forChild(routes) ],
+  exports: [ RouterModule ]
 })
 export class TabsRoutingModule {}

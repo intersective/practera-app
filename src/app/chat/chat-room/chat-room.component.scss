@@ -121,6 +121,7 @@
                 border-radius: 25px;
                 width: fit-content;
                 min-width: 73px;
+                max-width: 224px;
 
                 p {
                     color: black;
@@ -128,6 +129,7 @@
                     line-height: 24px;
                     margin: 0;
                     text-align: left;
+                    white-space: normal;
                 }
             }
 
@@ -161,7 +163,8 @@
 
                 .message-body {
                     background-color: var(--ion-color-primary);
-                    margin-left: calc(100% - 150px) !important;
+                    // margin-left: calc(100% - 150px) !important;
+                    float: right;
 
                     p {
                         color: white;

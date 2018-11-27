@@ -13,22 +13,30 @@ import { UtilsService } from './services/utils.service';
 import { AuthModule } from './auth/auth.module';
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
 import { ProjectModule } from './project/project.module';
+import { TabsModule } from './tabs/tabs.module';
+import { PopUpComponent } from './components/pop-up/pop-up.component';
 
 @NgModule({
   declarations: [
     AppComponent,
-    PageNotFoundComponent
+    PageNotFoundComponent,
+    PopUpComponent,
+    AppComponent
   ],
-  entryComponents: [],
+ 
+  entryComponents: [
+    PopUpComponent
+  ],
   imports: [
   	BrowserModule, 
     AuthModule,
+    TabsModule,
   	IonicModule.forRoot(), 
-  	AppRoutingModule,
-  	RequestModule.forRoot({ 
-  		appkey: 'b11e7c189b',
-  		prefixUrl: 'https://sandbox.practera.com/',
+    RequestModule.forRoot({ 
+      appkey: 'b11e7c189b',
+      prefixUrl: 'https://sandbox.practera.com/',
     }),
+    AppRoutingModule,
     NgCircleProgressModule,
     ProjectModule
   ],
