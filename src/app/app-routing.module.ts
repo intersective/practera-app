@@ -10,10 +10,15 @@ const routes: Routes = [
   	path: 'switcher', 
   	loadChildren: './switcher/switcher.module#SwitcherModule',
   },
-  { 
-  	path: 'tabs',  
-  	loadChildren: './tabs/tabs.module#TabsModule',
-  	canLoad: [AuthGuard],
+  {
+    path: '',
+    redirectTo: '/app',
+    pathMatch: 'full',
+    canLoad: [AuthGuard]
+  },
+  {
+    path: 'chat', 
+    loadChildren: './chat/chat.module#ChatModule' 
   },
   { 
   	path: 'project',  

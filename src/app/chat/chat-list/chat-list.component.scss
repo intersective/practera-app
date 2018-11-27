@@ -1,8 +1,5 @@
 ion-avatar {
 
-    margin: 2px 6px 2px 0 !important;
-    margin-left: -8px !important;
-
     ion-icon {
         width: 36px;
         height: 36px;
@@ -116,11 +113,16 @@ ion-item {
 
     }
 
+    .item-inner {
+        border: none !important;
+    }
+
     ion-label {
         margin: 10px 0 10px 0 !important;
 
         .chat-name-container {
             display: inline-flex !important;
+            flex-wrap: wrap;
 
             span {
                 border: 1px solid var(--ion-color-primary);

@@ -6,6 +6,8 @@ import { FormsModule } from '@angular/forms';
 import { ProjectComponent } from './project.component';
 import { NgCircleProgressModule } from 'ng-circle-progress';
 import { ProjectService } from './project.service';
+import { ProjectRoutingComponent } from './project-routing.component';
+import { ProjectRoutingModule } from './project-routing.module';
 
 @NgModule({
   imports: [
@@ -19,11 +21,14 @@ import { ProjectService } from './project.service';
     RouterModule.forChild([{ path: '', component: ProjectComponent }])
   ],
   declarations: [
-    ProjectComponent
+    ProjectComponent,
+    ProjectRoutingComponent
   ],
 
   providers: [
-    ProjectService
+    ProjectService,
+    ProjectRoutingModule
   ]
+  
 })
 export class ProjectModule {}
