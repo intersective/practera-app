@@ -12,7 +12,7 @@ import { DOCUMENT } from '@angular/common';
 @Component({
   selector: 'app-switcher-program',
   templateUrl: 'switcher-program.component.html',
-  styleUrls: ['switcher-program.component.css']
+  styleUrls: ['switcher-program.component.scss']
 })
 export class SwitcherProgramComponent implements OnInit{
   timelines = [];
