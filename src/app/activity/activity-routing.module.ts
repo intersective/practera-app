@@ -1,17 +1,17 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
-import { ProjectComponent } from './project.component';
-import { ProjectRoutingComponent } from './project-routing.component';
+import { ActivityComponent } from './activity.component';
+import { ActivityRoutingComponent } from './activity-routing.component';
 
 const routes: Routes = [
   {
     path: '',
-    component: ProjectRoutingComponent,
+    component: ActivityRoutingComponent,
     children: [
       {
-        path: '',
-        component: ProjectComponent
+        path: ':id',
+        component: ActivityComponent
       }
     ]
   }
@@ -21,4 +21,4 @@ const routes: Routes = [
   imports: [RouterModule.forChild(routes)],
   exports: [RouterModule]
 })
-export class ProjectRoutingModule {}
+export class ActivityRoutingModule {}
