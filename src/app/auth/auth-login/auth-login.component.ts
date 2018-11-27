@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '../auth.service';
+import { Observable, concat } from 'rxjs';
 
 @Component({
   selector: 'app-auth-login',
@@ -25,18 +26,13 @@ export class AuthLoginComponent {
       password: this.password,
     }).subscribe(res => {
       // hardcode login status
-      this.authService.isLoggedIn = true; 
-
       console.log(res);
       this.router.navigate(['/switcher']);
     }, err => {
       // hardcode login status
-      this.authService.isLoggedIn = true; 
-      
       console.log(err);
       // should popup something instead
       this.router.navigate(['/switcher']);
     });
 	}
-
 }

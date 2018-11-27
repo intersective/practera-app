@@ -6,9 +6,9 @@
 
 <ion-content padding color="light">
   <ion-card class="practera-card">
-    <ion-list *ngFor="let program of programs">
-      <ion-item (click)="switch(program.id)" color="light">
-        <img src="/assets/thumbs/practera_icon.png" height="25" width="25" class="img-inline"> {{ program.name }}
+    <ion-list *ngFor="let item of timelines">
+      <ion-item (click)="switch(item.program.id)" color="light">
+        <img src="/assets/thumbs/practera_icon.png" height="25" width="25" class="img-inline"> {{ item.program.name }}
       </ion-item>
     </ion-list>
   </ion-card>
