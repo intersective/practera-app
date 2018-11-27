@@ -12,8 +12,8 @@ const routes: Routes = [
     }
   },
   { 
-    path: 'review/:id', 
-    component: AssessmentComponent, 
+    path: 'review/:contextId/:id',
+    component: AssessmentComponent,
     data: {
       action: 'review'
     }
