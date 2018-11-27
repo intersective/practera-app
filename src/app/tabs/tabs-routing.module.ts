@@ -31,12 +31,12 @@ const routes: Routes = [
         loadChildren: '../project/project.module#ProjectModule',
         // component: ProjectComponent,
       },
-      {
-        path: 'activity/:id',
-        outlet: 'project',
-        // canActivateChild: [AuthGuard],
-        component: ActivityComponent
-      },
+      // {
+      //   path: 'activity/:id',
+      //   outlet: 'project',
+      //   // canActivateChild: [AuthGuard],
+      //   component: ActivityComponent
+      // },
       {
         path: 'chat',
         outlet: 'chat',

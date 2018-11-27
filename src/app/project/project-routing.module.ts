@@ -10,7 +10,7 @@ const routes: Routes = [
     component: ProjectComponent,
     children: [
     	{
-    		path: '',
+    		path: 'activity/:id',
     		component: ActivityComponent,
     	}
     ]
