@@ -11,6 +11,7 @@ interface Chat {
   is_team?: boolean;
   team_id: number;
   team_member_id: number;
+  chat_color?: string;
 }
 
 @Component({
@@ -46,6 +47,7 @@ export class ChatRoomComponent implements OnInit {
       is_team: false,
       team_id: null,
       team_member_id: null,
+      chat_color: null,
     };
     this.validateRoutePrams();
   }
