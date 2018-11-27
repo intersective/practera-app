@@ -1,17 +1,17 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
-import { HelpComponent } from './help.component';
-import { SettingComponent } from './setting/setting.component';
+import { SettingsRoutingComponent } from './settings-routing.component';
+import { SettingsComponent } from './settings.component';
 
 const routes: Routes = [
   { 
   	path: '', 
-  	component: HelpComponent,
+  	component: SettingsRoutingComponent,
   	children: [
   	  {
   	    path: '',
-  	    component: SettingComponent
+  	    component: SettingsComponent
   	  }
   	]
   }
@@ -21,4 +21,4 @@ const routes: Routes = [
   imports: [ RouterModule.forChild(routes) ],
   exports: [ RouterModule ]
 })
-export class HelpRoutingModule {}
+export class SettingsRoutingModule {}
