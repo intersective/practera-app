@@ -1,12 +1,14 @@
 import { Injectable } from '@angular/core';
-import * as _ from 'lodash';
 import { ModalController } from '@ionic/angular';
 import { PopUpComponent } from '@components/pop-up/pop-up.component';
+import * as _ from 'lodash';
+
+// @TODO: enhance Window reference later, we shouldn't refer directly to browser's window object like this
+declare var window: any;
 
 @Injectable({
   providedIn: 'root'
 })
-
 export class UtilsService {
   private lodash;
 
@@ -31,7 +33,7 @@ export class UtilsService {
   unset(object, path) {
     return this.lodash.unset(object, path);
   }
-
+  
   find(collections, callback) {
     return this.lodash.find(collections, callback);
   }
@@ -42,6 +44,10 @@ export class UtilsService {
 
   remove(collections, callback) {
     return this.lodash.remove(collections, callback);
+  }
+
+  openUrl(url, options?: {target: '_self'}) {
+    return window.open(url, options.target);
   }
 
   // show pop up message 

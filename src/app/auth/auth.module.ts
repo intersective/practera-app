@@ -25,6 +25,7 @@ import { AuthForgotPasswordComponent } from './auth-forgot-password/auth-forgot-
     AuthForgotPasswordComponent
   ],
   entryComponents: [
+    AuthComponent
   ],
   providers: [ AuthService ],
 })
