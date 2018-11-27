@@ -2,11 +2,11 @@ import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 
 @Component({
-  selector: 'app-setting',
-  templateUrl: 'setting.component.html',
-  styleUrls: ['setting.component.scss']
+  selector: 'app-settings',
+  templateUrl: 'settings.component.html',
+  styleUrls: ['settings.component.scss']
 })
-export class SettingComponent {
+export class SettingsComponent {
   
   email = "test@test.com";
   contact_number= "+61 420000000";
