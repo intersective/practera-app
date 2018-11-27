@@ -9,27 +9,32 @@
       <p>{{user.email}}</p>
     </ng-container>
     <ng-container *ngIf="hide_password">
-        <h4>Your Mobile Number</h4>
-        <p>{{user.contact}}</p>
+      <h4>Your Mobile Number</h4>
+      <p>{{user.contact}}</p>
     </ng-container>
     <form (submit)="register()">
       <ion-list margin>
         <ion-item *ngIf="!hide_password">
-          <ion-input name="passowrd" [(ngModel)]="password" (focus)="removeErrorMessages()" [ngModelOptions]="{standalone: true}" required type="password" placeholder="password"></ion-input>
+          <ion-input name="passowrd" [(ngModel)]="password" (focus)="removeErrorMessages()" [ngModelOptions]="{standalone: true}"
+            required type="password" placeholder="password"></ion-input>
         </ion-item>
         <ion-item *ngIf="!hide_password">
-          <ion-input name="rePassword" [(ngModel)]="rePassword" (focus)="removeErrorMessages()" [ngModelOptions]="{standalone: true}" required type="password" placeholder="Conform Password"></ion-input>
+          <ion-input name="rePassword" [(ngModel)]="rePassword" (focus)="removeErrorMessages()" [ngModelOptions]="{standalone: true}"
+            required type="password" placeholder="Conform Password"></ion-input>
         </ion-item>
         <ion-item lines="none">
-          <ion-checkbox color="primary" slot="start" (click)="validateRegistration('agree')" [(ngModel)]="isAgreed" [ngModelOptions]="{standalone: true}"></ion-checkbox>
+          <ion-checkbox color="primary" slot="start" (click)="validateRegistration('agree')" [(ngModel)]="isAgreed"
+            [ngModelOptions]="{standalone: true}"></ion-checkbox>
           <ion-label class="terms-and-conditions">I agree to the Terms & Conditions</ion-label>
         </ion-item>
       </ion-list>
       <p><a (click)="openLink()">Terms & Conditions</a></p>
       <p class="error-message" *ngIf="formValidationErrors.needPassword">You need a password !</p>
-      <p class="error-message" *ngIf="formValidationErrors.lengthError">Your password needs to be more than 8 characters.</p>
+      <p class="error-message" *ngIf="formValidationErrors.lengthError">Your password needs to be more than 8
+        characters.</p>
       <p class="error-message" *ngIf="formValidationErrors.passwordMismatch">Your passwords don't match.</p>
-      <p class="error-message" *ngIf="formValidationErrors.checkAgree">You need a password! You need to agree with terms and Conditions.</p>
+      <p class="error-message" *ngIf="formValidationErrors.checkAgree">You need a password! You need to agree with
+        terms and Conditions.</p>
       <ion-button shape="round" expand="block" type="submit" color="primary">REGISTER</ion-button>
     </form>
 
