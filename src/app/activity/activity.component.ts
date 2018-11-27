@@ -33,7 +33,7 @@ export class ActivityComponent implements OnInit {
   }
 
   back() {
-    
+    this.router.navigate(['app', { outlets: { project: 'project' } }]);
   }
 
   goto(type, id) {
@@ -46,7 +46,7 @@ export class ActivityComponent implements OnInit {
             contextId = task.contextId;
           }
         });
-        this.router.navigate(['/assessment/assessment', this.id , contextId, id]);
+        this.router.navigate(['assessment', 'assessment', this.id , contextId, id]);
         break;
       case 'Topic':
 

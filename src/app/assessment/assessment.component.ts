@@ -126,7 +126,7 @@ export class AssessmentComponent implements OnInit {
   }
 
   back() {
-    this.router.navigate(['pages', 'tabs', { outlets: { activity: ['activity', this.activityId] } }]);
+    this.router.navigate(['app', { outlets: { project: ['activity', this.activityId] } }]);
   }
 
   // form an object of required questions
@@ -195,7 +195,7 @@ export class AssessmentComponent implements OnInit {
           let redirect = [];
           // redirect to activity page if it is doing assessment
           if (this.doAssessment) {
-            redirect = ['pages', 'tabs', { outlets: { activity: ['activity', this.activityId] } }];
+            redirect = ['app', { outlets: { project: ['activity', this.activityId] } }];
           }
           // redirect to reviews page if it is doing review
           if (this.doReview) {
@@ -219,6 +219,4 @@ export class AssessmentComponent implements OnInit {
     this.assessmentService.saveFeedbackReviewed(this.review.id);
   }
 
-  
-  
 }
