@@ -18,7 +18,8 @@ const api = {
   login: "api/auth.json",
   me: "api/users.json",
   setProfile: "api/v2/user/enrolment/edit.json",
-  verifyRegistration: "api/verification_codes.json"
+  verifyRegistration: "api/verification_codes.json",
+  register: "api/registration_details.json"
 };
 
 interface verifyParams {
@@ -227,10 +228,10 @@ export class AuthService {
   saveRegistration(data: registerData): Observable<any> {
     data.user_id = this.storage.get("hash").id;
     data.key = this.storage.get("hash").key;
-    return of(true);
+    return this.request.post(api.register, data);
   }
 
-  verifyRegistration(prams: verifyParams): Observable<any> {
-    return this.request.post(api.verifyRegistration, prams);
+  verifyRegistration(data: verifyParams): Observable<any> {
+    return this.request.post(api.verifyRegistration, data);
   }
 }
