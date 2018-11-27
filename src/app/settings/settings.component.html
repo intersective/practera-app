@@ -4,7 +4,7 @@
   </ion-toolbar>
 </ion-header>
 <ion-content padding color="light">
-  <ion-card>
+  <ion-card class="practera-card">
     <ion-item >
       <ion-label>My Account
         <div *ngIf="email" >
@@ -45,7 +45,7 @@
     </ion-item>
   </ion-card>
 
-  <ion-card>
+  <ion-card class="practera-card">
     <ion-item>Support</ion-item>
     <ion-item (click)="mailTo()">
       <ion-icon padding name="mail"></ion-icon>
@@ -57,7 +57,7 @@
     </ion-item>
   </ion-card>
 
-  <ion-card>
+  <ion-card class="practera-card">
     <ion-item (click)="logout()">
       <ion-icon padding name="log-out"></ion-icon>
       Logout
