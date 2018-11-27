@@ -16,7 +16,7 @@ const routes: Routes = [
     pathMatch: 'full',
     canLoad: [AuthGuard]
   },
-  { 
+  {
     path: 'chat', 
     loadChildren: './chat/chat.module#ChatModule' 
   },
