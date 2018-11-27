@@ -424,7 +424,7 @@ export class AssessmentService {
     2: true
   }
 
-  constructor() {};
+  constructor() {}
 
   getAssessment(id): Observable<any> {
     return of(this.assessment);
