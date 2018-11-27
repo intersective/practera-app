@@ -2,6 +2,12 @@ import { Component, OnInit } from "@angular/core";
 import { Router, ActivatedRoute, ParamMap } from "@angular/router";
 import { UtilsService } from "@services/utils.service";
 import { Md5 } from "ts-md5/dist/md5";
+import {
+  Validators,
+  FormControl,
+  FormGroup,
+  FormBuilder
+} from "@angular/forms";
 
 import { AuthService } from "../auth.service";
 import { BrowserStorageService } from "@services/storage.service";
@@ -13,14 +19,9 @@ import { BrowserStorageService } from "@services/storage.service";
 })
 export class AuthRegistrationComponent implements OnInit {
   password: string;
-  formValidationErrors: any = {
-    checkAgree: false,
-    needPassword: false,
-    lengthError: false,
-    passwordMismatch: false
-  };
-  rePassword: string;
+  confirmPassword: string;
   isAgreed: boolean = false;
+  registerationForm: FormGroup;
   hide_password: boolean = false;
   user: any = {
     email: null,
@@ -28,14 +29,19 @@ export class AuthRegistrationComponent implements OnInit {
     contact: null
   };
   domain = window.location.hostname;
+  // validation errors array
+  errors: Array<any> = [];
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     private authService: AuthService,
     private utils: UtilsService,
-    private storage: BrowserStorageService
-  ) {}
+    private storage: BrowserStorageService,
+    private formBuilder: FormBuilder
+  ) {
+    this.initForm();
+  }
 
   ngOnInit() {
     this.domain =
@@ -45,10 +51,23 @@ export class AuthRegistrationComponent implements OnInit {
     this.validateQueryParams();
   }
 
+  initForm() {
+    this.registerationForm = new FormGroup({
+      password: new FormControl("", [
+        Validators.required,
+        Validators.minLength(8)
+      ]),
+      confirmPassword: new FormControl("", [
+        Validators.required
+      ])
+    });
+  }
+
   validateQueryParams() {
     // access query params
     this.route.queryParamMap.subscribe(queryParams => {
       let email = queryParams.get("email");
+      this.user.email = email;
       let activation_code = queryParams.get("activation_code");
       if (email || activation_code) {
         // set query params to stroage
@@ -90,7 +109,7 @@ export class AuthRegistrationComponent implements OnInit {
                       if (data.config.auth_via_contact_number === true) {
                         this.hide_password = true;
                         this.user.password = this.autoGeneratePassword();
-                        this.rePassword = this.user.password;
+                        this.confirmPassword = this.user.password;
                       }
                     }
                   },
@@ -133,10 +152,11 @@ export class AuthRegistrationComponent implements OnInit {
   }
 
   register() {
-    if (this.validateRegistration(null)) {
+    this.validateRegistration();
+    if ((this.registerationForm.valid) && (this.errors.length === 0)) {
       this.authService
         .saveRegistration({
-          password: this.rePassword
+          password: this.confirmPassword
         })
         .subscribe(
           response => {
@@ -171,44 +191,69 @@ export class AuthRegistrationComponent implements OnInit {
   }
 
   removeErrorMessages() {
-    this.formValidationErrors = {
-      checkAgree: false,
-      needPassword: false,
-      lengthError: false,
-      passwordMismatch: false
-    };
+    this.errors = [];
   }
 
-  validateRegistration(check) {
-    if (check) {
-      if (this.password) {
-        this.formValidationErrors.checkAgree = false;
-        return true;
-      } else {
-        this.formValidationErrors.checkAgree = true;
-        return false;
+  validateRegistration() {
+    this.errors = [];
+    if (this.registerationForm.valid) {
+      let pass = this.registerationForm.controls.password.value;
+      let confirmPass = this.registerationForm.controls.confirmPassword.value;
+      if (pass !== confirmPass) {
+        this.errors.push("Your passwords don't match.");
+      } else if (!this.isAgreed) {
+        this.errors.push("You need to agree with terms and Conditions.");
       }
     } else {
-      if (this.password) {
-        this.formValidationErrors.needPassword = false;
-        if (this.password.length > 8) {
-          this.formValidationErrors.lengthError = false;
-          if (this.password === this.rePassword) {
-            this.formValidationErrors.passwordMismatch = false;
-            return true;
-          } else {
-            this.formValidationErrors.passwordMismatch = true;
-            return false;
+      for (let conrtoller in this.registerationForm.controls) {
+        for (let key in this.registerationForm.controls[conrtoller].errors) {
+          if (this.registerationForm.controls[conrtoller].errors.hasOwnProperty(key)) {
+            switch (key) {
+              case "required":
+                this.errors.push("Fill required field");
+                break;
+              case "minlength":
+                this.errors.push(
+                  "Your password needs to be more than 8 characters."
+                );
+                break;
+              default:
+              this.errors.push(this.registerationForm.controls.errors[key]);
+            }
+            return;
           }
-        } else {
-          console.log(this.password.length);
-          this.formValidationErrors.lengthError = true;
-          return false;
         }
-      } else {
-        this.formValidationErrors.needPassword = true;
-        return false;
       }
     }
+    // if (check) {
+    //   if (this.password) {
+    //     this.formValidationErrors.checkAgree = false;
+    //     return true;
+    //   } else {
+    //     this.formValidationErrors.checkAgree = true;
+    //     return false;
+    //   }
+    // } else {
+    //   if (this.password) {
+    //     this.formValidationErrors.needPassword = false;
+    //     if (this.password.length > 8) {
+    //       this.formValidationErrors.lengthError = false;
+    //       if (this.password === this.confirmPassword) {
+    //         this.formValidationErrors.passwordMismatch = false;
+    //         return true;
+    //       } else {
+    //         this.formValidationErrors.passwordMismatch = true;
+    //         return false;
+    //       }
+    //     } else {
+    //       console.log(this.password.length);
+    //       this.formValidationErrors.lengthError = true;
+    //       return false;
+    //     }
+    //   } else {
+    //     this.formValidationErrors.needPassword = true;
+    //     return false;
+    //   }
+    // }
   }
 }
