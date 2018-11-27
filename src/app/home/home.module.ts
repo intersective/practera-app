@@ -16,11 +16,6 @@ import { TodoCardComponent } from '../components/todo-card/todo-card.component';
     NgCircleProgressModule.forRoot({
       "backgroundColor": "#f4f5f8",
       "subtitleColor": "#444444",
-<<<<<<< HEAD
-      
-    }),
-    RouterModule.forChild([{ path: '', component: HomeComponent }])
-=======
       "showInnerStroke": false,
       "startFromZero": false,
       "subtitle": [
@@ -30,8 +25,9 @@ import { TodoCardComponent } from '../components/todo-card/todo-card.component';
       "animationDuration": 1000,
       "titleFontSize": "32",
       "subtitleFontSize": "18",
-    })
->>>>>>> develop
+    }),
+    RouterModule.forChild([{ path: '', component: HomeComponent }])
+
   ],
   declarations: [HomeComponent, ActivityCardComponent, TodoCardComponent]
 })
