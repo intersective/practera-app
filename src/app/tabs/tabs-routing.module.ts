@@ -37,15 +37,12 @@ const routes: Routes = [
       {
         path: 'chat',
         outlet: 'chat',
-        // canActivateChild: [AuthGuard],
-        // loadChildren: '../chat/chat.module#ChatModule',
         component: ChatListComponent
       },
       {
-        path: 'help',
-        outlet: 'help',
-        loadChildren: '../help/help.module#HelpModule',
-        // component: HelpComponent
+        path: 'settings',
+        outlet: 'settings',
+        loadChildren: '../settings/settings.module#SettingsModule'
       }
     ]
   }
