@@ -16,11 +16,11 @@
       <ion-list margin>
         <ion-item *ngIf="!hide_password">
           <ion-input name="passowrd" [(ngModel)]="password" formControlName="password"
-            required type="password" placeholder="password"></ion-input>
+            required type="password" placeholder="Set up Practera password"></ion-input>
         </ion-item>
         <ion-item *ngIf="!hide_password">
           <ion-input name="confirmPassword" [(ngModel)]="confirmPassword" formControlName="confirmPassword"
-            required type="password" placeholder="Conform Password"></ion-input>
+            required type="password" placeholder="Confirm password"></ion-input>
         </ion-item>
         <ion-item lines="none">
           <ion-checkbox color="primary" slot="start" [(ngModel)]="isAgreed" [ngModelOptions]="{standalone: true}" name="isAgreed"></ion-checkbox>
