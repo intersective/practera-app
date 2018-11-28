@@ -1,0 +1,29 @@
+<ng-container *ngIf="file">
+  <ng-container [ngSwitch]="fileType">
+
+    <ng-container *ngSwitchCase="'image'">
+      <ion-img [src]="file.url"></ion-img>
+    </ng-container>
+
+    <ng-container *ngSwitchCase="'video'">
+      <video controls>
+        <ng-container *ngIf="file.transcoded">
+          <source [src]="file.transcoded + '.mp4#t=0.5'" type="video/mp4">
+          <source [src]="file.transcoded + '.webm'" type="video/webm">
+          <source [src]="file.transcoded + '.ts'">
+        </ng-container>
+        <source [src]="file.url" [type]="file.mimetype">
+        {{ file.url }}
+      </video>
+    </ng-container>
+
+    <ng-container *ngSwitchCase="'any'">
+      <div>
+        <a [href]="file.url" target="_blank">
+          <ion-icon name="document"></ion-icon>&nbsp;{{ file.filename }}
+        </a>
+      </div>
+    </ng-container>
+
+  </ng-container>
+</ng-container>

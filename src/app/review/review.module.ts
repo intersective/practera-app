@@ -1,18 +1,17 @@
 import { IonicModule } from '@ionic/angular';
-import { RouterModule } from '@angular/router';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { HelpComponent } from './help.component';
-
+import { ReviewComponent } from './review.component';
+import { ReviewRoutingModule } from './review-routing.module';
 
 @NgModule({
   imports: [
     IonicModule,
     CommonModule,
     FormsModule,
-    RouterModule.forChild([{ path: '', component: HelpComponent }])
+    ReviewRoutingModule,
   ],
-  declarations: [HelpComponent]
+  declarations: [ReviewComponent]
 })
-export class HelpModule {}
+export class ReviewModule {}

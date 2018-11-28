@@ -6,7 +6,6 @@
 
   <ion-tab tab="project">
     <ion-router-outlet name="project"></ion-router-outlet>
-    <ion-router-outlet name="activity"></ion-router-outlet>
   </ion-tab>
 
   <ion-tab tab="review">
@@ -18,46 +17,46 @@
   </ion-tab>
 
   <ion-tab tab="team">
-    <ion-router-outlet name="chat"></ion-router-outlet>
+    <ion-router-outlet name="team"></ion-router-outlet>
   </ion-tab>
 
-  <ion-tab tab="help">
-    <ion-router-outlet name="help"></ion-router-outlet>
+  <ion-tab tab="settings">
+    <ion-router-outlet name="settings"></ion-router-outlet>
   </ion-tab>
 
   <ion-tab-bar slot="bottom">
 
-    <ion-tab-button tab="home" href="/tabs/home">
+    <ion-tab-button tab="home" href="/app/(home:home)">
       <ion-icon name="home"></ion-icon>
       <ion-label>Home</ion-label>
     </ion-tab-button>
 
-    <ion-tab-button tab="project" href="/tabs/project">
+    <ion-tab-button tab="project" href="/app/(project:project)">
       <ion-icon name="list-box"></ion-icon>
       <ion-label>Activities</ion-label>
     </ion-tab-button>
 
-    <ion-tab-button *ngIf="showReview" tab="review" href="/tabs/review">
+    <ion-tab-button *ngIf="showReview" tab="review" href="/app/(review:review)">
       <ion-icon name="clipboard"></ion-icon>
       <ion-label>Review</ion-label>
     </ion-tab-button>
 
-    <ion-tab-button tab="chat" href="/tabs/chat">
+    <ion-tab-button tab="chat" href="/app/(chat:chat)">
       <ion-icon name="chatboxes"></ion-icon>
       <ion-label>Chat</ion-label>
     </ion-tab-button>
 
-    <ion-tab-button *ngIf="showTeam" tab="team" href="/tabs/chat">
+    <ion-tab-button *ngIf="showTeam" tab="team" href="/app/(team:team)">
       <ion-icon name="people"></ion-icon>
       <ion-label>Team</ion-label>
     </ion-tab-button>
 
-    <ion-tab-button tab="help" href="/tabs/help">
-      <ion-icon name="help-circle"></ion-icon>
-      <ion-label>Help</ion-label>
+    <ion-tab-button tab="settings" href="/app/(settings:settings)">
+      <ion-icon name="settings"></ion-icon>
+      <ion-label>Settings</ion-label>
     </ion-tab-button>
 
   </ion-tab-bar>
-  
-</ion-tabs> 
+
+</ion-tabs>
 
