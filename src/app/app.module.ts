@@ -23,8 +23,10 @@ import { EmbedVideo } from 'ngx-embed-video';
 
 @NgModule({
   declarations: [
-    AppComponent, 
-    PageNotFoundComponent
+    AppComponent,
+    PageNotFoundComponent,
+    PopUpComponent,
+    AppComponent
   ],
 
  
@@ -34,15 +36,16 @@ import { EmbedVideo } from 'ngx-embed-video';
   imports: [
   	BrowserModule, 
     AuthModule,
-  	IonicModule.forRoot(), 
-  	AppRoutingModule,
-  	RequestModule.forRoot({ 
-  		appkey: 'b11e7c189b',
-  		prefixUrl: 'https://sandbox.practera.com/',
-  	}),
     TabsModule,
+  	IonicModule.forRoot(), 
+    RequestModule.forRoot({ 
+      appkey: 'b11e7c189b',
+      prefixUrl: 'https://sandbox.practera.com/',
+    }),
+    AppRoutingModule,
     HttpClientModule,
     EmbedVideo.forRoot()
+
   ],
   providers: [
     // StatusBar,

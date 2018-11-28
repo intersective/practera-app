@@ -17,9 +17,22 @@ const routes: Routes = [
   { 
   	path: 'tabs',  
   	loadChildren: './tabs/tabs.module#TabsModule',
-  	canLoad: [AuthGuard],
+    canLoad: [AuthGuard]
   },
-  { path: '', redirectTo: 'tabs', pathMatch: 'full' },
+  {
+    path: 'assessment', 
+    loadChildren: './assessment/assessment.module#AssessmentModule',
+  },
+  {
+    path: '',
+    redirectTo: '/app',
+    pathMatch: 'full',
+    canLoad: [AuthGuard]
+  },
+  {
+    path: 'chat', 
+    loadChildren: './chat/chat.module#ChatModule' 
+  },
   { path: '**', component: PageNotFoundComponent }
 ];
 @NgModule({

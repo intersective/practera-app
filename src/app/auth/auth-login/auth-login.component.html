@@ -3,16 +3,17 @@
     <img src="/assets/logo.svg" width="60%">
   </div>
   <div class="div-after-logo">
-    <ion-list margin>
-      <ion-item>
-        <ion-input name="email" [(ngModel)]="email" required type="text" placeholder="Email"></ion-input>
-      </ion-item>
-      <ion-item>
-        <ion-input name="password" [(ngModel)]="password" required type="password" placeholder="Password"></ion-input>
-      </ion-item>
-    </ion-list>
-    <ion-button (click)="login()" shape="round" color="primary">LOGIN</ion-button>
-    <!-- <button class="btn-login" (click)="login()"><img src="/assets/login-button.svg" width="100%"></button> -->
+    <form (ngSubmit)="login()" #loginForm="ngForm">
+      <ion-list margin>
+        <ion-item>
+          <ion-input name="email" [(ngModel)]="email" required type="email" placeholder="Email" ></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-input name="password" [(ngModel)]="password" required type="password" placeholder="Password" ></ion-input>
+        </ion-item>
+      </ion-list>
+      <ion-button shape="round" color="primary" [disabled]="!loginForm.form.valid" type="submit">LOGIN</ion-button>
+    </form>
   </div>
   <div class="text-split">
     <a routerLink="/forgot_password">Problem signing in?</a>
