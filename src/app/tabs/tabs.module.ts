@@ -1,17 +1,13 @@
 import { IonicModule } from '@ionic/angular';
-import { RouterModule } from '@angular/router';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
 import { TabsRoutingModule } from './tabs-routing.module';
-
 import { TabsComponent } from './tabs.component';
 
 import { HomeModule } from '../home/home.module';
-import { ActivitiesModule } from '../activities/activities.module';
-import { ChatModule } from '../chat/chat.module';
-import { HelpModule } from '../help/help.module';
+import { ChatListComponent } from '../chat/chat-list/chat-list.component';
 
 @NgModule({
   imports: [
@@ -19,11 +15,11 @@ import { HelpModule } from '../help/help.module';
     CommonModule,
     FormsModule,
     TabsRoutingModule,
-    HomeModule,
-    ActivitiesModule,
-    ChatModule,
-    HelpModule
+    HomeModule
   ],
-  declarations: [TabsComponent]
+  declarations: [ 
+    TabsComponent,
+    ChatListComponent
+  ]
 })
 export class TabsModule {}
