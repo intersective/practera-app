@@ -34,7 +34,7 @@ interface UserProfile {
   providedIn: 'root',
 })
 export class AuthService {
-  private isLoggedIn: boolean = false;
+  private isLoggedIn: boolean = true;
 
   constructor(
     private request: RequestService,
