@@ -1,19 +1,20 @@
 import { Component, Input, forwardRef, ViewChild, ElementRef } from '@angular/core';
 import { NG_VALUE_ACCESSOR, ControlValueAccessor, FormControl } from '@angular/forms';
+import { UtilsService } from '@services/utils.service';
 
 @Component({
-  selector: 'app-q-oneof',
-  templateUrl: 'q-oneof.component.html',
-  styleUrls: ['q-oneof.component.scss'],
+  selector: 'app-multiple',
+  templateUrl: 'multiple.component.html',
+  styleUrls: ['multiple.component.scss'],
   providers: [
     { 
       provide: NG_VALUE_ACCESSOR,
       multi: true,
-      useExisting: forwardRef(() => QOneofComponent),
+      useExisting: forwardRef(() => MultipleComponent),
     }
   ]
 })
-export class QOneofComponent implements ControlValueAccessor {
+export class MultipleComponent implements ControlValueAccessor {
 
   @Input() question;
   @Input() submission;
@@ -34,7 +35,9 @@ export class QOneofComponent implements ControlValueAccessor {
   // validation errors array
   errors: Array<any> = [];
 
-  constructor() {}
+  constructor(
+    private utils: UtilsService
+  ) {}
 
   ngAfterViewInit() {
   }
@@ -42,21 +45,30 @@ export class QOneofComponent implements ControlValueAccessor {
   //propagate changes into the form control
   propagateChange = (_: any) => {}
 
-  // event fired when radio is selected. propagate the change up to the form control using the custom value accessor interface
+  // event fired when checkbox is selected/unselected. propagate the change up to the form control using the custom value accessor interface
   // if 'type' is set, it means it comes from reviewer doing review, otherwise it comes from submitter doing assessment
   onChange(value, type){
+    let position;
     //set changed value (answer or comment)
     if (type) {
       // initialise innerValue if not set
       if (!this.innerValue) {
         this.innerValue = {
-          answer: '',
+          answer: [],
           comment: ''
         };
       }
-      this.innerValue[type] = value;
+      if (type == 'comment') {
+        // just pass the value for comment since comment is always just text
+        this.innerValue.comment = value;
+      } else {
+        this.innerValue.answer = this.utils.addOrRemove(this.innerValue.answer, value);
+      }
     } else {
-      this.innerValue = value;
+      if (!this.innerValue) {
+        this.innerValue = [];
+      }
+      this.innerValue = this.utils.addOrRemove(this.innerValue, value);
     }
 
     // propagate value into form control using control value accessor interface
@@ -79,7 +91,7 @@ export class QOneofComponent implements ControlValueAccessor {
   //From ControlValueAccessor interface
   writeValue(value: any) {
     if (value) {
-      this.innerValue = value;
+      this.innerValue = JSON.stringify(value);
     }
   }
 

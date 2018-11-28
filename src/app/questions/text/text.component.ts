@@ -1,20 +1,19 @@
 import { Component, Input, forwardRef, ViewChild, ElementRef } from '@angular/core';
 import { NG_VALUE_ACCESSOR, ControlValueAccessor, FormControl } from '@angular/forms';
-import { UtilsService } from '@services/utils.service';
 
 @Component({
-  selector: 'app-q-multiple',
-  templateUrl: 'q-multiple.component.html',
-  styleUrls: ['q-multiple.component.scss'],
+  selector: 'app-text',
+  templateUrl: 'text.component.html',
+  styleUrls: ['text.component.scss'],
   providers: [
     { 
       provide: NG_VALUE_ACCESSOR,
       multi: true,
-      useExisting: forwardRef(() => QMultipleComponent),
+      useExisting: forwardRef(() => TextComponent),
     }
   ]
 })
-export class QMultipleComponent implements ControlValueAccessor {
+export class TextComponent implements ControlValueAccessor {
 
   @Input() question;
   @Input() submission;
@@ -30,14 +29,12 @@ export class QMultipleComponent implements ControlValueAccessor {
   // comment field for reviewer
   @ViewChild('comment') commentRef: ElementRef;
 
-  // the value of answer
+  // the value of answer &| comment
   innerValue: any;
   // validation errors array
   errors: Array<any> = [];
 
-  constructor(
-    private utils: UtilsService
-  ) {}
+  constructor() {}
 
   ngAfterViewInit() {
   }
@@ -45,30 +42,21 @@ export class QMultipleComponent implements ControlValueAccessor {
   //propagate changes into the form control
   propagateChange = (_: any) => {}
 
-  // event fired when checkbox is selected/unselected. propagate the change up to the form control using the custom value accessor interface
+  // event fired when input/textarea value is changed. propagate the change up to the form control using the custom value accessor interface
   // if 'type' is set, it means it comes from reviewer doing review, otherwise it comes from submitter doing assessment
   onChange(value, type){
-    let position;
     //set changed value (answer or comment)
     if (type) {
       // initialise innerValue if not set
       if (!this.innerValue) {
         this.innerValue = {
-          answer: [],
+          answer: '',
           comment: ''
         };
       }
-      if (type == 'comment') {
-        // just pass the value for comment since comment is always just text
-        this.innerValue.comment = value;
-      } else {
-        this.innerValue.answer = this.utils.addOrRemove(this.innerValue.answer, value);
-      }
+      this.innerValue[type] = value;
     } else {
-      if (!this.innerValue) {
-        this.innerValue = [];
-      }
-      this.innerValue = this.utils.addOrRemove(this.innerValue, value);
+      this.innerValue = value;
     }
 
     // propagate value into form control using control value accessor interface
@@ -91,7 +79,7 @@ export class QMultipleComponent implements ControlValueAccessor {
   //From ControlValueAccessor interface
   writeValue(value: any) {
     if (value) {
-      this.innerValue = JSON.stringify(value);
+      this.innerValue = value;
     }
   }
 
