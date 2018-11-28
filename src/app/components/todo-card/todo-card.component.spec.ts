@@ -1,3 +1,4 @@
+import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { TodoCardComponent } from './todo-card.component';
@@ -8,7 +9,8 @@ describe('FeedbackComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ TodoCardComponent ]
+      schemas: [ CUSTOM_ELEMENTS_SCHEMA ],
+      declarations: [ TodoCardComponent ],
     })
     .compileComponents();
   }));
