@@ -10,6 +10,10 @@ const routes: Routes = [
   	path: 'switcher', 
   	loadChildren: './switcher/switcher.module#SwitcherModule',
   },
+  { 
+    path: 'assessment', 
+    loadChildren: './assessment/assessment.module#AssessmentModule',
+  },
   {
     path: '',
     redirectTo: '/app',
