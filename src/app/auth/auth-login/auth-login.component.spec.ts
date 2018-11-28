@@ -1,5 +1,10 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+
+import { UtilsService } from '@services/utils.service';
 import { TestBed, ComponentFixture } from '@angular/core/testing';
+import { RouterTestingModule } from '@angular/router/testing';
+import { RequestModule } from '@shared/request/request.module';
 import { AuthLoginComponent } from './auth-login.component';
 import { AuthService } from "../auth.service";
 
@@ -11,9 +16,14 @@ describe('Component: Login', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [AuthLoginComponent],
+      imports: [FormsModule, RouterTestingModule, RequestModule],
+      declarations: [AuthLoginComponent,],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
-      providers: [AuthService]
+      providers: [AuthService, {
+        provide: UtilsService, useValue: {
+          isEmpty: () => true
+        }
+      }]
     });
 
     // create component and test fixture
@@ -27,11 +37,12 @@ describe('Component: Login', () => {
   });
 
   it('login will make API request with AuthService', () => {
-    spyOn(authService, 'login').and.returnValue(true);
-    expect(component.login({
-      email: 'test@practera.com',
-      password: 'test1234',
-    })).toBeTruthy();
-    expect(authService.login).toHaveBeenCalled();
+    spyOn(component, 'login').and.returnValue(true);
+
+    component.email = 'test@practera.com';
+    component.password = 'test1234';
+    expect(component.login).toBeTruthy();
+    component.login();
+    expect(component.login).toHaveBeenCalled();
   });
 });
