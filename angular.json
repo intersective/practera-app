@@ -38,6 +38,9 @@
               },
               {
                 "input": "src/global.scss"
+              },
+              {
+                "input": "src/styles.scss"
               }
             ],
             "scripts": []
@@ -99,7 +102,8 @@
                 "input": "src/assets",
                 "output": "/assets"
               }
-            ]
+            ],
+            "codeCoverage": true
           }
         },
         "lint": {
