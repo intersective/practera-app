@@ -14,11 +14,11 @@ import { ProjectRoutingModule } from './project-routing.module';
     IonicModule,
     CommonModule,
     FormsModule,
+    ProjectRoutingModule,
     NgCircleProgressModule.forRoot({
       "outerStrokeLinecap": "butt",
       "toFixed": 0,
-    }),
-    RouterModule.forChild([{ path: '', component: ProjectComponent }])
+    })
   ],
   declarations: [
     ProjectComponent,
@@ -27,7 +27,6 @@ import { ProjectRoutingModule } from './project-routing.module';
 
   providers: [
     ProjectService,
-    ProjectRoutingModule
   ]
   
 })
