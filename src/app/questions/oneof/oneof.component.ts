@@ -2,18 +2,18 @@ import { Component, Input, forwardRef, ViewChild, ElementRef } from '@angular/co
 import { NG_VALUE_ACCESSOR, ControlValueAccessor, FormControl } from '@angular/forms';
 
 @Component({
-  selector: 'app-q-text',
-  templateUrl: 'q-text.component.html',
-  styleUrls: ['q-text.component.scss'],
+  selector: 'app-oneof',
+  templateUrl: 'oneof.component.html',
+  styleUrls: ['oneof.component.scss'],
   providers: [
     { 
       provide: NG_VALUE_ACCESSOR,
       multi: true,
-      useExisting: forwardRef(() => QTextComponent),
+      useExisting: forwardRef(() => OneofComponent),
     }
   ]
 })
-export class QTextComponent implements ControlValueAccessor {
+export class OneofComponent implements ControlValueAccessor {
 
   @Input() question;
   @Input() submission;
@@ -29,7 +29,7 @@ export class QTextComponent implements ControlValueAccessor {
   // comment field for reviewer
   @ViewChild('comment') commentRef: ElementRef;
 
-  // the value of answer &| comment
+  // the value of answer
   innerValue: any;
   // validation errors array
   errors: Array<any> = [];
@@ -42,7 +42,7 @@ export class QTextComponent implements ControlValueAccessor {
   //propagate changes into the form control
   propagateChange = (_: any) => {}
 
-  // event fired when input/textarea value is changed. propagate the change up to the form control using the custom value accessor interface
+  // event fired when radio is selected. propagate the change up to the form control using the custom value accessor interface
   // if 'type' is set, it means it comes from reviewer doing review, otherwise it comes from submitter doing assessment
   onChange(value, type){
     //set changed value (answer or comment)

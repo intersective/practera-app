@@ -7,19 +7,19 @@
   <ion-card-content padding-horizontal class="q-content">
 
     <ng-container *ngIf="submission.answer">
-      <app-q-file-display
+      <app-file-display
         [file]="submission.answer"
         [fileType]="question.fileType"
-      ></app-q-file-display>
+      ></app-file-display>
     </ng-container>
 
     <div *ngIf="review.answer || review.comment" class="q-reviews">
       <ion-label class="q-title">Reviewer:</ion-label>
       <ng-container *ngIf="review.answer">
-        <app-q-file-display
+        <app-file-display
           [file]="review.answer"
           [fileType]="question.fileType"
-        ></app-q-file-display>
+        ></app-file-display>
       </ng-container>
       <ng-container *ngIf="review.comment">
         <b>Comment</b>
@@ -36,10 +36,10 @@
       <ion-text *ngFor="let error of errors" color="danger">
         <p>{{error}}</p>
       </ion-text>
-      <app-q-file-display
+      <app-file-display
         [file]="uploadedFile"
         [fileType]="question.fileType"
-      ></app-q-file-display>
+      ></app-file-display>
 
     </ng-container>
 
@@ -50,10 +50,10 @@
           (complete)="onFileUploadCompleted($event, 'answer')"
         >
         </file-stack>
-        <app-q-file-display
+        <app-file-display
           [file]="uploadedFile"
           [fileType]="question.fileType"
-        ></app-q-file-display>
+        ></app-file-display>
       </ng-container>
       <ion-textarea *ngIf="question.canComment" class="background-white" #comment margin-top rows="4" (blur)="onChange(comment.value, 'comment')" placeholder="Please put your feedback here"></ion-textarea>
     </ng-container>

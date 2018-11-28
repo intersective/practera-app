@@ -3,18 +3,18 @@ import { NG_VALUE_ACCESSOR, ControlValueAccessor, FormControl } from '@angular/f
 import { FilestackService } from '@shared/filestack/filestack.service';
 
 @Component({
-  selector: 'app-q-file',
-  templateUrl: 'q-file.component.html',
-  styleUrls: ['q-file.component.scss'],
+  selector: 'app-file',
+  templateUrl: 'file.component.html',
+  styleUrls: ['file.component.scss'],
   providers: [
     { 
       provide: NG_VALUE_ACCESSOR,
       multi: true,
-      useExisting: forwardRef(() => QFileComponent),
+      useExisting: forwardRef(() => FileComponent),
     }
   ]
 })
-export class QFileComponent implements ControlValueAccessor, OnInit {
+export class FileComponent implements ControlValueAccessor, OnInit {
 
   @Input() question = {
     fileType: 'any'

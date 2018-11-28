@@ -5,11 +5,11 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ReactiveFormsModule } from '@angular/forms';
 import { QuestionsComponent } from './questions.component';
-import { QTextComponent } from './q-text/q-text.component';
-import { QOneofComponent } from './q-oneof/q-oneof.component';
-import { QMultipleComponent } from './q-multiple/q-multiple.component';
-import { QFileComponent } from './q-file/q-file.component';
-import { QFileDisplayComponent } from './q-file/q-file-display/q-file-display.component';
+import { TextComponent } from './text/text.component';
+import { OneofComponent } from './oneof/oneof.component';
+import { MultipleComponent } from './multiple/multiple.component';
+import { FileComponent } from './file/file.component';
+import { FileDisplayComponent } from './file/file-display/file-display.component';
 import { FilestackModule } from '@shared/filestack/filestack.module';
 
 @NgModule({
@@ -22,17 +22,17 @@ import { FilestackModule } from '@shared/filestack/filestack.module';
   ],
   declarations: [
     QuestionsComponent,
-    QTextComponent,
-    QOneofComponent,
-    QMultipleComponent,
-    QFileComponent,
-    QFileDisplayComponent
+    TextComponent,
+    OneofComponent,
+    MultipleComponent,
+    FileComponent,
+    FileDisplayComponent
   ],
   exports: [
-    QTextComponent,
-    QOneofComponent,
-    QMultipleComponent,
-    QFileComponent
+    TextComponent,
+    OneofComponent,
+    MultipleComponent,
+    FileComponent
   ]
  
 })
