@@ -20,6 +20,7 @@ export class ActivityComponent implements OnInit {
   };
 
   constructor(
+    private router: Router,
     private route: ActivatedRoute,
     private activityService: ActivityService,
     private utils: UtilsService,
@@ -29,14 +30,31 @@ export class ActivityComponent implements OnInit {
     this.id = parseInt(this.route.snapshot.paramMap.get('id'));
     this.activityService.getActivity(this.id)
       .subscribe(activity => this.activity = activity);
-     console.log('Is Empty?::', this.utils.isEmpty({}));
   }
 
   back() {
-    console.log('go back');
+    this.router.navigate(['app', { outlets: { project: 'project' } }]);
   }
 
   goto(type, id) {
+    switch (type) {
+      case 'Assessment':
+        // get the context id of this assessment
+        let contextId = 0;
+        this.utils.each(this.activity.tasks, task => {
+          if (task.type === 'Assessment' && task.id == this.id) {
+            contextId = task.contextId;
+          }
+        });
+        this.router.navigate(['assessment', 'assessment', this.id , contextId, id]);
+        break;
+      case 'Topic':
+
+        break;
+      case 'Comm':
+
+        break;
+    }
     console.log('go to ', type, ' with id ', id);
   }
 
