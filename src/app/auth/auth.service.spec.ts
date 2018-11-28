@@ -5,6 +5,9 @@ describe('AuthService', () => {
 	let RequestService = {
 		appkey: '',
 		prefixUrl: '',
+		http: {},
+		utils: {},
+		storage: {},
 	};
 	let BrowserStorageService = {};
 	let UtilsService = {};
