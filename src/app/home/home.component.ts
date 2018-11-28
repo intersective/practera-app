@@ -26,7 +26,7 @@ export class HomeComponent implements OnInit {
   };
 
   activityRedirection(id) {
-    this.router.navigate(['pages', 'tabs', { outlets: { activity: ['activity', id] } }]);
+    this.router.navigateByUrl('app/(project:activity/' + id + ')');
   }
   
 }

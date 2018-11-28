@@ -1,3 +1,4 @@
+// used in login, forgot password, regestration page
 .div-logo {
   margin-top: 10vh;
   margin-bottom: 7vh;
@@ -23,12 +24,12 @@
 .clearfix {
   clear: both;
 }
-// used for todo-card, activity-card, tasks list
+
+// used for todo-card, activity-card, tasks list, program switcher page, setting page
 .practera-card {
   border-radius: 12px;
   margin: 30px 0;
 }
-
 // used for todo-card & tasks list
 .icon-item {
   h4 {
@@ -42,4 +43,27 @@
     text-overflow: ellipsis;
     margin-top: 0px;
   }
+}
+
+.background-white {
+  background: white;
+}
+
+// question name
+.q-title {
+  font-size: 16px;
+  font-weight: bold;
+  display: block;
+  padding-bottom: 0;
+}
+// question content
+.q-content {
+  padding-top: 0;
+}
+// the div block for review
+.q-reviews {
+  border: 2px solid var(--ion-color-warning);
+  padding: 5px 10px 10px;
+  margin-top: 10px;
+  border-radius: 12px;
 }

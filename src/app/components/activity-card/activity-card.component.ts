@@ -6,10 +6,13 @@ import { Component, OnInit, Input } from '@angular/core';
   styleUrls: ['./activity-card.component.scss']
 })
 export class ActivityCardComponent implements OnInit {
+  @Input() activity: object = {
+  	name: '',
+  };
+  name: string;
   
-  constructor() { }
+  constructor() {}
 
-  @Input() activity: {};
 
   ngOnInit() {
   }

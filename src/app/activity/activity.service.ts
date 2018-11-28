@@ -24,30 +24,41 @@ export class ActivityService {
         status: ''
       },
       {
-        id: 3,
+        id: 1,
+        contextId: 1,
         type: 'Assessment',
         name: 'Assessment name',
         status: ''
       },
       {
-        id: 4,
+        id: 2,
+        contextId: 2,
+        type: 'Assessment',
+        name: 'Assessment name',
+        status: 'done'
+      },
+      {
+        id: 3,
+        contextId: 3,
         type: 'Assessment',
         name: 'Assessment name',
         status: 'pending review'
       },
       {
-        id: 5,
+        id: 4,
+        contextId: 4,
         type: 'Assessment',
         name: 'Assessment name',
         status: 'published',
-        reviewFeedback: false
+        feedbackReviewed: false
       },
       {
-        id: 6,
+        id: 5,
+        contextId: 5,
         type: 'Assessment',
         name: 'Assessment name',
         status: 'published',
-        reviewFeedback: true
+        feedbackReviewed: true
       }
     ]
   };
