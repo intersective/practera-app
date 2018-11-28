@@ -1,12 +1,26 @@
-<ion-header>
-  <ion-toolbar>
-    <ion-title>Home</ion-title>
-  </ion-toolbar>
-</ion-header>
+<ion-content padding color="light">
+  <h1 text-center>{{Program.Name}}</h1>
+  <div text-center padding >
+    <circle-progress 
+      [percent]="progress">
+    </circle-progress>
+  </div>
 
-<ion-content padding>
-	<ion-button color="success">This is for test</ion-button>
-  <ion-button color="warning">This is for test</ion-button>
-  This is the start of Practera App V2
-  <p>If you get lost, the <a target="_blank" rel="noopener" href="https://ionicframework.com/docs">docs</a> will be your guide.</p>
+  <ion-label color="medium">Things to do</ion-label>
+  <ion-list class="todo-list">
+
+    <ng-container *ngIf="todoItems.length; else noItems">
+      <div *ngFor="let todoItem of todoItems">
+        <app-todo-card [todoItem]="todoItem"></app-todo-card>
+      </div>  
+    </ng-container>
+
+    <ng-template #noItems>
+      <app-todo-card [todoItem]="false"></app-todo-card>
+    </ng-template>
+
+  </ion-list>
+
+  <ion-label color="medium">Current Activity</ion-label>
+  <app-activity-card [activity]="activity" (click)="activityRedirection(activity.id)"></app-activity-card>
 </ion-content>
