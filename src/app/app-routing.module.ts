@@ -14,11 +14,6 @@ const routes: Routes = [
   	path: 'topic', 
   	loadChildren: './topic/topic.module#TopicModule',
   },
-  { 
-  	path: 'tabs',  
-  	loadChildren: './tabs/tabs.module#TabsModule',
-    canLoad: [AuthGuard]
-  },
   {
     path: 'assessment', 
     loadChildren: './assessment/assessment.module#AssessmentModule',
