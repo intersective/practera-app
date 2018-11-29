@@ -4,7 +4,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { TopicComponent }    from './topic.component';
 
 const TopicRoutes: Routes = [
-  { path: '',  component: TopicComponent }
+  { path: ':activityId/:id',  component: TopicComponent }
  
 ];
 

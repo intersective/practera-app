@@ -9,7 +9,7 @@ export class TopicService {
     id: 1,
     title: 'Welcome and Warm-up',
     content: '<div>At the end of this activity you will submit an agreed Project Charter explaining what and how your team will deliver value to your Project Stakeholder. A Project Charter is a great way to ensure team, project stakeholder and consulting mentor are in agreement on the work to be delivered and how it will get achieved. Below is a series of steps and instructions that will guide you and your team through the process of creating a project charter.</div><div><br></div><div><b>STEP 1: Organise a Kick-Off meeting with your team and consulting mentor</b></div>',
-    videolink: 'https://vimeo.com/157064711',
+    videolink: 'https://www.youtube.com/watch?v=nby5jgjb0Dk',
     files: [
       {
         "name": "JS2_Program_Overview_2016Aug-1.pdf",
