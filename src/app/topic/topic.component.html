@@ -8,7 +8,7 @@
   <h3 text-center>{{topic.title}}</h3>
   
 		<div *ngIf="topic.videolink && topic.videolink !=='magiclink'" class="text-center">
-      <div text-center padding [innerHtml]="iframeHtml"></div>
+			<div text-center padding [innerHtml]="iframeHtml"></div>
     </div>
     <ion-card *ngIf="topic.content" [innerHtml]="topic.content" padding>
     </ion-card>
