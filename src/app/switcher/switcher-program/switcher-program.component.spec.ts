@@ -1,22 +1,21 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ReviewComponent } from './review.component';
+import { SwitcherProgramComponent } from './switcher-program.component';
 
-describe('ReviewComponent', () => {
-  let component: ReviewComponent;
-  let fixture: ComponentFixture<ReviewComponent>;
+describe('SwitcherProgramComponent', () => {
+  let component: SwitcherProgramComponent;
+  let fixture: ComponentFixture<SwitcherProgramComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
+      declarations: [SwitcherProgramComponent],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
-      declarations: [ ReviewComponent ]
-    })
-    .compileComponents();
+    }).compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(ReviewComponent);
+    fixture = TestBed.createComponent(SwitcherProgramComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
