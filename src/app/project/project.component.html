@@ -77,7 +77,7 @@
                       color="primary"
                       class="card practera-card"
                       [ngClass]="activity.is_locked ? 'locked-card': ''"
-                      (click)="!activity.is_locked && goto(activity.id)"
+                      (click)="!activity.is_locked && goToActivity(activity.id)"
                       >
                       <ion-card-content [ngClass]="{'feedback-card': activity.hasFeedback }">
                         <h4 color="primary-contrast">Activity</h4>
