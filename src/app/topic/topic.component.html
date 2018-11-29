@@ -1,0 +1,41 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-icon name="arrow-back" (click)="back()" color="primary" slot="start" margin-start></ion-icon>
+    <ion-title text-center>Topic</ion-title>
+  </ion-toolbar>
+</ion-header>
+<ion-content color="light">
+  <h3 text-center>{{topic.title}}</h3>
+  
+		<div *ngIf="topic.videolink && topic.videolink !=='magiclink'" class="text-center">
+      <div text-center padding [innerHtml]="iframeHtml"></div>
+    </div>
+    <ion-card *ngIf="topic.content" [innerHtml]="topic.content" padding>
+    </ion-card>
+    
+    <div *ngIf="topic.files.length > 0"  color="light" >
+			<label padding>Supporting Downloads</label>
+			
+			<div *ngFor="let file of topic.files" padding class="topic-icons">
+				<ion-grid >
+					<ion-row>
+						<ion-col size="10" class="file-name-view">
+							<ion-icon name="document" class="vertical-middle"></ion-icon>
+							<span class="vertical-middle"> {{file.name}} </span>
+						</ion-col>
+						<ion-col size="2">
+							<ion-icon *ngIf="file.slug.length > 0" name="search" (click)="previewFile(file)"></ion-icon>
+							<a *ngIf="file.slug.length > 0" [href]="file.slug"  download class="text-right">
+							<ion-icon name="download" float-right></ion-icon>
+							</a>
+						</ion-col>
+					</ion-row>
+				</ion-grid>
+			</div>
+		</div>
+		<div padding text-right>
+			<span class="vertical-middle" class="margin-right" >Mark topic as read</span>
+			<ion-toggle  [checked]="btnToggleTopicIsDone" (ionChange)="markAsDone()" [disabled]="btnToggleTopicIsDone"  class="vertical-middle" ></ion-toggle>
+		</div>
+	
+</ion-content>
