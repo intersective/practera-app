@@ -39,18 +39,18 @@
 
 <ion-content color="light">
   <ion-list class="project-list" >
-    <div #milestones >
+    
       <ion-item *ngFor="let level of levels ; trackBy:trackLevel" >
         <div color="light" class="project-card">
           <div class="milestone" padding >
             <ion-text color="medium">MILESTONE</ion-text>
             <p class="project-title">{{level.name}}</p>
             <div class="milestone-description" [innerHtml]="level.description"></div>
-            <div *ngIf="level.Activity">
+            <div *ngIf="level.Activity" class="milestone-activities">
               <ion-list class="activity-list">
                 <ion-item class="activity-item" *ngFor="let activity of level.Activity">
                   <ng-container *ngIf="!activity.is_hidden">
-                    <div *ngIf="!activity.is_locked">
+                    <div *ngIf="!activity.is_locked" class="row-cards">
                       <!-- remove comment when milestone done -->
                       <ion-icon *ngIf="activity.progress >= 1" name="checkmark-circle" class="icon-done" margin-end></ion-icon>
         
@@ -108,6 +108,6 @@
           </div>
         </div>
       </ion-item>
-    </div>
+   
   </ion-list>
 </ion-content>
