@@ -22,8 +22,8 @@ export class ProjectComponent implements OnInit{
       .subscribe(levels => this.milestons = levels);
   }
 
-  goto(id) {
-    console.log ('activity.id is:', id);
+  goToActivity(id) {
+    this.router.navigateByUrl('app/(project:activity/' + id + ')');
   }
 
   trackLevel(index, level){
