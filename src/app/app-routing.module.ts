@@ -24,12 +24,7 @@ const routes: Routes = [
     path: 'chat', 
     loadChildren: './chat/chat.module#ChatModule' 
   },
-  { 
-  	path: 'project',  
-  	loadChildren: './project/project.module#ProjectModule',
-  	
-  },
-  { path: '', redirectTo: 'tabs', pathMatch: 'full' },
+  
   { path: '**', component: PageNotFoundComponent }
 ];
 @NgModule({
