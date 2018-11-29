@@ -17,7 +17,6 @@ import { PopUpComponent } from '@components/pop-up/pop-up.component';
 
 import { HttpClientInMemoryWebApiModule } from 'angular-in-memory-web-api';
 import { UtilsService } from './services/utils.service';
-import { HttpClientModule } from '@angular/common/http';
 import { EmbedVideo } from 'ngx-embed-video';
 
 
@@ -43,9 +42,7 @@ import { EmbedVideo } from 'ngx-embed-video';
       prefixUrl: 'https://sandbox.practera.com/',
     }),
     AppRoutingModule,
-    HttpClientModule,
     EmbedVideo.forRoot()
-
   ],
   providers: [
     // StatusBar,
