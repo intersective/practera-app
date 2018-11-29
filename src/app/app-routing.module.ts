@@ -14,6 +14,10 @@ const routes: Routes = [
     path: 'assessment', 
     loadChildren: './assessment/assessment.module#AssessmentModule',
   },
+  { 
+  	path: 'reviews', 
+  	loadChildren: './reviews/reviews.module#ReviewsModule',
+  },
   {
     path: '',
     redirectTo: '/app',
