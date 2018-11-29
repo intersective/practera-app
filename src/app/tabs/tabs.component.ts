@@ -7,5 +7,5 @@ import { Component } from '@angular/core';
 })
 export class TabsComponent {
 	showTeam = false;
-	showReview = false;
+	showReview = true;
 }
