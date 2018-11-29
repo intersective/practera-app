@@ -13,16 +13,13 @@ import { TopicRoutingModule } from './topic-routing.module';
     IonicModule,
     CommonModule,
     FormsModule,
-    TopicRoutingModule,
-   
-
+    TopicRoutingModule
   ],
   declarations: [
-    TopicComponent,
+    TopicComponent
   ],
   providers: [
-   TopicService,
-   
+   TopicService
   ]
 })
 export class TopicModule {}

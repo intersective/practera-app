@@ -15,9 +15,7 @@ export class TopicComponent implements OnInit {
   constructor( 
     private topicService: TopicService,
     private embedService: EmbedVideoService
-    )
-     { 
-     }
+  ) {}
 
   ngOnInit() {
     this.topicService.getTopic()
