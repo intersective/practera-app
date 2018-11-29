@@ -60,7 +60,7 @@ Resources:
     Description: The default Amazon EC2 security group that will be created for the Amazon EC2 Linux instances.
     Type: AWS::EC2::SecurityGroup
     Properties:
-      GroupDescription: Enable HTTP access via port 80,4200 and SSH access via port 22.
+      GroupDescription: Enable HTTP access via port 80,8080,443,4200 and SSH access via port 22.
       SecurityGroupIngress:
       - IpProtocol: tcp
         FromPort: '80'
@@ -73,5 +73,13 @@ Resources:
       - IpProtocol: tcp
         FromPort: '4200'
         ToPort: '4200'
+        CidrIp: 0.0.0.0/0
+      - IpProtocol: tcp
+        FromPort: '8080'
+        ToPort: '8080'
+        CidrIp: 0.0.0.0/0
+      - IpProtocol: tcp
+        FromPort: '443'
+        ToPort: '443'
         CidrIp: 0.0.0.0/0
       VpcId: !Ref 'VpcId'

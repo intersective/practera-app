@@ -4,3 +4,5 @@ yum install -y nodejs
 npm install forever -g
 npm install -g @angular/cli
 npm install
+node node_modules/node-sass/scripts/install.js
+npm rebuild node-sass
