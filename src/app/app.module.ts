@@ -17,13 +17,15 @@ import { PopUpComponent } from '@components/pop-up/pop-up.component';
 
 import { HttpClientInMemoryWebApiModule } from 'angular-in-memory-web-api';
 import { UtilsService } from './services/utils.service';
+import { ReviewsComponent } from './reviews/reviews.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     PageNotFoundComponent,
     PopUpComponent,
-    AppComponent
+    AppComponent,
+    ReviewsComponent
   ],
   entryComponents: [
     PopUpComponent
