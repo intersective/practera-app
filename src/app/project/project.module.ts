@@ -18,6 +18,26 @@ import { ProjectRoutingModule } from './project-routing.module';
     NgCircleProgressModule.forRoot({
       "outerStrokeLinecap": "butt",
       "toFixed": 0,
+      "outerStrokeColor": "var(--ion-color-primary)",
+      "backgroundColor": "var(--practera-progress-cricle-bg-color)",
+      "backgroundStroke": "var(--practera-progress-circle-stroke)",
+      "showTitle": false,
+      "showSubtitle": false,
+      "startFromZero": false,
+      "showInnerStroke": false,
+      "showUnits": false,
+      "backgroundStrokeWidth": 0,
+      "maxPercent": 100,
+      "outerStrokeWidth": 10,
+      "radius": 5,
+      "space": -20
+
+
+
+
+
+
+      
     })
   ],
   declarations: [
