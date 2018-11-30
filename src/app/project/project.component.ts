@@ -9,7 +9,7 @@ import { ProjectService } from './project.service';
 })
 export class ProjectComponent implements OnInit{
 
-public program:string = "Demo Program";
+public programName:string = "Demo Program";
   constructor(
     private router: Router,
     private projectService: ProjectService
