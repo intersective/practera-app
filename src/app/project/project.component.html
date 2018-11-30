@@ -1,113 +1,82 @@
-<ion-header>
+<ion-header color="light">
   <ion-toolbar class="project-toolbar">
-    <ion-title center>Program Name</ion-title>
+    <ion-title center>{{program}}</ion-title>
   </ion-toolbar>
 </ion-header>
 
 
 <ion-grid class="milestone-bar">
   <ion-row >
-    <ion-col class="bubbles-top" *ngFor="let level of levels;">
-      <div>
+    <ion-col class="bubbles-top" *ngFor="let level of milestons;">
       <div *ngIf="!level.is_locked" >
         <ion-icon *ngIf="level.progress >= 1" name="checkmark-circle" class="icon-done" ></ion-icon>
         <!--{{level.progress}}-->
         <circle-progress *ngIf="level.progress < 1"
           [percent]="level.progress * 100"
-          [backgroundStrokeWidth]= "0"
-          [radius]= "5"
-          [space]= "-20"
-          [maxPercent]= 100
-          [backgroundColor]= "'#eaeaea'"
-          [backgroundStroke]= "'#004987'"
-          [backgroundStrokeWidth]= "0"
-          [outerStrokeColor]= "'#2bbfd4'"
-          [outerStrokeWidth]= "10"
-          [showTitle]= false
-          [showSubtitle]= false
-          [showUnits]= false
-          [showInnerStroke]= false
-          [startFromZero]= false
+          
         >
         </circle-progress >
       </div>
       <ion-icon *ngIf="level.is_locked" name="lock" color="medium" class="icon-lock"></ion-icon>
-      </div>
     </ion-col>
   </ion-row>
 </ion-grid>
 
 <ion-content color="light">
   <ion-list class="project-list" >
-    
-      <ion-item *ngFor="let level of milestons ; trackBy:trackLevel" >
-        <div color="light" class="project-card">
-          <div class="milestone" padding >
-            <ion-text color="medium">MILESTONE</ion-text>
-            <p class="project-title">{{level.name}}</p>
-            <div class="milestone-description" [innerHtml]="level.description"></div>
-            <div *ngIf="level.Activity" class="milestone-activities">
-              <ion-list class="activity-list">
-                <ion-item class="activity-item" *ngFor="let activity of level.Activity">
-                  <ng-container *ngIf="!activity.is_hidden">
-                    <div *ngIf="!activity.is_locked" class="row-cards">
-                      <!-- remove comment when milestone done -->
-                      <ion-icon *ngIf="activity.progress >= 1" name="checkmark-circle" class="icon-done" margin-end></ion-icon>
-        
-                      <circle-progress margin-end *ngIf="activity.progress < 1"
-                        [percent]="activity.progress * 100"
-                        [backgroundStrokeWidth]= "0"
-                        [radius]= "5"
-                        [space]= "-20"
-                        [maxPercent]= 100
-                        [backgroundColor]= "'#eaeaea'"
-                        [backgroundStroke]= "'#004987'"
-                        [backgroundStrokeWidth]= "0"
-                        [outerStrokeColor]= "'#2bbfd4'"
-                        [outerStrokeWidth]= "10"
-                        [showTitle]= false
-                        [showSubtitle]= false
-                        [showUnits]= false
-                        [showInnerStroke]= false
-                        [startFromZero]= false 
-                      ></circle-progress>
-                    </div>
-                    <ion-icon *ngIf="activity.is_locked" name="lock" color="medium" class="icon-lock"></ion-icon>
-                    <ion-card *ngIf="!activity.lead_image"
-                      color="primary"
-                      class="card practera-card"
-                      [ngClass]="activity.is_locked ? 'locked-card': ''"
-                      (click)="!activity.is_locked && goToActivity(activity.id)"
-                      >
-                      <ion-card-content [ngClass]="{'feedback-card': activity.hasFeedback }">
-                        <h4 color="primary-contrast">Activity</h4>
-                        <h2 color="primary-contrast" class="activity-name">{{activity.name}}</h2>
-                        <div class="feedback-label" *ngIf="activity.hasFeedback">
-                          <p>Feedback Available</p>
-                        </div>
-                      </ion-card-content>
-                    </ion-card>
-                    <ion-card *ngIf="activity.lead_image"
-                      color="primary"
-                      class="card practera-card image-card"
-                      [ngClass]="activity.is_locked ? 'locked-card': ''"
-                      (click)="!activity.is_locked && goto(activity.id)"
-                      >         
-                      <ion-card-content [ngClass]="{'feedback-card': activity.hasFeedback }">
-                        <h4 color="primary-contrast">Activity</h4>
-                        <h2 color="primary-contrast" class="activity-name">{{activity.name}}</h2>
-                        <div class="feedback-label" *ngIf="activity.hasFeedback">
-                          <p>Feedback Available</p>
-                        </div>
-                      </ion-card-content>
-                    </ion-card>
-                  </ng-container>
-                </ion-item>
-              </ion-list>
-            </div>
+    <ion-item *ngFor="let level of milestons" >
+      <div color="light" class="project-card">
+        <div class="milestone" padding >
+          <ion-text color="medium">MILESTONE</ion-text>
+          <p class="project-title">{{level.name}}</p>
+          <div class="milestone-description" [innerHtml]="level.description"></div>
+          <div *ngIf="level.Activity" class="milestone-activities">
+            <ion-list class="activity-list">
+              <ion-item class="activity-item" *ngFor="let activity of level.Activity">
+                <ng-container *ngIf="!activity.is_hidden">
+                  <div *ngIf="!activity.is_locked" class="row-cards">
+                    <!-- remove comment when milestone done -->
+                    <ion-icon *ngIf="activity.progress >= 1" name="checkmark-circle" class="icon-done" margin-end></ion-icon>
+      
+                    <circle-progress margin-end *ngIf="activity.progress < 1"
+                      [percent]="activity.progress * 100"
+                    ></circle-progress>
+                  </div>
+                  <ion-icon *ngIf="activity.is_locked" name="lock" color="medium" class="icon-lock"></ion-icon>
+                  <ion-card *ngIf="!activity.lead_image"
+                    color="primary"
+                    class="card practera-card"
+                    [ngClass]="activity.is_locked ? 'locked-card': ''"
+                    (click)="!activity.is_locked && goToActivity(activity.id)"
+                    >
+                    <ion-card-content [ngClass]="{'feedback-card': activity.hasFeedback }">
+                      <h4 color="primary-contrast">Activity</h4>
+                      <h2 color="primary-contrast" class="activity-name">{{activity.name}}</h2>
+                      <div class="feedback-label" *ngIf="activity.hasFeedback">
+                        <p>Feedback Available</p>
+                      </div>
+                    </ion-card-content>
+                  </ion-card>
+                  <ion-card *ngIf="activity.lead_image"
+                    color="primary"
+                    class="card practera-card image-card"
+                    [ngClass]="activity.is_locked ? 'locked-card': ''"
+                    (click)="!activity.is_locked && goto(activity.id)"
+                    >         
+                    <ion-card-content [ngClass]="{'feedback-card': activity.hasFeedback }">
+                      <h4 color="primary-contrast">Activity</h4>
+                      <h2 color="primary-contrast" class="activity-name">{{activity.name}}</h2>
+                      <div class="feedback-label" *ngIf="activity.hasFeedback">
+                        <p>Feedback Available</p>
+                      </div>
+                    </ion-card-content>
+                  </ion-card>
+                </ng-container>
+              </ion-item>
+            </ion-list>
           </div>
         </div>
-      </ion-item>
-   
+      </div>
+    </ion-item>
   </ion-list>
 </ion-content>

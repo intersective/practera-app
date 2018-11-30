@@ -14,10 +14,11 @@ import { TodoCardComponent } from '../components/todo-card/todo-card.component';
     CommonModule,
     FormsModule,
     NgCircleProgressModule.forRoot({
-      "backgroundColor": "#f4f5f8",
-      "subtitleColor": "#444444",
+      "backgroundColor": "var(--ion-color-light)",
+      "subtitleColor": "var(--ion-color-dark-tint)",
       "showInnerStroke": false,
       "startFromZero": false,
+      "outerStrokeColor": "var(--ion-color-primary)",
       "subtitle": [
         "COMPLETE"
       ],
