@@ -17,6 +17,9 @@ import { NotificationService } from './notification.service';
   ],
   exports: [
     PopUpComponent
+  ],
+  entryComponents: [
+    PopUpComponent
   ]
 })
 
