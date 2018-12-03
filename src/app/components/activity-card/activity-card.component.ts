@@ -1,4 +1,6 @@
 import { Component, OnInit, Input } from '@angular/core';
+import { DOCUMENT } from '@angular/common';
+import { Inject } from '@angular/core';
 
 
 @Component({
@@ -7,9 +9,27 @@ import { Component, OnInit, Input } from '@angular/core';
   styleUrls: ['./activity-card.component.scss']
 })
 export class ActivityCardComponent implements OnInit {
-  @Input() activity = {}
+  @Input() activity : {
+    id: number,
+    name: string,
+    is_locked: boolean,
+    progress: number,
+    hasFeedback: boolean,
+    is_hidden: boolean,
+    lead_image: string
+
+  }
+ constructor ( @Inject(DOCUMENT) private document: Document ) { }
 
   ngOnInit() {
+    if (this.activity.lead_image) 
+    this.setBackgroundImage(this.activity.lead_image)
+  };
+
+  setBackgroundImage (image) {
+    console.log(image);
+    this.document.documentElement.style.setProperty('var(--practera-background-image)', "URL('"+image+'")');
   }
 
 }
+  
