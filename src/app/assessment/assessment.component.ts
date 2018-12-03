@@ -2,6 +2,7 @@ import { Component, OnInit, Input } from '@angular/core';
 import { Router, ActivatedRoute, ParamMap } from '@angular/router';
 import { AssessmentService } from './assessment.service';
 import { UtilsService } from '../services/utils.service';
+import { NotificationService } from '@shared/notification/notification.service';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 
 @Component({
@@ -65,7 +66,8 @@ export class AssessmentComponent implements OnInit {
     private router: Router,
     private route: ActivatedRoute,
     private assessmentService: AssessmentService,
-    private utils: UtilsService
+    private utils: UtilsService,
+    private notificationService: NotificationService
   ) {}
 
   ngOnInit() {
@@ -168,7 +170,7 @@ export class AssessmentComponent implements OnInit {
       // check if all required questions have answer
       if (!this.utils.isEmpty(requiredQuestions)) {
         // display a pop up if required question not answered
-        return this.utils.popUp('shortMessage', {message: 'Required question answer missing!'}, false);
+        return this.notificationService.popUp('shortMessage', {message: 'Required question answer missing!'}, false);
       }
     }
 
@@ -202,12 +204,12 @@ export class AssessmentComponent implements OnInit {
             redirect = ['reviews'];
           }
           // display a pop up for successful submission
-          return this.utils.popUp('shortMessage', {
+          return this.notificationService.popUp('shortMessage', {
             message: 'Submitted Successfully!'
           }, redirect);
         } else {
           // display a pop up if submission failed
-          return this.utils.popUp('shortMessage', {
+          return this.notificationService.popUp('shortMessage', {
             message: 'Submission Failed, please try again later.'
           }, false);
         }

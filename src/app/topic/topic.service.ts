@@ -29,7 +29,7 @@ export class TopicService {
   };
 
   constructor() { }
-  getTopic(): Observable<any> {
+  getTopic(id): Observable<any> {
     return of(this.topic);
   }
 }
