@@ -24,7 +24,6 @@ const routes: Routes = [
     path: 'chat', 
     loadChildren: './chat/chat.module#ChatModule' 
   },
-  
   { path: '**', component: PageNotFoundComponent }
 ];
 @NgModule({
