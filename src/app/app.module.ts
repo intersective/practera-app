@@ -10,14 +10,15 @@ import { UtilsService } from './services/utils.service';
 import { TabsModule } from './tabs/tabs.module';
 import { PopUpComponent } from './components/pop-up/pop-up.component';
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
-
+import { ActivityCardModule } from './components/activity-card/activity-card.module';
 
 @NgModule({
   declarations: [
     AppComponent,
     PopUpComponent,
     AppComponent,
-    PageNotFoundComponent
+    PageNotFoundComponent,
+    
   ],
  
   entryComponents: [
@@ -33,6 +34,7 @@ import { PageNotFoundComponent } from './page-not-found/page-not-found.component
     }),
     AppRoutingModule,
     NgCircleProgressModule,
+    ActivityCardModule
     
    
   ],
