@@ -5,7 +5,19 @@
   background-size: cover;
   width: 100%;
   .activity-name {
-    font-size: 20px;
+    font-size: 18px;
     font-weight: 500;
   }
+  &:last-child {
+    margin-bottom: 5px;
+  }
+}
+.locked-card {
+  background: var(--ion-color-medium);
+  opacity: 0.3;
+}
+.image-card {
+  background-position: center; 
+  background-color: transparent; 
+  //background-image: url('img/lead_image.jpg'),linear-gradient( rgba(0, 0, 0, .4), rgba(0, 0, 0, 0.2) ) !important;
 }

@@ -26,10 +26,5 @@ public programName:string = "Demo Program";
     this.router.navigateByUrl('app/(project:activity/' + id + ')');
   }
 
-  trackLevel(index, level){
-    //do what ever logic you need to come up with the unique identifier of your item in loop, I will just return the object id.
-    return level.id ? level.id : undefined;
-  }
-  
    
 }

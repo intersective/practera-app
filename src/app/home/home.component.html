@@ -37,7 +37,6 @@
   </ion-list>
 
   <ion-label color="medium">Current Activity</ion-label>
-  <!-- <app-activity-card [activity]="activity" (click)="activityRedirection(activity.id)"></app-activity-card> -->
   <app-activity-card [activity]="activity" (click)="!activity.is_locked && goToActivity(activity.id)"></app-activity-card>
              
 </ion-content>

@@ -19,6 +19,15 @@ export class ProjectService {
           is_locked: false,
           progress: 0.34,
           hasFeedback: true,
+          is_hidden: false,
+          lead_image:''
+        },
+        {
+          id: 102,
+          name: 'Activity two',
+          is_locked: true,
+          progress: 0.74,
+          lead_image: 'https://www.pexels.com/photo/audience-band-blur-concert-518389/',
           is_hidden: false
         },
         {
@@ -26,15 +35,7 @@ export class ProjectService {
           name: 'Activity two',
           is_locked: true,
           progress: 0.74,
-          lead_image: '/src/assets/home-page-img/header-bg.jpg',
-          is_hidden: false
-        },
-        {
-          id: 102,
-          name: 'Activity two',
-          is_locked: true,
-          progress: 0.74,
-          lead_image: '/src/assets/home-page-img/header-bg.jpg',
+          lead_image: 'https://www.pexels.com/photo/group-of-people-inside-disco-house-167491/',
           is_hidden: false
         } 
       ],
