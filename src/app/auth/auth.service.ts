@@ -3,7 +3,7 @@ import { RequestService } from '@shared/request/request.service';
 import { HttpParams } from '@angular/common/http';
 import { map } from 'rxjs/operators';
 import { Observable, of } from 'rxjs';
-import { BrowserStorageService, User } from '@services/storage.service';
+import { BrowserStorageService } from '@services/storage.service';
 import { UtilsService } from '@services/utils.service';
 
 /**
