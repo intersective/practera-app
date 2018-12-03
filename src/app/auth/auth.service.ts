@@ -3,7 +3,7 @@ import { RequestService } from '@shared/request/request.service';
 import { HttpParams } from '@angular/common/http';
 import { map } from 'rxjs/operators';
 import { Observable, of } from 'rxjs';
-import { BrowserStorageService } from '@services/storage.service';
+import { BrowserStorageService, User } from '@services/storage.service';
 import { UtilsService } from '@services/utils.service';
 
 /**
@@ -53,9 +53,7 @@ export class AuthService {
       success: rawData.success,
       tutorial: data.tutorial,
       apikey: data.apikey,
-      timelines: data.Timelines.map(function(timeline) {
-        timeline.Program.title = timeline.Program.name || '';
-
+      programs: data.Timelines.map(function(timeline) {
         return {
           enrolment: timeline.Enrolment,
           program: timeline.Program,
@@ -86,8 +84,8 @@ export class AuthService {
       console.log('Auth Response::', response);
       console.log('Auth Response::', norm);
       if (response.data) {
-        this.storage.set('apikey', norm.apikeys);
-        this.storage.set('timelines', norm.timelines);
+        this.storage.set('apikey', norm.apikey);
+        this.storage.set('programs', norm.programs);
         this.storage.set('isLoggedIn', true);
       }
       return response;
@@ -106,21 +104,20 @@ export class AuthService {
     return this.request.get(api.me).pipe(map(response => {
       if (response.data) {
         const apiData = response.data;
-
-        this.storage.set('name', apiData.name);
-        this.storage.set('contact_number', apiData.contact_number);
-        this.storage.set('email', apiData.email);
-        this.storage.set('role', apiData.role);
-        this.storage.set('image', apiData.image);
-        this.storage.set('linkedin_connected', apiData.linkedinConnected);
-        this.storage.set('linkedin_url', apiData.linkedin_url);
-        this.storage.set('program_id', apiData.program_id);
-        this.storage.set('timeline_id', apiData.timeline_id);
-        this.storage.set('project_id', apiData.project_id);
-        this.storage.set('filestackHash', apiData.userhash);
-
-        // Max points for bubble
-        this.storage.set('max_achievable_points', apiData.max_achievable_points);
+        this.storage.setUser({
+          name: apiData.name,
+          contactNumber: apiData.contact_number,
+          email: apiData.email,
+          role: apiData.role,
+          image: apiData.image,
+          linkedinConnected: apiData.linkedinConnected,
+          linkedinUrl: apiData.linkedin_url,
+          programId: apiData.program_id,
+          timelineId: apiData.timeline_id,
+          projectId: apiData.project_id,
+          filestackHash: apiData.userhash,
+          maxAchievablePoints: apiData.max_achievable_points
+        });
       }
       return response;
     }));
@@ -136,13 +133,13 @@ export class AuthService {
    * @return {Boolean}
    */
   linkedinAuthenticated () {
-      return this.storage.get('linkedin_connected') || false;
+      return this.storage.getUser().linkedinConnected || false;
   }
 
   // Activity ID is no longer used as a parameter,
   // but needs to be there so just pass in a 1
   connectToLinkedIn () {
-    const url = '/api/auth_linkedin.json?apikey=' + this.storage.get('token') + '&appkey=' + this.storage.get('appkey') + '&timeline_id=' + this.storage.get('timeline_id');
+    const url = '/api/auth_linkedin.json?apikey=' + this.storage.get('token') + '&appkey=' + this.storage.get('appkey') + '&timeline_id=' + this.storage.getUser().timelineId;
     
     this.utils.openUrl(url);
     return;
@@ -162,7 +159,7 @@ export class AuthService {
         const data = response.data;
         this.storage.set('token', data.apikey);
         this.storage.set('tutorial', data.tutorial);
-        this.storage.set('timelines', data.timelines);
+        this.storage.set('programs', data.timelines);
       }
 
       // @TODO: verify if safari browser localStorage store data above properly
