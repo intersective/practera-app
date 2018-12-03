@@ -87,6 +87,9 @@ export class AuthService {
         this.storage.set('apikey', norm.apikey);
         this.storage.set('programs', norm.programs);
         this.storage.set('isLoggedIn', true);
+        this.storage.setUser({
+          email: email
+        });
       }
       return response;
     }));
