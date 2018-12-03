@@ -1,6 +1,21 @@
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 
+export interface Task {
+  id: number,
+  type: string,
+  name: string,
+  status: string,
+  contextId?: number,
+  feedbackReviewed?: boolean
+}
+
+export interface Activity {
+  name: string,
+  description?: string,
+  tasks: Array<Task>
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -16,12 +31,6 @@ export class ActivityService {
         type: 'Topic',
         name: 'Topic name',
         status: 'done'
-      },
-      {
-        id: 2,
-        type: 'Comm',
-        name: 'Comm name',
-        status: ''
       },
       {
         id: 1,
@@ -65,7 +74,7 @@ export class ActivityService {
 
   constructor() {};
 
-  getActivity(id): Observable<any> {
+  getActivity(id: number): Observable<any> {
     return of(this.activity);
   }
 }
