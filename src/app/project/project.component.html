@@ -47,7 +47,7 @@
                     <ion-icon  name="lock" color="medium" class="icon-lock"></ion-icon>
                   </ng-template>
                   
-                  <ion-card 
+                  <!-- <ion-card 
                     color="primary"
                     class="card practera-card"
                     [ngClass]="{
@@ -63,7 +63,8 @@
                         <p>Feedback Available</p>
                       </div>
                     </ion-card-content>
-                  </ion-card>
+                  </ion-card> -->
+                  <app-activity-card [activity]="activity" (click)="!activity.is_locked && goToActivity(activity.id)"></app-activity-card>
               </ion-item>
             </ion-list>
           </div>
