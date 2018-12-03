@@ -1,0 +1,32 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Fast Feedback</ion-title>
+  </ion-toolbar>
+</ion-header>
+<ion-content>
+	<div class="text-center">
+		<p>Before you continue, please spend 10 seconds to answer these questions.</p>
+	</div>
+	<form role="form" ng-submit="submitSlider()">
+		<div class="card" ng-repeat="question in modal.questions">
+			<div class="item item-text-wrap">
+				<h2>Q{{ $index + 1 }}. {{ question.title }}</h2>
+				<p ng-if="question.description">{{ question.description }}</p>
+
+				<div class="list">
+					<ion-radio name="{{'question' + question.id}}"
+						ng-model="sliders[question.id]"
+						ng-value="choice.id"
+						ng-repeat="choice in question.choices | orderBy:'order'">
+						{{ choice.title }}
+					</ion-radio>
+				</div>
+			</div>
+		</div>
+
+		<div class="center">
+			<button type="submit" class="button practera-blue-submit-btn submit-button" ng-disabled="isSubmittingFeedback">Submit</button>
+		</div>
+	</form>
+  <ion-button class="dismiss">Dismiss Modal</ion-button>
+</ion-content>
