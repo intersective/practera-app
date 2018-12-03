@@ -1,11 +1,21 @@
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
+import { RequestService } from '@shared/request/request.service';
+
+/**
+ * @name api
+ * @description list of api endpoint involved in this service
+ * @type {Object}
+ */
+const api = {
+  activity: 'api/activities.json',
+};
 
 export interface Task {
   id: number,
   type: string,
   name: string,
-  status: string,
+  status?: string,
   contextId?: number,
   feedbackReviewed?: boolean
 }
@@ -72,9 +82,20 @@ export class ActivityService {
     ]
   };
 
-  constructor() {};
+  constructor(
+    private request: RequestService
+  ) {};
 
   getActivity(id: number): Observable<any> {
-    return of(this.activity);
+    return this.request.get(api.activity).pipe(map(response => {
+      if (response.success && response.data) {
+        return _normaliseActivity(response.data);
+      }
+    }));
   }
+
+  private _normaliseActivity(data: any) {
+
+  }
+
 }
