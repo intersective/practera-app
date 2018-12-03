@@ -27,8 +27,7 @@ export class ActivityCardComponent implements OnInit {
   };
 
   setBackgroundImage (image) {
-    console.log(image);
-    this.document.documentElement.style.setProperty('var(--practera-background-image)', "URL('"+image+'")');
+   this.document.documentElement.style.setProperty('--practera-card-background-image', "url('"+image+"')");
   }
 
 }
