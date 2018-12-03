@@ -10,7 +10,7 @@ import { TabsModule } from './tabs/tabs.module';
 import { AppComponent } from './app.component';
 import { NgCircleProgressModule } from 'ng-circle-progress';
 import { UtilsService } from './services/utils.service';
-//import { PopUpComponent } from './components/pop-up/pop-up.component';
+//import { PopUpComponent } from '@shared/notification/pop-up/pop-up.component';
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
 import { ActivityCardModule } from './components/activity-card/activity-card.module';
 

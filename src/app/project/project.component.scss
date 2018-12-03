@@ -63,20 +63,8 @@
   margin-left: 0px;
 }
 
-
-.card {
-  margin-top: 10px;
-  max-height: 120px;
-  height: 120px;
-  background-size: cover;
+.activity-card {
   width: 100%;
-  .activity-name {
-    font-size: 20px;
-    font-weight: 500;
-  }
-  &:last-child {
-    margin-bottom: 5px;
-  }
 }
 
 
