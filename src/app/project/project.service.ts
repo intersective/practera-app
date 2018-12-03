@@ -27,7 +27,7 @@ export class ProjectService {
           name: 'Activity two',
           is_locked: true,
           progress: 0.74,
-          lead_image: 'https://www.pexels.com/photo/audience-band-blur-concert-518389/',
+          lead_image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSGTVf63Vm3XgOncMVSOy0-jSxdMT8KVJIc8WiWaevuWiPGe0Pm',
           is_hidden: false
         },
         {
@@ -35,7 +35,7 @@ export class ProjectService {
           name: 'Activity two',
           is_locked: true,
           progress: 0.74,
-          lead_image: 'https://www.pexels.com/photo/group-of-people-inside-disco-house-167491/',
+          lead_image: '',
           is_hidden: false
         } 
       ],
