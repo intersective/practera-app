@@ -28,8 +28,21 @@ export class TopicService {
 
   };
 
+  topicDone = {
+    1: false,
+    2: false
+  }
+  
   constructor() { }
   getTopic(id): Observable<any> {
     return of(this.topic);
   }
+  saveTopicRead(topicId) {
+    console.log('topic is marked as read.');
+  }
+  getTopicIsDone(topicId) {
+    return of(this.topicDone[topicId] ? this.topicDone[topicId] : false);
+  }
+
+  
 }

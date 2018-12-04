@@ -19,13 +19,13 @@
 			<div *ngFor="let file of topic.files" padding class="topic-icons">
 				<ion-grid >
 					<ion-row>
-						<ion-col size="10" class="file-name-view">
-							<ion-icon name="document" class="vertical-middle"></ion-icon>
-							<span class="vertical-middle"> {{file.name}} </span>
+						<ion-col size="10" class="file-name-view" >
+							<ion-icon name="document" class="vertical-middle" color="primary"></ion-icon>
+							<span class="vertical-middle" color="primary">&nbsp;{{file.name}} </span>
 						</ion-col>
 						<ion-col size="2">
-							<ion-icon *ngIf="file.slug.length > 0" name="search" (click)="previewFile(file)"></ion-icon>
-							<a *ngIf="file.slug.length > 0" [href]="file.slug" download class="text-right">
+							<ion-icon *ngIf="file.slug.length > 0" name="search" (click)="previewFile(file)" color="primary"></ion-icon>
+							<a *ngIf="file.slug.length > 0" [href]="file.slug" download class="text-right" target="_blank">
 							 <ion-icon name="download" float-right></ion-icon>
 							</a>
 						</ion-col>
