@@ -1,6 +1,22 @@
 <ion-header>
   <ion-toolbar>
-    <ion-icon name="arrow-back" (click)="back()" color="primary" slot="start" margin-start></ion-icon>
-    <ion-title text-center>Reviews</ion-title>
+    <ion-title>Reviews</ion-title>
   </ion-toolbar>
 </ion-header>
+<ion-content padding color="light">
+  <ng-container class="top-round-btns">
+  </ng-container>
+  <div *ngIf="!reviews.length; else reviewsCard" class="no-review-show" padding>
+    <div class="empty-status" >
+      <h2 text-center>You have no new submissions to review</h2>
+    </div>
+  </div>
+  <ng-template #reviewsCard>
+    <ng-container *ngFor="let review of reviews">
+       
+      <ion-card>hey</ion-card>
+     
+    </ng-container>
+  </ng-template>
+
+</ion-content>
