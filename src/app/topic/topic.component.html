@@ -24,8 +24,8 @@
 							<span class="vertical-middle" color="primary">&nbsp;{{file.name}} </span>
 						</ion-col>
 						<ion-col size="2">
-							<ion-icon *ngIf="file.slug.length > 0" name="search" (click)="previewFile(file)" color="primary"></ion-icon>
-							<a *ngIf="file.slug.length > 0" [href]="file.slug" download class="text-right" target="_blank">
+							<ion-icon *ngIf="file.url.length > 0" name="search" (click)="previewFile(file)" color="primary"></ion-icon>
+							<a *ngIf="file.url.length > 0" [href]="file.url" download class="text-right" target="_blank">
 							 <ion-icon name="download" float-right></ion-icon>
 							</a>
 						</ion-col>
