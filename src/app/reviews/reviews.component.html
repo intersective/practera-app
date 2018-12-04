@@ -13,9 +13,7 @@
   </div>
   <ng-template #reviewsCard>
     <ng-container *ngFor="let review of reviews">
-       
-      <ion-card>hey</ion-card>
-     
+       <app-activity-card [activity]="review"></app-activity-card>
     </ng-container>
   </ng-template>
 

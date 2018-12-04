@@ -4,7 +4,7 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HomeComponent } from './home.component';
-import { ActivityCardComponent } from '../components/activity-card/activity-card.component';
+import { ActivityCardModule } from '../components/activity-card/activity-card.module';
 import { NgCircleProgressModule } from 'ng-circle-progress';
 import { TodoCardComponent } from '../components/todo-card/todo-card.component';
 
@@ -13,6 +13,7 @@ import { TodoCardComponent } from '../components/todo-card/todo-card.component';
     IonicModule,
     CommonModule,
     FormsModule,
+    ActivityCardModule,
     NgCircleProgressModule.forRoot({
       // set defaults here
       "backgroundColor": "#f5f6fa",
@@ -34,7 +35,7 @@ import { TodoCardComponent } from '../components/todo-card/todo-card.component';
       "subtitleFontSize": "18",
     })
   ],
-  declarations: [HomeComponent, ActivityCardComponent, TodoCardComponent]
+  declarations: [HomeComponent, TodoCardComponent]
 })
 export class HomeModule {
 }
