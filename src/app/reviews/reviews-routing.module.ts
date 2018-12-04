@@ -16,11 +16,7 @@ const reviewsRoutes: Routes = [
   }
 ];
  @NgModule({
-  imports: [
-    RouterModule.forChild(reviewsRoutes)
-  ],
-  exports: [
-    RouterModule
-  ]
+  imports: [ RouterModule.forChild(reviewsRoutes) ],
+  exports: [ RouterModule ]
 })
 export class ReviewsRoutingModule { } 
