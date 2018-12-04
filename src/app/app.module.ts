@@ -17,7 +17,6 @@ import { PopUpComponent } from '@components/pop-up/pop-up.component';
 
 import { HttpClientInMemoryWebApiModule } from 'angular-in-memory-web-api';
 import { UtilsService } from './services/utils.service';
-import { ReviewsModule } from './reviews/reviews.module';
 
 @NgModule({
   declarations: [
@@ -39,7 +38,7 @@ import { ReviewsModule } from './reviews/reviews.module';
       prefixUrl: 'https://sandbox.practera.com/',
     }),
     AppRoutingModule,
-    ReviewsModule
+    
   ],
   providers: [
     // StatusBar,

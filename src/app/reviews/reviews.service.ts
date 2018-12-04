@@ -7,7 +7,23 @@ import { Observable, of } from 'rxjs';
 export class ReviewsService {
   reviews = [
     {
-      isDone: false,
+      isDone: true,
+      name: 'moderated for mentors',
+      submitterName: 'Ronak',
+      submittedDate: 'today',
+      teamName: 'one',
+      isInTeam: true
+    },
+    {
+      isDone: true,
+      name: 'moderated for mentors',
+      submitterName: 'Ronak',
+      submittedDate: 'today',
+      teamName: 'one',
+      isInTeam: true
+    },
+    {
+      isDone: true,
       name: 'moderated for mentors',
       submitterName: 'Ronak',
       submittedDate: 'today',
