@@ -12,9 +12,8 @@ export class TopicComponent implements OnInit {
   topic : any;
   iframeHtml: any;
   btnToggleTopicIsDone: boolean = false;
-  id = 0;
-  activityId = 0;
-  action= '';
+  id: number = 0;
+  activityId: number = 0;
   
   constructor( 
     private topicService: TopicService,
@@ -24,7 +23,6 @@ export class TopicComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.action = this.route.snapshot.data.action;
     this.id = parseInt(this.route.snapshot.paramMap.get('id'));
     this.activityId = parseInt(this.route.snapshot.paramMap.get('activityId'));
 
@@ -44,7 +42,7 @@ export class TopicComponent implements OnInit {
   
   markAsDone () {
     this.btnToggleTopicIsDone = true;
-    this.topicService.saveTopicRead(this.topic.id);
+    this.topicService.saveTopicRead(this.id);
     
   }
   previewFile () {
