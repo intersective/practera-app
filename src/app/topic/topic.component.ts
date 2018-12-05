@@ -1,8 +1,7 @@
-import { TopicService } from './topic.service';
+import { TopicService, Topic } from './topic.service';
 import { Component, OnInit } from '@angular/core';
 import { EmbedVideoService } from 'ngx-embed-video';
 import { Router, ActivatedRoute, ParamMap } from '@angular/router';
-import { Topic } from './topic.service';
 
 @Component({
   selector: 'app-topic',
@@ -10,7 +9,7 @@ import { Topic } from './topic.service';
   styleUrls: ['./topic.component.scss']
 })
 export class TopicComponent implements OnInit {
-  topic : Topic;
+  topic: Topic;
   iframeHtml: string;
   btnToggleTopicIsDone: boolean = false;
   id: number = 0;
