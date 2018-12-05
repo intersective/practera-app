@@ -49,7 +49,7 @@ export class ActivityComponent implements OnInit {
         this.router.navigate(['assessment', 'assessment', this.id , contextId, id]);
         break;
       case 'Topic':
-
+        this.router.navigate(['topic', this.id, id]);
         break;
       case 'Comm':
 
