@@ -34,6 +34,10 @@ export class UtilsService {
     return this.lodash.find(collections, callback);
   }
 
+  has(object, path) {
+    return this.lodash.has(object, path);
+  }
+
   indexOf(array, value, fromIndex=0) {
     return this.lodash.indexOf(array, value, fromIndex);
   }
