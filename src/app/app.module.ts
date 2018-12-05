@@ -17,6 +17,8 @@ import { PageNotFoundComponent } from './page-not-found/page-not-found.component
 
 import { HttpClientInMemoryWebApiModule } from 'angular-in-memory-web-api';
 import { UtilsService } from './services/utils.service';
+import { EmbedVideo } from 'ngx-embed-video';
+
 
 @NgModule({
   declarations: [
@@ -33,6 +35,8 @@ import { UtilsService } from './services/utils.service';
       appkey: 'b11e7c189b',
       prefixUrl: 'https://sandbox.practera.com/',
     }),
+    AppRoutingModule,
+    EmbedVideo.forRoot(),
     NotificationModule,
   	AppRoutingModule,
   ],
