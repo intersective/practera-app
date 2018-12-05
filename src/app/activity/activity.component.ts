@@ -2,7 +2,7 @@ import { Component, OnInit, Input } from '@angular/core';
 import { Router, ActivatedRoute, ParamMap } from '@angular/router';
 import { switchMap } from 'rxjs/operators';
 import { Observable } from 'rxjs';
-import { ActivityService } from './activity.service';
+import { ActivityService, Activity } from './activity.service';
 import { UtilsService } from '../services/utils.service';
 
 @Component({
@@ -12,8 +12,9 @@ import { UtilsService } from '../services/utils.service';
 })
 export class ActivityComponent implements OnInit {
   
-  id = 0;
-  activity = {
+  id: number;
+  activity: Activity = {
+    id: 0,
     name: '',
     description: '',
     tasks: []
@@ -28,8 +29,34 @@ export class ActivityComponent implements OnInit {
 
   ngOnInit() {
     this.id = parseInt(this.route.snapshot.paramMap.get('id'));
+    this._getActivity();
+  }
+
+  _getActivity() {
     this.activityService.getActivity(this.id)
-      .subscribe(activity => this.activity = activity);
+      .subscribe(activity => {
+        this.activity = activity;
+        this._getTasksProgress();
+      });
+  }
+
+  _getTasksProgress() {
+    this.activityService.getTasksProgress(this.activity)
+      .subscribe(tasks => {
+        this.activity.tasks = tasks;
+        this.activity.tasks.forEach((task, index) => {
+          if(task.type == 'Assessment') {
+            this._getAssessmentStatus(index);
+          }
+        });
+      });
+  }
+
+  _getAssessmentStatus(index) {
+    this.activityService.getAssessmentStatus(this.activity.tasks[index])
+      .subscribe(task => {
+        this.activity.tasks[index] = task;
+      });
   }
 
   back() {

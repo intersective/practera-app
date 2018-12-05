@@ -30,21 +30,31 @@
           <div class="icon-item">
             <h4>{{ task.name }}</h4>
             <ion-text color="medium">
-              <p>{{ task.type }} <ng-container *ngIf="task.status">{{ task.status }}</ng-container></p>
+              <p>
+                {{ task.type }} 
+                <ng-container *ngIf="!task.loadingStatus; else spinner">{{ task.status }}</ng-container>
+                <ng-template #spinner><ion-spinner name="dots" class="vertical-middle"></ion-spinner></ng-template>
+              </p>
             </ion-text>
           </div>
 
-          <ng-container *ngIf="!task.status || (task.status == 'published' && !task.feedbackReviewed)">
-            <ion-icon name="arrow-forward" slot="end" color="primary" class="icon-forward"></ion-icon>
+          <ng-container *ngIf="!task.loadingStatus; else iconSpinner">
+            <ng-container *ngIf="!task.status || task.status == 'feedback available'">
+              <ion-icon name="arrow-forward" slot="end" color="primary" class="icon-forward"></ion-icon>
+            </ng-container>
+
+            <ng-container *ngIf="task.status == 'done'">
+              <ion-icon name="checkmark" slot="end" color="primary" class="icon-check"></ion-icon>
+            </ng-container>
+
+            <ng-container *ngIf="task.status == 'pending review'">
+              <ion-icon name="hourglass" slot="end" color="primary"></ion-icon>
+            </ng-container>
           </ng-container>
 
-          <ng-container *ngIf="task.status == 'done' || (task.status == 'published' && task.feedbackReviewed)">
-            <ion-icon name="checkmark" slot="end" color="primary" class="icon-check"></ion-icon>
-          </ng-container>
-
-          <ng-container *ngIf="task.status == 'pending review' || task.status == 'pending approval'">
-            <ion-icon name="hourglass" slot="end" color="primary"></ion-icon>
-          </ng-container>
+          <ng-template #iconSpinner>
+            <ion-spinner slot="end"></ion-spinner>
+          </ng-template>
 
         </ng-container>
       </ion-item>
