@@ -39,57 +39,6 @@ export interface Activity {
 
 export class ActivityService {
 
-  activity = {
-    name: 'Activity1',
-    description: 'This is the description of activity 1',
-    tasks: [
-      {
-        id: 1,
-        type: 'Topic',
-        name: 'Topic name',
-        status: 'done'
-      },
-      {
-        id: 1,
-        contextId: 1,
-        type: 'Assessment',
-        name: 'Assessment name',
-        status: '',
-        loadingStatus: true
-      },
-      {
-        id: 2,
-        contextId: 2,
-        type: 'Assessment',
-        name: 'Assessment name',
-        status: 'done'
-      },
-      {
-        id: 3,
-        contextId: 3,
-        type: 'Assessment',
-        name: 'Assessment name',
-        status: 'pending review'
-      },
-      {
-        id: 4,
-        contextId: 4,
-        type: 'Assessment',
-        name: 'Assessment name',
-        status: 'published',
-        feedbackReviewed: false
-      },
-      {
-        id: 5,
-        contextId: 5,
-        type: 'Assessment',
-        name: 'Assessment name',
-        status: 'published',
-        feedbackReviewed: true
-      }
-    ]
-  };
-
   constructor(
     private request: RequestService,
     private utils: UtilsService,
@@ -106,6 +55,7 @@ export class ActivityService {
   }
 
   private _normaliseActivity(data: any) {
+    // In API response, 'data' is an array of activities(since we passed activity id, it will return only one activity, but still in array format). That's why we use data[0]
     if (!Array.isArray(data) || !this.utils.has(data[0], 'Activity') || !this.utils.has(data[0], 'ActivitySequence') || !this.utils.has(data[0], 'References')) {
       return this.request.apiResponseFormatError('Activity format error');
     }
@@ -225,6 +175,7 @@ export class ActivityService {
       task.loadingStatus = false;
       return task;
     }
+    // In API response, 'data' is an array of submissions, but we only support one submission per assessment now. That's why we use data[0] - the first submission
     if (!Array.isArray(data) || !this.utils.has(data[0], 'AssessmentSubmission')) {
       return this.request.apiResponseFormatError('Submission format error');
     }
