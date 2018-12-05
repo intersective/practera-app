@@ -1,6 +1,15 @@
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 
+export interface Review {
+  isDone: boolean,
+  name: string,
+  submitterName: string,
+  submittedDate: Date,
+  teamName: string,
+  isInTeam: boolean
+}
+
 @Injectable({
   providedIn: 'root',
 })
