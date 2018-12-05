@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
-import { HtmlTagDefinition, ArrayType } from '@angular/compiler';
 
 export interface Topic{
   id: number,
