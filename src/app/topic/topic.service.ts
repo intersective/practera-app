@@ -2,17 +2,21 @@ import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { HtmlTagDefinition, ArrayType } from '@angular/compiler';
 
+export interface Topic{
+  id: number,
+  title: string,
+  content: string,
+  videolink: string,
+  files: object,
+};
+
 @Injectable({
   providedIn: 'root'
 })
+
 export class TopicService {
-  topic: {
-    id: number,
-    title: string,
-    content: string,
-    videolink: string,
-    files: object,
-  } = 
+ 
+  topic :Topic =
   { 
     id: 1,
     title: 'Welcome and Warm-up',
@@ -33,7 +37,6 @@ export class TopicService {
         "foreign_key": 3460
       },
     ]
-
   };
 
   topicDone = {
