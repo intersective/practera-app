@@ -2,7 +2,7 @@ import { Injectable, Optional } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams, HttpErrorResponse } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
-import { UtilsService } from '../../services/utils.service';
+import { UtilsService } from '@services/utils.service';
 import { BrowserStorageService } from '@services/storage.service';
 
 export class RequestConfig {
@@ -64,6 +64,18 @@ export class RequestService {
    * @returns {Observable<any>}
    */
   get(endPoint: string = '', httpOptions?: any): Observable<any> {
+    if (!httpOptions) {
+      httpOptions = {
+        headers: '',
+        params: ''
+      };
+    }
+    if (!this.utils.has(httpOptions, 'headers')) {
+      httpOptions.headers = '';
+    }
+    if (!this.utils.has(httpOptions, 'params')) {
+      httpOptions.params = '';
+    }
     return this.http.get<any>(this.prefixUrl + endPoint, {
       headers: this.appendHeaders(httpOptions.headers),
       params: this.setParams(httpOptions.params)
@@ -73,6 +85,18 @@ export class RequestService {
   }
 
   post(endPoint: string = '', data, httpOptions?: any): Observable<any> {
+    if (!httpOptions) {
+      httpOptions = {
+        headers: '',
+        params: ''
+      };
+    }
+    if (!this.utils.has(httpOptions, 'headers')) {
+      httpOptions.headers = '';
+    }
+    if (!this.utils.has(httpOptions, 'params')) {
+      httpOptions.params = '';
+    }
     return this.http.post<any>(this.prefixUrl + endPoint, data, {
       headers: this.appendHeaders(httpOptions.headers),
       params: this.setParams(httpOptions.params)
@@ -96,6 +120,11 @@ export class RequestService {
    */
   public getAppkey() {
     return this.appkey;
+  }
+
+  public apiResponseFormatError(msg = '') {
+    console.log("API response format error.\n" + msg);
+    return;
   }
 
   private handleError<T> (operation = 'operation', result?: T) {
