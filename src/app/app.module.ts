@@ -11,6 +11,8 @@ import { AppComponent } from './app.component';
 import { NgCircleProgressModule } from 'ng-circle-progress';
 import { UtilsService } from './services/utils.service';
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
+import { EmbedVideo } from 'ngx-embed-video';
+
 
 @NgModule({
   declarations: [
@@ -28,9 +30,9 @@ import { PageNotFoundComponent } from './page-not-found/page-not-found.component
       appkey: 'b11e7c189b',
       prefixUrl: 'https://sandbox.practera.com/',
     }),
-
     AppRoutingModule,
     NgCircleProgressModule,
+    EmbedVideo.forRoot(),
     NotificationModule,
     AuthModule
  
