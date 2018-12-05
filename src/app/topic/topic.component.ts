@@ -2,6 +2,7 @@ import { TopicService } from './topic.service';
 import { Component, OnInit } from '@angular/core';
 import { EmbedVideoService } from 'ngx-embed-video';
 import { Router, ActivatedRoute, ParamMap } from '@angular/router';
+import { Topic } from './topic.service';
 
 @Component({
   selector: 'app-topic',
@@ -9,8 +10,8 @@ import { Router, ActivatedRoute, ParamMap } from '@angular/router';
   styleUrls: ['./topic.component.scss']
 })
 export class TopicComponent implements OnInit {
-  topic : any;
-  iframeHtml: any;
+  topic : Topic;
+  iframeHtml: string;
   btnToggleTopicIsDone: boolean = false;
   id: number = 0;
   activityId: number = 0;
