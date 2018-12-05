@@ -1,7 +1,7 @@
 import { TopicService, Topic } from './topic.service';
 import { Component, OnInit } from '@angular/core';
 import { EmbedVideoService } from 'ngx-embed-video';
-import { Router, ActivatedRoute, ParamMap } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-topic',
@@ -34,7 +34,7 @@ export class TopicComponent implements OnInit {
         }
       });
 
-    this.topicService.getTopicIsDone(this.topic.id)
+    this.topicService.getTopicIsDone(this.id)
       .subscribe(result => {
         this.btnToggleTopicIsDone = result;
       });
