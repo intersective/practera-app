@@ -32,7 +32,7 @@ export class ActivityComponent implements OnInit {
     this._getActivity();
   }
 
-  _getActivity() {
+  private _getActivity() {
     this.activityService.getActivity(this.id)
       .subscribe(activity => {
         this.activity = activity;
@@ -40,7 +40,7 @@ export class ActivityComponent implements OnInit {
       });
   }
 
-  _getTasksProgress() {
+  private _getTasksProgress() {
     this.activityService.getTasksProgress(this.activity)
       .subscribe(tasks => {
         this.activity.tasks = tasks;
@@ -52,7 +52,7 @@ export class ActivityComponent implements OnInit {
       });
   }
 
-  _getAssessmentStatus(index) {
+  private _getAssessmentStatus(index) {
     this.activityService.getAssessmentStatus(this.activity.tasks[index])
       .subscribe(task => {
         this.activity.tasks[index] = task;
