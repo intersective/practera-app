@@ -8,7 +8,7 @@ import { NgCircleProgressModule } from 'ng-circle-progress';
 import { ProjectService } from './project.service';
 import { ProjectRoutingComponent } from './project-routing.component';
 import { ProjectRoutingModule } from './project-routing.module';
-import { ActivityCardModule } from '../components/activity-card/activity-card.module';
+import { CoreModule } from '../core/core.module';
 
 
 @NgModule({
@@ -17,7 +17,7 @@ import { ActivityCardModule } from '../components/activity-card/activity-card.mo
     CommonModule,
     FormsModule,
     ProjectRoutingModule,
-    ActivityCardModule,
+    CoreModule,
     NgCircleProgressModule.forRoot({
       "outerStrokeLinecap": "butt",
       "toFixed": 0,

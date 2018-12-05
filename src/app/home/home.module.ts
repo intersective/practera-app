@@ -4,18 +4,15 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HomeComponent } from './home.component';
-//import { ActivityCardComponent } from '../components/activity-card/activity-card.component';
 import { NgCircleProgressModule } from 'ng-circle-progress';
-import { TodoCardComponent } from '../components/todo-card/todo-card.component';
-import { ActivityCardModule } from '../components/activity-card/activity-card.module';
-
+import { CoreModule } from '../core/core.module';
 
 @NgModule({
   imports: [
     IonicModule,
     CommonModule,
     FormsModule,
-    ActivityCardModule,
+    CoreModule,
     NgCircleProgressModule.forRoot({
       "backgroundColor": "var(--ion-color-light)",
       "subtitleColor": "var(--ion-color-dark-tint)",
@@ -33,7 +30,12 @@ import { ActivityCardModule } from '../components/activity-card/activity-card.mo
     RouterModule.forChild([{ path: '', component: HomeComponent }])
 
   ],
-  declarations: [HomeComponent, TodoCardComponent]
+  declarations: [HomeComponent],
+  exports: [
+    CommonModule,
+    FormsModule,
+    CoreModule,
+  ],
 })
 export class HomeModule {
 }
