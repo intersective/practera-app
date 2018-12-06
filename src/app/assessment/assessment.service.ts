@@ -1,8 +1,65 @@
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
- @Injectable({
+
+/**
+ * @name api
+ * @description list of api endpoint involved in this service
+ * @type {Object}
+ */
+const api = {
+  get: {
+    assessment: 'api/assessments.json',
+    submissions: 'api/submissions.json',
+    progress: 'api/v2/motivations/progress/list.json'
+  },
+  post: {
+    submissions: 'api/assessment_submissions.json',
+    reviews: 'api/feedback_submissions.json'
+  }
+};
+
+export interface Assessment {
+  name: string,
+  description: string,
+  groups: Array<Group>
+}
+
+export interface Group {
+  name: string,
+  questions: Array<Question>
+}
+
+export interface Question {
+  id: number,
+  name: string,
+  type: string,
+  description: string,
+  isRequired: boolean,
+  canComment: boolean,
+  canAnswer: boolean,
+  choices?: Array<Choice>
+}
+
+export interface Choice {
+  id: number,
+  name: string
+}
+
+export interface Submission {
+  id: number,
+  status: string,
+  answers: any
+}
+
+export interface Review {
+  id: number,
+  answers: any
+}
+
+@Injectable({
   providedIn: 'root'
 })
+
 export class AssessmentService {
   assessment = {
     name: 'Assessment1',
