@@ -18,6 +18,7 @@ export class AuthForgotPasswordComponent {
 	async send() {
     // -- todo
     // call API to do forgot password logic
+    
     // show pop up message for confirmation
     return this.utils.popUp('forgotPasswordConfirmation', {
       email: this.email
