@@ -44,10 +44,9 @@ export class AuthRegistrationComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.domain =
-      this.domain.indexOf("127.0.0.1") !== -1
-        ? "appdev.practera.com"
-        : this.domain;
+    this.domain = ((this.domain.indexOf("127.0.0.1") !== -1) || 
+    (this.domain.indexOf("localhost") !== -1)) 
+    ? "appdev.practera.com" : this.domain;
     this.validateQueryParams();
   }
 
@@ -69,7 +68,7 @@ export class AuthRegistrationComponent implements OnInit {
       let email = queryParams.get("email");
       this.user.email = email;
       let activation_code = queryParams.get("activation_code");
-      if (email || activation_code) {
+      if (email && activation_code) {
         // set query params to stroage
         this.storage.set("hash", {
           email: email,
@@ -152,8 +151,7 @@ export class AuthRegistrationComponent implements OnInit {
   }
 
   register() {
-    this.validateRegistration();
-    if ((this.registerationForm.valid) && (this.errors.length === 0)) {
+    if (this.validateRegistration()) {
       this.authService
         .saveRegistration({
           password: this.confirmPassword
@@ -179,13 +177,19 @@ export class AuthRegistrationComponent implements OnInit {
                         )
                         .then(() => {});
                     },
-                    error => {}
+                    error => {
+                      console.log("me error");
+                    }
                   );
                 },
-                error => {}
+                error => {
+                  console.log("login error");
+                }
               );
           },
-          error => {}
+          error => {
+            console.log("saveRegistration error");
+          }
         );
     }
   }
@@ -195,65 +199,46 @@ export class AuthRegistrationComponent implements OnInit {
   }
 
   validateRegistration() {
+    let isValid = true;
     this.errors = [];
     if (this.registerationForm.valid) {
       let pass = this.registerationForm.controls.password.value;
       let confirmPass = this.registerationForm.controls.confirmPassword.value;
       if (pass !== confirmPass) {
         this.errors.push("Your passwords don't match.");
+        isValid = false;
+        return isValid;
       } else if (!this.isAgreed) {
         this.errors.push("You need to agree with terms and Conditions.");
+        isValid = false;
+        return isValid;
+      } else {
+        return isValid;
       }
     } else {
       for (let conrtoller in this.registerationForm.controls) {
-        for (let key in this.registerationForm.controls[conrtoller].errors) {
-          if (this.registerationForm.controls[conrtoller].errors.hasOwnProperty(key)) {
-            switch (key) {
-              case "required":
-                this.errors.push("Fill required field");
-                break;
-              case "minlength":
-                this.errors.push(
-                  "Your password needs to be more than 8 characters."
-                );
-                break;
-              default:
-              this.errors.push(this.registerationForm.controls.errors[key]);
+        if (this.registerationForm.controls[conrtoller].errors) {
+          isValid = false;
+          for (let key in this.registerationForm.controls[conrtoller].errors) {
+            if (this.registerationForm.controls[conrtoller].errors.hasOwnProperty(key)) {
+              switch (key) {
+                case "required":
+                  this.errors.push("Fill required field");
+                  break;
+                case "minlength":
+                  this.errors.push(
+                    "Your password needs to be more than 8 characters."
+                  );
+                  break;
+                default:
+                this.errors.push(this.registerationForm.controls.errors[key]);
+              }
+              return;
             }
-            return;
           }
         }
       }
+      return isValid;
     }
-    // if (check) {
-    //   if (this.password) {
-    //     this.formValidationErrors.checkAgree = false;
-    //     return true;
-    //   } else {
-    //     this.formValidationErrors.checkAgree = true;
-    //     return false;
-    //   }
-    // } else {
-    //   if (this.password) {
-    //     this.formValidationErrors.needPassword = false;
-    //     if (this.password.length > 8) {
-    //       this.formValidationErrors.lengthError = false;
-    //       if (this.password === this.confirmPassword) {
-    //         this.formValidationErrors.passwordMismatch = false;
-    //         return true;
-    //       } else {
-    //         this.formValidationErrors.passwordMismatch = true;
-    //         return false;
-    //       }
-    //     } else {
-    //       console.log(this.password.length);
-    //       this.formValidationErrors.lengthError = true;
-    //       return false;
-    //     }
-    //   } else {
-    //     this.formValidationErrors.needPassword = true;
-    //     return false;
-    //   }
-    // }
   }
 }
