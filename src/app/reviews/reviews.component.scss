@@ -16,7 +16,7 @@
 
 %default-review-bg {
   background: var( --practera-button-review-bg);
-  color: var(--ion-color-primary);
+  //color: var(--ion-color-primary);
 }
 
 .review-btn {
@@ -32,4 +32,8 @@
     border-radius: 0 50px 50px 0;
     margin-left: -5px;
   }
+}
+.active-review-btn {
+  color: white !important;
+  background: var(--ion-color-primary);
 }
