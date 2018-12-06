@@ -8,16 +8,15 @@ import { NgCircleProgressModule } from 'ng-circle-progress';
 import { ProjectService } from './project.service';
 import { ProjectRoutingComponent } from './project-routing.component';
 import { ProjectRoutingModule } from './project-routing.module';
-import { CoreModule } from '../core/core.module';
-
+import { SharedModule } from '@shared/shared.module';
 
 @NgModule({
   imports: [
     IonicModule,
     CommonModule,
     FormsModule,
+    SharedModule,
     ProjectRoutingModule,
-    CoreModule,
     NgCircleProgressModule.forRoot({
       "outerStrokeLinecap": "butt",
       "toFixed": 0,
