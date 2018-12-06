@@ -9,3 +9,27 @@
     font-size: 14px;
   }
 }
+%review-shared {
+  font-size: 15px;
+  padding:2px 30px;
+}
+
+%default-review-bg {
+  background: var( --practera-button-review-bg);
+  color: var(--ion-color-primary);
+}
+
+.review-btn {
+  @extend %review-shared;
+  .do {
+    @extend %default-review-bg;
+    border-radius: 50px 0 0 50px;
+    margin-right: 0;
+  }
+
+  .done {
+    @extend %default-review-bg;
+    border-radius: 0 50px 50px 0;
+    margin-left: -5px;
+  }
+}

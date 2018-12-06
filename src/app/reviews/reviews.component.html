@@ -3,10 +3,15 @@
     <ion-title>Reviews</ion-title>
   </ion-toolbar>
 </ion-header>
+
 <ion-content padding color="light">
   <ng-container class="top-round-btns">
+    <div class="review-btn" text-center >
+      <ion-button class="button do active-review-btn">Todo</ion-button>
+      <ion-button class="button done">Done</ion-button>
+    </div>
   </ng-container>
-  <div *ngIf="!reviews.length; else reviewsCard" class="no-review-show" padding>
+  <div *ngIf="!reviews.length; else reviewsCard" class="no-review-show" padding text-center>
     <div class="empty-status" >
       <h2 text-center>You have no new submissions to review</h2>
     </div>
