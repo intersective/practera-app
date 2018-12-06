@@ -1,4 +1,5 @@
-<ion-card id="card"
+<ion-card 
+*ngIf="activity; else reviewCard"
 color="primary"
 class="card practera-card"
 [ngClass]="{
@@ -6,11 +7,27 @@ class="card practera-card"
    'image-card'  : activity.lead_image
 }"
 >         
-<ion-card-content [ngClass]="{'feedback-card': activity.hasFeedback }">
+<ion-card-content [ngClass]="{'feedback-card': activity.hasFeedback }" >
   <h4 color="primary-contrast">Activity</h4>
   <h2 color="primary-contrast" class="activity-name">{{activity.name}}</h2>
   <div class="feedback-label" *ngIf="activity.hasFeedback">
     <p>Feedback Available</p>
   </div>
-</ion-card-content>
+  </ion-card-content>
 </ion-card>
+<ng-template #reviewCard>
+  <ion-card
+  color="primary"
+  class="card practera-card"
+  >
+  <ion-card-content>
+    <h4 color="primary-contrast" class="activity-name">{{review.name}}</h4>
+    <h2 color="primary-contrast" padding-top>{{review.submitterName}}</h2>
+    <div *ngIf="review.isInTeam" >
+      {{review.teamName}}
+      <ion-text class="time-stamp">{{review.submittedDate}}</ion-text>
+    </div>
+  </ion-card-content>  
+
+</ion-card>
+  </ng-template>
