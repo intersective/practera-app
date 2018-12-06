@@ -7,8 +7,6 @@ import { AppRoutingModule } from './app-routing.module';
 import { RequestModule } from '@shared/request/request.module';
 import { NotificationModule } from '@shared/notification/notification.module';
 import { AuthModule } from './auth/auth.module';
-import { TabsModule } from './tabs/tabs.module';
-import { CoreModule } from './core/core.module';
 
 import { AppComponent } from './app.component';
 import { NgCircleProgressModule } from 'ng-circle-progress';
@@ -24,14 +22,12 @@ import { EmbedVideo } from 'ngx-embed-video';
   ],
   imports: [
   	BrowserModule, 
-    TabsModule,
   	IonicModule.forRoot(), 
-    RequestModule.forRoot({ 
+    RequestModule.forRoot({
       appkey: 'b11e7c189b',
       prefixUrl: 'https://sandbox.practera.com/',
     }),
     AppRoutingModule,
-    CoreModule,
     NgCircleProgressModule,
     EmbedVideo.forRoot(),
     NotificationModule,
@@ -42,6 +38,6 @@ import { EmbedVideo } from 'ngx-embed-video';
     // Custom
     UtilsService,
   ],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
 })
 export class AppModule {}

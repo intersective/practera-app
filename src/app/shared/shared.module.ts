@@ -16,10 +16,11 @@ import { TodoCardComponent } from './components/todo-card/todo-card.component';
 		TodoCardComponent,
 	],
 	exports: [
-		CommonModule,
 		ActivityCardComponent,
 		TodoCardComponent,
+		CommonModule,
+		IonicModule,
 		FormsModule,
 	],
 })
-export class CoreModule {}
+export class SharedModule {}

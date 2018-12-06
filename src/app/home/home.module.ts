@@ -3,16 +3,16 @@ import { RouterModule } from '@angular/router';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { SharedModule } from '@shared/shared.module';
 import { HomeComponent } from './home.component';
 import { NgCircleProgressModule } from 'ng-circle-progress';
-import { CoreModule } from '../core/core.module';
 
 @NgModule({
   imports: [
+    SharedModule,
     IonicModule,
     CommonModule,
     FormsModule,
-    CoreModule,
     NgCircleProgressModule.forRoot({
       "backgroundColor": "var(--ion-color-light)",
       "subtitleColor": "var(--ion-color-dark-tint)",
@@ -34,7 +34,6 @@ import { CoreModule } from '../core/core.module';
   exports: [
     CommonModule,
     FormsModule,
-    CoreModule,
   ],
 })
 export class HomeModule {
