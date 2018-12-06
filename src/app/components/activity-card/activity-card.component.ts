@@ -10,6 +10,7 @@ export class ActivityCardComponent implements OnInit {
   constructor() { }
 
   @Input() activity: {};
+  @Input () review: {};
 
   ngOnInit() {
   }
