@@ -6,7 +6,7 @@ export interface Review {
   name: string,
   submitterName: string,
   submittedDate: Date,
-  teamName: string,
+  teamName?: string,
   isInTeam: boolean
 }
 
@@ -14,12 +14,12 @@ export interface Review {
   providedIn: 'root',
 })
 export class ReviewsService {
-  reviews = [
+  reviews:Array<Review> = [
     {
       isDone: true,
       name: 'moderated for mentors',
       submitterName: 'Ronak',
-      submittedDate: 'today',
+      submittedDate: new Date(2018, 11, 19),
       teamName: 'one',
       isInTeam: true
     },
@@ -27,7 +27,7 @@ export class ReviewsService {
       isDone: true,
       name: 'moderated for mentors',
       submitterName: 'Ronak',
-      submittedDate: 'today',
+      submittedDate: new Date(2018, 1, 20),
       teamName: 'one',
       isInTeam: true
     },
@@ -35,7 +35,7 @@ export class ReviewsService {
       isDone: true,
       name: 'moderated for mentors',
       submitterName: 'Ronak',
-      submittedDate: 'today',
+      submittedDate: new Date(2013, 7, 3),
       teamName: 'one',
       isInTeam: true
     }
