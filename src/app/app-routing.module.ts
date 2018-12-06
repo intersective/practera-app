@@ -10,13 +10,17 @@ const routes: Routes = [
   	path: 'switcher', 
   	loadChildren: './switcher/switcher.module#SwitcherModule',
   },
+  { 
+    path: 'assessment', 
+    loadChildren: './assessment/assessment.module#AssessmentModule',
+  },
   {
     path: '',
     redirectTo: '/app',
     pathMatch: 'full',
     canLoad: [AuthGuard]
   },
-  { 
+  {
     path: 'chat', 
     loadChildren: './chat/chat.module#ChatModule' 
   },
