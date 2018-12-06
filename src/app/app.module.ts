@@ -14,6 +14,8 @@ import { AppComponent } from './app.component';
 import { NgCircleProgressModule } from 'ng-circle-progress';
 import { UtilsService } from './services/utils.service';
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
+import { EmbedVideo } from 'ngx-embed-video';
+
 
 @NgModule({
   declarations: [
@@ -31,6 +33,7 @@ import { PageNotFoundComponent } from './page-not-found/page-not-found.component
     AppRoutingModule,
     CoreModule,
     NgCircleProgressModule,
+    EmbedVideo.forRoot(),
     NotificationModule,
     AuthModule,
   ],

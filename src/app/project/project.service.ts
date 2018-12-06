@@ -1,11 +1,31 @@
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 
+export interface Activity {
+  id: number,
+  name: string,
+  is_locked: boolean,
+  progress: number,
+  hasFeedback: boolean,
+  is_hidden: boolean,
+  lead_image?: string
+}
+
+export interface Milestone {
+  id: number,
+  name: string,
+  project_id: number,
+  description: string,
+  progress: number,
+  is_locked: boolean,
+  Activity:Array <Activity>
+}
+
 @Injectable({
   providedIn: 'root',
 })
 export class ProjectService {
-  levels = [
+  milestons: Array <Milestone> = [
     {
       id: 1,
       name: 'fundamental',
@@ -28,7 +48,8 @@ export class ProjectService {
           is_locked: true,
           progress: 0.74,
           lead_image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSGTVf63Vm3XgOncMVSOy0-jSxdMT8KVJIc8WiWaevuWiPGe0Pm',
-          is_hidden: false
+          is_hidden: false,
+          hasFeedback: false,
         },
         {
           id: 102,
@@ -36,7 +57,8 @@ export class ProjectService {
           is_locked: true,
           progress: 0.74,
           lead_image: '',
-          is_hidden: false
+          is_hidden: false,
+          hasFeedback: false,
         } 
       ],
       is_locked: false
@@ -53,21 +75,24 @@ export class ProjectService {
           name: 'Test Activity three',
           is_locked: false,
           progress: 0.47,
-          is_hidden: false
+          is_hidden: false,
+          hasFeedback: false,
         },
         {
           id: 104,
           name: 'Activity four',
           is_locked: false,
           progress:0.98,
-          is_hidden: false
+          is_hidden: false,
+          hasFeedback: false,
         },
         {
           id: 105,
           name: 'Test Activity five',
           is_locked: false,
           progress: 0.47,
-          is_hidden: false
+          is_hidden: false,
+          hasFeedback: false,
         },
       ],
       is_locked: false
@@ -111,7 +136,8 @@ export class ProjectService {
           name: 'Test Activity six',
           is_locked: false,
           progress: 1,
-          is_hidden: false
+          is_hidden: false,
+          hasFeedback: false,
         },
       ],
       is_locked: false
@@ -120,7 +146,7 @@ export class ProjectService {
 
   constructor() { }
   getMilestons(): Observable<any> {
-    return of(this.levels);
+    return of(this.milestons);
   }
 
 }
