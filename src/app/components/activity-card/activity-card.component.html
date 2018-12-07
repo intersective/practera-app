@@ -38,6 +38,7 @@ class="card practera-card"
     >
     <ion-card-content class="review">
       <h4 color="primary-contrast" class="activity-name">{{review.name}}</h4>
+      <ion-icon name="checkmark-circle" class="check-mark"></ion-icon>
       <h2 color="primary-contrast" padding-top>{{review.submitterName}}</h2>
       <h2 *ngIf="review.isInTeam" >
         {{review.teamName}}
