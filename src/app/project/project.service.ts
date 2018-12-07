@@ -25,7 +25,7 @@ export interface Milestone {
   providedIn: 'root',
 })
 export class ProjectService {
-  milestons: Array <Milestone> = [
+  milestones: Array <Milestone> = [
     {
       id: 1,
       name: 'fundamental',
@@ -145,8 +145,8 @@ export class ProjectService {
   ];
 
   constructor() { }
-  getMilestons(): Observable<any> {
-    return of(this.milestons);
+  getMilestones(): Observable<any> {
+    return of(this.milestones);
   }
 
 }
