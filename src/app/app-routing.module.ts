@@ -11,6 +11,10 @@ const routes: Routes = [
   	loadChildren: './switcher/switcher.module#SwitcherModule',
   },
   { 
+  	path: 'topic', 
+  	loadChildren: './topic/topic.module#TopicModule',
+  },
+  {
     path: 'assessment', 
     loadChildren: './assessment/assessment.module#AssessmentModule',
   },
