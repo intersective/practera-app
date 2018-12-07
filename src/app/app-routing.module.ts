@@ -21,6 +21,11 @@ const routes: Routes = [
     loadChildren: './chat/chat.module#ChatModule' 
   },
   {
+    path: '', 
+    loadChildren: './tabs/tabs.module#TabsModule',
+    canLoad: [AuthGuard]
+  },
+  {
     path: '',
     redirectTo: '/app',
     pathMatch: 'full',
