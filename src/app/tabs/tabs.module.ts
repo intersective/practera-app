@@ -5,7 +5,6 @@ import { FormsModule } from '@angular/forms';
 
 import { TabsRoutingModule } from './tabs-routing.module';
 import { TabsComponent } from './tabs.component';
-import { HomeModule } from '../home/home.module';
 
 import { ChatListComponent } from '../chat/chat-list/chat-list.component';
 
@@ -15,7 +14,6 @@ import { ChatListComponent } from '../chat/chat-list/chat-list.component';
     CommonModule,
     FormsModule,
     TabsRoutingModule,
-    HomeModule,
   ],
   declarations: [ 
     TabsComponent,
