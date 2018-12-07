@@ -1,5 +1,8 @@
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
+import { map } from 'rxjs/operators';
+import { RequestService } from '@shared/request/request.service';
+import { UtilsService } from '@services/utils.service';
 
 /**
  * @name api
@@ -34,6 +37,7 @@ export interface Question {
   id: number,
   name: string,
   type: string,
+  fileType?: string,
   description: string,
   isRequired: boolean,
   canComment: boolean,
@@ -482,10 +486,73 @@ export class AssessmentService {
     2: true
   }
 
-  constructor() {}
+  constructor(
+    private request: RequestService,
+    private utils: UtilsService
+  ) {}
 
-  getAssessment(id): Observable<any> {
-    return of(this.assessment);
+  getAssessment(id): Observable<Assessment> {
+    return this.request.get(api.get.assessment, {params: {
+        assessment_id: id,
+        structured: true
+      }})
+      .pipe(map(response => {
+        if (response.success && response.data) {
+          return this._normaliseAssessment(response.data);
+        }
+      })
+    );
+  }
+
+  private _normaliseAssessment(data) {
+    // In API response, 'data' is an array of assessments(since we passed assessment id, it will return only one assessment, but still in array format). That's why we use data[0]
+    if (!Array.isArray(data) || !this.utils.has(data[0], 'Assessment') || !this.utils.has(data[0], 'AssessmentGroup')) {
+      return this.request.apiResponseFormatError('Assessment format error');
+    }
+
+    let assessment: Assessment = {
+      name: '',
+      description: '',
+      groups: []
+    };
+
+    assessment.name = data[0].Assessment.name;
+    assessment.description = data[0].Assessment.description;
+
+    data[0].AssessmentGroup.forEach(group => {
+      if (!this.utils.has(group, 'name') || !this.utils.has(group, 'description') || !this.utils.has(group, 'AssessmentGroupQuestion') || !Array.isArray(group.AssessmentGroupQuestion)) {
+        return this.request.apiResponseFormatError('Assessment.AssessmentGroup format error');
+      }
+      let questions: Array<Question> = [];
+      group.AssessmentGroupQuestion.forEach(question => {
+        if (!this.utils.has(question, 'AssessmentQuestion')) {
+          return this.request.apiResponseFormatError('Assessment.AssessmentGroupQuestion format error');
+        }
+        if (!this.utils.has(question.AssessmentQuestion, 'id') || 
+            !this.utils.has(question.AssessmentQuestion, 'name') || 
+            !this.utils.has(question.AssessmentQuestion, 'description') || 
+            !this.utils.has(question.AssessmentQuestion, 'question_type') ||
+            !this.utils.has(question.AssessmentQuestion, 'is_required') ||
+            !this.utils.has(question.AssessmentQuestion, 'question_type') ||
+            ) {
+          return this.request.apiResponseFormatError('Assessment.AssessmentGroupQuestion format error');
+        }
+        let question: Question = {
+          id: 0,
+          name: '',
+          type: '',
+          description: '',
+          isRequired: false,
+          canComment: false,
+          canAnswer: false
+        };
+
+      })
+      assessment.groups.push({
+        name: group.name,
+        questions: questions
+      });
+    });
   }
 
   getSubmission(assessmentId, contextId, action): Observable<any> {
