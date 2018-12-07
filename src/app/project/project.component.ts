@@ -15,11 +15,11 @@ public programName:string = "Demo Program";
     private projectService: ProjectService
    ) {};
 
-  public milestons: Array <Milestone> ;
+  public milestones: Array <Milestone> ;
     
   ngOnInit() {
-    this.projectService.getMilestons()
-      .subscribe(milestones => this.milestons = milestones);
+    this.projectService.getMilestones()
+      .subscribe(milestones => this.milestones = milestones);
   }
 
   goToActivity(id) {
