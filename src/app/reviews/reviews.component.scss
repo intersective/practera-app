@@ -9,31 +9,17 @@
     font-size: 14px;
   }
 }
-%review-shared {
-  font-size: 15px;
-  padding:2px 30px;
-}
-
-%default-review-bg {
-  background: var( --practera-button-review-bg);
-  //color: var(--ion-color-primary);
-}
-
-.review-btn {
-  @extend %review-shared;
+.top-round-btns {
   .do {
-    @extend %default-review-bg;
-    border-radius: 50px 0 0 50px;
-    margin-right: 0;
+    --border-radius: 50px 0 0 50px;
   }
-
   .done {
-    @extend %default-review-bg;
-    border-radius: 0 50px 50px 0;
-    margin-left: -5px;
+    --border-radius: 0 50px 50px 0;
+    margin-left: -4px;
+    
+  }  
+  .active-review {
+    --color: var(--ion-color-primary);;
+    --background: var(--practera-button-review-bg);
   }
-}
-.active-review-btn {
-  color: white !important;
-  background: var(--ion-color-primary);
 }

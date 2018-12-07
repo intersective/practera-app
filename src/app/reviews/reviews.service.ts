@@ -5,7 +5,7 @@ export interface Review {
   isDone: boolean,
   name: string,
   submitterName: string,
-  submittedDate: Date,
+  submittedDate: string,
   teamName?: string,
   isInTeam: boolean
 }
@@ -19,7 +19,7 @@ export class ReviewsService {
       isDone: true,
       name: 'moderated for mentors',
       submitterName: 'Ronak',
-      submittedDate: new Date(2018, 11, 19),
+      submittedDate: 'Nov 19',
       teamName: 'one',
       isInTeam: true
     },
@@ -27,7 +27,7 @@ export class ReviewsService {
       isDone: true,
       name: 'moderated for mentors',
       submitterName: 'Ronak',
-      submittedDate: new Date(2018, 1, 20),
+      submittedDate: '20 Jun',
       teamName: 'one',
       isInTeam: true
     },
@@ -35,7 +35,7 @@ export class ReviewsService {
       isDone: true,
       name: 'moderated for mentors',
       submitterName: 'Ronak',
-      submittedDate: new Date(2013, 7, 3),
+      submittedDate: '15 Nov',
       teamName: 'one',
       isInTeam: true
     }

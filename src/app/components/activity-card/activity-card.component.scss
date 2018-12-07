@@ -21,3 +21,15 @@
   background-color: transparent; 
   background-image: var(--practera-card-background-image);
 }
+.review {
+  h2 {
+    font-size: 12px;
+  }
+  ion-text {
+    float: right;
+    top: 61px;
+    font-size: 12px;
+    position: absolute;
+    right: 22px;
+  } 
+}
