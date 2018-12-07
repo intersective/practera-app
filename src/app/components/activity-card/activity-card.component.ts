@@ -1,4 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
+//import { Review} from '../reviews/reviews.service';
 
 @Component({
   selector: 'app-activity-card',
@@ -10,9 +11,8 @@ export class ActivityCardComponent implements OnInit {
   constructor() { }
 
   @Input() activity: {};
-  @Input () review: {};
+  @Input () review:{} ;
+  @Input () toggle: boolean; 
 
-  ngOnInit() {
-  }
-
+  ngOnInit() {}
 }

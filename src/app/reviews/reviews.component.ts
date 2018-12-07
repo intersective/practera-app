@@ -10,15 +10,27 @@ export class ReviewsComponent implements OnInit {
 
   public reviews:Array <Review>;
   public activeToggle: boolean = true;
+  public activeToggleDo: boolean = true;
+  
   
   constructor( public reviewsService: ReviewsService) { }
 
   ngOnInit() {
     this.reviewsService.getReviews()
       .subscribe(reviews => this.reviews = reviews);
+
   }
-  toggleActive (){
-    console.log(this.activeToggle);
+  toggleActiveDo (){
     this.activeToggle = !this.activeToggle;
+    this.activeToggleDo = false;
+   
   };
+
+  toggleActiveDone (){
+    this.activeToggle = !this.activeToggle;
+    this.activeToggleDo = true;
+   
+  };
+
+  
 }
