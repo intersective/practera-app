@@ -2,7 +2,6 @@ import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
 import { AuthGuard } from './auth/auth.guard';
-import { TabsModule } from './tabs/tabs.module';
 
 const routes: Routes = [
   { 
@@ -20,10 +19,6 @@ const routes: Routes = [
   {
     path: 'chat', 
     loadChildren: './chat/chat.module#ChatModule' 
-  },
-  {
-    path: 'app',
-    component: TabsModule,
   },
   {
     path: '',
