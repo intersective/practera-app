@@ -21,8 +21,8 @@ const routes: Routes = [
       {
         path: 'home',
         outlet: 'home',
-        canActivateChild: [AuthGuard],
-        component: HomeComponent
+        component: HomeComponent,
+        // loadChildren: '../home/home.module#HomeModule',
       },
       {
         path: 'project',

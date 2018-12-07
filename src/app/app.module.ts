@@ -23,6 +23,7 @@ import { TabsModule } from './tabs/tabs.module';
   imports: [
   	BrowserModule, 
   	IonicModule.forRoot(), 
+    AuthModule,
     TabsModule,
     RequestModule.forRoot({
       appkey: 'b11e7c189b',
@@ -32,7 +33,6 @@ import { TabsModule } from './tabs/tabs.module';
     NgCircleProgressModule,
     EmbedVideo.forRoot(),
     NotificationModule,
-    AuthModule,
   ],
   providers: [
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
