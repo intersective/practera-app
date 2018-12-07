@@ -5,12 +5,10 @@
 </ion-header>
 
 <ion-content padding color="light">
-  <ng-container class="top-round-btns">
-    <div class="review-btn" text-center >
-      <ion-button class="do active-review-btn">Todo</ion-button>
-      <ion-button class="done">Done</ion-button>
-    </div>
-  </ng-container>
+  <div class="top-round-btns" text-center>
+    <ion-button class="do" [ngClass]="{'active-review': activeToggle}" (click)="toggleActive()">Todo</ion-button>
+    <ion-button class="done" [ngClass]="{'active-review': !activeToggle}" (click)="toggleActive()">Done</ion-button>
+  </div>
   <div *ngIf="!reviews.length; else reviewsCard" class="no-review-show" padding text-center>
     <div class="empty-status" >
       <h2 text-center>You have no new submissions to review</h2>

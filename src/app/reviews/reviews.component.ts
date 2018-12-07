@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ReviewsService } from './reviews.service';
+import { ReviewsService, Review } from './reviews.service';
 
 @Component({
   selector: 'app-reviews',
@@ -8,7 +8,8 @@ import { ReviewsService } from './reviews.service';
 })
 export class ReviewsComponent implements OnInit {
 
-  public reviews = [];
+  public reviews:Array <Review>;
+  public activeToggle: boolean = true;
   
   constructor( public reviewsService: ReviewsService) { }
 
@@ -16,4 +17,8 @@ export class ReviewsComponent implements OnInit {
     this.reviewsService.getReviews()
       .subscribe(reviews => this.reviews = reviews);
   }
+  toggleActive (){
+    console.log(this.activeToggle);
+    this.activeToggle = !this.activeToggle;
+  };
 }
