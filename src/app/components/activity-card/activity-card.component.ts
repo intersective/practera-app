@@ -8,7 +8,7 @@ import { Component, OnInit, Input } from '@angular/core';
 })
 export class ActivityCardComponent implements OnInit {
   
-  constructor() { }
+  constructor() {}
 
   @Input() activity: {};
   @Input () review:{} ;

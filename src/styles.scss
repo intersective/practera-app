@@ -12,6 +12,9 @@
   vertical-align: middle;
   width: auto !important; 
 }
+.vertical-middle {
+  vertical-align: middle;
+}
 .text-split {
   margin-top: 40px;
   margin-bottom: 40px;
@@ -70,3 +73,7 @@
   top: 18px;
   font-size: 12px;
 } 
+.vertical-middle {
+  display: inline-block;
+  vertical-align: middle;
+}
