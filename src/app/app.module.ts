@@ -13,7 +13,7 @@ import { NgCircleProgressModule } from 'ng-circle-progress';
 import { UtilsService } from './services/utils.service';
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
 import { EmbedVideo } from 'ngx-embed-video';
-
+import { TabsModule } from './tabs/tabs.module';
 
 @NgModule({
   declarations: [
@@ -23,6 +23,7 @@ import { EmbedVideo } from 'ngx-embed-video';
   imports: [
   	BrowserModule, 
   	IonicModule.forRoot(), 
+    TabsModule,
     RequestModule.forRoot({
       appkey: 'b11e7c189b',
       prefixUrl: 'https://sandbox.practera.com/',
