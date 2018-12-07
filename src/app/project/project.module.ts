@@ -12,10 +12,8 @@ import { SharedModule } from '@shared/shared.module';
 
 @NgModule({
   imports: [
-    IonicModule,
-    CommonModule,
-    FormsModule,
     SharedModule,
+    FormsModule,
     ProjectRoutingModule,
     NgCircleProgressModule.forRoot({
       "outerStrokeLinecap": "butt",
@@ -33,7 +31,7 @@ import { SharedModule } from '@shared/shared.module';
       "outerStrokeWidth": 10,
       "radius": 5,
       "space": -20
-})
+    })
   ],
   declarations: [
     ProjectComponent,
