@@ -9,7 +9,6 @@ import { TodoCardComponent } from './components/todo-card/todo-card.component';
 	imports: [
 		CommonModule,
 		IonicModule,
-		FormsModule,
 	],
 	declarations: [
 		ActivityCardComponent,
@@ -18,9 +17,6 @@ import { TodoCardComponent } from './components/todo-card/todo-card.component';
 	exports: [
 		ActivityCardComponent,
 		TodoCardComponent,
-		CommonModule,
-		IonicModule,
-		FormsModule,
 	],
 })
 export class SharedModule {}

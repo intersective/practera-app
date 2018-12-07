@@ -31,10 +31,6 @@ import { NgCircleProgressModule } from 'ng-circle-progress';
 
   ],
   declarations: [HomeComponent],
-  exports: [
-    CommonModule,
-    FormsModule,
-  ],
 })
 export class HomeModule {
 }
