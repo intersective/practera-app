@@ -19,6 +19,7 @@ class="card practera-card"
   <ion-card
   color="primary"
   class="card practera-card"
+  *ngIf="review.isDone && !toggle"
   >
     <ion-card-content class="review">
       <h4 color="primary-contrast" class="activity-name">{{review.name}}</h4>
@@ -26,7 +27,22 @@ class="card practera-card"
       <h2 *ngIf="review.isInTeam" >
         {{review.teamName}}
       </h2>
-      <ion-text>{{review.submittedDate}}</ion-text>
-    </ion-card-content>  
+      <ion-text>{{review.submittedAssessmnetDate}}</ion-text>
+      </ion-card-content>  
   </ion-card>
-  </ng-template>
+  
+    <ion-card
+    color="primary"
+    class="card practera-card"
+    *ngIf="!review.isDone && toggle"
+    >
+    <ion-card-content class="review">
+      <h4 color="primary-contrast" class="activity-name">{{review.name}}</h4>
+      <h2 color="primary-contrast" padding-top>{{review.submitterName}}</h2>
+      <h2 *ngIf="review.isInTeam" >
+        {{review.teamName}}
+      </h2>
+      <ion-text>{{review.submittedReviewDate}}</ion-text>
+      </ion-card-content>  
+      </ion-card>
+</ng-template>

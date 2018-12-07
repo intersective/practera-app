@@ -5,7 +5,8 @@ export interface Review {
   isDone: boolean,
   name: string,
   submitterName: string,
-  submittedDate: string,
+  submittedAssessmnetDate?: string,
+  submittedReviewDate?: string,
   teamName?: string,
   isInTeam: boolean
 }
@@ -14,29 +15,30 @@ export interface Review {
   providedIn: 'root',
 })
 export class ReviewsService {
+  
   reviews:Array<Review> = [
     {
       isDone: true,
       name: 'moderated for mentors',
       submitterName: 'Ronak',
-      submittedDate: 'Nov 19',
+      submittedAssessmnetDate: 'Nov 19',
+      teamName: 'one',
+      isInTeam: true
+    },
+    {
+      isDone: false,
+      name: 'video test',
+      submitterName: 'Sara',
+      submittedReviewDate: '20 Jun',
       teamName: 'one',
       isInTeam: true
     },
     {
       isDone: true,
-      name: 'moderated for mentors',
+      name: 'Demo assessment',
       submitterName: 'Ronak',
-      submittedDate: '20 Jun',
-      teamName: 'one',
-      isInTeam: true
-    },
-    {
-      isDone: true,
-      name: 'moderated for mentors',
-      submitterName: 'Ronak',
-      submittedDate: '15 Nov',
-      teamName: 'one',
+      submittedAssessmnetDate: '15 Nov',
+      teamName: 'two',
       isInTeam: true
     }
   ]
@@ -46,5 +48,5 @@ export class ReviewsService {
   getReviews(): Observable<any> {
     return of(this.reviews);
   }
-
+  
 }
