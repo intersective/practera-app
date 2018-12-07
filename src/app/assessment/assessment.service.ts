@@ -182,9 +182,6 @@ export class AssessmentService {
     ]
   };
 
-  // assessment_id: {
-  //  question_id: {}
-  // }
   submissions = {
     2: {
       status: 'done',
@@ -428,12 +425,6 @@ export class AssessmentService {
     }
   };
 
-  // assessment_id: {
-  //  id:
-  //  answers: {
-  //    question_id: {}
-  //  }
-  // }
   reviews = {
     3: {
       id: 1
@@ -506,7 +497,9 @@ export class AssessmentService {
 
   private _normaliseAssessment(data) {
     // In API response, 'data' is an array of assessments(since we passed assessment id, it will return only one assessment, but still in array format). That's why we use data[0]
-    if (!Array.isArray(data) || !this.utils.has(data[0], 'Assessment') || !this.utils.has(data[0], 'AssessmentGroup')) {
+    if (!Array.isArray(data) || 
+        !this.utils.has(data[0], 'Assessment') || 
+        !this.utils.has(data[0], 'AssessmentGroup')) {
       return this.request.apiResponseFormatError('Assessment format error');
     }
 
@@ -520,7 +513,10 @@ export class AssessmentService {
     assessment.description = data[0].Assessment.description;
 
     data[0].AssessmentGroup.forEach(group => {
-      if (!this.utils.has(group, 'name') || !this.utils.has(group, 'description') || !this.utils.has(group, 'AssessmentGroupQuestion') || !Array.isArray(group.AssessmentGroupQuestion)) {
+      if (!this.utils.has(group, 'name') || 
+          !this.utils.has(group, 'description') || 
+          !this.utils.has(group, 'AssessmentGroupQuestion') || 
+          !Array.isArray(group.AssessmentGroupQuestion)) {
         return this.request.apiResponseFormatError('Assessment.AssessmentGroup format error');
       }
       let questions: Array<Question> = [];
@@ -533,19 +529,51 @@ export class AssessmentService {
             !this.utils.has(question.AssessmentQuestion, 'description') || 
             !this.utils.has(question.AssessmentQuestion, 'question_type') ||
             !this.utils.has(question.AssessmentQuestion, 'is_required') ||
-            !this.utils.has(question.AssessmentQuestion, 'question_type') ||
+            !this.utils.has(question.AssessmentQuestion, 'has_comment') ||
+            !this.utils.has(question.AssessmentQuestion, 'can_answer')
             ) {
-          return this.request.apiResponseFormatError('Assessment.AssessmentGroupQuestion format error');
+          return this.request.apiResponseFormatError('Assessment.AssessmentQuestion format error');
         }
-        let question: Question = {
-          id: 0,
-          name: '',
-          type: '',
-          description: '',
-          isRequired: false,
-          canComment: false,
-          canAnswer: false
-        };
+
+        let choiceTypes = ['oneof', 'multiple'];
+        if (choicTypes.includes(question.AssessmentQuestion.question_type)) {
+          if (!this.utils.has(question.AssessmentQuestion, 'AssessmentQuestionChoice') || 
+              !this.utils.has(question.AssessmentQuestion.AssessmentQuestionChoice, 'id') || 
+              !this.utils.has(question.AssessmentQuestion.AssessmentQuestionChoice, 'AssessmentChoice') || 
+              !this.utils.has(question.AssessmentQuestion.AssessmentQuestionChoice.AssessmentChoice, 'name')
+            ) {
+            return this.request.apiResponseFormatError('Assessment.AssessmentQuestionChoice format error');
+          }
+
+          let choices: Array<Choice> = [];
+          question.AssessmentQuestion.AssessmentQuestionChoice.forEach(questionChoice => {
+            // Here we use the AssessmentQuestionChoice.id (instead of AssessmentChoice.id) as the choice id, this is the current logic from Practera server
+            choices.push({
+              id: questionChoice.id,
+              name: questionChoice.AssessmentChoice.name
+            });
+          });
+          questions.push({
+            id: question.AssessmentQuestion.id,
+            name: question.AssessmentQuestion.name,
+            type: question.AssessmentQuestion.question_type,
+            description: question.AssessmentQuestion.description,
+            isRequired: question.AssessmentQuestion.is_required,
+            canComment: question.AssessmentQuestion.has_comment,
+            canAnswer: question.AssessmentQuestion.can_answer,
+            choices: choices
+          });
+        } else {
+          questions.push({
+            id: question.AssessmentQuestion.id,
+            name: question.AssessmentQuestion.name,
+            type: question.AssessmentQuestion.question_type,
+            description: question.AssessmentQuestion.description,
+            isRequired: question.AssessmentQuestion.is_required,
+            canComment: question.AssessmentQuestion.has_comment,
+            canAnswer: question.AssessmentQuestion.can_answer
+          });
+        }
 
       })
       assessment.groups.push({
