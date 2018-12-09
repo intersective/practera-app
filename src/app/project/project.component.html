@@ -7,7 +7,7 @@
 
 <ion-grid class="milestone-bar">
   <ion-row >
-    <ion-col class="bubbles-top" *ngFor="let milestone of milestons">
+    <ion-col class="bubbles-top" *ngFor="let milestone of milestones">
       <div *ngIf="!milestone.is_locked; else milestoneLocked">
         <ion-icon *ngIf="milestone.progress >= 1; else circleProgress" name="checkmark-circle" class="icon-done" color="primary" ></ion-icon>
         <ng-template #circleProgress>
@@ -26,7 +26,7 @@
 
 <ion-content color="light">
   <ion-list class="project-list" >
-    <ion-item *ngFor="let milestone of milestons" >
+    <ion-item *ngFor="let milestone of milestones" >
       <div color="light" class="project-card">
         <div class="milestone" padding >
           <ion-text color="medium">MILESTONE</ion-text>
