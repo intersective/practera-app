@@ -11,20 +11,19 @@ import { RequestModule } from '@shared/request/request.module';
 import { NotificationModule } from '@shared/notification/notification.module';
 import { AuthModule } from './auth/auth.module';
 import { TabsModule } from './tabs/tabs.module';
+import { FastFeedbackModule } from './fast-feedback/fast-feedback.module';
 
 import { AppComponent } from './app.component';
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
 
 import { HttpClientInMemoryWebApiModule } from 'angular-in-memory-web-api';
 import { UtilsService } from './services/utils.service';
-import { FastFeedbackComponent } from './fast-feedback/fast-feedback.component';
 import { EmbedVideo } from 'ngx-embed-video';
 
 @NgModule({
   declarations: [
     AppComponent,
     PageNotFoundComponent,
-    FastFeedbackComponent,
   ],
   imports: [
   	BrowserModule, 
@@ -39,6 +38,7 @@ import { EmbedVideo } from 'ngx-embed-video';
     EmbedVideo.forRoot(),
     NotificationModule,
   	AppRoutingModule,
+    FastFeedbackModule,
   ],
   providers: [
     // StatusBar,
