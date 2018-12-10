@@ -20,8 +20,8 @@ import { EmbedVideo } from 'ngx-embed-video';
     PageNotFoundComponent,
   ],
   imports: [
-  	BrowserModule, 
-  	IonicModule.forRoot(), 
+    BrowserModule, 
+    IonicModule.forRoot(), 
     AuthModule,
     RequestModule.forRoot({
       appkey: 'b11e7c189b',
