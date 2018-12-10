@@ -21,4 +21,8 @@ export class FastFeedbackComponent implements OnInit {
     });
     return await modal.present();
   }
+
+  dismiss() {
+    this.modalController.dismiss();
+  }
 }
