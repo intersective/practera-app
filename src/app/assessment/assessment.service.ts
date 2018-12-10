@@ -482,7 +482,7 @@ export class AssessmentService {
     private utils: UtilsService
   ) {}
 
-  getAssessment(id): Observable<Assessment> {
+  getAssessment(id): Observable<any> {
     return this.request.get(api.get.assessment, {params: {
         assessment_id: id,
         structured: true
@@ -535,44 +535,64 @@ export class AssessmentService {
           return this.request.apiResponseFormatError('Assessment.AssessmentQuestion format error');
         }
 
-        let choiceTypes = ['oneof', 'multiple'];
-        if (choicTypes.includes(question.AssessmentQuestion.question_type)) {
-          if (!this.utils.has(question.AssessmentQuestion, 'AssessmentQuestionChoice') || 
-              !this.utils.has(question.AssessmentQuestion.AssessmentQuestionChoice, 'id') || 
-              !this.utils.has(question.AssessmentQuestion.AssessmentQuestionChoice, 'AssessmentChoice') || 
-              !this.utils.has(question.AssessmentQuestion.AssessmentQuestionChoice.AssessmentChoice, 'name')
-            ) {
-            return this.request.apiResponseFormatError('Assessment.AssessmentQuestionChoice format error');
-          }
+        switch (question.AssessmentQuestion.question_type) {
+          case 'oneof':
+          case 'multiple':
+            if (!this.utils.has(question.AssessmentQuestion, 'AssessmentQuestionChoice') || 
+                !this.utils.has(question.AssessmentQuestion.AssessmentQuestionChoice, 'id') || 
+                !this.utils.has(question.AssessmentQuestion.AssessmentQuestionChoice, 'AssessmentChoice') || 
+                !this.utils.has(question.AssessmentQuestion.AssessmentQuestionChoice.AssessmentChoice, 'name')
+              ) {
+              return this.request.apiResponseFormatError('Assessment.AssessmentQuestionChoice format error');
+            }
 
-          let choices: Array<Choice> = [];
-          question.AssessmentQuestion.AssessmentQuestionChoice.forEach(questionChoice => {
-            // Here we use the AssessmentQuestionChoice.id (instead of AssessmentChoice.id) as the choice id, this is the current logic from Practera server
-            choices.push({
-              id: questionChoice.id,
-              name: questionChoice.AssessmentChoice.name
+            let choices: Array<Choice> = [];
+            question.AssessmentQuestion.AssessmentQuestionChoice.forEach(questionChoice => {
+              // Here we use the AssessmentQuestionChoice.id (instead of AssessmentChoice.id) as the choice id, this is the current logic from Practera server
+              choices.push({
+                id: questionChoice.id,
+                name: questionChoice.AssessmentChoice.name
+              });
             });
-          });
-          questions.push({
-            id: question.AssessmentQuestion.id,
-            name: question.AssessmentQuestion.name,
-            type: question.AssessmentQuestion.question_type,
-            description: question.AssessmentQuestion.description,
-            isRequired: question.AssessmentQuestion.is_required,
-            canComment: question.AssessmentQuestion.has_comment,
-            canAnswer: question.AssessmentQuestion.can_answer,
-            choices: choices
-          });
-        } else {
-          questions.push({
-            id: question.AssessmentQuestion.id,
-            name: question.AssessmentQuestion.name,
-            type: question.AssessmentQuestion.question_type,
-            description: question.AssessmentQuestion.description,
-            isRequired: question.AssessmentQuestion.is_required,
-            canComment: question.AssessmentQuestion.has_comment,
-            canAnswer: question.AssessmentQuestion.can_answer
-          });
+            questions.push({
+              id: question.AssessmentQuestion.id,
+              name: question.AssessmentQuestion.name,
+              type: question.AssessmentQuestion.question_type,
+              description: question.AssessmentQuestion.description,
+              isRequired: question.AssessmentQuestion.is_required,
+              canComment: question.AssessmentQuestion.has_comment,
+              canAnswer: question.AssessmentQuestion.can_answer,
+              choices: choices
+            });
+            break;
+          
+          case 'file': 
+             if (!this.utils.has(question.AssessmentQuestion, 'file_type.type')) {
+              return this.request.apiResponseFormatError('Assessment.AssessmentQuestion.file_type format error');
+            }
+            questions.push({
+              id: question.AssessmentQuestion.id,
+              name: question.AssessmentQuestion.name,
+              type: question.AssessmentQuestion.question_type,
+              fileType: question.AssessmentQuestion.file_type.type,
+              description: question.AssessmentQuestion.description,
+              isRequired: question.AssessmentQuestion.is_required,
+              canComment: question.AssessmentQuestion.has_comment,
+              canAnswer: question.AssessmentQuestion.can_answer
+            });
+            break;
+
+          default:
+            questions.push({
+              id: question.AssessmentQuestion.id,
+              name: question.AssessmentQuestion.name,
+              type: question.AssessmentQuestion.question_type,
+              description: question.AssessmentQuestion.description,
+              isRequired: question.AssessmentQuestion.is_required,
+              canComment: question.AssessmentQuestion.has_comment,
+              canAnswer: question.AssessmentQuestion.can_answer
+            });
+            break;
         }
 
       })
