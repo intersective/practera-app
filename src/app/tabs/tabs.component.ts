@@ -6,6 +6,6 @@ import { Component } from '@angular/core';
   styleUrls: ['tabs.component.scss']
 })
 export class TabsComponent {
-	showTeam = false;
-	showReview = false;
+  showTeam = false;
+  showReview = false;
 }
