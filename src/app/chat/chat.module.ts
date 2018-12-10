@@ -17,9 +17,9 @@ import { ChatService } from './chat.service';
     ChatRoutingModule,
   ],
   declarations: [
-  	ChatComponent, 
-  	ChatListComponent,
-  	ChatRoomComponent
+    ChatComponent, 
+    ChatListComponent,
+    ChatRoomComponent
   ],
   providers:[ChatService]
 })

@@ -6,14 +6,14 @@ import { SettingsComponent } from './settings.component';
 
 const routes: Routes = [
   { 
-  	path: '', 
-  	component: SettingsRoutingComponent,
-  	children: [
-  	  {
-  	    path: '',
-  	    component: SettingsComponent
-  	  }
-  	]
+    path: '', 
+    component: SettingsRoutingComponent,
+    children: [
+      {
+        path: '',
+        component: SettingsComponent
+      }
+    ]
   }
 ];
 
