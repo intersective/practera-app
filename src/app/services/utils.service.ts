@@ -11,11 +11,11 @@ export class UtilsService {
   private lodash;
 
   constructor() {
-  	if (_) {
-	  	this.lodash = _;
-  	} else {
-  		throw "Lodash not available";
-  	}
+    if (_) {
+      this.lodash = _;
+    } else {
+      throw "Lodash not available";
+    }
   }
 
   isEmpty(value: any): boolean {
