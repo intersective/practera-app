@@ -1,23 +1,18 @@
-import { IonicModule } from '@ionic/angular';
 import { RouterModule } from '@angular/router';
 import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ProjectComponent } from './project.component';
 import { NgCircleProgressModule } from 'ng-circle-progress';
 import { ProjectService } from './project.service';
 import { ProjectRoutingComponent } from './project-routing.component';
 import { ProjectRoutingModule } from './project-routing.module';
-import { ActivityCardModule } from '../components/activity-card/activity-card.module';
-
+import { SharedModule } from '@shared/shared.module';
 
 @NgModule({
   imports: [
-    IonicModule,
-    CommonModule,
+    SharedModule,
     FormsModule,
     ProjectRoutingModule,
-    ActivityCardModule,
     NgCircleProgressModule.forRoot({
       "outerStrokeLinecap": "butt",
       "toFixed": 0,
@@ -34,7 +29,7 @@ import { ActivityCardModule } from '../components/activity-card/activity-card.mo
       "outerStrokeWidth": 10,
       "radius": 5,
       "space": -20
-})
+    })
   ],
   declarations: [
     ProjectComponent,
