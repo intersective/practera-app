@@ -6,19 +6,19 @@ import { ActivityCardComponent } from './components/activity-card/activity-card.
 import { TodoCardComponent } from './components/todo-card/todo-card.component';
 
 @NgModule({
-	imports: [
-		IonicModule,
-		CommonModule,
-	],
-	declarations: [
-		ActivityCardComponent,
-		TodoCardComponent,
-	],
-	exports: [
-		ActivityCardComponent,
-		TodoCardComponent,
-		IonicModule,
-		CommonModule,
-	],
+  imports: [
+    IonicModule,
+    CommonModule,
+  ],
+  declarations: [
+    ActivityCardComponent,
+    TodoCardComponent,
+  ],
+  exports: [
+    ActivityCardComponent,
+    TodoCardComponent,
+    IonicModule,
+    CommonModule,
+  ],
 })
 export class SharedModule {}

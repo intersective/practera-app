@@ -5,12 +5,12 @@ import { AuthGuard } from './auth/auth.guard';
 
 const routes: Routes = [
   { 
-  	path: 'switcher', 
-  	loadChildren: './switcher/switcher.module#SwitcherModule',
+    path: 'switcher', 
+    loadChildren: './switcher/switcher.module#SwitcherModule',
   },
   { 
-  	path: 'topic', 
-  	loadChildren: './topic/topic.module#TopicModule',
+    path: 'topic', 
+    loadChildren: './topic/topic.module#TopicModule',
   },
   {
     path: 'assessment', 
