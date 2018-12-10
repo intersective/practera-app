@@ -27,9 +27,6 @@ export class HomeComponent implements OnInit {
       });
   };
 
-  activityRedirection(id) {
-    this.router.navigateByUrl('app/(project:activity/' + id + ')');
-  }
   goToActivity(id) {
     this.router.navigateByUrl('app/(project:activity/' + id + ')');
   }

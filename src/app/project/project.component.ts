@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { ProjectService } from './project.service';
+import { ProjectService, Milestone } from './project.service';
 
 @Component({
   selector: 'app-project',
@@ -15,11 +15,11 @@ public programName:string = "Demo Program";
     private projectService: ProjectService
    ) {};
 
-  public milestons = [];
+  public milestones: Array <Milestone> ;
     
   ngOnInit() {
-    this.projectService.getMilestons()
-      .subscribe(levels => this.milestons = levels);
+    this.projectService.getMilestones()
+      .subscribe(milestones => this.milestones = milestones);
   }
 
   goToActivity(id) {
