@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { HomeService } from './home.service';
 import { Router } from '@angular/router';
+import { FastFeedbackService } from '../fast-feedback/fast-feedback.service';
 
 @Component({
   selector: 'app-home',
@@ -15,7 +16,8 @@ export class HomeComponent implements OnInit {
   
   constructor (
     private router: Router,
-    private homeService: HomeService 
+    private homeService: HomeService,
+    private fastFeedbackService: FastFeedbackService,
   ) {}
 
   ngOnInit() {
@@ -25,6 +27,8 @@ export class HomeComponent implements OnInit {
       .subscribe(programName => {
         this.programName = programName;
       });
+
+    this.fastFeedbackService.popUp();
   };
 
   activityRedirection(id) {
