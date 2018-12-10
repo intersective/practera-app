@@ -15,7 +15,7 @@ import { SwitcherService, ProgramObj } from '../switcher.service';
   styleUrls: ['switcher-program.component.scss']
 })
 
-export class SwitcherProgramComponent implements OnInit{
+export class SwitcherProgramComponent implements OnInit {
   programs: Array<ProgramObj>;
 
   constructor(
@@ -33,7 +33,7 @@ export class SwitcherProgramComponent implements OnInit{
       });
   }
 
-	switch(index) {
+  switch(index) {
     let color:string = '';
     if (this.programs[index].program.color) {
       color = this.programs[index].program.color;
@@ -45,7 +45,7 @@ export class SwitcherProgramComponent implements OnInit{
       .subscribe(() => {
         this.router.navigate(['/app']);
       });
-	}
+  }
 
   logout() {
     return this.authService.logout().subscribe(() => {
