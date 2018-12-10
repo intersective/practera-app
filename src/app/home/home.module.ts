@@ -1,21 +1,15 @@
-import { IonicModule } from '@ionic/angular';
-import { RouterModule } from '@angular/router';
 import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { SharedModule } from '@shared/shared.module';
 import { HomeComponent } from './home.component';
-//import { ActivityCardComponent } from '../components/activity-card/activity-card.component';
+import { HomeRoutingComponent } from './home-routing.component';
+import { HomeRoutingModule } from './home-routing.module';
 import { NgCircleProgressModule } from 'ng-circle-progress';
-import { TodoCardComponent } from '../components/todo-card/todo-card.component';
-import { ActivityCardModule } from '../components/activity-card/activity-card.module';
-
 
 @NgModule({
   imports: [
-    IonicModule,
-    CommonModule,
+    SharedModule,
     FormsModule,
-    ActivityCardModule,
     NgCircleProgressModule.forRoot({
       "backgroundColor": "var(--ion-color-light)",
       "subtitleColor": "var(--ion-color-dark-tint)",
@@ -30,10 +24,9 @@ import { ActivityCardModule } from '../components/activity-card/activity-card.mo
       "titleFontSize": "32",
       "subtitleFontSize": "18",
     }),
-    RouterModule.forChild([{ path: '', component: HomeComponent }])
-
+    HomeRoutingModule,
   ],
-  declarations: [HomeComponent, TodoCardComponent]
+  declarations: [HomeComponent, HomeRoutingComponent],
 })
 export class HomeModule {
 }
