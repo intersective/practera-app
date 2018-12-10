@@ -120,23 +120,27 @@ export class ActivityService {
   }
 
   private _normaliseTasksProgress(data: any, tasks: Array<Task>) {
-    if (!this.utils.has(data, 'Activity.Topic') || !this.utils.has(data, 'Activity.Assessment')) {
+    if (!this.utils.has(data, 'Activity.Topic') && !this.utils.has(data, 'Activity.Assessment')) {
       return this.request.apiResponseFormatError('Progress.Activity format error');
     }
     let topicProgresses = {};
     let assessmentProgresses = {};
-    data.Activity.Topic.forEach(element => {
-      if (!this.utils.has(element, 'id') || !this.utils.has(element, 'progress')) {
-        return this.request.apiResponseFormatError('Progress.Activity.Topic format error');
-      } 
-      topicProgresses[element.id] = element.progress
-    });
-    data.Activity.Assessment.forEach(element => {
-      if (!this.utils.has(element, 'id') || !this.utils.has(element, 'progress')) {
-        return this.request.apiResponseFormatError('Progress.Activity.Assessment format error');
-      } 
-      assessmentProgresses[element.id] = element.progress
-    });
+    if (this.utils.has(data, 'Activity.Topic')) {
+      data.Activity.Topic.forEach(element => {
+        if (!this.utils.has(element, 'id') || !this.utils.has(element, 'progress')) {
+          return this.request.apiResponseFormatError('Progress.Activity.Topic format error');
+        } 
+        topicProgresses[element.id] = element.progress
+      });
+    }
+    if (this.utils.has(data, 'Activity.Assessment')) {
+      data.Activity.Assessment.forEach(element => {
+        if (!this.utils.has(element, 'id') || !this.utils.has(element, 'progress')) {
+          return this.request.apiResponseFormatError('Progress.Activity.Assessment format error');
+        } 
+        assessmentProgresses[element.id] = element.progress
+      });
+    }
     tasks.forEach((task, index) => {
       switch (task.type) {
         case 'Topic':
