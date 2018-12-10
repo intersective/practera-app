@@ -538,16 +538,20 @@ export class AssessmentService {
         switch (question.AssessmentQuestion.question_type) {
           case 'oneof':
           case 'multiple':
-            if (!this.utils.has(question.AssessmentQuestion, 'AssessmentQuestionChoice') || 
-                !this.utils.has(question.AssessmentQuestion.AssessmentQuestionChoice, 'id') || 
-                !this.utils.has(question.AssessmentQuestion.AssessmentQuestionChoice, 'AssessmentChoice') || 
-                !this.utils.has(question.AssessmentQuestion.AssessmentQuestionChoice.AssessmentChoice, 'name')
+            if (!this.utils.has(question.AssessmentQuestion, 'AssessmentQuestionChoice') ||
+                !Array.isArray(question.AssessmentQuestion.AssessmentQuestionChoice)
               ) {
               return this.request.apiResponseFormatError('Assessment.AssessmentQuestionChoice format error');
             }
 
             let choices: Array<Choice> = [];
             question.AssessmentQuestion.AssessmentQuestionChoice.forEach(questionChoice => {
+              if (
+                  !this.utils.has(questionChoice, 'id') || 
+                  !this.utils.has(questionChoice, 'AssessmentChoice.name')
+                ) {
+                return this.request.apiResponseFormatError('Assessment.AssessmentChoice format error');
+              }
               // Here we use the AssessmentQuestionChoice.id (instead of AssessmentChoice.id) as the choice id, this is the current logic from Practera server
               choices.push({
                 id: questionChoice.id,
@@ -601,6 +605,7 @@ export class AssessmentService {
         questions: questions
       });
     });
+    return assessment;
   }
 
   getSubmission(assessmentId, contextId, action): Observable<any> {
