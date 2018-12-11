@@ -33,7 +33,9 @@ export class HomeService {
     id: 1,
     name :'Activity Name 1',
     progress: 0.65,
-    hasFeedback: true
+    hasFeedback: true,
+    is_hidden: false,
+    is_locked: false
   };
 
   constructor(
