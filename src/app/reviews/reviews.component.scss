@@ -1,6 +1,5 @@
 
 .empty-status {
-  background: var(--ion-color-primary-contrast);
   border-radius: 12px;
   border: .5px solid var(--practera-card-border-color);
   min-height: 58px !important;
@@ -19,7 +18,7 @@
     
   }  
   .active-review {
-    --color: var(--ion-color-primary);;
+    --color: var(--ion-color-primary);
     --background: var(--practera-button-review-bg);
   }
 }
