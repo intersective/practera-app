@@ -30,7 +30,7 @@ export class ReviewsComponent implements OnInit {
     this.showDo = false;
   };
   gotoReview(id) {
-    this.router.navigateByUrl('app/(project:activity/' + id +')');
+    this.router.navigateByUrl('review/:contextId/:'+ id );
   }
   
 }
