@@ -4,7 +4,6 @@ import { RouterModule, Routes } from '@angular/router';
 import { AuthGuard } from '../auth/auth.guard';
 
 import { TabsComponent } from './tabs.component';
-import { HomeComponent } from '../home/home.component';
 import { ChatListComponent } from '../chat/chat-list/chat-list.component';
 
 const routes: Routes = [
@@ -21,8 +20,7 @@ const routes: Routes = [
       {
         path: 'home',
         outlet: 'home',
-        canActivateChild: [AuthGuard],
-        component: HomeComponent
+        loadChildren: '../home/home.module#HomeModule',
       },
       {
         path: 'project',

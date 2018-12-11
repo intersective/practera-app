@@ -1,12 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
-
-interface Activity {
-  id:number,
-  name: string,
-  is_locked: boolean,
-  lead_image: string,
-  hasFeedback: boolean
-}
+import { Activity } from '../../project/project.service';
 
 @Component({
   selector: 'app-activity-card',

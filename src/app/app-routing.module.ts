@@ -4,15 +4,13 @@ import { PageNotFoundComponent } from './page-not-found/page-not-found.component
 import { AuthGuard } from './auth/auth.guard';
 
 const routes: Routes = [
-  // { path: '', reidr}
-  // { path: '', loadChildren: './auth/auth.module#AuthModule' },
   { 
-  	path: 'switcher', 
-  	loadChildren: './switcher/switcher.module#SwitcherModule',
+    path: 'switcher', 
+    loadChildren: './switcher/switcher.module#SwitcherModule',
   },
   { 
-  	path: 'topic', 
-  	loadChildren: './topic/topic.module#TopicModule',
+    path: 'topic', 
+    loadChildren: './topic/topic.module#TopicModule',
   },
   {
     path: 'assessment', 
@@ -20,16 +18,21 @@ const routes: Routes = [
   },
   
   {
+    path: 'chat', 
+    loadChildren: './chat/chat.module#ChatModule' 
+  },
+  {
+    path: '', 
+    loadChildren: './tabs/tabs.module#TabsModule',
+    canLoad: [AuthGuard]
+  },
+  {
     path: '',
     redirectTo: '/app',
     pathMatch: 'full',
     canLoad: [AuthGuard]
   },
-  {
-    path: 'chat', 
-    loadChildren: './chat/chat.module#ChatModule' 
-  },
-  { path: '**', component: PageNotFoundComponent }
+  { path: '**', component: PageNotFoundComponent },
 ];
 @NgModule({
   imports: [RouterModule.forRoot(routes, {
