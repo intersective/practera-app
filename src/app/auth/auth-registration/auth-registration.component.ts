@@ -1,6 +1,7 @@
 import { Component, OnInit } from "@angular/core";
 import { Router, ActivatedRoute, ParamMap } from "@angular/router";
 import { UtilsService } from "@services/utils.service";
+import { NotificationService } from '@shared/notification/notification.service';
 import { Md5 } from "ts-md5/dist/md5";
 import {
   Validators,
@@ -34,11 +35,10 @@ export class AuthRegistrationComponent implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
-    private router: Router,
     private authService: AuthService,
     private utils: UtilsService,
     private storage: BrowserStorageService,
-    private formBuilder: FormBuilder
+    private notificationService: NotificationService
   ) {
     this.initForm();
   }
@@ -116,7 +116,7 @@ export class AuthRegistrationComponent implements OnInit {
                   );
               }
             },error => {
-              this.utils.popUp(
+              this.notificationService.popUp(
                 "shortMessage",
                 {
                   message: "Registration link invalid"
@@ -126,7 +126,7 @@ export class AuthRegistrationComponent implements OnInit {
             }
           );
       } else {
-        this.utils.popUp(
+        this.notificationService.popUp(
           "shortMessage",
           {
             message: "Registration link invalid"
@@ -169,7 +169,7 @@ export class AuthRegistrationComponent implements OnInit {
                     response => {
                       let redirect = [];
                       redirect = ['switcher'];
-                      this.utils
+                      this.notificationService
                         .popUp(
                           "shortMessage",
                           {
@@ -179,7 +179,7 @@ export class AuthRegistrationComponent implements OnInit {
                         );
                     },
                     error => {
-                      this.utils
+                      this.notificationService
                         .popUp(
                           "shortMessage",
                           {
@@ -191,7 +191,7 @@ export class AuthRegistrationComponent implements OnInit {
                   );
                 },
                 error => {
-                  this.utils
+                  this.notificationService
                     .popUp(
                       "shortMessage",
                       {
@@ -203,7 +203,7 @@ export class AuthRegistrationComponent implements OnInit {
               );
           },
           error => {
-            this.utils
+            this.notificationService
               .popUp(
                 "shortMessage",
                 {
