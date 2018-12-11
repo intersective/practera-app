@@ -20,6 +20,7 @@
         color="primary"
         class="card practera-card"
         *ngIf="!review.isDone && !showDo" 
+        (click)="gotoReview(review.id)"
       >
         <ion-card-content class="review">
           <h4 color="primary-contrast" class="activity-name">{{review.name}}</h4>
@@ -35,7 +36,8 @@
       <ion-card
         color="primary"
         class="card practera-card"
-        *ngIf="review.isDone && !showDone"
+        *ngIf="review.isDone && showDo"
+        (click)="gotoReview(review.id)"
         >
         <ion-card-content class="review">
           <h4 color="primary-contrast" class="activity-name">{{review.name}}</h4>
