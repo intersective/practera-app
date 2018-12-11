@@ -1,8 +1,23 @@
 <ion-content padding color="light">
-  <h1 text-center>{{Program.Name}}</h1>
+  <h1 text-center>{{ programName }}</h1>
   <div text-center padding >
     <circle-progress 
-      [percent]="progress">
+      [percent]="progress"
+      [radius]= "70"
+      [subtitle]="COMPLETE"
+      [titleFontSize]= "32"
+      [subtitleFontSize]= "18"
+      [outerStrokeWidth]= "12"
+      [animation]= true
+      [animationDuration]= "1000"
+      [backgroundPadding]= -10
+      [maxPercent]= 100
+      [innerStrokeWidth]= 0
+      [showInnerStroke]= false
+      [startFromZero]= false
+      [outerStrokeLinecap]= "round"
+       
+      >
     </circle-progress>
   </div>
 
@@ -22,5 +37,6 @@
   </ion-list>
 
   <ion-label color="medium">Current Activity</ion-label>
-  <app-activity-card [activity]="activity" (click)="activityRedirection(activity.id)"></app-activity-card>
+  <app-activity-card [activity]="activity" (click)="!activity.is_locked && goToActivity(activity.id)"></app-activity-card>
+             
 </ion-content>
