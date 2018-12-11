@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ReviewsService, Review } from './reviews.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-reviews',
@@ -13,7 +14,10 @@ export class ReviewsComponent implements OnInit {
   public showDone: boolean = true;
   
   
-  constructor( public reviewsService: ReviewsService) { }
+  constructor( 
+    public reviewsService: ReviewsService,
+    public router: Router 
+  ) { }
 
   ngOnInit() {
     this.reviewsService.getReviews()
@@ -31,6 +35,8 @@ export class ReviewsComponent implements OnInit {
     this.showDo = false;
     
   };
-
+  gotoReview(id) {
+    this.router.navigateByUrl('app/(project:activity/' + id +')');
+  }
   
 }

@@ -26,7 +26,7 @@
 
     <ng-container *ngIf="todoItems.length; else noItems">
       <div *ngFor="let todoItem of todoItems">
-        <app-todo-card [todoItem]="todoItem"></app-todo-card>
+        <app-todo-card [todoItem]="todoItem" (click)="goToReview(todoItem.id)"></app-todo-card>
       </div>  
     </ng-container>
 
