@@ -17,10 +17,10 @@ export class AuthLoginComponent {
     private authService: AuthService,
   ) {}
 
-	login() {
+  login() {
     // -- todo
     // call API to do authentication
-		console.log("Email: ", this.email, "\nPassword: ", this.password);
+    console.log("Email: ", this.email, "\nPassword: ", this.password);
     this.authService.login({
       email: this.email,
       password: this.password,
@@ -34,5 +34,5 @@ export class AuthLoginComponent {
       // should popup something instead
       this.router.navigate(['/switcher']);
     });
-	}
+  }
 }

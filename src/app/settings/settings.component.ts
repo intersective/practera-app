@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
+import { AuthService } from '../auth/auth.service';
 
 @Component({
   selector: 'app-settings',
@@ -30,7 +31,8 @@ export class SettingsComponent {
   termsUrl = 'https://images.practera.com/terms_and_conditions/practera_terms_conditions.pdf';
   
   constructor (
-    private router: Router
+    private router: Router,
+    private authService: AuthService
   ){
 
   }
@@ -57,6 +59,8 @@ export class SettingsComponent {
   }
 
   logout() {
-    this.router.navigate(['/login']);
+    return this.authService.logout().subscribe(() => {
+      return this.router.navigate(['/login']);
+    });
   }
 }

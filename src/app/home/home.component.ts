@@ -9,9 +9,7 @@ import { Router } from '@angular/router';
 })
 export class HomeComponent implements OnInit {
   progress:number = 80;
-  Program = {
-    Name: 'Demo program'
-  };
+  programName:string;
   todoItems = [];
   activity = {};
   
@@ -22,10 +20,14 @@ export class HomeComponent implements OnInit {
 
   ngOnInit() {
     this.todoItems = this.homeService.getTodoItems();
-    this.activity = this.homeService.getCurrentActivity();  
+    this.activity = this.homeService.getCurrentActivity();
+    this.homeService.getProgramName()
+      .subscribe(programName => {
+        this.programName = programName;
+      });
   };
 
-  activityRedirection(id) {
+  goToActivity(id) {
     this.router.navigateByUrl('app/(project:activity/' + id + ')');
   }
   
