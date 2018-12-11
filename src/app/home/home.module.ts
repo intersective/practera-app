@@ -1,31 +1,21 @@
-import { IonicModule } from '@ionic/angular';
-import { RouterModule } from '@angular/router';
 import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { SharedModule } from '@shared/shared.module';
 import { HomeComponent } from './home.component';
-import { ActivityCardModule } from '../components/activity-card/activity-card.module';
+import { HomeRoutingComponent } from './home-routing.component';
+import { HomeRoutingModule } from './home-routing.module';
 import { NgCircleProgressModule } from 'ng-circle-progress';
-import { TodoCardComponent } from '../components/todo-card/todo-card.component';
 
 @NgModule({
   imports: [
-    IonicModule,
-    CommonModule,
+    SharedModule,
     FormsModule,
-    ActivityCardModule,
     NgCircleProgressModule.forRoot({
-      // set defaults here
-      "backgroundColor": "#f5f6fa",
-      "backgroundPadding": -10,
-      "radius": 70,
-      "maxPercent": 100,
-      "outerStrokeWidth": 12,
-      "outerStrokeColor": "var(--ion-color-primary)",
-      "innerStrokeWidth": 0,
-      "subtitleColor": "#444444",
+      "backgroundColor": "var(--ion-color-light)",
+      "subtitleColor": "var(--ion-color-dark-tint)",
       "showInnerStroke": false,
       "startFromZero": false,
+      "outerStrokeColor": "var(--ion-color-primary)",
       "subtitle": [
         "COMPLETE"
       ],
@@ -33,9 +23,10 @@ import { TodoCardComponent } from '../components/todo-card/todo-card.component';
       "animationDuration": 1000,
       "titleFontSize": "32",
       "subtitleFontSize": "18",
-    })
+    }),
+    HomeRoutingModule,
   ],
-  declarations: [HomeComponent, TodoCardComponent]
+  declarations: [HomeComponent, HomeRoutingComponent],
 })
 export class HomeModule {
 }
