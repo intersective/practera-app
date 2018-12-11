@@ -29,8 +29,8 @@ export class ReviewsComponent implements OnInit {
   activeDone (){
     this.showDo = false;
   };
-  gotoReview(id) {
-    this.router.navigateByUrl('review/:contextId/:'+ id );
+  gotoReview(contextId, id) {
+    this.router.navigateByUrl('assessment/review/'+ contextId +'/'+ id );
   }
   
 }
