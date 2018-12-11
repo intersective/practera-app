@@ -77,14 +77,14 @@ export class AssessmentComponent implements OnInit {
     this.contextId = parseInt(this.route.snapshot.paramMap.get('contextId'));
 
     // get assessment structure and populate the question form
-    this.assessmentService.getAssessment(this.id)
+    this.assessmentService.getAssessment(this.id, this.action)
       .subscribe(assessment => {
         this.assessment = assessment;
         this.populateQuestionsForm();
       });
 
     // get the submission answers &/| review answers
-    this.assessmentService.getSubmission(this.id, this.contextId, this.action)
+    this.assessmentService.getSubmission(this.id, this.contextId)
       .subscribe(result => {
         this.submission = result.submission;
         // this page is for doing assessment if submission is empty

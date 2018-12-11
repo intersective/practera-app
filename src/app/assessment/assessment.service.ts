@@ -482,14 +482,17 @@ export class AssessmentService {
     private utils: UtilsService
   ) {}
 
-  getAssessment(id): Observable<any> {
+  getAssessment(id, action): Observable<any> {
     return this.request.get(api.get.assessment, {params: {
         assessment_id: id,
-        structured: true
+        structured: true,
+        review: (action == 'review') ? true : false
       }})
       .pipe(map(response => {
         if (response.success && response.data) {
           return this._normaliseAssessment(response.data);
+        } else {
+          return {};
         }
       })
     );
@@ -608,18 +611,76 @@ export class AssessmentService {
     return assessment;
   }
 
-  getSubmission(assessmentId, contextId, action): Observable<any> {
-    return of({
-      submission: this.submissions[assessmentId] ? {
-        id: 1,
-        status: this.submissions[assessmentId].status,
-        answers: this.submissions[assessmentId] 
-      } : {},
-      review: this.reviews[assessmentId] ? {
-        id: this.reviews[assessmentId].id,
-        answers: this.reviews[assessmentId].answers
-      } : {}
+  getSubmission(assessmentId, contextId): Observable<any> {
+    return this.request.get(api.get.submissions, {params: {
+        assessment_id: assessmentId,
+        context_id: contextId
+      }})
+      .pipe(map(response => {
+        if (response.success && !this.utils.isEmpty(response.data)) {
+          return this._normaliseSubmission(response.data);
+        } else {
+          return {
+            submission: {},
+            review: {}
+          };
+        }
+      })
+    );
+  }
+
+  private _normaliseSubmission(data) {
+    // In API response, 'data' is an array of submissions(currently we only support one submission per assessment, but it is still in array format). That's why we use data[0]
+    if (!Array.isArray(data) || 
+        !this.utils.has(data[0], 'AssessmentSubmission')) {
+      return this.request.apiResponseFormatError('AssessmentSubmission format error');
+    }
+    let submission: Submission = {
+      id: data[0].AssessmentSubmission.id,
+      status: data[0].AssessmentSubmission.status,
+      answers: {}
+    }
+    if (!this.utils.has(data[0], 'AssessmentSubmissionAnswer') ||
+        !Array.isArray(data[0].AssessmentSubmissionAnswer)
+        ) {
+      return this.request.apiResponseFormatError('AssessmentSubmissionAnswer format error');
+    }
+    data[0].AssessmentSubmissionAnswer.forEach(answer => {
+      if (!this.utils.has(answer, 'assessment_question_id') ||
+          !this.utils.has(answer, 'answer')
+          ) {
+        return this.request.apiResponseFormatError('AssessmentSubmissionAnswer.answer format error');
+      }
+      submission.answers[answer.assessment_question_id] = {
+        answer: answer.answer
+      };
     });
+
+    let review: Review;
+    // only get the review answer if the review is published (submission.status == 'published')
+    if (submission.status != 'published' ||
+        !this.utils.has(data[0], 'AssessmentReviewAnswer') ||
+        !Array.isArray(data[0].AssessmentReviewAnswer)
+        ) {
+      review = {};
+    } else {
+      data[0].AssessmentReviewAnswer.forEach(answer => {
+        if (!this.utils.has(answer, 'assessment_question_id') ||
+            !this.utils.has(answer, 'answer') ||
+            !this.utils.has(answer, 'comment')
+            ) {
+          return this.request.apiResponseFormatError('AssessmentReviewAnswer format error');
+        }
+        review[answers][answer.assessment_question_id] = {
+          answer: answer.answer,
+          comment: answer.comment
+        };
+      });
+    }
+    return {
+      submission: submission,
+      review: review
+    };
   }
 
   saveAnswers(assessment, answers, action) {
