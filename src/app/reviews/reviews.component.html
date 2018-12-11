@@ -10,7 +10,7 @@
     <ion-button class="done" [ngClass]="{'active-review': showDo}" (click)="showDo && activeDone()">Done</ion-button>
   </div>
   <div *ngIf="!reviews.length; else reviewsCard" class="no-review-show" padding text-center>
-    <div class="empty-status" >
+    <div class="empty-status  background-white" >
       <h2 text-center>You have no new submissions to review</h2>
     </div>
   </div>
@@ -23,9 +23,9 @@
         (click)="gotoReview(review.id)"
       >
         <ion-card-content class="review">
-          <h4 color="primary-contrast" class="activity-name">{{review.name}}</h4>
+          <h4  class="activity-name">{{review.name}}</h4>
           <ion-icon name="checkmark-circle" class="check-mark"></ion-icon>
-          <h2 color="primary-contrast" padding-top>{{review.submitterName}}</h2>
+          <h2  padding-top>{{review.submitterName}}</h2>
           <h2 *ngIf="review.isInTeam" >
             {{review.teamName}}
           </h2>
@@ -40,8 +40,8 @@
         (click)="gotoReview(review.id)"
         >
         <ion-card-content class="review">
-          <h4 color="primary-contrast" class="activity-name">{{review.name}}</h4>
-          <h2 color="primary-contrast" padding-top>{{review.submitterName}}</h2>
+          <h4 class="activity-name">{{review.name}}</h4>
+          <h2 padding-top>{{review.submitterName}}</h2>
           <h2 *ngIf="review.isInTeam" >
             {{review.teamName}}
           </h2>
