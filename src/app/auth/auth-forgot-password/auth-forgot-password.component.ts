@@ -17,7 +17,7 @@ export class AuthForgotPasswordComponent {
     private notificationService: NotificationService
   ) {}
 
-	async send() {
+  async send() {
     // -- todo
     // call API to do forgot password logic
     
@@ -25,6 +25,6 @@ export class AuthForgotPasswordComponent {
     return this.notificationService.popUp('forgotPasswordConfirmation', {
       email: this.email
     }, ['login']);
-	}
+  }
 
 }
