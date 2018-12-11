@@ -1,5 +1,12 @@
 import { Component, OnInit, Input } from '@angular/core';
-//import { Review} from '../reviews/reviews.service';
+
+interface Activity {
+  id:number,
+  name: string,
+  is_locked: boolean,
+  lead_image: string,
+  hasFeedback: boolean
+}
 
 @Component({
   selector: 'app-activity-card',
@@ -10,9 +17,7 @@ export class ActivityCardComponent implements OnInit {
   
   constructor() {}
 
-  @Input() activity: {};
-  @Input () review:{} ;
-  @Input () toggle: boolean; 
-
+  @Input() activity: Activity;
+  
   ngOnInit() {}
 }
