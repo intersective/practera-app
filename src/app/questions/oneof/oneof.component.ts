@@ -37,6 +37,12 @@ export class OneofComponent implements ControlValueAccessor {
   constructor() {}
 
   ngAfterViewInit() {
+    // if (this.submission.answer) {
+    //   this.submission.answer = parseInt(this.submission.answer);
+    // }
+    // if (this.review.answer) {
+    //   this.review.answer = parseInt(this.review.answer);
+    // }console.log(this.submission);
   }
 
   //propagate changes into the form control

@@ -658,12 +658,13 @@ export class AssessmentService {
 
     let review: Review;
     // only get the review answer if the review is published (submission.status == 'published')
-    if (submission.status != 'published' ||
-        !this.utils.has(data[0], 'AssessmentReviewAnswer') ||
-        !Array.isArray(data[0].AssessmentReviewAnswer)
-        ) {
-      review = {};
-    } else {
+    if (submission.status == 'published' &&
+        this.utils.has(data[0], 'AssessmentReviewAnswer') &&
+        Array.isArray(data[0].AssessmentReviewAnswer)) {
+      review = {
+        id: 0,
+        answers: {}
+      };
       data[0].AssessmentReviewAnswer.forEach(answer => {
         if (!this.utils.has(answer, 'assessment_question_id') ||
             !this.utils.has(answer, 'answer') ||
@@ -671,7 +672,7 @@ export class AssessmentService {
             ) {
           return this.request.apiResponseFormatError('AssessmentReviewAnswer format error');
         }
-        review[answers][answer.assessment_question_id] = {
+        review.answers[answer.assessment_question_id] = {
           answer: answer.answer,
           comment: answer.comment
         };
@@ -679,7 +680,7 @@ export class AssessmentService {
     }
     return {
       submission: submission,
-      review: review
+      review: review ? review : {}
     };
   }
 
