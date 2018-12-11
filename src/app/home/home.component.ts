@@ -31,7 +31,7 @@ export class HomeComponent implements OnInit {
     this.fastFeedbackService.popUp();
   };
 
-  activityRedirection(id) {
+  goToActivity(id) {
     this.router.navigateByUrl('app/(project:activity/' + id + ')');
   }
   
