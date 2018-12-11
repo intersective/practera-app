@@ -11,8 +11,6 @@ export class ReviewsComponent implements OnInit {
 
   public reviews:Array <Review>;
   public showDo: boolean = false;
-  public showDone: boolean = true;
-  
   
   constructor( 
     public reviewsService: ReviewsService,
@@ -26,14 +24,10 @@ export class ReviewsComponent implements OnInit {
   }
   activeDo (){
     this.showDo = true;
-    this.showDone = false;
-    
   };
 
   activeDone (){
-    this.showDone = true;
     this.showDo = false;
-    
   };
   gotoReview(id) {
     this.router.navigateByUrl('app/(project:activity/' + id +')');
