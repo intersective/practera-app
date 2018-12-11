@@ -6,9 +6,6 @@ import { ReviewsComponent } from './reviews.component';
 import { ReviewsRoutingModule } from './reviews-routing.module';
 import { ReviewsService } from './reviews.service';
 import { ReviewsRoutingComponent } from './reviews-routing.components';
-import { ActivityCardModule } from '../components/activity-card/activity-card.module';
-
-
 
 @NgModule({
   imports: [
@@ -16,7 +13,7 @@ import { ActivityCardModule } from '../components/activity-card/activity-card.mo
     CommonModule,
     FormsModule,
     ReviewsRoutingModule,
-    ActivityCardModule
+    
   ],
   declarations: [ 
     ReviewsComponent,

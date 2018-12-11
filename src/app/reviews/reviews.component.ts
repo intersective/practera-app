@@ -9,8 +9,8 @@ import { ReviewsService, Review } from './reviews.service';
 export class ReviewsComponent implements OnInit {
 
   public reviews:Array <Review>;
-  public activeToggle: boolean = true;
-  public activeToggleDo: boolean = true;
+  public showDo: boolean = false;
+  public showDone: boolean = true;
   
   
   constructor( public reviewsService: ReviewsService) { }
@@ -20,16 +20,16 @@ export class ReviewsComponent implements OnInit {
       .subscribe(reviews => this.reviews = reviews);
 
   }
-  toggleActiveDo (){
-    this.activeToggle = !this.activeToggle;
-    this.activeToggleDo = false;
-   
+  activeDo (){
+    this.showDo = true;
+    this.showDone = false;
+    
   };
 
-  toggleActiveDone (){
-    this.activeToggle = !this.activeToggle;
-    this.activeToggleDo = true;
-   
+  activeDone (){
+    this.showDone = true;
+    this.showDo = false;
+    
   };
 
   
