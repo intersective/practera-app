@@ -477,6 +477,8 @@ export class AssessmentService {
     2: true
   }
 
+  questions = {};
+
   constructor(
     private request: RequestService,
     private utils: UtilsService

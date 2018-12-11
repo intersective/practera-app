@@ -81,9 +81,13 @@ export class AssessmentComponent implements OnInit {
       .subscribe(assessment => {
         this.assessment = assessment;
         this.populateQuestionsForm();
+        this._getSubmission();
       });
 
-    // get the submission answers &/| review answers
+  };
+
+  // get the submission answers &/| review answers
+  private _getSubmission() { 
     this.assessmentService.getSubmission(this.id, this.contextId)
       .subscribe(result => {
         this.submission = result.submission;
@@ -106,7 +110,7 @@ export class AssessmentComponent implements OnInit {
             });
         }
       });
-  };
+  }
 
   // Populate the question form with FormControls. 
   // The name of form control is like 'q-2' (2 is an example of question id)
