@@ -44,9 +44,11 @@ export class AuthRegistrationComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.domain = ((this.domain.indexOf("127.0.0.1") !== -1) || 
-    (this.domain.indexOf("localhost") !== -1)) 
-    ? "appdev.practera.com" : this.domain;
+    this.domain =
+      this.domain.indexOf("127.0.0.1") !== -1 ||
+      this.domain.indexOf("localhost") !== -1
+        ? "appdev.practera.com"
+        : this.domain;
     this.validateQueryParams();
   }
 
@@ -56,9 +58,7 @@ export class AuthRegistrationComponent implements OnInit {
         Validators.required,
         Validators.minLength(8)
       ]),
-      confirmPassword: new FormControl("", [
-        Validators.required
-      ])
+      confirmPassword: new FormControl("", [Validators.required])
     });
   }
 
@@ -79,43 +79,43 @@ export class AuthRegistrationComponent implements OnInit {
           .verifyRegistration({
             email: this.storage.get("hash").email,
             key: this.storage.get("hash").key
-          })
-          .subscribe(
-            response => {
-              let data = response.data.data;
-              let user = data.user;
-              let hash = this.storage.get("hash");
-              this.user.email = email;
-              this.user.contact = (data.User || {}).contact_number || null;
-              let merge = { hash, user };
-              this.storage.set("hash", merge);
+          }).subscribe(response => {
+              if (response) {
+                let user = response.data.data.user;
+                // Setting user data after registration verified.
+                this.user.email = email;
+                this.user.contact = (user || {}).contact_number || null;
 
-              // get app configaration
-              this.authService
-                .checkDomain({
-                  domain: this.domain
-                })
-                .subscribe(
-                  response => {
-                    var data = (response.data || {}).data;
-                    data = this.utils.find(data, function(datum) {
-                      return (
-                        datum.config && datum.config.auth_via_contact_number
-                      );
-                    });
+                // Update storage data
+                let hash = this.storage.get("hash");
+                let merge = { hash, user };
+                this.storage.set("hash", merge);
 
-                    if (data && data.config) {
-                      if (data.config.auth_via_contact_number === true) {
-                        this.hide_password = true;
-                        this.user.password = this.autoGeneratePassword();
-                        this.confirmPassword = this.user.password;
+                // get app configaration
+                this.authService
+                  .checkDomain({
+                    domain: this.domain
+                  })
+                  .subscribe(
+                    response => {
+                      var data = (response.data || {}).data;
+                      data = this.utils.find(data, function(datum) {
+                        return (
+                          datum.config && datum.config.auth_via_contact_number
+                        );
+                      });
+
+                      if (data && data.config) {
+                        if (data.config.auth_via_contact_number === true) {
+                          this.hide_password = true;
+                          this.user.password = this.autoGeneratePassword();
+                          this.confirmPassword = this.user.password;
+                        }
                       }
-                    }
-                  },
-                  err => {}
-                );
-            },
-            error => {
+                    },err => {}
+                  );
+              }
+            },error => {
               this.utils.popUp(
                 "shortMessage",
                 {
@@ -167,28 +167,50 @@ export class AuthRegistrationComponent implements OnInit {
                 response => {
                   this.authService.me().subscribe(
                     response => {
+                      let redirect = [];
+                      redirect = ['switcher'];
                       this.utils
                         .popUp(
                           "shortMessage",
                           {
-                            message: "Registration success"
+                            message: "Registration success!"
                           },
-                          false
-                        )
-                        .then(() => {});
+                          redirect
+                        );
                     },
                     error => {
-                      console.log("me error");
+                      this.utils
+                        .popUp(
+                          "shortMessage",
+                          {
+                            message: "Registration not compleate!"
+                          },
+                          false
+                        );
                     }
                   );
                 },
                 error => {
-                  console.log("login error");
+                  this.utils
+                    .popUp(
+                      "shortMessage",
+                      {
+                        message: "Registration not compleate!"
+                      },
+                      false
+                    );
                 }
               );
           },
           error => {
-            console.log("saveRegistration error");
+            this.utils
+              .popUp(
+                "shortMessage",
+                {
+                  message: "Registration not compleate!"
+                },
+                false
+              );
           }
         );
     }
@@ -201,7 +223,15 @@ export class AuthRegistrationComponent implements OnInit {
   validateRegistration() {
     let isValid = true;
     this.errors = [];
-    if (this.registerationForm.valid) {
+    if (this.hide_password) {
+      if (!this.isAgreed) {
+        this.errors.push("You need to agree with terms and Conditions.");
+        isValid = false;
+        return isValid;
+      } else {
+        return isValid;
+      }
+    } else if (this.registerationForm.valid) {
       let pass = this.registerationForm.controls.password.value;
       let confirmPass = this.registerationForm.controls.confirmPassword.value;
       if (pass !== confirmPass) {
@@ -220,10 +250,14 @@ export class AuthRegistrationComponent implements OnInit {
         if (this.registerationForm.controls[conrtoller].errors) {
           isValid = false;
           for (let key in this.registerationForm.controls[conrtoller].errors) {
-            if (this.registerationForm.controls[conrtoller].errors.hasOwnProperty(key)) {
+            if (
+              this.registerationForm.controls[conrtoller].errors.hasOwnProperty(
+                key
+              )
+            ) {
               switch (key) {
                 case "required":
-                  this.errors.push("Fill required field");
+                  this.errors.push("Please fill in your password");
                   break;
                 case "minlength":
                   this.errors.push(
@@ -231,7 +265,7 @@ export class AuthRegistrationComponent implements OnInit {
                   );
                   break;
                 default:
-                this.errors.push(this.registerationForm.controls.errors[key]);
+                  this.errors.push(this.registerationForm.controls.errors[key]);
               }
               return;
             }
