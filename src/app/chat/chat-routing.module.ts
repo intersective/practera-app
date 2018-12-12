@@ -3,16 +3,22 @@ import { RouterModule, Routes } from '@angular/router';
 
 import { ChatComponent } from './chat.component';
 import { ChatRoomComponent } from './chat-room/chat-room.component';
+import { ChatListComponent } from './chat-list/chat-list.component';
 
 const routes: Routes = [
   {
     path: '',
-    redirectTo: '/chat/chatroom',
-    pathMatch: 'full'
+    component: ChatComponent,
+    children: [
+      {
+        path: '',
+        component: ChatListComponent,
+      }
+    ]
   },
   {
     path: 'chatroom',
-    component: ChatRoomComponent
+    component: ChatRoomComponent,
   }
 ];
 
