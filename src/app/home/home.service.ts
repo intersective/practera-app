@@ -1,4 +1,6 @@
 import { Injectable } from '@angular/core';
+import { Observable, of } from 'rxjs';
+import { BrowserStorageService } from '@services/storage.service';
 
 @Injectable({
   providedIn: 'root'
@@ -29,10 +31,18 @@ export class HomeService {
   ];
   activity = {
     id: 1,
-    name :'Activity Name 1'
+    name :'Activity Name 1',
+    progress: 0.65,
+    hasFeedback: true
   };
 
-  constructor() {};
+  constructor(
+    private storage: BrowserStorageService
+  ) {};
+
+  getProgramName() {
+    return of(this.storage.getUser().programName);
+  }
 
   getTodoItems() {
     return this.todo;
