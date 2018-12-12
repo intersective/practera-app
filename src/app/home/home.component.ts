@@ -13,7 +13,8 @@ export class HomeComponent implements OnInit {
   programName:string;
   todoItems = [];
   activity = {};
-  
+  questions:any[];
+
   constructor (
     private router: Router,
     private homeService: HomeService,
@@ -27,9 +28,20 @@ export class HomeComponent implements OnInit {
       .subscribe(programName => {
         this.programName = programName;
       });
-
-    this.fastFeedbackService.popUp();
   };
+
+  ionViewDidEnter() {
+    this.fastFeedbackService.getInstantFeedback().subscribe(res => {
+      console.log(res);
+      // prepare ngModel for each of the data (question)
+      res.data.forEach(datum => this.questions.push(datum));
+
+      // popup instant feedback view if question quantity found > 0
+      if (this.questions.length > 0) {        
+        this.fastFeedbackService.popUp();
+      }
+    });
+  }
 
   goToActivity(id) {
     this.router.navigateByUrl('app/(project:activity/' + id + ')');

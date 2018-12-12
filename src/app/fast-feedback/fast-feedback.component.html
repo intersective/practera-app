@@ -4,8 +4,15 @@
   </ion-toolbar>
 </ion-header>
 <ion-content>
-  <h1>Testing Title</h1>
-  <div>Testing Content</div>
+  <h1>{{title}}</h1>
+  <div>{{description}}</div>
+	
+  <div *ngFor="let question of questions">
+	<app-file *ngIf="question.type === 'file'"></app-file>
+	<app-multiple *ngIf="question.type === 'multiple'"></app-multiple>
+	<app-oneof *ngIf="question.type === 'oneof'"></app-oneof>
+	<app-text *ngIf="question.type === 'text'"></app-text>
+  </div>
   <ion-button (click)="presentModal()">Modal Up</ion-button>
   <ion-button (click)="dismiss()">Dismiss</ion-button>
 </ion-content>
