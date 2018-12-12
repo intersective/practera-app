@@ -4,7 +4,6 @@ import { RouterModule, Routes } from '@angular/router';
 import { AuthGuard } from '../auth/auth.guard';
 
 import { TabsComponent } from './tabs.component';
-import { ChatListComponent } from '../chat/chat-list/chat-list.component';
 
 const routes: Routes = [
   {
@@ -35,7 +34,7 @@ const routes: Routes = [
       {
         path: 'chat',
         outlet: 'chat',
-        component: ChatListComponent
+        loadChildren: '../chat/chat.module#ChatModule',
       },
       {
         path: 'settings',
