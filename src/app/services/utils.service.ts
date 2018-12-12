@@ -1,6 +1,4 @@
 import { Injectable } from '@angular/core';
-import { ModalController } from '@ionic/angular';
-import { PopUpComponent } from '@components/pop-up/pop-up.component';
 import * as _ from 'lodash';
 
 // @TODO: enhance Window reference later, we shouldn't refer directly to browser's window object like this
@@ -12,14 +10,12 @@ declare var window: any;
 export class UtilsService {
   private lodash;
 
-  constructor(
-    public modalController: ModalController
-  ) {
-  	if (_) {
-	  	this.lodash = _;
-  	} else {
-  		throw "Lodash not available";
-  	}
+  constructor() {
+    if (_) {
+      this.lodash = _;
+    } else {
+      throw "Lodash not available";
+    }
   }
 
   isEmpty(value: any): boolean {
@@ -38,6 +34,10 @@ export class UtilsService {
     return this.lodash.find(collections, callback);
   }
 
+  has(object, path) {
+    return this.lodash.has(object, path);
+  }
+
   indexOf(array, value, fromIndex=0) {
     return this.lodash.indexOf(array, value, fromIndex);
   }
@@ -48,21 +48,6 @@ export class UtilsService {
 
   openUrl(url, options?: {target: '_self'}) {
     return window.open(url, options.target);
-  }
-
-  // show pop up message 
-  // this is using pop-up.component.ts as the view
-  // put redirect = false if don't need to redirect
-  async popUp(type, data, redirect) {
-    const modal = await this.modalController.create({
-      component: PopUpComponent,
-      componentProps: { 
-        type: type,
-        data: data,
-        redirect: redirect
-      }
-    });
-    return await modal.present();
   }
 
   // given an array and a value, check if this value is in this array, if it is, remove it, if not, add it to the array
