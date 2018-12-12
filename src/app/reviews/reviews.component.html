@@ -6,7 +6,7 @@
 
 <ion-content padding color="light">
   <div class="top-round-btns" text-center>
-    <ion-button class="do" [ngClass]="{'active-review': !showDo}" (click)="!showDo && activeDo()">Todo</ion-button>
+    <ion-button class="do" [ngClass]="{'active-review': !showDo}" (click)="!showDo && activeDo()">To do</ion-button>
     <ion-button class="done" [ngClass]="{'active-review': showDo}" (click)="showDo && activeDone()">Done</ion-button>
   </div>
   <div *ngIf="!reviews.length; else reviewsCard" class="no-review-show" padding text-center>
