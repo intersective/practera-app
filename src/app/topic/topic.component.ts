@@ -26,12 +26,10 @@ export class TopicComponent implements OnInit {
     this.id = parseInt(this.route.snapshot.paramMap.get('id'));
     this.activityId = parseInt(this.route.snapshot.paramMap.get('activityId'));
     this._getTopic();
-    this.topicService.getTopicIsDone(this.id)
-      .subscribe(result => {
-        this.btnToggleTopicIsDone = result;
-      });
+    this._getTopicIsDone();
+   
    }
-     
+
   private _getTopic() {
    this.topicService.getTopic(this.id)
       .subscribe(topic => {
@@ -41,6 +39,13 @@ export class TopicComponent implements OnInit {
         }
       });
     }
+  private _getTopicIsDone() {
+    this.topicService.getTopicIsDone(this.id)
+    .subscribe(result => {
+      this.btnToggleTopicIsDone = result;
+    });
+  }
+    
   markAsDone () {
     this.btnToggleTopicIsDone = true;
     this.topicService.saveTopicRead(this.id);
