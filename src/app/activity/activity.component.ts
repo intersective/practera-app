@@ -69,7 +69,7 @@ export class ActivityComponent implements OnInit {
         // get the context id of this assessment
         let contextId = 0;
         this.utils.each(this.activity.tasks, task => {
-          if (task.type == 'Assessment' && task.id == id) {
+          if (task.type === 'Assessment' && task.id == id) {
             contextId = task.contextId;
           }
         });
