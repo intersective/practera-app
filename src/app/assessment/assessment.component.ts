@@ -61,6 +61,7 @@ export class AssessmentComponent implements OnInit {
   doReview: boolean = false;
   feedbackReviewed: boolean = false;
   questionsForm = new FormGroup({});
+  submitting: boolean = false;
 
   constructor (
     private router: Router,
@@ -88,7 +89,7 @@ export class AssessmentComponent implements OnInit {
 
   // get the submission answers &/| review answers
   private _getSubmission() { 
-    this.assessmentService.getSubmission(this.id, this.contextId)
+    this.assessmentService.getSubmission(this.id, this.contextId, this.action)
       .subscribe(result => {
         this.submission = result.submission;
         // this page is for doing assessment if submission is empty
@@ -104,7 +105,7 @@ export class AssessmentComponent implements OnInit {
         }
         // call todo item to check if the feedback has been reviewed or not
         if (this.submission.status == 'published') {
-          this.assessmentService.getFeedbackReviewed(this.review.id)
+          this.assessmentService.getFeedbackReviewed(this.submission.id)
             .subscribe(result => {
               this.feedbackReviewed = result;
             });
@@ -149,6 +150,7 @@ export class AssessmentComponent implements OnInit {
   }
 
   submit() {
+    this.submitting = true;
     let answers = [];
     let assessment = {};
     let requiredQuestions = this.getRequiredQuestions();
@@ -173,6 +175,7 @@ export class AssessmentComponent implements OnInit {
       });
       // check if all required questions have answer
       if (!this.utils.isEmpty(requiredQuestions)) {
+        this.submitting = false;
         // display a pop up if required question not answered
         return this.notificationService.popUp('shortMessage', {message: 'Required question answer missing!'}, false);
       }
@@ -197,6 +200,7 @@ export class AssessmentComponent implements OnInit {
     // save the submission/feedback
     this.assessmentService.saveAnswers(assessment, answers, this.action)
       .subscribe(result => {
+        this.submitting = false;
         if (result.success) {
           let redirect = [];
           // redirect to activity page if it is doing assessment
@@ -222,7 +226,7 @@ export class AssessmentComponent implements OnInit {
 
   reviewFeedback() {
     this.feedbackReviewed = true;
-    this.assessmentService.saveFeedbackReviewed(this.review.id);
+    this.assessmentService.saveFeedbackReviewed(this.submission.id).subscribe();
   }
 
 }

@@ -3,6 +3,7 @@ import { Observable, of } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { RequestService } from '@shared/request/request.service';
 import { UtilsService } from '@services/utils.service';
+import { BrowserStorageService } from '@services/storage.service';
 
 /**
  * @name api
@@ -481,7 +482,8 @@ export class AssessmentService {
 
   constructor(
     private request: RequestService,
-    private utils: UtilsService
+    private utils: UtilsService,
+    private storage: BrowserStorageService
   ) {}
 
   getAssessment(id, action): Observable<any> {
@@ -539,6 +541,8 @@ export class AssessmentService {
             ) {
           return this.request.apiResponseFormatError('Assessment.AssessmentQuestion format error');
         }
+        // save question to "questions" object, for later use in normaliseSubmission()
+        this.questions[question.AssessmentQuestion.id] = question.AssessmentQuestion;
 
         switch (question.AssessmentQuestion.question_type) {
           case 'oneof':
@@ -613,11 +617,21 @@ export class AssessmentService {
     return assessment;
   }
 
-  getSubmission(assessmentId, contextId): Observable<any> {
-    return this.request.get(api.get.submissions, {params: {
+  getSubmission(assessmentId, contextId, action): Observable<any> {
+    let params;
+    if (action == 'review') {
+      params = {
+        assessment_id: assessmentId,
+        context_id: contextId,
+        review: true
+      };
+    } else {
+      params = {
         assessment_id: assessmentId,
         context_id: contextId
-      }})
+      };
+    }
+    return this.request.get(api.get.submissions, {params: params})
       .pipe(map(response => {
         if (response.success && !this.utils.isEmpty(response.data)) {
           return this._normaliseSubmission(response.data);
@@ -653,20 +667,30 @@ export class AssessmentService {
           ) {
         return this.request.apiResponseFormatError('AssessmentSubmissionAnswer.answer format error');
       }
+      answer.answer = this._normaliseAnswer(answer.assessment_question_id, answer.answer);
       submission.answers[answer.assessment_question_id] = {
         answer: answer.answer
       };
     });
 
     let review: Review;
+    // AssessmentReview is in array format, current we only support one review per submission, that's why we use AssessmentReview[0]
+    if (this.utils.has(data[0], 'AssessmentReview[0].id')) {
+      review = {
+        id: data[0].AssessmentReview[0].id,
+        answers: {}
+      };
+    }
     // only get the review answer if the review is published (submission.status == 'published')
     if (submission.status == 'published' &&
         this.utils.has(data[0], 'AssessmentReviewAnswer') &&
         Array.isArray(data[0].AssessmentReviewAnswer)) {
-      review = {
-        id: 0,
-        answers: {}
-      };
+      if (!review) {
+        review = {
+          id: 0,
+          answers: {}
+        };
+      }
       data[0].AssessmentReviewAnswer.forEach(answer => {
         if (!this.utils.has(answer, 'assessment_question_id') ||
             !this.utils.has(answer, 'answer') ||
@@ -674,6 +698,7 @@ export class AssessmentService {
             ) {
           return this.request.apiResponseFormatError('AssessmentReviewAnswer format error');
         }
+        answer.answer = this._normaliseAnswer(answer.assessment_question_id, answer.answer);
         review.answers[answer.assessment_question_id] = {
           answer: answer.answer,
           comment: answer.comment
@@ -686,6 +711,21 @@ export class AssessmentService {
     };
   }
 
+  private _normaliseAnswer(questionId, answer) {
+    if (this.questions[questionId]) {
+      switch (this.questions[questionId].question_type) {
+        case "oneof":
+          // re-format answer from string to number
+          answer = parseInt(answer);
+          break;
+        case "multiple":
+          break;
+        
+      }
+    }
+    return answer;
+  }
+
   saveAnswers(assessment, answers, action) {
     let postData;
     switch (action) {
@@ -694,29 +734,51 @@ export class AssessmentService {
           Assessment: assessment,
           AssessmentSubmissionAnswer: answers
         }
-        console.log("Submit submission with data:\n", postData);
-        break;
+        return this.request.post(api.post.submissions, postData);
 
       case 'review':
         postData = {
           Assessment: assessment,
           AssessmentReviewAnswer: answers
         }
-        console.log("Submit feedback with data:\n", postData);
-        break;
+        return this.request.post(api.post.reviews, postData);
     }
     return of({
-      success: true,
-      status: "success"
+      success: false
     });
   }
 
-  getFeedbackReviewed(reviewId) {
-    return of(this.feedbackReviewed[reviewId] ? this.feedbackReviewed[reviewId] : false);
+  getFeedbackReviewed(submissionId) {
+    return this.request.get(api.get.todoitem, {params: {
+      project_id: this.storage.getUser().projectId,
+      identifier: 'AssessmentSubmission-' + submissionId
+    }})
+      .pipe(map(response => {
+        if (response.success && !this.utils.isEmpty(response.data)) {
+          return this._normaliseFeedbackReviewed(response.data);
+        } else {
+          return false;
+        }
+      })
+    );
   }
 
-  saveFeedbackReviewed(reviewId) {
-    console.log('feedback reviewed');
+  private _normaliseFeedbackReviewed(data) {
+    // In API response, 'data' is an array of todo items. Since we passed "identifier", there should be just one in the array. That's why we use data[0]
+    if (!Array.isArray(data) || 
+        !this.utils.has(data[0], 'is_done')) {
+      return this.request.apiResponseFormatError('TodoItem format error');
+    }
+    return data[0].is_done;
+  }
+
+  saveFeedbackReviewed(submissionId) {
+    let postData = {
+      project_id: this.storage.getUser().projectId,
+      identifier: 'AssessmentSubmission-' + submissionId,
+      is_done: true
+    };
+    return this.request.post(api.post.todoitem, postData);
   }
 
 
