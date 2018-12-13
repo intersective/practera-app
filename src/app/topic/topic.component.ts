@@ -25,21 +25,22 @@ export class TopicComponent implements OnInit {
   ngOnInit() {
     this.id = parseInt(this.route.snapshot.paramMap.get('id'));
     this.activityId = parseInt(this.route.snapshot.paramMap.get('activityId'));
-
-    this.topicService.getTopic(this.id)
+    this._getTopic();
+    this.topicService.getTopicIsDone(this.id)
+      .subscribe(result => {
+        this.btnToggleTopicIsDone = result;
+      });
+   }
+     
+  private _getTopic() {
+   this.topicService.getTopic(this.id)
       .subscribe(topic => {
         this.topic = topic;
         if ( topic.videolink ) {
           this.iframeHtml = this.embedService.embed(this.topic.videolink);
         }
       });
-
-    this.topicService.getTopicIsDone(this.id)
-      .subscribe(result => {
-        this.btnToggleTopicIsDone = result;
-      });
-   }  
-  
+    }
   markAsDone () {
     this.btnToggleTopicIsDone = true;
     this.topicService.saveTopicRead(this.id);
