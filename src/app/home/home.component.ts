@@ -13,7 +13,7 @@ export class HomeComponent implements OnInit {
   programName:string;
   todoItems = [];
   activity = {};
-  questions:any[];
+  questions:any[] = [];
 
   constructor (
     private router: Router,
@@ -37,7 +37,7 @@ export class HomeComponent implements OnInit {
       res.data.forEach(datum => this.questions.push(datum));
 
       // popup instant feedback view if question quantity found > 0
-      if (this.questions.length > 0) {        
+      if (this.questions.length > 0) {
         this.fastFeedbackService.popUp();
       }
     });
@@ -46,5 +46,4 @@ export class HomeComponent implements OnInit {
   goToActivity(id) {
     this.router.navigateByUrl('app/(project:activity/' + id + ')');
   }
-  
 }
