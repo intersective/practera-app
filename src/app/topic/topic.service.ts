@@ -3,6 +3,8 @@ import { Observable, of } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { RequestService } from '@shared/request/request.service';
 import { UtilsService } from '@services/utils.service';
+import { FilestackComponent } from '@shared/filestack/filestack.component';
+import { fileURLToPath } from 'url';
 
 
 const api = {
@@ -15,13 +17,11 @@ export interface Topic {
   title: string,
   content: string,
   videolink: string,
-  files: Array <File>,
+  files:Array <object>,
   hasComments: boolean,
 
 };
-export interface File {
-  url: string
-}
+
 
 @Injectable({
   providedIn: 'root'
@@ -80,14 +80,20 @@ export class TopicService {
       hasComments: false,
       files:[]
     };
+    let file = [];
     topic.id = data[0].Story.id;
     topic.programId = data[0].program_id;
     topic.title = data[0].Story.title;
     topic.content = data[0].Story.content;
     topic.videolink = data[0].Story.videolink;
     topic.hasComments = data[0].Story.has_comments;
-    topic.files.push({'url': data[0].Filestore.forEach(index=> { data[0].Filestore[index].slug })
+    data[0].Filestore.forEach(function(item){
+      file.push({'url':item.slug});
     });
+    file.forEach(function(item) {
+      topic.files.push(item);
+    })
+    
   }
   
   saveTopicRead(topicId) {
