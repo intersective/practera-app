@@ -1,17 +1,32 @@
-import { IonicModule } from '@ionic/angular';
-import { RouterModule } from '@angular/router';
 import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { HomePage } from './home.page';
+import { SharedModule } from '@shared/shared.module';
+import { HomeComponent } from './home.component';
+import { HomeRoutingComponent } from './home-routing.component';
+import { HomeRoutingModule } from './home-routing.module';
+import { NgCircleProgressModule } from 'ng-circle-progress';
 
 @NgModule({
   imports: [
-    IonicModule,
-    CommonModule,
+    SharedModule,
     FormsModule,
-    RouterModule.forChild([{ path: '', component: HomePage }])
+    NgCircleProgressModule.forRoot({
+      "backgroundColor": "var(--ion-color-light)",
+      "subtitleColor": "var(--ion-color-dark-tint)",
+      "showInnerStroke": false,
+      "startFromZero": false,
+      "outerStrokeColor": "var(--ion-color-primary)",
+      "subtitle": [
+        "COMPLETE"
+      ],
+      "animation": true,
+      "animationDuration": 1000,
+      "titleFontSize": "32",
+      "subtitleFontSize": "18",
+    }),
+    HomeRoutingModule,
   ],
-  declarations: [HomePage]
+  declarations: [HomeComponent, HomeRoutingComponent],
 })
-export class HomePageModule {}
+export class HomeModule {
+}

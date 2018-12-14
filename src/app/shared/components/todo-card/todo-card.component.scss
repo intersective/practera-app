@@ -1,0 +1,18 @@
+.todo-card {
+  border: .5px solid #d8dbeb;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  background: #fff;
+  min-height: 58px;
+}
+.todo-item {
+  --border-width: 0px !important;
+  .time-stamp {
+    right: 20px;
+    top: 20px;
+    font-size: 13px;
+    position: absolute;
+    top: 18px;
+    font-size: 12px;
+  } 
+}

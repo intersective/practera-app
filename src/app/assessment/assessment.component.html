@@ -1,0 +1,83 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-icon name="arrow-back" (click)="back()" color="primary" slot="start" margin-start></ion-icon>
+    <ion-title text-center>Assessment</ion-title>
+  </ion-toolbar>
+</ion-header>
+<ion-content padding color="light" text-center>
+  <h1>{{ assessment.name }}</h1>
+  <ion-text color="medium" text-left>
+    <p>{{ assessment.description }}</p>
+  </ion-text>
+
+  <form [formGroup]="questionsForm">
+
+    <ng-container *ngFor="let group of assessment.groups">
+      <h3>{{ group.name }}</h3>
+      <ng-container *ngFor="let question of group.questions">
+
+        <ng-container [ngSwitch]="question.type">
+
+          <app-text 
+            *ngSwitchCase="'text'"
+            [question]="question"
+            [doAssessment]="doAssessment"
+            [doReview]="doReview"
+            [submission]="(submission.answers && submission.answers[question.id]) ? submission.answers[question.id] : {}"
+            [review]="(review.answers && review.answers[question.id]) ? review.answers[question.id] : {}"
+            [formControlName]="'q-' + question.id"
+            [control]="questionsForm.controls['q-' + question.id]"
+          ></app-text>
+
+          <app-oneof 
+            *ngSwitchCase="'oneof'"
+            [question]="question"
+            [doAssessment]="doAssessment"
+            [doReview]="doReview"
+            [submission]="(submission.answers && submission.answers[question.id]) ? submission.answers[question.id] : {}"
+            [review]="(review.answers && review.answers[question.id]) ? review.answers[question.id] : {}"
+            [formControlName]="'q-' + question.id"
+            [control]="questionsForm.controls['q-' + question.id]"
+          ></app-oneof>
+
+          <app-multiple 
+            *ngSwitchCase="'multiple'"
+            [question]="question"
+            [doAssessment]="doAssessment"
+            [doReview]="doReview"
+            [submission]="(submission.answers && submission.answers[question.id]) ? submission.answers[question.id] : {}"
+            [review]="(review.answers && review.answers[question.id]) ? review.answers[question.id] : {}"
+            [formControlName]="'q-' + question.id"
+            [control]="questionsForm.controls['q-' + question.id]"
+          ></app-multiple>
+
+          <app-file 
+            *ngSwitchCase="'file'"
+            [question]="question"
+            [doAssessment]="doAssessment"
+            [doReview]="doReview"
+            [submission]="(submission.answers && submission.answers[question.id]) ? submission.answers[question.id] : {}"
+            [review]="(review.answers && review.answers[question.id]) ? review.answers[question.id] : {}"
+            [formControlName]="'q-' + question.id"
+            [control]="questionsForm.controls['q-' + question.id]"
+          ></app-file>
+
+        </ng-container>
+
+      </ng-container>
+    </ng-container>
+
+    <ion-button *ngIf="doAssessment || doReview" [disabled]="submitting" (click)="submit()" shape="round" expand="full">
+      <ng-container *ngIf="!submitting">Submit</ng-container>
+      <ng-container *ngIf="submitting">Submitting...</ng-container>
+    </ion-button>
+
+    <div *ngIf="submission.status == 'published'" class="text-right">
+      <span class="vertical-middle">Mark feedback as read</span>
+      <ion-toggle [checked]="feedbackReviewed" [disabled]="feedbackReviewed" (ionChange)="reviewFeedback()" margin-start class="vertical-middle"></ion-toggle>
+    </div>
+
+  </form>
+
+
+</ion-content>

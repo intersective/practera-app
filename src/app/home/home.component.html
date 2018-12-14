@@ -1,0 +1,42 @@
+<ion-content padding color="light">
+  <h1 text-center>{{ programName }}</h1>
+  <div text-center padding >
+    <circle-progress 
+      [percent]="progress"
+      [radius]= "70"
+      [subtitle]="COMPLETE"
+      [titleFontSize]= "32"
+      [subtitleFontSize]= "18"
+      [outerStrokeWidth]= "12"
+      [animation]= true
+      [animationDuration]= "1000"
+      [backgroundPadding]= -10
+      [maxPercent]= 100
+      [innerStrokeWidth]= 0
+      [showInnerStroke]= false
+      [startFromZero]= false
+      [outerStrokeLinecap]= "round"
+       
+      >
+    </circle-progress>
+  </div>
+
+  <ion-label color="medium">Things to do</ion-label>
+  <ion-list class="todo-list">
+
+    <ng-container *ngIf="todoItems.length; else noItems">
+      <div *ngFor="let todoItem of todoItems">
+        <app-todo-card [todoItem]="todoItem"></app-todo-card>
+      </div>  
+    </ng-container>
+
+    <ng-template #noItems>
+      <app-todo-card [todoItem]="false"></app-todo-card>
+    </ng-template>
+
+  </ion-list>
+
+  <ion-label color="medium">Current Activity</ion-label>
+  <app-activity-card [activity]="activity" (click)="!activity.is_locked && goToActivity(activity.id)"></app-activity-card>
+             
+</ion-content>
