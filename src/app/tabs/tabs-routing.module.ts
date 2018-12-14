@@ -32,6 +32,11 @@ const routes: Routes = [
         loadChildren: '../activity/activity.module#ActivityModule'
       },
       {
+        path: 'reviews',
+        outlet: 'reviews',
+        loadChildren: '../reviews/reviews.module#ReviewsModule'
+      },
+      {
         path: 'chat',
         outlet: 'chat',
         loadChildren: '../chat/chat.module#ChatModule',
