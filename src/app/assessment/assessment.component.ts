@@ -4,6 +4,7 @@ import { AssessmentService, Assessment, Submission, Review } from './assessment.
 import { UtilsService } from '../services/utils.service';
 import { NotificationService } from '@shared/notification/notification.service';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
+import { BrowserStorageService } from '@services/storage.service';
 
 @Component({
   selector: 'app-assessment',
@@ -68,7 +69,8 @@ export class AssessmentComponent implements OnInit {
     private route: ActivatedRoute,
     private assessmentService: AssessmentService,
     private utils: UtilsService,
-    private notificationService: NotificationService
+    private notificationService: NotificationService,
+    private storage: BrowserStorageService
   ) {}
 
   ngOnInit() {
@@ -82,6 +84,9 @@ export class AssessmentComponent implements OnInit {
       .subscribe(assessment => {
         this.assessment = assessment;
         this.populateQuestionsForm();
+        if (this.assessment.isForTeam && !this.storage.getUser().teamId) {
+          return this.notificationService.popUp('shortMessage', {message: 'To do this assessment, you have to be in a team.'}, ['app', { outlets: { project: ['activity', this.activityId] } }]);
+        }
         this._getSubmission();
       });
 
