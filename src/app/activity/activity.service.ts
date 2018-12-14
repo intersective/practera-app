@@ -24,6 +24,7 @@ export interface Task {
   contextId?: number;
   feedbackReviewed?: boolean;
   loadingStatus?: boolean;
+  isForTeam?: boolean;
 }
 
 export interface Activity {
@@ -81,6 +82,14 @@ export class ActivityService {
     });
 
     thisActivity.ActivitySequence.forEach(element => {
+      if (this.utils.has(element, 'is_locked') && element.is_locked) {
+        return activity.tasks.push({
+          id: 0,
+          type: 'Locked',
+          name: 'Locked',
+          loadingStatus: false
+        });
+      }
       if (!this.utils.has(element, 'model') || !this.utils.has(element, element.model)) {
         return this.request.apiResponseFormatError('Activity.ActivitySequence format error');
       }
@@ -99,7 +108,8 @@ export class ActivityService {
             name: element[element.model].name,
             type: 'Assessment',
             contextId: contextIds[element[element.model].id] || 0,
-            loadingStatus: true
+            loadingStatus: true,
+            isForTeam: element[element.model].is_team
           });
           break;
       }
