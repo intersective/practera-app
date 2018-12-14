@@ -1,16 +1,23 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '../auth/auth.service';
+import { SettingService, Profile } from './setting.service';
+import { BrowserStorageService } from '@services/storage.service';
 
 @Component({
   selector: 'app-settings',
   templateUrl: 'settings.component.html',
   styleUrls: ['settings.component.scss']
 })
-export class SettingsComponent {
-  
-  email = "test@test.com";
-  contact_number= "+61 420000000";
+export class SettingsComponent implements OnInit {
+   
+  profile : Profile = {
+    contactNumber ; '',
+    email ; ''
+  };
+
+  // email = "test@xtest.com";
+  // contact_number= "+61 420000000";
   countryModel = "AUS";
   countryCodes = [
     {
@@ -32,10 +39,17 @@ export class SettingsComponent {
   
   constructor (
     private router: Router,
-    private authService: AuthService
+    private authService: AuthService,
+    private settingService : SettingService,
+    private storage : BrowserStorageService
   ){
 
   }
+
+  ngOnInit() {
+    //@TODO get email and contact number from user storage here
+  };
+
   openLink(link) {
     console.log('open the file');
   };
@@ -44,8 +58,8 @@ export class SettingsComponent {
     this.router.navigate(['/switcher']);
   };
 
-  updateProfile(number) {
-
+  updateContactNumber() {
+    this.settingService.updateProfile(this.profile);
   };
 
   updateCountry() {
