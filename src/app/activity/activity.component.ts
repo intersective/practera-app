@@ -69,7 +69,7 @@ export class ActivityComponent implements OnInit {
         // get the context id of this assessment
         let contextId = 0;
         this.utils.each(this.activity.tasks, task => {
-          if (task.type === 'Assessment' && task.id == this.id) {
+          if (task.type === 'Assessment' && task.id == id) {
             contextId = task.contextId;
           }
         });
@@ -78,11 +78,7 @@ export class ActivityComponent implements OnInit {
       case 'Topic':
         this.router.navigate(['topic', this.id, id]);
         break;
-      case 'Comm':
-
-        break;
     }
-    console.log('go to ', type, ' with id ', id);
   }
 
 }
