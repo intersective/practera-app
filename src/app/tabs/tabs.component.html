@@ -9,7 +9,7 @@
   </ion-tab>
 
   <ion-tab tab="review">
-    <ion-router-outlet name="review"></ion-router-outlet>
+    <ion-router-outlet name="reviews"></ion-router-outlet>
   </ion-tab>
 
   <ion-tab tab="chat">
@@ -36,7 +36,7 @@
       <ion-label>Activities</ion-label>
     </ion-tab-button>
 
-    <ion-tab-button *ngIf="showReview" tab="review" href="/app/(review:review)">
+    <ion-tab-button *ngIf="showReview" tab="review" href="/app/(reviews:reviews)">
       <ion-icon name="clipboard"></ion-icon>
       <ion-label>Review</ion-label>
     </ion-tab-button>
