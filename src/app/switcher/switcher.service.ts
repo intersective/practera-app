@@ -17,7 +17,8 @@ const api = {
 export interface ProgramObj {
   program: Program,
   project: Project,
-  timeline: Timeline
+  timeline: Timeline,
+  enrolment: Enrolment
 }
 
 export interface Program {
@@ -33,6 +34,10 @@ export interface Project {
 
 export interface Timeline {
   id: number
+}
+
+export interface Enrolment {
+  contact_number: string
 }
 
 @Injectable({
@@ -57,7 +62,8 @@ export class SwitcherService {
       programName: programObj.program.name,
       experienceId: programObj.program.experience_id,
       projectId: programObj.project.id,
-      timelineId: programObj.timeline.id
+      timelineId: programObj.timeline.id,
+      contactNumber: programObj.enrolment.contact_number
     });
     return this.request.get(api.teams)
       .pipe(map(response => {
