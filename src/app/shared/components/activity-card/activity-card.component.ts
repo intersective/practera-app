@@ -9,15 +9,13 @@ import { Inject } from '@angular/core';
   styleUrls: ['./activity-card.component.scss']
 })
 export class ActivityCardComponent implements OnInit {
-  @Input() activity : {
+  @Input() activity: {
     id: number,
     name: string,
-    is_locked: boolean,
-    progress: number,
-    hasFeedback: boolean,
-    is_hidden: boolean,
-    lead_image: string
-
+    is_locked?: boolean,
+    progress?: number,
+    hasFeedback?: boolean,
+    lead_image?: string
   }
  constructor ( @Inject(DOCUMENT) private document: Document ) { }
 

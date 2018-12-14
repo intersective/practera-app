@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { HomeService } from './home.service';
+import { HomeService, TodoItem } from './home.service';
 import { Router } from '@angular/router';
 import { Activity } from '../project/project.service';
 
@@ -9,10 +9,13 @@ import { Activity } from '../project/project.service';
   styleUrls: ['home.component.scss']
 })
 export class HomeComponent implements OnInit {
-  progress:number = 80;
-  programName:string;
-  todoItems = [];
-  activity :Activity;
+  progress: number = 0;
+  loadingProgress: boolean = true;
+  programName: string;
+  todoItems: Array<TodoItem> = [];
+  loadingTodoItems: boolean = true;
+  activity: Activity;
+  loadingActivity: boolean = true;
   
   constructor (
     private router: Router,
@@ -20,8 +23,26 @@ export class HomeComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.todoItems = this.homeService.getTodoItems();
-    this.activity = this.homeService.getCurrentActivity();
+    this.homeService.getTodoItems()
+      .subscribe(todoItems => {
+        // this.todoItems = this.todoItems.concat(todoItems);
+        // this.loadingTodoItems = false;
+      });
+    this.homeService.getChatMessages()
+      .subscribe(chatMessages => {
+        // this.todoItems = this.todoItems.concat(chatMessages);
+        // this.loadingTodoItems = false;
+      });
+    this.homeService.getProgress()
+      .subscribe(progress => {
+        // this.progress = progress;
+        // this.loadingProgress = false;
+        this.homeService.getCurrentActivity()
+          .subscribe(activity => {
+            // this.activity = activity;
+            // this.loadingActivity = false;
+          });
+      });
     this.homeService.getProgramName()
       .subscribe(programName => {
         this.programName = programName;
@@ -31,7 +52,8 @@ export class HomeComponent implements OnInit {
   goToActivity(id) {
     this.router.navigateByUrl('app/(project:activity/' + id + ')');
   }
-  gotoReview(contextId, id) {
-    this.router.navigateByUrl('assessment/review/'+ contextId +'/'+ id );
+
+  goto(todoItem) {
+    // this.router.navigateByUrl('assessment/review/'+ contextId +'/'+ id );
   }
 }
