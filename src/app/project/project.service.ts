@@ -2,23 +2,22 @@ import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 
 export interface Activity {
-  id: number,
-  name: string,
-  is_locked: boolean,
-  progress: number,
-  hasFeedback: boolean,
-  is_hidden: boolean,
-  lead_image?: string
+  id: number;
+  name: string;
+  is_locked?: boolean;
+  progress?: number;
+  hasFeedback?: boolean;
+  lead_image?: string;
 }
 
 export interface Milestone {
-  id: number,
-  name: string,
-  project_id: number,
-  description: string,
-  progress: number,
-  is_locked: boolean,
-  Activity:Array <Activity>
+  id: number;
+  name: string;
+  project_id: number;
+  description: string;
+  progress: number;
+  is_locked: boolean;
+  Activity:Array <Activity>;
 }
 
 @Injectable({
@@ -39,7 +38,6 @@ export class ProjectService {
           is_locked: false,
           progress: 0.34,
           hasFeedback: true,
-          is_hidden: false,
           lead_image:''
         },
         {
@@ -48,7 +46,6 @@ export class ProjectService {
           is_locked: true,
           progress: 0.74,
           lead_image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSGTVf63Vm3XgOncMVSOy0-jSxdMT8KVJIc8WiWaevuWiPGe0Pm',
-          is_hidden: false,
           hasFeedback: false,
         },
         {
@@ -57,7 +54,6 @@ export class ProjectService {
           is_locked: true,
           progress: 0.74,
           lead_image: '',
-          is_hidden: false,
           hasFeedback: false,
         } 
       ],
@@ -75,7 +71,6 @@ export class ProjectService {
           name: 'Test Activity three',
           is_locked: false,
           progress: 0.47,
-          is_hidden: false,
           hasFeedback: false,
         },
         {
@@ -83,7 +78,6 @@ export class ProjectService {
           name: 'Activity four',
           is_locked: false,
           progress:0.98,
-          is_hidden: false,
           hasFeedback: false,
         },
         {
@@ -91,7 +85,6 @@ export class ProjectService {
           name: 'Test Activity five',
           is_locked: false,
           progress: 0.47,
-          is_hidden: false,
           hasFeedback: false,
         },
       ],
@@ -110,7 +103,6 @@ export class ProjectService {
           is_locked: false,
           progress: 1,
           hasFeedback: false,
-          is_hidden: false
         },
         {
           id: 107,
@@ -118,8 +110,6 @@ export class ProjectService {
           is_locked: false,
           progress:0.48,
           hasFeedback: true,
-          is_hidden: false
-          
         }
       ],
       is_locked: true
@@ -136,7 +126,6 @@ export class ProjectService {
           name: 'Test Activity six',
           is_locked: false,
           progress: 1,
-          is_hidden: false,
           hasFeedback: false,
         },
       ],

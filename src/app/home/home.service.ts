@@ -2,55 +2,55 @@ import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { BrowserStorageService } from '@services/storage.service';
 
+/**
+ * @name api
+ * @description list of api endpoint involved in this service
+ * @type {Object}
+ */
+const api = {
+  activity: 'api/activities.json',
+  todoItem: 'api/v2/motivations/todo_item/list.json',
+  chat: 'api/v2/message/chat/list_messages.json',
+  progress: 'api/v2/motivations/progress/list.json'
+};
+
+export interface TodoItem {
+  type: string;
+  name: string;
+  description: string;
+  time: string;
+  meta: any;
+}
+
 @Injectable({
   providedIn: 'root'
 })
 
 export class HomeService {
-  todo = [
-    { id:1,
-      todoType: 'review',
-      assessmentName :'demo assessmnet',
-      teamName: 'Team1',
-      time: 'today',
-      reviewer : {
-        name:'mentor1',
-        assignOn: 'today'
-      }
-    },
-    { id:2,
-      todoType: 'review',
-      assessmentName :'demo assessmnet2',
-      teamName: 'Team1',
-      time: '1/1/2009',
-      reviewer : {
-        name:'mentor1',
-        assignOn: 'today'
-      }
-    }
-  ];
-  activity = {
-    id: 1,
-    name :'Activity Name 1',
-    progress: 0.65,
-    hasFeedback: true,
-    is_hidden: false,
-    is_locked: false
-  };
 
+  activityId: number = 0;
+  
   constructor(
     private storage: BrowserStorageService
-  ) {};
+  ) {}
 
   getProgramName() {
     return of(this.storage.getUser().programName);
   }
 
   getTodoItems() {
-    return this.todo;
+    return of();
+  }
+
+  getChatMessages() {
+    return of();
+  }
+
+  getProgress() {
+    return of();
   }
 
   getCurrentActivity() {
-    return this.activity;
+     return of();
   }
 }
