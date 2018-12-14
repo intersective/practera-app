@@ -1,0 +1,16 @@
+version: 0.2
+
+phases:
+  install:
+    commands:
+      # Upgrade AWS CLI to the latest version
+      - pip install --upgrade awscli
+artifacts:
+  type: zip
+  files:
+    - template.yml
+    - README.md
+    - package.json
+    - appspec.yml
+    - src/*
+    - scripts/*
