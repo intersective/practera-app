@@ -1,0 +1,38 @@
+<ion-card class="practera-card" text-left>
+  <ion-card-header class="q-title">
+    {{ question.name }}
+    <ion-text color="danger" *ngIf="question.isRequired">*</ion-text>
+    <ion-text color="medium"><p><i>{{ question.description }}</i></p></ion-text>
+  </ion-card-header>
+  <ion-card-content padding-horizontal class="q-content">
+
+    <ng-container *ngIf="submission.answer">
+      <ion-text>{{ submission.answer }}</ion-text>
+    </ng-container>
+
+    <div *ngIf="review.answer || review.comment" class="q-reviews">
+      <ion-label class="q-title">Reviewer:</ion-label>
+      <ng-container *ngIf="review.answer">
+        <b>Answer</b>
+        <p>{{ review.answer }}</p>
+      </ng-container>
+      <ng-container *ngIf="review.comment">
+        <b>Comment</b>
+        <p>{{ review.comment }}</p>
+      </ng-container>
+    </div>
+
+    <ng-container *ngIf="doAssessment">
+      <ion-textarea class="background-white" margin-top #answer rows="4" (blur)="onChange(answer.value)"></ion-textarea>
+      <ion-text *ngFor="let error of errors" color="danger">
+        <p>{{error}}</p>
+      </ion-text>
+    </ng-container>
+
+    <ng-container *ngIf="doReview">
+      <ion-textarea *ngIf="question.canAnswer" class="background-white" #answer margin-top rows="4" (blur)="onChange(answer.value, 'answer')" placeholder="Please put your answer here"></ion-textarea>
+      <ion-textarea *ngIf="question.canComment" class="background-white" #comment margin-top rows="4" (blur)="onChange(comment.value, 'comment')" placeholder="Please put your feedback here"></ion-textarea>
+    </ng-container>
+
+  </ion-card-content>
+</ion-card>
