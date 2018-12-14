@@ -26,6 +26,7 @@ export class AssessmentComponent implements OnInit {
   assessment: Assessment = {
     name: '',
     description: '',
+    isForTeam: false,
     groups: [
       {
         name: '',

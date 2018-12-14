@@ -102,14 +102,11 @@ export class AssessmentService {
     const thisAssessment = data[0];
 
     let assessment: Assessment = {
-      name: '',
-      description: '',
+      name: thisAssessment.Assessment.name,
+      description: thisAssessment.Assessment.description,
+      isForTeam: thisAssessment.Assessment.is_team,
       groups: []
     };
-
-    assessment.name = thisAssessment.Assessment.name;
-    assessment.description = thisAssessment.Assessment.description;
-    assessment.isForTeam = thisAssessment.Assessment.is_team;
 
     thisAssessment.AssessmentGroup.forEach(group => {
       if (!this.utils.has(group, 'name') || 
