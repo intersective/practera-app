@@ -1,6 +1,6 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { Router, ActivatedRoute, ParamMap } from '@angular/router';
-import { AssessmentService } from './assessment.service';
+import { AssessmentService, Assessment, Submission, Review } from './assessment.service';
 import { UtilsService } from '../services/utils.service';
 import { NotificationService } from '@shared/notification/notification.service';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
@@ -13,16 +13,16 @@ import { FormGroup, FormControl, Validators } from '@angular/forms';
 export class AssessmentComponent implements OnInit {
   
   // assessment id
-  id = 0;
+  id: number;
   // activity id
-  activityId = 0;
+  activityId: number;
   // context id
-  contextId = 0;
+  contextId: number;
   // action = 'assessment' is for user to do assessment
   // action = 'reivew' is for user to do review for this assessment
-  action = '';
+  action: string;
   // the structure of assessment
-  assessment = {
+  assessment: Assessment = {
     name: '',
     description: '',
     groups: [
@@ -30,7 +30,7 @@ export class AssessmentComponent implements OnInit {
         name: '',
         questions: [
           {
-            id: '',
+            id: 0,
             name: '',
             type: '',
             description: '',
@@ -39,7 +39,7 @@ export class AssessmentComponent implements OnInit {
             canAnswer: true,
             choices: [
               {
-                id: '',
+                id: 0,
                 name: ''
               }
             ]
@@ -48,19 +48,20 @@ export class AssessmentComponent implements OnInit {
       }
     ]
   };
-  submission = {
+  submission: Submission = {
     id: 0,
     status: '',
     answers: {}
   };
-  review = {
+  review: Review = {
     id: 0,
     answers: {}
   };
-  doAssessment = false;
-  doReview = false;
-  feedbackReviewed = false;
+  doAssessment: boolean = false;
+  doReview: boolean = false;
+  feedbackReviewed: boolean = false;
   questionsForm = new FormGroup({});
+  submitting: boolean = false;
 
   constructor (
     private router: Router,
@@ -77,13 +78,17 @@ export class AssessmentComponent implements OnInit {
     this.contextId = parseInt(this.route.snapshot.paramMap.get('contextId'));
 
     // get assessment structure and populate the question form
-    this.assessmentService.getAssessment(this.id)
+    this.assessmentService.getAssessment(this.id, this.action)
       .subscribe(assessment => {
         this.assessment = assessment;
         this.populateQuestionsForm();
+        this._getSubmission();
       });
 
-    // get the submission answers &/| review answers
+  };
+
+  // get the submission answers &/| review answers
+  private _getSubmission() { 
     this.assessmentService.getSubmission(this.id, this.contextId, this.action)
       .subscribe(result => {
         this.submission = result.submission;
@@ -100,13 +105,13 @@ export class AssessmentComponent implements OnInit {
         }
         // call todo item to check if the feedback has been reviewed or not
         if (this.submission.status == 'published') {
-          this.assessmentService.getFeedbackReviewed(this.review.id)
+          this.assessmentService.getFeedbackReviewed(this.submission.id)
             .subscribe(result => {
               this.feedbackReviewed = result;
             });
         }
       });
-  };
+  }
 
   // Populate the question form with FormControls. 
   // The name of form control is like 'q-2' (2 is an example of question id)
@@ -145,6 +150,7 @@ export class AssessmentComponent implements OnInit {
   }
 
   submit() {
+    this.submitting = true;
     let answers = [];
     let assessment = {};
     let requiredQuestions = this.getRequiredQuestions();
@@ -169,6 +175,7 @@ export class AssessmentComponent implements OnInit {
       });
       // check if all required questions have answer
       if (!this.utils.isEmpty(requiredQuestions)) {
+        this.submitting = false;
         // display a pop up if required question not answered
         return this.notificationService.popUp('shortMessage', {message: 'Required question answer missing!'}, false);
       }
@@ -193,6 +200,7 @@ export class AssessmentComponent implements OnInit {
     // save the submission/feedback
     this.assessmentService.saveAnswers(assessment, answers, this.action)
       .subscribe(result => {
+        this.submitting = false;
         if (result.success) {
           let redirect = [];
           // redirect to activity page if it is doing assessment
@@ -218,7 +226,7 @@ export class AssessmentComponent implements OnInit {
 
   reviewFeedback() {
     this.feedbackReviewed = true;
-    this.assessmentService.saveFeedbackReviewed(this.review.id);
+    this.assessmentService.saveFeedbackReviewed(this.submission.id).subscribe();
   }
 
 }
