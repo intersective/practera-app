@@ -66,12 +66,13 @@ export class SwitcherService {
               !Array.isArray(response.data.Teams) || 
               !this.utils.has(response.data.Teams[0], 'id')
              ) {
-            return this.request.apiResponseFormatError('Team format error');
+            return this.storage.setUser({
+              teamId: null
+            });
           }
-          this.storage.setUser({
+          return this.storage.setUser({
             teamId: response.data.Teams[0].id
           });
-          return true;
         }
       })
     );
