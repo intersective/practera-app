@@ -63,41 +63,38 @@ export class AuthRegistrationComponent implements OnInit {
   }
 
   validateQueryParams() {
+    let redirect = [];
+    redirect = ['login'];
     // access query params
     this.route.queryParamMap.subscribe(queryParams => {
       let email = queryParams.get("email");
       this.user.email = email;
       let activation_code = queryParams.get("activation_code");
       if (email && activation_code) {
-        // set query params to stroage
-        this.storage.set("hash", {
-          email: email,
-          key: activation_code
-        });
         // check is Url valid or not.
         this.authService
           .verifyRegistration({
-            email: this.storage.get("hash").email,
-            key: this.storage.get("hash").key
+            email: email,
+            key: activation_code
           }).subscribe(response => {
               if (response) {
-                let user = response.data.data.user;
+                let user = response.data.user;
                 // Setting user data after registration verified.
                 this.user.email = email;
                 this.user.contact = (user || {}).contact_number || null;
 
                 // Update storage data
-                let hash = this.storage.get("hash");
-                let merge = { hash, user };
-                this.storage.set("hash", merge);
+                this.storage.setUser({
+                  contactNumber: this.user.contact,
+                  email: this.user.email
+                });
 
                 // get app configaration
                 this.authService
                   .checkDomain({
                     domain: this.domain
                   })
-                  .subscribe(
-                    response => {
+                  .subscribe(response => {
                       var data = (response.data || {}).data;
                       data = this.utils.find(data, function(datum) {
                         return (
@@ -112,27 +109,18 @@ export class AuthRegistrationComponent implements OnInit {
                           this.confirmPassword = this.user.password;
                         }
                       }
-                    },err => {}
+                    },err => {
+                      this.showPopupMessages('shortMessage', 'Registration link invalid!',redirect);
+                    }
                   );
               }
-            },error => {
-              this.notificationService.popUp(
-                "shortMessage",
-                {
-                  message: "Registration link invalid"
-                },
-                false
-              );
+            },err => {
+              console.log("error");
+              this.showPopupMessages('shortMessage', 'Registration link invalid!',redirect);
             }
           );
       } else {
-        this.notificationService.popUp(
-          "shortMessage",
-          {
-            message: "Registration link invalid"
-          },
-          false
-        );
+        this.showPopupMessages('shortMessage', 'Registration link invalid!',redirect);
       }
     });
   }
@@ -156,61 +144,31 @@ export class AuthRegistrationComponent implements OnInit {
         .saveRegistration({
           password: this.confirmPassword
         })
-        .subscribe(
-          response => {
+        .subscribe(response => {
             this.authService
               .login({
                 email: this.user.email,
                 password: this.password
               })
-              .subscribe(
-                response => {
-                  this.authService.me().subscribe(
-                    response => {
+              .subscribe(response => {
+                  this.authService.me()
+                    .subscribe(response => {
                       let redirect = [];
                       redirect = ['switcher'];
-                      this.notificationService
-                        .popUp(
-                          "shortMessage",
-                          {
-                            message: "Registration success!"
-                          },
-                          redirect
-                        );
+                      this.showPopupMessages('shortMessage', 'Registration success!',redirect);
                     },
                     error => {
-                      this.notificationService
-                        .popUp(
-                          "shortMessage",
-                          {
-                            message: "Registration not compleate!"
-                          },
-                          false
-                        );
+                      this.showPopupMessages('shortMessage', 'Registration not compleate!');
                     }
                   );
                 },
                 error => {
-                  this.notificationService
-                    .popUp(
-                      "shortMessage",
-                      {
-                        message: "Registration not compleate!"
-                      },
-                      false
-                    );
+                  this.showPopupMessages('shortMessage', 'Registration not compleate!');
                 }
               );
           },
           error => {
-            this.notificationService
-              .popUp(
-                "shortMessage",
-                {
-                  message: "Registration not compleate!"
-                },
-                false
-              );
+            this.showPopupMessages('shortMessage', 'Registration not compleate!');
           }
         );
     }
@@ -275,4 +233,16 @@ export class AuthRegistrationComponent implements OnInit {
       return isValid;
     }
   }
+
+  private showPopupMessages(type: string, message: string, redirect?:any) {
+    this.notificationService
+      .popUp(
+        type,
+        {
+          message: message
+        },
+        redirect ? redirect : false
+      );
+  }
+
 }
