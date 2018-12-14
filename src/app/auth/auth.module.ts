@@ -3,14 +3,30 @@ import { RouterModule } from '@angular/router';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+
+import { AuthRoutingModule } from './auth-routing.module';
+
+import { AuthService } from './auth.service';
+
+import { AuthComponent } from './auth.component';
 import { AuthLoginComponent } from './auth-login/auth-login.component';
+import { AuthForgotPasswordComponent } from './auth-forgot-password/auth-forgot-password.component';
 
 @NgModule({
   imports: [
     IonicModule,
     CommonModule,
     FormsModule,
+    AuthRoutingModule
   ],
-  declarations: [AuthLoginComponent]
+  declarations: [
+    AuthComponent, 
+    AuthLoginComponent,
+    AuthForgotPasswordComponent
+  ],
+  entryComponents: [
+    AuthComponent
+  ],
+  providers: [ AuthService ],
 })
 export class AuthModule {}

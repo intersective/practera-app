@@ -1,0 +1,26 @@
+<ion-card color="primary-contrast" class="todo-card practera-card">
+  <ion-item class="todo-item">
+
+    <ng-container *ngIf="todoItem; else noItems">
+      <ion-icon name="text" slot="start" color="primary"></ion-icon>
+      <div class="icon-item">
+        <h4>{{todoItem.assessmentName}}</h4>
+        <ng-container [ngSwitch]="todoItem.todoType">
+          <ion-text color="medium">
+            <p *ngSwitchCase="'review'">Please review the assessment</p>
+            <p *ngSwitchCase="'feedback'">{{todoItem.reviewer.name}} has provided feedback</p>
+          </ion-text>  
+        </ng-container>
+      </div>
+      <ion-text float-right color="medium" class="time-stamp">{{todoItem.time}}</ion-text> 
+    </ng-container>
+
+    <ng-template #noItems>
+      <ion-icon name="notifications" slot="start" color="primary"></ion-icon>
+      <div>
+        <ion-text color="medium">You have no new notifications.</ion-text>
+      </div>
+    </ng-template>
+
+  </ion-item>
+</ion-card>

@@ -1,0 +1,66 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Settings</ion-title>
+  </ion-toolbar>
+</ion-header>
+<ion-content padding color="light">
+  <ion-card class="practera-card">
+    <ion-item >
+      <ion-label>My Account
+        <div *ngIf="email" >
+          <ion-label color="medium">Email: {{email}}</ion-label>
+        </div>
+      </ion-label>
+    </ion-item>
+
+    <ion-item>
+      <ion-label>Select Country</ion-label>
+        <ion-select [(ngModel)]="countryModel" (change)="updateCountry(countryModel)">
+          <ion-select-option *ngFor="let countryCode of countryCodes" [value]="countryCode.code">{{countryCode.name}}</ion-select-option>
+        </ion-select>
+    </ion-item>
+    <ion-item>  
+      <ion-grid class="contact-grid">
+        <ion-row>
+          <ion-label>
+            Contact No.
+            <ion-button class="btn-right" color="medium" (click)="updateProfile(contact_number)">Update</ion-button>
+          </ion-label>
+        </ion-row>
+        <ion-row>
+          <ion-input 
+            color="medium" 
+            [(ngModel)]="contact_number"
+            placeholder="contact number"
+            type="text"
+            >
+          </ion-input>
+        </ion-row>    
+      </ion-grid>
+    </ion-item>  
+
+    <ion-item (click)="switchProgram()">
+      <ion-icon padding name="radio-button-on"></ion-icon>
+      Switch to another program
+    </ion-item>
+  </ion-card>
+
+  <ion-card class="practera-card">
+    <ion-item>Support</ion-item>
+    <ion-item (click)="mailTo()">
+      <ion-icon padding name="mail"></ion-icon>
+      Email Help
+    </ion-item>
+    <ion-item (click)="openLink(termsUrl)">
+      <ion-icon padding name="clipboard"></ion-icon>
+      Terms of Use
+    </ion-item>
+  </ion-card>
+
+  <ion-card class="practera-card">
+    <ion-item (click)="logout()">
+      <ion-icon padding name="log-out"></ion-icon>
+      Logout
+    </ion-item>
+  </ion-card>
+</ion-content>
