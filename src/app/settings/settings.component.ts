@@ -12,8 +12,8 @@ import { BrowserStorageService } from '@services/storage.service';
 export class SettingsComponent implements OnInit {
    
   profile : Profile = {
-    contactNumber ; '',
-    email ; ''
+    contactNumber: '',
+    email: ''
   };
 
   // email = "test@xtest.com";
@@ -47,7 +47,9 @@ export class SettingsComponent implements OnInit {
   }
 
   ngOnInit() {
-    //@TODO get email and contact number from user storage here
+    // get contact number and email from local storage
+    this.profile.email = this.storage.getUser().email;
+    this.profile.contactNumber = this.storage.getUser().contactNumber;
   };
 
   openLink(link) {

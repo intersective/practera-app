@@ -7,8 +7,8 @@
   <ion-card class="practera-card">
     <ion-item >
       <ion-label>My Account
-        <div *ngIf="email" >
-          <ion-label color="medium">Email: {{email}}</ion-label>
+        <div *ngIf="profile.email" >
+          <ion-label color="medium">Email: {{profile.email}}</ion-label>
         </div>
       </ion-label>
     </ion-item>
@@ -30,7 +30,7 @@
         <ion-row>
           <ion-input 
             color="medium" 
-            [(ngModel)]="contact_number"
+            [(ngModel)]="profile.contactNumber"
             placeholder="contact number"
             type="text"
             >
