@@ -2,15 +2,15 @@ import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { RequestService } from '@shared/request/request.service';
 
-@Injectable({
-  providedIn: 'root'
-})
 
 export interface Profile {
 	contactNumber : string,
 	email : string
 }
 
+@Injectable({
+  providedIn: 'root'
+})
 export class SettingService {
 
   constructor(
