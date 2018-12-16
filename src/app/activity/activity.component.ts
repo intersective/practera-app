@@ -4,6 +4,8 @@ import { switchMap } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import { ActivityService, Activity } from './activity.service';
 import { UtilsService } from '../services/utils.service';
+import { NotificationService } from '@shared/notification/notification.service';
+import { BrowserStorageService } from '@services/storage.service';
 
 @Component({
   selector: 'app-activity',
@@ -25,6 +27,8 @@ export class ActivityComponent implements OnInit {
     private route: ActivatedRoute,
     private activityService: ActivityService,
     private utils: UtilsService,
+    private notificationService: NotificationService,
+    private storage: BrowserStorageService
   ) { }
 
   ngOnInit() {
@@ -68,15 +72,24 @@ export class ActivityComponent implements OnInit {
       case 'Assessment':
         // get the context id of this assessment
         let contextId = 0;
+        let isForTeam = false;
         this.utils.each(this.activity.tasks, task => {
           if (task.type === 'Assessment' && task.id == id) {
             contextId = task.contextId;
+            isForTeam = task.isForTeam;
           }
         });
+        if (isForTeam && !this.storage.getUser().teamId) {
+          this.notificationService.popUp('shortMessage', {message: 'To do this assessment, you have to be in a team.'}, false);
+          break;
+        }
         this.router.navigate(['assessment', 'assessment', this.id , contextId, id]);
         break;
       case 'Topic':
         this.router.navigate(['topic', this.id, id]);
+        break;
+      case 'Locked':
+        this.notificationService.popUp('shortMessage', {message: 'This part of the app is still locked. You can unlock the features by engaging with the app and completing all tasks.'}, false);
         break;
     }
   }
