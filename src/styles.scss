@@ -2,6 +2,11 @@
 .div-logo {
   margin-top: 10vh;
   margin-bottom: 7vh;
+
+  &.registration {
+    margin-top: 7vh;
+  }
+
 }
 .div-after-logo {
   margin: 0 30px 50px;
