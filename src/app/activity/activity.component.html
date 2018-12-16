@@ -17,10 +17,10 @@
       <ion-item (click)="goto(task.type, task.id)">
         <ng-container [ngSwitch]="task.type">
 
-          <ng-container *ngSwitchCase="'Topic'">
-            <ion-icon name="list-box" slot="start" color="primary"></ion-icon>
+          <ng-container *ngSwitchCase="'Locked'">
+            <ion-icon name="lock" slot="start" color="primary"></ion-icon>
           </ng-container>
-          <ng-container *ngSwitchCase="'Comm'">
+          <ng-container *ngSwitchCase="'Topic'">
             <ion-icon name="list-box" slot="start" color="primary"></ion-icon>
           </ng-container>
           <ng-container *ngSwitchCase="'Assessment'">
@@ -29,13 +29,13 @@
 
           <div class="icon-item">
             <h4>{{ task.name }}</h4>
-            <ion-text [color]="task.status == 'feedback available' ? 'primary' : 'medium'">
-              <p>
+            <p>
+              <ion-text *ngIf="task.type != 'Locked'" [color]="task.status == 'feedback available' ? 'primary' : 'medium'">
                 {{ task.type }} 
                 <ng-container *ngIf="!task.loadingStatus; else spinner">{{ task.status }}</ng-container>
                 <ng-template #spinner><ion-spinner name="dots" class="vertical-middle"></ion-spinner></ng-template>
-              </p>
-            </ion-text>
+              </ion-text>
+            </p>
           </div>
 
           <ng-container *ngIf="!task.loadingStatus; else iconSpinner">
