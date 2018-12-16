@@ -24,42 +24,43 @@ const api = {
 };
 
 export interface Assessment {
-  name: string,
-  description: string,
-  groups: Array<Group>
+  name: string;
+  description: string;
+  isForTeam: boolean;
+  groups: Array<Group>;
 }
 
 export interface Group {
-  name: string,
-  questions: Array<Question>
+  name: string;
+  questions: Array<Question>;
 }
 
 export interface Question {
-  id: number,
-  name: string,
-  type: string,
-  fileType?: string,
-  description: string,
-  isRequired: boolean,
-  canComment: boolean,
-  canAnswer: boolean,
-  choices?: Array<Choice>
+  id: number;
+  name: string;
+  type: string;
+  fileType?: string;
+  description: string;
+  isRequired: boolean;
+  canComment: boolean;
+  canAnswer: boolean;
+  choices?: Array<Choice>;
 }
 
 export interface Choice {
-  id: number,
-  name: string
+  id: number;
+  name: string;
 }
 
 export interface Submission {
-  id: number,
-  status: string,
-  answers: any
+  id: number;
+  status: string;
+  answers: any;
 }
 
 export interface Review {
-  id: number,
-  answers: any
+  id: number;
+  answers: any;
 }
 
 @Injectable({
@@ -98,17 +99,16 @@ export class AssessmentService {
         !this.utils.has(data[0], 'AssessmentGroup')) {
       return this.request.apiResponseFormatError('Assessment format error');
     }
+    const thisAssessment = data[0];
 
     let assessment: Assessment = {
-      name: '',
-      description: '',
+      name: thisAssessment.Assessment.name,
+      description: thisAssessment.Assessment.description,
+      isForTeam: thisAssessment.Assessment.is_team,
       groups: []
     };
 
-    assessment.name = data[0].Assessment.name;
-    assessment.description = data[0].Assessment.description;
-
-    data[0].AssessmentGroup.forEach(group => {
+    thisAssessment.AssessmentGroup.forEach(group => {
       if (!this.utils.has(group, 'name') || 
           !this.utils.has(group, 'description') || 
           !this.utils.has(group, 'AssessmentGroupQuestion') || 
@@ -240,17 +240,19 @@ export class AssessmentService {
         !this.utils.has(data[0], 'AssessmentSubmission')) {
       return this.request.apiResponseFormatError('AssessmentSubmission format error');
     }
+    const thisSubmission = data[0];
+
     let submission: Submission = {
-      id: data[0].AssessmentSubmission.id,
-      status: data[0].AssessmentSubmission.status,
+      id: thisSubmission.AssessmentSubmission.id,
+      status: thisSubmission.AssessmentSubmission.status,
       answers: {}
     }
-    if (!this.utils.has(data[0], 'AssessmentSubmissionAnswer') ||
-        !Array.isArray(data[0].AssessmentSubmissionAnswer)
+    if (!this.utils.has(thisSubmission, 'AssessmentSubmissionAnswer') ||
+        !Array.isArray(thisSubmission.AssessmentSubmissionAnswer)
         ) {
       return this.request.apiResponseFormatError('AssessmentSubmissionAnswer format error');
     }
-    data[0].AssessmentSubmissionAnswer.forEach(answer => {
+    thisSubmission.AssessmentSubmissionAnswer.forEach(answer => {
       if (!this.utils.has(answer, 'assessment_question_id') ||
           !this.utils.has(answer, 'answer')
           ) {
@@ -264,23 +266,23 @@ export class AssessmentService {
 
     let review: Review;
     // AssessmentReview is in array format, current we only support one review per submission, that's why we use AssessmentReview[0]
-    if (this.utils.has(data[0], 'AssessmentReview[0].id')) {
+    if (this.utils.has(thisSubmission, 'AssessmentReview[0].id')) {
       review = {
-        id: data[0].AssessmentReview[0].id,
+        id: thisSubmission.AssessmentReview[0].id,
         answers: {}
       };
     }
     // only get the review answer if the review is published (submission.status == 'published')
     if (submission.status == 'published' &&
-        this.utils.has(data[0], 'AssessmentReviewAnswer') &&
-        Array.isArray(data[0].AssessmentReviewAnswer)) {
+        this.utils.has(thisSubmission, 'AssessmentReviewAnswer') &&
+        Array.isArray(thisSubmission.AssessmentReviewAnswer)) {
       if (!review) {
         review = {
           id: 0,
           answers: {}
         };
       }
-      data[0].AssessmentReviewAnswer.forEach(answer => {
+      thisSubmission.AssessmentReviewAnswer.forEach(answer => {
         if (!this.utils.has(answer, 'assessment_question_id') ||
             !this.utils.has(answer, 'answer') ||
             !this.utils.has(answer, 'comment')
