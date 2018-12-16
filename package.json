@@ -35,6 +35,7 @@
     "ngx-embed-video": "^1.0.2",
     "rxjs": "6.3.3",
     "rxjs-compat": "^6.3.3",
+    "ts-md5": "^1.2.4",
     "zone.js": "^0.8.26"
   },
   "devDependencies": {
