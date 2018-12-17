@@ -15,24 +15,29 @@ const api = {
 };
 
 export interface ProgramObj {
-  program: Program,
-  project: Project,
-  timeline: Timeline
+  program: Program;
+  project: Project;
+  timeline: Timeline;
 }
 
 export interface Program {
-  id: number,
-  name: string,
-  experience_id: number,
-  color?: string
+  id: number;
+  name: string;
+  experience_id: number;
+  config?: ProgramConfig;
+}
+
+export interface ProgramConfig {
+  theme_color?: string;
+  card_style?: string;
 }
 
 export interface Project {
-  id: number
+  id: number;
 }
 
 export interface Timeline {
-  id: number
+  id: number;
 }
 
 @Injectable({
