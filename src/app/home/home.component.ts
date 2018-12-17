@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { HomeService } from './home.service';
 import { Router } from '@angular/router';
+import { Activity } from '../project/project.service';
 
 @Component({
   selector: 'app-home',
@@ -11,7 +12,7 @@ export class HomeComponent implements OnInit {
   progress:number = 80;
   programName:string;
   todoItems = [];
-  activity = {};
+  activity :Activity;
   
   constructor (
     private router: Router,
@@ -30,5 +31,7 @@ export class HomeComponent implements OnInit {
   goToActivity(id) {
     this.router.navigateByUrl('app/(project:activity/' + id + ')');
   }
-  
+  gotoReview(contextId, id) {
+    this.router.navigateByUrl('assessment/review/'+ contextId +'/'+ id );
+  }
 }

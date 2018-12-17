@@ -8,7 +8,7 @@ import { BrowserStorageService } from '@services/storage.service';
 
 export class HomeService {
   todo = [
-    { 
+    { id:1,
       todoType: 'review',
       assessmentName :'demo assessmnet',
       teamName: 'Team1',
@@ -18,7 +18,7 @@ export class HomeService {
         assignOn: 'today'
       }
     },
-    { 
+    { id:2,
       todoType: 'review',
       assessmentName :'demo assessmnet2',
       teamName: 'Team1',
@@ -33,7 +33,9 @@ export class HomeService {
     id: 1,
     name :'Activity Name 1',
     progress: 0.65,
-    hasFeedback: true
+    hasFeedback: true,
+    is_hidden: false,
+    is_locked: false
   };
 
   constructor(
