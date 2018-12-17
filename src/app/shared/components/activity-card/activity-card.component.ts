@@ -12,16 +12,16 @@ export class ActivityCardComponent implements OnInit {
   @Input() activity: {
     id: number,
     name: string,
-    is_locked?: boolean,
+    isLocked?: boolean,
     progress?: number,
     hasFeedback?: boolean,
-    lead_image?: string
+    leadImage?: string
   }
  constructor ( @Inject(DOCUMENT) private document: Document ) { }
 
   ngOnInit() {
-    if (this.activity.lead_image) 
-    this.setBackgroundImage(this.activity.lead_image)
+    if (this.activity.leadImage) 
+    this.setBackgroundImage(this.activity.leadImage)
   };
 
   setBackgroundImage (image) {
