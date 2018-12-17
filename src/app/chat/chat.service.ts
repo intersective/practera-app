@@ -129,6 +129,7 @@ export class ChatService {
    * }
    */
   getMessageList(prams: messageListPrams): Observable<any> {
+    console.log("Service", this.messageList);
     return of(this.messageList);
   }
 
