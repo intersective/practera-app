@@ -81,7 +81,7 @@ export class ChatRoomComponent implements OnInit {
     return this.chatService.generateChatAvatarText(senderName);
   }
 
-  goBack() {
+  back() {
     this.router.navigateByUrl('/app/(chat:chat)');
   }
 
@@ -107,25 +107,38 @@ export class ChatRoomComponent implements OnInit {
   }
 
   private updateMessageListResponse(response, loadMore): void {
+    console.log("1", response, loadMore);
     let index = 0;
+    console.log("2", index);
     let tempRes = null;
+    console.log("3", tempRes);
     if (response.length > 0) {
       this.messageList = [];
+      console.log("4", this.messageList);
       for (index = 0; index < response.length; index++) {
+        console.log("5");
         if (response[index] && !response[index].is_sender) {
+          console.log("6");
           if (this.selectedChat.is_team) {
+            console.log("7", this.selectedChat.is_team);
             this.getValidChatColors(this.chatColors, response, index);
           } else {
+            console.log("8", this.selectedChat.is_team);
             response[index].chat_color = this.selectedChat.chat_color;
           }
         }
         if (index === response.length - 1) {
-          tempRes = response;
+          console.log("9", response);
+          tempRes = Object.assign([], response);
+          console.log("10", tempRes);
           tempRes.reverse();
+          console.log("11", tempRes);
           if (loadMore) {
             this.messageList = tempRes.concat(this.messageList);
+            console.log("12", this.messageList);
           } else {
             this.messageList = tempRes;
+            console.log("13", this.messageList);
             this.content.scrollToBottom();
           }
           this.markAsSeen(tempRes);
