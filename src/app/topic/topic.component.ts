@@ -1,4 +1,4 @@
-import { TopicService, Topic } from './topic.service';
+import { TopicService, Topic, Progress } from './topic.service';
 import { Component, OnInit } from '@angular/core';
 import { EmbedVideoService } from 'ngx-embed-video';
 import { Router, ActivatedRoute } from '@angular/router';
@@ -14,6 +14,7 @@ export class TopicComponent implements OnInit {
   btnToggleTopicIsDone: boolean = false;
   id: number = 0;
   activityId: number = 0;
+  topicProgress: Progress;
   
   constructor( 
     private topicService: TopicService,
@@ -26,7 +27,8 @@ export class TopicComponent implements OnInit {
     this.id = parseInt(this.route.snapshot.paramMap.get('id'));
     this.activityId = parseInt(this.route.snapshot.paramMap.get('activityId'));
     this._getTopic();
-    this._getTopicIsDone();
+    this._getTopicProgress();
+    this._btnIsDone();
    
    }
 
@@ -39,18 +41,29 @@ export class TopicComponent implements OnInit {
         }
       });
     }
-  private _getTopicIsDone() {
-    this.topicService.getTopicIsDone(this.id)
+  private _getTopicProgress() {
+    this.topicService.getTopicProgress(this.id)
     .subscribe(result => {
-      this.btnToggleTopicIsDone = result;
+      this.topicProgress = result;
     });
   }
-    
+  
+  public _btnIsDone() {
+    if (this.topicProgress !== null && this.topicProgress !== undefined) {
+      //Check status of the topic
+      if (this.topicProgress.progress === 1) {
+          this.btnToggleTopicIsDone = true;
+      } else {
+          this.btnToggleTopicIsDone = false;
+      }
+    } else {
+      this.btnToggleTopicIsDone = false;
+    }
+  }
   markAsDone () {
     this.btnToggleTopicIsDone = true;
-    this.topicService.saveTopicRead(this.id);
-    
-  }
+    this.topicService.updateTopicStatus(this.id).subscribe();
+ }
   previewFile () {
     console.log('show the file');
   }
