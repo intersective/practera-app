@@ -2,10 +2,10 @@
 
 ## Requirements
 - Ionic 4 
+- Angular 7
 
 ## Development Notes
+Run `npm install` to install necessary packages
 
 Run `ionic serve` to start a development server on your local
 
-Run `npm run deploy` to build the code in production and deploy it to Github Pages.
-After that you will be able to go to https://intersective.github.io/practera-app-v2 to check it.
