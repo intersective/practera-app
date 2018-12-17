@@ -6,21 +6,23 @@ export const BROWSER_STORAGE = new InjectionToken<Storage>('Browser Storage', {
 });
 
 export interface User {
-  name?: string,
-  contactNumber?: string,
-  email?: string,
-  role?: string,
-  image?: string,
-  linkedinConnected?: boolean,
-  linkedinUrl?: string,
-  programId?: number,
-  programName?: string,
-  experienceId?: number,
-  timelineId?: number,
-  projectId?: number,
-  teamId?: number,
-  filestackHash?: string,
-  maxAchievablePoints?: number
+  name?: string;
+  contactNumber?: string;
+  email?: string;
+  role?: string;
+  image?: string;
+  linkedinConnected?: boolean;
+  linkedinUrl?: string;
+  programId?: number;
+  programName?: string;
+  experienceId?: number;
+  timelineId?: number;
+  projectId?: number;
+  teamId?: number;
+  filestackHash?: string;
+  maxAchievablePoints?: number;
+  themeColor?: string;
+  activityCard?: string;
 }
 
 @Injectable({
