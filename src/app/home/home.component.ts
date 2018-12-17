@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { HomeService, TodoItem } from './home.service';
 import { Router } from '@angular/router';
 import { Activity } from '../project/project.service';
+import { UtilsService } from '@services/utils.service';
 
 @Component({
   selector: 'app-home',
@@ -19,7 +20,8 @@ export class HomeComponent implements OnInit {
   
   constructor (
     private router: Router,
-    private homeService: HomeService 
+    private homeService: HomeService,
+    private utils: UtilsService
   ) {}
 
   ngOnInit() {
@@ -28,19 +30,23 @@ export class HomeComponent implements OnInit {
         this.todoItems = this.todoItems.concat(todoItems);
         this.loadingTodoItems = false;
       });
-    this.homeService.getChatMessages()
-      .subscribe(chatMessages => {
-        // this.todoItems = this.todoItems.concat(chatMessages);
-        // this.loadingTodoItems = false;
+    this.homeService.getChatMessage()
+      .subscribe(chatMessage => {
+        if (!this.utils.isEmpty(chatMessage)) {
+          this.todoItems.push(chatMessage);
+        }
+        this.loadingTodoItems = false;
       });
     this.homeService.getProgress()
       .subscribe(progress => {
-        // this.progress = progress;
-        // this.loadingProgress = false;
+        this.progress = progress;
+        this.loadingProgress = false;
         this.homeService.getCurrentActivity()
           .subscribe(activity => {
-            // this.activity = activity;
-            // this.loadingActivity = false;
+            if (!this.utils.isEmpty(activity)) {
+              this.activity = activity;
+              this.loadingActivity = false;
+            }
           });
       });
     this.homeService.getProgramName()

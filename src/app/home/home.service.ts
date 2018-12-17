@@ -13,16 +13,16 @@ import { BrowserStorageService } from '@services/storage.service';
 const api = {
   activity: 'api/activities.json',
   todoItem: 'api/v2/motivations/todo_item/list.json',
-  chat: 'api/v2/message/chat/list_messages.json',
+  chat: 'api/v2/message/chat/list.json',
   progress: 'api/v2/motivations/progress/list.json'
 };
 
 export interface TodoItem {
-  type: string;
-  name: string;
-  description: string;
-  time: string;
-  meta: any;
+  type?: string;
+  name?: string;
+  description?: string;
+  time?: string;
+  meta?: any;
 }
 
 @Injectable({
@@ -77,7 +77,7 @@ export class HomeService {
         description: '',
         time: '',
         meta: {}
-      }
+      };
       // todo item for user to see the feedback
       if (todoItem.identifier.includes('AssessmentSubmission-')) {
         item.type = 'feedback_available';
@@ -88,7 +88,7 @@ export class HomeService {
         }
         item.name = todoItem.meta.assessment_name;
         item.description = todoItem.meta.reviewer_name + ' has provided feedback';
-        item.time = this._timeFormat(todoItem.created);
+        item.time = this._timeFormater(todoItem.created);
         item.meta = todoItem.meta;
         todoItems.push(item);
       }
@@ -102,7 +102,7 @@ export class HomeService {
         }
         item.name = todoItem.meta.assessment_name;
         item.description = 'Please review the assessment';
-        item.time = this._timeFormat(todoItem.created);
+        item.time = this._timeFormater(todoItem.created);
         item.meta = todoItem.meta;
         todoItems.push(item);
       }
@@ -110,7 +110,7 @@ export class HomeService {
     return todoItems;
   }
 
-  private _timeFormat(time: string) {
+  private _timeFormater(time: string) {
     let date = new Date(time);
     return date.toLocaleString('en-GB', {
       month: 'short',
@@ -118,15 +118,127 @@ export class HomeService {
     });
   }
 
-  getChatMessages() {
-    return of();
+  getChatMessage() {
+    return this.request.get(api.chat)
+      .pipe(map(response => {
+        if (response.success && response.data) {
+          return this._normaliseChatMessage(response.data);
+        }
+      }));
+  }
+
+  private _normaliseChatMessage(data): TodoItem {
+    if (!Array.isArray(data)) {
+      this.request.apiResponseFormatError('Chat array format error');
+      return {};
+    }
+    let unreadMessages = 0;
+    let noOfChats = 0;
+    let todoItem: TodoItem = {
+      type: 'chat',
+      name: '',
+      description: '',
+      time: '',
+      meta: {}
+    };
+    data.forEach(data => {
+      if (!this.utils.has(data, 'unread_messages') || 
+          !this.utils.has(data, 'name') || 
+          !this.utils.has(data, 'last_message') ||
+          !this.utils.has(data, 'last_message_created')) {
+        return this.request.apiResponseFormatError('Chat object format error');
+      }
+      if (data.unread_messages > 0) {
+        unreadMessages += data.unread_messages;
+        noOfChats ++;
+        todoItem.name = data.name;
+        todoItem.description = data.last_message;
+        todoItem.time = this._timeFormater(data.last_message_created);
+      }
+    });
+    if (unreadMessages > 1) {
+      todoItem.name = unreadMessages + ' messages from ' + noOfChats + ' chats';
+    }
+    return todoItem;
   }
 
   getProgress() {
-    return of();
+    return this.request.get(api.progress, {
+        params: {
+          model: 'project',
+          model_id: this.storage.getUser().projectId,
+          scope: 'activity'
+        }
+      })
+      .pipe(map(response => {
+        if (response.success && response.data) {
+          return this._normaliseProgress(response.data);
+        }
+      }));
+  }
+
+  private _normaliseProgress(data) {
+    if (!this.utils.has(data, 'Project.progress') || 
+        !this.utils.has(data, 'Project.Milestone') ||
+        !Array.isArray(data.Project.Milestone)) {
+      this.request.apiResponseFormatError('Progress format error');
+      return 0;
+    }
+    data.Project.Milestone.forEach(milestone => {
+      if (this.currentActivityId > 0) {
+        return;
+      }
+      if (!this.utils.has(milestone, 'Activity') ||
+          !Array.isArray(milestone.Activity)) {
+        this.request.apiResponseFormatError('Progress.Milestone format error');
+        return ;
+      }
+      milestone.Activity.forEach(activity => {
+        if (this.currentActivityId > 0) {
+          return;
+        }
+        if (!this.utils.has(activity, 'progress') ||
+            !this.utils.has(activity, 'id')) {
+          this.request.apiResponseFormatError('Progress.Milestone.Activity format error');
+          return ;
+        }
+        if (activity.progress < 1) {
+          this.currentActivityId = activity.id
+        }
+      });
+    });
+    if (data.Project.progress > 1) {
+      data.Project.progress = 1;
+    }
+    return Math.round(data.Project.progress * 100);
   }
 
   getCurrentActivity() {
-     return of();
+     return this.request.get(api.activity, {
+        params: {
+          id: this.currentActivityId
+        }
+      })
+      .pipe(map(response => {
+        if (response.success && response.data) {
+          return this._normaliseActivity(response.data);
+        }
+      }));
   }
+
+  private _normaliseActivity(data) {
+    if (!Array.isArray(data) ||
+        !this.utils.has(data[0], 'Activity.name') || 
+        !this.utils.has(data[0], 'Activity.is_locked')) {
+      this.request.apiResponseFormatError('Activity format error');
+      return {};
+    }
+    let thisActivity = data[0];
+    return {
+      id: this.currentActivityId,
+      name: thisActivity.Activity.name,
+      isLocked: thisActivity.Activity.is_locked
+    };
+  }
+
 }
