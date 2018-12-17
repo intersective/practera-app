@@ -73,20 +73,14 @@ export class TopicService {
       hasComments: false,
       files:[]
     };
-    let file = [];
-    topic.id = data[0].Story.id;
-    topic.programId = data[0].program_id;
-    topic.title = data[0].Story.title;
-    topic.content = data[0].Story.content;
-    topic.videolink = data[0].Story.videolink;
-    topic.hasComments = data[0].Story.has_comments;
-    // data[0].Filestore.forEach(function(item){
-    //   file.push({'url':item.slug});
-    // });
-    // file.forEach(function(item) {
-    //   topic.files.push(item);
-    // })
-    topic.files = data[0].Filestore.map(item => ({url:item.slug}))
+    let thisTopic = data[0];
+    topic.id = thisTopic.Story.id;
+    topic.programId = thisTopic.program_id;
+    topic.title = thisTopic.Story.title;
+    topic.content = thisTopic.Story.content;
+    topic.videolink = thisTopic.Story.videolink;
+    topic.hasComments = thisTopic.Story.has_comments;
+    topic.files = thisTopic.Filestore.map(item => ({url:item.slug}))
   }
  updateTopicStatus(id){
     let postData;
