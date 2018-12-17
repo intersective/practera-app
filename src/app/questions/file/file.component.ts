@@ -58,7 +58,7 @@ export class FileComponent implements ControlValueAccessor, OnInit {
       // currently we only support one file upload per question, if we need to support multiple file upload later, we need to change this to: 
       // this.uploadedFiles = push(file.data);
       this.uploadedFile = file.data;
-      this.onChange(type);
+      this.onChange('', type);
     } else {
       // display error message for user
       this.errors.push('File upload failed, please try again later.');
@@ -67,7 +67,7 @@ export class FileComponent implements ControlValueAccessor, OnInit {
 
   // event fired when file is uploaded. propagate the change up to the form control using the custom value accessor interface
   // if 'type' is set, it means it comes from reviewer doing review, otherwise it comes from submitter doing assessment
-  onChange(type, value = ''){
+  onChange(value, type){
     //set changed value (answer or comment)
     if (type) {
       if (!this.innerValue) {
