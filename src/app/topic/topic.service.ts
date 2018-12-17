@@ -40,7 +40,6 @@ const api = {
 })
 
 export class TopicService {
- 
   topic :Topic;
   topicProgress: Progress;
   
@@ -89,9 +88,9 @@ export class TopicService {
     // })
     topic.files = data[0].Filestore.map(item => ({url:item.slug}))
   }
-  
-  updateTopicStatus(id){
+ updateTopicStatus(id){
     let postData;
+   
     postData = {
       model: "topic",
       model_id: id,

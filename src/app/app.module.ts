@@ -7,7 +7,6 @@ import { AppRoutingModule } from './app-routing.module';
 import { RequestModule } from '@shared/request/request.module';
 import { NotificationModule } from '@shared/notification/notification.module';
 import { AuthModule } from './auth/auth.module';
-
 import { AppComponent } from './app.component';
 import { NgCircleProgressModule } from 'ng-circle-progress';
 import { UtilsService } from './services/utils.service';
