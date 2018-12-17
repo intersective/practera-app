@@ -25,8 +25,8 @@ export class HomeComponent implements OnInit {
   ngOnInit() {
     this.homeService.getTodoItems()
       .subscribe(todoItems => {
-        // this.todoItems = this.todoItems.concat(todoItems);
-        // this.loadingTodoItems = false;
+        this.todoItems = this.todoItems.concat(todoItems);
+        this.loadingTodoItems = false;
       });
     this.homeService.getChatMessages()
       .subscribe(chatMessages => {
@@ -53,7 +53,15 @@ export class HomeComponent implements OnInit {
     this.router.navigateByUrl('app/(project:activity/' + id + ')');
   }
 
-  goto(todoItem) {
-    // this.router.navigateByUrl('assessment/review/'+ contextId +'/'+ id );
+  goToAssessment(activityId, contextId, assessmentId) {
+    this.router.navigate(['assessment', 'assessment', activityId , contextId, assessmentId]);
+  }
+
+  goToReview(contextId, assessmentId) {
+    this.router.navigate(['assessment', 'review', contextId, assessmentId]);
+  }
+
+  goToChat() {
+    this.router.navigateByUrl('app/(chat:chat)');
   }
 }

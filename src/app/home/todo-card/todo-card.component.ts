@@ -1,4 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
+import { TodoItem } from '../home.service';
 
 @Component({
   selector: 'app-todo-card',
@@ -9,7 +10,7 @@ export class TodoCardComponent implements OnInit {
   
   constructor() {};
   
-  @Input() todoItem: {};
+  @Input() todoItem: TodoItem;
   
   ngOnInit() {
   }
