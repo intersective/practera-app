@@ -18,6 +18,7 @@ export interface User {
   experienceId?: number,
   timelineId?: number,
   projectId?: number,
+  teamId?: number,
   filestackHash?: string,
   maxAchievablePoints?: number
 }
