@@ -57,7 +57,9 @@ export class SwitcherService {
       programName: programObj.program.name,
       experienceId: programObj.program.experience_id,
       projectId: programObj.project.id,
-      timelineId: programObj.timeline.id
+      timelineId: programObj.timeline.id,
+      themeColor: this.utils.has(programObj, 'program.config.theme_color') ? programObj.program.config.theme_color : '',
+      activityCard: this.utils.has(programObj, 'program.config.card_style') ? programObj.program.config.card_style : ''
     });
     return this.request.get(api.teams)
       .pipe(map(response => {
