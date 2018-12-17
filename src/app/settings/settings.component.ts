@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { AuthService } from '../auth/auth.service';
 import { SettingService, Profile } from './setting.service';
 import { BrowserStorageService } from '@services/storage.service';
+import { UtilsService } from '@services/utils.service';
 
 @Component({
   selector: 'app-settings',
@@ -15,10 +16,13 @@ export class SettingsComponent implements OnInit {
     contactNumber: '',
     email: ''
   };
-
-  // email = "test@xtest.com";
-  // contact_number= "+61 420000000";
+  
+  // default country model
   countryModel = "AUS";
+  // default mask 
+  mask = '';
+
+  // supported countries
   countryCodes = [
     {
         name: "Australia",
@@ -33,6 +37,12 @@ export class SettingsComponent implements OnInit {
         mask: "+1 999 999 9999",
     },
   ];
+
+  formatMasks = {
+      AUS: "+61 999 999 999",
+      US: "+1 999 999 9999"      
+   };
+
   helpline = 'help@practera.com';
   
   termsUrl = 'https://images.practera.com/terms_and_conditions/practera_terms_conditions.pdf';
@@ -41,7 +51,8 @@ export class SettingsComponent implements OnInit {
     private router: Router,
     private authService: AuthService,
     private settingService : SettingService,
-    private storage : BrowserStorageService
+    private storage : BrowserStorageService,
+    private utils: UtilsService,
   ){
 
   }
@@ -50,7 +61,71 @@ export class SettingsComponent implements OnInit {
     // get contact number and email from local storage
     this.profile.email = this.storage.getUser().email;
     this.profile.contactNumber = this.storage.getUser().contactNumber;
+    // if user has the contact number
+    if (this.profile.contactNumber && this.profile.contactNumber != null) {
+      this._checkCurrentContactNumberOrigin();
+    }
+
   };
+
+  private _checkCurrentContactNumberOrigin() {
+    var contactNum = this.profile.contactNumber;
+    var prefix = contactNum.substring(0, 3);
+    
+    if (prefix === '+61') {
+        this.countryModel = 'AUS';
+        this.mask = this.formatMasks['AUS'];           
+        return;
+    }
+
+    prefix = contactNum.substring(0, 2);
+    if (prefix === '61') {
+        this.countryModel = 'AUS';
+        this.mask = this.formatMasks['AUS'];
+        return;
+    }
+
+    if (prefix === '04') {
+        this.countryModel = 'AUS';
+        this.mask = this.formatMasks['AUS'];
+        return;
+     }
+
+    if (prefix === '+1') {
+        this.countryModel = 'US';        
+        this.mask = this.formatMasks['US']; 
+        return;
+    }
+
+    prefix = contactNum.substring(0, 1);
+    if (prefix === '1') {
+        this.countryModel = 'US';
+        this.mask = this.formatMasks['US'];   
+        return;
+    }
+
+    if (prefix === '0') {
+        this.countryModel = 'AUS';
+        this.mask = this.formatMasks['AUS'];   
+        return;
+    }
+  }
+
+  updateContactNumber() {   
+    this.settingService.updateProfile(this.profile);
+  };
+
+  updateCountry() {
+    var selectedCountry = this.countryModel;    
+    var country = this.utils.find(this.countryCodes, function(country){
+      return country.code === selectedCountry;
+    })
+    // set currentContactNumber to empty 
+    this.profile.contactNumber = '';    
+    // update the mask as per the newly selected country
+    this.mask = this.formatMasks[country.code];    
+  };
+
 
   openLink(link) {
     console.log('open the file');
@@ -58,14 +133,6 @@ export class SettingsComponent implements OnInit {
 
   switchProgram() {
     this.router.navigate(['/switcher']);
-  };
-
-  updateContactNumber() {
-    this.settingService.updateProfile(this.profile);
-  };
-
-  updateCountry() {
-
   };
 
   // send email to Help request
@@ -79,4 +146,5 @@ export class SettingsComponent implements OnInit {
       return this.router.navigate(['/login']);
     });
   }
+
 }
