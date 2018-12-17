@@ -16,6 +16,7 @@ const routes: Routes = [
     path: 'assessment', 
     loadChildren: './assessment/assessment.module#AssessmentModule',
   },
+  
   {
     path: 'chat', 
     loadChildren: './chat/chat.module#ChatModule' 
