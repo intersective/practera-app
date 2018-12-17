@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, Inject } from '@angular/core';
 import * as _ from 'lodash';
 import { DOCUMENT } from '@angular/common';
 
