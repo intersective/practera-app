@@ -4,23 +4,35 @@ import { map } from 'rxjs/operators';
 import { RequestService } from '@shared/request/request.service';
 import { UtilsService } from '@services/utils.service';
 import { FilestackComponent } from '@shared/filestack/filestack.component';
-import { fileURLToPath } from 'url';
 
 
-const api = {
-  stories:'/api/stories.json'
+export interface Progress {
+  id: number;
+  progress: number;
 }
 
 export interface Topic {
-  id: number,
-  programId: number,
-  title: string,
-  content: string,
-  videolink: string,
-  files:Array <object>,
-  hasComments: boolean,
+  id: number;
+  programId: number;
+  title: string;
+  content: string;
+  videolink: string;
+  files:Array <object>;
+  hasComments: boolean;
 
 };
+
+
+const api = {
+  get: {
+    stories:'/api/stories.json',
+    progress: 'api/v2/motivations/progress/list.json'
+  },
+  post: {
+    updateProgress: '/api/v2/motivations/progress/create.json',
+  }
+};
+
 
 
 @Injectable({
@@ -29,26 +41,8 @@ export interface Topic {
 
 export class TopicService {
  
-  topic :Topic=
-    { 
-      id: 1,
-      programId: 260,
-      title: 'Welcome and Warm-up',
-      content: '<div>At the end of this activity you will submit an agreed Project Charter explaining what and how your team will deliver value to your Project Stakeholder. A Project Charter is a great way to ensure team, project stakeholder and consulting mentor are in agreement on the work to be delivered and how it will get achieved. Below is a series of steps and instructions that will guide you and your team through the process of creating a project charter.</div><div><br></div><div><b>STEP 1: Organise a Kick-Off meeting with your team and consulting mentor</b></div>',
-      videolink: 'https://www.youtube.com/watch?v=nby5jgjb0Dk',
-      hasComments: false,
-      files: [
-        {
-          url: "https://www.filepicker.io/api/file/seqhKHMNQnmxeXBxsiKQ",
-          
-        },
-      ]
-    };
-
-  topicDone = {
-    1: false,
-    2: false
-  }
+  topic :Topic;
+  topicProgress: Progress;
   
   constructor(
     private request: RequestService,
@@ -56,7 +50,7 @@ export class TopicService {
   ) { }
 
   getTopic(id: number): Observable<any> {
-    return this.request.get(api.stories, {params: {id: id}})
+    return this.request.get(api.get.stories, {params: {id: id}})
       .pipe(map(response => {
         if (response.success && response.data) {
           return this._normaliseTopic(response.data);
@@ -87,19 +81,40 @@ export class TopicService {
     topic.content = data[0].Story.content;
     topic.videolink = data[0].Story.videolink;
     topic.hasComments = data[0].Story.has_comments;
-    data[0].Filestore.forEach(function(item){
-      file.push({'url':item.slug});
-    });
-    file.forEach(function(item) {
-      topic.files.push(item);
-    })
-    
+    // data[0].Filestore.forEach(function(item){
+    //   file.push({'url':item.slug});
+    // });
+    // file.forEach(function(item) {
+    //   topic.files.push(item);
+    // })
+    topic.files = data[0].Filestore.map(item => ({url:item.slug}))
   }
   
-  saveTopicRead(topicId) {
-    console.log('topic is marked as read.');
+  updateTopicStatus(id){
+    let postData;
+    postData = {
+      model: "topic",
+      model_id: id,
+      state: "completed"
+    }
+    return this.request.post(api.post.updateProgress, postData);
   }
-  getTopicIsDone(topicId) {
-    return of(this.topicDone[topicId] ? this.topicDone[topicId] : false);
+  
+  getTopicProgress(topicId): Observable<any> {
+    return this.request.get(api.get.progress, {params: {
+        model: 'Activity',
+        model_id: topicId,
+        scope: 'Task'
+      }})
+      .pipe(map(response => {
+        if (response.success && response.data) {
+          var progress = response.data.Activity.Topic.find(function (topic) {
+            return topic.id === topicId;
+        });
+        }
+        this.topicProgress = progress;
+      })
+    );
   }
+
 }
