@@ -15,24 +15,29 @@ const api = {
 };
 
 export interface ProgramObj {
-  program: Program,
-  project: Project,
-  timeline: Timeline
+  program: Program;
+  project: Project;
+  timeline: Timeline;
 }
 
 export interface Program {
-  id: number,
-  name: string,
-  experience_id: number,
-  color?: string
+  id: number;
+  name: string;
+  experience_id: number;
+  config?: ProgramConfig;
+}
+
+export interface ProgramConfig {
+  theme_color?: string;
+  card_style?: string;
 }
 
 export interface Project {
-  id: number
+  id: number;
 }
 
 export interface Timeline {
-  id: number
+  id: number;
 }
 
 @Injectable({
@@ -57,7 +62,9 @@ export class SwitcherService {
       programName: programObj.program.name,
       experienceId: programObj.program.experience_id,
       projectId: programObj.project.id,
-      timelineId: programObj.timeline.id
+      timelineId: programObj.timeline.id,
+      themeColor: this.utils.has(programObj, 'program.config.theme_color') ? programObj.program.config.theme_color : '',
+      activityCard: this.utils.has(programObj, 'program.config.card_style') ? programObj.program.config.card_style : ''
     });
     return this.request.get(api.teams)
       .pipe(map(response => {

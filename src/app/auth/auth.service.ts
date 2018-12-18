@@ -141,6 +141,7 @@ export class AuthService {
 
   logout(): Observable<any> {
     // @TODO: clear ionic view history too
+    this.utils.changeThemeColor('#2bbfd4');
     return of(this.storage.clear());
   }
 
