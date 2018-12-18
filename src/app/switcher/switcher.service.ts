@@ -22,18 +22,23 @@ export interface ProgramObj {
 }
 
 export interface Program {
-  id: number,
-  name: string,
-  experience_id: number,
-  color?: string
+  id: number;
+  name: string;
+  experience_id: number;
+  config?: ProgramConfig;
+}
+
+export interface ProgramConfig {
+  theme_color?: string;
+  card_style?: string;
 }
 
 export interface Project {
-  id: number
+  id: number;
 }
 
 export interface Timeline {
-  id: number
+  id: number;
 }
 
 export interface Enrolment {
@@ -63,7 +68,9 @@ export class SwitcherService {
       experienceId: programObj.program.experience_id,
       projectId: programObj.project.id,
       timelineId: programObj.timeline.id,
-      contactNumber: programObj.enrolment.contact_number
+      contactNumber: programObj.enrolment.contact_number,
+      themeColor: this.utils.has(programObj, 'program.config.theme_color') ? programObj.program.config.theme_color : '',
+      activityCard: this.utils.has(programObj, 'program.config.card_style') ? programObj.program.config.card_style : ''
     });
     return this.request.get(api.teams)
       .pipe(map(response => {
