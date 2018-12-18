@@ -205,7 +205,7 @@ export class HomeService {
       return 0;
     }
 
-    data.Project.Milestone.forEach(this._getCurrentActivityId);
+    this._getCurrentActivityId(data);
 
     if (data.Project.progress > 1) {
       data.Project.progress = 1;
@@ -213,7 +213,11 @@ export class HomeService {
     return Math.round(data.Project.progress * 100);
   }
 
-  private _getCurrentActivityId(milestone) {
+  private _getCurrentActivityId(data) {
+    return data.Project.Milestone.forEach(this._loopThroughMilestones);
+  }
+
+  private _loopThroughMilestones(milestone) {
     if (this.currentActivityId > 0) {
       return;
     }
