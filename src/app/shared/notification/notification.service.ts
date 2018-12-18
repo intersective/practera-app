@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
-import { ModalController } from '@ionic/angular';
+import { ModalController, AlertController } from '@ionic/angular';
+import { AlertOptions } from '@ionic/core';
 import { PopUpComponent } from './pop-up/pop-up.component';
 
 @Injectable({
@@ -8,7 +9,8 @@ import { PopUpComponent } from './pop-up/pop-up.component';
 export class NotificationService {
 
   constructor(
-    public modalController: ModalController
+    private modalController: ModalController,
+    private alertController: AlertController
   ) {}
 
   // show pop up message 
@@ -24,5 +26,10 @@ export class NotificationService {
       }
     });
     return await modal.present();
+  }
+
+  async confirm(config: AlertOptions) {
+    const confirm = await this.alertController.create(config);
+    return await confirm.present();
   }
 }
