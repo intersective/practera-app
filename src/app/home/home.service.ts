@@ -205,7 +205,7 @@ export class HomeService {
       return 0;
     }
 
-    this._getCurrentActivityId(data.Project.Milestone);
+    data.Project.Milestone.forEach(this._getCurrentActivityId);
 
     if (data.Project.progress > 1) {
       data.Project.progress = 1;
@@ -213,38 +213,30 @@ export class HomeService {
     return Math.round(data.Project.progress * 100);
   }
 
-  private _getCurrentActivityId(milestones) {
-    this._loopThroughMilestones(milestones);
+  private _getCurrentActivityId(milestone) {
+    if (this.currentActivityId > 0) {
+      return;
+    }
+    if (!this.utils.has(milestone, 'Activity') ||
+        !Array.isArray(milestone.Activity)) {
+      this.request.apiResponseFormatError('Progress.Milestone format error');
+      return ;
+    }
+    milestone.Activity.forEach(this._loopThroughActivities);
   }
 
-  private _loopThroughMilestones(milestones) {
-    milestones.forEach(milestone => {
-      if (this.currentActivityId > 0) {
-        return;
-      }
-      if (!this.utils.has(milestone, 'Activity') ||
-          !Array.isArray(milestone.Activity)) {
-        this.request.apiResponseFormatError('Progress.Milestone format error');
-        return ;
-      }
-      this._loopThroughActivities(milestone.Activity);
-    });
-  }
-
-  private _loopThroughActivities(activities) {
-    activities.forEach(activity => {
-      if (this.currentActivityId > 0) {
-        return;
-      }
-      if (!this.utils.has(activity, 'progress') ||
-          !this.utils.has(activity, 'id')) {
-        this.request.apiResponseFormatError('Progress.Milestone.Activity format error');
-        return ;
-      }
-      if (activity.progress < 1) {
-        this.currentActivityId = activity.id
-      }
-    });
+  private _loopThroughActivities(activity) {
+    if (this.currentActivityId > 0) {
+      return;
+    }
+    if (!this.utils.has(activity, 'progress') ||
+        !this.utils.has(activity, 'id')) {
+      this.request.apiResponseFormatError('Progress.Milestone.Activity format error');
+      return ;
+    }
+    if (activity.progress < 1) {
+      this.currentActivityId = activity.id
+    }
   }
 
   getCurrentActivity() {
