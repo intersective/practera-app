@@ -119,7 +119,7 @@ export class SettingsComponent implements OnInit {
 
   updateContactNumber() {   
     this.updating = true;
-    this.notificationService.confirm({
+    this.notificationService.alert({
       header: 'Update Profile',
       message: 'Are you sure to update your profile?',
       buttons: [
