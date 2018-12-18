@@ -28,8 +28,8 @@ export class NotificationService {
     return await modal.present();
   }
 
-  async confirm(config: AlertOptions) {
-    const confirm = await this.alertController.create(config);
-    return await confirm.present();
+  async alert(config: AlertOptions) {
+    const alert = await this.alertController.create(config);
+    return await alert.present();
   }
 }
