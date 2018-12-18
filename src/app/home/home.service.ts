@@ -248,7 +248,7 @@ export class HomeService {
   }
 
   getCurrentActivity() {
-     return this.request.get(api.activity, {
+    return this.request.get(api.activity, {
         params: {
           id: this.currentActivityId
         }
