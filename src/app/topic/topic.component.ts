@@ -42,7 +42,7 @@ export class TopicComponent implements OnInit {
       });
     }
   private _getTopicProgress() {
-    this.topicService.getTopicProgress(this.id)
+    this.topicService.getTopicProgress(this.activityId,this.id)
     .subscribe(result => {
       this.topicProgress = result;
     });
