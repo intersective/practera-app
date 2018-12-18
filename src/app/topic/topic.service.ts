@@ -3,8 +3,7 @@ import { Observable, of } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { RequestService } from '@shared/request/request.service';
 import { UtilsService } from '@services/utils.service';
-import { FilestackComponent } from '@shared/filestack/filestack.component';
-
+import { Activity } from '../activity/activity.service';
 
 export interface Progress {
   id: number;
@@ -16,7 +15,7 @@ export interface Topic {
   programId: number;
   title: string;
   content: string;
-  videolink: string;
+  videolink?: string;
   files:Array <object>;
   hasComments: boolean;
 
@@ -49,7 +48,7 @@ export class TopicService {
   ) { }
 
   getTopic(id: number): Observable<any> {
-    return this.request.get(api.get.stories, {params: {id: id}})
+    return this.request.get(api.get.stories, {params: { model_id: id }})
       .pipe(map(response => {
         if (response.success && response.data) {
           return this._normaliseTopic(response.data);
@@ -60,7 +59,7 @@ export class TopicService {
 
   private _normaliseTopic (data: any){
      // In API response, 'data' is an array of topics(since we passed topic id, it will return only one topic, but still in array format). That's why we use data[0]
-     if (!Array.isArray(data) || !this.utils.has(data[0], 'Story')) {
+     if (!Array.isArray(data) || !this.utils.has(data[0], 'Story') || !this.utils.has(data[0], 'Filestore')) {
       return this.request.apiResponseFormatError('Story format error');
     }
 
@@ -74,6 +73,14 @@ export class TopicService {
       files:[]
     };
     let thisTopic = data[0];
+      if (!this.utils.has(thisTopic.Story, 'id') || 
+      !this.utils.has(thisTopic.Story, 'program_id') || 
+      !this.utils.has(thisTopic.Story, 'title') || 
+      !this.utils.has(thisTopic.Story, 'content') || 
+      !this.utils.has(thisTopic.Story, 'videolink') ||
+      !this.utils.has(thisTopic.Story, 'has_comments'))
+        return this.request.apiResponseFormatError('Story.Story format error');
+      
     topic.id = thisTopic.Story.id;
     topic.programId = thisTopic.program_id;
     topic.title = thisTopic.Story.title;
@@ -82,7 +89,7 @@ export class TopicService {
     topic.hasComments = thisTopic.Story.has_comments;
     topic.files = thisTopic.Filestore.map(item => ({url:item.slug}))
   }
- updateTopicStatus(id){
+  updateTopicStatus(id){
     let postData;
    
     postData = {
@@ -93,10 +100,10 @@ export class TopicService {
     return this.request.post(api.post.updateProgress, postData);
   }
   
-  getTopicProgress(topicId): Observable<any> {
+  getTopicProgress(activityId, topicId): Observable<any> {
     return this.request.get(api.get.progress, {params: {
         model: 'Activity',
-        model_id: topicId,
+        model_id: activityId,
         scope: 'Task'
       }})
       .pipe(map(response => {
