@@ -24,7 +24,10 @@
         <ion-row>
           <ion-label>
             Contact No.
-            <ion-button class="btn-right" color="medium" (click)="updateContactNumber(profile.contactNumber)">Update</ion-button>
+            <ion-button class="btn-right" [disabled]="updating" color="medium" (click)="updateContactNumber(profile.contactNumber)">
+               <ng-container *ngIf="!updating">Update</ng-container>
+               <ng-container *ngIf="updating">Updating..</ng-container>
+            </ion-button>
           </ion-label>
         </ion-row>
         <ion-row>
