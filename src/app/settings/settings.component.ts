@@ -177,9 +177,9 @@ export class SettingsComponent implements OnInit {
   };
 
   // send email to Help request
-  mailTo() {
-    console.log("Send Email to:", this.helpline);
-    //mailto:{{helpline}}?subject={{email.supportTitle}}
+  mailTo() {  
+    var mailto = 'mailto:' + this.helpline + '?subject=' + this.currentProgramName;
+    window.open(mailto, '_self');
   }
 
   logout() {
