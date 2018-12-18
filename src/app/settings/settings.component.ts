@@ -4,6 +4,7 @@ import { AuthService } from '../auth/auth.service';
 import { SettingService, Profile } from './setting.service';
 import { BrowserStorageService } from '@services/storage.service';
 import { UtilsService } from '@services/utils.service';
+import { NotificationService } from '@shared/notification/notification.service';
 
 @Component({
   selector: 'app-settings',
@@ -53,6 +54,7 @@ export class SettingsComponent implements OnInit {
     private settingService : SettingService,
     private storage : BrowserStorageService,
     private utils: UtilsService,
+    private notificationService: NotificationService
   ){
 
   }
@@ -112,7 +114,34 @@ export class SettingsComponent implements OnInit {
   }
 
   updateContactNumber() {   
-    this.settingService.updateProfile(this.profile);
+    this.notificationService.confirm({
+      header: 'Update Profile',
+      message: 'Are you sure to update your profile?',
+      buttons: [
+        {
+          text: 'Cancel',
+          role: 'cancel',          
+          handler: () => {
+            return;
+          }
+        }, {
+          text: 'Okay',
+          handler: () => {
+             this.settingService.updateProfile(this.profile).subscribe(result => {
+               if (result.sucess) {
+                 // TODO:  UPDATE User storage's contact numbner
+                 // TODO : replace with simple alert box that shows in the middle show success alert  
+                 this.notificationService.popUp('shortMessage', { message: "Profile successfully updated!"}, false);         
+               } else {
+                 // TODO : replace with simple alert box that shows in the middle show success alert  
+                 this.notificationService.popUp('shortMessage', { message: "Profile updating failed!"}, false);
+               }
+             });
+          }
+        }
+      ]
+    });
+   
   };
 
   updateCountry() {
