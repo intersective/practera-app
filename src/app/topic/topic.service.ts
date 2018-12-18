@@ -3,7 +3,6 @@ import { Observable, of } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { RequestService } from '@shared/request/request.service';
 import { UtilsService } from '@services/utils.service';
-import { Activity } from '../activity/activity.service';
 
 export interface Progress {
   id: number;
@@ -107,11 +106,13 @@ export class TopicService {
         scope: 'Task'
       }})
       .pipe(map(response => {
-        if (response.success && response.data) {
+        if (response.success && !this.utils.isEmpty(response.data)) {
           var progress = response.data.Activity.Topic.find(function (topic) {
             return topic.id === topicId;
-        });
-        }
+          }) 
+        } else {
+        return false;
+      }
         this.topicProgress = progress;
       })
     );
