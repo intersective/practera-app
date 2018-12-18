@@ -137,11 +137,19 @@ export class SettingsComponent implements OnInit {
            this.settingService.updateProfile(this.profile).subscribe(result => {
              this.updating = false;
              if (result.success) {
-               // update contact number in user storage data array.
-               this.storage.setUser({
-                 contactNumber: this.profile.contactNumber
-               });                             
+               // update contact number in user local storage data array.
+               this.storage.setUser({ contactNumber: this.profile.contactNumber });   
+               var newContactNumber = this.profile.contactNumber;
+               // also update program object in local storage                                   
+               var timelineId = this.storage.getUser().timelineId;  // get current timeline Id 
+               var programsObj = this.utils.each(this.storage.get('programs'), function(program){
+                   if (program.timeline.id === timelineId) {
+                     program.enrolment.contact_number = newContactNumber;
+                   }
+               });
+               this.storage.set('programs', programsObj);
                return this.notificationService.popUp('shortMessage', { message: "Profile successfully updated!"}, false);         
+
              } else {
                return this.notificationService.popUp('shortMessage', { message: "Profile updating failed!"}, false);
              }
@@ -165,11 +173,8 @@ export class SettingsComponent implements OnInit {
   };
 
 
-  openLink(link) {
-     window.open(
-      this.termsUrl,
-      "_system"
-    );
+  openLink() {
+     window.open(this.termsUrl, "_system");
   };
 
   switchProgram() {
