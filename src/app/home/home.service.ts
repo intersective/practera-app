@@ -71,42 +71,62 @@ export class HomeService {
       if (todoItem.is_done) {
         return ;
       }
-      let item: TodoItem = {
-        type: '',
-        name: '',
-        description: '',
-        time: '',
-        meta: {}
-      };
+      
       // todo item for user to see the feedback
       if (todoItem.identifier.includes('AssessmentSubmission-')) {
-        item.type = 'feedback_available';
-        if (!this.utils.has(todoItem, 'meta.assessment_name') ||
-            !this.utils.has(todoItem, 'meta.reviewer_name') ||
-            !this.utils.has(todoItem, 'created')) {
-          return this.request.apiResponseFormatError('TodoItem meta format error');
-        }
-        item.name = todoItem.meta.assessment_name;
-        item.description = todoItem.meta.reviewer_name + ' has provided feedback';
-        item.time = this._timeFormater(todoItem.created);
-        item.meta = todoItem.meta;
-        todoItems.push(item);
+        todoItems = this._addTodoItemForFeedbackAvailable(todoItem, todoItems);
       }
 
       // todo item for user to do the review
       if (todoItem.identifier.includes('AssessmentReview-')) {
-        item.type = 'review_submission';
-        if (!this.utils.has(todoItem, 'meta.assessment_name') ||
-            !this.utils.has(todoItem, 'created')) {
-          return this.request.apiResponseFormatError('TodoItem meta format error');
-        }
-        item.name = todoItem.meta.assessment_name;
-        item.description = 'Please review the assessment';
-        item.time = this._timeFormater(todoItem.created);
-        item.meta = todoItem.meta;
-        todoItems.push(item);
+        todoItems = this._addTodoItemForReview(todoItem, todoItems);
       }
     });
+    return todoItems;
+  }
+
+  private _addTodoItemForFeedbackAvailable(todoItem, todoItems) {
+    let item: TodoItem = {
+      type: '',
+      name: '',
+      description: '',
+      time: '',
+      meta: {}
+    };
+    item.type = 'feedback_available';
+    if (!this.utils.has(todoItem, 'meta.assessment_name') ||
+        !this.utils.has(todoItem, 'meta.reviewer_name') ||
+        !this.utils.has(todoItem, 'created')) {
+      this.request.apiResponseFormatError('TodoItem meta format error');
+      return todoItems;
+    }
+    item.name = todoItem.meta.assessment_name;
+    item.description = todoItem.meta.reviewer_name + ' has provided feedback';
+    item.time = this._timeFormater(todoItem.created);
+    item.meta = todoItem.meta;
+    todoItems.push(item);
+    return todoItems;
+  }
+
+  private _addTodoItemForReview(todoItem, todoItems) {
+    let item: TodoItem = {
+      type: '',
+      name: '',
+      description: '',
+      time: '',
+      meta: {}
+    };
+    item.type = 'review_submission';
+    if (!this.utils.has(todoItem, 'meta.assessment_name') ||
+        !this.utils.has(todoItem, 'created')) {
+      this.request.apiResponseFormatError('TodoItem meta format error');
+      return todoItems;
+    }
+    item.name = todoItem.meta.assessment_name;
+    item.description = 'Please review the assessment';
+    item.time = this._timeFormater(todoItem.created);
+    item.meta = todoItem.meta;
+    todoItems.push(item);
     return todoItems;
   }
 
@@ -184,7 +204,21 @@ export class HomeService {
       this.request.apiResponseFormatError('Progress format error');
       return 0;
     }
-    data.Project.Milestone.forEach(milestone => {
+
+    this._getCurrentActivityId(data.Project.Milestone);
+
+    if (data.Project.progress > 1) {
+      data.Project.progress = 1;
+    }
+    return Math.round(data.Project.progress * 100);
+  }
+
+  private _getCurrentActivityId(milestones) {
+    this._loopThroughMilestones(milestones);
+  }
+
+  private _loopThroughMilestones(milestones) {
+    milestones.forEach(milestone => {
       if (this.currentActivityId > 0) {
         return;
       }
@@ -193,24 +227,24 @@ export class HomeService {
         this.request.apiResponseFormatError('Progress.Milestone format error');
         return ;
       }
-      milestone.Activity.forEach(activity => {
-        if (this.currentActivityId > 0) {
-          return;
-        }
-        if (!this.utils.has(activity, 'progress') ||
-            !this.utils.has(activity, 'id')) {
-          this.request.apiResponseFormatError('Progress.Milestone.Activity format error');
-          return ;
-        }
-        if (activity.progress < 1) {
-          this.currentActivityId = activity.id
-        }
-      });
+      this._loopThroughActivities(milestone.Activity);
     });
-    if (data.Project.progress > 1) {
-      data.Project.progress = 1;
-    }
-    return Math.round(data.Project.progress * 100);
+  }
+
+  private _loopThroughActivities(activities) {
+    activities.forEach(activity => {
+      if (this.currentActivityId > 0) {
+        return;
+      }
+      if (!this.utils.has(activity, 'progress') ||
+          !this.utils.has(activity, 'id')) {
+        this.request.apiResponseFormatError('Progress.Milestone.Activity format error');
+        return ;
+      }
+      if (activity.progress < 1) {
+        this.currentActivityId = activity.id
+      }
+    });
   }
 
   getCurrentActivity() {
