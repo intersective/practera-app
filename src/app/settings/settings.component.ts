@@ -6,6 +6,7 @@ import { BrowserStorageService } from '@services/storage.service';
 import { UtilsService } from '@services/utils.service';
 import { NotificationService } from '@shared/notification/notification.service';
 
+
 @Component({
   selector: 'app-settings',
   templateUrl: 'settings.component.html',
@@ -17,12 +18,13 @@ export class SettingsComponent implements OnInit {
     contactNumber: '',
     email: ''
   };
-  
+  currentProgramName = '';
   // default country model
   countryModel = "AUS";
   // default mask 
   mask = '';
-
+  // variable to control the update button 
+  updating = false;
   // supported countries
   countryCodes = [
     {
@@ -63,6 +65,8 @@ export class SettingsComponent implements OnInit {
     // get contact number and email from local storage
     this.profile.email = this.storage.getUser().email;
     this.profile.contactNumber = this.storage.getUser().contactNumber;
+    // also get program name 
+    this.currentProgramName = this.storage.getUser().programName;
     // if user has the contact number
     if (this.profile.contactNumber && this.profile.contactNumber != null) {
       this._checkCurrentContactNumberOrigin();
@@ -114,6 +118,7 @@ export class SettingsComponent implements OnInit {
   }
 
   updateContactNumber() {   
+    this.updating = true;
     this.notificationService.confirm({
       header: 'Update Profile',
       message: 'Are you sure to update your profile?',
@@ -122,21 +127,25 @@ export class SettingsComponent implements OnInit {
           text: 'Cancel',
           role: 'cancel',          
           handler: () => {
+            this.updating = false;
             return;
           }
-        }, {
+        }, 
+        {
           text: 'Okay',
-          handler: () => {
-             this.settingService.updateProfile(this.profile).subscribe(result => {
-               if (result.sucess) {
-                 // TODO:  UPDATE User storage's contact numbner
-                 // TODO : replace with simple alert box that shows in the middle show success alert  
-                 this.notificationService.popUp('shortMessage', { message: "Profile successfully updated!"}, false);         
-               } else {
-                 // TODO : replace with simple alert box that shows in the middle show success alert  
-                 this.notificationService.popUp('shortMessage', { message: "Profile updating failed!"}, false);
-               }
-             });
+          handler: () => {                              
+           this.settingService.updateProfile(this.profile).subscribe(result => {
+             this.updating = false;
+             if (result.success) {
+               // update contact number in user storage data array.
+               this.storage.setUser({
+                 contactNumber: this.profile.contactNumber
+               });                             
+               return this.notificationService.popUp('shortMessage', { message: "Profile successfully updated!"}, false);         
+             } else {
+               return this.notificationService.popUp('shortMessage', { message: "Profile updating failed!"}, false);
+             }
+           });
           }
         }
       ]
@@ -157,7 +166,10 @@ export class SettingsComponent implements OnInit {
 
 
   openLink(link) {
-    console.log('open the file');
+     window.open(
+      this.termsUrl,
+      "_system"
+    );
   };
 
   switchProgram() {
