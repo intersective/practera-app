@@ -214,7 +214,7 @@ export class HomeService {
   }
 
   private _getCurrentActivityId(data) {
-    return data.Project.Milestone.forEach(this._loopThroughMilestones);
+    return data.Project.Milestone.forEach(this._loopThroughMilestones, this);
   }
 
   private _loopThroughMilestones(milestone) {
@@ -226,7 +226,7 @@ export class HomeService {
       this.request.apiResponseFormatError('Progress.Milestone format error');
       return ;
     }
-    milestone.Activity.forEach(this._loopThroughActivities);
+    milestone.Activity.forEach(this._loopThroughActivities, this);
   }
 
   private _loopThroughActivities(activity) {
