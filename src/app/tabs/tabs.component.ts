@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { TabsService } from './tabs.service';
+import { BrowserStorageService } from '@services/storage.service';
 
 @Component({
   selector: 'app-tabs',
@@ -14,7 +15,7 @@ export class TabsComponent implements OnInit {
 
   constructor (
     private tabsService: TabsService,
-    // private utils: UtilsService
+    private storage: BrowserStorageService
   ) {}
 
   ngOnInit() {
@@ -26,5 +27,8 @@ export class TabsComponent implements OnInit {
       .subscribe(noOfChats => {
         this.noOfChats = noOfChats;
       });
+    if (!this.storage.getUser().teamId) {
+      this.showChat = false;
+    }
   }
 }
