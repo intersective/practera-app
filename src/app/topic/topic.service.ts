@@ -12,9 +12,7 @@ export interface Topic {
   videolink?: string;
   files:Array <object>;
   hasComments: boolean;
-
-};
-
+}
 
 const api = {
   get: {
@@ -25,8 +23,6 @@ const api = {
     updateProgress: '/api/v2/motivations/progress/create.json',
   }
 };
-
-
 
 @Injectable({
   providedIn: 'root'
@@ -67,10 +63,10 @@ export class TopicService {
       files:[]
     };
     let thisTopic = data[0];
-      if (!this.utils.has(thisTopic.Story, 'id') || 
-          !this.utils.has(thisTopic.Story, 'title'))
-        return this.request.apiResponseFormatError('Story.Story format error');
-      
+    if (!this.utils.has(thisTopic.Story, 'id') || 
+        !this.utils.has(thisTopic.Story, 'title')) {
+      return this.request.apiResponseFormatError('Story.Story format error');
+    }
     topic.id = thisTopic.Story.id;
     if (this.utils.has(thisTopic.Story, 'program_id')) {
       topic.programId = thisTopic.program_id;
@@ -101,22 +97,21 @@ export class TopicService {
   
   getTopicProgress(activityId, topicId): Observable<any> {
     return this.request.get(api.get.progress, {params: {
-        model: 'Activity',
-        model_id: activityId,
-        scope: 'Task'
-      }})
-      .pipe(map(response => {
-        if (response.success && !this.utils.isEmpty(response.data)) {
-
-            var progress = response.data.Activity.Topic.find(function (topic) {
-                return topic.id === topicId;
-            }) 
-            this.topicProgress = progress.progress;
-            return this.topicProgress;
-        } else {
-            return false;
-          }
-        })
-      );
-    }
+      model: 'Activity',
+      model_id: activityId,
+      scope: 'Task'
+    }})
+    .pipe(map(response => {
+      if (response.success && !this.utils.isEmpty(response.data)) {
+        var progress = response.data.Activity.Topic.find(function (topic) {
+            return topic.id === topicId;
+        });
+        this.topicProgress = progress.progress;
+        return this.topicProgress;
+      } else {
+          return false;
+      }
+    }));
+  }
+  
 }
