@@ -9,8 +9,16 @@ import { Router, ActivatedRoute } from '@angular/router';
   styleUrls: ['./topic.component.scss']
 })
 export class TopicComponent implements OnInit {
-  topic: Topic;
-  iframeHtml: string;
+  topic: Topic = {
+    id: 0,
+  programId: 0,
+  title: '',
+  content: '',
+  videolink: '',
+  files:[],
+  hasComments: false
+  };
+  iframeHtml: string ='';
   btnToggleTopicIsDone: boolean;
   id: number = 0;
   activityId: number = 0;
@@ -28,7 +36,6 @@ export class TopicComponent implements OnInit {
     this.activityId = parseInt(this.route.snapshot.paramMap.get('activityId'));
     this._getTopic();
     this._getTopicProgress();
-    this._btnIsDone();
    
    }
 
@@ -45,21 +52,19 @@ export class TopicComponent implements OnInit {
     this.topicService.getTopicProgress(this.activityId,this.id)
     .subscribe(result => {
       this.topicProgress = result;
+      if (this.topicProgress !== null && this.topicProgress !== undefined) {
+        //Check status of the topic
+        if (this.topicProgress.progress === 1) {
+            this.btnToggleTopicIsDone = true;
+        } else {
+            this.btnToggleTopicIsDone = false;
+        }
+      } else {
+        this.btnToggleTopicIsDone = false;
+      }
     });
   }
   
-  public _btnIsDone() {
-    if (this.topicProgress !== null && this.topicProgress !== undefined) {
-      //Check status of the topic
-      if (this.topicProgress.progress === 1) {
-          this.btnToggleTopicIsDone = true;
-      } else {
-          this.btnToggleTopicIsDone = false;
-      }
-    } else {
-      this.btnToggleTopicIsDone = false;
-    }
-  }
   markAsDone () {
     this.btnToggleTopicIsDone = true;
     this.topicService.updateTopicStatus(this.id).subscribe();
