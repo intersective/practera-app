@@ -22,29 +22,32 @@ export class SettingsComponent implements OnInit {
   // default country model
   countryModel = "AUS";
   // default mask 
-  mask = '';
+  mask = ''; 
+  // default prefix 
+  prefixCode = '';
   // variable to control the update button 
   updating = false;
   // supported countries
   countryCodes = [
     {
         name: "Australia",
-        code: "AUS",
-        prefix: "+61",
-        mask: "+61 999 999 999",
+        code: "AUS"
     },
     {
         name: "US/Canada",
-        code: "US",
-        prefix: "+1",
-        mask: "+1 999 999 9999",
+        code: "US"
     },
   ];
 
   formatMasks = {
-      AUS: "+61 999 999 999",
-      US: "+1 999 999 9999"      
+      AUS: "000 000 000",
+      US: "000 000 0000"      
    };
+
+   formatPrefix = {
+     AUS: "+61",
+     US: "+1"
+   }
 
   helpline = 'help@practera.com';
   
@@ -80,7 +83,9 @@ export class SettingsComponent implements OnInit {
     
     if (prefix === '+61') {
         this.countryModel = 'AUS';
-        this.mask = this.formatMasks['AUS'];           
+        this.mask = this.formatMasks['AUS'];
+        this.prefixCode = this.formatPrefix['AUS'];
+        this.profile.contactNumber = contactNum.substring(3, contactNum.length);                
         return;
     }
 
@@ -88,18 +93,24 @@ export class SettingsComponent implements OnInit {
     if (prefix === '61') {
         this.countryModel = 'AUS';
         this.mask = this.formatMasks['AUS'];
+        this.prefixCode = this.formatPrefix['AUS'];
+        this.profile.contactNumber = contactNum.substring(2, contactNum.length);
         return;
     }
 
     if (prefix === '04') {
         this.countryModel = 'AUS';
         this.mask = this.formatMasks['AUS'];
+        this.prefixCode = this.formatPrefix['AUS'];
+        this.profile.contactNumber = contactNum.substring(1, contactNum.length);
         return;
      }
 
     if (prefix === '+1') {
         this.countryModel = 'US';        
         this.mask = this.formatMasks['US']; 
+        this.prefixCode = this.formatPrefix['US'];    
+        this.profile.contactNumber = contactNum.substring(2, contactNum.length); 
         return;
     }
 
@@ -107,12 +118,16 @@ export class SettingsComponent implements OnInit {
     if (prefix === '1') {
         this.countryModel = 'US';
         this.mask = this.formatMasks['US'];   
+        this.prefixCode = this.formatPrefix['US'];
+        this.profile.contactNumber = contactNum.substring(1, contactNum.length);
         return;
     }
 
     if (prefix === '0') {
         this.countryModel = 'AUS';
         this.mask = this.formatMasks['AUS'];   
+        this.prefixCode = this.formatPrefix['AUS'];
+        this.profile.contactNumber = contactNum.substring(1, contactNum.length);
         return;
     }
   }
@@ -167,9 +182,10 @@ export class SettingsComponent implements OnInit {
       return country.code === selectedCountry;
     })
     // set currentContactNumber to empty 
-    this.profile.contactNumber = '';    
+    this.profile.contactNumber = "";    
     // update the mask as per the newly selected country
     this.mask = this.formatMasks[country.code];    
+    this.prefixCode = this.formatPrefix[country.code];
   };
 
 

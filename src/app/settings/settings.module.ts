@@ -5,6 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { SettingsRoutingComponent } from './settings-routing.component';
 import { SettingsComponent } from './settings.component';
 import { SettingsRoutingModule } from './settings-routing.module';
+import {NgxMaskModule} from 'ngx-mask'
 
 @NgModule({
   imports: [
@@ -12,6 +13,7 @@ import { SettingsRoutingModule } from './settings-routing.module';
     CommonModule,
     FormsModule,
     SettingsRoutingModule,
+    NgxMaskModule.forRoot()
   ],
   declarations: [ 
     SettingsRoutingComponent, 
