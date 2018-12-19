@@ -224,6 +224,23 @@ export class ProjectService {
 
   private _normaliseActivities(data) {
     let activities = [];
-    
+    if (!Array.isArray(data)) {
+      this.request.apiResponseFormatError('Activity array format error');
+      return [];
+    }
+    data.forEach(eachActivity, function (activity) {
+      var activityArray = [];
+      angular.forEach(activities.data, function (activity) {
+          //to get activity list assigning a empty array to activity property of milestone.
+          if (milestone.id === activity.Activity.milestone_id) {
+              //old logic - milestone.activity = activity
+              //modify old log to get activity list.
+              activityArray.push(activity);
+          }
+
+      });
+
+      milestone.activity = activityArray;
+  });
   }
 }
