@@ -27,7 +27,7 @@ export class TabsService {
     private utils: UtilsService,
   ) {}
 
-  getTodoItems() {
+  getNoOfTodoItems() {
     return this.request.get(api.todoItem, {
         params: {
           project_id: this.storage.getUser().projectId
@@ -35,16 +35,16 @@ export class TabsService {
       })
       .pipe(map(response => {
         if (response.success && response.data) {
-          return this._normaliseTodoItems(response.data);
+          return this._normaliseNoOfTodoItems(response.data);
         }
       }));
   }
 
-  private _normaliseTodoItems(data) {
+  private _normaliseNoOfTodoItems(data) {
     let noOfTodoItems = 0;
     if (!Array.isArray(data)) {
       this.request.apiResponseFormatError('TodoItem array format error');
-      return [];
+      return 0;
     }
     data.forEach(todoItem => {
       if (!this.utils.has(todoItem, 'is_done')) {
@@ -58,19 +58,19 @@ export class TabsService {
     return noOfTodoItems;
   }
 
-  getChatMessage() {
+  getNoOfChats() {
     return this.request.get(api.chat)
       .pipe(map(response => {
         if (response.success && response.data) {
-          return this._normaliseChatMessage(response.data);
+          return this._normaliseNoOfChats(response.data);
         }
       }));
   }
 
-  private _normaliseChatMessage(data) {
+  private _normaliseNoOfChats(data) {
     if (!Array.isArray(data)) {
       this.request.apiResponseFormatError('Chat array format error');
-      return {};
+      return 0;
     }
     let noOfChats = 0;
     data.forEach(data => {
