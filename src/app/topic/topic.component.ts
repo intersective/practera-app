@@ -11,7 +11,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 export class TopicComponent implements OnInit {
   topic: Topic;
   iframeHtml: string;
-  btnToggleTopicIsDone: boolean = false;
+  btnToggleTopicIsDone: boolean;
   id: number = 0;
   activityId: number = 0;
   topicProgress: Progress;
