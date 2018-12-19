@@ -11,12 +11,12 @@ import { Router, ActivatedRoute } from '@angular/router';
 export class TopicComponent implements OnInit {
   topic: Topic = {
     id: 0,
-  programId: 0,
-  title: '',
-  content: '',
-  videolink: '',
-  files:[],
-  hasComments: false
+    programId: 0,
+    title: '',
+    content: '',
+    videolink: '',
+    files:[],
+    hasComments: false
   };
   iframeHtml: string ='';
   btnToggleTopicIsDone: boolean;
