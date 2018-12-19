@@ -40,6 +40,7 @@ export interface Milestone {
   providedIn: 'root',
 })
 export class ProjectService {
+  public milestone_ids = [];
   // milestones: Array <Milestone> = [
   //   {
   //     id: 1,
@@ -200,7 +201,29 @@ export class ProjectService {
         milestone.description = eachMilestone.project_id;
       }
       milestones.push(eachMilestone);
+      milestones.forEach(milestone => {
+        this.milestone_ids.push(milestone.id);
+      })
     })
     return milestones;
+  }
+
+  getActivities() {
+    return this.request.get(api.activity, {
+      params: {
+        milestone_id: JSON.stringify(this.milestone_ids),
+        project_id: this.storage.getUser().projectId
+      }
+    })
+    .pipe(map(response => {
+      if (response.sucess && response.date) {
+        return this._normaliseActivities(response.date);
+      }
+    }))
+  }
+
+  private _normaliseActivities(data) {
+    let activities = [];
+    
   }
 }
