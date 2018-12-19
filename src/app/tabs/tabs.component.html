@@ -41,7 +41,7 @@
       <ion-label>Review</ion-label>
     </ion-tab-button>
 
-    <ion-tab-button tab="chat" href="/app/(chat:chat)">
+    <ion-tab-button *ngIf="showChat" tab="chat" href="/app/(chat:chat)">
       <ion-icon name="chatboxes"></ion-icon>
       <ion-label>Chat</ion-label>
     </ion-tab-button>
