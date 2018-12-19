@@ -7,5 +7,8 @@ import { Component } from '@angular/core';
 })
 export class TabsComponent {
 	showTeam = false;
-	showReview = true;
+	showReview = false;
+  showChat = true;
+  noOfTodoItems = 0;
+  noOfChats = 0;
 }
