@@ -1,5 +1,22 @@
 import { Injectable } from "@angular/core";
-import { Observable, of, BehaviorSubject } from "rxjs";
+import { RequestService } from "@shared/request/request.service";
+import { HttpParams } from "@angular/common/http";
+import { map } from "rxjs/operators";
+import { Observable, of } from "rxjs";
+import { BrowserStorageService } from "@services/storage.service";
+import { UtilsService } from "@services/utils.service";
+
+/**
+ * @name api
+ * @description list of api endpoint involved in this service
+ * @type {Object}
+ */
+const api = {
+  getChatList: "api/v2/message/chat/list.json",
+  getChatMessages: "api/v2/message/chat/list_messages.json",
+  createMessage: "api/v2/message/chat/create_message",
+  markAsSeen: "api/v2/message/chat/edit_message"
+};
 
 
 interface newMessage {
@@ -30,8 +47,12 @@ export class ChatService {
   private chatList: any[];
   private messageList: any[];
 
-  constructor() {
-    this.initDemoData();
+  constructor(
+    private request: RequestService,
+    private storage: BrowserStorageService,
+    private utils: UtilsService
+  ) {
+    
   }
 
   initDemoData() {
@@ -114,7 +135,7 @@ export class ChatService {
    * this method return chat list data.
    */
   getchatList(): Observable<any> {
-    return of(this.chatList);
+    return this.request.get(api.getChatList);
   }
 
   /**
@@ -129,8 +150,7 @@ export class ChatService {
    * }
    */
   getMessageList(prams: messageListPrams): Observable<any> {
-    console.log("Service", this.messageList);
-    return of(this.messageList);
+    return this.request.get(api.getChatMessages, prams);
   }
 
   markMessagesAsSeen(prams: markAsSeenPrams): Observable<any> {
