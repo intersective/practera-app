@@ -37,40 +37,41 @@ export class TopicComponent implements OnInit {
     this.activityId = parseInt(this.route.snapshot.paramMap.get('activityId'));
     this._getTopic();
     this._getTopicProgress();
-   
    }
 
   private _getTopic() {
-   this.topicService.getTopic(this.id)
+    this.topicService.getTopic(this.id)
       .subscribe(topic => {
         this.topic = topic;
         if ( topic.videolink ) {
           this.iframeHtml = this.embedService.embed(this.topic.videolink);
         }
       });
-    }
+  }
+
   private _getTopicProgress() {
     this.topicService.getTopicProgress(this.activityId,this.id)
-    .subscribe(result => {
-      this.topicProgress = result;
-      if (this.topicProgress !== null && this.topicProgress !== undefined) {
-        //Check status of the topic
-        if (this.topicProgress === 1) {
-            this.btnToggleTopicIsDone = true;
-            this.loadingMarkedDone = false;
+      .subscribe(result => {
+        this.topicProgress = result;
+        if (this.topicProgress !== null && this.topicProgress !== undefined) {
+          //Check status of the topic
+          if (this.topicProgress === 1) {
+              this.btnToggleTopicIsDone = true;
+              this.loadingMarkedDone = false;
+          } else {
+              this.btnToggleTopicIsDone = false;
+          }
         } else {
-            this.btnToggleTopicIsDone = false;
+          this.btnToggleTopicIsDone = false;
         }
-      } else {
-        this.btnToggleTopicIsDone = false;
-      }
-    });
+      });
   }
   
   markAsDone () {
     this.btnToggleTopicIsDone = true;
     this.topicService.updateTopicStatus(this.id).subscribe();
- }
+  }
+  
   previewFile () {
     console.log('show the file');
   }
