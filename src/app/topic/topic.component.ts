@@ -1,4 +1,4 @@
-import { TopicService, Topic, Progress } from './topic.service';
+import { TopicService, Topic } from './topic.service';
 import { Component, OnInit } from '@angular/core';
 import { EmbedVideoService } from 'ngx-embed-video';
 import { Router, ActivatedRoute } from '@angular/router';
@@ -19,10 +19,11 @@ export class TopicComponent implements OnInit {
     hasComments: false
   };
   iframeHtml: string ='';
-  btnToggleTopicIsDone: boolean;
+  btnToggleTopicIsDone: boolean = false;
+  loadingMarkedDone: boolean = true;
   id: number = 0;
   activityId: number = 0;
-  topicProgress: Progress;
+  topicProgress: number;
   
   constructor( 
     private topicService: TopicService,
@@ -54,8 +55,9 @@ export class TopicComponent implements OnInit {
       this.topicProgress = result;
       if (this.topicProgress !== null && this.topicProgress !== undefined) {
         //Check status of the topic
-        if (this.topicProgress.progress === 1) {
+        if (this.topicProgress === 1) {
             this.btnToggleTopicIsDone = true;
+            this.loadingMarkedDone = false;
         } else {
             this.btnToggleTopicIsDone = false;
         }

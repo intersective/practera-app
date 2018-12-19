@@ -4,11 +4,6 @@ import { map } from 'rxjs/operators';
 import { RequestService } from '@shared/request/request.service';
 import { UtilsService } from '@services/utils.service';
 
-export interface Progress {
-  id: number;
-  progress: number;
-}
-
 export interface Topic {
   id: number;
   programId: number;
@@ -39,7 +34,7 @@ const api = {
 
 export class TopicService {
   topic :Topic;
-  topicProgress: Progress;
+  topicProgress: number;
   
   constructor(
     private request: RequestService,
@@ -116,8 +111,8 @@ export class TopicService {
             var progress = response.data.Activity.Topic.find(function (topic) {
                 return topic.id === topicId;
             }) 
-            this.topicProgress = progress;
-            return this.topicProgress
+            this.topicProgress = progress.progress;
+            return this.topicProgress;
         } else {
             return false;
           }
