@@ -112,15 +112,16 @@ export class TopicService {
       }})
       .pipe(map(response => {
         if (response.success && !this.utils.isEmpty(response.data)) {
-          var progress = response.data.Activity.Topic.find(function (topic) {
-            return topic.id === topicId;
-          }) 
-        } else {
-        return false;
-      }
-        this.topicProgress = progress;
-      })
-    );
-  }
 
+            var progress = response.data.Activity.Topic.find(function (topic) {
+                return topic.id === topicId;
+            }) 
+            this.topicProgress = progress;
+            return this.topicProgress
+        } else {
+            return false;
+          }
+        })
+      );
+    }
 }
