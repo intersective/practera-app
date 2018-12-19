@@ -16,10 +16,6 @@
     <ion-router-outlet name="chat"></ion-router-outlet>
   </ion-tab>
 
-  <ion-tab tab="team">
-    <ion-router-outlet name="team"></ion-router-outlet>
-  </ion-tab>
-
   <ion-tab tab="settings">
     <ion-router-outlet name="settings"></ion-router-outlet>
   </ion-tab>
@@ -28,6 +24,7 @@
 
     <ion-tab-button tab="home" href="/app/(home:home)">
       <ion-icon name="home"></ion-icon>
+      <ion-badge color="danger" *ngIf="noOfTodoItems > 0">{{ noOfTodoItems }}</ion-badge>
       <ion-label>Home</ion-label>
     </ion-tab-button>
 
@@ -43,12 +40,8 @@
 
     <ion-tab-button *ngIf="showChat" tab="chat" href="/app/(chat:chat)">
       <ion-icon name="chatboxes"></ion-icon>
+      <ion-badge color="danger" *ngIf="noOfChats > 0">{{ noOfChats }}</ion-badge>
       <ion-label>Chat</ion-label>
-    </ion-tab-button>
-
-    <ion-tab-button *ngIf="showTeam" tab="team" href="/app/(team:team)">
-      <ion-icon name="people"></ion-icon>
-      <ion-label>Team</ion-label>
     </ion-tab-button>
 
     <ion-tab-button tab="settings" href="/app/(settings:settings)">
