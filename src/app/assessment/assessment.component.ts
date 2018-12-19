@@ -62,6 +62,7 @@ export class AssessmentComponent implements OnInit {
   doAssessment: boolean = false;
   doReview: boolean = false;
   feedbackReviewed: boolean = false;
+  loadingFeedbackReviewed: boolean = true;
   questionsForm = new FormGroup({});
   submitting: boolean = false;
 
@@ -114,6 +115,7 @@ export class AssessmentComponent implements OnInit {
           this.assessmentService.getFeedbackReviewed(this.submission.id)
             .subscribe(result => {
               this.feedbackReviewed = result;
+              this.loadingFeedbackReviewed = false;
             });
         }
       });
