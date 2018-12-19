@@ -72,7 +72,6 @@ export class TopicService {
       files:[]
     };
     let thisTopic = data[0];
-    console.log(data[0]);
       if (!this.utils.has(thisTopic.Story, 'id') || 
           !this.utils.has(thisTopic.Story, 'title'))
         return this.request.apiResponseFormatError('Story.Story format error');
@@ -90,7 +89,7 @@ export class TopicService {
     }
     topic.hasComments = thisTopic.Story.has_comments;
     topic.files = thisTopic.Filestore.map(item => ({url:item.slug , name:item.name}));
-    console.log(topic);
+
     return topic;
   }
   
