@@ -72,22 +72,28 @@ export class TopicService {
       files:[]
     };
     let thisTopic = data[0];
+    console.log(data[0]);
       if (!this.utils.has(thisTopic.Story, 'id') || 
-      !this.utils.has(thisTopic.Story, 'program_id') || 
-      !this.utils.has(thisTopic.Story, 'title') || 
-      !this.utils.has(thisTopic.Story, 'content') || 
-      !this.utils.has(thisTopic.Story, 'videolink') ||
-      !this.utils.has(thisTopic.Story, 'has_comments'))
+          !this.utils.has(thisTopic.Story, 'title'))
         return this.request.apiResponseFormatError('Story.Story format error');
       
     topic.id = thisTopic.Story.id;
-    topic.programId = thisTopic.program_id;
+    if (this.utils.has(thisTopic.Story, 'program_id')) {
+      topic.programId = thisTopic.program_id;
+    }
     topic.title = thisTopic.Story.title;
-    topic.content = thisTopic.Story.content;
-    topic.videolink = thisTopic.Story.videolink;
+    if (this.utils.has(thisTopic.Story, 'content')) {
+      topic.content = thisTopic.Story.content;
+    }
+    if (this.utils.has(thisTopic.Story, 'videolink')) {
+      topic.videolink = thisTopic.Story.videolink;
+    }
     topic.hasComments = thisTopic.Story.has_comments;
-    topic.files = thisTopic.Filestore.map(item => ({url:item.slug}))
+    topic.files = thisTopic.Filestore.map(item => ({url:item.slug , name:item.name}));
+    console.log(topic);
+    return topic;
   }
+  
   updateTopicStatus(id){
     let postData;
    
