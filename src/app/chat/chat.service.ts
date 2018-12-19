@@ -94,18 +94,18 @@ export class ChatService {
     ];
     this.messageList = [
       {
-        id: 14949,
-        sender_name: "test student1",
-        message: "coming from student 1 to student 2",
-        sent_time: "11.30 AM",
-        is_sender: true
-      },
-      {
         id: 14950,
         sender_name: "test student2",
         message: "second chat from student 2 to student 1",
         sent_time: "1.00 PM",
         is_sender: false
+      },
+      {
+        id: 14949,
+        sender_name: "test student1",
+        message: "coming from student 1 to student 2",
+        sent_time: "11.30 AM",
+        is_sender: true
       }
     ];
   }
