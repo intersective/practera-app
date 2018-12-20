@@ -56,12 +56,9 @@ export class TopicComponent implements OnInit {
         if (this.topicProgress !== null && this.topicProgress !== undefined) {
           if (this.topicProgress === 1) {
             this.btnToggleTopicIsDone = true;
-            
-          } else {
-            this.btnToggleTopicIsDone = false;
-          }
-          this.loadingMarkedDone = false;
+          } 
         }
+        this.loadingMarkedDone = false;
       });
    }
 
