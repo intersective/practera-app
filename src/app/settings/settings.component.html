@@ -7,15 +7,15 @@
   <ion-card class="practera-card">
     <ion-item >
       <ion-label>My Account
-        <div *ngIf="email" >
-          <ion-label color="medium">Email: {{email}}</ion-label>
+        <div *ngIf="profile.email" >
+          <ion-label color="medium">Email: {{profile.email}}</ion-label>
         </div>
       </ion-label>
     </ion-item>
 
     <ion-item>
       <ion-label>Select Country</ion-label>
-        <ion-select [(ngModel)]="countryModel" (change)="updateCountry(countryModel)">
+        <ion-select [(ngModel)]="countryModel" (ionChange)="updateCountry()">
           <ion-select-option *ngFor="let countryCode of countryCodes" [value]="countryCode.code">{{countryCode.name}}</ion-select-option>
         </ion-select>
     </ion-item>
@@ -24,17 +24,14 @@
         <ion-row>
           <ion-label>
             Contact No.
-            <ion-button class="btn-right" color="medium" (click)="updateProfile(contact_number)">Update</ion-button>
+            <ion-button class="btn-right" [disabled]="updating" color="medium" (click)="updateContactNumber()">
+               <ng-container *ngIf="!updating">Update</ng-container>
+               <ng-container *ngIf="updating">Updating..</ng-container>
+            </ion-button>
           </ion-label>
         </ion-row>
-        <ion-row>
-          <ion-input 
-            color="medium" 
-            [(ngModel)]="contact_number"
-            placeholder="contact number"
-            type="text"
-            >
-          </ion-input>
+        <ion-row>                     
+          <input [textMask]="{mask: mask, showMask: true, guide: true}" [(ngModel)]="profile.contactNumber" type="text"/>
         </ion-row>    
       </ion-grid>
     </ion-item>  
@@ -51,7 +48,7 @@
       <ion-icon padding name="mail"></ion-icon>
       Email Help
     </ion-item>
-    <ion-item (click)="openLink(termsUrl)">
+    <ion-item (click)="openLink()">
       <ion-icon padding name="clipboard"></ion-icon>
       Terms of Use
     </ion-item>
