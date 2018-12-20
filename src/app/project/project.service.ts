@@ -4,6 +4,7 @@ import { map } from 'rxjs/operators';
 import { RequestService } from '@shared/request/request.service';
 import { UtilsService } from '@services/utils.service';
 import { BrowserStorageService } from '@services/storage.service';
+import { Task } from '../activity/activity.service';
 
 /**
  * @name api
@@ -17,12 +18,13 @@ const api = {
 };
 
 export interface Activity {
-  id?: number;
-  name?: string;
-  isLocked?: boolean;
-  progress: number;
-  hasFeedback?: boolean;
+  id: number;
+  name: string;
+  milestoneId: number;
+  isLocked: boolean;
   leadImage?: string;
+  description?: string;
+  tasks: Array <Task>
 }
 
 export interface Milestone {
@@ -207,7 +209,9 @@ export class ProjectService {
     })
     return milestones;
   }
-
+  private _addActivitiesToEachMilestone() {
+    
+  }
   getActivities() {
     return this.request.get(api.activity, {
       params: {
@@ -222,25 +226,53 @@ export class ProjectService {
     }))
   }
 
-  private _normaliseActivities(data) {
+  private _normaliseActivities(data: any) {
     let activities = [];
     if (!Array.isArray(data)) {
-      this.request.apiResponseFormatError('Activity array format error');
+      this.request.apiResponseFormatError('Activities array format error');
       return [];
     }
-    data.forEach(eachActivity, function (activity) {
-      var activityArray = [];
-      angular.forEach(activities.data, function (activity) {
-          //to get activity list assigning a empty array to activity property of milestone.
-          if (milestone.id === activity.Activity.milestone_id) {
-              //old logic - milestone.activity = activity
-              //modify old log to get activity list.
-              activityArray.push(activity);
-          }
+    
+    data.forEach(eachActivity => {
+      if (!this.utils.has(eachActivity, 'Activity')) {
+        return this.request.apiResponseFormatError('Activity.Activity format error');
+      }
+      if (this.utils.has(eachActivity, 'Activity') && eachActivity.Activity.is_locked === false ) {
+        if (!this.utils.has(eachActivity, 'ActivitySequence') || !this.utils.has(eachActivity, 'References')) {
+          return this.request.apiResponseFormatError('Activities format error');
+        }
+      }
+      let activity: Activity = {
+        id: 0,
+        name: '',
+        milestoneId: 0,
+        isLocked: false,
+        leadImage: '',
+        description: '',
+        tasks: []
+      }
+      let thisActivity = eachActivity.Activity;
+      activity.id = thisActivity.id;
+      activity.name = thisActivity.name;
+      activity.isLocked = thisActivity.is_locked;
 
-      });
+      if (this.utils.has(thisActivity, 'description')) {
+        activity.description = thisActivity.description;
+      }
+      if (this.utils.has(thisActivity, 'lead_mage')) {
+        activity.leadImage = thisActivity.lead_image;
+      }
+      if (!thisActivity.isLocked) {
+        activity.milestoneId = thisActivity.milestone_id;
+      }
+      if (this.utils.has(thisActivity, 'ActivitySequence')) {
+        thisActivity.ActivitySequence.forEach(task => {
+          activity.tasks.push(task);
+        })   
+     };
 
-      milestone.activity = activityArray;
-  });
-  }
+      activities.push(activity);
+
+    })
+  }     
 }
