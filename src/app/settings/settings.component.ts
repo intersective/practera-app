@@ -13,7 +13,7 @@ import { NotificationService } from '@shared/notification/notification.service';
   styleUrls: ['settings.component.scss']
 })
 export class SettingsComponent implements OnInit {
-   
+
   profile : Profile = {
     contactNumber: '',
     email: ''
@@ -22,9 +22,7 @@ export class SettingsComponent implements OnInit {
   // default country model
   countryModel = "AUS";
   // default mask 
-  mask = ''; 
-  // default prefix 
-  prefixCode = '';
+  mask: Array<string|RegExp>;   
   // variable to control the update button 
   updating = false;
   // supported countries
@@ -40,14 +38,9 @@ export class SettingsComponent implements OnInit {
   ];
 
   formatMasks = {
-      AUS: "000 000 000",
-      US: "000 000 0000"      
+      AUS: ['+','6','1',/[1-9]/, /\d/, /\d/, ' ', /\d/, /\d/, /\d/, ' ', /\d/, /\d/, /\d/],
+      US: ['+','1',/[1-9]/, /\d/, /\d/, ' ', /\d/, /\d/, /\d/, ' ', /\d/, /\d/, /\d/, /\d/]
    };
-
-   formatPrefix = {
-     AUS: "+61",
-     US: "+1"
-   }
 
   helpline = 'help@practera.com';
   
@@ -72,19 +65,17 @@ export class SettingsComponent implements OnInit {
     this.currentProgramName = this.storage.getUser().programName;
     // if user has the contact number
     if (this.profile.contactNumber && this.profile.contactNumber != null) {
-      this._checkCurrentContactNumberOrigin();
-    }
-
+      this.checkCurrentContactNumberOrigin();
+    } 
   };
 
-  private _checkCurrentContactNumberOrigin() {
+  private checkCurrentContactNumberOrigin() {
     var contactNum = this.profile.contactNumber;
     var prefix = contactNum.substring(0, 3);
     
     if (prefix === '+61') {
         this.countryModel = 'AUS';
-        this.mask = this.formatMasks['AUS'];
-        this.prefixCode = this.formatPrefix['AUS'];
+        this.mask = this.formatMasks['AUS'];     
         this.profile.contactNumber = contactNum.substring(3, contactNum.length);                
         return;
     }
@@ -92,24 +83,21 @@ export class SettingsComponent implements OnInit {
     prefix = contactNum.substring(0, 2);
     if (prefix === '61') {
         this.countryModel = 'AUS';
-        this.mask = this.formatMasks['AUS'];
-        this.prefixCode = this.formatPrefix['AUS'];
+        this.mask = this.formatMasks['AUS'];     
         this.profile.contactNumber = contactNum.substring(2, contactNum.length);
         return;
     }
 
     if (prefix === '04') {
         this.countryModel = 'AUS';
-        this.mask = this.formatMasks['AUS'];
-        this.prefixCode = this.formatPrefix['AUS'];
+        this.mask = this.formatMasks['AUS'];       
         this.profile.contactNumber = contactNum.substring(1, contactNum.length);
         return;
      }
 
     if (prefix === '+1') {
         this.countryModel = 'US';        
-        this.mask = this.formatMasks['US']; 
-        this.prefixCode = this.formatPrefix['US'];    
+        this.mask = this.formatMasks['US'];        
         this.profile.contactNumber = contactNum.substring(2, contactNum.length); 
         return;
     }
@@ -117,22 +105,27 @@ export class SettingsComponent implements OnInit {
     prefix = contactNum.substring(0, 1);
     if (prefix === '1') {
         this.countryModel = 'US';
-        this.mask = this.formatMasks['US'];   
-        this.prefixCode = this.formatPrefix['US'];
+        this.mask = this.formatMasks['US'];          
         this.profile.contactNumber = contactNum.substring(1, contactNum.length);
         return;
     }
 
     if (prefix === '0') {
         this.countryModel = 'AUS';
-        this.mask = this.formatMasks['AUS'];   
-        this.prefixCode = this.formatPrefix['AUS'];
+        this.mask = this.formatMasks['AUS'];           
         this.profile.contactNumber = contactNum.substring(1, contactNum.length);
         return;
     }
   }
 
-  updateContactNumber() {   
+  updateContactNumber() { 
+    // strip out white spaces and underscores    
+    this.profile.contactNumber = this.profile.contactNumber.replace(/[^0-9+]+/ig, "");
+    // check if newly input number is valid or not.                     
+    if (!this.validateContactNumber(this.profile.contactNumber)) {
+      this.profile.contactNumber = '';
+      return;
+    }
     this.updating = true;
     this.notificationService.alert({
       header: 'Update Profile',
@@ -148,14 +141,14 @@ export class SettingsComponent implements OnInit {
         }, 
         {
           text: 'Okay',
-          handler: () => {                              
+          handler: () => {                   
            this.settingService.updateProfile(this.profile).subscribe(result => {
              this.updating = false;
              if (result.success) {
                // update contact number in user local storage data array.
                this.storage.setUser({ contactNumber: this.profile.contactNumber });   
                var newContactNumber = this.profile.contactNumber;
-               // also update program object in local storage                                   
+               // also update contact number in program object in local storage                                   
                var timelineId = this.storage.getUser().timelineId;  // get current timeline Id 
                var programsObj = this.utils.each(this.storage.get('programs'), function(program){
                    if (program.timeline.id === timelineId) {
@@ -176,6 +169,23 @@ export class SettingsComponent implements OnInit {
    
   };
 
+  private validateContactNumber(contactNumber) {
+   switch (this.countryModel) {
+     case "AUS":
+       if (contactNumber.length == 12) {                  
+         return true;
+       }
+       break;
+     
+     case "US" : 
+       if (contactNumber.length == 12) {
+         return true;
+       }
+       break;
+   }
+   return false;
+  }
+
   updateCountry() {
     var selectedCountry = this.countryModel;    
     var country = this.utils.find(this.countryCodes, function(country){
@@ -184,8 +194,7 @@ export class SettingsComponent implements OnInit {
     // set currentContactNumber to empty 
     this.profile.contactNumber = "";    
     // update the mask as per the newly selected country
-    this.mask = this.formatMasks[country.code];    
-    this.prefixCode = this.formatPrefix[country.code];
+    this.mask = this.formatMasks[country.code];        
   };
 
 

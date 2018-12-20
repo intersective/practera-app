@@ -30,15 +30,8 @@
             </ion-button>
           </ion-label>
         </ion-row>
-        <ion-row>
-          <!-- <ion-input 
-            color="medium" 
-            [(ngModel)]="profile.contactNumber"
-            placeholder="contact number"
-            type="text"
-            >
-          </ion-input> -->           
-           <input [(ngModel)]="profile.contactNumber" mask="{{mask}}" prefix={{prefixCode}} [showMaskTyped] = "true">
+        <ion-row>                     
+          <input [textMask]="{mask: mask, showMask: true, guide: true}" [(ngModel)]="profile.contactNumber" type="text"/>
         </ion-row>    
       </ion-grid>
     </ion-item>  
