@@ -6,8 +6,6 @@ import { FormsModule } from '@angular/forms';
 import { TabsRoutingModule } from './tabs-routing.module';
 import { TabsComponent } from './tabs.component';
 
-import { ChatListComponent } from '../chat/chat-list/chat-list.component';
-
 @NgModule({
   imports: [
     IonicModule,
@@ -17,7 +15,6 @@ import { ChatListComponent } from '../chat/chat-list/chat-list.component';
   ],
   declarations: [ 
     TabsComponent,
-    ChatListComponent
   ]
 })
 export class TabsModule {}

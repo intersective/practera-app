@@ -1,0 +1,53 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title center>Reviews</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content padding color="light">
+  <div class="top-round-btns" text-center>
+    <ion-button class="do" [ngClass]="{'active-review': !showDo}" (click)="!showDo && activeDo()">To do</ion-button>
+    <ion-button class="done" [ngClass]="{'active-review': showDo}" (click)="showDo && activeDone()">Done</ion-button>
+  </div>
+  <div *ngIf="!reviews.length; else reviewsCard" class="no-review-show" padding text-center>
+    <div class="empty-status  background-white" >
+      <h2 text-center>You have no new submissions to review</h2>
+    </div>
+  </div>
+  <ng-template #reviewsCard>
+    <ng-container *ngFor="let review of reviews">
+      <ion-card
+        color="primary"
+        class="card practera-card"
+        *ngIf="!review.isDone && !showDo" 
+        (click)="gotoReview(review.contextId,review.id)"
+      >
+        <ion-card-content class="review">
+          <h4  class="activity-name">{{review.name}}</h4>
+          <ion-icon name="checkmark-circle" class="check-mark"></ion-icon>
+          <h2  padding-top>{{review.submitterName}}</h2>
+          <h2 *ngIf="review.isInTeam" >
+            {{review.teamName}}
+          </h2>
+          <ion-text >{{review.submittedReviewDate}}</ion-text>
+          
+        </ion-card-content>  
+      </ion-card>
+      <ion-card
+        color="primary"
+        class="card practera-card"
+        *ngIf="review.isDone && showDo"
+        (click)="gotoReview(review.contextId,review.id)"
+        >
+        <ion-card-content class="review">
+          <h4 class="activity-name">{{review.name}}</h4>
+          <h2 padding-top>{{review.submitterName}}</h2>
+          <h2 *ngIf="review.isInTeam" >
+            {{review.teamName}}
+          </h2>
+          <ion-text>{{review.submittedAssessmnetDate}}</ion-text>
+        </ion-card-content>  
+      </ion-card>
+    </ng-container>  
+  </ng-template>
+</ion-content>

@@ -1,5 +1,6 @@
-import { Injectable } from '@angular/core';
+import { Injectable, Inject } from '@angular/core';
 import * as _ from 'lodash';
+import { DOCUMENT } from '@angular/common';
 
 // @TODO: enhance Window reference later, we shouldn't refer directly to browser's window object like this
 declare var window: any;
@@ -10,7 +11,9 @@ declare var window: any;
 export class UtilsService {
   private lodash;
 
-  constructor() {
+  constructor(
+    @Inject(DOCUMENT) private document: Document
+  ) {
     if (_) {
       this.lodash = _;
     } else {
@@ -61,5 +64,9 @@ export class UtilsService {
       array.push(value);
     }
     return array;
+  }
+
+  changeThemeColor(color) {
+    this.document.documentElement.style.setProperty('--ion-color-primary', color);
   }
 }
