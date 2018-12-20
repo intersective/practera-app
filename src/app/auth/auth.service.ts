@@ -1,10 +1,10 @@
-import { Injectable } from '@angular/core';
-import { RequestService } from '@shared/request/request.service';
-import { HttpParams } from '@angular/common/http';
-import { map } from 'rxjs/operators';
-import { Observable, of } from 'rxjs';
-import { BrowserStorageService } from '@services/storage.service';
-import { UtilsService } from '@services/utils.service';
+import { Injectable } from "@angular/core";
+import { RequestService } from "@shared/request/request.service";
+import { HttpParams } from "@angular/common/http";
+import { map } from "rxjs/operators";
+import { Observable, of } from "rxjs";
+import { BrowserStorageService } from "@services/storage.service";
+import { UtilsService } from "@services/utils.service";
 
 /**
  * @name api
@@ -12,26 +12,39 @@ import { UtilsService } from '@services/utils.service';
  * @type {Object}
  */
 const api = {
-  directLink: 'api/auths.json?action=authentication',
-  getConfig: 'api/v2/plan/experience/config',
-  linkedin: 'api/auth_linkedin.json',
-  login: 'api/auth.json',
-  me: 'api/users.json',
-  setProfile: 'api/v2/user/enrolment/edit.json',
+  directLink: "api/auths.json?action=authentication",
+  getConfig: "api/v2/plan/experience/config",
+  linkedin: "api/auth_linkedin.json",
+  login: "api/auth.json",
+  me: "api/users.json",
+  setProfile: "api/v2/user/enrolment/edit.json",
+  verifyRegistration: "api/verification_codes.json",
+  register: "api/registration_details.json"
 };
+
+interface verifyParams {
+  email: string;
+  key: string;
+}
+
+interface registerData {
+  password: string;
+  user_id?: string;
+  key?: string;
+}
 
 interface ConfigParams {
   domain?: string;
-  id: number | string;
-  apikey: string;
+  id?: number | string;
+  apikey?: string;
 }
 
 interface UserProfile {
-  contactNumber: string; 
+  contactNumber: string;
 }
 
 @Injectable({
-  providedIn: 'root',
+  providedIn: "root"
 })
 export class AuthService {
   private isLoggedIn: boolean = false;
@@ -40,13 +53,13 @@ export class AuthService {
     private request: RequestService,
     private storage: BrowserStorageService,
     private utils: UtilsService
-  ) { }
+  ) {}
 
-  private _clearCache():any {
+  private _clearCache(): any {
     // do clear user cache here
   }
 
-  private _normaliseAuth(rawData):any {
+  private _normaliseAuth(rawData): any {
     var data = rawData.data;
 
     return {
@@ -58,11 +71,11 @@ export class AuthService {
           enrolment: timeline.Enrolment,
           program: timeline.Program,
           project: timeline.Project,
-          timeline: timeline.Timeline,
+          timeline: timeline.Timeline
         };
       }),
       config: (data.Experience || {}).config || {},
-      _raw: rawData,
+      _raw: rawData
     };
   }
 
@@ -96,7 +109,7 @@ export class AuthService {
   }
 
   isAuthenticated(): boolean {
-    return this.isLoggedIn || this.storage.get('isLoggedIn');
+    return this.isLoggedIn || this.storage.get("isLoggedIn");
   }
 
   /**
@@ -128,6 +141,7 @@ export class AuthService {
 
   logout(): Observable<any> {
     // @TODO: clear ionic view history too
+    this.utils.changeThemeColor('#2bbfd4');
     return of(this.storage.clear());
   }
 
@@ -181,9 +195,9 @@ export class AuthService {
    * @description enforced domain checking before experience config API call
    * @param {[type]} data [description]
    */
-  checkDomain(data): Observable<any> {    
+  checkDomain(data): Observable<any> {
     if (!data.domain) {
-        throw new Error('Tech Error: Domain is compulsory!');
+      throw new Error("Tech Error: Domain is compulsory!");
     }
 
     return this.getConfig(data);
@@ -191,5 +205,21 @@ export class AuthService {
 
   updateProfile(data: UserProfile): Observable<any> {
     return this.request.post(api.setProfile, data);
+  }
+
+  saveRegistration(data: registerData): Observable<any> {
+    data.user_id = this.storage.get("hash").id;
+    data.key = this.storage.get("hash").key;
+    return this.request
+    .post(api.register, data, {
+      headers: { "Content-Type": "application/json" }
+    });
+  }
+
+  verifyRegistration(data: verifyParams): Observable<any> {
+    return this.request
+    .post(api.verifyRegistration, data, {
+      headers: { "Content-Type": "application/json" }
+    });
   }
 }

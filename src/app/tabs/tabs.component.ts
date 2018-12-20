@@ -7,6 +7,6 @@ import { Component, OnInit } from '@angular/core';
 })
 
 export class TabsComponent {
-  showTeam = false;
-  showReview = false;
+	showTeam = false;
+	showReview = true;
 }
