@@ -39,6 +39,10 @@ interface markAsSeenPrams {
   action?: string;
 }
 
+interface unreadMessagePrams {
+  filter: string
+}
+
 @Injectable({
   providedIn: "root"
 })
@@ -154,23 +158,34 @@ export class ChatService {
   }
 
   markMessagesAsSeen(prams: markAsSeenPrams): Observable<any> {
-    prams.action = 'mark_seen';
-    return of("maked");
+    let body = {
+      'team_id': prams.team_id,
+      'id': prams.id,
+      'action': 'mark_seen'
+    }
+    return this.request.post(api.markAsSeen, body, {
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+    });
   }
 
   postNewMessage(data: newMessage): Observable<any> {
-    data.env = 'develop';
-    let returnData = {
-      id: 300,
-      sender_name: 'Chathumal',
-      is_sender: true,
-      team_name: 'dream team',
-      sent_time: '1.30 PM',
-      message: data.message,
-      team_id: data.team_id,
-      to: data.to
-    };
-    return of(returnData);
+    let body = {
+      'data[to]': data.to,
+      'data[message]': data.message,
+      'data[team_id]': data.team_id,
+      'env': ''
+    }
+    body.env = 'develop';
+    return this.request.post(api.createMessage, body.toString(), {
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+    });
+  }
+
+  unreadMessageCout(data: unreadMessagePrams): Observable<any>{
+    let body = {
+      'unread_count_for': data.filter
+    }
+    return this.request.get(api.getChatMessages, body);
   }
 
   generateChatAvatarText(text) {
