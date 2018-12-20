@@ -2,8 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '../../auth/auth.service';
 import { Injectable, Inject } from '@angular/core';
-import { DOCUMENT } from '@angular/common';
 import { SwitcherService, ProgramObj } from '../switcher.service';
+import { BrowserStorageService } from '@services/storage.service';
+import { UtilsService } from '@services/utils.service';
 
 @Injectable({
   providedIn: 'root'
@@ -22,7 +23,8 @@ export class SwitcherProgramComponent implements OnInit {
     private router: Router,
     private authService: AuthService,
     private switcherService: SwitcherService,
-    @Inject(DOCUMENT) private document: Document
+    private utils: UtilsService,
+    private storage: BrowserStorageService
   ) {
   }
 
@@ -34,15 +36,12 @@ export class SwitcherProgramComponent implements OnInit {
   }
 
   switch(index) {
-    let color:string = '';
-    if (this.programs[index].program.color) {
-      color = this.programs[index].program.color;
-    }
-    if (color) {
-      this.changeThemeColor(color);
-    }
     this.switcherService.switchProgram(this.programs[index])
       .subscribe(() => {
+        let color = this.storage.getUser().themeColor;
+        if (color) {
+          this.utils.changeThemeColor(color);
+        }
         this.router.navigate(['/app']);
       });
   }
@@ -53,7 +52,4 @@ export class SwitcherProgramComponent implements OnInit {
     });
   }
 
-  changeThemeColor(color) {
-    this.document.documentElement.style.setProperty('--ion-color-primary', color);
-  }
 }
