@@ -6,7 +6,6 @@ import { UtilsService } from '@services/utils.service';
 
 export interface Topic {
   id: number;
-  programId: number;
   title: string;
   content: string;
   videolink?: string;
@@ -29,9 +28,7 @@ const api = {
 })
 
 export class TopicService {
-  topic :Topic;
-  topicProgress: number;
-  
+
   constructor(
     private request: RequestService,
     private utils: UtilsService,
@@ -55,7 +52,6 @@ export class TopicService {
 
     let topic: Topic = {
       id: 0,
-      programId: 0,
       title: '',
       content: '',
       videolink: '',
@@ -68,9 +64,6 @@ export class TopicService {
       return this.request.apiResponseFormatError('Story.Story format error');
     }
     topic.id = thisTopic.Story.id;
-    if (this.utils.has(thisTopic.Story, 'program_id')) {
-      topic.programId = thisTopic.program_id;
-    }
     topic.title = thisTopic.Story.title;
     if (this.utils.has(thisTopic.Story, 'content')) {
       topic.content = thisTopic.Story.content;
@@ -84,10 +77,9 @@ export class TopicService {
     return topic;
   }
   
-  updateTopicStatus(id){
-    let postData;
-   
-    postData = {
+  updateTopicProgress(id){
+    
+     let postData = {
       model: "topic",
       model_id: id,
       state: "completed"
@@ -106,8 +98,7 @@ export class TopicService {
         var progress = response.data.Activity.Topic.find(function (topic) {
             return topic.id === topicId;
         });
-        this.topicProgress = progress.progress;
-        return this.topicProgress;
+        return progress.progress;
       } else {
           return false;
       }

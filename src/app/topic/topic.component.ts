@@ -11,7 +11,6 @@ import { Router, ActivatedRoute } from '@angular/router';
 export class TopicComponent implements OnInit {
   topic: Topic = {
     id: 0,
-    programId: 0,
     title: '',
     content: '',
     videolink: '',
@@ -53,23 +52,22 @@ export class TopicComponent implements OnInit {
     this.topicService.getTopicProgress(this.activityId,this.id)
       .subscribe(result => {
         this.topicProgress = result;
+
         if (this.topicProgress !== null && this.topicProgress !== undefined) {
-          //Check status of the topic
           if (this.topicProgress === 1) {
-              this.btnToggleTopicIsDone = true;
-              this.loadingMarkedDone = false;
+            this.btnToggleTopicIsDone = true;
+            
           } else {
-              this.btnToggleTopicIsDone = false;
+            this.btnToggleTopicIsDone = false;
           }
-        } else {
-          this.btnToggleTopicIsDone = false;
+          this.loadingMarkedDone = false;
         }
       });
-  }
-  
+   }
+
   markAsDone () {
     this.btnToggleTopicIsDone = true;
-    this.topicService.updateTopicStatus(this.id).subscribe();
+    this.topicService.updateTopicProgress(this.id).subscribe();
   }
   
   previewFile () {
