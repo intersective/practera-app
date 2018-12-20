@@ -20,11 +20,10 @@ public programName:string = "Demo Program";
   ngOnInit() {
     this.projectService.getMilestones()
       .subscribe(milestones => this.milestones = milestones);
+      console.log(this.milestones);
   }
 
   goToActivity(id) {
     this.router.navigateByUrl('app/(project:activity/' + id + ')');
   }
-
-   
 }
