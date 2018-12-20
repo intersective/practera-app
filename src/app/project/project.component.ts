@@ -26,6 +26,4 @@ public programName:string = "Demo Program";
   goToActivity(id) {
     this.router.navigateByUrl('app/(project:activity/' + id + ')');
   }
-
-   
 }
