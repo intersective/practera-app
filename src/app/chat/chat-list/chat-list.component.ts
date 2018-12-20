@@ -38,6 +38,7 @@ export class ChatListComponent implements OnInit {
   private updateChatListResponse(response):void {
     if ((response)) {
       this.chatList = [];
+      this.chatColors = this.storage.get("chatAvatarColors");
       if ((!this.chatColors)) {
         this.setChatAvatarColors(response, null, 'nocolor');
       } else {
