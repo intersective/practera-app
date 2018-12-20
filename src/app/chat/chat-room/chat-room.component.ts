@@ -81,7 +81,7 @@ export class ChatRoomComponent implements OnInit {
     return this.chatService.generateChatAvatarText(senderName);
   }
 
-  goBack() {
+  back() {
     this.router.navigateByUrl('/app/(chat:chat)');
   }
 
@@ -120,7 +120,7 @@ export class ChatRoomComponent implements OnInit {
           }
         }
         if (index === response.length - 1) {
-          tempRes = response;
+          tempRes = Object.assign([], response);
           tempRes.reverse();
           if (loadMore) {
             this.messageList = tempRes.concat(this.messageList);
