@@ -15,10 +15,10 @@ const api = {
 };
 
 export interface ProgramObj {
-  program: Program,
-  project: Project,
-  timeline: Timeline,
-  enrolment: Enrolment
+  program: Program;
+  project: Project;
+  timeline: Timeline;
+  enrolment: Enrolment;
 }
 
 export interface Program {
