@@ -1,66 +1,108 @@
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
+import { map } from 'rxjs/operators';
+import { RequestService } from '@shared/request/request.service';
+import { UtilsService } from '@services/utils.service';
 
 export interface Topic {
-  id: number,
-  title: string,
-  content: string,
-  videolink: string,
-  files: Array<File>,
-};
-
-export interface File {
-  name: string,
-  extension: string,
-  path: string,
-  type: string,
-  size: number,
-  visibility: string,
-  experience_id: number,
-  program_id: number,
-  url?: string,
+  id: number;
+  title: string;
+  content: string;
+  videolink?: string;
+  files:Array <object>;
+  hasComments: boolean;
 }
+
+const api = {
+  get: {
+    stories:'/api/stories.json',
+    progress: 'api/v2/motivations/progress/list.json'
+  },
+  post: {
+    updateProgress: '/api/v2/motivations/progress/create.json',
+  }
+};
 
 @Injectable({
   providedIn: 'root'
 })
 
 export class TopicService {
- 
-  topic :Topic =
- {  id: 1,
-    title: 'Welcome and Warm-up',
-    content: '<div>At the end of this activity you will submit an agreed Project Charter explaining what and how your team will deliver value to your Project Stakeholder. A Project Charter is a great way to ensure team, project stakeholder and consulting mentor are in agreement on the work to be delivered and how it will get achieved. Below is a series of steps and instructions that will guide you and your team through the process of creating a project charter.</div><div><br></div><div><b>STEP 1: Organise a Kick-Off meeting with your team and consulting mentor</b></div>',
-    videolink: 'https://www.youtube.com/watch?v=nby5jgjb0Dk',
-    files: [
-      {
-        name: "JS2_Program_Overview_2016Aug-1.pdf",
-        extension: ".pdf",
-        path: "s3://practera/uploads/b14a7b8059d9c055954c92674ce60032/pHzgZpjQ6eCDPXPWovhT_JS2_Program_Overview_2016Aug-1.pdf",
-        type: "application/pdf",
-        size: 1006217,
-        visibility: "program",
-        experience_id: 44,
-        program_id: 176,
-        url: "https://www.filepicker.io/api/file/seqhKHMNQnmxeXBxsiKQ",
-        
-        },
-      ]
+
+  constructor(
+    private request: RequestService,
+    private utils: UtilsService,
+  ) { }
+
+  getTopic(id: number): Observable<any> {
+    return this.request.get(api.get.stories, {params: { model_id: id }})
+      .pipe(map(response => {
+        if (response.success && response.data) {
+          return this._normaliseTopic(response.data);
+        }
+      })
+    );
+  }
+
+  private _normaliseTopic (data: any){
+     // In API response, 'data' is an array of topics(since we passed topic id, it will return only one topic, but still in array format). That's why we use data[0]
+     if (!Array.isArray(data) || !this.utils.has(data[0], 'Story') || !this.utils.has(data[0], 'Filestore')) {
+      return this.request.apiResponseFormatError('Story format error');
+    }
+
+    let topic: Topic = {
+      id: 0,
+      title: '',
+      content: '',
+      videolink: '',
+      hasComments: false,
+      files:[]
     };
-  
-  topicDone = {
-    1: false,
-    2: false
+    let thisTopic = data[0];
+    if (!this.utils.has(thisTopic.Story, 'id') || 
+        !this.utils.has(thisTopic.Story, 'title')) {
+      return this.request.apiResponseFormatError('Story.Story format error');
+    }
+    topic.id = thisTopic.Story.id;
+    topic.title = thisTopic.Story.title;
+    if (this.utils.has(thisTopic.Story, 'content')) {
+      topic.content = thisTopic.Story.content;
+    }
+    if (this.utils.has(thisTopic.Story, 'videolink')) {
+      topic.videolink = thisTopic.Story.videolink;
+    }
+    topic.hasComments = thisTopic.Story.has_comments;
+    topic.files = thisTopic.Filestore.map(item => ({url:item.slug , name:item.name}));
+
+    return topic;
   }
   
-  constructor() { }
-  getTopic(id): Observable<any> {
-    return of(this.topic);
+  updateTopicProgress(id){
+    
+     let postData = {
+      model: "topic",
+      model_id: id,
+      state: "completed"
+    }
+    return this.request.post(api.post.updateProgress, postData);
   }
-  saveTopicRead(topicId) {
-    console.log('topic is marked as read.');
+  
+  getTopicProgress(activityId, topicId): Observable<any> {
+    return this.request.get(api.get.progress, {params: {
+      model: 'Activity',
+      model_id: activityId,
+      scope: 'Task'
+    }})
+    .pipe(map(response => {
+      if (response.success && !this.utils.isEmpty(response.data)) {
+        var progress = response.data.Activity.Topic.find(function (topic) {
+            return topic.id === topicId;
+        });
+        return progress.progress;
+      } else {
+          return false;
+      }
+    }));
   }
-  getTopicIsDone(topicId) {
-    return of(this.topicDone[topicId] ? this.topicDone[topicId] : false);
-  }
+  
 }
