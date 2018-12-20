@@ -5,15 +5,15 @@ import { FormsModule } from '@angular/forms';
 import { SettingsRoutingComponent } from './settings-routing.component';
 import { SettingsComponent } from './settings.component';
 import { SettingsRoutingModule } from './settings-routing.module';
-import {NgxMaskModule} from 'ngx-mask'
+import { TextMaskModule } from 'angular2-text-mask';
 
 @NgModule({
   imports: [
     IonicModule,
     CommonModule,
     FormsModule,
-    SettingsRoutingModule,
-    NgxMaskModule.forRoot()
+    SettingsRoutingModule,     
+    TextMaskModule
   ],
   declarations: [ 
     SettingsRoutingComponent, 
