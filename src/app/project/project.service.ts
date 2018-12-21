@@ -43,6 +43,7 @@ export interface Milestone {
 })
 export class ProjectService {
   public milestone_ids = [];
+  public activities ;
   
   constructor( 
     private request: RequestService,
@@ -99,12 +100,22 @@ export class ProjectService {
         this.milestone_ids.push(milestone.id);
       })
     })
+    this.activities = this.getActivities();
+    this._addActivitiesToEachMilestone(milestones,this.activities);
     return milestones;
   }
-  private _addActivitiesToEachMilestone() {
-    
+
+  private _addActivitiesToEachMilestone(milestones,activities) {
+    let activitiesOfEachMilestone =[];
+    milestones.forEach(function(eachMilestone) {
+      activities.find(function (activity) {
+        activitiesOfEachMilestone.push( activity.Activity.milestoneId == eachMilestone.id);
+      })
+      eachMilestone.Activity = activitiesOfEachMilestone;
+    })
   }
-  getActivities() {
+
+  public getActivities() {
     return this.request.get(api.activity, {
       params: {
         milestone_id: JSON.stringify(this.milestone_ids),
@@ -119,7 +130,7 @@ export class ProjectService {
   }
 
   private _normaliseActivities(data: any) {
-    let activities = [];
+    let activities =[];
     if (!Array.isArray(data)) {
       this.request.apiResponseFormatError('Activities array format error');
       return [];
@@ -163,7 +174,7 @@ export class ProjectService {
         })   
      };
 
-      activities.push(activity);
+      return activities.push(activity);
 
     })
   }     
