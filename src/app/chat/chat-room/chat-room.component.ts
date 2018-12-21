@@ -69,7 +69,7 @@ export class ChatRoomComponent implements OnInit {
       team_member_id: this.routeTeamMemberId
     }
     this.chatService.getMessageList(param).subscribe(response => {
-      this.updateMessageListResponse(response, false);
+      this.updateMessageListResponse(response.data, false);
     });
   }
 
