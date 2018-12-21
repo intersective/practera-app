@@ -18,6 +18,7 @@ export interface ProgramObj {
   program: Program;
   project: Project;
   timeline: Timeline;
+  enrolment: Enrolment;
 }
 
 export interface Program {
@@ -38,6 +39,10 @@ export interface Project {
 
 export interface Timeline {
   id: number;
+}
+
+export interface Enrolment {
+  contact_number: string
 }
 
 @Injectable({
@@ -63,6 +68,7 @@ export class SwitcherService {
       experienceId: programObj.program.experience_id,
       projectId: programObj.project.id,
       timelineId: programObj.timeline.id,
+      contactNumber: programObj.enrolment.contact_number,
       themeColor: this.utils.has(programObj, 'program.config.theme_color') ? programObj.program.config.theme_color : '',
       activityCard: this.utils.has(programObj, 'program.config.card_style') ? programObj.program.config.card_style : ''
     });

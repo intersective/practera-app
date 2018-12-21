@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 
+
 export interface Activity {
   id?: number;
   name?: string;
