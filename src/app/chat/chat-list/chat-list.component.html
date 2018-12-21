@@ -23,7 +23,7 @@
           <ng-template #messgeElseBlock><p>No messages.</p></ng-template>
         </ion-label>
         <div slot="end" class="time-container">
-          <span>{{chat.last_message_created}}</span>
+          <span>{{getChatDate(chat.last_message_created)}}</span>
           <ng-container *ngIf="chat.unread_messages > 0">
               <ion-badge>{{chat.unread_messages}}</ion-badge>
           </ng-container>
