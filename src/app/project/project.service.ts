@@ -20,20 +20,18 @@ const api = {
 export interface Activity {
   id: number;
   name: string;
-  milestoneId: number;
+  milestoneId?: number;
   isLocked: boolean;
   leadImage?: string;
-  description?: string;
-  tasks: Array <Task>
+  progress: number;
+  tasks?: Array <Task>
 }
 
 export interface Milestone {
   id: number;
   name: string;
-  project_id?: number;
   description?: string;
   isLocked: boolean;
-  lead_image?: string;
   progress: number;
   Activity: Array <Activity>;
 }
@@ -42,6 +40,7 @@ export interface Milestone {
   providedIn: 'root',
 })
 export class ProjectService {
+  public Milestones = [];
   public milestone_ids = [];
   public activities ;
   
@@ -76,10 +75,8 @@ export class ProjectService {
       let milestone: Milestone = {
         id: 0,
         name: '',
-        project_id: 0,
         description: '',
         isLocked: false,
-        lead_image: '',
         progress: 0,
         Activity:[]
       };
@@ -89,20 +86,19 @@ export class ProjectService {
       if (this.utils.has(eachMilestone, 'description')) {
         milestone.description = eachMilestone.description;
       }
-      if (this.utils.has(eachMilestone, 'lead_image')) {
-        milestone.description = eachMilestone.lead_image;
-      }
-      if (this.utils.has(eachMilestone, 'project_id')) {
-        milestone.description = eachMilestone.project_id;
-      }
+      
       milestones.push(eachMilestone);
       milestones.forEach(milestone => {
         this.milestone_ids.push(milestone.id);
       })
+
     })
+
     this.activities = this.getActivities();
     this._addActivitiesToEachMilestone(milestones,this.activities);
-    return milestones;
+    this.getProgress();
+
+    return this.Milestones = milestones;
   }
 
   private _addActivitiesToEachMilestone(milestones,activities) {
@@ -151,17 +147,15 @@ export class ProjectService {
         milestoneId: 0,
         isLocked: false,
         leadImage: '',
-        description: '',
+        progress: 0,
         tasks: []
       }
       let thisActivity = eachActivity.Activity;
+
       activity.id = thisActivity.id;
       activity.name = thisActivity.name;
       activity.isLocked = thisActivity.is_locked;
 
-      if (this.utils.has(thisActivity, 'description')) {
-        activity.description = thisActivity.description;
-      }
       if (this.utils.has(thisActivity, 'lead_mage')) {
         activity.leadImage = thisActivity.lead_image;
       }
@@ -174,8 +168,56 @@ export class ProjectService {
         })   
      };
 
-      return activities.push(activity);
+      activities.push(activity);
 
     })
-  }     
+    return activities;
+  }
+  
+  public getProgress() {
+    return this.request.get(api.progress, {
+      params: {
+        model: 'project',
+        model_id: this.storage.getUser().projectId,
+        scope: 'activity'
+      }
+    })
+    .pipe(map(response => {
+      if (response.sucess && response.date) {
+        return this._normaliseProgress(response.date);
+      }
+    }))
+  }
+
+  private _normaliseProgress(data: any) {
+    
+    if (!this.utils.has(data, 'Project.progress') || 
+        !this.utils.has(data, 'Project.Milestone') ||
+        !Array.isArray(data.Project.Milestone)) {
+      this.request.apiResponseFormatError('Progress format error');
+      return 0;
+    }
+
+    this._milestoneProgress(data);
+  }
+
+  private _milestoneProgress(data) {
+    data.Project.Milestone.forEach(this._loopThroughMilestones, this);
+  }
+
+  private _loopThroughMilestones(milestone) {
+    var progress = this.Milestones.find(function (item) {
+      return item.id === milestone.id;
+    })
+    progress.progress = milestone.progress;
+
+    this._activityProgress(progress);
+  }
+
+  private _activityProgress(data) {
+    data.Activity.forEach(this._loopThroghActivities, this);
+  }
+  private _loopThroghActivities(activity) {
+    
+  }
 }
