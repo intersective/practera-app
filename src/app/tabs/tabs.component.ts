@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { TabsService } from './tabs.service';
 import { BrowserStorageService } from '@services/storage.service';
 
@@ -7,7 +7,7 @@ import { BrowserStorageService } from '@services/storage.service';
   templateUrl: 'tabs.component.html',
   styleUrls: ['tabs.component.scss']
 })
-export class TabsComponent implements OnInit {
+export class TabsComponent {
 	showReview = false;
   showChat = true;
   noOfTodoItems = 0;
@@ -18,7 +18,7 @@ export class TabsComponent implements OnInit {
     private storage: BrowserStorageService
   ) {}
 
-  ngOnInit() {
+  ionViewWillEnter() {
     this.tabsService.getNoOfTodoItems()
       .subscribe(noOfTodoItems => {
         this.noOfTodoItems = noOfTodoItems;
