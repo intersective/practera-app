@@ -26,7 +26,7 @@ export class ChatListComponent implements OnInit {
 
   loadChatData():void {
     this.chatService.getchatList().subscribe(response => {
-      this.updateChatListResponse(response);
+      this.updateChatListResponse(response.data);
     });
   }
 
@@ -36,6 +36,7 @@ export class ChatListComponent implements OnInit {
    * @param {Array} response 
    */
   private updateChatListResponse(response):void {
+    console.log('updateChatListResponse', response)
     if ((response)) {
       this.chatList = [];
       this.chatColors = this.storage.get("chatAvatarColors");
@@ -117,5 +118,13 @@ export class ChatListComponent implements OnInit {
       queryParams: { chat },
     };
     this.router.navigate(['/chat/chatroom'],{ queryParams: {teamId: chat.team_id, memberId: chat.team_member_id} });
+  }
+
+  getChatDate(date) {
+    let params = {
+      date: date,
+      type: 'list'
+    }
+    this.chatService.getDate(params);
   }
 }
