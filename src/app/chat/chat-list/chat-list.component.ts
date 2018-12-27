@@ -125,6 +125,6 @@ export class ChatListComponent implements OnInit {
       date: date,
       type: 'list'
     }
-    this.chatService.getDate(params);
+    return this.chatService.getDate(params);
   }
 }

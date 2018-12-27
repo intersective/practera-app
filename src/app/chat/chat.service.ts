@@ -178,13 +178,11 @@ export class ChatService {
   }
 
   postNewMessage(data: newMessage): Observable<any> {
-    let body = {
-      'data[to]': data.to,
-      'data[message]': data.message,
-      'data[team_id]': data.team_id,
-      'env': ''
-    }
-    body.env = 'develop';
+    const body = new HttpParams()
+      .set('data[to]', data.to.toString())
+      .set('data[message]', data.message)
+      .set('data[team_id]',data.team_id.toString())
+      .set('env', 'develop');
     return this.request.post(api.createMessage, body.toString(), {
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
     });
