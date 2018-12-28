@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { ModalController, AlertController } from '@ionic/angular';
 import { AlertOptions } from '@ionic/core';
 import { PopUpComponent } from './pop-up/pop-up.component';
+import { ReviewRatingComponent } from '../../review-rating/review-rating.component';
 
 @Injectable({
   providedIn: 'root'
@@ -31,5 +32,17 @@ export class NotificationService {
   async alert(config: AlertOptions) {
     const alert = await this.alertController.create(config);
     return await alert.present();
+  }
+
+  // show review rating page as pop up modal
+  // review ID is required to
+  async reviewRating(reviewId) {
+     const modal = await this.modalController.create({
+      component: ReviewRatingComponent,
+      componentProps: { 
+        reviewId: reviewId
+      }
+    });
+    return await modal.present();
   }
 }
