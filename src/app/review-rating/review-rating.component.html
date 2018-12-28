@@ -18,9 +18,9 @@
 			</div>					
 		</div>
 
-		<hr *ngIf="ratingData.rating !== '0.5'" class="separator">		
-		<h2 *ngIf="ratingData.rating !== '0.5'" class="subTitle">Send a quick thank you note!</h2>		
-		<div *ngIf="ratingData.rating !== '0.5'" class="quick-tagging">
+		<hr *ngIf="ratingData.rating !== 0.5" class="separator">		
+		<h2 *ngIf="ratingData.rating !== 0.5" class="subTitle">Send a quick thank you note!</h2>		
+		<div *ngIf="ratingData.rating !== 0.5" class="quick-tagging">
 			<a class="toggle" [class.active]="ratingData.tags.includes('Thanks')" (click)="addOrRemoveTags('Thanks')">Thanks</a>
 			<a class="toggle" [class.active]="ratingData.tags.includes('Thank You')" (click)="addOrRemoveTags('Thank You')">Thank You</a>
 			<a class="toggle" [class.active]="ratingData.tags.includes('You are awesome!')" (click)="addOrRemoveTags('You are awesome!')">You are awesome!</a>
