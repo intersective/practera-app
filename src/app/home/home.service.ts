@@ -154,13 +154,7 @@ export class HomeService {
     }
     let unreadMessages = 0;
     let noOfChats = 0;
-    let todoItem: TodoItem = {
-      type: 'chat',
-      name: '',
-      description: '',
-      time: '',
-      meta: {}
-    };
+    let todoItem: TodoItem;
     data.forEach(data => {
       if (!this.utils.has(data, 'unread_messages') || 
           !this.utils.has(data, 'name') || 
@@ -169,6 +163,13 @@ export class HomeService {
         return this.request.apiResponseFormatError('Chat object format error');
       }
       if (data.unread_messages > 0) {
+        todoItem = {
+          type: 'chat',
+          name: '',
+          description: '',
+          time: '',
+          meta: {}
+        };
         unreadMessages += data.unread_messages;
         noOfChats ++;
         todoItem.name = data.name;
