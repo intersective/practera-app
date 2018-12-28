@@ -1,4 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
+import { ModalController } from '@ionic/angular';
 import { Router, ActivatedRoute, ParamMap } from '@angular/router';
 import { AssessmentService, Assessment, Submission, Review } from './assessment.service';
 import { UtilsService } from '../services/utils.service';
@@ -72,7 +73,8 @@ export class AssessmentComponent implements OnInit {
     private assessmentService: AssessmentService,
     private utils: UtilsService,
     private notificationService: NotificationService,
-    private storage: BrowserStorageService
+    private storage: BrowserStorageService,
+    private modalController: ModalController,
   ) {}
 
   ngOnInit() {
@@ -234,7 +236,12 @@ export class AssessmentComponent implements OnInit {
 
   reviewFeedback() {
     this.feedbackReviewed = true;
-    this.assessmentService.saveFeedbackReviewed(this.submission.id).subscribe();
+    this.assessmentService.saveFeedbackReviewed(this.submission.id).subscribe(result => {
+      // if review is successfully mark as read, display review rating modal
+      if (result.success) {
+          this.notificationService.reviewRating(this.review.id);
+      }
+    });
   }
 
 }
