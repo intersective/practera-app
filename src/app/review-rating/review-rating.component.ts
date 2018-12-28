@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { ModalController } from '@ionic/angular';
 import { ReviewRatingService, RatingData } from './review-rating.service';
@@ -8,12 +8,18 @@ import { ReviewRatingService, RatingData } from './review-rating.service';
   templateUrl: './review-rating.component.html',
   styleUrls: ['./review-rating.component.scss']
 })
-export class ReviewRatingComponent {
-  
+export class ReviewRatingComponent implements OnInit {
+  // Review ID is required if this component is to be used.
   @Input() reviewId;
-  rating = "0.5";
-  tags = {};
-  comment = "";
+  // Default redirect i.e home page.
+  redirect = ['/'];
+
+  ratingData: RatingData = {
+  	assessment_review_id: null,
+  	rating : 0.5,
+  	comment: '',
+  	tags: []
+  };
 
   constructor(
   	private reviewRatingService: ReviewRatingService,
@@ -21,20 +27,45 @@ export class ReviewRatingComponent {
   	private router : Router) 
   {}
 
+  ngOnInit() {
+  	if (this.reviewId) {
+  		this.ratingData.assessment_review_id = this.reviewId;
+  	}
+  }
 
-  submitReviewRating() {
-  	console.log(this.reviewId);
-  	console.log('submit');
+  submitReviewRating() {  	
+  	// round to 2 decimal place
+  	this.ratingData.rating = +(this.ratingData.rating.toFixed(2));
+  	
+  	this.reviewRatingService.submitRating(this.ratingData).subscribe(result => {
+  		this.closeReviewRating();
+  	});
   }
 
   closeReviewRating() {
-  	console.log('closed');
+  	this.modalController.dismiss();
+    // if this.redirect == false, don't redirect to another page
+    if (this.redirect) {
+      this.router.navigate(this.redirect);
+    }
   }
 
-  addOrRemoveQuickMessage(tags) {
+  addOrRemoveTags(tag) {
+  	// if there are no tags yet
+  	if (!this.ratingData.tags || this.ratingData.tags.length <= 0) {
+  		this.ratingData.tags.push(tag);
 
+  	} else if (this.ratingData.tags.includes(tag)) { // if tag already exist, then tag is being removed
+  		var index = this.ratingData.tags.indexOf(tag);
+  		if (index > -1) {
+		  this.ratingData.tags.splice(index, 1);
+		}
+  	} else {
+  		// otherwise, there are existing tags and new tag being push dosen't exist yet.
+  		this.ratingData.tags.push(tag);
+  	}
   }
 
-  
+
 
 }
