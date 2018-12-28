@@ -35,12 +35,13 @@ export class NotificationService {
   }
 
   // show review rating page as pop up modal
-  // review ID is required to
-  async reviewRating(reviewId) {
+  // review ID is required
+  async reviewRating(reviewId, redirect) {
      const modal = await this.modalController.create({
       component: ReviewRatingComponent,
       componentProps: { 
-        reviewId: reviewId
+        reviewId: reviewId,
+        redirect: redirect
       }
     });
     return await modal.present();

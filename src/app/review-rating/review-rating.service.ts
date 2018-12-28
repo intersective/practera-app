@@ -9,7 +9,8 @@ const api = {
 };
 
 export interface RatingData {
-  reviewId : number;
+  assessment_review_id : number;
+  rating : number;
 	comment : string;
 	tags : Array<string>
 }
@@ -27,7 +28,8 @@ export class ReviewRatingService {
   submitRating(data : RatingData) {
   	let postData;
   	postData = {
-  		review_id: data.reviewId,
+  		assessment_review_id: data.assessment_review_id,
+      rating: data.rating,
       comment: data.comment,
       tags: data.tags
   	};

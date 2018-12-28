@@ -5,7 +5,7 @@
   .header-detail {
     display: inline-flex;
     width: 100%;
-    margin-bottom: 20px;
+    margin-bottom: 10px;
     margin-top: 20px;
 
     .title {
@@ -40,6 +40,7 @@
     font-size: 16px;
     font-weight: normal;
     text-align: center;
+    margin-top:35px;
   }
 
   .range-text {
@@ -55,7 +56,7 @@
 
     p:nth-child(1) {
       margin-left: 0;
-      color: var(--practera-chat-color-time-text-color);
+      color: #AFB5D2;
     }
 
     p:nth-child(2) {
@@ -64,12 +65,13 @@
 
   }
 
-  .quick-response {
+  .quick-tagging {
     display: flex;
     flex-wrap: wrap;
     width: 100%;
     justify-content: center;
     margin-top: 16px;
+    padding: 0 0 0 10px;
 
     a.toggle {
       color: var(--ion-color-primary);
@@ -91,18 +93,12 @@
 
   }
 
-  .item.item-input.textarea {
-    width: 100%;
-    border: none;
-    border-top: 1px solid #ddd;
-    border-radius: 0px;
-  }
-
   .comment-box {    
+    font-size:14px;
     width: 100%;
     border: none;
     border-radius: 12px;
-    margin-top: 16px;
-    background-color: var(--ion-color-light);
+    margin: 16px 10px 0 10px;
+    background-color: var(--ion-color-light-tint);
   }
 }
