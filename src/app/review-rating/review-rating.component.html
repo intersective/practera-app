@@ -1,0 +1,46 @@
+<ion-content class="review-rating" ng-controller="reviewRatingCtrl">
+	<ng-container>		
+		<div class="header-detail">
+			<h1 class="title">Rating</h1>
+			<ion-icon class="close-button" name="close-circle-outline" (click)="closeReviewRating()"></ion-icon>					
+		</div>
+
+		<hr class="separator">
+
+		<h2 class="title">How helpful was the feedback?</h2>
+
+		<div>			
+			<ion-item>
+			    <ion-range min="0" max="1" step="any" [(ngModel)]="rating">
+			    	<!-- <ion-label slot="start">Not helpful</ion-label>
+      				<ion-label slot="end">Very helpful</ion-label> -->
+			    </ion-range>			   
+			 </ion-item>
+			   <div class="range-text">
+					<p>Not helpful</p>
+					<p>Very helpful</p>
+				</div>					
+		</div>
+
+		<hr class="separator">
+		<br>
+		<h2 ng-if="disableButton('rating') === false" class="subTitle">Send a quick thank you note!</h2>		
+		<div ng-if="disableButton('rating') === false" class="quick-response">
+			<a class="toggle" ng-class="reviewRating.tags.includes('Thanks') ? 'active': ''" (click)="addOrRemoveQuickMessage('Thanks')">Thanks</a>
+			<a class="toggle" ng-class="reviewRating.tags.includes('Thank You') ? 'active': ''" (click)="addOrRemoveQuickMessage('Thank You')">Thank You</a>
+			<a class="toggle" ng-class="reviewRating.tags.includes('You are awesome!') ? 'active': ''" (click)="addOrRemoveQuickMessage('You are awesome!')">You are awesome!</a>
+			<a class="toggle" ng-class="reviewRating.tags.includes('Great support') ? 'active': ''" (click)="addOrRemoveQuickMessage('Great support')">Great support</a>
+			<a class="toggle" ng-class="reviewRating.tags.includes('Very helpful') ? 'active': ''" (click)="addOrRemoveQuickMessage('Very helpful')">Very helpful</a>
+			<a class="toggle" ng-class="reviewRating.tags.includes('Friendly') ? 'active': ''" (click)="addOrRemoveQuickMessage('Friendly')">Friendly</a>
+		</div>
+		<br>		
+		<label class="item item-input comment-box">
+			<input type="text" placeholder="Add a personal thank you" [(ngModel)]="comment">
+		</label>		
+	
+		<br><br>		
+		<div class="div-after-logo">
+      		<ion-button (click)="submitReviewRating()" shape="round" expand="full">Submit</ion-button>
+    	</div>
+    </ng-container>  
+</ion-content>
