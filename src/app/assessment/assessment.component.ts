@@ -237,9 +237,10 @@ export class AssessmentComponent implements OnInit {
   reviewFeedback() {
     this.feedbackReviewed = true;
     this.assessmentService.saveFeedbackReviewed(this.submission.id).subscribe(result => {
-      // if review is successfully mark as read, display review rating modal
+      // if review is successfully mark as read, display review rating modal and then redirect to activity page.
+      // TODO also add condition to check if configuration exist to disable review rating
       if (result.success) {
-          this.notificationService.reviewRating(this.review.id);
+        this.notificationService.reviewRating(this.review.id, ['app', { outlets: { project: ['activity', this.activityId] } }]);
       }
     });
   }
