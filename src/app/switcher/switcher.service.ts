@@ -31,6 +31,7 @@ export interface Program {
 export interface ProgramConfig {
   theme_color?: string;
   card_style?: string;
+  review_rating?: boolean;
 }
 
 export interface Project {
@@ -65,12 +66,13 @@ export class SwitcherService {
     this.storage.setUser({
       programId: programObj.program.id,
       programName: programObj.program.name,
+      reviewRating: this.utils.has(programObj, 'program.config.review_rating') ? programObj.program.config.review_rating : false,
       experienceId: programObj.program.experience_id,
       projectId: programObj.project.id,
       timelineId: programObj.timeline.id,
       contactNumber: programObj.enrolment.contact_number,
       themeColor: this.utils.has(programObj, 'program.config.theme_color') ? programObj.program.config.theme_color : '',
-      activityCard: this.utils.has(programObj, 'program.config.card_style') ? programObj.program.config.card_style : ''
+      activityCard: this.utils.has(programObj, 'program.config.card_style') ? programObj.program.config.card_style : ''      
     });
     return this.request.get(api.teams)
       .pipe(map(response => {
