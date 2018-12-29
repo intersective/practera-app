@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { Router } from '@angular/router';
 import { ModalController } from '@ionic/angular';
 import { ReviewRatingService, RatingData } from './review-rating.service';
@@ -8,9 +8,8 @@ import { ReviewRatingService, RatingData } from './review-rating.service';
   templateUrl: './review-rating.component.html',
   styleUrls: ['./review-rating.component.scss']
 })
-export class ReviewRatingComponent implements OnInit {
-  // Review ID is required if this component is to be used.
-  @Input() reviewId;
+export class ReviewRatingComponent {
+  
   // Default redirect i.e home page.
   redirect = ['/'];
 
@@ -27,10 +26,10 @@ export class ReviewRatingComponent implements OnInit {
   	private router : Router) 
   {}
 
-  ngOnInit() {
-  	if (this.reviewId) {
-  		this.ratingData.assessment_review_id = this.reviewId;
-  	}
+  // Review ID is required if this component is to be used.upon detecting incoming/changes of value, set passed reviewId into local var
+  @Input()
+  set reviewId(reviewId: number) {
+  	this.ratingData.assessment_review_id = reviewId;
   }
 
   submitReviewRating() {  	
