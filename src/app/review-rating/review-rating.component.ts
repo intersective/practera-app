@@ -19,6 +19,8 @@ export class ReviewRatingComponent {
   	comment: '',
   	tags: []
   };
+  // variable to control the button text to indicate rating 
+  submitting = false;
 
   constructor(
   	private reviewRatingService: ReviewRatingService,
@@ -29,14 +31,16 @@ export class ReviewRatingComponent {
   // Review ID is required if this component is to be used.upon detecting incoming/changes of value, set passed reviewId into local var
   @Input()
   set reviewId(reviewId: number) {
-  	this.ratingData.assessment_review_id = reviewId;
+  	this.ratingData.assessment_review_id = reviewId;    
   }
 
   submitReviewRating() {  	
+    this.submitting = true;
   	// round to 2 decimal place
   	this.ratingData.rating = +(this.ratingData.rating.toFixed(2));
   	
   	this.reviewRatingService.submitRating(this.ratingData).subscribe(result => {
+      this.submitting = false;
   		this.closeReviewRating();
   	});
   }
