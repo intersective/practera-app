@@ -2,7 +2,6 @@ import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
 import { AuthGuard } from './auth/auth.guard';
-import { ReviewRatingComponent } from './review-rating/review-rating.component';
 
 const routes: Routes = [
   { 
@@ -21,10 +20,6 @@ const routes: Routes = [
   {
     path: 'chat', 
     loadChildren: './chat/chat.module#ChatModule' 
-  },
- { 
-    path: 'review-rating',
-    component: ReviewRatingComponent,
   },
   {
     path: '', 

@@ -34,7 +34,10 @@
 	
 		<br>
 		<div class="div-after-logo">
-      		<ion-button [disabled]="ratingData.tags.length <= 0" (click)="submitReviewRating()" shape="round" expand="full">Submit</ion-button>
+      		<ion-button [disabled]="ratingData.tags.length <= 0" (click)="submitReviewRating()" shape="round" expand="full">      			
+      			<ng-container *ngIf="!submitting">Submit</ng-container>
+               	<ng-container *ngIf="submitting">Submitting...</ng-container>
+      		</ion-button>
     	</div>
     </ng-container>  
 </ion-content>
