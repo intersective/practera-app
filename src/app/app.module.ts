@@ -12,7 +12,6 @@ import { NgCircleProgressModule } from 'ng-circle-progress';
 import { UtilsService } from './services/utils.service';
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
 import { EmbedVideo } from 'ngx-embed-video';
-import { ReviewRatingModule } from './review-rating/review-rating.module';
 
 @NgModule({
   declarations: [
@@ -30,8 +29,7 @@ import { ReviewRatingModule } from './review-rating/review-rating.module';
     AppRoutingModule,
     NgCircleProgressModule,
     EmbedVideo.forRoot(),
-    NotificationModule,
-    ReviewRatingModule
+    NotificationModule
   ],
   providers: [
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
