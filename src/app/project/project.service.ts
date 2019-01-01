@@ -60,7 +60,7 @@ export class ProjectService {
     }))
   }
 
-  private _normaliseMilestones(data): Array<Milestone> {
+  private _normaliseMilestones(data){
     let milestones = [];
     if (!Array.isArray(data)) {
       this.request.apiResponseFormatError('Milestones array format error');
