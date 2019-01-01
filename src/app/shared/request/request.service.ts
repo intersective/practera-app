@@ -7,8 +7,8 @@ import { BrowserStorageService } from '@services/storage.service';
 
 export class RequestConfig {
   appkey = '';
-  prefixUrl = 'https://sandbox.practera.com/';
-  // prefixUrl = 'http://local.practera.com/';
+  //prefixUrl = 'https://sandbox.practera.com/';
+  prefixUrl = 'http://local.practera.com/';
 }
 
 @Injectable({
