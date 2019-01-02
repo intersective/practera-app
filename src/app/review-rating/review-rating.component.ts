@@ -25,8 +25,8 @@ export class ReviewRatingComponent {
   constructor(
   	private reviewRatingService: ReviewRatingService,
   	private modalController : ModalController,
-  	private router : Router) 
-  {}
+  	private router : Router
+  ) {}
 
   // Review ID is required if this component is to be used.upon detecting incoming/changes of value, set passed reviewId into local var
   @Input()
@@ -61,14 +61,12 @@ export class ReviewRatingComponent {
   	} else if (this.ratingData.tags.includes(tag)) { // if tag already exist, then tag is being removed
   		var index = this.ratingData.tags.indexOf(tag);
   		if (index > -1) {
-		  this.ratingData.tags.splice(index, 1);
-		}
+		    this.ratingData.tags.splice(index, 1);
+	  	}
   	} else {
   		// otherwise, there are existing tags and new tag being push dosen't exist yet.
   		this.ratingData.tags.push(tag);
   	}
   }
-
-
 
 }

@@ -1,5 +1,4 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { ModalController } from '@ionic/angular';
 import { Router, ActivatedRoute, ParamMap } from '@angular/router';
 import { AssessmentService, Assessment, Submission, Review } from './assessment.service';
 import { UtilsService } from '../services/utils.service';
@@ -73,8 +72,7 @@ export class AssessmentComponent implements OnInit {
     private assessmentService: AssessmentService,
     private utils: UtilsService,
     private notificationService: NotificationService,
-    private storage: BrowserStorageService,
-    private modalController: ModalController,
+    private storage: BrowserStorageService    
   ) {}
 
   ngOnInit() {
