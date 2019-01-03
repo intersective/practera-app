@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { ModalController } from '@ionic/angular';
 import { ReviewRatingService, ReviewRating } from './review-rating.service';
 import { UtilsService } from '@services/utils.service';
+import { NotificationService } from '../shared/notification/notification.service';
 
 @Component({
   selector: 'app-review-rating',
@@ -27,7 +28,8 @@ export class ReviewRatingComponent {
   	private reviewRatingService: ReviewRatingService,
   	private modalController : ModalController,
   	private router : Router,
-    private utils: UtilsService
+    private utils: UtilsService,
+    private notificationService: NotificationService
   ) {}
 
   // Review ID is required if this component is to be used.upon detecting incoming/changes of value, set passed reviewId into local var
@@ -41,8 +43,13 @@ export class ReviewRatingComponent {
   	// round to 2 decimal place
   	this.ratingData.rating = +(this.ratingData.rating.toFixed(2));
   	
-  	this.reviewRatingService.submitRating(this.ratingData).subscribe(result => {
+  	this.reviewRatingService.submitRating(this.ratingData).subscribe(result => {       
       this.isSubmitting = false;
+      if (result.success) {
+          this.notificationService.presentToast('Successfully submitted.');
+      } else {       
+          this.notificationService.presentToast('Error submtting review rating.', false);
+      }
   	  this.closeReviewRating();
   	});
   }
