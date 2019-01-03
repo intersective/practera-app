@@ -8,10 +8,10 @@ const api = {
   }
 };
 
-export interface RatingData {
+export interface ReviewRating {
   assessment_review_id : number;
   rating : number;
-	comment : string;
+  comment : string;
 	tags : Array<string>;
 }
 
@@ -22,10 +22,9 @@ export class ReviewRatingService {
 
   constructor(
   	private request : RequestService,
-  ) { }
+  ) {}
 
-
-  submitRating(data : RatingData) {
+  submitRating(data : ReviewRating) {
   	let postData = {
   		assessment_review_id: data.assessment_review_id,
       rating: data.rating,

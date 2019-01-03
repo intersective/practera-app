@@ -23,7 +23,7 @@ export interface User {
   maxAchievablePoints?: number;
   themeColor?: string;
   activityCard?: string;
-  reviewRating?: boolean;
+  hasReviewRating?: boolean;
 }
 
 @Injectable({
