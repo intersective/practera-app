@@ -59,11 +59,12 @@ export class ChatRoomComponent implements OnInit, AfterContentInit {
     this.activatedRoute.queryParams.subscribe(params => {
       this.routeTeamId = +params["teamId"]; // (+) converts string 'teamId' to a number
       this.routeTeamMemberId = +params["memberId"]; // (+) converts string 'memberId' to a number
-      this.loadMessages();
+      this.loadMessages(false);
     });
   }
 
-  loadMessages() {
+  loadMessages(loadMore) {
+    let tempRes = null;
     // creating params need to load messages.
     let param = {
       team_id: this.routeTeamId,
@@ -71,8 +72,16 @@ export class ChatRoomComponent implements OnInit, AfterContentInit {
       size: this.messagePagesize,
       team_member_id: this.routeTeamMemberId
     };
-    this.chatService.getMessageList(param).subscribe(response => {
-      this.updateMessageListResponse(response.data, false);
+    this.chatService.getMessageList(param, this.selectedChat)
+    .subscribe(response => {
+      tempRes = Object.assign([], response);
+          tempRes.reverse();
+          if (loadMore) {
+            this.messageList = tempRes.concat(this.messageList);
+          } else {
+            this.messageList = tempRes;
+          }
+          this.markAsSeen(tempRes);
     });
   }
 
@@ -109,44 +118,6 @@ export class ChatRoomComponent implements OnInit, AfterContentInit {
         },
         error => {}
       );
-    }
-  }
-
-  private updateMessageListResponse(response, loadMore): void {
-    let index = 0;
-    let tempRes = null;
-    if (response.length > 0) {
-      this.messageList = [];
-      for (index = 0; index < response.length; index++) {
-        if (response[index] && !response[index].is_sender) {
-          if (this.selectedChat.is_team) {
-            this.getValidChatColors(this.chatColors, response, index);
-          } else {
-            response[index].chat_color = this.selectedChat.chat_color;
-          }
-        }
-        if (index === response.length - 1) {
-          tempRes = Object.assign([], response);
-          tempRes.reverse();
-          if (loadMore) {
-            this.messageList = tempRes.concat(this.messageList);
-          } else {
-            this.messageList = tempRes;
-          }
-          this.markAsSeen(tempRes);
-        }
-      }
-    }
-  }
-
-  private getValidChatColors(chatColors, response, index) {
-    let chatcolor = chatColors.find(function(chat) {
-      return chat.name === response[index].sender_name;
-    });
-    if (chatcolor) {
-      response[index].chat_color = chatcolor.chat_color;
-    } else {
-      response[index].chat_color = this.chatService.getRandomColor();
     }
   }
 

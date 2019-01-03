@@ -1,3 +1,5 @@
 export const environment = {
-  production: true
+  production: true,
+  APIEndpoint: 'https://api.practera.com/',
+  environment: 'live'
 };
