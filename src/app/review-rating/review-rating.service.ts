@@ -12,7 +12,7 @@ export interface ReviewRating {
   assessment_review_id : number;
   rating : number;
   comment : string;
-	tags : Array<string>;
+  tags : Array<string>;
 }
 
 @Injectable({
@@ -26,7 +26,7 @@ export class ReviewRatingService {
 
   submitRating(data : ReviewRating) {
   	let postData = {
-  		assessment_review_id: data.assessment_review_id,
+      assessment_review_id: data.assessment_review_id,
       rating: data.rating,
       comment: data.comment,
       tags: data.tags
