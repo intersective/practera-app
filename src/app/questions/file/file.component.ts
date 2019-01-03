@@ -17,6 +17,9 @@ import { FilestackService } from '@shared/filestack/filestack.service';
 export class FileComponent implements ControlValueAccessor, OnInit {
 
   @Input() question = {
+    name: '',
+    description: '',
+    isRequired: false,
     fileType: 'any'
   };
   @Input() submission;
