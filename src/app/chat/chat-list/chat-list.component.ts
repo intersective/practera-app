@@ -26,66 +26,9 @@ export class ChatListComponent implements OnInit {
 
   loadChatData():void {
     this.chatService.getchatList().subscribe(response => {
-      this.updateChatListResponse(response.data);
-    });
-  }
-
-  /**
-   * modify the response 
-   *  - set chat avatar color
-   * @param {Array} response 
-   */
-  private updateChatListResponse(response):void {
-    console.log('updateChatListResponse', response)
-    if ((response)) {
-      this.chatList = [];
-      this.chatColors = this.storage.get("chatAvatarColors");
-      if ((!this.chatColors)) {
-        this.setChatAvatarColors(response, null, 'nocolor');
-      } else {
-        this.setChatAvatarColors(response, this.chatColors, 'havecolor');
-      }
+      this.chatList = response;
       this.checkHaveMoreTeam(response);
-    }
-  }
-
-  /**
-   * this method check old avatar colors and set the releted one.
-   * if there no old avatar colors it will create new color and add that to service variable.
-   * @param {Array} response 
-   * @param {Array} chatColors 
-   * @param {String} status 
-   */
-  private setChatAvatarColors(response, chatColors, status):void {
-    let index = 0;
-    for (index = 0; index < response.length; index++) {
-      if ((response[index])) {
-        switch (status) {
-          case 'nocolor':
-            response[index].chat_color = this.chatService.getRandomColor();
-            this.colorArray.push({
-              team_member_id: response[index].team_member_id,
-              name: response[index].name,
-              chat_color: response[index].chat_color
-            });
-            break;
-          case 'havecolor':
-            let colorObject = chatColors.find(function(chat) {
-              return chat.team_member_id === response[index].team_member_id;
-            });
-            if ((colorObject)) {
-              response[index].chat_color = colorObject.chat_color;
-            } else {
-              response[index].chat_color = this.chatService.getRandomColor();
-            }
-            break;
-        }
-        this.chatList.push(response[index]);
-      }
-    }
-    if ((this.colorArray.length > 0)) {
-      this.storage.set('chatAvatarColors', this.colorArray);
-    }
+    });
   }
 
   /**

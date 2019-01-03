@@ -9,11 +9,20 @@ import { Router, ActivatedRoute } from '@angular/router';
   styleUrls: ['./topic.component.scss']
 })
 export class TopicComponent implements OnInit {
-  topic: Topic;
-  iframeHtml: string;
+  topic: Topic = {
+    id: 0,
+    title: '',
+    content: '',
+    videolink: '',
+    files:[],
+    hasComments: false
+  };
+  iframeHtml: string ='';
   btnToggleTopicIsDone: boolean = false;
+  loadingMarkedDone: boolean = true;
   id: number = 0;
   activityId: number = 0;
+  topicProgress: number;
   
   constructor( 
     private topicService: TopicService,
@@ -25,7 +34,11 @@ export class TopicComponent implements OnInit {
   ngOnInit() {
     this.id = parseInt(this.route.snapshot.paramMap.get('id'));
     this.activityId = parseInt(this.route.snapshot.paramMap.get('activityId'));
+    this._getTopic();
+    this._getTopicProgress();
+   }
 
+  private _getTopic() {
     this.topicService.getTopic(this.id)
       .subscribe(topic => {
         this.topic = topic;
@@ -33,18 +46,27 @@ export class TopicComponent implements OnInit {
           this.iframeHtml = this.embedService.embed(this.topic.videolink);
         }
       });
+  }
 
-    this.topicService.getTopicIsDone(this.id)
+  private _getTopicProgress() {
+    this.topicService.getTopicProgress(this.activityId,this.id)
       .subscribe(result => {
-        this.btnToggleTopicIsDone = result;
+        this.topicProgress = result;
+
+        if (this.topicProgress !== null && this.topicProgress !== undefined) {
+          if (this.topicProgress === 1) {
+            this.btnToggleTopicIsDone = true;
+          } 
+        }
+        this.loadingMarkedDone = false;
       });
-   }  
-  
+   }
+
   markAsDone () {
     this.btnToggleTopicIsDone = true;
-    this.topicService.saveTopicRead(this.id);
-    
+    this.topicService.updateTopicProgress(this.id).subscribe();
   }
+  
   previewFile () {
     console.log('show the file');
   }
