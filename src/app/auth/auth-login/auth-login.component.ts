@@ -2,6 +2,8 @@ import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '../auth.service';
 import { Observable, concat } from 'rxjs';
+import { Validators, FormGroup, FormControl } from '@angular/forms';
+import { NotificationService } from '@shared/notification/notification.service';
 
 @Component({
   selector: 'app-auth-login',
@@ -9,30 +11,40 @@ import { Observable, concat } from 'rxjs';
   styleUrls: ['auth-login.component.scss']
 })
 export class AuthLoginComponent {
-  email = '';
-  password = '';
+  loginForm = new FormGroup({
+    email: new FormControl('', [Validators.required]),
+    password: new FormControl('', [Validators.required]),
+  });
+  isLoggingIn = false;
 
   constructor(
     private router: Router,
     private authService: AuthService,
+    private notificationService: NotificationService
   ) {}
 
   login() {
-    // -- todo
-    // call API to do authentication
-    console.log("Email: ", this.email, "\nPassword: ", this.password);
+    this.isLoggingIn = true;
     this.authService.login({
-      email: this.email,
-      password: this.password,
+      email: this.loginForm.value.email,
+      password: this.loginForm.value.password,
     }).subscribe(res => {
-      // hardcode login status
-      console.log(res);
+      this.isLoggingIn = false;
       this.router.navigate(['/switcher']);
     }, err => {
-      // hardcode login status
-      console.log(err);
-      // should popup something instead
-      this.router.navigate(['/switcher']);
+      this.notificationService.alert({
+        message: 'Your email or password is incorrect, please try again.',
+        buttons: [
+          {
+            text: 'OK',
+            role: 'cancel',          
+            handler: () => {
+              this.isLoggingIn = false;
+              return;
+            }
+          }
+        ]
+      });
     });
   }
 }

@@ -93,9 +93,6 @@ export class AuthService {
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
     }).pipe(map(response => {
       const norm = this._normaliseAuth(response);
-
-      console.log('Auth Response::', response);
-      console.log('Auth Response::', norm);
       if (response.data) {
         this.storage.set('apikey', norm.apikey);
         this.storage.set('programs', norm.programs);
