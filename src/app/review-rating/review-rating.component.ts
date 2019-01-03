@@ -16,18 +16,18 @@ export class ReviewRatingComponent {
   redirect = ['/'];
 
   ratingData: ReviewRating = {
-  	assessment_review_id: null,
-  	rating : 0.5,
-  	comment: '',
-  	tags: []
+    assessment_review_id: null,
+    rating : 0.5,
+    comment: '',
+    tags: []
   };
   // variable to control the button text to indicate rating 
   isSubmitting = false;
 
   constructor(
-  	private reviewRatingService: ReviewRatingService,
-  	private modalController : ModalController,
-  	private router : Router,
+    private reviewRatingService: ReviewRatingService,
+    private modalController : ModalController,
+    private router : Router,
     private utils: UtilsService,
     private notificationService: NotificationService
   ) {}
@@ -35,23 +35,23 @@ export class ReviewRatingComponent {
   // Review ID is required if this component is to be used.upon detecting incoming/changes of value, set passed reviewId into local var
   @Input()
   set reviewId(reviewId: number) {
-  	this.ratingData.assessment_review_id = reviewId;    
+    this.ratingData.assessment_review_id = reviewId;
   }
 
-  submitReviewRating() {  	
+  submitReviewRating() {
     this.isSubmitting = true;
-  	// round to 2 decimal place
-  	this.ratingData.rating = +(this.ratingData.rating.toFixed(2));
-  	
-  	this.reviewRatingService.submitRating(this.ratingData).subscribe(result => {       
+    // round to 2 decimal place
+    this.ratingData.rating = +(this.ratingData.rating.toFixed(2));
+    
+    this.reviewRatingService.submitRating(this.ratingData).subscribe(result => {
       this.isSubmitting = false;
       if (result) {
           this.notificationService.presentToast('Successfully submitted.');
-      } else {       
+      } else {
           this.notificationService.presentToast('Error submtting review rating.', false);
       }
-  	  this.closeReviewRating();
-  	});
+      this.closeReviewRating();
+    });
   }
 
   closeReviewRating() {
