@@ -30,7 +30,7 @@ import { environment } from '../environments/environment';
     AppRoutingModule,
     NgCircleProgressModule,
     EmbedVideo.forRoot(),
-    NotificationModule,
+    NotificationModule
   ],
   providers: [
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
