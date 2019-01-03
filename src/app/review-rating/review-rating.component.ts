@@ -43,7 +43,7 @@ export class ReviewRatingComponent {
   	
   	this.reviewRatingService.submitRating(this.ratingData).subscribe(result => {
       this.isSubmitting = false;
-  		this.closeReviewRating();
+  	  this.closeReviewRating();
   	});
   }
 
