@@ -3,7 +3,7 @@
     <img src="/assets/logo.svg" width="60%">
   </div>
   <div class="div-after-logo">
-    <form (ngSubmit)="login()" [formGroup]="loginForm" (keyup.enter)="login()">
+    <form (ngSubmit)="login()" [formGroup]="loginForm" (keyup.enter)="login()" #loginForm="ngForm">
       <ion-list margin>
         <ion-item>
           <ion-input name="email" formControlName="email" required type="email" placeholder="Email" ></ion-input>
