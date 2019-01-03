@@ -19,7 +19,8 @@ const api = {
   me: "api/users.json",
   setProfile: "api/v2/user/enrolment/edit.json",
   verifyRegistration: "api/verification_codes.json",
-  register: "api/registration_details.json"
+  register: "api/registration_details.json",
+  forgotPassword: "api/auths.json?action=forgot_password"
 };
 
 interface verifyParams {
@@ -143,6 +144,17 @@ export class AuthService {
     // @TODO: clear ionic view history too
     this.utils.changeThemeColor('#2bbfd4');
     return of(this.storage.clear());
+  }
+
+   /**
+   * @name forgotPassword
+   * @description make request to server to send out email with reset password url
+   * @param  {string}}        email [user's email]  
+   */
+  forgotPassword(email:string) {
+    return this.request.post(api.forgotPassword, {
+      email: email
+    });
   }
 
   /**
