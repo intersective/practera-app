@@ -7,6 +7,7 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
+    "local": "ng serve -c local",
     "development": "ng serve --host 0.0.0.0 --port 8080 --disable-host-check",
     "build": "ng build && git commit -am 'Build'",
     "deploy": "ng build --base-href '/practera-app-v2/' && git commit -am 'Build to Github Page' && git subtree push --prefix www origin gh-pages",
@@ -34,7 +35,7 @@
     "filestack-js": "^1.8.0",
     "lodash": "^4.17.11",
     "ng-circle-progress": "^1.3.0",
-    "ngx-embed-video": "^1.0.2",    
+    "ngx-embed-video": "^1.0.2",
     "rxjs": "6.3.3",
     "rxjs-compat": "^6.3.3",
     "ts-md5": "^1.2.4",
