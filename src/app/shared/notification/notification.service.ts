@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
-import { ModalController, AlertController } from '@ionic/angular';
+import { ModalController, AlertController, ToastController } from '@ionic/angular';
 import { AlertOptions } from '@ionic/core';
 import { PopUpComponent } from './pop-up/pop-up.component';
+import { ReviewRatingComponent } from '../../review-rating/review-rating.component';
 
 @Injectable({
   providedIn: 'root'
@@ -10,7 +11,8 @@ export class NotificationService {
 
   constructor(
     private modalController: ModalController,
-    private alertController: AlertController
+    private alertController: AlertController,
+    private toastController: ToastController
   ) {}
 
   // show pop up message 
@@ -31,5 +33,33 @@ export class NotificationService {
   async alert(config: AlertOptions) {
     const alert = await this.alertController.create(config);
     return await alert.present();
+  }
+
+  // toast message pop up, by default, shown success message for 2 seconds.
+  async presentToast(message, success=true, duration=2000) {
+    let color = 'success'
+    if (!success) {
+      color = 'danger';
+    } 
+    const toast = await this.toastController.create({
+      message: message,
+      duration: duration,
+      position: 'top',
+      color : color
+    });
+    toast.present();
+  }
+
+  // show review rating page as pop up modal
+  // review ID is required
+  async reviewRating(reviewId, redirect) {
+     const modal = await this.modalController.create({
+      component: ReviewRatingComponent,
+      componentProps: { 
+        reviewId: reviewId,
+        redirect: redirect
+      }
+    });
+    return await modal.present();
   }
 }
