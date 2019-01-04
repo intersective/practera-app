@@ -15,7 +15,6 @@ const api = {
   getConfig: "api/v2/plan/experience/config",
   linkedin: "api/auth_linkedin.json",
   login: "api/auths.json",
-  me: "api/users.json",
   setProfile: "api/v2/user/enrolment/edit.json",
   verifyRegistration: "api/verification_codes.json",
   register: "api/registration_details.json"
@@ -47,7 +46,6 @@ interface UserProfile {
 })
 export class AuthService {
   private isLoggedIn: boolean = false;
-  email: string = '';
 
   constructor(
     private request: RequestService,
@@ -85,7 +83,6 @@ export class AuthService {
    * @param {object} { email, password } in string for each of the value
    */
   login({ email, password }): Observable<any> {
-    this.email = email;
     const body = new HttpParams()
       .set('data[User][email]', email)
       .set('data[User][password]', password);
@@ -113,44 +110,12 @@ export class AuthService {
       this.storage.set('apikey', norm.apikey);
       this.storage.set('programs', norm.programs);
       this.storage.set('isLoggedIn', true);
-      if (!this.utils.isEmpty(this.email)) {
-        this.storage.setUser({
-          email: this.email
-        });
-      }
     }
     return response;
   }
 
   isAuthenticated(): boolean {
     return this.isLoggedIn || this.storage.get("isLoggedIn");
-  }
-
-  /**
-   * @name me
-   * @description get user info
-   */
-  me(): Observable<any> {
-    return this.request.get(api.me).pipe(map(response => {
-      if (response.data) {
-        const apiData = response.data;
-        this.storage.setUser({
-          name: apiData.name,
-          contactNumber: apiData.contact_number,
-          email: apiData.email,
-          role: apiData.role,
-          image: apiData.image,
-          linkedinConnected: apiData.linkedinConnected,
-          linkedinUrl: apiData.linkedin_url,
-          programId: apiData.program_id,
-          timelineId: apiData.timeline_id,
-          projectId: apiData.project_id,
-          filestackHash: apiData.userhash,
-          maxAchievablePoints: apiData.max_achievable_points
-        });
-      }
-      return response;
-    }));
   }
 
   logout(): Observable<any> {
