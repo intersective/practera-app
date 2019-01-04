@@ -50,13 +50,13 @@ export class ProjectService {
     private utils: UtilsService,
     private storage: BrowserStorageService) { }
 
-  getMilestones() {
+  public getMilestones() {
     return this.request.get(api.milestone, {
       params: {}
     })
     .pipe(map(response => {
-      if (response.sucess && response.date) {
-        return this._normaliseMilestones(response.date);
+      if (response.success && response.data) {
+        return this._normaliseMilestones(response.data);
       }
     }))
   }
@@ -88,12 +88,14 @@ export class ProjectService {
       }
       
       this.milestones.push(milestone);
-      this.milestones.forEach(milestone => {
-      this.milestone_ids.push(milestone.id);
-      })
       console.log('milestones is:',this.milestones);
       
   })
+  this.milestones.forEach(milestone => {
+    this.milestone_ids.push(milestone.id);
+    
+  })
+  console.log('milestoneIds is:',this.milestone_ids);
   let activities = this.getActivities();
   this._addActivitiesToEachMilestone(this.milestones, activities);  
   this.milestone_ids.forEach(this.getProgress, this);
@@ -118,8 +120,8 @@ export class ProjectService {
       }
     })
     .pipe(map(response => {
-      if (response.sucess && response.date) {
-        return this._normaliseActivities(response.date);
+      if (response.success && response.data) {
+        return this._normaliseActivities(response.data);
       }
     }))
   }
