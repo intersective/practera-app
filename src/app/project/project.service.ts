@@ -42,7 +42,7 @@ export interface Milestone {
 export class ProjectService {
   public Milestones = [];
   public milestone_ids = [];
-  public activities ;
+  public milestones = [];
   
   constructor( 
     private request: RequestService,
@@ -61,7 +61,6 @@ export class ProjectService {
   }
 
   private _normaliseMilestones(data){
-    let milestones = [];
     if (!Array.isArray(data)) {
       this.request.apiResponseFormatError('Milestones array format error');
       return [];
@@ -87,25 +86,24 @@ export class ProjectService {
         milestone.description = eachMilestone.description;
       }
       
-      milestones.push(eachMilestone);
-      milestones.forEach(milestone => {
+      this.milestones.push(milestone);
+      this.milestones.forEach(milestone => {
         this.milestone_ids.push(milestone.id);
       })
+      console.log('milestones is:',this.milestones);
 
-    })
-
-    this.activities = this.getActivities();
-    this._addActivitiesToEachMilestone(milestones,this.activities);
-    this.getProgress();
-
-    return this.Milestones = milestones;
+    let activities = this.getActivities();
+    this._addActivitiesToEachMilestone(this.milestones, activities);
+    this.getProgress(eachMilestone);
+  })
+    return this.Milestones = this.milestones;
   }
 
   private _addActivitiesToEachMilestone(milestones,activities) {
     let activitiesOfEachMilestone =[];
     milestones.forEach(function(eachMilestone) {
       activities.find(function (activity) {
-        activitiesOfEachMilestone.push( activity.Activity.milestoneId == eachMilestone.id);
+        activitiesOfEachMilestone.push( activity.milestoneId == eachMilestone.id);
       })
       eachMilestone.Activity = activitiesOfEachMilestone;
     })
@@ -137,8 +135,8 @@ export class ProjectService {
         return this.request.apiResponseFormatError('Activity.Activity format error');
       }
       if (this.utils.has(eachActivity, 'Activity') && eachActivity.Activity.is_locked === false ) {
-        if (!this.utils.has(eachActivity, 'ActivitySequence') || !this.utils.has(eachActivity, 'References')) {
-          return this.request.apiResponseFormatError('Activities format error');
+        if (!this.utils.has(eachActivity, 'ActivitySequence')) {
+          return this.request.apiResponseFormatError('ActivitySequence format error');
         }
       }
       let activity: Activity = {
@@ -174,12 +172,12 @@ export class ProjectService {
     return activities;
   }
   
-  public getProgress() {
+  public getProgress(milestone) {
     return this.request.get(api.progress, {
       params: {
-        model: 'project',
-        model_id: this.storage.getUser().projectId,
-        scope: 'activity'
+        model: 'Milestone',
+        model_id: milestone.id,
+        scope: 'Task'
       }
     })
     .pipe(map(response => {
@@ -206,12 +204,12 @@ export class ProjectService {
   }
 
   private _loopThroughMilestones(milestone) {
-    var progress = this.Milestones.find(function (item) {
+    var findMilestoneWithThisId = this.Milestones.find(function (item) {
       return item.id === milestone.id;
     })
-    progress.progress = milestone.progress;
+    findMilestoneWithThisId.progress = milestone.progress;
 
-    this._activityProgress(progress);
+    this._activityProgress(findMilestoneWithThisId);
   }
 
   private _activityProgress(data) {
