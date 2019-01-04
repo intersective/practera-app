@@ -47,6 +47,7 @@ interface UserProfile {
 })
 export class AuthService {
   private isLoggedIn: boolean = false;
+  email: string = '';
 
   constructor(
     private request: RequestService,
@@ -80,28 +81,45 @@ export class AuthService {
 
   /**
    * @name login
-   * @description login API specifically only accept request data in encodedUrl formdata, so must conver them into compatible formdata before submission
+   * @description login API specifically only accept request data in encodedUrl formdata, so must convert them into compatible formdata before submission
    * @param {object} { email, password } in string for each of the value
    */
   login({ email, password }): Observable<any> {
+    this.email = email;
     const body = new HttpParams()
       .set('data[User][email]', email)
       .set('data[User][password]', password);
-
     return this.request.post(api.login, body.toString(), {
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
-    }).pipe(map(response => {
-      const norm = this._normaliseAuth(response);
-      if (response.data) {
-        this.storage.set('apikey', norm.apikey);
-        this.storage.set('programs', norm.programs);
-        this.storage.set('isLoggedIn', true);
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+      }).pipe(map(this._handleLoginResponse, this));
+  }
+
+  /**
+   * @name directLogin
+   * @description login API specifically only accept request data in encodedUrl formdata, so must convert them into compatible formdata before submission
+   * @param {object} { authToken } in string
+   */
+  directLogin({ authToken }): Observable<any> {
+    const body = new HttpParams()
+      .set('auth_token', authToken);
+    return this.request.post(api.login, body.toString(), {
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+      }).pipe(map(this._handleLoginResponse, this));
+  }
+
+  private _handleLoginResponse(response) {
+    const norm = this._normaliseAuth(response);
+    if (response.data) {
+      this.storage.set('apikey', norm.apikey);
+      this.storage.set('programs', norm.programs);
+      this.storage.set('isLoggedIn', true);
+      if (!this.utils.isEmpty(this.email)) {
         this.storage.setUser({
-          email: email
+          email: this.email
         });
       }
-      return response;
-    }));
+    }
+    return response;
   }
 
   isAuthenticated(): boolean {
@@ -159,13 +177,13 @@ export class AuthService {
   }
 
   /**
-   * @name directLink
+   * @name contactNumberLogin
    * @description fast/quick login with contact number
    * @param  {string}}        data [description]
    * @return {Observable<any>}      [description]
    */
-  directLink(data: { contactNumber: string }): Observable<any> {
-    return this.request.post(api.directLink, {
+  contactNumberLogin(data: { contactNumber: string }): Observable<any> {
+    return this.request.post(api.login, {
       contact_number: data.contactNumber, // API accepts contact_numebr
     }).pipe(map(response => {
       if (response.data) {
