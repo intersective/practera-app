@@ -25,11 +25,7 @@ import { environment } from '../environments/environment';
     AuthModule,
     RequestModule.forRoot({
       appkey: 'b11e7c189b',
-<<<<<<< HEAD
-      prefixUrl: 'https://local.practera.com:8080/',
-=======
       prefixUrl: environment.APIEndpoint,
->>>>>>> develop
     }),
     AppRoutingModule,
     NgCircleProgressModule,
