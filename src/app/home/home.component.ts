@@ -15,7 +15,7 @@ export class HomeComponent implements OnInit {
   programName: string;
   todoItems: Array<TodoItem> = [];
   loadingTodoItems: boolean = true;
-  activity: Activity;
+  activity;
   loadingActivity: boolean = true;
   
   constructor (
