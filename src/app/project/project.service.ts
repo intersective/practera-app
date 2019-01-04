@@ -17,6 +17,7 @@ const api = {
   progress: 'api/v2/motivations/progress/list.json'
 };
 
+
 export interface Activity {
   id: number;
   name: string;
