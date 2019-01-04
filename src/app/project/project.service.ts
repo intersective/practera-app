@@ -88,14 +88,14 @@ export class ProjectService {
       
       this.milestones.push(milestone);
       this.milestones.forEach(milestone => {
-        this.milestone_ids.push(milestone.id);
+      this.milestone_ids.push(milestone.id);
       })
       console.log('milestones is:',this.milestones);
 
-    let activities = this.getActivities();
-    this._addActivitiesToEachMilestone(this.milestones, activities);
     this.getProgress(eachMilestone);
   })
+    let activities = this.getActivities();
+    this._addActivitiesToEachMilestone(this.milestones, activities);
     return this.Milestones = this.milestones;
   }
 
@@ -200,22 +200,24 @@ export class ProjectService {
   }
 
   private _milestoneProgress(data) {
-    data.Project.Milestone.forEach(this._loopThroughMilestones, this);
+    data.Milestone.forEach(this._loopThroughMilestones, this);
   }
 
-  private _loopThroughMilestones(milestone) {
+  private _loopThroughMilestones(progressOfMilestones) {
     var findMilestoneWithThisId = this.Milestones.find(function (item) {
-      return item.id === milestone.id;
+      return item.id === progressOfMilestones.id;
     })
-    findMilestoneWithThisId.progress = milestone.progress;
+    findMilestoneWithThisId.progress = progressOfMilestones.progress;
 
-    this._activityProgress(findMilestoneWithThisId);
+    this._activityProgress(findMilestoneWithThisId, progressOfMilestones);
   }
 
-  private _activityProgress(data) {
-    data.Activity.forEach(this._loopThroghActivities, this);
-  }
-  private _loopThroghActivities(activity) {
-    
+  private _activityProgress(data,progress) {
+    data.Activity.forEach(function(activity){
+      var findActivityWithThisId = progress.Activity.find(function(item) {
+        return item.id === activity.id;
+      })
+      data.Activity.progress = findActivityWithThisId.progress;
+    })
   }
 }
