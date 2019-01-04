@@ -11,6 +11,9 @@ phases:
   build:
     commands:
       - sudo ng build --configuration=stage
+  post_build:
+    commands:
+      - aws s3 cp www s3://appv2.practeraco.de/ --recursive
 artifacts:
   type: zip
   files:
