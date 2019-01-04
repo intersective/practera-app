@@ -5,6 +5,7 @@ import { SettingService, Profile } from './setting.service';
 import { BrowserStorageService } from '@services/storage.service';
 import { UtilsService } from '@services/utils.service';
 import { NotificationService } from '@shared/notification/notification.service';
+import { environment } from '../../environments/environment.prod';
 
 
 @Component({
@@ -66,7 +67,19 @@ export class SettingsComponent implements OnInit {
     // if user has the contact number
     if (this.profile.contactNumber && this.profile.contactNumber != null) {
       this.checkCurrentContactNumberOrigin();
-    } 
+    } else { 
+      // by default, set Mask in Australian format.
+      this.mask = this.formatMasks[this.countryModel];           
+      /*
+          user has no contact number, set the default mask 
+            : also check which the server which the APP talks to, i.e if the APP is consuming APIs from 'us.practera.com' then, it is APP V2 in US.
+              But if APP consumes APIs from 'api.practera.com' then it is APP V2 in AUS. 
+       */ 
+      if (environment.APIEndpoint.indexOf('us') !== -1) {
+        this.countryModel = 'US';
+        this.mask = this.formatMasks[this.countryModel];      
+      }       
+    }    
   };
 
   private checkCurrentContactNumberOrigin() {
