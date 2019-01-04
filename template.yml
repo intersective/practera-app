@@ -30,7 +30,7 @@ Resources:
     Description: The installation and configuration commands this project will use to create instances that support this sample web application.
     Properties:
       IamInstanceProfile: !Ref 'WebAppInstanceProfile'
-      InstanceType: t2.small
+      InstanceType: t2.medium
       ImageId: !Ref 'ImageId'
       KeyName: !Ref 'KeyPairName'
       NetworkInterfaces:
@@ -55,6 +55,7 @@ Resources:
             cd /home/ec2-user/
             wget https://aws-codedeploy-${AWS::Region}.s3.amazonaws.com/latest/codedeploy-agent.noarch.rpm
             yum -y install codedeploy-agent.noarch.rpm
+            pip install awscli --upgrade
     Type: AWS::EC2::Instance
   WebAppSG:
     Description: The default Amazon EC2 security group that will be created for the Amazon EC2 Linux instances.
@@ -81,9 +82,5 @@ Resources:
       - IpProtocol: tcp
         FromPort: '443'
         ToPort: '443'
-        CidrIp: 0.0.0.0/0
-      - IpProtocol: tcp
-        FromPort: '8000'
-        ToPort: '8000'
         CidrIp: 0.0.0.0/0
       VpcId: !Ref 'VpcId'

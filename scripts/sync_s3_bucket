@@ -1,0 +1,3 @@
+#!/bin/bash
+cd /home/ec2-user/node-website
+aws s3 sync www s3://appv2.practeraco.de/ --delete
