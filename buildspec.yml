@@ -3,15 +3,15 @@ version: 0.2
 phases:
   install:
     commands:
-      - yum install -y nodejs
-      - npm install forever -g
-      - npm install -g @angular/cli
-      - npm install
-      - node node_modules/node-sass/scripts/install.js
-      - npm rebuild node-sass
+      - sudo apt-get install -y nodejs
+      - sudo npm install forever -g
+      - sudo npm install -g @angular/cli
+      - sudo npm install
+      - sudo node node_modules/node-sass/scripts/install.js
+      - sudo npm rebuild node-sass
   build:
     commands:
-      - ng build --configuration=stage
+      - sudo ng build --configuration=stage
 artifacts:
   type: zip
   files:
