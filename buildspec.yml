@@ -3,8 +3,6 @@ version: 0.2
 phases:
   install:
     commands:
-      # Upgrade AWS CLI to the latest version
-      - pip install --upgrade awscli
       - yum install -y nodejs
       - npm install forever -g
       - npm install -g @angular/cli
