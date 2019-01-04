@@ -8,7 +8,7 @@
     "ng": "ng",
     "start": "ng serve",
     "local": "ng serve -c local",
-    "development": "ng serve --host 0.0.0.0 --port 8080 --disable-host-check",
+    "development": "ng serve —-ssl true --host 0.0.0.0 --port 8080 --disable-host-check",
     "build": "ng build && git commit -am 'Build'",
     "deploy": "ng build --base-href '/practera-app-v2/' && git commit -am 'Build to Github Page' && git subtree push --prefix www origin gh-pages",
     "test": "ng test",
