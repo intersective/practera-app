@@ -12,10 +12,9 @@ import { UtilsService } from "@services/utils.service";
  * @type {Object}
  */
 const api = {
-  directLink: "api/auths.json?action=authentication",
   getConfig: "api/v2/plan/experience/config",
   linkedin: "api/auth_linkedin.json",
-  login: "api/auth.json",
+  login: "api/auths.json",
   me: "api/users.json",
   setProfile: "api/v2/user/enrolment/edit.json",
   verifyRegistration: "api/verification_codes.json",
