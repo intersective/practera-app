@@ -3,7 +3,6 @@ version: 0.2
 phases:
   install:
     commands:
-      - sudo apt-get install -y nodejs
       - sudo npm install forever -g
       - sudo npm install -g @angular/cli
       - sudo npm install
