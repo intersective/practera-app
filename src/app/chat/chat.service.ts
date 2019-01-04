@@ -118,7 +118,7 @@ export class ChatService {
       'data[to]': data.to.toString(),
       'data[message]': data.message,
       'data[team_id]': data.team_id.toString(),
-      'env': environment.environment
+      'env': environment.chatEnvironment
     };
     return this.request.post(api.createMessage, {}, {
       params: params
