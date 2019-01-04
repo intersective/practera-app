@@ -151,16 +151,8 @@ export class AuthRegistrationComponent implements OnInit {
                 password: this.password
               })
               .subscribe(response => {
-                  this.authService.me()
-                    .subscribe(response => {
-                      let redirect = [];
-                      redirect = ['switcher'];
-                      this.showPopupMessages('shortMessage', 'Registration success!',redirect);
-                    },
-                    error => {
-                      this.showPopupMessages('shortMessage', 'Registration not compleate!');
-                    }
-                  );
+                  let redirect = ['switcher'];
+                  this.showPopupMessages('shortMessage', 'Registration success!', redirect);
                 },
                 error => {
                   this.showPopupMessages('shortMessage', 'Registration not compleate!');
