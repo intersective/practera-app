@@ -91,11 +91,11 @@ export class ProjectService {
       this.milestone_ids.push(milestone.id);
       })
       console.log('milestones is:',this.milestones);
-
-    this.getProgress(eachMilestone);
+      
   })
-    let activities = this.getActivities();
-    this._addActivitiesToEachMilestone(this.milestones, activities);
+  let activities = this.getActivities();
+  this._addActivitiesToEachMilestone(this.milestones, activities);  
+  this.milestone_ids.forEach(this.getProgress, this);
     return this.Milestones = this.milestones;
   }
 
@@ -172,11 +172,11 @@ export class ProjectService {
     return activities;
   }
   
-  public getProgress(milestone) {
+  public getProgress(id) {
     return this.request.get(api.progress, {
       params: {
         model: 'Milestone',
-        model_id: milestone.id,
+        model_id: id,
         scope: 'Task'
       }
     })
@@ -189,9 +189,7 @@ export class ProjectService {
 
   private _normaliseProgress(data: any) {
     
-    if (!this.utils.has(data, 'Project.progress') || 
-        !this.utils.has(data, 'Project.Milestone') ||
-        !Array.isArray(data.Project.Milestone)) {
+    if (!this.utils.has(data, 'Project.Milestone')) {
       this.request.apiResponseFormatError('Progress format error');
       return 0;
     }
