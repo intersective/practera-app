@@ -6,12 +6,7 @@ phases:
       # Upgrade AWS CLI to the latest version
       - pip install --upgrade awscli
       - curl -sL https://rpm.nodesource.com/setup_10.x | bash -
-      - yum install -y nodejs
-      - npm install forever -g
-      - npm install -g @angular/cli
-      - npm install
-      - node node_modules/node-sass/scripts/install.js
-      - npm rebuild node-sass
+      - yum install -y nodejs && npm install forever -g && npm install -g @angular/cli && npm install && node node_modules/node-sass/scripts/install.js && npm rebuild node-sass
   build:
     commands:
       - ng build --configuration=stage
