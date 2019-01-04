@@ -24,7 +24,7 @@ import { EmbedVideo } from 'ngx-embed-video';
     AuthModule,
     RequestModule.forRoot({
       appkey: 'b11e7c189b',
-      prefixUrl: 'https://sandbox.practera.com/',
+      prefixUrl: 'https://local.practera.com:8080/',
     }),
     AppRoutingModule,
     NgCircleProgressModule,
