@@ -1,5 +1,5 @@
 export const environment = {
   production: true,
   APIEndpoint: 'https://api.practera.com/',
-  environment: 'live'
+  chatEnvironment: 'live'
 };
