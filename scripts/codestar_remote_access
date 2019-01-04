@@ -7,8 +7,8 @@ sed -i '/AuthorizedKeysCommand /s/.*/AuthorizedKeysCommand \/usr\/local\/bin\/ge
 sed -i '/AuthorizedKeysCommandUser /s/.*/AuthorizedKeysCommandUser root/g' /etc/ssh/sshd_config
 /etc/init.d/sshd restart
 yum update -y aws-cfn-bootstrap
-yum install -y aws-cli
 # Install pip and python dev libraries.
 yum install -y python27-devel python27-pip gcc
 pip install boto3
 pip install pycrypto
+pip install awscli --upgrade

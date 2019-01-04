@@ -55,7 +55,6 @@ Resources:
             cd /home/ec2-user/
             wget https://aws-codedeploy-${AWS::Region}.s3.amazonaws.com/latest/codedeploy-agent.noarch.rpm
             yum -y install codedeploy-agent.noarch.rpm
-            pip install awscli --upgrade
     Type: AWS::EC2::Instance
   WebAppSG:
     Description: The default Amazon EC2 security group that will be created for the Amazon EC2 Linux instances.
