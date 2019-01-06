@@ -13,7 +13,7 @@ import { BrowserStorageService } from '@services/storage.service';
   styleUrls: ['./activity.component.scss']
 })
 export class ActivityComponent implements OnInit {
-  
+
   id: number;
   activity: Activity = {
     id: 0,
@@ -80,7 +80,7 @@ export class ActivityComponent implements OnInit {
           }
         });
         if (isForTeam && !this.storage.getUser().teamId) {
-          this.notificationService.popUp('shortMessage', {message: 'To do this assessment, you have to be in a team.'}, false);
+          this.notificationService.popUp('shortMessage', {message: 'To do this assessment, you have to be in a team.'});
           break;
         }
         this.router.navigate(['assessment', 'assessment', this.id , contextId, id]);
@@ -89,7 +89,7 @@ export class ActivityComponent implements OnInit {
         this.router.navigate(['topic', this.id, id]);
         break;
       case 'Locked':
-        this.notificationService.popUp('shortMessage', {message: 'This part of the app is still locked. You can unlock the features by engaging with the app and completing all tasks.'}, false);
+        this.notificationService.popUp('shortMessage', {message: 'This part of the app is still locked. You can unlock the features by engaging with the app and completing all tasks.'});
         break;
     }
   }
