@@ -27,8 +27,6 @@ export class ChatRoomComponent implements OnInit, AfterContentInit {
   messageList: any[];
   selectedChat: Chat;
   chatColors: any[];
-  routeTeamId: number = 0;
-  routeTeamMemberId: number = 0;
   messagePageNumber: number = 0;
   messagePagesize: number = 20;
 
@@ -57,11 +55,8 @@ export class ChatRoomComponent implements OnInit, AfterContentInit {
 
   private validateRoutePrams() {
     this.activatedRoute.queryParams.subscribe(params => {
-      this.selectedChat = params['selectedChat'];
-      console.log("chat", this.selectedChat.name);
-      // this.routeTeamId = +params["teamId"]; // (+) converts string 'teamId' to a number
-      // this.routeTeamMemberId = +params["memberId"]; // (+) converts string 'memberId' to a number
-      // this.loadMessages(false);
+      this.selectedChat = JSON.parse(params["selectedChatObject"]);
+      this.loadMessages(false);
     });
   }
 
@@ -69,10 +64,10 @@ export class ChatRoomComponent implements OnInit, AfterContentInit {
     let tempRes = null;
     // creating params need to load messages.
     let param = {
-      team_id: this.routeTeamId,
+      team_id: this.selectedChat.team_id,
       page: this.getMessagePageNumber(),
       size: this.messagePagesize,
-      team_member_id: this.routeTeamMemberId
+      team_member_id: this.selectedChat.team_member_id
     };
     this.chatService
       .getMessageList(param, this.selectedChat)

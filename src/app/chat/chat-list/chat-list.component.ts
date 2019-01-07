@@ -53,15 +53,8 @@ export class ChatListComponent implements OnInit {
   getChatAvatarText(chatName) {
     return this.chatService.generateChatAvatarText(chatName);
   }
-
   navigateToChatRoom(chat) {
-    this.storage.set('selectedChatObject', chat);
-
-    const extra: NavigationExtras = {
-      queryParams: { chat },
-    };
-    console.log("navigateToChatRoom",chat);
-    this.router.navigate(['/chat/chatroom'],{ queryParams: {selectedChat: chat} });
+    this.router.navigate(['/chat/chatroom'],{ queryParams: {selectedChatObject: JSON.stringify(chat)} });
   }
 
   getChatDate(date) {

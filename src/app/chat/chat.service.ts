@@ -114,14 +114,13 @@ export class ChatService {
   }
 
   postNewMessage(data: newMessage): Observable<any> {
-    let params = {
-      'data[to]': data.to.toString(),
-      'data[message]': data.message,
-      'data[team_id]': data.team_id.toString(),
-      'env': environment.chatEnvironment
-    };
-    return this.request.post(api.createMessage, {}, {
-      params: params
+    const body = new HttpParams()
+      .set('data[to]', data.to.toString())
+      .set('data[message]', data.message)
+      .set('data[team_id]',data.team_id.toString())
+      .set('env', environment.chatEnvironment);
+    return this.request.post(api.createMessage, body.toString(), {
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
     });
   }
 
