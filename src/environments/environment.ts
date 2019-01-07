@@ -12,11 +12,10 @@ export const environment = {
       location: 's3',
       container: 'practera-aus',
       region: 'ap-southeast-2',
-      path: '/appv2/local/uploads/',
       paths: {
-        any: '/appv2/local/uploads/',
-        image: '/appv2/local/uploads/',
-        video: '/appv2/local/uploads/'
+        any: '/appv2/stage/uploads/',
+        image: '/appv2/stage/uploads/',
+        video: '/appv2/stage/uploads/'
       }
     }
   }

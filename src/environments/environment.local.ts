@@ -7,7 +7,6 @@ export const environment = {
       location: 's3',
       container: 'practera-aus',
       region: 'ap-southeast-2',
-      path: '/appv2/local/uploads/',
       paths: {
         any: '/appv2/local/uploads/',
         image: '/appv2/local/uploads/',
