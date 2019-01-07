@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { RequestService } from '@shared/request/request.service';
-import { NotificationService } from '@shared/notification/notification.service';
 
 const api = {
   post: {
@@ -23,7 +22,6 @@ export class ReviewRatingService {
 
   constructor(
   	private request : RequestService,
-    private notification : NotificationService,
   ) {}
 
   submitRating(data : ReviewRating) {
