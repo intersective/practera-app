@@ -30,8 +30,8 @@ interface verifyParams {
 
 interface registerData {
   password: string;
-  user_id?: string;
-  key?: string;
+  user_id: string;
+  key: string;
 }
 
 interface ConfigParams {
@@ -94,9 +94,6 @@ export class AuthService {
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
     }).pipe(map(response => {
       const norm = this._normaliseAuth(response);
-
-      console.log('Auth Response::', response);
-      console.log('Auth Response::', norm);
       if (response.data) {
         this.storage.set('apikey', norm.apikey);
         this.storage.set('programs', norm.programs);
@@ -220,8 +217,6 @@ export class AuthService {
   }
 
   saveRegistration(data: registerData): Observable<any> {
-    data.user_id = this.storage.get("hash").id;
-    data.key = this.storage.get("hash").key;
     return this.request
     .post(api.register, data, {
       headers: { "Content-Type": "application/json" }
