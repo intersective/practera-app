@@ -28,10 +28,12 @@ export class FilestackService {
 
   //get s3 config
   getS3Config (fileType) {
-    let path = environment.filestack.s3Config.path;
+    let path = environment.filestack.s3Config.paths.any;
+    // get s3 path based on file type
     if (environment.filestack.s3Config.paths[fileType]) {
       path = environment.filestack.s3Config.paths[fileType];
     }
+    // add user hash to the path
     path = path + this.storage.getUser().userHash + '/';
     return {
       location: environment.filestack.s3Config.location,
