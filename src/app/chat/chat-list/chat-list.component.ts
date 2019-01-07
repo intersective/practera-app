@@ -60,6 +60,7 @@ export class ChatListComponent implements OnInit {
     const extra: NavigationExtras = {
       queryParams: { chat },
     };
+    console.log("navigateToChatRoom",chat);
     this.router.navigate(['/chat/chatroom'],{ queryParams: {selectedChat: chat} });
   }
 
