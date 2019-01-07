@@ -2,7 +2,6 @@ import { Component, OnInit, Input } from '@angular/core';
 import { Router, ActivatedRoute, ParamMap } from '@angular/router';
 import { AssessmentService, Assessment, Submission, Review } from './assessment.service';
 import { UtilsService } from '../services/utils.service';
-import { ReviewRatingService } from '../review-rating/review-rating.service';
 import { NotificationService } from '@shared/notification/notification.service';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { BrowserStorageService } from '@services/storage.service';
@@ -74,7 +73,6 @@ export class AssessmentComponent implements OnInit {
     private utils: UtilsService,
     private notificationService: NotificationService,
     private storage: BrowserStorageService,
-    private reviewRatingService: ReviewRatingService,
   ) {}
 
   ngOnInit() {
