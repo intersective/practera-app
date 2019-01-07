@@ -9,6 +9,7 @@ import { FilestackService } from "./filestack.service";
 })
 export class FilestackComponent implements OnInit, OnDestroy {
   @Input("accept") private fileTypes: any;
+  @Input("fileType") private fileType: string;
   @Output("complete") private output: EventEmitter<any> = new EventEmitter();
   private filestackSubscriber: Subscription;
 
@@ -26,7 +27,7 @@ export class FilestackComponent implements OnInit, OnDestroy {
     }
     let filestackConfig = this.filestackService.getFilestackConfig().key;
     const fileStackClient = filestack.init(filestackConfig);
-    let s3Config = this.filestackService.getS3Config();
+    let s3Config = this.filestackService.getS3Config(this.fileType);
     let pickerOptions = {
       dropPane: {},
       fromSources: [
