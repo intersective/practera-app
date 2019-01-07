@@ -4,7 +4,7 @@ import { RequestService } from '@shared/request/request.service';
 
 const api = {
   post: {
-    reviewRating: 'api/v2/observations/review_rating/create.json',  
+    reviewRating: 'api/v2/observations/review_rating/create.json',
   }
 };
 
@@ -31,8 +31,7 @@ export class ReviewRatingService {
       comment: data.comment,
       tags: data.tags
   	};
-  
+
   	return this.request.post(api.post.reviewRating, postData);
   }
-
 }
