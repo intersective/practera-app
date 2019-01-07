@@ -29,8 +29,8 @@ interface verifyParams {
 
 interface registerData {
   password: string;
-  user_id?: string;
-  key?: string;
+  user_id: string;
+  key: string;
 }
 
 interface ConfigParams {
@@ -205,8 +205,6 @@ export class AuthService {
   }
 
   saveRegistration(data: registerData): Observable<any> {
-    data.user_id = this.storage.get("hash").id;
-    data.key = this.storage.get("hash").key;
     return this.request
     .post(api.register, data, {
       headers: { "Content-Type": "application/json" }
