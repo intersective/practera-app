@@ -11,13 +11,11 @@
     </ng-container>
 
     <div *ngIf="review.answer || review.comment" class="q-reviews">
-      <ion-label class="q-title">Reviewer:</ion-label>
+      <ion-label class="q-title">Feedback</ion-label>
       <ng-container *ngIf="review.answer">
-        <b>Answer</b>
         <p>{{ review.answer }}</p>
       </ng-container>
       <ng-container *ngIf="review.comment">
-        <b>Comment</b>
         <p>{{ review.comment }}</p>
       </ng-container>
     </div>
