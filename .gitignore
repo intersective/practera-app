@@ -1,4 +1,4 @@
 node_modules
 src/coverage
 *.DS_Store
-www
+www/
