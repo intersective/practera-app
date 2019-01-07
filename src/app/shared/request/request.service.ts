@@ -1,4 +1,4 @@
-import { Injectable, Optional } from '@angular/core';
+import { Injectable, Optional, isDevMode } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams, HttpErrorResponse } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
@@ -127,10 +127,16 @@ export class RequestService {
   }
 
   private handleError<T> (operation = 'operation', result?: T) {
+    // when API response error is blank
+    if (!result) {
+      return (result as T);
+    }
+
     return (error: any): Observable<T> => {
-   
-      // TODO: send the error to remote logging infrastructure
-      console.error(error); // log to console instead
+      if (isDevMode()) {
+        console.error(error); // log to console instead
+        this.storage.append('errors', error);
+      }
    
       // TODO: better job of transforming error for user consumption
       this.log(`${operation} failed: ${error.message}`);
