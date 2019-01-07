@@ -44,6 +44,7 @@ export class ProjectService {
   public Milestones = [];
   public milestone_ids = [];
   public milestones = [];
+  public activities:Array<Activity> = [];
   
   constructor( 
     private request: RequestService,
@@ -87,50 +88,52 @@ export class ProjectService {
         milestone.description = eachMilestone.description;
       }
       
-      this.getActivities(eachMilestone.id).subscribe(activities => {
-        milestone.Activity = activities;
-        this.milestones.push(milestone);
-      });
-      
+      this.milestones.push(milestone);
       console.log('milestones is:',this.milestones);
-      //this._addActivitiesToEachMilestone(eachMilestone, activities); 
+      
   })
   this.milestones.forEach(milestone => {
-    this.milestone_ids.push(milestone.id);
+    if (!milestone.isLocked) {
+      this.milestone_ids.push(milestone.id);
+    }
     
-  })
-  console.log('milestoneIds is:',this.milestone_ids);
+  });
+
+  this._getActivities().subscribe(activities => { 
+    this.activities = activities; 
+    this._addActivitiesToEachMilestone(this.milestones, this.activities);
+  });
    
   this.milestone_ids.forEach(this.getProgress, this);
     return this.Milestones = this.milestones;
   }
 
-  // private _addActivitiesToEachMilestone(milestones,activities) {
-  //   let activitiesOfEachMilestone =[];
-  //   milestones.forEach(function(eachMilestone) {
-  //     activities.find(function (activity) {
-  //       activitiesOfEachMilestone.push( activity.milestoneId == eachMilestone.id);
-  //     })
-  //     eachMilestone.Activity = activitiesOfEachMilestone;
-  //   })
-  // }
-
-
-  public getActivities(id) {
+  private _addActivitiesToEachMilestone(milestones,activities) {
+    
+    milestones.forEach(function(eachMilestone) {
+      activities.forEach( function (activity) {
+        if (activity.milestoneId === eachMilestone.id) {
+          eachMilestone.Activity.push(activity);
+        }
+     })
+  })
+}
+  
+  public _getActivities() {
     return this.request.get(api.activity, {
       params: {
-        milestone_id: id,
+        milestone_id: JSON.stringify(this.milestone_ids)
       }
     })
     .pipe(map(response => {
       if (response.success && response.data) {
         return this._normaliseActivities(response.data);
       }
-    }))
+    }));
   }
 
   private _normaliseActivities(data: any) {
-    let activities :Array <Activity> ;
+    let activities: Array<Activity> = [];
     if (!Array.isArray(data)) {
       this.request.apiResponseFormatError('Activities array format error');
       return [];
@@ -171,9 +174,7 @@ export class ProjectService {
           activity.tasks.push(task);
         })   
      };
-
-      activities.push(activity);
-
+       activities.push(activity);
     })
     return activities;
   }
