@@ -22,9 +22,9 @@ export class SettingsComponent implements OnInit {
   currentProgramName = '';
   // default country model
   countryModel = "AUS";
-  // default mask 
-  mask: Array<string|RegExp>;   
-  // variable to control the update button 
+  // default mask
+  mask: Array<string|RegExp>;
+  // variable to control the update button
   updating = false;
   // supported countries
   countryCodes = [
@@ -46,9 +46,9 @@ export class SettingsComponent implements OnInit {
    };
 
   helpline = 'help@practera.com';
-  
+
   termsUrl = 'https://images.practera.com/terms_and_conditions/practera_terms_conditions.pdf';
-  
+
   constructor (
     private router: Router,
     private authService: AuthService,
@@ -64,7 +64,7 @@ export class SettingsComponent implements OnInit {
     // get contact number and email from local storage
     this.profile.email = this.storage.getUser().email;
     this.profile.contactNumber = this.storage.getUser().contactNumber;
-    // also get program name 
+    // also get program name
     this.currentProgramName = this.storage.getUser().programName;
     // if user has the contact number
     if (this.profile.contactNumber && this.profile.contactNumber != null) {
@@ -87,47 +87,47 @@ export class SettingsComponent implements OnInit {
   private checkCurrentContactNumberOrigin() {
     var contactNum = this.profile.contactNumber;
     var prefix = contactNum.substring(0, 3);
-    
+
     if (prefix === '+61') {
         this.countryModel = 'AUS';
-        this.mask = this.formatMasks['AUS'];     
-        this.profile.contactNumber = contactNum.substring(3, contactNum.length);                
+        this.mask = this.formatMasks['AUS'];
+        this.profile.contactNumber = contactNum.substring(3, contactNum.length);
         return;
     }
 
     prefix = contactNum.substring(0, 2);
     if (prefix === '61') {
         this.countryModel = 'AUS';
-        this.mask = this.formatMasks['AUS'];     
+        this.mask = this.formatMasks['AUS'];
         this.profile.contactNumber = contactNum.substring(2, contactNum.length);
         return;
     }
 
     if (prefix === '04') {
         this.countryModel = 'AUS';
-        this.mask = this.formatMasks['AUS'];       
+        this.mask = this.formatMasks['AUS'];
         this.profile.contactNumber = contactNum.substring(1, contactNum.length);
         return;
      }
 
     if (prefix === '+1') {
-        this.countryModel = 'US';        
-        this.mask = this.formatMasks['US'];        
-        this.profile.contactNumber = contactNum.substring(2, contactNum.length); 
+        this.countryModel = 'US';
+        this.mask = this.formatMasks['US'];
+        this.profile.contactNumber = contactNum.substring(2, contactNum.length);
         return;
     }
 
     prefix = contactNum.substring(0, 1);
     if (prefix === '1') {
         this.countryModel = 'US';
-        this.mask = this.formatMasks['US'];          
+        this.mask = this.formatMasks['US'];
         this.profile.contactNumber = contactNum.substring(1, contactNum.length);
         return;
     }
 
     if (prefix === '0') {
         this.countryModel = 'AUS';
-        this.mask = this.formatMasks['AUS'];           
+        this.mask = this.formatMasks['AUS'];
         this.profile.contactNumber = contactNum.substring(1, contactNum.length);
         return;
     }
@@ -147,54 +147,54 @@ export class SettingsComponent implements OnInit {
       buttons: [
         {
           text: 'Cancel',
-          role: 'cancel',          
+          role: 'cancel',
           handler: () => {
             this.updating = false;
             return;
           }
-        }, 
+        },
         {
           text: 'Okay',
-          handler: () => {                   
+          handler: () => {
             this.settingService.updateProfile(this.profile).subscribe(result => {
               this.updating = false;
               if (result.success) {
                 // update contact number in user local storage data array.
-                this.storage.setUser({ contactNumber: this.profile.contactNumber });   
+                this.storage.setUser({ contactNumber: this.profile.contactNumber });
                 var newContactNumber = this.profile.contactNumber;
-                // also update contact number in program object in local storage                                   
-                var timelineId = this.storage.getUser().timelineId;  // get current timeline Id 
+                // also update contact number in program object in local storage
+                var timelineId = this.storage.getUser().timelineId;  // get current timeline Id
                 var programsObj = this.utils.each(this.storage.get('programs'), function(program){
                     if (program.timeline.id === timelineId) {
                       program.enrolment.contact_number = newContactNumber;
                     }
                 });
                 this.storage.set('programs', programsObj);
-                return this.notificationService.popUp('shortMessage', { message: "Profile successfully updated!"}, false);         
+                return this.notificationService.popUp('shortMessage', { message: "Profile successfully updated!"});
 
               } else {
-                return this.notificationService.popUp('shortMessage', { message: "Profile updating failed!"}, false);
+                return this.notificationService.popUp('shortMessage', { message: "Profile updating failed!"});
               }
            });
           }
         }
       ]
     });
-   
+
   };
 
   private validateContactNumber(contactNumber) {
     switch (this.countryModel) {
       case "AUS":
-        if (contactNumber.length == 12) {                  
+        if (contactNumber.length == 12) {
           return true;
         } else if(contactNumber.length == 3) {
           this.profile.contactNumber = null;
           return true;
         } 
         break;
-     
-      case "US" : 
+
+      case "US" :
         if (contactNumber.length == 12) {
           return true;
         } else if (contactNumber.length == 2) {
@@ -207,7 +207,7 @@ export class SettingsComponent implements OnInit {
   }
 
   updateCountry() {
-    var selectedCountry = this.countryModel;    
+    var selectedCountry = this.countryModel;
     var country = this.utils.find(this.countryCodes, function(country){
       return country.code === selectedCountry;
     });        
@@ -227,7 +227,7 @@ export class SettingsComponent implements OnInit {
   };
 
   // send email to Help request
-  mailTo() {  
+  mailTo() {
     var mailto = 'mailto:' + this.helpline + '?subject=' + this.currentProgramName;
     window.open(mailto, '_self');
   }
