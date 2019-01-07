@@ -30,17 +30,19 @@ export class SettingsComponent implements OnInit {
   countryCodes = [
     {
         name: "Australia",
-        code: "AUS"
+        code: "AUS",
+        format: '+61 ___ ___ ___'
     },
     {
         name: "US/Canada",
-        code: "US"
+        code: "US",
+        format: '+1 ___ ___ ____'
     },
   ];
 
   formatMasks = {
-      AUS: ['+','6','1',/[1-9]/, /\d/, /\d/, ' ', /\d/, /\d/, /\d/, ' ', /\d/, /\d/, /\d/],
-      US: ['+','1',/[1-9]/, /\d/, /\d/, ' ', /\d/, /\d/, /\d/, ' ', /\d/, /\d/, /\d/, /\d/]
+      AUS: ['+','6','1',' ', /[1-9]/, /\d/, /\d/, ' ', /\d/, /\d/, /\d/, ' ', /\d/, /\d/, /\d/],     
+      US: ['+','1', ' ',/[1-9]/, /\d/, /\d/, ' ', /\d/, /\d/, /\d/, ' ', /\d/, /\d/, /\d/, /\d/]
    };
 
   helpline = 'help@practera.com';
@@ -131,13 +133,12 @@ export class SettingsComponent implements OnInit {
     }
   }
 
-  updateContactNumber() { 
+  updateContactNumber() {     
     // strip out white spaces and underscores    
-    this.profile.contactNumber = this.profile.contactNumber.replace(/[^0-9+]+/ig, "");
+    this.profile.contactNumber = this.profile.contactNumber.replace(/[^0-9+]+/ig, "");    
     // check if newly input number is valid or not.                     
-    if (!this.validateContactNumber(this.profile.contactNumber)) {
-      this.profile.contactNumber = '';
-      return;
+    if (!this.validateContactNumber(this.profile.contactNumber)) {     
+      return this.notificationService.presentToast('Invalid contact number', false);    
     }
     this.updating = true;
     this.notificationService.alert({
@@ -187,11 +188,17 @@ export class SettingsComponent implements OnInit {
       case "AUS":
         if (contactNumber.length == 12) {                  
           return true;
-        }
+        } else if(contactNumber.length == 3) {
+          this.profile.contactNumber = null;
+          return true;
+        } 
         break;
      
       case "US" : 
         if (contactNumber.length == 12) {
+          return true;
+        } else if (contactNumber.length == 2) {
+          this.profile.contactNumber = null;
           return true;
         }
         break;
@@ -203,11 +210,11 @@ export class SettingsComponent implements OnInit {
     var selectedCountry = this.countryModel;    
     var country = this.utils.find(this.countryCodes, function(country){
       return country.code === selectedCountry;
-    })
-    // set currentContactNumber to empty 
-    this.profile.contactNumber = "";    
+    });        
+    // set currentContactNumber to it's format. 
+    this.profile.contactNumber = country.format;    
     // update the mask as per the newly selected country
-    this.mask = this.formatMasks[country.code];        
+    this.mask = this.formatMasks[country.code];     
   };
 
 
