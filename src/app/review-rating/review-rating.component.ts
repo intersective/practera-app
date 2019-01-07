@@ -11,7 +11,7 @@ import { NotificationService } from '../shared/notification/notification.service
   styleUrls: ['./review-rating.component.scss']
 })
 export class ReviewRatingComponent {
-  
+
   // Default redirect i.e home page.
   redirect = ['/'];
 
@@ -21,7 +21,7 @@ export class ReviewRatingComponent {
     comment: '',
     tags: []
   };
-  // variable to control the button text to indicate rating 
+  // variable to control the button text to indicate rating
   isSubmitting = false;
 
   constructor(
@@ -42,7 +42,7 @@ export class ReviewRatingComponent {
     this.isSubmitting = true;
     // round to 2 decimal place
     this.ratingData.rating = +(this.ratingData.rating.toFixed(2));
-    
+
     this.reviewRatingService.submitRating(this.ratingData).subscribe(result => {
       this.isSubmitting = false;
       if (result) {
