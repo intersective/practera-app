@@ -4,7 +4,7 @@
     <ion-text color="danger" *ngIf="question.isRequired">*</ion-text>
     <ion-text color="medium"><p><i>{{ question.description }}</i></p></ion-text>
   </ion-card-header>
-  <ion-card-content padding-horizontal class="q-content">
+  <ion-card-content padding-horizontal class="q-content" color="light">
 
     <ng-container *ngIf="submission.answer">
       <ion-list>
