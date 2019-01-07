@@ -35,8 +35,8 @@ export class NotificationService {
       data,
       redirect,
     };
-    const modal = await this.modalController.create(this.modalConfig({ component, componentProps }));
-    return await modal.present();
+    const modal = await this.modal(component, componentProps);
+    return modal;
   }
 
   async modal(component, componentProps) {
