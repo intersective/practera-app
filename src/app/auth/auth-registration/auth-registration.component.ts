@@ -27,7 +27,8 @@ export class AuthRegistrationComponent implements OnInit {
   user: any = {
     email: null,
     activation_code: null,
-    contact: null
+    contact: null,
+    id: null
   };
   domain = window.location.hostname;
   // validation errors array
@@ -69,19 +70,20 @@ export class AuthRegistrationComponent implements OnInit {
     this.route.queryParamMap.subscribe(queryParams => {
       let email = queryParams.get("email");
       this.user.email = email;
-      let activation_code = queryParams.get("activation_code");
-      if (email && activation_code) {
+      this.user.activation_code = queryParams.get("activation_code");
+      if (email && this.user.activation_code) {
         // check is Url valid or not.
         this.authService
           .verifyRegistration({
             email: email,
-            key: activation_code
+            key: this.user.activation_code
           }).subscribe(response => {
               if (response) {
-                let user = response.data.user;
+                let user = response.data.User;
                 // Setting user data after registration verified.
                 this.user.email = email;
                 this.user.contact = (user || {}).contact_number || null;
+                this.user.id = user.id;
 
                 // Update storage data
                 this.storage.setUser({
@@ -142,13 +144,15 @@ export class AuthRegistrationComponent implements OnInit {
     if (this.validateRegistration()) {
       this.authService
         .saveRegistration({
-          password: this.confirmPassword
+          password: this.confirmPassword,
+          user_id:this.user.id,
+          key: this.user.activation_code
         })
         .subscribe(response => {
             this.authService
               .login({
                 email: this.user.email,
-                password: this.password
+                password: this.confirmPassword
               })
               .subscribe(response => {
                   this.authService.me()
