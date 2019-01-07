@@ -43,7 +43,15 @@ export class BrowserStorageService {
   }
 
   set(key: string, value: any) {
-    this.storage.setItem(key, JSON.stringify(value));
+    return this.storage.setItem(key, JSON.stringify(value));
+  }
+
+  append(key: string, value: any) {
+    let actual = this.get(key);
+    if (!actual) {
+      actual = {};
+    }
+    return this.set(key, Object.assign(actual, value));
   }
 
   remove(key: string) {
