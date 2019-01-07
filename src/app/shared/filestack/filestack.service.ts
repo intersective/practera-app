@@ -1,4 +1,6 @@
 import { Injectable } from '@angular/core';
+import { ModalController } from '@ionic/angular';
+import { PreviewComponent } from './preview/preview.component';
 
 @Injectable()
 
@@ -19,7 +21,9 @@ export class FilestackService {
     video: 'video/*'
   };
   
-  constructor() {}
+  constructor(
+    private modalController: ModalController,
+  ) {}
 
   //get filestack config
   getFilestackConfig() {
@@ -32,7 +36,27 @@ export class FilestackService {
   }
 
   //get s3 config
-  getS3Config () {
+  getS3Config() {
     return this.s3Config;
+  }
+
+  previewFile(file) {
+    let fileUrl = file.url;
+    if (fileUrl && fileUrl.indexOf('api/file') !== -1) {
+      fileUrl = fileUrl.replace('api/file', 'api/preview');
+    } else if (file.handle) {
+      fileUrl = 'https://www.filepicker.io/api/preview/' + file.handle;
+    }
+    this.previewModal(fileUrl);
+  }
+
+  async previewModal(url) {
+    const modal = await this.modalController.create({
+      component: PreviewComponent,
+      componentProps: { 
+        url: url
+      }
+    });
+    return await modal.present();
   }
 }
