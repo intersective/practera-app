@@ -57,7 +57,8 @@ export class ChatRoomComponent implements OnInit, AfterContentInit {
 
   private validateRoutePrams() {
     this.activatedRoute.queryParams.subscribe(params => {
-      console.log("chat", params['selectedChat']);
+      this.selectedChat = params['selectedChat'];
+      console.log("chat", this.selectedChat.name);
       // this.routeTeamId = +params["teamId"]; // (+) converts string 'teamId' to a number
       // this.routeTeamMemberId = +params["memberId"]; // (+) converts string 'memberId' to a number
       // this.loadMessages(false);
