@@ -12,7 +12,7 @@ import { BrowserStorageService } from '@services/storage.service';
   styleUrls: ['assessment.component.scss']
 })
 export class AssessmentComponent implements OnInit {
-  
+
   // assessment id
   id: number;
   // activity id
@@ -72,7 +72,7 @@ export class AssessmentComponent implements OnInit {
     private assessmentService: AssessmentService,
     private utils: UtilsService,
     private notificationService: NotificationService,
-    private storage: BrowserStorageService
+    private storage: BrowserStorageService,
   ) {}
 
   ngOnInit() {
@@ -95,7 +95,7 @@ export class AssessmentComponent implements OnInit {
   };
 
   // get the submission answers &/| review answers
-  private _getSubmission() { 
+  private _getSubmission() {
     this.assessmentService.getSubmission(this.id, this.contextId, this.action)
       .subscribe(result => {
         this.submission = result.submission;
@@ -121,7 +121,7 @@ export class AssessmentComponent implements OnInit {
       });
   }
 
-  // Populate the question form with FormControls. 
+  // Populate the question form with FormControls.
   // The name of form control is like 'q-2' (2 is an example of question id)
   populateQuestionsForm() {
     let questionsFormObject = {};
@@ -185,7 +185,7 @@ export class AssessmentComponent implements OnInit {
       if (!this.utils.isEmpty(requiredQuestions)) {
         this.submitting = false;
         // display a pop up if required question not answered
-        return this.notificationService.popUp('shortMessage', {message: 'Required question answer missing!'}, false);
+        return this.notificationService.popUp('shortMessage', {message: 'Required question answer missing!'});
       }
     }
 
@@ -227,14 +227,21 @@ export class AssessmentComponent implements OnInit {
           // display a pop up if submission failed
           return this.notificationService.popUp('shortMessage', {
             message: 'Submission Failed, please try again later.'
-          }, false);
+          });
         }
       });
   }
 
   reviewFeedback() {
     this.feedbackReviewed = true;
-    this.assessmentService.saveFeedbackReviewed(this.submission.id).subscribe();
+    this.assessmentService.saveFeedbackReviewed(this.submission.id).subscribe(result => {
+      // if review is successfully mark as read and program is configured to enable review rating, display review rating modal and then redirect to activity page.
+      if (result.success && this.storage.getUser().hasReviewRating === true) {
+        this.assessmentService.popUpReviewRating(this.review.id, ['app', {
+          outlets: { project: ['activity', this.activityId] },
+        }]);
+      }
+    });
   }
 
 }

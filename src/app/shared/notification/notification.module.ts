@@ -1,28 +1,31 @@
 import { IonicModule } from '@ionic/angular';
+import { FormsModule } from '@angular/forms';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { PopUpComponent } from './pop-up/pop-up.component';
 import { NotificationService } from './notification.service';
 
+
 @NgModule({
-  imports: [ 
+  imports: [
     IonicModule,
-    CommonModule 
+    CommonModule,
+    FormsModule
   ],
   providers: [
     NotificationService
   ],
   declarations: [
-    PopUpComponent
+    PopUpComponent,
   ],
   exports: [
     PopUpComponent
   ],
   entryComponents: [
-    PopUpComponent
+    PopUpComponent,
   ]
 })
 
 export class NotificationModule {
-  
+
 }
