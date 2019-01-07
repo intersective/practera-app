@@ -1,17 +1,10 @@
 import { Injectable } from '@angular/core';
+import { environment } from '@environments/environment';
+import { BrowserStorageService } from '@services/storage.service';
 
 @Injectable()
 
 export class FilestackService {
-  public filestackConfig : any = {
-    key: 'AO6F4C72uTPGRywaEijdLz'
-  };
-  public s3Config : any = {
-    location: 's3',
-    container: 'practera-aus',
-    region: 'ap-southeast-2',
-    path: '/case/uploads/public/'
-  };
   // file types that allowed to upload
   public fileTypes = {
     any: '',
@@ -19,11 +12,13 @@ export class FilestackService {
     video: 'video/*'
   };
   
-  constructor() {}
+  constructor(
+    private storage: BrowserStorageService
+  ) {}
 
   //get filestack config
   getFilestackConfig() {
-    return this.filestackConfig;
+    return environment.filestack.key;
   }
 
   // get file types
@@ -32,7 +27,12 @@ export class FilestackService {
   }
 
   //get s3 config
-  getS3Config () {
-    return this.s3Config;
+  getS3Config (fileType) {
+    let s3Config = environment.filestack.s3Config;
+    if (s3Config.paths[fileType]) {
+      s3Config.path = s3Config.paths[fileType];
+    }
+    s3Config.path = s3Config.path + this.storage.getUser().userHash + '/';
+    return s3Config;
   }
 }
