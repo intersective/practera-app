@@ -90,45 +90,39 @@ export class SettingsComponent implements OnInit {
 
     if (prefix === '+61') {
         this.countryModel = 'AUS';
-        this.mask = this.formatMasks['AUS'];
-        this.profile.contactNumber = contactNum.substring(3, contactNum.length);
+        this.mask = this.formatMasks['AUS'];        
         return;
     }
 
     prefix = contactNum.substring(0, 2);
     if (prefix === '61') {
         this.countryModel = 'AUS';
-        this.mask = this.formatMasks['AUS'];
-        this.profile.contactNumber = contactNum.substring(2, contactNum.length);
+        this.mask = this.formatMasks['AUS'];       
         return;
     }
 
     if (prefix === '04') {
         this.countryModel = 'AUS';
-        this.mask = this.formatMasks['AUS'];
-        this.profile.contactNumber = contactNum.substring(1, contactNum.length);
+        this.mask = this.formatMasks['AUS'];        
         return;
      }
 
     if (prefix === '+1') {
         this.countryModel = 'US';
-        this.mask = this.formatMasks['US'];
-        this.profile.contactNumber = contactNum.substring(2, contactNum.length);
+        this.mask = this.formatMasks['US'];       
         return;
     }
 
     prefix = contactNum.substring(0, 1);
     if (prefix === '1') {
         this.countryModel = 'US';
-        this.mask = this.formatMasks['US'];
-        this.profile.contactNumber = contactNum.substring(1, contactNum.length);
+        this.mask = this.formatMasks['US'];        
         return;
     }
 
     if (prefix === '0') {
         this.countryModel = 'AUS';
-        this.mask = this.formatMasks['AUS'];
-        this.profile.contactNumber = contactNum.substring(1, contactNum.length);
+        this.mask = this.formatMasks['AUS'];       
         return;
     }
   }
