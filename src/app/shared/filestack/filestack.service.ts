@@ -28,11 +28,16 @@ export class FilestackService {
 
   //get s3 config
   getS3Config (fileType) {
-    let s3Config = environment.filestack.s3Config;
-    if (s3Config.paths[fileType]) {
-      s3Config.path = s3Config.paths[fileType];
+    let path = environment.filestack.s3Config.path;
+    if (environment.filestack.s3Config.paths[fileType]) {
+      path = environment.filestack.s3Config.paths[fileType];
     }
-    s3Config.path = s3Config.path + this.storage.getUser().userHash + '/';
-    return s3Config;
+    path = path + this.storage.getUser().userHash + '/';
+    return {
+      location: environment.filestack.s3Config.location,
+      container: environment.filestack.s3Config.container,
+      region: environment.filestack.s3Config.region,
+      path: path
+    };
   }
 }
