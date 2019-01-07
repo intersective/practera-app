@@ -4,7 +4,7 @@
     <ion-text color="danger" *ngIf="question.isRequired">*</ion-text>
     <ion-text color="medium"><p><i>{{ question.description }}</i></p></ion-text>
   </ion-card-header>
-  <ion-card-content padding-horizontal class="q-content">
+  <ion-card-content padding-horizontal class="q-content" color="light">
 
     <ng-container *ngIf="submission.answer">
       <ion-list>
@@ -20,7 +20,7 @@
     <div *ngIf="review.answer || review.comment" class="q-reviews">
       <ion-label class="q-title">Feedback</ion-label>
       <ng-container *ngIf="review.answer">
-        <ion-list>
+        <ion-list color="light">
           <ion-radio-group [value]="review.answer">
             <ng-container *ngFor="let choice of question.choices">
               <ng-container *ngIf="choice.id === review.answer">
