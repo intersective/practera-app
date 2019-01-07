@@ -25,7 +25,7 @@ export class FilestackComponent implements OnInit, OnDestroy {
       this.filestackSubscriber.unsubscribe();
       this.filestackSubscriber = null;
     }
-    let filestackConfig = this.filestackService.getFilestackConfig().key;
+    let filestackConfig = this.filestackService.getFilestackConfig();
     const fileStackClient = filestack.init(filestackConfig);
     let s3Config = this.filestackService.getS3Config(this.fileType);
     let pickerOptions = {
