@@ -89,7 +89,6 @@ export class ProjectService {
       }
       
       this.milestones.push(milestone);
-      console.log('milestones is:',this.milestones);
       
   })
   this.milestones.forEach(milestone => {
@@ -104,7 +103,10 @@ export class ProjectService {
     this._addActivitiesToEachMilestone(this.milestones, this.activities);
   });
    
-  this.milestone_ids.forEach(this.getProgress, this);
+  this.milestone_ids.forEach(function (id) {
+    this._getProgress(id).subscribe();
+  });
+
     return this.Milestones = this.milestones;
   }
 
@@ -179,7 +181,7 @@ export class ProjectService {
     return activities;
   }
   
-  public getProgress(id) {
+  public _getProgress(id) {
     return this.request.get(api.progress, {
       params: {
         model: 'Milestone',
@@ -188,8 +190,8 @@ export class ProjectService {
       }
     })
     .pipe(map(response => {
-      if (response.sucess && response.date) {
-        return this._normaliseProgress(response.date);
+      if (response.success && response.data) {
+        return this._normaliseProgress(response.data);
       }
     }))
   }
@@ -202,20 +204,29 @@ export class ProjectService {
     }
 
     this._milestoneProgress(data);
+    
   }
 
   private _milestoneProgress(data) {
-    data.Milestone.forEach(this._loopThroughMilestones, this);
-  }
 
-  private _loopThroughMilestones(progressOfMilestones) {
-    var findMilestoneWithThisId = this.Milestones.find(function (item) {
-      return item.id === progressOfMilestones.id;
-    })
-    findMilestoneWithThisId.progress = progressOfMilestones.progress;
+    let findMilestone = this.milestones.find(function (milestone) {
+      return milestone.id === data.Milestone.id });
+    findMilestone.progress = data.Milestone.progress;
 
-    this._activityProgress(findMilestoneWithThisId, progressOfMilestones);
+    this._activityProgress(findMilestone, this);
+
+    return findMilestone;
   }
+  
+
+  // private _loopThroughMilestones(progressOfMilestones) {
+  //   var findMilestoneWithThisId = this.Milestones.find(function (item) {
+  //     return item.id === progressOfMilestones.id;
+  //   })
+  //   findMilestoneWithThisId.progress = progressOfMilestones.progress;
+
+    
+  // }
 
   private _activityProgress(data,progress) {
     data.Activity.forEach(function(activity){
