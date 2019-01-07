@@ -20,7 +20,7 @@
     <div *ngIf="review.answer || review.comment" class="q-reviews">
       <ion-label class="q-title">Feedback</ion-label>
       <ng-container *ngIf="review.answer">
-        <ion-list color="light">
+        <ion-list>
           <ion-radio-group [value]="review.answer">
             <ng-container *ngFor="let choice of question.choices">
               <ng-container *ngIf="choice.id === review.answer">
