@@ -15,7 +15,7 @@ public programName:string = "Demo Program";
     private projectService: ProjectService
    ) {};
 
-  public milestones: Array <Milestone> ;
+  public milestones: Array <Milestone> = [] ;
     
   ngOnInit() {
     this.projectService.getMilestones()
@@ -25,6 +25,4 @@ public programName:string = "Demo Program";
   goToActivity(id) {
     this.router.navigateByUrl('app/(project:activity/' + id + ')');
   }
-
-   
 }
