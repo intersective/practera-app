@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { ModalController } from '@ionic/angular';
 import { ModalPage } from './modal/modal.page';
+import { FastFeedbackService } from './fast-feedback.service';
+import { FormGroup } from '@angular/forms';
 
 @Component({
   selector: 'app-fast-feedback',
@@ -8,8 +10,12 @@ import { ModalPage } from './modal/modal.page';
   styleUrls: ['./fast-feedback.component.scss']
 })
 export class FastFeedbackComponent implements OnInit {
+  fastFeedbackForm: FormGroup;
 
-  constructor(public modalController: ModalController) {}
+  constructor(
+    public modalController: ModalController,
+    private fastFeedbackService: FastFeedbackService,
+  ) {}
 
   ngOnInit() {
   }
@@ -24,5 +30,10 @@ export class FastFeedbackComponent implements OnInit {
 
   dismiss() {
     this.modalController.dismiss();
+  }
+
+  submit() {
+    console.log(this.fastFeedbackForm);
+    // this.fastFeedbackService.submit();
   }
 }
