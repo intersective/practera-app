@@ -23,7 +23,7 @@ export class HomeComponent implements OnInit {
     private homeService: HomeService,
     private utils: UtilsService
   ) {}
-
+  
   ngOnInit() {
     this.homeService.getTodoItems()
       .subscribe(todoItems => {
