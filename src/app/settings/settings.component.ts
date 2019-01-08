@@ -5,6 +5,7 @@ import { SettingService, Profile } from './setting.service';
 import { BrowserStorageService } from '@services/storage.service';
 import { UtilsService } from '@services/utils.service';
 import { NotificationService } from '@shared/notification/notification.service';
+import { environment } from '../../environments/environment.prod';
 
 
 @Component({
@@ -21,31 +22,33 @@ export class SettingsComponent implements OnInit {
   currentProgramName = '';
   // default country model
   countryModel = "AUS";
-  // default mask 
-  mask: Array<string|RegExp>;   
-  // variable to control the update button 
+  // default mask
+  mask: Array<string|RegExp>;
+  // variable to control the update button
   updating = false;
   // supported countries
   countryCodes = [
     {
         name: "Australia",
-        code: "AUS"
+        code: "AUS",
+        format: '+61 ___ ___ ___'
     },
     {
         name: "US/Canada",
-        code: "US"
+        code: "US",
+        format: '+1 ___ ___ ____'
     },
   ];
 
   formatMasks = {
-      AUS: ['+','6','1',/[1-9]/, /\d/, /\d/, ' ', /\d/, /\d/, /\d/, ' ', /\d/, /\d/, /\d/],
-      US: ['+','1',/[1-9]/, /\d/, /\d/, ' ', /\d/, /\d/, /\d/, ' ', /\d/, /\d/, /\d/, /\d/]
+      AUS: ['+','6','1',' ', /[1-9]/, /\d/, /\d/, ' ', /\d/, /\d/, /\d/, ' ', /\d/, /\d/, /\d/],     
+      US: ['+','1', ' ',/[1-9]/, /\d/, /\d/, ' ', /\d/, /\d/, /\d/, ' ', /\d/, /\d/, /\d/, /\d/]
    };
 
   helpline = 'help@practera.com';
-  
+
   termsUrl = 'https://images.practera.com/terms_and_conditions/practera_terms_conditions.pdf';
-  
+
   constructor (
     private router: Router,
     private authService: AuthService,
@@ -61,70 +64,75 @@ export class SettingsComponent implements OnInit {
     // get contact number and email from local storage
     this.profile.email = this.storage.getUser().email;
     this.profile.contactNumber = this.storage.getUser().contactNumber;
-    // also get program name 
+    // also get program name
     this.currentProgramName = this.storage.getUser().programName;
     // if user has the contact number
     if (this.profile.contactNumber && this.profile.contactNumber != null) {
       this.checkCurrentContactNumberOrigin();
-    } 
+    } else { 
+      // by default, set Mask in Australian format.
+      this.mask = this.formatMasks[this.countryModel];           
+      /*
+          user has no contact number, set the default mask 
+            : also check which the server which the APP talks to, i.e if the APP is consuming APIs from 'us.practera.com' then, it is APP V2 in US.
+              But if APP consumes APIs from 'api.practera.com' then it is APP V2 in AUS. 
+       */ 
+      if (environment.APIEndpoint.indexOf('us') !== -1) {
+        this.countryModel = 'US';
+        this.mask = this.formatMasks[this.countryModel];      
+      }       
+    }    
   };
 
   private checkCurrentContactNumberOrigin() {
     var contactNum = this.profile.contactNumber;
     var prefix = contactNum.substring(0, 3);
-    
+
     if (prefix === '+61') {
         this.countryModel = 'AUS';
-        this.mask = this.formatMasks['AUS'];     
-        this.profile.contactNumber = contactNum.substring(3, contactNum.length);                
+        this.mask = this.formatMasks['AUS'];        
         return;
     }
 
     prefix = contactNum.substring(0, 2);
     if (prefix === '61') {
         this.countryModel = 'AUS';
-        this.mask = this.formatMasks['AUS'];     
-        this.profile.contactNumber = contactNum.substring(2, contactNum.length);
+        this.mask = this.formatMasks['AUS'];       
         return;
     }
 
     if (prefix === '04') {
         this.countryModel = 'AUS';
-        this.mask = this.formatMasks['AUS'];       
-        this.profile.contactNumber = contactNum.substring(1, contactNum.length);
+        this.mask = this.formatMasks['AUS'];        
         return;
      }
 
     if (prefix === '+1') {
-        this.countryModel = 'US';        
-        this.mask = this.formatMasks['US'];        
-        this.profile.contactNumber = contactNum.substring(2, contactNum.length); 
+        this.countryModel = 'US';
+        this.mask = this.formatMasks['US'];       
         return;
     }
 
     prefix = contactNum.substring(0, 1);
     if (prefix === '1') {
         this.countryModel = 'US';
-        this.mask = this.formatMasks['US'];          
-        this.profile.contactNumber = contactNum.substring(1, contactNum.length);
+        this.mask = this.formatMasks['US'];        
         return;
     }
 
     if (prefix === '0') {
         this.countryModel = 'AUS';
-        this.mask = this.formatMasks['AUS'];           
-        this.profile.contactNumber = contactNum.substring(1, contactNum.length);
+        this.mask = this.formatMasks['AUS'];       
         return;
     }
   }
 
-  updateContactNumber() { 
+  updateContactNumber() {     
     // strip out white spaces and underscores    
-    this.profile.contactNumber = this.profile.contactNumber.replace(/[^0-9+]+/ig, "");
+    this.profile.contactNumber = this.profile.contactNumber.replace(/[^0-9+]+/ig, "");    
     // check if newly input number is valid or not.                     
-    if (!this.validateContactNumber(this.profile.contactNumber)) {
-      this.profile.contactNumber = '';
-      return;
+    if (!this.validateContactNumber(this.profile.contactNumber)) {     
+      return this.notificationService.presentToast('Invalid contact number', false);    
     }
     this.updating = true;
     this.notificationService.alert({
@@ -133,52 +141,58 @@ export class SettingsComponent implements OnInit {
       buttons: [
         {
           text: 'Cancel',
-          role: 'cancel',          
+          role: 'cancel',
           handler: () => {
             this.updating = false;
             return;
           }
-        }, 
+        },
         {
           text: 'Okay',
-          handler: () => {                   
+          handler: () => {
             this.settingService.updateProfile(this.profile).subscribe(result => {
               this.updating = false;
               if (result.success) {
                 // update contact number in user local storage data array.
-                this.storage.setUser({ contactNumber: this.profile.contactNumber });   
+                this.storage.setUser({ contactNumber: this.profile.contactNumber });
                 var newContactNumber = this.profile.contactNumber;
-                // also update contact number in program object in local storage                                   
-                var timelineId = this.storage.getUser().timelineId;  // get current timeline Id 
+                // also update contact number in program object in local storage
+                var timelineId = this.storage.getUser().timelineId;  // get current timeline Id
                 var programsObj = this.utils.each(this.storage.get('programs'), function(program){
                     if (program.timeline.id === timelineId) {
                       program.enrolment.contact_number = newContactNumber;
                     }
                 });
                 this.storage.set('programs', programsObj);
-                return this.notificationService.popUp('shortMessage', { message: "Profile successfully updated!"}, false);         
+                return this.notificationService.popUp('shortMessage', { message: "Profile successfully updated!"});
 
               } else {
-                return this.notificationService.popUp('shortMessage', { message: "Profile updating failed!"}, false);
+                return this.notificationService.popUp('shortMessage', { message: "Profile updating failed!"});
               }
            });
           }
         }
       ]
     });
-   
+
   };
 
   private validateContactNumber(contactNumber) {
     switch (this.countryModel) {
       case "AUS":
-        if (contactNumber.length == 12) {                  
-          return true;
-        }
-        break;
-     
-      case "US" : 
         if (contactNumber.length == 12) {
+          return true;
+        } else if(contactNumber.length == 3) {
+          this.profile.contactNumber = null;
+          return true;
+        } 
+        break;
+
+      case "US" :
+        if (contactNumber.length == 12) {
+          return true;
+        } else if (contactNumber.length == 2) {
+          this.profile.contactNumber = null;
           return true;
         }
         break;
@@ -187,14 +201,14 @@ export class SettingsComponent implements OnInit {
   }
 
   updateCountry() {
-    var selectedCountry = this.countryModel;    
+    var selectedCountry = this.countryModel;
     var country = this.utils.find(this.countryCodes, function(country){
       return country.code === selectedCountry;
-    })
-    // set currentContactNumber to empty 
-    this.profile.contactNumber = "";    
+    });        
+    // set currentContactNumber to it's format. 
+    this.profile.contactNumber = country.format;    
     // update the mask as per the newly selected country
-    this.mask = this.formatMasks[country.code];        
+    this.mask = this.formatMasks[country.code];     
   };
 
 
@@ -207,7 +221,7 @@ export class SettingsComponent implements OnInit {
   };
 
   // send email to Help request
-  mailTo() {  
+  mailTo() {
     var mailto = 'mailto:' + this.helpline + '?subject=' + this.currentProgramName;
     window.open(mailto, '_self');
   }
