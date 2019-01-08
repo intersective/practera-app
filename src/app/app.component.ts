@@ -33,6 +33,7 @@ export class AppComponent implements OnInit {
               this.router.navigate(['reset_password', searchParams.get('key'), searchParams.get('email')]);
             }
             break;
+          
         }
       }
     }
