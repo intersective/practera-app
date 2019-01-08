@@ -4,6 +4,7 @@ import { map } from 'rxjs/operators';
 import { RequestService } from '@shared/request/request.service';
 import { UtilsService } from '@services/utils.service';
 import { BrowserStorageService } from '@services/storage.service';
+import { Activity } from '../project/project.service';
 
 /**
  * @name api
@@ -230,6 +231,7 @@ export class HomeService {
   }
 
   private _loopThroughActivities(activity) {
+    
     if (this.currentActivityId > 0) {
       return;
     }
@@ -257,6 +259,7 @@ export class HomeService {
   }
 
   private _normaliseActivity(data) {
+    
     if (!Array.isArray(data) ||
         !this.utils.has(data[0], 'Activity.name') || 
         !this.utils.has(data[0], 'Activity.is_locked')) {
