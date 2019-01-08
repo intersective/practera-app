@@ -6,24 +6,24 @@ import { FormsModule } from '@angular/forms';
 import { FastFeedbackRoutingComponent } from './fast-feedback-routing.component';
 import { FastFeedbackComponent } from './fast-feedback.component';
 import { FastFeedbackService } from './fast-feedback.service';
-import { QuestionsModule } from '../questions/questions.module';
+import { QuestionComponent } from './question/question.component';
 
 @NgModule({
   imports: [
     IonicModule,
     CommonModule,
     FormsModule,
-    QuestionsModule,
   ],
   declarations: [
   	FastFeedbackRoutingComponent, 
     FastFeedbackComponent,
+    QuestionComponent,
   ],
   entryComponents: [ FastFeedbackRoutingComponent ],
   providers: [ FastFeedbackService ],
   exports: [
     FastFeedbackComponent,
-    QuestionsModule,
+    FormsModule,
   ]
 })
 export class FastFeedbackModule {}

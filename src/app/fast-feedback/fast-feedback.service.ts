@@ -6,6 +6,7 @@ import { RequestService } from '@shared/request/request.service';
 
 const api = {
   instantFeedback: '/api/v2/observation/slider/list',
+  submit: '/api/v2/observation/slider/create',
 };
 @Injectable({
   providedIn: 'root'
@@ -18,7 +19,6 @@ export class FastFeedbackService {
     }
   };
 
-
   constructor(
     private modalController: ModalController,
     private request: RequestService,
@@ -26,6 +26,10 @@ export class FastFeedbackService {
 
   getInstantFeedback() {
     return this.request.get(api.instantFeedback);
+  }
+
+  submit(data) {
+    return this.request.post(api.submit, data);
   }
 
   // show pop up message 
@@ -38,5 +42,4 @@ export class FastFeedbackService {
     const modal = await this.modalController.create(config);
     return await modal.present();
   }
-
 }
