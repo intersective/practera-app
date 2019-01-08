@@ -14,8 +14,7 @@
     </ng-container>
 
     <div text-center>
-      <ion-button type="submit">Submit</ion-button>
-      <button type="submit" class="btn btn-success" [disabled]="!fastFeedbackForm.valid">Submit</button>
+      <ion-button type="submit" (click)="submit()" [disabled]="fastFeedbackForm.invalid">Submit</ion-button>
     </div>
   </form>
 
