@@ -60,7 +60,6 @@ export class HomeComponent implements OnInit {
 
   ionViewDidEnter() {
     this.fastFeedbackService.getInstantFeedback().subscribe(res => {
-      console.log(res);
       // prepare ngModel for each of the data (question)
       res.data.forEach(datum => this.questions.push(datum));
 
