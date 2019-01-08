@@ -26,8 +26,8 @@ import { SharedModule } from '@shared/shared.module';
       "showUnits": false,
       "backgroundStrokeWidth": 2,
       "maxPercent": 100,
-      "outerStrokeWidth": 10,
-      "radius": 5,
+      "outerStrokeWidth": 8,
+      "radius": 4,
       "space": -20
     })
   ],

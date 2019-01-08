@@ -3,7 +3,6 @@ import { Observable, of } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { RequestService } from '@shared/request/request.service';
 import { UtilsService } from '@services/utils.service';
-import { BrowserStorageService } from '@services/storage.service';
 import { Task } from '../activity/activity.service';
 
 /**
@@ -41,32 +40,31 @@ export interface Milestone {
   providedIn: 'root',
 })
 export class ProjectService {
-  public Milestones = [];
-  public milestone_ids = [];
-  public milestones = [];
-  public activities:Array<Activity> = [];
+  public milestones: Array<Milestone> = [];
+  public milestone_ids: Array<number> = [];
+  public activities: Array<Activity> = [];
   
   constructor( 
     private request: RequestService,
-    private utils: UtilsService,
-    private storage: BrowserStorageService) { }
-
+    private utils: UtilsService) { }
+  
   public getMilestones() {
-    return this.request.get(api.milestone, {
-      params: {}
-    })
+    return this.request.get(api.milestone)
     .pipe(map(response => {
       if (response.success && response.data) {
         return this._normaliseMilestones(response.data);
       }
-    }))
+    }));
   }
-
+  
   private _normaliseMilestones(data){
+    
     if (!Array.isArray(data)) {
       this.request.apiResponseFormatError('Milestones array format error');
       return [];
     }
+    this.milestones = [];
+    this.milestone_ids = [];
     data.forEach(eachMilestone => {
       if (!this.utils.has(eachMilestone, 'id') || 
           !this.utils.has(eachMilestone, 'name') || 
@@ -86,28 +84,28 @@ export class ProjectService {
       milestone.isLocked = eachMilestone.is_locked;
       if (this.utils.has(eachMilestone, 'description')) {
         milestone.description = eachMilestone.description;
-      }
+      };
       
       this.milestones.push(milestone);
       
-  })
+  });
   this.milestones.forEach(milestone => {
     if (!milestone.isLocked) {
       this.milestone_ids.push(milestone.id);
     }
-    
   });
 
   this._getActivities().subscribe(activities => { 
+    
     this.activities = activities; 
     this._addActivitiesToEachMilestone(this.milestones, this.activities);
+    this.milestone_ids.forEach(id => {
+      this._getProgress(id, this.milestones).subscribe();
+    });
+    
   });
-   
-  this.milestone_ids.forEach(function (id) {
-    this._getProgress(id).subscribe();
-  });
-
-    return this.Milestones = this.milestones;
+  
+  return this.milestones;
   }
 
   private _addActivitiesToEachMilestone(milestones,activities) {
@@ -117,8 +115,8 @@ export class ProjectService {
         if (activity.milestoneId === eachMilestone.id) {
           eachMilestone.Activity.push(activity);
         }
-     })
-  })
+     });
+  });
 }
   
   public _getActivities() {
@@ -135,6 +133,7 @@ export class ProjectService {
   }
 
   private _normaliseActivities(data: any) {
+    
     let activities: Array<Activity> = [];
     if (!Array.isArray(data)) {
       this.request.apiResponseFormatError('Activities array format error');
@@ -171,17 +170,12 @@ export class ProjectService {
       if (!thisActivity.isLocked) {
         activity.milestoneId = thisActivity.milestone_id;
       }
-      if (this.utils.has(thisActivity, 'ActivitySequence')) {
-        thisActivity.ActivitySequence.forEach(task => {
-          activity.tasks.push(task);
-        })   
-     };
        activities.push(activity);
     })
     return activities;
   }
   
-  public _getProgress(id) {
+  public _getProgress(id, milestones) {
     return this.request.get(api.progress, {
       params: {
         model: 'Milestone',
@@ -191,49 +185,39 @@ export class ProjectService {
     })
     .pipe(map(response => {
       if (response.success && response.data) {
-        return this._normaliseProgress(response.data);
+        return this._normaliseProgress(response.data,milestones);
       }
     }))
   }
 
-  private _normaliseProgress(data: any) {
+  private _normaliseProgress(data: any, milestones) {
     
-    if (!this.utils.has(data, 'Project.Milestone')) {
+    if (!this.utils.has(data, 'Milestone')) {
       this.request.apiResponseFormatError('Progress format error');
       return 0;
     }
 
-    this._milestoneProgress(data);
+    this._milestoneProgress(data,milestones);
     
   }
 
-  private _milestoneProgress(data) {
+  private _milestoneProgress(data,milestones) {
 
-    let findMilestone = this.milestones.find(function (milestone) {
+    let findMilestone = milestones.find(function (milestone) {
       return milestone.id === data.Milestone.id });
+
     findMilestone.progress = data.Milestone.progress;
+    this._activityProgress(data,findMilestone);
 
-    this._activityProgress(findMilestone, this);
-
-    return findMilestone;
   }
-  
 
-  // private _loopThroughMilestones(progressOfMilestones) {
-  //   var findMilestoneWithThisId = this.Milestones.find(function (item) {
-  //     return item.id === progressOfMilestones.id;
-  //   })
-  //   findMilestoneWithThisId.progress = progressOfMilestones.progress;
-
-    
-  // }
-
-  private _activityProgress(data,progress) {
-    data.Activity.forEach(function(activity){
-      var findActivityWithThisId = progress.Activity.find(function(item) {
+  private _activityProgress(data,milestone) {
+    data.Milestone.Activity.forEach(function(activity){
+      var findActivityWithThisId = milestone.Activity.find(function(item) {
         return item.id === activity.id;
       })
-      data.Activity.progress = findActivityWithThisId.progress;
+      findActivityWithThisId.progress = activity.progress;
     })
+    return milestone;
   }
 }
