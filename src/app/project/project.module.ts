@@ -24,10 +24,10 @@ import { SharedModule } from '@shared/shared.module';
       "startFromZero": false,
       "showInnerStroke": false,
       "showUnits": false,
-      "backgroundStrokeWidth": 0,
+      "backgroundStrokeWidth": 2,
       "maxPercent": 100,
-      "outerStrokeWidth": 10,
-      "radius": 5,
+      "outerStrokeWidth": 8,
+      "radius": 4,
       "space": -20
     })
   ],
