@@ -1,6 +1,4 @@
 import { Component } from '@angular/core';
-import { Router } from '@angular/router';
-import { UtilsService } from '@services/utils.service';
 import { NotificationService } from '@shared/notification/notification.service';
 import { AuthService } from '../auth.service';
 
@@ -15,8 +13,6 @@ export class AuthForgotPasswordComponent {
   isSending = false;
 
   constructor(
-    private router: Router,
-    private utils: UtilsService,
     private notificationService: NotificationService,
     private authService: AuthService
   ) {}
@@ -29,17 +25,15 @@ export class AuthForgotPasswordComponent {
     this.isSending = true;
     // call API to do forgot password logic
     this.authService.forgotPassword(this.email).subscribe(res => {
+      this.isSending = false;            
+      // show pop up message for confirmation
+      return this.notificationService.popUp('forgotPasswordConfirmation', {
+        email: this.email
+      }, ['/login']);            
+    }, err => {
       this.isSending = false;
-      if (res) {
-        // show pop up message for confirmation
-        return this.notificationService.popUp('forgotPasswordConfirmation', {
-          email: this.email
-        }, ['/login']);
-      } else {
-        return this.notificationService.presentToast('Issue occured. Please try again', false);       
-      }
-    });
-        
+      return this.notificationService.presentToast('Issue occured. Please try again', false);       
+    });       
   }
 
 }
