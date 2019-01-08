@@ -131,8 +131,9 @@ export class AuthService {
    * @name forgotPassword
    * @description make request to server to send out email with reset password url
    * @param  {string}}        email [user's email which will receive reset password url]  
+   * @return {Observable<any>}      [description]
    */
-  forgotPassword(email:string) {
+  forgotPassword(email:string): Observable<any>  {
     return this.request.post(api.forgotPassword, {
       email: email
     });
