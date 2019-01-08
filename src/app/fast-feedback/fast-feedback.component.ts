@@ -2,7 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { ModalController } from '@ionic/angular';
 import { ModalPage } from './modal/modal.page';
 import { FastFeedbackService } from './fast-feedback.service';
-import { FormGroup } from '@angular/forms';
+import { FormGroup, FormControl } from '@angular/forms';
+import { UtilsService } from '@services/utils.service';
 
 @Component({
   selector: 'app-fast-feedback',
@@ -11,21 +12,20 @@ import { FormGroup } from '@angular/forms';
 })
 export class FastFeedbackComponent implements OnInit {
   fastFeedbackForm: FormGroup;
+  questions = [];
 
   constructor(
     public modalController: ModalController,
     private fastFeedbackService: FastFeedbackService,
+    private utils: UtilsService,
   ) {}
 
   ngOnInit() {
-  }
-
-  async presentModal() {
-    const modal = await this.modalController.create({
-      component: ModalPage,
-      componentProps: { value: 123 }
+    let group: any = {};
+    this.questions.forEach(question => {
+      group[question.id] = new FormControl('');
     });
-    return await modal.present();
+    this.fastFeedbackForm = new FormGroup(group);
   }
 
   dismiss() {
@@ -34,6 +34,16 @@ export class FastFeedbackComponent implements OnInit {
 
   submit() {
     console.log(this.fastFeedbackForm);
-    // this.fastFeedbackService.submit();
+    const formData = this.fastFeedbackForm.value;
+    const data = [];
+    this.utils.each(formData, (answer, questionId) => {
+      data.push({
+        id: questionId,
+        choice_id: answer,
+      });
+    });
+
+    console.log(data);
+    // this.fastFeedbackService.submit(data);
   }
 }
