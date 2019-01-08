@@ -7,6 +7,8 @@
 	<div class="text-center">
 		<p>Before you continue, please spend 10 seconds to answer these questions.</p>
 	</div>
+	<pre>{{questions | json}}</pre>
+
 	<form role="form" ng-submit="submitSlider()">
 		<div class="card" ng-repeat="question in modal.questions">
 			<div class="item item-text-wrap">

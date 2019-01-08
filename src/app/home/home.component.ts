@@ -66,7 +66,9 @@ export class HomeComponent implements OnInit {
 
       // popup instant feedback view if question quantity found > 0
       if (this.questions.length > 0) {
-        this.fastFeedbackService.popUp();
+        this.fastFeedbackService.popUp({
+          questions: this.questions,
+        });
       }
     });
   }
