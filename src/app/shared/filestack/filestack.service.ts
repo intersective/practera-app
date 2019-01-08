@@ -42,10 +42,16 @@ export class FilestackService {
 
   previewFile(file) {
     let fileUrl = file.url;
-    if (fileUrl && fileUrl.indexOf('api/file') !== -1) {
-      fileUrl = fileUrl.replace('api/file', 'api/preview');
+    if (fileUrl) {
+      if (fileUrl.indexOf('www.filepicker.io/api/file') !== -1) {
+        // old format
+        fileUrl = fileUrl.replace('www.filepicker.io/api/file', 'cdn.filestackcontent.com/preview');
+      } else if (fileUrl.indexOf('filestackcontent.com') !== -1) {
+        // new format
+        fileUrl = fileUrl.replace('filestackcontent.com', 'filestackcontent.com/preview');
+      } 
     } else if (file.handle) {
-      fileUrl = 'https://www.filepicker.io/api/preview/' + file.handle;
+      fileUrl = 'https://cdn.filestackcontent.com/preview/' + file.handle;
     }
     this.previewModal(fileUrl);
   }
