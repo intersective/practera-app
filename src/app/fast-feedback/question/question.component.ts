@@ -9,6 +9,7 @@ import { FormGroup }        from '@angular/forms';
 
 export class QuestionComponent {
 	@Input() question: any[];
+	@Input() form: FormGroup;
 
 	constructor() {}
 }
