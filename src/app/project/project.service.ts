@@ -1,9 +1,8 @@
 import { Injectable } from '@angular/core';
-import { Observable, of } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { RequestService } from '@shared/request/request.service';
 import { UtilsService } from '@services/utils.service';
-import { Task } from '../activity/activity.service';
+import { BrowserStorageService } from '@services/storage.service';
 
 /**
  * @name api
@@ -23,8 +22,7 @@ export interface Activity {
   milestoneId?: number;
   isLocked: boolean;
   leadImage?: string;
-  progress: number;
-  tasks?: Array <Task>
+  progress?: number;
 }
 
 export interface Milestone {
@@ -40,12 +38,11 @@ export interface Milestone {
   providedIn: 'root',
 })
 export class ProjectService {
-  public milestones: Array<Milestone> = [];
-  public milestone_ids: Array<number> = [];
   public activities: Array<Activity> = [];
   
   constructor( 
     private request: RequestService,
+    private storage: BrowserStorageService,
     private utils: UtilsService) { }
   
   public getMilestones() {
@@ -58,13 +55,12 @@ export class ProjectService {
   }
   
   private _normaliseMilestones(data){
-    
     if (!Array.isArray(data)) {
       this.request.apiResponseFormatError('Milestones array format error');
       return [];
     }
-    this.milestones = [];
-    this.milestone_ids = [];
+    let milestones = [];
+    let milestone_ids = [];
     data.forEach(eachMilestone => {
       if (!this.utils.has(eachMilestone, 'id') || 
           !this.utils.has(eachMilestone, 'name') || 
@@ -86,26 +82,23 @@ export class ProjectService {
         milestone.description = eachMilestone.description;
       };
       
-      this.milestones.push(milestone);
-      
+    milestones.push(milestone);
   });
-  this.milestones.forEach(milestone => {
+    milestones.forEach(milestone => {
     if (!milestone.isLocked) {
-      this.milestone_ids.push(milestone.id);
+      milestone_ids.push(milestone.id);
     }
   });
 
-  this._getActivities().subscribe(activities => { 
+  this._getActivities(milestone_ids).subscribe(activities => { 
     
     this.activities = activities; 
-    this._addActivitiesToEachMilestone(this.milestones, this.activities);
-    this.milestone_ids.forEach(id => {
-      this._getProgress(id, this.milestones).subscribe();
-    });
+    this._addActivitiesToEachMilestone(milestones, this.activities);
+    this._getProgress(milestones).subscribe();
     
   });
   
-  return this.milestones;
+  return milestones;
   }
 
   private _addActivitiesToEachMilestone(milestones,activities) {
@@ -119,10 +112,10 @@ export class ProjectService {
   });
 }
   
-  public _getActivities() {
+  public _getActivities(id) {
     return this.request.get(api.activity, {
       params: {
-        milestone_id: JSON.stringify(this.milestone_ids)
+        milestone_id: JSON.stringify(id)
       }
     })
     .pipe(map(response => {
@@ -156,7 +149,6 @@ export class ProjectService {
         isLocked: false,
         leadImage: '',
         progress: 0,
-        tasks: []
       }
       let thisActivity = eachActivity.Activity;
 
@@ -175,12 +167,12 @@ export class ProjectService {
     return activities;
   }
   
-  public _getProgress(id, milestones) {
+  public _getProgress(milestones) {
     return this.request.get(api.progress, {
       params: {
-        model: 'Milestone',
-        model_id: id,
-        scope: 'Task'
+        model: 'Project',
+        model_id: this.storage.getUser().projectId,
+        scope: 'Activity'
       }
     })
     .pipe(map(response => {
@@ -192,32 +184,31 @@ export class ProjectService {
 
   private _normaliseProgress(data: any, milestones) {
     
-    if (!this.utils.has(data, 'Milestone')) {
+    if (!this.utils.has(data, 'Project.Milestone')) {
       this.request.apiResponseFormatError('Progress format error');
       return 0;
     }
 
-    this._milestoneProgress(data,milestones);
+    this._milestoneProgress(data.Project,milestones);
+  }
+
+  private _milestoneProgress(progress,milestones) {
     
+    progress.Milestone.forEach(function(eachMilestone){ 
+      let findMilestone = milestones.find(function (milestone) {
+       return milestone.id === eachMilestone.id });
+
+    findMilestone.progress = eachMilestone.progress;
+    this._activityProgress(eachMilestone,findMilestone);
+    });
   }
-
-  private _milestoneProgress(data,milestones) {
-
-    let findMilestone = milestones.find(function (milestone) {
-      return milestone.id === data.Milestone.id });
-
-    findMilestone.progress = data.Milestone.progress;
-    this._activityProgress(data,findMilestone);
-
-  }
-
-  private _activityProgress(data,milestone) {
-    data.Milestone.Activity.forEach(function(activity){
+  private _activityProgress(milestonWithProgress,milestone) {
+    milestonWithProgress.Activity.forEach(function(activity){
       var findActivityWithThisId = milestone.Activity.find(function(item) {
         return item.id === activity.id;
       })
       findActivityWithThisId.progress = activity.progress;
     })
-    return milestone;
+    return milestone
   }
 }
