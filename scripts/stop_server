@@ -1,2 +1,11 @@
 #!/bin/bash
-pkill -f node
+if pgrep node
+then pkill -f node
+else
+echo " node is not running"
+fi
+if pgrep npm
+then pkill -f npm
+else
+echo " npm is not running"
+fi

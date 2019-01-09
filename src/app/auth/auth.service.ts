@@ -1,10 +1,10 @@
-import { Injectable } from '@angular/core';
-import { RequestService } from '@shared/request/request.service';
-import { HttpParams } from '@angular/common/http';
-import { map } from 'rxjs/operators';
-import { Observable, of } from 'rxjs';
-import { BrowserStorageService } from '@services/storage.service';
-import { UtilsService } from '@services/utils.service';
+import { Injectable } from "@angular/core";
+import { RequestService } from "@shared/request/request.service";
+import { HttpParams } from "@angular/common/http";
+import { map } from "rxjs/operators";
+import { Observable, of } from "rxjs";
+import { BrowserStorageService } from "@services/storage.service";
+import { UtilsService } from "@services/utils.service";
 
 /**
  * @name api
@@ -12,26 +12,37 @@ import { UtilsService } from '@services/utils.service';
  * @type {Object}
  */
 const api = {
-  directLink: 'api/auths.json?action=authentication',
-  getConfig: 'api/v2/plan/experience/config',
-  linkedin: 'api/auth_linkedin.json',
-  login: 'api/auth.json',
-  me: 'api/users.json',
-  setProfile: 'api/v2/user/enrolment/edit.json',
+  getConfig: "api/v2/plan/experience/config",
+  linkedin: "api/auth_linkedin.json",
+  login: "api/auths.json",
+  setProfile: "api/v2/user/enrolment/edit.json",
+  verifyRegistration: "api/verification_codes.json",
+  register: "api/registration_details.json"
 };
+
+interface verifyParams {
+  email: string;
+  key: string;
+}
+
+interface registerData {
+  password: string;
+  user_id: string;
+  key: string;
+}
 
 interface ConfigParams {
   domain?: string;
-  id: number | string;
-  apikey: string;
+  id?: number | string;
+  apikey?: string;
 }
 
 interface UserProfile {
-  contactNumber: string; 
+  contactNumber: string;
 }
 
 @Injectable({
-  providedIn: 'root',
+  providedIn: "root"
 })
 export class AuthService {
   private isLoggedIn: boolean = false;
@@ -40,13 +51,13 @@ export class AuthService {
     private request: RequestService,
     private storage: BrowserStorageService,
     private utils: UtilsService
-  ) { }
+  ) {}
 
-  private _clearCache():any {
+  private _clearCache(): any {
     // do clear user cache here
   }
 
-  private _normaliseAuth(rawData):any {
+  private _normaliseAuth(rawData): any {
     var data = rawData.data;
 
     return {
@@ -58,76 +69,58 @@ export class AuthService {
           enrolment: timeline.Enrolment,
           program: timeline.Program,
           project: timeline.Project,
-          timeline: timeline.Timeline,
+          timeline: timeline.Timeline
         };
       }),
       config: (data.Experience || {}).config || {},
-      _raw: rawData,
+      _raw: rawData
     };
   }
 
   /**
    * @name login
-   * @description login API specifically only accept request data in encodedUrl formdata, so must conver them into compatible formdata before submission
+   * @description login API specifically only accept request data in encodedUrl formdata, so must convert them into compatible formdata before submission
    * @param {object} { email, password } in string for each of the value
    */
   login({ email, password }): Observable<any> {
     const body = new HttpParams()
       .set('data[User][email]', email)
       .set('data[User][password]', password);
-
     return this.request.post(api.login, body.toString(), {
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
-    }).pipe(map(response => {
-      const norm = this._normaliseAuth(response);
-
-      console.log('Auth Response::', response);
-      console.log('Auth Response::', norm);
-      if (response.data) {
-        this.storage.set('apikey', norm.apikey);
-        this.storage.set('programs', norm.programs);
-        this.storage.set('isLoggedIn', true);
-        this.storage.setUser({
-          email: email
-        });
-      }
-      return response;
-    }));
-  }
-
-  isAuthenticated(): boolean {
-    return this.isLoggedIn || this.storage.get('isLoggedIn');
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+      }).pipe(map(this._handleLoginResponse, this));
   }
 
   /**
-   * @name me
-   * @description get user info
+   * @name directLogin
+   * @description login API specifically only accept request data in encodedUrl formdata, so must convert them into compatible formdata before submission
+   * @param {object} { authToken } in string
    */
-  me(): Observable<any> {
-    return this.request.get(api.me).pipe(map(response => {
-      if (response.data) {
-        const apiData = response.data;
-        this.storage.setUser({
-          name: apiData.name,
-          contactNumber: apiData.contact_number,
-          email: apiData.email,
-          role: apiData.role,
-          image: apiData.image,
-          linkedinConnected: apiData.linkedinConnected,
-          linkedinUrl: apiData.linkedin_url,
-          programId: apiData.program_id,
-          timelineId: apiData.timeline_id,
-          projectId: apiData.project_id,
-          filestackHash: apiData.userhash,
-          maxAchievablePoints: apiData.max_achievable_points
-        });
-      }
-      return response;
-    }));
+  directLogin({ authToken }): Observable<any> {
+    const body = new HttpParams()
+      .set('auth_token', authToken);
+    return this.request.post(api.login, body.toString(), {
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+      }).pipe(map(this._handleLoginResponse, this));
+  }
+
+  private _handleLoginResponse(response) {
+    const norm = this._normaliseAuth(response);
+    if (response.data) {
+      this.storage.set('apikey', norm.apikey);
+      this.storage.set('programs', norm.programs);
+      this.storage.set('isLoggedIn', true);
+    }
+    return response;
+  }
+
+  isAuthenticated(): boolean {
+    return this.isLoggedIn || this.storage.get("isLoggedIn");
   }
 
   logout(): Observable<any> {
     // @TODO: clear ionic view history too
+    this.utils.changeThemeColor('#2bbfd4');
     return of(this.storage.clear());
   }
 
@@ -149,13 +142,13 @@ export class AuthService {
   }
 
   /**
-   * @name directLink
+   * @name contactNumberLogin
    * @description fast/quick login with contact number
    * @param  {string}}        data [description]
    * @return {Observable<any>}      [description]
    */
-  directLink(data: { contactNumber: string }): Observable<any> {
-    return this.request.post(api.directLink, {
+  contactNumberLogin(data: { contactNumber: string }): Observable<any> {
+    return this.request.post(api.login, {
       contact_number: data.contactNumber, // API accepts contact_numebr
     }).pipe(map(response => {
       if (response.data) {
@@ -181,9 +174,9 @@ export class AuthService {
    * @description enforced domain checking before experience config API call
    * @param {[type]} data [description]
    */
-  checkDomain(data): Observable<any> {    
+  checkDomain(data): Observable<any> {
     if (!data.domain) {
-        throw new Error('Tech Error: Domain is compulsory!');
+      throw new Error("Tech Error: Domain is compulsory!");
     }
 
     return this.getConfig(data);
@@ -191,5 +184,19 @@ export class AuthService {
 
   updateProfile(data: UserProfile): Observable<any> {
     return this.request.post(api.setProfile, data);
+  }
+
+  saveRegistration(data: registerData): Observable<any> {
+    return this.request
+    .post(api.register, data, {
+      headers: { "Content-Type": "application/json" }
+    });
+  }
+
+  verifyRegistration(data: verifyParams): Observable<any> {
+    return this.request
+    .post(api.verifyRegistration, data, {
+      headers: { "Content-Type": "application/json" }
+    });
   }
 }

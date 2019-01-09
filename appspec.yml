@@ -3,18 +3,33 @@ os: linux
 files:
   - source: /package.json
     destination: /home/ec2-user/node-website
+  - source: /angular.json
+    destination: /home/ec2-user/node-website
+  - source: /tsconfig.json
+    destination: /home/ec2-user/node-website
+  - source: /tslint.json
+    destination: /home/ec2-user/node-website
+  - source: /ionic.config.json
+    destination: /home/ec2-user/node-website
+  - source: /src
+    destination: /home/ec2-user/node-website/src
+  - source: /www
+    destination: /home/ec2-user/node-website/www
 hooks:
   AfterInstall:
-    - location: /scripts/install_dependencies
-      timeout: 300
+    - location: scripts/install_dependencies
+      timeout: 600
       runas: root
-    - location: /scripts/codestar_remote_access
-      timeout: 300
+    - location: scripts/codestar_remote_access
+      timeout: 600
       runas: root
-    - location: /scripts/start_server
-      timeout: 300
+    - location: scripts/start_server
+      timeout: 600
+      runas: root
+    - location: scripts/sync_s3_bucket
+      timeout: 600
       runas: root
   ApplicationStop:
-    - location: /scripts/stop_server
-      timeout: 300
+    - location: scripts/stop_server
+      timeout: 600
       runas: root

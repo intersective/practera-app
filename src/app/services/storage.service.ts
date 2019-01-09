@@ -6,21 +6,24 @@ export const BROWSER_STORAGE = new InjectionToken<Storage>('Browser Storage', {
 });
 
 export interface User {
-  name?: string,
-  contactNumber?: string,
-  email?: string,
-  role?: string,
-  image?: string,
-  linkedinConnected?: boolean,
-  linkedinUrl?: string,
-  programId?: number,
-  programName?: string,
-  experienceId?: number,
-  timelineId?: number,
-  projectId?: number,
-  teamId?: number,
-  filestackHash?: string,
-  maxAchievablePoints?: number
+  name?: string;
+  contactNumber?: string;
+  email?: string;
+  role?: string;
+  image?: string;
+  linkedinConnected?: boolean;
+  linkedinUrl?: string;
+  programId?: number;
+  programName?: string;
+  experienceId?: number;
+  timelineId?: number;
+  projectId?: number;
+  teamId?: number;
+  userHash?: string;
+  maxAchievablePoints?: number;
+  themeColor?: string;
+  activityCard?: string;
+  hasReviewRating?: boolean;
 }
 
 @Injectable({
@@ -40,7 +43,15 @@ export class BrowserStorageService {
   }
 
   set(key: string, value: any) {
-    this.storage.setItem(key, JSON.stringify(value));
+    return this.storage.setItem(key, JSON.stringify(value));
+  }
+
+  append(key: string, value: any) {
+    let actual = this.get(key);
+    if (!actual) {
+      actual = {};
+    }
+    return this.set(key, Object.assign(actual, value));
   }
 
   remove(key: string) {

@@ -5,6 +5,7 @@ import { HomeComponent } from './home.component';
 import { HomeRoutingComponent } from './home-routing.component';
 import { HomeRoutingModule } from './home-routing.module';
 import { NgCircleProgressModule } from 'ng-circle-progress';
+import { TodoCardComponent } from './todo-card/todo-card.component';
 
 @NgModule({
   imports: [
@@ -26,7 +27,11 @@ import { NgCircleProgressModule } from 'ng-circle-progress';
     }),
     HomeRoutingModule,
   ],
-  declarations: [HomeComponent, HomeRoutingComponent],
+  declarations: [
+    HomeComponent, 
+    HomeRoutingComponent,
+    TodoCardComponent
+  ],
 })
 export class HomeModule {
 }
