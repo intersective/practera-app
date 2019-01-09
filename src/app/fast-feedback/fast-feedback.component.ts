@@ -14,6 +14,7 @@ import { NotificationService } from '@shared/notification/notification.service';
 export class FastFeedbackComponent implements OnInit {
   fastFeedbackForm: FormGroup;
   questions = [];
+  loading: boolean = false;
 
   constructor(
     public modalController: ModalController,
@@ -35,7 +36,7 @@ export class FastFeedbackComponent implements OnInit {
   }
 
   submit() {
-    console.log(this.fastFeedbackForm);
+    this.loading = true;
     const formData = this.fastFeedbackForm.value;
     const data = [];
     this.utils.each(formData, (answer, questionId) => {
@@ -45,7 +46,6 @@ export class FastFeedbackComponent implements OnInit {
       });
     });
 
-    console.log(data);
     this.fastFeedbackService.submit(data).subscribe(res => {
       this.notification.alert({
         header: 'Submission Successful',
@@ -53,6 +53,7 @@ export class FastFeedbackComponent implements OnInit {
         buttons: [{
           text: 'OK',
           handler: () => {
+            this.loading = false;
             return this.dismiss();
           },
         }],

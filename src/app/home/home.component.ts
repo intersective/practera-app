@@ -61,17 +61,15 @@ export class HomeComponent implements OnInit {
   };
 
   ionViewDidEnter() {
-    const fastFeedback = this.fastFeedbackService.getFastFeedback().subscribe(this.showFastFeedback);
+    const fastFeedback = this.fastFeedbackService.getFastFeedback().subscribe(res => {
+      // popup instant feedback view if question quantity found > 0
+      if (res.data && res.data.length > 0) {
+        return this.fastFeedbackService.popUp({
+          questions: res.data,
+        });
+      }
+    });
     this.subscriptions.push(fastFeedback);
-  }
-
-  async showFastFeedback(res) {
-    // popup instant feedback view if question quantity found > 0
-    if (res.data || res.data.length > 0) {
-      this.fastFeedbackService.popUp({
-        questions: res.data,
-      });
-    }
   }
 
   goToActivity(id) {
