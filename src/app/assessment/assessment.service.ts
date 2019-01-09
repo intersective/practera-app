@@ -4,6 +4,8 @@ import { map } from 'rxjs/operators';
 import { RequestService } from '@shared/request/request.service';
 import { UtilsService } from '@services/utils.service';
 import { BrowserStorageService } from '@services/storage.service';
+import { NotificationService } from '@shared/notification/notification.service';
+import { ReviewRatingComponent } from '../review-rating/review-rating.component';
 
 /**
  * @name api
@@ -24,42 +26,43 @@ const api = {
 };
 
 export interface Assessment {
-  name: string,
-  description: string,
-  groups: Array<Group>
+  name: string;
+  description: string;
+  isForTeam: boolean;
+  groups: Array<Group>;
 }
 
 export interface Group {
-  name: string,
-  questions: Array<Question>
+  name: string;
+  questions: Array<Question>;
 }
 
 export interface Question {
-  id: number,
-  name: string,
-  type: string,
-  fileType?: string,
-  description: string,
-  isRequired: boolean,
-  canComment: boolean,
-  canAnswer: boolean,
-  choices?: Array<Choice>
+  id: number;
+  name: string;
+  type: string;
+  fileType?: string;
+  description: string;
+  isRequired: boolean;
+  canComment: boolean;
+  canAnswer: boolean;
+  choices?: Array<Choice>;
 }
 
 export interface Choice {
-  id: number,
-  name: string
+  id: number;
+  name: string;
 }
 
 export interface Submission {
-  id: number,
-  status: string,
-  answers: any
+  id: number;
+  status: string;
+  answers: any;
 }
 
 export interface Review {
-  id: number,
-  answers: any
+  id: number;
+  answers: any;
 }
 
 @Injectable({
@@ -72,7 +75,8 @@ export class AssessmentService {
   constructor(
     private request: RequestService,
     private utils: UtilsService,
-    private storage: BrowserStorageService
+    private storage: BrowserStorageService,
+    private notification: NotificationService,
   ) {}
 
   getAssessment(id, action): Observable<any> {
@@ -93,25 +97,24 @@ export class AssessmentService {
 
   private _normaliseAssessment(data) {
     // In API response, 'data' is an array of assessments(since we passed assessment id, it will return only one assessment, but still in array format). That's why we use data[0]
-    if (!Array.isArray(data) || 
-        !this.utils.has(data[0], 'Assessment') || 
+    if (!Array.isArray(data) ||
+        !this.utils.has(data[0], 'Assessment') ||
         !this.utils.has(data[0], 'AssessmentGroup')) {
       return this.request.apiResponseFormatError('Assessment format error');
     }
+    const thisAssessment = data[0];
 
     let assessment: Assessment = {
-      name: '',
-      description: '',
+      name: thisAssessment.Assessment.name,
+      description: thisAssessment.Assessment.description,
+      isForTeam: thisAssessment.Assessment.is_team,
       groups: []
     };
 
-    assessment.name = data[0].Assessment.name;
-    assessment.description = data[0].Assessment.description;
-
-    data[0].AssessmentGroup.forEach(group => {
-      if (!this.utils.has(group, 'name') || 
-          !this.utils.has(group, 'description') || 
-          !this.utils.has(group, 'AssessmentGroupQuestion') || 
+    thisAssessment.AssessmentGroup.forEach(group => {
+      if (!this.utils.has(group, 'name') ||
+          !this.utils.has(group, 'description') ||
+          !this.utils.has(group, 'AssessmentGroupQuestion') ||
           !Array.isArray(group.AssessmentGroupQuestion)) {
         return this.request.apiResponseFormatError('Assessment.AssessmentGroup format error');
       }
@@ -120,9 +123,9 @@ export class AssessmentService {
         if (!this.utils.has(question, 'AssessmentQuestion')) {
           return this.request.apiResponseFormatError('Assessment.AssessmentGroupQuestion format error');
         }
-        if (!this.utils.has(question.AssessmentQuestion, 'id') || 
-            !this.utils.has(question.AssessmentQuestion, 'name') || 
-            !this.utils.has(question.AssessmentQuestion, 'description') || 
+        if (!this.utils.has(question.AssessmentQuestion, 'id') ||
+            !this.utils.has(question.AssessmentQuestion, 'name') ||
+            !this.utils.has(question.AssessmentQuestion, 'description') ||
             !this.utils.has(question.AssessmentQuestion, 'question_type') ||
             !this.utils.has(question.AssessmentQuestion, 'is_required') ||
             !this.utils.has(question.AssessmentQuestion, 'has_comment') ||
@@ -145,7 +148,7 @@ export class AssessmentService {
             let choices: Array<Choice> = [];
             question.AssessmentQuestion.AssessmentQuestionChoice.forEach(questionChoice => {
               if (
-                  !this.utils.has(questionChoice, 'id') || 
+                  !this.utils.has(questionChoice, 'id') ||
                   !this.utils.has(questionChoice, 'AssessmentChoice.name')
                 ) {
                 return this.request.apiResponseFormatError('Assessment.AssessmentChoice format error');
@@ -167,8 +170,8 @@ export class AssessmentService {
               choices: choices
             });
             break;
-          
-          case 'file': 
+
+          case 'file':
              if (!this.utils.has(question.AssessmentQuestion, 'file_type.type')) {
               return this.request.apiResponseFormatError('Assessment.AssessmentQuestion.file_type format error');
             }
@@ -236,21 +239,23 @@ export class AssessmentService {
 
   private _normaliseSubmission(data) {
     // In API response, 'data' is an array of submissions(currently we only support one submission per assessment, but it is still in array format). That's why we use data[0]
-    if (!Array.isArray(data) || 
+    if (!Array.isArray(data) ||
         !this.utils.has(data[0], 'AssessmentSubmission')) {
       return this.request.apiResponseFormatError('AssessmentSubmission format error');
     }
+    const thisSubmission = data[0];
+
     let submission: Submission = {
-      id: data[0].AssessmentSubmission.id,
-      status: data[0].AssessmentSubmission.status,
+      id: thisSubmission.AssessmentSubmission.id,
+      status: thisSubmission.AssessmentSubmission.status,
       answers: {}
     }
-    if (!this.utils.has(data[0], 'AssessmentSubmissionAnswer') ||
-        !Array.isArray(data[0].AssessmentSubmissionAnswer)
+    if (!this.utils.has(thisSubmission, 'AssessmentSubmissionAnswer') ||
+        !Array.isArray(thisSubmission.AssessmentSubmissionAnswer)
         ) {
       return this.request.apiResponseFormatError('AssessmentSubmissionAnswer format error');
     }
-    data[0].AssessmentSubmissionAnswer.forEach(answer => {
+    thisSubmission.AssessmentSubmissionAnswer.forEach(answer => {
       if (!this.utils.has(answer, 'assessment_question_id') ||
           !this.utils.has(answer, 'answer')
           ) {
@@ -264,23 +269,23 @@ export class AssessmentService {
 
     let review: Review;
     // AssessmentReview is in array format, current we only support one review per submission, that's why we use AssessmentReview[0]
-    if (this.utils.has(data[0], 'AssessmentReview[0].id')) {
+    if (this.utils.has(thisSubmission, 'AssessmentReview[0].id')) {
       review = {
-        id: data[0].AssessmentReview[0].id,
+        id: thisSubmission.AssessmentReview[0].id,
         answers: {}
       };
     }
     // only get the review answer if the review is published (submission.status == 'published')
     if (submission.status == 'published' &&
-        this.utils.has(data[0], 'AssessmentReviewAnswer') &&
-        Array.isArray(data[0].AssessmentReviewAnswer)) {
+        this.utils.has(thisSubmission, 'AssessmentReviewAnswer') &&
+        Array.isArray(thisSubmission.AssessmentReviewAnswer)) {
       if (!review) {
         review = {
           id: 0,
           answers: {}
         };
       }
-      data[0].AssessmentReviewAnswer.forEach(answer => {
+      thisSubmission.AssessmentReviewAnswer.forEach(answer => {
         if (!this.utils.has(answer, 'assessment_question_id') ||
             !this.utils.has(answer, 'answer') ||
             !this.utils.has(answer, 'comment')
@@ -309,7 +314,7 @@ export class AssessmentService {
           break;
         case "multiple":
           break;
-        
+
       }
     }
     return answer;
@@ -354,7 +359,7 @@ export class AssessmentService {
 
   private _normaliseFeedbackReviewed(data) {
     // In API response, 'data' is an array of todo items. Since we passed "identifier", there should be just one in the array. That's why we use data[0]
-    if (!Array.isArray(data) || 
+    if (!Array.isArray(data) ||
         !this.utils.has(data[0], 'is_done')) {
       return this.request.apiResponseFormatError('TodoItem format error');
     }
@@ -370,7 +375,12 @@ export class AssessmentService {
     return this.request.post(api.post.todoitem, postData);
   }
 
-
+  popUpReviewRating(reviewId, redirect) {
+    return this.notification.modal(ReviewRatingComponent, {
+      reviewId,
+      redirect,
+    });
+  }
 }
 
 

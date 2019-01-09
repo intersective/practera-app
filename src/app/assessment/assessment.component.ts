@@ -4,6 +4,7 @@ import { AssessmentService, Assessment, Submission, Review } from './assessment.
 import { UtilsService } from '../services/utils.service';
 import { NotificationService } from '@shared/notification/notification.service';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
+import { BrowserStorageService } from '@services/storage.service';
 
 @Component({
   selector: 'app-assessment',
@@ -11,7 +12,7 @@ import { FormGroup, FormControl, Validators } from '@angular/forms';
   styleUrls: ['assessment.component.scss']
 })
 export class AssessmentComponent implements OnInit {
-  
+
   // assessment id
   id: number;
   // activity id
@@ -25,6 +26,7 @@ export class AssessmentComponent implements OnInit {
   assessment: Assessment = {
     name: '',
     description: '',
+    isForTeam: false,
     groups: [
       {
         name: '',
@@ -60,6 +62,7 @@ export class AssessmentComponent implements OnInit {
   doAssessment: boolean = false;
   doReview: boolean = false;
   feedbackReviewed: boolean = false;
+  loadingFeedbackReviewed: boolean = true;
   questionsForm = new FormGroup({});
   submitting: boolean = false;
 
@@ -68,7 +71,8 @@ export class AssessmentComponent implements OnInit {
     private route: ActivatedRoute,
     private assessmentService: AssessmentService,
     private utils: UtilsService,
-    private notificationService: NotificationService
+    private notificationService: NotificationService,
+    private storage: BrowserStorageService,
   ) {}
 
   ngOnInit() {
@@ -82,13 +86,16 @@ export class AssessmentComponent implements OnInit {
       .subscribe(assessment => {
         this.assessment = assessment;
         this.populateQuestionsForm();
+        if (this.assessment.isForTeam && !this.storage.getUser().teamId) {
+          return this.notificationService.popUp('shortMessage', {message: 'To do this assessment, you have to be in a team.'}, ['app', { outlets: { project: ['activity', this.activityId] } }]);
+        }
         this._getSubmission();
       });
 
   };
 
   // get the submission answers &/| review answers
-  private _getSubmission() { 
+  private _getSubmission() {
     this.assessmentService.getSubmission(this.id, this.contextId, this.action)
       .subscribe(result => {
         this.submission = result.submission;
@@ -108,12 +115,13 @@ export class AssessmentComponent implements OnInit {
           this.assessmentService.getFeedbackReviewed(this.submission.id)
             .subscribe(result => {
               this.feedbackReviewed = result;
+              this.loadingFeedbackReviewed = false;
             });
         }
       });
   }
 
-  // Populate the question form with FormControls. 
+  // Populate the question form with FormControls.
   // The name of form control is like 'q-2' (2 is an example of question id)
   populateQuestionsForm() {
     let questionsFormObject = {};
@@ -177,7 +185,7 @@ export class AssessmentComponent implements OnInit {
       if (!this.utils.isEmpty(requiredQuestions)) {
         this.submitting = false;
         // display a pop up if required question not answered
-        return this.notificationService.popUp('shortMessage', {message: 'Required question answer missing!'}, false);
+        return this.notificationService.popUp('shortMessage', {message: 'Required question answer missing!'});
       }
     }
 
@@ -219,14 +227,21 @@ export class AssessmentComponent implements OnInit {
           // display a pop up if submission failed
           return this.notificationService.popUp('shortMessage', {
             message: 'Submission Failed, please try again later.'
-          }, false);
+          });
         }
       });
   }
 
   reviewFeedback() {
     this.feedbackReviewed = true;
-    this.assessmentService.saveFeedbackReviewed(this.submission.id).subscribe();
+    this.assessmentService.saveFeedbackReviewed(this.submission.id).subscribe(result => {
+      // if review is successfully mark as read and program is configured to enable review rating, display review rating modal and then redirect to activity page.
+      if (result.success && this.storage.getUser().hasReviewRating === true) {
+        this.assessmentService.popUpReviewRating(this.review.id, ['app', {
+          outlets: { project: ['activity', this.activityId] },
+        }]);
+      }
+    });
   }
 
 }

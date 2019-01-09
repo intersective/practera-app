@@ -1,0 +1,29 @@
+version: 0.2
+
+phases:
+  install:
+    commands:
+      - sudo npm install forever -g
+      - sudo npm install -g @angular/cli
+      - sudo npm install
+      - sudo node node_modules/node-sass/scripts/install.js
+      - sudo npm rebuild node-sass
+  build:
+    commands:
+      - sudo ng build --configuration=stage
+artifacts:
+  type: zip
+  files:
+    - template.yml
+    - README.md
+    - package.json
+    - package-lock.json
+    - tsconfig.json
+    - tslint.json
+    - angular.json
+    - ionic.config.json
+    - appspec.yml
+    - scripts/*
+    - src/**/*
+    - www/**/*
+    - node_modules/**/*
