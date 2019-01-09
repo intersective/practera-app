@@ -6,6 +6,19 @@ export const environment = {
   production: false,
   APIEndpoint: 'http://stage.practera.com/',
   // APIEndpoint: 'https://sandbox.practera.com/'
+  filestack: {
+    key: 'AO6F4C72uTPGRywaEijdLz',
+    s3Config: {
+      location: 's3',
+      container: 'practera-aus',
+      region: 'ap-southeast-2',
+      paths: {
+        any: '/appv2/stage/uploads/',
+        image: '/appv2/stage/uploads/',
+        video: '/appv2/stage/uploads/'
+      }
+    }
+  }
 };
 
 /*
