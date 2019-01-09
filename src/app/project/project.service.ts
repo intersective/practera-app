@@ -82,8 +82,9 @@ export class ProjectService {
         milestone.description = eachMilestone.description;
       };
       
-    milestones.push(milestone);
+      milestones.push(milestone);
   });
+
     milestones.forEach(milestone => {
     if (!milestone.isLocked) {
       milestone_ids.push(milestone.id);
@@ -103,14 +104,13 @@ export class ProjectService {
 
   private _addActivitiesToEachMilestone(milestones,activities) {
     
-    milestones.forEach(function(eachMilestone) {
-      activities.forEach( function (activity) {
-        if (activity.milestoneId === eachMilestone.id) {
-          eachMilestone.Activity.push(activity);
-        }
-     });
-  });
-}
+    activities.forEach(function (activity) {
+      var findMilestone = milestones.find(function (milestonWithThisId) {
+        return milestonWithThisId.id === activity.milestoneId
+      })
+      findMilestone.Activity.push(activity);
+    });
+  }
   
   public _getActivities(id) {
     return this.request.get(api.activity, {
@@ -179,7 +179,7 @@ export class ProjectService {
       if (response.success && response.data) {
         return this._normaliseProgress(response.data,milestones);
       }
-    }))
+    }));
   }
 
   private _normaliseProgress(data: any, milestones) {
@@ -196,19 +196,16 @@ export class ProjectService {
     
     progress.Milestone.forEach(function(eachMilestone){ 
       let findMilestone = milestones.find(function (milestone) {
-       return milestone.id === eachMilestone.id });
+       return milestone.id === eachMilestone.id
+      });
 
     findMilestone.progress = eachMilestone.progress;
-    this._activityProgress(eachMilestone,findMilestone);
-    });
-  }
-  private _activityProgress(milestonWithProgress,milestone) {
-    milestonWithProgress.Activity.forEach(function(activity){
-      var findActivityWithThisId = milestone.Activity.find(function(item) {
+    findMilestone.Activity.forEach(function(activity){
+      var findActivityWithThisId = eachMilestone.Activity.find(function(item) {
         return item.id === activity.id;
       })
-      findActivityWithThisId.progress = activity.progress;
+      activity.progress = findActivityWithThisId.progress;
+      });
     })
-    return milestone
   }
 }
