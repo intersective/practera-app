@@ -10,6 +10,14 @@ export interface Activity {
   leadImage?: string;
   progress?: number;
 }
+export interface Milestone {
+  id: number;
+  name: string;
+  description?: string;
+  isLocked: boolean;
+  progress: number;
+  Activity: Array <Activity>;
+}
 
 @Component({
   selector: 'app-project',
@@ -28,7 +36,9 @@ public programName:string = "Demo Program";
   public milestonesIds: Array<number> =[];
   public loadingActivity: boolean = true;
   public loadingMilestone: boolean = true;
+  public loadingProgress: boolean = true;
   public activities: Array<Activity> = [];
+  public progress;
   
     
   ngOnInit() {
@@ -36,23 +46,61 @@ public programName:string = "Demo Program";
       .subscribe(milestones => {
         this.milestones = milestones;
         this.loadingMilestone = false;
+        this.milestonesIds = this.projectService.getMilestoneIds(this.milestones);
+        this.projectService.getActivities(this.milestonesIds)
+          .subscribe(activities => { 
+            this.activities = activities;
+            this.milestones = this.addActivitiesToEachMilestone(this.milestones, this.activities);
+            this.loadingActivity = false;
+            this.projectService.getProgress(this.milestones).subscribe(
+              progress => {
+                this.progress = progress;
+                this.milestoneProgress(progress,this.milestones);
+                this.loadingProgress = false;
+              }
+            );
+          });
       });
-      console.log('this.milestones',this.milestones);
-    this.milestonesIds = this.projectService.getMilestoneIds(this.milestones);
-    console.log('milestonesIds is:',this.milestonesIds);
-    this.projectService.getActivities(this.milestonesIds)
-      .subscribe(activities => { 
-        this.activities = activities;
-        this.projectService.addActivitiesToEachMilestone(this.milestones, this.activities)
-        .subscribe(milestones => {
-          this.loadingActivity = false;
-          this.milestones = milestones;
-        });
-    this.projectService.getProgress(this.milestones).subscribe();
-      })
-    }
+  }
 
-    goToActivity(id) {
-      this.router.navigateByUrl('app/(project:activity/' + id + ')');
-    }
+  goToActivity(id) {
+    this.router.navigateByUrl('app/(project:activity/' + id + ')');
+  }
+
+  addActivitiesToEachMilestone(milestones,activities) {
+    let findMilestone: Milestone = {
+      id: 0,
+      name: '',
+      description: '',
+      isLocked: false,
+      progress: 0,
+      Activity:[]
+    };
+    activities.forEach(function (activity) {
+      findMilestone = milestones.find(function (milestonWithThisId) {
+        return milestonWithThisId.id === activity.milestoneId
+      })
+      findMilestone.Activity.push(activity);
+    });
+  
+    return milestones;
+  }
+
+  milestoneProgress(progress,milestones) {
+    
+    progress.Milestone.forEach(function(eachMilestone){ 
+      let findMilestone = milestones.find(function (milestone) {
+       return milestone.id === eachMilestone.id
+      });
+
+    findMilestone.progress = eachMilestone.progress;
+    findMilestone.Activity.forEach(function(activity){
+      var findActivityWithThisId = eachMilestone.Activity.find(function(item) {
+        return item.id === activity.id;
+      })
+      activity.progress = findActivityWithThisId.progress;
+      });
+    })
+  }
+    
   }

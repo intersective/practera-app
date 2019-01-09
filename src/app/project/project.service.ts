@@ -95,16 +95,6 @@ export class ProjectService {
    })
     return  milestoneIds; 
   }
-  public addActivitiesToEachMilestone(milestones,activities) {
-    
-    activities.forEach(function (activity) {
-      var findMilestone = milestones.find(function (milestonWithThisId) {
-        return milestonWithThisId.id === activity.milestoneId
-      })
-      findMilestone.Activity.push(activity);
-    });
-    return milestones;
-  }
   
   public getActivities(id) {
     return this.request.get(api.activity, {
@@ -161,6 +151,7 @@ export class ProjectService {
     return activities;
   }
   
+
   public getProgress(milestones) {
     return this.request.get(api.progress, {
       params: {
@@ -182,24 +173,8 @@ export class ProjectService {
       this.request.apiResponseFormatError('Progress format error');
       return 0;
     }
-
-    this._milestoneProgress(data.Project,milestones);
+   return data.Project
   }
 
-  private _milestoneProgress(progress,milestones) {
-    
-    progress.Milestone.forEach(function(eachMilestone){ 
-      let findMilestone = milestones.find(function (milestone) {
-       return milestone.id === eachMilestone.id
-      });
-
-    findMilestone.progress = eachMilestone.progress;
-    findMilestone.Activity.forEach(function(activity){
-      var findActivityWithThisId = eachMilestone.Activity.find(function(item) {
-        return item.id === activity.id;
-      })
-      activity.progress = findActivityWithThisId.progress;
-      });
-    })
-  }
+  
 }
