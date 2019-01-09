@@ -145,6 +145,7 @@ export class ChatRoomComponent implements OnInit {
     }
   }
 
+  // call chat api to mark message as seen messages
   private markAsSeen(messageList) {
     let messageIdList = [];
     let index = 0;
@@ -166,4 +167,5 @@ export class ChatRoomComponent implements OnInit {
         }
       );
   }
+  
 }
