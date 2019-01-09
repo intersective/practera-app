@@ -26,7 +26,7 @@ export class AuthRegistrationComponent implements OnInit {
   hide_password: boolean = false;
   user: any = {
     email: null,
-    activation_code: null,
+    key: null,
     contact: null,
     id: null
   };
@@ -68,61 +68,55 @@ export class AuthRegistrationComponent implements OnInit {
     redirect = ['login'];
     // access query params
     this.route.queryParamMap.subscribe(queryParams => {
-      let email = queryParams.get("email");
-      this.user.email = email;
-      this.user.activation_code = queryParams.get("activation_code");
-      if (email && this.user.activation_code) {
+      this.user.email = this.route.snapshot.paramMap.get('email');
+      this.user.key = this.route.snapshot.paramMap.get('key');
+      if (this.user.email && this.user.key) {
         // check is Url valid or not.
-        this.authService
-          .verifyRegistration({
-            email: email,
-            key: this.user.activation_code
+        this.authService.verifyRegistration({
+            email: this.user.email,
+            key: this.user.key
           }).subscribe(response => {
-              if (response) {
-                let user = response.data.User;
-                // Setting user data after registration verified.
-                this.user.email = email;
-                this.user.contact = (user || {}).contact_number || null;
-                this.user.id = user.id;
+            if (response) {
+              let user = response.data.User;
+              // Setting user data after registration verified.
+              this.user.contact = (user || {}).contact_number || null;
+              this.user.id = user.id;
 
-                // Update storage data
-                this.storage.setUser({
-                  contactNumber: this.user.contact,
-                  email: this.user.email
-                });
+              // Update storage data
+              this.storage.setUser({
+                contactNumber: this.user.contact,
+                email: this.user.email
+              });
 
-                // get app configaration
-                this.authService
-                  .checkDomain({
-                    domain: this.domain
-                  })
-                  .subscribe(response => {
-                      var data = (response.data || {}).data;
-                      data = this.utils.find(data, function(datum) {
-                        return (
-                          datum.config && datum.config.auth_via_contact_number
-                        );
-                      });
+              // get app configaration
+              this.authService.checkDomain({
+                  domain: this.domain
+                })
+                .subscribe(response => {
+                  var data = (response.data || {}).data;
+                  data = this.utils.find(data, function(datum) {
+                    return (
+                      datum.config && datum.config.auth_via_contact_number
+                    );
+                  });
 
-                      if (data && data.config) {
-                        if (data.config.auth_via_contact_number === true) {
-                          this.hide_password = true;
-                          this.user.password = this.autoGeneratePassword();
-                          this.confirmPassword = this.user.password;
-                        }
-                      }
-                    },err => {
-                      this.showPopupMessages('shortMessage', 'Registration link invalid!',redirect);
+                  if (data && data.config) {
+                    if (data.config.auth_via_contact_number === true) {
+                      this.hide_password = true;
+                      this.user.password = this.autoGeneratePassword();
+                      this.confirmPassword = this.user.password;
                     }
-                  );
-              }
-            },err => {
-              console.log("error");
-              this.showPopupMessages('shortMessage', 'Registration link invalid!',redirect);
+                  }
+                }, err => {
+                  this.showPopupMessages('shortMessage', 'Registration link invalid!', redirect);
+                });
             }
-          );
+          }, err => {
+            console.log("error");
+            this.showPopupMessages('shortMessage', 'Registration link invalid!', redirect);
+          });
       } else {
-        this.showPopupMessages('shortMessage', 'Registration link invalid!',redirect);
+        this.showPopupMessages('shortMessage', 'Registration link invalid!', redirect);
       }
     });
   }
@@ -146,7 +140,7 @@ export class AuthRegistrationComponent implements OnInit {
         .saveRegistration({
           password: this.confirmPassword,
           user_id:this.user.id,
-          key: this.user.activation_code
+          key: this.user.key
         })
         .subscribe(response => {
             this.authService
