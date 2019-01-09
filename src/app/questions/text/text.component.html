@@ -4,20 +4,18 @@
     <ion-text color="danger" *ngIf="question.isRequired">*</ion-text>
     <ion-text color="medium"><p><i>{{ question.description }}</i></p></ion-text>
   </ion-card-header>
-  <ion-card-content padding-horizontal class="q-content">
+  <ion-card-content padding-horizontal class="q-content" color="light">
 
     <ng-container *ngIf="submission.answer">
       <ion-text>{{ submission.answer }}</ion-text>
     </ng-container>
 
     <div *ngIf="review.answer || review.comment" class="q-reviews">
-      <ion-label class="q-title">Reviewer:</ion-label>
+      <ion-label class="q-title">Feedback</ion-label>
       <ng-container *ngIf="review.answer">
-        <b>Answer</b>
         <p>{{ review.answer }}</p>
       </ng-container>
       <ng-container *ngIf="review.comment">
-        <b>Comment</b>
         <p>{{ review.comment }}</p>
       </ng-container>
     </div>
