@@ -17,7 +17,7 @@ export class HomeComponent implements OnInit {
   loadingTodoItems: boolean = true;
   activity: Activity;
   loadingActivity: boolean = true;
-  
+
   constructor (
     private router: Router,
     private homeService: HomeService,
@@ -56,7 +56,7 @@ export class HomeComponent implements OnInit {
   };
 
   goToActivity(id) {
-    this.router.navigateByUrl('app/(project:activity/' + id + ')');
+    this.router.navigateByUrl('app/activity/' + id);
   }
 
   goToAssessment(activityId, contextId, assessmentId) {
