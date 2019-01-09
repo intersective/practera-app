@@ -30,6 +30,7 @@
     <ng-container *ngIf="doAssessment">
       <file-stack
         [accept]="fileTypes"
+        [fileType]="question.fileType"
         (complete)="onFileUploadCompleted($event)"
       >
       </file-stack>
@@ -47,6 +48,7 @@
       <ng-container *ngIf="question.canAnswer">
         <file-stack 
           [accept]="fileTypes"
+          [fileType]="question.fileType"
           (complete)="onFileUploadCompleted($event, 'answer')"
         >
         </file-stack>
