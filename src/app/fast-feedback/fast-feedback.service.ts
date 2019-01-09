@@ -55,8 +55,6 @@ export class FastFeedbackService {
     const modal = await this.notification.modal(FastFeedbackComponent, props, {
       backdropDismiss: false,
       showBackdrop: false,
-      presentModal: false, // false: do not display modal rightaway || true: display modal instantly
     });
-    return await modal.present();
   }
 }
