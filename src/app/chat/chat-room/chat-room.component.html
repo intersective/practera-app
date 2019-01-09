@@ -18,7 +18,7 @@
             <p>{{message.sent_time}}</p>
           </div>
           <div class="message-body">
-            <p>{{message.message}}</p>
+            <p [innerHTML]="message.message | linkify"></p>
           </div>
           <ng-container *ngIf="message.sender_name && !message.is_sender">
             <div class="seen-text">
@@ -31,12 +31,10 @@
   </ion-list>
 </ion-content>
 <ion-footer>
-  <form (submit)="sendMessage()">
     <ion-item lines="none">
-      <ion-input type="text" (keydown.enter)="sendMessage()" required placeholder="Enter your message" name="message" [(ngModel)]="message"></ion-input>
-      <ion-button type="submit" slot="end" fill="clear" color="light">
+        <ion-textarea placeholder="Enter your message" (keydown.shift.enter)="sendMessage()" required="true" name="message" [(ngModel)]="message"></ion-textarea>
+      <ion-button (click)="sendMessage()" type="submit" slot="end" fill="clear" color="light">
         <ion-icon name="send"></ion-icon>
       </ion-button>
     </ion-item>
-  </form>
 </ion-footer>

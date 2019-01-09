@@ -124,12 +124,23 @@
                 max-width: 224px;
 
                 p {
-                    color: black;
+                    color: var(--practera-black);
                     font-size: 16px;
                     line-height: 24px;
                     margin: 0;
                     text-align: left;
-                    white-space: normal;
+                    user-select: all !important;
+                    white-space: pre-wrap !important;
+
+
+                    a {
+                        color: var(--practera-black);
+                        font-size: 16px;
+                        line-height: 24px;
+                        margin: 0;
+                        text-align: left;
+                      }
+
                 }
             }
 
@@ -167,7 +178,15 @@
                     float: right;
 
                     p {
-                        color: white;
+                        color: var(--practera-white);
+
+                        a {
+                            color: var(--practera-white);
+                            font-size: 16px;
+                            line-height: 24px;
+                            margin: 0;
+                            text-align: left;
+                          }
                     }
 
                 }
