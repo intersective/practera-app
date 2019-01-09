@@ -4,7 +4,7 @@
 // The list of which env maps to which file can be found in `.angular-cli.json`.
 export const environment = {
   production: false,
-  APIEndpoint: 'http://stage.practera.com/',
+  APIEndpoint: 'http://stage-test.practera.com/',
   // APIEndpoint: 'https://sandbox.practera.com/'
 };
 
