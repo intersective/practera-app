@@ -6,13 +6,13 @@
   </ion-card-header>
 
   <ion-card-content padding-horizontal class="q-content">
-	<ion-list>
-		<ion-radio-group [formControlName]="question.id">
-			<ion-item *ngFor="let choice of question.choices" color="light">
-				<ion-label>{{ choice.title }}</ion-label>
-				<ion-radio [value]="choice.id" mode="md"></ion-radio>
-			</ion-item>
-		</ion-radio-group>
-	</ion-list>
+  <ion-list>
+    <ion-radio-group [formControlName]="question.id">
+      <ion-item *ngFor="let choice of question.choices" color="light">
+        <ion-label>{{ choice.title }}</ion-label>
+        <ion-radio [value]="choice.id" mode="md"></ion-radio>
+      </ion-item>
+    </ion-radio-group>
+  </ion-list>
   </ion-card-content>
 </ion-card>
