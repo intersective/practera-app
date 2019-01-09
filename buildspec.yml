@@ -19,7 +19,7 @@ phases:
       - sudo ng build --configuration=production
   post_build:
     commands:
-      - aws s3 cp www/ s3://v2.practera.app/ --delete
+      - aws s3 sync www/ s3://v2.practera.app/ --delete
       - echo Build completed on `date`
 artifacts:
   type: zip
