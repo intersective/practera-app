@@ -49,7 +49,6 @@ export class FastFeedbackComponent implements OnInit {
     this.fastFeedbackService.submit(data).subscribe(res => {
       this.notification.alert({
         header: 'Submission Successful',
-        subHeader: 'Subtitle',
         message: 'Thanks for taking time to answer the feedback question.',
         buttons: [{
           text: 'OK',

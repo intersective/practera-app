@@ -16,7 +16,7 @@ import { QuestionComponent } from './question/question.component';
     ReactiveFormsModule,
   ],
   declarations: [
-  	FastFeedbackRoutingComponent, 
+    FastFeedbackRoutingComponent,
     FastFeedbackComponent,
     QuestionComponent,
   ],
