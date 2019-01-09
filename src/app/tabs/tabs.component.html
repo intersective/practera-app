@@ -1,50 +1,30 @@
 <ion-tabs>
 
-  <ion-tab tab="home">
-    <ion-router-outlet name="home"></ion-router-outlet>
-  </ion-tab>
-
-  <ion-tab tab="project">
-    <ion-router-outlet name="project"></ion-router-outlet>
-  </ion-tab>
-
-  <ion-tab tab="review">
-    <ion-router-outlet name="reviews"></ion-router-outlet>
-  </ion-tab>
-
-  <ion-tab tab="chat">
-    <ion-router-outlet name="chat"></ion-router-outlet>
-  </ion-tab>
-
-  <ion-tab tab="settings">
-    <ion-router-outlet name="settings"></ion-router-outlet>
-  </ion-tab>
-
   <ion-tab-bar slot="bottom">
 
-    <ion-tab-button tab="home" href="/app/(home:home)">
+    <ion-tab-button tab="home">
       <ion-icon name="home"></ion-icon>
       <ion-badge color="danger" *ngIf="noOfTodoItems > 0">{{ noOfTodoItems }}</ion-badge>
       <ion-label>Home</ion-label>
     </ion-tab-button>
 
-    <ion-tab-button tab="project" href="/app/(project:project)">
+    <ion-tab-button tab="project">
       <ion-icon name="list-box"></ion-icon>
       <ion-label>Activities</ion-label>
     </ion-tab-button>
 
-    <ion-tab-button *ngIf="showReview" tab="review" href="/app/(reviews:reviews)">
+    <ion-tab-button *ngIf="showReview" tab="review">
       <ion-icon name="clipboard"></ion-icon>
       <ion-label>Review</ion-label>
     </ion-tab-button>
 
-    <ion-tab-button *ngIf="showChat" tab="chat" href="/app/(chat:chat)">
+    <ion-tab-button *ngIf="showChat" tab="chat">
       <ion-icon name="chatboxes"></ion-icon>
       <ion-badge color="danger" *ngIf="noOfChats > 0">{{ noOfChats }}</ion-badge>
       <ion-label>Chat</ion-label>
     </ion-tab-button>
 
-    <ion-tab-button tab="settings" href="/app/(settings:settings)">
+    <ion-tab-button tab="settings">
       <ion-icon name="settings"></ion-icon>
       <ion-label>Settings</ion-label>
     </ion-tab-button>
