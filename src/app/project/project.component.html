@@ -1,4 +1,4 @@
-<ion-header color="light">
+<ion-header >
   <ion-toolbar class="project-toolbar">
     <ion-title center>{{programName}}</ion-title>
   </ion-toolbar>
@@ -8,18 +8,24 @@
 <ion-grid class="milestone-bar">
   <ion-row >
     <ion-col class="bubbles-top" *ngFor="let milestone of milestones">
-      <div *ngIf="!milestone.isLocked; else milestoneLocked">
-        <ion-icon *ngIf="milestone.progress >= 1; else circleProgress" name="checkmark-circle" class="icon-done" color="primary" ></ion-icon>
-        <ng-template #circleProgress>
-          <circle-progress 
-            [percent]="milestone.progress * 100"
-          >
-          </circle-progress >
-        </ng-template>  
-      </div>
-      <ng-template #milestoneLocked>
-       <ion-icon  name="lock" color="medium" class="icon-lock"></ion-icon>
-      </ng-template>
+      <ng-container *ngIf="loadingProgress; else progressTpl">
+        <ion-spinner></ion-spinner>
+      </ng-container>
+
+      <ng-template #progressTpl>
+        <div *ngIf="!milestone.isLocked; else milestoneLocked">
+          <ion-icon *ngIf="milestone.progress >= 1; else circleProgress" name="checkmark-circle" class="icon-done" color="primary" ></ion-icon>
+          <ng-template #circleProgress>
+            <circle-progress 
+              [percent]="milestone.progress * 100"
+            >
+            </circle-progress >
+          </ng-template>  
+        </div>
+        <ng-template #milestoneLocked>
+          <ion-icon  name="lock" color="medium" class="icon-lock"></ion-icon>
+        </ng-template>
+      </ng-template> 
     </ion-col>
   </ion-row>
 </ion-grid>
@@ -38,7 +44,15 @@
             <div class="milestone-description" [innerHtml]="milestone.description"></div>
             <div *ngIf="milestone.Activity" class="milestone-activities">
               <ion-list class="activity-list">
+                  <ng-container *ngIf="loadingActivity" >
+                      <ion-spinner></ion-spinner>
+                  </ng-container>
                 <ion-item class="activity-item" *ngFor="let activity of milestone.Activity">
+                 
+                  <ng-container *ngIf="loadingProgress; else progressTpl">
+                    <ion-spinner></ion-spinner>
+                  </ng-container>
+                  <ng-template #progressTpl>
                     <div *ngIf="!activity.isLocked; else activityLocked" class="row-cards">
                       <ion-icon *ngIf="activity.progress >= 1; else circleProgressActivity" name="checkmark-circle" class="icon-done" margin-end color="primary"></ion-icon>
                       <ng-template #circleProgressActivity>
@@ -50,12 +64,9 @@
                     <ng-template #activityLocked>
                       <ion-icon  name="lock" color="medium" class="icon-lock"></ion-icon>
                     </ng-template>
-                    <ng-container *ngIf="loadingActivity; else activityTpl">
-                      <ion-spinner></ion-spinner>
-                    </ng-container>
-                    <ng-template #activityTpl> 
-                      <app-activity-card [activity]="activity" (click)="!activity.isLocked && goToActivity(activity.id)" class="activity-card"></app-activity-card>
-                    </ng-template>    
+                  </ng-template>
+                  <app-activity-card [activity]="activity" (click)="!activity.isLocked && goToActivity(activity.id)" class="activity-card"></app-activity-card>
+                    
                 </ion-item>
               </ion-list>
             </div>
