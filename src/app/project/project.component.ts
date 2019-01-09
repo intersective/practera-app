@@ -37,7 +37,9 @@ public programName:string = "Demo Program";
         this.milestones = milestones;
         this.loadingMilestone = false;
       });
+      console.log('this.milestones',this.milestones);
     this.milestonesIds = this.projectService.getMilestoneIds(this.milestones);
+    console.log('milestonesIds is:',this.milestonesIds);
     this.projectService.getActivities(this.milestonesIds)
       .subscribe(activities => { 
         this.activities = activities;
