@@ -1,4 +1,6 @@
 import { Injectable } from '@angular/core';
+import { ModalController } from '@ionic/angular';
+import { PreviewComponent } from './preview/preview.component';
 import { environment } from '@environments/environment';
 import { BrowserStorageService } from '@services/storage.service';
 
@@ -13,6 +15,7 @@ export class FilestackService {
   };
   
   constructor(
+    private modalController: ModalController,
     private storage: BrowserStorageService
   ) {}
 
@@ -41,5 +44,31 @@ export class FilestackService {
       region: environment.filestack.s3Config.region,
       path: path
     };
+  }
+
+  previewFile(file) {
+    let fileUrl = file.url;
+    if (fileUrl) {
+      if (fileUrl.indexOf('www.filepicker.io/api/file') !== -1) {
+        // old format
+        fileUrl = fileUrl.replace('www.filepicker.io/api/file', 'cdn.filestackcontent.com/preview');
+      } else if (fileUrl.indexOf('filestackcontent.com') !== -1) {
+        // new format
+        fileUrl = fileUrl.replace('filestackcontent.com', 'filestackcontent.com/preview');
+      } 
+    } else if (file.handle) {
+      fileUrl = 'https://cdn.filestackcontent.com/preview/' + file.handle;
+    }
+    this.previewModal(fileUrl);
+  }
+
+  async previewModal(url) {
+    const modal = await this.modalController.create({
+      component: PreviewComponent,
+      componentProps: { 
+        url: url
+      }
+    });
+    return await modal.present();
   }
 }
