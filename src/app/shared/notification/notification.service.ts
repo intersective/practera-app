@@ -43,7 +43,9 @@ export class NotificationService {
 
   async modal(component, componentProps, options?) {
     const modal = await this.modalController.create(this.modalConfig({ component, componentProps }, options));
-    return await modal.present();
+
+    // prevent default behavior (show modal instantly), if presentModal is `false`
+    return modal;
   }
 
   async alert(config: AlertOptions) {

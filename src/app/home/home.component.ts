@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { FastFeedbackService } from '../fast-feedback/fast-feedback.service';
 import { Activity } from '../project/project.service';
 import { UtilsService } from '@services/utils.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-home',
@@ -19,6 +20,7 @@ export class HomeComponent implements OnInit {
   activity: Activity;
   questions:any[] = [];
   loadingActivity: boolean = true;
+  subscriptions: Subscription[] = [];
 
   constructor (
     private router: Router,
@@ -59,17 +61,17 @@ export class HomeComponent implements OnInit {
   };
 
   ionViewDidEnter() {
-    this.fastFeedbackService.getInstantFeedback().subscribe(res => {
-      // prepare ngModel for each of the data (question)
-      res.data.forEach(datum => this.questions.push(datum));
+    const fastFeedback = this.fastFeedbackService.getFastFeedback().subscribe(this.showFastFeedback);
+    this.subscriptions.push(fastFeedback);
+  }
 
-      // popup instant feedback view if question quantity found > 0
-      if (this.questions.length > 0) {
-        this.fastFeedbackService.popUp({
-          questions: this.questions,
-        });
-      }
-    });
+  async showFastFeedback(res) {
+    // popup instant feedback view if question quantity found > 0
+    if (res.data || res.data.length > 0) {
+      this.fastFeedbackService.popUp({
+        questions: res.data,
+      });
+    }
   }
 
   goToActivity(id) {
@@ -86,5 +88,9 @@ export class HomeComponent implements OnInit {
 
   goToChat() {
     this.router.navigateByUrl('app/(chat:chat)');
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.forEach(subscription => subscription.unsubscribe());
   }
 }
