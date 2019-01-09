@@ -60,7 +60,6 @@ export class ProjectService {
       return [];
     }
     let milestones = [];
-    let milestone_ids = [];
     data.forEach(eachMilestone => {
       if (!this.utils.has(eachMilestone, 'id') || 
           !this.utils.has(eachMilestone, 'name') || 
@@ -83,26 +82,20 @@ export class ProjectService {
       };
       
       milestones.push(milestone);
-  });
-
-    milestones.forEach(milestone => {
-    if (!milestone.isLocked) {
-      milestone_ids.push(milestone.id);
-    }
-  });
-
-  this._getActivities(milestone_ids).subscribe(activities => { 
-    
-    this.activities = activities; 
-    this._addActivitiesToEachMilestone(milestones, this.activities);
-    this._getProgress(milestones).subscribe();
-    
-  });
-  
+    });
   return milestones;
   }
 
-  private _addActivitiesToEachMilestone(milestones,activities) {
+  public getMilestoneIds(milestones) {
+    let milestoneIds = [];
+    milestones.forEach(milestone => { 
+      if (!milestone.isLocked) {
+        milestoneIds.push(milestone.id);
+      }
+   })
+    return  milestoneIds; 
+  }
+  public addActivitiesToEachMilestone(milestones,activities) {
     
     activities.forEach(function (activity) {
       var findMilestone = milestones.find(function (milestonWithThisId) {
@@ -110,9 +103,10 @@ export class ProjectService {
       })
       findMilestone.Activity.push(activity);
     });
+    return milestones;
   }
   
-  public _getActivities(id) {
+  public getActivities(id) {
     return this.request.get(api.activity, {
       params: {
         milestone_id: JSON.stringify(id)
@@ -167,7 +161,7 @@ export class ProjectService {
     return activities;
   }
   
-  public _getProgress(milestones) {
+  public getProgress(milestones) {
     return this.request.get(api.progress, {
       params: {
         model: 'Project',
