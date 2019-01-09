@@ -74,7 +74,11 @@
 
     <div *ngIf="submission.status == 'published'" class="text-right">
       <span class="vertical-middle">Mark feedback as read</span>
-      <ion-toggle [checked]="feedbackReviewed" [disabled]="feedbackReviewed" (ionChange)="reviewFeedback()" margin-start class="vertical-middle"></ion-toggle>
+      <ng-container *ngIf="!loadingFeedbackReviewed; else spinnerTmpl">
+        <ion-toggle [checked]="feedbackReviewed" [disabled]="feedbackReviewed" (ionChange)="reviewFeedback()" margin-start class="vertical-middle"></ion-toggle>
+      </ng-container>
+      <ng-template #spinnerTmpl><ion-spinner name="dots" class="vertical-middle"></ion-spinner></ng-template>
+      
     </div>
 
   </form>
