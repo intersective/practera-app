@@ -30,8 +30,8 @@
   </ion-row>
 </ion-grid>
 
-<ion-content class="bg-color" color="light">
-  <ion-list class="project-list" color="light">
+<ion-content color="light">
+  <ion-list class="project-list">
     <ng-container *ngIf="loadingMilestone">
       <ion-spinner></ion-spinner>
     </ng-container>  
@@ -65,13 +65,14 @@
                       <ion-icon  name="lock" color="medium" class="icon-lock"></ion-icon>
                     </ng-template>
                   </ng-template>
-                  <app-activity-card [activity]="activity" (click)="!activity.isLocked && goToActivity(activity.id)" class="activity-card"></app-activity-card>
-                    
-                </ion-item>
-              </ion-list>
-            </div>
+                </ng-template>
+                <app-activity-card [activity]="activity" (click)="!activity.isLocked && goToActivity(activity.id)" class="activity-card"></app-activity-card>
+                  
+              </ion-item>
+            </ion-list>
           </div>
         </div>
-      </ion-item>
-    </ion-list>
+      </div>
+    </ion-item>
+  </ion-list>
 </ion-content>
