@@ -3,6 +3,7 @@ import { HomeService, TodoItem } from './home.service';
 import { Router } from '@angular/router';
 import { Activity } from '../project/project.service';
 import { UtilsService } from '@services/utils.service';
+import { BrowserStorageService } from '@services/storage.service';
 
 @Component({
   selector: 'app-home',
@@ -21,7 +22,8 @@ export class HomeComponent implements OnInit {
   constructor (
     private router: Router,
     private homeService: HomeService,
-    private utils: UtilsService
+    private utils: UtilsService,
+    private storage: BrowserStorageService
   ) {}
 
   ngOnInit() {
@@ -30,13 +32,16 @@ export class HomeComponent implements OnInit {
         this.todoItems = this.todoItems.concat(todoItems);
         this.loadingTodoItems = false;
       });
-    this.homeService.getChatMessage()
-      .subscribe(chatMessage => {
-        if (!this.utils.isEmpty(chatMessage)) {
-          this.todoItems.push(chatMessage);
-        }
-        this.loadingTodoItems = false;
-      });
+    // only get the number of chats if user is in team  
+    if (this.storage.getUser().teamId) {
+      this.homeService.getChatMessage()
+        .subscribe(chatMessage => {
+          if (!this.utils.isEmpty(chatMessage)) {
+            this.todoItems.push(chatMessage);
+          }
+          this.loadingTodoItems = false;
+        });
+    }
     this.homeService.getProgress()
       .subscribe(progress => {
         this.progress = progress;
