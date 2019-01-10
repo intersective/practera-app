@@ -3,6 +3,7 @@ import { ModuleWithProviders, NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FilestackService } from './filestack.service';
 import { FilestackComponent } from './filestack.component';
+import { PreviewComponent } from './preview/preview.component';
 
 @NgModule({
   imports: [ 
@@ -13,10 +14,14 @@ import { FilestackComponent } from './filestack.component';
     FilestackService
   ],
   declarations: [
-    FilestackComponent
+    FilestackComponent,
+    PreviewComponent
   ],
   exports: [
     FilestackComponent
+  ],
+  entryComponents: [
+    PreviewComponent
   ]
 })
 

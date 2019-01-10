@@ -4,7 +4,7 @@
     <ion-text color="danger" *ngIf="question.isRequired">*</ion-text>
     <ion-text color="medium"><p><i>{{ question.description }}</i></p></ion-text>
   </ion-card-header>
-  <ion-card-content padding-horizontal class="q-content">
+  <ion-card-content padding-horizontal class="q-content" color="light">
 
     <ng-container *ngIf="submission.answer">
       <app-file-display
@@ -14,7 +14,7 @@
     </ng-container>
 
     <div *ngIf="review.answer || review.comment" class="q-reviews">
-      <ion-label class="q-title">Reviewer:</ion-label>
+      <ion-label class="q-title">Feedback</ion-label>
       <ng-container *ngIf="review.answer">
         <app-file-display
           [file]="review.answer"
@@ -22,7 +22,6 @@
         ></app-file-display>
       </ng-container>
       <ng-container *ngIf="review.comment">
-        <b>Comment</b>
         <p>{{ review.comment }}</p>
       </ng-container>
     </div>
@@ -30,6 +29,7 @@
     <ng-container *ngIf="doAssessment">
       <file-stack
         [accept]="fileTypes"
+        [fileType]="question.fileType"
         (complete)="onFileUploadCompleted($event)"
       >
       </file-stack>
@@ -47,6 +47,7 @@
       <ng-container *ngIf="question.canAnswer">
         <file-stack 
           [accept]="fileTypes"
+          [fileType]="question.fileType"
           (complete)="onFileUploadCompleted($event, 'answer')"
         >
         </file-stack>
