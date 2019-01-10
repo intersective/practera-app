@@ -24,10 +24,13 @@ export class TabsComponent {
       .subscribe(noOfTodoItems => {
         this.noOfTodoItems = noOfTodoItems;
       });
-    this.tabsService.getNoOfChats()
-      .subscribe(noOfChats => {
-        this.noOfChats = noOfChats;
-      });
+    // only get the number of chats if user is in team
+    if (this.storage.getUser().teamId) {
+      this.tabsService.getNoOfChats()
+        .subscribe(noOfChats => {
+          this.noOfChats = noOfChats;
+        });
+    }
     if (!this.storage.getUser().teamId) {
       this.showChat = false;
     }
