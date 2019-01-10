@@ -315,7 +315,7 @@ export class AssessmentService {
   }
 
   /**
-   * For each question that has choice, if there's no reviewer comment and there's an explanation of that choice, show the explanation as the reviewer comment
+   * For each question that has choice (oneof & multiple), show the choice explanation in the submission if it is not empty
    */
   private _addChoiceExplanation(submissionAnswer, submission): Submission {
     let questionId = submissionAnswer.assessment_question_id;
