@@ -32,10 +32,10 @@
 
 <ion-content>
   <ion-list class="project-list">
-    <ng-container *ngIf="loadingMilestone; else milestoneTpl">
+    <ng-container *ngIf="loadingMilestone">
       <ion-spinner></ion-spinner>
     </ng-container>  
-    <ng-template #milestoneTpl>
+    
       <ion-item *ngFor="let milestone of milestones" >
         <div color="light" class="project-card">
           <div class="milestone" padding >
@@ -73,6 +73,5 @@
           </div>
         </div>
       </ion-item>
-    </ng-template>  
-  </ion-list>
+    </ion-list>
 </ion-content>
