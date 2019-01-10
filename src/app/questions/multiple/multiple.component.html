@@ -2,7 +2,7 @@
   <ion-card-header class="q-title">
     {{ question.name }}
     <ion-text color="danger" *ngIf="question.isRequired">*</ion-text>
-    <ion-text color="medium"><p><i>{{ question.description }}</i></p></ion-text>
+    <ion-text color="medium"><p class="paragraph"><i>{{ question.description }}</i></p></ion-text>
   </ion-card-header>
   <ion-card-content padding-horizontal class="q-content" color="light">
 
@@ -13,6 +13,10 @@
           <ion-checkbox [checked]="submission.answer.includes(choice.id)" disabled mode="md"></ion-checkbox>
         </ion-item>
       </ion-list>
+      <div *ngIf="submission.explanation" class="q-reviews">
+        <ion-label class="q-title">Explanation</ion-label>
+        <p class="paragraph">{{ submission.explanation }}</p>
+      </div>
     </ng-container>
 
     <div *ngIf="review.answer || review.comment" class="q-reviews">
@@ -30,7 +34,7 @@
         </ion-list>
       </ng-container>
       <ng-container *ngIf="review.comment">
-        <p>{{ review.comment }}</p>
+        <p class="paragraph">{{ review.comment }}</p>
       </ng-container>
     </div>
 

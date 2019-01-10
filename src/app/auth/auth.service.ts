@@ -1,5 +1,5 @@
 import { Injectable } from "@angular/core";
-import { RequestService } from "@shared/request/request.service";
+import { RequestService, QueryEncoder } from "@shared/request/request.service";
 import { HttpParams } from "@angular/common/http";
 import { map } from "rxjs/operators";
 import { Observable, of } from "rxjs";
@@ -83,7 +83,9 @@ export class AuthService {
    * @param {object} { email, password } in string for each of the value
    */
   login({ email, password }): Observable<any> {
-    const body = new HttpParams()
+    const body = new HttpParams({
+        encoder: new QueryEncoder()
+      })
       .set('data[User][email]', email)
       .set('data[User][password]', password);
     return this.request.post(api.login, body.toString(), {
