@@ -356,8 +356,15 @@ export class AssessmentService {
           answer = parseInt(answer);
           break;
         case "multiple":
+          if (!Array.isArray(answer)) {
+            // re-format json string to array 
+            answer = JSON.parse(answer);
+          }
+          // re-format answer from string to number
+          answer = answer.map(value => {
+            return parseInt(value);
+          });
           break;
-
       }
     }
     return answer;
