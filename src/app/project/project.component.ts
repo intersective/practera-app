@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { ProjectService, Milestone } from './project.service';
+import { HomeService } from '../home/home.service';
 
 export interface Activity {
   id: number;
@@ -26,10 +27,12 @@ export interface Milestone {
 })
 export class ProjectComponent implements OnInit{
 
-public programName:string = "Demo Program";
+public programName:string;
+
   constructor(
     private router: Router,
-    private projectService: ProjectService
+    private projectService: ProjectService,
+    private homeService: HomeService
    ) {};
 
   public milestones: Array <Milestone> = [] ;
@@ -38,10 +41,16 @@ public programName:string = "Demo Program";
   public loadingMilestone: boolean = true;
   public loadingProgress: boolean = true;
   public activities: Array<Activity> = [];
-  public progress: number = 0;
+    public progress: number = 0;
   
     
   ngOnInit() {
+    
+    this.homeService.getProgramName()
+    .subscribe(programName => {
+      this.programName = programName;
+    });
+    
     this.projectService.getMilestones()
       .subscribe(milestones => {
         this.milestones = milestones;

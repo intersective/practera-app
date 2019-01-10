@@ -30,13 +30,13 @@
   </ion-row>
 </ion-grid>
 
-<ion-content>
-  <ion-list class="project-list">
+<ion-content class="bg-color" color="light">
+  <ion-list class="project-list" color="light">
     <ng-container *ngIf="loadingMilestone">
       <ion-spinner></ion-spinner>
     </ng-container>  
     
-      <ion-item *ngFor="let milestone of milestones" >
+      <ion-item *ngFor="let milestone of milestones" color="light">
         <div color="light" class="project-card">
           <div class="milestone" padding >
             <ion-text color="medium">MILESTONE</ion-text>
@@ -47,7 +47,7 @@
                 <ng-container *ngIf="loadingActivity" >
                   <ion-spinner></ion-spinner>
                 </ng-container>
-                <ion-item class="activity-item" *ngFor="let activity of milestone.Activity">
+                <ion-item class="activity-item" *ngFor="let activity of milestone.Activity" color="light">
                  
                   <ng-container *ngIf="loadingProgress; else progressTpl">
                     <ion-spinner></ion-spinner>
