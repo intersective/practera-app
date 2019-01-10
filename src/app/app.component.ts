@@ -28,7 +28,11 @@ export class AppComponent implements OnInit {
               this.router.navigate(['secure', searchParams.get('auth_token')]);
             }
             break;
-          
+          case "registration":
+            if (searchParams.has('key') && searchParams.has('email')) {
+              this.router.navigate(['registration', searchParams.get('email'), searchParams.get('key') ]);
+            }
+            break;
         }
       }
     }
