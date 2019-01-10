@@ -36,7 +36,7 @@
       <ion-spinner></ion-spinner>
     </ng-container>  
     
-      <ion-item *ngFor="let milestone of milestones" color="light">
+    <ion-item *ngFor="let milestone of milestones" color="light">
         <div color="light" class="project-card">
           <div class="milestone" padding >
             <ion-text color="medium">MILESTONE</ion-text>
@@ -65,7 +65,6 @@
                       <ion-icon  name="lock" color="medium" class="icon-lock"></ion-icon>
                     </ng-template>
                   </ng-template>
-                </ng-template>
                 <app-activity-card [activity]="activity" (click)="!activity.isLocked && goToActivity(activity.id)" class="activity-card"></app-activity-card>
                   
               </ion-item>
