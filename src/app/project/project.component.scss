@@ -1,6 +1,9 @@
 .project-toolbar {
   --border-width: 0px !important;
 }
+.bg-color {
+  background: var(--ion-color-light) !important;
+}
 .milestone-bar {
   list-style: none;
   margin: 0px;
