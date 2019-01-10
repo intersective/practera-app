@@ -64,7 +64,7 @@ export class ActivityComponent implements OnInit {
   }
 
   back() {
-    this.router.navigate(['app', { outlets: { project: 'project' } }]);
+    this.router.navigate(['app', 'project' ]);
   }
 
   goto(type, id) {
