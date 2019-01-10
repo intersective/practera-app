@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { ModalController } from '@ionic/angular';
-import { ModalPage } from './modal/modal.page';
 import { FastFeedbackService } from './fast-feedback.service';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { UtilsService } from '@services/utils.service';
