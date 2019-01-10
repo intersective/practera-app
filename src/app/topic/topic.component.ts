@@ -74,7 +74,7 @@ export class TopicComponent implements OnInit {
   }
 
   back() {
-    this.router.navigate(['app', { outlets: { project: ['activity', this.activityId] }}]);
+    this.router.navigate(['app', 'activity', this.activityId]);
   }
 
 }
