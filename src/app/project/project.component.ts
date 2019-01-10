@@ -38,7 +38,7 @@ public programName:string = "Demo Program";
   public loadingMilestone: boolean = true;
   public loadingProgress: boolean = true;
   public activities: Array<Activity> = [];
-  public progress;
+  public progress: number = 0;
   
     
   ngOnInit() {
