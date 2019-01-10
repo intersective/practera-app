@@ -342,7 +342,7 @@ export class AssessmentService {
         }
       });
     }
-    // put the explanation as reviewer comment
+    // put the explanation in the submission
     submission.answers[questionId].explanation = explanation;
 
     return submission;
