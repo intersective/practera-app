@@ -52,6 +52,7 @@ export interface Question {
 export interface Choice {
   id: number;
   name: string;
+  explanation?: string;
 }
 
 export interface Submission {
@@ -156,7 +157,8 @@ export class AssessmentService {
               // Here we use the AssessmentQuestionChoice.id (instead of AssessmentChoice.id) as the choice id, this is the current logic from Practera server
               choices.push({
                 id: questionChoice.id,
-                name: questionChoice.AssessmentChoice.name
+                name: questionChoice.AssessmentChoice.name,
+                explanation: this.utils.has(questionChoice, 'AssessmentChoice.explanation') ? questionChoice.AssessmentChoice.explanation : ''
               });
             });
             questions.push({
@@ -250,6 +252,8 @@ export class AssessmentService {
       status: thisSubmission.AssessmentSubmission.status,
       answers: {}
     }
+
+    //-- normalise submission answers
     if (!this.utils.has(thisSubmission, 'AssessmentSubmissionAnswer') ||
         !Array.isArray(thisSubmission.AssessmentSubmissionAnswer)
         ) {
@@ -265,8 +269,12 @@ export class AssessmentService {
       submission.answers[answer.assessment_question_id] = {
         answer: answer.answer
       };
+      if (submission.status == 'published' || submission.status == 'done') {
+        submission = this._addChoiceExplanation(answer, submission);
+      }
     });
 
+    //-- normalise reviewer answers
     let review: Review;
     // AssessmentReview is in array format, current we only support one review per submission, that's why we use AssessmentReview[0]
     if (this.utils.has(thisSubmission, 'AssessmentReview[0].id')) {
@@ -299,10 +307,45 @@ export class AssessmentService {
         };
       });
     }
+
     return {
       submission: submission,
       review: review ? review : {}
     };
+  }
+
+  /**
+   * For each question that has choice (oneof & multiple), show the choice explanation in the submission if it is not empty
+   */
+  private _addChoiceExplanation(submissionAnswer, submission): Submission {
+    let questionId = submissionAnswer.assessment_question_id;
+    let answer = submissionAnswer.answer;
+    // don't do anything if there's no choices
+    if (this.utils.isEmpty(this.questions[questionId].AssessmentQuestionChoice)) {
+      return submission;
+    }
+    let explanation = '';
+    if (Array.isArray(answer)) {
+      // multiple question
+      this.questions[questionId].AssessmentQuestionChoice.forEach(choice => {
+        // only display the explanation if it is not empty
+        if (answer.includes(choice.id) && !this.utils.isEmpty(choice.explanation)) {
+          explanation += choice.AssessmentChoice.name + ' - ' + choice.explanation + "\n";
+        }
+      });
+    } else {
+      // oneof question 
+      this.questions[questionId].AssessmentQuestionChoice.forEach(choice => {
+        // only display the explanation if it is not empty
+        if (answer === choice.id && !this.utils.isEmpty(choice.explanation)) {
+          explanation = choice.explanation;
+        }
+      });
+    }
+    // put the explanation in the submission
+    submission.answers[questionId].explanation = explanation;
+
+    return submission;
   }
 
   private _normaliseAnswer(questionId, answer) {
