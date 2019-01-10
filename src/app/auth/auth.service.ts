@@ -1,6 +1,6 @@
 import { Injectable } from "@angular/core";
-import { RequestService } from "@shared/request/request.service";
-import { HttpParams, HttpParameterCodec } from "@angular/common/http";
+import { RequestService, QueryEncoder } from "@shared/request/request.service";
+import { HttpParams } from "@angular/common/http";
 import { map } from "rxjs/operators";
 import { Observable, of } from "rxjs";
 import { BrowserStorageService } from "@services/storage.service";
@@ -39,24 +39,6 @@ interface ConfigParams {
 
 interface UserProfile {
   contactNumber: string;
-}
-
-export class QueryEncoderHelper implements HttpParameterCodec {
-    encodeKey(k: string): string {
-        return encodeURIComponent(k);
-    }
-
-    encodeValue(v: string): string {
-        return encodeURIComponent(v);
-    }
-
-    decodeKey(k: string): string {
-        return decodeURIComponent(k);
-    }
-
-    decodeValue(v: string): string {
-        return decodeURIComponent(v);
-    }
 }
 
 @Injectable({
@@ -102,7 +84,7 @@ export class AuthService {
    */
   login({ email, password }): Observable<any> {
     const body = new HttpParams({
-        encoder: new QueryEncoderHelper()
+        encoder: new QueryEncoder()
       })
       .set('data[User][email]', email)
       .set('data[User][password]', password);
