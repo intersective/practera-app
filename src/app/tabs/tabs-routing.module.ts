@@ -12,42 +12,66 @@ const routes: Routes = [
     canActivate: [AuthGuard],
     children: [
       {
-        path: '',
-        redirectTo: '/app/(home:home)',
-        pathMatch: 'full'
-      },
-      {
         path: 'home',
-        outlet: 'home',
-        loadChildren: '../home/home.module#HomeModule',
+        children: [
+          {
+            path: '',
+            loadChildren: '../home/home.module#HomeModule',
+          }
+        ]
       },
       {
         path: 'project',
-        outlet: 'project',
-        loadChildren: '../project/project.module#ProjectModule'
+        children: [
+          {
+            path: '',
+            loadChildren: '../project/project.module#ProjectModule'
+          }
+        ]
       },
       {
         path: 'activity',
-        outlet: 'project',
-        loadChildren: '../activity/activity.module#ActivityModule'
+        children: [
+          {
+            path: '',
+            loadChildren: '../activity/activity.module#ActivityModule'
+          }
+        ]
       },
       {
         path: 'reviews',
-        outlet: 'reviews',
-        loadChildren: '../reviews/reviews.module#ReviewsModule'
+        children: [
+          {
+            path: '',
+            loadChildren: '../reviews/reviews.module#ReviewsModule'
+          }
+        ]
       },
       {
         path: 'chat',
-        outlet: 'chat',
-        loadChildren: '../chat/chat.module#ChatModule',
+        children: [
+          {
+            path: '',
+            loadChildren: '../chat/chat.module#ChatModule',
+          }
+        ]
       },
       {
         path: 'settings',
-        outlet: 'settings',
-        loadChildren: '../settings/settings.module#SettingsModule'
+        children: [
+          {
+            path: '',
+            loadChildren: '../settings/settings.module#SettingsModule'
+          }
+        ]
       }
     ]
-  }
+  },
+  {
+    path: '',
+    redirectTo: '/app/(home:home)',
+    pathMatch: 'full'
+  },
 ];
 
 @NgModule({
