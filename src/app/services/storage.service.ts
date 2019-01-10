@@ -19,7 +19,7 @@ export interface User {
   timelineId?: number;
   projectId?: number;
   teamId?: number;
-  filestackHash?: string;
+  userHash?: string;
   maxAchievablePoints?: number;
   themeColor?: string;
   activityCard?: string;
