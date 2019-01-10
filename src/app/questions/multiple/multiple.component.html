@@ -13,6 +13,10 @@
           <ion-checkbox [checked]="submission.answer.includes(choice.id)" disabled mode="md"></ion-checkbox>
         </ion-item>
       </ion-list>
+      <div *ngIf="submission.explanation" class="q-reviews">
+        <ion-label class="q-title">Explanation</ion-label>
+        <p class="paragraph">{{ submission.explanation }}</p>
+      </div>
     </ng-container>
 
     <div *ngIf="review.answer || review.comment" class="q-reviews">

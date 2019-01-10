@@ -253,6 +253,27 @@ export class AssessmentService {
       answers: {}
     }
 
+    //-- normalise submission answers
+    if (!this.utils.has(thisSubmission, 'AssessmentSubmissionAnswer') ||
+        !Array.isArray(thisSubmission.AssessmentSubmissionAnswer)
+        ) {
+      return this.request.apiResponseFormatError('AssessmentSubmissionAnswer format error');
+    }
+    thisSubmission.AssessmentSubmissionAnswer.forEach(answer => {
+      if (!this.utils.has(answer, 'assessment_question_id') ||
+          !this.utils.has(answer, 'answer')
+          ) {
+        return this.request.apiResponseFormatError('AssessmentSubmissionAnswer.answer format error');
+      }
+      answer.answer = this._normaliseAnswer(answer.assessment_question_id, answer.answer);
+      submission.answers[answer.assessment_question_id] = {
+        answer: answer.answer
+      };
+      if (submission.status == 'published' || submission.status == 'done') {
+        submission = this._addChoiceExplanation(answer, submission);
+      }
+    });
+
     //-- normalise reviewer answers
     let review: Review;
     // AssessmentReview is in array format, current we only support one review per submission, that's why we use AssessmentReview[0]
@@ -287,27 +308,6 @@ export class AssessmentService {
       });
     }
 
-    //-- normalise submission answers
-    if (!this.utils.has(thisSubmission, 'AssessmentSubmissionAnswer') ||
-        !Array.isArray(thisSubmission.AssessmentSubmissionAnswer)
-        ) {
-      return this.request.apiResponseFormatError('AssessmentSubmissionAnswer format error');
-    }
-    thisSubmission.AssessmentSubmissionAnswer.forEach(answer => {
-      if (!this.utils.has(answer, 'assessment_question_id') ||
-          !this.utils.has(answer, 'answer')
-          ) {
-        return this.request.apiResponseFormatError('AssessmentSubmissionAnswer.answer format error');
-      }
-      answer.answer = this._normaliseAnswer(answer.assessment_question_id, answer.answer);
-      submission.answers[answer.assessment_question_id] = {
-        answer: answer.answer
-      };
-      if (submission.status == 'published' || submission.status == 'done') {
-        review = this._showChoiceExplanation(answer, review);
-      }
-    });
-
     return {
       submission: submission,
       review: review ? review : {}
@@ -317,20 +317,12 @@ export class AssessmentService {
   /**
    * For each question that has choice, if there's no reviewer comment and there's an explanation of that choice, show the explanation as the reviewer comment
    */
-  private _showChoiceExplanation(submissionAnswer, review): Review {
+  private _addChoiceExplanation(submissionAnswer, submission): Submission {
     let questionId = submissionAnswer.assessment_question_id;
     let answer = submissionAnswer.answer;
     // don't do anything if there's no choices
     if (this.utils.isEmpty(this.questions[questionId].AssessmentQuestionChoice)) {
-      return review;
-    }
-    // don't do anything if there's reviewer answer/comment
-    if (!this.utils.isEmpty(review) &&
-        this.utils.has(review.answers, questionId) &&
-        (!this.utils.isEmpty(review.answers[questionId].answer) ||
-          !this.utils.isEmpty(review.answers[questionId].comment))
-      ) {
-      return review;
+      return submission;
     }
     let explanation = '';
     if (Array.isArray(answer)) {
@@ -350,19 +342,10 @@ export class AssessmentService {
         }
       });
     }
-    if (this.utils.isEmpty(review)) {
-      review = {
-        id: 0,
-        answers: {}
-      }
-    }
     // put the explanation as reviewer comment
-    review.answers[questionId] = {
-      answer: null,
-      comment: explanation
-    }
+    submission.answers[questionId].explanation = explanation;
 
-    return review;
+    return submission;
   }
 
   private _normaliseAnswer(questionId, answer) {

@@ -15,6 +15,10 @@
           </ion-item>
         </ion-radio-group>
       </ion-list>
+      <div *ngIf="submission.explanation" class="q-reviews">
+        <ion-label class="q-title">Explanation</ion-label>
+        <p class="paragraph">{{ submission.explanation }}</p>
+      </div>
     </ng-container>
 
     <div *ngIf="review.answer || review.comment" class="q-reviews">
