@@ -2,6 +2,7 @@ import { TopicService, Topic } from './topic.service';
 import { Component, OnInit } from '@angular/core';
 import { EmbedVideoService } from 'ngx-embed-video';
 import { Router, ActivatedRoute } from '@angular/router';
+import { FilestackService } from '@shared/filestack/filestack.service';
 
 @Component({
   selector: 'app-topic',
@@ -29,6 +30,7 @@ export class TopicComponent implements OnInit {
     private embedService: EmbedVideoService,
     private router: Router,
     private route: ActivatedRoute,
+    private filestackService: FilestackService
   ) {}
 
   ngOnInit() {
@@ -36,7 +38,7 @@ export class TopicComponent implements OnInit {
     this.activityId = parseInt(this.route.snapshot.paramMap.get('activityId'));
     this._getTopic();
     this._getTopicProgress();
-   }
+  }
 
   private _getTopic() {
     this.topicService.getTopic(this.id)
@@ -62,17 +64,17 @@ export class TopicComponent implements OnInit {
       });
    }
 
-  markAsDone () {
+  markAsDone() {
     this.btnToggleTopicIsDone = true;
     this.topicService.updateTopicProgress(this.id).subscribe();
   }
   
-  previewFile () {
-    console.log('show the file');
+  previewFile(file) {
+    this.filestackService.previewFile(file);
   }
 
   back() {
-    this.router.navigate(['app', { outlets: { project: ['activity', this.activityId] }}]);
+    this.router.navigate(['app', 'activity', this.activityId]);
   }
 
 }
