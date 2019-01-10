@@ -73,7 +73,7 @@ export class HomeComponent implements OnInit {
   }
 
   goToActivity(id) {
-    this.router.navigateByUrl('app/(project:activity/' + id + ')');
+    this.router.navigateByUrl('app/activity/' + id);
   }
 
   goToAssessment(activityId, contextId, assessmentId) {
