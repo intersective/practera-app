@@ -11,6 +11,7 @@ import { BrowserStorageService } from '@services/storage.service';
  * @type {Object}
  */
 const api = {
+  me: "api/users.json",
   teams: 'api/teams.json'
 };
 
@@ -74,6 +75,11 @@ export class SwitcherService {
       themeColor: this.utils.has(programObj, 'program.config.theme_color') ? programObj.program.config.theme_color : '',
       activityCard: this.utils.has(programObj, 'program.config.card_style') ? programObj.program.config.card_style : ''      
     });
+    this._getTeamInfo().subscribe();
+    return this._getMyInfo();
+  }
+
+  private _getTeamInfo(): Observable<any> {
     return this.request.get(api.teams)
       .pipe(map(response => {
         if (response.success && response.data) {
@@ -93,4 +99,31 @@ export class SwitcherService {
     );
   }
   
+  /**
+   * @name _getMyInfo
+   * @description get user info
+   */
+  private _getMyInfo(): Observable<any> {
+    return this.request.get(api.me).pipe(map(response => {
+      if (response.data) {
+        if (!this.utils.has(response, 'data.User')) {
+          return this.request.apiResponseFormatError('User format error');
+        }
+        const apiData = response.data.User;
+        this.storage.setUser({
+          name: apiData.name,
+          contactNumber: apiData.contact_number,
+          email: apiData.email,
+          role: apiData.role,
+          image: apiData.image,
+          linkedinConnected: apiData.linkedinConnected,
+          linkedinUrl: apiData.linkedin_url,
+          userHash: apiData.userhash,
+          maxAchievablePoints: this.utils.has(apiData, 'max_achievable_points') ? apiData.max_achievable_points : null
+        });
+      }
+      return response;
+    }));
+  }
+
 }

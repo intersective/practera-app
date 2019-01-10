@@ -11,3 +11,9 @@ Run `npm run start` to start a development server on your local, and calling san
 
 Run `npm run local` to start a development server on your local, and calling 127.0.0.1:8080 for API
 
+## External link format
+Direct link login 
+
+`*.com?do=secure&auth_token=***`
+
+
