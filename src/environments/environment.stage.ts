@@ -1,6 +1,6 @@
 export const environment = {
-  production: false,
-  APIEndpoint: 'http://127.0.0.1:8080/',
+  production: true,
+  APIEndpoint: 'https://stage-test.practera.com/',
   filestack: {
     key: 'AO6F4C72uTPGRywaEijdLz',
     s3Config: {
