@@ -30,6 +30,7 @@ export class AssessmentComponent implements OnInit {
     groups: [
       {
         name: '',
+        description: '',
         questions: [
           {
             id: 0,
@@ -63,6 +64,7 @@ export class AssessmentComponent implements OnInit {
   doReview: boolean = false;
   feedbackReviewed: boolean = false;
   loadingFeedbackReviewed: boolean = true;
+  loadingAssessment: boolean = true;
   questionsForm = new FormGroup({});
   submitting: boolean = false;
 
@@ -89,6 +91,7 @@ export class AssessmentComponent implements OnInit {
         if (this.assessment.isForTeam && !this.storage.getUser().teamId) {
           return this.notificationService.popUp('shortMessage', {message: 'To do this assessment, you have to be in a team.'}, ['app', 'activity', this.activityId ]);
         }
+        this.loadingAssessment = false;
         this._getSubmission();
       });
 
