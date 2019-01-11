@@ -1,9 +1,6 @@
 .project-toolbar {
   --border-width: 0px !important;
 }
-.bg-color {
-  background: var(--ion-color-light) !important;
-}
 .milestone-bar {
   list-style: none;
   margin: 0px;
@@ -11,7 +8,7 @@
   border-bottom: 0.5px solid var( --ion-color-light-shade);
   top: 44px;
   height: 54px;
-  
+
   .bubbles-top {
     padding-top: 3px;
     text-align: center;
@@ -22,7 +19,6 @@
       font-size: 31px;
     }
   }
-  
 }
 
 .project-list {
@@ -36,7 +32,7 @@
       font-size: 14px;
     }
   }
-} 
+}
 .project-title {
   color: var(--practera-milestone-name-font-color);
   text-transform: capitalize;
