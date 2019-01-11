@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { Router, ActivatedRoute, ParamMap } from '@angular/router';
 import { switchMap } from 'rxjs/operators';
 import { Observable } from 'rxjs';
@@ -12,7 +12,7 @@ import { BrowserStorageService } from '@services/storage.service';
   templateUrl: './activity.component.html',
   styleUrls: ['./activity.component.scss']
 })
-export class ActivityComponent implements OnInit {
+export class ActivityComponent {
 
   id: number;
   activity: Activity = {
@@ -32,7 +32,7 @@ export class ActivityComponent implements OnInit {
     private storage: BrowserStorageService
   ) { }
 
-  ngOnInit() {
+  ionViewDidEnter() {
     this.id = parseInt(this.route.snapshot.paramMap.get('id'));
     this._getActivity();
   }
