@@ -7,18 +7,23 @@
 <ion-content padding color="light" text-center>
   <h1>{{ assessment.name }}</h1>
   <ion-text color="medium" text-left>
-    <p>{{ assessment.description }}</p>
+    <p [innerHtml]="assessment.description"></p>
   </ion-text>
 
   <form [formGroup]="questionsForm">
-
+    <ng-container *ngIf="loadingAssessment">
+      <ion-spinner></ion-spinner>
+    </ng-container>
     <ng-container *ngFor="let group of assessment.groups">
       <h3>{{ group.name }}</h3>
+      <ion-text color="medium" text-left>
+        <p [innerHtml]="group.description"></p>
+      </ion-text>
       <ng-container *ngFor="let question of group.questions">
 
         <ng-container [ngSwitch]="question.type">
 
-          <app-text 
+          <app-text
             *ngSwitchCase="'text'"
             [question]="question"
             [doAssessment]="doAssessment"
@@ -29,7 +34,7 @@
             [control]="questionsForm.controls['q-' + question.id]"
           ></app-text>
 
-          <app-oneof 
+          <app-oneof
             *ngSwitchCase="'oneof'"
             [question]="question"
             [doAssessment]="doAssessment"
@@ -40,7 +45,7 @@
             [control]="questionsForm.controls['q-' + question.id]"
           ></app-oneof>
 
-          <app-multiple 
+          <app-multiple
             *ngSwitchCase="'multiple'"
             [question]="question"
             [doAssessment]="doAssessment"
@@ -51,7 +56,7 @@
             [control]="questionsForm.controls['q-' + question.id]"
           ></app-multiple>
 
-          <app-file 
+          <app-file
             *ngSwitchCase="'file'"
             [question]="question"
             [doAssessment]="doAssessment"
@@ -78,7 +83,7 @@
         <ion-toggle [checked]="feedbackReviewed" [disabled]="feedbackReviewed" (ionChange)="reviewFeedback()" margin-start class="vertical-middle"></ion-toggle>
       </ng-container>
       <ng-template #spinnerTmpl><ion-spinner name="dots" class="vertical-middle"></ion-spinner></ng-template>
-      
+
     </div>
 
   </form>

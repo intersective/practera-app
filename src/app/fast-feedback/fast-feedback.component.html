@@ -1,0 +1,21 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Instant Feedback</ion-title>
+  </ion-toolbar>
+</ion-header>
+<ion-content>
+  <div text-center>
+    <p>Before you continue, please spend 10 seconds to answer these questions.</p>
+  </div>
+
+  <form (ngSubmit)="submit()" [formGroup]="fastFeedbackForm">
+    <ng-container *ngFor="let question of questions">
+      <question [question]="question" [form]="fastFeedbackForm"></question>
+    </ng-container>
+
+    <div text-center>
+      <ion-button type="submit" [disabled]="fastFeedbackForm.invalid || loading">Submit</ion-button>
+    </div>
+  </form>
+
+</ion-content>
