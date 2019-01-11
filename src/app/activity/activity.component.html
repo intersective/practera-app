@@ -31,7 +31,7 @@
             <h4>{{ task.name }}</h4>
             <p>
               <ion-text *ngIf="task.type != 'Locked'" [color]="task.status == 'feedback available' ? 'primary' : 'medium'">
-                {{ task.type }} 
+                {{ task.type }}
                 <ng-container *ngIf="!task.loadingStatus; else spinner">{{ task.status }}</ng-container>
                 <ng-template #spinner><ion-spinner name="dots" class="vertical-middle"></ion-spinner></ng-template>
               </ion-text>
