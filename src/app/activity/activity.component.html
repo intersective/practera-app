@@ -6,8 +6,11 @@
 </ion-header>
 
 <ion-content padding color="light" text-center>
+  <ng-container *ngIf="loadingActivity">
+    <ion-spinner></ion-spinner>
+  </ng-container>
   <h1>{{ activity.name }}</h1>
-  <p>{{ activity.description }}</p>
+  <p [innerHtml]="activity.description"></p>
   <ion-label color="medium" text-left padding-top class="label">
     Tasks
   </ion-label>
