@@ -2,7 +2,7 @@
   <ion-card-header class="q-title">
     {{ question.name }}
     <ion-text color="danger" *ngIf="question.isRequired">*</ion-text>
-    <ion-text color="medium"><p class="paragraph"><i>{{ question.description }}</i></p></ion-text>
+    <ion-text color="medium"><p class="paragraph"><i [innerHtml]="question.description"></i></p></ion-text>
   </ion-card-header>
   <ion-card-content padding-horizontal class="q-content" color="light">
 
