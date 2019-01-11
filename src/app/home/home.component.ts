@@ -34,7 +34,7 @@ export class HomeComponent implements OnInit {
   ngOnInit() {
     this.onEnter();
     this.subscription = this.router.events.subscribe(event => {
-      if (event instanceof NavigationEnd) {
+      if (event instanceof NavigationEnd && event.url == 'app/home') {
         this.onEnter()
       }
     });
