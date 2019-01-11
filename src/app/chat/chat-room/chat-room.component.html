@@ -18,7 +18,7 @@
             <p>{{message.sent_time}}</p>
           </div>
           <div class="message-body">
-            <p [innerHTML]="message.message | linkify"></p>
+            <p class="message-text" [innerHTML]="message.message | linkify"></p>
           </div>
           <ng-container *ngIf="message.sender_name && !message.is_sender">
             <div class="seen-text">
