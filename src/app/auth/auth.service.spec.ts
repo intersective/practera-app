@@ -49,8 +49,8 @@ describe('AuthService', () => {
 		expect(service.connectToLinkedIn).toBeDefined();
 	});
 	
-	it('#directLink should', () => {
-		expect(service.directLink).toBeDefined();
+	it('#contactNumberLogin should', () => {
+		expect(service.contactNumberLogin).toBeDefined();
 	});
 	
 	it('#getConfig should', () => {
