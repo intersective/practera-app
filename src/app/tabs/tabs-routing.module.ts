@@ -64,12 +64,17 @@ const routes: Routes = [
             loadChildren: '../settings/settings.module#SettingsModule'
           }
         ]
+      },
+      {
+        path: '',
+        redirectTo: '/app/home',
+        pathMatch: 'full'
       }
     ]
   },
   {
     path: '',
-    redirectTo: '/app/(home:home)',
+    redirectTo: '/app/home',
     pathMatch: 'full'
   },
 ];
