@@ -1,8 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { HomeService, TodoItem } from './home.service';
 import { Router } from '@angular/router';
+import { FastFeedbackService } from '../fast-feedback/fast-feedback.service';
 import { Activity } from '../project/project.service';
 import { UtilsService } from '@services/utils.service';
+import { Subscription } from 'rxjs';
 import { BrowserStorageService } from '@services/storage.service';
 
 @Component({
@@ -18,10 +20,12 @@ export class HomeComponent implements OnInit {
   loadingTodoItems: boolean = true;
   activity: Activity;
   loadingActivity: boolean = true;
+  subscriptions: Subscription[] = [];
 
   constructor (
     private router: Router,
     private homeService: HomeService,
+    private fastFeedbackService: FastFeedbackService,
     private utils: UtilsService,
     private storage: BrowserStorageService
   ) {}
@@ -60,6 +64,18 @@ export class HomeComponent implements OnInit {
       });
   };
 
+  ionViewDidEnter() {
+    const fastFeedback = this.fastFeedbackService.getFastFeedback().subscribe(res => {
+      // popup instant feedback view if question quantity found > 0
+      if (res.data && res.data.length > 0) {
+        return this.fastFeedbackService.popUp({
+          questions: res.data,
+        });
+      }
+    });
+    this.subscriptions.push(fastFeedback);
+  }
+
   goToActivity(id) {
     this.router.navigateByUrl('app/activity/' + id);
   }
@@ -73,6 +89,10 @@ export class HomeComponent implements OnInit {
   }
 
   goToChat() {
-    this.router.navigateByUrl('app/(chat:chat)');
+    this.router.navigateByUrl('app/chat');
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.forEach(subscription => subscription.unsubscribe());
   }
 }

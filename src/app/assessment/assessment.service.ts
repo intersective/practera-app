@@ -34,6 +34,7 @@ export interface Assessment {
 
 export interface Group {
   name: string;
+  description: string;
   questions: Array<Question>;
 }
 
@@ -203,10 +204,13 @@ export class AssessmentService {
         }
 
       })
-      assessment.groups.push({
-        name: group.name,
-        questions: questions
-      });
+      if (!this.utils.isEmpty(questions)) {
+        assessment.groups.push({
+          name: group.name,
+          description: group.description,
+          questions: questions
+        });
+      }
     });
     return assessment;
   }
@@ -334,7 +338,7 @@ export class AssessmentService {
         }
       });
     } else {
-      // oneof question 
+      // oneof question
       this.questions[questionId].AssessmentQuestionChoice.forEach(choice => {
         // only display the explanation if it is not empty
         if (answer === choice.id && !this.utils.isEmpty(choice.explanation)) {
