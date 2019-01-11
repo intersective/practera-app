@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { ProjectService, Milestone } from './project.service';
 import { HomeService } from '../home/home.service';
+import { RouterEnter } from '@services/router-enter.service';
 
 export interface Activity {
   id: number;
@@ -25,22 +26,32 @@ export interface Milestone {
   templateUrl: 'project.component.html',
   styleUrls: ['project.component.scss']
 })
-export class ProjectComponent {
+export class ProjectComponent extends RouterEnter {
 
-  public programName:string;
-
-  constructor(
-    private router: Router,
-    private projectService: ProjectService,
-    private homeService: HomeService
-   ) {}
-
+  public routeUrl: string = '/app/project';
+  public programName: string;
   public milestones: Array<Milestone> = [];
   public loadingActivity: boolean = true;
   public loadingMilestone: boolean = true;
   public loadingProgress: boolean = true;
 
-  ionViewDidEnter() {
+  constructor(
+    public router: Router,
+    private projectService: ProjectService,
+    private homeService: HomeService
+   ) {
+    super(router);
+  }
+
+  private _initialise() {
+    this.milestones = [];
+    this.loadingActivity = true;
+    this.loadingMilestone = true;
+    this.loadingProgress = true;
+  }
+
+  onEnter() {
+    this._initialise();
     this.homeService.getProgramName().subscribe(programName => {
       this.programName = programName;
     });
