@@ -6,8 +6,8 @@ import linkifyStr from 'linkifyjs/string';
 })
 export class LinkifyPipe implements PipeTransform {
 
-  transform(value: string, target: string, args?: any): any {
-    return value ? linkifyStr(value, {target: target}) : value;
+  transform(value: string, args?: any): any {
+    return value ? linkifyStr(value, {target: '_blank'}) : value;
   }
 
 }

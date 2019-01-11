@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
 import { FormsModule } from '@angular/forms';
 import { ActivityCardComponent } from '@shared/components/activity-card/activity-card.component';
-import { LinkifyPipe } from './pipes/linkify/linkify.pipe';
 
 @NgModule({
   imports: [
@@ -11,8 +10,7 @@ import { LinkifyPipe } from './pipes/linkify/linkify.pipe';
     CommonModule,
   ],
   declarations: [
-    ActivityCardComponent,
-    LinkifyPipe
+    ActivityCardComponent
   ],
   exports: [
     ActivityCardComponent,
