@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { ProjectService, Milestone } from './project.service';
 import { HomeService } from '../home/home.service';
@@ -25,7 +25,7 @@ export interface Milestone {
   templateUrl: 'project.component.html',
   styleUrls: ['project.component.scss']
 })
-export class ProjectComponent implements OnInit {
+export class ProjectComponent {
 
   public programName:string;
 
@@ -40,7 +40,7 @@ export class ProjectComponent implements OnInit {
   public loadingMilestone: boolean = true;
   public loadingProgress: boolean = true;
 
-  ngOnInit() {
+  ionViewDidEnter() {
     this.homeService.getProgramName().subscribe(programName => {
       this.programName = programName;
     });
