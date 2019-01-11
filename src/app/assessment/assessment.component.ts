@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { Router, ActivatedRoute, ParamMap } from '@angular/router';
 import { AssessmentService, Assessment, Submission, Review } from './assessment.service';
 import { UtilsService } from '../services/utils.service';
@@ -11,7 +11,7 @@ import { BrowserStorageService } from '@services/storage.service';
   templateUrl: 'assessment.component.html',
   styleUrls: ['assessment.component.scss']
 })
-export class AssessmentComponent implements OnInit {
+export class AssessmentComponent {
 
   // assessment id
   id: number;
@@ -77,7 +77,7 @@ export class AssessmentComponent implements OnInit {
     private storage: BrowserStorageService,
   ) {}
 
-  ngOnInit() {
+  ionViewDidEnter() {
     this.action = this.route.snapshot.data.action;
     this.id = parseInt(this.route.snapshot.paramMap.get('id'));
     this.activityId = parseInt(this.route.snapshot.paramMap.get('activityId'));
@@ -94,7 +94,6 @@ export class AssessmentComponent implements OnInit {
         this.loadingAssessment = false;
         this._getSubmission();
       });
-
   };
 
   // get the submission answers &/| review answers
