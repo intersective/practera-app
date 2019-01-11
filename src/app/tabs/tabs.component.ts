@@ -7,6 +7,7 @@ import { BrowserStorageService } from '@services/storage.service';
   templateUrl: 'tabs.component.html',
   styleUrls: ['tabs.component.scss']
 })
+
 export class TabsComponent {
 	showReview = false;
   showChat = true;
