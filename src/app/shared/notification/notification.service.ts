@@ -18,11 +18,13 @@ export class NotificationService {
    * @name modalConfig
    * @description futher customised filter
    */
-  private modalConfig({ component, componentProps }) {
-    return {
+  private modalConfig({ component, componentProps }, options = {}) {
+    const config = Object.assign({
       component,
       componentProps,
-    };
+    }, options);
+
+    return config;
   }
 
   // show pop up message
@@ -39,8 +41,8 @@ export class NotificationService {
     return modal;
   }
 
-  async modal(component, componentProps) {
-    const modal = await this.modalController.create(this.modalConfig({ component, componentProps }));
+  async modal(component, componentProps, options?) {
+    const modal = await this.modalController.create(this.modalConfig({ component, componentProps }, options));
     return await modal.present();
   }
 
