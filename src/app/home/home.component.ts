@@ -19,7 +19,6 @@ export class HomeComponent implements OnInit {
   todoItems: Array<TodoItem> = [];
   loadingTodoItems: boolean = true;
   activity: Activity;
-  questions:any[] = [];
   loadingActivity: boolean = true;
   subscriptions: Subscription[] = [];
 
@@ -90,7 +89,7 @@ export class HomeComponent implements OnInit {
   }
 
   goToChat() {
-    this.router.navigateByUrl('app/(chat:chat)');
+    this.router.navigateByUrl('app/chat');
   }
 
   ngOnDestroy(): void {
