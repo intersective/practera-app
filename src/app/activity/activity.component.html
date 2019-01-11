@@ -6,8 +6,11 @@
 </ion-header>
 
 <ion-content padding color="light" text-center>
+  <ng-container *ngIf="loadingActivity">
+    <ion-spinner></ion-spinner>
+  </ng-container>
   <h1>{{ activity.name }}</h1>
-  <p>{{ activity.description }}</p>
+  <p [innerHtml]="activity.description"></p>
   <ion-label color="medium" text-left padding-top class="label">
     Tasks
   </ion-label>
@@ -31,7 +34,7 @@
             <h4>{{ task.name }}</h4>
             <p>
               <ion-text *ngIf="task.type != 'Locked'" [color]="task.status == 'feedback available' ? 'primary' : 'medium'">
-                {{ task.type }} 
+                {{ task.type }}
                 <ng-container *ngIf="!task.loadingStatus; else spinner">{{ task.status }}</ng-container>
                 <ng-template #spinner><ion-spinner name="dots" class="vertical-middle"></ion-spinner></ng-template>
               </ion-text>

@@ -14,7 +14,8 @@
           <p>{{todoItem.description}}</p>
         </ion-text>  
       </div>
-      <ion-text float-right color="medium" class="time-stamp">{{todoItem.time}}</ion-text> 
+      <ion-text color="medium" class="time-stamp">{{todoItem.time}}</ion-text>
+      <ion-icon class="ending-arrow" name="arrow-forward" color="primary" slot="end"></ion-icon>
     </ng-container>
 
     <ng-template #noItems>

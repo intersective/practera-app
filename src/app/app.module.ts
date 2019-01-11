@@ -7,6 +7,8 @@ import { AppRoutingModule } from './app-routing.module';
 import { RequestModule } from '@shared/request/request.module';
 import { NotificationModule } from '@shared/notification/notification.module';
 import { AuthModule } from './auth/auth.module';
+import { FastFeedbackModule } from './fast-feedback/fast-feedback.module';
+
 import { AppComponent } from './app.component';
 import { NgCircleProgressModule } from 'ng-circle-progress';
 import { UtilsService } from './services/utils.service';
@@ -30,7 +32,8 @@ import { environment } from '../environments/environment';
     AppRoutingModule,
     NgCircleProgressModule,
     EmbedVideo.forRoot(),
-    NotificationModule
+    NotificationModule,
+    FastFeedbackModule,
   ],
   providers: [
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },

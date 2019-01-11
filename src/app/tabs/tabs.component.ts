@@ -7,6 +7,7 @@ import { BrowserStorageService } from '@services/storage.service';
   templateUrl: 'tabs.component.html',
   styleUrls: ['tabs.component.scss']
 })
+
 export class TabsComponent {
 	showReview = false;
   showChat = true;
@@ -23,10 +24,13 @@ export class TabsComponent {
       .subscribe(noOfTodoItems => {
         this.noOfTodoItems = noOfTodoItems;
       });
-    this.tabsService.getNoOfChats()
-      .subscribe(noOfChats => {
-        this.noOfChats = noOfChats;
-      });
+    // only get the number of chats if user is in team
+    if (this.storage.getUser().teamId) {
+      this.tabsService.getNoOfChats()
+        .subscribe(noOfChats => {
+          this.noOfChats = noOfChats;
+        });
+    }
     if (!this.storage.getUser().teamId) {
       this.showChat = false;
     }
