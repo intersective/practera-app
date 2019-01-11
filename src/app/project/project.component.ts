@@ -25,91 +25,70 @@ export interface Milestone {
   templateUrl: 'project.component.html',
   styleUrls: ['project.component.scss']
 })
-export class ProjectComponent implements OnInit{
+export class ProjectComponent implements OnInit {
 
-public programName:string;
+  public programName:string;
 
   constructor(
     private router: Router,
     private projectService: ProjectService,
     private homeService: HomeService
-   ) {};
+   ) {}
 
-  public milestones: Array <Milestone> = [] ;
-  public milestonesIds: Array<number> =[];
+  public milestones: Array<Milestone> = [];
   public loadingActivity: boolean = true;
   public loadingMilestone: boolean = true;
   public loadingProgress: boolean = true;
-  public activities: Array<Activity> = [];
-    public progress: number = 0;
-  
-    
+
   ngOnInit() {
-    
-    this.homeService.getProgramName()
-    .subscribe(programName => {
+    this.homeService.getProgramName().subscribe(programName => {
       this.programName = programName;
     });
-    
+
     this.projectService.getMilestones()
       .subscribe(milestones => {
         this.milestones = milestones;
         this.loadingMilestone = false;
-        this.milestonesIds = this.projectService.getMilestoneIds(this.milestones);
-        this.projectService.getActivities(this.milestonesIds)
-          .subscribe(activities => { 
-            this.activities = activities;
-            this.milestones = this.addActivitiesToEachMilestone(this.milestones, this.activities);
+        this.projectService.getActivities(milestones)
+          .subscribe(activities => {
+            this.milestones = this._addActivitiesToEachMilestone(this.milestones, activities);
             this.loadingActivity = false;
-            this.projectService.getProgress(this.milestones).subscribe(
-              progress => {
-                this.progress = progress;
-                this.milestoneProgress(progress,this.milestones);
-                this.loadingProgress = false;
-              }
-            );
+            this.projectService.getProgress(this.milestones).subscribe(progresses => {
+              this.milestones = this._populateMilestoneProgress(progresses, this.milestones);
+              this.loadingProgress = false;
+            });
           });
       });
   }
 
   goToActivity(id) {
-    this.router.navigateByUrl('app/(project:activity/' + id + ')');
+    this.router.navigate(['app', 'activity', id]);
   }
 
-  addActivitiesToEachMilestone(milestones,activities) {
-    let findMilestone: Milestone = {
-      id: 0,
-      name: '',
-      description: '',
-      isLocked: false,
-      progress: 0,
-      Activity:[]
-    };
-    activities.forEach(function (activity) {
-      findMilestone = milestones.find(function (milestonWithThisId) {
-        return milestonWithThisId.id === activity.milestoneId
-      })
-      findMilestone.Activity.push(activity);
+  private _addActivitiesToEachMilestone(milestones, activities) {
+    activities.forEach(activity => {
+      let milestoneIndex = milestones.findIndex(milestone => {
+        return milestone.id === activity.milestoneId
+      });
+      milestones[milestoneIndex].Activity.push(activity);
     });
-  
     return milestones;
   }
 
-  milestoneProgress(progress,milestones) {
-    
-    progress.Milestone.forEach(function(eachMilestone){ 
-      let findMilestone = milestones.find(function (milestone) {
-       return milestone.id === eachMilestone.id
+  private _populateMilestoneProgress(progresses, milestones) {
+    progresses.Milestone.forEach(milestoneProgress => {
+      let milestoneIndex = milestones.findIndex(milestone => {
+        return milestone.id === milestoneProgress.id
       });
 
-    findMilestone.progress = eachMilestone.progress;
-    findMilestone.Activity.forEach(function(activity){
-      var findActivityWithThisId = eachMilestone.Activity.find(function(item) {
-        return item.id === activity.id;
-      })
-      activity.progress = findActivityWithThisId.progress;
+      milestones[milestoneIndex].progress = milestoneProgress.progress;
+      milestones[milestoneIndex].Activity.forEach((activity, activityIndex) => {
+        var thisActivity = milestoneProgress.Activity.find(item => {
+          return item.id === activity.id;
+        })
+        milestones[milestoneIndex].Activity[activityIndex].progress = thisActivity.progress;
       });
-    })
+    });
+    return milestones;
   }
-    
-  }
+}
