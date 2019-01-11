@@ -32,7 +32,7 @@ export class HomeComponent implements OnInit {
         this.todoItems = this.todoItems.concat(todoItems);
         this.loadingTodoItems = false;
       });
-    // only get the number of chats if user is in team  
+    // only get the number of chats if user is in team
     if (this.storage.getUser().teamId) {
       this.homeService.getChatMessage()
         .subscribe(chatMessage => {
@@ -48,7 +48,7 @@ export class HomeComponent implements OnInit {
         this.loadingProgress = false;
         this.homeService.getCurrentActivity()
           .subscribe(activity => {
-            if (!this.utils.isEmpty(activity)) {
+            if (activity.id) {
               this.activity = activity;
               this.loadingActivity = false;
             }
