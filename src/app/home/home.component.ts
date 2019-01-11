@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { HomeService, TodoItem } from './home.service';
 import { Router, NavigationEnd } from '@angular/router';
 import { FastFeedbackService } from '../fast-feedback/fast-feedback.service';
@@ -6,13 +6,15 @@ import { Activity } from '../project/project.service';
 import { UtilsService } from '@services/utils.service';
 import { Subscription } from 'rxjs';
 import { BrowserStorageService } from '@services/storage.service';
+import { RouterEnter } from '@services/router-enter.service';
 
 @Component({
   selector: 'app-home',
   templateUrl: 'home.component.html',
   styleUrls: ['home.component.scss']
 })
-export class HomeComponent implements OnInit {
+export class HomeComponent extends RouterEnter {
+  routeUrl: string = '/app/home';
   progress: number = 0;
   loadingProgress: boolean = true;
   programName: string;
@@ -21,33 +23,26 @@ export class HomeComponent implements OnInit {
   activity: Activity;
   loadingActivity: boolean = true;
   subscriptions: Subscription[] = [];
-  subscription: Subscription;
 
   constructor (
-    private router: Router,
+    public router: Router,
     private homeService: HomeService,
     private fastFeedbackService: FastFeedbackService,
     private utils: UtilsService,
     private storage: BrowserStorageService
-  ) {}
-
-  ngOnInit() {
-    this.onEnter();
-    this.subscription = this.router.events.subscribe(event => {
-      if (event instanceof NavigationEnd && event.url == 'app/home') {
-        this.onEnter()
-      }
-    });
+  ) {
+    super(router);
   }
 
-  private _initialisation() {
-    // initialise todoItems array
+  private _initialise() {
     this.todoItems = [];
     this.loadingTodoItems = true;
+    this.loadingProgress = true;
+    this.loadingActivity = true;
   }
 
   onEnter() {
-    this._initialisation();
+    this._initialise();
     this.subscriptions.push(
       this.homeService.getTodoItems()
         .subscribe(todoItems => {
@@ -116,6 +111,5 @@ export class HomeComponent implements OnInit {
 
   ngOnDestroy(): void {
     this.subscriptions.forEach(subscription => subscription.unsubscribe());
-    this.subscription.unsubscribe();
   }
 }

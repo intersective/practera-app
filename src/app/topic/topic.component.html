@@ -5,17 +5,18 @@
   </ion-toolbar>
 </ion-header>
 <ion-content color="light">
+  <div text-center margin-top *ngIf="loadingTopic">
+    <ion-spinner></ion-spinner>
+  </div>
   <h3 text-center>{{topic.title}}</h3>
-
     <div *ngIf="topic.videolink && topic.videolink !=='magiclink'" class="text-center" padding-bottom>
       <div text-center padding [innerHtml]="iframeHtml"></div>
     </div>
-    <ion-card *ngIf="topic.content" [innerHtml]="topic.content" padding>
-    </ion-card>
-    
+    <ion-card *ngIf="topic.content" [innerHtml]="topic.content" padding></ion-card>
+
     <div *ngIf="topic.files.length > 0"  color="light" >
       <label padding>Supporting Downloads</label>
-      
+
       <div *ngFor="let file of topic.files" padding class="topic-icons">
         <ion-grid >
           <ion-row>
@@ -38,7 +39,7 @@
       <ng-container *ngIf="!loadingMarkedDone; else spinnerTmpl">
         <ion-toggle  [checked]="btnToggleTopicIsDone" (ionChange)="markAsDone()" [disabled]="btnToggleTopicIsDone"  class="vertical-middle" ></ion-toggle>
       </ng-container>
-      <ng-template #spinnerTmpl><ion-spinner name="dots" class="vertical-middle"></ion-spinner></ng-template>  
+      <ng-template #spinnerTmpl><ion-spinner name="dots" class="vertical-middle"></ion-spinner></ng-template>
     </div>
 
 </ion-content>

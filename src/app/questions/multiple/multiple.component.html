@@ -1,67 +1,56 @@
-<ion-card class="practera-card" text-left>
-  <ion-card-header class="q-title">
-    {{ question.name }}
-    <ion-text color="danger" *ngIf="question.isRequired">*</ion-text>
-    <ion-text color="medium"><p class="paragraph"><i [innerHtml]="question.description"></i></p></ion-text>
-  </ion-card-header>
-  <ion-card-content padding-horizontal class="q-content" color="light">
+<ng-container *ngIf="submission.answer">
+  <ion-list>
+    <ion-item *ngFor="let choice of question.choices" color="light">
+      <ion-label>{{ choice.name }}</ion-label>
+      <ion-checkbox [checked]="submission.answer.includes(choice.id)" disabled mode="md"></ion-checkbox>
+    </ion-item>
+  </ion-list>
+  <div *ngIf="submission.explanation" class="q-reviews">
+    <ion-label class="q-title">Explanation</ion-label>
+    <p class="paragraph">{{ submission.explanation }}</p>
+  </div>
+</ng-container>
 
-    <ng-container *ngIf="submission.answer">
-      <ion-list>
-        <ion-item *ngFor="let choice of question.choices" color="light">
-          <ion-label>{{ choice.name }}</ion-label>
-          <ion-checkbox [checked]="submission.answer.includes(choice.id)" disabled mode="md"></ion-checkbox>
-        </ion-item>
-      </ion-list>
-      <div *ngIf="submission.explanation" class="q-reviews">
-        <ion-label class="q-title">Explanation</ion-label>
-        <p class="paragraph">{{ submission.explanation }}</p>
-      </div>
-    </ng-container>
-
-    <div *ngIf="review.answer || review.comment" class="q-reviews">
-      <ion-label class="q-title">Feedback</ion-label>
-      <ng-container *ngIf="review.answer">
-        <ion-list>
-          <ng-container *ngFor="let choice of question.choices">
-            <ng-container *ngIf="review.answer.includes(choice.id)">
-              <ion-item color="light">
-                <ion-label>{{ choice.name }}</ion-label>
-                <ion-checkbox checked disabled mode="md"></ion-checkbox>
-              </ion-item>
-            </ng-container>
-          </ng-container>
-        </ion-list>
+<div *ngIf="review.answer || review.comment" class="q-reviews">
+  <ion-label class="q-title">Feedback</ion-label>
+  <ng-container *ngIf="review.answer">
+    <ion-list>
+      <ng-container *ngFor="let choice of question.choices">
+        <ng-container *ngIf="review.answer.includes(choice.id)">
+          <ion-item color="light">
+            <ion-label>{{ choice.name }}</ion-label>
+            <ion-checkbox checked disabled mode="md"></ion-checkbox>
+          </ion-item>
+        </ng-container>
       </ng-container>
-      <ng-container *ngIf="review.comment">
-        <p class="paragraph">{{ review.comment }}</p>
-      </ng-container>
-    </div>
+    </ion-list>
+  </ng-container>
+  <ng-container *ngIf="review.comment">
+    <p class="paragraph">{{ review.comment }}</p>
+  </ng-container>
+</div>
 
-    <ng-container *ngIf="doAssessment">
-      <ion-list>
-        <ion-item *ngFor="let choice of question.choices">
-          <ion-label>{{ choice.name }}</ion-label>
-          <ion-checkbox [value]="choice.id" mode="md" (ionChange)="onChange(choice.id)"></ion-checkbox>
-        </ion-item>
-      </ion-list>
-      <ion-text *ngFor="let error of errors" color="danger">
-        <p>{{error}}</p>
-      </ion-text>
-    </ng-container>
+<ng-container *ngIf="doAssessment">
+  <ion-list>
+    <ion-item *ngFor="let choice of question.choices">
+      <ion-label>{{ choice.name }}</ion-label>
+      <ion-checkbox [value]="choice.id" mode="md" (ionChange)="onChange(choice.id)"></ion-checkbox>
+    </ion-item>
+  </ion-list>
+  <ion-text *ngFor="let error of errors" color="danger">
+    <p>{{error}}</p>
+  </ion-text>
+</ng-container>
 
-    <ng-container *ngIf="doReview">
-      <ion-list *ngIf="question.canAnswer">
-        <ion-list-header>
-          <ion-label>Your Answer is</ion-label>
-        </ion-list-header>
-        <ion-item *ngFor="let choice of question.choices">
-          <ion-label>{{ choice.name }}</ion-label>
-          <ion-checkbox [value]="choice.id" mode="md" (ionChange)="onChange(choice.id, 'answer')"></ion-checkbox>
-        </ion-item>
-      </ion-list>
-      <ion-textarea *ngIf="question.canComment" class="background-white" #comment margin-top rows="4" (blur)="onChange(comment.value, 'comment')" placeholder="Please put your feedback here"></ion-textarea>
-    </ng-container>
-
-  </ion-card-content>
-</ion-card>
+<ng-container *ngIf="doReview">
+  <ion-list *ngIf="question.canAnswer">
+    <ion-list-header>
+      <ion-label>Your Answer is</ion-label>
+    </ion-list-header>
+    <ion-item *ngFor="let choice of question.choices">
+      <ion-label>{{ choice.name }}</ion-label>
+      <ion-checkbox [value]="choice.id" mode="md" (ionChange)="onChange(choice.id, 'answer')"></ion-checkbox>
+    </ion-item>
+  </ion-list>
+  <ion-textarea *ngIf="question.canComment" class="background-white" #comment margin-top rows="4" (blur)="onChange(comment.value, 'comment')" placeholder="Please put your feedback here"></ion-textarea>
+</ng-container>

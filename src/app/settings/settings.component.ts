@@ -6,6 +6,7 @@ import { BrowserStorageService } from '@services/storage.service';
 import { UtilsService } from '@services/utils.service';
 import { NotificationService } from '@shared/notification/notification.service';
 import { environment } from '../../environments/environment.prod';
+import { RouterEnter } from '@services/router-enter.service';
 
 
 @Component({
@@ -13,8 +14,9 @@ import { environment } from '../../environments/environment.prod';
   templateUrl: 'settings.component.html',
   styleUrls: ['settings.component.scss']
 })
-export class SettingsComponent {
+export class SettingsComponent extends RouterEnter {
 
+  routeUrl: string = '/app/settings/';
   profile : Profile = {
     contactNumber: '',
     email: ''
@@ -50,15 +52,17 @@ export class SettingsComponent {
   termsUrl = 'https://images.practera.com/terms_and_conditions/practera_terms_conditions.pdf';
 
   constructor (
-    private router: Router,
+    public router: Router,
     private authService: AuthService,
     private settingService : SettingService,
     private storage : BrowserStorageService,
     private utils: UtilsService,
     private notificationService: NotificationService
-  ){ }
+  ){
+    super(router);
+  }
 
-  ionViewWillEnter() {
+  onEnter() {
     // get contact number and email from local storage
     this.profile.email = this.storage.getUser().email;
     this.profile.contactNumber = this.storage.getUser().contactNumber;

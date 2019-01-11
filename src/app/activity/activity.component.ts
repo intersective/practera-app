@@ -6,14 +6,16 @@ import { ActivityService, Activity } from './activity.service';
 import { UtilsService } from '../services/utils.service';
 import { NotificationService } from '@shared/notification/notification.service';
 import { BrowserStorageService } from '@services/storage.service';
+import { RouterEnter } from '@services/router-enter.service';
 
 @Component({
   selector: 'app-activity',
   templateUrl: './activity.component.html',
   styleUrls: ['./activity.component.scss']
 })
-export class ActivityComponent {
+export class ActivityComponent extends RouterEnter {
 
+  routeUrl: string = '/app/activity/';
   id: number;
   activity: Activity = {
     id: 0,
@@ -24,15 +26,28 @@ export class ActivityComponent {
   loadingActivity: boolean = true;
 
   constructor(
-    private router: Router,
+    public router: Router,
     private route: ActivatedRoute,
     private activityService: ActivityService,
     private utils: UtilsService,
     private notificationService: NotificationService,
     private storage: BrowserStorageService
-  ) { }
+  ) {
+    super(router);
+  }
 
-  ionViewDidEnter() {
+  private _initialise() {
+    this.activity = {
+      id: 0,
+      name: '',
+      description: '',
+      tasks: []
+    };
+    this.loadingActivity = true;
+  }
+
+  onEnter() {
+    this._initialise();
     this.id = parseInt(this.route.snapshot.paramMap.get('id'));
     this._getActivity();
   }
