@@ -16,7 +16,7 @@ export class HomeComponent implements OnInit {
   programName: string;
   todoItems: Array<TodoItem> = [];
   loadingTodoItems: boolean = true;
-  activity;
+  activity: Activity;
   loadingActivity: boolean = true;
 
   constructor (
@@ -25,14 +25,14 @@ export class HomeComponent implements OnInit {
     private utils: UtilsService,
     private storage: BrowserStorageService
   ) {}
-  
+
   ngOnInit() {
     this.homeService.getTodoItems()
       .subscribe(todoItems => {
         this.todoItems = this.todoItems.concat(todoItems);
         this.loadingTodoItems = false;
       });
-    // only get the number of chats if user is in team  
+    // only get the number of chats if user is in team
     if (this.storage.getUser().teamId) {
       this.homeService.getChatMessage()
         .subscribe(chatMessage => {
@@ -48,7 +48,7 @@ export class HomeComponent implements OnInit {
         this.loadingProgress = false;
         this.homeService.getCurrentActivity()
           .subscribe(activity => {
-            if (!this.utils.isEmpty(activity)) {
+            if (activity.id) {
               this.activity = activity;
               this.loadingActivity = false;
             }

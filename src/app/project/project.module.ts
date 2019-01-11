@@ -17,8 +17,8 @@ import { SharedModule } from '@shared/shared.module';
       "outerStrokeLinecap": "butt",
       "toFixed": 0,
       "outerStrokeColor": "var(--ion-color-primary)",
-      "backgroundColor": "var(--practera-progress-cricle-bg-color)",
-      "backgroundStroke": "var(--practera-progress-circle-stroke)",
+      "backgroundColor": "var(--ion-color-light)",
+      "backgroundStroke": "var(--ion-color-primary)",
       "showTitle": false,
       "showSubtitle": false,
       "startFromZero": false,
@@ -39,6 +39,6 @@ import { SharedModule } from '@shared/shared.module';
   providers: [
     ProjectService,
   ]
-  
+
 })
 export class ProjectModule {}

@@ -231,7 +231,6 @@ export class HomeService {
   }
 
   private _loopThroughActivities(activity) {
-    
     if (this.currentActivityId > 0) {
       return;
     }
@@ -258,13 +257,16 @@ export class HomeService {
       }));
   }
 
-  private _normaliseActivity(data) {
-    
+  private _normaliseActivity(data): Activity {
     if (!Array.isArray(data) ||
         !this.utils.has(data[0], 'Activity.name') || 
         !this.utils.has(data[0], 'Activity.is_locked')) {
       this.request.apiResponseFormatError('Activity format error');
-      return {};
+      return {
+        id: null,
+        name: '',
+        isLocked: false
+      };
     }
     let thisActivity = data[0];
     return {
