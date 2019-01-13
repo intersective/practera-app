@@ -21,6 +21,7 @@ export class ActivityComponent implements OnInit {
     description: '',
     tasks: []
   };
+  loadingActivity: boolean = true;
 
   constructor(
     private router: Router,
@@ -40,6 +41,7 @@ export class ActivityComponent implements OnInit {
     this.activityService.getActivity(this.id)
       .subscribe(activity => {
         this.activity = activity;
+        this.loadingActivity = false;
         this._getTasksProgress();
       });
   }
@@ -64,7 +66,7 @@ export class ActivityComponent implements OnInit {
   }
 
   back() {
-    this.router.navigate(['app', { outlets: { project: 'project' } }]);
+    this.router.navigate(['app', 'project' ]);
   }
 
   goto(type, id) {

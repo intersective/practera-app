@@ -17,17 +17,17 @@ import { SharedModule } from '@shared/shared.module';
       "outerStrokeLinecap": "butt",
       "toFixed": 0,
       "outerStrokeColor": "var(--ion-color-primary)",
-      "backgroundColor": "var(--practera-progress-cricle-bg-color)",
-      "backgroundStroke": "var(--practera-progress-circle-stroke)",
+      "backgroundColor": "var(--ion-color-light)",
+      "backgroundStroke": "var(--ion-color-primary)",
       "showTitle": false,
       "showSubtitle": false,
       "startFromZero": false,
       "showInnerStroke": false,
       "showUnits": false,
-      "backgroundStrokeWidth": 0,
+      "backgroundStrokeWidth": 2,
       "maxPercent": 100,
-      "outerStrokeWidth": 10,
-      "radius": 5,
+      "outerStrokeWidth": 8,
+      "radius": 4,
       "space": -20
     })
   ],
@@ -39,6 +39,6 @@ import { SharedModule } from '@shared/shared.module';
   providers: [
     ProjectService,
   ]
-  
+
 })
 export class ProjectModule {}
