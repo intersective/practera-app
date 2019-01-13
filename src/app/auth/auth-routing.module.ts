@@ -27,7 +27,7 @@ const routes: Routes = [
         component: AuthForgotPasswordComponent
       },
       {
-        path: 'registration',
+        path: 'registration/:email/:key',
         component: AuthRegistrationComponent
       },
       {
