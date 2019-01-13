@@ -30,6 +30,7 @@ export class AssessmentComponent implements OnInit {
     groups: [
       {
         name: '',
+        description: '',
         questions: [
           {
             id: 0,
@@ -63,6 +64,7 @@ export class AssessmentComponent implements OnInit {
   doReview: boolean = false;
   feedbackReviewed: boolean = false;
   loadingFeedbackReviewed: boolean = true;
+  loadingAssessment: boolean = true;
   questionsForm = new FormGroup({});
   submitting: boolean = false;
 
@@ -87,8 +89,9 @@ export class AssessmentComponent implements OnInit {
         this.assessment = assessment;
         this.populateQuestionsForm();
         if (this.assessment.isForTeam && !this.storage.getUser().teamId) {
-          return this.notificationService.popUp('shortMessage', {message: 'To do this assessment, you have to be in a team.'}, ['app', { outlets: { project: ['activity', this.activityId] } }]);
+          return this.notificationService.popUp('shortMessage', {message: 'To do this assessment, you have to be in a team.'}, ['app', 'activity', this.activityId ]);
         }
+        this.loadingAssessment = false;
         this._getSubmission();
       });
 
@@ -141,7 +144,7 @@ export class AssessmentComponent implements OnInit {
   }
 
   back() {
-    this.router.navigate(['app', { outlets: { project: ['activity', this.activityId] } }]);
+    this.router.navigate(['app', 'activity', this.activityId ]);
   }
 
   // form an object of required questions
@@ -213,7 +216,7 @@ export class AssessmentComponent implements OnInit {
           let redirect = [];
           // redirect to activity page if it is doing assessment
           if (this.doAssessment) {
-            redirect = ['app', { outlets: { project: ['activity', this.activityId] } }];
+            redirect = ['app', 'activity', this.activityId];
           }
           // redirect to reviews page if it is doing review
           if (this.doReview) {
@@ -237,9 +240,7 @@ export class AssessmentComponent implements OnInit {
     this.assessmentService.saveFeedbackReviewed(this.submission.id).subscribe(result => {
       // if review is successfully mark as read and program is configured to enable review rating, display review rating modal and then redirect to activity page.
       if (result.success && this.storage.getUser().hasReviewRating === true) {
-        this.assessmentService.popUpReviewRating(this.review.id, ['app', {
-          outlets: { project: ['activity', this.activityId] },
-        }]);
+        this.assessmentService.popUpReviewRating(this.review.id, ['app', 'activity', this.activityId]);
       }
     });
   }
