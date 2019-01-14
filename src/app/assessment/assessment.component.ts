@@ -255,4 +255,8 @@ export class AssessmentComponent extends RouterEnter {
     });
   }
 
+  showQuestionInfo(info) {
+    this.notificationService.popUp('shortMessage', {message: info});
+  }
+
 }
