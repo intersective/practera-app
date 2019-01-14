@@ -4,7 +4,7 @@ import { RequestService } from '@shared/request/request.service';
 
 const api = {
   post: {
-    profile: 'api/v2/user/enrolment/edit.json',  
+    profile: 'api/v2/user/enrolment/edit.json',
   }
 };
 
@@ -22,13 +22,12 @@ export class SettingService {
   	private request : RequestService,
   ) { }
 
-
   updateProfile(profile : Profile) {
   	let postData;
   	postData = {
   		contact_number: profile.contactNumber
   	};
-  
+
   	return this.request.post(api.post.profile, postData);
   }
 
