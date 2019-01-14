@@ -7,63 +7,89 @@
 <ion-content padding color="light" text-center>
   <h1>{{ assessment.name }}</h1>
   <ion-text color="medium" text-left>
-    <p>{{ assessment.description }}</p>
+    <p [innerHtml]="assessment.description"></p>
   </ion-text>
 
   <form [formGroup]="questionsForm">
-
+    <ng-container *ngIf="loadingAssessment">
+      <ion-spinner></ion-spinner>
+    </ng-container>
     <ng-container *ngFor="let group of assessment.groups">
       <h3>{{ group.name }}</h3>
+      <ion-text color="medium" text-left>
+        <p [innerHtml]="group.description"></p>
+      </ion-text>
       <ng-container *ngFor="let question of group.questions">
+        <ion-card class="practera-card" text-left>
+          <ion-card-header class="q-title">
+            {{ question.name }}
+            <ion-text color="danger" *ngIf="question.isRequired">*</ion-text>
+            <ion-text color="medium"><p class="paragraph"><i [innerHtml]="question.description"></i></p></ion-text>
+          </ion-card-header>
+          <div text-center margin-bottom *ngIf="loadingSubmission; else submissionTpl">
+            <ion-spinner></ion-spinner>
+          </div>
+          <ng-template #submissionTpl>
+            <ion-card-content [ngSwitch]="question.type" padding-horizontal class="q-content" color="light">
 
-        <ng-container [ngSwitch]="question.type">
+              <app-text
+                *ngSwitchCase="'text'"
+                [question]="question"
+                [doAssessment]="doAssessment"
+                [doReview]="doReview"
+                [submission]="(submission.answers && submission.answers[question.id]) ? submission.answers[question.id] : {}"
+                [review]="(review.answers && review.answers[question.id]) ? review.answers[question.id] : {}"
+                [formControlName]="'q-' + question.id"
+                [control]="questionsForm.controls['q-' + question.id]"
+              ></app-text>
 
-          <app-text 
-            *ngSwitchCase="'text'"
-            [question]="question"
-            [doAssessment]="doAssessment"
-            [doReview]="doReview"
-            [submission]="(submission.answers && submission.answers[question.id]) ? submission.answers[question.id] : {}"
-            [review]="(review.answers && review.answers[question.id]) ? review.answers[question.id] : {}"
-            [formControlName]="'q-' + question.id"
-            [control]="questionsForm.controls['q-' + question.id]"
-          ></app-text>
+              <app-oneof
+                *ngSwitchCase="'oneof'"
+                [question]="question"
+                [doAssessment]="doAssessment"
+                [doReview]="doReview"
+                [submission]="(submission.answers && submission.answers[question.id]) ? submission.answers[question.id] : {}"
+                [review]="(review.answers && review.answers[question.id]) ? review.answers[question.id] : {}"
+                [formControlName]="'q-' + question.id"
+                [control]="questionsForm.controls['q-' + question.id]"
+              ></app-oneof>
 
-          <app-oneof 
-            *ngSwitchCase="'oneof'"
-            [question]="question"
-            [doAssessment]="doAssessment"
-            [doReview]="doReview"
-            [submission]="(submission.answers && submission.answers[question.id]) ? submission.answers[question.id] : {}"
-            [review]="(review.answers && review.answers[question.id]) ? review.answers[question.id] : {}"
-            [formControlName]="'q-' + question.id"
-            [control]="questionsForm.controls['q-' + question.id]"
-          ></app-oneof>
+              <app-multiple
+                *ngSwitchCase="'multiple'"
+                [question]="question"
+                [doAssessment]="doAssessment"
+                [doReview]="doReview"
+                [submission]="(submission.answers && submission.answers[question.id]) ? submission.answers[question.id] : {}"
+                [review]="(review.answers && review.answers[question.id]) ? review.answers[question.id] : {}"
+                [formControlName]="'q-' + question.id"
+                [control]="questionsForm.controls['q-' + question.id]"
+              ></app-multiple>
 
-          <app-multiple 
-            *ngSwitchCase="'multiple'"
-            [question]="question"
-            [doAssessment]="doAssessment"
-            [doReview]="doReview"
-            [submission]="(submission.answers && submission.answers[question.id]) ? submission.answers[question.id] : {}"
-            [review]="(review.answers && review.answers[question.id]) ? review.answers[question.id] : {}"
-            [formControlName]="'q-' + question.id"
-            [control]="questionsForm.controls['q-' + question.id]"
-          ></app-multiple>
+              <app-file
+                *ngSwitchCase="'file'"
+                [question]="question"
+                [doAssessment]="doAssessment"
+                [doReview]="doReview"
+                [submission]="(submission.answers && submission.answers[question.id]) ? submission.answers[question.id] : {}"
+                [review]="(review.answers && review.answers[question.id]) ? review.answers[question.id] : {}"
+                [formControlName]="'q-' + question.id"
+                [control]="questionsForm.controls['q-' + question.id]"
+              ></app-file>
 
-          <app-file 
-            *ngSwitchCase="'file'"
-            [question]="question"
-            [doAssessment]="doAssessment"
-            [doReview]="doReview"
-            [submission]="(submission.answers && submission.answers[question.id]) ? submission.answers[question.id] : {}"
-            [review]="(review.answers && review.answers[question.id]) ? review.answers[question.id] : {}"
-            [formControlName]="'q-' + question.id"
-            [control]="questionsForm.controls['q-' + question.id]"
-          ></app-file>
+              <app-team-member-selector
+                *ngSwitchCase="'team member selector'"
+                [question]="question"
+                [doAssessment]="doAssessment"
+                [doReview]="doReview"
+                [submission]="(submission.answers && submission.answers[question.id]) ? submission.answers[question.id] : {}"
+                [review]="(review.answers && review.answers[question.id]) ? review.answers[question.id] : {}"
+                [formControlName]="'q-' + question.id"
+                [control]="questionsForm.controls['q-' + question.id]"
+              ></app-team-member-selector>
 
-        </ng-container>
-
+            </ion-card-content>
+          </ng-template>
+        </ion-card>
       </ng-container>
     </ng-container>
 
@@ -78,7 +104,7 @@
         <ion-toggle [checked]="feedbackReviewed" [disabled]="feedbackReviewed" (ionChange)="reviewFeedback()" margin-start class="vertical-middle"></ion-toggle>
       </ng-container>
       <ng-template #spinnerTmpl><ion-spinner name="dots" class="vertical-middle"></ion-spinner></ng-template>
-      
+
     </div>
 
   </form>

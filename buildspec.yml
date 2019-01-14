@@ -3,8 +3,14 @@ version: 0.2
 phases:
   install:
     commands:
-      # Upgrade AWS CLI to the latest version
-      - pip install --upgrade awscli
+      - sudo npm install forever -g
+      - sudo npm install -g @angular/cli
+      - sudo npm install
+      - sudo node node_modules/node-sass/scripts/install.js
+      - sudo npm rebuild node-sass
+  build:
+    commands:
+      - sudo ng build --configuration=stage
 artifacts:
   type: zip
   files:
@@ -20,3 +26,4 @@ artifacts:
     - scripts/*
     - src/**/*
     - www/**/*
+    - node_modules/**/*
