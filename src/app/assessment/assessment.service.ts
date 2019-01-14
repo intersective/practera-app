@@ -44,6 +44,7 @@ export interface Question {
   type: string;
   fileType?: string;
   description: string;
+  info?: string;
   isRequired: boolean;
   canComment: boolean;
   canAnswer: boolean;
@@ -148,6 +149,7 @@ export class AssessmentService {
             }
 
             let choices: Array<Choice> = [];
+            let info = '';
             question.AssessmentQuestion.AssessmentQuestionChoice.forEach(questionChoice => {
               if (
                   !this.utils.has(questionChoice, 'id') ||
@@ -161,12 +163,20 @@ export class AssessmentService {
                 name: questionChoice.AssessmentChoice.name,
                 explanation: this.utils.has(questionChoice, 'AssessmentChoice.explanation') ? questionChoice.AssessmentChoice.explanation : ''
               });
+              if (this.utils.has(questionChoice, 'AssessmentChoice.description') && questionChoice.AssessmentChoice.description) {
+                info += "<p>" + questionChoice.AssessmentChoice.name + " - " + questionChoice.AssessmentChoice.description + "</p>";
+              }
             });
+            if (info) {
+              // Add the title
+              info = '<h3>Choice Description:</h3>' + info;
+            }
             questions.push({
               id: question.AssessmentQuestion.id,
               name: question.AssessmentQuestion.name,
               type: question.AssessmentQuestion.question_type,
               description: question.AssessmentQuestion.description,
+              info: info,
               isRequired: question.AssessmentQuestion.is_required,
               canComment: question.AssessmentQuestion.has_comment,
               canAnswer: question.AssessmentQuestion.can_answer,
@@ -361,7 +371,7 @@ export class AssessmentService {
           break;
         case "multiple":
           if (!Array.isArray(answer)) {
-            // re-format json string to array 
+            // re-format json string to array
             answer = JSON.parse(answer);
           }
           // re-format answer from string to number
