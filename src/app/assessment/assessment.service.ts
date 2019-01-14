@@ -342,7 +342,7 @@ export class AssessmentService {
         Array.isArray(thisSubmission.AssessmentReviewAnswer)) {
       if (!review) {
         review = {
-          // we use the review id in this way only if AssessmentReviewAnswer is not returnted,
+          // we use the review id in this way only if AssessmentReviewAnswer is not returned,
           // we should change API so that it returns AssessmentReviewAnswer object later
           id: thisSubmission.AssessmentReviewAnswer[0].assessment_review_id,
           answers: {}
