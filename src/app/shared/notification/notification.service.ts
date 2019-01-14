@@ -2,7 +2,6 @@ import { Injectable } from '@angular/core';
 import { ModalController, AlertController, ToastController } from '@ionic/angular';
 import { AlertOptions } from '@ionic/core';
 import { PopUpComponent } from './pop-up/pop-up.component';
-import { ReviewRatingComponent } from '../../review-rating/review-rating.component';
 
 @Injectable({
   providedIn: 'root'
@@ -15,18 +14,35 @@ export class NotificationService {
     private toastController: ToastController
   ) {}
 
-  // show pop up message 
+  /**
+   * @name modalConfig
+   * @description futher customised filter
+   */
+  private modalConfig({ component, componentProps }, options = {}) {
+    const config = Object.assign({
+      component,
+      componentProps,
+    }, options);
+
+    return config;
+  }
+
+  // show pop up message
   // this is using pop-up.component.ts as the view
   // put redirect = false if don't need to redirect
-  async popUp(type, data, redirect) {
-    const modal = await this.modalController.create({
-      component: PopUpComponent,
-      componentProps: { 
-        type: type,
-        data: data,
-        redirect: redirect
-      }
-    });
+  async popUp(type, data, redirect:any = false) {
+    const component = PopUpComponent;
+    const componentProps = {
+      type,
+      data,
+      redirect,
+    };
+    const modal = await this.modal(component, componentProps);
+    return modal;
+  }
+
+  async modal(component, componentProps, options?) {
+    const modal = await this.modalController.create(this.modalConfig({ component, componentProps }, options));
     return await modal.present();
   }
 
@@ -40,7 +56,7 @@ export class NotificationService {
     let color = 'success'
     if (!success) {
       color = 'danger';
-    } 
+    }
     const toast = await this.toastController.create({
       message: message,
       duration: duration,
@@ -48,18 +64,5 @@ export class NotificationService {
       color : color
     });
     toast.present();
-  }
-
-  // show review rating page as pop up modal
-  // review ID is required
-  async reviewRating(reviewId, redirect) {
-     const modal = await this.modalController.create({
-      component: ReviewRatingComponent,
-      componentProps: { 
-        reviewId: reviewId,
-        redirect: redirect
-      }
-    });
-    return await modal.present();
   }
 }

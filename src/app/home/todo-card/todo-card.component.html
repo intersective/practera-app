@@ -1,5 +1,5 @@
 <ion-card color="primary-contrast" class="todo-card practera-card">
-  <ion-item class="todo-item">
+  <ion-item>
 
     <ng-container *ngIf="todoItem.type; else noItems">
       <ng-container [ngSwitch]="todoItem.type">
@@ -7,14 +7,15 @@
         <ion-icon *ngSwitchCase="'review_submission'" name="information-circle-outline" slot="start" color="primary"></ion-icon>
         <ion-icon *ngSwitchCase="'chat'" name="chatboxes" slot="start" color="primary"></ion-icon>
       </ng-container>
-      
+
       <div class="icon-item">
         <h4>{{todoItem.name}}</h4>
         <ion-text color="medium">
           <p>{{todoItem.description}}</p>
-        </ion-text>  
+        </ion-text>
       </div>
-      <ion-text float-right color="medium" class="time-stamp">{{todoItem.time}}</ion-text> 
+      <ion-text color="medium" class="time-stamp">{{todoItem.time}}</ion-text>
+      <ion-icon class="ending-arrow" name="arrow-forward" color="primary" slot="end"></ion-icon>
     </ng-container>
 
     <ng-template #noItems>

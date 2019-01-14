@@ -5,21 +5,21 @@ import { FormsModule } from '@angular/forms';
 import { TopicComponent} from './topic.component';
 import { TopicService } from './topic.service';
 import { TopicRoutingModule } from './topic-routing.module';
-
-
+import { FilestackModule } from '@shared/filestack/filestack.module';
 
 @NgModule({
   imports: [
     IonicModule,
     CommonModule,
     FormsModule,
-    TopicRoutingModule
+    TopicRoutingModule,
+    FilestackModule
   ],
   declarations: [
     TopicComponent
   ],
   providers: [
-   TopicService
+    TopicService
   ]
 })
 export class TopicModule {}

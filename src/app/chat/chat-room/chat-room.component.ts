@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild, AfterContentInit } from "@angular/core";
 import { Router, ActivatedRoute } from "@angular/router";
-import { Content } from "@ionic/angular";
+import { IonContent } from "@ionic/angular";
 import { BrowserStorageService } from "@services/storage.service";
 
 import { ChatService } from "../chat.service";
@@ -21,7 +21,7 @@ interface Chat {
 })
 export class ChatRoomComponent implements OnInit, AfterContentInit {
   // @TODO need to create method to convert chat time to local time.
-  @ViewChild(Content) content: Content;
+  @ViewChild(IonContent) content: IonContent;
 
   message: any;
   messageList: any[];

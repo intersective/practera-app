@@ -1,17 +1,12 @@
 import { Injectable } from '@angular/core';
+import { ModalController } from '@ionic/angular';
+import { PreviewComponent } from './preview/preview.component';
+import { environment } from '@environments/environment';
+import { BrowserStorageService } from '@services/storage.service';
 
 @Injectable()
 
 export class FilestackService {
-  public filestackConfig : any = {
-    key: 'AO6F4C72uTPGRywaEijdLz'
-  };
-  public s3Config : any = {
-    location: 's3',
-    container: 'practera-aus',
-    region: 'ap-southeast-2',
-    path: '/case/uploads/public/'
-  };
   // file types that allowed to upload
   public fileTypes = {
     any: '',
@@ -19,11 +14,14 @@ export class FilestackService {
     video: 'video/*'
   };
   
-  constructor() {}
+  constructor(
+    private modalController: ModalController,
+    private storage: BrowserStorageService
+  ) {}
 
   //get filestack config
   getFilestackConfig() {
-    return this.filestackConfig;
+    return environment.filestack.key;
   }
 
   // get file types
@@ -32,7 +30,45 @@ export class FilestackService {
   }
 
   //get s3 config
-  getS3Config () {
-    return this.s3Config;
+  getS3Config (fileType) {
+    let path = environment.filestack.s3Config.paths.any;
+    // get s3 path based on file type
+    if (environment.filestack.s3Config.paths[fileType]) {
+      path = environment.filestack.s3Config.paths[fileType];
+    }
+    // add user hash to the path
+    path = path + this.storage.getUser().userHash + '/';
+    return {
+      location: environment.filestack.s3Config.location,
+      container: environment.filestack.s3Config.container,
+      region: environment.filestack.s3Config.region,
+      path: path
+    };
+  }
+
+  previewFile(file) {
+    let fileUrl = file.url;
+    if (fileUrl) {
+      if (fileUrl.indexOf('www.filepicker.io/api/file') !== -1) {
+        // old format
+        fileUrl = fileUrl.replace('www.filepicker.io/api/file', 'cdn.filestackcontent.com/preview');
+      } else if (fileUrl.indexOf('filestackcontent.com') !== -1) {
+        // new format
+        fileUrl = fileUrl.replace('filestackcontent.com', 'filestackcontent.com/preview');
+      } 
+    } else if (file.handle) {
+      fileUrl = 'https://cdn.filestackcontent.com/preview/' + file.handle;
+    }
+    this.previewModal(fileUrl);
+  }
+
+  async previewModal(url) {
+    const modal = await this.modalController.create({
+      component: PreviewComponent,
+      componentProps: { 
+        url: url
+      }
+    });
+    return await modal.present();
   }
 }
