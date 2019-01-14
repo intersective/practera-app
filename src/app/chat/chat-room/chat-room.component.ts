@@ -85,10 +85,15 @@ export class ChatRoomComponent implements OnInit {
     this.router.navigateByUrl('/app/(chat:chat)');
   }
 
-  sendMessage() {
+  sendMessage(event?:any) {
+    // preventing textarea default action when press enter.
+    if (event) {
+      event.preventDefault();
+    }
     if (this.message) {
       const message = this.message;
-      this.message = ""; // remove typed message from text field.
+      // remove typed message from text field.
+      this.message = ''; 
       // createing prams need to send message
       let data = {
         message: message,
