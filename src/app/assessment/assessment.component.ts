@@ -212,26 +212,31 @@ export class AssessmentComponent implements OnInit {
     this.assessmentService.saveAnswers(assessment, answers, this.action)
       .subscribe(result => {
         this.submitting = false;
-        if (result.success) {
-          let redirect = [];
-          // redirect to activity page if it is doing assessment
-          if (this.doAssessment) {
-            redirect = ['app', 'activity', this.activityId];
-          }
-          // redirect to reviews page if it is doing review
-          if (this.doReview) {
-            redirect = ['reviews'];
-          }
-          // display a pop up for successful submission
-          return this.notificationService.popUp('shortMessage', {
-            message: 'Submitted Successfully!'
-          }, redirect);
-        } else {
-          // display a pop up if submission failed
-          return this.notificationService.popUp('shortMessage', {
-            message: 'Submission Failed, please try again later.'
-          });
+        let redirect = [];
+        // redirect to activity page if it is doing assessment
+        if (this.doAssessment) {
+          redirect = ['app', 'activity', this.activityId];
         }
+        // redirect to reviews page if it is doing review
+        if (this.doReview) {
+          redirect = ['reviews'];
+        }
+        // display a pop up for successful submission
+        return this.notificationService.popUp('shortMessage', {
+          message: 'Submitted Successfully!'
+        }, redirect);
+      }, err => {
+        this.submitting = false;
+        // display a pop up if submission failed
+        this.notificationService.alert({
+          message: 'Submission Failed, please try again later.',
+          buttons: [
+            {
+              text: 'OK',
+              role: 'cancel'
+            }
+          ]
+        });
       });
   }
 
