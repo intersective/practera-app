@@ -35,10 +35,10 @@ export class AuthResetPasswordComponent implements OnInit {
 
     if (!this.key || !this.email) {
       return this._notifyAndRedirect('Invalid reset password link');
-    }   
-    // Call API to verify that key and email parameters from reset password URL are valid 
-    this.authService.verifyUserKeyEmail({key: this.key, email: this.email}).subscribe(res => {      
-      // verification of key and email is successfuly. 
+    }
+    // Call API to verify that key and email parameters from reset password URL are valid
+    this.authService.verifyResetPassword({key: this.key, email: this.email}).subscribe(res => {
+      // verification of key and email is successfuly.
       this.verifySuccess = true;
     }, err => {
       return this._notifyAndRedirect('Invalid reset password link');
