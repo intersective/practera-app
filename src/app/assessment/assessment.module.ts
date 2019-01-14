@@ -20,7 +20,7 @@ import { QuestionsModule } from '../questions/questions.module';
   ],
   declarations: [
     AssessmentComponent
-  ],
+  ]
 })
 
 export class AssessmentModule {
