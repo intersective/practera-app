@@ -1,63 +1,52 @@
-<ion-card class="practera-card" text-left>
-  <ion-card-header class="q-title">
-    {{ question.name }}
-    <ion-text color="danger" *ngIf="question.isRequired">*</ion-text>
-    <ion-text color="medium"><p class="paragraph"><i [innerHtml]="question.description"></i></p></ion-text>
-  </ion-card-header>
-  <ion-card-content padding-horizontal class="q-content" color="light">
+<ng-container *ngIf="submission.answer">
+  <app-file-display
+    [file]="submission.answer"
+    [fileType]="question.fileType"
+  ></app-file-display>
+</ng-container>
 
-    <ng-container *ngIf="submission.answer">
-      <app-file-display
-        [file]="submission.answer"
-        [fileType]="question.fileType"
-      ></app-file-display>
-    </ng-container>
+<div *ngIf="review.answer || review.comment" class="q-reviews">
+  <ion-label class="q-title">Feedback</ion-label>
+  <ng-container *ngIf="review.answer">
+    <app-file-display
+      [file]="review.answer"
+      [fileType]="question.fileType"
+    ></app-file-display>
+  </ng-container>
+  <ng-container *ngIf="review.comment">
+    <p class="paragraph">{{ review.comment }}</p>
+  </ng-container>
+</div>
 
-    <div *ngIf="review.answer || review.comment" class="q-reviews">
-      <ion-label class="q-title">Feedback</ion-label>
-      <ng-container *ngIf="review.answer">
-        <app-file-display
-          [file]="review.answer"
-          [fileType]="question.fileType"
-        ></app-file-display>
-      </ng-container>
-      <ng-container *ngIf="review.comment">
-        <p class="paragraph">{{ review.comment }}</p>
-      </ng-container>
-    </div>
+<ng-container *ngIf="doAssessment">
+  <file-stack
+    [accept]="fileTypes"
+    [fileType]="question.fileType"
+    (complete)="onFileUploadCompleted($event)"
+  >
+  </file-stack>
+  <ion-text *ngFor="let error of errors" color="danger">
+    <p>{{error}}</p>
+  </ion-text>
+  <app-file-display
+    [file]="uploadedFile"
+    [fileType]="question.fileType"
+  ></app-file-display>
 
-    <ng-container *ngIf="doAssessment">
-      <file-stack
-        [accept]="fileTypes"
-        [fileType]="question.fileType"
-        (complete)="onFileUploadCompleted($event)"
-      >
-      </file-stack>
-      <ion-text *ngFor="let error of errors" color="danger">
-        <p>{{error}}</p>
-      </ion-text>
-      <app-file-display
-        [file]="uploadedFile"
-        [fileType]="question.fileType"
-      ></app-file-display>
+</ng-container>
 
-    </ng-container>
-
-    <ng-container *ngIf="doReview">
-      <ng-container *ngIf="question.canAnswer">
-        <file-stack
-          [accept]="fileTypes"
-          [fileType]="question.fileType"
-          (complete)="onFileUploadCompleted($event, 'answer')"
-        >
-        </file-stack>
-        <app-file-display
-          [file]="uploadedFile"
-          [fileType]="question.fileType"
-        ></app-file-display>
-      </ng-container>
-      <ion-textarea *ngIf="question.canComment" class="background-white" #comment margin-top rows="4" (blur)="onChange(comment.value, 'comment')" placeholder="Please put your feedback here"></ion-textarea>
-    </ng-container>
-
-  </ion-card-content>
-</ion-card>
+<ng-container *ngIf="doReview">
+  <ng-container *ngIf="question.canAnswer">
+    <file-stack
+      [accept]="fileTypes"
+      [fileType]="question.fileType"
+      (complete)="onFileUploadCompleted($event, 'answer')"
+    >
+    </file-stack>
+    <app-file-display
+      [file]="uploadedFile"
+      [fileType]="question.fileType"
+    ></app-file-display>
+  </ng-container>
+  <ion-textarea *ngIf="question.canComment" class="background-white" #comment margin-top rows="4" (blur)="onChange(comment.value, 'comment')" placeholder="Please put your feedback here"></ion-textarea>
+</ng-container>
