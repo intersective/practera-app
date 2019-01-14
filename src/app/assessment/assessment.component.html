@@ -67,6 +67,17 @@
             [control]="questionsForm.controls['q-' + question.id]"
           ></app-file>
 
+          <app-team-member-selector
+            *ngSwitchCase="'team member selector'"
+            [question]="question"
+            [doAssessment]="doAssessment"
+            [doReview]="doReview"
+            [submission]="(submission.answers && submission.answers[question.id]) ? submission.answers[question.id] : {}"
+            [review]="(review.answers && review.answers[question.id]) ? review.answers[question.id] : {}"
+            [formControlName]="'q-' + question.id"
+            [control]="questionsForm.controls['q-' + question.id]"
+          ></app-team-member-selector>
+
         </ng-container>
 
       </ng-container>
