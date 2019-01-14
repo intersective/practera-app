@@ -24,6 +24,7 @@
           <ion-card-header class="q-title">
             {{ question.name }}
             <ion-text color="danger" *ngIf="question.isRequired">*</ion-text>
+            <ion-icon *ngIf="question.info" color="primary" class="icon-info vertical-middle" (click)="showQuestionInfo(question.info)" name="information-circle-outline"></ion-icon>
             <ion-text color="medium"><p class="paragraph"><i [innerHtml]="question.description"></i></p></ion-text>
           </ion-card-header>
           <div text-center margin-bottom *ngIf="loadingSubmission; else submissionTpl">
