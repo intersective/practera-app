@@ -5,7 +5,7 @@
       <ion-spinner></ion-spinner>
     </ng-container>
     <ng-template #progressTpl>
-      <circle-progress 
+      <circle-progress
         [percent]="progress"
         [radius]= "70"
         [subtitle]="COMPLETE"
@@ -26,7 +26,7 @@
   </div>
 
   <ion-label color="medium">Things to do</ion-label>
-  <ion-list class="todo-list">
+  <ion-list class="todo-list" lines="none">
 
     <ng-container *ngIf="loadingTodoItems; else todoItemsTpl">
       <ion-spinner></ion-spinner>
@@ -36,19 +36,19 @@
       <ng-container *ngIf="todoItems.length; else noItemsTpl">
         <div *ngFor="let todoItem of todoItems">
           <ng-container [ngSwitch]="todoItem.type">
-            <app-todo-card 
+            <app-todo-card
               *ngSwitchCase="'feedback_available'"
-              [todoItem]="todoItem" 
+              [todoItem]="todoItem"
               (click)="goToAssessment(todoItem.meta.activity_id, todoItem.meta.context_id, todoItem.meta.assessment_id)"
             ></app-todo-card>
-            <app-todo-card 
+            <app-todo-card
               *ngSwitchCase="'review_submission'"
-              [todoItem]="todoItem" 
+              [todoItem]="todoItem"
               (click)="goToReview(todoItem.meta.context_id, todoItem.meta.assessment_id)"
             ></app-todo-card>
-            <app-todo-card 
+            <app-todo-card
               *ngSwitchCase="'chat'"
-              [todoItem]="todoItem" 
+              [todoItem]="todoItem"
               (click)="goToChat()"
             ></app-todo-card>
           </ng-container>
