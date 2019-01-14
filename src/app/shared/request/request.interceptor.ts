@@ -17,6 +17,7 @@ export class RequestInterceptor implements HttpInterceptor {
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     const apikey = this.storage.get('apikey');
     const timelineId = this.storage.getUser().timelineId;
+    const teamId = this.storage.getUser().teamId;
     let headerClone = req.headers;
     let paramsInject = req.params;
 
@@ -25,13 +26,14 @@ export class RequestInterceptor implements HttpInterceptor {
       let appkey = this.currenConfig.appkey;
       headerClone = headerClone.set('appkey', appkey);
     }
-
     if (apikey) {
       headerClone = headerClone.set('apikey', apikey);
     }
-
     if (timelineId) {
       headerClone = headerClone.set('timelineId', timelineId);
+    }
+    if (teamId) {
+      headerClone = headerClone.set('teamId', teamId);
     }
 
     return next.handle(req.clone({
