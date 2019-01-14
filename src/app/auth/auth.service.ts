@@ -19,7 +19,7 @@ const api = {
   verifyRegistration: "api/verification_codes.json",
   register: "api/registration_details.json",
   forgotPassword: "api/auths.json?action=forgot_password",
-  verifyUserKeyEmail: "api/auths.json?action=verify_reset_password",
+  verifyResetPassword: "api/auths.json?action=verify_reset_password",
   resetPassword: "api/auths.json?action=reset_password"
 };
 
@@ -228,14 +228,14 @@ export class AuthService {
   }
 
   /**
-   * @name verifyUserKeyEmail
+   * @name verifyResetPassword
    * @description make request to server to verity that user's email and key are valid
    * @param {[type]} data [description]
    * @return {Observable<any>}      [description]
   */
-  verifyUserKeyEmail(data: verifyParams): Observable<any> {
+  verifyResetPassword(data: verifyParams): Observable<any> {
     return this.request
-    .post(api.verifyUserKeyEmail, data, {
+    .post(api.verifyResetPassword, data, {
       headers: { "Content-Type": "application/json" }
     });
   }
