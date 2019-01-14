@@ -228,8 +228,14 @@ export class AssessmentComponent implements OnInit {
       }, err => {
         this.submitting = false;
         // display a pop up if submission failed
-        return this.notificationService.popUp('shortMessage', {
-          message: 'Submission Failed, please try again later.'
+        this.notificationService.alert({
+          message: 'Submission Failed, please try again later.',
+          buttons: [
+            {
+              text: 'OK',
+              role: 'cancel'
+            }
+          ]
         });
       });
   }
