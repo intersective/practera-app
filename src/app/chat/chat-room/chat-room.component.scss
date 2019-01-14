@@ -124,7 +124,7 @@
         max-width: 224px;
 
         .message-text {
-          color: var(--practera-black);
+          color: black;
           font-size: 16px;
           line-height: 24px;
           margin: 0;
@@ -133,7 +133,7 @@
           white-space: pre-wrap !important;
 
           a.linkified {
-            color: var(--practera-black);
+            color: black;
             font-size: 16px;
             line-height: 24px;
             margin: 0;
@@ -152,7 +152,7 @@
         text-align: left;
 
         .message-body {
-          background-color: var(--practera-white);
+          background-color: white;
         }
 
         .time {
@@ -175,9 +175,9 @@
           float: right;
 
           .message-text {
-            color: var(--practera-white) !important;
+            color: white !important;
             a.linkified {
-              color: var(--practera-white) !important;
+              color: white !important;
               font-size: 16px;
               line-height: 24px;
               margin: 0;
