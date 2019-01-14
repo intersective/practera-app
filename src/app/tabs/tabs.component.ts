@@ -1,6 +1,8 @@
 import { Component } from '@angular/core';
 import { TabsService } from './tabs.service';
 import { BrowserStorageService } from '@services/storage.service';
+import { RouterEnter } from '@services/router-enter.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-tabs',
@@ -8,18 +10,22 @@ import { BrowserStorageService } from '@services/storage.service';
   styleUrls: ['tabs.component.scss']
 })
 
-export class TabsComponent {
+export class TabsComponent extends RouterEnter {
+  routeUrl: string = '/app/';
 	showReview = false;
   showChat = true;
   noOfTodoItems = 0;
   noOfChats = 0;
 
   constructor (
+    public router: Router,
     private tabsService: TabsService,
     private storage: BrowserStorageService
-  ) {}
+  ) {
+    super(router);
+  }
 
-  ionViewWillEnter() {
+  onEnter() {
     this.tabsService.getNoOfTodoItems()
       .subscribe(noOfTodoItems => {
         this.noOfTodoItems = noOfTodoItems;
