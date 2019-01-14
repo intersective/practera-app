@@ -1,18 +1,20 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { Router, ActivatedRoute, ParamMap } from '@angular/router';
 import { AssessmentService, Assessment, Submission, Review } from './assessment.service';
 import { UtilsService } from '../services/utils.service';
 import { NotificationService } from '@shared/notification/notification.service';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { BrowserStorageService } from '@services/storage.service';
+import { RouterEnter } from '@services/router-enter.service';
 
 @Component({
   selector: 'app-assessment',
   templateUrl: 'assessment.component.html',
   styleUrls: ['assessment.component.scss']
 })
-export class AssessmentComponent implements OnInit {
+export class AssessmentComponent extends RouterEnter {
 
+  routeUrl = '/assessment/'
   // assessment id
   id: number;
   // activity id
@@ -27,29 +29,7 @@ export class AssessmentComponent implements OnInit {
     name: '',
     description: '',
     isForTeam: false,
-    groups: [
-      {
-        name: '',
-        description: '',
-        questions: [
-          {
-            id: 0,
-            name: '',
-            type: '',
-            description: '',
-            isRequired: false,
-            canComment: true,
-            canAnswer: true,
-            choices: [
-              {
-                id: 0,
-                name: ''
-              }
-            ]
-          }
-        ]
-      }
-    ]
+    groups: []
   };
   submission: Submission = {
     id: 0,
@@ -65,19 +45,44 @@ export class AssessmentComponent implements OnInit {
   feedbackReviewed: boolean = false;
   loadingFeedbackReviewed: boolean = true;
   loadingAssessment: boolean = true;
+  loadingSubmission: boolean = true;
   questionsForm = new FormGroup({});
   submitting: boolean = false;
 
   constructor (
-    private router: Router,
+    public router: Router,
     private route: ActivatedRoute,
     private assessmentService: AssessmentService,
     private utils: UtilsService,
     private notificationService: NotificationService,
     private storage: BrowserStorageService,
-  ) {}
+  ) {
+    super(router);
+  }
 
-  ngOnInit() {
+  private _initialise() {
+    this.assessment = {
+      name: '',
+      description: '',
+      isForTeam: false,
+      groups: []
+    };
+    this.submission = {
+      id: 0,
+      status: '',
+      answers: {}
+    };
+    this.review = {
+      id: 0,
+      answers: {}
+    };
+    this.loadingAssessment = true;
+    this.loadingSubmission = true;
+    this.loadingFeedbackReviewed = true;
+  }
+
+  onEnter() {
+    this._initialise();
     this.action = this.route.snapshot.data.action;
     this.id = parseInt(this.route.snapshot.paramMap.get('id'));
     this.activityId = parseInt(this.route.snapshot.paramMap.get('activityId'));
@@ -94,7 +99,6 @@ export class AssessmentComponent implements OnInit {
         this.loadingAssessment = false;
         this._getSubmission();
       });
-
   };
 
   // get the submission answers &/| review answers
@@ -102,6 +106,7 @@ export class AssessmentComponent implements OnInit {
     this.assessmentService.getSubmission(this.id, this.contextId, this.action)
       .subscribe(result => {
         this.submission = result.submission;
+        this.loadingSubmission = false;
         // this page is for doing assessment if submission is empty
         if (this.utils.isEmpty(this.submission)) {
           this.doAssessment = true;
@@ -212,26 +217,31 @@ export class AssessmentComponent implements OnInit {
     this.assessmentService.saveAnswers(assessment, answers, this.action)
       .subscribe(result => {
         this.submitting = false;
-        if (result.success) {
-          let redirect = [];
-          // redirect to activity page if it is doing assessment
-          if (this.doAssessment) {
-            redirect = ['app', 'activity', this.activityId];
-          }
-          // redirect to reviews page if it is doing review
-          if (this.doReview) {
-            redirect = ['reviews'];
-          }
-          // display a pop up for successful submission
-          return this.notificationService.popUp('shortMessage', {
-            message: 'Submitted Successfully!'
-          }, redirect);
-        } else {
-          // display a pop up if submission failed
-          return this.notificationService.popUp('shortMessage', {
-            message: 'Submission Failed, please try again later.'
-          });
+        let redirect = [];
+        // redirect to activity page if it is doing assessment
+        if (this.doAssessment) {
+          redirect = ['app', 'activity', this.activityId];
         }
+        // redirect to reviews page if it is doing review
+        if (this.doReview) {
+          redirect = ['reviews'];
+        }
+        // display a pop up for successful submission
+        return this.notificationService.popUp('shortMessage', {
+          message: 'Submitted Successfully!'
+        }, redirect);
+      }, err => {
+        this.submitting = false;
+        // display a pop up if submission failed
+        this.notificationService.alert({
+          message: 'Submission Failed, please try again later.',
+          buttons: [
+            {
+              text: 'OK',
+              role: 'cancel'
+            }
+          ]
+        });
       });
   }
 
