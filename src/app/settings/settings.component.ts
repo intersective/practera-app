@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '../auth/auth.service';
 import { SettingService, Profile } from './setting.service';
@@ -6,6 +6,7 @@ import { BrowserStorageService } from '@services/storage.service';
 import { UtilsService } from '@services/utils.service';
 import { NotificationService } from '@shared/notification/notification.service';
 import { environment } from '../../environments/environment.prod';
+import { RouterEnter } from '@services/router-enter.service';
 
 
 @Component({
@@ -13,8 +14,9 @@ import { environment } from '../../environments/environment.prod';
   templateUrl: 'settings.component.html',
   styleUrls: ['settings.component.scss']
 })
-export class SettingsComponent implements OnInit {
+export class SettingsComponent extends RouterEnter {
 
+  routeUrl: string = '/app/settings/';
   profile : Profile = {
     contactNumber: '',
     email: ''
@@ -41,7 +43,7 @@ export class SettingsComponent implements OnInit {
   ];
 
   formatMasks = {
-      AUS: ['+','6','1',' ', /[1-9]/, /\d/, /\d/, ' ', /\d/, /\d/, /\d/, ' ', /\d/, /\d/, /\d/],     
+      AUS: ['+','6','1',' ', /[1-9]/, /\d/, /\d/, ' ', /\d/, /\d/, /\d/, ' ', /\d/, /\d/, /\d/],
       US: ['+','1', ' ',/[1-9]/, /\d/, /\d/, ' ', /\d/, /\d/, /\d/, ' ', /\d/, /\d/, /\d/, /\d/]
    };
 
@@ -50,17 +52,17 @@ export class SettingsComponent implements OnInit {
   termsUrl = 'https://images.practera.com/terms_and_conditions/practera_terms_conditions.pdf';
 
   constructor (
-    private router: Router,
+    public router: Router,
     private authService: AuthService,
     private settingService : SettingService,
     private storage : BrowserStorageService,
     private utils: UtilsService,
     private notificationService: NotificationService
   ){
-
+    super(router);
   }
 
-  ngOnInit() {
+  onEnter() {
     // get contact number and email from local storage
     this.profile.email = this.storage.getUser().email;
     this.profile.contactNumber = this.storage.getUser().contactNumber;
@@ -69,19 +71,19 @@ export class SettingsComponent implements OnInit {
     // if user has the contact number
     if (this.profile.contactNumber && this.profile.contactNumber != null) {
       this.checkCurrentContactNumberOrigin();
-    } else { 
+    } else {
       // by default, set Mask in Australian format.
-      this.mask = this.formatMasks[this.countryModel];           
+      this.mask = this.formatMasks[this.countryModel];
       /*
-          user has no contact number, set the default mask 
+          user has no contact number, set the default mask
             : also check which the server which the APP talks to, i.e if the APP is consuming APIs from 'us.practera.com' then, it is APP V2 in US.
-              But if APP consumes APIs from 'api.practera.com' then it is APP V2 in AUS. 
-       */ 
+              But if APP consumes APIs from 'api.practera.com' then it is APP V2 in AUS.
+       */
       if (environment.APIEndpoint.indexOf('us') !== -1) {
         this.countryModel = 'US';
-        this.mask = this.formatMasks[this.countryModel];      
-      }       
-    }    
+        this.mask = this.formatMasks[this.countryModel];
+      }
+    }
   };
 
   private checkCurrentContactNumberOrigin() {
@@ -90,49 +92,49 @@ export class SettingsComponent implements OnInit {
 
     if (prefix === '+61') {
         this.countryModel = 'AUS';
-        this.mask = this.formatMasks['AUS'];        
+        this.mask = this.formatMasks['AUS'];
         return;
     }
 
     prefix = contactNum.substring(0, 2);
     if (prefix === '61') {
         this.countryModel = 'AUS';
-        this.mask = this.formatMasks['AUS'];       
+        this.mask = this.formatMasks['AUS'];
         return;
     }
 
     if (prefix === '04') {
         this.countryModel = 'AUS';
-        this.mask = this.formatMasks['AUS'];        
+        this.mask = this.formatMasks['AUS'];
         return;
      }
 
     if (prefix === '+1') {
         this.countryModel = 'US';
-        this.mask = this.formatMasks['US'];       
+        this.mask = this.formatMasks['US'];
         return;
     }
 
     prefix = contactNum.substring(0, 1);
     if (prefix === '1') {
         this.countryModel = 'US';
-        this.mask = this.formatMasks['US'];        
+        this.mask = this.formatMasks['US'];
         return;
     }
 
     if (prefix === '0') {
         this.countryModel = 'AUS';
-        this.mask = this.formatMasks['AUS'];       
+        this.mask = this.formatMasks['AUS'];
         return;
     }
   }
 
-  updateContactNumber() {     
-    // strip out white spaces and underscores    
-    this.profile.contactNumber = this.profile.contactNumber.replace(/[^0-9+]+/ig, "");    
-    // check if newly input number is valid or not.                     
-    if (!this.validateContactNumber(this.profile.contactNumber)) {     
-      return this.notificationService.presentToast('Invalid contact number', false);    
+  updateContactNumber() {
+    // strip out white spaces and underscores
+    this.profile.contactNumber = this.profile.contactNumber.replace(/[^0-9+]+/ig, "");
+    // check if newly input number is valid or not.
+    if (!this.validateContactNumber(this.profile.contactNumber)) {
+      return this.notificationService.presentToast('Invalid contact number', false);
     }
     this.updating = true;
     this.notificationService.alert({
@@ -185,7 +187,7 @@ export class SettingsComponent implements OnInit {
         } else if(contactNumber.length == 3) {
           this.profile.contactNumber = null;
           return true;
-        } 
+        }
         break;
 
       case "US" :
@@ -204,11 +206,11 @@ export class SettingsComponent implements OnInit {
     var selectedCountry = this.countryModel;
     var country = this.utils.find(this.countryCodes, function(country){
       return country.code === selectedCountry;
-    });        
-    // set currentContactNumber to it's format. 
-    this.profile.contactNumber = country.format;    
+    });
+    // set currentContactNumber to it's format.
+    this.profile.contactNumber = country.format;
     // update the mask as per the newly selected country
-    this.mask = this.formatMasks[country.code];     
+    this.mask = this.formatMasks[country.code];
   };
 
 
