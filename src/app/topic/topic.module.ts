@@ -19,7 +19,7 @@ import { FilestackModule } from '@shared/filestack/filestack.module';
     TopicComponent
   ],
   providers: [
-   TopicService
+    TopicService
   ]
 })
 export class TopicModule {}
