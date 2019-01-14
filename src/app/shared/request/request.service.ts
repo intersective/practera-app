@@ -1,5 +1,5 @@
-import { Injectable, Optional } from '@angular/core';
-import { HttpClient, HttpHeaders, HttpParams, HttpErrorResponse } from '@angular/common/http';
+import { Injectable, Optional, isDevMode } from '@angular/core';
+import { HttpClient, HttpHeaders, HttpParams, HttpErrorResponse, HttpParameterCodec } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 import { UtilsService } from '@services/utils.service';
@@ -8,6 +8,24 @@ import { BrowserStorageService } from '@services/storage.service';
 export class RequestConfig {
   appkey = '';
   prefixUrl = '';
+}
+
+export class QueryEncoder implements HttpParameterCodec {
+  encodeKey(k: string): string {
+    return encodeURIComponent(k);
+  }
+
+  encodeValue(v: string): string {
+    return encodeURIComponent(v);
+  }
+
+  decodeKey(k: string): string {
+    return decodeURIComponent(k);
+  }
+
+  decodeValue(v: string): string {
+    return decodeURIComponent(v);
+  }
 }
 
 @Injectable({
@@ -127,10 +145,16 @@ export class RequestService {
   }
 
   private handleError<T> (operation = 'operation', result?: T) {
+    // when API response error is blank
+    if (!result) {
+      return (result as T);
+    }
+
     return (error: any): Observable<T> => {
-   
-      // TODO: send the error to remote logging infrastructure
-      console.error(error); // log to console instead
+      if (isDevMode()) {
+        console.error(error); // log to console instead
+        this.storage.append('errors', error);
+      }
    
       // TODO: better job of transforming error for user consumption
       this.log(`${operation} failed: ${error.message}`);

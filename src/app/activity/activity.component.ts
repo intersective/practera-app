@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { Router, ActivatedRoute, ParamMap } from '@angular/router';
 import { switchMap } from 'rxjs/operators';
 import { Observable } from 'rxjs';
@@ -6,14 +6,16 @@ import { ActivityService, Activity } from './activity.service';
 import { UtilsService } from '../services/utils.service';
 import { NotificationService } from '@shared/notification/notification.service';
 import { BrowserStorageService } from '@services/storage.service';
+import { RouterEnter } from '@services/router-enter.service';
 
 @Component({
   selector: 'app-activity',
   templateUrl: './activity.component.html',
   styleUrls: ['./activity.component.scss']
 })
-export class ActivityComponent implements OnInit {
-  
+export class ActivityComponent extends RouterEnter {
+
+  routeUrl: string = '/app/activity/';
   id: number;
   activity: Activity = {
     id: 0,
@@ -21,17 +23,31 @@ export class ActivityComponent implements OnInit {
     description: '',
     tasks: []
   };
+  loadingActivity: boolean = true;
 
   constructor(
-    private router: Router,
+    public router: Router,
     private route: ActivatedRoute,
     private activityService: ActivityService,
     private utils: UtilsService,
     private notificationService: NotificationService,
     private storage: BrowserStorageService
-  ) { }
+  ) {
+    super(router);
+  }
 
-  ngOnInit() {
+  private _initialise() {
+    this.activity = {
+      id: 0,
+      name: '',
+      description: '',
+      tasks: []
+    };
+    this.loadingActivity = true;
+  }
+
+  onEnter() {
+    this._initialise();
     this.id = parseInt(this.route.snapshot.paramMap.get('id'));
     this._getActivity();
   }
@@ -40,6 +56,7 @@ export class ActivityComponent implements OnInit {
     this.activityService.getActivity(this.id)
       .subscribe(activity => {
         this.activity = activity;
+        this.loadingActivity = false;
         this._getTasksProgress();
       });
   }
@@ -64,7 +81,7 @@ export class ActivityComponent implements OnInit {
   }
 
   back() {
-    this.router.navigate(['app', { outlets: { project: 'project' } }]);
+    this.router.navigate(['app', 'project' ]);
   }
 
   goto(type, id) {
@@ -80,7 +97,7 @@ export class ActivityComponent implements OnInit {
           }
         });
         if (isForTeam && !this.storage.getUser().teamId) {
-          this.notificationService.popUp('shortMessage', {message: 'To do this assessment, you have to be in a team.'}, false);
+          this.notificationService.popUp('shortMessage', {message: 'To do this assessment, you have to be in a team.'});
           break;
         }
         this.router.navigate(['assessment', 'assessment', this.id , contextId, id]);
@@ -89,7 +106,7 @@ export class ActivityComponent implements OnInit {
         this.router.navigate(['topic', this.id, id]);
         break;
       case 'Locked':
-        this.notificationService.popUp('shortMessage', {message: 'This part of the app is still locked. You can unlock the features by engaging with the app and completing all tasks.'}, false);
+        this.notificationService.popUp('shortMessage', {message: 'This part of the app is still locked. You can unlock the features by engaging with the app and completing all tasks.'});
         break;
     }
   }

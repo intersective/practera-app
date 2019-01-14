@@ -1,5 +1,5 @@
 import { Injectable } from "@angular/core";
-import { RequestService } from "@shared/request/request.service";
+import { RequestService, QueryEncoder } from "@shared/request/request.service";
 import { HttpParams } from "@angular/common/http";
 import { map } from "rxjs/operators";
 import { Observable, of } from "rxjs";
@@ -12,14 +12,15 @@ import { UtilsService } from "@services/utils.service";
  * @type {Object}
  */
 const api = {
-  directLink: "api/auths.json?action=authentication",
   getConfig: "api/v2/plan/experience/config",
   linkedin: "api/auth_linkedin.json",
-  login: "api/auth.json",
-  me: "api/users.json",
+  login: "api/auths.json",
   setProfile: "api/v2/user/enrolment/edit.json",
   verifyRegistration: "api/verification_codes.json",
-  register: "api/registration_details.json"
+  register: "api/registration_details.json",
+  forgotPassword: "api/auths.json?action=forgot_password",
+  verifyResetPassword: "api/auths.json?action=verify_reset_password",
+  resetPassword: "api/auths.json?action=reset_password"
 };
 
 interface verifyParams {
@@ -29,8 +30,8 @@ interface verifyParams {
 
 interface registerData {
   password: string;
-  user_id?: string;
-  key?: string;
+  user_id: string;
+  key: string;
 }
 
 interface ConfigParams {
@@ -81,68 +82,73 @@ export class AuthService {
 
   /**
    * @name login
-   * @description login API specifically only accept request data in encodedUrl formdata, so must conver them into compatible formdata before submission
+   * @description login API specifically only accept request data in encodedUrl formdata, so must convert them into compatible formdata before submission
    * @param {object} { email, password } in string for each of the value
    */
   login({ email, password }): Observable<any> {
-    const body = new HttpParams()
+    const body = new HttpParams({
+        encoder: new QueryEncoder()
+      })
       .set('data[User][email]', email)
       .set('data[User][password]', password);
-
     return this.request.post(api.login, body.toString(), {
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
-    }).pipe(map(response => {
-      const norm = this._normaliseAuth(response);
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+      }).pipe(map(this._handleLoginResponse, this));
+  }
 
-      console.log('Auth Response::', response);
-      console.log('Auth Response::', norm);
-      if (response.data) {
-        this.storage.set('apikey', norm.apikey);
-        this.storage.set('programs', norm.programs);
-        this.storage.set('isLoggedIn', true);
-        this.storage.setUser({
-          email: email
-        });
-      }
-      return response;
-    }));
+  /**
+   * @name directLogin
+   * @description login API specifically only accept request data in encodedUrl formdata, so must convert them into compatible formdata before submission
+   * @param {object} { authToken } in string
+   */
+  directLogin({ authToken }): Observable<any> {
+    const body = new HttpParams()
+      .set('auth_token', authToken);
+    return this.request.post(api.login, body.toString(), {
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+      }).pipe(map(this._handleLoginResponse, this));
+  }
+
+  private _handleLoginResponse(response) {
+    const norm = this._normaliseAuth(response);
+    if (response.data) {
+      this.storage.set('apikey', norm.apikey);
+      this.storage.set('programs', norm.programs);
+      this.storage.set('isLoggedIn', true);
+    }
+    return response;
   }
 
   isAuthenticated(): boolean {
     return this.isLoggedIn || this.storage.get("isLoggedIn");
   }
 
-  /**
-   * @name me
-   * @description get user info
-   */
-  me(): Observable<any> {
-    return this.request.get(api.me).pipe(map(response => {
-      if (response.data) {
-        const apiData = response.data;
-        this.storage.setUser({
-          name: apiData.name,
-          contactNumber: apiData.contact_number,
-          email: apiData.email,
-          role: apiData.role,
-          image: apiData.image,
-          linkedinConnected: apiData.linkedinConnected,
-          linkedinUrl: apiData.linkedin_url,
-          programId: apiData.program_id,
-          timelineId: apiData.timeline_id,
-          projectId: apiData.project_id,
-          filestackHash: apiData.userhash,
-          maxAchievablePoints: apiData.max_achievable_points
-        });
-      }
-      return response;
-    }));
-  }
-
   logout(): Observable<any> {
     // @TODO: clear ionic view history too
     this.utils.changeThemeColor('#2bbfd4');
     return of(this.storage.clear());
+  }
+
+   /**
+   * @name forgotPassword
+   * @description make request to server to send out email with reset password url
+   * @param  {string}}        email [user's email which will receive reset password url]  
+   * @return {Observable<any>}      [description]
+   */
+  forgotPassword(email:string): Observable<any>  {
+    return this.request.post(api.forgotPassword, {
+      email: email
+    });
+  }
+
+  /**
+   * @name resetPassword
+   * @description make request to server to reset user password
+   * @param {[type]} data [description]
+   * @return {Observable<any>}      [description]
+   */
+  resetPassword(data): Observable<any> {
+    return this.request.post(api.resetPassword, data);
   }
 
   /**
@@ -163,13 +169,13 @@ export class AuthService {
   }
 
   /**
-   * @name directLink
+   * @name contactNumberLogin
    * @description fast/quick login with contact number
    * @param  {string}}        data [description]
    * @return {Observable<any>}      [description]
    */
-  directLink(data: { contactNumber: string }): Observable<any> {
-    return this.request.post(api.directLink, {
+  contactNumberLogin(data: { contactNumber: string }): Observable<any> {
+    return this.request.post(api.login, {
       contact_number: data.contactNumber, // API accepts contact_numebr
     }).pipe(map(response => {
       if (response.data) {
@@ -208,8 +214,6 @@ export class AuthService {
   }
 
   saveRegistration(data: registerData): Observable<any> {
-    data.user_id = this.storage.get("hash").id;
-    data.key = this.storage.get("hash").key;
     return this.request
     .post(api.register, data, {
       headers: { "Content-Type": "application/json" }
@@ -219,6 +223,19 @@ export class AuthService {
   verifyRegistration(data: verifyParams): Observable<any> {
     return this.request
     .post(api.verifyRegistration, data, {
+      headers: { "Content-Type": "application/json" }
+    });
+  }
+
+  /**
+   * @name verifyResetPassword
+   * @description make request to server to verity that user's email and key are valid
+   * @param {[type]} data [description]
+   * @return {Observable<any>}      [description]
+  */
+  verifyResetPassword(data: verifyParams): Observable<any> {
+    return this.request
+    .post(api.verifyResetPassword, data, {
       headers: { "Content-Type": "application/json" }
     });
   }

@@ -4,6 +4,8 @@ import { map } from 'rxjs/operators';
 import { RequestService } from '@shared/request/request.service';
 import { UtilsService } from '@services/utils.service';
 import { BrowserStorageService } from '@services/storage.service';
+import { NotificationService } from '@shared/notification/notification.service';
+import { ReviewRatingComponent } from '../review-rating/review-rating.component';
 
 /**
  * @name api
@@ -32,6 +34,7 @@ export interface Assessment {
 
 export interface Group {
   name: string;
+  description: string;
   questions: Array<Question>;
 }
 
@@ -45,11 +48,18 @@ export interface Question {
   canComment: boolean;
   canAnswer: boolean;
   choices?: Array<Choice>;
+  teamMembers?: Array<TeamMember>;
 }
 
 export interface Choice {
   id: number;
   name: string;
+  explanation?: string;
+}
+
+export interface TeamMember {
+  key: string;
+  userName: string;
 }
 
 export interface Submission {
@@ -73,14 +83,16 @@ export class AssessmentService {
   constructor(
     private request: RequestService,
     private utils: UtilsService,
-    private storage: BrowserStorageService
+    private storage: BrowserStorageService,
+    private notification: NotificationService,
   ) {}
 
   getAssessment(id, action): Observable<any> {
     return this.request.get(api.get.assessment, {params: {
         assessment_id: id,
         structured: true,
-        review: (action == 'review') ? true : false
+        review: (action == 'review') ? true : false,
+        team_id: this.storage.getUser().teamId
       }})
       .pipe(map(response => {
         if (response.success && response.data) {
@@ -94,8 +106,8 @@ export class AssessmentService {
 
   private _normaliseAssessment(data) {
     // In API response, 'data' is an array of assessments(since we passed assessment id, it will return only one assessment, but still in array format). That's why we use data[0]
-    if (!Array.isArray(data) || 
-        !this.utils.has(data[0], 'Assessment') || 
+    if (!Array.isArray(data) ||
+        !this.utils.has(data[0], 'Assessment') ||
         !this.utils.has(data[0], 'AssessmentGroup')) {
       return this.request.apiResponseFormatError('Assessment format error');
     }
@@ -109,9 +121,9 @@ export class AssessmentService {
     };
 
     thisAssessment.AssessmentGroup.forEach(group => {
-      if (!this.utils.has(group, 'name') || 
-          !this.utils.has(group, 'description') || 
-          !this.utils.has(group, 'AssessmentGroupQuestion') || 
+      if (!this.utils.has(group, 'name') ||
+          !this.utils.has(group, 'description') ||
+          !this.utils.has(group, 'AssessmentGroupQuestion') ||
           !Array.isArray(group.AssessmentGroupQuestion)) {
         return this.request.apiResponseFormatError('Assessment.AssessmentGroup format error');
       }
@@ -120,9 +132,9 @@ export class AssessmentService {
         if (!this.utils.has(question, 'AssessmentQuestion')) {
           return this.request.apiResponseFormatError('Assessment.AssessmentGroupQuestion format error');
         }
-        if (!this.utils.has(question.AssessmentQuestion, 'id') || 
-            !this.utils.has(question.AssessmentQuestion, 'name') || 
-            !this.utils.has(question.AssessmentQuestion, 'description') || 
+        if (!this.utils.has(question.AssessmentQuestion, 'id') ||
+            !this.utils.has(question.AssessmentQuestion, 'name') ||
+            !this.utils.has(question.AssessmentQuestion, 'description') ||
             !this.utils.has(question.AssessmentQuestion, 'question_type') ||
             !this.utils.has(question.AssessmentQuestion, 'is_required') ||
             !this.utils.has(question.AssessmentQuestion, 'has_comment') ||
@@ -145,7 +157,7 @@ export class AssessmentService {
             let choices: Array<Choice> = [];
             question.AssessmentQuestion.AssessmentQuestionChoice.forEach(questionChoice => {
               if (
-                  !this.utils.has(questionChoice, 'id') || 
+                  !this.utils.has(questionChoice, 'id') ||
                   !this.utils.has(questionChoice, 'AssessmentChoice.name')
                 ) {
                 return this.request.apiResponseFormatError('Assessment.AssessmentChoice format error');
@@ -153,7 +165,8 @@ export class AssessmentService {
               // Here we use the AssessmentQuestionChoice.id (instead of AssessmentChoice.id) as the choice id, this is the current logic from Practera server
               choices.push({
                 id: questionChoice.id,
-                name: questionChoice.AssessmentChoice.name
+                name: questionChoice.AssessmentChoice.name,
+                explanation: this.utils.has(questionChoice, 'AssessmentChoice.explanation') ? questionChoice.AssessmentChoice.explanation : ''
               });
             });
             questions.push({
@@ -167,8 +180,8 @@ export class AssessmentService {
               choices: choices
             });
             break;
-          
-          case 'file': 
+
+          case 'file':
              if (!this.utils.has(question.AssessmentQuestion, 'file_type.type')) {
               return this.request.apiResponseFormatError('Assessment.AssessmentQuestion.file_type format error');
             }
@@ -181,6 +194,38 @@ export class AssessmentService {
               isRequired: question.AssessmentQuestion.is_required,
               canComment: question.AssessmentQuestion.has_comment,
               canAnswer: question.AssessmentQuestion.can_answer
+            });
+            break;
+
+          case 'team member selector':
+            if (!this.utils.has(question.AssessmentQuestion, 'TeamMember') ||
+                !Array.isArray(question.AssessmentQuestion.TeamMember)
+              ) {
+              return this.request.apiResponseFormatError('Assessment.TeamMember format error');
+            }
+
+            let teamMembers: Array<TeamMember> = [];
+            question.AssessmentQuestion.TeamMember.forEach(teamMember => {
+              if (
+                  !this.utils.has(teamMember, 'userName')
+                ) {
+                return this.request.apiResponseFormatError('Assessment.TeamMember format error');
+              }
+              teamMembers.push({
+                key: JSON.stringify(teamMember),
+                userName: teamMember.userName
+              });
+            });
+
+            questions.push({
+              id: question.AssessmentQuestion.id,
+              name: question.AssessmentQuestion.name,
+              type: question.AssessmentQuestion.question_type,
+              description: question.AssessmentQuestion.description,
+              isRequired: question.AssessmentQuestion.is_required,
+              canComment: question.AssessmentQuestion.has_comment,
+              canAnswer: question.AssessmentQuestion.can_answer,
+              teamMembers: teamMembers
             });
             break;
 
@@ -198,10 +243,13 @@ export class AssessmentService {
         }
 
       })
-      assessment.groups.push({
-        name: group.name,
-        questions: questions
-      });
+      if (!this.utils.isEmpty(questions)) {
+        assessment.groups.push({
+          name: group.name,
+          description: group.description,
+          questions: questions
+        });
+      }
     });
     return assessment;
   }
@@ -236,7 +284,7 @@ export class AssessmentService {
 
   private _normaliseSubmission(data) {
     // In API response, 'data' is an array of submissions(currently we only support one submission per assessment, but it is still in array format). That's why we use data[0]
-    if (!Array.isArray(data) || 
+    if (!Array.isArray(data) ||
         !this.utils.has(data[0], 'AssessmentSubmission')) {
       return this.request.apiResponseFormatError('AssessmentSubmission format error');
     }
@@ -247,6 +295,8 @@ export class AssessmentService {
       status: thisSubmission.AssessmentSubmission.status,
       answers: {}
     }
+
+    //-- normalise submission answers
     if (!this.utils.has(thisSubmission, 'AssessmentSubmissionAnswer') ||
         !Array.isArray(thisSubmission.AssessmentSubmissionAnswer)
         ) {
@@ -262,8 +312,12 @@ export class AssessmentService {
       submission.answers[answer.assessment_question_id] = {
         answer: answer.answer
       };
+      if (submission.status == 'published' || submission.status == 'done') {
+        submission = this._addChoiceExplanation(answer, submission);
+      }
     });
 
+    //-- normalise reviewer answers
     let review: Review;
     // AssessmentReview is in array format, current we only support one review per submission, that's why we use AssessmentReview[0]
     if (this.utils.has(thisSubmission, 'AssessmentReview[0].id')) {
@@ -296,10 +350,45 @@ export class AssessmentService {
         };
       });
     }
+
     return {
       submission: submission,
       review: review ? review : {}
     };
+  }
+
+  /**
+   * For each question that has choice (oneof & multiple), show the choice explanation in the submission if it is not empty
+   */
+  private _addChoiceExplanation(submissionAnswer, submission): Submission {
+    let questionId = submissionAnswer.assessment_question_id;
+    let answer = submissionAnswer.answer;
+    // don't do anything if there's no choices
+    if (this.utils.isEmpty(this.questions[questionId].AssessmentQuestionChoice)) {
+      return submission;
+    }
+    let explanation = '';
+    if (Array.isArray(answer)) {
+      // multiple question
+      this.questions[questionId].AssessmentQuestionChoice.forEach(choice => {
+        // only display the explanation if it is not empty
+        if (answer.includes(choice.id) && !this.utils.isEmpty(choice.explanation)) {
+          explanation += choice.AssessmentChoice.name + ' - ' + choice.explanation + "\n";
+        }
+      });
+    } else {
+      // oneof question
+      this.questions[questionId].AssessmentQuestionChoice.forEach(choice => {
+        // only display the explanation if it is not empty
+        if (answer === choice.id && !this.utils.isEmpty(choice.explanation)) {
+          explanation = choice.explanation;
+        }
+      });
+    }
+    // put the explanation in the submission
+    submission.answers[questionId].explanation = explanation;
+
+    return submission;
   }
 
   private _normaliseAnswer(questionId, answer) {
@@ -310,8 +399,15 @@ export class AssessmentService {
           answer = parseInt(answer);
           break;
         case "multiple":
+          if (!Array.isArray(answer)) {
+            // re-format json string to array
+            answer = JSON.parse(answer);
+          }
+          // re-format answer from string to number
+          answer = answer.map(value => {
+            return parseInt(value);
+          });
           break;
-        
       }
     }
     return answer;
@@ -356,7 +452,7 @@ export class AssessmentService {
 
   private _normaliseFeedbackReviewed(data) {
     // In API response, 'data' is an array of todo items. Since we passed "identifier", there should be just one in the array. That's why we use data[0]
-    if (!Array.isArray(data) || 
+    if (!Array.isArray(data) ||
         !this.utils.has(data[0], 'is_done')) {
       return this.request.apiResponseFormatError('TodoItem format error');
     }
@@ -372,7 +468,12 @@ export class AssessmentService {
     return this.request.post(api.post.todoitem, postData);
   }
 
-
+  popUpReviewRating(reviewId, redirect) {
+    return this.notification.modal(ReviewRatingComponent, {
+      reviewId,
+      redirect,
+    });
+  }
 }
 
 

@@ -4,6 +4,7 @@ import { map } from 'rxjs/operators';
 import { RequestService } from '@shared/request/request.service';
 import { UtilsService } from '@services/utils.service';
 import { BrowserStorageService } from '@services/storage.service';
+import { Activity } from '../project/project.service';
 
 /**
  * @name api
@@ -32,7 +33,7 @@ export interface TodoItem {
 export class HomeService {
 
   currentActivityId: number = 0;
-  
+
   constructor(
     private storage: BrowserStorageService,
     private request: RequestService,
@@ -63,15 +64,15 @@ export class HomeService {
       return [];
     }
     data.forEach(todoItem => {
-      if (!this.utils.has(todoItem, 'identifier') || 
-          !this.utils.has(todoItem, 'is_done') || 
+      if (!this.utils.has(todoItem, 'identifier') ||
+          !this.utils.has(todoItem, 'is_done') ||
           !this.utils.has(todoItem, 'meta')) {
         return this.request.apiResponseFormatError('TodoItem format error');
       }
       if (todoItem.is_done) {
         return ;
       }
-      
+
       // todo item for user to see the feedback
       if (todoItem.identifier.includes('AssessmentSubmission-')) {
         todoItems = this._addTodoItemForFeedbackAvailable(todoItem, todoItems);
@@ -156,8 +157,8 @@ export class HomeService {
     let noOfChats = 0;
     let todoItem: TodoItem;
     data.forEach(data => {
-      if (!this.utils.has(data, 'unread_messages') || 
-          !this.utils.has(data, 'name') || 
+      if (!this.utils.has(data, 'unread_messages') ||
+          !this.utils.has(data, 'name') ||
           !this.utils.has(data, 'last_message') ||
           !this.utils.has(data, 'last_message_created')) {
         return this.request.apiResponseFormatError('Chat object format error');
@@ -199,7 +200,7 @@ export class HomeService {
   }
 
   private _normaliseProgress(data) {
-    if (!this.utils.has(data, 'Project.progress') || 
+    if (!this.utils.has(data, 'Project.progress') ||
         !this.utils.has(data, 'Project.Milestone') ||
         !Array.isArray(data.Project.Milestone)) {
       this.request.apiResponseFormatError('Progress format error');
@@ -257,12 +258,16 @@ export class HomeService {
       }));
   }
 
-  private _normaliseActivity(data) {
+  private _normaliseActivity(data): Activity {
     if (!Array.isArray(data) ||
-        !this.utils.has(data[0], 'Activity.name') || 
+        !this.utils.has(data[0], 'Activity.name') ||
         !this.utils.has(data[0], 'Activity.is_locked')) {
       this.request.apiResponseFormatError('Activity format error');
-      return {};
+      return {
+        id: null,
+        name: '',
+        isLocked: false
+      };
     }
     let thisActivity = data[0];
     return {
