@@ -4,10 +4,10 @@
     <ion-title text-center>{{selectedChat.is_team ? selectedChat.team_name : selectedChat.name}}</ion-title>
   </ion-toolbar>
 </ion-header>
-<ion-content>
-  <ion-list lines="none" class="chat-list">
+<ion-content color="light">
+  <ion-list lines="none" color="light" class="chat-list">
     <ng-container *ngFor="let message of messageList">
-      <ion-item>
+      <ion-item color="light">
         <ng-container *ngIf="!message.is_sender">
           <ion-avatar [ngClass]="message.chat_color" slot="start">
             <p class="chat-avatar">{{getChatAvatarText(message.sender_name)}}</p>
@@ -18,7 +18,7 @@
             <p>{{message.sent_time}}</p>
           </div>
           <div class="message-body">
-            <p class="message-text" [innerHTML]="message.message | linkify"></p>
+            <p class="message-text" [innerHTML]="message.message"></p>
           </div>
           <ng-container *ngIf="message.sender_name && !message.is_sender">
             <div class="seen-text">
@@ -32,7 +32,7 @@
 </ion-content>
 <ion-footer>
     <ion-item lines="none">
-        <ion-textarea placeholder="Enter your message" (keydown.shift.enter)="sendMessage()" required="true" name="message" [(ngModel)]="message"></ion-textarea>
+        <ion-textarea placeholder="Enter your message" (keydown.enter)="sendMessage($event)" required="true" name="message" [(ngModel)]="message"></ion-textarea>
       <ion-button (click)="sendMessage()" type="submit" slot="end" fill="clear" color="light">
         <ion-icon name="send"></ion-icon>
       </ion-button>
