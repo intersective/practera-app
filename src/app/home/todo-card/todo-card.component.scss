@@ -7,6 +7,16 @@
 }
 .todo-item {
   --border-width: 0px !important;
+  .icon-item {
+    ion-text {
+      p {
+        max-height: 16px;
+        -webkit-line-clamp: 1;
+        line-height: 16px;
+        overflow: hidden;
+      }
+    }
+  }
 }
 .ending-arrow {
   margin-left: 5px;
