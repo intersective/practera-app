@@ -1,68 +1,58 @@
-<ion-card class="practera-card" text-left>
-  <ion-card-header class="q-title">
-    {{ question.name }}
-    <ion-text color="danger" *ngIf="question.isRequired">*</ion-text>
-    <ion-text color="medium"><p class="paragraph"><i [innerHtml]="question.description"></i></p></ion-text>
-  </ion-card-header>
-  <ion-card-content padding-horizontal class="q-content" color="light">
+<ng-container *ngIf="submission.answer">
+  <ion-list>
+    <ion-radio-group [value]="submission.answer">
+      <ion-item *ngFor="let teamMember of question.teamMembers" color="light">
+        <ion-label>{{ teamMember.userName }}</ion-label>
+        <ion-radio [value]="teamMember.key" disabled mode="md"></ion-radio>
+      </ion-item>
+    </ion-radio-group>
+  </ion-list>
+</ng-container>
 
-    <ng-container *ngIf="submission.answer">
-      <ion-list>
-        <ion-radio-group [value]="submission.answer">
-          <ion-item *ngFor="let teamMember of question.teamMembers" color="light">
-            <ion-label>{{ teamMember.userName }}</ion-label>
-            <ion-radio [value]="teamMember.key" disabled mode="md"></ion-radio>
-          </ion-item>
-        </ion-radio-group>
-      </ion-list>
-    </ng-container>
+<div *ngIf="review.answer || review.comment" class="q-reviews">
+  <ion-label class="q-title">Feedback</ion-label>
+  <ng-container *ngIf="review.answer">
+    <ion-list>
+      <ion-radio-group [value]="review.answer">
+        <ng-container *ngFor="let teamMember of question.teamMembers">
+          <ng-container *ngIf="teamMember.key === review.answer">
+            <ion-item color="light">
+              <ion-label>{{ teamMember.userName }}</ion-label>
+              <ion-radio [value]="teamMember.key" disabled mode="md"></ion-radio>
+            </ion-item>
+          </ng-container>
+        </ng-container>
+      </ion-radio-group>
+    </ion-list>
+  </ng-container>
+  <ng-container *ngIf="review.comment">
+    <p class="paragraph">{{ review.comment }}</p>
+  </ng-container>
+</div>
 
-    <div *ngIf="review.answer || review.comment" class="q-reviews">
-      <ion-label class="q-title">Feedback</ion-label>
-      <ng-container *ngIf="review.answer">
-        <ion-list>
-          <ion-radio-group [value]="review.answer">
-            <ng-container *ngFor="let teamMember of question.teamMembers">
-              <ng-container *ngIf="teamMember.key === review.answer">
-                <ion-item color="light">
-                  <ion-label>{{ teamMember.userName }}</ion-label>
-                  <ion-radio [value]="teamMember.key" disabled mode="md"></ion-radio>
-                </ion-item>
-              </ng-container>
-            </ng-container>
-          </ion-radio-group>
-        </ion-list>
-      </ng-container>
-      <ng-container *ngIf="review.comment">
-        <p class="paragraph">{{ review.comment }}</p>
-      </ng-container>
-    </div>
+<ng-container *ngIf="doAssessment">
+  <ion-list>
+    <ion-radio-group #answer (ionChange)="onChange(answer.value)">
+      <ion-item *ngFor="let teamMember of question.teamMembers">
+        <ion-label>{{ teamMember.userName }}</ion-label>
+        <ion-radio [value]="teamMember.key" mode="md"></ion-radio>
+      </ion-item>
+    </ion-radio-group>
+  </ion-list>
+</ng-container>
 
-    <ng-container *ngIf="doAssessment">
-      <ion-list>
-        <ion-radio-group #answer (ionChange)="onChange(answer.value)">
-          <ion-item *ngFor="let teamMember of question.teamMembers">
-            <ion-label>{{ teamMember.userName }}</ion-label>
-            <ion-radio [value]="teamMember.key" mode="md"></ion-radio>
-          </ion-item>
-        </ion-radio-group>
-      </ion-list>
-    </ng-container>
+<ng-container *ngIf="doReview">
+  <ion-list *ngIf="question.canAnswer">
+    <ion-radio-group #answer (ionChange)="onChange(answer.value, 'answer')">
+      <ion-list-header>
+        <ion-label>Your Answer is</ion-label>
+      </ion-list-header>
+      <ion-item *ngFor="let teamMember of question.teamMembers">
+        <ion-label>{{ teamMember.userName }}</ion-label>
+        <ion-radio [value]="teamMember.key" mode="md"></ion-radio>
+      </ion-item>
+    </ion-radio-group>
+  </ion-list>
+  <ion-textarea *ngIf="question.canComment" class="background-white" #comment margin-top rows="4" (blur)="onChange(comment.value, 'comment')" placeholder="Please put your feedback here"></ion-textarea>
+</ng-container>
 
-    <ng-container *ngIf="doReview">
-      <ion-list *ngIf="question.canAnswer">
-        <ion-radio-group #answer (ionChange)="onChange(answer.value, 'answer')">
-          <ion-list-header>
-            <ion-label>Your Answer is</ion-label>
-          </ion-list-header>
-          <ion-item *ngFor="let teamMember of question.teamMembers">
-            <ion-label>{{ teamMember.userName }}</ion-label>
-            <ion-radio [value]="teamMember.key" mode="md"></ion-radio>
-          </ion-item>
-        </ion-radio-group>
-      </ion-list>
-      <ion-textarea *ngIf="question.canComment" class="background-white" #comment margin-top rows="4" (blur)="onChange(comment.value, 'comment')" placeholder="Please put your feedback here"></ion-textarea>
-    </ng-container>
-
-  </ion-card-content>
-</ion-card>
