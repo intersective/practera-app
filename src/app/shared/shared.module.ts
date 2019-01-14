@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
 import { FormsModule } from '@angular/forms';
-import { ActivityCardComponent } from './components/activity-card/activity-card.component';
+import { ActivityCardComponent } from '@shared/components/activity-card/activity-card.component';
 
 @NgModule({
   imports: [
@@ -10,7 +10,7 @@ import { ActivityCardComponent } from './components/activity-card/activity-card.
     CommonModule,
   ],
   declarations: [
-    ActivityCardComponent,
+    ActivityCardComponent
   ],
   exports: [
     ActivityCardComponent,
