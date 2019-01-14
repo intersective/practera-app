@@ -48,12 +48,18 @@ export interface Question {
   canComment: boolean;
   canAnswer: boolean;
   choices?: Array<Choice>;
+  teamMembers?: Array<TeamMember>;
 }
 
 export interface Choice {
   id: number;
   name: string;
   explanation?: string;
+}
+
+export interface TeamMember {
+  key: string;
+  userName: string;
 }
 
 export interface Submission {
@@ -85,7 +91,8 @@ export class AssessmentService {
     return this.request.get(api.get.assessment, {params: {
         assessment_id: id,
         structured: true,
-        review: (action == 'review') ? true : false
+        review: (action == 'review') ? true : false,
+        team_id: this.storage.getUser().teamId
       }})
       .pipe(map(response => {
         if (response.success && response.data) {
@@ -187,6 +194,38 @@ export class AssessmentService {
               isRequired: question.AssessmentQuestion.is_required,
               canComment: question.AssessmentQuestion.has_comment,
               canAnswer: question.AssessmentQuestion.can_answer
+            });
+            break;
+
+          case 'team member selector':
+            if (!this.utils.has(question.AssessmentQuestion, 'TeamMember') ||
+                !Array.isArray(question.AssessmentQuestion.TeamMember)
+              ) {
+              return this.request.apiResponseFormatError('Assessment.TeamMember format error');
+            }
+
+            let teamMembers: Array<TeamMember> = [];
+            question.AssessmentQuestion.TeamMember.forEach(teamMember => {
+              if (
+                  !this.utils.has(teamMember, 'userName')
+                ) {
+                return this.request.apiResponseFormatError('Assessment.TeamMember format error');
+              }
+              teamMembers.push({
+                key: JSON.stringify(teamMember),
+                userName: teamMember.userName
+              });
+            });
+
+            questions.push({
+              id: question.AssessmentQuestion.id,
+              name: question.AssessmentQuestion.name,
+              type: question.AssessmentQuestion.question_type,
+              description: question.AssessmentQuestion.description,
+              isRequired: question.AssessmentQuestion.is_required,
+              canComment: question.AssessmentQuestion.has_comment,
+              canAnswer: question.AssessmentQuestion.can_answer,
+              teamMembers: teamMembers
             });
             break;
 
@@ -361,7 +400,7 @@ export class AssessmentService {
           break;
         case "multiple":
           if (!Array.isArray(answer)) {
-            // re-format json string to array 
+            // re-format json string to array
             answer = JSON.parse(answer);
           }
           // re-format answer from string to number
