@@ -46,7 +46,7 @@
               <app-description [content]="milestone.description"></app-description>
             </div>
             <div *ngIf="milestone.Activity" class="milestone-activities">
-              <ion-list class="activity-list">
+              <ion-list class="activity-list" color="light">
                 <ng-container *ngIf="loadingActivity" >
                   <ion-spinner></ion-spinner>
                 </ng-container>
