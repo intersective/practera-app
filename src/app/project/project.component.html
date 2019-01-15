@@ -44,7 +44,7 @@
             <p class="project-title">{{ milestone.name }}</p>
             <div class="milestone-description" [innerHtml]="milestone.description"></div>
             <div *ngIf="milestone.Activity" class="milestone-activities">
-              <ion-list class="activity-list">
+              <ion-list class="activity-list" color="light">
                 <ng-container *ngIf="loadingActivity" >
                   <ion-spinner></ion-spinner>
                 </ng-container>
