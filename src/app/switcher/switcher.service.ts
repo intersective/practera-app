@@ -73,18 +73,18 @@ export class SwitcherService {
       timelineId: programObj.timeline.id,
       contactNumber: programObj.enrolment.contact_number,
       themeColor: this.utils.has(programObj, 'program.config.theme_color') ? programObj.program.config.theme_color : '',
-      activityCard: this.utils.has(programObj, 'program.config.card_style') ? programObj.program.config.card_style : ''      
+      activityCard: this.utils.has(programObj, 'program.config.card_style') ? programObj.program.config.card_style : ''
     });
-    this._getTeamInfo().subscribe();
-    return this._getMyInfo();
+    this.getTeamInfo().subscribe();
+    return this.getMyInfo();
   }
 
-  private _getTeamInfo(): Observable<any> {
+  getTeamInfo(): Observable<any> {
     return this.request.get(api.teams)
       .pipe(map(response => {
         if (response.success && response.data) {
-          if (!this.utils.has(response.data, 'Teams') || 
-              !Array.isArray(response.data.Teams) || 
+          if (!this.utils.has(response.data, 'Teams') ||
+              !Array.isArray(response.data.Teams) ||
               !this.utils.has(response.data.Teams[0], 'id')
              ) {
             return this.storage.setUser({
@@ -98,12 +98,12 @@ export class SwitcherService {
       })
     );
   }
-  
+
   /**
-   * @name _getMyInfo
+   * @name getMyInfo
    * @description get user info
    */
-  private _getMyInfo(): Observable<any> {
+  getMyInfo(): Observable<any> {
     return this.request.get(api.me).pipe(map(response => {
       if (response.data) {
         if (!this.utils.has(response, 'data.User')) {
