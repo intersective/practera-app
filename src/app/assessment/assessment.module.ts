@@ -1,8 +1,6 @@
-import { IonicModule } from '@ionic/angular';
+import { SharedModule } from '@shared/shared.module';
 import { RouterModule } from '@angular/router';
 import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
 import { AssessmentRoutingModule } from './assessment-routing.module';
 import { ReactiveFormsModule } from '@angular/forms';
 
@@ -11,9 +9,7 @@ import { QuestionsModule } from '../questions/questions.module';
 
 @NgModule({
   imports: [
-    IonicModule,
-    CommonModule,
-    FormsModule,
+    SharedModule,
     AssessmentRoutingModule,
     ReactiveFormsModule,
     QuestionsModule

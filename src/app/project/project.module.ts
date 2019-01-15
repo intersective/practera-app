@@ -1,6 +1,5 @@
 import { RouterModule } from '@angular/router';
 import { NgModule } from '@angular/core';
-import { FormsModule } from '@angular/forms';
 import { ProjectComponent } from './project.component';
 import { NgCircleProgressModule } from 'ng-circle-progress';
 import { ProjectService } from './project.service';
@@ -11,7 +10,6 @@ import { SharedModule } from '@shared/shared.module';
 @NgModule({
   imports: [
     SharedModule,
-    FormsModule,
     ProjectRoutingModule,
     NgCircleProgressModule.forRoot({
       "outerStrokeLinecap": "butt",
