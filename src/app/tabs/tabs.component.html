@@ -2,29 +2,28 @@
 
   <ion-tab-bar slot="bottom">
 
-    <ion-tab-button tab="home">
+    <ion-tab-button tab="home" [class.selected]="selectedTab == 'home'">
       <ion-icon name="home"></ion-icon>
       <ion-badge color="danger" *ngIf="noOfTodoItems > 0">{{ noOfTodoItems }}</ion-badge>
       <ion-label>Home</ion-label>
     </ion-tab-button>
-
-    <ion-tab-button tab="project">
+    <ion-tab-button tab="project" [class.selected]="selectedTab == 'project'">
       <ion-icon name="list-box"></ion-icon>
       <ion-label>Activities</ion-label>
     </ion-tab-button>
 
-    <ion-tab-button *ngIf="showReview" tab="review">
+    <ion-tab-button *ngIf="showReview" tab="reviews" [class.selected]="selectedTab == 'reviews'">
       <ion-icon name="clipboard"></ion-icon>
       <ion-label>Review</ion-label>
     </ion-tab-button>
 
-    <ion-tab-button *ngIf="showChat" tab="chat">
+    <ion-tab-button *ngIf="showChat" tab="chat" [class.selected]="selectedTab == 'chat'">
       <ion-icon name="chatboxes"></ion-icon>
       <ion-badge color="danger" *ngIf="noOfChats > 0">{{ noOfChats }}</ion-badge>
       <ion-label>Chat</ion-label>
     </ion-tab-button>
 
-    <ion-tab-button tab="settings">
+    <ion-tab-button tab="settings" [class.selected]="selectedTab == 'settings'">
       <ion-icon name="settings"></ion-icon>
       <ion-label>Settings</ion-label>
     </ion-tab-button>
