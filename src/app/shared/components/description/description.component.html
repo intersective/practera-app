@@ -1,0 +1,12 @@
+<p *ngIf="content.length <= limit; else tmpl" [innerHtml]="content"></p>
+<ng-template #tmpl>
+  <ng-container *ngIf="isTruncating">
+    <p [innerHtml]="truncated()"></p>
+    <a href="javascript:void(0)" color="primary" (click)="isTruncating = false">show more</a>
+  </ng-container>
+
+  <ng-container *ngIf="!isTruncating">
+    <p [innerHtml]="content"></p>
+    <a href="javascript:void(0)" color="primary" (click)="isTruncating = true">show less</a>
+  </ng-container>
+</ng-template>
