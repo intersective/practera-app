@@ -32,7 +32,9 @@ export class RequestInterceptor implements HttpInterceptor {
     if (timelineId) {
       headerClone = headerClone.set('timelineId', timelineId);
     }
-    if (teamId) {
+
+    // do not need to pass team id for teams.json
+    if (teamId && !req.url.includes('/teams.json')) {
       headerClone = headerClone.set('teamId', teamId);
     }
 

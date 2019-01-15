@@ -14,7 +14,7 @@ export class RouterEnter implements OnInit {
     this.onEnter();
     this.subscription = this.router.events.subscribe(event => {
       if (event instanceof NavigationEnd && event.url.includes(this.routeUrl)) {
-        this.onEnter()
+        this.onEnter();
       }
     });
   }
