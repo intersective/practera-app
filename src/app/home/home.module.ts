@@ -1,5 +1,4 @@
 import { NgModule } from '@angular/core';
-import { FormsModule } from '@angular/forms';
 import { SharedModule } from '@shared/shared.module';
 import { HomeComponent } from './home.component';
 import { HomeRoutingComponent } from './home-routing.component';
@@ -10,7 +9,6 @@ import { TodoCardComponent } from './todo-card/todo-card.component';
 @NgModule({
   imports: [
     SharedModule,
-    FormsModule,
     NgCircleProgressModule.forRoot({
       "backgroundColor": "var(--ion-color-light)",
       "subtitleColor": "var(--ion-color-dark-tint)",
@@ -28,7 +26,7 @@ import { TodoCardComponent } from './todo-card/todo-card.component';
     HomeRoutingModule,
   ],
   declarations: [
-    HomeComponent, 
+    HomeComponent,
     HomeRoutingComponent,
     TodoCardComponent
   ],
