@@ -42,7 +42,9 @@
             <ion-icon *ngIf="milestone.isLocked" name="lock" color="medium" class="icon-lock"></ion-icon>
             <ion-text color="medium">MILESTONE</ion-text>
             <p class="project-title">{{ milestone.name }}</p>
-            <div class="milestone-description" [innerHtml]="milestone.description"></div>
+            <div class="milestone-description">
+              <app-description [content]="milestone.description"></app-description>
+            </div>
             <div *ngIf="milestone.Activity" class="milestone-activities">
               <ion-list class="activity-list">
                 <ng-container *ngIf="loadingActivity" >
