@@ -216,6 +216,8 @@ export class HomeService {
   }
 
   private _getCurrentActivityId(data) {
+    // initialise current activity id
+    this.currentActivityId = 0;
     data.Project.Milestone.forEach(this._loopThroughMilestones, this);
   }
 

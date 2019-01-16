@@ -29,11 +29,11 @@ export class ActivityComponent extends RouterEnter {
     public router: Router,
     private route: ActivatedRoute,
     private activityService: ActivityService,
-    private utils: UtilsService,
+    public utils: UtilsService,
     private notificationService: NotificationService,
-    private storage: BrowserStorageService
+    public storage: BrowserStorageService
   ) {
-    super(router);
+    super(router, utils, storage);
   }
 
   private _initialise() {
