@@ -43,7 +43,9 @@
                 "input": "src/styles.scss"
               }
             ],
-            "scripts": []
+            "scripts": [
+              "../node_modules/pusher-js/dist/web/pusher.min.js",
+            ],
           },
           "configurations": {
             "production": {
