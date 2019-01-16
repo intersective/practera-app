@@ -217,15 +217,7 @@ export class AssessmentComponent extends RouterEnter {
     this.assessmentService.saveAnswers(assessment, answers, this.action)
       .subscribe(result => {
         this.submitting = false;
-        let redirect = [];
-        // redirect to activity page if it is doing assessment
-        if (this.doAssessment) {
-          redirect = ['app', 'activity', this.activityId];
-        }
-        // redirect to reviews page if it is doing review
-        if (this.doReview) {
-          redirect = ['reviews'];
-        }
+        let redirect = ['app', 'home'];
         // display a pop up for successful submission
         return this.notificationService.popUp('shortMessage', {
           message: 'Submitted Successfully!'
@@ -250,7 +242,7 @@ export class AssessmentComponent extends RouterEnter {
     this.assessmentService.saveFeedbackReviewed(this.submission.id).subscribe(result => {
       // if review is successfully mark as read and program is configured to enable review rating, display review rating modal and then redirect to activity page.
       if (result.success && this.storage.getUser().hasReviewRating === true) {
-        this.assessmentService.popUpReviewRating(this.review.id, ['app', 'activity', this.activityId]);
+        this.assessmentService.popUpReviewRating(this.review.id, ['app', 'home']);
       }
     });
   }
