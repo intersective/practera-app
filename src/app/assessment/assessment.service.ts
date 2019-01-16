@@ -483,7 +483,7 @@ export class AssessmentService {
   popUpReviewRating(reviewId, redirect) {
     return this.notification.modal(ReviewRatingComponent, {
       reviewId,
-      redirect,
+      redirect
     });
   }
 }
