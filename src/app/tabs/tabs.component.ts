@@ -1,7 +1,9 @@
 import { Component } from '@angular/core';
 import { TabsService } from './tabs.service';
+import { UtilsService } from '@services/utils.service';
 import { BrowserStorageService } from '@services/storage.service';
 import { RouterEnter } from '@services/router-enter.service';
+import { SwitcherService } from '../switcher/switcher.service';
 import { Router } from '@angular/router';
 
 @Component({
@@ -16,16 +18,20 @@ export class TabsComponent extends RouterEnter {
   showChat = true;
   noOfTodoItems = 0;
   noOfChats = 0;
+  selectedTab = '';
 
   constructor (
     public router: Router,
     private tabsService: TabsService,
-    private storage: BrowserStorageService
+    public storage: BrowserStorageService,
+    public utils: UtilsService,
+    private switcherService: SwitcherService,
   ) {
-    super(router);
+    super(router, utils, storage);
   }
 
   onEnter() {
+    this._checkRoute();
     this.tabsService.getNoOfTodoItems()
       .subscribe(noOfTodoItems => {
         this.noOfTodoItems = noOfTodoItems;
@@ -37,8 +43,40 @@ export class TabsComponent extends RouterEnter {
           this.noOfChats = noOfChats;
         });
     }
-    if (!this.storage.getUser().teamId) {
-      this.showChat = false;
+    this.switcherService.getTeamInfo().subscribe(data => {
+      if (!this.storage.getUser().teamId) {
+        this.showChat = false;
+      }
+    });
+  }
+
+  private _checkRoute() {
+    switch (this.router.url) {
+      case "/app/home":
+        this.selectedTab = 'home';
+        break;
+
+      case "/app/project":
+        this.selectedTab = 'project';
+        break;
+
+      case "/app/settings":
+        this.selectedTab = 'settings';
+        break;
+
+      case "/app/chat":
+        this.selectedTab = 'chat';
+        break;
+
+      default:
+        if (this.router.url.includes('/app/activity')) {
+          this.selectedTab = 'project';
+        } else if (this.router.url.includes('/app/reviews')) {
+          this.selectedTab = 'reviews';
+        } else {
+          this.selectedTab = ''
+        }
+        break;
     }
   }
 }
