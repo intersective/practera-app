@@ -84,9 +84,10 @@ export class HomeComponent extends RouterEnter {
       this.fastFeedbackService.getFastFeedback()
         .subscribe(res => {
           // popup instant feedback view if question quantity found > 0
-          if (res.data && res.data.length > 0) {
+          if (res.data && res.data.slider.length > 0) {
             return this.fastFeedbackService.popUp({
-              questions: res.data,
+              questions: res.data.slider,
+              meta: res.data.meta
             });
           }
         })
