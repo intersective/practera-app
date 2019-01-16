@@ -3,6 +3,8 @@ import { Router } from '@angular/router';
 import { ProjectService, Milestone } from './project.service';
 import { HomeService } from '../home/home.service';
 import { RouterEnter } from '@services/router-enter.service';
+import { BrowserStorageService } from '@services/storage.service';
+import { UtilsService } from '@services/utils.service';
 
 export interface Activity {
   id: number;
@@ -41,10 +43,12 @@ export class ProjectComponent extends RouterEnter {
 
   constructor(
     public router: Router,
+    public utils: UtilsService,
+    public storage: BrowserStorageService,
     private projectService: ProjectService,
     private homeService: HomeService
    ) {
-    super(router);
+    super(router, utils, storage);
   }
 
   private _initialise() {

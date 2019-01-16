@@ -55,11 +55,11 @@ export class SettingsComponent extends RouterEnter {
     public router: Router,
     private authService: AuthService,
     private settingService : SettingService,
-    private storage : BrowserStorageService,
-    private utils: UtilsService,
+    public storage : BrowserStorageService,
+    public utils: UtilsService,
     private notificationService: NotificationService
   ){
-    super(router);
+    super(router, utils, storage);
   }
 
   onEnter() {
