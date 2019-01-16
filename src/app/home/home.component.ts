@@ -28,10 +28,10 @@ export class HomeComponent extends RouterEnter {
     public router: Router,
     private homeService: HomeService,
     private fastFeedbackService: FastFeedbackService,
-    private utils: UtilsService,
-    private storage: BrowserStorageService
+    public utils: UtilsService,
+    public storage: BrowserStorageService
   ) {
-    super(router);
+    super(router, utils, storage);
   }
 
   private _initialise() {
