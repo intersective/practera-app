@@ -53,11 +53,11 @@ export class AssessmentComponent extends RouterEnter {
     public router: Router,
     private route: ActivatedRoute,
     private assessmentService: AssessmentService,
-    private utils: UtilsService,
+    public utils: UtilsService,
     private notificationService: NotificationService,
-    private storage: BrowserStorageService,
+    public storage: BrowserStorageService,
   ) {
-    super(router);
+    super(router, utils, storage);
   }
 
   private _initialise() {

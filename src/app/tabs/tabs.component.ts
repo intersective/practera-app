@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { TabsService } from './tabs.service';
+import { UtilsService } from '@services/utils.service';
 import { BrowserStorageService } from '@services/storage.service';
 import { RouterEnter } from '@services/router-enter.service';
 import { SwitcherService } from '../switcher/switcher.service';
@@ -22,10 +23,11 @@ export class TabsComponent extends RouterEnter {
   constructor (
     public router: Router,
     private tabsService: TabsService,
-    private storage: BrowserStorageService,
-    private switcherService: SwitcherService
+    public storage: BrowserStorageService,
+    public utils: UtilsService,
+    private switcherService: SwitcherService,
   ) {
-    super(router);
+    super(router, utils, storage);
   }
 
   onEnter() {
