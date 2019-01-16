@@ -36,7 +36,7 @@ describe('ChatRoomComponent', () => {
     expect(component).toBeTruthy();
     expect(component.loadMessages).toBeDefined();
     expect(component.getChatAvatarText).toBeDefined();
-    expect(component.goBack).toBeDefined();
+    expect(component.back).toBeDefined();
     expect(component.sendMessage).toBeDefined();
   });
 
