@@ -1,7 +1,8 @@
 <ion-content class="review-rating" padding-horizontal>
   <div class="header-detail">
     <h1 class="title">Rating</h1>
-    <ion-icon class="close-button" name="close-circle-outline" (click)="closeReviewRating()"></ion-icon>
+    <!-- AV2-169 review rating is compulsory -->
+   <!--  <ion-icon class="close-button" name="close-circle-outline" (click)="closeReviewRating()"></ion-icon> -->
   </div>
 
   <hr class="separator">
@@ -29,11 +30,11 @@
   </div>
   <br>
 
-  <ion-input *ngIf="ratingData.tags.length > 0" placeholder="Add a personal thank you" class="comment-box" padding-horizontal [(ngModel)]="ratingData.comment"></ion-input>
+  <ion-input *ngIf="ratingData.rating !== 0.5" placeholder="Add a personal thank you" class="comment-box" padding-horizontal [(ngModel)]="ratingData.comment"></ion-input>
 
   <br>
   <div class="div-after-logo">
-    <ion-button [disabled]="ratingData.tags.length <= 0 || isSubmitting" (click)="submitReviewRating()" shape="round" expand="full">
+    <ion-button [disabled]="ratingData.rating === 0.5 || isSubmitting" (click)="submitReviewRating()" shape="round" expand="full">
       <ng-container *ngIf="!isSubmitting">Submit</ng-container>
       <ng-container *ngIf="isSubmitting">Submitting...</ng-container>
     </ion-button>
