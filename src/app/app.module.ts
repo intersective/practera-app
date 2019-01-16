@@ -16,6 +16,7 @@ import { UtilsService } from './services/utils.service';
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
 import { EmbedVideo } from 'ngx-embed-video';
 import { environment } from '../environments/environment';
+import { PusherModule } from '@shared/pusher/pusher.module';
 
 @NgModule({
   declarations: [
@@ -35,7 +36,11 @@ import { environment } from '../environments/environment';
     EmbedVideo.forRoot(),
     NotificationModule,
     FastFeedbackModule,
-    ReviewRatingModule
+    ReviewRatingModule,
+    PusherModule.forRoot({
+      apiurl: environment.APIEndpoint,
+      apikey: '255f010d210933ca7675',
+    })
   ],
   providers: [
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
