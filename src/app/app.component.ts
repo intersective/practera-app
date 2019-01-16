@@ -19,8 +19,14 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit() {
+    let searchParams = null;
     if (window.location.search) {
-      let searchParams = new URLSearchParams(window.location.search.substring(1));
+      searchParams = new URLSearchParams(window.location.search.substring(1));
+    } else if (window.location.hash) {
+      searchParams = new URLSearchParams(window.location.hash.substring(2));
+    }
+
+    if (searchParams) {
       if (searchParams.has('do')) {
         switch (searchParams.get('do')) {
           case "secure":
