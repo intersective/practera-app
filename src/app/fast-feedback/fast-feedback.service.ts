@@ -49,8 +49,8 @@ export class FastFeedbackService {
     return this.request.get(api.fastFeedback);
   }
 
-  submit(data, parameters) {
-    return this.request.post(api.submit, data);
+  submit(data, params) {
+    return this.request.post(api.submit, data, {params: params});
   }
 
   // show pop up message
