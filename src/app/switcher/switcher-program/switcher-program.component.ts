@@ -25,10 +25,10 @@ export class SwitcherProgramComponent extends RouterEnter {
     public router: Router,
     private authService: AuthService,
     private switcherService: SwitcherService,
-    private utils: UtilsService,
-    private storage: BrowserStorageService
+    public utils: UtilsService,
+    public storage: BrowserStorageService
   ) {
-    super(router);
+    super(router, utils, storage);
   }
 
   onEnter() {
@@ -45,7 +45,7 @@ export class SwitcherProgramComponent extends RouterEnter {
         if (color) {
           this.utils.changeThemeColor(color);
         }
-        this.router.navigate(['/app']);
+        this.router.navigate(['/app/home']);
       });
   }
 
