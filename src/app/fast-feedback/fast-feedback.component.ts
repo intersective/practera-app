@@ -13,6 +13,7 @@ import { NotificationService } from '@shared/notification/notification.service';
 export class FastFeedbackComponent implements OnInit {
   fastFeedbackForm: FormGroup;
   questions = [];
+  meta = [];
   loading: boolean = false;
 
   constructor(
@@ -38,6 +39,11 @@ export class FastFeedbackComponent implements OnInit {
     this.loading = true;
     const formData = this.fastFeedbackForm.value;
     const data = [];
+    const parameters = {
+      context_id: null,
+      team_id: null,
+      target_user_id: null
+    };
     this.utils.each(formData, (answer, questionId) => {
       data.push({
         id: questionId,
@@ -45,7 +51,13 @@ export class FastFeedbackComponent implements OnInit {
       });
     });
 
-    this.fastFeedbackService.submit(data).subscribe(res => {
+    parameters.context_id = this.meta['context_id'];
+    // prepare parameters
+    if (this.meta['team_id']) {
+      parameters.team_id = this.meta['team_id'];
+    }
+
+    this.fastFeedbackService.submit(data, parameters).subscribe(res => {
       this.notification.alert({
         header: 'Submission Successful',
         message: 'Thanks for taking time to answer the feedback question.',
