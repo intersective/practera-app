@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, HostListener, ViewChild, ViewChildren, QueryList, ElementRef } from '@angular/core';
 import { Router } from '@angular/router';
 import { ProjectService, Milestone } from './project.service';
 import { HomeService } from '../home/home.service';
@@ -34,6 +34,10 @@ export class ProjectComponent extends RouterEnter {
   public loadingActivity: boolean = true;
   public loadingMilestone: boolean = true;
   public loadingProgress: boolean = true;
+  @ViewChild('contentRef', {read: ElementRef}) contentRef: any;
+  @ViewChildren('milestoneRef', {read: ElementRef}) milestoneRefs: QueryList<ElementRef>;
+  private milestonePositions: Array<number> = [];
+  public activeMilestone: Array<boolean> = [];
 
   constructor(
     public router: Router,
@@ -60,16 +64,43 @@ export class ProjectComponent extends RouterEnter {
       .subscribe(milestones => {
         this.milestones = milestones;
         this.loadingMilestone = false;
+        this.activeMilestone = new Array(milestones.length);
+        this.activeMilestone.fill(false);
+        this.activeMilestone[0] = true;
         this.projectService.getActivities(milestones)
           .subscribe(activities => {
             this.milestones = this._addActivitiesToEachMilestone(this.milestones, activities);
             this.loadingActivity = false;
             this.projectService.getProgress(this.milestones).subscribe(progresses => {
+              this._getMilestonePositions();
               this.milestones = this._populateMilestoneProgress(progresses, this.milestones);
               this.loadingProgress = false;
             });
           });
       });
+  }
+
+  trackScrolling(event) {
+    let activeMilestoneIndex = this.milestonePositions.findIndex((element, i) => {
+      if (i == this.milestonePositions.length - 1) {
+        return event.detail.currentY >= element;
+      }
+      return event.detail.currentY >= element && event.detail.currentY < this.milestonePositions[i + 1];
+    });
+    // update active milestone status
+    this.activeMilestone.fill(false);
+    this.activeMilestone[activeMilestoneIndex] = true;
+  }
+
+  // scroll to a milestone. i is the index of milestone list
+  scrollTo(i) {
+    this.contentRef.nativeElement.scrollToPoint(0, this.milestonePositions[i], 500);
+  }
+
+  private _getMilestonePositions() {
+    this.milestonePositions = this.milestoneRefs.map(milestoneRef => {
+      return milestoneRef.nativeElement.offsetTop;
+    });
   }
 
   goToActivity(id) {

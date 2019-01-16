@@ -19,6 +19,10 @@
       font-size: 31px;
     }
   }
+
+  .active {
+    background-color: lightgrey;
+  }
 }
 
 .project-list {
@@ -26,11 +30,12 @@
     width: 100%;
     .milestone-description {
       color: var(--practera-milestone-name-font-color);
-      overflow: hidden;
       line-height: 20px;
-      max-height: 200px;
       font-size: 14px;
     }
+  }
+  :last-child {
+    --inner-border-width: 0px !important;
   }
 }
 .project-title {
@@ -45,6 +50,7 @@
 .activity-list {
   background: transparent;
   margin-left: -29px;
+
   .icon-lock {
     margin-right: 18px;
     font-size: 32px;

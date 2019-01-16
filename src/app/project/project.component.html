@@ -7,7 +7,7 @@
 
 <ion-grid class="milestone-bar">
   <ion-row >
-    <ion-col class="bubbles-top" *ngFor="let milestone of milestones">
+    <ion-col class="bubbles-top" [class.active]="activeMilestone[i]" (click)="scrollTo(i)" *ngFor="let milestone of milestones; let i = index">
       <ng-container *ngIf="loadingProgress; else progressTpl">
         <ion-spinner></ion-spinner>
       </ng-container>
@@ -30,21 +30,23 @@
   </ion-row>
 </ion-grid>
 
-<ion-content color="light">
+<ion-content color="light" [scrollEvents]="true" (ionScroll)="trackScrolling($event)" #contentRef>
   <ion-list class="project-list">
     <ion-item *ngIf="loadingMilestone" color="light">
       <ion-spinner></ion-spinner>
     </ion-item>
 
-    <ion-item *ngFor="let milestone of milestones" color="light">
+    <ion-item *ngFor="let milestone of milestones" color="light" #milestoneRef>
         <div color="light" class="project-card">
           <div class="milestone" padding >
             <ion-icon *ngIf="milestone.isLocked" name="lock" color="medium" class="icon-lock"></ion-icon>
             <ion-text color="medium">MILESTONE</ion-text>
             <p class="project-title">{{ milestone.name }}</p>
-            <div class="milestone-description" [innerHtml]="milestone.description"></div>
+            <div class="milestone-description">
+              <app-description [content]="milestone.description"></app-description>
+            </div>
             <div *ngIf="milestone.Activity" class="milestone-activities">
-              <ion-list class="activity-list">
+              <ion-list class="activity-list" color="light">
                 <ng-container *ngIf="loadingActivity" >
                   <ion-spinner></ion-spinner>
                 </ng-container>
