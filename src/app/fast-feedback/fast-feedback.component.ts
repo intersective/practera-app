@@ -39,25 +39,26 @@ export class FastFeedbackComponent implements OnInit {
     this.loading = true;
     const formData = this.fastFeedbackForm.value;
     const data = [];
-    const parameters = {
-      context_id: null,
-      team_id: null,
-      target_user_id: null
-    };
+
     this.utils.each(formData, (answer, questionId) => {
       data.push({
         id: questionId,
         choice_id: answer,
       });
     });
-
-    parameters.context_id = this.meta['context_id'];
     // prepare parameters
+    let params = {
+      context_id: this.meta['context_id']
+    };
+    // if team_id exist, pass team_id
     if (this.meta['team_id']) {
-      parameters.team_id = this.meta['team_id'];
+      params.team_id = this.meta['team_id'];
+    } else if (this.meta['target_user_id']) {
+      // otherwise, pass target_user_id
+      params.target_user_id = this.meta['target_user_id'];
     }
 
-    this.fastFeedbackService.submit(data, parameters).subscribe(res => {
+    this.fastFeedbackService.submit(data, params).subscribe(res => {
       this.notification.alert({
         header: 'Submission Successful',
         message: 'Thanks for taking time to answer the feedback question.',
