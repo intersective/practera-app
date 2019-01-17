@@ -48,7 +48,7 @@ export class ProjectComponent extends RouterEnter {
     private projectService: ProjectService,
     private homeService: HomeService
    ) {
-    super(router, utils, storage);
+    super(router, utils, storage);;
   }
 
   private _initialise() {

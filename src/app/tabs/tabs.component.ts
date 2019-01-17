@@ -25,9 +25,10 @@ export class TabsComponent extends RouterEnter {
     private tabsService: TabsService,
     public storage: BrowserStorageService,
     public utils: UtilsService,
-    private switcherService: SwitcherService,
+    private switcherService: SwitcherService
   ) {
     super(router, utils, storage);
+    this.utils.getEvent('test--event').subscribe(event => {console.log('from tab:', event)});
   }
 
   onEnter() {
