@@ -8,6 +8,7 @@ import { RequestModule } from '@shared/request/request.module';
 import { NotificationModule } from '@shared/notification/notification.module';
 import { AuthModule } from './auth/auth.module';
 import { FastFeedbackModule } from './fast-feedback/fast-feedback.module';
+import { ReviewRatingModule } from './review-rating/review-rating.module';
 
 import { AppComponent } from './app.component';
 import { NgCircleProgressModule } from 'ng-circle-progress';
@@ -19,11 +20,11 @@ import { environment } from '../environments/environment';
 @NgModule({
   declarations: [
     AppComponent,
-    PageNotFoundComponent,
+    PageNotFoundComponent
   ],
   imports: [
-    BrowserModule, 
-    IonicModule.forRoot(), 
+    BrowserModule,
+    IonicModule.forRoot(),
     AuthModule,
     RequestModule.forRoot({
       appkey: 'b11e7c189b',
@@ -34,6 +35,7 @@ import { environment } from '../environments/environment';
     EmbedVideo.forRoot(),
     NotificationModule,
     FastFeedbackModule,
+    ReviewRatingModule
   ],
   providers: [
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },

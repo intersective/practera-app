@@ -4,7 +4,7 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content>
+<ion-content color="light">
   <ion-list>
     <ng-container *ngFor="let chat of chatList">
       <ion-item (click)="navigateToChatRoom(chat)" [class]="chat.unread_messages > 0 ? 'unread' : ''">

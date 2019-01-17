@@ -118,7 +118,7 @@ export class ChatService {
       .set('data[to]', data.to.toString())
       .set('data[message]', data.message)
       .set('data[team_id]',data.team_id.toString())
-      .set('env', environment.chatEnvironment);
+      .set('env', environment.env);
     return this.request.post(api.createMessage, body.toString(), {
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
     });

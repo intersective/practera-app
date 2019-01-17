@@ -1,7 +1,7 @@
 export const environment = {
   production: true,
+  env: 'live',
   APIEndpoint: 'https://api.practera.com/',
-  chatEnvironment: 'live',
   filestack: {
     key: 'AO6F4C72uTPGRywaEijdLz',
     s3Config: {

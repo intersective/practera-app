@@ -4,7 +4,7 @@
 // The list of which env maps to which file can be found in configurations section of `angular.json`.
 export const environment = {
   production: false,
-  chatEnvironment: 'sandbox',
+  env: 'sandbox',
   APIEndpoint: 'http://stage-test.practera.com/',
   // APIEndpoint: 'https://sandbox.practera.com/'
   filestack: {

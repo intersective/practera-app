@@ -8,6 +8,7 @@ import { ChatListComponent } from './chat-list/chat-list.component';
 import { ChatRoomComponent } from './chat-room/chat-room.component';
 import { ChatRoutingModule } from './chat-routing.module';
 import { ChatService } from './chat.service';
+import { LinkifyPipe } from '../shared/pipes/linkify/linkify.pipe';
 
 @NgModule({
   imports: [
@@ -19,7 +20,8 @@ import { ChatService } from './chat.service';
   declarations: [
     ChatComponent, 
     ChatListComponent,
-    ChatRoomComponent
+    ChatRoomComponent,
+    LinkifyPipe
   ],
   providers:[ChatService],
   exports: [ChatRoomComponent]

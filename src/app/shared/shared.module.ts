@@ -2,18 +2,22 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
 import { FormsModule } from '@angular/forms';
-import { ActivityCardComponent } from './components/activity-card/activity-card.component';
+import { ActivityCardComponent } from '@shared/components/activity-card/activity-card.component';
+import { DescriptionComponent } from '@shared/components/description/description.component';
 
 @NgModule({
   imports: [
     IonicModule,
     CommonModule,
+    FormsModule
   ],
   declarations: [
     ActivityCardComponent,
+    DescriptionComponent
   ],
   exports: [
     ActivityCardComponent,
+    DescriptionComponent,
     IonicModule,
     CommonModule,
   ],

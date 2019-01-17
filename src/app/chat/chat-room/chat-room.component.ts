@@ -103,10 +103,15 @@ export class ChatRoomComponent implements OnInit, AfterContentInit {
     this.router.navigateByUrl("/app/(chat:chat)");
   }
 
-  sendMessage() {
+  sendMessage(event?:any) {
+    // preventing textarea default action when press enter.
+    if (event) {
+      event.preventDefault();
+    }
     if (this.message) {
       const message = this.message;
-      this.message = ""; // remove typed message from text field.
+      // remove typed message from text field.
+      this.message = ''; 
       // createing prams need to send message
       let data = {
         message: message,
@@ -127,6 +132,7 @@ export class ChatRoomComponent implements OnInit, AfterContentInit {
     }
   }
 
+  // call chat api to mark message as seen messages
   private markAsSeen(messageList) {
     let messageIdList = [];
     let index = 0;
