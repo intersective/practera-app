@@ -39,7 +39,7 @@ import { PusherModule } from '@shared/pusher/pusher.module';
     ReviewRatingModule,
     PusherModule.forRoot({
       apiurl: environment.APIEndpoint,
-      apikey: '255f010d210933ca7675',
+      pusherKey: '255f010d210933ca7675',
     })
   ],
   providers: [
