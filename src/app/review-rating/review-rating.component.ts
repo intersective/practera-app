@@ -50,11 +50,11 @@ export class ReviewRatingComponent {
       } else {
           this.notificationService.presentToast('Error submtting review rating.', false);
       }
-      this.closeReviewRating();
+      this._closeReviewRating();
     });
   }
 
-  closeReviewRating() {
+  private _closeReviewRating() {
     this.modalController.dismiss();
     // if this.redirect == false, don't redirect to another page
     if (this.redirect) {
