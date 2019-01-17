@@ -132,12 +132,19 @@ export class AuthService {
    /**
    * @name forgotPassword
    * @description make request to server to send out email with reset password url
-   * @param  {string}}        email [user's email which will receive reset password url]  
+   * @param  {string}}        email [user's email which will receive reset password url]
    * @return {Observable<any>}      [description]
    */
   forgotPassword(email:string): Observable<any>  {
+    let domain = window.location.hostname;
+    domain =
+      domain.indexOf("127.0.0.1") !== -1 ||
+      domain.indexOf("localhost") !== -1
+        ? "dev.app-v2.practera.com"
+        : domain;
     return this.request.post(api.forgotPassword, {
-      email: email
+      email: email,
+      domain: domain
     });
   }
 
@@ -163,7 +170,7 @@ export class AuthService {
   // but needs to be there so just pass in a 1
   connectToLinkedIn () {
     const url = '/api/auth_linkedin.json?apikey=' + this.storage.get('token') + '&appkey=' + this.storage.get('appkey') + '&timeline_id=' + this.storage.getUser().timelineId;
-    
+
     this.utils.openUrl(url);
     return;
   }
