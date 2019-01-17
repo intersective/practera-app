@@ -23,6 +23,9 @@ export class ChatRoomComponent implements OnInit, AfterContentInit {
   // @TODO need to create method to convert chat time to local time.
   @ViewChild(IonContent) content: IonContent;
 
+  teamId:number;
+  teamMemberId:number;
+  isTeam:boolean = false;
   message: any;
   messageList: any[];
   selectedChat: Chat;
@@ -54,6 +57,11 @@ export class ChatRoomComponent implements OnInit, AfterContentInit {
   }
 
   private validateRoutePrams() {
+    this.teamId = parseInt(this.activatedRoute.snapshot.paramMap.get('teamId'));
+    if (!this.activatedRoute.snapshot.paramMap.get('teamMemberId')) {
+      this.isTeam = true;
+      this.teamMemberId = parseInt(this.activatedRoute.snapshot.paramMap.get('teamMemberId'));
+    }
     this.activatedRoute.queryParams.subscribe(params => {
       this.selectedChat = JSON.parse(params["selectedChatObject"]);
       this.loadMessages(false);
