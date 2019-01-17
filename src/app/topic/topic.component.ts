@@ -4,6 +4,8 @@ import { EmbedVideoService } from 'ngx-embed-video';
 import { Router, ActivatedRoute } from '@angular/router';
 import { FilestackService } from '@shared/filestack/filestack.service';
 import { RouterEnter } from '@services/router-enter.service';
+import { UtilsService } from '@services/utils.service';
+import { BrowserStorageService } from '@services/storage.service';
 
 @Component({
   selector: 'app-topic',
@@ -33,9 +35,11 @@ export class TopicComponent extends RouterEnter {
     private embedService: EmbedVideoService,
     public router: Router,
     private route: ActivatedRoute,
-    private filestackService: FilestackService
+    private filestackService: FilestackService,
+    public storage: BrowserStorageService,
+    public utils: UtilsService
   ) {
-    super(router);
+    super(router, utils, storage);
   }
 
   private _initialise() {

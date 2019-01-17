@@ -13,12 +13,20 @@ interface Question {
   id: number;
   title: string;
   description: string;
-  choices: Choice[];
+  choices: Array<Choice>;
+}
+
+export interface Meta {
+  context_id: number;
+  team_id: number;
+  target_user_id: number;
+  team_name: string;
+  assessment_name: string;
 }
 
 const api = {
-  fastFeedback: '/api/v2/observation/slider/list',
-  submit: '/api/v2/observation/slider/create',
+  fastFeedback: '/api/v2/observation/slider/list.json',
+  submit: '/api/v2/observation/slider/create.json',
 };
 @Injectable({
   providedIn: 'root'
@@ -41,14 +49,14 @@ export class FastFeedbackService {
     return this.request.get(api.fastFeedback);
   }
 
-  submit(data) {
-    return this.request.post(api.submit, data);
+  submit(data, params) {
+    return this.request.post(api.submit, data, {params: params});
   }
 
   // show pop up message
   // this is using pop-up.component.ts as the view
   // put redirect = false if don't need to redirect
-  async popUp(props: { questions?: Question[]; } = {}) {
+  async popUp(props: { questions?: Array<Question>, meta?: Meta } = {}) {
     const data = Object.assign(this.modalConfig.componentProps, props);
     const config = Object.assign(this.modalConfig, data);
 

@@ -10,7 +10,9 @@
     <ion-spinner></ion-spinner>
   </ng-container>
   <h1>{{ activity.name }}</h1>
-  <p [innerHtml]="activity.description"></p>
+  <div text-left>
+    <app-description [content]="activity.description"></app-description>
+  </div>
   <ion-label color="medium" text-left padding-top class="label">
     Tasks
   </ion-label>

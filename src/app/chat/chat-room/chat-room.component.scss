@@ -1,21 +1,13 @@
 .chat-list {
   ion-item {
 
-    &.no-avatar {
-      ion-label {
-        &.reserved-messages {
-          margin-left: 10%;
-        }
-      }
-    }
-
     ion-avatar {
 
-      margin: 20px 6px 2px 0 !important;
+      margin: 2px 6px 2px 0 !important;
       margin-left: -8px !important;
 
       &.no-time {
-        margin-top: 0% !important;
+        margin-top: -8% !important;
       }
 
       ion-icon {
@@ -131,13 +123,22 @@
         min-width: 73px;
         max-width: 224px;
 
-        p {
+        .message-text {
           color: black;
           font-size: 16px;
           line-height: 24px;
           margin: 0;
           text-align: left;
-          white-space: normal;
+          user-select: all !important;
+          white-space: pre-wrap !important;
+
+          a.linkified {
+            color: black;
+            font-size: 16px;
+            line-height: 24px;
+            margin: 0;
+            text-align: left;
+          }
         }
       }
 
@@ -151,7 +152,7 @@
         text-align: left;
 
         .message-body {
-          background-color: var(--ion-color-light);
+          background-color: white;
         }
 
         .time {
@@ -159,10 +160,13 @@
           width: -webkit-fill-available !important;
         }
 
+        &.no-avatar {
+          margin-left: 10%;
+        }
+
       }
 
       &.send-messages {
-
         text-align: right;
 
         .message-body {
@@ -170,13 +174,18 @@
           // margin-left: calc(100% - 150px) !important;
           float: right;
 
-          p {
-            color: white;
+          .message-text {
+            color: white !important;
+            a.linkified {
+              color: white !important;
+              font-size: 16px;
+              line-height: 24px;
+              margin: 0;
+              text-align: left;
+            }
           }
-
         }
       }
-
     }
   }
 }
