@@ -34,6 +34,7 @@
           </div>
           <ng-template #submissionTpl>
             <ion-card-content [ngSwitch]="question.type" padding-horizontal class="q-content" color="light">
+              <i *ngIf="!doAssessment && !doReview && !submission.answers[question.id]">No Answer</i>
 
               <app-text
                 *ngSwitchCase="'text'"
