@@ -32,6 +32,7 @@ export class HomeComponent extends RouterEnter {
     public storage: BrowserStorageService
   ) {
     super(router, utils, storage);
+    this.utils.getEvent('notification').subscribe(event => {console.log('from home:', event)});
   }
 
   private _initialise() {
@@ -84,7 +85,7 @@ export class HomeComponent extends RouterEnter {
       this.fastFeedbackService.getFastFeedback()
         .subscribe(res => {
           // popup instant feedback view if question quantity found > 0
-          if (res.data && res.data.slider.length > 0) {
+          if (!this.utils.isEmpty(res.data) && res.data.slider.length > 0) {
             return this.fastFeedbackService.popUp({
               questions: res.data.slider,
               meta: res.data.meta
@@ -113,4 +114,5 @@ export class HomeComponent extends RouterEnter {
   ngOnDestroy(): void {
     this.subscriptions.forEach(subscription => subscription.unsubscribe());
   }
+
 }
