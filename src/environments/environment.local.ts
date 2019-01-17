@@ -1,5 +1,6 @@
 export const environment = {
   production: false,
+  env: 'develop',
   APIEndpoint: 'http://127.0.0.1:8080/',
   filestack: {
     key: 'AO6F4C72uTPGRywaEijdLz',
