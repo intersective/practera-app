@@ -4,9 +4,10 @@
 // The list of which env maps to which file can be found in configurations section of `angular.json`.
 export const environment = {
   production: false,
+  appkey: 'b11e7c189b',
+  pusherKey: '255f010d210933ca7675',
   env: 'sandbox',
-  APIEndpoint: 'http://stage-test.practera.com/',
-  // APIEndpoint: 'https://sandbox.practera.com/'
+  APIEndpoint: 'https://stage-test.practera.com/',
   filestack: {
     key: 'AO6F4C72uTPGRywaEijdLz',
     s3Config: {

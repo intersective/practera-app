@@ -5,11 +5,12 @@ import { catchError, map, filter } from 'rxjs/operators';
 import { RequestService } from '@shared/request/request.service';
 import { environment } from '@environments/environment';
 import { UtilsService } from '@services/utils.service';
+import { BrowserStorageService } from '@services/storage.service';
 
 declare const Pusher: any;
 const api = {
-  pusherAuth: '/api/v2/message/notify/pusher_auth.json',
-  channels: '/api/v2/message/notify/channels.json'
+  pusherAuth: 'api/v2/message/notify/pusher_auth.json',
+  channels: 'api/v2/message/notify/channels.json'
 };
 
 export class PusherConfig {
@@ -36,7 +37,8 @@ export class PusherService {
     private http: HttpClient,
     @Optional() config: PusherConfig,
     private request: RequestService,
-    private utils: UtilsService
+    private utils: UtilsService,
+    public storage: BrowserStorageService
   ) {
     if (config) {
       this.pusherKey = config.pusherKey;
@@ -50,6 +52,9 @@ export class PusherService {
         auth: {
           headers: {
             'Authorization': 'pusherKey=' + this.pusherKey,
+            'appkey': environment.appkey,
+            'apikey': this.storage.get('apikey'),
+            'timelineid': this.storage.getUser().timelineId
           },
         },
       });
@@ -59,7 +64,9 @@ export class PusherService {
   }
 
   getChannels() {
-    this.request.get(api.channels, {params: {
+    // unsubscribe channels before subscribe the new ones
+    this.unsubscribeChannels();
+    return this.request.get(api.channels, {params: {
         env: environment.env
       }})
       .pipe(map(response => {
@@ -68,6 +75,16 @@ export class PusherService {
         }
       })
     );
+  }
+
+  // unsubscribe all channels
+  unsubscribeChannels() {
+    this.utils.each(this.channelNames, (channel, key) => {
+      if (channel) {
+        this.pusher.unsubscribe(channel);
+        this.channelNames[key] = null;
+      }
+    });
   }
 
   private _subscribeChannels(data) {
@@ -81,19 +98,29 @@ export class PusherService {
       // subscribe channels and bind events
       if (channel.channel.includes('private-' + environment.env + '-team-')) {
         this.channelNames.team = channel.channel;
-        this.pusher.subscribe(channel.channel).bind('send-event', this._sendEventForTeam);
-        this.pusher.subscribe(channel.channel).bind('typing-event', this._typingEventForTeam);
+        this.pusher.subscribe(channel.channel).bind('send-event', data => {
+          this.utils.broadcastEvent('team-message', data);
+        });
+        this.pusher.subscribe(channel.channel).bind('typing-event', data => {
+          this.utils.broadcastEvent('team-typing', data);
+        });
         return;
       }
       if (channel.channel.includes('private-' + environment.env + '-team-nomentor-')) {
         this.channelNames.teamNoMentor = channel.channel;
-        this.pusher.subscribe(channel.channel).bind('send-event', this._sendEventForTeamNoMentor);
-        this.pusher.subscribe(channel.channel).bind('typing-event', this._typingEventForTeamNoMentor);
+        this.pusher.subscribe(channel.channel).bind('send-event', data => {
+          this.utils.broadcastEvent('team-no-mentor-message', data);
+        });
+        this.pusher.subscribe(channel.channel).bind('typing-event', data => {
+          this.utils.broadcastEvent('team-no-mentor-typing', data);
+        });
         return;
       }
       if (channel.channel.includes('private-' + environment.env + '-notification-')) {
         this.channelNames.notification = channel.channel;
-        this.pusher.subscribe(channel.channel).bind('notification', this._notificationEvent);
+        this.pusher.subscribe(channel.channel).bind('notification', data => {
+          this.utils.broadcastEvent('notification', data);
+        });
         return;
       }
       if (channel.channel.includes('presence-' + environment.env + '-team-')) {
@@ -101,23 +128,6 @@ export class PusherService {
         return;
       }
     });
-  }
-
-  // broadcast events to the app
-  private _sendEventForTeam(data) {
-    this.utils.broadcastEvent('team-message', data);
-  }
-  private _typingEventForTeam(data) {
-    this.utils.broadcastEvent('team-typing', data);
-  }
-  private _sendEventForTeamNoMentor(data) {
-    this.utils.broadcastEvent('team-no-mentor-message', data);
-  }
-  private _typingEventForTeamNoMentor(data) {
-    this.utils.broadcastEvent('team-no-mentor-typing', data);
-  }
-  private _notificationEvent(data) {
-    this.utils.broadcastEvent('notification', data);
   }
 
 }

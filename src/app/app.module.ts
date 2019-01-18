@@ -28,7 +28,7 @@ import { PusherModule } from '@shared/pusher/pusher.module';
     IonicModule.forRoot(),
     AuthModule,
     RequestModule.forRoot({
-      appkey: 'b11e7c189b',
+      appkey: environment.appkey,
       prefixUrl: environment.APIEndpoint,
     }),
     AppRoutingModule,
@@ -39,7 +39,7 @@ import { PusherModule } from '@shared/pusher/pusher.module';
     ReviewRatingModule,
     PusherModule.forRoot({
       apiurl: environment.APIEndpoint,
-      pusherKey: '255f010d210933ca7675',
+      pusherKey: environment.pusherKey,
     })
   ],
   providers: [
