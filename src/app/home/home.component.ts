@@ -29,9 +29,16 @@ export class HomeComponent extends RouterEnter {
     private homeService: HomeService,
     private fastFeedbackService: FastFeedbackService,
     public utils: UtilsService,
-    public storage: BrowserStorageService
+    public storage: BrowserStorageService,
   ) {
     super(router, utils, storage);
+    this.utils.getEvent('notification').subscribe(event => {
+      let todoItem = this.homeService.getTodoItemFromEvent(event);
+      if (!this.utils.isEmpty(todoItem)) {
+        // add todo item to the list if it is not empty
+        this.todoItems.push(todoItem);
+      }
+    });
   }
 
   private _initialise() {
@@ -84,7 +91,7 @@ export class HomeComponent extends RouterEnter {
       this.fastFeedbackService.getFastFeedback()
         .subscribe(res => {
           // popup instant feedback view if question quantity found > 0
-          if (res.data && res.data.slider.length > 0) {
+          if (!this.utils.isEmpty(res.data) && res.data.slider.length > 0) {
             return this.fastFeedbackService.popUp({
               questions: res.data.slider,
               meta: res.data.meta
@@ -113,4 +120,5 @@ export class HomeComponent extends RouterEnter {
   ngOnDestroy(): void {
     this.subscriptions.forEach(subscription => subscription.unsubscribe());
   }
+
 }

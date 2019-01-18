@@ -15,7 +15,8 @@ import { NgCircleProgressModule } from 'ng-circle-progress';
 import { UtilsService } from './services/utils.service';
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
 import { EmbedVideo } from 'ngx-embed-video';
-import { environment } from '../environments/environment';
+import { environment } from '@environments/environment';
+import { PusherModule } from '@shared/pusher/pusher.module';
 
 @NgModule({
   declarations: [
@@ -27,7 +28,7 @@ import { environment } from '../environments/environment';
     IonicModule.forRoot(),
     AuthModule,
     RequestModule.forRoot({
-      appkey: 'b11e7c189b',
+      appkey: environment.appkey,
       prefixUrl: environment.APIEndpoint,
     }),
     AppRoutingModule,
@@ -35,7 +36,11 @@ import { environment } from '../environments/environment';
     EmbedVideo.forRoot(),
     NotificationModule,
     FastFeedbackModule,
-    ReviewRatingModule
+    ReviewRatingModule,
+    PusherModule.forRoot({
+      apiurl: environment.APIEndpoint,
+      pusherKey: environment.pusherKey,
+    })
   ],
   providers: [
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
