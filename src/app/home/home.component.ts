@@ -29,7 +29,7 @@ export class HomeComponent extends RouterEnter {
     private homeService: HomeService,
     private fastFeedbackService: FastFeedbackService,
     public utils: UtilsService,
-    public storage: BrowserStorageService
+    public storage: BrowserStorageService,
   ) {
     super(router, utils, storage);
     this.utils.getEvent('notification').subscribe(event => {

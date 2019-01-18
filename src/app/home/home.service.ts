@@ -291,7 +291,6 @@ export class HomeService {
    * @return {TodoItem}       [Normalised todo item]
    */
   getTodoItemFromEvent(event): TodoItem {
-    console.log('event:', event);
     if (!this.utils.has(event, 'type')) {
       this.request.apiResponseFormatError('Pusher notification event format error');
       return {};
