@@ -28,7 +28,9 @@ export class TabsComponent extends RouterEnter {
     private switcherService: SwitcherService
   ) {
     super(router, utils, storage);
-    this.utils.getEvent('test--event').subscribe(event => {console.log('from tab:', event)});
+    this.utils.getEvent('notification').subscribe(event => {
+      this.noOfTodoItems ++;
+    });
   }
 
   onEnter() {

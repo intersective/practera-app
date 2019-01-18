@@ -32,7 +32,13 @@ export class HomeComponent extends RouterEnter {
     public storage: BrowserStorageService
   ) {
     super(router, utils, storage);
-    this.utils.getEvent('notification').subscribe(event => {console.log('from home:', event)});
+    this.utils.getEvent('notification').subscribe(event => {
+      let todoItem = this.homeService.getTodoItemFromEvent(event);
+      if (!this.utils.isEmpty(todoItem)) {
+        // add todo item to the list if it is not empty
+        this.todoItems.push(todoItem);
+      }
+    });
   }
 
   private _initialise() {
