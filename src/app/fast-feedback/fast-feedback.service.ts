@@ -25,8 +25,8 @@ export interface Meta {
 }
 
 const api = {
-  fastFeedback: '/api/v2/observation/slider/list.json',
-  submit: '/api/v2/observation/slider/create.json',
+  fastFeedback: 'api/v2/observation/slider/list.json',
+  submit: 'api/v2/observation/slider/create.json',
 };
 @Injectable({
   providedIn: 'root'
