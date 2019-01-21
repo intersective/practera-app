@@ -33,7 +33,7 @@
             <ion-spinner></ion-spinner>
           </div>
           <ng-template #submissionTpl>
-            <ion-card-content [ngSwitch]="question.type" padding-horizontal class="q-content" color="light">
+            <ion-card-content [ngSwitch]="question.type" padding-horizontal class="q-content" color="light" margin-top>
               <i *ngIf="!doAssessment && !doReview && !submission.answers[question.id]">No Answer</i>
 
               <app-text
