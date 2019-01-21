@@ -92,7 +92,7 @@ export class HomeComponent extends RouterEnter {
         .subscribe(res => {
           // popup instant feedback view if question quantity found > 0
           if (!this.utils.isEmpty(res.data) && res.data.slider.length > 0) {
-            return this.fastFeedbackService.popUp({
+            return this.homeService.popUpFastFeedback({
               questions: res.data.slider,
               meta: res.data.meta
             });
