@@ -1,36 +1,43 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { ReviewsService, Review } from './reviews.service';
 import { Router } from '@angular/router';
+import { RouterEnter } from '@services/router-enter.service';
+import { UtilsService } from '../services/utils.service';
+import { BrowserStorageService } from '@services/storage.service';
 
 @Component({
   selector: 'app-reviews',
   templateUrl: './reviews.component.html',
   styleUrls: ['./reviews.component.scss']
 })
-export class ReviewsComponent implements OnInit {
+export class ReviewsComponent extends RouterEnter {
 
-  public reviews:Array <Review>;
-  public showDo: boolean = false;
-  
-  constructor( 
+  public routeUrl = '/app/reviews'
+  public reviews: Array<Review> = [];
+  public showDone: boolean = false;
+  public loadingReviews: boolean = true;
+
+  constructor(
     public reviewsService: ReviewsService,
-    public router: Router 
-  ) { }
+    public router: Router,
+    public utils: UtilsService,
+    public storage: BrowserStorageService,
+  ) {
+    super(router, utils, storage);
+  }
 
-  ngOnInit() {
+  onEnter() {
+    this.loadingReviews = true;
+    this.showDone = false;
     this.reviewsService.getReviews()
-      .subscribe(reviews => this.reviews = reviews);
-
+      .subscribe(reviews => {
+        this.reviews = reviews;
+        this.loadingReviews = false;
+      });
   }
-  activeDo (){
-    this.showDo = true;
-  };
 
-  activeDone (){
-    this.showDo = false;
-  };
-  gotoReview(contextId, id) {
-    this.router.navigateByUrl('assessment/review/'+ contextId +'/'+ id );
+  gotoReview(contextId, assessmentId) {
+    this.router.navigate(['assessment', 'review', contextId, assessmentId, {from: 'reviews'}]);
   }
-  
+
 }
