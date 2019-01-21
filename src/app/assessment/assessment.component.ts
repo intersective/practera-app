@@ -48,6 +48,7 @@ export class AssessmentComponent extends RouterEnter {
   loadingSubmission: boolean = true;
   questionsForm = new FormGroup({});
   submitting: boolean = false;
+  fromPage: string = '';
 
   constructor (
     public router: Router,
@@ -84,9 +85,10 @@ export class AssessmentComponent extends RouterEnter {
   onEnter() {
     this._initialise();
     this.action = this.route.snapshot.data.action;
-    this.id = parseInt(this.route.snapshot.paramMap.get('id'));
-    this.activityId = parseInt(this.route.snapshot.paramMap.get('activityId'));
-    this.contextId = parseInt(this.route.snapshot.paramMap.get('contextId'));
+    this.fromPage = this.route.snapshot.paramMap.get('from');
+    this.id = +this.route.snapshot.paramMap.get('id');
+    this.activityId = +this.route.snapshot.paramMap.get('activityId');
+    this.contextId = +this.route.snapshot.paramMap.get('contextId');
 
     // get assessment structure and populate the question form
     this.assessmentService.getAssessment(this.id, this.action)
@@ -149,7 +151,13 @@ export class AssessmentComponent extends RouterEnter {
   }
 
   back() {
-    this.router.navigate(['app', 'activity', this.activityId ]);
+    if (this.fromPage && this.fromPage === 'reviews') {
+      return this.router.navigate(['app', 'reviews']);
+    }
+    if (this.activityId) {
+      return this.router.navigate(['app', 'activity', this.activityId ]);
+    }
+    return this.router.navigate(['app', 'home']);
   }
 
   // form an object of required questions
