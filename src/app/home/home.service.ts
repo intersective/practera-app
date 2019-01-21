@@ -5,6 +5,9 @@ import { RequestService } from '@shared/request/request.service';
 import { UtilsService } from '@services/utils.service';
 import { BrowserStorageService } from '@services/storage.service';
 import { Activity } from '../project/project.service';
+import { FastFeedbackComponent } from '../fast-feedback/fast-feedback.component';
+import { Question, Meta} from '../fast-feedback/fast-feedback.service';
+import { NotificationService } from '@shared/notification/notification.service';
 
 /**
  * @name api
@@ -44,6 +47,7 @@ export class HomeService {
     private storage: BrowserStorageService,
     private request: RequestService,
     private utils: UtilsService,
+    private notification: NotificationService,
   ) {}
 
   getProgramName() {
@@ -345,6 +349,16 @@ export class HomeService {
         };
 
     }
+  }
+
+  /**
+   * Pop up the fast feedback modal window
+   */
+  async popUpFastFeedback(props: { questions?: Array<Question>, meta?: Meta } = {}) {
+    const modal = await this.notification.modal(FastFeedbackComponent, props, {
+      backdropDismiss: false,
+      showBackdrop: false,
+    });
   }
 
 }
