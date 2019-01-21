@@ -7,7 +7,7 @@ import { FilestackService } from '@shared/filestack/filestack.service';
   templateUrl: 'file.component.html',
   styleUrls: ['file.component.scss'],
   providers: [
-    { 
+    {
       provide: NG_VALUE_ACCESSOR,
       multi: true,
       useExisting: forwardRef(() => FileComponent),
@@ -56,9 +56,9 @@ export class FileComponent implements ControlValueAccessor, OnInit {
 
   onFileUploadCompleted(file, type = null) {
     if (file.success) {
-      // reset errors 
+      // reset errors
       this.errors = [];
-      // currently we only support one file upload per question, if we need to support multiple file upload later, we need to change this to: 
+      // currently we only support one file upload per question, if we need to support multiple file upload later, we need to change this to:
       // this.uploadedFiles = push(file.data);
       this.uploadedFile = file.data;
       this.onChange('', type);

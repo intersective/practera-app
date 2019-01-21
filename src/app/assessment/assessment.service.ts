@@ -264,7 +264,7 @@ export class AssessmentService {
     return assessment;
   }
 
-  getSubmission(assessmentId, contextId, action): Observable<any> {
+  getSubmission(assessmentId, contextId, action, submissionId?): Observable<any> {
     let params;
     if (action == 'review') {
       params = {
@@ -277,6 +277,9 @@ export class AssessmentService {
         assessment_id: assessmentId,
         context_id: contextId
       };
+    }
+    if (submissionId) {
+      params['id'] = submissionId;
     }
     return this.request.get(api.get.submissions, {params: params})
       .pipe(map(response => {
