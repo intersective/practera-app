@@ -102,7 +102,7 @@
       <ng-container *ngIf="submitting">Submitting...</ng-container>
     </ion-button>
 
-    <div *ngIf="submission.status == 'published'" class="text-right">
+    <div *ngIf="action === 'assessment' && submission.status == 'published'" class="text-right">
       <span class="vertical-middle">Mark feedback as read</span>
       <ng-container *ngIf="!loadingFeedbackReviewed; else spinnerTmpl">
         <ion-toggle [checked]="feedbackReviewed" [disabled]="feedbackReviewed" (ionChange)="reviewFeedback()" margin-start class="vertical-middle"></ion-toggle>

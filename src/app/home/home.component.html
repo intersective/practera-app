@@ -44,7 +44,7 @@
             <app-todo-card
               *ngSwitchCase="'review_submission'"
               [todoItem]="todoItem"
-              (click)="goToReview(todoItem.meta.context_id, todoItem.meta.assessment_id)"
+              (click)="goToReview(todoItem.meta.context_id, todoItem.meta.assessment_id, todoItem.meta.assessment_submission_id)"
             ></app-todo-card>
             <app-todo-card
               *ngSwitchCase="'chat'"

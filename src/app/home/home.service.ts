@@ -30,6 +30,7 @@ export interface TodoItem {
     activity_id?: number;
     context_id?: number;
     assessment_id?: number;
+    assessment_submission_id?: number;
     assessment_name?: string;
     reviewer_name?: string;
   };
