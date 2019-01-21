@@ -131,8 +131,12 @@ export class ProjectComponent extends RouterEnter {
       milestones[milestoneIndex].Activity.forEach((activity, activityIndex) => {
         var thisActivity = milestoneProgress.Activity.find(item => {
           return item.id === activity.id;
-        })
-        milestones[milestoneIndex].Activity[activityIndex].progress = thisActivity.progress;
+        });
+        if (this.utils.has(thisActivity, 'progress')) {
+          milestones[milestoneIndex].Activity[activityIndex].progress = thisActivity.progress;
+        } else {
+          milestones[milestoneIndex].Activity[activityIndex].progress = 0;
+        }
       });
     });
     return milestones;
