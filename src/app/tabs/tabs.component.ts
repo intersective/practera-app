@@ -4,6 +4,7 @@ import { UtilsService } from '@services/utils.service';
 import { BrowserStorageService } from '@services/storage.service';
 import { RouterEnter } from '@services/router-enter.service';
 import { SwitcherService } from '../switcher/switcher.service';
+import { ReviewsService } from '../reviews/reviews.service';
 import { Router } from '@angular/router';
 
 @Component({
@@ -25,7 +26,8 @@ export class TabsComponent extends RouterEnter {
     private tabsService: TabsService,
     public storage: BrowserStorageService,
     public utils: UtilsService,
-    private switcherService: SwitcherService
+    private switcherService: SwitcherService,
+    private reviewsService: ReviewsService
   ) {
     super(router, utils, storage);
     this.utils.getEvent('notification').subscribe(event => {
@@ -51,6 +53,11 @@ export class TabsComponent extends RouterEnter {
         this.showChat = false;
       }
     });
+    this.reviewsService.getReviews().subscribe(data => {
+      if (data.length) {
+        this.showReview = true;
+      }
+    })
   }
 
   private _checkRoute() {
