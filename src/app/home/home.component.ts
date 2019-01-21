@@ -109,8 +109,8 @@ export class HomeComponent extends RouterEnter {
     this.router.navigate(['assessment', 'assessment', activityId , contextId, assessmentId]);
   }
 
-  goToReview(contextId, assessmentId) {
-    this.router.navigate(['assessment', 'review', contextId, assessmentId]);
+  goToReview(contextId, assessmentId, submissionId) {
+    this.router.navigate(['assessment', 'review', contextId, assessmentId, submissionId]);
   }
 
   goToChat() {
