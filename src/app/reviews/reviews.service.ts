@@ -9,13 +9,14 @@ const api = {
 };
 
 export interface Review {
-  assessmentId: number,
-  isDone: boolean,
-  name: string,
-  submitterName: string,
-  date?: string,
-  teamName?: string,
-  contextId: number
+  assessmentId: number;
+  submissionId: number;
+  isDone: boolean;
+  name: string;
+  submitterName: string;
+  date?: string;
+  teamName?: string;
+  contextId: number;
 }
 
 @Injectable({
@@ -51,12 +52,14 @@ export class ReviewsService {
           !this.utils.has(review, 'AssessmentReview.is_done') ||
           !this.utils.has(review, 'AssessmentSubmission.Submitter.name') ||
           !this.utils.has(review, 'AssessmentSubmission.context_id') ||
+          !this.utils.has(review, 'AssessmentSubmission.id') ||
           !this.utils.has(review, 'AssessmentReview.created') ||
           !this.utils.has(review, 'AssessmentReview.modified')) {
         return this.request.apiResponseFormatError('Reviews object format error');
       }
       reviews.push({
         assessmentId: review.Assessment.id,
+        submissionId: review.AssessmentSubmission.id,
         isDone: review.AssessmentReview.is_done,
         name: review.Assessment.name,
         submitterName: review.AssessmentSubmission.Submitter.name,
