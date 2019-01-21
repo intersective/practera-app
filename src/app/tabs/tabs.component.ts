@@ -49,7 +49,9 @@ export class TabsComponent extends RouterEnter {
         });
     }
     this.switcherService.getTeamInfo().subscribe(data => {
-      if (!this.storage.getUser().teamId) {
+      if (this.storage.getUser().teamId) {
+        this.showChat = true;
+      } else {
         this.showChat = false;
       }
     });
