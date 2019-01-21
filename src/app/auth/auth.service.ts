@@ -3,8 +3,10 @@ import { RequestService, QueryEncoder } from "@shared/request/request.service";
 import { HttpParams } from "@angular/common/http";
 import { map } from "rxjs/operators";
 import { Observable, of } from "rxjs";
+import { Router } from '@angular/router';
 import { BrowserStorageService } from "@services/storage.service";
 import { UtilsService } from "@services/utils.service";
+import { PusherService } from '@shared/pusher/pusher.service';
 
 /**
  * @name api
@@ -53,7 +55,9 @@ export class AuthService {
   constructor(
     private request: RequestService,
     private storage: BrowserStorageService,
-    private utils: UtilsService
+    private utils: UtilsService,
+    private router: Router,
+    private pusherService: PusherService
   ) {}
 
   private _clearCache(): any {
@@ -123,10 +127,12 @@ export class AuthService {
     return this.isLoggedIn || this.storage.get("isLoggedIn");
   }
 
-  logout(): Observable<any> {
+  logout() {
     // @TODO: clear ionic view history too
     this.utils.changeThemeColor('#2bbfd4');
-    return of(this.storage.clear());
+    this.pusherService.unsubscribeChannels();
+    this.storage.clear();
+    return this.router.navigate(['/login']);
   }
 
    /**
