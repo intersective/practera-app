@@ -36,8 +36,8 @@ export class ReviewsComponent extends RouterEnter {
       });
   }
 
-  gotoReview(contextId, assessmentId) {
-    this.router.navigate(['assessment', 'review', contextId, assessmentId, {from: 'reviews'}]);
+  gotoReview(contextId, assessmentId, submissionId) {
+    this.router.navigate(['assessment', 'review', contextId, assessmentId, submissionId, {from: 'reviews'}]);
   }
 
 }

@@ -25,7 +25,7 @@
           color="primary"
           class="card practera-card"
           *ngIf="review.isDone == showDone"
-          (click)="gotoReview(review.contextId, review.assessmentId)"
+          (click)="gotoReview(review.contextId, review.assessmentId, review.submissionId)"
         >
           <ion-card-content class="review">
             <h4  class="activity-name">{{review.name}}</h4>

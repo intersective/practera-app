@@ -23,6 +23,7 @@ export class AssessmentComponent extends RouterEnter {
   contextId: number;
   // action = 'assessment' is for user to do assessment
   // action = 'reivew' is for user to do review for this assessment
+  submissionId: number;
   action: string;
   // the structure of assessment
   assessment: Assessment = {
@@ -89,6 +90,7 @@ export class AssessmentComponent extends RouterEnter {
     this.id = +this.route.snapshot.paramMap.get('id');
     this.activityId = +this.route.snapshot.paramMap.get('activityId');
     this.contextId = +this.route.snapshot.paramMap.get('contextId');
+    this.submissionId = +this.route.snapshot.paramMap.get('submissionId');
 
     // get assessment structure and populate the question form
     this.assessmentService.getAssessment(this.id, this.action)
@@ -105,7 +107,7 @@ export class AssessmentComponent extends RouterEnter {
 
   // get the submission answers &/| review answers
   private _getSubmission() {
-    this.assessmentService.getSubmission(this.id, this.contextId, this.action)
+    this.assessmentService.getSubmission(this.id, this.contextId, this.action, this.submissionId)
       .subscribe(result => {
         this.submission = result.submission;
         this.loadingSubmission = false;
