@@ -284,7 +284,7 @@ export class AssessmentService {
     return this.request.get(api.get.submissions, {params: params})
       .pipe(map(response => {
         if (response.success && !this.utils.isEmpty(response.data)) {
-          return this._normaliseSubmission(response.data);
+          return this._normaliseSubmission(response.data, action);
         } else {
           return {
             submission: {},
@@ -295,7 +295,7 @@ export class AssessmentService {
     );
   }
 
-  private _normaliseSubmission(data) {
+  private _normaliseSubmission(data, action) {
     // In API response, 'data' is an array of submissions(currently we only support one submission per assessment, but it is still in array format). That's why we use data[0]
     if (!Array.isArray(data) ||
         !this.utils.has(data[0], 'AssessmentSubmission')) {
@@ -339,8 +339,8 @@ export class AssessmentService {
         answers: {}
       };
     }
-    // only get the review answer if the review is published (submission.status == 'published')
-    if (submission.status == 'published' &&
+    // only get the review answer if the review is published (submission.status == 'published') or this is from /assessment/review
+    if ( (submission.status == 'published' || action === 'review') &&
         this.utils.has(thisSubmission, 'AssessmentReviewAnswer') &&
         Array.isArray(thisSubmission.AssessmentReviewAnswer)) {
       if (!review) {
