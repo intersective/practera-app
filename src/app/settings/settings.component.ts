@@ -8,7 +8,6 @@ import { NotificationService } from '@shared/notification/notification.service';
 import { environment } from '../../environments/environment.prod';
 import { RouterEnter } from '@services/router-enter.service';
 
-
 @Component({
   selector: 'app-settings',
   templateUrl: 'settings.component.html',
@@ -57,7 +56,7 @@ export class SettingsComponent extends RouterEnter {
     private settingService : SettingService,
     public storage : BrowserStorageService,
     public utils: UtilsService,
-    private notificationService: NotificationService
+    private notificationService: NotificationService,
   ){
     super(router, utils, storage);
   }
@@ -229,9 +228,7 @@ export class SettingsComponent extends RouterEnter {
   }
 
   logout() {
-    return this.authService.logout().subscribe(() => {
-      return this.router.navigate(['/login']);
-    });
+    return this.authService.logout();
   }
 
 }
