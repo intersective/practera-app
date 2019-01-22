@@ -57,6 +57,7 @@ export class AuthDirectLoginComponent implements OnInit {
     // switch to the program
     this.switcherService.switchProgram(program)
       .subscribe(() => {
+        // -- todo --
         this.router.navigate(['/app/home']);
       });
   }
