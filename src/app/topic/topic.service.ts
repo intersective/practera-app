@@ -15,11 +15,11 @@ export interface Topic {
 
 const api = {
   get: {
-    stories:'/api/stories.json',
+    stories:'api/stories.json',
     progress: 'api/v2/motivations/progress/list.json'
   },
   post: {
-    updateProgress: '/api/v2/motivations/progress/create.json',
+    updateProgress: 'api/v2/motivations/progress/create.json',
   }
 };
 
@@ -59,7 +59,7 @@ export class TopicService {
       files:[]
     };
     let thisTopic = data[0];
-    if (!this.utils.has(thisTopic.Story, 'id') || 
+    if (!this.utils.has(thisTopic.Story, 'id') ||
         !this.utils.has(thisTopic.Story, 'title')) {
       return this.request.apiResponseFormatError('Story.Story format error');
     }
@@ -76,9 +76,9 @@ export class TopicService {
 
     return topic;
   }
-  
+
   updateTopicProgress(id){
-    
+
      let postData = {
       model: "topic",
       model_id: id,
@@ -86,7 +86,7 @@ export class TopicService {
     }
     return this.request.post(api.post.updateProgress, postData);
   }
-  
+
   getTopicProgress(activityId, topicId): Observable<any> {
     return this.request.get(api.get.progress, {params: {
       model: 'Activity',
@@ -104,5 +104,5 @@ export class TopicService {
       }
     }));
   }
-  
+
 }
