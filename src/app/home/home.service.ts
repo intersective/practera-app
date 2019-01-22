@@ -5,6 +5,9 @@ import { RequestService } from '@shared/request/request.service';
 import { UtilsService } from '@services/utils.service';
 import { BrowserStorageService } from '@services/storage.service';
 import { Activity } from '../project/project.service';
+import { FastFeedbackComponent } from '../fast-feedback/fast-feedback.component';
+import { Question, Meta} from '../fast-feedback/fast-feedback.service';
+import { NotificationService } from '@shared/notification/notification.service';
 
 /**
  * @name api
@@ -23,7 +26,14 @@ export interface TodoItem {
   name?: string;
   description?: string;
   time?: string;
-  meta?: any;
+  meta?: {
+    activity_id?: number;
+    context_id?: number;
+    assessment_id?: number;
+    assessment_submission_id?: number;
+    assessment_name?: string;
+    reviewer_name?: string;
+  };
 }
 
 @Injectable({
@@ -38,6 +48,7 @@ export class HomeService {
     private storage: BrowserStorageService,
     private request: RequestService,
     private utils: UtilsService,
+    private notification: NotificationService,
   ) {}
 
   getProgramName() {
@@ -277,6 +288,78 @@ export class HomeService {
       name: thisActivity.Activity.name,
       isLocked: thisActivity.Activity.is_locked
     };
+  }
+
+  /**
+   * When we get a notification event from Pusher, normalise the data to todo item and return it.
+   * @param  {Obj}   event [The event data get from Pusher]
+   * @return {TodoItem}       [Normalised todo item]
+   */
+  getTodoItemFromEvent(event): TodoItem {
+    if (!this.utils.has(event, 'type')) {
+      this.request.apiResponseFormatError('Pusher notification event format error');
+      return {};
+    }
+    switch (event.type) {
+      // This is a feedback available event
+      case "assessment_review_published":
+        if (!this.utils.has(event, 'meta.AssessmentReview.assessment_name') ||
+            !this.utils.has(event, 'meta.AssessmentReview.reviewer_name') ||
+            !this.utils.has(event, 'meta.AssessmentReview.published_date') ||
+            !this.utils.has(event, 'meta.AssessmentReview.assessment_id') ||
+            !this.utils.has(event, 'meta.AssessmentReview.activity_id') ||
+            !this.utils.has(event, 'meta.AssessmentReview.context_id')
+          ) {
+          this.request.apiResponseFormatError('Pusher notification event meta format error');
+          return {};
+        }
+        return {
+          type: 'feedback_available',
+          name: event.meta.AssessmentReview.assessment_name,
+          description: event.meta.AssessmentReview.reviewer_name + ' has provided feedback',
+          time: this._timeFormater(event.meta.AssessmentReview.published_date),
+          meta: {
+            activity_id: event.meta.AssessmentReview.activity_id,
+            context_id: event.meta.AssessmentReview.context_id,
+            assessment_id: event.meta.AssessmentReview.assessment_id,
+            assessment_name: event.meta.AssessmentReview.assessment_name,
+            reviewer_name: event.meta.AssessmentReview.reviewer_name,
+          }
+        };
+
+      // This is a submission ready for review event
+      case "assessment_review_assigned":
+        if (!this.utils.has(event, 'meta.AssessmentReview.assessment_name') ||
+            !this.utils.has(event, 'meta.AssessmentReview.assigned_date') ||
+            !this.utils.has(event, 'meta.AssessmentReview.assessment_id') ||
+            !this.utils.has(event, 'meta.AssessmentReview.context_id')
+          ) {
+          this.request.apiResponseFormatError('Pusher notification event meta format error');
+          return {};
+        }
+        return {
+          type: 'review_submission',
+          name: event.meta.AssessmentReview.assessment_name,
+          description: 'Please review the assessment',
+          time: this._timeFormater(event.meta.AssessmentReview.assigned_date),
+          meta: {
+            context_id: event.meta.AssessmentReview.context_id,
+            assessment_id: event.meta.AssessmentReview.assessment_id,
+            assessment_name: event.meta.AssessmentReview.assessment_name,
+          }
+        };
+
+    }
+  }
+
+  /**
+   * Pop up the fast feedback modal window
+   */
+  async popUpFastFeedback(props: { questions?: Array<Question>, meta?: Meta } = {}) {
+    const modal = await this.notification.modal(FastFeedbackComponent, props, {
+      backdropDismiss: false,
+      showBackdrop: false,
+    });
   }
 
 }

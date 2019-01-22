@@ -6,6 +6,7 @@ import { SwitcherService, ProgramObj } from '../switcher.service';
 import { BrowserStorageService } from '@services/storage.service';
 import { UtilsService } from '@services/utils.service';
 import { RouterEnter } from '@services/router-enter.service';
+import { PusherService } from '@shared/pusher/pusher.service';
 
 @Injectable({
   providedIn: 'root'
@@ -26,7 +27,8 @@ export class SwitcherProgramComponent extends RouterEnter {
     private authService: AuthService,
     private switcherService: SwitcherService,
     public utils: UtilsService,
-    public storage: BrowserStorageService
+    public storage: BrowserStorageService,
+    private pusherService: PusherService
   ) {
     super(router, utils, storage);
   }
@@ -45,14 +47,13 @@ export class SwitcherProgramComponent extends RouterEnter {
         if (color) {
           this.utils.changeThemeColor(color);
         }
+        this.pusherService.getChannels().subscribe();
         this.router.navigate(['/app/home']);
       });
   }
 
   logout() {
-    return this.authService.logout().subscribe(() => {
-      return this.router.navigate(['/login']);
-    });
+    return this.authService.logout();
   }
 
 }
