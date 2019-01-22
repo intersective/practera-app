@@ -4,6 +4,7 @@ import { map } from 'rxjs/operators';
 import { RequestService } from '@shared/request/request.service';
 import { UtilsService } from '@services/utils.service';
 import { BrowserStorageService } from '@services/storage.service';
+import { PusherService } from '@shared/pusher/pusher.service';
 
 /**
  * @name api
@@ -56,7 +57,8 @@ export class SwitcherService {
   constructor(
     private request: RequestService,
     private utils: UtilsService,
-    private storage: BrowserStorageService
+    private storage: BrowserStorageService,
+    private pusherService: PusherService
   ) {}
 
   getPrograms() {
@@ -64,6 +66,7 @@ export class SwitcherService {
   }
 
   switchProgram(programObj:ProgramObj) {
+    let themeColor = this.utils.has(programObj, 'program.config.theme_color') ? programObj.program.config.theme_color : '';
     this.storage.setUser({
       programId: programObj.program.id,
       programName: programObj.program.name,
@@ -72,10 +75,16 @@ export class SwitcherService {
       projectId: programObj.project.id,
       timelineId: programObj.timeline.id,
       contactNumber: programObj.enrolment.contact_number,
-      themeColor: this.utils.has(programObj, 'program.config.theme_color') ? programObj.program.config.theme_color : '',
+      themeColor: themeColor,
       activityCard: this.utils.has(programObj, 'program.config.card_style') ? programObj.program.config.card_style : ''
     });
     this.getTeamInfo().subscribe();
+    // change the theme color
+    if (themeColor) {
+      this.utils.changeThemeColor(themeColor);
+    }
+    // subscribe to Pusher channels
+    this.pusherService.getChannels().subscribe();
     return this.getMyInfo();
   }
 

@@ -14,6 +14,12 @@ Run `npm run local` to start a development server on your local, and calling 127
 ## External link format
 Direct link login 
 
-`*.com?do=secure&auth_token=***`
+`*.com?do=secure&auth_token=*`
 
+Reset password
 
+`*.com?do=resetpassword&key=*&email=*`
+
+Registration
+
+`*.com?do=registration&key=*&email=*`
