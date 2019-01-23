@@ -24,6 +24,7 @@ Run `npm run local` to start a development server on your local, and calling 127
 `*.com?do=secure&auth_token=*&redirect=*&tl=*`
 
 #### Required parameters:
+- `auth_token` - the auth token used to authenticate user
 - `redirect` - the page you will be redirect to 
 - `tl` - timeline id of the program you are in
 
