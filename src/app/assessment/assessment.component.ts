@@ -35,7 +35,8 @@ export class AssessmentComponent extends RouterEnter {
   submission: Submission = {
     id: 0,
     status: '',
-    answers: {}
+    answers: {},
+    submitterId: 0
   };
   review: Review = {
     id: 0,
@@ -72,7 +73,8 @@ export class AssessmentComponent extends RouterEnter {
     this.submission = {
       id: 0,
       status: '',
-      answers: {}
+      answers: {},
+      submitterId: 0
     };
     this.review = {
       id: 0,
@@ -96,6 +98,7 @@ export class AssessmentComponent extends RouterEnter {
     this.assessmentService.getAssessment(this.id, this.action)
       .subscribe(assessment => {
         this.assessment = assessment;
+        console.log(this.assessment);
         this.populateQuestionsForm();
         if (this.assessment.isForTeam && !this.storage.getUser().teamId) {
           return this.notificationService.popUp('shortMessage', {message: 'To do this assessment, you have to be in a team.'}, ['app', 'activity', this.activityId ]);
