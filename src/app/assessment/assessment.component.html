@@ -9,6 +9,12 @@
   <ion-text color="medium" text-left>
     <app-description [content]="assessment.description"></app-description>
   </ion-text>
+  <div class="review-submitter" ng-if="assessment.submitter" text-left>
+    <p class="title">Submitted by</p>
+    <div class="item item-borderless"> {{assessment}}
+      <!-- <p class="team-label" ng-if="assessment.isForTeam">{{assessment.submission.Team.name}}</p> -->
+    </div>
+  </div>
 
   <form [formGroup]="questionsForm">
     <ng-container *ngIf="loadingAssessment">

@@ -67,6 +67,7 @@ export interface Submission {
   id: number;
   status: string;
   answers: any;
+  submitterId: number;
 }
 
 export interface Review {
@@ -306,7 +307,8 @@ export class AssessmentService {
     let submission: Submission = {
       id: thisSubmission.AssessmentSubmission.id,
       status: thisSubmission.AssessmentSubmission.status,
-      answers: {}
+      answers: {},
+      submitterId: thisSubmission.AssessmentSubmission.submitter_id
     }
 
     //-- normalise submission answers
