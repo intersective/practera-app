@@ -54,7 +54,11 @@ export class ChatListComponent implements OnInit {
     return this.chatService.generateChatAvatarText(chatName);
   }
   navigateToChatRoom(chat) {
-    this.router.navigate(['/chat/chatroom'],{ queryParams: {selectedChatObject: JSON.stringify(chat)} });
+    if (chat.is_team) {
+      this.router.navigate(['/chat/chat-room',chat.team_id]);
+    } else {
+      this.router.navigate(['/chat/chat-room', chat.team_id, chat.team_member_id]);
+    }
   }
 
   getChatDate(date) {

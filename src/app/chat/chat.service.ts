@@ -16,7 +16,8 @@ const api = {
   getChatList: "api/v2/message/chat/list.json",
   getChatMessages: "api/v2/message/chat/list_messages.json",
   createMessage: "api/v2/message/chat/create_message",
-  markAsSeen: "api/v2/message/chat/edit_message"
+  markAsSeen: "api/v2/message/chat/edit_message",
+  getTeam: 'api/teams.json'
 };
 
 
@@ -29,7 +30,7 @@ interface newMessage {
 
 interface messageListPrams {
   team_id: number;
-  team_member_id: number | null;
+  team_member_id?: number;
   page: number;
   size: number;
 }
@@ -129,6 +130,24 @@ export class ChatService {
       'unread_count_for': data.filter
     }
     return this.request.get(api.getChatMessages, body);
+  }
+
+  getTeamName(id: number): Observable<any> {
+    let data = {
+      team_id: id
+    }
+    return this.request.get(api.getTeam, {
+      params: data
+    })
+    .pipe(map(response => {
+      if (response.success && response.data) {
+        return this._normalisTeamResponse(response.data);
+      }
+    }));
+  }
+
+  private _normalisTeamResponse(response) {
+    return response.Team.name;
   }
 
   generateChatAvatarText(text) {
@@ -240,6 +259,7 @@ export class ChatService {
             response[index].chat_color = this.getRandomColor();
             this.colorArray.push({
               team_member_id: response[index].team_member_id,
+              team_id: response[index].team_id,
               name: response[index].name,
               chat_color: response[index].chat_color
             });
@@ -271,10 +291,21 @@ export class ChatService {
         if (response[index] && !response[index].is_sender) {
           if (selectedChat.is_team) {
             this.getValidChatColors(this.chatColors, response, index);
-          } else {
+          } else if (selectedChat.chat_color) {
             response[index].chat_color = selectedChat.chat_color;
+          } else {
+            response[index].chat_color = this.getRandomColor();
           }
+          this.colorArray.push({
+            team_member_id: response[index].team_member_id,
+            team_id: response[index].team_id,
+            name: response[index].name,
+            chat_color: response[index].chat_color
+          });
         }
+      }
+      if ((this.colorArray.length > 0)) {
+        this.storage.set('chatAvatarColors', this.colorArray);
       }
       return response;
     }
@@ -289,6 +320,12 @@ export class ChatService {
     } else {
       response[index].chat_color = this.getRandomColor();
     }
+    this.colorArray.push({
+      team_member_id: response[index].team_member_id,
+      team_id: response[index].team_id,
+      name: response[index].name,
+      chat_color: response[index].chat_color
+    });
   }
 
 }
