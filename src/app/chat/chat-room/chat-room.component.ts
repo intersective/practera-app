@@ -23,9 +23,6 @@ export class ChatRoomComponent implements OnInit, AfterContentInit {
   // @TODO need to create method to convert chat time to local time.
   @ViewChild(IonContent) content: IonContent;
 
-  teamId:number;
-  teamMemberId:number;
-  isTeam:boolean = false;
   message: any;
   messageList: any[];
   selectedChat: Chat;
@@ -46,7 +43,7 @@ export class ChatRoomComponent implements OnInit, AfterContentInit {
 
   ngOnInit() {
     this.chatColors = this.storage.get("chatAvatarColors");
-    this.selectedChat = this.storage.get("selectedChatObject") || {
+    this.selectedChat = {
       name: "",
       is_team: false,
       team_id: null,
@@ -57,26 +54,34 @@ export class ChatRoomComponent implements OnInit, AfterContentInit {
   }
 
   private validateRoutePrams() {
-    this.teamId = parseInt(this.activatedRoute.snapshot.paramMap.get('teamId'));
-    if (!this.activatedRoute.snapshot.paramMap.get('teamMemberId')) {
-      this.isTeam = true;
-      this.teamMemberId = parseInt(this.activatedRoute.snapshot.paramMap.get('teamMemberId'));
+    let teamId = parseInt(this.activatedRoute.snapshot.paramMap.get('teamId'));
+    this.selectedChat.team_id = teamId
+    if (this.activatedRoute.snapshot.paramMap.get('teamMemberId')) {
+      this.selectedChat.team_member_id = parseInt(this.activatedRoute.snapshot.paramMap.get('teamMemberId'));
+    } else {
+      this.selectedChat.is_team = true;
     }
-    this.activatedRoute.queryParams.subscribe(params => {
-      this.selectedChat = JSON.parse(params["selectedChatObject"]);
-      this.loadMessages(false);
-    });
+    this.loadMessages(false);
   }
 
   loadMessages(loadMore) {
     let tempRes = null;
+    let param: any;
     // creating params need to load messages.
-    let param = {
-      team_id: this.selectedChat.team_id,
-      page: this.getMessagePageNumber(),
-      size: this.messagePagesize,
-      team_member_id: this.selectedChat.team_member_id
-    };
+    if (this.selectedChat.is_team) {
+      param = {
+        team_id: this.selectedChat.team_id,
+        page: this.getMessagePageNumber(),
+        size: this.messagePagesize
+      };
+    } else {
+      param = {
+        team_id: this.selectedChat.team_id,
+        page: this.getMessagePageNumber(),
+        size: this.messagePagesize,
+        team_member_id: this.selectedChat.team_member_id
+      };
+    }
     this.chatService
       .getMessageList(param, this.selectedChat)
       .subscribe(response => {
@@ -87,12 +92,29 @@ export class ChatRoomComponent implements OnInit, AfterContentInit {
         } else {
           this.messageList = tempRes;
         }
+        this.getChatName();
         this.markAsSeen(tempRes);
       });
   }
 
   private getMessagePageNumber() {
     return (this.messagePageNumber += 1);
+  }
+
+  private getChatName() {
+    if (this.selectedChat.is_team) {
+      this.chatService.getTeamName(this.selectedChat.team_id)
+      .subscribe(Response => {
+        this.selectedChat.team_name = Response;
+      });
+    } else {
+      let message = this.messageList.find(function(message) {
+        return message.is_sender === false;
+      });
+      if (message) {
+        this.selectedChat.name = message.sender_name;
+      }
+    }
   }
 
   getChatAvatarText(senderName) {
