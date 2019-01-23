@@ -227,11 +227,20 @@ export class AssessmentComponent extends RouterEnter {
     this.assessmentService.saveAnswers(assessment, answers, this.action)
       .subscribe(result => {
         this.submitting = false;
-        let redirect = ['app', 'home'];
         // display a pop up for successful submission
-        return this.notificationService.popUp('shortMessage', {
-          message: 'Submitted Successfully!'
-        }, redirect);
+        return this.notificationService.alert({
+          message: 'Submission Successful!',
+          buttons: [
+            {
+              text: 'OK',
+              role: 'cancel',
+              handler: () => {
+                this.router.navigate(['app', 'home']);
+                return;
+              }
+            }
+          ]
+        });
       }, err => {
         this.submitting = false;
         // display a pop up if submission failed
