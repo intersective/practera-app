@@ -66,7 +66,7 @@ export class SwitcherService {
   }
 
   switchProgram(programObj:ProgramObj) {
-    let themeColor = this.utils.has(programObj, 'program.config.theme_color') ? programObj.program.config.theme_color : '';
+    let themeColor = this.utils.has(programObj, 'program.config.theme_color') ? programObj.program.config.theme_color : '#2bbfd4';
     this.storage.setUser({
       programId: programObj.program.id,
       programName: programObj.program.name,
@@ -80,9 +80,9 @@ export class SwitcherService {
     });
     this.getTeamInfo().subscribe();
     // change the theme color
-    if (themeColor) {
-      this.utils.changeThemeColor(themeColor);
-    }
+    this.utils.changeThemeColor(themeColor);
+    // initialise Pusher
+    this.pusherService.initialisePusher();
     // subscribe to Pusher channels
     this.pusherService.getChannels().subscribe();
     return this.getMyInfo();
