@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, AfterContentInit } from "@angular/core";
+import { Component, OnInit, ViewChild, AfterContentInit, AfterViewInit } from "@angular/core";
 import { Router, ActivatedRoute } from "@angular/router";
 import { IonContent } from "@ionic/angular";
 import { BrowserStorageService } from "@services/storage.service";
@@ -12,6 +12,7 @@ interface Chat {
   team_id: number;
   team_member_id: number;
   chat_color?: string;
+  participants_only?: boolean;
 }
 
 @Component({
@@ -19,16 +20,16 @@ interface Chat {
   templateUrl: "./chat-room.component.html",
   styleUrls: ["./chat-room.component.scss"]
 })
-export class ChatRoomComponent implements OnInit, AfterContentInit {
+export class ChatRoomComponent implements OnInit, AfterViewInit {
   // @TODO need to create method to convert chat time to local time.
   @ViewChild(IonContent) content: IonContent;
 
   message: any;
   messageList: any[];
   selectedChat: Chat;
-  chatColors: any[];
   messagePageNumber: number = 0;
   messagePagesize: number = 20;
+  loadingChatMessages:boolean = true;
 
   constructor(
     private chatService: ChatService,
@@ -37,18 +38,21 @@ export class ChatRoomComponent implements OnInit, AfterContentInit {
     private activatedRoute: ActivatedRoute
   ) {}
 
-  ngAfterContentInit() {
-    this.content.scrollToBottom();
+  ngAfterViewInit() {
+    setTimeout(() => {
+      this.content.scrollToBottom();
+   }, 500);
   }
 
   ngOnInit() {
-    this.chatColors = this.storage.get("chatAvatarColors");
+    this.loadingChatMessages = true;
     this.selectedChat = {
       name: "",
       is_team: false,
       team_id: null,
       team_member_id: null,
-      chat_color: null
+      chat_color: null,
+      participants_only: false
     };
     this.validateRoutePrams();
   }
@@ -56,23 +60,27 @@ export class ChatRoomComponent implements OnInit, AfterContentInit {
   private validateRoutePrams() {
     let teamId = parseInt(this.activatedRoute.snapshot.paramMap.get('teamId'));
     this.selectedChat.team_id = teamId
-    if (this.activatedRoute.snapshot.paramMap.get('teamMemberId')) {
+    if (Number(this.activatedRoute.snapshot.paramMap.get('teamMemberId'))) {
       this.selectedChat.team_member_id = parseInt(this.activatedRoute.snapshot.paramMap.get('teamMemberId'));
     } else {
       this.selectedChat.is_team = true;
+      this.selectedChat.participants_only = JSON.parse(this.activatedRoute.snapshot.paramMap.get('teamMemberId'));
     }
     this.loadMessages(false);
   }
 
   loadMessages(loadMore) {
+    this.loadingChatMessages = true;
     let tempRes = null;
     let param: any;
+    this.messageList = [];
     // creating params need to load messages.
     if (this.selectedChat.is_team) {
       param = {
         team_id: this.selectedChat.team_id,
         page: this.getMessagePageNumber(),
-        size: this.messagePagesize
+        size: this.messagePagesize,
+        participants_only: this.selectedChat.participants_only
       };
     } else {
       param = {
@@ -85,16 +93,33 @@ export class ChatRoomComponent implements OnInit, AfterContentInit {
     this.chatService
       .getMessageList(param, this.selectedChat)
       .subscribe(response => {
-        tempRes = Object.assign([], response);
-        tempRes.reverse();
-        if (loadMore) {
-          this.messageList = tempRes.concat(this.messageList);
+        if (response) {
+          if (response.length > 0) {
+            tempRes = Object.assign([], response);
+            tempRes.reverse();
+            if (loadMore) {
+              this.messageList = tempRes.concat(this.messageList);
+            } else {
+              this.messageList = tempRes;
+            }
+            this.getChatName();
+            this.markAsSeen(tempRes);
+          } else {
+            this.messagePageNumber -= 1;
+          }
         } else {
-          this.messageList = tempRes;
+          this.loadingChatMessages = false;
         }
-        this.getChatName();
-        this.markAsSeen(tempRes);
+      }, error => {
+        this.loadingChatMessages = false;
       });
+  }
+
+  loadMoreMessages(event) {
+    let scrollTopPosition = event.detail.scrollTop;
+    if (scrollTopPosition === 0) {
+      this.loadMessages(true);
+    }
   }
 
   private getMessagePageNumber() {
@@ -106,6 +131,7 @@ export class ChatRoomComponent implements OnInit, AfterContentInit {
       this.chatService.getTeamName(this.selectedChat.team_id)
       .subscribe(Response => {
         this.selectedChat.team_name = Response;
+        this.loadingChatMessages = false;
       });
     } else {
       let message = this.messageList.find(function(message) {
@@ -115,6 +141,7 @@ export class ChatRoomComponent implements OnInit, AfterContentInit {
         this.selectedChat.name = message.sender_name;
       }
     }
+    this.loadingChatMessages = false;
   }
 
   getChatAvatarText(senderName) {
@@ -135,15 +162,20 @@ export class ChatRoomComponent implements OnInit, AfterContentInit {
       // remove typed message from text field.
       this.message = ''; 
       // createing prams need to send message
-      let data = {
-        message: message,
-        team_id: this.selectedChat.team_id,
-        to: null
-      };
+      let data:any;
       if (this.selectedChat.is_team) {
-        data.to = "team";
+        data = {
+          message: message,
+          team_id: this.selectedChat.team_id,
+          to: "team",
+          participants_only: this.selectedChat.participants_only
+        }
       } else {
-        data.to = this.selectedChat.team_member_id;
+        data = {
+          message: message,
+          team_id: this.selectedChat.team_id,
+          to: this.selectedChat.team_member_id
+        }
       }
       this.chatService.postNewMessage(data).subscribe(
         response => {
@@ -170,9 +202,6 @@ export class ChatRoomComponent implements OnInit, AfterContentInit {
       .subscribe(
         response => {
           console.log("marked");
-        },
-        error => {
-          console.log("error");
         }
       );
   }
