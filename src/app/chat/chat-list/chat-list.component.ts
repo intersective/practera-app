@@ -1,30 +1,35 @@
-import { Component, OnInit } from '@angular/core';
-import { Router, NavigationExtras } from '@angular/router';
-import { BrowserStorageService } from '@services/storage.service';
+import { Component, OnInit } from "@angular/core";
+import { Router, NavigationExtras } from "@angular/router";
+import { BrowserStorageService } from "@services/storage.service";
 
-import { ChatService } from '../chat.service';
+import { ChatService } from "../chat.service";
 
 @Component({
-  selector: 'app-chat',
-  templateUrl: 'chat-list.component.html',
-  styleUrls: ['chat-list.component.scss']
+  selector: "app-chat",
+  templateUrl: "chat-list.component.html",
+  styleUrls: ["chat-list.component.scss"]
 })
 export class ChatListComponent implements OnInit {
   // @TODO need to create method to convert chat time to local time.
   chatList: any[];
-  haveMoreTeam:Boolean;
-  private chatColors:any[];
+  haveMoreTeam: boolean;
+  loadingChatList:boolean = true;
+  private chatColors: any[];
   private colorArray = [];
 
-  constructor(private chatService: ChatService, private router: Router, private storage: BrowserStorageService) {
-  }
+  constructor(
+    private chatService: ChatService,
+    private router: Router,
+    private storage: BrowserStorageService
+  ) {}
 
   ngOnInit() {
     this.haveMoreTeam = false;
+    this.loadingChatList = true;
     this.loadChatData();
   }
 
-  loadChatData():void {
+  loadChatData(): void {
     this.chatService.getchatList().subscribe(response => {
       this.chatList = response;
       this.checkHaveMoreTeam(response);
@@ -33,21 +38,22 @@ export class ChatListComponent implements OnInit {
 
   /**
    * this method check is this user in multiple teams.
-   * @param {Array} response 
+   * @param {Array} response
    */
-  private checkHaveMoreTeam(response):void {
+  private checkHaveMoreTeam(response): void {
     let index = 0;
     let teamCount = 0;
     for (index = 0; index < response.length; index++) {
-      if ((response[index].is_team)) {
+      if (response[index].is_team) {
         teamCount++;
       }
     }
-    if ((teamCount > 1)) {
+    if (teamCount > 1) {
       this.haveMoreTeam = true;
     } else {
       this.haveMoreTeam = false;
     }
+    this.loadingChatList = false;
   }
 
   getChatAvatarText(chatName) {
@@ -55,17 +61,35 @@ export class ChatListComponent implements OnInit {
   }
   navigateToChatRoom(chat) {
     if (chat.is_team) {
-      this.router.navigate(['/chat/chat-room',chat.team_id]);
+      this.router.navigate([
+        "/chat/chat-room",
+        chat.team_id,
+        chat.participants_only
+      ]);
     } else {
-      this.router.navigate(['/chat/chat-room', chat.team_id, chat.team_member_id]);
+      this.router.navigate([
+        "/chat/chat-room",
+        chat.team_id,
+        chat.team_member_id
+      ]);
     }
   }
 
   getChatDate(date) {
     let params = {
       date: date,
-      type: 'list'
-    }
+      type: "list"
+    };
     return this.chatService.getDate(params);
+  }
+
+  getChatName(chat) {
+    var chatName = chat.name;
+    if (chat.is_team && chat.participants_only) {
+      chatName = chat.team_name;
+    } else if (chat.is_team && !chat.participants_only) {
+      chatName = chat.team_name + " + Mentor";
+    }
+    return chatName;
   }
 }
