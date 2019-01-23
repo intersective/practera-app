@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Platform } from '@ionic/angular';
+import { UtilsService } from '@services/utils.service';
 // import { SplashScreen } from '@ionic-native/splash-screen/ngx';
 // import { StatusBar } from '@ionic-native/status-bar/ngx';
 
@@ -12,6 +13,7 @@ export class AppComponent implements OnInit {
   constructor(
     private platform: Platform,
     private router: Router,
+    public utils: UtilsService,
     // private splashScreen: SplashScreen,
     // private statusBar: StatusBar
   ) {
@@ -20,32 +22,33 @@ export class AppComponent implements OnInit {
 
   ngOnInit() {
     let searchParams = null;
+    let queryString = '';
     if (window.location.search) {
-      searchParams = new URLSearchParams(window.location.search.substring(1));
+      queryString =  window.location.search.substring(1);
     } else if (window.location.hash) {
-      searchParams = new URLSearchParams(window.location.hash.substring(2));
+      queryString = window.location.hash.substring(2);
     }
+    searchParams = new URLSearchParams(queryString);
 
-    if (searchParams) {
-      if (searchParams.has('do')) {
-        switch (searchParams.get('do')) {
-          case "secure":
-            if (searchParams.has('auth_token')) {
-              this.router.navigate(['secure', searchParams.get('auth_token')]);
-            }
-            break;
-          case "resetpassword":
-            if (searchParams.has('key') && searchParams.has('email')) {
-              this.router.navigate(['reset_password', searchParams.get('key'), searchParams.get('email')]);
-            }
-            break;
+    if (searchParams.has('do')) {
+      switch (searchParams.get('do')) {
+        case "secure":
+          if (searchParams.has('auth_token')) {
+            let queries = this.utils.urlQueryToObject(queryString);
+            this.router.navigate(['secure', searchParams.get('auth_token'), queries]);
+          }
+          break;
+        case "resetpassword":
+          if (searchParams.has('key') && searchParams.has('email')) {
+            this.router.navigate(['reset_password', searchParams.get('key'), searchParams.get('email')]);
+          }
+          break;
 
-          case "registration":
-            if (searchParams.has('key') && searchParams.has('email')) {
-              this.router.navigate(['registration', searchParams.get('email'), searchParams.get('key') ]);
-            }
-            break;
-        }
+        case "registration":
+          if (searchParams.has('key') && searchParams.has('email')) {
+            this.router.navigate(['registration', searchParams.get('email'), searchParams.get('key') ]);
+          }
+          break;
       }
     }
   }
