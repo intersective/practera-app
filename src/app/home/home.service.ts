@@ -332,7 +332,8 @@ export class HomeService {
         if (!this.utils.has(event, 'meta.AssessmentReview.assessment_name') ||
             !this.utils.has(event, 'meta.AssessmentReview.assigned_date') ||
             !this.utils.has(event, 'meta.AssessmentReview.assessment_id') ||
-            !this.utils.has(event, 'meta.AssessmentReview.context_id')
+            !this.utils.has(event, 'meta.AssessmentReview.context_id') ||
+            !this.utils.has(event, 'meta.AssessmentReview.assessment_submission_id')
           ) {
           this.request.apiResponseFormatError('Pusher notification event meta format error');
           return {};
@@ -346,6 +347,7 @@ export class HomeService {
             context_id: event.meta.AssessmentReview.context_id,
             assessment_id: event.meta.AssessmentReview.assessment_id,
             assessment_name: event.meta.AssessmentReview.assessment_name,
+            assessment_submission_id: event.meta.AssessmentReview.assessment_submission_id,
           }
         };
 
