@@ -42,23 +42,56 @@ export class AuthDirectLoginComponent implements OnInit {
    * Redirect user to a specific page if data is passed in, otherwise redirect to program switcher page
    */
   private _redirect() {
-    let searchParams;
-    // get the query parameters
-    if (window.location.search) {
-      searchParams = new URLSearchParams(window.location.search.substring(1));
+    let redirect = this.route.snapshot.paramMap.get('redirect');
+    let timelineId = +this.route.snapshot.paramMap.get('tl');
+    let activityId = +this.route.snapshot.paramMap.get('act');
+    let contextId = +this.route.snapshot.paramMap.get('ctxt');
+    let assessmentId = +this.route.snapshot.paramMap.get('asmt');
+    let submissionId = +this.route.snapshot.paramMap.get('sm');
+    if (!redirect || !timelineId) {
+      // if there's no redirection or timeline id
+      return this.router.navigate(['switcher']);
     }
-    if (this.utils.isEmpty(searchParams) || !this.utils.has(searchParams, 'redirect') || !this.utils.has(searchParams, 't')) {
-      // if there's no query parameter or required data
-      return this.router.navigate(['/switcher']);
-    }
-    let program = this.utils.find(this.storage.get('programs'), {
-
+    let program = this.utils.find(this.storage.get('programs'), value => {
+      return value.timeline.id === timelineId;
     });
+    if (this.utils.isEmpty(program)) {
+      // if the timeline id is not found
+      return this.router.navigate(['switcher']);
+    }
     // switch to the program
     this.switcherService.switchProgram(program)
       .subscribe(() => {
-        // -- todo --
-        this.router.navigate(['/app/home']);
+        switch (redirect) {
+          case "home":
+            return this.router.navigate(['app', 'home']);
+          case "project":
+            return this.router.navigate(['app', 'project']);
+          case "activity":
+            if (!activityId) {
+              return this.router.navigate(['app', 'home']);
+            }
+            return this.router.navigate(['app', 'activity', activityId]);
+          case "assessment":
+            if (!activityId || !contextId || !assessmentId) {
+              return this.router.navigate(['app', 'home']);
+            }
+            return this.router.navigate(['assessment', 'assessment', activityId, contextId, assessmentId]);
+          case "reviews":
+            return this.router.navigate(['app', 'reviews']);
+          case "review":
+            if (!contextId || !assessmentId || !submissionId) {
+              return this.router.navigate(['app', 'home']);
+            }
+            return this.router.navigate(['assessment', 'review', contextId, assessmentId, submissionId]);
+          case "chat":
+            return this.router.navigate(['app', 'chat']);
+          case "settings":
+            return this.router.navigate(['app', 'settings']);
+          default:
+            return this.router.navigate(['app', 'home']);
+        }
+        this.router.navigate(['app', 'home']);
       });
   }
 

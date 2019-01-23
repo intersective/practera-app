@@ -44,6 +44,9 @@ export class PusherService {
       this.pusherKey = config.pusherKey;
       this.apiurl = config.apiurl;
     }
+  }
+
+  initialisePusher() {
     try {
       this.pusher = new Pusher(this.pusherKey, {
         cluster: 'mt1',
