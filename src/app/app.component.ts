@@ -34,7 +34,7 @@ export class AppComponent implements OnInit {
       switch (searchParams.get('do')) {
         case "secure":
           if (searchParams.has('auth_token')) {
-            let queries = this.utils.urlQueryToObject(searchParams);
+            let queries = this.utils.urlQueryToObject(queryString);
             this.router.navigate(['secure', searchParams.get('auth_token'), queries]);
           }
           break;
