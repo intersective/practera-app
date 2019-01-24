@@ -114,7 +114,7 @@ export class HomeService {
     }
     item.name = todoItem.meta.assessment_name;
     item.description = todoItem.meta.reviewer_name + ' has provided feedback';
-    item.time = this._timeFormater(todoItem.created);
+    item.time = this.utils.timeFormater(todoItem.created);
     item.meta = todoItem.meta;
     todoItems.push(item);
     return todoItems;
@@ -136,18 +136,10 @@ export class HomeService {
     }
     item.name = todoItem.meta.assessment_name;
     item.description = 'Please review the assessment';
-    item.time = this._timeFormater(todoItem.created);
+    item.time = this.utils.timeFormater(todoItem.created);
     item.meta = todoItem.meta;
     todoItems.push(item);
     return todoItems;
-  }
-
-  private _timeFormater(time: string) {
-    let date = new Date(time);
-    return date.toLocaleString('en-GB', {
-      month: 'short',
-      day: 'numeric'
-    });
   }
 
   getChatMessage() {
@@ -186,7 +178,7 @@ export class HomeService {
         noOfChats ++;
         todoItem.name = data.name;
         todoItem.description = data.last_message;
-        todoItem.time = this._timeFormater(data.last_message_created);
+        todoItem.time = this.utils.timeFormater(data.last_message_created);
       }
     });
     if (unreadMessages > 1) {
@@ -317,7 +309,7 @@ export class HomeService {
           type: 'feedback_available',
           name: event.meta.AssessmentReview.assessment_name,
           description: event.meta.AssessmentReview.reviewer_name + ' has provided feedback',
-          time: this._timeFormater(event.meta.AssessmentReview.published_date),
+          time: this.utils.timeFormater(event.meta.AssessmentReview.published_date),
           meta: {
             activity_id: event.meta.AssessmentReview.activity_id,
             context_id: event.meta.AssessmentReview.context_id,
@@ -342,7 +334,7 @@ export class HomeService {
           type: 'review_submission',
           name: event.meta.AssessmentReview.assessment_name,
           description: 'Please review the assessment',
-          time: this._timeFormater(event.meta.AssessmentReview.assigned_date),
+          time: this.utils.timeFormater(event.meta.AssessmentReview.assigned_date),
           meta: {
             context_id: event.meta.AssessmentReview.context_id,
             assessment_id: event.meta.AssessmentReview.assessment_id,
