@@ -90,4 +90,12 @@ export class UtilsService {
   urlQueryToObject(query: string) {
     return JSON.parse('{"' + decodeURI(query).replace(/"/g, '\\"').replace(/&/g, '","').replace(/=/g,'":"') + '"}')
   }
+
+  timeFormater(time: string) {
+    let date = new Date(time);
+    return date.toLocaleString('en-GB', {
+      month: 'short',
+      day: 'numeric'
+    });
+  }
 }
