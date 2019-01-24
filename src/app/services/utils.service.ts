@@ -86,4 +86,8 @@ export class UtilsService {
         map(e => e.value)
       );
   }
+
+  urlQueryToObject(query: string) {
+    return JSON.parse('{"' + decodeURI(query).replace(/"/g, '\\"').replace(/&/g, '","').replace(/=/g,'":"') + '"}')
+  }
 }
