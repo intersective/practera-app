@@ -9,15 +9,10 @@
         [percent]="progress"
         [radius]= "70"
         [subtitle]="COMPLETE"
-        [titleFontSize]= "32"
-        [subtitleFontSize]= "18"
         [outerStrokeWidth]= "12"
-        [animation]= true
-        [animationDuration]= "1000"
         [backgroundPadding]= -10
         [maxPercent]= 100
-        [innerStrokeWidth]= 0
-        [showInnerStroke]= false
+        [showInnerStroke]= true
         [startFromZero]= false
         [outerStrokeLinecap]= "round"
         >
@@ -44,7 +39,7 @@
             <app-todo-card
               *ngSwitchCase="'review_submission'"
               [todoItem]="todoItem"
-              (click)="goToReview(todoItem.meta.context_id, todoItem.meta.assessment_id)"
+              (click)="goToReview(todoItem.meta.context_id, todoItem.meta.assessment_id, todoItem.meta.assessment_submission_id)"
             ></app-todo-card>
             <app-todo-card
               *ngSwitchCase="'chat'"
@@ -69,5 +64,4 @@
   <ng-template #activityTpl>
     <app-activity-card [activity]="activity" (click)="!activity.isLocked && goToActivity(activity.id)"></app-activity-card>
   </ng-template>
-
 </ion-content>
