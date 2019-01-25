@@ -1,6 +1,8 @@
 import { Injectable, Inject } from '@angular/core';
 import * as _ from 'lodash';
 import { DOCUMENT } from '@angular/common';
+import { Observable, Subject } from 'rxjs';
+import { map, filter } from 'rxjs/operators';
 
 // @TODO: enhance Window reference later, we shouldn't refer directly to browser's window object like this
 declare var window: any;
@@ -10,6 +12,7 @@ declare var window: any;
 })
 export class UtilsService {
   private lodash;
+  protected _eventsSubject = new Subject<{key: string, value: any}>();
 
   constructor(
     @Inject(DOCUMENT) private document: Document
@@ -32,7 +35,7 @@ export class UtilsService {
   unset(object, path) {
     return this.lodash.unset(object, path);
   }
-  
+
   find(collections, callback) {
     return this.lodash.find(collections, callback);
   }
@@ -68,5 +71,23 @@ export class UtilsService {
 
   changeThemeColor(color) {
     this.document.documentElement.style.setProperty('--ion-color-primary', color);
+  }
+
+  // broadcast the event to whoever subscribed
+  broadcastEvent(key: string, value: any) {
+    this._eventsSubject.next({ key, value })
+  }
+
+  // get Event to subscribe to
+  getEvent(key: string): Observable<any> {
+    return this._eventsSubject.asObservable()
+      .pipe(
+        filter(e => e.key === key),
+        map(e => e.value)
+      );
+  }
+
+  urlQueryToObject(query: string) {
+    return JSON.parse('{"' + decodeURI(query).replace(/"/g, '\\"').replace(/&/g, '","').replace(/=/g,'":"') + '"}')
   }
 }

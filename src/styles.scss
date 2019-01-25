@@ -1,3 +1,16 @@
+body {
+  background-color: #c7cbe1;
+}
+#mainContainer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+}
 // used in login, forgot password, regestration page
 .div-logo {
   margin-top: 10vh;
@@ -15,7 +28,7 @@
   margin-left: 10px;
   margin-right: 10px;
   vertical-align: middle;
-  width: auto !important; 
+  width: auto !important;
 }
 .vertical-middle {
   vertical-align: middle;
@@ -35,10 +48,12 @@
 }
 // used for todo-card & tasks list
 .icon-item {
+  width: 100%;
   h4 {
-    font-size: 16px;
+    font-size: 14px;
     text-overflow: ellipsis;
     margin-bottom: 0px;
+    max-width: 80%;
   }
   p {
     font-size: 14px;
@@ -107,7 +122,7 @@
   position: absolute;
   top: 18px;
   font-size: 12px;
-} 
+}
 
 .vertical-middle {
   display: inline-block;
@@ -132,8 +147,8 @@
   opacity: 0.3;
 }
 .image-card {
-  background-position: center; 
-  background-color: transparent; 
+  background-position: center;
+  background-color: transparent;
   background-image: var(--practera-card-background-image);
 }
 .review {
@@ -153,5 +168,5 @@
     padding-right: 6px;
     position: relative;
     top: -16px;
-  } 
+  }
 }
