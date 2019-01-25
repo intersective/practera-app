@@ -1,38 +1,59 @@
 import { Component, OnInit } from "@angular/core";
 import { Router, NavigationExtras } from "@angular/router";
 import { BrowserStorageService } from "@services/storage.service";
+import { RouterEnter } from "@services/router-enter.service";
+import { UtilsService } from "../../services/utils.service";
 
 import { ChatService } from "../chat.service";
+
+export interface Chat {
+  team_id: number;
+  team_name: string;
+  team_member_id?: number;
+  name: string;
+  role?: string;
+  unread_messages?: number;
+  last_message_created?: string;
+  last_message?: string;
+  is_team: boolean;
+  participants_only: boolean;
+  chat_color?: string;
+}
 
 @Component({
   selector: "app-chat",
   templateUrl: "chat-list.component.html",
   styleUrls: ["chat-list.component.scss"]
 })
-export class ChatListComponent implements OnInit {
+export class ChatListComponent extends RouterEnter {
   // @TODO need to create method to convert chat time to local time.
-  chatList: any[];
+  chatList: Array<Chat>;
   haveMoreTeam: boolean;
-  loadingChatList:boolean = true;
-  private chatColors: any[];
-  private colorArray = [];
+  loadingChatList: boolean = true;
 
   constructor(
     private chatService: ChatService,
-    private router: Router,
-    private storage: BrowserStorageService
-  ) {}
-
-  ngOnInit() {
-    this.haveMoreTeam = false;
-    this.loadingChatList = true;
-    this.loadChatData();
+    public router: Router,
+    public storage: BrowserStorageService,
+    public utils: UtilsService
+  ) {
+    super(router, utils, storage);
   }
 
-  loadChatData(): void {
+  onEnter() {
+    this._initialise();
+    this._loadChatData();
+  }
+
+  private _initialise() {
+    this.haveMoreTeam = false;
+    this.loadingChatList = true;
+  }
+
+  private _loadChatData(): void {
     this.chatService.getchatList().subscribe(response => {
       this.chatList = response;
-      this.checkHaveMoreTeam(response);
+      this._checkHaveMoreTeam();
     });
   }
 
@@ -40,20 +61,22 @@ export class ChatListComponent implements OnInit {
    * this method check is this user in multiple teams.
    * @param {Array} response
    */
-  private checkHaveMoreTeam(response): void {
-    let index = 0;
-    let teamCount = 0;
-    for (index = 0; index < response.length; index++) {
-      if (response[index].is_team) {
-        teamCount++;
+  private _checkHaveMoreTeam(): void {
+    if (this.chatList.length > 0) {
+      let index = 0;
+      let teamCount = 0;
+      for (index = 0; index < this.chatList.length; index++) {
+        if (this.chatList[index].is_team) {
+          teamCount++;
+        }
       }
+      if (teamCount > 1) {
+        this.haveMoreTeam = true;
+      } else {
+        this.haveMoreTeam = false;
+      }
+      this.loadingChatList = false;
     }
-    if (teamCount > 1) {
-      this.haveMoreTeam = true;
-    } else {
-      this.haveMoreTeam = false;
-    }
-    this.loadingChatList = false;
   }
 
   getChatAvatarText(chatName) {
@@ -62,7 +85,7 @@ export class ChatListComponent implements OnInit {
   navigateToChatRoom(chat) {
     if (chat.is_team) {
       this.router.navigate([
-        "/chat/chat-room",
+        "/chat/chat-room/team",
         chat.team_id,
         chat.participants_only
       ]);
