@@ -87,15 +87,38 @@ export class UtilsService {
       );
   }
 
+  // transfer url query string to an object
   urlQueryToObject(query: string) {
     return JSON.parse('{"' + decodeURI(query).replace(/"/g, '\\"').replace(/&/g, '","').replace(/=/g,'":"') + '"}')
   }
 
-  timeFormater(time: string) {
+  /**
+   * This is a time formatter that transfer time/date string to a nice string
+   * It will return different string based on the comparision with 'compareWith' (default is today)
+   * Any time before yesterday(one day before 'compareWith') will return 'Yesterday'
+   * Any time today(the same day as 'compareWith') will return the time
+   * Any other time will just return the date in "3 May" format
+   * @param {string} time        [The time string going to be formatted]
+   * @param {string} compareWith [The time string used to compare with]
+   */
+  timeFormatter(time: string, compareWith?: string) {
+    // if no compareWith provided, compare with today
+    let compareDate = new Date();
+    if (compareWith) {
+      compareDate = new Date(compareWith);
+    }
     let date = new Date(time);
-    return date.toLocaleString('en-GB', {
+    if (date.getFullYear() === compareDate.getFullYear() && date.getMonth() === compareDate.getMonth()) {
+      if (date.getDate() === compareDate.getDate() - 1) {
+        return 'Yesterday';
+      }
+      if (date.getDate() === compareDate.getDate() && date.getHours()) {
+        return date.toLocaleTimeString();
+      }
+    }
+    return new Intl.DateTimeFormat('en-GB', {
       month: 'short',
       day: 'numeric'
-    });
+    }).format(date);
   }
 }
