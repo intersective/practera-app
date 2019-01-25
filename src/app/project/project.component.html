@@ -1,4 +1,4 @@
-<ion-header >
+<ion-header>
   <ion-toolbar class="project-toolbar">
     <ion-title center>{{programName}}</ion-title>
   </ion-toolbar>
@@ -6,7 +6,7 @@
 
 
 <ion-grid class="milestone-bar">
-  <ion-row >
+  <ion-row>
     <ion-col class="bubbles-top" [class.active]="activeMilestone[i]" (click)="scrollTo(i)" *ngFor="let milestone of milestones; let i = index">
       <ng-container *ngIf="loadingProgress; else progressTpl">
         <ion-spinner></ion-spinner>
@@ -14,12 +14,12 @@
 
       <ng-template #progressTpl>
         <div *ngIf="!milestone.isLocked; else milestoneLocked">
-          <ion-icon *ngIf="milestone.progress >= 1; else circleProgress" name="checkmark-circle" class="icon-done" color="primary" ></ion-icon>
+          <ion-icon *ngIf="milestone.progress >= 1; else circleProgress" name="checkmark-circle" class="icon-done" color="primary"></ion-icon>
           <ng-template #circleProgress>
             <circle-progress
               [percent]="milestone.progress * 100"
             >
-            </circle-progress >
+            </circle-progress>
           </ng-template>
         </div>
         <ng-template #milestoneLocked>
