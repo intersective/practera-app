@@ -6,6 +6,7 @@ import { Observable, of } from "rxjs";
 import { BrowserStorageService } from "@services/storage.service";
 import { UtilsService } from "@services/utils.service";
 import { environment } from "../../environments/environment";
+import { Chat } from "./chat-list/chat-list.component";
 
 /**
  * @name api
@@ -20,7 +21,7 @@ const api = {
   getTeam: "api/teams.json"
 };
 
-interface newMessage {
+export interface newMessage {
   to: number | string;
   message: string;
   team_id: number;
@@ -28,7 +29,7 @@ interface newMessage {
   participants_only?: boolean;
 }
 
-interface messageListPrams {
+export interface messageListPrams {
   team_id: number;
   team_member_id?: number;
   page: number;
@@ -36,17 +37,17 @@ interface messageListPrams {
   participants_only?: boolean;
 }
 
-interface markAsSeenPrams {
+export interface markAsSeenPrams {
   team_id: number;
   id: string | number;
   action?: string;
 }
 
-interface unreadMessagePrams {
+export interface unreadMessagePrams {
   filter: string;
 }
 
-interface getDatePrams {
+export interface getDatePrams {
   date: any;
   type: string;
   messageList?: any[];
@@ -57,7 +58,6 @@ interface getDatePrams {
   providedIn: "root"
 })
 export class ChatService {
-  private chatList: any[];
   private chatColors: any[];
   private colorArray = [];
 
@@ -178,7 +178,7 @@ export class ChatService {
     return avatarText;
   }
 
-  getRandomColor() {
+  private _getRandomColor() {
     var randomNumber = this.getRamdomNumber();
     return "color-" + randomNumber;
   }
@@ -260,15 +260,9 @@ export class ChatService {
    *  - set chat avatar color
    * @param {Array} response
    */
-  private _normaliseChatListResponse(response): Array<any> {
+  private _normaliseChatListResponse(response): Array<Chat> {
     if (response) {
-      this.chatList = [];
-      this.chatColors = this.storage.get("chatAvatarColors");
-      if (!this.chatColors) {
-        return this.setChatAvatarColors(response, null, "nocolor");
-      } else {
-        return this.setChatAvatarColors(response, this.chatColors, "havecolor");
-      }
+      return this._setChatAvatarColors(response);
     }
   }
 
@@ -276,66 +270,38 @@ export class ChatService {
    * this method check old avatar colors and set the releted one.
    * if there no old avatar colors it will create new color and add that to service variable.
    * @param {Array} response
-   * @param {Array} chatColors
-   * @param {String} status
    */
-  private setChatAvatarColors(response, chatColors, status): Array<any> {
+  private _setChatAvatarColors(response): Array<Chat> {
+    let chatColors = this.storage.get("chatAvatarColors");
+    let chatList: Array<Chat>;
     let index = 0;
     for (index = 0; index < response.length; index++) {
       if (response[index]) {
-        switch (status) {
-          case "nocolor":
-            response[index].chat_color = this.getRandomColor();
+        if (chatColors.length > 0) {
+          let colorObject = chatColors.find(function(chat) {
+            return chat.team_member_id === response[index].team_member_id;
+          });
+          if (colorObject) {
+            response[index].chat_color = colorObject.chat_color;
+          } else {
+            response[index].chat_color = this._getRandomColor();
+          }
+        } else {
+          response[index].chat_color = this._getRandomColor();
             this.colorArray.push({
               team_member_id: response[index].team_member_id,
               team_id: response[index].team_id,
               name: response[index].name,
               chat_color: response[index].chat_color
             });
-            break;
-          case "havecolor":
-            let colorObject = chatColors.find(function(chat) {
-              return chat.team_member_id === response[index].team_member_id;
-            });
-            if (colorObject) {
-              response[index].chat_color = colorObject.chat_color;
-            } else {
-              response[index].chat_color = this.getRandomColor();
-            }
-            break;
         }
-        this.chatList.push(response[index]);
+        chatList.push(response[index]);
       }
     }
     if (this.colorArray.length > 0) {
       this.storage.set("chatAvatarColors", this.colorArray);
     }
-    return this._filterChatList();
-  }
-
-  private _filterChatList(): Array<any> {
-    let myRole = this.storage.get("role");
-    let index:number;
-    if (myRole !== "mentor") {
-      index = 0;
-      for (; index < this.chatList.length; index++) {
-        if (
-          this.chatList[index].role === "mentor" &&
-          this.chatList[index].last_message_created === null &&
-          this.chatList[index].last_message === null
-        ) {
-          this.chatList.splice(index, 1);
-        }
-      }
-    } else {
-      index = 0;
-      for (; index < this.chatList.length; index++) {
-        if (this.chatList[index].participants_only === true) {
-          this.chatList.splice(index,1);
-        }
-    }
-    }
-    return this.chatList;
+    return chatList;
   }
 
   private _normalisMessageListResponse(response, selectedChat): Array<any> {
@@ -344,11 +310,11 @@ export class ChatService {
       for (index = 0; index < response.length; index++) {
         if (response[index] && !response[index].is_sender) {
           if (selectedChat.is_team) {
-            this.getValidChatColors(this.chatColors, response, index);
+            this._getValidChatColors(this.chatColors, response, index);
           } else if (selectedChat.chat_color) {
             response[index].chat_color = selectedChat.chat_color;
           } else {
-            response[index].chat_color = this.getRandomColor();
+            response[index].chat_color = this._getRandomColor();
           }
           this.colorArray.push({
             team_member_id: response[index].team_member_id,
@@ -365,7 +331,7 @@ export class ChatService {
     }
   }
 
-  private getValidChatColors(chatColors, response, index) {
+  private _getValidChatColors(chatColors, response, index) {
     if (chatColors) {
       let chatcolor = chatColors.find(function(chat) {
         return chat.name === response[index].sender_name;
@@ -373,10 +339,10 @@ export class ChatService {
       if (chatcolor) {
         response[index].chat_color = chatcolor.chat_color;
       } else {
-        response[index].chat_color = this.getRandomColor();
+        response[index].chat_color = this._getRandomColor();
       }
     } else {
-      response[index].chat_color = this.getRandomColor();
+      response[index].chat_color = this._getRandomColor();
     }
     this.colorArray.push({
       team_member_id: response[index].team_member_id,

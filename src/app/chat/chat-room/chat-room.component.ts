@@ -2,10 +2,12 @@ import { Component, OnInit, ViewChild, AfterContentInit, AfterViewInit } from "@
 import { Router, ActivatedRoute } from "@angular/router";
 import { IonContent } from "@ionic/angular";
 import { BrowserStorageService } from "@services/storage.service";
+import { RouterEnter } from "@services/router-enter.service";
+import { UtilsService } from "../../services/utils.service";
 
 import { ChatService } from "../chat.service";
 
-interface Chat {
+export interface Chat {
   name: string;
   team_name?: string;
   is_team?: boolean;
@@ -15,17 +17,27 @@ interface Chat {
   participants_only?: boolean;
 }
 
+export interface Message {
+  id:number
+  sender_name:string;
+  message:string;
+  sent_time:string;
+  is_sender:boolean;
+  chat_color?: string;
+  noAvatar?:boolean;
+}
+
 @Component({
   selector: "app-chat-room",
   templateUrl: "./chat-room.component.html",
   styleUrls: ["./chat-room.component.scss"]
 })
-export class ChatRoomComponent implements OnInit, AfterViewInit {
+export class ChatRoomComponent extends RouterEnter implements AfterViewInit {
   // @TODO need to create method to convert chat time to local time.
   @ViewChild(IonContent) content: IonContent;
 
-  message: any;
-  messageList: any[];
+  message: string;
+  messageList: Array<Message>;
   selectedChat: Chat;
   messagePageNumber: number = 0;
   messagePagesize: number = 20;
@@ -33,10 +45,13 @@ export class ChatRoomComponent implements OnInit, AfterViewInit {
 
   constructor(
     private chatService: ChatService,
-    private router: Router,
-    private storage: BrowserStorageService,
-    private activatedRoute: ActivatedRoute
-  ) {}
+    public router: Router,
+    public storage: BrowserStorageService,
+    private activatedRoute: ActivatedRoute,
+    public utils: UtilsService
+  ) {
+    super(router, utils, storage);
+  }
 
   ngAfterViewInit() {
     setTimeout(() => {
@@ -44,7 +59,13 @@ export class ChatRoomComponent implements OnInit, AfterViewInit {
    }, 500);
   }
 
-  ngOnInit() {
+  onEnter() {
+    this._initialise();
+    this._validateRoutePrams();
+    this._loadMessages(false);
+  }
+
+  private _initialise() {
     this.loadingChatMessages = true;
     this.selectedChat = {
       name: "",
@@ -54,10 +75,9 @@ export class ChatRoomComponent implements OnInit, AfterViewInit {
       chat_color: null,
       participants_only: false
     };
-    this.validateRoutePrams();
   }
 
-  private validateRoutePrams() {
+  private _validateRoutePrams() {
     let teamId = parseInt(this.activatedRoute.snapshot.paramMap.get('teamId'));
     this.selectedChat.team_id = teamId
     if (Number(this.activatedRoute.snapshot.paramMap.get('teamMemberId'))) {
@@ -66,10 +86,9 @@ export class ChatRoomComponent implements OnInit, AfterViewInit {
       this.selectedChat.is_team = true;
       this.selectedChat.participants_only = JSON.parse(this.activatedRoute.snapshot.paramMap.get('teamMemberId'));
     }
-    this.loadMessages(false);
   }
 
-  loadMessages(loadMore) {
+  private _loadMessages(loadMore) {
     this.loadingChatMessages = true;
     let tempRes = null;
     let param: any;
@@ -118,7 +137,7 @@ export class ChatRoomComponent implements OnInit, AfterViewInit {
   loadMoreMessages(event) {
     let scrollTopPosition = event.detail.scrollTop;
     if (scrollTopPosition === 0) {
-      this.loadMessages(true);
+      this._loadMessages(true);
     }
   }
 
