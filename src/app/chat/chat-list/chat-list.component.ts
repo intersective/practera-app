@@ -4,21 +4,7 @@ import { BrowserStorageService } from "@services/storage.service";
 import { RouterEnter } from "@services/router-enter.service";
 import { UtilsService } from "../../services/utils.service";
 
-import { ChatService } from "../chat.service";
-
-export interface Chat {
-  team_id: number;
-  team_name: string;
-  team_member_id?: number;
-  name: string;
-  role?: string;
-  unread_messages?: number;
-  last_message_created?: string;
-  last_message?: string;
-  is_team: boolean;
-  participants_only: boolean;
-  chat_color?: string;
-}
+import { ChatService, ChatListObject } from "../chat.service";
 
 @Component({
   selector: "app-chat",
@@ -27,7 +13,7 @@ export interface Chat {
 })
 export class ChatListComponent extends RouterEnter {
   // @TODO need to create method to convert chat time to local time.
-  chatList: Array<Chat>;
+  chatList: Array<ChatListObject>;
   haveMoreTeam: boolean;
   loadingChatList: boolean = true;
 
@@ -51,15 +37,14 @@ export class ChatListComponent extends RouterEnter {
   }
 
   private _loadChatData(): void {
-    this.chatService.getchatList().subscribe(response => {
-      this.chatList = response;
+    this.chatService.getchatList().subscribe(chats => {
+      this.chatList = chats;
       this._checkHaveMoreTeam();
     });
   }
 
   /**
    * this method check is this user in multiple teams.
-   * @param {Array} response
    */
   private _checkHaveMoreTeam(): void {
     if (this.chatList.length > 0) {
