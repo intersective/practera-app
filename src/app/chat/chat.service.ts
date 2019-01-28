@@ -6,7 +6,6 @@ import { Observable, of } from "rxjs";
 import { BrowserStorageService } from "@services/storage.service";
 import { UtilsService } from "@services/utils.service";
 import { environment } from "../../environments/environment";
-import { Chat } from "./chat-list/chat-list.component";
 
 /**
  * @name api
@@ -21,7 +20,40 @@ const api = {
   getTeam: "api/teams.json"
 };
 
-export interface newMessage {
+export interface ChatListObject {
+  team_id: number;
+  team_name: string;
+  team_member_id?: number;
+  name: string;
+  role?: string;
+  unread_messages?: number;
+  last_message_created?: string;
+  last_message?: string;
+  is_team: boolean;
+  participants_only: boolean;
+  chat_color?: string;
+}
+
+export interface ChatRoomObject {
+  name: string;
+  team_name?: string;
+  is_team?: boolean;
+  team_id: number;
+  team_member_id: number;
+  chat_color?: string;
+  participants_only?: boolean;
+}
+
+export interface Message {
+  id:number
+  sender_name:string;
+  message:string;
+  sent_time:string;
+  is_sender:boolean;
+  chat_color?: string;
+  noAvatar?:boolean;
+}
+interface NewMessage {
   to: number | string;
   message: string;
   team_id: number;
@@ -29,7 +61,7 @@ export interface newMessage {
   participants_only?: boolean;
 }
 
-export interface messageListPrams {
+interface MessageListPrams {
   team_id: number;
   team_member_id?: number;
   page: number;
@@ -37,29 +69,34 @@ export interface messageListPrams {
   participants_only?: boolean;
 }
 
-export interface markAsSeenPrams {
+interface MarkAsSeenPrams {
   team_id: number;
   id: string | number;
   action?: string;
 }
 
-export interface unreadMessagePrams {
+interface UnreadMessagePrams {
   filter: string;
 }
 
-export interface getDatePrams {
+interface GetDatePrams {
   date: any;
   type: string;
   messageList?: any[];
   messageIndex?: number;
 }
 
+export interface ChatColor {
+  team_member_id: number;
+  team_id: number;
+  name: string;
+  chat_color: string;
+}
+
 @Injectable({
   providedIn: "root"
 })
 export class ChatService {
-  private chatColors: any[];
-  private colorArray = [];
 
   constructor(
     private request: RequestService,
@@ -91,7 +128,7 @@ export class ChatService {
    *  size:20
    * }
    */
-  getMessageList(data: messageListPrams, selectedChat: any): Observable<any> {
+  getMessageList(data: MessageListPrams, selectedChat: any): Observable<any> {
     return this.request
       .get(api.getChatMessages, {
         params: data
@@ -108,7 +145,7 @@ export class ChatService {
       );
   }
 
-  markMessagesAsSeen(prams: markAsSeenPrams): Observable<any> {
+  markMessagesAsSeen(prams: MarkAsSeenPrams): Observable<any> {
     let body = {
       team_id: prams.team_id,
       id: prams.id,
@@ -119,21 +156,21 @@ export class ChatService {
     });
   }
 
-  postNewMessage(data: newMessage): Observable<any> {
+  postNewMessage(data: NewMessage): Observable<any> {
     const body = new HttpParams()
       .set("data[to]", data.to.toString())
       .set("data[message]", data.message)
       .set("data[team_id]", data.team_id.toString())
       .set("env", environment.env);
-      if (data.participants_only) {
-        body.set("participants_only", data.participants_only.toString());
-      }
+    if (data.participants_only) {
+      body.set("participants_only", data.participants_only.toString());
+    }
     return this.request.post(api.createMessage, body.toString(), {
       headers: { "Content-Type": "application/x-www-form-urlencoded" }
     });
   }
 
-  unreadMessageCout(data: unreadMessagePrams): Observable<any> {
+  unreadMessageCout(data: UnreadMessagePrams): Observable<any> {
     let body = {
       unread_count_for: data.filter
     };
@@ -179,15 +216,15 @@ export class ChatService {
   }
 
   private _getRandomColor() {
-    var randomNumber = this.getRamdomNumber();
+    var randomNumber = this._getRamdomNumber();
     return "color-" + randomNumber;
   }
 
-  private getRamdomNumber() {
+  private _getRamdomNumber() {
     return Math.floor(Math.random() * 19) + 1;
   }
 
-  getDate(prams: getDatePrams) {
+  getDate(prams: GetDatePrams) {
     const months = [
       "Jan",
       "Feb",
@@ -260,8 +297,8 @@ export class ChatService {
    *  - set chat avatar color
    * @param {Array} response
    */
-  private _normaliseChatListResponse(response): Array<Chat> {
-    if (response) {
+  private _normaliseChatListResponse(response): Array<ChatListObject> {
+    if (response.length > 0) {
       return this._setChatAvatarColors(response);
     }
   }
@@ -271,52 +308,48 @@ export class ChatService {
    * if there no old avatar colors it will create new color and add that to service variable.
    * @param {Array} response
    */
-  private _setChatAvatarColors(response): Array<Chat> {
+  private _setChatAvatarColors(response): Array<ChatListObject> {
     let chatColors = this.storage.get("chatAvatarColors");
-    let chatList: Array<Chat>;
+    let colors: Array<ChatColor>;
     let index = 0;
     for (index = 0; index < response.length; index++) {
-      if (response[index]) {
-        if (chatColors.length > 0) {
-          let colorObject = chatColors.find(function(chat) {
-            return chat.team_member_id === response[index].team_member_id;
-          });
-          if (colorObject) {
-            response[index].chat_color = colorObject.chat_color;
-          } else {
-            response[index].chat_color = this._getRandomColor();
-          }
+      if (chatColors.length > 0) {
+        let colorObject = chatColors.find(function(chat) {
+          return chat.team_member_id === response[index].team_member_id;
+        });
+        if (colorObject) {
+          response[index].chat_color = colorObject.chat_color;
         } else {
           response[index].chat_color = this._getRandomColor();
-            this.colorArray.push({
-              team_member_id: response[index].team_member_id,
-              team_id: response[index].team_id,
-              name: response[index].name,
-              chat_color: response[index].chat_color
-            });
         }
-        chatList.push(response[index]);
+      } else {
+        response[index].chat_color = this._getRandomColor();
       }
+      colors.push({
+        team_member_id: response[index].team_member_id,
+        team_id: response[index].team_id,
+        name: response[index].name,
+        chat_color: response[index].chat_color
+      });
     }
-    if (this.colorArray.length > 0) {
-      this.storage.set("chatAvatarColors", this.colorArray);
-    }
-    return chatList;
+    this.storage.set("chatAvatarColors", colors);
+    return response;
   }
 
-  private _normalisMessageListResponse(response, selectedChat): Array<any> {
+  private _normalisMessageListResponse(response, selectedChat): Array<ChatRoomObject> {
+    let colors:Array<ChatColor>;
     let index = 0;
     if (response.length > 0) {
       for (index = 0; index < response.length; index++) {
         if (response[index] && !response[index].is_sender) {
           if (selectedChat.is_team) {
-            this._getValidChatColors(this.chatColors, response, index);
+            response[index].chat_color = this._getValidChatColors(response[index].sender_name);
           } else if (selectedChat.chat_color) {
             response[index].chat_color = selectedChat.chat_color;
           } else {
             response[index].chat_color = this._getRandomColor();
           }
-          this.colorArray.push({
+          colors.push({
             team_member_id: response[index].team_member_id,
             team_id: response[index].team_id,
             name: response[index].name,
@@ -324,31 +357,28 @@ export class ChatService {
           });
         }
       }
-      if (this.colorArray.length > 0) {
-        this.storage.set("chatAvatarColors", this.colorArray);
+      if (colors.length > 0) {
+        this.storage.set("chatAvatarColors", colors);
       }
       return response;
     }
   }
 
-  private _getValidChatColors(chatColors, response, index) {
+  private _getValidChatColors(senderName) {
+    let chatColors = this.storage.get("chatAvatarColors");
+    let color:string;
     if (chatColors) {
       let chatcolor = chatColors.find(function(chat) {
-        return chat.name === response[index].sender_name;
+        return chat.name === senderName;
       });
       if (chatcolor) {
-        response[index].chat_color = chatcolor.chat_color;
+        color = chatcolor.chat_color;
       } else {
-        response[index].chat_color = this._getRandomColor();
+        color = this._getRandomColor();
       }
     } else {
-      response[index].chat_color = this._getRandomColor();
+      color = this._getRandomColor();
     }
-    this.colorArray.push({
-      team_member_id: response[index].team_member_id,
-      team_id: response[index].team_id,
-      name: response[index].name,
-      chat_color: response[index].chat_color
-    });
+    return color;
   }
 }

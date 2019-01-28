@@ -5,27 +5,7 @@ import { BrowserStorageService } from "@services/storage.service";
 import { RouterEnter } from "@services/router-enter.service";
 import { UtilsService } from "../../services/utils.service";
 
-import { ChatService } from "../chat.service";
-
-export interface Chat {
-  name: string;
-  team_name?: string;
-  is_team?: boolean;
-  team_id: number;
-  team_member_id: number;
-  chat_color?: string;
-  participants_only?: boolean;
-}
-
-export interface Message {
-  id:number
-  sender_name:string;
-  message:string;
-  sent_time:string;
-  is_sender:boolean;
-  chat_color?: string;
-  noAvatar?:boolean;
-}
+import { ChatService, ChatRoomObject, Message } from "../chat.service";
 
 @Component({
   selector: "app-chat-room",
@@ -38,7 +18,7 @@ export class ChatRoomComponent extends RouterEnter implements AfterViewInit {
 
   message: string;
   messageList: Array<Message>;
-  selectedChat: Chat;
+  selectedChat: ChatRoomObject;
   messagePageNumber: number = 0;
   messagePagesize: number = 20;
   loadingChatMessages:boolean = true;
@@ -61,7 +41,7 @@ export class ChatRoomComponent extends RouterEnter implements AfterViewInit {
 
   onEnter() {
     this._initialise();
-    this._validateRoutePrams();
+    this._validateRouteParams();
     this._loadMessages(false);
   }
 
@@ -77,14 +57,14 @@ export class ChatRoomComponent extends RouterEnter implements AfterViewInit {
     };
   }
 
-  private _validateRoutePrams() {
-    let teamId = parseInt(this.activatedRoute.snapshot.paramMap.get('teamId'));
+  private _validateRouteParams() {
+    let teamId = Number(this.activatedRoute.snapshot.paramMap.get('teamId'));
     this.selectedChat.team_id = teamId
     if (Number(this.activatedRoute.snapshot.paramMap.get('teamMemberId'))) {
-      this.selectedChat.team_member_id = parseInt(this.activatedRoute.snapshot.paramMap.get('teamMemberId'));
+      this.selectedChat.team_member_id = Number(this.activatedRoute.snapshot.paramMap.get('teamMemberId'));
     } else {
       this.selectedChat.is_team = true;
-      this.selectedChat.participants_only = JSON.parse(this.activatedRoute.snapshot.paramMap.get('teamMemberId'));
+      this.selectedChat.participants_only = JSON.parse(this.activatedRoute.snapshot.paramMap.get('participants_only'));
     }
   }
 
@@ -111,10 +91,10 @@ export class ChatRoomComponent extends RouterEnter implements AfterViewInit {
     }
     this.chatService
       .getMessageList(param, this.selectedChat)
-      .subscribe(response => {
-        if (response) {
-          if (response.length > 0) {
-            tempRes = Object.assign([], response);
+      .subscribe(messages => {
+        if (messages) {
+          if (messages.length > 0) {
+            tempRes = Object.assign([], messages);
             tempRes.reverse();
             if (loadMore) {
               this.messageList = tempRes.concat(this.messageList);
@@ -148,8 +128,8 @@ export class ChatRoomComponent extends RouterEnter implements AfterViewInit {
   private getChatName() {
     if (this.selectedChat.is_team) {
       this.chatService.getTeamName(this.selectedChat.team_id)
-      .subscribe(Response => {
-        this.selectedChat.team_name = Response;
+      .subscribe(teamName => {
+        this.selectedChat.team_name = teamName;
         this.loadingChatMessages = false;
       });
     } else {
