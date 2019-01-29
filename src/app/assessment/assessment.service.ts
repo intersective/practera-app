@@ -67,7 +67,7 @@ export interface Submission {
   id: number;
   status: string;
   answers: any;
-  submitterId: number;
+  submitterName: string;
 }
 
 export interface Review {
@@ -308,7 +308,7 @@ export class AssessmentService {
       id: thisSubmission.AssessmentSubmission.id,
       status: thisSubmission.AssessmentSubmission.status,
       answers: {},
-      submitterId: thisSubmission.AssessmentSubmission.submitter_id
+      submitterName: thisSubmission.Submitter.name
     }
 
     //-- normalise submission answers
