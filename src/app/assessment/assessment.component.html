@@ -9,11 +9,12 @@
   <ion-text color="medium" text-left>
     <app-description [content]="assessment.description"></app-description>
   </ion-text>
-  <div class="review-submitter" *ngIf="assessment.isFor && !(JSON.stringify(submission) === '{}')" text-left>
-    <p class="title">Submitted by</p>
-    <div class="item item-borderless">
-       {{submission.submitterName}}
-    </div>
+  <div class="review-submitter" *ngIf="assessment.isForTeam" text-left>
+    <p class="title">
+      Submitted by
+      <br>
+      {{submission.submitterName}}
+    </p>
   </div>
 
   <form [formGroup]="questionsForm">
