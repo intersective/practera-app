@@ -22,6 +22,7 @@ export class ChatRoomComponent extends RouterEnter implements AfterViewInit {
   messagePageNumber: number = 0;
   messagePagesize: number = 20;
   loadingChatMessages:boolean = true;
+  loadingMesageSend:boolean = false;
 
   constructor(
     private chatService: ChatService,
@@ -42,7 +43,7 @@ export class ChatRoomComponent extends RouterEnter implements AfterViewInit {
   onEnter() {
     this._initialise();
     this._validateRouteParams();
-    this._loadMessages(false);
+    this._loadMessages();
   }
 
   private _initialise() {
@@ -64,51 +65,50 @@ export class ChatRoomComponent extends RouterEnter implements AfterViewInit {
       this.selectedChat.team_member_id = Number(this.activatedRoute.snapshot.paramMap.get('teamMemberId'));
     } else {
       this.selectedChat.is_team = true;
-      this.selectedChat.participants_only = JSON.parse(this.activatedRoute.snapshot.paramMap.get('participants_only'));
+      this.selectedChat.participants_only = JSON.parse(this.activatedRoute.snapshot.paramMap.get('participantsOnly'));
     }
   }
 
-  private _loadMessages(loadMore) {
+  private _loadMessages() {
     this.loadingChatMessages = true;
-    let tempRes = null;
-    let param: any;
-    this.messageList = [];
+    let data: any;
+    this.messageList = new Array;
+    this.messagePageNumber += 1;
     // creating params need to load messages.
     if (this.selectedChat.is_team) {
-      param = {
+      data = {
         team_id: this.selectedChat.team_id,
-        page: this.getMessagePageNumber(),
+        page: this.messagePageNumber,
         size: this.messagePagesize,
         participants_only: this.selectedChat.participants_only
       };
     } else {
-      param = {
+      data = {
         team_id: this.selectedChat.team_id,
-        page: this.getMessagePageNumber(),
+        page: this.messagePageNumber,
         size: this.messagePagesize,
         team_member_id: this.selectedChat.team_member_id
       };
     }
     this.chatService
-      .getMessageList(param, this.selectedChat)
+      .getMessageList(data, this.selectedChat.is_team, this.selectedChat.chat_color)
       .subscribe(messages => {
         if (messages) {
           if (messages.length > 0) {
-            tempRes = Object.assign([], messages);
-            tempRes.reverse();
-            if (loadMore) {
-              this.messageList = tempRes.concat(this.messageList);
+            messages = Object.assign([], messages);
+            messages.reverse();
+            if (this.messageList.length > 0) {
+              this.messageList = messages.concat(this.messageList);
             } else {
-              this.messageList = tempRes;
+              this.messageList = messages;
             }
             this.getChatName();
-            this.markAsSeen(tempRes);
+            this.markAsSeen(messages);
           } else {
             this.messagePageNumber -= 1;
           }
-        } else {
-          this.loadingChatMessages = false;
         }
+        this.loadingChatMessages = false;
       }, error => {
         this.loadingChatMessages = false;
       });
@@ -117,12 +117,8 @@ export class ChatRoomComponent extends RouterEnter implements AfterViewInit {
   loadMoreMessages(event) {
     let scrollTopPosition = event.detail.scrollTop;
     if (scrollTopPosition === 0) {
-      this._loadMessages(true);
+      this._loadMessages();
     }
-  }
-
-  private getMessagePageNumber() {
-    return (this.messagePageNumber += 1);
   }
 
   private getChatName() {
@@ -148,7 +144,7 @@ export class ChatRoomComponent extends RouterEnter implements AfterViewInit {
   }
 
   back() {
-    this.router.navigateByUrl("/app/(chat:chat)");
+    this.router.navigate(["/app/chat"]);
   }
 
   sendMessage(event?:any) {
@@ -157,6 +153,7 @@ export class ChatRoomComponent extends RouterEnter implements AfterViewInit {
       event.preventDefault();
     }
     if (this.message) {
+      this.loadingMesageSend = true;
       const message = this.message;
       // remove typed message from text field.
       this.message = ''; 
@@ -179,8 +176,14 @@ export class ChatRoomComponent extends RouterEnter implements AfterViewInit {
       this.chatService.postNewMessage(data).subscribe(
         response => {
           this.messageList.push(response.data);
+          this.loadingMesageSend = false;
+          setTimeout(() => {
+            this.content.scrollToBottom();
+         }, 500);
         },
-        error => {}
+        error => {
+          this.loadingMesageSend = false;
+        }
       );
     }
   }

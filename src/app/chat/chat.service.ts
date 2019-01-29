@@ -128,7 +128,7 @@ export class ChatService {
    *  size:20
    * }
    */
-  getMessageList(data: MessageListPrams, selectedChat: any): Observable<any> {
+  getMessageList(data: MessageListPrams, isTeam:boolean, chatColor:string): Observable<any> {
     return this.request
       .get(api.getChatMessages, {
         params: data
@@ -136,9 +136,10 @@ export class ChatService {
       .pipe(
         map(response => {
           if (response.success && response.data) {
-            return this._normalisMessageListResponse(
+            return this._normaliseMessageListResponse(
               response.data,
-              selectedChat
+              isTeam,
+              chatColor
             );
           }
         })
@@ -157,15 +158,19 @@ export class ChatService {
   }
 
   postNewMessage(data: NewMessage): Observable<any> {
-    const body = new HttpParams()
-      .set("data[to]", data.to.toString())
-      .set("data[message]", data.message)
-      .set("data[team_id]", data.team_id.toString())
-      .set("env", environment.env);
-    if (data.participants_only) {
-      body.set("participants_only", data.participants_only.toString());
+    let reqData = {
+      to: data.to,
+      message: data.message,
+      team_id:data.team_id,
+      env: data.env,
+      participants_only: '',
     }
-    return this.request.post(api.createMessage, body.toString(), {
+    if (data.participants_only) {
+      reqData.participants_only = data.participants_only.toString();
+    } else {
+      delete reqData.participants_only;
+    }
+    return this.request.post(api.createMessage, reqData, {
       headers: { "Content-Type": "application/x-www-form-urlencoded" }
     });
   }
@@ -299,7 +304,7 @@ export class ChatService {
    */
   private _normaliseChatListResponse(response): Array<ChatListObject> {
     if (response.length > 0) {
-      return this._setChatAvatarColors(response);
+      return this._setChatAvatarColorAndName(response);
     }
   }
 
@@ -308,9 +313,9 @@ export class ChatService {
    * if there no old avatar colors it will create new color and add that to service variable.
    * @param {Array} response
    */
-  private _setChatAvatarColors(response): Array<ChatListObject> {
+  private _setChatAvatarColorAndName(response): Array<ChatListObject> {
     let chatColors = this.storage.get("chatAvatarColors");
-    let colors: Array<ChatColor>;
+    let colors: Array<ChatColor> = new Array;
     let index = 0;
     for (index = 0; index < response.length; index++) {
       if (chatColors.length > 0) {
@@ -331,21 +336,30 @@ export class ChatService {
         name: response[index].name,
         chat_color: response[index].chat_color
       });
+      this._getChatName(response[index]);
     }
     this.storage.set("chatAvatarColors", colors);
     return response;
   }
 
-  private _normalisMessageListResponse(response, selectedChat): Array<ChatRoomObject> {
-    let colors:Array<ChatColor>;
+  private _getChatName(chat) {
+    if (chat.is_team && chat.participants_only) {
+      chat.name = chat.team_name;
+    } else if (chat.is_team && !chat.participants_only) {
+      chat.name = chat.team_name + " + Mentor";
+    }
+  }
+
+  private _normaliseMessageListResponse(response, isTeam, chatColor): Array<ChatRoomObject> {
+    let colors:Array<ChatColor> = new Array;
     let index = 0;
     if (response.length > 0) {
       for (index = 0; index < response.length; index++) {
         if (response[index] && !response[index].is_sender) {
-          if (selectedChat.is_team) {
+          if (isTeam) {
             response[index].chat_color = this._getValidChatColors(response[index].sender_name);
-          } else if (selectedChat.chat_color) {
-            response[index].chat_color = selectedChat.chat_color;
+          } else if (chatColor) {
+            response[index].chat_color = chatColor;
           } else {
             response[index].chat_color = this._getRandomColor();
           }
@@ -366,7 +380,7 @@ export class ChatService {
 
   private _getValidChatColors(senderName) {
     let chatColors = this.storage.get("chatAvatarColors");
-    let color:string;
+    let color:string = '';
     if (chatColors) {
       let chatcolor = chatColors.find(function(chat) {
         return chat.name === senderName;
