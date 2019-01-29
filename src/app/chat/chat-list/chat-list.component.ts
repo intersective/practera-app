@@ -48,11 +48,16 @@ export class ChatListComponent extends RouterEnter {
    */
   private _checkHaveMoreTeam(): void {
     if (this.chatList.length > 0) {
+      let myRole = this.storage.get("role");
       let index = 0;
       let teamCount = 0;
       for (index = 0; index < this.chatList.length; index++) {
         if (this.chatList[index].is_team) {
-          teamCount++;
+          if (myRole !== "mentor") {
+            teamCount++;
+          } else if (!this.chatList[index].participants_only) {
+            teamCount++;
+          }
         }
       }
       if (teamCount > 1) {
@@ -89,15 +94,5 @@ export class ChatListComponent extends RouterEnter {
       type: "list"
     };
     return this.chatService.getDate(params);
-  }
-
-  getChatName(chat) {
-    var chatName = chat.name;
-    if (chat.is_team && chat.participants_only) {
-      chatName = chat.team_name;
-    } else if (chat.is_team && !chat.participants_only) {
-      chatName = chat.team_name + " + Mentor";
-    }
-    return chatName;
   }
 }

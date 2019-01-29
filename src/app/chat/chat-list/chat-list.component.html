@@ -19,7 +19,7 @@
         </ion-avatar>
         <ion-label>
           <div class="chat-name-container">
-            <h2 [class]="chat.is_team ? 'chat-name team-channel' : 'chat-name'">{{getChatName(chat)}}</h2>
+            <h2 [class]="chat.is_team ? 'chat-name team-channel' : 'chat-name'">{{chat.name}}</h2>
             <ng-container *ngIf="(chat.role === 'mentor') && (haveMoreTeam)"><span>mentor - {{chat.team_name}}</span></ng-container>
             <ng-container *ngIf="(chat.role === 'mentor') && (!haveMoreTeam)"><span>mentor</span></ng-container>
             <ng-container *ngIf="(chat.role !== 'mentor') && (!chat.is_team) && (haveMoreTeam)"><span>{{chat.team_name}}</span></ng-container>

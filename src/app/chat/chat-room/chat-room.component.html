@@ -33,6 +33,13 @@
         </ion-label>
       </ion-item>
     </ng-container>
+    <ng-container *ngIf="loadingMesageSend">
+      <ion-item color="light">
+        <div class="message-sending-loading">
+            <ion-spinner name="bubbles"></ion-spinner>
+        </div>
+      </ion-item>
+    </ng-container>
   </ion-list>
 </ion-content>
 <ion-footer>
