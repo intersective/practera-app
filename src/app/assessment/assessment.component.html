@@ -9,10 +9,10 @@
   <ion-text color="medium" text-left>
     <app-description [content]="assessment.description"></app-description>
   </ion-text>
-  <div class="review-submitter" ng-if="assessment.submitter" text-left>
+  <div class="review-submitter" *ngIf="assessment.isFor && !(JSON.stringify(submission) === '{}')" text-left>
     <p class="title">Submitted by</p>
-    <div class="item item-borderless"> {{assessment}}
-      <!-- <p class="team-label" ng-if="assessment.isForTeam">{{assessment.submission.Team.name}}</p> -->
+    <div class="item item-borderless">
+       {{submission.submitterName}}
     </div>
   </div>
 
