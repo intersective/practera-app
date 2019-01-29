@@ -230,71 +230,7 @@ export class ChatService {
   }
 
   getDate(prams: GetDatePrams) {
-    const months = [
-      "Jan",
-      "Feb",
-      "Mar",
-      "Apr",
-      "May",
-      "Jun",
-      "Jul",
-      "Aug",
-      "Sept",
-      "Oct",
-      "Nov",
-      "Dec"
-    ];
-    let returnDate = "";
-    let returnTime = "";
-    if (prams.date) {
-      var UTCDate = prams.date.replace(/-/g, "/") + " UTC";
-      var chatDate = new Date(UTCDate);
-      var today = new Date();
-      var diff = today.getDate() - chatDate.getDate();
-      if (diff === 0) {
-        returnDate = "Today";
-      } else if (diff === 1) {
-        returnDate = "Yesterday";
-      } else {
-        returnDate =
-          months[chatDate.getMonth()] + " " + chatDate.getDate().toString();
-      }
-
-      returnTime = chatDate.toLocaleString("en-US", {
-        hour: "numeric",
-        minute: "numeric",
-        hour12: true
-      });
-
-      switch (prams.type) {
-        case "list":
-          if (diff === 0) {
-            return returnTime;
-          } else {
-            return returnDate;
-          }
-        case "room":
-          if (prams.messageList && prams.messageIndex) {
-            if (prams.messageList[prams.messageIndex - 1]) {
-              var currentMessageTime = new Date(
-                prams.messageList[prams.messageIndex].sent_time
-              );
-              var oldMessageTime = new Date(
-                prams.messageList[prams.messageIndex - 1].sent_time
-              );
-              var dateDiff =
-                currentMessageTime.getDate() - oldMessageTime.getDate();
-              if (dateDiff === 0) {
-                return returnTime;
-              } else {
-                return returnDate + " " + returnTime;
-              }
-            }
-          }
-      }
-    } else {
-      return "";
-    }
+    return this.utils.timeFormatter(prams.date);
   }
 
   /**

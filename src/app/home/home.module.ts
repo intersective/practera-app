@@ -15,6 +15,7 @@ import { TodoCardComponent } from './todo-card/todo-card.component';
       "showInnerStroke": false,
       "startFromZero": false,
       "outerStrokeColor": "var(--ion-color-primary)",
+      "innerStrokeColor": "var(--ion-color-primary)",
       "subtitle": [
         "COMPLETE"
       ],

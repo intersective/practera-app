@@ -275,7 +275,8 @@ export class AssessmentService {
     } else {
       params = {
         assessment_id: assessmentId,
-        context_id: contextId
+        context_id: contextId,
+        review: false
       };
     }
     if (submissionId) {
