@@ -34,7 +34,10 @@ export class RequestInterceptor implements HttpInterceptor {
     }
 
     // do not need to pass team id for teams.json
-    if (teamId && !req.url.includes('/teams.json')) {
+    // do not need to pass team id for chat api calls
+    if (teamId && !req.url.includes('/teams.json') && 
+    !req.url.includes('/message/chat/list.json') && !req.url.includes('/message/chat/create_message') && 
+    !req.url.includes('/message/chat/edit_message') && req.url.includes('/message/chat/list_messages.json')) {
       headerClone = headerClone.set('teamId', teamId);
     }
 
