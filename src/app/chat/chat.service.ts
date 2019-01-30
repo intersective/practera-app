@@ -5,7 +5,7 @@ import { map } from "rxjs/operators";
 import { Observable, of } from "rxjs";
 import { BrowserStorageService } from "@services/storage.service";
 import { UtilsService } from "@services/utils.service";
-import { environment } from "../../environments/environment";
+import { environment } from "@environments/environment";
 
 /**
  * @name api
@@ -77,13 +77,6 @@ interface MarkAsSeenPrams {
 
 interface UnreadMessagePrams {
   filter: string;
-}
-
-interface GetDatePrams {
-  date: any;
-  type: string;
-  messageList?: any[];
-  messageIndex?: number;
 }
 
 export interface ChatColor {
@@ -229,10 +222,6 @@ export class ChatService {
     return Math.floor(Math.random() * 19) + 1;
   }
 
-  getDate(prams: GetDatePrams) {
-    return this.utils.timeFormatter(prams.date);
-  }
-
   /**
    * modify the Chat list response
    *  - set chat avatar color
@@ -280,7 +269,7 @@ export class ChatService {
         name: chat.name,
         chat_color: chat.chat_color
       });
-      this._getChatName(chat);
+      chat = this._getChatName(chat);
     });
     this.storage.set("chatAvatarColors", colors);
     return data;
@@ -292,46 +281,50 @@ export class ChatService {
     } else if (chat.is_team && !chat.participants_only) {
       chat.name = chat.team_name + " + Mentor";
     }
+    return chat;
   }
 
   /**
    * modify the message list response
-   * @param data 
-   * @param isTeam 
-   * @param chatColor 
+   * @param data
+   * @param isTeam
+   * @param chatColor
    */
   private _normaliseMessageListResponse(data, isTeam, chatColor) {
     let colors:Array<ChatColor> = new Array;
-    if (!Array.isArray(data) ||
-        !this.utils.has(data[0], 'id') ||
-        !this.utils.has(data[0], 'sender_name') ||
-        !this.utils.has(data[0], 'message') ||
-        !this.utils.has(data[0], 'is_sender')) {
-      return this.request.apiResponseFormatError('Message format error');
+    if (!Array.isArray(data)) {
+      return this.request.apiResponseFormatError('Message array format error');
     }
-    if (data.length > 0) {
-      data.forEach((message) => {
-        if (message && !message.is_sender) {
-          if (isTeam) {
-            message.chat_color = this._getValidChatColors(message.sender_name);
-          } else if (chatColor) {
-            message.chat_color = chatColor;
-          } else {
-            message.chat_color = this._getRandomColor();
-          }
-          colors.push({
-            team_member_id: message.team_member_id,
-            team_id: message.team_id,
-            name: message.name,
-            chat_color: message.chat_color
-          });
-        }
-      });
-      if (colors.length > 0) {
-        this.storage.set("chatAvatarColors", colors);
+    if (data.length == 0) {
+      return [];
+    }
+    data.forEach((message) => {
+      if (!this.utils.has(message, 'id') ||
+          !this.utils.has(message, 'sender_name') ||
+          !this.utils.has(message, 'message') ||
+          !this.utils.has(message, 'is_sender')) {
+        return this.request.apiResponseFormatError('Message format error');
       }
-      return data;
+      if (!message.is_sender) {
+        if (isTeam) {
+          message.chat_color = this._getValidChatColors(message.sender_name);
+        } else if (chatColor) {
+          message.chat_color = chatColor;
+        } else {
+          message.chat_color = this._getRandomColor();
+        }
+        colors.push({
+          team_member_id: message.team_member_id,
+          team_id: message.team_id,
+          name: message.name,
+          chat_color: message.chat_color
+        });
+      }
+    });
+    if (colors.length > 0) {
+      this.storage.set("chatAvatarColors", colors);
     }
+    return data;
   }
 
   private _getValidChatColors(senderName) {
