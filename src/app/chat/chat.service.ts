@@ -199,8 +199,11 @@ export class ChatService {
       );
   }
 
-  private _normalisTeamResponse(response) {
-    return response.Team.name;
+  private _normalisTeamResponse(data) {
+    if (!this.utils.has(data, 'Team')) {
+      return this.request.apiResponseFormatError('Team format error');
+    }
+    return data.Team.name;
   }
 
   generateChatAvatarText(text) {
@@ -209,12 +212,9 @@ export class ChatService {
     if (chatNameArray[0] && chatNameArray[1]) {
       avatarText += chatNameArray[0].charAt(0).toUpperCase();
       avatarText += chatNameArray[1].charAt(0).toUpperCase();
-    } else if (chatNameArray[0]) {
+    } else {
       avatarText += chatNameArray[0].charAt(0).toUpperCase();
       avatarText += chatNameArray[0].charAt(1).toUpperCase();
-    } else {
-      avatarText += chatNameArray[1].charAt(0).toUpperCase();
-      avatarText += chatNameArray[1].charAt(1).toUpperCase();
     }
 
     return avatarText;
@@ -234,13 +234,22 @@ export class ChatService {
   }
 
   /**
-   * modify the response
+   * modify the Chat list response
    *  - set chat avatar color
+   *  - set chat name
    * @param {Array} response
    */
-  private _normaliseChatListResponse(response): Array<ChatListObject> {
-    if (response.length > 0) {
-      return this._setChatAvatarColorAndName(response);
+  private _normaliseChatListResponse(data) {
+    if (!Array.isArray(data) ||
+        !this.utils.has(data[0], 'team_id') ||
+        !this.utils.has(data[0], 'is_team') ||
+        !this.utils.has(data[0], 'participants_only') ||
+        !this.utils.has(data[0], 'name') ||
+        !this.utils.has(data[0], 'team_name')) {
+      return this.request.apiResponseFormatError('Chat format error');
+    }
+    if (data.length > 0) {
+      return this._setChatAvatarColorAndName(data);
     }
   }
 
@@ -249,33 +258,32 @@ export class ChatService {
    * if there no old avatar colors it will create new color and add that to service variable.
    * @param {Array} response
    */
-  private _setChatAvatarColorAndName(response): Array<ChatListObject> {
+  private _setChatAvatarColorAndName(data): Array<ChatListObject> {
     let chatColors = this.storage.get("chatAvatarColors");
     let colors: Array<ChatColor> = new Array;
-    let index = 0;
-    for (index = 0; index < response.length; index++) {
-      if (chatColors.length > 0) {
-        let colorObject = chatColors.find(function(chat) {
-          return chat.team_member_id === response[index].team_member_id;
+    data.forEach((chat) => {
+      if (chatColors && chatColors.length > 0) {
+        let colorObject = chatColors.find(function(color) {
+          return color.team_member_id === chat.team_member_id;
         });
         if (colorObject) {
-          response[index].chat_color = colorObject.chat_color;
+          chat.chat_color = colorObject.chat_color;
         } else {
-          response[index].chat_color = this._getRandomColor();
+          chat.chat_color = this._getRandomColor();
         }
       } else {
-        response[index].chat_color = this._getRandomColor();
+        chat.chat_color = this._getRandomColor();
       }
       colors.push({
-        team_member_id: response[index].team_member_id,
-        team_id: response[index].team_id,
-        name: response[index].name,
-        chat_color: response[index].chat_color
+        team_member_id: chat.team_member_id,
+        team_id: chat.team_id,
+        name: chat.name,
+        chat_color: chat.chat_color
       });
-      this._getChatName(response[index]);
-    }
+      this._getChatName(chat);
+    });
     this.storage.set("chatAvatarColors", colors);
-    return response;
+    return data;
   }
 
   private _getChatName(chat) {
@@ -286,31 +294,43 @@ export class ChatService {
     }
   }
 
-  private _normaliseMessageListResponse(response, isTeam, chatColor): Array<ChatRoomObject> {
+  /**
+   * modify the message list response
+   * @param data 
+   * @param isTeam 
+   * @param chatColor 
+   */
+  private _normaliseMessageListResponse(data, isTeam, chatColor) {
     let colors:Array<ChatColor> = new Array;
-    let index = 0;
-    if (response.length > 0) {
-      for (index = 0; index < response.length; index++) {
-        if (response[index] && !response[index].is_sender) {
+    if (!Array.isArray(data) ||
+        !this.utils.has(data[0], 'id') ||
+        !this.utils.has(data[0], 'sender_name') ||
+        !this.utils.has(data[0], 'message') ||
+        !this.utils.has(data[0], 'is_sender')) {
+      return this.request.apiResponseFormatError('Message format error');
+    }
+    if (data.length > 0) {
+      data.forEach((message) => {
+        if (message && !message.is_sender) {
           if (isTeam) {
-            response[index].chat_color = this._getValidChatColors(response[index].sender_name);
+            message.chat_color = this._getValidChatColors(message.sender_name);
           } else if (chatColor) {
-            response[index].chat_color = chatColor;
+            message.chat_color = chatColor;
           } else {
-            response[index].chat_color = this._getRandomColor();
+            message.chat_color = this._getRandomColor();
           }
           colors.push({
-            team_member_id: response[index].team_member_id,
-            team_id: response[index].team_id,
-            name: response[index].name,
-            chat_color: response[index].chat_color
+            team_member_id: message.team_member_id,
+            team_id: message.team_id,
+            name: message.name,
+            chat_color: message.chat_color
           });
         }
-      }
+      });
       if (colors.length > 0) {
         this.storage.set("chatAvatarColors", colors);
       }
-      return response;
+      return data;
     }
   }
 
