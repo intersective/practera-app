@@ -3,7 +3,7 @@ import { Router, ActivatedRoute } from "@angular/router";
 import { IonContent } from "@ionic/angular";
 import { BrowserStorageService } from "@services/storage.service";
 import { RouterEnter } from "@services/router-enter.service";
-import { UtilsService } from "../../services/utils.service";
+import { UtilsService } from "@services/utils.service";
 
 import { ChatService, ChatRoomObject, Message } from "../chat.service";
 
@@ -16,6 +16,7 @@ export class ChatRoomComponent extends RouterEnter implements AfterViewInit {
   // @TODO need to create method to convert chat time to local time.
   @ViewChild(IonContent) content: IonContent;
 
+  routeUrl = '/chat-room/';
   message: string;
   messageList: Array<Message> = new Array;
   selectedChat: ChatRoomObject;
@@ -37,7 +38,7 @@ export class ChatRoomComponent extends RouterEnter implements AfterViewInit {
   ngAfterViewInit() {
     setTimeout(() => {
       this.content.scrollToBottom();
-   }, 500);
+    }, 500);
   }
 
   onEnter() {
@@ -60,7 +61,7 @@ export class ChatRoomComponent extends RouterEnter implements AfterViewInit {
 
   private _validateRouteParams() {
     let teamId = Number(this.activatedRoute.snapshot.paramMap.get('teamId'));
-    this.selectedChat.team_id = teamId
+    this.selectedChat.team_id = teamId;
     if (Number(this.activatedRoute.snapshot.paramMap.get('teamMemberId'))) {
       this.selectedChat.team_member_id = Number(this.activatedRoute.snapshot.paramMap.get('teamMemberId'));
     } else {
@@ -101,7 +102,7 @@ export class ChatRoomComponent extends RouterEnter implements AfterViewInit {
             } else {
               this.messageList = messages;
             }
-            this.getChatName();
+            this._getChatName();
             this.markAsSeen(messages);
           } else {
             this.messagePageNumber -= 1;
@@ -120,13 +121,13 @@ export class ChatRoomComponent extends RouterEnter implements AfterViewInit {
     }
   }
 
-  private getChatName() {
+  private _getChatName() {
     if (this.selectedChat.is_team) {
       this.chatService.getTeamName(this.selectedChat.team_id)
-      .subscribe(teamName => {
-        this.selectedChat.team_name = teamName;
-        this.loadingChatMessages = false;
-      });
+        .subscribe(teamName => {
+          this.selectedChat.team_name = teamName;
+          this.loadingChatMessages = false;
+        });
     } else {
       let message = this.messageList.find(function(message) {
         return message.is_sender === false;
@@ -151,7 +152,7 @@ export class ChatRoomComponent extends RouterEnter implements AfterViewInit {
       this.loadingMesageSend = true;
       const message = this.message;
       // remove typed message from text field.
-      this.message = ''; 
+      this.message = '';
       // createing prams need to send message
       let data:any;
       if (this.selectedChat.is_team) {
@@ -204,11 +205,7 @@ export class ChatRoomComponent extends RouterEnter implements AfterViewInit {
   }
 
   getMessageDate(date) {
-    let params = {
-      date: date,
-      type: "list"
-    };
-    return this.chatService.getDate(params);
+    return this.utils.timeFormatter(date);
   }
 
   /**
@@ -217,35 +214,32 @@ export class ChatRoomComponent extends RouterEnter implements AfterViewInit {
    */
   checkIsLastMessage(message) {
     let index = this.messageList.indexOf(message);
-    if (index > -1) {
-      var currentMessage = this.messageList[index];
-      var nextMessage = this.messageList[index + 1];
-      if (!currentMessage.is_sender) {
-        if (nextMessage) {
-          var currentMessageTime = new Date(this.messageList[index].sent_time);
-          var nextMessageTime = new Date(this.messageList[index + 1].sent_time);
-          if (currentMessage.sender_name === nextMessage.sender_name) {
-            var timeDiff =
-              (nextMessageTime.getTime() - currentMessageTime.getTime()) /
-              (60 * 1000);
-            if (timeDiff > 5) {
-              this.messageList[index].noAvatar = false;
-              return true;
-            } else {
-              this.messageList[index].noAvatar = true;
-              return false;
-            }
-          } else {
-            this.messageList[index].noAvatar = false;
-            return true;
-          }
-        }
-        this.messageList[index].noAvatar = false;
-        return true;
-      } else {
-        this.messageList[index].noAvatar = true;
-        return false;
-      }
+    if (index === -1) {
+      this.messageList[index].noAvatar = true;
+      return false;
+    }
+    var currentMessage = this.messageList[index];
+    var nextMessage = this.messageList[index + 1];
+    if (currentMessage.is_sender) {
+      this.messageList[index].noAvatar = true;
+      return false;
+    }
+    if (!nextMessage) {
+      this.messageList[index].noAvatar = false;
+      return true;
+    }
+    var currentMessageTime = new Date(this.messageList[index].sent_time);
+    var nextMessageTime = new Date(this.messageList[index + 1].sent_time);
+    if (currentMessage.sender_name !== nextMessage.sender_name) {
+      this.messageList[index].noAvatar = false;
+      return true;
+    }
+    var timeDiff =
+      (nextMessageTime.getTime() - currentMessageTime.getTime()) /
+      (60 * 1000);
+    if (timeDiff > 5) {
+      this.messageList[index].noAvatar = false;
+      return true;
     } else {
       this.messageList[index].noAvatar = true;
       return false;
