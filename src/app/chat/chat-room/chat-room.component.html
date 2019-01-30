@@ -44,7 +44,7 @@
 </ion-content>
 <ion-footer>
   <ion-item lines="none">
-    <ion-textarea placeholder="Enter your message" (keydown.enter)="sendMessage($event)" required="true" name="message"
+    <ion-textarea placeholder="Enter your message" required="true" name="message"
       [(ngModel)]="message"></ion-textarea>
     <ion-button (click)="sendMessage()" type="submit" slot="end" fill="clear" color="light">
       <ion-icon name="send"></ion-icon>
