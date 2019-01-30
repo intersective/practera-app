@@ -17,7 +17,7 @@ export class ChatRoomComponent extends RouterEnter implements AfterViewInit {
   @ViewChild(IonContent) content: IonContent;
 
   message: string;
-  messageList: Array<Message>;
+  messageList: Array<Message> = new Array;
   selectedChat: ChatRoomObject;
   messagePageNumber: number = 0;
   messagePagesize: number = 20;
@@ -72,7 +72,6 @@ export class ChatRoomComponent extends RouterEnter implements AfterViewInit {
   private _loadMessages() {
     this.loadingChatMessages = true;
     let data: any;
-    this.messageList = new Array;
     this.messagePageNumber += 1;
     // creating params need to load messages.
     if (this.selectedChat.is_team) {
@@ -147,11 +146,7 @@ export class ChatRoomComponent extends RouterEnter implements AfterViewInit {
     this.router.navigate(["/app/chat"]);
   }
 
-  sendMessage(event?:any) {
-    // preventing textarea default action when press enter.
-    if (event) {
-      event.preventDefault();
-    }
+  sendMessage() {
     if (this.message) {
       this.loadingMesageSend = true;
       const message = this.message;
