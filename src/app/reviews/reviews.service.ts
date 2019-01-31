@@ -63,12 +63,13 @@ export class ReviewsService {
         isDone: review.AssessmentReview.is_done,
         name: review.Assessment.name,
         submitterName: review.AssessmentSubmission.Submitter.name,
-        date: review.AssessmentReview.is_done ? review.AssessmentReview.modified : review.AssessmentReview.created,
+        date: this.utils.timeFormatter(review.AssessmentReview.is_done ? review.AssessmentReview.modified : review.AssessmentReview.created),
         teamName: this.utils.has(review, 'AssessmentSubmission.Team.name') ? review.AssessmentSubmission.Team.name : '',
         contextId: review.AssessmentSubmission.context_id
       });
     });
     return reviews;
   }
+
 
 }

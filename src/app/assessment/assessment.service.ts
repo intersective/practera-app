@@ -67,6 +67,7 @@ export interface Submission {
   id: number;
   status: string;
   answers: any;
+  submitterName: string;
 }
 
 export interface Review {
@@ -275,7 +276,8 @@ export class AssessmentService {
     } else {
       params = {
         assessment_id: assessmentId,
-        context_id: contextId
+        context_id: contextId,
+        review: false
       };
     }
     if (submissionId) {
@@ -306,7 +308,8 @@ export class AssessmentService {
     let submission: Submission = {
       id: thisSubmission.AssessmentSubmission.id,
       status: thisSubmission.AssessmentSubmission.status,
-      answers: {}
+      answers: {},
+      submitterName: thisSubmission.Submitter.name
     }
 
     //-- normalise submission answers
