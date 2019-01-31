@@ -12,7 +12,7 @@
     <div *ngIf="topic.videolink && topic.videolink !=='magiclink'" class="text-center" padding-bottom>
       <div text-center padding [innerHtml]="iframeHtml"></div>
     </div>
-    <ion-card *ngIf="topic.content" [innerHtml]="topic.content" padding></ion-card>
+    <ion-card *ngIf="topic.content" [innerHtml]="sanitizer.bypassSecurityTrustHtml(topic.content)" padding></ion-card>
 
     <div *ngIf="topic.files.length > 0"  color="light" >
       <label padding>Supporting Downloads</label>
