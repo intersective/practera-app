@@ -271,14 +271,16 @@ export class HomeService {
       return {
         id: null,
         name: '',
-        isLocked: false
+        isLocked: false,
+        leadImage: ''
       };
     }
     let thisActivity = data[0];
     return {
       id: this.currentActivityId,
       name: thisActivity.Activity.name,
-      isLocked: thisActivity.Activity.is_locked
+      isLocked: thisActivity.Activity.is_locked,
+      leadImage: (thisActivity.Activity.lead_image ? thisActivity.Activity.lead_image : '')
     };
   }
 
