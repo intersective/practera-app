@@ -6,6 +6,7 @@ import { FilestackService } from '@shared/filestack/filestack.service';
 import { RouterEnter } from '@services/router-enter.service';
 import { UtilsService } from '@services/utils.service';
 import { BrowserStorageService } from '@services/storage.service';
+import { DomSanitizer } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-topic',
@@ -37,7 +38,8 @@ export class TopicComponent extends RouterEnter {
     private route: ActivatedRoute,
     private filestackService: FilestackService,
     public storage: BrowserStorageService,
-    public utils: UtilsService
+    public utils: UtilsService,
+    public sanitizer: DomSanitizer
   ) {
     super(router, utils, storage);
   }
