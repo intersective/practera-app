@@ -17,12 +17,13 @@ export class ActivityCardComponent implements OnInit {
     hasFeedback?: boolean,
     leadImage?: string,
   }
- constructor ( @Inject(DOCUMENT) private document: Document ) { }
+  backgroundImageStyle: string = '';
+  constructor ( @Inject(DOCUMENT) private document: Document ) { }
 
   ngOnInit() {
-    this.activity['style'] = '';
+    this.backgroundImageStyle = '';
     if (this.activity.leadImage) {
-      this.activity['style'] = 'url(' + this.activity.leadImage + ')';
+      this.backgroundImageStyle = 'url(' + this.activity.leadImage + ')';
     }
   }
 
