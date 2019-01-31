@@ -1,10 +1,12 @@
-<ion-card id="card"
+<ion-card
   color="primary"
   class="card practera-card"
   [ngClass]="{
-     'locked-card' : activity.isLocked,
-     'image-card'  : activity.leadImage
-  }">         
+     'locked-card': activity.isLocked,
+     'default-image-card': !activity.leadImage
+  }"
+  [ngStyle]="{'background-image': activity.style }"
+>
   <ion-card-content [ngClass]="{'feedback-card': activity.hasFeedback }">
     <h4 color="primary-contrast">Activity</h4>
     <h2 color="primary-contrast" class="activity-name">{{activity.name}}</h2>
