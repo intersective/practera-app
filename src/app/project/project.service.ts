@@ -117,12 +117,8 @@ export class ProjectService {
       if (!this.utils.has(eachActivity, 'Activity.id') ||
           !this.utils.has(eachActivity, 'Activity.name') ||
           !this.utils.has(eachActivity, 'Activity.is_locked')) {
-            return {
-              id: null,
-              name: '',
-              isLocked: false,
-              leadImage: ''
-            };
+        this.request.apiResponseFormatError('Activity.Activity format error');
+        return ;
       }
       let activity = eachActivity.Activity;
       activities.push({
