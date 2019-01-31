@@ -22,7 +22,7 @@ export interface User {
   userHash?: string;
   maxAchievablePoints?: number;
   themeColor?: string;
-  activityCard?: string;
+  activityCardImage?: string;
   hasReviewRating?: boolean;
 }
 
