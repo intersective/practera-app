@@ -5,7 +5,7 @@
      'locked-card': activity.isLocked,
      'default-image-card': !activity.leadImage
   }"
-  [ngStyle]="{'background-image': activity.style }"
+  [ngStyle]="{'background-image': backgroundImageStyle }"
 >
   <ion-card-content [ngClass]="{'feedback-card': activity.hasFeedback }">
     <h4 color="primary-contrast">Activity</h4>
