@@ -73,6 +73,10 @@ export class UtilsService {
     this.document.documentElement.style.setProperty('--ion-color-primary', color);
   }
 
+  changeCardBackgroundImage(image) {
+    this.document.documentElement.style.setProperty('--practera-card-background-image', "url('"+image+"')");
+  }
+
   // broadcast the event to whoever subscribed
   broadcastEvent(key: string, value: any) {
     this._eventsSubject.next({ key, value })
