@@ -20,13 +20,14 @@ export class ActivityCardComponent implements OnInit {
  constructor ( @Inject(DOCUMENT) private document: Document ) { }
 
   ngOnInit() {
-    if (this.activity.leadImage) 
-    this.setBackgroundImage(this.activity.leadImage)
-  };
+    if (this.activity.leadImage) {
+      this.setBackgroundImage(this.activity.leadImage);
+    }
+  }
 
   setBackgroundImage (image) {
    this.document.documentElement.style.setProperty('--practera-card-background-image', "url('"+image+"')");
   }
 
 }
-  
+

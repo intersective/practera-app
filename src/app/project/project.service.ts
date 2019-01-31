@@ -117,7 +117,12 @@ export class ProjectService {
       if (!this.utils.has(eachActivity, 'Activity.id') ||
           !this.utils.has(eachActivity, 'Activity.name') ||
           !this.utils.has(eachActivity, 'Activity.is_locked')) {
-        return this.request.apiResponseFormatError('Activity.Activity format error');
+            return {
+              id: null,
+              name: '',
+              isLocked: false,
+              leadImage: ''
+            };
       }
       let activity = eachActivity.Activity;
       activities.push({
@@ -125,7 +130,7 @@ export class ProjectService {
         name: activity.name,
         milestoneId: activity.milestone_id,
         isLocked: activity.is_locked,
-        leadImage: this.utils.has(activity, 'lead_mage') ? activity.lead_image : '',
+        leadImage: this.utils.has(activity, 'lead_image') ? activity.lead_image : '',
         progress: 0,
       });
     })
