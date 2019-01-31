@@ -32,7 +32,7 @@
             <ion-icon *ngIf="review.isDone" name="checkmark-circle" class="check-mark"></ion-icon>
             <h2  padding-top>{{review.submitterName}}</h2>
             <h2 *ngIf="review.teamName">{{review.teamName}}</h2>
-            <ion-text >{{review.date}}</ion-text>
+            <ion-text class="time-stamp">{{review.date}}</ion-text>
           </ion-card-content>
         </ion-card>
       </ng-container>

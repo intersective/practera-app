@@ -5,6 +5,11 @@
 </ion-header>
 
 <ion-content color="light">
+  <ng-container *ngIf="loadingChatList">
+    <div text-center>
+        <ion-spinner></ion-spinner>
+    </div>
+  </ng-container>
   <ion-list>
     <ng-container *ngFor="let chat of chatList">
       <ion-item (click)="navigateToChatRoom(chat)" [class]="chat.unread_messages > 0 ? 'unread' : ''">
@@ -14,7 +19,7 @@
         </ion-avatar>
         <ion-label>
           <div class="chat-name-container">
-            <h2>{{chat.is_team ? chat.team_name : chat.name}}</h2>
+            <h2 [class]="chat.is_team ? 'chat-name team-channel' : 'chat-name'">{{chat.name}}</h2>
             <ng-container *ngIf="(chat.role === 'mentor') && (haveMoreTeam)"><span>mentor - {{chat.team_name}}</span></ng-container>
             <ng-container *ngIf="(chat.role === 'mentor') && (!haveMoreTeam)"><span>mentor</span></ng-container>
             <ng-container *ngIf="(chat.role !== 'mentor') && (!chat.is_team) && (haveMoreTeam)"><span>{{chat.team_name}}</span></ng-container>
@@ -23,7 +28,7 @@
           <ng-template #messgeElseBlock><p>No messages.</p></ng-template>
         </ion-label>
         <div slot="end" class="time-container">
-          <span>{{chat.last_message_created}}</span>
+          <span>{{getChatDate(chat.last_message_created)}}</span>
           <ng-container *ngIf="chat.unread_messages > 0">
               <ion-badge>{{chat.unread_messages}}</ion-badge>
           </ng-container>

@@ -9,6 +9,13 @@
   <ion-text color="medium" text-left>
     <app-description [content]="assessment.description"></app-description>
   </ion-text>
+  <div class="review-submitter" *ngIf="assessment.isForTeam" text-left>
+    <p class="title">
+      Submitted by
+      <br>
+      {{submission.submitterName}}
+    </p>
+  </div>
 
   <form [formGroup]="questionsForm">
     <ng-container *ngIf="loadingAssessment">
@@ -34,7 +41,8 @@
           </div>
           <ng-template #submissionTpl>
             <ion-card-content [ngSwitch]="question.type" padding-horizontal class="q-content" color="light" margin-top>
-              <i *ngIf="!doAssessment && !doReview && !submission.answers[question.id]">No Answer</i>
+              <i *ngIf="!doAssessment && !submission.answers[question.id]">No Answer</i>
+              <br>
 
               <app-text
                 *ngSwitchCase="'text'"

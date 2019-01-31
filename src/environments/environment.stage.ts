@@ -2,7 +2,7 @@ export const environment = {
   production: true,
   appkey: 'b11e7c189b',
   pusherKey: '255f010d210933ca7675',
-  env: 'develop',
+  env: 'sandbox',
   APIEndpoint: 'https://stage-test.practera.com/',
   filestack: {
     key: 'AO6F4C72uTPGRywaEijdLz',
