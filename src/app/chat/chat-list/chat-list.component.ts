@@ -12,7 +12,6 @@ import { ChatService, ChatListObject } from "../chat.service";
   styleUrls: ["chat-list.component.scss"]
 })
 export class ChatListComponent extends RouterEnter {
-  // @TODO need to create method to convert chat time to local time.
   routeUrl = '/app/chat';
   chatList: Array<ChatListObject>;
   haveMoreTeam: boolean;
