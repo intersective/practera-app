@@ -22,6 +22,7 @@
         <a [href]="file.url" target="_blank">
           <ion-icon name="document"></ion-icon>&nbsp;{{ file.filename }}
         </a>
+        <ion-icon *ngIf="file.url.length > 0" name="search" (click)="previewFile(file)" color="primary" padding-left></ion-icon>
       </div>
     </ng-container>
 
