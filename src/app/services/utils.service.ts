@@ -15,7 +15,7 @@ export class UtilsService {
   protected _eventsSubject = new Subject<{key: string, value: any}>();
 
   constructor(
-    @Inject(DOCUMENT) private document: Document
+    @Inject(DOCUMENT) private document: Document,
   ) {
     if (_) {
       this.lodash = _;
@@ -102,7 +102,7 @@ export class UtilsService {
    * Any time before yesterday(one day before 'compareWith') will return 'Yesterday'
    * Any time today(the same day as 'compareWith') will return the time
    * Any other time will just return the date in "3 May" format
-   * @param {string} time        [The time string going to be formatted]
+   * @param {string} time        [The time string going to be formatted (In UTC timezone)]
    * @param {string} compareWith [The time string used to compare with]
    */
   timeFormatter(time: string, compareWith?: string) {
@@ -114,18 +114,16 @@ export class UtilsService {
     if (compareWith) {
       compareDate = new Date(compareWith);
     }
-    let date = new Date(time);
+    let date = new Date(time + ' UTC');
     if (date.getFullYear() === compareDate.getFullYear() && date.getMonth() === compareDate.getMonth()) {
       if (date.getDate() === compareDate.getDate() - 1) {
         return 'Yesterday';
       }
       if (date.getDate() === compareDate.getDate()) {
-        // return date.toLocaleTimeString();
         return new Intl.DateTimeFormat('en-GB', {
           hour12: true,
           hour: 'numeric',
-          minute: 'numeric',
-          second: 'numeric'
+          minute: 'numeric'
         }).format(date);
       }
     }
