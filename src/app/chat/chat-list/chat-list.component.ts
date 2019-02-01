@@ -12,7 +12,6 @@ import { ChatService, ChatListObject } from "../chat.service";
   styleUrls: ["chat-list.component.scss"]
 })
 export class ChatListComponent extends RouterEnter {
-  // @TODO need to create method to convert chat time to local time.
   routeUrl = '/app/chat';
   chatList: Array<ChatListObject>;
   haveMoreTeam: boolean;
@@ -83,16 +82,31 @@ export class ChatListComponent extends RouterEnter {
   navigateToChatRoom(chat) {
     if (chat.is_team) {
       this.router.navigate([
-        "/chat/chat-room/team",
+        "chat",
+        "chat-room",
+        "team",
         chat.team_id,
         chat.participants_only
       ]);
     } else {
-      this.router.navigate([
-        "/chat/chat-room",
-        chat.team_id,
-        chat.team_member_id
-      ]);
+      if (chat.last_message_created) {
+        this.router.navigate([
+          "chat",
+          "chat-room",
+          chat.team_id,
+          chat.team_member_id
+        ]);
+      } else {
+        this.router.navigate([
+          "chat",
+          "chat-room",
+          chat.team_id,
+          chat.team_member_id,
+          {
+            name: chat.name
+          }
+        ]);
+      }
     }
   }
 
