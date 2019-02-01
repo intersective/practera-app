@@ -15,7 +15,7 @@ import { RouterEnter } from '@services/router-enter.service';
 })
 export class ActivityComponent extends RouterEnter {
 
-  routeUrl: string = '/app/activity/';
+  routeUrl: string = '/app/activity';
   id: number;
   activity: Activity = {
     id: 0,
