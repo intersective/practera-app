@@ -106,6 +106,9 @@ export class UtilsService {
    * @param {string} compareWith [The time string used to compare with]
    */
   timeFormatter(time: string, compareWith?: string) {
+    if (!time) {
+      return '';
+    }
     // if no compareWith provided, compare with today
     let compareDate = new Date();
     if (compareWith) {
@@ -116,8 +119,14 @@ export class UtilsService {
       if (date.getDate() === compareDate.getDate() - 1) {
         return 'Yesterday';
       }
-      if (date.getDate() === compareDate.getDate() && date.getHours()) {
-        return date.toLocaleTimeString();
+      if (date.getDate() === compareDate.getDate()) {
+        // return date.toLocaleTimeString();
+        return new Intl.DateTimeFormat('en-GB', {
+          hour12: true,
+          hour: 'numeric',
+          minute: 'numeric',
+          second: 'numeric'
+        }).format(date);
       }
     }
     return new Intl.DateTimeFormat('en-GB', {
