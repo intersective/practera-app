@@ -29,7 +29,7 @@ export class ChatRoomComponent extends RouterEnter implements AfterViewInit {
     private chatService: ChatService,
     public router: Router,
     public storage: BrowserStorageService,
-    private activatedRoute: ActivatedRoute,
+    private route: ActivatedRoute,
     public utils: UtilsService
   ) {
     super(router, utils, storage);
@@ -60,13 +60,13 @@ export class ChatRoomComponent extends RouterEnter implements AfterViewInit {
   }
 
   private _validateRouteParams() {
-    let teamId = Number(this.activatedRoute.snapshot.paramMap.get('teamId'));
+    let teamId = Number(this.route.snapshot.paramMap.get('teamId'));
     this.selectedChat.team_id = teamId;
-    if (Number(this.activatedRoute.snapshot.paramMap.get('teamMemberId'))) {
-      this.selectedChat.team_member_id = Number(this.activatedRoute.snapshot.paramMap.get('teamMemberId'));
+    if (Number(this.route.snapshot.paramMap.get('teamMemberId'))) {
+      this.selectedChat.team_member_id = Number(this.route.snapshot.paramMap.get('teamMemberId'));
     } else {
       this.selectedChat.is_team = true;
-      this.selectedChat.participants_only = JSON.parse(this.activatedRoute.snapshot.paramMap.get('participantsOnly'));
+      this.selectedChat.participants_only = JSON.parse(this.route.snapshot.paramMap.get('participantsOnly'));
     }
   }
 
@@ -102,11 +102,11 @@ export class ChatRoomComponent extends RouterEnter implements AfterViewInit {
             } else {
               this.messageList = messages;
             }
-            this._getChatName();
             this.markAsSeen(messages);
           } else {
             this.messagePageNumber -= 1;
           }
+          this._getChatName();
         }
         this.loadingChatMessages = false;
       }, error => {
@@ -122,18 +122,36 @@ export class ChatRoomComponent extends RouterEnter implements AfterViewInit {
   }
 
   private _getChatName() {
+    // if the chat name is passed in as parameter, use it
+    let name = this.route.snapshot.paramMap.get('name');
+    if (name) {
+      this.selectedChat.name = name;
+      this.loadingChatMessages = false;
+      return;
+    }
+    // if it is a team chat, use the team name as the chat title
     if (this.selectedChat.is_team) {
       this.chatService.getTeamName(this.selectedChat.team_id)
         .subscribe(teamName => {
-          this.selectedChat.team_name = teamName;
+          if (this.selectedChat.participants_only) {
+            this.selectedChat.team_name = teamName;
+          } else {
+            // if it is not participant only, add "+ Mentor" as the chat title
+            this.selectedChat.team_name = teamName + ' + Mentor';
+          }
           this.loadingChatMessages = false;
         });
     } else {
-      let message = this.messageList.find(function(message) {
-        return message.is_sender === false;
-      });
+      // get the chat title from messge list
+      let message = this.messageList[0];
       if (message) {
-        this.selectedChat.name = message.sender_name;
+        if (message.is_sender) {
+          // if the current user is sender, the chat name will be the receiver name
+          this.selectedChat.name = message.receiver_name;
+        } else {
+          // if the current user is not the sender, the chat name will be the sender name
+          this.selectedChat.name = message.sender_name;
+        }
       }
     }
     this.loadingChatMessages = false;
@@ -148,40 +166,41 @@ export class ChatRoomComponent extends RouterEnter implements AfterViewInit {
   }
 
   sendMessage() {
-    if (this.message) {
-      this.loadingMesageSend = true;
-      const message = this.message;
-      // remove typed message from text field.
-      this.message = '';
-      // createing prams need to send message
-      let data:any;
-      if (this.selectedChat.is_team) {
-        data = {
-          message: message,
-          team_id: this.selectedChat.team_id,
-          to: "team",
-          participants_only: this.selectedChat.participants_only
-        }
-      } else {
-        data = {
-          message: message,
-          team_id: this.selectedChat.team_id,
-          to: this.selectedChat.team_member_id
-        }
-      }
-      this.chatService.postNewMessage(data).subscribe(
-        response => {
-          this.messageList.push(response.data);
-          this.loadingMesageSend = false;
-          setTimeout(() => {
-            this.content.scrollToBottom();
-         }, 500);
-        },
-        error => {
-          this.loadingMesageSend = false;
-        }
-      );
+    if (!this.message) {
+      return;
     }
+    this.loadingMesageSend = true;
+    const message = this.message;
+    // remove typed message from text field.
+    this.message = '';
+    // createing prams need to send message
+    let data:any;
+    if (this.selectedChat.is_team) {
+      data = {
+        message: message,
+        team_id: this.selectedChat.team_id,
+        to: "team",
+        participants_only: this.selectedChat.participants_only
+      }
+    } else {
+      data = {
+        message: message,
+        team_id: this.selectedChat.team_id,
+        to: this.selectedChat.team_member_id
+      }
+    }
+    this.chatService.postNewMessage(data).subscribe(
+      response => {
+        this.messageList.push(response.data);
+        this.loadingMesageSend = false;
+        setTimeout(() => {
+          this.content.scrollToBottom();
+        }, 500);
+      },
+      error => {
+        this.loadingMesageSend = false;
+      }
+    );
   }
 
   // call chat api to mark message as seen messages

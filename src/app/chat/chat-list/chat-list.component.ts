@@ -74,16 +74,31 @@ export class ChatListComponent extends RouterEnter {
   navigateToChatRoom(chat) {
     if (chat.is_team) {
       this.router.navigate([
-        "/chat/chat-room/team",
+        "chat",
+        "chat-room",
+        "team",
         chat.team_id,
         chat.participants_only
       ]);
     } else {
-      this.router.navigate([
-        "/chat/chat-room",
-        chat.team_id,
-        chat.team_member_id
-      ]);
+      if (chat.last_message_created) {
+        this.router.navigate([
+          "chat",
+          "chat-room",
+          chat.team_id,
+          chat.team_member_id
+        ]);
+      } else {
+        this.router.navigate([
+          "chat",
+          "chat-room",
+          chat.team_id,
+          chat.team_member_id,
+          {
+            name: chat.name
+          }
+        ]);
+      }
     }
   }
 
