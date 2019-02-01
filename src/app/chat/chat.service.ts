@@ -47,6 +47,7 @@ export interface ChatRoomObject {
 export interface Message {
   id:number
   sender_name:string;
+  receiver_name:string;
   message:string;
   sent_time:string;
   is_sender:boolean;
@@ -301,6 +302,7 @@ export class ChatService {
     data.forEach((message) => {
       if (!this.utils.has(message, 'id') ||
           !this.utils.has(message, 'sender_name') ||
+          !this.utils.has(message, 'receiver_name') ||
           !this.utils.has(message, 'message') ||
           !this.utils.has(message, 'is_sender')) {
         return this.request.apiResponseFormatError('Message format error');
