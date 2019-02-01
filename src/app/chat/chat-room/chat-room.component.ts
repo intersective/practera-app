@@ -13,7 +13,6 @@ import { ChatService, ChatRoomObject, Message } from "../chat.service";
   styleUrls: ["./chat-room.component.scss"]
 })
 export class ChatRoomComponent extends RouterEnter implements AfterViewInit {
-  // @TODO need to create method to convert chat time to local time.
   @ViewChild(IonContent) content: IonContent;
 
   routeUrl = '/chat-room/';
