@@ -5,6 +5,7 @@ import { map } from "rxjs/operators";
 import { Observable, of } from "rxjs";
 import { BrowserStorageService } from "@services/storage.service";
 import { UtilsService } from "@services/utils.service";
+import { PusherService } from "../shared/pusher/pusher.service";
 import { environment } from "@environments/environment";
 
 /**
@@ -45,11 +46,11 @@ export interface ChatRoomObject {
 }
 
 export interface Message {
-  id:number
-  sender_name:string;
-  message:string;
-  sent_time:string;
-  is_sender:boolean;
+  id?:number
+  sender_name?:string;
+  message?:string;
+  sent_time?:string;
+  is_sender?:boolean;
   chat_color?: string;
   noAvatar?:boolean;
 }
@@ -94,7 +95,8 @@ export class ChatService {
   constructor(
     private request: RequestService,
     private storage: BrowserStorageService,
-    private utils: UtilsService
+    private utils: UtilsService,
+    private pusherService:PusherService
   ) {}
 
   /**
@@ -190,6 +192,44 @@ export class ChatService {
           }
         })
       );
+  }
+
+  getMessageFromEvent(data) {
+    let presenceChannelId = this.pusherService.getMyPresenceChannelId();
+    let chatColors;
+    if (presenceChannelId !== data.event.from) {
+      if (presenceChannelId == data.event.to || data.event.to == 'team') {
+        if ((data.isTeam && (data.event.to == 'team') && (data.participants_only == data.event.participants_only)) || 
+        ((data.event.sender_name === data.chatName) && (data.event.to !== 'team'))) {
+          let message = {
+            id:data.event.id,
+            is_sender: data.event.is_sender,
+            message: data.event.message,
+            sender_name: data.event.sender_name,
+            sent_time: data.event.sent_time,
+            chat_color : ''
+          };
+          if (!message.is_sender) {
+            chatColors = this.storage.get("chatAvatarColors");
+            if (data.isTeam) {
+              message.chat_color = this._getValidChatColors(message.sender_name);
+            } else {
+              message.chat_color = this._getRandomColor();
+            }
+            chatColors.push({
+              team_member_id: data.event.team_member_id,
+              team_id: data.event.team_id,
+              name: data.event.sender_name,
+              chat_color: message.chat_color
+            });
+            this.storage.set("chatAvatarColors", chatColors);
+          }
+          return message;
+        }
+      }
+    }
+     
+    return {};
   }
 
   private _normalisTeamResponse(data) {
