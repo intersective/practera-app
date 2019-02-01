@@ -41,8 +41,7 @@
           </div>
           <ng-template #submissionTpl>
             <ion-card-content [ngSwitch]="question.type" padding-horizontal class="q-content" color="light" margin-top>
-              <i *ngIf="!doAssessment && !submission.answers[question.id] && !(question.audience.length ===1 && question.audience=='reviewer') ">No Answer</i>
-              <br>
+              <p><i *ngIf="!doAssessment && !submission.answers[question.id] && !(question.audience.length ===1 && question.audience=='reviewer') ">No Answer Submitted</i></p>
 
               <app-text
                 *ngSwitchCase="'text'"
