@@ -13,7 +13,7 @@
     padding-top: 3px;
     text-align: center;
     ion-icon {
-      padding-top: 5px;
+      padding-top: 3px;
     }
     .icon-lock {
       font-size: 31px;
@@ -22,6 +22,10 @@
 
   .active {
     background-color: lightgrey;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: inline-block;
   }
 }
 
