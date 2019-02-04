@@ -112,9 +112,13 @@ export class UtilsService {
     // if no compareWith provided, compare with today
     let compareDate = new Date();
     if (compareWith) {
-      compareDate = new Date(compareWith);
+      compareWith = compareWith.replace(' ', 'T');
+      compareDate = new Date(compareWith + 'Z');
     }
-    let date = new Date(time + ' UTC');
+    // add "T" between date and time, so that it works on Safari
+    time = time.replace(' ', 'T');
+    // add "Z" to declare that it is UTC time, it will automatically convert to local time
+    let date = new Date(time + 'Z');
     if (date.getFullYear() === compareDate.getFullYear() && date.getMonth() === compareDate.getMonth()) {
       if (date.getDate() === compareDate.getDate() - 1) {
         return 'Yesterday';
