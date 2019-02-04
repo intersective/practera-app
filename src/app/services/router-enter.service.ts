@@ -13,7 +13,7 @@ export class RouterEnter implements OnInit {
     public router: Router,
     public utils: UtilsService,
     public storage: BrowserStorageService,
-    public pusherService?: PusherService
+    public pusherService: PusherService
   ) {}
 
   ngOnInit() {
