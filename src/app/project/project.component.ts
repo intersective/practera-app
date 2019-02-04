@@ -99,6 +99,7 @@ export class ProjectComponent extends RouterEnter {
   // scroll to a milestone. i is the index of milestone list
   scrollTo(i) {
     this.contentRef.nativeElement.scrollToPoint(0, this.milestonePositions[i], 500);
+
   }
 
   private _getMilestonePositions() {
