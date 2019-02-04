@@ -1,80 +1,159 @@
-import { Component, OnInit, ViewChild } from "@angular/core";
+import { Component, OnInit, ViewChild, AfterContentInit, AfterViewInit } from "@angular/core";
 import { Router, ActivatedRoute } from "@angular/router";
 import { IonContent } from "@ionic/angular";
 import { BrowserStorageService } from "@services/storage.service";
+import { RouterEnter } from "@services/router-enter.service";
+import { UtilsService } from "@services/utils.service";
 
-import { ChatService } from "../chat.service";
-
-interface Chat {
-  name: string;
-  team_name?: string;
-  is_team?: boolean;
-  team_id: number;
-  team_member_id: number;
-  chat_color?: string;
-}
+import { ChatService, ChatRoomObject, Message } from "../chat.service";
 
 @Component({
   selector: "app-chat-room",
   templateUrl: "./chat-room.component.html",
   styleUrls: ["./chat-room.component.scss"]
 })
-export class ChatRoomComponent implements OnInit {
-  // @TODO need to create method to convert chat time to local time.
+export class ChatRoomComponent extends RouterEnter implements AfterViewInit {
   @ViewChild(IonContent) content: IonContent;
 
-  message: any;
-  messageList: any[];
-  selectedChat: Chat;
-  chatColors: any[];
-  routeTeamId:number = 0;
-  routeTeamMemberId:number = 0;
-  messagePageNumber:number = 0;
-  messagePagesize:number = 20;
+  routeUrl = '/chat-room/';
+  message: string;
+  messageList: Array<Message> = new Array;
+  selectedChat: ChatRoomObject;
+  messagePageNumber: number = 0;
+  messagePagesize: number = 20;
+  loadingChatMessages:boolean = true;
+  loadingMesageSend:boolean = false;
 
   constructor(
     private chatService: ChatService,
-    private router: Router,
-    private storage: BrowserStorageService,
-    private activatedRoute: ActivatedRoute
+    public router: Router,
+    public storage: BrowserStorageService,
+    private route: ActivatedRoute,
+    public utils: UtilsService
   ) {
+    super(router, utils, storage);
   }
 
-  ngOnInit() {
-    this.chatColors = this.storage.get("chatAvatarColors");
-    this.selectedChat = this.storage.get("selectedChatObject") || {
-      name: '',
+  ngAfterViewInit() {
+    setTimeout(() => {
+      this.content.scrollToBottom();
+    }, 500);
+  }
+
+  onEnter() {
+    this._initialise();
+    this._validateRouteParams();
+    this._loadMessages();
+  }
+
+  private _initialise() {
+    this.loadingChatMessages = true;
+    this.selectedChat = {
+      name: "",
       is_team: false,
       team_id: null,
       team_member_id: null,
       chat_color: null,
+      participants_only: false
     };
-    this.validateRoutePrams();
   }
 
-  private validateRoutePrams() {
-    this.activatedRoute.queryParams.subscribe(params => {
-      this.routeTeamId = +params['teamId']; // (+) converts string 'teamId' to a number
-      this.routeTeamMemberId = +params['memberId']; // (+) converts string 'memberId' to a number
-      this.loadMessages();
-   });
-  }
-
-  loadMessages() {
-    // creating params need to load messages.
-    let param = {
-      team_id : this.routeTeamId,
-      page: this.getMessagePageNumber(),
-      size: this.messagePagesize,
-      team_member_id: this.routeTeamMemberId
+  private _validateRouteParams() {
+    let teamId = Number(this.route.snapshot.paramMap.get('teamId'));
+    this.selectedChat.team_id = teamId;
+    if (Number(this.route.snapshot.paramMap.get('teamMemberId'))) {
+      this.selectedChat.team_member_id = Number(this.route.snapshot.paramMap.get('teamMemberId'));
+    } else {
+      this.selectedChat.is_team = true;
+      this.selectedChat.participants_only = JSON.parse(this.route.snapshot.paramMap.get('participantsOnly'));
     }
-    this.chatService.getMessageList(param).subscribe(response => {
-      this.updateMessageListResponse(response, false);
-    });
   }
 
-  private getMessagePageNumber() {
-    return (this.messagePageNumber += 1);
+  private _loadMessages() {
+    this.loadingChatMessages = true;
+    let data: any;
+    this.messagePageNumber += 1;
+    // creating params need to load messages.
+    if (this.selectedChat.is_team) {
+      data = {
+        team_id: this.selectedChat.team_id,
+        page: this.messagePageNumber,
+        size: this.messagePagesize,
+        participants_only: this.selectedChat.participants_only
+      };
+    } else {
+      data = {
+        team_id: this.selectedChat.team_id,
+        page: this.messagePageNumber,
+        size: this.messagePagesize,
+        team_member_id: this.selectedChat.team_member_id
+      };
+    }
+    this.chatService
+      .getMessageList(data, this.selectedChat.is_team, this.selectedChat.chat_color)
+      .subscribe(messages => {
+        if (messages) {
+          if (messages.length > 0) {
+            messages = Object.assign([], messages);
+            messages.reverse();
+            if (this.messageList.length > 0) {
+              this.messageList = messages.concat(this.messageList);
+            } else {
+              this.messageList = messages;
+            }
+            this.markAsSeen(messages);
+          } else {
+            this.messagePageNumber -= 1;
+          }
+          this._getChatName();
+        }
+        this.loadingChatMessages = false;
+      }, error => {
+        this.loadingChatMessages = false;
+      });
+  }
+
+  loadMoreMessages(event) {
+    let scrollTopPosition = event.detail.scrollTop;
+    if (scrollTopPosition === 0) {
+      this._loadMessages();
+    }
+  }
+
+  private _getChatName() {
+    // if the chat name is passed in as parameter, use it
+    let name = this.route.snapshot.paramMap.get('name');
+    if (name) {
+      this.selectedChat.name = name;
+      this.loadingChatMessages = false;
+      return;
+    }
+    // if it is a team chat, use the team name as the chat title
+    if (this.selectedChat.is_team) {
+      this.chatService.getTeamName(this.selectedChat.team_id)
+        .subscribe(teamName => {
+          if (this.selectedChat.participants_only) {
+            this.selectedChat.team_name = teamName;
+          } else {
+            // if it is not participant only, add "+ Mentor" as the chat title
+            this.selectedChat.team_name = teamName + ' + Mentor';
+          }
+          this.loadingChatMessages = false;
+        });
+    } else {
+      // get the chat title from messge list
+      let message = this.messageList[0];
+      if (message) {
+        if (message.is_sender) {
+          // if the current user is sender, the chat name will be the receiver name
+          this.selectedChat.name = message.receiver_name;
+        } else {
+          // if the current user is not the sender, the chat name will be the sender name
+          this.selectedChat.name = message.sender_name;
+        }
+      }
+    }
+    this.loadingChatMessages = false;
   }
 
   getChatAvatarText(senderName) {
@@ -82,72 +161,45 @@ export class ChatRoomComponent implements OnInit {
   }
 
   back() {
-    this.router.navigateByUrl('/app/(chat:chat)');
+    this.router.navigate(["/app/chat"]);
   }
 
-  sendMessage(event?:any) {
-    // preventing textarea default action when press enter.
-    if (event) {
-      event.preventDefault();
+  sendMessage() {
+    if (!this.message) {
+      return;
     }
-    if (this.message) {
-      const message = this.message;
-      // remove typed message from text field.
-      this.message = ''; 
-      // createing prams need to send message
-      let data = {
+    this.loadingMesageSend = true;
+    const message = this.message;
+    // remove typed message from text field.
+    this.message = '';
+    // createing prams need to send message
+    let data:any;
+    if (this.selectedChat.is_team) {
+      data = {
         message: message,
         team_id: this.selectedChat.team_id,
-        to: null,
-      };
-      if (this.selectedChat.is_team) {
-        data.to = "team";
-      } else {
-        data.to = this.selectedChat.team_member_id;
+        to: "team",
+        participants_only: this.selectedChat.participants_only
       }
-      this.chatService.postNewMessage(data).subscribe((response) => {
-        this.messageList.push(response);
-      }, (error) => {});
-    }
-  }
-
-  private updateMessageListResponse(response, loadMore): void {
-    let index = 0;
-    let tempRes = null;
-    if (response.length > 0) {
-      this.messageList = [];
-      for (index = 0; index < response.length; index++) {
-        if (response[index] && !response[index].is_sender) {
-          if (this.selectedChat.is_team) {
-            this.getValidChatColors(this.chatColors, response, index);
-          } else {
-            response[index].chat_color = this.selectedChat.chat_color;
-          }
-        }
-        if (index === response.length - 1) {
-          tempRes = Object.assign([], response);
-          tempRes.reverse();
-          if (loadMore) {
-            this.messageList = tempRes.concat(this.messageList);
-          } else {
-            this.messageList = tempRes;
-            this.content.scrollToBottom();
-          }
-          this.markAsSeen(tempRes);
-        }
-      }
-    }
-  }
-
-  private getValidChatColors(chatColors, response, index) {
-    let chatcolor = chatColors.find(function(chat) {
-      return chat.name === response[index].sender_name;
-    });
-    if (chatcolor) {
-      response[index].chat_color = chatcolor.chat_color;
     } else {
-      response[index].chat_color = this.chatService.getRandomColor();
+      data = {
+        message: message,
+        team_id: this.selectedChat.team_id,
+        to: this.selectedChat.team_member_id
+      }
     }
+    this.chatService.postNewMessage(data).subscribe(
+      response => {
+        this.messageList.push(response.data);
+        this.loadingMesageSend = false;
+        setTimeout(() => {
+          this.content.scrollToBottom();
+        }, 500);
+      },
+      error => {
+        this.loadingMesageSend = false;
+      }
+    );
   }
 
   // call chat api to mark message as seen messages
@@ -166,11 +218,117 @@ export class ChatRoomComponent implements OnInit {
       .subscribe(
         response => {
           console.log("marked");
-        },
-        error => {
-          console.log("error");
         }
       );
   }
-  
+
+  getMessageDate(date) {
+    return this.utils.timeFormatter(date);
+  }
+
+  /**
+   * check same user have messages inline
+   * @param {int} message
+   */
+  checkIsLastMessage(message) {
+    let index = this.messageList.indexOf(message);
+    if (index === -1) {
+      this.messageList[index].noAvatar = true;
+      return false;
+    }
+    var currentMessage = this.messageList[index];
+    var nextMessage = this.messageList[index + 1];
+    if (currentMessage.is_sender) {
+      this.messageList[index].noAvatar = true;
+      return false;
+    }
+    if (!nextMessage) {
+      this.messageList[index].noAvatar = false;
+      return true;
+    }
+    var currentMessageTime = new Date(this.messageList[index].sent_time);
+    var nextMessageTime = new Date(this.messageList[index + 1].sent_time);
+    if (currentMessage.sender_name !== nextMessage.sender_name) {
+      this.messageList[index].noAvatar = false;
+      return true;
+    }
+    var timeDiff =
+      (nextMessageTime.getTime() - currentMessageTime.getTime()) /
+      (60 * 1000);
+    if (timeDiff > 5) {
+      this.messageList[index].noAvatar = false;
+      return true;
+    } else {
+      this.messageList[index].noAvatar = true;
+      return false;
+    }
+  }
+
+  /**
+   * check message sender and return related css class
+   * @param {object} message
+   */
+  getClassForMessageBubble(message) {
+    if (!message.is_sender && message.noAvatar) {
+      return "reserved-messages no-avatar";
+    } else if (!message.is_sender && !message.noAvatar) {
+      return "reserved-messages";
+    } else {
+      return "send-messages";
+    }
+  }
+  /**
+   * check message time and return related css class for avatar
+   * @param {object} message
+   */
+  getClassForAvatar(message) {
+    if (this.checkToShowMessageTime(message)) {
+      return message.chat_color;
+    } else {
+      return message.chat_color + " no-time";
+    }
+  }
+
+  /**
+   * check date and time diffrance between current message(message object of index) old message.
+   * @param {int} message
+   */
+  checkToShowMessageTime(message) {
+    let index = this.messageList.indexOf(message);
+    if (index > -1) {
+      if (this.messageList[index - 1]) {
+        var currentMessageTime = new Date(this.messageList[index].sent_time);
+        var oldMessageTime = new Date(this.messageList[index - 1].sent_time);
+        if (oldMessageTime) {
+          var dateDiff =
+            currentMessageTime.getDate() - oldMessageTime.getDate();
+          if (dateDiff === 0) {
+            return this.checkmessageOldThan5Min(
+              currentMessageTime,
+              oldMessageTime
+            );
+          } else {
+            return true;
+          }
+        } else {
+          return true;
+        }
+      }
+    }
+  }
+
+  /**
+   * check time diffrance larger than 5 min.
+   * @param {object} currentMessageTime
+   * @param {object} oldMessageTime
+   */
+  private checkmessageOldThan5Min(currentMessageTime, oldMessageTime) {
+    var timeDiff =
+      (currentMessageTime.getTime() - oldMessageTime.getTime()) / (60 * 1000);
+    if (timeDiff > 5) {
+      return true;
+    } else {
+      return false;
+    }
+  }
 }

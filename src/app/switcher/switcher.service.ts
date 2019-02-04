@@ -67,6 +67,7 @@ export class SwitcherService {
 
   switchProgram(programObj:ProgramObj) {
     let themeColor = this.utils.has(programObj, 'program.config.theme_color') ? programObj.program.config.theme_color : '#2bbfd4';
+    let cardBackgroundImage = this.utils.has(programObj, 'program.config.card_style') ? '/assets/' + programObj.program.config.card_style : '';
     this.storage.setUser({
       programId: programObj.program.id,
       programName: programObj.program.name,
@@ -76,11 +77,12 @@ export class SwitcherService {
       timelineId: programObj.timeline.id,
       contactNumber: programObj.enrolment.contact_number,
       themeColor: themeColor,
-      activityCard: this.utils.has(programObj, 'program.config.card_style') ? programObj.program.config.card_style : ''
+      activityCardImage: cardBackgroundImage
     });
     this.getTeamInfo().subscribe();
     // change the theme color
     this.utils.changeThemeColor(themeColor);
+    this.utils.changeCardBackgroundImage(cardBackgroundImage);
     // initialise Pusher
     this.pusherService.initialisePusher();
     // subscribe to Pusher channels

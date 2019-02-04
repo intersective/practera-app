@@ -1,121 +1,107 @@
-import { Component, OnInit } from '@angular/core';
-import { Router, NavigationExtras } from '@angular/router';
-import { BrowserStorageService } from '@services/storage.service';
+import { Component, OnInit } from "@angular/core";
+import { Router, NavigationExtras } from "@angular/router";
+import { BrowserStorageService } from "@services/storage.service";
+import { RouterEnter } from "@services/router-enter.service";
+import { UtilsService } from "@services/utils.service";
 
-import { ChatService } from '../chat.service';
+import { ChatService, ChatListObject } from "../chat.service";
 
 @Component({
-  selector: 'app-chat',
-  templateUrl: 'chat-list.component.html',
-  styleUrls: ['chat-list.component.scss']
+  selector: "app-chat",
+  templateUrl: "chat-list.component.html",
+  styleUrls: ["chat-list.component.scss"]
 })
-export class ChatListComponent implements OnInit {
-  // @TODO need to create method to convert chat time to local time.
-  chatList: any[];
-  haveMoreTeam:Boolean;
-  private chatColors:any[];
-  private colorArray = [];
+export class ChatListComponent extends RouterEnter {
+  routeUrl = '/app/chat';
+  chatList: Array<ChatListObject>;
+  haveMoreTeam: boolean;
+  loadingChatList: boolean = true;
 
-  constructor(private chatService: ChatService, private router: Router, private storage: BrowserStorageService) {
+  constructor(
+    private chatService: ChatService,
+    public router: Router,
+    public storage: BrowserStorageService,
+    public utils: UtilsService
+  ) {
+    super(router, utils, storage);
   }
 
-  ngOnInit() {
+  onEnter() {
+    this._initialise();
+    this._loadChatData();
+  }
+
+  private _initialise() {
     this.haveMoreTeam = false;
-    this.loadChatData();
+    this.loadingChatList = true;
   }
 
-  loadChatData():void {
-    this.chatService.getchatList().subscribe(response => {
-      this.updateChatListResponse(response);
+  private _loadChatData(): void {
+    this.chatService.getchatList().subscribe(chats => {
+      this.chatList = chats;
+      this._checkHaveMoreTeam();
     });
   }
 
   /**
-   * modify the response 
-   *  - set chat avatar color
-   * @param {Array} response 
-   */
-  private updateChatListResponse(response):void {
-    if ((response)) {
-      this.chatList = [];
-      this.chatColors = this.storage.get("chatAvatarColors");
-      if ((!this.chatColors)) {
-        this.setChatAvatarColors(response, null, 'nocolor');
-      } else {
-        this.setChatAvatarColors(response, this.chatColors, 'havecolor');
-      }
-      this.checkHaveMoreTeam(response);
-    }
-  }
-
-  /**
-   * this method check old avatar colors and set the releted one.
-   * if there no old avatar colors it will create new color and add that to service variable.
-   * @param {Array} response 
-   * @param {Array} chatColors 
-   * @param {String} status 
-   */
-  private setChatAvatarColors(response, chatColors, status):void {
-    let index = 0;
-    for (index = 0; index < response.length; index++) {
-      if ((response[index])) {
-        switch (status) {
-          case 'nocolor':
-            response[index].chat_color = this.chatService.getRandomColor();
-            this.colorArray.push({
-              team_member_id: response[index].team_member_id,
-              name: response[index].name,
-              chat_color: response[index].chat_color
-            });
-            break;
-          case 'havecolor':
-            let colorObject = chatColors.find(function(chat) {
-              return chat.team_member_id === response[index].team_member_id;
-            });
-            if ((colorObject)) {
-              response[index].chat_color = colorObject.chat_color;
-            } else {
-              response[index].chat_color = this.chatService.getRandomColor();
-            }
-            break;
-        }
-        this.chatList.push(response[index]);
-      }
-    }
-    if ((this.colorArray.length > 0)) {
-      this.storage.set('chatAvatarColors', this.colorArray);
-    }
-  }
-
-  /**
    * this method check is this user in multiple teams.
-   * @param {Array} response 
    */
-  private checkHaveMoreTeam(response):void {
-    let index = 0;
-    let teamCount = 0;
-    for (index = 0; index < response.length; index++) {
-      if ((response[index].is_team)) {
-        teamCount++;
+  private _checkHaveMoreTeam(): void {
+    if (this.chatList.length > 0) {
+      let myRole = this.storage.getUser().role;
+      let index = 0;
+      let teamCount = 0;
+      for (index = 0; index < this.chatList.length; index++) {
+        if (this.chatList[index].is_team) {
+          if (myRole === "mentor" || !this.chatList[index].participants_only) {
+            teamCount++;
+          }
+        }
       }
-    }
-    if ((teamCount > 1)) {
-      this.haveMoreTeam = true;
-    } else {
-      this.haveMoreTeam = false;
+      if (teamCount > 1) {
+        this.haveMoreTeam = true;
+      } else {
+        this.haveMoreTeam = false;
+      }
+      this.loadingChatList = false;
     }
   }
 
   getChatAvatarText(chatName) {
     return this.chatService.generateChatAvatarText(chatName);
   }
-
   navigateToChatRoom(chat) {
-    this.storage.set('selectedChatObject', chat);
+    if (chat.is_team) {
+      this.router.navigate([
+        "chat",
+        "chat-room",
+        "team",
+        chat.team_id,
+        chat.participants_only
+      ]);
+    } else {
+      if (chat.last_message_created) {
+        this.router.navigate([
+          "chat",
+          "chat-room",
+          chat.team_id,
+          chat.team_member_id
+        ]);
+      } else {
+        this.router.navigate([
+          "chat",
+          "chat-room",
+          chat.team_id,
+          chat.team_member_id,
+          {
+            name: chat.name
+          }
+        ]);
+      }
+    }
+  }
 
-    const extra: NavigationExtras = {
-      queryParams: { chat },
-    };
-    this.router.navigate(['/chat/chatroom'],{ queryParams: {teamId: chat.team_id, memberId: chat.team_member_id} });
+  getChatDate(date) {
+    return this.utils.timeFormatter(date);
   }
 }

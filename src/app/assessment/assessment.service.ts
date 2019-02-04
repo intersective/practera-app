@@ -50,6 +50,7 @@ export interface Question {
   canAnswer: boolean;
   choices?: Array<Choice>;
   teamMembers?: Array<TeamMember>;
+  audience: Array<string>;
 }
 
 export interface Choice {
@@ -67,6 +68,7 @@ export interface Submission {
   id: number;
   status: string;
   answers: any;
+  submitterName: string;
 }
 
 export interface Review {
@@ -139,7 +141,8 @@ export class AssessmentService {
             !this.utils.has(question.AssessmentQuestion, 'question_type') ||
             !this.utils.has(question.AssessmentQuestion, 'is_required') ||
             !this.utils.has(question.AssessmentQuestion, 'has_comment') ||
-            !this.utils.has(question.AssessmentQuestion, 'can_answer')
+            !this.utils.has(question.AssessmentQuestion, 'can_answer') ||
+            !this.utils.has(question.AssessmentQuestion, 'audience')
             ) {
           return this.request.apiResponseFormatError('Assessment.AssessmentQuestion format error');
         }
@@ -187,6 +190,7 @@ export class AssessmentService {
               isRequired: question.AssessmentQuestion.is_required,
               canComment: question.AssessmentQuestion.has_comment,
               canAnswer: question.AssessmentQuestion.can_answer,
+              audience: question.AssessmentQuestion.audience,
               choices: choices
             });
             break;
@@ -203,7 +207,8 @@ export class AssessmentService {
               description: question.AssessmentQuestion.description,
               isRequired: question.AssessmentQuestion.is_required,
               canComment: question.AssessmentQuestion.has_comment,
-              canAnswer: question.AssessmentQuestion.can_answer
+              canAnswer: question.AssessmentQuestion.can_answer,
+              audience: question.AssessmentQuestion.audience,
             });
             break;
 
@@ -235,6 +240,7 @@ export class AssessmentService {
               isRequired: question.AssessmentQuestion.is_required,
               canComment: question.AssessmentQuestion.has_comment,
               canAnswer: question.AssessmentQuestion.can_answer,
+              audience: question.AssessmentQuestion.audience,
               teamMembers: teamMembers
             });
             break;
@@ -247,7 +253,8 @@ export class AssessmentService {
               description: question.AssessmentQuestion.description,
               isRequired: question.AssessmentQuestion.is_required,
               canComment: question.AssessmentQuestion.has_comment,
-              canAnswer: question.AssessmentQuestion.can_answer
+              canAnswer: question.AssessmentQuestion.can_answer,
+              audience: question.AssessmentQuestion.audience,
             });
             break;
         }
@@ -275,7 +282,8 @@ export class AssessmentService {
     } else {
       params = {
         assessment_id: assessmentId,
-        context_id: contextId
+        context_id: contextId,
+        review: false
       };
     }
     if (submissionId) {
@@ -302,11 +310,11 @@ export class AssessmentService {
       return this.request.apiResponseFormatError('AssessmentSubmission format error');
     }
     const thisSubmission = data[0];
-
     let submission: Submission = {
       id: thisSubmission.AssessmentSubmission.id,
       status: thisSubmission.AssessmentSubmission.status,
-      answers: {}
+      answers: {},
+      submitterName: thisSubmission.Submitter.name
     }
 
     //-- normalise submission answers

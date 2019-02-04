@@ -1,4 +1,7 @@
 .chat-list {
+
+  background-color: transparent !important;
+
   ion-item {
 
     ion-avatar {
@@ -188,6 +191,11 @@
       }
     }
   }
+}
+
+.message-sending-loading {
+  width: 100% !important;
+  text-align: right !important;
 }
 
 ion-footer {

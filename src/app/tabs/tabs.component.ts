@@ -35,7 +35,13 @@ export class TabsComponent extends RouterEnter {
     });
   }
 
+  private _initialise() {
+    this.showChat = true;
+    this.showReview = false;
+  }
+
   onEnter() {
+    this._initialise();
     this._checkRoute();
     this.tabsService.getNoOfTodoItems()
       .subscribe(noOfTodoItems => {

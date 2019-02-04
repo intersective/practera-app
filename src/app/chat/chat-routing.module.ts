@@ -17,7 +17,11 @@ const routes: Routes = [
     ]
   },
   {
-    path: 'chatroom',
+    path: 'chat-room/:teamId/:teamMemberId',
+    component: ChatRoomComponent,
+  },
+  {
+    path: 'chat-room/team/:teamId/:participantsOnly',
     component: ChatRoomComponent,
   }
 ];
