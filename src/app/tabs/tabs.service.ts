@@ -12,7 +12,6 @@ import { BrowserStorageService } from '@services/storage.service';
  */
 const api = {
   todoItem: 'api/v2/motivations/todo_item/list.json',
-  chat: 'api/v2/message/chat/list.json',
   unreadMessages: "api/v2/message/chat/list_messages.json",
 };
 
@@ -60,12 +59,11 @@ export class TabsService {
   }
 
   getNoOfChats() {
-    let body = {
-      unread_count_for: 'all'
-    };
     return this.request.get(api.unreadMessages, {
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      params: body
+      params: {
+        unread_count_for: 'all',
+        team_id: this.storage.getUser().teamId
+      }
     })
       .pipe(map(response => {
         if (response.success && response.data) {
