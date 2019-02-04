@@ -15,7 +15,7 @@ import { RouterEnter } from '@services/router-enter.service';
 })
 export class SettingsComponent extends RouterEnter {
 
-  routeUrl: string = '/app/settings/';
+  routeUrl: string = '/app/settings';
   profile : Profile = {
     contactNumber: '',
     email: ''

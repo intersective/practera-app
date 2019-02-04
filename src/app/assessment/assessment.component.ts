@@ -35,7 +35,8 @@ export class AssessmentComponent extends RouterEnter {
   submission: Submission = {
     id: 0,
     status: '',
-    answers: {}
+    answers: {},
+    submitterName: ''
   };
   review: Review = {
     id: 0,
@@ -72,7 +73,8 @@ export class AssessmentComponent extends RouterEnter {
     this.submission = {
       id: 0,
       status: '',
-      answers: {}
+      answers: {},
+      submitterName: ''
     };
     this.review = {
       id: 0,
