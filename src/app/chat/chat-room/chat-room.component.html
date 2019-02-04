@@ -35,12 +35,11 @@
     </ng-container>
     <ng-container *ngIf="isTyping">
       <ion-item color="light">
-        <ion-label class="reserved-messages no-avatar">
-          <div class="message-body">
-            <p class="message-text">
-              {{typingMessage}} <ion-spinner name="dots"></ion-spinner>
-            </p>
-          </div>
+        <ion-label class="reserved-messages no-avatar" color="medium">
+          <p class="message-typing">
+            <i>{{typingMessage}}</i>
+            <ion-spinner name="dots" class="vertical-middle"></ion-spinner>
+          </p>
         </ion-label>
       </ion-item>
     </ng-container>
@@ -55,8 +54,13 @@
 </ion-content>
 <ion-footer>
   <ion-item lines="none">
-    <ion-textarea placeholder="Enter your message" required="true" name="message"
-      [(ngModel)]="message"></ion-textarea>
+    <ion-textarea
+      placeholder="Enter your message"
+      required="true"
+      name="message"
+      [(ngModel)]="message"
+      (ngModelChange)="typing()"
+    ></ion-textarea>
     <ion-button (click)="sendMessage()" type="submit" slot="end" fill="clear" color="light">
       <ion-icon name="send"></ion-icon>
     </ion-button>
