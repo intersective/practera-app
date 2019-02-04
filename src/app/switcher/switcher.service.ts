@@ -58,7 +58,7 @@ export class SwitcherService {
     private request: RequestService,
     private utils: UtilsService,
     private storage: BrowserStorageService,
-    private pusherService: PusherService
+    public pusherService: PusherService
   ) {}
 
   getPrograms() {
