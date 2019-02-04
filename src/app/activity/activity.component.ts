@@ -7,6 +7,7 @@ import { UtilsService } from '../services/utils.service';
 import { NotificationService } from '@shared/notification/notification.service';
 import { BrowserStorageService } from '@services/storage.service';
 import { RouterEnter } from '@services/router-enter.service';
+import { PusherService } from "@shared/pusher/pusher.service";
 
 @Component({
   selector: 'app-activity',
@@ -31,9 +32,10 @@ export class ActivityComponent extends RouterEnter {
     private activityService: ActivityService,
     public utils: UtilsService,
     private notificationService: NotificationService,
-    public storage: BrowserStorageService
+    public storage: BrowserStorageService,
+    public pusherService: PusherService
   ) {
-    super(router, utils, storage);
+    super(router, utils, storage, pusherService);
   }
 
   private _initialise() {
