@@ -30,7 +30,7 @@ export class TabsComponent extends RouterEnter {
     private reviewsService: ReviewsService,
     public pusherService: PusherService
   ) {
-    super(router, utils, storage);
+    super(router, utils, storage, pusherService);
     let role = this.storage.getUser().role;
     this.utils.getEvent("notification").subscribe(event => {
       this.noOfTodoItems++;
