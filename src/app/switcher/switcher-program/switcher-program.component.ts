@@ -6,6 +6,7 @@ import { SwitcherService, ProgramObj } from '../switcher.service';
 import { BrowserStorageService } from '@services/storage.service';
 import { UtilsService } from '@services/utils.service';
 import { RouterEnter } from '@services/router-enter.service';
+import { PusherService } from "@shared/pusher/pusher.service";
 
 @Injectable({
   providedIn: 'root'
@@ -27,8 +28,9 @@ export class SwitcherProgramComponent extends RouterEnter {
     private switcherService: SwitcherService,
     public utils: UtilsService,
     public storage: BrowserStorageService,
+    public pusherService: PusherService
   ) {
-    super(router, utils, storage);
+    super(router, utils, storage, pusherService);
   }
 
   onEnter() {

@@ -46,14 +46,14 @@ export interface ChatRoomObject {
 }
 
 export interface Message {
-  id?:number
-  sender_name?:string;
-  receiver_name?:string;
-  message?:string;
-  sent_time?:string;
-  is_sender?:boolean;
+  id?: number;
+  sender_name?: string;
+  receiver_name?: string;
+  message?: string;
+  sent_time?: string;
+  is_sender?: boolean;
   chat_color?: string;
-  noAvatar?:boolean;
+  noAvatar?: boolean;
 }
 interface NewMessage {
   to: number | string;
@@ -107,7 +107,7 @@ export class ChatService {
     return this.request.get(api.getChatList).pipe(
       map(response => {
         if (response.success && response.data) {
-          return this._normaliseChatListResponse(response.data);
+          return this._normaliseeChatListResponse(response.data);
         }
       })
     );
@@ -132,7 +132,7 @@ export class ChatService {
       .pipe(
         map(response => {
           if (response.success && response.data) {
-            return this._normaliseMessageListResponse(
+            return this._normaliseeMessageListResponse(
               response.data,
               isTeam,
               chatColor
@@ -187,7 +187,7 @@ export class ChatService {
       .pipe(
         map(response => {
           if (response.success && response.data) {
-            return this._normalisTeamResponse(response.data);
+            return this._normaliseTeamResponse(response.data);
           }
         })
       );
@@ -227,7 +227,7 @@ export class ChatService {
     return message;
   }
 
-  private _normalisTeamResponse(data) {
+  private _normaliseTeamResponse(data) {
     if (!this.utils.has(data, 'Team')) {
       return this.request.apiResponseFormatError('Team format error');
     }
@@ -260,7 +260,7 @@ export class ChatService {
    *  - set chat name
    * @param {Array} response
    */
-  private _normaliseChatListResponse(data) {
+  private _normaliseeChatListResponse(data) {
     if (!Array.isArray(data)) {
       return this.request.apiResponseFormatError('Chat format error');
     }
@@ -278,18 +278,21 @@ export class ChatService {
         return this.request.apiResponseFormatError('Chat object format error');
       }
       chat['chat_color'] = this._getAvataColor(chat.name, chat.team_id)
+      chat.name = this._getChatName(chat);
       chats.push(chat);
     });
     return chats;
   }
 
   private _getChatName(chat) {
-    if (chat.is_team && chat.participants_only) {
-      chat.name = chat.team_name;
-    } else if (chat.is_team && !chat.participants_only) {
-      chat.name = chat.team_name + " + Mentor";
+    if (!chat.is_team) {
+      return chat.name;
     }
-    return chat;
+    if (chat.participants_only) {
+      return chat.team_name;
+    } else {
+      return chat.team_name + " + Mentor";
+    }
   }
 
   /**
@@ -298,7 +301,7 @@ export class ChatService {
    * @param isTeam
    * @param chatColor
    */
-  private _normaliseMessageListResponse(data, isTeam, chatColor) {
+  private _normaliseeMessageListResponse(data, isTeam, chatColor) {
     if (!Array.isArray(data)) {
       return this.request.apiResponseFormatError('Message array format error');
     }

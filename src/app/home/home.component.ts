@@ -7,6 +7,7 @@ import { UtilsService } from "@services/utils.service";
 import { Subscription } from "rxjs";
 import { BrowserStorageService } from "@services/storage.service";
 import { RouterEnter } from "@services/router-enter.service";
+import { PusherService } from "@shared/pusher/pusher.service";
 
 @Component({
   selector: "app-home",
@@ -29,9 +30,10 @@ export class HomeComponent extends RouterEnter {
     private homeService: HomeService,
     private fastFeedbackService: FastFeedbackService,
     public utils: UtilsService,
-    public storage: BrowserStorageService
+    public storage: BrowserStorageService,
+    public pusherService: PusherService
   ) {
-    super(router, utils, storage);
+    super(router, utils, storage, pusherService);
     let role = this.storage.getUser().role;
     this.utils.getEvent("notification").subscribe(event => {
       let todoItem = this.homeService.getTodoItemFromEvent(event);
