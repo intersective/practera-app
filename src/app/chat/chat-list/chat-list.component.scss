@@ -125,6 +125,7 @@ ion-item {
       flex-wrap: wrap;
       text-overflow: inherit;
       overflow: inherit;
+      width: 100% !important;
 
       span {
         border: 1px solid var(--ion-color-primary);

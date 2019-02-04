@@ -33,6 +33,17 @@
         </ion-label>
       </ion-item>
     </ng-container>
+    <ng-container *ngIf="isTyping">
+      <ion-item color="light">
+        <ion-label class="reserved-messages no-avatar">
+          <div class="message-body">
+            <p class="message-text">
+              {{typingMessage}} <ion-spinner name="dots"></ion-spinner>
+            </p>
+          </div>
+        </ion-label>
+      </ion-item>
+    </ng-container>
     <ng-container *ngIf="loadingMesageSend">
       <ion-item color="light">
         <div class="message-sending-loading">
