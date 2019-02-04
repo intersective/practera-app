@@ -245,7 +245,7 @@ export class HomeService {
       this.request.apiResponseFormatError('Progress.Milestone.Activity format error');
       return ;
     }
-    if (activity.progress < 1) {
+    if (activity.progress < 1 || activity.progress ===1) {
       this.currentActivityId = activity.id
     }
   }
