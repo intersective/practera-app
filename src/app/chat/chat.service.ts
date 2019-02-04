@@ -1,25 +1,90 @@
 import { Injectable } from "@angular/core";
-import { Observable, of, BehaviorSubject } from "rxjs";
+import { RequestService } from "@shared/request/request.service";
+import { HttpParams } from "@angular/common/http";
+import { map } from "rxjs/operators";
+import { Observable, of } from "rxjs";
+import { BrowserStorageService } from "@services/storage.service";
+import { UtilsService } from "@services/utils.service";
+import { environment } from "@environments/environment";
 
+/**
+ * @name api
+ * @description list of api endpoint involved in this service
+ * @type {Object}
+ */
+const api = {
+  getChatList: "api/v2/message/chat/list.json",
+  getChatMessages: "api/v2/message/chat/list_messages.json",
+  createMessage: "api/v2/message/chat/create_message",
+  markAsSeen: "api/v2/message/chat/edit_message",
+  getTeam: "api/teams.json"
+};
 
-interface newMessage {
+export interface ChatListObject {
+  team_id: number;
+  team_name: string;
+  team_member_id?: number;
+  name: string;
+  role?: string;
+  unread_messages?: number;
+  last_message_created?: string;
+  last_message?: string;
+  is_team: boolean;
+  participants_only: boolean;
+  chat_color?: string;
+}
+
+export interface ChatRoomObject {
+  name: string;
+  team_name?: string;
+  is_team?: boolean;
+  team_id: number;
+  team_member_id: number;
+  chat_color?: string;
+  participants_only?: boolean;
+}
+
+export interface Message {
+  id:number
+  sender_name:string;
+  receiver_name:string;
+  message:string;
+  sent_time:string;
+  is_sender:boolean;
+  chat_color?: string;
+  noAvatar?:boolean;
+}
+interface NewMessage {
   to: number | string;
   message: string;
   team_id: number;
   env?: string;
+  participants_only?: boolean;
 }
 
-interface messageListPrams {
+interface MessageListPrams {
   team_id: number;
-  team_member_id: number | null;
+  team_member_id?: number;
   page: number;
   size: number;
+  participants_only?: boolean;
 }
 
-interface markAsSeenPrams {
+interface MarkAsSeenPrams {
   team_id: number;
   id: string | number;
   action?: string;
+}
+
+interface UnreadMessagePrams {
+  filter: string;
+}
+
+export interface ChatColor {
+  team_member_id: number;
+  team_id: number;
+  name: string;
+  chat_color: string;
 }
 
 @Injectable({
@@ -27,94 +92,23 @@ interface markAsSeenPrams {
 })
 export class ChatService {
 
-  private chatList: any[];
-  private messageList: any[];
-
-  constructor() {
-    this.initDemoData();
-  }
-
-  initDemoData() {
-    this.chatList = [
-      {
-        team_id: 1447,
-        team_name: "dream team",
-        team_member_id: null,
-        name: "Team",
-        role: null,
-        unread_messages: 2,
-        last_message_created: "Nov 7",
-        last_message: "this is the team chat for dream team",
-        is_team: true
-      },
-      {
-        team_id: 1448,
-        team_name: "sleep team",
-        team_member_id: null,
-        name: "Team",
-        role: null,
-        unread_messages: 2,
-        last_message_created: "Nov 5",
-        last_message: "this is the team chat for sleep team",
-        is_team: true
-      },
-      {
-        team_id: 1447,
-        team_name: "dream team",
-        team_member_id: 1,
-        name: "test student2",
-        role: "participant",
-        unread_messages: 0,
-        last_message_created: "Nov 1",
-        last_message: "coming from student 1 to student 2",
-        is_team: false
-      },
-      {
-        team_id: 1448,
-        team_name: "sleep team",
-        team_member_id: 3,
-        name: "mob studtest",
-        role: "participant",
-        last_message_created: "Oct 23",
-        last_message: "Message to team meber in sleep team",
-        unread_messages: null,
-        is_team: false
-      },
-      {
-        team_id: 1448,
-        team_name: "sleep team",
-        team_member_id: 4,
-        name: "mob Mentor",
-        role: "mentor",
-        last_message_created: null,
-        last_message: null,
-        unread_messages: null,
-        is_team: false
-      }
-    ];
-    this.messageList = [
-      {
-        id: 14950,
-        sender_name: "test student2",
-        message: "second chat from student 2 to student 1",
-        sent_time: "1.00 PM",
-        is_sender: false
-      },
-      {
-        id: 14949,
-        sender_name: "test student1",
-        message: "coming from student 1 to student 2",
-        sent_time: "11.30 AM",
-        is_sender: true
-      }
-    ];
-  }
+  constructor(
+    private request: RequestService,
+    private storage: BrowserStorageService,
+    private utils: UtilsService
+  ) {}
 
   /**
    * this method return chat list data.
    */
   getchatList(): Observable<any> {
-    return of(this.chatList);
+    return this.request.get(api.getChatList).pipe(
+      map(response => {
+        if (response.success && response.data) {
+          return this._normaliseChatListResponse(response.data);
+        }
+      })
+    );
   }
 
   /**
@@ -128,29 +122,82 @@ export class ChatService {
    *  size:20
    * }
    */
-  getMessageList(prams: messageListPrams): Observable<any> {
-    console.log("Service", this.messageList);
-    return of(this.messageList);
+  getMessageList(data: MessageListPrams, isTeam:boolean, chatColor:string): Observable<any> {
+    return this.request
+      .get(api.getChatMessages, {
+        params: data
+      })
+      .pipe(
+        map(response => {
+          if (response.success && response.data) {
+            return this._normaliseMessageListResponse(
+              response.data,
+              isTeam,
+              chatColor
+            );
+          }
+        })
+      );
   }
 
-  markMessagesAsSeen(prams: markAsSeenPrams): Observable<any> {
-    prams.action = 'mark_seen';
-    return of("maked");
-  }
-
-  postNewMessage(data: newMessage): Observable<any> {
-    data.env = 'develop';
-    let returnData = {
-      id: 300,
-      sender_name: 'Chathumal',
-      is_sender: true,
-      team_name: 'dream team',
-      sent_time: '1.30 PM',
-      message: data.message,
-      team_id: data.team_id,
-      to: data.to
+  markMessagesAsSeen(prams: MarkAsSeenPrams): Observable<any> {
+    let body = {
+      team_id: prams.team_id,
+      id: prams.id,
+      action: "mark_seen"
     };
-    return of(returnData);
+    return this.request.post(api.markAsSeen, body, {
+      headers: { "Content-Type": "application/x-www-form-urlencoded" }
+    });
+  }
+
+  postNewMessage(data: NewMessage): Observable<any> {
+    let reqData = {
+      to: data.to,
+      message: data.message,
+      team_id:data.team_id,
+      env: data.env,
+      participants_only: '',
+    }
+    if (data.participants_only) {
+      reqData.participants_only = data.participants_only.toString();
+    } else {
+      delete reqData.participants_only;
+    }
+    return this.request.post(api.createMessage, reqData, {
+      headers: { "Content-Type": "application/x-www-form-urlencoded" }
+    });
+  }
+
+  unreadMessageCout(data: UnreadMessagePrams): Observable<any> {
+    let body = {
+      unread_count_for: data.filter
+    };
+    return this.request.get(api.getChatMessages, body);
+  }
+
+  getTeamName(id: number): Observable<any> {
+    let data = {
+      team_id: id
+    };
+    return this.request
+      .get(api.getTeam, {
+        params: data
+      })
+      .pipe(
+        map(response => {
+          if (response.success && response.data) {
+            return this._normalisTeamResponse(response.data);
+          }
+        })
+      );
+  }
+
+  private _normalisTeamResponse(data) {
+    if (!this.utils.has(data, 'Team')) {
+      return this.request.apiResponseFormatError('Team format error');
+    }
+    return data.Team.name;
   }
 
   generateChatAvatarText(text) {
@@ -159,23 +206,144 @@ export class ChatService {
     if (chatNameArray[0] && chatNameArray[1]) {
       avatarText += chatNameArray[0].charAt(0).toUpperCase();
       avatarText += chatNameArray[1].charAt(0).toUpperCase();
-    } else if (chatNameArray[0]) {
+    } else {
       avatarText += chatNameArray[0].charAt(0).toUpperCase();
       avatarText += chatNameArray[0].charAt(1).toUpperCase();
-    } else {
-      avatarText += chatNameArray[1].charAt(0).toUpperCase();
-      avatarText += chatNameArray[1].charAt(1).toUpperCase();
     }
 
     return avatarText;
   }
 
-  getRandomColor() {
-    var randomNumber = this.getRamdomNumber();
+  private _getRandomColor() {
+    var randomNumber = this._getRamdomNumber();
     return "color-" + randomNumber;
   }
 
-  private getRamdomNumber() {
+  private _getRamdomNumber() {
     return Math.floor(Math.random() * 19) + 1;
+  }
+
+  /**
+   * modify the Chat list response
+   *  - set chat avatar color
+   *  - set chat name
+   * @param {Array} response
+   */
+  private _normaliseChatListResponse(data) {
+    if (!Array.isArray(data) ||
+        !this.utils.has(data[0], 'team_id') ||
+        !this.utils.has(data[0], 'is_team') ||
+        !this.utils.has(data[0], 'participants_only') ||
+        !this.utils.has(data[0], 'name') ||
+        !this.utils.has(data[0], 'team_name')) {
+      return this.request.apiResponseFormatError('Chat format error');
+    }
+    if (data.length > 0) {
+      return this._setChatAvatarColorAndName(data);
+    }
+  }
+
+  /**
+   * this method check old avatar colors and set the releted one.
+   * if there no old avatar colors it will create new color and add that to service variable.
+   * @param {Array} response
+   */
+  private _setChatAvatarColorAndName(data): Array<ChatListObject> {
+    let chatColors = this.storage.get("chatAvatarColors");
+    let colors: Array<ChatColor> = new Array;
+    data.forEach((chat) => {
+      if (chatColors && chatColors.length > 0) {
+        let colorObject = chatColors.find(function(color) {
+          return color.team_member_id === chat.team_member_id;
+        });
+        if (colorObject) {
+          chat.chat_color = colorObject.chat_color;
+        } else {
+          chat.chat_color = this._getRandomColor();
+        }
+      } else {
+        chat.chat_color = this._getRandomColor();
+      }
+      colors.push({
+        team_member_id: chat.team_member_id,
+        team_id: chat.team_id,
+        name: chat.name,
+        chat_color: chat.chat_color
+      });
+      chat = this._getChatName(chat);
+    });
+    this.storage.set("chatAvatarColors", colors);
+    return data;
+  }
+
+  private _getChatName(chat) {
+    if (chat.is_team && chat.participants_only) {
+      chat.name = chat.team_name;
+    } else if (chat.is_team && !chat.participants_only) {
+      chat.name = chat.team_name + " + Mentor";
+    }
+    return chat;
+  }
+
+  /**
+   * modify the message list response
+   * @param data
+   * @param isTeam
+   * @param chatColor
+   */
+  private _normaliseMessageListResponse(data, isTeam, chatColor) {
+    let colors:Array<ChatColor> = new Array;
+    if (!Array.isArray(data)) {
+      return this.request.apiResponseFormatError('Message array format error');
+    }
+    if (data.length == 0) {
+      return [];
+    }
+    data.forEach((message) => {
+      if (!this.utils.has(message, 'id') ||
+          !this.utils.has(message, 'sender_name') ||
+          !this.utils.has(message, 'receiver_name') ||
+          !this.utils.has(message, 'message') ||
+          !this.utils.has(message, 'is_sender')) {
+        return this.request.apiResponseFormatError('Message format error');
+      }
+      if (!message.is_sender) {
+        if (isTeam) {
+          message.chat_color = this._getValidChatColors(message.sender_name);
+        } else if (chatColor) {
+          message.chat_color = chatColor;
+        } else {
+          message.chat_color = this._getRandomColor();
+        }
+        colors.push({
+          team_member_id: message.team_member_id,
+          team_id: message.team_id,
+          name: message.name,
+          chat_color: message.chat_color
+        });
+      }
+    });
+    if (colors.length > 0) {
+      this.storage.set("chatAvatarColors", colors);
+    }
+    return data;
+  }
+
+  private _getValidChatColors(senderName) {
+    let chatColors = this.storage.get("chatAvatarColors");
+    let color:string = '';
+    if (chatColors) {
+      let chatcolor = chatColors.find(function(chat) {
+        return chat.name === senderName;
+      });
+      if (chatcolor) {
+        color = chatcolor.chat_color;
+      } else {
+        color = this._getRandomColor();
+      }
+    } else {
+      color = this._getRandomColor();
+    }
+    return color;
   }
 }
