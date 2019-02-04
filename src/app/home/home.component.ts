@@ -149,15 +149,13 @@ export class HomeComponent extends RouterEnter {
     let currentChatTodo = this.todoItems.find((todoItem, index) => {
       if (todoItem.type === 'chat') {
         currentChatTodoIndex = index;
-        return todoItem.type === 'chat';
+        return true;
       }
     });
     if (currentChatTodo) {
-      this.todoItems.splice(currentChatTodoIndex,1);
-      this.todoItems.push(chatTodoItem);
-    } else {
-      this.todoItems.push(chatTodoItem);
+      this.todoItems.splice(currentChatTodoIndex, 1);
     }
+    this.todoItems.push(chatTodoItem);
   }
 
 }

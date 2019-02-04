@@ -33,7 +33,7 @@ export class ChatRoomComponent extends RouterEnter implements AfterViewInit {
     public storage: BrowserStorageService,
     private route: ActivatedRoute,
     public utils: UtilsService,
-    private pusherService: PusherService
+    public pusherService: PusherService
   ) {
     super(router, utils, storage);
     let role = this.storage.getUser().role;
@@ -44,7 +44,7 @@ export class ChatRoomComponent extends RouterEnter implements AfterViewInit {
         chatName: this.selectedChat.name,
         participants_only: this.selectedChat.participants_only
       }
-      let receivedMessage =  this.chatService.getMessageFromEvent(param);
+      let receivedMessage = this.chatService.getMessageFromEvent(param);
       if (!this.utils.isEmpty(receivedMessage)) {
         this.messageList.push(receivedMessage);
       }
@@ -374,23 +374,23 @@ export class ChatRoomComponent extends RouterEnter implements AfterViewInit {
 
   private _showTyping(event) {
     let presenceChannelId = this.pusherService.getMyPresenceChannelId();
-    if (presenceChannelId !== event.from) {
-      if ((event.is_team === true) && (this.selectedChat.team_id === event.team_id)){
-        this.typingMessage = event.sender_name+ ' is typing';
-        this.isTyping = true;
-        setTimeout(() => {
-          this.typingMessage = '';
-        this.isTyping = false;
-        },3000);
-      } else if ((event.is_team === false) && (this.selectedChat.team_id === event.team_id)){
-        this.typingMessage = '';
-        this.isTyping = true;
-        setTimeout(() => {
-          this.typingMessage = '';
-        this.isTyping = false;
-        },3000);
-      }
+    if (presenceChannelId === event.from) {
+      return ;
     }
+    // show the typing message if it is team message and the current page is the team message
+    if ((event.is_team === this.selectedChat.is_team &&
+        this.selectedChat.team_id === event.team_id &&
+        this.selectedChat.participants_only === event.participants_only)
+      ){
+      this.typingMessage = event.sender_name+ ' is typing';
+    } else {
+      return ;
+    }
+    this.isTyping = true;
+    setTimeout(() => {
+      this.typingMessage = '';
+      this.isTyping = false;
+    },3000);
   }
 
 }

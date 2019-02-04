@@ -28,7 +28,7 @@ export class TabsComponent extends RouterEnter {
     public utils: UtilsService,
     private switcherService: SwitcherService,
     private reviewsService: ReviewsService,
-    private pusherService: PusherService
+    public pusherService: PusherService
   ) {
     super(router, utils, storage);
     let role = this.storage.getUser().role;
