@@ -6,7 +6,7 @@ import { NG_VALUE_ACCESSOR, ControlValueAccessor, FormControl } from '@angular/f
   templateUrl: 'oneof.component.html',
   styleUrls: ['oneof.component.scss'],
   providers: [
-    { 
+    {
       provide: NG_VALUE_ACCESSOR,
       multi: true,
       useExisting: forwardRef(() => OneofComponent),
@@ -25,12 +25,13 @@ export class OneofComponent implements ControlValueAccessor {
   // FormControl that is passed in from parent component
   @Input() control: FormControl;
   // answer field for submitter & reviewer
-  @ViewChild('answer') answerRef: ElementRef;
+  @ViewChild('answerEle') answerRef: ElementRef;
   // comment field for reviewer
-  @ViewChild('comment') commentRef: ElementRef;
+  @ViewChild('commentEle') commentRef: ElementRef;
 
   // the value of answer
   innerValue: any;
+  comment: string;
   // validation errors array
   errors: Array<any> = [];
 
@@ -62,7 +63,7 @@ export class OneofComponent implements ControlValueAccessor {
     // propagate value into form control using control value accessor interface
     this.propagateChange(this.innerValue);
 
-    //reset errors 
+    //reset errors
     this.errors = [];
     //setting, resetting error messages into an array (to loop) and adding the validation messages to show below the answer area
     for (var key in this.control.errors) {
