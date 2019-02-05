@@ -51,7 +51,7 @@
                 <ng-container *ngIf="loadingActivity" >
                   <ion-spinner></ion-spinner>
                 </ng-container>
-                <ion-item class="activity-item" *ngFor="let activity of milestone.Activity" color="light">
+                <ion-item class="activity-item" *ngFor="let activity of milestone.Activity" color="light" ng-class="addMargin: 'test'?">
 
                   <ng-container *ngIf="loadingProgress; else progressTpl">
                     <ion-spinner></ion-spinner>
@@ -78,4 +78,5 @@
       </div>
     </ion-item>
   </ion-list>
+  <div style="height:300px"></div>
 </ion-content>
