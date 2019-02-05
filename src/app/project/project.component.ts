@@ -5,7 +5,6 @@ import { HomeService } from '../home/home.service';
 import { RouterEnter } from '@services/router-enter.service';
 import { BrowserStorageService } from '@services/storage.service';
 import { UtilsService } from '@services/utils.service';
-import { PusherService } from "@shared/pusher/pusher.service";
 
 export interface Activity {
   id: number;
@@ -48,9 +47,8 @@ export class ProjectComponent extends RouterEnter {
     public storage: BrowserStorageService,
     private projectService: ProjectService,
     private homeService: HomeService,
-    public pusherService: PusherService
    ) {
-    super(router, utils, storage, pusherService);
+    super(router);
   }
 
   private _initialise() {

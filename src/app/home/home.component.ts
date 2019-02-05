@@ -31,9 +31,8 @@ export class HomeComponent extends RouterEnter {
     private fastFeedbackService: FastFeedbackService,
     public utils: UtilsService,
     public storage: BrowserStorageService,
-    public pusherService: PusherService
   ) {
-    super(router, utils, storage, pusherService);
+    super(router);
     let role = this.storage.getUser().role;
     this.utils.getEvent("notification").subscribe(event => {
       let todoItem = this.homeService.getTodoItemFromEvent(event);
