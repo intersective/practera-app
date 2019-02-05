@@ -6,7 +6,6 @@ import { NotificationService } from '@shared/notification/notification.service';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { BrowserStorageService } from '@services/storage.service';
 import { RouterEnter } from '@services/router-enter.service';
-import { PusherService } from "@shared/pusher/pusher.service";
 
 @Component({
   selector: 'app-assessment',
@@ -60,9 +59,8 @@ export class AssessmentComponent extends RouterEnter {
     public utils: UtilsService,
     private notificationService: NotificationService,
     public storage: BrowserStorageService,
-    public pusherService: PusherService
   ) {
-    super(router, utils, storage, pusherService);
+    super(router);
   }
 
   private _initialise() {

@@ -7,7 +7,6 @@ import { UtilsService } from '@services/utils.service';
 import { NotificationService } from '@shared/notification/notification.service';
 import { environment } from '../../environments/environment.prod';
 import { RouterEnter } from '@services/router-enter.service';
-import { PusherService } from "@shared/pusher/pusher.service";
 
 @Component({
   selector: 'app-settings',
@@ -58,9 +57,8 @@ export class SettingsComponent extends RouterEnter {
     public storage : BrowserStorageService,
     public utils: UtilsService,
     private notificationService: NotificationService,
-    public pusherService: PusherService
   ){
-    super(router, utils, storage, pusherService);
+    super(router);
   }
 
   onEnter() {
