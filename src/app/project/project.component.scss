@@ -41,6 +41,7 @@
   :last-child {
     --inner-border-width: 0px !important;
   }
+  background: var(--ion-color-light, #f4f5f8) !important;
 }
 .project-title {
   color: var(--practera-milestone-name-font-color);

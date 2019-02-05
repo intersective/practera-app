@@ -40,6 +40,7 @@ export class ProjectComponent extends RouterEnter {
   @ViewChildren('milestoneRef', {read: ElementRef}) milestoneRefs: QueryList<ElementRef>;
   private milestonePositions: Array<number> = [];
   public activeMilestone: Array<boolean> = [];
+  public test: boolean = false;
 
   constructor(
     public router: Router,
@@ -56,6 +57,7 @@ export class ProjectComponent extends RouterEnter {
     this.loadingActivity = true;
     this.loadingMilestone = true;
     this.loadingProgress = true;
+
   }
 
   onEnter() {
@@ -94,13 +96,15 @@ export class ProjectComponent extends RouterEnter {
     // update active milestone status
     this.activeMilestone.fill(false);
     this.activeMilestone[activeMilestoneIndex] = true;
+    if (this.milestonePositions.length -1 < event.detail.currentY) {
+      this.test = true;
+    }
   }
 
   // scroll to a milestone. i is the index of milestone list
   scrollTo(i) {
     this.contentRef.nativeElement.scrollToPoint(0, this.milestonePositions[i], 500);
-
-  }
+}
 
   private _getMilestonePositions() {
     this.milestonePositions = this.milestoneRefs.map(milestoneRef => {
