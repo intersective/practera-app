@@ -5,6 +5,7 @@ import { map } from "rxjs/operators";
 import { Observable, of } from "rxjs";
 import { BrowserStorageService } from "@services/storage.service";
 import { UtilsService } from "@services/utils.service";
+import { PusherService } from "@shared/pusher/pusher.service";
 import { environment } from "@environments/environment";
 
 /**
@@ -45,14 +46,14 @@ export interface ChatRoomObject {
 }
 
 export interface Message {
-  id:number
-  sender_name:string;
-  receiver_name:string;
-  message:string;
-  sent_time:string;
-  is_sender:boolean;
+  id?: number;
+  sender_name?: string;
+  receiver_name?: string;
+  message?: string;
+  sent_time?: string;
+  is_sender?: boolean;
   chat_color?: string;
-  noAvatar?:boolean;
+  noAvatar?: boolean;
 }
 interface NewMessage {
   to: number | string;
@@ -95,7 +96,8 @@ export class ChatService {
   constructor(
     private request: RequestService,
     private storage: BrowserStorageService,
-    private utils: UtilsService
+    private utils: UtilsService,
+    private pusherService:PusherService
   ) {}
 
   /**
@@ -105,7 +107,7 @@ export class ChatService {
     return this.request.get(api.getChatList).pipe(
       map(response => {
         if (response.success && response.data) {
-          return this._normaliseChatListResponse(response.data);
+          return this._normaliseeChatListResponse(response.data);
         }
       })
     );
@@ -130,7 +132,7 @@ export class ChatService {
       .pipe(
         map(response => {
           if (response.success && response.data) {
-            return this._normaliseMessageListResponse(
+            return this._normaliseeMessageListResponse(
               response.data,
               isTeam,
               chatColor
@@ -156,7 +158,7 @@ export class ChatService {
       to: data.to,
       message: data.message,
       team_id:data.team_id,
-      env: data.env,
+      env: environment.env,
       participants_only: '',
     }
     if (data.participants_only) {
@@ -164,9 +166,7 @@ export class ChatService {
     } else {
       delete reqData.participants_only;
     }
-    return this.request.post(api.createMessage, reqData, {
-      headers: { "Content-Type": "application/x-www-form-urlencoded" }
-    });
+    return this.request.post(api.createMessage, reqData);
   }
 
   unreadMessageCout(data: UnreadMessagePrams): Observable<any> {
@@ -187,13 +187,47 @@ export class ChatService {
       .pipe(
         map(response => {
           if (response.success && response.data) {
-            return this._normalisTeamResponse(response.data);
+            return this._normaliseTeamResponse(response.data);
           }
         })
       );
   }
 
-  private _normalisTeamResponse(data) {
+  getMessageFromEvent(data) {
+    let presenceChannelId = this.pusherService.getMyPresenceChannelId();
+    let chatColors;
+    // don't show the message if it is from the current user,
+    // or it is not to this user and not a team message
+    if ((presenceChannelId === data.event.from) ||
+        (presenceChannelId !== data.event.to && data.event.to !== 'team')
+      ) {
+      return null;
+    }
+    // show the message if it is team message, and participants_only match
+    // or it is individual message and sender match
+    if (!(
+          (data.isTeam && data.event.to == 'team' &&
+            data.participants_only == data.event.participants_only) ||
+          (data.event.sender_name === data.chatName &&
+            data.event.to !== 'team')
+      )) {
+      return null;
+    }
+    let message = {
+      id: data.event.id,
+      is_sender: data.event.is_sender,
+      message: data.event.message,
+      sender_name: data.event.sender_name,
+      sent_time: data.event.sent_time,
+      chat_color : ''
+    };
+    if (!message.is_sender) {
+      message.chat_color = this._getAvataColor(message.sender_name, data.event.team_id);
+    }
+    return message;
+  }
+
+  private _normaliseTeamResponse(data) {
     if (!this.utils.has(data, 'Team')) {
       return this.request.apiResponseFormatError('Team format error');
     }
@@ -215,12 +249,9 @@ export class ChatService {
   }
 
   private _getRandomColor() {
-    var randomNumber = this._getRamdomNumber();
+    // currently we have 19 colors
+    var randomNumber = Math.floor(Math.random() * 19) + 1;
     return "color-" + randomNumber;
-  }
-
-  private _getRamdomNumber() {
-    return Math.floor(Math.random() * 19) + 1;
   }
 
   /**
@@ -229,60 +260,39 @@ export class ChatService {
    *  - set chat name
    * @param {Array} response
    */
-  private _normaliseChatListResponse(data) {
-    if (!Array.isArray(data) ||
-        !this.utils.has(data[0], 'team_id') ||
-        !this.utils.has(data[0], 'is_team') ||
-        !this.utils.has(data[0], 'participants_only') ||
-        !this.utils.has(data[0], 'name') ||
-        !this.utils.has(data[0], 'team_name')) {
+  private _normaliseeChatListResponse(data) {
+    if (!Array.isArray(data)) {
       return this.request.apiResponseFormatError('Chat format error');
     }
-    if (data.length > 0) {
-      return this._setChatAvatarColorAndName(data);
+    if (data.length == 0) {
+      return [];
     }
-  }
-
-  /**
-   * this method check old avatar colors and set the releted one.
-   * if there no old avatar colors it will create new color and add that to service variable.
-   * @param {Array} response
-   */
-  private _setChatAvatarColorAndName(data): Array<ChatListObject> {
-    let chatColors = this.storage.get("chatAvatarColors");
-    let colors: Array<ChatColor> = new Array;
-    data.forEach((chat) => {
-      if (chatColors && chatColors.length > 0) {
-        let colorObject = chatColors.find(function(color) {
-          return color.team_member_id === chat.team_member_id;
-        });
-        if (colorObject) {
-          chat.chat_color = colorObject.chat_color;
-        } else {
-          chat.chat_color = this._getRandomColor();
-        }
-      } else {
-        chat.chat_color = this._getRandomColor();
+    let chats = [];
+    data.forEach(chat => {
+      if(!this.utils.has(chat, 'team_id') ||
+          !this.utils.has(chat, 'is_team') ||
+          !this.utils.has(chat, 'participants_only') ||
+          !this.utils.has(chat, 'name') ||
+          !this.utils.has(chat, 'team_name')
+        ){
+        return this.request.apiResponseFormatError('Chat object format error');
       }
-      colors.push({
-        team_member_id: chat.team_member_id,
-        team_id: chat.team_id,
-        name: chat.name,
-        chat_color: chat.chat_color
-      });
-      chat = this._getChatName(chat);
+      chat['chat_color'] = this._getAvataColor(chat.name, chat.team_id)
+      chat.name = this._getChatName(chat);
+      chats.push(chat);
     });
-    this.storage.set("chatAvatarColors", colors);
-    return data;
+    return chats;
   }
 
   private _getChatName(chat) {
-    if (chat.is_team && chat.participants_only) {
-      chat.name = chat.team_name;
-    } else if (chat.is_team && !chat.participants_only) {
-      chat.name = chat.team_name + " + Mentor";
+    if (!chat.is_team) {
+      return chat.name;
     }
-    return chat;
+    if (chat.participants_only) {
+      return chat.team_name;
+    } else {
+      return chat.team_name + " + Mentor";
+    }
   }
 
   /**
@@ -291,15 +301,15 @@ export class ChatService {
    * @param isTeam
    * @param chatColor
    */
-  private _normaliseMessageListResponse(data, isTeam, chatColor) {
-    let colors:Array<ChatColor> = new Array;
+  private _normaliseeMessageListResponse(data, isTeam, chatColor) {
     if (!Array.isArray(data)) {
       return this.request.apiResponseFormatError('Message array format error');
     }
     if (data.length == 0) {
       return [];
     }
-    data.forEach((message) => {
+    let messageList = [];
+    data.forEach(message => {
       if (!this.utils.has(message, 'id') ||
           !this.utils.has(message, 'sender_name') ||
           !this.utils.has(message, 'receiver_name') ||
@@ -308,42 +318,51 @@ export class ChatService {
         return this.request.apiResponseFormatError('Message format error');
       }
       if (!message.is_sender) {
-        if (isTeam) {
-          message.chat_color = this._getValidChatColors(message.sender_name);
-        } else if (chatColor) {
-          message.chat_color = chatColor;
-        } else {
-          message.chat_color = this._getRandomColor();
-        }
-        colors.push({
-          team_member_id: message.team_member_id,
-          team_id: message.team_id,
-          name: message.name,
-          chat_color: message.chat_color
-        });
+        message.chat_color = this._getAvataColor(message.sender_name);
       }
+      messageList.push(message);
     });
-    if (colors.length > 0) {
-      this.storage.set("chatAvatarColors", colors);
-    }
-    return data;
+    return messageList;
   }
 
-  private _getValidChatColors(senderName) {
+  /**
+   * Get the avatar color of a person
+   * @param {string} name   [Name of this person]
+   * @param {number} teamId [This person's team id]
+   */
+  private _getAvataColor(name, teamId?) {
+    if (!teamId) {
+      teamId = this.storage.getUser().teamId;
+    }
+    // get colors from local storage
     let chatColors = this.storage.get("chatAvatarColors");
-    let color:string = '';
+    if (!chatColors) {
+      chatColors = [];
+    }
     if (chatColors) {
+      // find the color for this person
       let chatcolor = chatColors.find(function(chat) {
-        return chat.name === senderName;
+        // the reason of storing & checking name instead of id is that the API
+        // 1. returns the actually id in /message/chat/list.json,
+        // 2. returns UUID in send-event from Pusher
+        // 3. doesn't return id in /message/chat/list_message.json
+        // @TODO we need to change API so that it returns UUID all the time later
+        return (chat.name === name && chat.teamId === teamId);
       });
       if (chatcolor) {
-        color = chatcolor.chat_color;
-      } else {
-        color = this._getRandomColor();
+        //just return the color if found
+        return chatcolor.color;
       }
-    } else {
-      color = this._getRandomColor();
     }
+    // generate a random color if not found
+    let color = this._getRandomColor();
+    chatColors.push({
+      teamId: teamId,
+      name: name,
+      color: color
+    });
+    // save the new color to local storage
+    this.storage.set("chatAvatarColors", chatColors);
     return color;
   }
 }

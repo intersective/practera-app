@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { RouterEnter } from '@services/router-enter.service';
 import { UtilsService } from '../services/utils.service';
 import { BrowserStorageService } from '@services/storage.service';
+import { PusherService } from "@shared/pusher/pusher.service";
 
 @Component({
   selector: 'app-reviews',
@@ -22,8 +23,9 @@ export class ReviewsComponent extends RouterEnter {
     public router: Router,
     public utils: UtilsService,
     public storage: BrowserStorageService,
+    public pusherService: PusherService
   ) {
-    super(router, utils, storage);
+    super(router, utils, storage, pusherService);
   }
 
   onEnter() {

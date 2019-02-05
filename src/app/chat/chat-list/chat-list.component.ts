@@ -3,6 +3,7 @@ import { Router, NavigationExtras } from "@angular/router";
 import { BrowserStorageService } from "@services/storage.service";
 import { RouterEnter } from "@services/router-enter.service";
 import { UtilsService } from "@services/utils.service";
+import { PusherService } from "@shared/pusher/pusher.service";
 
 import { ChatService, ChatListObject } from "../chat.service";
 
@@ -12,7 +13,6 @@ import { ChatService, ChatListObject } from "../chat.service";
   styleUrls: ["chat-list.component.scss"]
 })
 export class ChatListComponent extends RouterEnter {
-  // @TODO need to create method to convert chat time to local time.
   routeUrl = '/app/chat';
   chatList: Array<ChatListObject>;
   haveMoreTeam: boolean;
@@ -22,9 +22,19 @@ export class ChatListComponent extends RouterEnter {
     private chatService: ChatService,
     public router: Router,
     public storage: BrowserStorageService,
-    public utils: UtilsService
+    public utils: UtilsService,
+    public pusherService: PusherService
   ) {
-    super(router, utils, storage);
+    super(router, utils, storage, pusherService);
+    let role = this.storage.getUser().role;
+    this.utils.getEvent('team-message').subscribe(event => {
+      this._loadChatData();
+    });
+    if (role !== 'mentor') {
+      this.utils.getEvent('team-no-mentor-message').subscribe(event => {
+        this._loadChatData();
+      });
+    }
   }
 
   onEnter() {
