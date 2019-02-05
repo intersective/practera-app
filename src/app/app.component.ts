@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Platform } from '@ionic/angular';
 import { UtilsService } from '@services/utils.service';
+import { SharedService } from '@services/shared.service';
 // import { SplashScreen } from '@ionic-native/splash-screen/ngx';
 // import { StatusBar } from '@ionic-native/status-bar/ngx';
 
@@ -14,6 +15,7 @@ export class AppComponent implements OnInit {
     private platform: Platform,
     private router: Router,
     public utils: UtilsService,
+    private sharedService: SharedService
     // private splashScreen: SplashScreen,
     // private statusBar: StatusBar
   ) {
@@ -21,6 +23,7 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.sharedService.onPageLoad();
     let searchParams = null;
     let queryString = '';
     if (window.location.search) {
@@ -59,4 +62,5 @@ export class AppComponent implements OnInit {
       // this.splashScreen.hide();
     });
   }
+
 }

@@ -5,7 +5,6 @@ import { BrowserStorageService } from "@services/storage.service";
 import { RouterEnter } from "@services/router-enter.service";
 import { SwitcherService } from "../switcher/switcher.service";
 import { ReviewsService } from "../reviews/reviews.service";
-import { PusherService } from "../shared/pusher/pusher.service";
 import { Router } from "@angular/router";
 
 @Component({
@@ -28,9 +27,8 @@ export class TabsComponent extends RouterEnter {
     public utils: UtilsService,
     private switcherService: SwitcherService,
     private reviewsService: ReviewsService,
-    public pusherService: PusherService
   ) {
-    super(router, utils, storage, pusherService);
+    super(router);
     let role = this.storage.getUser().role;
     this.utils.getEvent("notification").subscribe(event => {
       this.noOfTodoItems++;
