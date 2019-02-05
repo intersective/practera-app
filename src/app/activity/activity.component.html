@@ -18,8 +18,8 @@
   </ion-label>
 
   <ion-card class="practera-card">
-    <ion-list *ngFor="let task of activity.tasks">
-      <ion-item (click)="goto(task.type, task.id)">
+    <ion-list *ngFor="let task of activity.tasks; let i = index">
+      <ion-item (click)="goto(task.type, task.id)" [lines]="i == activity.tasks.length - 1 ? 'none' : ''">
         <ng-container [ngSwitch]="task.type">
 
           <ng-container *ngSwitchCase="'Locked'">
