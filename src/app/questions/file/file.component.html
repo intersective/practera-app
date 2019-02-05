@@ -48,5 +48,5 @@
       [fileType]="question.fileType"
     ></app-file-display>
   </ng-container>
-  <ion-textarea *ngIf="question.canComment && submission.answer" class="background-white" #comment margin-top rows="4" (blur)="onChange(comment.value, 'comment')" placeholder="Please put your feedback here"></ion-textarea>
+  <ion-textarea *ngIf="question.canComment && submission.answer" class="background-white" #commentEle margin-top rows="4" [(ngModel)]="comment" (ngModelChange)="onChange(comment, 'comment')" placeholder="Please put your feedback here"></ion-textarea>
 </ng-container>
