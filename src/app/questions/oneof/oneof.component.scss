@@ -1,0 +1,9 @@
+ion-list {
+    ion-item {
+        &.item-label {
+            ion-label {
+                white-space: normal !important;
+            }
+        }
+    }
+}
