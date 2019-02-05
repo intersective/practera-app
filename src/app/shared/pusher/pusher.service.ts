@@ -90,9 +90,13 @@ export class PusherService {
   unsubscribeChannels() {
     this.utils.each(this.channelNames, (channel, key) => {
       if (channel) {
-        this.pusher.unsubscribe(channel);
         this.channelNames[key] = null;
-        this.channels[key] = null;
+        if (this.channels[key]) {
+          // unbind all events from this channel
+          this.channels[key].unbind();
+          this.channels[key] = null;
+        }
+        this.pusher.unsubscribe(channel);
       }
     });
   }
