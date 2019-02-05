@@ -6,7 +6,7 @@ import { NG_VALUE_ACCESSOR, ControlValueAccessor, FormControl } from '@angular/f
   templateUrl: 'text.component.html',
   styleUrls: ['text.component.scss'],
   providers: [
-    { 
+    {
       provide: NG_VALUE_ACCESSOR,
       multi: true,
       useExisting: forwardRef(() => TextComponent),
@@ -25,12 +25,14 @@ export class TextComponent implements ControlValueAccessor {
   // FormControl that is passed in from parent component
   @Input() control: FormControl;
   // answer field for submitter & reviewer
-  @ViewChild('answer') answerRef: ElementRef;
+  @ViewChild('answerEle') answerRef: ElementRef;
   // comment field for reviewer
-  @ViewChild('comment') commentRef: ElementRef;
+  @ViewChild('commentEle') commentRef: ElementRef;
 
   // the value of answer &| comment
   innerValue: any;
+  answer: string;
+  comment: string;
   // validation errors array
   errors: Array<any> = [];
 
@@ -44,7 +46,7 @@ export class TextComponent implements ControlValueAccessor {
 
   // event fired when input/textarea value is changed. propagate the change up to the form control using the custom value accessor interface
   // if 'type' is set, it means it comes from reviewer doing review, otherwise it comes from submitter doing assessment
-  onChange(value, type){
+  onChange(type){
     //set changed value (answer or comment)
     if (type) {
       // initialise innerValue if not set
@@ -54,15 +56,19 @@ export class TextComponent implements ControlValueAccessor {
           comment: ''
         };
       }
-      this.innerValue[type] = value;
+      this.innerValue[type] = this[type];
     } else {
-      this.innerValue = value;
+      this.innerValue = this.answer;
     }
 
     // propagate value into form control using control value accessor interface
     this.propagateChange(this.innerValue);
 
-    //reset errors 
+    // 05/02/2019
+    // Don't check "is required" error for now, it has some error.
+    // Since we are checking required answer when submit, it's OK to just return here.
+    return ;
+    //reset errors
     this.errors = [];
     //setting, resetting error messages into an array (to loop) and adding the validation messages to show below the answer area
     for (var key in this.control.errors) {
