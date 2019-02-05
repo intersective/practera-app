@@ -3,7 +3,6 @@ import { Router, NavigationExtras } from "@angular/router";
 import { BrowserStorageService } from "@services/storage.service";
 import { RouterEnter } from "@services/router-enter.service";
 import { UtilsService } from "@services/utils.service";
-import { PusherService } from "@shared/pusher/pusher.service";
 
 import { ChatService, ChatListObject } from "../chat.service";
 
@@ -23,9 +22,8 @@ export class ChatListComponent extends RouterEnter {
     public router: Router,
     public storage: BrowserStorageService,
     public utils: UtilsService,
-    public pusherService: PusherService
   ) {
-    super(router, utils, storage, pusherService);
+    super(router);
     let role = this.storage.getUser().role;
     this.utils.getEvent('team-message').subscribe(event => {
       this._loadChatData();
