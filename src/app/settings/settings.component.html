@@ -1,5 +1,5 @@
 <ion-header>
-  <ion-toolbar>
+  <ion-toolbar color="light">
     <ion-title>Settings</ion-title>
   </ion-toolbar>
 </ion-header>
@@ -19,7 +19,7 @@
           <ion-select-option *ngFor="let countryCode of countryCodes" [value]="countryCode.code">{{countryCode.name}}</ion-select-option>
         </ion-select>
     </ion-item>
-    <ion-item>  
+    <ion-item>
       <ion-grid class="contact-grid">
         <ion-row>
           <ion-label>
@@ -30,13 +30,13 @@
             </ion-button>
           </ion-label>
         </ion-row>
-        <ion-row>                     
+        <ion-row>
           <input [textMask]="{mask: mask, showMask: true, guide: true}" [(ngModel)]="profile.contactNumber" type="text"/>
-        </ion-row>    
+        </ion-row>
       </ion-grid>
-    </ion-item>  
+    </ion-item>
 
-    <ion-item (click)="switchProgram()">
+    <ion-item (click)="switchProgram()" lines="none">
       <ion-icon padding name="radio-button-on"></ion-icon>
       Switch to another program
     </ion-item>
@@ -48,14 +48,14 @@
       <ion-icon padding name="mail"></ion-icon>
       Email Help
     </ion-item>
-    <ion-item (click)="openLink()">
+    <ion-item (click)="openLink()" lines="none">
       <ion-icon padding name="clipboard"></ion-icon>
       Terms of Use
     </ion-item>
   </ion-card>
 
   <ion-card class="practera-card">
-    <ion-item (click)="logout()">
+    <ion-item (click)="logout()" lines="none">
       <ion-icon padding name="log-out"></ion-icon>
       Logout
     </ion-item>

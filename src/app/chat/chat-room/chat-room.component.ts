@@ -4,6 +4,7 @@ import { IonContent } from "@ionic/angular";
 import { BrowserStorageService } from "@services/storage.service";
 import { RouterEnter } from "@services/router-enter.service";
 import { UtilsService } from "@services/utils.service";
+import { PusherService } from "@shared/pusher/pusher.service";
 
 import { ChatService, ChatRoomObject, Message } from "../chat.service";
 
@@ -13,7 +14,6 @@ import { ChatService, ChatRoomObject, Message } from "../chat.service";
   styleUrls: ["./chat-room.component.scss"]
 })
 export class ChatRoomComponent extends RouterEnter implements AfterViewInit {
-  // @TODO need to create method to convert chat time to local time.
   @ViewChild(IonContent) content: IonContent;
 
   routeUrl = '/chat-room/';
@@ -24,21 +24,56 @@ export class ChatRoomComponent extends RouterEnter implements AfterViewInit {
   messagePagesize: number = 20;
   loadingChatMessages:boolean = true;
   loadingMesageSend:boolean = false;
+  isTyping:boolean = false;
+  typingMessage:string;
 
   constructor(
     private chatService: ChatService,
     public router: Router,
     public storage: BrowserStorageService,
     private route: ActivatedRoute,
-    public utils: UtilsService
+    public utils: UtilsService,
+    public pusherService: PusherService
   ) {
-    super(router, utils, storage);
+    super(router, utils, storage, pusherService);
+    let role = this.storage.getUser().role;
+    this.utils.getEvent('team-message').subscribe(event => {
+      let param = {
+        event: event,
+        isTeam: this.selectedChat.is_team,
+        chatName: this.selectedChat.name,
+        participants_only: this.selectedChat.participants_only
+      }
+      let receivedMessage = this.chatService.getMessageFromEvent(param);
+      if (!this.utils.isEmpty(receivedMessage)) {
+        this.messageList.push(receivedMessage);
+        this._scrollToBottom();
+      }
+    });
+    this.utils.getEvent('team-typing').subscribe(event => {
+      this._showTyping(event);
+    });
+    if (role !== 'mentor') {
+      this.utils.getEvent('team-no-mentor-message').subscribe(event => {
+        let param = {
+          event: event,
+          isTeam: this.selectedChat.is_team,
+          chatName: this.selectedChat.name,
+          participants_only: this.selectedChat.participants_only
+        }
+        let receivedMessage =  this.chatService.getMessageFromEvent(param);
+        if (!this.utils.isEmpty(receivedMessage)) {
+          this.messageList.push(receivedMessage);
+        }
+      });
+      this.utils.getEvent('team-no-mentor-typing').subscribe(event => {
+        this._showTyping(event);
+      });
+    }
   }
 
   ngAfterViewInit() {
-    setTimeout(() => {
-      this.content.scrollToBottom();
-    }, 500);
+    this._scrollToBottom();
   }
 
   onEnter() {
@@ -101,6 +136,7 @@ export class ChatRoomComponent extends RouterEnter implements AfterViewInit {
               this.messageList = messages.concat(this.messageList);
             } else {
               this.messageList = messages;
+              this._scrollToBottom();
             }
             this.markAsSeen(messages);
           } else {
@@ -193,9 +229,7 @@ export class ChatRoomComponent extends RouterEnter implements AfterViewInit {
       response => {
         this.messageList.push(response.data);
         this.loadingMesageSend = false;
-        setTimeout(() => {
-          this.content.scrollToBottom();
-        }, 500);
+        this._scrollToBottom();
       },
       error => {
         this.loadingMesageSend = false;
@@ -216,11 +250,7 @@ export class ChatRoomComponent extends RouterEnter implements AfterViewInit {
         id: JSON.stringify(messageIdList),
         team_id: this.selectedChat.team_id
       })
-      .subscribe(
-        response => {
-          console.log("marked");
-        }
-      );
+      .subscribe();
   }
 
   getMessageDate(date) {
@@ -304,7 +334,7 @@ export class ChatRoomComponent extends RouterEnter implements AfterViewInit {
           var dateDiff =
             currentMessageTime.getDate() - oldMessageTime.getDate();
           if (dateDiff === 0) {
-            return this.checkmessageOldThan5Min(
+            return this._checkmessageOldThan5Min(
               currentMessageTime,
               oldMessageTime
             );
@@ -323,7 +353,7 @@ export class ChatRoomComponent extends RouterEnter implements AfterViewInit {
    * @param {object} currentMessageTime
    * @param {object} oldMessageTime
    */
-  private checkmessageOldThan5Min(currentMessageTime, oldMessageTime) {
+  private _checkmessageOldThan5Min(currentMessageTime, oldMessageTime) {
     var timeDiff =
       (currentMessageTime.getTime() - oldMessageTime.getTime()) / (60 * 1000);
     if (timeDiff > 5) {
@@ -332,4 +362,52 @@ export class ChatRoomComponent extends RouterEnter implements AfterViewInit {
       return false;
     }
   }
+
+  /**
+   * Trigger typing event when user is typing
+   */
+  typing() {
+    this.pusherService.triggerTypingEvent({
+      from: this.pusherService.getMyPresenceChannelId(),
+      to: this.selectedChat.name,
+      is_team: this.selectedChat.is_team,
+      team_id: this.selectedChat.team_id,
+      participants_only: this.selectedChat.participants_only,
+      sender_name: this.storage.getUser().name
+    }, this.selectedChat.participants_only);
+  }
+
+  private _showTyping(event) {
+    let presenceChannelId = this.pusherService.getMyPresenceChannelId();
+    // do not display typing message if it is yourself typing, or it is not for your team
+    if (presenceChannelId === event.from || this.selectedChat.team_id !== event.team_id) {
+      return ;
+    }
+    // show the typing message if it is team message and the current page is the team message
+    // or it is individual message and it is for the current user
+    if ((
+          event.is_team && this.selectedChat.is_team &&
+          this.selectedChat.participants_only === event.participants_only
+        ) ||
+        (
+          !event.is_team && !this.selectedChat.is_team &&
+          event.to === this.storage.getUser().name
+        )
+      ){
+      this.typingMessage = event.sender_name+ ' is typing';
+      this._scrollToBottom();
+      this.isTyping = true;
+      setTimeout(() => {
+        this.typingMessage = '';
+        this.isTyping = false;
+      },3000);
+    }
+  }
+
+  private _scrollToBottom() {
+    setTimeout(() => {
+      this.content.scrollToBottom();
+    }, 500);
+  }
+
 }

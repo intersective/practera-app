@@ -32,6 +32,12 @@ export class PusherService {
     teamNoMentor: null,
     notification: null
   };
+  private channels = {
+    presence: null,
+    team: null,
+    teamNoMentor: null,
+    notification: null
+  };
 
   constructor(
     private http: HttpClient,
@@ -86,6 +92,7 @@ export class PusherService {
       if (channel) {
         this.pusher.unsubscribe(channel);
         this.channelNames[key] = null;
+        this.channels[key] = null;
       }
     });
   }
@@ -99,22 +106,31 @@ export class PusherService {
         return this.request.apiResponseFormatError('Pusher channel format error');
       }
       // subscribe channels and bind events
-      if (channel.channel.includes('private-' + environment.env + '-team-')) {
+      if (channel.channel.includes('private-' + environment.env + '-team-') &&
+          !channel.channel.includes('nomentor')) {
         this.channelNames.team = channel.channel;
-        this.pusher.subscribe(channel.channel).bind('send-event', data => {
+        this.channels.team = this.pusher.subscribe(channel.channel);
+        this.channels.team.bind('send-event', data => {
           this.utils.broadcastEvent('team-message', data);
         });
-        this.pusher.subscribe(channel.channel).bind('typing-event', data => {
+        this.channels.team.bind('typing-event', data => {
+          this.utils.broadcastEvent('team-typing', data);
+        });
+        this.channels.team.bind('client-typing-event', data => {
           this.utils.broadcastEvent('team-typing', data);
         });
         return;
       }
       if (channel.channel.includes('private-' + environment.env + '-team-nomentor-')) {
         this.channelNames.teamNoMentor = channel.channel;
-        this.pusher.subscribe(channel.channel).bind('send-event', data => {
+        this.channels.teamNoMentor = this.pusher.subscribe(channel.channel);
+        this.channels.teamNoMentor.bind('send-event', data => {
           this.utils.broadcastEvent('team-no-mentor-message', data);
         });
-        this.pusher.subscribe(channel.channel).bind('typing-event', data => {
+        this.channels.teamNoMentor.bind('typing-event', data => {
+          this.utils.broadcastEvent('team-no-mentor-typing', data);
+        });
+        this.channels.teamNoMentor.bind('client-typing-event', data => {
           this.utils.broadcastEvent('team-no-mentor-typing', data);
         });
         return;
@@ -128,9 +144,24 @@ export class PusherService {
       }
       if (channel.channel.includes('presence-' + environment.env + '-team-')) {
         this.channelNames.presence = channel.channel;
+        this.channels.presence = this.pusher.subscribe(channel.channel);
         return;
       }
     });
+  }
+
+  getMyPresenceChannelId() {
+    if (!this.utils.isEmpty(this.channels.presence) && this.utils.has(this.channels.presence, 'members')) {
+      return this.channels.presence.members.me.id;
+    }
+  }
+
+  triggerTypingEvent(data, participantsOnly) {
+    if (participantsOnly) {
+      this.channels.teamNoMentor.trigger('client-typing-event', data);
+    } else {
+      this.channels.team.trigger('client-typing-event', data);
+    }
   }
 
 }

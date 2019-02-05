@@ -1,5 +1,5 @@
 <ion-header>
-  <ion-toolbar>
+  <ion-toolbar color="light">
     <ion-title center>Reviews</ion-title>
   </ion-toolbar>
 </ion-header>
@@ -28,11 +28,11 @@
           (click)="gotoReview(review.contextId, review.assessmentId, review.submissionId)"
         >
           <ion-card-content class="review">
-            <h4  class="activity-name">{{review.name}}</h4>
+            <h2>{{review.name}}</h2>
             <ion-icon *ngIf="review.isDone" name="checkmark-circle" class="check-mark"></ion-icon>
-            <h2  padding-top>{{review.submitterName}}</h2>
-            <h2 *ngIf="review.teamName">{{review.teamName}}</h2>
-            <ion-text class="time-stamp">{{review.date}}</ion-text>
+            <h4 padding-top>{{review.submitterName}}</h4>
+            <h4 *ngIf="review.teamName">{{review.teamName}}</h4>
+            <ion-text>{{review.date}}</ion-text>
           </ion-card-content>
         </ion-card>
       </ng-container>
