@@ -7,13 +7,13 @@
 <ion-content padding color="light">
   <ion-card class="practera-card">
     <ion-list *ngFor="let program of programs; let i = index">
-      <ion-item (click)="switch(i)" color="light">
+      <ion-item (click)="switch(i)" color="light" [lines]="i == programs.length - 1 ? 'none' : ''">
         <img src="/assets/thumbs/practera_icon.png" height="25" width="25" class="img-inline"> {{ program.program.name }}
       </ion-item>
     </ion-list>
   </ion-card>
   <ion-card class="practera-card">
-    <ion-item (click)="logout()">
+    <ion-item (click)="logout()" lines="none">
       <ion-icon name="log-out" margin-end></ion-icon> Logout
     </ion-item>
   </ion-card>
