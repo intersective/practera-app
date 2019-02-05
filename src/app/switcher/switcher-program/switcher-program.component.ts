@@ -1,12 +1,9 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '../../auth/auth.service';
 import { Injectable, Inject } from '@angular/core';
 import { SwitcherService, ProgramObj } from '../switcher.service';
-import { BrowserStorageService } from '@services/storage.service';
-import { UtilsService } from '@services/utils.service';
 import { RouterEnter } from '@services/router-enter.service';
-import { PusherService } from "@shared/pusher/pusher.service";
 
 @Injectable({
   providedIn: 'root'
@@ -18,22 +15,16 @@ import { PusherService } from "@shared/pusher/pusher.service";
   styleUrls: ['switcher-program.component.scss']
 })
 
-export class SwitcherProgramComponent extends RouterEnter {
-  routeUrl: string = '/switcher-program';
+export class SwitcherProgramComponent implements OnInit {
   programs: Array<ProgramObj>;
 
   constructor(
     public router: Router,
     private authService: AuthService,
     private switcherService: SwitcherService,
-    public utils: UtilsService,
-    public storage: BrowserStorageService,
-    public pusherService: PusherService
-  ) {
-    super(router, utils, storage, pusherService);
-  }
+  ) {}
 
-  onEnter() {
+  ngOnInit() {
     this.switcherService.getPrograms()
       .subscribe(programs => {
         this.programs = programs;
