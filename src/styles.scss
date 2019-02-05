@@ -123,4 +123,8 @@ body {
   display: inline-block;
   vertical-align: middle;
 }
+// change white-space to normal - use in choices.
+.white-space-normal {
+  white-space: normal !important;
+}
 

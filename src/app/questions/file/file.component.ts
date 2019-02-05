@@ -33,13 +33,14 @@ export class FileComponent implements ControlValueAccessor, OnInit {
   // answer field for submitter & reviewer
   @ViewChild('answer') answerRef: ElementRef;
   // comment field for reviewer
-  @ViewChild('comment') commentRef: ElementRef;
+  @ViewChild('commentEle') commentRef: ElementRef;
 
   uploadedFile;
   fileTypes = '';
 
   // the value of answer
   innerValue: any;
+  comment: string;
   // validation errors array
   errors: Array<any> = [];
 
