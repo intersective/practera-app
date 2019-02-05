@@ -47,6 +47,7 @@ export class ChatRoomComponent extends RouterEnter {
       let receivedMessage = this.chatService.getMessageFromEvent(param);
       if (!this.utils.isEmpty(receivedMessage)) {
         this.messageList.push(receivedMessage);
+        this._markAsSeen();
         this._scrollToBottom();
       }
     });
@@ -63,6 +64,7 @@ export class ChatRoomComponent extends RouterEnter {
         }
         let receivedMessage =  this.chatService.getMessageFromEvent(param);
         if (!this.utils.isEmpty(receivedMessage)) {
+          this._markAsSeen();
           this.messageList.push(receivedMessage);
         }
       });
@@ -135,7 +137,7 @@ export class ChatRoomComponent extends RouterEnter {
               this.messageList = messages;
               this._scrollToBottom();
             }
-            this.markAsSeen(messages);
+            this._markAsSeen();
           } else {
             this.messagePageNumber -= 1;
           }
@@ -235,12 +237,12 @@ export class ChatRoomComponent extends RouterEnter {
   }
 
   // call chat api to mark message as seen messages
-  private markAsSeen(messageList) {
+  private _markAsSeen() {
     let messageIdList = [];
     let index = 0;
     // createing id array to mark as read.
-    for (index = 0; index < messageList.length; index++) {
-      messageIdList.push(messageList[index].id);
+    for (index = 0; index < this.messageList.length; index++) {
+      messageIdList.push(this.messageList[index].id);
     }
     this.chatService
       .markMessagesAsSeen({
