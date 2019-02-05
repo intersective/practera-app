@@ -25,12 +25,13 @@ export class TeamMemberSelectorComponent implements ControlValueAccessor {
   // FormControl that is passed in from parent component
   @Input() control: FormControl;
   // answer field for submitter & reviewer
-  @ViewChild('answer') answerRef: ElementRef;
+  @ViewChild('answerEle') answerRef: ElementRef;
   // comment field for reviewer
-  @ViewChild('comment') commentRef: ElementRef;
+  @ViewChild('commentEle') commentRef: ElementRef;
 
   // the value of answer
   innerValue: any;
+  comment: string;
   // validation errors array
   errors: Array<any> = [];
 
