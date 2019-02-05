@@ -222,6 +222,12 @@ export class HomeService {
     // initialise current activity id
     this.currentActivityId = 0;
     data.Project.Milestone.forEach(this._loopThroughMilestones, this);
+    // regard last activity as the current activity if all activities are finished
+    if (this.currentActivityId == 0) {
+      let milestones = data.Project.Milestone;
+      let activities = milestones[milestones.length - 1].Activity;
+      this.currentActivityId = activities[activities.length - 1].id;
+    }
   }
 
   private _loopThroughMilestones(milestone) {
@@ -245,7 +251,7 @@ export class HomeService {
       this.request.apiResponseFormatError('Progress.Milestone.Activity format error');
       return ;
     }
-    if (activity.progress < 1 || activity.progress ===1) {
+    if (activity.progress < 1) {
       this.currentActivityId = activity.id
     }
   }
