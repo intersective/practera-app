@@ -13,7 +13,7 @@ import { ChatService, ChatRoomObject, Message } from "../chat.service";
   templateUrl: "./chat-room.component.html",
   styleUrls: ["./chat-room.component.scss"]
 })
-export class ChatRoomComponent extends RouterEnter implements AfterViewInit {
+export class ChatRoomComponent extends RouterEnter {
   @ViewChild(IonContent) content: IonContent;
 
   routeUrl = '/chat-room/';
@@ -35,7 +35,7 @@ export class ChatRoomComponent extends RouterEnter implements AfterViewInit {
     public utils: UtilsService,
     public pusherService: PusherService
   ) {
-    super(router, utils, storage, pusherService);
+    super(router);
     let role = this.storage.getUser().role;
     this.utils.getEvent('team-message').subscribe(event => {
       let param = {
@@ -72,14 +72,11 @@ export class ChatRoomComponent extends RouterEnter implements AfterViewInit {
     }
   }
 
-  ngAfterViewInit() {
-    this._scrollToBottom();
-  }
-
   onEnter() {
     this._initialise();
     this._validateRouteParams();
     this._loadMessages();
+    this._scrollToBottom();
   }
 
   private _initialise() {
