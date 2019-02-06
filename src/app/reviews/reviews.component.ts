@@ -39,14 +39,19 @@ export class ReviewsComponent extends RouterEnter {
   gotoReview(contextId, assessmentId, submissionId) {
     this.router.navigate(['assessment', 'review', contextId, assessmentId, submissionId, {from: 'reviews'}]);
   }
-  noReviewsToDone() {
-    let findToDoReviews = [];
-    let findToDoReview = this.reviews.find(toDo => {
-       return toDo.isDone === false
 
+  noReviewsToDo() {
+    let reviewTodo = this.reviews.find(review => {
+       return review.isDone === false
     });
-    findToDoReviews.push(findToDoReview);
-    return findToDoReview
+    return !reviewTodo && !this.showDone;
+  }
+
+  noReviewsDone() {
+    let reviewDone = this.reviews.find(review => {
+       return review.isDone === true
+    });
+    return !reviewDone && this.showDone;
   }
 
 }
