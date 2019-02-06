@@ -56,7 +56,6 @@ export class ProjectComponent extends RouterEnter {
     this.loadingActivity = true;
     this.loadingMilestone = true;
     this.loadingProgress = true;
-
   }
 
   onEnter() {
@@ -90,7 +89,6 @@ export class ProjectComponent extends RouterEnter {
       if (i == this.milestonePositions.length - 1) {
         return event.detail.currentY >= element;
       }
-
       return event.detail.currentY >= element && event.detail.currentY < this.milestonePositions[i + 1];
     });
     // update active milestone status
@@ -101,7 +99,7 @@ export class ProjectComponent extends RouterEnter {
   // scroll to a milestone. i is the index of milestone list
   scrollTo(i) {
     this.contentRef.nativeElement.scrollToPoint(0, this.milestonePositions[i], 500);
-}
+  }
 
   private _getMilestonePositions() {
     this.milestonePositions = this.milestoneRefs.map(milestoneRef => {
