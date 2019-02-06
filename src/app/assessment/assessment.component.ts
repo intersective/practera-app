@@ -99,8 +99,23 @@ export class AssessmentComponent extends RouterEnter {
       .subscribe(assessment => {
         this.assessment = assessment;
         this.populateQuestionsForm();
-        if (this.assessment.isForTeam && !this.storage.getUser().teamId) {
-          return this.notificationService.popUp('shortMessage', {message: 'To do this assessment, you have to be in a team.'}, ['app', 'activity', this.activityId ]);
+        if (this.doAssessment && this.assessment.isForTeam && !this.storage.getUser().teamId) {
+          return this.notificationService.alert({
+            message: 'To do this assessment, you have to be in a team.',
+            buttons: [
+              {
+                text: 'OK',
+                role: 'cancel',
+                handler: () => {
+                  if (this.activityId) {
+                    this.router.navigate(['app', 'activity', this.activityId ]);
+                  } else {
+                    this.router.navigate(['app', 'home']);
+                  }
+                }
+              }
+            ]
+          });
         }
         this.loadingAssessment = false;
         this._getSubmission();
