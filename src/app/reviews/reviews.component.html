@@ -14,7 +14,7 @@
   </div>
   <ng-template #reviewsTmpl>
 
-    <div *ngIf="!reviews.length; else reviewsCard" class="no-review-show" padding text-center>
+    <div *ngIf="!noReviewsToDone() && !showDone; else reviewsCard" class="no-review-show" padding text-center>
       <div class="empty-status background-white" >
         <h2 text-center>You have no new submissions to review</h2>
       </div>
