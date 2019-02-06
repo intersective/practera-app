@@ -51,6 +51,8 @@ export interface Question {
   choices?: Array<Choice>;
   teamMembers?: Array<TeamMember>;
   audience: Array<string>;
+  submitterOnly?: boolean;
+  reviewerOnly?: boolean;
 }
 
 export interface Choice {
@@ -147,7 +149,19 @@ export class AssessmentService {
         }
         // save question to "questions" object, for later use in normaliseSubmission()
         this.questions[question.AssessmentQuestion.id] = question.AssessmentQuestion;
-
+        let audience = question.AssessmentQuestion.audience;
+        let questionObject: Question = {
+          id: question.AssessmentQuestion.id,
+          name: question.AssessmentQuestion.name,
+          type: question.AssessmentQuestion.question_type,
+          description: question.AssessmentQuestion.description,
+          isRequired: question.AssessmentQuestion.is_required,
+          canComment: question.AssessmentQuestion.has_comment,
+          canAnswer: question.AssessmentQuestion.can_answer,
+          audience: audience,
+          submitterOnly: audience.length === 1 && audience.includes('submitter'),
+          reviewerOnly: audience.length === 1 && audience.includes('reviewer')
+        };
         switch (question.AssessmentQuestion.question_type) {
           case 'oneof':
           case 'multiple':
@@ -156,7 +170,6 @@ export class AssessmentService {
               ) {
               return this.request.apiResponseFormatError('Assessment.AssessmentQuestionChoice format error');
             }
-
             let choices: Array<Choice> = [];
             let info = '';
             question.AssessmentQuestion.AssessmentQuestionChoice.forEach(questionChoice => {
@@ -180,35 +193,15 @@ export class AssessmentService {
               // Add the title
               info = '<h3>Choice Description:</h3>' + info;
             }
-            questions.push({
-              id: question.AssessmentQuestion.id,
-              name: question.AssessmentQuestion.name,
-              type: question.AssessmentQuestion.question_type,
-              description: question.AssessmentQuestion.description,
-              info: info,
-              isRequired: question.AssessmentQuestion.is_required,
-              canComment: question.AssessmentQuestion.has_comment,
-              canAnswer: question.AssessmentQuestion.can_answer,
-              audience: question.AssessmentQuestion.audience,
-              choices: choices
-            });
+            questionObject['info'] = info;
+            questionObject['choices'] = choices;
             break;
 
           case 'file':
-             if (!this.utils.has(question.AssessmentQuestion, 'file_type.type')) {
+            if (!this.utils.has(question.AssessmentQuestion, 'file_type.type')) {
               return this.request.apiResponseFormatError('Assessment.AssessmentQuestion.file_type format error');
             }
-            questions.push({
-              id: question.AssessmentQuestion.id,
-              name: question.AssessmentQuestion.name,
-              type: question.AssessmentQuestion.question_type,
-              fileType: question.AssessmentQuestion.file_type.type,
-              description: question.AssessmentQuestion.description,
-              isRequired: question.AssessmentQuestion.is_required,
-              canComment: question.AssessmentQuestion.has_comment,
-              canAnswer: question.AssessmentQuestion.can_answer,
-              audience: question.AssessmentQuestion.audience,
-            });
+            questionObject['fileType'] = question.AssessmentQuestion.file_type.type;
             break;
 
           case 'team member selector':
@@ -217,7 +210,6 @@ export class AssessmentService {
               ) {
               return this.request.apiResponseFormatError('Assessment.TeamMember format error');
             }
-
             let teamMembers: Array<TeamMember> = [];
             question.AssessmentQuestion.TeamMember.forEach(teamMember => {
               if (
@@ -230,34 +222,10 @@ export class AssessmentService {
                 userName: teamMember.userName
               });
             });
-
-            questions.push({
-              id: question.AssessmentQuestion.id,
-              name: question.AssessmentQuestion.name,
-              type: question.AssessmentQuestion.question_type,
-              description: question.AssessmentQuestion.description,
-              isRequired: question.AssessmentQuestion.is_required,
-              canComment: question.AssessmentQuestion.has_comment,
-              canAnswer: question.AssessmentQuestion.can_answer,
-              audience: question.AssessmentQuestion.audience,
-              teamMembers: teamMembers
-            });
-            break;
-
-          default:
-            questions.push({
-              id: question.AssessmentQuestion.id,
-              name: question.AssessmentQuestion.name,
-              type: question.AssessmentQuestion.question_type,
-              description: question.AssessmentQuestion.description,
-              isRequired: question.AssessmentQuestion.is_required,
-              canComment: question.AssessmentQuestion.has_comment,
-              canAnswer: question.AssessmentQuestion.can_answer,
-              audience: question.AssessmentQuestion.audience,
-            });
+            questionObject['teamMembers'] = teamMembers;
             break;
         }
-
+        questions.push(questionObject);
       })
       if (!this.utils.isEmpty(questions)) {
         assessment.groups.push({
