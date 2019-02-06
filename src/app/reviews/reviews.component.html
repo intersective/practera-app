@@ -14,12 +14,17 @@
   </div>
   <ng-template #reviewsTmpl>
 
-    <div *ngIf="!noReviewsToDone() && !showDone; else reviewsCard" class="no-review-show" padding text-center>
-      <div class="empty-status background-white" >
+    <div *ngIf="noReviewsToDo()" class="no-review-show" padding text-center>
+      <div class="empty-status background-white">
         <h2 text-center>You have no new submissions to review</h2>
       </div>
     </div>
-    <ng-template #reviewsCard>
+    <div *ngIf="noReviewsDone()" class="no-review-show" padding text-center>
+      <div class="empty-status background-white">
+        <h2 text-center>You have not reviewed any submissions</h2>
+      </div>
+    </div>
+    <ng-container *ngIf="!noReviewsToDo() && !noReviewsDone()">
       <ng-container *ngFor="let review of reviews">
         <ion-card
           color="primary"
@@ -36,7 +41,7 @@
           </ion-card-content>
         </ion-card>
       </ng-container>
-    </ng-template>
+    </ng-container>
 
   </ng-template>
 </ion-content>
