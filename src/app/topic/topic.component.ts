@@ -39,9 +39,9 @@ export class TopicComponent extends RouterEnter {
     private filestackService: FilestackService,
     public storage: BrowserStorageService,
     public utils: UtilsService,
-    public sanitizer: DomSanitizer
+    public sanitizer: DomSanitizer,
   ) {
-    super(router, utils, storage);
+    super(router);
   }
 
   private _initialise() {

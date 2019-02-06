@@ -60,7 +60,7 @@ export class AssessmentComponent extends RouterEnter {
     private notificationService: NotificationService,
     public storage: BrowserStorageService,
   ) {
-    super(router, utils, storage);
+    super(router);
   }
 
   private _initialise() {

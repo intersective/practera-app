@@ -1,7 +1,7 @@
 <ng-container *ngIf="submission.answer">
   <ion-list>
     <ion-item *ngFor="let choice of question.choices" color="light">
-      <ion-label>{{ choice.name }}</ion-label>
+      <ion-label class="white-space-normal">{{ choice.name }}</ion-label>
       <ion-checkbox [checked]="submission.answer.includes(choice.id)" disabled mode="md"></ion-checkbox>
     </ion-item>
   </ion-list>
@@ -18,7 +18,7 @@
       <ng-container *ngFor="let choice of question.choices">
         <ng-container *ngIf="review.answer.includes(choice.id)">
           <ion-item color="light">
-            <ion-label>{{ choice.name }}</ion-label>
+            <ion-label class="white-space-normal">{{ choice.name }}</ion-label>
             <ion-checkbox checked disabled mode="md"></ion-checkbox>
           </ion-item>
         </ng-container>
@@ -33,7 +33,7 @@
 <ng-container *ngIf="doAssessment">
   <ion-list>
     <ion-item *ngFor="let choice of question.choices">
-      <ion-label>{{ choice.name }}</ion-label>
+      <ion-label class="white-space-normal">{{ choice.name }}</ion-label>
       <ion-checkbox [value]="choice.id" mode="md" (ionChange)="onChange(choice.id)"></ion-checkbox>
     </ion-item>
   </ion-list>
@@ -48,9 +48,9 @@
       <ion-label>Your Answer is</ion-label>
     </ion-list-header>
     <ion-item *ngFor="let choice of question.choices">
-      <ion-label>{{ choice.name }}</ion-label>
+      <ion-label class="white-space-normal">{{ choice.name }}</ion-label>
       <ion-checkbox [value]="choice.id" mode="md" (ionChange)="onChange(choice.id, 'answer')"></ion-checkbox>
     </ion-item>
   </ion-list>
-  <ion-textarea *ngIf="question.canComment && submission.answer" class="background-white" #comment margin-top rows="4" (blur)="onChange(comment.value, 'comment')" placeholder="Please put your feedback here"></ion-textarea>
+  <ion-textarea *ngIf="question.canComment && submission.answer" class="background-white" #commentEle margin-top rows="4" [(ngModel)]="comment" (ngModelChange)="onChange(comment, 'comment')" placeholder="Please put your feedback here"></ion-textarea>
 </ng-container>

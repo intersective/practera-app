@@ -46,9 +46,9 @@ export class ProjectComponent extends RouterEnter {
     public utils: UtilsService,
     public storage: BrowserStorageService,
     private projectService: ProjectService,
-    private homeService: HomeService
+    private homeService: HomeService,
    ) {
-    super(router, utils, storage);;
+    super(router);
   }
 
   private _initialise() {

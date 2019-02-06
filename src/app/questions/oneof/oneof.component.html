@@ -2,7 +2,7 @@
   <ion-list>
     <ion-radio-group [value]="submission.answer">
       <ion-item *ngFor="let choice of question.choices" color="light">
-        <ion-label>{{ choice.name }}</ion-label>
+        <ion-label class="white-space-normal">{{ choice.name }}</ion-label>
         <ion-radio [value]="choice.id" disabled mode="md"></ion-radio>
       </ion-item>
     </ion-radio-group>
@@ -21,7 +21,7 @@
         <ng-container *ngFor="let choice of question.choices">
           <ng-container *ngIf="choice.id === review.answer">
             <ion-item color="light">
-              <ion-label>{{ choice.name }}</ion-label>
+              <ion-label class="white-space-normal">{{ choice.name }}</ion-label>
               <ion-radio [value]="choice.id" disabled mode="md"></ion-radio>
             </ion-item>
           </ng-container>
@@ -36,9 +36,9 @@
 
 <ng-container *ngIf="doAssessment">
   <ion-list>
-    <ion-radio-group #answer (ionChange)="onChange(answer.value)">
+    <ion-radio-group #answerEle (ionChange)="onChange(answerEle.value)">
       <ion-item *ngFor="let choice of question.choices">
-        <ion-label>{{ choice.name }}</ion-label>
+        <ion-label class="white-space-normal">{{ choice.name }}</ion-label>
         <ion-radio [value]="choice.id" mode="md"></ion-radio>
       </ion-item>
     </ion-radio-group>
@@ -47,15 +47,15 @@
 
 <ng-container *ngIf="doReview">
   <ion-list *ngIf="question.canAnswer">
-    <ion-radio-group #answer (ionChange)="onChange(answer.value, 'answer')">
+    <ion-radio-group #answerEle (ionChange)="onChange(answerEle.value, 'answer')">
       <ion-list-header>
         <ion-label>Your Answer is</ion-label>
       </ion-list-header>
       <ion-item *ngFor="let choice of question.choices">
-        <ion-label>{{ choice.name }}</ion-label>
+        <ion-label class="white-space-normal">{{ choice.name }}</ion-label>
         <ion-radio [value]="choice.id" mode="md"></ion-radio>
       </ion-item>
     </ion-radio-group>
   </ion-list>
-  <ion-textarea *ngIf="question.canComment && submission.answer" class="background-white" #comment margin-top rows="4" (blur)="onChange(comment.value, 'comment')" placeholder="Please put your feedback here"></ion-textarea>
+  <ion-textarea *ngIf="question.canComment && submission.answer" class="background-white" #commentEle [(ngModel)]="comment" margin-top rows="4" (ngModelChange)="onChange(comment, 'comment')" placeholder="Please put your feedback here"></ion-textarea>
 </ng-container>

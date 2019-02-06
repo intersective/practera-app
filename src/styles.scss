@@ -60,6 +60,10 @@ body {
     font-weight: 500;
     text-overflow: ellipsis;
     margin-top: 0px;
+    overflow: hidden;
+    max-height: 16px;
+    -webkit-line-clamp: 1;
+    line-height: 16px;
   }
 }
 
@@ -115,54 +119,12 @@ body {
   white-space: pre-wrap;
 }
 
-.time-stamp {
-  right: 30px;
-  top: 20px;
-  font-size: 13px;
-  position: absolute;
-  top: 18px;
-  font-size: 12px;
-}
-
 .vertical-middle {
   display: inline-block;
   vertical-align: middle;
 }
-.card {
-  margin-top: 20px;
-  max-height: 120px;
-  height: 120px;
-  background-size: cover;
-  width: 100%;
-  .activity-name {
-    font-size: 18px;
-    font-weight: 500;
-  }
-  &:last-child {
-    margin-bottom: 5px;
-  }
-}
-.locked-card {
-  background: var(--ion-color-medium);
-  opacity: 0.3;
+// change white-space to normal - use in choices.
+.white-space-normal {
+  white-space: normal !important;
 }
 
-.review {
-  h2 {
-    font-size: 14px;
-  }
-  ion-text {
-    float: right;
-    top: 61px;
-    font-size: 12px;
-    position: absolute;
-    right: 22px;
-  }
-  .check-mark {
-    float: right;
-    font-size: 20px;
-    padding-right: 6px;
-    position: relative;
-    top: -16px;
-  }
-}
