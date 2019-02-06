@@ -41,6 +41,7 @@
   :last-child {
     --inner-border-width: 0px !important;
   }
+  background: var(--ion-color-light) !important;
 }
 .project-title {
   color: var(--practera-milestone-name-font-color);
@@ -79,4 +80,6 @@ ion-spinner {
   margin: auto;
 }
 
-
+.spacer {
+  height: 300px;
+}
