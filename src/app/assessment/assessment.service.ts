@@ -94,8 +94,7 @@ export class AssessmentService {
     return this.request.get(api.get.assessment, {params: {
         assessment_id: id,
         structured: true,
-        review: (action == 'review') ? true : false,
-        team_id: this.storage.getUser().teamId
+        review: (action == 'review') ? true : false
       }})
       .pipe(map(response => {
         if (response.success && response.data) {
