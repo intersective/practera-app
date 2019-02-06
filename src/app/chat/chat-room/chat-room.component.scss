@@ -198,6 +198,11 @@
   text-align: right !important;
 }
 
+.message-typing {
+  width: 100% !important;
+  text-align: left !important;
+}
+
 ion-footer {
   ion-item {
     border-top: 0.1px solid var(--practera-chat-footer-border-color) !important;

@@ -1,4 +1,5 @@
 import { Component, Input } from '@angular/core';
+import { FilestackService } from '@shared/filestack/filestack.service';
 
 @Component({
   selector: 'app-file-display',
@@ -10,6 +11,8 @@ export class FileDisplayComponent {
   @Input() fileType = 'any';
   @Input() file: any;
 
-  constructor() {}
-
+  constructor( private filestackService:FilestackService ) {}
+  previewFile(file) {
+    this.filestackService.previewFile(file);
+  }
 }

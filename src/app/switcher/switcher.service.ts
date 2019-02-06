@@ -5,6 +5,7 @@ import { RequestService } from '@shared/request/request.service';
 import { UtilsService } from '@services/utils.service';
 import { BrowserStorageService } from '@services/storage.service';
 import { PusherService } from '@shared/pusher/pusher.service';
+import { SharedService } from '@services/shared.service';
 
 /**
  * @name api
@@ -58,7 +59,7 @@ export class SwitcherService {
     private request: RequestService,
     private utils: UtilsService,
     private storage: BrowserStorageService,
-    private pusherService: PusherService
+    private sharedService: SharedService
   ) {}
 
   getPrograms() {
@@ -80,13 +81,7 @@ export class SwitcherService {
       activityCardImage: cardBackgroundImage
     });
     this.getTeamInfo().subscribe();
-    // change the theme color
-    this.utils.changeThemeColor(themeColor);
-    this.utils.changeCardBackgroundImage(cardBackgroundImage);
-    // initialise Pusher
-    this.pusherService.initialisePusher();
-    // subscribe to Pusher channels
-    this.pusherService.getChannels().subscribe();
+    this.sharedService.onPageLoad();
     return this.getMyInfo();
   }
 

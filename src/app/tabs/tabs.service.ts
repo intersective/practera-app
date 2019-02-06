@@ -12,7 +12,7 @@ import { BrowserStorageService } from '@services/storage.service';
  */
 const api = {
   todoItem: 'api/v2/motivations/todo_item/list.json',
-  chat: 'api/v2/message/chat/list.json'
+  unreadMessages: "api/v2/message/chat/list_messages.json",
 };
 
 @Injectable({
@@ -59,7 +59,12 @@ export class TabsService {
   }
 
   getNoOfChats() {
-    return this.request.get(api.chat)
+    return this.request.get(api.unreadMessages, {
+      params: {
+        unread_count_for: 'all',
+        team_id: this.storage.getUser().teamId
+      }
+    })
       .pipe(map(response => {
         if (response.success && response.data) {
           return this._normaliseNoOfChats(response.data);
@@ -68,20 +73,11 @@ export class TabsService {
   }
 
   private _normaliseNoOfChats(data) {
-    if (!Array.isArray(data)) {
-      this.request.apiResponseFormatError('Chat array format error');
+    if (!this.utils.has(data, 'unread_message_count')) {
+      this.request.apiResponseFormatError('Chat unread count format error');
       return 0;
     }
-    let noOfChats = 0;
-    data.forEach(data => {
-      if (!this.utils.has(data, 'unread_messages')) {
-        return this.request.apiResponseFormatError('Chat object format error');
-      }
-      if (data.unread_messages > 0) {
-        noOfChats ++;
-      }
-    });
-    return noOfChats;
+    return data.unread_message_count;
   }
 
 }

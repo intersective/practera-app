@@ -23,7 +23,7 @@ export class ReviewsComponent extends RouterEnter {
     public utils: UtilsService,
     public storage: BrowserStorageService,
   ) {
-    super(router, utils, storage);
+    super(router);
   }
 
   onEnter() {

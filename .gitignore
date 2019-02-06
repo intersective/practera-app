@@ -1,3 +1,9 @@
+.ionic/
+.sourcemaps/
+.sass-cache/
+.tmp/
+
+coverage/
 node_modules
 src/coverage
 *.DS_Store

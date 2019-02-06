@@ -58,7 +58,7 @@ export class SettingsComponent extends RouterEnter {
     public utils: UtilsService,
     private notificationService: NotificationService,
   ){
-    super(router, utils, storage);
+    super(router);
   }
 
   onEnter() {
