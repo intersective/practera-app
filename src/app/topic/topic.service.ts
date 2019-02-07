@@ -3,6 +3,7 @@ import { Observable, of } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { RequestService } from '@shared/request/request.service';
 import { UtilsService } from '@services/utils.service';
+import { DomSanitizer } from '@angular/platform-browser';
 
 export interface Topic {
   id: number;
@@ -32,6 +33,7 @@ export class TopicService {
   constructor(
     private request: RequestService,
     private utils: UtilsService,
+    public sanitizer: DomSanitizer,
   ) { }
 
   getTopic(id: number): Observable<any> {
@@ -66,7 +68,7 @@ export class TopicService {
     topic.id = thisTopic.Story.id;
     topic.title = thisTopic.Story.title;
     if (this.utils.has(thisTopic.Story, 'content')) {
-      topic.content = thisTopic.Story.content;
+      topic.content = this.sanitizer.bypassSecurityTrustHtml(thisTopic.Story.content);
     }
     if (this.utils.has(thisTopic.Story, 'videolink')) {
       topic.videolink = thisTopic.Story.videolink;
