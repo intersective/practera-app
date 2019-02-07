@@ -1,7 +1,7 @@
 <ng-container *ngIf="submission.answer">
   <ion-list>
     <ion-radio-group [value]="submission.answer">
-      <ion-item *ngFor="let choice of question.choices" color="light">
+      <ion-item *ngFor="let choice of question.choices; let i = index" color="light" [lines]="i == question.choices.length - 1 ? 'none' : ''">
         <ion-label class="white-space-normal">{{ choice.name }}</ion-label>
         <ion-radio [value]="choice.id" disabled mode="md"></ion-radio>
       </ion-item>
@@ -18,9 +18,9 @@
   <ng-container *ngIf="review.answer">
     <ion-list>
       <ion-radio-group [value]="review.answer">
-        <ng-container *ngFor="let choice of question.choices">
+        <ng-container *ngFor="let choice of question.choices; let i = index">
           <ng-container *ngIf="choice.id === review.answer">
-            <ion-item color="light">
+            <ion-item color="light" [lines]="i == question.choices.length - 1 ? 'none' : ''">
               <ion-label class="white-space-normal">{{ choice.name }}</ion-label>
               <ion-radio [value]="choice.id" disabled mode="md"></ion-radio>
             </ion-item>
@@ -37,7 +37,7 @@
 <ng-container *ngIf="doAssessment">
   <ion-list>
     <ion-radio-group #answerEle (ionChange)="onChange(answerEle.value)">
-      <ion-item *ngFor="let choice of question.choices">
+      <ion-item *ngFor="let choice of question.choices; let i = index" [lines]="i == question.choices.length - 1 ? 'none' : ''">
         <ion-label class="white-space-normal">{{ choice.name }}</ion-label>
         <ion-radio [value]="choice.id" mode="md"></ion-radio>
       </ion-item>
@@ -51,7 +51,7 @@
       <ion-list-header>
         <ion-label>Your Answer is</ion-label>
       </ion-list-header>
-      <ion-item *ngFor="let choice of question.choices">
+      <ion-item *ngFor="let choice of question.choices; let i = index" [lines]="i == question.choices.length - 1 ? 'none' : ''">
         <ion-label class="white-space-normal">{{ choice.name }}</ion-label>
         <ion-radio [value]="choice.id" mode="md"></ion-radio>
       </ion-item>

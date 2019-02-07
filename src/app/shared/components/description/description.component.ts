@@ -1,18 +1,21 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, ViewChild, ElementRef } from '@angular/core';
 
 @Component({
   selector: 'app-description',
   templateUrl: 'description.component.html',
-  styles: ['']
+  styleUrls: ['./description.component.scss']
 })
 export class DescriptionComponent {
-  limit: number = 300;
-  isTruncating = true;
+  heightLimit: number = 90;
+  isTruncating: boolean = true;
+  heightExceeded: boolean = false;
   @Input() content: string = '';
+  @ViewChild('description') descriptionRef: ElementRef
 
-  truncated(): string {
-    return this.content.length > this.limit ? this.content.substring(0, this.limit) + '...' : this.content;
+  ngAfterViewInit() {
+    setTimeout(() => {
+      this.heightExceeded = this.descriptionRef.nativeElement.clientHeight >= this.heightLimit;
+    }, 1500);
   }
+
 }
-
-
