@@ -8,7 +8,7 @@ import { DomSanitizer } from '@angular/platform-browser';
 export interface Topic {
   id: number;
   title: string;
-  content: string;
+  content: any;
   videolink?: string;
   files:Array <object>;
   hasComments: boolean;
