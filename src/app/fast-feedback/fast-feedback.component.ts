@@ -4,6 +4,7 @@ import { FastFeedbackService, Meta } from './fast-feedback.service';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { UtilsService } from '@services/utils.service';
 import { NotificationService } from '@shared/notification/notification.service';
+import { BrowserStorageService } from "@services/storage.service";
 
 @Component({
   selector: 'app-fast-feedback',
@@ -21,6 +22,7 @@ export class FastFeedbackComponent implements OnInit {
     private fastFeedbackService: FastFeedbackService,
     private utils: UtilsService,
     private notification: NotificationService,
+    public storage: BrowserStorageService,
   ) {}
 
   ngOnInit() {
@@ -32,6 +34,8 @@ export class FastFeedbackComponent implements OnInit {
   }
 
   dismiss() {
+    // change the flag to false
+    this.storage.set('fastFeedbackOpening', false);
     this.modalController.dismiss();
   }
 
