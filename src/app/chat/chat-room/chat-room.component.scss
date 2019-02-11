@@ -203,8 +203,12 @@
   text-align: left !important;
 }
 
-ion-footer {
-  ion-item {
+.footer {
+  ion-grid {
+    background-color: white;
+  }
+
+  ion-item, ion-grid {
     border-top: 0.1px solid var(--practera-chat-footer-border-color) !important;
 
     ion-button {
