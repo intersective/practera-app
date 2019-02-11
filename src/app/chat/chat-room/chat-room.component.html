@@ -56,11 +56,16 @@
   <ion-grid class="white-bg">
     <ion-row>
       <ion-col>
-        <ion-button (click)="attach()" fill="clear">
+        <ion-button (click)="attach('image')" fill="clear">
+          <ion-icon name="photos"></ion-icon>
+        </ion-button>
+      </ion-col>
+      <ion-col>
+        <ion-button (click)="attach('any')" fill="clear">
           <ion-icon name="attach" slot="start"></ion-icon>
         </ion-button>
       </ion-col>
-      <ion-col size="10">
+      <ion-col size="9">
         <ion-textarea
           placeholder="Enter your message"
           required="true"

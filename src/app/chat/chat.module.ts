@@ -9,6 +9,7 @@ import { ChatRoomComponent } from './chat-room/chat-room.component';
 import { ChatRoutingModule } from './chat-routing.module';
 import { ChatService } from './chat.service';
 import { LinkifyPipe } from '../shared/pipes/linkify/linkify.pipe';
+import { FilestackModule } from '../shared/filestack/filestack.module';
 
 @NgModule({
   imports: [
@@ -16,9 +17,10 @@ import { LinkifyPipe } from '../shared/pipes/linkify/linkify.pipe';
     CommonModule,
     FormsModule,
     ChatRoutingModule,
+    FilestackModule,
   ],
   declarations: [
-    ChatComponent, 
+    ChatComponent,
     ChatListComponent,
     ChatRoomComponent,
     LinkifyPipe
