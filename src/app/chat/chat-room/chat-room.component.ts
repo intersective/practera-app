@@ -5,6 +5,7 @@ import { BrowserStorageService } from "@services/storage.service";
 import { RouterEnter } from "@services/router-enter.service";
 import { UtilsService } from "@services/utils.service";
 import { PusherService } from "@shared/pusher/pusher.service";
+import { FilestackService } from "@shared/filestack/filestack.service";
 
 import { ChatService, ChatRoomObject, Message } from "../chat.service";
 
@@ -33,7 +34,8 @@ export class ChatRoomComponent extends RouterEnter {
     public storage: BrowserStorageService,
     private route: ActivatedRoute,
     public utils: UtilsService,
-    public pusherService: PusherService
+    public pusherService: PusherService,
+    private filestackService: FilestackService,
   ) {
     super(router);
     let role = this.storage.getUser().role;
@@ -409,7 +411,21 @@ export class ChatRoomComponent extends RouterEnter {
     }, 500);
   }
 
-  attach() {
+  async attach() {
+    const filepicker = await this.filestackService.open({
+      accept: 'image',
+    });
+    console.log(filepicker);
+    // this.filestackService.open({
+    //   accept: 'image',
+    // }, res => {
+    //   console.log('success!', res);
+    // }, err => {
+    //   console.log('failed!', err);
+    // });
+
+    console.log(this.filestackService);
+
     this.messageList.push({
       id: Math.random(),
       sender_name: 'test sender',
