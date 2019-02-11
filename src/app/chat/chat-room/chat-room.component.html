@@ -53,16 +53,27 @@
   </ion-list>
 </ion-content>
 <ion-footer>
-  <ion-item lines="none">
-    <ion-textarea
-      placeholder="Enter your message"
-      required="true"
-      name="message"
-      [(ngModel)]="message"
-      (ngModelChange)="typing()"
-    ></ion-textarea>
-    <ion-button (click)="sendMessage()" type="submit" slot="end" fill="clear" color="light">
-      <ion-icon name="send"></ion-icon>
-    </ion-button>
-  </ion-item>
+  <ion-grid class="white-bg">
+    <ion-row>
+      <ion-col>
+        <ion-button (click)="attach()" fill="clear">
+          <ion-icon name="attach" slot="start"></ion-icon>
+        </ion-button>
+      </ion-col>
+      <ion-col size="10">
+        <ion-textarea
+          placeholder="Enter your message"
+          required="true"
+          name="message"
+          [(ngModel)]="message"
+          (ngModelChange)="typing()"
+        ></ion-textarea>
+      </ion-col>
+      <ion-col size="1">
+        <ion-button (click)="sendMessage()" type="submit" fill="clear">
+          <ion-icon name="send" slot="end"></ion-icon>
+        </ion-button>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
 </ion-footer>

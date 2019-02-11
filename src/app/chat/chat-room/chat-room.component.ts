@@ -409,4 +409,15 @@ export class ChatRoomComponent extends RouterEnter {
     }, 500);
   }
 
+  attach() {
+    this.messageList.push({
+      id: Math.random(),
+      sender_name: 'test sender',
+      receiver_name: 'test receiver',
+      message: 'attachement',
+      sent_time: JSON.stringify(new Date('YYYY-mm-dd')),
+      is_sender: ((new Date()).getTime() % 2) ? true : false,
+      chat_color: '',
+    });
+  }
 }
