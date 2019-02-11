@@ -252,7 +252,7 @@ export class AssessmentComponent extends RouterEnter {
               text: 'OK',
               role: 'cancel',
               handler: () => {
-                this.router.navigate(['app', 'home']);
+                this.router.navigate(['app','home']);
                 return;
               }
             }
