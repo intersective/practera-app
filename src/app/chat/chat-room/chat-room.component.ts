@@ -131,6 +131,12 @@ export class ChatRoomComponent extends RouterEnter {
       .subscribe(messages => {
         if (messages) {
           if (messages.length > 0) {
+            messages.forEach((msg, i) => {
+              if (msg.file) {
+                messages[i].preview = this.attachmentPreview(msg.file);
+              }
+            });
+
             messages = Object.assign([], messages);
             messages.reverse();
             if (this.messageList.length > 0) {
