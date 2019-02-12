@@ -120,13 +120,12 @@
 
       .message-body {
         padding: 8px 16px;
+        min-width: 73px;
         max-width: 224px;
         border-radius: 25px;
         width: fit-content;
-        min-width: 73px;
-        max-width: 224px;
 
-        .message-text {
+        p,.message-text {
           color: black;
           font-size: 16px;
           line-height: 24px;

@@ -411,29 +411,46 @@ export class ChatRoomComponent extends RouterEnter {
     }, 500);
   }
 
-  async attach() {
+  async attach(type: string) {
+    let message;
+
     const filepicker = await this.filestackService.open({
-      accept: 'image',
+      accept: this.filestackService.getFileTypes(type),
+    }, (res: any) => {
+      console.log(res);
+
+      let preview = `Uploaded ${res.filename}`;
+      const dimension = 224;
+      if (res.mimetype.includes('image')) {
+        const attachmentURL = `https://cdn.filestackcontent.com/quality=value:70/resize=w:${dimension},h:${dimension},fit:crop/${res.handle}`;
+        preview = `<p>Uploaded ${res.filename}</p><img src=${attachmentURL}>`;
+      }
+
+      const date = new Date();
+      message = {
+        id: Math.random(),
+        sender_name: 'Filestack',
+        receiver_name: 'test receiver',
+        message: preview,
+        sent_time: JSON.stringify(`${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`),
+        is_sender: ((new Date()).getTime() % 2) ? true : false,
+        chat_color: 'green',
+        type: 'attachment',
+      };
+      return this.messageList.push(message);
+    }, err => {
+      console.log(err);
     });
-    console.log(filepicker);
-    // this.filestackService.open({
-    //   accept: 'image',
-    // }, res => {
-    //   console.log('success!', res);
-    // }, err => {
-    //   console.log('failed!', err);
-    // });
 
-    console.log(this.filestackService);
-
-    this.messageList.push({
+    /*const date = new Date();
+    this.messageList.push(message || {
       id: Math.random(),
       sender_name: 'test sender',
       receiver_name: 'test receiver',
-      message: 'attachement',
-      sent_time: JSON.stringify(new Date('YYYY-mm-dd')),
+      message: 'test attachment',
+      sent_time: JSON.stringify(`${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`),
       is_sender: ((new Date()).getTime() % 2) ? true : false,
       chat_color: '',
-    });
+    });*/
   }
 }
