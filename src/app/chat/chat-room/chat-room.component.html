@@ -23,11 +23,11 @@
             <p>{{getMessageDate(message.sent_time)}}</p>
           </div>
           <div class="message-body">
-            <ng-container *ngIf="message.type !== 'attachment'; else attachment">
+            <ng-container *ngIf="!message.file; else attachment">
               <p class="message-text" [innerHTML]="message.message"></p>
             </ng-container>
             <ng-template #attachment>
-              <div [innerHTML]="message.message"></div>
+              <div [innerHTML]="message.preview"></div>
             </ng-template>
           </div>
           <ng-container *ngIf="!message.noAvatar && selectedChat.is_team">
