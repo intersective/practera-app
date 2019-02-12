@@ -411,46 +411,64 @@ export class ChatRoomComponent extends RouterEnter {
     }, 500);
   }
 
+  private attachmentPreview(filestackRes) {
+    let preview = `Uploaded ${filestackRes.filename}`;
+    const dimension = 224;
+    if (filestackRes.mimetype.includes('image')) {
+      const attachmentURL = `https://cdn.filestackcontent.com/quality=value:70/resize=w:${dimension},h:${dimension},fit:crop/${filestackRes.handle}`;
+      preview = `<p>Uploaded ${filestackRes.filename}</p><img src=${attachmentURL}>`;
+    }
+
+    return preview;
+  }
+
   async attach(type: string) {
     let message;
 
-    const filepicker = await this.filestackService.open({
+    await this.filestackService.open({
       accept: this.filestackService.getFileTypes(type),
     }, (res: any) => {
       console.log(res);
 
-      let preview = `Uploaded ${res.filename}`;
-      const dimension = 224;
-      if (res.mimetype.includes('image')) {
-        const attachmentURL = `https://cdn.filestackcontent.com/quality=value:70/resize=w:${dimension},h:${dimension},fit:crop/${res.handle}`;
-        preview = `<p>Uploaded ${res.filename}</p><img src=${attachmentURL}>`;
-      }
-
-      const date = new Date();
-      message = {
-        id: Math.random(),
-        sender_name: 'Filestack',
-        receiver_name: 'test receiver',
-        message: preview,
-        sent_time: JSON.stringify(`${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`),
-        is_sender: ((new Date()).getTime() % 2) ? true : false,
-        chat_color: 'green',
-        type: 'attachment',
-      };
-      return this.messageList.push(message);
+      return this.postAttachment(res);
     }, err => {
       console.log(err);
     });
+  }
 
-    /*const date = new Date();
-    this.messageList.push(message || {
-      id: Math.random(),
-      sender_name: 'test sender',
-      receiver_name: 'test receiver',
-      message: 'test attachment',
-      sent_time: JSON.stringify(`${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`),
-      is_sender: ((new Date()).getTime() % 2) ? true : false,
-      chat_color: '',
-    });*/
+  private postAttachment(file) {
+    if (this.loadingMesageSend) {
+      return;
+    }
+
+    this.loadingMesageSend = true;
+
+    let data:any = {
+      message: null,
+      file,
+      team_id: this.selectedChat.team_id,
+      to: null,
+      participants_only: this.selectedChat.participants_only,
+    };
+    if (this.selectedChat.is_team) {
+      data.to = "team";
+    } else {
+      data.to = this.selectedChat.team_member_id;
+    }
+
+    this.chatService.postAttachmentMessage(data).subscribe(
+      response => {
+        let message = response.data;
+        message.preview = this.attachmentPreview(file);
+
+        this.messageList.push(message);
+        this.loadingMesageSend = false;
+        this._scrollToBottom();
+      },
+      error => {
+        this.loadingMesageSend = false;
+        // error feedback to user for failed upload
+      }
+    );
   }
 }
