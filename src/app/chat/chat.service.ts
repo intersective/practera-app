@@ -61,6 +61,7 @@ interface NewMessage {
   team_id: number;
   env?: string;
   participants_only?: boolean;
+  file?: object;
 }
 
 interface MessageListPrams {
@@ -153,6 +154,12 @@ export class ChatService {
     });
   }
 
+  /**
+   * @name postNewMessage
+   * @description post new text message (with text) or attachment (with file)
+   * @param  {NewMessage}      data [description]
+   * @return {Observable<any>}      [description]
+   */
   postNewMessage(data: NewMessage): Observable<any> {
     let reqData = {
       to: data.to,
@@ -160,6 +167,7 @@ export class ChatService {
       team_id:data.team_id,
       env: environment.env,
       participants_only: '',
+      file: data.file,
     }
     if (data.participants_only) {
       reqData.participants_only = data.participants_only.toString();
@@ -167,6 +175,13 @@ export class ChatService {
       delete reqData.participants_only;
     }
     return this.request.post(api.createMessage, reqData);
+  }
+
+  postAttachmentMessage(data: NewMessage): Observable<any> {
+    if (!data.file) {
+      throw "Fatal: File value must not be empty.";
+    }
+    return this.postNewMessage(data);
   }
 
   unreadMessageCout(data: UnreadMessagePrams): Observable<any> {
