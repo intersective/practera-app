@@ -79,7 +79,7 @@ export class FilestackService {
     this.previewModal(fileUrl);
   }
 
-  async open(options = {}, onSuccess = () => {}, onError = () => {}) {
+  async open(options = {}, onSuccess = res => res, onError = err => err) {
     let pickerOptions:any = {
       dropPane: {},
       fromSources: [
