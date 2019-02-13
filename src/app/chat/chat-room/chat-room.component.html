@@ -59,15 +59,15 @@
 </ion-content>
 <ion-footer>
   <ion-grid class="white-bg">
-    <ion-row>
-      <ion-col>
-        <ion-button (click)="attach('image')" fill="clear">
-          <ion-icon name="photos"></ion-icon>
+    <ion-row nowrap no-padding align-items-center>
+      <ion-col size="1" no-padding text-center>
+        <ion-button (click)="attach('image')" fill="clear" no-padding>
+          <ion-icon name="photos" slot="icon-only"></ion-icon>
         </ion-button>
       </ion-col>
-      <ion-col>
-        <ion-button (click)="attach('any')" fill="clear">
-          <ion-icon name="attach" slot="start"></ion-icon>
+      <ion-col size="1" no-padding text-center>
+        <ion-button (click)="attach('any')" fill="clear" no-padding>
+          <ion-icon name="attach" slot="icon-only"></ion-icon>
         </ion-button>
       </ion-col>
       <ion-col size="9">
@@ -79,9 +79,9 @@
           (ngModelChange)="typing()"
         ></ion-textarea>
       </ion-col>
-      <ion-col size="1">
-        <ion-button (click)="sendMessage()" type="submit" fill="clear">
-          <ion-icon name="send" slot="end"></ion-icon>
+      <ion-col size="1" no-padding text-center>
+        <ion-button (click)="sendMessage()" type="submit" fill="clear" no-padding>
+          <ion-icon name="send" slot="icon-only"></ion-icon>
         </ion-button>
       </ion-col>
     </ion-row>
