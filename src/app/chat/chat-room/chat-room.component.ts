@@ -422,7 +422,10 @@ export class ChatRoomComponent extends RouterEnter {
     const dimension = 224;
     if (filestackRes.mimetype.includes('image')) {
       const attachmentURL = `https://cdn.filestackcontent.com/quality=value:70/resize=w:${dimension},h:${dimension},fit:crop/${filestackRes.handle}`;
-      preview = `<p>Uploaded ${filestackRes.filename}</p><img src=${attachmentURL}>`;
+      // preview = `<p>Uploaded ${filestackRes.filename}</p><img src=${attachmentURL}>`;
+      preview = `<img src=${attachmentURL}>`;
+    } else if (filestackRes.mimetype.includes('video')) { // we'll need to identify filetype for 'any' type fileupload
+      preview = `<app-file-display [file]="submission.answer" [fileType]="question.fileType"></app-file-display>`;
     }
 
     return preview;
@@ -434,8 +437,6 @@ export class ChatRoomComponent extends RouterEnter {
     await this.filestackService.open({
       accept: this.filestackService.getFileTypes(type),
     }, (res: any) => {
-      console.log(res);
-
       return this.postAttachment(res);
     }, err => {
       console.log(err);
