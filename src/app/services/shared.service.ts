@@ -33,5 +33,10 @@ export class SharedService {
     this.pusherService.initialisePusher();
     // subscribe to Pusher channels
     this.pusherService.getChannels().subscribe();
+
+    // listen to the achievement event
+    this.utils.getEvent("achievement").subscribe(event => {
+      console.log('Achievement received:', event);
+    });
   }
 }
