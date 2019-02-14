@@ -12,16 +12,7 @@ export class AchievementBadgeComponent implements OnInit {
 
   constructor() {}
 
-  ngOnInit() {
-    this.achievement = {
-      id: 1,
-      name: 'first',
-      description: '',
-      isEarned: true,
-      points: 300
-
-    }
-  }
+  ngOnInit() {}
 
 
 }
