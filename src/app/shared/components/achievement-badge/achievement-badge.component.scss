@@ -1,0 +1,17 @@
+.badge {
+  img {
+    border-radius: 50%;
+    width: 50px;
+  }
+  ion-icon {
+  position: absolute;
+  left:70px;
+  font-size: x-large;
+}
+}
+.badge-point {
+  font-size: smaller;
+  position: relative;
+  top: 20px;
+  right: 60px;
+}

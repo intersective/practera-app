@@ -8,6 +8,8 @@ import { Subscription } from "rxjs";
 import { BrowserStorageService } from "@services/storage.service";
 import { RouterEnter } from "@services/router-enter.service";
 import { PusherService } from "@shared/pusher/pusher.service";
+import { Achievement } from "@app/achievements/achievements.service";
+
 
 @Component({
   selector: "app-home",
@@ -24,6 +26,7 @@ export class HomeComponent extends RouterEnter {
   activity: Activity;
   loadingActivity: boolean = true;
   subscriptions: Subscription[] = [];
+  achievement: Achievement;
 
   constructor(
     public router: Router,
@@ -66,6 +69,13 @@ export class HomeComponent extends RouterEnter {
     this.loadingActivity = true;
     // add a flag in local storage to indicate that is there any fast feedback open
     this.storage.set('fastFeedbackOpening', false);
+    this.achievement = {
+      id: 2,
+      name: 'project plan',
+      description: '',
+      points: 200,
+      isEarned: true
+    };
   }
 
   onEnter() {
