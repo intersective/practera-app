@@ -7,7 +7,7 @@ import { PusherService } from '@shared/pusher/pusher.service';
   providedIn: 'root'
 })
 export class SharedService {
-
+  private achievementEvent;
   constructor(
     private utils: UtilsService,
     private storage: BrowserStorageService,
@@ -35,8 +35,10 @@ export class SharedService {
     this.pusherService.getChannels().subscribe();
 
     // listen to the achievement event
-    this.utils.getEvent("achievement").subscribe(event => {
-      console.log('Achievement received:', event);
-    });
+    if (!this.achievementEvent) {
+      this.achievementEvent = this.utils.getEvent("achievement").subscribe(event => {
+        console.log('Achievement received:', event);
+      });
+    }
   }
 }
