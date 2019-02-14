@@ -1,8 +1,8 @@
 <ng-container *ngIf="submission.answer">
-  <ion-list>
+  <ion-list class="no-bg">
     <ion-radio-group [value]="submission.answer">
       <ion-item *ngFor="let teamMember of question.teamMembers;let i = index" color="light" [lines]="i == question.teamMembers.length - 1 ? 'none' : ''">
-        <ion-label>{{ teamMember.userName }}</ion-label>
+        <ion-label class="white-space-normal">{{ teamMember.userName }}</ion-label>
         <ion-radio [value]="teamMember.key" disabled mode="md"></ion-radio>
       </ion-item>
     </ion-radio-group>
@@ -12,12 +12,12 @@
 <div *ngIf="review.answer || review.comment" class="q-reviews">
   <ion-label class="q-title">Feedback</ion-label>
   <ng-container *ngIf="review.answer">
-    <ion-list>
+    <ion-list class="no-bg">
       <ion-radio-group [value]="review.answer">
         <ng-container *ngFor="let teamMember of question.teamMembers;let i = index">
           <ng-container *ngIf="teamMember.key === review.answer">
             <ion-item color="light" [lines]="i == question.teamMembers.length - 1 ? 'none' : ''">
-              <ion-label>{{ teamMember.userName }}</ion-label>
+              <ion-label class="white-space-normal">{{ teamMember.userName }}</ion-label>
               <ion-radio [value]="teamMember.key" disabled mode="md"></ion-radio>
             </ion-item>
           </ng-container>
@@ -31,10 +31,10 @@
 </div>
 
 <ng-container *ngIf="doAssessment">
-  <ion-list>
+  <ion-list class="no-bg">
     <ion-radio-group #answerEle (ionChange)="onChange(answerEle.value)">
       <ion-item *ngFor="let teamMember of question.teamMembers;let i = index" [lines]="i == question.teamMembers.length - 1 ? 'none' : ''">
-        <ion-label>{{ teamMember.userName }}</ion-label>
+        <ion-label class="white-space-normal">{{ teamMember.userName }}</ion-label>
         <ion-radio [value]="teamMember.key" mode="md"></ion-radio>
       </ion-item>
     </ion-radio-group>
@@ -42,13 +42,13 @@
 </ng-container>
 
 <ng-container *ngIf="doReview">
-  <ion-list *ngIf="question.canAnswer">
+  <ion-list class="no-bg" *ngIf="question.canAnswer">
     <ion-radio-group #answerEle (ionChange)="onChange(answerEle.value, 'answer')">
       <ion-list-header>
         <ion-label>Your Answer is</ion-label>
       </ion-list-header>
       <ion-item *ngFor="let teamMember of question.teamMembers;let i = index" [lines]="i == question.teamMembers.length - 1 ? 'none' : ''">
-        <ion-label>{{ teamMember.userName }}</ion-label>
+        <ion-label class="white-space-normal">{{ teamMember.userName }}</ion-label>
         <ion-radio [value]="teamMember.key" mode="md"></ion-radio>
       </ion-item>
     </ion-radio-group>
