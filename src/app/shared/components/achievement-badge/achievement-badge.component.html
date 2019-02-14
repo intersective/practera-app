@@ -1,0 +1,5 @@
+<div class="badge">
+  <img [src]="achievement.image? achievement.image : '/assets/throphy.svg' " >
+  <ion-icon  name="checkmark-circle" color="primary" class="icon-lock"></ion-icon>
+  <ion-text *ngIf= "achievement.points" class="badge-point">{{achievement.points}} Points</ion-text>
+</div>
