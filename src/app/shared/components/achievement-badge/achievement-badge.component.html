@@ -1,4 +1,4 @@
-<div class="badge">
+<div class="badge" (click)="showTrophiDetails()">
   <img [src]="achievement.image? achievement.image : '/assets/throphy.svg' " >
   <ion-icon  *ngIf="achievement.isEarned" name="checkmark-circle" color="primary" ></ion-icon>
   <ion-icon  *ngIf="!achievement.isEarned" name="lock" color="medium"></ion-icon>
