@@ -20,4 +20,14 @@ export class AchievementsComponent extends RouterEnter {
   ) {
     super(router);
   }
+
+  onEnter() {
+    this.achievementService.getAchievements().subscribe(achievements => {
+      this.achievements = achievements;
+    })
+  }
+
+  back() {
+    this.router.navigate(['app', 'home']);
+  }
 }
