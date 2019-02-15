@@ -5,6 +5,9 @@
   </ion-toolbar>
 </ion-header>
 <ion-content padding color="light" text-center>
+  <ng-container *ngIf="loadingAchievements">
+    <ion-spinner></ion-spinner>
+  </ng-container>
   <ion-grid>
     <ion-row>
       <ion-col
