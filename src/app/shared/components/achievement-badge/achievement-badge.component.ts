@@ -13,7 +13,7 @@ export class AchievementBadgeComponent implements OnInit {
   constructor() {}
 
   ngOnInit() {}
-  showTrophiDetails () {
+  showAchievementDetails () {
     console.log("show the trophy's name");
   }
 
