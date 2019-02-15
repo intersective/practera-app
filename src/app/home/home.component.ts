@@ -8,6 +8,8 @@ import { Subscription } from "rxjs";
 import { BrowserStorageService } from "@services/storage.service";
 import { RouterEnter } from "@services/router-enter.service";
 import { PusherService } from "@shared/pusher/pusher.service";
+import { Achievement } from "@app/achievements/achievements.service";
+
 
 @Component({
   selector: "app-home",
