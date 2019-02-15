@@ -12,6 +12,7 @@ import { RouterEnter } from '@services/router-enter.service';
 export class AchievementsComponent extends RouterEnter {
   routeUrl: string = '/achievements';
   achievements: Array<Achievement>;
+  loadingAchievements: boolean = true;
 
   constructor (
     public router: Router,
@@ -24,6 +25,7 @@ export class AchievementsComponent extends RouterEnter {
   onEnter() {
     this.achievementService.getAchievements().subscribe(achievements => {
       this.achievements = achievements;
+      this.loadingAchievements = false;
     })
   }
 
