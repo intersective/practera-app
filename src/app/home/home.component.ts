@@ -26,7 +26,6 @@ export class HomeComponent extends RouterEnter {
   activity: Activity;
   loadingActivity: boolean = true;
   subscriptions: Subscription[] = [];
-  achievement: Achievement;
 
   constructor(
     public router: Router,
@@ -69,14 +68,6 @@ export class HomeComponent extends RouterEnter {
     this.loadingActivity = true;
     // add a flag in local storage to indicate that is there any fast feedback open
     this.storage.set('fastFeedbackOpening', false);
-    this.achievement = {
-      id: 2,
-      name: 'project plan',
-      description: '',
-      isEarned: false,
-      image: 'https://www.filepicker.io/api/file/LbIC2009RLKG4Y11eQSS',
-      points: 100
-    };
   }
 
   onEnter() {
