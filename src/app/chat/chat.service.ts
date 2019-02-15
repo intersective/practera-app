@@ -54,6 +54,8 @@ export interface Message {
   is_sender?: boolean;
   chat_color?: string;
   noAvatar?: boolean;
+  file?: object;
+  preview?: string;
 }
 interface NewMessage {
   to: number | string;
@@ -208,7 +210,10 @@ export class ChatService {
       );
   }
 
-  getMessageFromEvent(data) {
+  /**
+   * @description listen to pusher event from new/incoming message
+   */
+  getMessageFromEvent(data): Message | null {
     let presenceChannelId = this.pusherService.getMyPresenceChannelId();
     let chatColors;
     // don't show the message if it is from the current user,
@@ -234,7 +239,8 @@ export class ChatService {
       message: data.event.message,
       sender_name: data.event.sender_name,
       sent_time: data.event.sent_time,
-      chat_color : ''
+      chat_color : '',
+      file: data.event.file,
     };
     if (!message.is_sender) {
       message.chat_color = this._getAvataColor(message.sender_name, data.event.team_id);
