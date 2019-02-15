@@ -5,7 +5,6 @@ import { HomeRoutingComponent } from './home-routing.component';
 import { HomeRoutingModule } from './home-routing.module';
 import { NgCircleProgressModule } from 'ng-circle-progress';
 import { TodoCardComponent } from './todo-card/todo-card.component';
-import { AchievementBadgeComponent } from '@shared/components/achievement-badge/achievement-badge.component';
 
 @NgModule({
   imports: [
@@ -30,8 +29,7 @@ import { AchievementBadgeComponent } from '@shared/components/achievement-badge/
   declarations: [
     HomeComponent,
     HomeRoutingComponent,
-    TodoCardComponent,
-    AchievementBadgeComponent
+    TodoCardComponent
   ],
 })
 export class HomeModule {
