@@ -1,17 +1,15 @@
-import * as filestack from 'filestack-js';
 import { Subscription } from 'rxjs/Subscription';
-import { Component, HostListener, EventEmitter, Output, Input, OnInit, OnDestroy } from '@angular/core';
+import { Component, HostListener, EventEmitter, Output, Input, OnInit } from '@angular/core';
 import { FilestackService } from "./filestack.service";
 
 @Component({
   selector: "file-stack",
   templateUrl: "filestack.component.html"
 })
-export class FilestackComponent implements OnInit, OnDestroy {
+export class FilestackComponent implements OnInit {
   @Input("accept") private fileTypes: any;
   @Input("fileType") private fileType: string;
   @Output("complete") private output: EventEmitter<any> = new EventEmitter();
-  private filestackSubscriber: Subscription;
 
   constructor(
     private filestackService: FilestackService
@@ -20,16 +18,9 @@ export class FilestackComponent implements OnInit, OnDestroy {
 
   ngOnInit() {}
 
-  uploadFile() {
-    if (this.filestackSubscriber) {
-      this.filestackSubscriber.unsubscribe();
-      this.filestackSubscriber = null;
-    }
-    let filestackConfig = this.filestackService.getFilestackConfig();
-    const fileStackClient = filestack.init(filestackConfig);
+  async uploadFile() {
     let s3Config = this.filestackService.getS3Config(this.fileType);
     let pickerOptions = {
-      dropPane: {},
       fromSources: [
         'local_file_system',
         'googledrive',
@@ -51,18 +42,11 @@ export class FilestackComponent implements OnInit, OnDestroy {
         });
       }
     };
+
     if (this.fileTypes) {
       pickerOptions['accept'] = this.fileTypes;
     }
 
-    fileStackClient.picker(pickerOptions)
-      .open();
-  }
-
-  ngOnDestroy() {
-    if (this.filestackSubscriber) {
-      this.filestackSubscriber.unsubscribe();
-      this.filestackSubscriber = null;
-    }
+    return await this.filestackService.open(pickerOptions);
   }
 }
