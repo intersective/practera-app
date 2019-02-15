@@ -25,9 +25,16 @@
     <ion-label >
       <a color="primary" routerLink="">VIEW ALL</a>
     </ion-label>
-    <
-    <achievement-badge [achievement] = "achievement"></achievement-badge>
   </div>
+    <ion-grid class="dashboard-achievement">
+      <ion-row class="achievement-row">
+        <ion-col><achievement-badge [achievement]="achievement"></achievement-badge></ion-col>
+        <ion-col><achievement-badge [achievement]="achievement"></achievement-badge></ion-col>
+        <ion-col><achievement-badge [achievement]="achievement"></achievement-badge></ion-col>
+
+      </ion-row>
+    </ion-grid>
+
 
   <ion-label color="medium">Things to do</ion-label>
   <ion-list class="todo-list" lines="none">
