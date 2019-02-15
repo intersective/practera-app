@@ -32,7 +32,8 @@ export interface Achievement {
 })
 
 export class AchievementsService {
-
+  earnedPoints: number = 0;
+  totalPoints: number = 0;
   constructor(
     private request: RequestService,
     private utils: UtilsService,
@@ -75,9 +76,21 @@ export class AchievementsService {
         isEarned: achievement.isEarned,
         earnedDate: achievement.earnedDate,
       });
+      if (achievement.points) {
+        this.totalPoints += +achievement.points;
+        if (achievement.isEarned) {
+          this.earnedPoints += +achievement.points;
+        }
+      }
     });
     return achievements;
   }
+
+  getEarnedPoints() {
+    return this.earnedPoints;
+  }
+
+  getTotalPoints() {
+    return this.totalPoints;
+  }
 }
-
-
