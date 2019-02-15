@@ -93,6 +93,11 @@ export class HomeService {
       if (todoItem.identifier.includes('AssessmentReview-')) {
         todoItems = this._addTodoItemForReview(todoItem, todoItems);
       }
+
+      // todo item for user to see the achievement earned message
+      if (todoItem.identifier.includes('Achievement-')) {
+        console.log('Achievement pop-up:', todoItem);
+      }
     });
     return todoItems;
   }
