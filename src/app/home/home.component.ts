@@ -73,8 +73,7 @@ export class HomeComponent extends RouterEnter {
       id: 2,
       name: 'project plan',
       description: '',
-      points: 200,
-      isEarned: false
+      isEarned: true
     };
   }
 
