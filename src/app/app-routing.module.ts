@@ -5,28 +5,32 @@ import { FastFeedbackComponent } from './fast-feedback/fast-feedback.component';
 import { AuthGuard } from './auth/auth.guard';
 
 const routes: Routes = [
-  { 
-    path: 'switcher', 
+  {
+    path: 'switcher',
     loadChildren: './switcher/switcher.module#SwitcherModule',
   },
-  { 
-    path: 'topic', 
+  {
+    path: 'topic',
     loadChildren: './topic/topic.module#TopicModule',
   },
   {
-    path: 'assessment', 
+    path: 'assessment',
     loadChildren: './assessment/assessment.module#AssessmentModule',
   },
-  { 
+  {
+    path: 'achievements',
+    loadChildren: './achievements/achievements.module#AchievementsModule',
+  },
+  {
     path: 'fast-feedback',
     component: FastFeedbackComponent,
   },
   {
-    path: 'chat', 
-    loadChildren: './chat/chat.module#ChatModule' 
+    path: 'chat',
+    loadChildren: './chat/chat.module#ChatModule'
   },
   {
-    path: '', 
+    path: '',
     loadChildren: './tabs/tabs.module#TabsModule',
     canLoad: [AuthGuard]
   },
