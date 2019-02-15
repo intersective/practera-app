@@ -1,14 +1,12 @@
-
 .badge {
   img {
     border-radius: 50%;
     width: 48px;
   }
   ion-icon {
-  position: absolute;
-  left: 67px;
-  font-size: x-large;
-}
+    position: absolute;
+    font-size: 24px;
+  }
 }
 .badge-point {
   background-color: var(--ion-color-primary);
@@ -17,7 +15,7 @@
   max-width: 80px;
   padding: 0px 8px;
   margin-left: 3px;
-  font-size: small;
+  font-size: 13px;
 }
 .black-white-image {
   filter: grayscale(100%);
