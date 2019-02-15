@@ -459,6 +459,10 @@ export class ChatRoomComponent extends RouterEnter {
     });
   }
 
+  previewFile(file) {
+    this.filestackService.previewFile(file);
+  }
+
   private postAttachment(file) {
     if (this.loadingMesageSend) {
       return;
@@ -493,5 +497,108 @@ export class ChatRoomComponent extends RouterEnter {
         // error feedback to user for failed upload
       }
     );
+  }
+
+  private getTypeByMime(mimetype: string): string {
+    const zip = [
+      'application/x-compressed',
+      'application/x-zip-compressed',
+      'application/zip',
+      'multipart/x-zip',
+    ];
+
+    let result: string = '';
+
+    if (zip.indexOf(mimetype) >= 0) {
+      result = 'Zip';
+
+    // set icon to different document type (excel, word, powerpoint, audio, video)
+    } else if (mimetype.indexOf('audio/') >= 0) {
+      result = 'Audio';
+    } else if (mimetype.indexOf('image/') >= 0) {
+      result = 'Image';
+    } else if (mimetype.indexOf('text/') >= 0) {
+      result = 'Text';
+    } else if (mimetype.indexOf('video/') >= 0) {
+      result = 'Video';
+    } else {
+      switch (mimetype) {
+        case 'application/pdf':
+          result = 'PDF';
+          break;
+        case 'application/msword':
+        case 'application/vnd.openxmlformats-officedocument.wordprocessingml.document':
+          result = 'Word';
+          break;
+        case 'application/excel':
+        case 'application/vnd.ms-excel':
+        case 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet':
+        case 'application/x-excel':
+        case 'application/x-msexcel':
+          result = 'Excel';
+          break;
+        case 'application/mspowerpoint':
+        case 'application/vnd.ms-powerpoint':
+        case 'application/vnd.openxmlformats-officedocument.presentationml.presentation':
+        case 'application/x-mspowerpoint':
+          result = 'Powerpoint';
+          break;
+        default:
+          result = 'File';
+          break;
+      }
+    }
+
+    return result;
+  }
+
+  private getIconByMime(mimetype: string): string {
+    const zip = [
+      'application/x-compressed',
+      'application/x-zip-compressed',
+      'application/zip',
+      'multipart/x-zip',
+    ];
+    let result: string = '';
+
+    if (zip.indexOf(mimetype) >= 0) {
+      result = 'document';
+    } else if (mimetype.includes('audio')) {
+      result = 'volume-mute';
+    } else if (mimetype.includes('image')) {
+      result = 'photos';
+    } else if (mimetype.includes('text')) {
+      result = 'clipboard';
+    } else if (mimetype.includes('video')) {
+      result = 'videocam';
+    } else {
+      switch (mimetype) {
+        case 'application/pdf':
+          result = 'document'; // 'pdf';
+          break;
+        case 'application/msword':
+        case 'application/vnd.openxmlformats-officedocument.wordprocessingml.document':
+          result = 'document'; // 'word';
+          break;
+        case 'application/excel':
+        case 'application/vnd.ms-excel':
+        case 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet':
+        case 'application/x-excel':
+        case 'application/x-msexcel':
+          result = 'document'; // 'excel';
+          break;
+        case 'application/mspowerpoint':
+        case 'application/vnd.ms-powerpoint':
+        case 'application/vnd.openxmlformats-officedocument.presentationml.presentation':
+        case 'application/x-mspowerpoint':
+          result = 'document'; // 'powerpoint';
+          break;
+        default:
+          result = 'document'; // 'file';
+          break;
+      }
+    }
+
+    return result;
   }
 }

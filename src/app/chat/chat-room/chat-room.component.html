@@ -36,13 +36,43 @@
         </ng-container>
 
         <ng-template #attachment>
-          <ion-label [ngClass]="getClassForMessageBubble(message)">
+          <ion-label [ngClass]="getClassForMessageBubble(message)" text-wrap>
             <div *ngIf="checkToShowMessageTime(message)" class="time">
               <p>{{getMessageDate(message.sent_time)}}</p>
             </div>
+
             <div class="message-body">
-              <div [innerHTML]="message.preview"></div>
+              <ng-container *ngIf="message.file && message.file.mimetype.includes('image')">
+                <div [innerHTML]="message.preview"></div>
+              </ng-container>
+
+              <ng-container *ngIf="message.file && message.file.mimetype.includes('video')">
+                <video controls>
+                  <ng-container *ngIf="message.file.transcoded">
+                    <source [src]="message.file.transcoded + '.mp4#t=0.5'" type="video/mp4">
+                    <source [src]="message.file.transcoded + '.webm'" type="video/webm">
+                    <source [src]="message.file.transcoded + '.ts'">
+                  </ng-container>
+                  <source [src]="message.file.url" [type]="message.file.mimetype">
+                  {{ message.file.url }}
+                </video>
+              </ng-container>
+
+              <ng-container *ngIf="message.file && (
+                !message.file.mimetype.includes('image') && !message.file.mimetype.includes('video')
+              )">
+                <ion-item (click)="previewFile(message.file)">
+                  <ion-icon name="document" slot="start"></ion-icon>
+                  <ion-label color="primary">
+                    {{ message.file.filename }}
+                  </ion-label>
+                  <ion-note *ngIf="getTypeByMime(message.file.mimetype)">
+                    {{ getTypeByMime(message.file.mimetype) }}
+                  </ion-note>
+                </ion-item>
+              </ng-container>
             </div>
+
             <ng-container *ngIf="!message.noAvatar && selectedChat.is_team">
               <div class="seen-text">
                 <p>{{message.sender_name}}</p>
