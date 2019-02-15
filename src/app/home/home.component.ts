@@ -73,7 +73,9 @@ export class HomeComponent extends RouterEnter {
       id: 2,
       name: 'project plan',
       description: '',
-      isEarned: true
+      isEarned: false,
+      image: 'https://www.filepicker.io/api/file/LbIC2009RLKG4Y11eQSS',
+      points: 100
     };
   }
 
