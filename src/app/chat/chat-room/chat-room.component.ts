@@ -39,6 +39,8 @@ export class ChatRoomComponent extends RouterEnter {
   ) {
     super(router);
     let role = this.storage.getUser().role;
+
+    // message by team
     this.utils.getEvent('team-message').subscribe(event => {
       let param = {
         event: event,
@@ -47,15 +49,23 @@ export class ChatRoomComponent extends RouterEnter {
         participants_only: this.selectedChat.participants_only
       }
       let receivedMessage = this.chatService.getMessageFromEvent(param);
+      if (receivedMessage && receivedMessage.file) {
+        receivedMessage.preview = this.attachmentPreview(receivedMessage.file);
+      }
+
       if (!this.utils.isEmpty(receivedMessage)) {
         this.messageList.push(receivedMessage);
         this._markAsSeen();
         this._scrollToBottom();
       }
     });
+
+    // singal by team typing
     this.utils.getEvent('team-typing').subscribe(event => {
       this._showTyping(event);
     });
+
+    // message by non-mentor
     if (role !== 'mentor') {
       this.utils.getEvent('team-no-mentor-message').subscribe(event => {
         let param = {
@@ -65,6 +75,10 @@ export class ChatRoomComponent extends RouterEnter {
           participants_only: this.selectedChat.participants_only
         }
         let receivedMessage =  this.chatService.getMessageFromEvent(param);
+        if (receivedMessage && receivedMessage.file) {
+          receivedMessage.preview = this.attachmentPreview(receivedMessage.file);
+        }
+
         if (!this.utils.isEmpty(receivedMessage)) {
           this._markAsSeen();
           this.messageList.push(receivedMessage);
@@ -433,10 +447,12 @@ export class ChatRoomComponent extends RouterEnter {
 
   async attach(type: string) {
     let message;
+    let options: any = {};
 
-    await this.filestackService.open({
-      accept: this.filestackService.getFileTypes(type),
-    }, (res: any) => {
+    if (this.filestackService.getFileTypes(type)) {
+      options.accept = this.filestackService.getFileTypes(type);
+    }
+    await this.filestackService.open(options, (res: any) => {
       return this.postAttachment(res);
     }, err => {
       console.log(err);
