@@ -186,6 +186,11 @@
               text-align: left;
             }
           }
+
+          video {
+            max-width: 190px; // to accommodate parent's 224px with fixed padding
+            padding: 0;
+          }
         }
       }
     }
