@@ -8,7 +8,7 @@ import { Subscription } from "rxjs";
 import { BrowserStorageService } from "@services/storage.service";
 import { RouterEnter } from "@services/router-enter.service";
 import { PusherService } from "@shared/pusher/pusher.service";
-import { Achievement } from "@app/achievements/achievements.service";
+import { Achievement, AchievementsService } from "@app/achievements/achievements.service";
 
 
 @Component({
@@ -26,7 +26,7 @@ export class HomeComponent extends RouterEnter {
   activity: Activity;
   loadingActivity: boolean = true;
   subscriptions: Subscription[] = [];
-  achievement: Achievement;
+  achievements: Array<Achievement>;
 
   constructor(
     public router: Router,
@@ -34,6 +34,7 @@ export class HomeComponent extends RouterEnter {
     private fastFeedbackService: FastFeedbackService,
     public utils: UtilsService,
     public storage: BrowserStorageService,
+    public achievementService: AchievementsService
   ) {
     super(router);
     let role = this.storage.getUser().role;
@@ -67,15 +68,14 @@ export class HomeComponent extends RouterEnter {
     this.loadingTodoItems = true;
     this.loadingProgress = true;
     this.loadingActivity = true;
+    this.achievements= [];
     // add a flag in local storage to indicate that is there any fast feedback open
     this.storage.set('fastFeedbackOpening', false);
-    this.achievement = {
-      id: 2,
-      name: 'project plan',
-      description: '',
-      points: 200,
-      isEarned: true
-    };
+
+    this.achievementService.getAchievements('desc').subscribe(achievements => {
+      this.achievements = achievements;
+      this.achievements.length = 3;
+    })
   }
 
   onEnter() {
