@@ -9,6 +9,7 @@ import { BrowserStorageService } from "@services/storage.service";
 import { RouterEnter } from "@services/router-enter.service";
 import { PusherService } from "@shared/pusher/pusher.service";
 import { Achievement, AchievementsService } from "@app/achievements/achievements.service";
+import { initDomAdapter } from "@angular/platform-browser/src/browser";
 
 
 @Component({
@@ -26,7 +27,8 @@ export class HomeComponent extends RouterEnter {
   activity: Activity;
   loadingActivity: boolean = true;
   subscriptions: Subscription[] = [];
-  achievements: Array<Achievement>;
+  totalAchievements: Array <Achievement>;
+  achievements: Array <Achievement>;
 
   constructor(
     public router: Router,
@@ -68,13 +70,44 @@ export class HomeComponent extends RouterEnter {
     this.loadingTodoItems = true;
     this.loadingProgress = true;
     this.loadingActivity = true;
+    this.totalAchievements= [];
     this.achievements= [];
     // add a flag in local storage to indicate that is there any fast feedback open
     this.storage.set('fastFeedbackOpening', false);
 
     this.achievementService.getAchievements('desc').subscribe(achievements => {
-      this.achievements = achievements;
-      this.achievements.length = 3;
+      this.totalAchievements = achievements;
+
+      let earnedArray = [];
+      let unEarned = [];
+      this.totalAchievements.forEach(item => {
+        if (item.isEarned === false) {
+          unEarned.push(item);
+        } else {
+          earnedArray.push(item);
+        }
+      });
+
+
+      if (!earnedArray.length) {
+        this.achievements = this.totalAchievements;
+        this.achievements.length = 3;
+
+     } else if (earnedArray.length = 1) {
+        this.achievements[0] = earnedArray[0];
+        this.achievements[1] = unEarned[0];
+        this.achievements[2] = unEarned[1];
+
+      } else if (earnedArray.length > 1) {
+        this.achievements[0] = earnedArray[0];
+        this.achievements[1] = earnedArray[1];
+        this.achievements[2] = unEarned[0];
+
+
+      } else if (earnedArray.length = this.totalAchievements.length) {
+        this.achievements = this.totalAchievements;
+        this.achievements.length = 3;
+      }
     })
   }
 
