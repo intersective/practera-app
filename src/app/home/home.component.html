@@ -20,6 +20,30 @@
     </ng-template>
   </div>
 
+  <ng-container *ngIf="achievements[0]">
+    <div class="achievement">
+      <ion-label color="medium">My Badges</ion-label>
+      <ion-label >
+        <a color="primary" routerLink="/achievements">VIEW ALL</a>
+      </ion-label>
+    </div>
+    <ion-grid class="dashboard-achievement">
+      <ion-row class="achievement-row" >
+        <ion-col
+          *ngFor="let achievement of achievements; let i = index;"
+          size-xs="4"
+          size-sm="3"
+          size-md="2"
+          align-self-center
+        >
+        <achievement-badge
+          [achievement]="achievement"
+        ></achievement-badge>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </ng-container>
+
   <ion-label color="medium">Things to do</ion-label>
   <ion-list class="todo-list" lines="none">
 
