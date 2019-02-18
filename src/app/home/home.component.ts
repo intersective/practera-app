@@ -136,7 +136,9 @@ export class HomeComponent extends RouterEnter {
           }
         });
 
-        if (!earned.length || earned.length === achievements.length) {
+        if (achievements.length <= 3) {
+          this.achievements = achievements;
+        } else if (!earned.length || earned.length === achievements.length) {
           this.achievements = achievements;
           this.achievements.length = 3;
         } else if (earned.length === 1 && unEarned.length > 1) {
