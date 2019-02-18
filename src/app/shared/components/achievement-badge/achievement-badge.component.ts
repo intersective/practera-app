@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { AchievementsService, Achievement } from '@app/achievements/achievements.service';
 
 @Component({
@@ -6,15 +6,15 @@ import { AchievementsService, Achievement } from '@app/achievements/achievements
   templateUrl: './achievement-badge.component.html',
   styleUrls: ['./achievement-badge.component.scss']
 })
-export class AchievementBadgeComponent implements OnInit {
+export class AchievementBadgeComponent {
 
   @Input() achievement: Achievement;
+  @Input() showName: Boolean = false;
 
   constructor() {}
 
-  ngOnInit() {}
   showAchievementDetails () {
-    console.log("show the trophy's name");
+    console.log("achievement detail:", this.achievement);
   }
 
 }
