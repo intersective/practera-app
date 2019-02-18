@@ -9,6 +9,7 @@ import { AchievementsService, Achievement } from '@app/achievements/achievements
 export class AchievementBadgeComponent {
 
   @Input() achievement: Achievement;
+  @Input() showName: Boolean = false;
 
   constructor() {}
 
