@@ -9,8 +9,6 @@ import { BrowserStorageService } from "@services/storage.service";
 import { RouterEnter } from "@services/router-enter.service";
 import { PusherService } from "@shared/pusher/pusher.service";
 import { Achievement, AchievementsService } from "@app/achievements/achievements.service";
-import { initDomAdapter } from "@angular/platform-browser/src/browser";
-
 
 @Component({
   selector: "app-home",
@@ -27,7 +25,7 @@ export class HomeComponent extends RouterEnter {
   activity: Activity;
   loadingActivity: boolean = true;
   subscriptions: Subscription[] = [];
-  achievements: Array <Achievement>;
+  achievements: Array<Achievement>;
 
   constructor(
     public router: Router,
