@@ -141,9 +141,12 @@ body {
   }
 }
 .dashboard-achievement {
-  margin: 0 auto;
+
   .achievement-row {
     margin: auto;
     text-align: center;
+    ion-col {
+      margin:auto
+    }
   }
 }
