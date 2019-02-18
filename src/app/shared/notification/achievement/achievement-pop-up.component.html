@@ -1,0 +1,27 @@
+<ion-content color="light" class="pop-up-content" text-center>
+
+  <div class="imgage-content">
+    <div class="image">
+        <img [src]="data.image ? data.image : '/assets/achievement-popup-default.svg'">
+    </div>
+  </div>
+  <div class="details-container">
+
+      <div class="div-after-img" *ngIf="type === 'notification'">
+          <p class="title notify">Congratulations</p>
+          <p class="subtitle">You have earned a new badge</p>
+          <div class="description" *ngIf="data.achievementName">Unlock {{data.achievementName}}</div>
+        </div>
+
+    <div class="div-after-img" *ngIf="type !== 'notification'">
+      <p class="title" *ngIf="data.achievementName">{{data.achievementName}}</p>
+      <p class="points" *ngIf="data.points && type !== 'notification'">{{data.points}} points!</p>
+      <div class="description" *ngIf="data.description">{{data.description}}</div>
+    </div>
+  
+    <div class="div-after-img">
+      <ion-button (click)="confirmed()" shape="round" color="primary" expand="full">OK</ion-button>
+    </div>
+  </div>
+
+</ion-content>
