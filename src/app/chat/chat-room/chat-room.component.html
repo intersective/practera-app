@@ -63,17 +63,16 @@
             <ng-container *ngIf="message.file && (
               !message.file.mimetype.includes('image') && !message.file.mimetype.includes('video')
             )">
-              <div class="message-body">
-                <ion-item (click)="previewFile(message.file)">
-                  <ion-icon name="document" slot="start"></ion-icon>
-                  <ion-label color="primary">
-                    {{ message.file.filename }}
-                  </ion-label>
-                  <ion-note *ngIf="getTypeByMime(message.file.mimetype)">
-                    {{ getTypeByMime(message.file.mimetype) }}
-                  </ion-note>
-                </ion-item>
-              </div>
+              <ion-item class="message-body general-attachment" (click)="previewFile(message.file)">
+                <ion-ripple-effect></ion-ripple-effect>
+                <ion-icon name="document" slot="start"></ion-icon>
+                <ion-label color="primary">
+                  {{ message.file.filename }}
+                </ion-label>
+                <ion-note *ngIf="getTypeByMime(message.file.mimetype)">
+                  {{ getTypeByMime(message.file.mimetype) }}
+                </ion-note>
+              </ion-item>
             </ng-container>
 
             <ng-container *ngIf="!message.noAvatar && selectedChat.is_team">
