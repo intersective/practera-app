@@ -1,12 +1,19 @@
-import { Component, OnInit, Input } from '@angular/core';
-
+import { Component, Input } from '@angular/core';
+import { AchievementsService, Achievement } from '@app/achievements/achievements.service';
 
 @Component({
-  selector: 'app-achievement-badge',
+  selector: 'achievement-badge',
   templateUrl: './achievement-badge.component.html',
   styleUrls: ['./achievement-badge.component.scss']
 })
 export class AchievementBadgeComponent {
 
-}
+  @Input() achievement: Achievement;
 
+  constructor() {}
+
+  showAchievementDetails () {
+    console.log("achievement detail:", this.achievement);
+  }
+
+}
