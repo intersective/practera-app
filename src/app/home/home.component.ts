@@ -139,11 +139,11 @@ export class HomeComponent extends RouterEnter {
         if (!earned.length || earned.length === achievements.length) {
           this.achievements = achievements;
           this.achievements.length = 3;
-        } else if (earned.length = 1) {
+        } else if (earned.length === 1 && unEarned.length > 1) {
           this.achievements[0] = earned[0];
           this.achievements[1] = unEarned[0];
           this.achievements[2] = unEarned[1];
-        } else if (earned.length > 1) {
+        } else if (earned.length > 1 && unEarned.length > 0) {
           this.achievements[0] = earned[0];
           this.achievements[1] = earned[1];
           this.achievements[2] = unEarned[0];
