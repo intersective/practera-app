@@ -41,26 +41,29 @@
               <p>{{getMessageDate(message.sent_time)}}</p>
             </div>
 
-            <div class="message-body">
-              <ng-container *ngIf="message.file && message.file.mimetype.includes('image')">
+            <ng-container *ngIf="message.file && message.file.mimetype.includes('video')">
+              <video controls class="message-body">
+                <ng-container *ngIf="message.file.transcoded">
+                  <source [src]="message.file.transcoded + '.mp4#t=0.5'" type="video/mp4">
+                  <source [src]="message.file.transcoded + '.webm'" type="video/webm">
+                  <source [src]="message.file.transcoded + '.ts'">
+                </ng-container>
+                <source [src]="message.file.url" [type]="message.file.mimetype">
+                {{ message.file.url }}
+              </video>
+            </ng-container>
+
+            <ng-container *ngIf="message.file && message.file.mimetype.includes('image')">
+              <div class="message-body image" (click)="previewFile(message.file)">
                 <div [innerHTML]="message.preview"></div>
-              </ng-container>
+              </div>
+            </ng-container>
 
-              <ng-container *ngIf="message.file && message.file.mimetype.includes('video')">
-                <video controls>
-                  <ng-container *ngIf="message.file.transcoded">
-                    <source [src]="message.file.transcoded + '.mp4#t=0.5'" type="video/mp4">
-                    <source [src]="message.file.transcoded + '.webm'" type="video/webm">
-                    <source [src]="message.file.transcoded + '.ts'">
-                  </ng-container>
-                  <source [src]="message.file.url" [type]="message.file.mimetype">
-                  {{ message.file.url }}
-                </video>
-              </ng-container>
 
-              <ng-container *ngIf="message.file && (
-                !message.file.mimetype.includes('image') && !message.file.mimetype.includes('video')
-              )">
+            <ng-container *ngIf="message.file && (
+              !message.file.mimetype.includes('image') && !message.file.mimetype.includes('video')
+            )">
+              <div class="message-body">
                 <ion-item (click)="previewFile(message.file)">
                   <ion-icon name="document" slot="start"></ion-icon>
                   <ion-label color="primary">
@@ -70,8 +73,8 @@
                     {{ getTypeByMime(message.file.mimetype) }}
                   </ion-note>
                 </ion-item>
-              </ng-container>
-            </div>
+              </div>
+            </ng-container>
 
             <ng-container *ngIf="!message.noAvatar && selectedChat.is_team">
               <div class="seen-text">
