@@ -70,10 +70,12 @@ export class NotificationService {
   /** pop up achievement notification and detail
     * sample call for notification popup
     NotificationService.achievementPopUp('notification',{
+      image: 'url' (optinal - have default one)
       achievementName: "Sample Headding"
     });
     * sample call for info popup
     NotificationService.achievementPopUp('',{
+      image: 'url' (optinal - have default one)
       achievementName: "Sample Headding",
       points: "100",
       description: "qwert yuiop asdfg asdff"

@@ -83,12 +83,6 @@ export class AssessmentComponent extends RouterEnter {
     this.loadingAssessment = true;
     this.loadingSubmission = true;
     this.loadingFeedbackReviewed = true;
-    this.notificationService.achievementPopUp('notification',{
-      achievementName: "Project Plan",
-      subTitle: "sample subTitle",
-      points: "100",
-      description: "qwert yuiop asdfg asdff"
-    });
   }
 
   onEnter() {
