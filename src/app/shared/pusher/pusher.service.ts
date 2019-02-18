@@ -79,7 +79,6 @@ export class PusherService {
         env: environment.env
       }})
       .pipe(map(response => {
-        console.log(response.data);
         if (response.data) {
           return this._subscribeChannels(response.data);
         }
