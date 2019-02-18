@@ -1,5 +1,6 @@
-.chat-list {
+$message-body-size: 224px;
 
+.chat-list {
   background-color: transparent !important;
 
   ion-item {
@@ -118,12 +119,23 @@
         margin-bottom: 8px;
       }
 
-      .message-body {
+      video.message-body {
+        padding: 0;
+        max-width: $message-body-size;
+        border-radius: 25px;
+      }
+
+      div.message-body {
         padding: 8px 16px;
         min-width: 73px;
-        max-width: 224px;
+        max-width: $message-body-size;
         border-radius: 25px;
         width: fit-content;
+
+        &.image {
+          padding: 0;
+          background: none;
+        }
 
         p,.message-text {
           color: black;
