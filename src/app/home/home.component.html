@@ -27,14 +27,13 @@
         <a color="primary" routerLink="/achievements">VIEW ALL</a>
       </ion-label>
     </div>
-    <ion-grid class="dashboard-achievement">
-      <ion-row class="achievement-row" >
+    <ion-grid>
+      <ion-row text-center>
         <ion-col
           *ngFor="let achievement of achievements; let i = index;"
           size-xs="4"
           size-sm="3"
           size-md="2"
-          align-self-center
         >
         <achievement-badge
           [achievement]="achievement"
