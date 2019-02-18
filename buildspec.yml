@@ -16,10 +16,10 @@ phases:
   build:
     commands:
       - echo Build started on `date`
-      - sudo ng build --configuration=$(BUILD_CONFIG)
+      - sudo ng build --configuration=$BUILD_CONFIG
   post_build:
     commands:
-      - aws s3 sync www/ s3://$(S3_BUCKET)/ --delete
+      - aws s3 sync www/ s3://$S3_BUCKET/ --delete
       - echo Build completed on `date`
 artifacts:
   type: zip
