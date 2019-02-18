@@ -89,7 +89,7 @@ export class HomeComponent extends RouterEnter {
       });
 
 
-      if (!earnedArray.length) {
+      if (!earnedArray.length || earnedArray.length === this.totalAchievements.length) {
         this.achievements = this.totalAchievements;
         this.achievements.length = 3;
 
@@ -104,9 +104,6 @@ export class HomeComponent extends RouterEnter {
         this.achievements[2] = unEarned[0];
 
 
-      } else if (earnedArray.length = this.totalAchievements.length) {
-        this.achievements = this.totalAchievements;
-        this.achievements.length = 3;
       }
     })
   }
