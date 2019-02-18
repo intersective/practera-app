@@ -9,6 +9,12 @@
     font-size: 24px;
   }
 }
+.badge-name {
+  font-size: 14px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 .badge-point {
   background-color: var(--ion-color-primary);
   border-radius: 8px;
