@@ -3,6 +3,7 @@ import { Observable, of } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { RequestService } from '@shared/request/request.service';
 import { UtilsService } from '@services/utils.service';
+import { BrowserStorageService } from '@services/storage.service';
 
 /**
  * @name api
@@ -14,6 +15,7 @@ const api = {
     achievements: 'api/v2/motivations/achievement/list.json'
   },
   post: {
+    todoItem: 'api/v2/motivations/todo_item/edit.json'
   }
 };
 
@@ -37,6 +39,7 @@ export class AchievementsService {
   constructor(
     private request: RequestService,
     private utils: UtilsService,
+    private storage: BrowserStorageService,
   ) {}
 
   getAchievements(order?): Observable<any> {
@@ -92,5 +95,14 @@ export class AchievementsService {
 
   getTotalPoints() {
     return this.totalPoints;
+  }
+
+  markAchievementAsSeen(achievementId) {
+    let postData = {
+      project_id: this.storage.getUser().projectId,
+      identifier: 'Achievement-' + achievementId,
+      is_done: true
+    };
+    return this.request.post(api.post.todoItem, postData);
   }
 }
