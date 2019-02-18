@@ -1,7 +1,8 @@
 <div class="badge" (click)="showAchievementDetails()">
-  <img [src]="achievement.image? achievement.image : '/assets/achievement.svg' " [ngClass]="{'black-white-image' : !achievement.isEarned}">
+  <img
+    [src]="achievement.image ? achievement.image : '/assets/achievement.svg'"
+    [ngClass]="{'black-white-image' : !achievement.isEarned}">
   <ion-icon  *ngIf="achievement.isEarned" name="checkmark-circle" color="primary" ></ion-icon>
   <ion-icon  *ngIf="!achievement.isEarned" name="lock" color="medium"></ion-icon>
 </div>
-  <ion-text *ngIf= "achievement.points" class="badge-point">{{achievement.points}} Points</ion-text>
-
+<ion-text *ngIf= "achievement.points" class="badge-point">{{achievement.points}} Points</ion-text>

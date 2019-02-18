@@ -3,6 +3,7 @@ import { RouterModule } from '@angular/router';
 import { NgModule } from '@angular/core';
 import { AchievementsRoutingModule } from './achievements-routing.module';
 import { AchievementsComponent } from './achievements.component';
+import { AchievementsService } from './achievements.service';
 
 @NgModule({
   imports: [
@@ -11,6 +12,9 @@ import { AchievementsComponent } from './achievements.component';
   ],
   declarations: [
     AchievementsComponent
+  ],
+  providers: [
+    AchievementsService
   ]
 })
 
