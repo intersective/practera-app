@@ -26,10 +26,11 @@
     </ion-label>
   </div>
     <ion-grid class="dashboard-achievement">
-      <ion-row class="achievement-row">
+      <ion-row class="achievement-row" >
         <ion-col
         *ngFor="let achievement of achievements; let i = index;"
         size-xs="3"
+        [center]
       >
       <achievement-badge
         [achievement]="achievement"
