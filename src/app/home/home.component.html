@@ -19,25 +19,28 @@
       </circle-progress>
     </ng-template>
   </div>
+
   <div class="achievement">
     <ion-label color="medium"> My Achievement</ion-label>
     <ion-label >
-      <a color="primary" routerLink="">VIEW ALL</a>
+      <a color="primary" routerLink="/achievements">VIEW ALL</a>
     </ion-label>
   </div>
-    <ion-grid class="dashboard-achievement">
-      <ion-row class="achievement-row" >
-        <ion-col
+  <ion-grid class="dashboard-achievement">
+    <ion-row class="achievement-row" >
+      <ion-col
         *ngFor="let achievement of achievements; let i = index;"
-        size-xs="3"
+        size-xs="4"
+        size-sm="3"
+        size-md="2"
         align-self-center
       >
       <achievement-badge
         [achievement]="achievement"
       ></achievement-badge>
       </ion-col>
-      </ion-row>
-    </ion-grid>
+    </ion-row>
+  </ion-grid>
 
   <ion-label color="medium">Things to do</ion-label>
   <ion-list class="todo-list" lines="none">
