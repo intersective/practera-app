@@ -141,8 +141,12 @@ export class PusherService {
       }
       if (channel.channel.includes('private-' + environment.env + '-notification-')) {
         this.channelNames.notification = channel.channel;
-        this.pusher.subscribe(channel.channel).bind('notification', data => {
+        this.channels.notification = this.pusher.subscribe(channel.channel);
+        this.channels.notification.bind('notification', data => {
           this.utils.broadcastEvent('notification', data);
+        });
+        this.channels.notification.bind('achievement', data => {
+          this.utils.broadcastEvent('achievement', data);
         });
         return;
       }
