@@ -67,28 +67,29 @@ export class NotificationService {
     toast.present();
   }
 
-  /** pop up achievement notification and detail
-    * sample call for notification popup
-    NotificationService.achievementPopUp('notification',{
-      image: 'url' (optinal - have default one)
-      achievementName: "Sample Headding"
-    });
-    * sample call for info popup
-    NotificationService.achievementPopUp('',{
-      image: 'url' (optinal - have default one)
-      achievementName: "Sample Headding",
-      points: "100",
-      description: "qwert yuiop asdfg asdff"
-    });
-   **/
-  async achievementPopUp(type, data) {
+  /**
+   * pop up achievement notification and detail
+   * sample call for notification popup
+   * NotificationService.achievementPopUp('notification', {
+   *   image: 'url' (optinal - have default one)
+   *   name: "Sample Headding"
+   * });
+   * sample call for info popup
+   * NotificationService.achievementPopUp('', {
+   *    image: 'url' (optinal - have default one)
+   *    name: "Sample Headding",
+   *    points: "100",
+   *    description: "qwert yuiop asdfg asdff"
+   * });
+   */
+  async achievementPopUp(type, achievement) {
     const component = AchievementPopUpComponent;
     const componentProps = {
       type,
-      data
+      achievement
     };
-    const modal = await this.modal(component, componentProps,{
-      'cssClass':'achievement-popup',
+    const modal = await this.modal(component, componentProps, {
+      'cssClass': 'achievement-popup',
       'keyboardClose': false,
       'backdropDismiss': false
     });

@@ -94,14 +94,12 @@ body {
       font-size: 14px;
       font-weight: normal;
       color: var(--ion-color-primary);
-      ;
       text-shadow: none;
       height: 20px;
       margin-top: 0px;
     }
   }
 }
-
 
 .background-white {
   background: white;
@@ -149,8 +147,8 @@ body {
 
 .achievement-popup {
   .modal-wrapper {
-    --height: 50% !important;
-    --width: 50% !important;
+    --height: 80% !important;
+    --width: 70% !important;
     --border-radius: 12% !important;
     --background: transparent !important;
   }
