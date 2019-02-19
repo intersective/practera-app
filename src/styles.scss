@@ -147,9 +147,10 @@ body {
 
 .achievement-popup {
   .modal-wrapper {
-    --height: 80% !important;
-    --width: 70% !important;
-    --border-radius: 12% !important;
-    --background: transparent !important;
+    --height: 80%;
+    --width: 70%;
+    --border-radius: 12%;
+    --background: transparent;
+    --box-shadow: none;
   }
 }
