@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { ModalController } from '@ionic/angular';
+import { Achievement, AchievementsService } from "@app/achievements/achievements.service";
 
 @Component({
   selector: 'app-achievement-pop-up',
@@ -7,11 +8,12 @@ import { ModalController } from '@ionic/angular';
   styleUrls: ['achievement-pop-up.component.scss']
 })
 export class AchievementPopUpComponent {
-  type = '';
-  data = {};
+  type: string = '';
+  achievement: Achievement;
 
   constructor(
-    public modalController: ModalController
+    public modalController: ModalController,
+    public achievementService: AchievementsService
   ) {}
 
   confirmed() {
