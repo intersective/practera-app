@@ -25,7 +25,7 @@ export interface Achievement {
   description: string;
   points?: number;
   image?: string;
-  isEarned: boolean;
+  isEarned?: boolean;
   earnedDate?: string;
 }
 
@@ -103,6 +103,6 @@ export class AchievementsService {
       identifier: 'Achievement-' + achievementId,
       is_done: true
     };
-    return this.request.post(api.post.todoItem, postData);
+    return this.request.post(api.post.todoItem, postData).subscribe();
   }
 }
