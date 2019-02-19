@@ -1,3 +1,4 @@
+import { Router } from '@angular/router';
 import { Component, OnInit } from '@angular/core';
 import { ModalController } from '@ionic/angular';
 import { GoMobileService, Profile } from './go-mobile.service';
@@ -47,6 +48,7 @@ export class GoMobileComponent implements OnInit {
    };
   constructor(
     public modalController: ModalController,
+    private router: Router,
     private GoMobileService: GoMobileService,
     private utils: UtilsService,
     private notification: NotificationService,
@@ -54,6 +56,9 @@ export class GoMobileComponent implements OnInit {
   ) {}
 
   ngOnInit() {
+    if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
+      this.router.navigate(['/switcher']);
+    }
     this.profile.email = this.storage.getUser().email;
     this.profile.contactNumber = this.storage.getUser().contactNumber;
     if (this.profile.contactNumber) {

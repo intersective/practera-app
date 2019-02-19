@@ -150,6 +150,9 @@ export class AuthRegistrationComponent implements OnInit {
               })
               .subscribe(response => {
                   let redirect = ['go-mobile'];
+                  if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
+                    redirect = ['switcher'];
+                  }
                   this.showPopupMessages('shortMessage', 'Registration success!', redirect);
                 },
                 error => {
