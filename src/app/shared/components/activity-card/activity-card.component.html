@@ -2,13 +2,18 @@
   color="primary"
   class="card practera-card"
   [ngClass]="{
+     'loading-card': activityLoading,
      'locked-card': activity.isLocked,
      'default-image-card': !activity.leadImage
   }"
   [ngStyle]="{'background-image': backgroundImageStyle }"
 >
-  <ion-card-content [ngClass]="{'feedback-card': activity.hasFeedback }">
+  <ion-card-content *ngIf="activity" [ngClass]="{'feedback-card': activity.hasFeedback }">
     <h4 color="primary-contrast">Activity</h4>
     <h2 color="primary-contrast" class="activity-name">{{activity.name}}</h2>
+  </ion-card-content>
+  <ion-card-content *ngIf="activityLoading">
+      <h4 color="primary-contrast">Activity</h4>
+      <h2 color="primary-contrast" class="activity-name">loading...</h2>
   </ion-card-content>
 </ion-card>

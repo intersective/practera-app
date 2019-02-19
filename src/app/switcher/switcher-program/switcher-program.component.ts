@@ -4,6 +4,7 @@ import { AuthService } from '../../auth/auth.service';
 import { Injectable, Inject } from '@angular/core';
 import { SwitcherService, ProgramObj } from '../switcher.service';
 import { RouterEnter } from '@services/router-enter.service';
+import { LoadingController } from '@ionic/angular';
 
 @Injectable({
   providedIn: 'root'
@@ -17,9 +18,10 @@ import { RouterEnter } from '@services/router-enter.service';
 
 export class SwitcherProgramComponent implements OnInit {
   programs: Array<ProgramObj>;
-
+ 
   constructor(
     public router: Router,
+    public loadingController: LoadingController,
     private authService: AuthService,
     private switcherService: SwitcherService,
   ) {}
@@ -31,9 +33,15 @@ export class SwitcherProgramComponent implements OnInit {
       });
   }
 
-  switch(index) {
+  async switch(index) {
+    const loading = await this.loadingController.create({
+      message: 'loading...'
+    });
+    await loading.present();
+
     this.switcherService.switchProgram(this.programs[index])
       .subscribe(() => {
+        loading.dismiss();
         this.router.navigate(['/app/home']);
       });
   }

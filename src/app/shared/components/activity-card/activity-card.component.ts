@@ -18,9 +18,13 @@ export class ActivityCardComponent implements OnInit {
     leadImage?: string,
   }
   backgroundImageStyle: string = '';
+  activityLoading: boolean = true;
   constructor ( @Inject(DOCUMENT) private document: Document ) { }
 
   ngOnInit() {
+    if (this.activity.id) {
+      this.activityLoading = false;
+    }
     this.backgroundImageStyle = '';
     if (this.activity.leadImage) {
       this.backgroundImageStyle = 'url(' + this.activity.leadImage + '), linear-gradient( rgba(0, 0, 0, .4), rgba(0, 0, 0, 0.2) )';
