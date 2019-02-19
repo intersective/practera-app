@@ -1,0 +1,22 @@
+.go-mobile {
+    ion-grid {
+        background-image: url(/assets/img/mobile-bg.png);
+        background-size: contain;
+        background-repeat: no-repeat;
+        background-position-x: center;
+
+        p {
+            padding-left: 10em;
+            padding-right: 10em;
+        }
+
+        img {
+            padding-top: 3.5em;
+        }
+
+        ion-item {
+            
+        }
+    }
+
+}
