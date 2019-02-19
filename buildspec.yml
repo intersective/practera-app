@@ -19,7 +19,8 @@ phases:
       - sudo ng build --configuration=$BUILD_CONFIG
   post_build:
     commands:
-      - aws s3 sync www/ s3://$S3_BUCKET/ --delete --recursive --cf-invalidate --add-header=Cache-Control:max-age=0,public
+      - aws s3 sync www/ s3://$S3_BUCKET/ --delete
+      - aws cloudfront create-invalidation --distribution-id $CF_DIST_ID --paths '/*'
       - echo Build completed on `date`
 artifacts:
   type: zip
