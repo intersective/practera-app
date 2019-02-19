@@ -96,7 +96,13 @@ export class HomeService {
 
       // todo item for user to see the achievement earned message
       if (todoItem.identifier.includes('Achievement-')) {
-        console.log('Achievement pop-up:', todoItem);
+        this.notification.achievementPopUp('notification', {
+          id: todoItem.meta.id,
+          name: todoItem.meta.name,
+          description: todoItem.meta.description,
+          points: todoItem.meta.points,
+          image: todoItem.meta.badge
+        });
       }
     });
     return todoItems;
