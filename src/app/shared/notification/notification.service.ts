@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { ModalController, AlertController, ToastController } from '@ionic/angular';
 import { AlertOptions } from '@ionic/core';
 import { PopUpComponent } from './pop-up/pop-up.component';
-import { AchievementPopUpComponent } from './achievement/achievement-pop-up.component';
+import { AchievementPopUpComponent } from './achievement-pop-up/achievement-pop-up.component';
 
 @Injectable({
   providedIn: 'root'
