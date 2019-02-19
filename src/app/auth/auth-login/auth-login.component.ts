@@ -17,6 +17,7 @@ export class AuthLoginComponent {
     password: new FormControl('', [Validators.required]),
   });
   isLoggingIn = false;
+  isPreferredDevice = false;
 
   constructor(
     private router: Router,
@@ -48,7 +49,11 @@ export class AuthLoginComponent {
       password: this.loginForm.value.password,
     }).subscribe(res => {
       this.isLoggingIn = false;
-      this.router.navigate(['/switcher']);
+      if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
+        this.router.navigate(['/switcher']);
+      } else {
+        this.router.navigate(['/go-mobile']);
+      }
     }, err => {
       this.notificationService.alert({
         message: 'Your email or password is incorrect, please try again.',
