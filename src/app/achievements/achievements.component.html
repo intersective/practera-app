@@ -1,1 +1,26 @@
-<h1>Achievement list</h1>
+<ion-header>
+  <ion-toolbar color="light">
+    <ion-icon name="arrow-back" (click)="back()" color="primary" slot="start" margin-start></ion-icon>
+    <ion-title text-center>Badges</ion-title>
+  </ion-toolbar>
+</ion-header>
+<ion-content padding color="light" text-center>
+  <ng-container *ngIf="loadingAchievements">
+    <ion-spinner></ion-spinner>
+  </ng-container>
+  <ion-grid>
+    <ion-row>
+      <ion-col
+        *ngFor="let achievement of achievements; let i = index;"
+        size-xs="4"
+        size-sm="3"
+        size-md="2"
+      >
+        <achievement-badge
+          [achievement]="achievement"
+          [showName]=true
+        ></achievement-badge>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+</ion-content>
