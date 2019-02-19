@@ -71,6 +71,7 @@ export class AuthService {
       success: rawData.success,
       tutorial: data.tutorial,
       apikey: data.apikey,
+      contact_number: data.contact_number,
       programs: data.Timelines.map(function(timeline) {
         return {
           enrolment: timeline.Enrolment,
@@ -116,6 +117,7 @@ export class AuthService {
   private _handleLoginResponse(response) {
     const norm = this._normaliseAuth(response);
     if (response.data) {
+      this.storage.setUser({ contactNumber: norm.contact_number});
       this.storage.set('apikey', norm.apikey);
       this.storage.set('programs', norm.programs);
       this.storage.set('isLoggedIn', true);
