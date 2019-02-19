@@ -2,6 +2,8 @@ import { Injectable } from '@angular/core';
 import { ModalController, AlertController, ToastController } from '@ionic/angular';
 import { AlertOptions } from '@ionic/core';
 import { PopUpComponent } from './pop-up/pop-up.component';
+import { AchievementPopUpComponent } from './achievement-pop-up/achievement-pop-up.component';
+import { Achievement, AchievementsService } from "@app/achievements/achievements.service";
 
 @Injectable({
   providedIn: 'root'
@@ -11,7 +13,8 @@ export class NotificationService {
   constructor(
     private modalController: ModalController,
     private alertController: AlertController,
-    private toastController: ToastController
+    private toastController: ToastController,
+    public achievementService: AchievementsService
   ) {}
 
   /**
@@ -65,4 +68,37 @@ export class NotificationService {
     });
     toast.present();
   }
+
+  /**
+   * pop up achievement notification and detail
+   * sample call for notification popup
+   * NotificationService.achievementPopUp('notification', {
+   *   image: 'url' (optinal - have default one)
+   *   name: "Sample Headding"
+   * });
+   * sample call for info popup
+   * NotificationService.achievementPopUp('', {
+   *    image: 'url' (optinal - have default one)
+   *    name: "Sample Headding",
+   *    points: "100",
+   *    description: "qwert yuiop asdfg asdff"
+   * });
+   */
+  async achievementPopUp(type: string, achievement: Achievement) {
+    const component = AchievementPopUpComponent;
+    const componentProps = {
+      type,
+      achievement
+    };
+    if (type == 'notification') {
+      this.achievementService.markAchievementAsSeen(achievement.id);
+    }
+    const modal = await this.modal(component, componentProps, {
+      'cssClass': 'achievement-popup',
+      'keyboardClose': false,
+      'backdropDismiss': false
+    });
+    return modal;
+  }
+
 }
