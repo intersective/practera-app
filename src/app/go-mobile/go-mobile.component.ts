@@ -76,7 +76,6 @@ export class GoMobileComponent implements OnInit {
 
   dismiss() {
     // change the flag to false
-    this.storage.set('goMobileOpening', false);
     this.modalController.dismiss();
   }
 

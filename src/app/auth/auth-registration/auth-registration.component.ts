@@ -149,16 +149,16 @@ export class AuthRegistrationComponent implements OnInit {
                 password: this.confirmPassword
               })
               .subscribe(response => {
-                  let redirect = ['switcher'];
+                  let redirect = ['go-mobile'];
                   this.showPopupMessages('shortMessage', 'Registration success!', redirect);
                 },
                 error => {
-                  this.showPopupMessages('shortMessage', 'Registration not compleate!');
+                  this.showPopupMessages('shortMessage', 'Registration not complete!');
                 }
               );
           },
           error => {
-            this.showPopupMessages('shortMessage', 'Registration not compleate!');
+            this.showPopupMessages('shortMessage', 'Registration not complete!');
           }
         );
     }
