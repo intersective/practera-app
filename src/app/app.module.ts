@@ -9,6 +9,7 @@ import { NotificationModule } from '@shared/notification/notification.module';
 import { AuthModule } from './auth/auth.module';
 import { FastFeedbackModule } from './fast-feedback/fast-feedback.module';
 import { ReviewRatingModule } from './review-rating/review-rating.module';
+import { GoMobileModule } from './go-mobile/go-mobile.module';
 
 import { AppComponent } from './app.component';
 import { NgCircleProgressModule } from 'ng-circle-progress';
@@ -36,6 +37,7 @@ import { PusherModule } from '@shared/pusher/pusher.module';
     EmbedVideo.forRoot(),
     NotificationModule,
     FastFeedbackModule,
+    GoMobileModule,
     ReviewRatingModule,
     PusherModule.forRoot({
       apiurl: environment.APIEndpoint,
