@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { ModalController, AlertController, ToastController } from '@ionic/angular';
 import { AlertOptions } from '@ionic/core';
 import { PopUpComponent } from './pop-up/pop-up.component';
+import { AchievementPopUpComponent } from './achievement-pop-up/achievement-pop-up.component';
 
 @Injectable({
   providedIn: 'root'
@@ -65,4 +66,34 @@ export class NotificationService {
     });
     toast.present();
   }
+
+  /**
+   * pop up achievement notification and detail
+   * sample call for notification popup
+   * NotificationService.achievementPopUp('notification', {
+   *   image: 'url' (optinal - have default one)
+   *   name: "Sample Headding"
+   * });
+   * sample call for info popup
+   * NotificationService.achievementPopUp('', {
+   *    image: 'url' (optinal - have default one)
+   *    name: "Sample Headding",
+   *    points: "100",
+   *    description: "qwert yuiop asdfg asdff"
+   * });
+   */
+  async achievementPopUp(type, achievement) {
+    const component = AchievementPopUpComponent;
+    const componentProps = {
+      type,
+      achievement
+    };
+    const modal = await this.modal(component, componentProps, {
+      'cssClass': 'achievement-popup',
+      'keyboardClose': false,
+      'backdropDismiss': false
+    });
+    return modal;
+  }
+
 }
