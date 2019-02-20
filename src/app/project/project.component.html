@@ -62,9 +62,8 @@
 
                 </ion-item>
               </ng-container>
-              <ion-item class="activity-item ion-activatable" *ngFor="let activity of milestone.Activity" color="light">
-                <ion-ripple-effect></ion-ripple-effect>
-                <ng-container *ngIf="loadingProgress; else progressTpl">
+              <ion-item class="activity-item" *ngFor="let activity of milestone.Activity" color="light">
+                 <ng-container *ngIf="loadingProgress; else progressTpl">
                     <ng-container *ngTemplateOutlet="loadingCircle"></ng-container>
                 </ng-container>
                 <ng-template #progressTpl>
@@ -80,7 +79,7 @@
                     <ion-icon  name="lock" color="medium" class="icon-lock"></ion-icon>
                   </ng-template>
                 </ng-template>
-                <app-activity-card [activity]="activity" (click)="!activity.isLocked && goToActivity(activity.id)" class="activity-card" ></app-activity-card>
+                <app-activity-card [activity]="activity" (click)="!activity.isLocked && goToActivity(activity.id)" class="activity-card ion-activatable" ></app-activity-card>
 
               </ion-item>
             </ion-list>
@@ -126,7 +125,7 @@
           <div class='row cards'>
             <ng-container *ngTemplateOutlet="loadingCircle"></ng-container>
           </div>
-          <app-activity-card class="activity-card loading-card" ></app-activity-card>
+          <app-activity-card class="activity-card" [activity]="false" [loading]="true"></app-activity-card>
         </ion-item>
       </ion-list>
     </div>
