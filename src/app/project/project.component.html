@@ -58,7 +58,7 @@
                   <div class='row cards'>
                     <ng-container *ngTemplateOutlet="loadingCircle"></ng-container>
                   </div>
-                  <app-activity-card class="activity-card  loading-card" ></app-activity-card>
+                  <app-activity-card class="activity-card" [activity]="false" [loading]="true"></app-activity-card>
 
                 </ion-item>
               </ng-container>
