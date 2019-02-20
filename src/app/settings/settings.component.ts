@@ -83,6 +83,7 @@ export class SettingsComponent extends RouterEnter {
         this.mask = this.formatMasks[this.countryModel];
       }
     }
+
   };
 
   private checkCurrentContactNumberOrigin() {

@@ -154,3 +154,21 @@ body {
     --box-shadow: none;
   }
 }
+
+
+.intercom-namespace .intercom-launcher-discovery-frame,
+.intercom-namespace .intercom-launcher-frame {
+  transform: scale(.7) translateX(30px);
+  top: 10px !important;
+  right: 0px !important;
+
+}
+
+@media only screen and (max-device-width: 667px), screen and (max-width: 450px) {
+  .intercom-namespace .intercom-launcher-discovery-frame,
+  .intercom-namespace .intercom-launcher-frame {
+    transform: scale(.7) translateX(30px);
+    top: 0px !important;
+    right: 0px !important;
+  }
+}

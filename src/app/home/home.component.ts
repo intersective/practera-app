@@ -9,6 +9,7 @@ import { BrowserStorageService } from "@services/storage.service";
 import { RouterEnter } from "@services/router-enter.service";
 import { PusherService } from "@shared/pusher/pusher.service";
 import { Achievement, AchievementsService } from "@app/achievements/achievements.service";
+import { Intercom } from 'ng-intercom';
 
 @Component({
   selector: "app-home",
@@ -28,6 +29,7 @@ export class HomeComponent extends RouterEnter {
   achievements: Array<Achievement>;
 
   constructor(
+    public intercom: Intercom,
     public router: Router,
     private homeService: HomeService,
     private fastFeedbackService: FastFeedbackService,
@@ -69,11 +71,22 @@ export class HomeComponent extends RouterEnter {
     this.loadingActivity = true;
     this.achievements = [];
     // add a flag in local storage to indicate that is there any fast feedback open
-    this.storage.set('fastFeedbackOpening', false);
+    this.storage.set('fastFeedbackOpening', false);    
+    this.intercom.boot({
+      app_id: "pef1lmo8",
+      name: this.storage.getUser().name, // Full name
+      email: this.storage.getUser().email, // Email address
+      user_id: this.storage.getUser().id, // current_user_id
+      // Supports all optional configuration.
+      widget: {
+        "activator": "#intercom" 
+      }
+    });
   }
 
   onEnter() {
     this._initialise();
+    
     this.subscriptions.push(
       this.homeService.getTodoItems().subscribe(todoItems => {
         this.todoItems = this.todoItems.concat(todoItems);
