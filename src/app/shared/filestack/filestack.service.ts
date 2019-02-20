@@ -76,7 +76,7 @@ export class FilestackService {
     } else if (file.handle) {
       fileUrl = 'https://cdn.filestackcontent.com/preview/' + file.handle;
     }
-    this.previewModal(fileUrl);
+    this.previewModal(fileUrl, file);
   }
 
   async open(options = {}, onSuccess = res => res, onError = err => err) {
@@ -97,11 +97,12 @@ export class FilestackService {
     return await this.filestack.picker(Object.assign(pickerOptions, options)).open();
   }
 
-  async previewModal(url) {
+  async previewModal(url, filestackUploadedResponse?) {
     const modal = await this.modalController.create({
       component: PreviewComponent,
       componentProps: {
-        url: url
+        url: url,
+        file: filestackUploadedResponse, // for whole object reference
       }
     });
     return await modal.present();
