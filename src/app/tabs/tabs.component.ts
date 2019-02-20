@@ -29,9 +29,11 @@ export class TabsComponent extends RouterEnter {
     private reviewsService: ReviewsService,
   ) {
     super(router);
+
     let role = this.storage.getUser().role;
     this.utils.getEvent("notification").subscribe(event => {
       this.noOfTodoItems++;
+
     });
     this.utils.getEvent("team-message").subscribe(event => {
       this.tabsService.getNoOfChats().subscribe(noOfChats => {
