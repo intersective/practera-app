@@ -93,6 +93,17 @@ export class HomeService {
       if (todoItem.identifier.includes('AssessmentReview-')) {
         todoItems = this._addTodoItemForReview(todoItem, todoItems);
       }
+
+      // todo item for user to see the achievement earned message
+      if (todoItem.identifier.includes('Achievement-')) {
+        this.notification.achievementPopUp('notification', {
+          id: todoItem.meta.id,
+          name: todoItem.meta.name,
+          description: todoItem.meta.description,
+          points: todoItem.meta.points,
+          image: todoItem.meta.badge
+        });
+      }
     });
     return todoItems;
   }

@@ -1,5 +1,6 @@
-.chat-list {
+$message-body-size: 224px;
 
+.chat-list {
   background-color: transparent !important;
 
   ion-item {
@@ -120,13 +121,21 @@
 
       .message-body {
         padding: 8px 16px;
-        max-width: 224px;
+        min-width: 73px;
+        max-width: $message-body-size;
         border-radius: 25px;
         width: fit-content;
-        min-width: 73px;
-        max-width: 224px;
 
-        .message-text {
+        &.image {
+          padding: 0;
+        }
+
+        &.general-attachment {
+          border-radius: 25px;
+          max-width: $message-body-size;
+        }
+
+        p,.message-text {
           color: black;
           font-size: 16px;
           line-height: 24px;
@@ -145,6 +154,12 @@
         }
       }
 
+      video.message-body {
+        padding: 0;
+        max-width: $message-body-size;
+        border-radius: 25px;
+      }
+
       .seen-text {
         padding: 8px 16px;
         color: var(--practera-chat-color-time-text-color);
@@ -156,6 +171,11 @@
 
         .message-body {
           background-color: white;
+
+          // image attachment no need to contrast text colors
+          &.image {
+            background: none;
+          }
         }
 
         .time {
@@ -174,6 +194,16 @@
 
         .message-body {
           background-color: var(--ion-color-primary);
+
+          &.image {
+            background: none;
+          }
+
+          // consistent colour to make attachment standout
+          &.general-attachment {
+            background: white;
+          }
+
           // margin-left: calc(100% - 150px) !important;
           float: right;
 
@@ -186,6 +216,11 @@
               margin: 0;
               text-align: left;
             }
+          }
+
+          video {
+            max-width: 190px; // to accommodate parent's 224px with fixed padding
+            padding: 0;
           }
         }
       }
@@ -203,8 +238,12 @@
   text-align: left !important;
 }
 
-ion-footer {
-  ion-item {
+.footer {
+  ion-grid {
+    background-color: white;
+  }
+
+  ion-item, ion-grid {
     border-top: 0.1px solid var(--practera-chat-footer-border-color) !important;
 
     ion-button {
