@@ -3,22 +3,17 @@ import { ModalController } from '@ionic/angular';
 import { DomSanitizer } from '@angular/platform-browser';
 
 @Component({
-  selector: 'app-preview',
-  templateUrl: 'preview.component.html',
-  styleUrls: ['preview.component.scss']
+  selector: 'chat-preview',
+  templateUrl: 'chat-preview.component.html',
+  styleUrls: ['chat-preview.component.scss']
 })
-export class PreviewComponent {
+export class ChatPreviewComponent {
   url = '';
-  file:any = {};
 
   constructor(
     public modalController: ModalController,
     public sanitizer: DomSanitizer
   ) {}
-
-  download() {
-    return window.open(this.file.url, "_system");
-  }
 
   close() {
     this.modalController.dismiss();
