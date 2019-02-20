@@ -8,6 +8,7 @@ import { Subscription } from "rxjs";
 import { BrowserStorageService } from "@services/storage.service";
 import { RouterEnter } from "@services/router-enter.service";
 import { PusherService } from "@shared/pusher/pusher.service";
+import { Achievement, AchievementsService } from "@app/achievements/achievements.service";
 
 @Component({
   selector: "app-home",
@@ -24,6 +25,7 @@ export class HomeComponent extends RouterEnter {
   activity: Activity;
   loadingActivity: boolean = true;
   subscriptions: Subscription[] = [];
+  achievements: Array<Achievement>;
 
   constructor(
     public router: Router,
@@ -31,6 +33,7 @@ export class HomeComponent extends RouterEnter {
     private fastFeedbackService: FastFeedbackService,
     public utils: UtilsService,
     public storage: BrowserStorageService,
+    public achievementService: AchievementsService
   ) {
     super(router);
     let role = this.storage.getUser().role;
@@ -64,6 +67,7 @@ export class HomeComponent extends RouterEnter {
     this.loadingTodoItems = true;
     this.loadingProgress = true;
     this.loadingActivity = true;
+    this.achievements = [];
     // add a flag in local storage to indicate that is there any fast feedback open
     this.storage.set('fastFeedbackOpening', false);
   }
@@ -116,6 +120,35 @@ export class HomeComponent extends RouterEnter {
             questions: res.data.slider,
             meta: res.data.meta
           });
+        }
+      })
+    );
+
+    this.subscriptions.push(
+      this.achievementService.getAchievements('desc').subscribe(achievements => {
+        let earned = [];
+        let unEarned = [];
+        achievements.forEach(item => {
+          if (item.isEarned === false) {
+            unEarned.push(item);
+          } else {
+            earned.push(item);
+          }
+        });
+
+        if (achievements.length <= 3) {
+          this.achievements = achievements;
+        } else if (!earned.length || earned.length === achievements.length) {
+          this.achievements = achievements;
+          this.achievements.length = 3;
+        } else if (earned.length === 1 && unEarned.length > 1) {
+          this.achievements[0] = earned[0];
+          this.achievements[1] = unEarned[0];
+          this.achievements[2] = unEarned[1];
+        } else if (earned.length > 1 && unEarned.length > 0) {
+          this.achievements[0] = earned[0];
+          this.achievements[1] = earned[1];
+          this.achievements[2] = unEarned[0];
         }
       })
     );
