@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild, AfterContentInit, AfterViewInit } from "@angular/core";
 import { Router, ActivatedRoute } from "@angular/router";
-import { IonContent } from "@ionic/angular";
+import { IonContent, ModalController } from "@ionic/angular";
 import { BrowserStorageService } from "@services/storage.service";
 import { RouterEnter } from "@services/router-enter.service";
 import { UtilsService } from "@services/utils.service";
@@ -8,6 +8,7 @@ import { PusherService } from "@shared/pusher/pusher.service";
 import { FilestackService } from "@shared/filestack/filestack.service";
 
 import { ChatService, ChatRoomObject, Message } from "../chat.service";
+import { ChatPreviewComponent } from "../chat-preview/chat-preview.component";
 
 @Component({
   selector: "app-chat-room",
@@ -36,6 +37,7 @@ export class ChatRoomComponent extends RouterEnter {
     public utils: UtilsService,
     public pusherService: PusherService,
     private filestackService: FilestackService,
+    private modalController: ModalController,
   ) {
     super(router);
     let role = this.storage.getUser().role;
@@ -600,5 +602,15 @@ export class ChatRoomComponent extends RouterEnter {
     }
 
     return result;
+  }
+
+  async preview(url) {
+    const modal = await this.modalController.create({
+      component: ChatPreviewComponent,
+      componentProps: {
+        url: url
+      }
+    });
+    return await modal.present();
   }
 }
