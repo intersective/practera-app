@@ -1,12 +1,14 @@
 import { Component, OnInit, ViewChild, AfterContentInit, AfterViewInit } from "@angular/core";
 import { Router, ActivatedRoute } from "@angular/router";
-import { IonContent } from "@ionic/angular";
+import { IonContent, ModalController } from "@ionic/angular";
 import { BrowserStorageService } from "@services/storage.service";
 import { RouterEnter } from "@services/router-enter.service";
 import { UtilsService } from "@services/utils.service";
 import { PusherService } from "@shared/pusher/pusher.service";
+import { FilestackService } from "@shared/filestack/filestack.service";
 
 import { ChatService, ChatRoomObject, Message } from "../chat.service";
+import { ChatPreviewComponent } from "../chat-preview/chat-preview.component";
 
 @Component({
   selector: "app-chat-room",
@@ -33,10 +35,14 @@ export class ChatRoomComponent extends RouterEnter {
     public storage: BrowserStorageService,
     private route: ActivatedRoute,
     public utils: UtilsService,
-    public pusherService: PusherService
+    public pusherService: PusherService,
+    private filestackService: FilestackService,
+    private modalController: ModalController,
   ) {
     super(router);
     let role = this.storage.getUser().role;
+
+    // message by team
     this.utils.getEvent('team-message').subscribe(event => {
       let param = {
         event: event,
@@ -45,15 +51,23 @@ export class ChatRoomComponent extends RouterEnter {
         participants_only: this.selectedChat.participants_only
       }
       let receivedMessage = this.chatService.getMessageFromEvent(param);
+      if (receivedMessage && receivedMessage.file) {
+        receivedMessage.preview = this.attachmentPreview(receivedMessage.file);
+      }
+
       if (!this.utils.isEmpty(receivedMessage)) {
         this.messageList.push(receivedMessage);
         this._markAsSeen();
         this._scrollToBottom();
       }
     });
+
+    // singal by team typing
     this.utils.getEvent('team-typing').subscribe(event => {
       this._showTyping(event);
     });
+
+    // message by non-mentor
     if (role !== 'mentor') {
       this.utils.getEvent('team-no-mentor-message').subscribe(event => {
         let param = {
@@ -63,6 +77,10 @@ export class ChatRoomComponent extends RouterEnter {
           participants_only: this.selectedChat.participants_only
         }
         let receivedMessage =  this.chatService.getMessageFromEvent(param);
+        if (receivedMessage && receivedMessage.file) {
+          receivedMessage.preview = this.attachmentPreview(receivedMessage.file);
+        }
+
         if (!this.utils.isEmpty(receivedMessage)) {
           this._markAsSeen();
           this.messageList.push(receivedMessage);
@@ -129,6 +147,12 @@ export class ChatRoomComponent extends RouterEnter {
       .subscribe(messages => {
         if (messages) {
           if (messages.length > 0) {
+            messages.forEach((msg, i) => {
+              if (msg.file) {
+                messages[i].preview = this.attachmentPreview(msg.file);
+              }
+            });
+
             messages = Object.assign([], messages);
             messages.reverse();
             if (this.messageList.length > 0) {
@@ -409,4 +433,184 @@ export class ChatRoomComponent extends RouterEnter {
     }, 500);
   }
 
+  private attachmentPreview(filestackRes) {
+    let preview = `Uploaded ${filestackRes.filename}`;
+    const dimension = 224;
+    if (filestackRes.mimetype.includes('image')) {
+      const attachmentURL = `https://cdn.filestackcontent.com/quality=value:70/resize=w:${dimension},h:${dimension},fit:crop/${filestackRes.handle}`;
+      // preview = `<p>Uploaded ${filestackRes.filename}</p><img src=${attachmentURL}>`;
+      preview = `<img src=${attachmentURL}>`;
+    } else if (filestackRes.mimetype.includes('video')) { // we'll need to identify filetype for 'any' type fileupload
+      preview = `<app-file-display [file]="submission.answer" [fileType]="question.fileType"></app-file-display>`;
+    }
+
+    return preview;
+  }
+
+  async attach(type: string) {
+    let message;
+    let options: any = {};
+
+    if (this.filestackService.getFileTypes(type)) {
+      options.accept = this.filestackService.getFileTypes(type);
+    }
+    await this.filestackService.open(options, (res: any) => {
+      return this.postAttachment(res);
+    }, err => {
+      console.log(err);
+    });
+  }
+
+  previewFile(file) {
+    this.filestackService.previewFile(file);
+  }
+
+  private postAttachment(file) {
+    if (this.loadingMesageSend) {
+      return;
+    }
+
+    this.loadingMesageSend = true;
+
+    let data:any = {
+      message: null,
+      file,
+      team_id: this.selectedChat.team_id,
+      to: null,
+      participants_only: this.selectedChat.participants_only,
+    };
+    if (this.selectedChat.is_team) {
+      data.to = "team";
+    } else {
+      data.to = this.selectedChat.team_member_id;
+    }
+
+    this.chatService.postAttachmentMessage(data).subscribe(
+      response => {
+        let message = response.data;
+        message.preview = this.attachmentPreview(file);
+
+        this.messageList.push(message);
+        this.loadingMesageSend = false;
+        this._scrollToBottom();
+      },
+      error => {
+        this.loadingMesageSend = false;
+        // error feedback to user for failed upload
+      }
+    );
+  }
+
+  private getTypeByMime(mimetype: string): string {
+    const zip = [
+      'application/x-compressed',
+      'application/x-zip-compressed',
+      'application/zip',
+      'multipart/x-zip',
+    ];
+
+    let result: string = '';
+
+    if (zip.indexOf(mimetype) >= 0) {
+      result = 'Zip';
+
+    // set icon to different document type (excel, word, powerpoint, audio, video)
+    } else if (mimetype.indexOf('audio/') >= 0) {
+      result = 'Audio';
+    } else if (mimetype.indexOf('image/') >= 0) {
+      result = 'Image';
+    } else if (mimetype.indexOf('text/') >= 0) {
+      result = 'Text';
+    } else if (mimetype.indexOf('video/') >= 0) {
+      result = 'Video';
+    } else {
+      switch (mimetype) {
+        case 'application/pdf':
+          result = 'PDF';
+          break;
+        case 'application/msword':
+        case 'application/vnd.openxmlformats-officedocument.wordprocessingml.document':
+          result = 'Word';
+          break;
+        case 'application/excel':
+        case 'application/vnd.ms-excel':
+        case 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet':
+        case 'application/x-excel':
+        case 'application/x-msexcel':
+          result = 'Excel';
+          break;
+        case 'application/mspowerpoint':
+        case 'application/vnd.ms-powerpoint':
+        case 'application/vnd.openxmlformats-officedocument.presentationml.presentation':
+        case 'application/x-mspowerpoint':
+          result = 'Powerpoint';
+          break;
+        default:
+          result = 'File';
+          break;
+      }
+    }
+
+    return result;
+  }
+
+  private getIconByMime(mimetype: string): string {
+    const zip = [
+      'application/x-compressed',
+      'application/x-zip-compressed',
+      'application/zip',
+      'multipart/x-zip',
+    ];
+    let result: string = '';
+
+    if (zip.indexOf(mimetype) >= 0) {
+      result = 'document';
+    } else if (mimetype.includes('audio')) {
+      result = 'volume-mute';
+    } else if (mimetype.includes('image')) {
+      result = 'photos';
+    } else if (mimetype.includes('text')) {
+      result = 'clipboard';
+    } else if (mimetype.includes('video')) {
+      result = 'videocam';
+    } else {
+      switch (mimetype) {
+        case 'application/pdf':
+          result = 'document'; // 'pdf';
+          break;
+        case 'application/msword':
+        case 'application/vnd.openxmlformats-officedocument.wordprocessingml.document':
+          result = 'document'; // 'word';
+          break;
+        case 'application/excel':
+        case 'application/vnd.ms-excel':
+        case 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet':
+        case 'application/x-excel':
+        case 'application/x-msexcel':
+          result = 'document'; // 'excel';
+          break;
+        case 'application/mspowerpoint':
+        case 'application/vnd.ms-powerpoint':
+        case 'application/vnd.openxmlformats-officedocument.presentationml.presentation':
+        case 'application/x-mspowerpoint':
+          result = 'document'; // 'powerpoint';
+          break;
+        default:
+          result = 'document'; // 'file';
+          break;
+      }
+    }
+
+    return result;
+  }
+
+  async preview(url) {
+    const modal = await this.modalController.create({
+      component: ChatPreviewComponent,
+      componentProps: {
+        url: url
+      }
+    });
+    return await modal.present();
+  }
 }

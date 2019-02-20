@@ -54,6 +54,8 @@ export interface Message {
   is_sender?: boolean;
   chat_color?: string;
   noAvatar?: boolean;
+  file?: object;
+  preview?: string;
 }
 interface NewMessage {
   to: number | string;
@@ -61,6 +63,7 @@ interface NewMessage {
   team_id: number;
   env?: string;
   participants_only?: boolean;
+  file?: object;
 }
 
 interface MessageListPrams {
@@ -153,6 +156,12 @@ export class ChatService {
     });
   }
 
+  /**
+   * @name postNewMessage
+   * @description post new text message (with text) or attachment (with file)
+   * @param  {NewMessage}      data [description]
+   * @return {Observable<any>}      [description]
+   */
   postNewMessage(data: NewMessage): Observable<any> {
     let reqData = {
       to: data.to,
@@ -160,6 +169,7 @@ export class ChatService {
       team_id:data.team_id,
       env: environment.env,
       participants_only: '',
+      file: data.file,
     }
     if (data.participants_only) {
       reqData.participants_only = data.participants_only.toString();
@@ -167,6 +177,13 @@ export class ChatService {
       delete reqData.participants_only;
     }
     return this.request.post(api.createMessage, reqData);
+  }
+
+  postAttachmentMessage(data: NewMessage): Observable<any> {
+    if (!data.file) {
+      throw "Fatal: File value must not be empty.";
+    }
+    return this.postNewMessage(data);
   }
 
   unreadMessageCout(data: UnreadMessagePrams): Observable<any> {
@@ -193,7 +210,10 @@ export class ChatService {
       );
   }
 
-  getMessageFromEvent(data) {
+  /**
+   * @description listen to pusher event from new/incoming message
+   */
+  getMessageFromEvent(data): Message | null {
     let presenceChannelId = this.pusherService.getMyPresenceChannelId();
     let chatColors;
     // don't show the message if it is from the current user,
@@ -219,7 +239,8 @@ export class ChatService {
       message: data.event.message,
       sender_name: data.event.sender_name,
       sent_time: data.event.sent_time,
-      chat_color : ''
+      chat_color : '',
+      file: data.event.file,
     };
     if (!message.is_sender) {
       message.chat_color = this._getAvataColor(message.sender_name, data.event.team_id);
