@@ -1,6 +1,7 @@
 body {
   background-color: #c7cbe1;
 }
+
 #mainContainer {
   position: absolute;
   top: 0;
@@ -11,6 +12,7 @@ body {
   margin-left: auto;
   margin-right: auto;
 }
+
 // used in login, forgot password, regestration page
 .div-logo {
   margin-top: 10vh;
@@ -21,22 +23,27 @@ body {
   }
 
 }
+
 .div-after-logo {
   margin: 0 30px 50px;
 }
+
 .img-inline {
   margin-left: 10px;
   margin-right: 10px;
   vertical-align: middle;
   width: auto !important;
 }
+
 .vertical-middle {
   vertical-align: middle;
 }
+
 .text-split {
   margin-top: 40px;
   margin-bottom: 40px;
 }
+
 .clearfix {
   clear: both;
 }
@@ -46,15 +53,18 @@ body {
   border-radius: 12px;
   margin: 30px 0;
 }
+
 // used for todo-card & tasks list
 .icon-item {
   width: 100%;
+
   h4 {
     font-size: 14px;
     text-overflow: ellipsis;
     margin-bottom: 0px;
     max-width: 80%;
   }
+
   p {
     font-size: 14px;
     font-weight: 500;
@@ -83,14 +93,13 @@ body {
     p {
       font-size: 14px;
       font-weight: normal;
-      color: var(--ion-color-primary);;
+      color: var(--ion-color-primary);
       text-shadow: none;
       height: 20px;
       margin-top: 0px;
     }
   }
 }
-
 
 .background-white {
   background: white;
@@ -103,10 +112,12 @@ body {
   display: block;
   padding-bottom: 0;
 }
+
 // question content
 .q-content {
   padding-top: 0;
 }
+
 // the div block for review
 .q-reviews {
   border: 2px solid var(--ion-color-warning);
@@ -123,8 +134,23 @@ body {
   display: inline-block;
   vertical-align: middle;
 }
+
 // change white-space to normal - use in choices.
 .white-space-normal {
   white-space: normal !important;
 }
 
+// remove background
+.no-bg {
+  background-color: transparent !important;
+}
+
+.achievement-popup {
+  .modal-wrapper {
+    --height: 80%;
+    --width: 70%;
+    --border-radius: 12%;
+    --background: transparent;
+    --box-shadow: none;
+  }
+}
