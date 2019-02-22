@@ -68,7 +68,7 @@ export class TopicService {
     topic.id = thisTopic.Story.id;
     topic.title = thisTopic.Story.title;
     if (this.utils.has(thisTopic.Story, 'content')) {
-      thisTopic.Story.content = this._adjustAlignment(thisTopic.Story.content);
+      thisTopic.Story.content = thisTopic.Story.content.replace(/text-align: center;/gi, "text-align: center; text-align: -webkit-center;");
       topic.content = this.sanitizer.bypassSecurityTrustHtml(thisTopic.Story.content);
     }
     if (this.utils.has(thisTopic.Story, 'videolink')) {
@@ -78,23 +78,6 @@ export class TopicService {
     topic.files = thisTopic.Filestore.map(item => ({url:item.slug , name:item.name}));
 
     return topic;
-  }
-
-  private _adjustAlignment(content) {
-    let fullText = '';
-    let textStyle = 'text-align: center; text-align: -webkit-center;';
-    let splittedText = content.split("text-align: center;");
-    if (splittedText) {
-      splittedText.forEach((element, index) => {
-        if (index < (splittedText.length-1)) {
-          fullText += (element + textStyle);
-        } else {
-          fullText += element;
-        }
-      });
-      return fullText;
-    }
-    return content;
   }
 
   updateTopicProgress(id){
