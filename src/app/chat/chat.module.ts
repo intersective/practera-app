@@ -23,10 +23,11 @@ import { FilestackModule } from '../shared/filestack/filestack.module';
   declarations: [
     ChatComponent,
     ChatListComponent,
-    ChatRoomComponent,
     ChatPreviewComponent,
+    ChatRoomComponent,
     LinkifyPipe
   ],
+  entryComponents: [ChatPreviewComponent],
   providers:[ChatService],
   exports: [ChatRoomComponent]
 })
