@@ -604,13 +604,22 @@ export class ChatRoomComponent extends RouterEnter {
     return result;
   }
 
-  async preview(url) {
+  async preview(file) {
     const modal = await this.modalController.create({
       component: ChatPreviewComponent,
       componentProps: {
-        url: url
+        file,
       }
     });
     return await modal.present();
+  }
+
+  createThumb(video, w, h) {
+    var c = document.createElement("canvas"),    // create a canvas
+        ctx = c.getContext("2d");                // get context
+    c.width = w;                                 // set size = thumb
+    c.height = h;
+    ctx.drawImage(video, 0, 0, w, h);            // draw in frame
+    return c;                                    // return canvas
   }
 }
