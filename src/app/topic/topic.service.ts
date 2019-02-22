@@ -68,6 +68,7 @@ export class TopicService {
     topic.id = thisTopic.Story.id;
     topic.title = thisTopic.Story.title;
     if (this.utils.has(thisTopic.Story, 'content')) {
+      thisTopic.Story.content = thisTopic.Story.content.replace(/text-align: center;/gi, "text-align: center; text-align: -webkit-center;");
       topic.content = this.sanitizer.bypassSecurityTrustHtml(thisTopic.Story.content);
     }
     if (this.utils.has(thisTopic.Story, 'videolink')) {
