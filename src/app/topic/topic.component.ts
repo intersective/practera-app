@@ -78,7 +78,7 @@ export class TopicComponent extends RouterEnter {
     this.topicService.getTopicProgress(this.activityId,this.id)
       .subscribe(result => {
         this.topicProgress = result;
-
+        
         if (this.topicProgress !== null && this.topicProgress !== undefined) {
           if (this.topicProgress === 1) {
             this.btnToggleTopicIsDone = true;
