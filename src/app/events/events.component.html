@@ -1,0 +1,39 @@
+<ion-header>
+  <ion-toolbar color="light">
+    <ion-icon name="arrow-back" (click)="back()" color="primary" slot="start" margin-start></ion-icon>
+    <ion-title text-center>Events</ion-title>
+  </ion-toolbar>
+</ion-header>
+<ion-content padding color="light" text-center>
+  <ng-container *ngIf="loadingEvents">
+    <ion-spinner></ion-spinner>
+  </ng-container>
+  <div class="btn-filter">
+    <ion-button
+      class="btn-left-half"
+      [ngClass]="{'btn-activated': activated == 'browse'}"
+      (click)="showBrowse()"
+      >
+      <ion-ripple-effect type="unbounded"></ion-ripple-effect>
+      Browse
+    </ion-button>
+    <ion-button
+      class="btn-middle"
+      [ngClass]="{'btn-activated': activated == 'booked'}"
+      (click)="showBooked()"
+      >
+      <ion-ripple-effect type="unbounded"></ion-ripple-effect>
+      Booked
+    </ion-button>
+    <ion-button
+      class="btn-right-half"
+      [ngClass]="{'btn-activated': activated == 'attended'}"
+      (click)="showAttended()">
+      <ion-ripple-effect type="unbounded"></ion-ripple-effect>
+      Attended
+    </ion-button>
+  </div>
+  <event-list
+    [events]="events"
+  ></event-list>
+</ion-content>

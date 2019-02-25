@@ -71,6 +71,7 @@ export class UtilsService {
 
   changeThemeColor(color) {
     this.document.documentElement.style.setProperty('--ion-color-primary', color);
+    this.document.documentElement.style.setProperty('--ion-color-primary-shade', color);
   }
 
   changeCardBackgroundImage(image) {

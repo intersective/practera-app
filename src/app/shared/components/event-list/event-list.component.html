@@ -1,0 +1,8 @@
+<ion-card class="practera-card">
+  <ion-list *ngFor="let event of events; let i = index">
+    <ion-item (click)="showEventDetail(event)" [lines]="i == events.length - 1 ? 'none' : ''">
+      <h4>{{ event.name }}</h4>
+      <p>{{ event.startTime }}</p>
+    </ion-item>
+  </ion-list>
+</ion-card>
