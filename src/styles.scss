@@ -154,3 +154,29 @@ body {
     --box-shadow: none;
   }
 }
+
+/******************
+  Filter buttons
+  Currently used on reviews & events page
+******************/
+.btn-filter {
+  ion-button {
+    margin: 0;
+    color: var(--ion-color-primary);
+    --background: white;
+  }
+  .btn-activated{
+    color: white;
+    --background: var(--ion-color-primary);
+  }
+  .btn-left-half {
+    --border-radius: 50px 0 0 50px;
+  }
+  .btn-middle {
+    --border-radius: 0;
+    margin: 0 2px;
+  }
+  .btn-right-half {
+    --border-radius: 0 50px 50px 0;
+  }
+}

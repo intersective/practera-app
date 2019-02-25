@@ -9,6 +9,7 @@ import { BrowserStorageService } from "@services/storage.service";
 import { RouterEnter } from "@services/router-enter.service";
 import { PusherService } from "@shared/pusher/pusher.service";
 import { Achievement, AchievementsService } from "@app/achievements/achievements.service";
+import { EventsService } from "@app/events/events.service";
 
 @Component({
   selector: "app-home",
@@ -26,6 +27,7 @@ export class HomeComponent extends RouterEnter {
   loadingActivity: boolean = true;
   subscriptions: Subscription[] = [];
   achievements: Array<Achievement>;
+  haveEvents: boolean = false;
 
   constructor(
     public router: Router,
@@ -33,7 +35,8 @@ export class HomeComponent extends RouterEnter {
     private fastFeedbackService: FastFeedbackService,
     public utils: UtilsService,
     public storage: BrowserStorageService,
-    public achievementService: AchievementsService
+    public achievementService: AchievementsService,
+    public eventService: EventsService
   ) {
     super(router);
     let role = this.storage.getUser().role;
@@ -68,6 +71,7 @@ export class HomeComponent extends RouterEnter {
     this.loadingProgress = true;
     this.loadingActivity = true;
     this.achievements = [];
+    this.haveEvents = false;
     // add a flag in local storage to indicate that is there any fast feedback open
     this.storage.set('fastFeedbackOpening', false);
   }
@@ -150,6 +154,12 @@ export class HomeComponent extends RouterEnter {
           this.achievements[1] = earned[1];
           this.achievements[2] = unEarned[0];
         }
+      })
+    );
+
+    this.subscriptions.push(
+      this.eventService.getEvents().subscribe(events => {
+        this.haveEvents = !this.utils.isEmpty(events);
       })
     );
   }
