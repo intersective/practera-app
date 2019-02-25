@@ -33,7 +33,12 @@
       Attended
     </ion-button>
   </div>
-  <event-list
-    [events]="events"
-  ></event-list>
+  <ion-card class="practera-card">
+    <ion-list *ngFor="let event of events; let i = index">
+      <ion-item [lines]="i == events.length - 1 ? 'none' : ''">
+        <event-card [event]="event"></event-card>
+      </ion-item>
+    </ion-list>
+  </ion-card>
+
 </ion-content>
