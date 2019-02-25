@@ -25,6 +25,7 @@ export interface Event {
   description: string;
   location: string;
   activityId: number;
+  activityName: string;
   startTime: string;
   endTime: string;
   capacity: number;
@@ -64,6 +65,7 @@ export class EventsService {
           !this.utils.has(event, 'title') ||
           !this.utils.has(event, 'description') ||
           !this.utils.has(event, 'activity_id') ||
+          !this.utils.has(event, 'activity_name') ||
           !this.utils.has(event, 'location') ||
           !this.utils.has(event, 'start') ||
           !this.utils.has(event, 'end') ||
@@ -80,6 +82,7 @@ export class EventsService {
         description: event.description,
         location: event.location,
         activityId: event.activity_id,
+        activityName: event.activity_name,
         startTime: event.start,
         endTime: event.end,
         capacity: event.capacity,
