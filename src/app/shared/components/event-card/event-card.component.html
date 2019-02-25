@@ -1,0 +1,5 @@
+<div (click)="showEventDetail()">
+  <ion-icon name="calendar" slot="start" [color]="event.isPast ? 'medium' : 'primary'"></ion-icon>
+  <h4>{{ event.name }}</h4>
+  <p>{{ event.startTime }}</p>
+</div>

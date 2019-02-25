@@ -3,18 +3,18 @@ import { EventsService, Event } from '@app/events/events.service';
 import { NotificationService } from '@shared/notification/notification.service';
 
 @Component({
-  selector: 'event-list',
-  templateUrl: './event-list.component.html',
-  styleUrls: ['./event-list.component.scss']
+  selector: 'event-card',
+  templateUrl: './event-card.component.html',
+  styleUrls: ['./event-card.component.scss']
 })
-export class EventListComponent {
-  @Input() events: Array<Event>;
+export class EventCardComponent {
+  @Input() event: Event;
   constructor(
     private notificationService: NotificationService
   ) {}
 
-  showEventDetail(event) {
-    // this.notificationService.eventDetail(event);
+  showEventDetail() {
+    // this.notificationService.eventDetail(this.event);
   }
 
 }
