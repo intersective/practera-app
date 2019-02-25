@@ -42,7 +42,7 @@
             </div>
 
             <ng-container *ngIf="message.file && message.file.mimetype.includes('video')">
-              <video controls class="message-body">
+              <video class="video message-body" (click)="preview(message.file)">
                 <ng-container *ngIf="message.file.transcoded">
                   <source [src]="message.file.transcoded + '.mp4#t=0.5'" type="video/mp4">
                   <source [src]="message.file.transcoded + '.webm'" type="video/webm">
@@ -54,7 +54,7 @@
             </ng-container>
 
             <ng-container *ngIf="message.file && message.file.mimetype.includes('image')">
-              <div class="message-body image" (click)="previewFile(message.file)">
+              <div class="message-body image" (click)="preview(message.file)">
                 <div [innerHTML]="message.preview"></div>
               </div>
             </ng-container>
