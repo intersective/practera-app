@@ -1,5 +1,4 @@
 <div (click)="showEventDetail()">
-  <ion-ripple-effect type="unbounded"></ion-ripple-effect>
   <ion-icon class="leading-icon" name="calendar" [color]="event.isPast ? 'medium' : 'primary'"></ion-icon>
   <div class="content">
     <h4 [ngClass]="{'past': event.isPast}">{{ event.name }}</h4>
