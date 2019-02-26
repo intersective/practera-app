@@ -12,7 +12,8 @@ import { BrowserStorageService } from '@services/storage.service';
  */
 const api = {
   get: {
-    events: 'api/v2/act/event/list.json'
+    events: 'api/v2/act/event/list.json',
+    activities: 'api/v2/plan/activity/list.json'
   },
   post: {
     book: 'api/book_events.json'
@@ -32,6 +33,11 @@ export interface Event {
   remainingCapacity: number;
   isBooked: boolean;
   isPast?: boolean;
+}
+
+export interface Activity {
+  id: number;
+  name: string;
 }
 
 @Injectable({
@@ -113,6 +119,34 @@ export class EventsService {
       if (dateA.getTime() < now.getTime() && dateB.getTime() < now.getTime()) {
         return dateA.getTime() < dateB.getTime();
       }
+    });
+  }
+
+  getActivities() {
+    return this.request.get(api.get.activities)
+      .pipe(map(response => {
+        if (response.success && response.data) {
+          return this._normaliseActivities(response.data);
+        }
+      }));
+  }
+
+  private _normaliseActivities(data): Array<Activity> {
+    if (!Array.isArray(data)) {
+      this.request.apiResponseFormatError('Activity array format error');
+      return [];
+    }
+
+    return data.map(activity => {
+      if (!this.utils.has(activity, 'id') ||
+          !this.utils.has(activity, 'name')) {
+        this.request.apiResponseFormatError('Activity format error');
+        return null;
+      }
+      return {
+        id: activity.id,
+        name: activity.name
+      };
     });
   }
 
