@@ -8,6 +8,7 @@
   <ng-container *ngIf="loadingEvents">
     <ion-spinner></ion-spinner>
   </ng-container>
+
   <div class="btn-filter">
     <ion-button
       class="btn-left-half"
@@ -33,6 +34,21 @@
       Attended
     </ion-button>
   </div>
+
+  <ion-card class="activity-filter-wrap practera-card">
+    <ion-item lines="none">
+     <ion-label id="activity-filter" color="medium"><i>Filter by Activity</i></ion-label>
+      <ion-select
+        multiple="true"
+        aria-labelledby="activity-filter"
+        [value]="selectedActivities"
+        (ionChange)="onSelect(filterEle.value)"
+        #filterEle>
+        <ion-select-option *ngFor="let activity of activities" [value]="activity.id" selected>{{ activity.name }}</ion-select-option>
+      </ion-select>
+    </ion-item>
+  </ion-card>
+
   <ng-container *ngFor="let eventObj of events">
     <h4 class="date-group" text-left>{{ eventObj.date }}</h4>
     <ion-card class="practera-card">
