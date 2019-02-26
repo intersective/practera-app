@@ -9,6 +9,7 @@ import { NotificationService } from '@shared/notification/notification.service';
 })
 export class EventCardComponent {
   @Input() event: Event;
+  @Input() time: string;
   constructor(
     private notificationService: NotificationService
   ) {}

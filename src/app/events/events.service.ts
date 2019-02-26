@@ -55,9 +55,10 @@ export class EventsService {
     );
   }
 
-  private _normaliseEvents(data) {
+  private _normaliseEvents(data): Array<Event> {
     if (!Array.isArray(data)) {
-      return this.request.apiResponseFormatError('Event format error');
+      this.request.apiResponseFormatError('Event format error');
+      return [];
     }
     let events: Array<Event> = [];
     data.forEach(event => {
@@ -74,8 +75,6 @@ export class EventsService {
           !this.utils.has(event, 'isBooked')) {
         return this.request.apiResponseFormatError('Event object format error');
       }
-      let start = new Date(event.start);
-      let now = new Date();
       events.push({
         id: event.id,
         name: event.title,
@@ -88,7 +87,7 @@ export class EventsService {
         capacity: event.capacity,
         remainingCapacity: event.remaining_capacity,
         isBooked: event.isBooked,
-        isPast: start.getTime() < now.getTime()
+        isPast: this.utils.timeComparer(event.start) < 0
       });
     });
     return this._sortEvent(events);
@@ -96,8 +95,8 @@ export class EventsService {
 
   private _sortEvent(events) {
     return events.sort((a, b) => {
-      let dateA = new Date(a.startTime);
-      let dateB = new Date(b.startTime);
+      let dateA = new Date(a.startTime + 'Z');
+      let dateB = new Date(b.startTime + 'Z');
       let now = new Date();
       if (dateA.getTime() === dateB.getTime()) {
         return 0;
