@@ -1,10 +1,10 @@
 import { Component, Input } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
-import { EventsService, Event } from './events.service';
+import { EventsService, Event, Activity } from './events.service';
 import { UtilsService } from '@services/utils.service';
 import { RouterEnter } from '@services/router-enter.service';
 
-interface eventGroup {
+interface EventGroup {
   date: string;
   events: Array<Event>;
 }
@@ -17,12 +17,14 @@ interface eventGroup {
 
 export class EventsComponent extends RouterEnter {
   routeUrl: string = '/events';
-  events: Array<eventGroup>;
+  events: Array<EventGroup>;
   eventsCategorised: {
-    browse: Array<eventGroup>;
-    booked: Array<eventGroup>;
-    attended: Array<eventGroup>;
+    browse: Array<EventGroup>;
+    booked: Array<EventGroup>;
+    attended: Array<EventGroup>;
   };
+  activities: Array<Activity>;
+  selectedActivities: Array<number>;
   loadingEvents: boolean = true;
   activated: string = 'browse';
 
@@ -41,6 +43,8 @@ export class EventsComponent extends RouterEnter {
       booked: [],
       attended: []
     }
+    this.activities = [];
+    this.selectedActivities = [];
     this.loadingEvents = true;
     this.activated = 'browse';
   }
@@ -48,7 +52,6 @@ export class EventsComponent extends RouterEnter {
   onEnter() {
     this._initialise();
     this.eventService.getEvents().subscribe(events => {
-      this.events = [];
       if (this.utils.isEmpty(events)) {
         this.loadingEvents = false;
         return;
@@ -93,7 +96,10 @@ export class EventsComponent extends RouterEnter {
       }
       this.events = this.eventsCategorised[this.activated];
       this.loadingEvents = false;
-    })
+    });
+    this.eventService.getActivities().subscribe(activities => {
+      this.activities = activities;
+    });
   }
 
   /**
@@ -140,10 +146,16 @@ export class EventsComponent extends RouterEnter {
     return [events, eventGroup, compareDate];
   }
 
+  /**
+   * This is used to get the proper time information need to be displayed on card
+   * @param {Event} event [event data]
+   */
   timeDisplayed(event) {
-    if (this.utils.timeComparer(event.startTime) < 0) {
+    // display date only if it is a past event and is not booked
+    if (this.utils.timeComparer(event.startTime) < 0 && !event.isBooked) {
       return this.utils.utcToLocal(event.startTime, 'date');
     }
+    // otherwise display time only
     return this.utils.utcToLocal(event.startTime, 'time') + ' - ' + this.utils.utcToLocal(event.endTime, 'time');
   }
 
@@ -153,14 +165,43 @@ export class EventsComponent extends RouterEnter {
 
   showBrowse() {
     this.activated = 'browse';
-    this.events = this.eventsCategorised[this.activated];
+    this._filterByActivities();
   }
   showBooked() {
     this.activated = 'booked';
-    this.events = this.eventsCategorised[this.activated];
+    this._filterByActivities();
   }
   showAttended() {
     this.activated = 'attended';
+    this._filterByActivities();
+  }
+
+  onSelect(value) {
+    this.selectedActivities = value;
+    this._filterByActivities();
+  }
+
+  private _filterByActivities() {
+    // initialise events
     this.events = this.eventsCategorised[this.activated];
+    if (this.utils.isEmpty(this.selectedActivities)) {
+      return ;
+    }
+    let events = [];
+    this.events.forEach(eventGroup => {
+      let group: EventGroup = {
+        date: eventGroup.date,
+        events: []
+      };
+      eventGroup.events.forEach(event => {
+        if (this.selectedActivities.includes(event.activityId)) {
+          group.events.push(event);
+        }
+      });
+      if (!this.utils.isEmpty(group.events)) {
+        events.push(group);
+      }
+    });
+    this.events = events;
   }
 }

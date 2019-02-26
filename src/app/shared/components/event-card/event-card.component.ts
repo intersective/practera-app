@@ -15,6 +15,7 @@ export class EventCardComponent {
   ) {}
 
   showEventDetail() {
+    console.log(this.event);
     // this.notificationService.eventDetail(this.event);
   }
 
