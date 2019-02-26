@@ -3,6 +3,11 @@ version: 0.2
 phases:
   install:
     commands:
+      - curl -sL https://deb.nodesource.com/setup_10.x | sudo -E bash -
+      - sudo apt-get install -y nodejs
+      - echo Installing source NPM dependencies...
+      - sudo apt-get update -y
+      - sudo apt-get install -y apt-transport-https
       - sudo npm install forever -g
       - sudo npm install -g @angular/cli
       - sudo npm install
@@ -10,7 +15,13 @@ phases:
       - sudo npm rebuild node-sass
   build:
     commands:
-      - sudo ng build --configuration=stage
+      - echo Build started on `date`
+      - sudo ng build --configuration=$BUILD_CONFIG
+  post_build:
+    commands:
+      - aws s3 sync www/ s3://$S3_BUCKET/ --delete
+      - aws cloudfront create-invalidation --distribution-id $CF_DIST_ID --paths '/*'
+      - echo Build completed on `date`
 artifacts:
   type: zip
   files:
