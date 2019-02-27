@@ -31,7 +31,7 @@
           </ion-label>
         </ion-row>
         <ion-row>
-          <input [textMask]="{mask: mask, showMask: true, guide: true}" [(ngModel)]="profile.contactNumber"  type="text" class="contact-input"/>
+          <input [textMask]="{mask: mask, showMask: true, guide: true}" [(ngModel)]="profile.contactNumber" type="text" class="contact-input" (keydown)="disableArrowKeys($event)"/>
         </ion-row>
       </ion-grid>
     </ion-item>
