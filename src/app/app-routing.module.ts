@@ -22,6 +22,10 @@ const routes: Routes = [
     loadChildren: './achievements/achievements.module#AchievementsModule',
   },
   {
+    path: 'events',
+    loadChildren: './events/events.module#EventsModule',
+  },
+  {
     path: 'fast-feedback',
     component: FastFeedbackComponent,
   },

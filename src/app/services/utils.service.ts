@@ -71,6 +71,7 @@ export class UtilsService {
 
   changeThemeColor(color) {
     this.document.documentElement.style.setProperty('--ion-color-primary', color);
+    this.document.documentElement.style.setProperty('--ion-color-primary-shade', color);
   }
 
   changeCardBackgroundImage(image) {
@@ -123,6 +124,9 @@ export class UtilsService {
       if (date.getDate() === compareDate.getDate() - 1) {
         return 'Yesterday';
       }
+      if (date.getDate() === compareDate.getDate() + 1) {
+        return 'Tomorrow';
+      }
       if (date.getDate() === compareDate.getDate()) {
         return new Intl.DateTimeFormat('en-GB', {
           hour12: true,
@@ -135,5 +139,69 @@ export class UtilsService {
       month: 'short',
       day: 'numeric'
     }).format(date);
+  }
+
+  utcToLocal(time: string, display: string = 'all') {
+    if (!time) {
+      return '';
+    }
+    // add "T" between date and time, so that it works on Safari
+    time = time.replace(' ', 'T');
+    // add "Z" to declare that it is UTC time, it will automatically convert to local time
+    let date = new Date(time + 'Z');
+    switch (display) {
+      case "date":
+        let today = new Date();
+        if (date.getFullYear() === today.getFullYear() && date.getMonth() === today.getMonth()) {
+          if (date.getDate() === today.getDate() - 1) {
+            return 'Yesterday';
+          }
+          if (date.getDate() === today.getDate()) {
+            return 'Today';
+          }
+          if (date.getDate() === today.getDate() + 1) {
+            return 'Tomorrow';
+          }
+        }
+        return new Intl.DateTimeFormat('en-GB', {
+            month: 'short',
+            day: 'numeric',
+            year: 'numeric'
+          }).format(date);
+
+      case "time":
+        return new Intl.DateTimeFormat('en-GB', {
+            hour12: true,
+            hour: 'numeric',
+            minute: 'numeric'
+          }).format(date);
+
+      default:
+        return new Intl.DateTimeFormat('en-GB', {
+            hour12: true,
+            hour: 'numeric',
+            minute: 'numeric',
+            month: 'short',
+            day: 'numeric',
+            year: 'numeric'
+          }).format(date);
+    }
+  }
+
+  timeComparer(timeString: string, comparedString?: string) {
+    let time = new Date(timeString + 'Z');
+    let compared = new Date();
+    if (comparedString) {
+      compared = new Date(comparedString + 'Z');
+    }
+    if (time.getTime() < compared.getTime()) {
+      return -1;
+    }
+    if (time.getTime() == compared.getTime()) {
+      return 0;
+    }
+    if (time.getTime() > compared.getTime()) {
+      return 1;
+    }
   }
 }
