@@ -13,6 +13,7 @@ import { RouterEnter } from '@services/router-enter.service';
   templateUrl: 'settings.component.html',
   styleUrls: ['settings.component.scss']
 })
+
 export class SettingsComponent extends RouterEnter {
 
   routeUrl: string = '/app/settings';
@@ -57,6 +58,7 @@ export class SettingsComponent extends RouterEnter {
     public storage : BrowserStorageService,
     public utils: UtilsService,
     private notificationService: NotificationService,
+
   ){
     super(router);
   }

@@ -90,20 +90,24 @@ export class ProjectComponent extends RouterEnter {
         return event.detail.currentY >= element;
       }
       return event.detail.currentY >= element && event.detail.currentY < this.milestonePositions[i + 1];
+
     });
     // update active milestone status
     this.activeMilestone.fill(false);
+
     this.activeMilestone[activeMilestoneIndex] = true;
   }
 
   // scroll to a milestone. i is the index of milestone list
   scrollTo(i) {
     this.contentRef.nativeElement.scrollToPoint(0, this.milestonePositions[i], 500);
+
   }
 
   private _getMilestonePositions() {
     this.milestonePositions = this.milestoneRefs.map(milestoneRef => {
       return milestoneRef.nativeElement.offsetTop;
+
     });
   }
 
