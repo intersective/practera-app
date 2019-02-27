@@ -4,6 +4,8 @@ import { AlertOptions } from '@ionic/core';
 import { PopUpComponent } from './pop-up/pop-up.component';
 import { AchievementPopUpComponent } from './achievement-pop-up/achievement-pop-up.component';
 import { Achievement, AchievementsService } from "@app/achievements/achievements.service";
+import { EventDetailComponent } from './event-detail/event-detail.component';
+import { Event, EventsService } from '@app/events/events.service';
 
 @Injectable({
   providedIn: 'root'
@@ -97,6 +99,13 @@ export class NotificationService {
       'cssClass': 'achievement-popup',
       'keyboardClose': false,
       'backdropDismiss': false
+    });
+    return modal;
+  }
+
+  async eventDetailPopUp(event: Event) {
+    const modal = await this.modal(EventDetailComponent, {event}, {
+      'cssClass': 'event-detail-popup'
     });
     return modal;
   }

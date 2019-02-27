@@ -4,6 +4,7 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { PopUpComponent } from './pop-up/pop-up.component';
 import { AchievementPopUpComponent } from './achievement-pop-up/achievement-pop-up.component';
+import { EventDetailComponent } from './event-detail/event-detail.component';
 import { NotificationService } from './notification.service';
 
 
@@ -18,15 +19,18 @@ import { NotificationService } from './notification.service';
   ],
   declarations: [
     PopUpComponent,
-    AchievementPopUpComponent
+    AchievementPopUpComponent,
+    EventDetailComponent
   ],
   exports: [
     PopUpComponent,
-    AchievementPopUpComponent
+    AchievementPopUpComponent,
+    EventDetailComponent
   ],
   entryComponents: [
     PopUpComponent,
-    AchievementPopUpComponent
+    AchievementPopUpComponent,
+    EventDetailComponent
   ]
 })
 

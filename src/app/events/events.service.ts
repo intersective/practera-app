@@ -150,15 +150,15 @@ export class EventsService {
     });
   }
 
-  bookEvent(eventId) {
+  bookEvent(event: Event) {
     let postData = {
-      event_id: eventId,
+      event_id: event.id,
       delete_previous: "no"
     };
     return this.request.post(api.post.book, postData).subscribe();
   }
 
-  cancelEvent(eventId) {
+  cancelEvent(event: Event) {
 
   }
 }
