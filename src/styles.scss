@@ -159,6 +159,15 @@ body {
   }
 }
 
+.event-detail-popup {
+  .modal-wrapper {
+    --height: 90%;
+    --width: 80%;
+    --border-radius: 12px;
+    --box-shadow: none;
+  }
+}
+
 /******************
   Filter buttons
   Currently used on reviews & events page
