@@ -15,7 +15,7 @@ import { Router } from "@angular/router";
 export class TabsComponent extends RouterEnter {
   routeUrl: string = "/app/";
   showReview = false;
-  showChat = true;
+  showChat = false;
   noOfTodoItems = 0;
   noOfChats = 0;
   selectedTab = "";
@@ -50,7 +50,7 @@ export class TabsComponent extends RouterEnter {
   }
 
   private _initialise() {
-    this.showChat = true;
+    this.showChat = false;
     this.showReview = false;
   }
 
