@@ -231,9 +231,12 @@ export class SettingsComponent extends RouterEnter {
     return this.authService.logout();
   }
 
-  setCursorPosition(event) {
+  disableArrowKeys(event) {
     event = (event) ? event : window.event;
+    // charCode is the code of each Key
     var charCode = (event.which) ? event.which : event.keyCode;
+
+    // just allow number keys to enter
     if (charCode > 31 && (charCode < 48 || charCode > 57)) {
         return false;
     }
