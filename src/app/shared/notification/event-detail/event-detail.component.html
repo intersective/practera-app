@@ -1,0 +1,15 @@
+<ion-content color="light" text-center>
+
+
+  <div class="div-after-logo" *ngIf="!event.isPast">
+    <ion-button (click)="confirmed()" shape="round" color="primary" expand="full">
+      <ng-container *ngIf="!event.isBooked">
+        Book
+      </ng-container>
+      <ng-container *ngIf="event.isBooked">
+        Cancel Booking
+      </ng-container>
+    </ion-button>
+  </div>
+
+</ion-content>
