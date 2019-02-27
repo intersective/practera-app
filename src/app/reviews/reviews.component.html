@@ -5,9 +5,22 @@
 </ion-header>
 
 <ion-content padding color="light">
-  <div class="top-round-btns" text-center>
-    <ion-button class="do" [ngClass]="{'btn-none-active': showDone}" (click)="showDone = false">To do</ion-button>
-    <ion-button class="done" [ngClass]="{'btn-none-active': !showDone}" (click)="showDone = true">Done</ion-button>
+  <div class="btn-filter" text-center>
+    <ion-button
+      class="btn-left-half"
+      [ngClass]="{'btn-activated': !showDone}"
+      (click)="showDone = false"
+      >
+      <ion-ripple-effect type="unbounded"></ion-ripple-effect>
+      To do
+    </ion-button>
+    <ion-button
+      class="btn-right-half"
+      [ngClass]="{'btn-activated': showDone}"
+      (click)="showDone = true">
+      <ion-ripple-effect type="unbounded"></ion-ripple-effect>
+      Done
+    </ion-button>
   </div>
   <div text-center *ngIf="loadingReviews; else reviewsTmpl">
     <ion-spinner></ion-spinner>
