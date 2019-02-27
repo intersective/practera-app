@@ -19,7 +19,7 @@ export interface Profile {
 export class SettingService {
 
   constructor(
-  	private request : RequestService,
+    private request : RequestService,
   ) { }
 
   updateProfile(profile : Profile) {
