@@ -86,10 +86,8 @@ export class ProjectComponent extends RouterEnter {
 
   trackScrolling(event) {
     let activeMilestoneIndex = this.milestonePositions.findIndex((element, i) => {
-      if (event.detail.currentY +32 >= this.milestonePositions[this.milestonePositions.length-1] && this.milestones[this.milestonePositions.length-1].isLocked) {
-        return event.detail.currentY < element;
 
-      } else if (i == this.milestonePositions.length - 1) {
+       if (i == this.milestonePositions.length - 1) {
         return event.detail.currentY >= element;
       }
 
@@ -98,15 +96,13 @@ export class ProjectComponent extends RouterEnter {
     // update active milestone status
     this.activeMilestone.fill(false);
     this.activeMilestone[activeMilestoneIndex] = true;
+
   }
 
   // scroll to a milestone. i is the index of milestone list
   scrollTo(i) {
     this.contentRef.nativeElement.scrollToPoint(0, this.milestonePositions[i], 500);
-    if (i === this.milestones.length-1 && this.milestones[i].isLocked) {
-      this.activeMilestone.fill(false);
-      this.activeMilestone[i] = true;
-    }
+
   }
 
   private _getMilestonePositions() {
