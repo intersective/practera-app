@@ -86,9 +86,11 @@ export class ProjectComponent extends RouterEnter {
 
   trackScrolling(event) {
     let activeMilestoneIndex = this.milestonePositions.findIndex((element, i) => {
+
       if (i == this.milestonePositions.length - 1) {
         return event.detail.currentY >= element;
       }
+
       return event.detail.currentY >= element && event.detail.currentY < this.milestonePositions[i + 1];
 
     });
@@ -96,6 +98,7 @@ export class ProjectComponent extends RouterEnter {
     this.activeMilestone.fill(false);
 
     this.activeMilestone[activeMilestoneIndex] = true;
+
   }
 
   // scroll to a milestone. i is the index of milestone list
