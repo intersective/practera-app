@@ -17,6 +17,9 @@ const api = {
   },
   post: {
     book: 'api/book_events.json'
+  },
+  delete: {
+    cancel: 'api/book_events.json'
   }
 };
 
@@ -151,14 +154,17 @@ export class EventsService {
   }
 
   bookEvent(event: Event) {
-    let postData = {
+    return this.request.post(api.post.book, {
       event_id: event.id,
       delete_previous: "no"
-    };
-    return this.request.post(api.post.book, postData).subscribe();
+    });
   }
 
   cancelEvent(event: Event) {
-
+    return this.request.delete(api.delete.cancel, {
+      params: {
+        event_id: event.id
+      }
+    });
   }
 }
