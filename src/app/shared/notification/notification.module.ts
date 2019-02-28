@@ -2,7 +2,6 @@ import { SharedModule } from '@shared/shared.module';
 import { NgModule } from '@angular/core';
 import { PopUpComponent } from './pop-up/pop-up.component';
 import { AchievementPopUpComponent } from './achievement-pop-up/achievement-pop-up.component';
-import { EventDetailComponent } from './event-detail/event-detail.component';
 import { NotificationService } from './notification.service';
 
 
@@ -15,18 +14,15 @@ import { NotificationService } from './notification.service';
   ],
   declarations: [
     PopUpComponent,
-    AchievementPopUpComponent,
-    EventDetailComponent
+    AchievementPopUpComponent
   ],
   exports: [
     PopUpComponent,
-    AchievementPopUpComponent,
-    EventDetailComponent
+    AchievementPopUpComponent
   ],
   entryComponents: [
     PopUpComponent,
     AchievementPopUpComponent,
-    EventDetailComponent
   ]
 })
 

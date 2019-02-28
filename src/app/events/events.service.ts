@@ -4,6 +4,8 @@ import { map } from 'rxjs/operators';
 import { RequestService } from '@shared/request/request.service';
 import { UtilsService } from '@services/utils.service';
 import { BrowserStorageService } from '@services/storage.service';
+import { NotificationService } from '@shared/notification/notification.service';
+import { EventDetailComponent } from '@app/event-detail/event-detail.component';
 
 /**
  * @name api
@@ -14,12 +16,6 @@ const api = {
   get: {
     events: 'api/v2/act/event/list.json',
     activities: 'api/v2/plan/activity/list.json'
-  },
-  post: {
-    book: 'api/book_events.json'
-  },
-  delete: {
-    cancel: 'api/book_events.json'
   }
 };
 
@@ -52,6 +48,7 @@ export class EventsService {
     private request: RequestService,
     private utils: UtilsService,
     private storage: BrowserStorageService,
+    private notificationService: NotificationService
   ) {}
 
   getEvents(): Observable<any> {
@@ -153,18 +150,10 @@ export class EventsService {
     });
   }
 
-  bookEvent(event: Event) {
-    return this.request.post(api.post.book, {
-      event_id: event.id,
-      delete_previous: "no"
-    });
-  }
-
-  cancelEvent(event: Event) {
-    return this.request.delete(api.delete.cancel, {
-      params: {
-        event_id: event.id
-      }
+  eventDetailPopUp(event: Event) {
+    return this.notificationService.modal(EventDetailComponent,
+      {event}, {
+      cssClass: 'event-detail-popup'
     });
   }
 }
