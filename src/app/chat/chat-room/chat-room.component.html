@@ -42,15 +42,20 @@
             </div>
 
             <ng-container *ngIf="message.file && message.file.mimetype.includes('video')">
-              <video class="video message-body" (click)="preview(message.file)">
-                <ng-container *ngIf="message.file.transcoded">
-                  <source [src]="message.file.transcoded + '.mp4#t=0.5'" type="video/mp4">
-                  <source [src]="message.file.transcoded + '.webm'" type="video/webm">
-                  <source [src]="message.file.transcoded + '.ts'">
-                </ng-container>
-                <source [src]="message.file.url" [type]="message.file.mimetype">
-                {{ message.file.url }}
-              </video>
+              <div  class="message-body video-attachment-container">
+                <div id="inner-box">
+                  <p><ion-icon name="play-circle"></ion-icon></p>
+                </div>
+                <video (click)="preview(message.file)">
+                  <ng-container *ngIf="message.file.transcoded">
+                    <source [src]="message.file.transcoded + '.mp4#t=0.5'" type="video/mp4">
+                    <source [src]="message.file.transcoded + '.webm'" type="video/webm">
+                    <source [src]="message.file.transcoded + '.ts'">
+                  </ng-container>
+                  <source [src]="message.file.url" [type]="message.file.mimetype">
+                  {{ message.file.url }}
+                </video>
+              </div>
             </ng-container>
 
             <ng-container *ngIf="message.file && message.file.mimetype.includes('image')">
@@ -87,7 +92,7 @@
     </ng-container>
     <ng-container *ngIf="isTyping">
       <ion-item color="light">
-        <ion-label class="reserved-messages no-avatar" color="medium">
+        <ion-label class="received-messages no-avatar" color="medium">
           <p class="message-typing">
             <i>{{typingMessage}}</i>
             <ion-spinner name="dots" class="vertical-middle"></ion-spinner>
