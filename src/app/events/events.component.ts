@@ -30,10 +30,12 @@ export class EventsComponent extends RouterEnter {
 
   constructor (
     public router: Router,
+    private route: ActivatedRoute,
     private eventService: EventsService,
     public utils: UtilsService
   ) {
     super(router);
+    // update event list after book/cancel an event
     this.utils.getEvent('update-event').subscribe(event => {
       this.onEnter();
     });
@@ -98,6 +100,11 @@ export class EventsComponent extends RouterEnter {
         this.eventsCategorised.attended.push(eventGroupAttended);
       }
       this.events = this.eventsCategorised[this.activated];
+      // if activity id is passed in, filter by that activity
+      let activityId = +this.route.snapshot.paramMap.get('activityId');
+      if (activityId) {
+        this.onSelect([activityId]);
+      }
       this.loadingEvents = false;
     });
     this.eventService.getActivities().subscribe(activities => {
