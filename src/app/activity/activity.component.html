@@ -11,8 +11,10 @@
   </ng-container>
   <h1>{{ activity.name }}</h1>
   <div text-left>
-    <app-description [content]="activity.description"></app-description>
-    <ion-label color="medium" padding-top class="label">
+    <app-description *ngIf="activity.description" [content]="activity.description"></app-description>
+  </div>
+  <div text-left margin-top>
+    <ion-label color="medium" class="label">
       Tasks
     </ion-label>
   </div>
@@ -70,8 +72,8 @@
     <ion-spinner></ion-spinner>
   </ng-container>
   <ng-container *ngIf="events.length">
-    <div text-left>
-      <ion-label color="medium" text-left padding-top class="label">
+    <div text-left margin-top>
+      <ion-label color="medium" class="label">
         Events
       </ion-label>
     </div>
