@@ -324,9 +324,9 @@ export class ChatRoomComponent extends RouterEnter {
    */
   getClassForMessageBubble(message) {
     if (!message.is_sender && message.noAvatar) {
-      return "reserved-messages no-avatar";
+      return "received-messages no-avatar";
     } else if (!message.is_sender && !message.noAvatar) {
-      return "reserved-messages";
+      return "received-messages";
     } else {
       return "send-messages";
     }
