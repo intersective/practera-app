@@ -125,14 +125,10 @@ $message-body-size: 224px;
         width: fit-content;
 
         &.image {
+          background: none !important;
           line-height: 0;
           padding: 0;
-          background: none;
-        }
-
-        &.general-attachment {
-          border-radius: 25px;
-          max-width: inherit;
+          cursor: pointer;
         }
 
         p, .message-text {
@@ -159,6 +155,7 @@ $message-body-size: 224px;
           padding: 0;
           display:block;
           position:relative;
+          cursor: pointer;
 
           #inner-box {
             border-radius: inherit;
@@ -172,7 +169,6 @@ $message-body-size: 224px;
             p {
               color: #fff;
               line-height: $message-body-size;
-              font-family: 'arial';
               text-align: center;
               height: inherit;
               ion-icon {
