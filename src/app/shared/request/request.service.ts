@@ -122,6 +122,26 @@ export class RequestService {
     );
   }
 
+  delete(endPoint: string = '', httpOptions?: any): Observable<any> {
+    if (!httpOptions) {
+      httpOptions = {
+        headers: '',
+        params: ''
+      };
+    }
+    if (!this.utils.has(httpOptions, 'headers')) {
+      httpOptions.headers = '';
+    }
+    if (!this.utils.has(httpOptions, 'params')) {
+      httpOptions.params = '';
+    }
+    return this.http.delete<any>(this.prefixUrl + endPoint, {
+      headers: this.appendHeaders(httpOptions.headers),
+      params: this.setParams(httpOptions.params)
+    }).pipe(
+      catchError(this.handleError<any>('API Request'))
+    );
+  }
 
   /**
    *
@@ -155,10 +175,10 @@ export class RequestService {
         console.error(error); // log to console instead
         this.storage.append('errors', error);
       }
-   
+
       // TODO: better job of transforming error for user consumption
       this.log(`${operation} failed: ${error.message}`);
-   
+
       // Let the app keep running by returning an empty result.
       return of(result as T);
     };
