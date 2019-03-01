@@ -8,12 +8,16 @@ import { DomSanitizer } from '@angular/platform-browser';
   styleUrls: ['chat-preview.component.scss']
 })
 export class ChatPreviewComponent {
-  url = '';
+  file: any = {};
 
   constructor(
     public modalController: ModalController,
     public sanitizer: DomSanitizer
   ) {}
+
+  download() {
+    return window.open(this.file.url, "_system");
+  }
 
   close() {
     this.modalController.dismiss();
