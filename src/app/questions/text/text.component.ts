@@ -1,4 +1,4 @@
-import { Component, Input, forwardRef, ViewChild, ElementRef } from '@angular/core';
+import { Component, Input, Output, EventEmitter, forwardRef, ViewChild, ElementRef } from '@angular/core';
 import { NG_VALUE_ACCESSOR, ControlValueAccessor, FormControl } from '@angular/forms';
 
 @Component({
@@ -28,6 +28,8 @@ export class TextComponent implements ControlValueAccessor {
   @ViewChild('answerEle') answerRef: ElementRef;
   // comment field for reviewer
   @ViewChild('commentEle') commentRef: ElementRef;
+  // call back for save changes
+  @Output() saveProgress = new EventEmitter<boolean>();
 
   // the value of answer &| comment
   innerValue: any;
@@ -80,6 +82,8 @@ export class TextComponent implements ControlValueAccessor {
         }
       }
     }
+
+    this.saveProgress.emit(true);
   }
 
   //From ControlValueAccessor interface

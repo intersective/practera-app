@@ -78,6 +78,14 @@ export interface Review {
   answers: any;
 }
 
+export interface saveAnswersParams {
+  assessment:any; 
+  answers:any; 
+  action:string; 
+  inProgress: boolean;
+  AssessmentSubmissionId?: number;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -403,20 +411,36 @@ export class AssessmentService {
     return answer;
   }
 
-  saveAnswers(assessment, answers, action) {
+  saveAnswers(saveAnswersParams: saveAnswersParams) {
     let postData;
-    switch (action) {
+    switch (saveAnswersParams.action) {
       case 'assessment':
         postData = {
-          Assessment: assessment,
-          AssessmentSubmissionAnswer: answers
+          Assessment: saveAnswersParams.assessment,
+          AssessmentSubmissionAnswer: saveAnswersParams.answers
+        }
+        if (saveAnswersParams.inProgress) {
+          postData.in_progress = saveAnswersParams.inProgress
+        }
+        if (saveAnswersParams.AssessmentSubmissionId) {
+          postData.AssessmentSubmission = {
+            id: saveAnswersParams.AssessmentSubmissionId
+          }
         }
         return this.request.post(api.post.submissions, postData);
 
       case 'review':
         postData = {
-          Assessment: assessment,
-          AssessmentReviewAnswer: answers
+          Assessment: saveAnswersParams.assessment,
+          AssessmentReviewAnswer: saveAnswersParams.answers
+        }
+        if (saveAnswersParams.inProgress) {
+          postData.in_progress = saveAnswersParams.inProgress
+        }
+        if (saveAnswersParams.AssessmentSubmissionId) {
+          postData.AssessmentSubmission = {
+            id: saveAnswersParams.AssessmentSubmissionId
+          }
         }
         return this.request.post(api.post.reviews, postData);
     }

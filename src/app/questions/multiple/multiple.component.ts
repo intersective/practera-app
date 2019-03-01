@@ -1,4 +1,4 @@
-import { Component, Input, forwardRef, ViewChild, ElementRef } from '@angular/core';
+import { Component, Input, Output, EventEmitter, forwardRef, ViewChild, ElementRef } from '@angular/core';
 import { NG_VALUE_ACCESSOR, ControlValueAccessor, FormControl } from '@angular/forms';
 import { UtilsService } from '@services/utils.service';
 
@@ -29,6 +29,8 @@ export class MultipleComponent implements ControlValueAccessor {
   @ViewChild('answer') answerRef: ElementRef;
   // comment field for reviewer
   @ViewChild('commentEle') commentRef: ElementRef;
+  // call back for save changes
+  @Output() saveProgress = new EventEmitter<boolean>();
 
   // the value of answer
   innerValue: any;
@@ -87,6 +89,8 @@ export class MultipleComponent implements ControlValueAccessor {
         }
       }
     }
+
+    this.saveProgress.emit(true);
   }
 
   //From ControlValueAccessor interface
