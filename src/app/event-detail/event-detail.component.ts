@@ -16,7 +16,7 @@ export class EventDetailComponent {
     public modalController: ModalController,
     public eventDetailService: EventDetailService,
     private notificationService: NotificationService,
-    private utils: UtilsService
+    public utils: UtilsService
   ) {}
 
   confirmed() {
