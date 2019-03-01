@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, forwardRef, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter, forwardRef, ViewChild, ElementRef } from '@angular/core';
 import { NG_VALUE_ACCESSOR, ControlValueAccessor, FormControl } from '@angular/forms';
 import { FilestackService } from '@shared/filestack/filestack.service';
 
@@ -34,6 +34,8 @@ export class FileComponent implements ControlValueAccessor, OnInit {
   @ViewChild('answer') answerRef: ElementRef;
   // comment field for reviewer
   @ViewChild('commentEle') commentRef: ElementRef;
+  // call back for save changes
+  @Output() saveProgress = new EventEmitter<boolean>();
 
   uploadedFile;
   fileTypes = '';
@@ -93,6 +95,8 @@ export class FileComponent implements ControlValueAccessor, OnInit {
 
     // propagate value into form control using control value accessor interface
     this.propagateChange(this.innerValue);
+
+    this.saveProgress.emit(true);
   }
 
   //From ControlValueAccessor interface

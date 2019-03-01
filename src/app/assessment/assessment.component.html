@@ -2,6 +2,8 @@
   <ion-toolbar color="light">
     <ion-icon name="arrow-back" (click)="back()" color="primary" slot="start" margin-start></ion-icon>
     <ion-title text-center>Assessment</ion-title>
+    <ion-title *ngIf="saving" text-center class="subTitle">{{savingMessage}}</ion-title>
+    <ion-button disabled="saving" class="text-button" color="primary" slot="end" fill="clear" size="small">Save</ion-button>
   </ion-toolbar>
 </ion-header>
 <ion-content padding color="light" text-center>
@@ -55,6 +57,7 @@
                 [review]="(review.answers && review.answers[question.id]) ? review.answers[question.id] : {}"
                 [formControlName]="'q-' + question.id"
                 [control]="questionsForm.controls['q-' + question.id]"
+                (saveProgress)="submit($event)"
               ></app-text>
 
               <app-oneof
@@ -66,6 +69,7 @@
                 [review]="(review.answers && review.answers[question.id]) ? review.answers[question.id] : {}"
                 [formControlName]="'q-' + question.id"
                 [control]="questionsForm.controls['q-' + question.id]"
+                (saveProgress)="submit($event)"
               ></app-oneof>
 
               <app-multiple
@@ -77,6 +81,7 @@
                 [review]="(review.answers && review.answers[question.id]) ? review.answers[question.id] : {}"
                 [formControlName]="'q-' + question.id"
                 [control]="questionsForm.controls['q-' + question.id]"
+                (saveProgress)="submit($event)"
               ></app-multiple>
 
               <app-file
@@ -88,6 +93,7 @@
                 [review]="(review.answers && review.answers[question.id]) ? review.answers[question.id] : {}"
                 [formControlName]="'q-' + question.id"
                 [control]="questionsForm.controls['q-' + question.id]"
+                (saveProgress)="submit($event)"
               ></app-file>
 
               <app-team-member-selector
@@ -99,6 +105,7 @@
                 [review]="(review.answers && review.answers[question.id]) ? review.answers[question.id] : {}"
                 [formControlName]="'q-' + question.id"
                 [control]="questionsForm.controls['q-' + question.id]"
+                (saveProgress)="submit($event)"
               ></app-team-member-selector>
 
             </ion-card-content>
@@ -107,7 +114,7 @@
       </ng-container>
     </ng-container>
 
-    <ion-button *ngIf="doAssessment || doReview" [disabled]="submitting" (click)="submit()" shape="round" expand="full">
+    <ion-button *ngIf="doAssessment || doReview" [disabled]="submitting" (click)="submit(false)" shape="round" expand="full">
       <ng-container *ngIf="!submitting">Submit</ng-container>
       <ng-container *ngIf="submitting">Submitting...</ng-container>
     </ion-button>
