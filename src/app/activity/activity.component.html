@@ -84,7 +84,7 @@
             class="width-100"
             ></event-card>
         </ion-item>
-        <ion-item lines="none" (click)="router.navigate(['events'])">
+        <ion-item lines="none" (click)="router.navigate(['events', {activityId: id}])">
           <ion-icon name="more" color="primary" margin-end></ion-icon>
           <p>Show More</p>
         </ion-item>
