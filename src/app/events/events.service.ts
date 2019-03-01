@@ -51,10 +51,19 @@ export class EventsService {
     private notificationService: NotificationService
   ) {}
 
-  getEvents(): Observable<any> {
-    return this.request.get(api.get.events, {params: {
+  getEvents(activityId?): Observable<any> {
+    let params = {};
+    if (activityId) {
+      params = {
+        type: 'activity_session',
+        activity_id: activityId
+      };
+    } else {
+      params = {
         type: 'activity_session'
-      }})
+      };
+    }
+    return this.request.get(api.get.events, {params: params})
       .pipe(map(response => {
         return this._normaliseEvents(response.data);
       })
@@ -114,10 +123,10 @@ export class EventsService {
         return 1;
       }
       if (dateA.getTime() > now.getTime() && dateB.getTime() > now.getTime()) {
-        return dateA.getTime() > dateB.getTime();
+        return dateA.getTime() < dateB.getTime() ? -1 : 1;
       }
       if (dateA.getTime() < now.getTime() && dateB.getTime() < now.getTime()) {
-        return dateA.getTime() < dateB.getTime();
+        return dateA.getTime() > dateB.getTime() ? -1 : 1;
       }
     });
   }
