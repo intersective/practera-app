@@ -34,6 +34,9 @@ export class EventsComponent extends RouterEnter {
     public utils: UtilsService
   ) {
     super(router);
+    this.utils.getEvent('update-event').subscribe(event => {
+      this.onEnter();
+    });
   }
 
   private _initialise() {

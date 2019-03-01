@@ -1,6 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { EventsService, Event } from '@app/events/events.service';
-import { NotificationService } from '@shared/notification/notification.service';
+import { Event, EventsService } from '@app/events/events.service';
 
 @Component({
   selector: 'event-card',
@@ -11,12 +10,11 @@ export class EventCardComponent {
   @Input() event: Event;
   @Input() time: string;
   constructor(
-    private notificationService: NotificationService
+    private eventsService: EventsService
   ) {}
 
   showEventDetail() {
-    console.log(this.event);
-    // this.notificationService.eventDetail(this.event);
+    this.eventsService.eventDetailPopUp(this.event);
   }
 
 }
