@@ -3,7 +3,6 @@ import { Observable, of } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { RequestService } from '@shared/request/request.service';
 import { UtilsService } from '@services/utils.service';
-import { Event } from '@app/events/events.service';
 
 /**
  * @name api
@@ -13,8 +12,7 @@ import { Event } from '@app/events/events.service';
 const api = {
   activity: 'api/activities.json',
   submissions: 'api/submissions.json',
-  progress: 'api/v2/motivations/progress/list.json',
-  events: 'api/v2/act/event/list.json'
+  progress: 'api/v2/motivations/progress/list.json'
 };
 
 export interface Task {
@@ -224,66 +222,6 @@ export class ActivityService {
     }
     task.loadingStatus = false;
     return task;
-  }
-
-  getEvents(activityId): Observable<any> {
-    return this.request.get(api.events, {params: {
-        type: 'activity_session',
-        activity_id: activityId
-      }})
-      .pipe(map(response => {
-        return this._normaliseEvents(response.data);
-      })
-    );
-  }
-
-  private _normaliseEvents(data): Array<Event> {
-    if (!Array.isArray(data)) {
-      this.request.apiResponseFormatError('Event format error');
-      return [];
-    }
-    let events: Array<Event> = [];
-    data.forEach(event => {
-      if (!this.utils.has(event, 'id') ||
-          !this.utils.has(event, 'title') ||
-          !this.utils.has(event, 'description') ||
-          !this.utils.has(event, 'activity_id') ||
-          !this.utils.has(event, 'activity_name') ||
-          !this.utils.has(event, 'location') ||
-          !this.utils.has(event, 'start') ||
-          !this.utils.has(event, 'end') ||
-          !this.utils.has(event, 'capacity') ||
-          !this.utils.has(event, 'remaining_capacity') ||
-          !this.utils.has(event, 'isBooked')) {
-        return this.request.apiResponseFormatError('Event object format error');
-      }
-      events.push({
-        id: event.id,
-        name: event.title,
-        description: event.description,
-        location: event.location,
-        activityId: event.activity_id,
-        activityName: event.activity_name,
-        startTime: event.start,
-        endTime: event.end,
-        capacity: event.capacity,
-        remainingCapacity: event.remaining_capacity,
-        isBooked: event.isBooked,
-        isPast: this.utils.timeComparer(event.start) < 0
-      });
-    });
-    return this._sortEvent(events);
-  }
-
-  private _sortEvent(events) {
-    return events.sort((a, b) => {
-      let dateA = new Date(a.startTime + 'Z');
-      let dateB = new Date(b.startTime + 'Z');
-      if (dateA.getTime() === dateB.getTime()) {
-        return 0;
-      }
-      return dateA.getTime() > dateB.getTime() ? -1 : 1;
-    });
   }
 
 }
