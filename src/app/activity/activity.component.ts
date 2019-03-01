@@ -24,6 +24,8 @@ export class ActivityComponent extends RouterEnter {
     tasks: []
   };
   loadingActivity: boolean = true;
+  events: Array<Event>;
+  loadingEvents: boolean = true;
 
   constructor(
     public router: Router,
@@ -50,6 +52,7 @@ export class ActivityComponent extends RouterEnter {
     this._initialise();
     this.id = parseInt(this.route.snapshot.paramMap.get('id'));
     this._getActivity();
+    this._getEvents();
   }
 
   private _getActivity() {
@@ -78,6 +81,20 @@ export class ActivityComponent extends RouterEnter {
       .subscribe(task => {
         this.activity.tasks[index] = task;
       });
+  }
+
+  private _getEvents() {
+    this.loadingEvents = true;
+    this.events = [];
+    this.activityService.getEvents(this.id).subscribe(events => {
+      if (events.length > 2) {
+        // only display 2 events
+        events.length = 2;
+      }
+      this.events = events;
+      this.loadingEvents = false;
+      console.log(this.events);
+    });
   }
 
   back() {

@@ -3,6 +3,7 @@ import { Observable, of } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { RequestService } from '@shared/request/request.service';
 import { UtilsService } from '@services/utils.service';
+import { Event } from '@app/events/events.service';
 
 /**
  * @name api
@@ -12,7 +13,8 @@ import { UtilsService } from '@services/utils.service';
 const api = {
   activity: 'api/activities.json',
   submissions: 'api/submissions.json',
-  progress: 'api/v2/motivations/progress/list.json'
+  progress: 'api/v2/motivations/progress/list.json',
+  events: 'api/v2/act/event/list.json'
 };
 
 export interface Task {
@@ -57,7 +59,7 @@ export class ActivityService {
 
   private _normaliseActivity(data: any) {
     // In API response, 'data' is an array of activities(since we passed activity id, it will return only one activity, but still in array format). That's why we use data[0]
-    const thisActivity = data[0]; // grab first element from the array as activity 
+    const thisActivity = data[0]; // grab first element from the array as activity
 
     if (!Array.isArray(data) || !this.utils.has(thisActivity, 'Activity') || !this.utils.has(thisActivity, 'ActivitySequence') || !this.utils.has(thisActivity, 'References')) {
       return this.request.apiResponseFormatError('Activity format error');
@@ -143,7 +145,7 @@ export class ActivityService {
       data.Activity.Topic.forEach(topic => {
         if (!this.utils.has(topic, 'id') || !this.utils.has(topic, 'progress')) {
           return this.request.apiResponseFormatError('Progress.Activity.Topic format error');
-        } 
+        }
         topicProgresses[topic.id] = topic.progress;
       });
     }
@@ -151,7 +153,7 @@ export class ActivityService {
       data.Activity.Assessment.forEach(assessment => {
         if (!this.utils.has(assessment, 'id') || !this.utils.has(assessment, 'progress')) {
           return this.request.apiResponseFormatError('Progress.Activity.Assessment format error');
-        } 
+        }
         assessmentProgresses[assessment.id] = assessment.progress;
       });
     }
@@ -204,7 +206,7 @@ export class ActivityService {
       case 'pending approval':
         task.status = 'pending review';
         break;
-      
+
       case 'published':
         // default
         task.status = 'feedback available';
@@ -222,6 +224,66 @@ export class ActivityService {
     }
     task.loadingStatus = false;
     return task;
+  }
+
+  getEvents(activityId): Observable<any> {
+    return this.request.get(api.events, {params: {
+        type: 'activity_session',
+        activity_id: activityId
+      }})
+      .pipe(map(response => {
+        return this._normaliseEvents(response.data);
+      })
+    );
+  }
+
+  private _normaliseEvents(data): Array<Event> {
+    if (!Array.isArray(data)) {
+      this.request.apiResponseFormatError('Event format error');
+      return [];
+    }
+    let events: Array<Event> = [];
+    data.forEach(event => {
+      if (!this.utils.has(event, 'id') ||
+          !this.utils.has(event, 'title') ||
+          !this.utils.has(event, 'description') ||
+          !this.utils.has(event, 'activity_id') ||
+          !this.utils.has(event, 'activity_name') ||
+          !this.utils.has(event, 'location') ||
+          !this.utils.has(event, 'start') ||
+          !this.utils.has(event, 'end') ||
+          !this.utils.has(event, 'capacity') ||
+          !this.utils.has(event, 'remaining_capacity') ||
+          !this.utils.has(event, 'isBooked')) {
+        return this.request.apiResponseFormatError('Event object format error');
+      }
+      events.push({
+        id: event.id,
+        name: event.title,
+        description: event.description,
+        location: event.location,
+        activityId: event.activity_id,
+        activityName: event.activity_name,
+        startTime: event.start,
+        endTime: event.end,
+        capacity: event.capacity,
+        remainingCapacity: event.remaining_capacity,
+        isBooked: event.isBooked,
+        isPast: this.utils.timeComparer(event.start) < 0
+      });
+    });
+    return this._sortEvent(events);
+  }
+
+  private _sortEvent(events) {
+    return events.sort((a, b) => {
+      let dateA = new Date(a.startTime + 'Z');
+      let dateB = new Date(b.startTime + 'Z');
+      if (dateA.getTime() === dateB.getTime()) {
+        return 0;
+      }
+      return dateA.getTime() > dateB.getTime() ? -1 : 1;
+    });
   }
 
 }
