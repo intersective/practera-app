@@ -1,6 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { Router, ActivatedRoute, ParamMap } from '@angular/router';
-import { AssessmentService, Assessment, Submission, Review } from './assessment.service';
+import { AssessmentService, Assessment, Submission, Review, saveAnswersParams } from './assessment.service';
 import { UtilsService } from '../services/utils.service';
 import { NotificationService } from '@shared/notification/notification.service';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
@@ -50,6 +50,8 @@ export class AssessmentComponent extends RouterEnter {
   loadingSubmission: boolean = true;
   questionsForm = new FormGroup({});
   submitting: boolean = false;
+  saving: boolean = false;
+  savingMessage: string = 'Saving...';
   fromPage: string = '';
 
   constructor (
@@ -127,6 +129,7 @@ export class AssessmentComponent extends RouterEnter {
     this.assessmentService.getSubmission(this.id, this.contextId, this.action, this.submissionId)
       .subscribe(result => {
         this.submission = result.submission;
+        console.log("this.submission - ", this.submission);
         this.loadingSubmission = false;
         // this page is for doing assessment if submission is empty
         if (this.utils.isEmpty(this.submission)) {
@@ -192,8 +195,15 @@ export class AssessmentComponent extends RouterEnter {
     return requiredQuestions;
   }
 
-  submit() {
-    this.submitting = true;
+
+
+  submit(isInProgress:boolean) {
+    if (isInProgress) {
+      this.saving = true;
+      this.savingMessage = 'Saving...';
+    } else {
+      this.submitting = true;
+    }
     let answers = [];
     let assessment = {};
     let requiredQuestions = this.getRequiredQuestions();
@@ -216,11 +226,13 @@ export class AssessmentComponent extends RouterEnter {
           this.utils.unset(requiredQuestions, questionId);
         }
       });
-      // check if all required questions have answer
-      if (!this.utils.isEmpty(requiredQuestions)) {
-        this.submitting = false;
-        // display a pop up if required question not answered
-        return this.notificationService.popUp('shortMessage', {message: 'Required question answer missing!'});
+      // check if all required questions have answer when assessment done
+      if (!isInProgress) {
+        if (!this.utils.isEmpty(requiredQuestions)) {
+          this.submitting = false;
+          // display a pop up if required question not answered
+          return this.notificationService.popUp('shortMessage', {message: 'Required question answer missing!'});
+        }
       }
     }
 
@@ -240,27 +252,51 @@ export class AssessmentComponent extends RouterEnter {
       });
     }
 
+    let params:saveAnswersParams = {
+      assessment: assessment,
+      answers: answers,
+      action: this.action,
+      inProgress: false
+    };
+    if (isInProgress) {
+      params.inProgress = true;
+    }
+    if (this.submission) {
+      params.AssessmentSubmissionId = this.submission.id;
+    }
     // save the submission/feedback
-    this.assessmentService.saveAnswers(assessment, answers, this.action)
+    this.assessmentService.saveAnswers(params)
       .subscribe(result => {
         this.submitting = false;
-        // display a pop up for successful submission
-        return this.notificationService.alert({
-          message: 'Submission Successful!',
-          buttons: [
-            {
-              text: 'OK',
-              role: 'cancel',
-              handler: () => {
-                this.router.navigate(['app','home']);
-                return;
+        this.saving = false;
+        
+        if (isInProgress) {
+          // display message for successfull saved answers
+          this.savingMessage = 'All changes are saved';
+        } else {
+          // display a pop up for successful submission
+          return this.notificationService.alert({
+            message: 'Submission Successful!',
+            buttons: [
+              {
+                text: 'OK',
+                role: 'cancel',
+                handler: () => {
+                  this.router.navigate(['app','home']);
+                  return;
+                }
               }
-            }
-          ]
-        });
+            ]
+          });
+        }
       }, err => {
         this.submitting = false;
-        // display a pop up if submission failed
+        this.saving = false;
+        if (isInProgress) {
+          // display message when saving answers failed
+          this.savingMessage = 'All changes are saved';
+        } else {
+          // display a pop up if submission failed
         this.notificationService.alert({
           message: 'Submission Failed, please try again later.',
           buttons: [
@@ -270,6 +306,7 @@ export class AssessmentComponent extends RouterEnter {
             }
           ]
         });
+        }
       });
   }
 
