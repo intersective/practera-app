@@ -94,9 +94,9 @@ export class NotificationService {
       this.achievementService.markAchievementAsSeen(achievement.id);
     }
     const modal = await this.modal(component, componentProps, {
-      'cssClass': 'achievement-popup',
-      'keyboardClose': false,
-      'backdropDismiss': false
+      cssClass: 'achievement-popup',
+      keyboardClose: false,
+      backdropDismiss: false
     });
     return modal;
   }

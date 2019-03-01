@@ -1,0 +1,41 @@
+<ion-header>
+  <ion-toolbar color="light">
+    <ion-icon name="close-circle-outline" class="close-icon" (click)="close()" color="primary" slot="end"></ion-icon>
+  </ion-toolbar>
+</ion-header>
+<ion-content color="light" text-center>
+  <h1>{{ event.name }}</h1>
+  <div class="div-activity-name">{{ event.activityName }}</div>
+  <app-description [content]="event.description"></app-description>
+
+  <ion-list>
+    <ion-item>
+      <ion-icon class="leading-icon" name="calendar" color="primary"></ion-icon>
+      <div>{{ utils.utcToLocal(event.startTime, 'date') }}</div>
+    </ion-item>
+    <ion-item>
+      <ion-icon class="leading-icon" name="time" color="primary"></ion-icon>
+      <div>{{ utils.utcToLocal(event.startTime, 'time') }} - {{ utils.utcToLocal(event.endTime, 'time') }}</div>
+    </ion-item>
+    <ion-item>
+      <ion-icon class="leading-icon" name="pin" color="primary"></ion-icon>
+      <div>{{ event.location }}</div>
+    </ion-item>
+    <ion-item lines="none">
+      <ion-icon class="leading-icon" name="contacts" color="primary"></ion-icon>
+      <div>{{ event.remainingCapacity }} Seats Available Out of {{ event.capacity }}</div>
+    </ion-item>
+  </ion-list>
+
+  <div class="div-btn" *ngIf="!event.isPast && (event.isBooked || event.remainingCapacity > 0)">
+    <ion-button (click)="confirmed()" shape="round" color="primary" expand="full">
+      <ng-container *ngIf="!event.isBooked">
+        Book
+      </ng-container>
+      <ng-container *ngIf="event.isBooked">
+        Cancel Booking
+      </ng-container>
+    </ion-button>
+  </div>
+
+</ion-content>
