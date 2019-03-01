@@ -7,6 +7,7 @@ import { UtilsService } from '../services/utils.service';
 import { NotificationService } from '@shared/notification/notification.service';
 import { BrowserStorageService } from '@services/storage.service';
 import { RouterEnter } from '@services/router-enter.service';
+import { Event, EventsService} from '@app/events/events.service';
 
 @Component({
   selector: 'app-activity',
@@ -24,6 +25,8 @@ export class ActivityComponent extends RouterEnter {
     tasks: []
   };
   loadingActivity: boolean = true;
+  events: Array<Event>;
+  loadingEvents: boolean = true;
 
   constructor(
     public router: Router,
@@ -31,9 +34,14 @@ export class ActivityComponent extends RouterEnter {
     private activityService: ActivityService,
     public utils: UtilsService,
     private notificationService: NotificationService,
-    public storage: BrowserStorageService
+    public storage: BrowserStorageService,
+    private eventsService: EventsService
   ) {
     super(router);
+    // update event list after book/cancel an event
+    this.utils.getEvent('update-event').subscribe(event => {
+      this._getEvents();
+    });
   }
 
   private _initialise() {
@@ -50,6 +58,7 @@ export class ActivityComponent extends RouterEnter {
     this._initialise();
     this.id = parseInt(this.route.snapshot.paramMap.get('id'));
     this._getActivity();
+    this._getEvents();
   }
 
   private _getActivity() {
@@ -78,6 +87,19 @@ export class ActivityComponent extends RouterEnter {
       .subscribe(task => {
         this.activity.tasks[index] = task;
       });
+  }
+
+  private _getEvents() {
+    this.loadingEvents = true;
+    this.events = [];
+    this.eventsService.getEvents(this.id).subscribe(events => {
+      if (events.length > 2) {
+        // only display 2 events
+        events.length = 2;
+      }
+      this.events = events;
+      this.loadingEvents = false;
+    });
   }
 
   back() {

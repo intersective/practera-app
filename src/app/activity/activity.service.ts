@@ -57,7 +57,7 @@ export class ActivityService {
 
   private _normaliseActivity(data: any) {
     // In API response, 'data' is an array of activities(since we passed activity id, it will return only one activity, but still in array format). That's why we use data[0]
-    const thisActivity = data[0]; // grab first element from the array as activity 
+    const thisActivity = data[0]; // grab first element from the array as activity
 
     if (!Array.isArray(data) || !this.utils.has(thisActivity, 'Activity') || !this.utils.has(thisActivity, 'ActivitySequence') || !this.utils.has(thisActivity, 'References')) {
       return this.request.apiResponseFormatError('Activity format error');
@@ -143,7 +143,7 @@ export class ActivityService {
       data.Activity.Topic.forEach(topic => {
         if (!this.utils.has(topic, 'id') || !this.utils.has(topic, 'progress')) {
           return this.request.apiResponseFormatError('Progress.Activity.Topic format error');
-        } 
+        }
         topicProgresses[topic.id] = topic.progress;
       });
     }
@@ -151,7 +151,7 @@ export class ActivityService {
       data.Activity.Assessment.forEach(assessment => {
         if (!this.utils.has(assessment, 'id') || !this.utils.has(assessment, 'progress')) {
           return this.request.apiResponseFormatError('Progress.Activity.Assessment format error');
-        } 
+        }
         assessmentProgresses[assessment.id] = assessment.progress;
       });
     }
@@ -204,7 +204,7 @@ export class ActivityService {
       case 'pending approval':
         task.status = 'pending review';
         break;
-      
+
       case 'published':
         // default
         task.status = 'feedback available';
