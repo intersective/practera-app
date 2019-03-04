@@ -7,7 +7,7 @@ import { AuthForgotPasswordComponent } from './auth-forgot-password/auth-forgot-
 import { AuthRegistrationComponent } from './auth-registration/auth-registration.component';
 import { AuthResetPasswordComponent } from './auth-reset-password/auth-reset-password.component';
 import { AuthDirectLoginComponent } from './auth-direct-login/auth-direct-login.component';
-import { UnauthorizedGuard } from './../guards/unauthorized-guard.service';
+import { UnauthorizedGuard } from './unauthorized.guard';
 
 const routes: Routes = [
   {
@@ -26,15 +26,18 @@ const routes: Routes = [
       },
       {
         path: 'forgot_password',
-        component: AuthForgotPasswordComponent
+        component: AuthForgotPasswordComponent,
+        canActivate: [UnauthorizedGuard],
       },
       {
         path: 'registration/:email/:key',
-        component: AuthRegistrationComponent
+        component: AuthRegistrationComponent,
+        canActivate: [UnauthorizedGuard],
       },
       {
         path: 'reset_password/:key/:email',
-        component: AuthResetPasswordComponent
+        component: AuthResetPasswordComponent,
+        canActivate: [UnauthorizedGuard],
       },
       {
         path: 'secure/:authToken',

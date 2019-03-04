@@ -8,7 +8,7 @@ import { AuthRoutingModule } from './auth-routing.module';
 
 import { AuthService } from './auth.service';
 
-import { UnauthorizedGuard } from './../guards/unauthorized-guard.service';
+import { UnauthorizedGuard } from './unauthorized.guard';
 import { AuthComponent } from './auth.component';
 import { AuthLoginComponent } from './auth-login/auth-login.component';
 import { AuthForgotPasswordComponent } from './auth-forgot-password/auth-forgot-password.component';
