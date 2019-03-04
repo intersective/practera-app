@@ -9,13 +9,15 @@ export class DescriptionComponent {
   heightLimit: number = 90;
   isTruncating: boolean = true;
   heightExceeded: boolean = false;
+  elementHeight: number;
   @Input() content: string = '';
   @ViewChild('description') descriptionRef: ElementRef
 
   ngAfterViewInit() {
+    this.elementHeight = this.descriptionRef.nativeElement.clientHeight;
     setTimeout(() => {
-      this.heightExceeded = this.descriptionRef.nativeElement.clientHeight >= this.heightLimit;
-    }, 1500);
+      this.heightExceeded = this.elementHeight >= this.heightLimit;
+    });
   }
 
 }
