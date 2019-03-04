@@ -7,8 +7,6 @@ phases:
       - sudo npm install forever -g
       - sudo npm install -g @angular/cli
       - sudo npm install
-      - sudo node node_modules/node-sass/scripts/install.js
-      - sudo npm rebuild node-sass
       - echo Install completed on `date`
   build:
     commands:
