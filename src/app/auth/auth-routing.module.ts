@@ -7,6 +7,7 @@ import { AuthForgotPasswordComponent } from './auth-forgot-password/auth-forgot-
 import { AuthRegistrationComponent } from './auth-registration/auth-registration.component';
 import { AuthResetPasswordComponent } from './auth-reset-password/auth-reset-password.component';
 import { AuthDirectLoginComponent } from './auth-direct-login/auth-direct-login.component';
+import { UnauthorizedGuard } from './../guards/unauthorized-guard.service';
 
 const routes: Routes = [
   {
@@ -20,7 +21,8 @@ const routes: Routes = [
       },
       {
         path: 'login',
-        component: AuthLoginComponent
+        component: AuthLoginComponent,
+        canActivate: [UnauthorizedGuard],
       },
       {
         path: 'forgot_password',
