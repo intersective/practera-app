@@ -90,7 +90,9 @@ export class TopicComponent extends RouterEnter {
 
   markAsDone() {
     this.btnToggleTopicIsDone = true;
-    this.topicService.updateTopicProgress(this.id).subscribe();
+    this.topicService.updateTopicProgress(this.id).subscribe(result => {
+      this.router.navigate(['app', 'activity', this.activityId]);
+    });
   }
 
   previewFile(file) {
