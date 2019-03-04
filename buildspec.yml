@@ -8,7 +8,7 @@ phases:
       - echo Installing source NPM dependencies...
       - sudo apt-get update -y
       - sudo apt-get install -y apt-transport-https
-      - sudo apt-get install -y s3cmd
+      # - sudo apt-get install -y s3cmd
       - sudo npm install forever -g
       - sudo npm install -g @angular/cli
       - sudo npm install
@@ -20,7 +20,7 @@ phases:
       - sudo ng build --configuration=$BUILD_CONFIG
   post_build:
     commands:
-      #- s3cmd sync www/ s3://$S3_BUCKET/ --delete-removed --recursive --cf-invalidate --add-header=Cache-Control:max-age=0,public
+      # - s3cmd sync www/ s3://$S3_BUCKET/ --delete-removed --recursive --cf-invalidate --add-header=Cache-Control:max-age=0,public
       - aws s3 sync www/ s3://$S3_BUCKET/ --delete
       - aws cloudfront create-invalidation --distribution-id $CF_DIST_ID --paths '/*'
       - echo Build completed on `date`
