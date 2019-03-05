@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '../auth/auth.service';
-import { SettingService, Profile } from './setting.service';
+import { SettingService } from './setting.service';
 import { BrowserStorageService } from '@services/storage.service';
 import { UtilsService } from '@services/utils.service';
 import { NotificationService } from '@shared/notification/notification.service';
@@ -17,7 +17,7 @@ import { RouterEnter } from '@services/router-enter.service';
 export class SettingsComponent extends RouterEnter {
 
   routeUrl: string = '/app/settings';
-  profile : Profile = {
+  profile = {
     contactNumber: '',
     email: ''
   };
@@ -153,7 +153,10 @@ export class SettingsComponent extends RouterEnter {
         {
           text: 'Okay',
           handler: () => {
-            this.settingService.updateProfile(this.profile).subscribe(result => {
+            this.settingService.updateProfile({
+              contact_number: this.profile.contactNumber,
+              email: this.profile.email,
+            }).subscribe(result => {
               this.updating = false;
               if (result.success) {
                 // update contact number in user local storage data array.
