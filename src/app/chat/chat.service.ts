@@ -215,7 +215,6 @@ export class ChatService {
    */
   getMessageFromEvent(data): Message | null {
     const presenceChannelId = this.pusherService.getMyPresenceChannelId();
-    const chatColors;
     // don't show the message if it is from the current user,
     // or it is not to this user and not a team message
     if ((presenceChannelId === data.event.from) ||
