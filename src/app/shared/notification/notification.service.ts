@@ -93,7 +93,7 @@ export class NotificationService {
       type,
       achievement
     };
-    if (type == 'notification') {
+    if (type === 'notification') {
       this.achievementService.markAchievementAsSeen(achievement.id);
     }
     const modal = await this.modal(component, componentProps, {

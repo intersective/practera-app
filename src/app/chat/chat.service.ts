@@ -215,7 +215,7 @@ export class ChatService {
    */
   getMessageFromEvent(data): Message | null {
     const presenceChannelId = this.pusherService.getMyPresenceChannelId();
-    let chatColors;
+    const chatColors;
     // don't show the message if it is from the current user,
     // or it is not to this user and not a team message
     if ((presenceChannelId === data.event.from) ||
@@ -226,8 +226,8 @@ export class ChatService {
     // show the message if it is team message, and participants_only match
     // or it is individual message and sender match
     if (!(
-          (data.isTeam && data.event.to == 'team' &&
-            data.participants_only == data.event.participants_only) ||
+          (data.isTeam && data.event.to === 'team' &&
+            data.participants_only === data.event.participants_only) ||
           (data.event.sender_name === data.chatName &&
             data.event.to !== 'team')
       )) {
@@ -285,7 +285,7 @@ export class ChatService {
     if (!Array.isArray(data)) {
       return this.request.apiResponseFormatError('Chat format error');
     }
-    if (data.length == 0) {
+    if (data.length === 0) {
       return [];
     }
     const chats = [];
@@ -326,7 +326,7 @@ export class ChatService {
     if (!Array.isArray(data)) {
       return this.request.apiResponseFormatError('Message array format error');
     }
-    if (data.length == 0) {
+    if (data.length === 0) {
       return [];
     }
     const messageList = [];

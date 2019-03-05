@@ -38,9 +38,6 @@ export class TextComponent implements ControlValueAccessor {
 
   constructor() {}
 
-  ngAfterViewInit() {
-  }
-
   // propagate changes into the form control
   propagateChange = (_: any) => {};
 
@@ -71,7 +68,7 @@ export class TextComponent implements ControlValueAccessor {
     // reset errors
     this.errors = [];
     // setting, resetting error messages into an array (to loop) and adding the validation messages to show below the answer area
-    for (let key in this.control.errors) {
+    for (const key in this.control.errors) {
       if (this.control.errors.hasOwnProperty(key)) {
         if (key === 'required') {
           this.errors.push('This question is required');

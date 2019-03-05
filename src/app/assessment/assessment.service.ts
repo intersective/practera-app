@@ -96,7 +96,7 @@ export class AssessmentService {
     return this.request.get(api.get.assessment, {params: {
         assessment_id: id,
         structured: true,
-        review: (action == 'review') ? true : false
+        review: (action === 'review') ? true : false
       }})
       .pipe(map(response => {
         if (response.success && response.data) {
@@ -109,7 +109,9 @@ export class AssessmentService {
   }
 
   private _normaliseAssessment(data) {
-    // In API response, 'data' is an array of assessments(since we passed assessment id, it will return only one assessment, but still in array format). That's why we use data[0]
+    // In API response, 'data' is an array of assessments
+    // (since we passed assessment id, it will return only one assessment, but still in array format). 
+    // That's why we use data[0]
     if (!Array.isArray(data) ||
         !this.utils.has(data[0], 'Assessment') ||
         !this.utils.has(data[0], 'AssessmentGroup')) {
@@ -179,7 +181,8 @@ export class AssessmentService {
                 ) {
                 return this.request.apiResponseFormatError('Assessment.AssessmentChoice format error');
               }
-              // Here we use the AssessmentQuestionChoice.id (instead of AssessmentChoice.id) as the choice id, this is the current logic from Practera server
+              // Here we use the AssessmentQuestionChoice.id (instead of AssessmentChoice.id) as the choice id, 
+              // this is the current logic from Practera server
               choices.push({
                 id: questionChoice.id,
                 name: questionChoice.AssessmentChoice.name,
@@ -240,7 +243,7 @@ export class AssessmentService {
 
   getSubmission(assessmentId, contextId, action, submissionId?): Observable<any> {
     let params;
-    if (action == 'review') {
+    if (action === 'review') {
       params = {
         assessment_id: assessmentId,
         context_id: contextId,
@@ -271,7 +274,9 @@ export class AssessmentService {
   }
 
   private _normaliseSubmission(data, action) {
-    // In API response, 'data' is an array of submissions(currently we only support one submission per assessment, but it is still in array format). That's why we use data[0]
+    // In API response, 'data' is an array of submissions
+    // (currently we only support one submission per assessment, but it is still in array format). 
+    // That's why we use data[0]
     if (!Array.isArray(data) ||
         !this.utils.has(data[0], 'AssessmentSubmission')) {
       return this.request.apiResponseFormatError('AssessmentSubmission format error');
@@ -300,7 +305,7 @@ export class AssessmentService {
       submission.answers[answer.assessment_question_id] = {
         answer: answer.answer
       };
-      if (submission.status == 'published' || submission.status == 'done') {
+      if (submission.status === 'published' || submission.status === 'done') {
         submission = this._addChoiceExplanation(answer, submission);
       }
     });
@@ -314,8 +319,8 @@ export class AssessmentService {
         answers: {}
       };
     }
-    // only get the review answer if the review is published (submission.status == 'published') or this is from /assessment/review
-    if ( (submission.status == 'published' || action === 'review') &&
+    // only get the review answer if the review is published (submission.status === 'published') or this is from /assessment/review
+    if ( (submission.status === 'published' || action === 'review') &&
         this.utils.has(thisSubmission, 'AssessmentReviewAnswer') &&
         Array.isArray(thisSubmission.AssessmentReviewAnswer)) {
       if (!review) {
@@ -386,7 +391,7 @@ export class AssessmentService {
       switch (this.questions[questionId].question_type) {
         case 'oneof':
           // re-format answer from string to number
-          answer = parseInt(answer);
+          answer = +answer;
           break;
         case 'multiple':
           if (!Array.isArray(answer)) {
@@ -395,7 +400,7 @@ export class AssessmentService {
           }
           // re-format answer from string to number
           answer = answer.map(value => {
-            return parseInt(value);
+            return +value;
           });
           break;
       }
@@ -441,7 +446,8 @@ export class AssessmentService {
   }
 
   private _normaliseFeedbackReviewed(data) {
-    // In API response, 'data' is an array of todo items. Since we passed "identifier", there should be just one in the array. That's why we use data[0]
+    // In API response, 'data' is an array of todo items. 
+    // Since we passed "identifier", there should be just one in the array. That's why we use data[0]
     if (!Array.isArray(data) ||
         !this.utils.has(data[0], 'is_done')) {
       return this.request.apiResponseFormatError('TodoItem format error');

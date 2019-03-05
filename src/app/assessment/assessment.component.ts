@@ -136,14 +136,14 @@ export class AssessmentComponent extends RouterEnter {
         }
         this.review = result.review;
         // this page is for doing review if the submission status is 'pending review' and action is review
-        if (this.submission.status == 'pending review' && this.action == 'review') {
+        if (this.submission.status === 'pending review' && this.action === 'review') {
           this.doReview = true;
         }
         // call todo item to check if the feedback has been reviewed or not
-        if (this.submission.status == 'published') {
+        if (this.submission.status === 'published') {
           this.assessmentService.getFeedbackReviewed(this.submission.id)
-            .subscribe(result => {
-              this.feedbackReviewed = result;
+            .subscribe(feedbackReviewed => {
+              this.feedbackReviewed = feedbackReviewed;
               this.loadingFeedbackReviewed = false;
             });
         }
@@ -206,7 +206,7 @@ export class AssessmentComponent extends RouterEnter {
         context_id: this.contextId
       };
       this.utils.each(this.questionsForm.value, (value, key) => {
-        questionId = parseInt(key.replace('q-', ''));
+        questionId = +key.replace('q-', '');
         answers.push({
           assessment_question_id: questionId,
           answer: value
@@ -234,7 +234,7 @@ export class AssessmentComponent extends RouterEnter {
       this.utils.each(this.questionsForm.value, (value, key) => {
         if (value) {
           const answer = value;
-          answer.assessment_question_id = parseInt(key.replace('q-', ''));
+          answer.assessment_question_id = +key.replace('q-', '');
           answers.push(answer);
         }
       });
@@ -276,7 +276,8 @@ export class AssessmentComponent extends RouterEnter {
   reviewFeedback() {
     this.feedbackReviewed = true;
     this.assessmentService.saveFeedbackReviewed(this.submission.id).subscribe(result => {
-      // if review is successfully mark as read and program is configured to enable review rating, display review rating modal and then redirect to activity page.
+      // if review is successfully mark as read and program is configured to enable review rating, 
+      // display review rating modal and then redirect to activity page.
       if (result.success && this.storage.getUser().hasReviewRating === true) {
         this.assessmentService.popUpReviewRating(this.review.id, ['app', 'home']);
       }

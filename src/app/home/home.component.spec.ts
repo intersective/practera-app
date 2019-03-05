@@ -9,7 +9,7 @@ import { FastFeedbackService } from '../fast-feedback/fast-feedback.service';
 describe('HomeComponent', () => {
   let component: HomeComponent;
   let fixture: ComponentFixture<HomeComponent>;
-  let fastFeedbackService;
+  const fastFeedbackService;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
