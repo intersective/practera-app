@@ -269,7 +269,7 @@ export class AssessmentComponent extends RouterEnter {
       });
     }
 
-    let params:saveAnswersParams = {
+    let params: saveAnswersParams = {
       assessment: assessment,
       answers: answers,
       action: this.action
@@ -278,11 +278,11 @@ export class AssessmentComponent extends RouterEnter {
       params.AssessmentSubmissionId = this.submission.id;
     }
     // save the submission/feedback
-    this.assessmentService.saveAnswers(params)
-      .subscribe(result => {
+    this.assessmentService.saveAnswers(params).subscribe(
+      result => {
         this.submitting = false;
         this.saving = false;
-        if ( isInProgress ) {
+        if (isInProgress) {
           // display message for successfull saved answers
           this.savingMessage = 'Last saved a mooment ago';
         } else {
@@ -294,15 +294,15 @@ export class AssessmentComponent extends RouterEnter {
                 text: 'OK',
                 role: 'cancel',
                 handler: () => {
-                  this.router.navigate(['app','home']);
+                  this.router.navigate(['app', 'home']);
                   return;
                 }
-
               }
             ]
           });
         }
-      }, err => {
+      },
+      err => {
         this.submitting = false;
         this.saving = false;
         if (isInProgress) {
@@ -310,17 +310,18 @@ export class AssessmentComponent extends RouterEnter {
           this.savingMessage = 'Auto save failed';
         } else {
           // display a pop up if submission failed
-        this.notificationService.alert({
-          message: 'Submission Failed, please try again later.',
-          buttons: [
-            {
-              text: 'OK',
-              role: 'cancel'
-            }
-          ]
-        });
+          this.notificationService.alert({
+            message: 'Submission Failed, please try again later.',
+            buttons: [
+              {
+                text: 'OK',
+                role: 'cancel'
+              }
+            ]
+          });
         }
-      });
+      }
+    );
   }
 
   reviewFeedback() {

@@ -80,8 +80,8 @@ export interface Review {
 }
 
 export interface saveAnswersParams {
-  assessment: any; 
-  answers: any; 
+  assessment: any;
+  answers: any;
   action: string;
   AssessmentSubmissionId?: number;
 }
