@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ModalController } from '@ionic/angular';
 import { GoMobileService } from './go-mobile.service';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
-import { UtilsService } from '@services/utils.service';
+import { UtilsService, ContactNumberFormat } from '@services/utils.service';
 import { NotificationService } from '@shared/notification/notification.service';
 import { BrowserStorageService } from "@services/storage.service";
 import { environment } from '../../environments/environment.prod';
@@ -27,24 +27,10 @@ export class GoMobileComponent implements OnInit {
   mask: Array<string|RegExp>;
   // variable to control the update button
   updating = false;
-  // supported countries
-  countryCodes = [
-    {
-        name: "Australia",
-        code: "AUS",
-        format: '+61 ___ ___ ___'
-    },
-    {
-        name: "US/Canada",
-        code: "US",
-        format: '+1 ___ ___ ____'
-    },
-  ];
 
-  formatMasks = {
-      AUS: ['+','6','1',' ', /[1-9]/, /\d/, /\d/, ' ', /\d/, /\d/, /\d/, ' ', /\d/, /\d/, /\d/],
-      US: ['+','1', ' ',/[1-9]/, /\d/, /\d/, ' ', /\d/, /\d/, /\d/, ' ', /\d/, /\d/, /\d/, /\d/]
-   };
+  countryCodes = ContactNumberFormat.countryCodes;
+  formatMasks = ContactNumberFormat.masks;
+
   constructor(
     public modalController: ModalController,
     private GoMobileService: GoMobileService,
@@ -89,7 +75,9 @@ export class GoMobileComponent implements OnInit {
     }
 
     this.GoMobileService.submit({
-      contactnumber: this.profile.contactNumber,
+      contact_number: this.profile.contactNumber,
+      email: this.profile.email,
+      sendsms: true,
     }).subscribe(res => {
       this.saved = true;
       this.notification.alert({

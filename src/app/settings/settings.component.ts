@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 import { AuthService } from '../auth/auth.service';
 import { SettingService } from './setting.service';
 import { BrowserStorageService } from '@services/storage.service';
-import { UtilsService } from '@services/utils.service';
+import { UtilsService, ContactNumberFormat } from '@services/utils.service';
 import { NotificationService } from '@shared/notification/notification.service';
 import { environment } from '../../environments/environment.prod';
 import { RouterEnter } from '@services/router-enter.service';
@@ -28,24 +28,9 @@ export class SettingsComponent extends RouterEnter {
   mask: Array<string|RegExp>;
   // variable to control the update button
   updating = false;
-  // supported countries
-  countryCodes = [
-    {
-        name: "Australia",
-        code: "AUS",
-        format: '+61 ___ ___ ___'
-    },
-    {
-        name: "US/Canada",
-        code: "US",
-        format: '+1 ___ ___ ____'
-    },
-  ];
 
-  formatMasks = {
-      AUS: ['+','6','1',' ', /[1-9]/, /\d/, /\d/, ' ', /\d/, /\d/, /\d/, ' ', /\d/, /\d/, /\d/],
-      US: ['+','1', ' ',/[1-9]/, /\d/, /\d/, ' ', /\d/, /\d/, /\d/, ' ', /\d/, /\d/, /\d/, /\d/]
-   };
+  countryCodes = ContactNumberFormat.countryCodes;
+  formatMasks = ContactNumberFormat.masks;
 
   helpline = 'help@practera.com';
 
