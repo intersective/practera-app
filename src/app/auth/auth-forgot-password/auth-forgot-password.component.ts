@@ -28,10 +28,12 @@ export class AuthForgotPasswordComponent {
       res => {
         this.isSending = false;
         // show pop up message for confirmation
-        return this.notificationService.popUp('forgotPasswordConfirmation', {
-          email: this.email
-        },
-        ['/login']);
+        return this.notificationService.popUp(
+          'forgotPasswordConfirmation', {
+            email: this.email
+          },
+          ['/login']
+        );
       },
       err => {
         this.isSending = false;

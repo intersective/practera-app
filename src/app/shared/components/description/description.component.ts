@@ -5,7 +5,7 @@ import { Component, Input, ViewChild, ElementRef, AfterViewInit} from '@angular/
   templateUrl: 'description.component.html',
   styleUrls: ['./description.component.scss']
 })
-export class DescriptionComponent implements AfterViewInit{
+export class DescriptionComponent implements AfterViewInit {
   heightLimit = 90;
   isTruncating = true;
   heightExceeded = false;

@@ -467,7 +467,7 @@ export class ChatRoomComponent extends RouterEnter {
       options.accept = this.filestackService.getFileTypes(type);
     }
     await this.filestackService.open(
-      options, 
+      options,
       res => {
         return this.postAttachment(res);
       },
