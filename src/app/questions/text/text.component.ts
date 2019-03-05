@@ -35,7 +35,7 @@ export class TextComponent implements ControlValueAccessor {
 
   // the value of answer &| comment
   innerValue: any;
-  answer: string = '';
+  answer = '';
   comment: string;
   // validation errors array
   errors: Array<any> = [];
@@ -48,8 +48,8 @@ export class TextComponent implements ControlValueAccessor {
     }
   }
 
-  //propagate changes into the form control
-  propagateChange = (_: any) => {}
+  // propagate changes into the form control
+  propagateChange = (_: any) => {};
 
   // event fired when input/textarea value is changed. propagate the change up to the form control using the custom value accessor interface
   // if 'type' is set, it means it comes from reviewer doing review, otherwise it comes from submitter doing assessment
@@ -94,7 +94,6 @@ export class TextComponent implements ControlValueAccessor {
 
   // From ControlValueAccessor interface
   writeValue(value: any) {
-    console.log("writeValue",value);
     if (value) {
       this.innerValue = value;
     }
@@ -102,7 +101,6 @@ export class TextComponent implements ControlValueAccessor {
 
   // From ControlValueAccessor interface
   registerOnChange(fn: any) {
-    console.log("registerOnChange",fn);
     this.propagateChange = fn;
   }
 

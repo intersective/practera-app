@@ -51,9 +51,9 @@ export class AssessmentComponent extends RouterEnter {
   loadingSubmission = true;
   questionsForm = new FormGroup({});
   submitting = false;
-  saving: boolean = false;
-  savingButtonEnable: boolean = true;
-  savingMessage: string = 'Last saved ';
+  saving = false;
+  savingButtonEnable = true;
+  savingMessage = 'Last saved ';
   fromPage = '';
 
   constructor (
@@ -144,7 +144,6 @@ export class AssessmentComponent extends RouterEnter {
           return ;
         }
         this.review = result.review;
-        console.log("this.review", this.review);
         // this page is for doing review if the submission status is 'pending review' and action is review
         if (this.submission.status === 'pending review' && this.action === 'review') {
           this.doReview = true;
@@ -204,8 +203,8 @@ export class AssessmentComponent extends RouterEnter {
 
 
 
-  submit(isInProgress:boolean) {
-    if (isInProgress) {
+  submit(isInProgress: boolean) {
+    if ( isInProgress ) {
       this.saving = true;
       this.savingMessage = 'Saving...';
       if (!this.savingButtonEnable) {
@@ -225,7 +224,7 @@ export class AssessmentComponent extends RouterEnter {
         id: this.id,
         context_id: this.contextId,
         in_progress: false
-      }
+      };
       if (isInProgress) {
         assessment.in_progress = true;
       }
@@ -257,7 +256,7 @@ export class AssessmentComponent extends RouterEnter {
         review_id: this.review.id,
         submission_id: this.submission.id,
         in_progress: false
-      }
+      };
       if (isInProgress) {
         assessment.in_progress = true;
       }
@@ -283,8 +282,7 @@ export class AssessmentComponent extends RouterEnter {
       .subscribe(result => {
         this.submitting = false;
         this.saving = false;
-        
-        if (isInProgress) {
+        if ( isInProgress ) {
           // display message for successfull saved answers
           this.savingMessage = 'Last saved a mooment ago';
         } else {
@@ -299,6 +297,7 @@ export class AssessmentComponent extends RouterEnter {
                   this.router.navigate(['app','home']);
                   return;
                 }
+
               }
             ]
           });
