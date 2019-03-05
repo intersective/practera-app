@@ -80,9 +80,9 @@ export interface Review {
 }
 
 export interface saveAnswersParams {
-  assessment:any; 
-  answers:any; 
-  action:string;
+  assessment: any; 
+  answers: any; 
+  action: string;
   AssessmentSubmissionId?: number;
 }
 
@@ -296,7 +296,7 @@ export class AssessmentService {
       answers: {},
       submitterName: thisSubmission.Submitter.name,
       modified: thisSubmission.AssessmentSubmission.modified
-    }
+    };
 
     // -- normalise submission answers
     if (!this.utils.has(thisSubmission, 'AssessmentSubmissionAnswer') ||
@@ -417,25 +417,25 @@ export class AssessmentService {
     return answer;
   }
 
-  saveAnswers(saveAnswersParams: saveAnswersParams) {
+  saveAnswers(params: saveAnswersParams) {
     let postData;
-    switch (saveAnswersParams.action) {
+    switch (params.action) {
       case 'assessment':
         postData = {
-          Assessment: saveAnswersParams.assessment,
-          AssessmentSubmissionAnswer: saveAnswersParams.answers
-        }
-        if (saveAnswersParams.AssessmentSubmissionId) {
+          Assessment: params.assessment,
+          AssessmentSubmissionAnswer: params.answers
+        };
+        if (params.AssessmentSubmissionId) {
           postData.AssessmentSubmission = {
-            id: saveAnswersParams.AssessmentSubmissionId
-          }
+            id: params.AssessmentSubmissionId
+          };
         }
         return this.request.post(api.post.submissions, postData);
 
       case 'review':
         postData = {
-          Assessment: saveAnswersParams.assessment,
-          AssessmentReviewAnswer: saveAnswersParams.answers
+          Assessment: params.assessment,
+          AssessmentReviewAnswer: params.answers
         };
         return this.request.post(api.post.reviews, postData);
     }

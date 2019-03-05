@@ -76,7 +76,6 @@ export class OneofComponent implements ControlValueAccessor {
         }
       }
     }
-    
     if (this.doAssessment) {
       this.saveProgress.emit(true);
     }
