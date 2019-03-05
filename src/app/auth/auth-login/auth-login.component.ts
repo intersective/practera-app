@@ -32,7 +32,7 @@ export class AuthLoginComponent {
         buttons: [
           {
             text: 'OK',
-            role: 'cancel',          
+            role: 'cancel',
             handler: () => {
               this.isLoggingIn = false;
               return;
@@ -46,23 +46,26 @@ export class AuthLoginComponent {
     this.authService.login({
       email: this.loginForm.value.email,
       password: this.loginForm.value.password,
-    }).subscribe(res => {
-      this.isLoggingIn = false;
-      this.router.navigate(['/switcher']);
-    }, err => {
-      this.notificationService.alert({
-        message: 'Your email or password is incorrect, please try again.',
-        buttons: [
-          {
-            text: 'OK',
-            role: 'cancel',          
-            handler: () => {
-              this.isLoggingIn = false;
-              return;
+    }).subscribe(
+      res => {
+        this.isLoggingIn = false;
+        this.router.navigate(['/switcher']);
+      },
+      err => {
+        this.notificationService.alert({
+          message: 'Your email or password is incorrect, please try again.',
+          buttons: [
+            {
+              text: 'OK',
+              role: 'cancel',
+              handler: () => {
+                this.isLoggingIn = false;
+                return;
+              }
             }
-          }
-        ]
-      });
-    });
+          ]
+        });
+      }
+    );
   }
 }

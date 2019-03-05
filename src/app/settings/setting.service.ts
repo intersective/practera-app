@@ -9,8 +9,8 @@ const api = {
 };
 
 export interface Profile {
-	contactNumber : string,
-	email : string
+  contactNumber: string;
+  email: string;
 }
 
 @Injectable({
@@ -19,16 +19,16 @@ export interface Profile {
 export class SettingService {
 
   constructor(
-    private request : RequestService,
+    private request: RequestService,
   ) { }
 
-  updateProfile(profile : Profile) {
-  	let postData;
-  	postData = {
-  		contact_number: profile.contactNumber
-  	};
+  updateProfile(profile: Profile) {
+    let postData;
+    postData = {
+      contact_number: profile.contactNumber
+    };
 
-  	return this.request.post(api.post.profile, postData);
+    return this.request.post(api.post.profile, postData);
   }
 
 }
