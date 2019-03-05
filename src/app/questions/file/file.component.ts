@@ -24,6 +24,8 @@ export class FileComponent implements ControlValueAccessor, OnInit {
   };
   @Input() submission;
   @Input() review;
+  // this is for assessment status
+  @Input() status;
   // this is for doing an assessment or not
   @Input() doAssessment: Boolean;
   // this is for doing review or not

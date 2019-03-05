@@ -36,7 +36,8 @@ export class AssessmentComponent extends RouterEnter {
     id: 0,
     status: '',
     answers: {},
-    submitterName: ''
+    submitterName: '',
+    modified: ''
   };
   review: Review = {
     id: 0,
@@ -51,7 +52,7 @@ export class AssessmentComponent extends RouterEnter {
   questionsForm = new FormGroup({});
   submitting: boolean = false;
   saving: boolean = false;
-  savingMessage: string = 'Saving...';
+  savingMessage: string = 'Last saved ';
   fromPage: string = '';
 
   constructor (
@@ -76,7 +77,8 @@ export class AssessmentComponent extends RouterEnter {
       id: 0,
       status: '',
       answers: {},
-      submitterName: ''
+      submitterName: '',
+      modified: ''
     };
     this.review = {
       id: 0,
@@ -129,12 +131,18 @@ export class AssessmentComponent extends RouterEnter {
     this.assessmentService.getSubmission(this.id, this.contextId, this.action, this.submissionId)
       .subscribe(result => {
         this.submission = result.submission;
-        console.log("this.submission - ", this.submission);
+        console.log(this.submission);
         this.loadingSubmission = false;
         // this page is for doing assessment if submission is empty
-        if (this.utils.isEmpty(this.submission)) {
+        if (this.utils.isEmpty(this.submission) || this.submission.status === 'in progress') {
           this.doAssessment = true;
           this.doReview = false;
+          if (this.submission.status === 'in progress') {
+            console.log(this.savingMessage);
+            this.savingMessage += this.utils.timeFormatter(this.submission.modified);
+            console.log(this.savingMessage);
+            console.log(this.utils.timeFormatter(this.submission.modified));
+          }
           return ;
         }
         this.review = result.review;
@@ -205,7 +213,7 @@ export class AssessmentComponent extends RouterEnter {
       this.submitting = true;
     }
     let answers = [];
-    let assessment = {};
+    let assessment;
     let requiredQuestions = this.getRequiredQuestions();
     let questionId = 0;
 
@@ -213,7 +221,11 @@ export class AssessmentComponent extends RouterEnter {
     if (this.doAssessment) {
       assessment = {
         id: this.id,
-        context_id: this.contextId
+        context_id: this.contextId,
+        in_progress: false
+      }
+      if (isInProgress) {
+        assessment.in_progress = true;
       }
       this.utils.each(this.questionsForm.value, (value, key) => {
         questionId = parseInt(key.replace('q-', ''));
@@ -241,7 +253,11 @@ export class AssessmentComponent extends RouterEnter {
       assessment = {
         id: this.id,
         review_id: this.review.id,
-        submission_id: this.submission.id
+        submission_id: this.submission.id,
+        in_progress: false
+      }
+      if (isInProgress) {
+        assessment.in_progress = true;
       }
       this.utils.each(this.questionsForm.value, (value, key) => {
         if (value) {
@@ -255,12 +271,8 @@ export class AssessmentComponent extends RouterEnter {
     let params:saveAnswersParams = {
       assessment: assessment,
       answers: answers,
-      action: this.action,
-      inProgress: false
+      action: this.action
     };
-    if (isInProgress) {
-      params.inProgress = true;
-    }
     if (this.submission) {
       params.AssessmentSubmissionId = this.submission.id;
     }
@@ -272,7 +284,7 @@ export class AssessmentComponent extends RouterEnter {
         
         if (isInProgress) {
           // display message for successfull saved answers
-          this.savingMessage = 'All changes are saved';
+          this.savingMessage = 'Last saved ';
         } else {
           // display a pop up for successful submission
           return this.notificationService.alert({
@@ -294,7 +306,7 @@ export class AssessmentComponent extends RouterEnter {
         this.saving = false;
         if (isInProgress) {
           // display message when saving answers failed
-          this.savingMessage = 'All changes are saved';
+          this.savingMessage = 'Auto save failed';
         } else {
           // display a pop up if submission failed
         this.notificationService.alert({

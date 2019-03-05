@@ -1,4 +1,4 @@
-<ng-container *ngIf="submission.answer">
+<ng-container *ngIf="status !== 'in progress' && submission.answer">
   <app-file-display
     [file]="submission.answer"
     [fileType]="question.fileType"
@@ -29,7 +29,7 @@
     <p>{{error}}</p>
   </ion-text>
   <app-file-display
-    [file]="uploadedFile"
+    [file]="uploadedFile ? uploadedFile : submission.answer"
     [fileType]="question.fileType"
   ></app-file-display>
 

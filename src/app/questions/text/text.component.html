@@ -1,4 +1,4 @@
-<ng-container *ngIf="submission.answer">
+<ng-container *ngIf="status !== 'in progress' && submission.answer">
   <p class="paragraph">{{ submission.answer }}</p>
 </ng-container>
 
