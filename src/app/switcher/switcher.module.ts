@@ -17,7 +17,7 @@ import { SwitcherProgramComponent } from './switcher-program/switcher-program.co
     SwitcherRoutingModule,
   ],
   declarations: [
-    SwitcherComponent, 
+    SwitcherComponent,
     SwitcherProgramComponent
   ]
 })

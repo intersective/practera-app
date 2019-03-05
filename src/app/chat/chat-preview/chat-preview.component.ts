@@ -16,7 +16,7 @@ export class ChatPreviewComponent {
   ) {}
 
   download() {
-    return window.open(this.file.url, "_system");
+    return window.open(this.file.url, '_system');
   }
 
   close() {

@@ -16,7 +16,7 @@ import { Event, EventsService} from '@app/events/events.service';
 })
 export class ActivityComponent extends RouterEnter {
 
-  routeUrl: string = '/app/activity';
+  routeUrl = '/app/activity';
   id: number;
   activity: Activity = {
     id: 0,
@@ -24,9 +24,9 @@ export class ActivityComponent extends RouterEnter {
     description: '',
     tasks: []
   };
-  loadingActivity: boolean = true;
+  loadingActivity = true;
   events: Array<Event>;
-  loadingEvents: boolean = true;
+  loadingEvents = true;
 
   constructor(
     public router: Router,
@@ -75,7 +75,7 @@ export class ActivityComponent extends RouterEnter {
       .subscribe(tasks => {
         this.activity.tasks = tasks;
         this.activity.tasks.forEach((task, index) => {
-          if(task.type == 'Assessment') {
+          if (task.type == 'Assessment') {
             this._getAssessmentStatus(index);
           }
         });

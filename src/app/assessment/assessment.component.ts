@@ -14,7 +14,7 @@ import { RouterEnter } from '@services/router-enter.service';
 })
 export class AssessmentComponent extends RouterEnter {
 
-  routeUrl = '/assessment/'
+  routeUrl = '/assessment/';
   // assessment id
   id: number;
   // activity id
@@ -42,15 +42,15 @@ export class AssessmentComponent extends RouterEnter {
     id: 0,
     answers: {}
   };
-  doAssessment: boolean = false;
-  doReview: boolean = false;
-  feedbackReviewed: boolean = false;
-  loadingFeedbackReviewed: boolean = true;
-  loadingAssessment: boolean = true;
-  loadingSubmission: boolean = true;
+  doAssessment = false;
+  doReview = false;
+  feedbackReviewed = false;
+  loadingFeedbackReviewed = true;
+  loadingAssessment = true;
+  loadingSubmission = true;
   questionsForm = new FormGroup({});
-  submitting: boolean = false;
-  fromPage: string = '';
+  submitting = false;
+  fromPage = '';
 
   constructor (
     public router: Router,
@@ -120,7 +120,7 @@ export class AssessmentComponent extends RouterEnter {
         this.loadingAssessment = false;
         this._getSubmission();
       });
-  };
+  }
 
   // get the submission answers &/| review answers
   private _getSubmission() {
@@ -153,7 +153,7 @@ export class AssessmentComponent extends RouterEnter {
   // Populate the question form with FormControls.
   // The name of form control is like 'q-2' (2 is an example of question id)
   populateQuestionsForm() {
-    let questionsFormObject = {};
+    const questionsFormObject = {};
     let validator = [];
     this.assessment.groups.forEach(group => {
       group.questions.forEach(question => {
@@ -164,7 +164,7 @@ export class AssessmentComponent extends RouterEnter {
           validator = [];
         }
         questionsFormObject['q-' + question.id] = new FormControl('', validator);
-      })
+      });
     });
     this.questionsForm = new FormGroup(questionsFormObject);
   }
@@ -181,7 +181,7 @@ export class AssessmentComponent extends RouterEnter {
 
   // form an object of required questions
   getRequiredQuestions() {
-    let requiredQuestions = {};
+    const requiredQuestions = {};
     this.assessment.groups.forEach(group => {
       group.questions.forEach(question => {
         if (question.isRequired) {
@@ -194,9 +194,9 @@ export class AssessmentComponent extends RouterEnter {
 
   submit() {
     this.submitting = true;
-    let answers = [];
+    const answers = [];
     let assessment = {};
-    let requiredQuestions = this.getRequiredQuestions();
+    const requiredQuestions = this.getRequiredQuestions();
     let questionId = 0;
 
     // form submission answers
@@ -204,7 +204,7 @@ export class AssessmentComponent extends RouterEnter {
       assessment = {
         id: this.id,
         context_id: this.contextId
-      }
+      };
       this.utils.each(this.questionsForm.value, (value, key) => {
         questionId = parseInt(key.replace('q-', ''));
         answers.push({
@@ -230,10 +230,10 @@ export class AssessmentComponent extends RouterEnter {
         id: this.id,
         review_id: this.review.id,
         submission_id: this.submission.id
-      }
+      };
       this.utils.each(this.questionsForm.value, (value, key) => {
         if (value) {
-          let answer = value;
+          const answer = value;
           answer.assessment_question_id = parseInt(key.replace('q-', ''));
           answers.push(answer);
         }
@@ -252,13 +252,13 @@ export class AssessmentComponent extends RouterEnter {
               text: 'OK',
               role: 'cancel',
               handler: () => {
-                this.router.navigate(['app','home']);
+                this.router.navigate(['app', 'home']);
                 return;
               }
             }
           ]
         });
-      }, err => {
+      },         err => {
         this.submitting = false;
         // display a pop up if submission failed
         this.notificationService.alert({

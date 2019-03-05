@@ -1,24 +1,24 @@
-import { Component } from "@angular/core";
-import { TabsService } from "./tabs.service";
-import { UtilsService } from "@services/utils.service";
-import { BrowserStorageService } from "@services/storage.service";
-import { RouterEnter } from "@services/router-enter.service";
-import { SwitcherService } from "../switcher/switcher.service";
-import { ReviewsService } from "../reviews/reviews.service";
-import { Router } from "@angular/router";
+import { Component } from '@angular/core';
+import { TabsService } from './tabs.service';
+import { UtilsService } from '@services/utils.service';
+import { BrowserStorageService } from '@services/storage.service';
+import { RouterEnter } from '@services/router-enter.service';
+import { SwitcherService } from '../switcher/switcher.service';
+import { ReviewsService } from '../reviews/reviews.service';
+import { Router } from '@angular/router';
 
 @Component({
-  selector: "app-tabs",
-  templateUrl: "tabs.component.html",
-  styleUrls: ["tabs.component.scss"]
+  selector: 'app-tabs',
+  templateUrl: 'tabs.component.html',
+  styleUrls: ['tabs.component.scss']
 })
 export class TabsComponent extends RouterEnter {
-  routeUrl: string = "/app/";
+  routeUrl = '/app/';
   showReview = false;
   showChat = false;
   noOfTodoItems = 0;
   noOfChats = 0;
-  selectedTab = "";
+  selectedTab = '';
 
   constructor(
     public router: Router,
@@ -30,18 +30,18 @@ export class TabsComponent extends RouterEnter {
   ) {
     super(router);
 
-    let role = this.storage.getUser().role;
-    this.utils.getEvent("notification").subscribe(event => {
+    const role = this.storage.getUser().role;
+    this.utils.getEvent('notification').subscribe(event => {
       this.noOfTodoItems++;
 
     });
-    this.utils.getEvent("team-message").subscribe(event => {
+    this.utils.getEvent('team-message').subscribe(event => {
       this.tabsService.getNoOfChats().subscribe(noOfChats => {
         this.noOfChats = noOfChats;
       });
     });
-    if (role !== "mentor") {
-      this.utils.getEvent("team-no-mentor-message").subscribe(event => {
+    if (role !== 'mentor') {
+      this.utils.getEvent('team-no-mentor-message').subscribe(event => {
         this.tabsService.getNoOfChats().subscribe(noOfChats => {
           this.noOfChats = noOfChats;
         });
@@ -82,29 +82,29 @@ export class TabsComponent extends RouterEnter {
 
   private _checkRoute() {
     switch (this.router.url) {
-      case "/app/home":
-        this.selectedTab = "home";
+      case '/app/home':
+        this.selectedTab = 'home';
         break;
 
-      case "/app/project":
-        this.selectedTab = "project";
+      case '/app/project':
+        this.selectedTab = 'project';
         break;
 
-      case "/app/settings":
-        this.selectedTab = "settings";
+      case '/app/settings':
+        this.selectedTab = 'settings';
         break;
 
-      case "/app/chat":
-        this.selectedTab = "chat";
+      case '/app/chat':
+        this.selectedTab = 'chat';
         break;
 
       default:
-        if (this.router.url.includes("/app/activity")) {
-          this.selectedTab = "project";
-        } else if (this.router.url.includes("/app/reviews")) {
-          this.selectedTab = "reviews";
+        if (this.router.url.includes('/app/activity')) {
+          this.selectedTab = 'project';
+        } else if (this.router.url.includes('/app/reviews')) {
+          this.selectedTab = 'reviews';
         } else {
-          this.selectedTab = "";
+          this.selectedTab = '';
         }
         break;
     }

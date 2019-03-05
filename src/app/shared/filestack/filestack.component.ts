@@ -1,15 +1,15 @@
 import { Subscription } from 'rxjs/Subscription';
 import { Component, HostListener, EventEmitter, Output, Input, OnInit } from '@angular/core';
-import { FilestackService } from "./filestack.service";
+import { FilestackService } from './filestack.service';
 
 @Component({
-  selector: "file-stack",
-  templateUrl: "filestack.component.html"
+  selector: 'file-stack',
+  templateUrl: 'filestack.component.html'
 })
 export class FilestackComponent implements OnInit {
-  @Input("accept") private fileTypes: any;
-  @Input("fileType") private fileType: string;
-  @Output("complete") private output: EventEmitter<any> = new EventEmitter();
+  @Input('accept') private fileTypes: any;
+  @Input('fileType') private fileType: string;
+  @Output('complete') private output: EventEmitter<any> = new EventEmitter();
 
   constructor(
     private filestackService: FilestackService
@@ -19,8 +19,8 @@ export class FilestackComponent implements OnInit {
   ngOnInit() {}
 
   async uploadFile() {
-    let s3Config = this.filestackService.getS3Config(this.fileType);
-    let pickerOptions = {
+    const s3Config = this.filestackService.getS3Config(this.fileType);
+    const pickerOptions = {
       fromSources: [
         'local_file_system',
         'googledrive',

@@ -117,7 +117,7 @@ export class AssessmentService {
     }
     const thisAssessment = data[0];
 
-    let assessment: Assessment = {
+    const assessment: Assessment = {
       name: thisAssessment.Assessment.name,
       description: thisAssessment.Assessment.description,
       isForTeam: thisAssessment.Assessment.is_team,
@@ -131,7 +131,7 @@ export class AssessmentService {
           !Array.isArray(group.AssessmentGroupQuestion)) {
         return this.request.apiResponseFormatError('Assessment.AssessmentGroup format error');
       }
-      let questions: Array<Question> = [];
+      const questions: Array<Question> = [];
       group.AssessmentGroupQuestion.forEach(question => {
         if (!this.utils.has(question, 'AssessmentQuestion')) {
           return this.request.apiResponseFormatError('Assessment.AssessmentGroupQuestion format error');
@@ -149,8 +149,8 @@ export class AssessmentService {
         }
         // save question to "questions" object, for later use in normaliseSubmission()
         this.questions[question.AssessmentQuestion.id] = question.AssessmentQuestion;
-        let audience = question.AssessmentQuestion.audience;
-        let questionObject: Question = {
+        const audience = question.AssessmentQuestion.audience;
+        const questionObject: Question = {
           id: question.AssessmentQuestion.id,
           name: question.AssessmentQuestion.name,
           type: question.AssessmentQuestion.question_type,
@@ -170,7 +170,7 @@ export class AssessmentService {
               ) {
               return this.request.apiResponseFormatError('Assessment.AssessmentQuestionChoice format error');
             }
-            let choices: Array<Choice> = [];
+            const choices: Array<Choice> = [];
             let info = '';
             question.AssessmentQuestion.AssessmentQuestionChoice.forEach(questionChoice => {
               if (
@@ -186,7 +186,7 @@ export class AssessmentService {
                 explanation: this.utils.has(questionChoice, 'AssessmentChoice.explanation') ? questionChoice.AssessmentChoice.explanation : ''
               });
               if (this.utils.has(questionChoice, 'AssessmentChoice.description') && questionChoice.AssessmentChoice.description) {
-                info += "<p>" + questionChoice.AssessmentChoice.name + " - " + questionChoice.AssessmentChoice.description + "</p>";
+                info += '<p>' + questionChoice.AssessmentChoice.name + ' - ' + questionChoice.AssessmentChoice.description + '</p>';
               }
             });
             if (info) {
@@ -210,7 +210,7 @@ export class AssessmentService {
               ) {
               return this.request.apiResponseFormatError('Assessment.TeamMember format error');
             }
-            let teamMembers: Array<TeamMember> = [];
+            const teamMembers: Array<TeamMember> = [];
             question.AssessmentQuestion.TeamMember.forEach(teamMember => {
               if (
                   !this.utils.has(teamMember, 'userName')
@@ -226,7 +226,7 @@ export class AssessmentService {
             break;
         }
         questions.push(questionObject);
-      })
+      });
       if (!this.utils.isEmpty(questions)) {
         assessment.groups.push({
           name: group.name,
@@ -282,9 +282,9 @@ export class AssessmentService {
       status: thisSubmission.AssessmentSubmission.status,
       answers: {},
       submitterName: thisSubmission.Submitter.name
-    }
+    };
 
-    //-- normalise submission answers
+    // -- normalise submission answers
     if (!this.utils.has(thisSubmission, 'AssessmentSubmissionAnswer') ||
         !Array.isArray(thisSubmission.AssessmentSubmissionAnswer)
         ) {
@@ -305,7 +305,7 @@ export class AssessmentService {
       }
     });
 
-    //-- normalise reviewer answers
+    // -- normalise reviewer answers
     let review: Review;
     // AssessmentReview is in array format, current we only support one review per submission, that's why we use AssessmentReview[0]
     if (this.utils.has(thisSubmission, 'AssessmentReview[0].id')) {
@@ -351,8 +351,8 @@ export class AssessmentService {
    * For each question that has choice (oneof & multiple), show the choice explanation in the submission if it is not empty
    */
   private _addChoiceExplanation(submissionAnswer, submission): Submission {
-    let questionId = submissionAnswer.assessment_question_id;
-    let answer = submissionAnswer.answer;
+    const questionId = submissionAnswer.assessment_question_id;
+    const answer = submissionAnswer.answer;
     // don't do anything if there's no choices
     if (this.utils.isEmpty(this.questions[questionId].AssessmentQuestionChoice)) {
       return submission;
@@ -363,7 +363,7 @@ export class AssessmentService {
       this.questions[questionId].AssessmentQuestionChoice.forEach(choice => {
         // only display the explanation if it is not empty
         if (answer.includes(choice.id) && !this.utils.isEmpty(choice.explanation)) {
-          explanation += choice.AssessmentChoice.name + ' - ' + choice.explanation + "\n";
+          explanation += choice.AssessmentChoice.name + ' - ' + choice.explanation + '\n';
         }
       });
     } else {
@@ -384,11 +384,11 @@ export class AssessmentService {
   private _normaliseAnswer(questionId, answer) {
     if (this.questions[questionId]) {
       switch (this.questions[questionId].question_type) {
-        case "oneof":
+        case 'oneof':
           // re-format answer from string to number
           answer = parseInt(answer);
           break;
-        case "multiple":
+        case 'multiple':
           if (!Array.isArray(answer)) {
             // re-format json string to array
             answer = JSON.parse(answer);
@@ -410,14 +410,14 @@ export class AssessmentService {
         postData = {
           Assessment: assessment,
           AssessmentSubmissionAnswer: answers
-        }
+        };
         return this.request.post(api.post.submissions, postData);
 
       case 'review':
         postData = {
           Assessment: assessment,
           AssessmentReviewAnswer: answers
-        }
+        };
         return this.request.post(api.post.reviews, postData);
     }
     return of({
@@ -450,7 +450,7 @@ export class AssessmentService {
   }
 
   saveFeedbackReviewed(submissionId) {
-    let postData = {
+    const postData = {
       project_id: this.storage.getUser().projectId,
       identifier: 'AssessmentSubmission-' + submissionId,
       is_done: true

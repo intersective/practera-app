@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
 import { ModalController } from '@ionic/angular';
 import { UtilsService } from '@services/utils.service';
-import { Event } from "@app/events/events.service";
-import { EventDetailService } from "./event-detail.service";
+import { Event } from '@app/events/events.service';
+import { EventDetailService } from './event-detail.service';
 import { NotificationService } from '@shared/notification/notification.service';
 
 @Component({
