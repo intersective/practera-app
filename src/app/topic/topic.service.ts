@@ -10,13 +10,13 @@ export interface Topic {
   title: string;
   content: any;
   videolink?: string;
-  files:Array <object>;
+  files: Array<object>;
   hasComments: boolean;
 }
 
 const api = {
   get: {
-    stories:'api/stories.json',
+    stories: 'api/stories.json',
     progress: 'api/v2/motivations/progress/list.json'
   },
   post: {
@@ -46,47 +46,48 @@ export class TopicService {
     );
   }
 
-  private _normaliseTopic (data: any){
-     // In API response, 'data' is an array of topics(since we passed topic id, it will return only one topic, but still in array format). That's why we use data[0]
-     if (!Array.isArray(data) || !this.utils.has(data[0], 'Story') || !this.utils.has(data[0], 'Filestore')) {
+  private _normaliseTopic(data: any) {
+    // In API response, 'data' is an array of topics
+    // (since we passed topic id, it will return only one topic, but still in array format).
+    // That's why we use data[0]
+    if (!Array.isArray(data) || !this.utils.has(data[0], 'Story') || !this.utils.has(data[0], 'Filestore')) {
       return this.request.apiResponseFormatError('Story format error');
     }
 
-    let topic: Topic = {
+    const topic: Topic = {
       id: 0,
       title: '',
       content: '',
       videolink: '',
       hasComments: false,
-      files:[]
+      files: []
     };
-    let thisTopic = data[0];
+    const thisTopic = data[0];
     if (!this.utils.has(thisTopic.Story, 'id') ||
-        !this.utils.has(thisTopic.Story, 'title')) {
+      !this.utils.has(thisTopic.Story, 'title')) {
       return this.request.apiResponseFormatError('Story.Story format error');
     }
     topic.id = thisTopic.Story.id;
     topic.title = thisTopic.Story.title;
     if (this.utils.has(thisTopic.Story, 'content')) {
-      thisTopic.Story.content = thisTopic.Story.content.replace(/text-align: center;/gi, "text-align: center; text-align: -webkit-center;");
+      thisTopic.Story.content = thisTopic.Story.content.replace(/text-align: center;/gi, 'text-align: center; text-align: -webkit-center;');
       topic.content = this.sanitizer.bypassSecurityTrustHtml(thisTopic.Story.content);
     }
     if (this.utils.has(thisTopic.Story, 'videolink')) {
       topic.videolink = thisTopic.Story.videolink;
     }
     topic.hasComments = thisTopic.Story.has_comments;
-    topic.files = thisTopic.Filestore.map(item => ({url:item.slug , name:item.name}));
+    topic.files = thisTopic.Filestore.map(item => ({url: item.slug , name: item.name}));
 
     return topic;
   }
 
-  updateTopicProgress(id){
-
-     let postData = {
-      model: "topic",
+  updateTopicProgress(id) {
+    const postData = {
+      model: 'topic',
       model_id: id,
-      state: "completed"
-    }
+      state: 'completed'
+    };
     return this.request.post(api.post.updateProgress, postData);
   }
 
@@ -98,7 +99,7 @@ export class TopicService {
     }})
     .pipe(map(response => {
       if (response.success && !this.utils.isEmpty(response.data)) {
-        var progress = response.data.Activity.Topic.find(function (topic) {
+        const progress = response.data.Activity.Topic.find(function (topic) {
             return topic.id === topicId;
         });
         return progress.progress;

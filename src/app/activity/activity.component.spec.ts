@@ -18,7 +18,7 @@ describe('ActivityComponent', () => {
         {
           provide: UtilsService, useValue: {
             isEmpty: (data) => data
-          } 
+          }
         },
         {
         provide: ActivatedRoute, useValue: {
