@@ -56,14 +56,16 @@ export class ActivityService {
   }
 
   private _normaliseActivity(data: any) {
-    // In API response, 'data' is an array of activities(since we passed activity id, it will return only one activity, but still in array format). That's why we use data[0]
-    const thisActivity = data[0]; // grab first element from the array as activity
+    // In API response, 'data' is an array of activities
+    // (since we passed activity id, it will return only one activity, but still in array format).
+    // That's why we use data[0]
+    const thisActivity = data[0];
 
     if (!Array.isArray(data) || !this.utils.has(thisActivity, 'Activity') || !this.utils.has(thisActivity, 'ActivitySequence') || !this.utils.has(thisActivity, 'References')) {
       return this.request.apiResponseFormatError('Activity format error');
     }
 
-    let activity: Activity = {
+    const activity: Activity = {
       id: 0,
       name: '',
       description: '',
@@ -73,7 +75,7 @@ export class ActivityService {
     activity.name = thisActivity.Activity.name;
     activity.description = thisActivity.Activity.description;
 
-    let contextIds = {};
+    const contextIds = {};
     thisActivity.References.forEach(element => {
       if (!this.utils.has(element, 'Assessment.id') || !this.utils.has(element, 'context_id')) {
         return this.request.apiResponseFormatError('Activity.References format error');
@@ -137,8 +139,8 @@ export class ActivityService {
     if (!this.utils.has(data, 'Activity.Topic') && !this.utils.has(data, 'Activity.Assessment')) {
       return this.request.apiResponseFormatError('Progress.Activity format error');
     }
-    let topicProgresses = {};
-    let assessmentProgresses = {};
+    const topicProgresses = {};
+    const assessmentProgresses = {};
     if (this.utils.has(data, 'Activity.Topic')) {
       data.Activity.Topic.forEach(topic => {
         if (!this.utils.has(topic, 'id') || !this.utils.has(topic, 'progress')) {
@@ -162,7 +164,7 @@ export class ActivityService {
           tasks[index].status = '';
           tasks[index].loadingStatus = false;
 
-          if (tasks[index].progress == 1) {
+          if (tasks[index].progress === 1) {
             tasks[index].status = 'done';
           }
           break;
@@ -176,7 +178,7 @@ export class ActivityService {
 
   getAssessmentStatus(task: Task): Observable<any> {
     return this.request.get(api.submissions, {
-        params:{
+        params: {
           assessment_id: task.id,
           context_id: task.contextId
         }
@@ -194,7 +196,9 @@ export class ActivityService {
       task.loadingStatus = false;
       return task;
     }
-    // In API response, 'data' is an array of submissions, but we only support one submission per assessment now. That's why we use data[0] - the first submission
+    // In API response, 'data' is an array of submissions,
+    // but we only support one submission per assessment now.
+    // That's why we use data[0] - the first submission
     const thisSubmission = data[0];
     if (!Array.isArray(data) || !this.utils.has(thisSubmission, 'AssessmentSubmission')) {
       return this.request.apiResponseFormatError('Submission format error');
@@ -210,7 +214,7 @@ export class ActivityService {
         task.status = 'feedback available';
         task.feedbackReviewed = false;
 
-        if (task.progress == 1) {
+        if (task.progress === 1) {
           task.status = 'done';
           task.feedbackReviewed = true;
         }

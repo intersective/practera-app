@@ -1,6 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { ModalController } from '@ionic/angular';
-import { FormGroup }        from '@angular/forms';
+import { FormGroup } from '@angular/forms';
 
 @Component({
   selector: 'question',

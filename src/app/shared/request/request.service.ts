@@ -53,7 +53,7 @@ export class RequestService {
    * @returns {HttpHeaders}
    */
   appendHeaders(header = {'Content-Type': 'application/json'}) {
-    let headers = new HttpHeaders(header);
+    const headers = new HttpHeaders(header);
     return headers;
   }
 
@@ -160,7 +160,7 @@ export class RequestService {
   }
 
   public apiResponseFormatError(msg = '') {
-    console.error("API response format error.\n" + msg);
+    console.error('API response format error.\n' + msg);
     return;
   }
 

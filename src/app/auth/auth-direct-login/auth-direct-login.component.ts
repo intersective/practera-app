@@ -25,34 +25,37 @@ export class AuthDirectLoginComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    let authToken = this.route.snapshot.paramMap.get('authToken');
+    const authToken = this.route.snapshot.paramMap.get('authToken');
     if (!authToken) {
       return this._error();
     }
     this.authService.directLogin({
       authToken: authToken
-    }).subscribe(res => {
-      this._redirect();
-    }, err => {
-      this._error();
-    });
+    }).subscribe(
+      res => {
+        this._redirect();
+      },
+      err => {
+        this._error();
+      }
+    );
   }
 
   /**
    * Redirect user to a specific page if data is passed in, otherwise redirect to program switcher page
    */
   private _redirect() {
-    let redirect = this.route.snapshot.paramMap.get('redirect');
-    let timelineId = +this.route.snapshot.paramMap.get('tl');
-    let activityId = +this.route.snapshot.paramMap.get('act');
-    let contextId = +this.route.snapshot.paramMap.get('ctxt');
-    let assessmentId = +this.route.snapshot.paramMap.get('asmt');
-    let submissionId = +this.route.snapshot.paramMap.get('sm');
+    const redirect = this.route.snapshot.paramMap.get('redirect');
+    const timelineId = +this.route.snapshot.paramMap.get('tl');
+    const activityId = +this.route.snapshot.paramMap.get('act');
+    const contextId = +this.route.snapshot.paramMap.get('ctxt');
+    const assessmentId = +this.route.snapshot.paramMap.get('asmt');
+    const submissionId = +this.route.snapshot.paramMap.get('sm');
     if (!redirect || !timelineId) {
       // if there's no redirection or timeline id
       return this.router.navigate(['switcher']);
     }
-    let program = this.utils.find(this.storage.get('programs'), value => {
+    const program = this.utils.find(this.storage.get('programs'), value => {
       return value.timeline.id === timelineId;
     });
     if (this.utils.isEmpty(program)) {
@@ -63,30 +66,30 @@ export class AuthDirectLoginComponent implements OnInit {
     this.switcherService.switchProgram(program)
       .subscribe(() => {
         switch (redirect) {
-          case "home":
+          case 'home':
             return this.router.navigate(['app', 'home']);
-          case "project":
+          case 'project':
             return this.router.navigate(['app', 'project']);
-          case "activity":
+          case 'activity':
             if (!activityId) {
               return this.router.navigate(['app', 'home']);
             }
             return this.router.navigate(['app', 'activity', activityId]);
-          case "assessment":
+          case 'assessment':
             if (!activityId || !contextId || !assessmentId) {
               return this.router.navigate(['app', 'home']);
             }
             return this.router.navigate(['assessment', 'assessment', activityId, contextId, assessmentId]);
-          case "reviews":
+          case 'reviews':
             return this.router.navigate(['app', 'reviews']);
-          case "review":
+          case 'review':
             if (!contextId || !assessmentId || !submissionId) {
               return this.router.navigate(['app', 'home']);
             }
             return this.router.navigate(['assessment', 'review', contextId, assessmentId, submissionId]);
-          case "chat":
+          case 'chat':
             return this.router.navigate(['app', 'chat']);
-          case "settings":
+          case 'settings':
             return this.router.navigate(['app', 'settings']);
           default:
             return this.router.navigate(['app', 'home']);
