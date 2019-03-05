@@ -71,6 +71,7 @@ export interface Submission {
   status: string;
   answers: any;
   submitterName: string;
+  modified: string;
 }
 
 export interface Review {
@@ -81,8 +82,7 @@ export interface Review {
 export interface saveAnswersParams {
   assessment:any; 
   answers:any; 
-  action:string; 
-  inProgress: boolean;
+  action:string;
   AssessmentSubmissionId?: number;
 }
 
@@ -289,7 +289,8 @@ export class AssessmentService {
       id: thisSubmission.AssessmentSubmission.id,
       status: thisSubmission.AssessmentSubmission.status,
       answers: {},
-      submitterName: thisSubmission.Submitter.name
+      submitterName: thisSubmission.Submitter.name,
+      modified: thisSubmission.AssessmentSubmission.modified
     }
 
     //-- normalise submission answers
@@ -419,9 +420,6 @@ export class AssessmentService {
           Assessment: saveAnswersParams.assessment,
           AssessmentSubmissionAnswer: saveAnswersParams.answers
         }
-        if (saveAnswersParams.inProgress) {
-          postData.in_progress = saveAnswersParams.inProgress
-        }
         if (saveAnswersParams.AssessmentSubmissionId) {
           postData.AssessmentSubmission = {
             id: saveAnswersParams.AssessmentSubmissionId
@@ -433,9 +431,6 @@ export class AssessmentService {
         postData = {
           Assessment: saveAnswersParams.assessment,
           AssessmentReviewAnswer: saveAnswersParams.answers
-        }
-        if (saveAnswersParams.inProgress) {
-          postData.in_progress = saveAnswersParams.inProgress
         }
         if (saveAnswersParams.AssessmentSubmissionId) {
           postData.AssessmentSubmission = {
