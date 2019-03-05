@@ -6,12 +6,12 @@ import { Router, ActivatedRoute, ParamMap } from '@angular/router';
   template: '<ion-router-outlet></ion-router-outlet>'
 })
 export class QuestionsComponent implements OnInit {
-  
+
   constructor (
   ) {}
 
   ngOnInit() {
-  };
+  }
 
-  
+
 }

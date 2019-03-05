@@ -24,19 +24,19 @@ export class FilestackService {
     this.filestack = filestack.init(this.getFilestackConfig());
 
     if (!this.filestack) {
-      throw "Filestack module not found.";
+      throw new Error('Filestack module not found.');
     }
   }
 
   get client() {
     if (!this.filestack) {
-      throw "Filestack module not found.";
+      throw new Error('Filestack module not found.');
     }
 
     return this.filestack;
   }
 
-  //get filestack config
+  // get filestack config
   getFilestackConfig() {
     return environment.filestack.key;
   }
@@ -46,7 +46,7 @@ export class FilestackService {
     return this.fileTypes[type];
   }
 
-  //get s3 config
+  // get s3 config
   getS3Config(fileType) {
     let path = environment.filestack.s3Config.paths.any;
     // get s3 path based on file type
@@ -80,7 +80,7 @@ export class FilestackService {
   }
 
   async open(options = {}, onSuccess = res => res, onError = err => err) {
-    let pickerOptions:any = {
+    const pickerOptions: any = {
       dropPane: {},
       fromSources: [
         'local_file_system',

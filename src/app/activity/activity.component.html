@@ -11,11 +11,13 @@
   </ng-container>
   <h1>{{ activity.name }}</h1>
   <div text-left>
-    <app-description [content]="activity.description"></app-description>
+    <app-description *ngIf="activity.description" [content]="activity.description"></app-description>
   </div>
-  <ion-label color="medium" text-left padding-top class="label">
-    Tasks
-  </ion-label>
+  <div text-left margin-top>
+    <ion-label color="medium" class="label">
+      Tasks
+    </ion-label>
+  </div>
 
   <ion-card class="practera-card">
     <ion-list *ngFor="let task of activity.tasks; let i = index">
@@ -65,4 +67,30 @@
       </ion-item>
     </ion-list>
   </ion-card>
+
+  <ng-container *ngIf="loadingEvents">
+    <ion-spinner></ion-spinner>
+  </ng-container>
+  <ng-container *ngIf="events.length">
+    <div text-left margin-top>
+      <ion-label color="medium" class="label">
+        Events
+      </ion-label>
+    </div>
+    <ion-card class="practera-card">
+      <ion-list>
+        <ion-item *ngFor="let event of events; let i = index">
+          <event-card
+            [event]="event"
+            [time]="utils.utcToLocal(event.startTime, 'date')"
+            class="width-100"
+            ></event-card>
+        </ion-item>
+        <ion-item lines="none" (click)="router.navigate(['events', {activityId: id}])">
+          <ion-icon name="more" color="primary" margin-end></ion-icon>
+          <p>Show More</p>
+        </ion-item>
+      </ion-list>
+    </ion-card>
+  </ng-container>
 </ion-content>

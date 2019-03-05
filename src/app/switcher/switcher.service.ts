@@ -13,7 +13,7 @@ import { SharedService } from '@services/shared.service';
  * @type {Object}
  */
 const api = {
-  me: "api/users.json",
+  me: 'api/users.json',
   teams: 'api/teams.json'
 };
 
@@ -46,7 +46,7 @@ export interface Timeline {
 }
 
 export interface Enrolment {
-  contact_number: string
+  contact_number: string;
 }
 
 @Injectable({
@@ -66,9 +66,12 @@ export class SwitcherService {
     return of(this.storage.get('programs'));
   }
 
-  switchProgram(programObj:ProgramObj) {
-    let themeColor = this.utils.has(programObj, 'program.config.theme_color') ? programObj.program.config.theme_color : '#2bbfd4';
-    let cardBackgroundImage = this.utils.has(programObj, 'program.config.card_style') ? '/assets/' + programObj.program.config.card_style : '';
+  switchProgram(programObj: ProgramObj) {
+    const themeColor = this.utils.has(programObj, 'program.config.theme_color') ? programObj.program.config.theme_color : '#2bbfd4';
+    let cardBackgroundImage = '';
+    if (this.utils.has(programObj, 'program.config.card_style')) {
+      cardBackgroundImage = '/assets/' + programObj.program.config.card_style;
+    }
     this.storage.setUser({
       programId: programObj.program.id,
       programName: programObj.program.name,

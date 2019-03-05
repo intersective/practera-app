@@ -26,8 +26,8 @@ export class ReviewRatingComponent {
 
   constructor(
     private reviewRatingService: ReviewRatingService,
-    private modalController : ModalController,
-    private router : Router,
+    private modalController: ModalController,
+    private router: Router,
     private utils: UtilsService,
     private notificationService: NotificationService
   ) {}
