@@ -18,6 +18,8 @@ export class TextComponent implements ControlValueAccessor {
   @Input() question;
   @Input() submission;
   @Input() review;
+  // this is for assessment status
+  @Input() status;
   // this is for doing an assessment or not
   @Input() doAssessment: Boolean;
   // this is for doing review or not
@@ -33,7 +35,7 @@ export class TextComponent implements ControlValueAccessor {
 
   // the value of answer &| comment
   innerValue: any;
-  answer: string;
+  answer: string = '';
   comment: string;
   // validation errors array
   errors: Array<any> = [];
@@ -41,6 +43,9 @@ export class TextComponent implements ControlValueAccessor {
   constructor() {}
 
   ngAfterViewInit() {
+    if (this.status === 'in progress') {
+      this.answer = this.submission.answer;
+    }
   }
 
   //propagate changes into the form control
@@ -62,6 +67,9 @@ export class TextComponent implements ControlValueAccessor {
     } else {
       this.innerValue = this.answer;
     }
+    setTimeout(() => {
+      this.saveProgress.emit(true);
+    },2000);
 
     // propagate value into form control using control value accessor interface
     this.propagateChange(this.innerValue);
@@ -82,12 +90,11 @@ export class TextComponent implements ControlValueAccessor {
         }
       }
     }
-
-    this.saveProgress.emit(true);
   }
 
   //From ControlValueAccessor interface
   writeValue(value: any) {
+    console.log("writeValue",value);
     if (value) {
       this.innerValue = value;
     }
@@ -95,6 +102,7 @@ export class TextComponent implements ControlValueAccessor {
 
   //From ControlValueAccessor interface
   registerOnChange(fn: any) {
+    console.log("registerOnChange",fn);
     this.propagateChange = fn;
   }
 
