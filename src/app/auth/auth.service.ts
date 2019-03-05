@@ -1,11 +1,11 @@
-import { Injectable } from "@angular/core";
-import { RequestService, QueryEncoder } from "@shared/request/request.service";
-import { HttpParams } from "@angular/common/http";
-import { map } from "rxjs/operators";
-import { Observable, of } from "rxjs";
+import { Injectable } from '@angular/core';
+import { RequestService, QueryEncoder } from '@shared/request/request.service';
+import { HttpParams } from '@angular/common/http';
+import { map } from 'rxjs/operators';
+import { Observable, of } from 'rxjs';
 import { Router } from '@angular/router';
-import { BrowserStorageService } from "@services/storage.service";
-import { UtilsService } from "@services/utils.service";
+import { BrowserStorageService } from '@services/storage.service';
+import { UtilsService } from '@services/utils.service';
 import { PusherService } from '@shared/pusher/pusher.service';
 
 /**
@@ -14,15 +14,15 @@ import { PusherService } from '@shared/pusher/pusher.service';
  * @type {Object}
  */
 const api = {
-  getConfig: "api/v2/plan/experience/config",
-  linkedin: "api/auth_linkedin.json",
-  login: "api/auths.json",
-  setProfile: "api/v2/user/enrolment/edit.json",
-  verifyRegistration: "api/verification_codes.json",
-  register: "api/registration_details.json",
-  forgotPassword: "api/auths.json?action=forgot_password",
-  verifyResetPassword: "api/auths.json?action=verify_reset_password",
-  resetPassword: "api/auths.json?action=reset_password"
+  getConfig: 'api/v2/plan/experience/config',
+  linkedin: 'api/auth_linkedin.json',
+  login: 'api/auths.json',
+  setProfile: 'api/v2/user/enrolment/edit.json',
+  verifyRegistration: 'api/verification_codes.json',
+  register: 'api/registration_details.json',
+  forgotPassword: 'api/auths.json?action=forgot_password',
+  verifyResetPassword: 'api/auths.json?action=verify_reset_password',
+  resetPassword: 'api/auths.json?action=reset_password'
 };
 
 interface verifyParams {
@@ -47,10 +47,10 @@ interface UserProfile {
 }
 
 @Injectable({
-  providedIn: "root"
+  providedIn: 'root'
 })
 export class AuthService {
-  private isLoggedIn: boolean = false;
+  private isLoggedIn = false;
 
   constructor(
     private request: RequestService,
@@ -65,7 +65,7 @@ export class AuthService {
   }
 
   private _normaliseAuth(rawData): any {
-    var data = rawData.data;
+    const data = rawData.data;
 
     return {
       success: rawData.success,
@@ -124,7 +124,7 @@ export class AuthService {
   }
 
   isAuthenticated(): boolean {
-    return this.isLoggedIn || this.storage.get("isLoggedIn");
+    return this.isLoggedIn || this.storage.get('isLoggedIn');
   }
 
   logout() {
@@ -141,12 +141,12 @@ export class AuthService {
    * @param  {string}}        email [user's email which will receive reset password url]
    * @return {Observable<any>}      [description]
    */
-  forgotPassword(email:string): Observable<any>  {
+  forgotPassword(email: string): Observable<any>  {
     let domain = window.location.hostname;
     domain =
-      domain.indexOf("127.0.0.1") !== -1 ||
-      domain.indexOf("localhost") !== -1
-        ? "dev.app-v2.practera.com"
+      domain.indexOf('127.0.0.1') !== -1 ||
+      domain.indexOf('localhost') !== -1
+        ? 'dev.app-v2.practera.com'
         : domain;
     return this.request.post(api.forgotPassword, {
       email: email,
@@ -216,7 +216,7 @@ export class AuthService {
    */
   checkDomain(data): Observable<any> {
     if (!data.domain) {
-      throw new Error("Tech Error: Domain is compulsory!");
+      throw new Error('Tech Error: Domain is compulsory!');
     }
 
     return this.getConfig(data);
@@ -229,14 +229,14 @@ export class AuthService {
   saveRegistration(data: registerData): Observable<any> {
     return this.request
     .post(api.register, data, {
-      headers: { "Content-Type": "application/json" }
+      headers: { 'Content-Type': 'application/json' }
     });
   }
 
   verifyRegistration(data: verifyParams): Observable<any> {
     return this.request
     .post(api.verifyRegistration, data, {
-      headers: { "Content-Type": "application/json" }
+      headers: { 'Content-Type': 'application/json' }
     });
   }
 
@@ -249,7 +249,7 @@ export class AuthService {
   verifyResetPassword(data: verifyParams): Observable<any> {
     return this.request
     .post(api.verifyResetPassword, data, {
-      headers: { "Content-Type": "application/json" }
+      headers: { 'Content-Type': 'application/json' }
     });
   }
 }

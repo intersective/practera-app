@@ -23,11 +23,11 @@ export class SharedService {
       return;
     }
     // check and change theme color on every page refresh
-    let color = this.storage.getUser().themeColor;
+    const color = this.storage.getUser().themeColor;
     if (color) {
       this.utils.changeThemeColor(color);
     }
-    let image = this.storage.getUser().activityCardImage;
+    const image = this.storage.getUser().activityCardImage;
     if (image) {
       this.utils.changeCardBackgroundImage(image);
     }
@@ -38,7 +38,7 @@ export class SharedService {
 
     // listen to the achievement event
     if (!this.achievementEvent) {
-      this.achievementEvent = this.utils.getEvent("achievement").subscribe(event => {
+      this.achievementEvent = this.utils.getEvent('achievement').subscribe(event => {
         this.notification.achievementPopUp('notification', {
           id: event.meta.Achievement.id,
           name: event.meta.Achievement.name,

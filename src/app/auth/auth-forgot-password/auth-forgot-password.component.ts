@@ -17,23 +17,25 @@ export class AuthForgotPasswordComponent {
     private authService: AuthService
   ) {}
 
-  async send() {   
+  async send() {
     // basic validation
     if (this.email.length < 0 || !this.email) {
-      return this.notificationService.presentToast('Please enter email', false);       
+      return this.notificationService.presentToast('Please enter email', false);
     }
     this.isSending = true;
     // call API to do forgot password logic
     this.authService.forgotPassword(this.email).subscribe(res => {
-      this.isSending = false;            
+      this.isSending = false;
       // show pop up message for confirmation
       return this.notificationService.popUp('forgotPasswordConfirmation', {
         email: this.email
-      }, ['/login']);            
-    }, err => {
+      },
+      ['/login']);
+    },
+    err => {
       this.isSending = false;
-      return this.notificationService.presentToast('Issue occured. Please try again', false);       
-    });       
+      return this.notificationService.presentToast('Issue occured. Please try again', false);
+    });
   }
 
 }
