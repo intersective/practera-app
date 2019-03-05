@@ -86,7 +86,7 @@ export class AuthService {
 
   /**
    * @name login
-   * @description login API specifically only accept request data in encodedUrl formdata, 
+   * @description login API specifically only accept request data in encodedUrl formdata,
    *              so must convert them into compatible formdata before submission
    * @param {object} { email, password } in string for each of the value
    */
@@ -103,7 +103,7 @@ export class AuthService {
 
   /**
    * @name directLogin
-   * @description login API specifically only accept request data in encodedUrl formdata, 
+   * @description login API specifically only accept request data in encodedUrl formdata,
    *              so must convert them into compatible formdata before submission
    * @param {object} { authToken } in string
    */

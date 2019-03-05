@@ -276,7 +276,7 @@ export class AssessmentComponent extends RouterEnter {
   reviewFeedback() {
     this.feedbackReviewed = true;
     this.assessmentService.saveFeedbackReviewed(this.submission.id).subscribe(result => {
-      // if review is successfully mark as read and program is configured to enable review rating, 
+      // if review is successfully mark as read and program is configured to enable review rating,
       // display review rating modal and then redirect to activity page.
       if (result.success && this.storage.getUser().hasReviewRating === true) {
         this.assessmentService.popUpReviewRating(this.review.id, ['app', 'home']);

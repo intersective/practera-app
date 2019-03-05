@@ -162,7 +162,7 @@ export class EventsService {
   eventDetailPopUp(event: Event) {
     return this.notificationService.modal(
       EventDetailComponent,
-      { event }, 
+      { event },
       { cssClass: 'event-detail-popup' }
     );
   }

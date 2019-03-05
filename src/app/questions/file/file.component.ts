@@ -59,7 +59,7 @@ export class FileComponent implements ControlValueAccessor, OnInit {
     if (file.success) {
       // reset errors
       this.errors = [];
-      // currently we only support one file upload per question, 
+      // currently we only support one file upload per question,
       // if we need to support multiple file upload later, we need to change this to:
       // this.uploadedFiles = push(file.data);
       this.uploadedFile = file.data;
