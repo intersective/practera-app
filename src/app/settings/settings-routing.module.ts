@@ -5,8 +5,8 @@ import { SettingsRoutingComponent } from './settings-routing.component';
 import { SettingsComponent } from './settings.component';
 
 const routes: Routes = [
-  { 
-    path: '', 
+  {
+    path: '',
     component: SettingsRoutingComponent,
     children: [
       {
