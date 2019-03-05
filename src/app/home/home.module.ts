@@ -10,19 +10,19 @@ import { TodoCardComponent } from './todo-card/todo-card.component';
   imports: [
     SharedModule,
     NgCircleProgressModule.forRoot({
-      "backgroundColor": "var(--ion-color-light)",
-      "subtitleColor": "var(--ion-color-dark-tint)",
-      "showInnerStroke": false,
-      "startFromZero": false,
-      "outerStrokeColor": "var(--ion-color-primary)",
-      "innerStrokeColor": "var(--ion-color-primary)",
-      "subtitle": [
-        "COMPLETE"
+      'backgroundColor': 'var(--ion-color-light)',
+      'subtitleColor': 'var(--ion-color-dark-tint)',
+      'showInnerStroke': false,
+      'startFromZero': false,
+      'outerStrokeColor': 'var(--ion-color-primary)',
+      'innerStrokeColor': 'var(--ion-color-primary)',
+      'subtitle': [
+        'COMPLETE'
       ],
-      "animation": true,
-      "animationDuration": 1000,
-      "titleFontSize": "32",
-      "subtitleFontSize": "18",
+      'animation': true,
+      'animationDuration': 1000,
+      'titleFontSize': '32',
+      'subtitleFontSize': '18',
     }),
     HomeRoutingModule,
   ],
