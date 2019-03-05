@@ -41,16 +41,13 @@ export class OneofComponent implements ControlValueAccessor {
 
   constructor() {}
 
-  ngAfterViewInit() {
-  }
-
-  //propagate changes into the form control
-  propagateChange = (_: any) => {}
+  // propagate changes into the form control
+  propagateChange = (_: any) => {};
 
   // event fired when radio is selected. propagate the change up to the form control using the custom value accessor interface
   // if 'type' is set, it means it comes from reviewer doing review, otherwise it comes from submitter doing assessment
-  onChange(value, type){
-    //set changed value (answer or comment)
+  onChange(value, type) {
+    // set changed value (answer or comment)
     if (type) {
       // initialise innerValue if not set
       if (!this.innerValue) {
@@ -67,14 +64,14 @@ export class OneofComponent implements ControlValueAccessor {
     // propagate value into form control using control value accessor interface
     this.propagateChange(this.innerValue);
 
-    //reset errors
+    // reset errors
     this.errors = [];
-    //setting, resetting error messages into an array (to loop) and adding the validation messages to show below the answer area
-    for (var key in this.control.errors) {
+    // setting, resetting error messages into an array (to loop) and adding the validation messages to show below the answer area
+    for (const key in this.control.errors) {
       if (this.control.errors.hasOwnProperty(key)) {
-        if(key === "required"){
-          this.errors.push("This question is required");
-        }else{
+        if (key === 'required') {
+          this.errors.push('This question is required');
+        } else {
           this.errors.push(this.control.errors[key]);
         }
       }
@@ -85,19 +82,19 @@ export class OneofComponent implements ControlValueAccessor {
     }
   }
 
-  //From ControlValueAccessor interface
+  // From ControlValueAccessor interface
   writeValue(value: any) {
     if (value) {
       this.innerValue = value;
     }
   }
 
-  //From ControlValueAccessor interface
+  // From ControlValueAccessor interface
   registerOnChange(fn: any) {
     this.propagateChange = fn;
   }
 
-  //From ControlValueAccessor interface
+  // From ControlValueAccessor interface
   registerOnTouched(fn: any) {
 
   }

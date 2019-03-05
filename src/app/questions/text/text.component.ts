@@ -53,8 +53,8 @@ export class TextComponent implements ControlValueAccessor {
 
   // event fired when input/textarea value is changed. propagate the change up to the form control using the custom value accessor interface
   // if 'type' is set, it means it comes from reviewer doing review, otherwise it comes from submitter doing assessment
-  onChange(type){
-    //set changed value (answer or comment)
+  onChange(type) {
+    // set changed value (answer or comment)
     if (type) {
       // initialise innerValue if not set
       if (!this.innerValue) {
@@ -78,21 +78,21 @@ export class TextComponent implements ControlValueAccessor {
     // Don't check "is required" error for now, it has some error.
     // Since we are checking required answer when submit, it's OK to just return here.
     return ;
-    //reset errors
+    // reset errors
     this.errors = [];
-    //setting, resetting error messages into an array (to loop) and adding the validation messages to show below the answer area
-    for (var key in this.control.errors) {
+    // setting, resetting error messages into an array (to loop) and adding the validation messages to show below the answer area
+    for (const key in this.control.errors) {
       if (this.control.errors.hasOwnProperty(key)) {
-        if(key === "required"){
-          this.errors.push("This question is required");
-        }else{
+        if (key === 'required') {
+          this.errors.push('This question is required');
+        } else {
           this.errors.push(this.control.errors[key]);
         }
       }
     }
   }
 
-  //From ControlValueAccessor interface
+  // From ControlValueAccessor interface
   writeValue(value: any) {
     console.log("writeValue",value);
     if (value) {
@@ -100,13 +100,13 @@ export class TextComponent implements ControlValueAccessor {
     }
   }
 
-  //From ControlValueAccessor interface
+  // From ControlValueAccessor interface
   registerOnChange(fn: any) {
     console.log("registerOnChange",fn);
     this.propagateChange = fn;
   }
 
-  //From ControlValueAccessor interface
+  // From ControlValueAccessor interface
   registerOnTouched(fn: any) {
 
   }

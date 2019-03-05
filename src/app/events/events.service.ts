@@ -4,6 +4,8 @@ import { map } from 'rxjs/operators';
 import { RequestService } from '@shared/request/request.service';
 import { UtilsService } from '@services/utils.service';
 import { BrowserStorageService } from '@services/storage.service';
+import { NotificationService } from '@shared/notification/notification.service';
+import { EventDetailComponent } from '@app/event-detail/event-detail.component';
 
 /**
  * @name api
@@ -14,9 +16,6 @@ const api = {
   get: {
     events: 'api/v2/act/event/list.json',
     activities: 'api/v2/plan/activity/list.json'
-  },
-  post: {
-    book: 'api/book_events.json'
   }
 };
 
@@ -49,12 +48,22 @@ export class EventsService {
     private request: RequestService,
     private utils: UtilsService,
     private storage: BrowserStorageService,
+    private notificationService: NotificationService
   ) {}
 
-  getEvents(): Observable<any> {
-    return this.request.get(api.get.events, {params: {
+  getEvents(activityId?): Observable<any> {
+    let params = {};
+    if (activityId) {
+      params = {
+        type: 'activity_session',
+        activity_id: activityId
+      };
+    } else {
+      params = {
         type: 'activity_session'
-      }})
+      };
+    }
+    return this.request.get(api.get.events, {params: params})
       .pipe(map(response => {
         return this._normaliseEvents(response.data);
       })
@@ -66,7 +75,7 @@ export class EventsService {
       this.request.apiResponseFormatError('Event format error');
       return [];
     }
-    let events: Array<Event> = [];
+    const events: Array<Event> = [];
     data.forEach(event => {
       if (!this.utils.has(event, 'id') ||
           !this.utils.has(event, 'title') ||
@@ -101,9 +110,9 @@ export class EventsService {
 
   private _sortEvent(events) {
     return events.sort((a, b) => {
-      let dateA = new Date(a.startTime + 'Z');
-      let dateB = new Date(b.startTime + 'Z');
-      let now = new Date();
+      const dateA = new Date(a.startTime + 'Z');
+      const dateB = new Date(b.startTime + 'Z');
+      const now = new Date();
       if (dateA.getTime() === dateB.getTime()) {
         return 0;
       }
@@ -114,10 +123,10 @@ export class EventsService {
         return 1;
       }
       if (dateA.getTime() > now.getTime() && dateB.getTime() > now.getTime()) {
-        return dateA.getTime() > dateB.getTime();
+        return dateA.getTime() < dateB.getTime() ? -1 : 1;
       }
       if (dateA.getTime() < now.getTime() && dateB.getTime() < now.getTime()) {
-        return dateA.getTime() < dateB.getTime();
+        return dateA.getTime() > dateB.getTime() ? -1 : 1;
       }
     });
   }
@@ -150,15 +159,11 @@ export class EventsService {
     });
   }
 
-  bookEvent(eventId) {
-    let postData = {
-      event_id: eventId,
-      delete_previous: "no"
-    };
-    return this.request.post(api.post.book, postData).subscribe();
-  }
-
-  cancelEvent(eventId) {
-
+  eventDetailPopUp(event: Event) {
+    return this.notificationService.modal(
+      EventDetailComponent,
+      { event },
+      { cssClass: 'event-detail-popup' }
+    );
   }
 }

@@ -12,12 +12,12 @@ import { TextMaskModule } from 'angular2-text-mask';
     IonicModule,
     CommonModule,
     FormsModule,
-    SettingsRoutingModule,     
+    SettingsRoutingModule,
     TextMaskModule
   ],
-  declarations: [ 
-    SettingsRoutingComponent, 
-    SettingsComponent 
+  declarations: [
+    SettingsRoutingComponent,
+    SettingsComponent
   ],
 })
 export class SettingsModule {}

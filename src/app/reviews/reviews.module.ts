@@ -13,11 +13,11 @@ import { ReviewsRoutingComponent } from './reviews-routing.components';
     CommonModule,
     FormsModule,
     ReviewsRoutingModule,
-    
+
   ],
-  declarations: [ 
+  declarations: [
     ReviewsComponent,
-    ReviewsRoutingComponent 
+    ReviewsRoutingComponent
   ],
   providers: [ ReviewsService]
 })

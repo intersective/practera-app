@@ -12,7 +12,7 @@ import { BrowserStorageService } from '@services/storage.service';
  */
 const api = {
   todoItem: 'api/v2/motivations/todo_item/list.json',
-  unreadMessages: "api/v2/message/chat/list_messages.json",
+  unreadMessages: 'api/v2/message/chat/list_messages.json',
 };
 
 @Injectable({

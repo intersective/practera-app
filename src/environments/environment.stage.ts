@@ -13,7 +13,7 @@ export const environment = {
       paths: {
         any: '/appv2/stage/uploads/',
         image: '/appv2/stage/uploads/',
-        video: '/appv2/stage/uploads/'
+        video: '/appv2/stage/video/upload/'
       }
     }
   }

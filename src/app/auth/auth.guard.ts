@@ -28,11 +28,11 @@ export class AuthGuard implements CanActivate, CanActivateChild, CanLoad {
   }
 
   checkLogin(): boolean {
-    if (this.authService.isAuthenticated()) { 
-      return true; 
+    if (this.authService.isAuthenticated()) {
+      return true;
     }
 
-    let navigationExtras: NavigationExtras = {
+    const navigationExtras: NavigationExtras = {
       queryParams: { 'sample-data': true },
       fragment: 'activity-card-1'
     };
