@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ModalController } from '@ionic/angular';
-import { GoMobileService, Profile } from './go-mobile.service';
+import { GoMobileService } from './go-mobile.service';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { UtilsService } from '@services/utils.service';
 import { NotificationService } from '@shared/notification/notification.service';
@@ -15,7 +15,7 @@ import { environment } from '../../environments/environment.prod';
 export class GoMobileComponent implements OnInit {
   loading: boolean = false;
   saved: boolean = false;
-  profile : Profile = {
+  profile = {
     contactNumber: '',
     email: '',
     sendsms: true
@@ -88,7 +88,9 @@ export class GoMobileComponent implements OnInit {
       return this.notification.presentToast('Invalid contact number', false);
     }
 
-    this.GoMobileService.submit(this.profile).subscribe(res => {
+    this.GoMobileService.submit({
+      contactnumber: this.profile.contactNumber,
+    }).subscribe(res => {
       this.saved = true;
       this.notification.alert({
         header: 'Going Mobile!',
