@@ -40,16 +40,12 @@ export class MultipleComponent implements ControlValueAccessor {
     private utils: UtilsService
   ) {}
 
-  ngAfterViewInit() {
-  }
-
   // propagate changes into the form control
   propagateChange = (_: any) => {};
 
   // event fired when checkbox is selected/unselected. propagate the change up to the form control using the custom value accessor interface
   // if 'type' is set, it means it comes from reviewer doing review, otherwise it comes from submitter doing assessment
   onChange(value, type) {
-    let position;
     // set changed value (answer or comment)
     if (type) {
       // initialise innerValue if not set
@@ -59,7 +55,7 @@ export class MultipleComponent implements ControlValueAccessor {
           comment: ''
         };
       }
-      if (type == 'comment') {
+      if (type === 'comment') {
         // just pass the value for comment since comment is always just text
         this.innerValue.comment = value;
       } else {
@@ -78,7 +74,7 @@ export class MultipleComponent implements ControlValueAccessor {
     // reset errors
     this.errors = [];
     // setting, resetting error messages into an array (to loop) and adding the validation messages to show below the answer area
-    for (let key in this.control.errors) {
+    for (const key in this.control.errors) {
       if (this.control.errors.hasOwnProperty(key)) {
         if (key === 'required') {
           this.errors.push('This question is required');

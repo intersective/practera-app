@@ -24,18 +24,20 @@ export class AuthForgotPasswordComponent {
     }
     this.isSending = true;
     // call API to do forgot password logic
-    this.authService.forgotPassword(this.email).subscribe(res => {
-      this.isSending = false;
-      // show pop up message for confirmation
-      return this.notificationService.popUp('forgotPasswordConfirmation', {
-        email: this.email
+    this.authService.forgotPassword(this.email).subscribe(
+      res => {
+        this.isSending = false;
+        // show pop up message for confirmation
+        return this.notificationService.popUp('forgotPasswordConfirmation', {
+          email: this.email
+        },
+        ['/login']);
       },
-      ['/login']);
-    },
-    err => {
-      this.isSending = false;
-      return this.notificationService.presentToast('Issue occured. Please try again', false);
-    });
+      err => {
+        this.isSending = false;
+        return this.notificationService.presentToast('Issue occured. Please try again', false);
+      }
+    );
   }
 
 }

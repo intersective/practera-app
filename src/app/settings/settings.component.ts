@@ -75,11 +75,10 @@ export class SettingsComponent extends RouterEnter {
     } else {
       // by default, set Mask in Australian format.
       this.mask = this.formatMasks[this.countryModel];
-      /*
-          user has no contact number, set the default mask
-            : also check which the server which the APP talks to, i.e if the APP is consuming APIs from 'us.practera.com' then, it is APP V2 in US.
-              But if APP consumes APIs from 'api.practera.com' then it is APP V2 in AUS.
-       */
+
+      // user has no contact number, set the default mask
+      // also check which the server which the APP talks to, i.e if the APP is consuming APIs from 'us.practera.com' then, it is APP V2 in US.
+      // But if APP consumes APIs from 'api.practera.com' then it is APP V2 in AUS.
       if (environment.APIEndpoint.indexOf('us') !== -1) {
         this.countryModel = 'US';
         this.mask = this.formatMasks[this.countryModel];
@@ -183,18 +182,18 @@ export class SettingsComponent extends RouterEnter {
   private validateContactNumber(contactNumber) {
     switch (this.countryModel) {
       case 'AUS':
-        if (contactNumber.length == 12) {
+        if (contactNumber.length === 12) {
           return true;
-        } else if (contactNumber.length == 3) {
+        } else if (contactNumber.length === 3) {
           this.profile.contactNumber = null;
           return true;
         }
         break;
 
       case 'US' :
-        if (contactNumber.length == 12) {
+        if (contactNumber.length === 12) {
           return true;
-        } else if (contactNumber.length == 2) {
+        } else if (contactNumber.length === 2) {
           this.profile.contactNumber = null;
           return true;
         }
@@ -205,8 +204,8 @@ export class SettingsComponent extends RouterEnter {
 
   updateCountry() {
     const selectedCountry = this.countryModel;
-    const country = this.utils.find(this.countryCodes, function(country) {
-      return country.code === selectedCountry;
+    const country = this.utils.find(this.countryCodes, eachCountry => {
+      return eachCountry.code === selectedCountry;
     });
     // set currentContactNumber to it's format.
     this.profile.contactNumber = country.format;

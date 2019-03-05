@@ -162,15 +162,15 @@ export class HomeService {
       }));
   }
 
-  private _normaliseChatMessage(data): TodoItem {
-    if (!Array.isArray(data)) {
+  private _normaliseChatMessage(chatMessages): TodoItem {
+    if (!Array.isArray(chatMessages)) {
       this.request.apiResponseFormatError('Chat array format error');
       return {};
     }
     let unreadMessages = 0;
     let noOfChats = 0;
     let todoItem: TodoItem;
-    data.forEach(data => {
+    chatMessages.forEach(data => {
       if (!this.utils.has(data, 'unread_messages') ||
           !this.utils.has(data, 'name') ||
           !this.utils.has(data, 'last_message') ||
@@ -234,7 +234,7 @@ export class HomeService {
     this.currentActivityId = 0;
     data.Project.Milestone.forEach(this._loopThroughMilestones, this);
     // regard last activity as the current activity if all activities are finished
-    if (this.currentActivityId == 0) {
+    if (this.currentActivityId === 0) {
       const milestones = data.Project.Milestone;
       const activities = milestones[milestones.length - 1].Activity;
       this.currentActivityId = activities[activities.length - 1].id;

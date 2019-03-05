@@ -452,7 +452,8 @@ export class ChatRoomComponent extends RouterEnter {
       const attachmentURL = `https://cdn.filestackcontent.com/quality=value:70/resize=w:${dimension},h:${dimension},fit:crop/${filestackRes.handle}`;
       // preview = `<p>Uploaded ${filestackRes.filename}</p><img src=${attachmentURL}>`;
       preview = `<img src=${attachmentURL}>`;
-    } else if (filestackRes.mimetype.includes('video')) { // we'll need to identify filetype for 'any' type fileupload
+    } else if (filestackRes.mimetype.includes('video')) {
+      // we'll need to identify filetype for 'any' type fileupload
       preview = `<app-file-display [file]="submission.answer" [fileType]="question.fileType"></app-file-display>`;
     }
 
@@ -460,13 +461,13 @@ export class ChatRoomComponent extends RouterEnter {
   }
 
   async attach(type: string) {
-    let message;
     const options: any = {};
 
     if (this.filestackService.getFileTypes(type)) {
       options.accept = this.filestackService.getFileTypes(type);
     }
-    await this.filestackService.open(options, 
+    await this.filestackService.open(
+      options, 
       res => {
         return this.postAttachment(res);
       },

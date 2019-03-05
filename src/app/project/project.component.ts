@@ -87,7 +87,7 @@ export class ProjectComponent extends RouterEnter {
   trackScrolling(event) {
     const activeMilestoneIndex = this.milestonePositions.findIndex((element, i) => {
 
-      if (i == this.milestonePositions.length - 1) {
+      if (i === this.milestonePositions.length - 1) {
         return event.detail.currentY >= element;
       }
 
