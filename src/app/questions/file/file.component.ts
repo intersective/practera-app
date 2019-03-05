@@ -52,8 +52,8 @@ export class FileComponent implements ControlValueAccessor, OnInit {
     this.fileTypes = this.filestackService.getFileTypes(this.question.fileType);
   }
 
-  //propagate changes into the form control
-  propagateChange = (_: any) => {}
+  // propagate changes into the form control
+  propagateChange = (_: any) => {};
 
   onFileUploadCompleted(file, type = null) {
     if (file.success) {
@@ -71,8 +71,8 @@ export class FileComponent implements ControlValueAccessor, OnInit {
 
   // event fired when file is uploaded. propagate the change up to the form control using the custom value accessor interface
   // if 'type' is set, it means it comes from reviewer doing review, otherwise it comes from submitter doing assessment
-  onChange(value, type){
-    //set changed value (answer or comment)
+  onChange(value, type) {
+    // set changed value (answer or comment)
     if (type) {
       if (!this.innerValue) {
         this.innerValue = {
@@ -95,19 +95,19 @@ export class FileComponent implements ControlValueAccessor, OnInit {
     this.propagateChange(this.innerValue);
   }
 
-  //From ControlValueAccessor interface
+  // From ControlValueAccessor interface
   writeValue(value: any) {
     if (value) {
       this.innerValue = value;
     }
   }
 
-  //From ControlValueAccessor interface
+  // From ControlValueAccessor interface
   registerOnChange(fn: any) {
     this.propagateChange = fn;
   }
 
-  //From ControlValueAccessor interface
+  // From ControlValueAccessor interface
   registerOnTouched(fn: any) {
 
   }

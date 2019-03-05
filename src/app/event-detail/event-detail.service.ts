@@ -17,13 +17,13 @@ const api = {
 export class EventDetailService {
 
   constructor(
-  	private request : RequestService,
+    private request: RequestService,
   ) {}
 
   bookEvent(event: Event) {
     return this.request.post(api.post.book, {
       event_id: event.id,
-      delete_previous: "no"
+      delete_previous: 'no'
     });
   }
 

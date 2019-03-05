@@ -63,7 +63,7 @@ export class ActivityService {
       return this.request.apiResponseFormatError('Activity format error');
     }
 
-    let activity: Activity = {
+    const activity: Activity = {
       id: 0,
       name: '',
       description: '',
@@ -73,7 +73,7 @@ export class ActivityService {
     activity.name = thisActivity.Activity.name;
     activity.description = thisActivity.Activity.description;
 
-    let contextIds = {};
+    const contextIds = {};
     thisActivity.References.forEach(element => {
       if (!this.utils.has(element, 'Assessment.id') || !this.utils.has(element, 'context_id')) {
         return this.request.apiResponseFormatError('Activity.References format error');
@@ -137,8 +137,8 @@ export class ActivityService {
     if (!this.utils.has(data, 'Activity.Topic') && !this.utils.has(data, 'Activity.Assessment')) {
       return this.request.apiResponseFormatError('Progress.Activity format error');
     }
-    let topicProgresses = {};
-    let assessmentProgresses = {};
+    const topicProgresses = {};
+    const assessmentProgresses = {};
     if (this.utils.has(data, 'Activity.Topic')) {
       data.Activity.Topic.forEach(topic => {
         if (!this.utils.has(topic, 'id') || !this.utils.has(topic, 'progress')) {
@@ -176,7 +176,7 @@ export class ActivityService {
 
   getAssessmentStatus(task: Task): Observable<any> {
     return this.request.get(api.submissions, {
-        params:{
+        params: {
           assessment_id: task.id,
           context_id: task.contextId
         }

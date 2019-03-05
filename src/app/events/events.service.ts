@@ -75,7 +75,7 @@ export class EventsService {
       this.request.apiResponseFormatError('Event format error');
       return [];
     }
-    let events: Array<Event> = [];
+    const events: Array<Event> = [];
     data.forEach(event => {
       if (!this.utils.has(event, 'id') ||
           !this.utils.has(event, 'title') ||
@@ -110,9 +110,9 @@ export class EventsService {
 
   private _sortEvent(events) {
     return events.sort((a, b) => {
-      let dateA = new Date(a.startTime + 'Z');
-      let dateB = new Date(b.startTime + 'Z');
-      let now = new Date();
+      const dateA = new Date(a.startTime + 'Z');
+      const dateB = new Date(b.startTime + 'Z');
+      const now = new Date();
       if (dateA.getTime() === dateB.getTime()) {
         return 0;
       }
@@ -160,9 +160,10 @@ export class EventsService {
   }
 
   eventDetailPopUp(event: Event) {
-    return this.notificationService.modal(EventDetailComponent,
-      {event}, {
-      cssClass: 'event-detail-popup'
-    });
+    return this.notificationService.modal(
+      EventDetailComponent,
+      { event }, 
+      { cssClass: 'event-detail-popup' }
+    );
   }
 }

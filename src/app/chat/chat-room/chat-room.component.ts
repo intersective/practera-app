@@ -1,19 +1,19 @@
-import { Component, OnInit, ViewChild, AfterContentInit, AfterViewInit } from "@angular/core";
-import { Router, ActivatedRoute } from "@angular/router";
-import { IonContent, ModalController } from "@ionic/angular";
-import { BrowserStorageService } from "@services/storage.service";
-import { RouterEnter } from "@services/router-enter.service";
-import { UtilsService } from "@services/utils.service";
-import { PusherService } from "@shared/pusher/pusher.service";
-import { FilestackService } from "@shared/filestack/filestack.service";
+import { Component, OnInit, ViewChild, AfterContentInit, AfterViewInit } from '@angular/core';
+import { Router, ActivatedRoute } from '@angular/router';
+import { IonContent, ModalController } from '@ionic/angular';
+import { BrowserStorageService } from '@services/storage.service';
+import { RouterEnter } from '@services/router-enter.service';
+import { UtilsService } from '@services/utils.service';
+import { PusherService } from '@shared/pusher/pusher.service';
+import { FilestackService } from '@shared/filestack/filestack.service';
 
-import { ChatService, ChatRoomObject, Message } from "../chat.service";
-import { ChatPreviewComponent } from "../chat-preview/chat-preview.component";
+import { ChatService, ChatRoomObject, Message } from '../chat.service';
+import { ChatPreviewComponent } from '../chat-preview/chat-preview.component';
 
 @Component({
-  selector: "app-chat-room",
-  templateUrl: "./chat-room.component.html",
-  styleUrls: ["./chat-room.component.scss"]
+  selector: 'app-chat-room',
+  templateUrl: './chat-room.component.html',
+  styleUrls: ['./chat-room.component.scss']
 })
 export class ChatRoomComponent extends RouterEnter {
   @ViewChild(IonContent) content: IonContent;
@@ -22,12 +22,12 @@ export class ChatRoomComponent extends RouterEnter {
   message: string;
   messageList: Array<Message> = new Array;
   selectedChat: ChatRoomObject;
-  messagePageNumber: number = 0;
-  messagePagesize: number = 20;
-  loadingChatMessages:boolean = true;
-  loadingMesageSend:boolean = false;
-  isTyping:boolean = false;
-  typingMessage:string;
+  messagePageNumber = 0;
+  messagePagesize = 20;
+  loadingChatMessages = true;
+  loadingMesageSend = false;
+  isTyping = false;
+  typingMessage: string;
 
   constructor(
     private chatService: ChatService,
@@ -40,17 +40,17 @@ export class ChatRoomComponent extends RouterEnter {
     private modalController: ModalController,
   ) {
     super(router);
-    let role = this.storage.getUser().role;
+    const role = this.storage.getUser().role;
 
     // message by team
     this.utils.getEvent('team-message').subscribe(event => {
-      let param = {
+      const param = {
         event: event,
         isTeam: this.selectedChat.is_team,
         chatName: this.selectedChat.name,
         participants_only: this.selectedChat.participants_only
-      }
-      let receivedMessage = this.chatService.getMessageFromEvent(param);
+      };
+      const receivedMessage = this.chatService.getMessageFromEvent(param);
       if (receivedMessage && receivedMessage.file) {
         receivedMessage.preview = this.attachmentPreview(receivedMessage.file);
       }
@@ -70,13 +70,13 @@ export class ChatRoomComponent extends RouterEnter {
     // message by non-mentor
     if (role !== 'mentor') {
       this.utils.getEvent('team-no-mentor-message').subscribe(event => {
-        let param = {
+        const param = {
           event: event,
           isTeam: this.selectedChat.is_team,
           chatName: this.selectedChat.name,
           participants_only: this.selectedChat.participants_only
-        }
-        let receivedMessage =  this.chatService.getMessageFromEvent(param);
+        };
+        const receivedMessage =  this.chatService.getMessageFromEvent(param);
         if (receivedMessage && receivedMessage.file) {
           receivedMessage.preview = this.attachmentPreview(receivedMessage.file);
         }
@@ -102,7 +102,7 @@ export class ChatRoomComponent extends RouterEnter {
   private _initialise() {
     this.loadingChatMessages = true;
     this.selectedChat = {
-      name: "",
+      name: '',
       is_team: false,
       team_id: null,
       team_member_id: null,
@@ -112,7 +112,7 @@ export class ChatRoomComponent extends RouterEnter {
   }
 
   private _validateRouteParams() {
-    let teamId = Number(this.route.snapshot.paramMap.get('teamId'));
+    const teamId = Number(this.route.snapshot.paramMap.get('teamId'));
     this.selectedChat.team_id = teamId;
     if (Number(this.route.snapshot.paramMap.get('teamMemberId'))) {
       this.selectedChat.team_member_id = Number(this.route.snapshot.paramMap.get('teamMemberId'));
@@ -144,37 +144,40 @@ export class ChatRoomComponent extends RouterEnter {
     }
     this.chatService
       .getMessageList(data, this.selectedChat.is_team, this.selectedChat.chat_color)
-      .subscribe(messages => {
-        if (messages) {
-          if (messages.length > 0) {
-            messages.forEach((msg, i) => {
-              if (msg.file) {
-                messages[i].preview = this.attachmentPreview(msg.file);
-              }
-            });
+      .subscribe(
+        messages => {
+          if (messages) {
+            if (messages.length > 0) {
+              messages.forEach((msg, i) => {
+                if (msg.file) {
+                  messages[i].preview = this.attachmentPreview(msg.file);
+                }
+              });
 
-            messages = Object.assign([], messages);
-            messages.reverse();
-            if (this.messageList.length > 0) {
-              this.messageList = messages.concat(this.messageList);
+              messages = Object.assign([], messages);
+              messages.reverse();
+              if (this.messageList.length > 0) {
+                this.messageList = messages.concat(this.messageList);
+              } else {
+                this.messageList = messages;
+                this._scrollToBottom();
+              }
+              this._markAsSeen();
             } else {
-              this.messageList = messages;
-              this._scrollToBottom();
+              this.messagePageNumber -= 1;
             }
-            this._markAsSeen();
-          } else {
-            this.messagePageNumber -= 1;
+            this._getChatName();
           }
-          this._getChatName();
+          this.loadingChatMessages = false;
+        },
+        error => {
+          this.loadingChatMessages = false;
         }
-        this.loadingChatMessages = false;
-      }, error => {
-        this.loadingChatMessages = false;
-      });
+      );
   }
 
   loadMoreMessages(event) {
-    let scrollTopPosition = event.detail.scrollTop;
+    const scrollTopPosition = event.detail.scrollTop;
     if (scrollTopPosition === 0) {
       this._loadMessages();
     }
@@ -182,7 +185,7 @@ export class ChatRoomComponent extends RouterEnter {
 
   private _getChatName() {
     // if the chat name is passed in as parameter, use it
-    let name = this.route.snapshot.paramMap.get('name');
+    const name = this.route.snapshot.paramMap.get('name');
     if (name) {
       this.selectedChat.name = name;
       this.loadingChatMessages = false;
@@ -202,7 +205,7 @@ export class ChatRoomComponent extends RouterEnter {
         });
     } else {
       // get the chat title from messge list
-      let message = this.messageList[0];
+      const message = this.messageList[0];
       if (message) {
         if (message.is_sender) {
           // if the current user is sender, the chat name will be the receiver name
@@ -221,7 +224,7 @@ export class ChatRoomComponent extends RouterEnter {
   }
 
   back() {
-    this.router.navigate(["/app/chat"]);
+    this.router.navigate(['/app/chat']);
   }
 
   sendMessage() {
@@ -233,20 +236,20 @@ export class ChatRoomComponent extends RouterEnter {
     // remove typed message from text field.
     this.message = '';
     // createing prams need to send message
-    let data:any;
+    let data: any;
     if (this.selectedChat.is_team) {
       data = {
         message: message,
         team_id: this.selectedChat.team_id,
-        to: "team",
+        to: 'team',
         participants_only: this.selectedChat.participants_only
-      }
+      };
     } else {
       data = {
         message: message,
         team_id: this.selectedChat.team_id,
         to: this.selectedChat.team_member_id
-      }
+      };
     }
     this.chatService.postNewMessage(data).subscribe(
       response => {
@@ -262,7 +265,7 @@ export class ChatRoomComponent extends RouterEnter {
 
   // call chat api to mark message as seen messages
   private _markAsSeen() {
-    let messageIdList = [];
+    const messageIdList = [];
     let index = 0;
     // createing id array to mark as read.
     for (index = 0; index < this.messageList.length; index++) {
@@ -285,13 +288,13 @@ export class ChatRoomComponent extends RouterEnter {
    * @param {int} message
    */
   checkIsLastMessage(message) {
-    let index = this.messageList.indexOf(message);
+    const index = this.messageList.indexOf(message);
     if (index === -1) {
       this.messageList[index].noAvatar = true;
       return false;
     }
-    var currentMessage = this.messageList[index];
-    var nextMessage = this.messageList[index + 1];
+    const currentMessage = this.messageList[index];
+    const nextMessage = this.messageList[index + 1];
     if (currentMessage.is_sender) {
       this.messageList[index].noAvatar = true;
       return false;
@@ -300,13 +303,13 @@ export class ChatRoomComponent extends RouterEnter {
       this.messageList[index].noAvatar = false;
       return true;
     }
-    var currentMessageTime = new Date(this.messageList[index].sent_time);
-    var nextMessageTime = new Date(this.messageList[index + 1].sent_time);
+    const currentMessageTime = new Date(this.messageList[index].sent_time);
+    const nextMessageTime = new Date(this.messageList[index + 1].sent_time);
     if (currentMessage.sender_name !== nextMessage.sender_name) {
       this.messageList[index].noAvatar = false;
       return true;
     }
-    var timeDiff =
+    const timeDiff =
       (nextMessageTime.getTime() - currentMessageTime.getTime()) /
       (60 * 1000);
     if (timeDiff > 5) {
@@ -324,11 +327,11 @@ export class ChatRoomComponent extends RouterEnter {
    */
   getClassForMessageBubble(message) {
     if (!message.is_sender && message.noAvatar) {
-      return "received-messages no-avatar";
+      return 'received-messages no-avatar';
     } else if (!message.is_sender && !message.noAvatar) {
-      return "received-messages";
+      return 'received-messages';
     } else {
-      return "send-messages";
+      return 'send-messages';
     }
   }
   /**
@@ -339,7 +342,7 @@ export class ChatRoomComponent extends RouterEnter {
     if (this.checkToShowMessageTime(message)) {
       return message.chat_color;
     } else {
-      return message.chat_color + " no-time";
+      return message.chat_color + ' no-time';
     }
   }
 
@@ -348,13 +351,13 @@ export class ChatRoomComponent extends RouterEnter {
    * @param {int} message
    */
   checkToShowMessageTime(message) {
-    let index = this.messageList.indexOf(message);
+    const index = this.messageList.indexOf(message);
     if (index > -1) {
       if (this.messageList[index - 1]) {
-        var currentMessageTime = new Date(this.messageList[index].sent_time);
-        var oldMessageTime = new Date(this.messageList[index - 1].sent_time);
+        const currentMessageTime = new Date(this.messageList[index].sent_time);
+        const oldMessageTime = new Date(this.messageList[index - 1].sent_time);
         if (oldMessageTime) {
-          var dateDiff =
+          const dateDiff =
             currentMessageTime.getDate() - oldMessageTime.getDate();
           if (dateDiff === 0) {
             return this._checkmessageOldThan5Min(
@@ -377,7 +380,7 @@ export class ChatRoomComponent extends RouterEnter {
    * @param {object} oldMessageTime
    */
   private _checkmessageOldThan5Min(currentMessageTime, oldMessageTime) {
-    var timeDiff =
+    const timeDiff =
       (currentMessageTime.getTime() - oldMessageTime.getTime()) / (60 * 1000);
     if (timeDiff > 5) {
       return true;
@@ -390,18 +393,21 @@ export class ChatRoomComponent extends RouterEnter {
    * Trigger typing event when user is typing
    */
   typing() {
-    this.pusherService.triggerTypingEvent({
-      from: this.pusherService.getMyPresenceChannelId(),
-      to: this.selectedChat.name,
-      is_team: this.selectedChat.is_team,
-      team_id: this.selectedChat.team_id,
-      participants_only: this.selectedChat.participants_only,
-      sender_name: this.storage.getUser().name
-    }, this.selectedChat.participants_only);
+    this.pusherService.triggerTypingEvent(
+      {
+        from: this.pusherService.getMyPresenceChannelId(),
+        to: this.selectedChat.name,
+        is_team: this.selectedChat.is_team,
+        team_id: this.selectedChat.team_id,
+        participants_only: this.selectedChat.participants_only,
+        sender_name: this.storage.getUser().name
+      },
+      this.selectedChat.participants_only
+    );
   }
 
   private _showTyping(event) {
-    let presenceChannelId = this.pusherService.getMyPresenceChannelId();
+    const presenceChannelId = this.pusherService.getMyPresenceChannelId();
     // do not display typing message if it is yourself typing, or it is not for your team
     if (presenceChannelId === event.from || this.selectedChat.team_id !== event.team_id) {
       return ;
@@ -416,21 +422,27 @@ export class ChatRoomComponent extends RouterEnter {
           !event.is_team && !this.selectedChat.is_team &&
           event.to === this.storage.getUser().name
         )
-      ){
-      this.typingMessage = event.sender_name+ ' is typing';
+      ) {
+      this.typingMessage = event.sender_name + ' is typing';
       this._scrollToBottom();
       this.isTyping = true;
-      setTimeout(() => {
-        this.typingMessage = '';
-        this.isTyping = false;
-      },3000);
+      setTimeout(
+        () => {
+          this.typingMessage = '';
+          this.isTyping = false;
+        },
+        3000
+      );
     }
   }
 
   private _scrollToBottom() {
-    setTimeout(() => {
-      this.content.scrollToBottom();
-    }, 500);
+    setTimeout(
+      () => {
+        this.content.scrollToBottom();
+      },
+      500
+    );
   }
 
   private attachmentPreview(filestackRes) {
@@ -449,16 +461,19 @@ export class ChatRoomComponent extends RouterEnter {
 
   async attach(type: string) {
     let message;
-    let options: any = {};
+    const options: any = {};
 
     if (this.filestackService.getFileTypes(type)) {
       options.accept = this.filestackService.getFileTypes(type);
     }
-    await this.filestackService.open(options, (res: any) => {
-      return this.postAttachment(res);
-    }, err => {
-      console.log(err);
-    });
+    await this.filestackService.open(options, 
+      res => {
+        return this.postAttachment(res);
+      },
+      err => {
+        console.log(err);
+      }
+    );
   }
 
   previewFile(file) {
@@ -472,7 +487,7 @@ export class ChatRoomComponent extends RouterEnter {
 
     this.loadingMesageSend = true;
 
-    let data:any = {
+    const data: any = {
       message: null,
       file,
       team_id: this.selectedChat.team_id,
@@ -480,14 +495,14 @@ export class ChatRoomComponent extends RouterEnter {
       participants_only: this.selectedChat.participants_only,
     };
     if (this.selectedChat.is_team) {
-      data.to = "team";
+      data.to = 'team';
     } else {
       data.to = this.selectedChat.team_member_id;
     }
 
     this.chatService.postAttachmentMessage(data).subscribe(
       response => {
-        let message = response.data;
+        const message = response.data;
         message.preview = this.attachmentPreview(file);
 
         this.messageList.push(message);
@@ -509,7 +524,7 @@ export class ChatRoomComponent extends RouterEnter {
       'multipart/x-zip',
     ];
 
-    let result: string = '';
+    let result = '';
 
     if (zip.indexOf(mimetype) >= 0) {
       result = 'Zip';
@@ -561,7 +576,7 @@ export class ChatRoomComponent extends RouterEnter {
       'application/zip',
       'multipart/x-zip',
     ];
-    let result: string = '';
+    let result = '';
 
     if (zip.indexOf(mimetype) >= 0) {
       result = 'document';
@@ -615,8 +630,8 @@ export class ChatRoomComponent extends RouterEnter {
   }
 
   createThumb(video, w, h) {
-    var c = document.createElement("canvas"),    // create a canvas
-        ctx = c.getContext("2d");                // get context
+    const c = document.createElement('canvas'),    // create a canvas
+        ctx = c.getContext('2d');                // get context
     c.width = w;                                 // set size = thumb
     c.height = h;
     ctx.drawImage(video, 0, 0, w, h);            // draw in frame

@@ -4,19 +4,19 @@ import { ReviewsComponent }    from './reviews.component';
 import { ReviewsRoutingComponent } from './reviews-routing.components';
 
 const reviewsRoutes: Routes = [
-  { 
-  	path: '', 
-  	component: ReviewsRoutingComponent,
-  	children: [
-  	  {
-  	    path: '',
-  	    component: ReviewsComponent
-  	  }
-  	]
+  {
+    path: '',
+    component: ReviewsRoutingComponent,
+    children: [
+      {
+        path: '',
+        component: ReviewsComponent
+      }
+    ]
   }
 ];
- @NgModule({
+@NgModule({
   imports: [ RouterModule.forChild(reviewsRoutes) ],
   exports: [ RouterModule ]
 })
-export class ReviewsRoutingModule { } 
+export class ReviewsRoutingModule { }

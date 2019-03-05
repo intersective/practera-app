@@ -19,11 +19,11 @@ export class RequestInterceptor implements HttpInterceptor {
     const timelineId = this.storage.getUser().timelineId;
     const teamId = this.storage.getUser().teamId;
     let headerClone = req.headers;
-    let paramsInject = req.params;
+    const paramsInject = req.params;
 
     // inject appkey
     if (this.currenConfig.appkey) {
-      let appkey = this.currenConfig.appkey;
+      const appkey = this.currenConfig.appkey;
       headerClone = headerClone.set('appkey', appkey);
     }
     if (apikey) {

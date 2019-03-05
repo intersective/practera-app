@@ -3,7 +3,7 @@ import { ModalController, AlertController, ToastController } from '@ionic/angula
 import { AlertOptions } from '@ionic/core';
 import { PopUpComponent } from './pop-up/pop-up.component';
 import { AchievementPopUpComponent } from './achievement-pop-up/achievement-pop-up.component';
-import { Achievement, AchievementsService } from "@app/achievements/achievements.service";
+import { Achievement, AchievementsService } from '@app/achievements/achievements.service';
 
 @Injectable({
   providedIn: 'root'
@@ -22,10 +22,13 @@ export class NotificationService {
    * @description futher customised filter
    */
   private modalConfig({ component, componentProps }, options = {}) {
-    const config = Object.assign({
-      component,
-      componentProps,
-    }, options);
+    const config = Object.assign(
+      {
+        component,
+        componentProps,
+      },
+      options
+    );
 
     return config;
   }
@@ -33,7 +36,7 @@ export class NotificationService {
   // show pop up message
   // this is using pop-up.component.ts as the view
   // put redirect = false if don't need to redirect
-  async popUp(type, data, redirect:any = false) {
+  async popUp(type, data, redirect: any = false) {
     const component = PopUpComponent;
     const componentProps = {
       type,
@@ -55,8 +58,8 @@ export class NotificationService {
   }
 
   // toast message pop up, by default, shown success message for 2 seconds.
-  async presentToast(message, success=true, duration=2000) {
-    let color = 'success'
+  async presentToast(message, success= true, duration= 2000) {
+    let color = 'success';
     if (!success) {
       color = 'danger';
     }
