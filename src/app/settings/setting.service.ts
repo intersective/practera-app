@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { SharedService } from '@services/shared.service';
+import { SharedService, Profile } from '@services/shared.service';
 
 @Injectable({
   providedIn: 'root'
@@ -10,10 +10,8 @@ export class SettingService {
     private sharedService : SharedService,
   ) { }
 
-  updateProfile(data) {
-    return this.sharedService.updateProfile({
-      contact_number: data.contactNumber,
-    });
+  updateProfile(data: Profile) {
+    return this.sharedService.updateProfile(data);
   }
 
 }
