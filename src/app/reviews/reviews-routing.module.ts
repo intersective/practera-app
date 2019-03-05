@@ -1,6 +1,6 @@
-import { NgModule }             from '@angular/core';
+import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { ReviewsComponent }    from './reviews.component';
+import { ReviewsComponent } from './reviews.component';
 import { ReviewsRoutingComponent } from './reviews-routing.components';
 
 const reviewsRoutes: Routes = [

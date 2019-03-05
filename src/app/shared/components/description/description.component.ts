@@ -1,11 +1,11 @@
-import { Component, Input, ViewChild, ElementRef } from '@angular/core';
+import { Component, Input, ViewChild, ElementRef, AfterViewInit} from '@angular/core';
 
 @Component({
   selector: 'app-description',
   templateUrl: 'description.component.html',
   styleUrls: ['./description.component.scss']
 })
-export class DescriptionComponent {
+export class DescriptionComponent implements AfterViewInit{
   heightLimit = 90;
   isTruncating = true;
   heightExceeded = false;

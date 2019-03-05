@@ -197,7 +197,7 @@ export class UtilsService {
     if (time.getTime() < compared.getTime()) {
       return -1;
     }
-    if (time.getTime() == compared.getTime()) {
+    if (time.getTime() === compared.getTime()) {
       return 0;
     }
     if (time.getTime() > compared.getTime()) {

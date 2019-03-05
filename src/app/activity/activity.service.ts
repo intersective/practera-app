@@ -56,8 +56,10 @@ export class ActivityService {
   }
 
   private _normaliseActivity(data: any) {
-    // In API response, 'data' is an array of activities(since we passed activity id, it will return only one activity, but still in array format). That's why we use data[0]
-    const thisActivity = data[0]; // grab first element from the array as activity
+    // In API response, 'data' is an array of activities
+    // (since we passed activity id, it will return only one activity, but still in array format). 
+    // That's why we use data[0]
+    const thisActivity = data[0]; 
 
     if (!Array.isArray(data) || !this.utils.has(thisActivity, 'Activity') || !this.utils.has(thisActivity, 'ActivitySequence') || !this.utils.has(thisActivity, 'References')) {
       return this.request.apiResponseFormatError('Activity format error');
@@ -162,7 +164,7 @@ export class ActivityService {
           tasks[index].status = '';
           tasks[index].loadingStatus = false;
 
-          if (tasks[index].progress == 1) {
+          if (tasks[index].progress === 1) {
             tasks[index].status = 'done';
           }
           break;
@@ -194,7 +196,9 @@ export class ActivityService {
       task.loadingStatus = false;
       return task;
     }
-    // In API response, 'data' is an array of submissions, but we only support one submission per assessment now. That's why we use data[0] - the first submission
+    // In API response, 'data' is an array of submissions, 
+    // but we only support one submission per assessment now. 
+    // That's why we use data[0] - the first submission
     const thisSubmission = data[0];
     if (!Array.isArray(data) || !this.utils.has(thisSubmission, 'AssessmentSubmission')) {
       return this.request.apiResponseFormatError('Submission format error');
@@ -210,7 +214,7 @@ export class ActivityService {
         task.status = 'feedback available';
         task.feedbackReviewed = false;
 
-        if (task.progress == 1) {
+        if (task.progress === 1) {
           task.status = 'done';
           task.feedbackReviewed = true;
         }

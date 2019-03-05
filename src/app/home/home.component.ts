@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
 import { HomeService, TodoItem } from './home.service';
 import { Router, NavigationEnd } from '@angular/router';
 import { FastFeedbackService } from '../fast-feedback/fast-feedback.service';
@@ -16,7 +16,7 @@ import { EventsService } from '@app/events/events.service';
   templateUrl: 'home.component.html',
   styleUrls: ['home.component.scss']
 })
-export class HomeComponent extends RouterEnter {
+export class HomeComponent extends RouterEnter implements OnDestroy {
   routeUrl = '/app/home';
   progress = 0;
   loadingProgress = true;

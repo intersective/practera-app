@@ -25,12 +25,12 @@ const api = {
   resetPassword: 'api/auths.json?action=reset_password'
 };
 
-interface verifyParams {
+interface VerifyParams {
   email: string;
   key: string;
 }
 
-interface registerData {
+interface RegisterData {
   password: string;
   user_id: string;
   key: string;
@@ -86,7 +86,8 @@ export class AuthService {
 
   /**
    * @name login
-   * @description login API specifically only accept request data in encodedUrl formdata, so must convert them into compatible formdata before submission
+   * @description login API specifically only accept request data in encodedUrl formdata, 
+   *              so must convert them into compatible formdata before submission
    * @param {object} { email, password } in string for each of the value
    */
   login({ email, password }): Observable<any> {
@@ -102,7 +103,8 @@ export class AuthService {
 
   /**
    * @name directLogin
-   * @description login API specifically only accept request data in encodedUrl formdata, so must convert them into compatible formdata before submission
+   * @description login API specifically only accept request data in encodedUrl formdata, 
+   *              so must convert them into compatible formdata before submission
    * @param {object} { authToken } in string
    */
   directLogin({ authToken }): Observable<any> {
@@ -192,10 +194,9 @@ export class AuthService {
       contact_number: data.contactNumber, // API accepts contact_numebr
     }).pipe(map(response => {
       if (response.data) {
-        const data = response.data;
-        this.storage.set('token', data.apikey);
-        this.storage.set('tutorial', data.tutorial);
-        this.storage.set('programs', data.timelines);
+        this.storage.set('token', response.data.apikey);
+        this.storage.set('tutorial', response.data.tutorial);
+        this.storage.set('programs', response.data.timelines);
       }
 
       // @TODO: verify if safari browser localStorage store data above properly
@@ -226,14 +227,14 @@ export class AuthService {
     return this.request.post(api.setProfile, data);
   }
 
-  saveRegistration(data: registerData): Observable<any> {
+  saveRegistration(data: RegisterData): Observable<any> {
     return this.request
     .post(api.register, data, {
       headers: { 'Content-Type': 'application/json' }
     });
   }
 
-  verifyRegistration(data: verifyParams): Observable<any> {
+  verifyRegistration(data: VerifyParams): Observable<any> {
     return this.request
     .post(api.verifyRegistration, data, {
       headers: { 'Content-Type': 'application/json' }
@@ -246,7 +247,7 @@ export class AuthService {
    * @param {[type]} data [description]
    * @return {Observable<any>}      [description]
   */
-  verifyResetPassword(data: verifyParams): Observable<any> {
+  verifyResetPassword(data: VerifyParams): Observable<any> {
     return this.request
     .post(api.verifyResetPassword, data, {
       headers: { 'Content-Type': 'application/json' }

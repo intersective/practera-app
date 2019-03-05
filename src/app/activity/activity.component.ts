@@ -56,7 +56,7 @@ export class ActivityComponent extends RouterEnter {
 
   onEnter() {
     this._initialise();
-    this.id = parseInt(this.route.snapshot.paramMap.get('id'));
+    this.id = +this.route.snapshot.paramMap.get('id');
     this._getActivity();
     this._getEvents();
   }
@@ -75,7 +75,7 @@ export class ActivityComponent extends RouterEnter {
       .subscribe(tasks => {
         this.activity.tasks = tasks;
         this.activity.tasks.forEach((task, index) => {
-          if (task.type == 'Assessment') {
+          if (task.type === 'Assessment') {
             this._getAssessmentStatus(index);
           }
         });
@@ -113,7 +113,7 @@ export class ActivityComponent extends RouterEnter {
         let contextId = 0;
         let isForTeam = false;
         this.utils.each(this.activity.tasks, task => {
-          if (task.type === 'Assessment' && task.id == id) {
+          if (task.type === 'Assessment' && task.id === id) {
             contextId = task.contextId;
             isForTeam = task.isForTeam;
           }

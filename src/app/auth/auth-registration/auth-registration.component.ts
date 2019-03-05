@@ -94,8 +94,8 @@ export class AuthRegistrationComponent implements OnInit {
                     domain: this.domain
                   })
                   .subscribe(
-                    response => {
-                      let data = (response.data || {}).data;
+                    res => {
+                      let data = (res.data || {}).data;
                       data = this.utils.find(data, function(datum) {
                         return (
                           datum.config && datum.config.auth_via_contact_number
@@ -116,8 +116,8 @@ export class AuthRegistrationComponent implements OnInit {
                   );
               }
             },
-            err => {
-              console.log('error');
+            error => {
+              console.log('error', error);
               this.showPopupMessages('shortMessage', 'Registration link invalid!', redirect);
             }
           );
@@ -156,11 +156,11 @@ export class AuthRegistrationComponent implements OnInit {
                 password: this.confirmPassword
               })
               .subscribe(
-                response => {
+                res => {
                   const redirect = ['switcher'];
                   this.showPopupMessages('shortMessage', 'Registration success!', redirect);
                 },
-                error => {
+                err => {
                   this.showPopupMessages('shortMessage', 'Registration not compleate!');
                 }
               );
