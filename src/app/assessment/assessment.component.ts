@@ -52,6 +52,7 @@ export class AssessmentComponent extends RouterEnter {
   questionsForm = new FormGroup({});
   submitting: boolean = false;
   saving: boolean = false;
+  savingButtonEnable: boolean = true;
   savingMessage: string = 'Last saved ';
   fromPage: string = '';
 
@@ -131,21 +132,19 @@ export class AssessmentComponent extends RouterEnter {
     this.assessmentService.getSubmission(this.id, this.contextId, this.action, this.submissionId)
       .subscribe(result => {
         this.submission = result.submission;
-        console.log(this.submission);
         this.loadingSubmission = false;
         // this page is for doing assessment if submission is empty
         if (this.utils.isEmpty(this.submission) || this.submission.status === 'in progress') {
           this.doAssessment = true;
           this.doReview = false;
           if (this.submission.status === 'in progress') {
-            console.log(this.savingMessage);
             this.savingMessage += this.utils.timeFormatter(this.submission.modified);
-            console.log(this.savingMessage);
-            console.log(this.utils.timeFormatter(this.submission.modified));
+            this.savingButtonEnable = false;
           }
           return ;
         }
         this.review = result.review;
+        console.log("this.review", this.review);
         // this page is for doing review if the submission status is 'pending review' and action is review
         if (this.submission.status == 'pending review' && this.action == 'review') {
           this.doReview = true;
@@ -209,6 +208,9 @@ export class AssessmentComponent extends RouterEnter {
     if (isInProgress) {
       this.saving = true;
       this.savingMessage = 'Saving...';
+      if (!this.savingButtonEnable) {
+        this.savingButtonEnable = true;
+      }
     } else {
       this.submitting = true;
     }
@@ -284,7 +286,7 @@ export class AssessmentComponent extends RouterEnter {
         
         if (isInProgress) {
           // display message for successfull saved answers
-          this.savingMessage = 'Last saved ';
+          this.savingMessage = 'Last saved a mooment ago';
         } else {
           // display a pop up for successful submission
           return this.notificationService.alert({

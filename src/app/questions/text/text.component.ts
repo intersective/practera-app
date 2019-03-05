@@ -67,9 +67,9 @@ export class TextComponent implements ControlValueAccessor {
     } else {
       this.innerValue = this.answer;
     }
-    setTimeout(() => {
+    if (this.doAssessment) {
       this.saveProgress.emit(true);
-    },2000);
+    }
 
     // propagate value into form control using control value accessor interface
     this.propagateChange(this.innerValue);
