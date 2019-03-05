@@ -80,7 +80,9 @@ export class TeamMemberSelectorComponent implements ControlValueAccessor {
       }
     }
 
-    this.saveProgress.emit(true);
+    if (this.doAssessment) {
+      this.saveProgress.emit(true);
+    }
   }
 
   //From ControlValueAccessor interface
