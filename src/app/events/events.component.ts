@@ -16,7 +16,7 @@ interface EventGroup {
 })
 
 export class EventsComponent extends RouterEnter {
-  routeUrl: string = '/events';
+  routeUrl = '/events';
   events: Array<EventGroup>;
   eventsCategorised: {
     browse: Array<EventGroup>;
@@ -25,15 +25,20 @@ export class EventsComponent extends RouterEnter {
   };
   activities: Array<Activity>;
   selectedActivities: Array<number>;
-  loadingEvents: boolean = true;
-  activated: string = 'browse';
+  loadingEvents = true;
+  activated = 'browse';
 
   constructor (
     public router: Router,
+    private route: ActivatedRoute,
     private eventService: EventsService,
     public utils: UtilsService
   ) {
     super(router);
+    // update event list after book/cancel an event
+    this.utils.getEvent('update-event').subscribe(event => {
+      this.onEnter();
+    });
   }
 
   private _initialise() {
@@ -42,7 +47,7 @@ export class EventsComponent extends RouterEnter {
       browse: [],
       booked: [],
       attended: []
-    }
+    };
     this.activities = [];
     this.selectedActivities = [];
     this.loadingEvents = true;
@@ -64,15 +69,15 @@ export class EventsComponent extends RouterEnter {
       let eventGroupBrowse = {
         date: compareDateBrowse,
         events: []
-      }
+      };
       let eventGroupBooked = {
         date: compareDateBooked,
         events: []
-      }
+      };
       let eventGroupAttended = {
         date: compareDateAttended,
         events: []
-      }
+      };
       events.forEach(event => {
         if (!event.isBooked) {
           // group event for 'browse' type
@@ -95,6 +100,11 @@ export class EventsComponent extends RouterEnter {
         this.eventsCategorised.attended.push(eventGroupAttended);
       }
       this.events = this.eventsCategorised[this.activated];
+      // if activity id is passed in, filter by that activity
+      const activityId = +this.route.snapshot.paramMap.get('activityId');
+      if (activityId) {
+        this.onSelect([activityId]);
+      }
       this.loadingEvents = false;
     });
     this.eventService.getActivities().subscribe(activities => {
@@ -111,7 +121,7 @@ export class EventsComponent extends RouterEnter {
    * @param {Boolean} isBrowse     If this is for browse (will group all past events in "Expired")
    */
   private _groupEvents(event, events, eventGroup, compareDate, isBrowse = false) {
-    let date = this.utils.utcToLocal(event.startTime, 'date');
+    const date = this.utils.utcToLocal(event.startTime, 'date');
     // initialise compareDate & eventGroup
     if (!compareDate) {
       compareDate = date;
@@ -128,7 +138,7 @@ export class EventsComponent extends RouterEnter {
         eventGroup = {
           date: compareDate,
           events: []
-        }
+        };
       }
       eventGroup.events.push(event);
     } else if (date === compareDate) {
@@ -141,7 +151,7 @@ export class EventsComponent extends RouterEnter {
       eventGroup = {
         date: compareDate,
         events: [event]
-      }
+      };
     }
     return [events, eventGroup, compareDate];
   }
@@ -187,9 +197,9 @@ export class EventsComponent extends RouterEnter {
     if (this.utils.isEmpty(this.selectedActivities)) {
       return ;
     }
-    let events = [];
+    const events = [];
     this.events.forEach(eventGroup => {
-      let group: EventGroup = {
+      const group: EventGroup = {
         date: eventGroup.date,
         events: []
       };

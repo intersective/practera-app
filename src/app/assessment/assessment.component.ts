@@ -14,7 +14,7 @@ import { RouterEnter } from '@services/router-enter.service';
 })
 export class AssessmentComponent extends RouterEnter {
 
-  routeUrl = '/assessment/'
+  routeUrl = '/assessment/';
   // assessment id
   id: number;
   // activity id
@@ -43,18 +43,18 @@ export class AssessmentComponent extends RouterEnter {
     id: 0,
     answers: {}
   };
-  doAssessment: boolean = false;
-  doReview: boolean = false;
-  feedbackReviewed: boolean = false;
-  loadingFeedbackReviewed: boolean = true;
-  loadingAssessment: boolean = true;
-  loadingSubmission: boolean = true;
+  doAssessment = false;
+  doReview = false;
+  feedbackReviewed = false;
+  loadingFeedbackReviewed = true;
+  loadingAssessment = true;
+  loadingSubmission = true;
   questionsForm = new FormGroup({});
-  submitting: boolean = false;
+  submitting = false;
   saving: boolean = false;
   savingButtonEnable: boolean = true;
   savingMessage: string = 'Last saved ';
-  fromPage: string = '';
+  fromPage = '';
 
   constructor (
     public router: Router,
@@ -125,7 +125,7 @@ export class AssessmentComponent extends RouterEnter {
         this.loadingAssessment = false;
         this._getSubmission();
       });
-  };
+  }
 
   // get the submission answers &/| review answers
   private _getSubmission() {
@@ -146,14 +146,14 @@ export class AssessmentComponent extends RouterEnter {
         this.review = result.review;
         console.log("this.review", this.review);
         // this page is for doing review if the submission status is 'pending review' and action is review
-        if (this.submission.status == 'pending review' && this.action == 'review') {
+        if (this.submission.status === 'pending review' && this.action === 'review') {
           this.doReview = true;
         }
         // call todo item to check if the feedback has been reviewed or not
-        if (this.submission.status == 'published') {
+        if (this.submission.status === 'published') {
           this.assessmentService.getFeedbackReviewed(this.submission.id)
-            .subscribe(result => {
-              this.feedbackReviewed = result;
+            .subscribe(feedbackReviewed => {
+              this.feedbackReviewed = feedbackReviewed;
               this.loadingFeedbackReviewed = false;
             });
         }
@@ -163,7 +163,7 @@ export class AssessmentComponent extends RouterEnter {
   // Populate the question form with FormControls.
   // The name of form control is like 'q-2' (2 is an example of question id)
   populateQuestionsForm() {
-    let questionsFormObject = {};
+    const questionsFormObject = {};
     let validator = [];
     this.assessment.groups.forEach(group => {
       group.questions.forEach(question => {
@@ -174,7 +174,7 @@ export class AssessmentComponent extends RouterEnter {
           validator = [];
         }
         questionsFormObject['q-' + question.id] = new FormControl('', validator);
-      })
+      });
     });
     this.questionsForm = new FormGroup(questionsFormObject);
   }
@@ -191,7 +191,7 @@ export class AssessmentComponent extends RouterEnter {
 
   // form an object of required questions
   getRequiredQuestions() {
-    let requiredQuestions = {};
+    const requiredQuestions = {};
     this.assessment.groups.forEach(group => {
       group.questions.forEach(question => {
         if (question.isRequired) {
@@ -230,7 +230,7 @@ export class AssessmentComponent extends RouterEnter {
         assessment.in_progress = true;
       }
       this.utils.each(this.questionsForm.value, (value, key) => {
-        questionId = parseInt(key.replace('q-', ''));
+        questionId = +key.replace('q-', '');
         answers.push({
           assessment_question_id: questionId,
           answer: value
@@ -263,8 +263,8 @@ export class AssessmentComponent extends RouterEnter {
       }
       this.utils.each(this.questionsForm.value, (value, key) => {
         if (value) {
-          let answer = value;
-          answer.assessment_question_id = parseInt(key.replace('q-', ''));
+          const answer = value;
+          answer.assessment_question_id = +key.replace('q-', '');
           answers.push(answer);
         }
       });
@@ -327,7 +327,8 @@ export class AssessmentComponent extends RouterEnter {
   reviewFeedback() {
     this.feedbackReviewed = true;
     this.assessmentService.saveFeedbackReviewed(this.submission.id).subscribe(result => {
-      // if review is successfully mark as read and program is configured to enable review rating, display review rating modal and then redirect to activity page.
+      // if review is successfully mark as read and program is configured to enable review rating,
+      // display review rating modal and then redirect to activity page.
       if (result.success && this.storage.getUser().hasReviewRating === true) {
         this.assessmentService.popUpReviewRating(this.review.id, ['app', 'home']);
       }

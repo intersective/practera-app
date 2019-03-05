@@ -35,19 +35,19 @@ export class AppComponent implements OnInit {
 
     if (searchParams.has('do')) {
       switch (searchParams.get('do')) {
-        case "secure":
+        case 'secure':
           if (searchParams.has('auth_token')) {
-            let queries = this.utils.urlQueryToObject(queryString);
+            const queries = this.utils.urlQueryToObject(queryString);
             this.router.navigate(['secure', searchParams.get('auth_token'), queries]);
           }
           break;
-        case "resetpassword":
+        case 'resetpassword':
           if (searchParams.has('key') && searchParams.has('email')) {
             this.router.navigate(['reset_password', searchParams.get('key'), searchParams.get('email')]);
           }
           break;
 
-        case "registration":
+        case 'registration':
           if (searchParams.has('key') && searchParams.has('email')) {
             this.router.navigate(['registration', searchParams.get('email'), searchParams.get('key') ]);
           }

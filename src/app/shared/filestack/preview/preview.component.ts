@@ -9,7 +9,7 @@ import { DomSanitizer } from '@angular/platform-browser';
 })
 export class PreviewComponent {
   url = '';
-  file:any = {};
+  file: any = {};
 
   constructor(
     public modalController: ModalController,
@@ -17,7 +17,7 @@ export class PreviewComponent {
   ) {}
 
   download() {
-    return window.open(this.file.url, "_system");
+    return window.open(this.file.url, '_system');
   }
 
   close() {

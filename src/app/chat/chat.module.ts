@@ -28,7 +28,7 @@ import { FilestackModule } from '../shared/filestack/filestack.module';
     LinkifyPipe
   ],
   entryComponents: [ChatPreviewComponent],
-  providers:[ChatService],
+  providers: [ChatService],
   exports: [ChatRoomComponent]
 })
 export class ChatModule {}
