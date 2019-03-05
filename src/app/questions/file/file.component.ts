@@ -52,14 +52,15 @@ export class FileComponent implements ControlValueAccessor, OnInit {
     this.fileTypes = this.filestackService.getFileTypes(this.question.fileType);
   }
 
-  //propagate changes into the form control
-  propagateChange = (_: any) => {}
+  // propagate changes into the form control
+  propagateChange = (_: any) => {};
 
   onFileUploadCompleted(file, type = null) {
     if (file.success) {
       // reset errors
       this.errors = [];
-      // currently we only support one file upload per question, if we need to support multiple file upload later, we need to change this to:
+      // currently we only support one file upload per question,
+      // if we need to support multiple file upload later, we need to change this to:
       // this.uploadedFiles = push(file.data);
       this.uploadedFile = file.data;
       this.onChange('', type);
@@ -71,8 +72,8 @@ export class FileComponent implements ControlValueAccessor, OnInit {
 
   // event fired when file is uploaded. propagate the change up to the form control using the custom value accessor interface
   // if 'type' is set, it means it comes from reviewer doing review, otherwise it comes from submitter doing assessment
-  onChange(value, type){
-    //set changed value (answer or comment)
+  onChange(value, type) {
+    // set changed value (answer or comment)
     if (type) {
       if (!this.innerValue) {
         this.innerValue = {
@@ -80,7 +81,7 @@ export class FileComponent implements ControlValueAccessor, OnInit {
           comment: ''
         };
       }
-      if (type == 'comment') {
+      if (type === 'comment') {
         // just pass the value for comment since comment is always just text
         this.innerValue.comment = value;
       } else {
@@ -95,19 +96,19 @@ export class FileComponent implements ControlValueAccessor, OnInit {
     this.propagateChange(this.innerValue);
   }
 
-  //From ControlValueAccessor interface
+  // From ControlValueAccessor interface
   writeValue(value: any) {
     if (value) {
       this.innerValue = value;
     }
   }
 
-  //From ControlValueAccessor interface
+  // From ControlValueAccessor interface
   registerOnChange(fn: any) {
     this.propagateChange = fn;
   }
 
-  //From ControlValueAccessor interface
+  // From ControlValueAccessor interface
   registerOnTouched(fn: any) {
 
   }

@@ -16,19 +16,18 @@ import { RouterEnter } from '@services/router-enter.service';
 
 export class SettingsComponent extends RouterEnter {
 
-  routeUrl: string = '/app/settings';
+  routeUrl = '/app/settings';
   profile = {
     contactNumber: '',
     email: ''
   };
   currentProgramName = '';
   // default country model
-  countryModel = "AUS";
+  countryModel = 'AUS';
   // default mask
   mask: Array<string|RegExp>;
   // variable to control the update button
   updating = false;
-
   countryCodes = ContactNumberFormat.countryCodes;
   formatMasks = ContactNumberFormat.masks;
 
@@ -39,12 +38,12 @@ export class SettingsComponent extends RouterEnter {
   constructor (
     public router: Router,
     private authService: AuthService,
-    private settingService : SettingService,
-    public storage : BrowserStorageService,
+    private settingService: SettingService,
+    public storage: BrowserStorageService,
     public utils: UtilsService,
     private notificationService: NotificationService,
 
-  ){
+  ) {
     super(router);
   }
 
@@ -60,21 +59,20 @@ export class SettingsComponent extends RouterEnter {
     } else {
       // by default, set Mask in Australian format.
       this.mask = this.formatMasks[this.countryModel];
-      /*
-          user has no contact number, set the default mask
-            : also check which the server which the APP talks to, i.e if the APP is consuming APIs from 'us.practera.com' then, it is APP V2 in US.
-              But if APP consumes APIs from 'api.practera.com' then it is APP V2 in AUS.
-       */
+
+      // user has no contact number, set the default mask
+      // also check which the server which the APP talks to, i.e if the APP is consuming APIs from 'us.practera.com' then, it is APP V2 in US.
+      // But if APP consumes APIs from 'api.practera.com' then it is APP V2 in AUS.
       if (environment.APIEndpoint.indexOf('us') !== -1) {
         this.countryModel = 'US';
         this.mask = this.formatMasks[this.countryModel];
       }
     }
-  };
+  }
 
   private checkCurrentContactNumberOrigin() {
-    var contactNum = this.profile.contactNumber;
-    var prefix = contactNum.substring(0, 3);
+    const contactNum = this.profile.contactNumber;
+    let prefix = contactNum.substring(0, 3);
 
     if (prefix === '+61') {
         this.countryModel = 'AUS';
@@ -117,7 +115,7 @@ export class SettingsComponent extends RouterEnter {
 
   updateContactNumber() {
     // strip out white spaces and underscores
-    this.profile.contactNumber = this.profile.contactNumber.replace(/[^0-9+]+/ig, "");
+    this.profile.contactNumber = this.profile.contactNumber.replace(/[^0-9+]+/ig, '');
     // check if newly input number is valid or not.
     if (!this.validateContactNumber(this.profile.contactNumber)) {
       return this.notificationService.presentToast('Invalid contact number', false);
@@ -146,19 +144,19 @@ export class SettingsComponent extends RouterEnter {
               if (result.success) {
                 // update contact number in user local storage data array.
                 this.storage.setUser({ contactNumber: this.profile.contactNumber });
-                var newContactNumber = this.profile.contactNumber;
+                const newContactNumber = this.profile.contactNumber;
                 // also update contact number in program object in local storage
-                var timelineId = this.storage.getUser().timelineId;  // get current timeline Id
-                var programsObj = this.utils.each(this.storage.get('programs'), function(program){
+                const timelineId = this.storage.getUser().timelineId;  // get current timeline Id
+                const programsObj = this.utils.each(this.storage.get('programs'), function(program) {
                     if (program.timeline.id === timelineId) {
                       program.enrolment.contact_number = newContactNumber;
                     }
                 });
                 this.storage.set('programs', programsObj);
-                return this.notificationService.popUp('shortMessage', { message: "Profile successfully updated!"});
+                return this.notificationService.popUp('shortMessage', { message: 'Profile successfully updated!'});
 
               } else {
-                return this.notificationService.popUp('shortMessage', { message: "Profile updating failed!"});
+                return this.notificationService.popUp('shortMessage', { message: 'Profile updating failed!'});
               }
            });
           }
@@ -166,23 +164,23 @@ export class SettingsComponent extends RouterEnter {
       ]
     });
 
-  };
+  }
 
   private validateContactNumber(contactNumber) {
     switch (this.countryModel) {
-      case "AUS":
-        if (contactNumber.length == 12) {
+      case 'AUS':
+        if (contactNumber.length === 12) {
           return true;
-        } else if(contactNumber.length == 3) {
+        } else if (contactNumber.length === 3) {
           this.profile.contactNumber = null;
           return true;
         }
         break;
 
-      case "US" :
-        if (contactNumber.length == 12) {
+      case 'US' :
+        if (contactNumber.length === 12) {
           return true;
-        } else if (contactNumber.length == 2) {
+        } else if (contactNumber.length === 2) {
           this.profile.contactNumber = null;
           return true;
         }
@@ -192,28 +190,28 @@ export class SettingsComponent extends RouterEnter {
   }
 
   updateCountry() {
-    var selectedCountry = this.countryModel;
-    var country = this.utils.find(this.countryCodes, function(country){
-      return country.code === selectedCountry;
+    const selectedCountry = this.countryModel;
+    const country = this.utils.find(this.countryCodes, eachCountry => {
+      return eachCountry.code === selectedCountry;
     });
     // set currentContactNumber to it's format.
     this.profile.contactNumber = country.format;
     // update the mask as per the newly selected country
     this.mask = this.formatMasks[country.code];
-  };
+  }
 
 
   openLink() {
-     window.open(this.termsUrl, "_system");
-  };
+     window.open(this.termsUrl, '_system');
+  }
 
   switchProgram() {
     this.router.navigate(['/switcher']);
-  };
+  }
 
   // send email to Help request
   mailTo() {
-    var mailto = 'mailto:' + this.helpline + '?subject=' + this.currentProgramName;
+    const mailto = 'mailto:' + this.helpline + '?subject=' + this.currentProgramName;
     window.open(mailto, '_self');
   }
 
@@ -225,7 +223,7 @@ export class SettingsComponent extends RouterEnter {
     event = (event) ? event : window.event;
 
     // charCode is the code of each Key
-    var charCode = (event.which) ? event.which : event.keyCode;
+    const charCode = (event.which) ? event.which : event.keyCode;
 
     // just allow number keys to enter
     if (charCode > 31 && (charCode < 48 || charCode > 57)) {
@@ -237,7 +235,7 @@ export class SettingsComponent extends RouterEnter {
   disableMiddleClicking(event) {
     event = (event) ? event : window.event;
 
-    var cursorPosition = event.clientX;
+    const cursorPosition = event.clientX;
     if ( cursorPosition > 75 && cursorPosition < 146) {
 
       return false;

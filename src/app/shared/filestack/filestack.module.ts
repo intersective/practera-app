@@ -6,9 +6,9 @@ import { FilestackComponent } from './filestack.component';
 import { PreviewComponent } from './preview/preview.component';
 
 @NgModule({
-  imports: [ 
+  imports: [
     IonicModule,
-    CommonModule 
+    CommonModule
   ],
   providers: [
     FilestackService
@@ -26,5 +26,5 @@ import { PreviewComponent } from './preview/preview.component';
 })
 
 export class FilestackModule {
-  
+
 }

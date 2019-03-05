@@ -42,7 +42,7 @@ export class UtilsService {
     if (_) {
       this.lodash = _;
     } else {
-      throw "Lodash not available";
+      throw new Error('Lodash not available');
     }
   }
 
@@ -66,7 +66,7 @@ export class UtilsService {
     return this.lodash.has(object, path);
   }
 
-  indexOf(array, value, fromIndex=0) {
+  indexOf(array, value, fromIndex= 0) {
     return this.lodash.indexOf(array, value, fromIndex);
   }
 
@@ -80,7 +80,7 @@ export class UtilsService {
 
   // given an array and a value, check if this value is in this array, if it is, remove it, if not, add it to the array
   addOrRemove(array: Array<any>, value) {
-    let position = this.indexOf(array, value);
+    const position = this.indexOf(array, value);
     if (position > -1) {
       // find the position of this value and remove it
       array.splice(position, 1);
@@ -97,12 +97,12 @@ export class UtilsService {
   }
 
   changeCardBackgroundImage(image) {
-    this.document.documentElement.style.setProperty('--practera-card-background-image', "url('"+image+"')");
+    this.document.documentElement.style.setProperty('--practera-card-background-image', 'url(\'' + image + '\')');
   }
 
   // broadcast the event to whoever subscribed
   broadcastEvent(key: string, value: any) {
-    this._eventsSubject.next({ key, value })
+    this._eventsSubject.next({ key, value });
   }
 
   // get Event to subscribe to
@@ -116,7 +116,7 @@ export class UtilsService {
 
   // transfer url query string to an object
   urlQueryToObject(query: string) {
-    return JSON.parse('{"' + decodeURI(query).replace(/"/g, '\\"').replace(/&/g, '","').replace(/=/g,'":"') + '"}')
+    return JSON.parse('{"' + decodeURI(query).replace(/"/g, '\\"').replace(/&/g, '","').replace(/=/g, '":"') + '"}');
   }
 
   /**
@@ -141,7 +141,7 @@ export class UtilsService {
     // add "T" between date and time, so that it works on Safari
     time = time.replace(' ', 'T');
     // add "Z" to declare that it is UTC time, it will automatically convert to local time
-    let date = new Date(time + 'Z');
+    const date = new Date(time + 'Z');
     if (date.getFullYear() === compareDate.getFullYear() && date.getMonth() === compareDate.getMonth()) {
       if (date.getDate() === compareDate.getDate() - 1) {
         return 'Yesterday';
@@ -170,10 +170,10 @@ export class UtilsService {
     // add "T" between date and time, so that it works on Safari
     time = time.replace(' ', 'T');
     // add "Z" to declare that it is UTC time, it will automatically convert to local time
-    let date = new Date(time + 'Z');
+    const date = new Date(time + 'Z');
     switch (display) {
-      case "date":
-        let today = new Date();
+      case 'date':
+        const today = new Date();
         if (date.getFullYear() === today.getFullYear() && date.getMonth() === today.getMonth()) {
           if (date.getDate() === today.getDate() - 1) {
             return 'Yesterday';
@@ -191,7 +191,7 @@ export class UtilsService {
             year: 'numeric'
           }).format(date);
 
-      case "time":
+      case 'time':
         return new Intl.DateTimeFormat('en-GB', {
             hour12: true,
             hour: 'numeric',
@@ -211,7 +211,7 @@ export class UtilsService {
   }
 
   timeComparer(timeString: string, comparedString?: string) {
-    let time = new Date(timeString + 'Z');
+    const time = new Date(timeString + 'Z');
     let compared = new Date();
     if (comparedString) {
       compared = new Date(comparedString + 'Z');
@@ -219,7 +219,7 @@ export class UtilsService {
     if (time.getTime() < compared.getTime()) {
       return -1;
     }
-    if (time.getTime() == compared.getTime()) {
+    if (time.getTime() === compared.getTime()) {
       return 0;
     }
     if (time.getTime() > compared.getTime()) {
