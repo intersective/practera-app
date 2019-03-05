@@ -110,7 +110,7 @@ export class AssessmentService {
 
   private _normaliseAssessment(data) {
     // In API response, 'data' is an array of assessments
-    // (since we passed assessment id, it will return only one assessment, but still in array format). 
+    // (since we passed assessment id, it will return only one assessment, but still in array format).
     // That's why we use data[0]
     if (!Array.isArray(data) ||
         !this.utils.has(data[0], 'Assessment') ||
@@ -181,7 +181,7 @@ export class AssessmentService {
                 ) {
                 return this.request.apiResponseFormatError('Assessment.AssessmentChoice format error');
               }
-              // Here we use the AssessmentQuestionChoice.id (instead of AssessmentChoice.id) as the choice id, 
+              // Here we use the AssessmentQuestionChoice.id (instead of AssessmentChoice.id) as the choice id,
               // this is the current logic from Practera server
               choices.push({
                 id: questionChoice.id,
@@ -275,7 +275,7 @@ export class AssessmentService {
 
   private _normaliseSubmission(data, action) {
     // In API response, 'data' is an array of submissions
-    // (currently we only support one submission per assessment, but it is still in array format). 
+    // (currently we only support one submission per assessment, but it is still in array format).
     // That's why we use data[0]
     if (!Array.isArray(data) ||
         !this.utils.has(data[0], 'AssessmentSubmission')) {
@@ -446,7 +446,7 @@ export class AssessmentService {
   }
 
   private _normaliseFeedbackReviewed(data) {
-    // In API response, 'data' is an array of todo items. 
+    // In API response, 'data' is an array of todo items.
     // Since we passed "identifier", there should be just one in the array. That's why we use data[0]
     if (!Array.isArray(data) ||
         !this.utils.has(data[0], 'is_done')) {
