@@ -41,7 +41,9 @@ export class AssessmentComponent extends RouterEnter {
   };
   review: Review = {
     id: 0,
-    answers: {}
+    answers: {},
+    status: '',
+    modified: ''
   };
   doAssessment = false;
   doReview = false;
@@ -83,7 +85,9 @@ export class AssessmentComponent extends RouterEnter {
     };
     this.review = {
       id: 0,
-      answers: {}
+      answers: {},
+      status: '',
+      modified: ''
     };
     this.loadingAssessment = true;
     this.loadingSubmission = true;
@@ -144,6 +148,10 @@ export class AssessmentComponent extends RouterEnter {
           return ;
         }
         this.review = result.review;
+        if (this.review.status === 'in progress') {
+          this.savingMessage += this.utils.timeFormatter(this.review.modified);
+          this.savingButtonEnable = false;
+        }
         // this page is for doing review if the submission status is 'pending review' and action is review
         if (this.submission.status === 'pending review' && this.action === 'review') {
           this.doReview = true;

@@ -1,4 +1,4 @@
-<ng-container *ngIf="status !== 'in progress' && submission.answer">
+<ng-container *ngIf="status !== 'in progress' && doAssessment && submission.answer">
   <ion-list class="no-bg">
     <ion-radio-group [value]="submission.answer">
       <ion-item *ngFor="let choice of question.choices; let i = index" color="light" [lines]="i == question.choices.length - 1 ? 'none' : ''">
@@ -13,7 +13,7 @@
   </div>
 </ng-container>
 
-<div *ngIf="review.answer || review.comment" class="q-reviews">
+<div *ngIf="status !== 'in progress' && doReview && (review.answer || review.comment)" class="q-reviews">
   <ion-label class="q-title">Feedback</ion-label>
   <ng-container *ngIf="review.answer">
     <ion-list class="no-bg">
@@ -47,7 +47,7 @@
 
 <ng-container *ngIf="doReview">
   <ion-list class="no-bg" *ngIf="question.canAnswer">
-    <ion-radio-group #answerEle (ionChange)="onChange(answerEle.value, 'answer')">
+    <ion-radio-group #answerEle [value]="review.answer" (ionChange)="onChange(answerEle.value, 'answer')">
       <ion-list-header>
         <ion-label>Your Answer is</ion-label>
       </ion-list-header>

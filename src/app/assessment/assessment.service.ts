@@ -77,6 +77,8 @@ export interface Submission {
 export interface Review {
   id: number;
   answers: any;
+  status: string;
+  modified: string;
 }
 
 export interface SaveAnswersParams {
@@ -325,7 +327,9 @@ export class AssessmentService {
     if (this.utils.has(thisSubmission, 'AssessmentReview[0].id')) {
       review = {
         id: thisSubmission.AssessmentReview[0].id,
-        answers: {}
+        answers: {},
+        status: thisSubmission.AssessmentReview[0].status,
+        modified: thisSubmission.AssessmentReview[0].modified
       };
     }
     // only get the review answer if the review is published (submission.status === 'published') or this is from /assessment/review
@@ -337,7 +341,9 @@ export class AssessmentService {
           // we use the review id in this way only if AssessmentReviewAnswer is not returned,
           // we should change API so that it returns AssessmentReviewAnswer object later
           id: thisSubmission.AssessmentReviewAnswer[0].assessment_review_id,
-          answers: {}
+          answers: {},
+          status: thisSubmission.AssessmentReview[0].status,
+          modified: thisSubmission.AssessmentReview[0].modified
         };
       }
       thisSubmission.AssessmentReviewAnswer.forEach(answer => {
