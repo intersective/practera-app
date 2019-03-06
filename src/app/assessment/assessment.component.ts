@@ -1,6 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { Router, ActivatedRoute, ParamMap } from '@angular/router';
-import { AssessmentService, Assessment, Submission, Review, saveAnswersParams } from './assessment.service';
+import { AssessmentService, Assessment, Submission, Review, SaveAnswersParams } from './assessment.service';
 import { UtilsService } from '../services/utils.service';
 import { NotificationService } from '@shared/notification/notification.service';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
@@ -213,9 +213,9 @@ export class AssessmentComponent extends RouterEnter {
     } else {
       this.submitting = true;
     }
-    let answers = [];
+    const answers = [];
     let assessment;
-    let requiredQuestions = this.getRequiredQuestions();
+    const requiredQuestions = this.getRequiredQuestions();
     let questionId = 0;
 
     // form submission answers
@@ -269,7 +269,7 @@ export class AssessmentComponent extends RouterEnter {
       });
     }
 
-    let params: saveAnswersParams = {
+    const params: SaveAnswersParams = {
       assessment: assessment,
       answers: answers,
       action: this.action
