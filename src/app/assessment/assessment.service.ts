@@ -79,7 +79,7 @@ export interface Review {
   answers: any;
 }
 
-export interface saveAnswersParams {
+export interface SaveAnswersParams {
   assessment: any;
   answers: any;
   action: string;
@@ -417,7 +417,7 @@ export class AssessmentService {
     return answer;
   }
 
-  saveAnswers(params: saveAnswersParams) {
+  saveAnswers(params: SaveAnswersParams) {
     let postData;
     switch (params.action) {
       case 'assessment':
