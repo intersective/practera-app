@@ -1,4 +1,4 @@
-<ng-container *ngIf="status !== 'in progress' && submission.answer">
+<ng-container *ngIf="status !== 'in progress' && doAssessment && submission.answer">
   <ion-list class="no-bg">
     <ion-item *ngFor="let choice of question.choices; let i = index" color="light" [lines]="i == question.choices.length - 1 ? 'none' : ''">
       <ion-label class="white-space-normal">{{ choice.name }}</ion-label>
@@ -11,7 +11,7 @@
   </div>
 </ng-container>
 
-<div *ngIf="review.answer || review.comment" class="q-reviews">
+<div *ngIf="status !== 'in progress' && doReview && (review.answer || review.comment)" class="q-reviews">
   <ion-label class="q-title">Feedback</ion-label>
   <ng-container *ngIf="review.answer">
     <ion-list class="no-bg">
@@ -49,7 +49,7 @@
     </ion-list-header>
     <ion-item *ngFor="let choice of question.choices; let i = index" [lines]="i == question.choices.length - 1 ? 'none' : ''">
       <ion-label class="white-space-normal">{{ choice.name }}</ion-label>
-      <ion-checkbox [value]="choice.id" mode="md" (ionChange)="onChange(choice.id, 'answer')"></ion-checkbox>
+      <ion-checkbox [checked]="review.answer ? review.answer.includes(choice.id) : false" [value]="choice.id" mode="md" (ionChange)="onChange(choice.id, 'answer')"></ion-checkbox>
     </ion-item>
   </ion-list>
   <ion-textarea *ngIf="question.canComment && submission.answer" class="background-white" #commentEle margin-top rows="4" [(ngModel)]="comment" (ngModelChange)="onChange(comment, 'comment')" placeholder="Please put your feedback here"></ion-textarea>

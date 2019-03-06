@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, forwardRef, ViewChild, ElementRef } from '@angular/core';
+import { Component, Input, Output, EventEmitter, forwardRef, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 import { NG_VALUE_ACCESSOR, ControlValueAccessor, FormControl } from '@angular/forms';
 import { UtilsService } from '@services/utils.service';
 
@@ -14,7 +14,7 @@ import { UtilsService } from '@services/utils.service';
     }
   ]
 })
-export class MultipleComponent implements ControlValueAccessor {
+export class MultipleComponent implements ControlValueAccessor, AfterViewInit {
 
   @Input() question;
   @Input() submission;
@@ -43,6 +43,12 @@ export class MultipleComponent implements ControlValueAccessor {
   constructor(
     private utils: UtilsService
   ) {}
+
+  ngAfterViewInit() {
+    if ((this.status === 'in progress') && (this.doReview)) {
+      this.comment = this.review.comment;
+    }
+  }
 
   // propagate changes into the form control
   propagateChange = (_: any) => {};
@@ -87,10 +93,7 @@ export class MultipleComponent implements ControlValueAccessor {
         }
       }
     }
-
-    if (this.doAssessment) {
-      this.saveProgress.emit(true);
-    }
+    this.saveProgress.emit(true);
   }
 
   // From ControlValueAccessor interface

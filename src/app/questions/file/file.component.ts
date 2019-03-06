@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, Output, EventEmitter, forwardRef, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter, forwardRef, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 import { NG_VALUE_ACCESSOR, ControlValueAccessor, FormControl } from '@angular/forms';
 import { FilestackService } from '@shared/filestack/filestack.service';
 
@@ -14,7 +14,7 @@ import { FilestackService } from '@shared/filestack/filestack.service';
     }
   ]
 })
-export class FileComponent implements ControlValueAccessor, OnInit {
+export class FileComponent implements ControlValueAccessor, OnInit, AfterViewInit {
 
   @Input() question = {
     name: '',
@@ -54,6 +54,12 @@ export class FileComponent implements ControlValueAccessor, OnInit {
 
   ngOnInit() {
     this.fileTypes = this.filestackService.getFileTypes(this.question.fileType);
+  }
+
+  ngAfterViewInit() {
+    if ((this.status === 'in progress') && (this.doReview)) {
+      this.comment = this.review.comment;
+    }
   }
 
   // propagate changes into the form control
@@ -99,9 +105,7 @@ export class FileComponent implements ControlValueAccessor, OnInit {
     // propagate value into form control using control value accessor interface
     this.propagateChange(this.innerValue);
 
-    if (this.doAssessment) {
-      this.saveProgress.emit(true);
-    }
+    this.saveProgress.emit(true);
   }
 
   // From ControlValueAccessor interface
