@@ -10,21 +10,21 @@ declare var window: any;
 // contact number format should be consistent throughout the app (GoMobile & Setting)
 export class ContactNumberFormat {
   masks = {
-    AUS: ['+','6','1',' ', /[1-9]/, /\d/, /\d/, ' ', /\d/, /\d/, /\d/, ' ', /\d/, /\d/, /\d/],
-    US: ['+','1', ' ',/[1-9]/, /\d/, /\d/, ' ', /\d/, /\d/, /\d/, ' ', /\d/, /\d/, /\d/, /\d/],
+    AUS: ['+', '6', '1', ' ', /[1-9]/, /\d/, /\d/, ' ', /\d/, /\d/, /\d/, ' ', /\d/, /\d/, /\d/],
+    US: ['+', '1', ' ', /[1-9]/, /\d/, /\d/, ' ', /\d/, /\d/, /\d/, ' ', /\d/, /\d/, /\d/, /\d/],
   };
 
   // supported countries
   countryCodes = [
     {
-        name: "Australia",
-        code: "AUS",
-        format: '+61 ___ ___ ___'
+      name: 'Australia',
+      code: 'AUS',
+      format: '+61 ___ ___ ___'
     },
     {
-        name: "US/Canada",
-        code: "US",
-        format: '+1 ___ ___ ____'
+      name: 'US/Canada',
+      code: 'US',
+      format: '+1 ___ ___ ____'
     },
   ];
 }

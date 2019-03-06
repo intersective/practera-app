@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot, Router, Route } from '@angular/router';
 import { Observable } from 'rxjs';
-import { BrowserStorageService } from "@services/storage.service";
+import { BrowserStorageService } from '@services/storage.service';
 
 @Injectable()
 export class ProgramSelectedGuard implements CanActivate {
@@ -14,7 +14,7 @@ export class ProgramSelectedGuard implements CanActivate {
 
   // if user hasn't selected a program
   canActivate(next: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> | Promise<boolean> | boolean {
-    const storage = this.storage.getUser().programId;
+    const storage = this.storage.getUser().timelineId;
 
     if (storage) {
       return true;

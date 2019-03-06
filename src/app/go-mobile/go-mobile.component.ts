@@ -4,7 +4,7 @@ import { GoMobileService } from './go-mobile.service';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { UtilsService, ContactNumberFormat } from '@services/utils.service';
 import { NotificationService } from '@shared/notification/notification.service';
-import { BrowserStorageService } from "@services/storage.service";
+import { BrowserStorageService } from '@services/storage.service';
 import { environment } from '../../environments/environment.prod';
 
 @Component({
@@ -13,16 +13,16 @@ import { environment } from '../../environments/environment.prod';
   styleUrls: ['./go-mobile.component.scss']
 })
 export class GoMobileComponent implements OnInit {
-  loading: boolean = false;
-  saved: boolean = false;
+  loading = false;
+  saved = false;
   profile = {
     contactNumber: '',
     email: '',
     sendsms: true
   };
-  invalidNumber: boolean = true;
+  invalidNumber = true;
   // default country model
-  countryModel = "AUS";
+  countryModel = 'AUS';
   // default mask
   mask: Array<string|RegExp>;
   // variable to control the update button
@@ -32,7 +32,7 @@ export class GoMobileComponent implements OnInit {
 
   constructor(
     public modalController: ModalController,
-    private GoMobileService: GoMobileService,
+    private goMobileService: GoMobileService,
     private utils: UtilsService,
     private notification: NotificationService,
     public storage: BrowserStorageService,
@@ -71,13 +71,13 @@ export class GoMobileComponent implements OnInit {
 
   submit() {
     this.loading = true;
-    this.profile.contactNumber = this.profile.contactNumber.replace(/[^0-9+]+/ig, "");
+    this.profile.contactNumber = this.profile.contactNumber.replace(/[^0-9+]+/ig, '');
     // check if newly input number is valid or not.
     if (!this.validateContactNumber()) {
       return this.notification.presentToast('Invalid contact number', false);
     }
 
-    this.GoMobileService.submit({
+    this.goMobileService.submit({
       contact_number: this.profile.contactNumber,
       email: this.profile.email,
       sendsms: true,
@@ -98,23 +98,23 @@ export class GoMobileComponent implements OnInit {
   }
 
   validateContactNumber() {
-    var contactNumber = this.profile.contactNumber.replace(/[^0-9+]+/ig, "");
+    const contactNumber = this.profile.contactNumber.replace(/[^0-9+]+/ig, '');
 
     switch (this.countryModel) {
-      case "AUS":
-        if (contactNumber.length == 12) {
+      case 'AUS':
+        if (contactNumber.length === 12) {
           this.invalidNumber = false;
           return true;
-        } else if(contactNumber.length == 3) {
+        } else if (contactNumber.length === 3) {
           this.profile.contactNumber = null;
         }
         break;
 
-      case "US" :
-        if (contactNumber.length == 12) {
+      case 'US' :
+        if (contactNumber.length === 12) {
           this.invalidNumber = false;
           return true;
-        } else if (contactNumber.length == 2) {
+        } else if (contactNumber.length === 2) {
           this.profile.contactNumber = null;
         }
         break;
@@ -124,14 +124,14 @@ export class GoMobileComponent implements OnInit {
   }
 
   updateCountry() {
-    var selectedCountry = this.countryModel;
-    var country = this.utils.find(this.countryCodes, function(country){
-      return country.code === selectedCountry;
+    const selectedCountry = this.countryModel;
+    const country = this.utils.find(this.countryCodes, function(c) {
+      return c.code === selectedCountry;
     });
     // set currentContactNumber to it's format.
     this.profile.contactNumber = country.format;
     // update the mask as per the newly selected country
     this.mask = this.formatMasks[country.code];
-  };
+  }
 
 }
