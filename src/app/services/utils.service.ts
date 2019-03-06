@@ -8,14 +8,14 @@ import { map, filter } from 'rxjs/operators';
 declare var window: any;
 
 // contact number format should be consistent throughout the app (GoMobile & Setting)
-export const ContactNumberFormat = {
-  masks: {
+export class ContactNumberFormat {
+  masks = {
     AUS: ['+','6','1',' ', /[1-9]/, /\d/, /\d/, ' ', /\d/, /\d/, /\d/, ' ', /\d/, /\d/, /\d/],
     US: ['+','1', ' ',/[1-9]/, /\d/, /\d/, ' ', /\d/, /\d/, /\d/, ' ', /\d/, /\d/, /\d/, /\d/],
-  },
+  };
 
   // supported countries
-  countryCodes: [
+  countryCodes = [
     {
         name: "Australia",
         code: "AUS",
@@ -26,8 +26,8 @@ export const ContactNumberFormat = {
         code: "US",
         format: '+1 ___ ___ ____'
     },
-  ],
-};
+  ];
+}
 
 @Injectable({
   providedIn: 'root'
