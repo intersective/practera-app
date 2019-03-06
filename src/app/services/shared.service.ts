@@ -6,9 +6,9 @@ import { NotificationService } from '@shared/notification/notification.service';
 import { RequestService } from '@shared/request/request.service';
 
 export interface Profile {
-  contact_number : string,
-  email?: string,
-  sendsms?: boolean
+  contact_number: string;
+  email?: string;
+  sendsms?: boolean;
 }
 
 const api = {
@@ -27,7 +27,7 @@ export class SharedService {
     private storage: BrowserStorageService,
     public pusherService: PusherService,
     private notification: NotificationService,
-    private request : RequestService,
+    private request: RequestService
   ) {}
 
   // call this function on every page refresh
