@@ -31,11 +31,9 @@ export class SwitcherProgramComponent implements OnInit {
       });
   }
 
-  switch(index) {
-    this.switcherService.switchProgram(this.programs[index])
-      .subscribe(() => {
-        this.router.navigate(['/app/home']);
-      });
+  async switch(index) {
+    await this.switcherService.switchProgram(this.programs[index]);
+    return this.router.navigate(['/app/home']);
   }
 
   logout() {

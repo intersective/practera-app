@@ -66,27 +66,28 @@ export class SwitcherService {
     return of(this.storage.get('programs'));
   }
 
-  switchProgram(programObj: ProgramObj) {
-    return this.getTeamInfo().pipe(map(() => {
-      const themeColor = this.utils.has(programObj, 'program.config.theme_color') ? programObj.program.config.theme_color : '#2bbfd4';
-      let cardBackgroundImage = '';
-      if (this.utils.has(programObj, 'program.config.card_style')) {
-        cardBackgroundImage = '/assets/' + programObj.program.config.card_style;
-      }
-      this.storage.setUser({
-        programId: programObj.program.id,
-        programName: programObj.program.name,
-        hasReviewRating: this.utils.has(programObj, 'program.config.review_rating') ? programObj.program.config.review_rating : false,
-        experienceId: programObj.program.experience_id,
-        projectId: programObj.project.id,
-        timelineId: programObj.timeline.id,
-        contactNumber: programObj.enrolment.contact_number,
-        themeColor: themeColor,
-        activityCardImage: cardBackgroundImage
-      });
-      this.sharedService.onPageLoad();
-      return this.getMyInfo();
-    }));
+  async switchProgram(programObj: ProgramObj) {
+    const themeColor = this.utils.has(programObj, 'program.config.theme_color') ? programObj.program.config.theme_color : '#2bbfd4';
+    let cardBackgroundImage = '';
+    if (this.utils.has(programObj, 'program.config.card_style')) {
+      cardBackgroundImage = '/assets/' + programObj.program.config.card_style;
+    }
+    this.storage.setUser({
+      programId: programObj.program.id,
+      programName: programObj.program.name,
+      hasReviewRating: this.utils.has(programObj, 'program.config.review_rating') ? programObj.program.config.review_rating : false,
+      experienceId: programObj.program.experience_id,
+      projectId: programObj.project.id,
+      timelineId: programObj.timeline.id,
+      contactNumber: programObj.enrolment.contact_number,
+      themeColor: themeColor,
+      activityCardImage: cardBackgroundImage
+    });
+
+    await this.getTeamInfo().toPromise();
+    this.sharedService.onPageLoad();
+    const myInfo = await this.getMyInfo().toPromise();
+    return myInfo;
   }
 
   getTeamInfo(): Observable<any> {
