@@ -150,6 +150,9 @@ $message-body-size: 224px;
         }
 
         &.video-attachment-container {
+          min-width: $message-body-size;
+          min-height: 170px;
+          max-height: 170px;
           background: none !important;
           line-height: 0;
           padding: 0;
@@ -159,15 +162,16 @@ $message-body-size: 224px;
 
           #inner-box {
             border-radius: inherit;
-            height: 100%;
-            width: 100%;
+            min-width: inherit;
             max-width: inherit;
+            min-height: inherit;
+            max-height: inherit;
             position: absolute;
             padding: 0;
-            opacity: 0.6;
+            border: 1px #bbbbbb solid;
 
             p {
-              color: #fff;
+              color: var(--ion-color-primary);
               line-height: $message-body-size;
               text-align: center;
               height: inherit;
@@ -179,9 +183,11 @@ $message-body-size: 224px;
 
           video {
             padding: inherit;
+            min-width: inherit;
             max-width: inherit;
+            min-height: inherit;
+            max-height: inherit;
             border-radius: inherit;
-
           }
           &:hover {
             #inner-box {
