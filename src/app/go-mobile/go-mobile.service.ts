@@ -16,8 +16,8 @@ export class GoMobileService {
 
   constructor(
     private modalController: ModalController,
-    private sharedService : SharedService,
-  ) { }
+    private sharedService: SharedService,
+  ) {}
 
   submit(profile: Profile) {
     return this.sharedService.updateProfile(profile);

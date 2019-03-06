@@ -14,7 +14,7 @@ const api = {
 export class SettingService {
 
   constructor(
-    private sharedService : SharedService,
+    private sharedService: SharedService,
   ) { }
 
   updateProfile(data: Profile) {
