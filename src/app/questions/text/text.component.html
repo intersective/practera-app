@@ -1,8 +1,8 @@
-<ng-container *ngIf="status !== 'in progress' && submission.answer">
+<ng-container *ngIf="status !== 'in progress' && doAssessment && submission.answer">
   <p class="paragraph">{{ submission.answer }}</p>
 </ng-container>
 
-<div *ngIf="review.answer || review.comment" class="q-reviews">
+<div *ngIf="status !== 'in progress' && doReview && (review.answer || review.comment)" class="q-reviews">
   <ion-label class="q-title">Feedback</ion-label>
   <ng-container *ngIf="review.answer">
     <p class="paragraph">{{ review.answer }}</p>

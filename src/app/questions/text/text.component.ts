@@ -43,8 +43,11 @@ export class TextComponent implements ControlValueAccessor, AfterViewInit {
   constructor() {}
 
   ngAfterViewInit() {
-    if (this.status === 'in progress') {
+    if ((this.status === 'in progress') && (this.doAssessment)) {
       this.answer = this.submission.answer;
+    } else if ((this.status === 'in progress') && (this.doReview)) {
+      this.answer = this.review.answer;
+      this.comment = this.review.comment;
     }
   }
 
@@ -67,9 +70,7 @@ export class TextComponent implements ControlValueAccessor, AfterViewInit {
     } else {
       this.innerValue = this.answer;
     }
-    if (this.doAssessment) {
-      this.saveProgress.emit(true);
-    }
+    this.saveProgress.emit(true);
 
     // propagate value into form control using control value accessor interface
     this.propagateChange(this.innerValue);
