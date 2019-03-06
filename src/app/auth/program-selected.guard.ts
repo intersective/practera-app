@@ -14,7 +14,7 @@ export class ProgramSelectedGuard implements CanActivate {
 
   // if user hasn't selected a program
   canActivate(next: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> | Promise<boolean> | boolean {
-    const storage = this.storage.get('programId');
+    const storage = this.storage.getUser().programId;
 
     if (storage) {
       return true;

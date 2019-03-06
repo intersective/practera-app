@@ -27,9 +27,8 @@ export class GoMobileComponent implements OnInit {
   mask: Array<string|RegExp>;
   // variable to control the update button
   updating = false;
-
-  countryCodes = ContactNumberFormat.countryCodes;
-  formatMasks = ContactNumberFormat.masks;
+  countryCodes;
+  formatMasks;
 
   constructor(
     public modalController: ModalController,
@@ -37,7 +36,11 @@ export class GoMobileComponent implements OnInit {
     private utils: UtilsService,
     private notification: NotificationService,
     public storage: BrowserStorageService,
-  ) {}
+    private contact: ContactNumberFormat,
+  ) {
+    this.countryCodes = contact.countryCodes;
+    this.formatMasks = contact.masks;
+  }
 
   ngOnInit() {
     this.profile.email = this.storage.getUser().email;

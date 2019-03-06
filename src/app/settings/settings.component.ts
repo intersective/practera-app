@@ -28,8 +28,8 @@ export class SettingsComponent extends RouterEnter {
   mask: Array<string|RegExp>;
   // variable to control the update button
   updating = false;
-  countryCodes = ContactNumberFormat.countryCodes;
-  formatMasks = ContactNumberFormat.masks;
+  countryCodes;
+  formatMasks;
 
   helpline = 'help@practera.com';
 
@@ -42,9 +42,11 @@ export class SettingsComponent extends RouterEnter {
     public storage: BrowserStorageService,
     public utils: UtilsService,
     private notificationService: NotificationService,
-
+    private contact: ContactNumberFormat,
   ) {
     super(router);
+    this.countryCodes = contact.countryCodes;
+    this.formatMasks = contact.masks;
   }
 
   onEnter() {
