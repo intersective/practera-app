@@ -17,7 +17,6 @@ export class AuthLoginComponent {
     password: new FormControl('', [Validators.required]),
   });
   isLoggingIn = false;
-  isPreferredDevice = false;
 
   constructor(
     private router: Router,

@@ -8,20 +8,20 @@ export class ProgramSelectedGuard implements CanActivate {
 
 
   constructor(
-    private _router: Router,
+    private router: Router,
     private storage: BrowserStorageService
   ) {}
 
   // if user hasn't selected a program
   canActivate(next: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> | Promise<boolean> | boolean {
-    const storage = this.storage.getUser().timelineId;
+    const timelineId = this.storage.getUser().timelineId;
 
-    if (storage) {
+    if (timelineId) {
       return true;
     }
 
     // navigate to not found page
-    this._router.navigate(['/switcher']);
+    this.router.navigate(['/switcher']);
     return false;
   }
 
