@@ -2,8 +2,8 @@
   <ion-toolbar color="light">
     <ion-icon name="arrow-back" (click)="back()" color="primary" slot="start" margin-start></ion-icon>
     <ion-title text-center>Assessment</ion-title>
-    <ion-title *ngIf="saving || submission.status === 'in progress'" text-center class="subTitle">{{savingMessage}} {{savingButtonDisable}}</ion-title>
-    <ion-button *ngIf="submission.status === 'in progress'" [disabled]="savingButtonEnable" (click)="submit(true)" class="text-button" color="primary" slot="end" fill="clear" size="small">Save</ion-button>
+    <ion-title *ngIf="saving || doAssessment || doReview" text-center class="subTitle">{{savingMessage}}</ion-title>
+    <ion-button *ngIf="doAssessment || doReview" [disabled]="savingButtonEnable" (click)="submit(true)" class="text-button" color="primary" slot="end" fill="clear" size="small">Save</ion-button>
   </ion-toolbar>
 </ion-header>
 <ion-content padding color="light" text-center>
@@ -55,7 +55,8 @@
                 [doReview]="doReview"
                 [submission]="(submission.answers && submission.answers[question.id]) ? submission.answers[question.id] : {}"
                 [review]="(review.answers && review.answers[question.id]) ? review.answers[question.id] : {}"
-                [status]="doAssessment ? submission.status : review.status"
+                [reviewStatus]="review.status"
+                [submissionStatus]= "submission.status"
                 [formControlName]="'q-' + question.id"
                 [control]="questionsForm.controls['q-' + question.id]"
                 (saveProgress)="submit($event)"
@@ -68,7 +69,8 @@
                 [doReview]="doReview"
                 [submission]="(submission.answers && submission.answers[question.id]) ? submission.answers[question.id] : {}"
                 [review]="(review.answers && review.answers[question.id]) ? review.answers[question.id] : {}"
-                [status]="doAssessment ? submission.status : review.status"
+                [reviewStatus]="review.status"
+                [submissionStatus]= "submission.status"
                 [formControlName]="'q-' + question.id"
                 [control]="questionsForm.controls['q-' + question.id]"
                 (saveProgress)="submit($event)"
@@ -81,7 +83,8 @@
                 [doReview]="doReview"
                 [submission]="(submission.answers && submission.answers[question.id]) ? submission.answers[question.id] : {}"
                 [review]="(review.answers && review.answers[question.id]) ? review.answers[question.id] : {}"
-                [status]="doAssessment ? submission.status : review.status"
+                [reviewStatus]="review.status"
+                [submissionStatus]= "submission.status"
                 [formControlName]="'q-' + question.id"
                 [control]="questionsForm.controls['q-' + question.id]"
                 (saveProgress)="submit($event)"
@@ -94,7 +97,8 @@
                 [doReview]="doReview"
                 [submission]="(submission.answers && submission.answers[question.id]) ? submission.answers[question.id] : {}"
                 [review]="(review.answers && review.answers[question.id]) ? review.answers[question.id] : {}"
-                [status]="doAssessment ? submission.status : review.status"
+                [reviewStatus]="review.status"
+                [submissionStatus]= "submission.status"
                 [formControlName]="'q-' + question.id"
                 [control]="questionsForm.controls['q-' + question.id]"
                 (saveProgress)="submit($event)"
@@ -107,7 +111,8 @@
                 [doReview]="doReview"
                 [submission]="(submission.answers && submission.answers[question.id]) ? submission.answers[question.id] : {}"
                 [review]="(review.answers && review.answers[question.id]) ? review.answers[question.id] : {}"
-                [status]="doAssessment ? submission.status : review.status"
+                [reviewStatus]="review.status"
+                [submissionStatus]= "submission.status"
                 [formControlName]="'q-' + question.id"
                 [control]="questionsForm.controls['q-' + question.id]"
                 (saveProgress)="submit($event)"
