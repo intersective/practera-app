@@ -43,18 +43,16 @@
 
             <ng-container *ngIf="message.file && message.file.mimetype.includes('video')">
               <div  class="message-body video-attachment-container">
-                <div id="inner-box">
+                <div id="inner-box" (click)="preview(message.file)">
                   <p><ion-icon name="play-circle"></ion-icon></p>
                 </div>
-                <video (click)="preview(message.file)">
-                  <ng-container *ngIf="message.file.transcoded">
-                    <source [src]="message.file.transcoded + '.mp4#t=0.5'" type="video/mp4">
-                    <source [src]="message.file.transcoded + '.webm'" type="video/webm">
-                    <source [src]="message.file.transcoded + '.ts'">
-                  </ng-container>
-                  <source [src]="message.file.url" [type]="message.file.mimetype">
-                  {{ message.file.url }}
-                </video>
+                <div class="label">
+                  <p>
+                    <ion-label color="primary">
+                      {{ message.file.filename }}
+                    </ion-label>
+                  </p>
+                </div>
               </div>
             </ng-container>
 
