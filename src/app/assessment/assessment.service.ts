@@ -81,13 +81,6 @@ export interface Review {
   modified: string;
 }
 
-export interface SaveAnswersParams {
-  assessment: any;
-  answers: any;
-  action: string;
-  AssessmentSubmissionId?: number;
-}
-
 @Injectable({
   providedIn: 'root'
 })
@@ -423,25 +416,25 @@ export class AssessmentService {
     return answer;
   }
 
-  saveAnswers(params: SaveAnswersParams) {
+  saveAnswers(assessment, answers, action, submissionId?) {
     let postData;
-    switch (params.action) {
+    switch (action) {
       case 'assessment':
         postData = {
-          Assessment: params.assessment,
-          AssessmentSubmissionAnswer: params.answers
+          Assessment: assessment,
+          AssessmentSubmissionAnswer: answers
         };
-        if (params.AssessmentSubmissionId) {
+        if (submissionId) {
           postData.AssessmentSubmission = {
-            id: params.AssessmentSubmissionId
+            id: submissionId
           };
         }
         return this.request.post(api.post.submissions, postData);
 
       case 'review':
         postData = {
-          Assessment: params.assessment,
-          AssessmentReviewAnswer: params.answers
+          Assessment: assessment,
+          AssessmentReviewAnswer: answers
         };
         return this.request.post(api.post.reviews, postData);
     }
