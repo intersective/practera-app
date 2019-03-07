@@ -1,6 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { Router, ActivatedRoute, ParamMap } from '@angular/router';
-import { AssessmentService, Assessment, Submission, Review, SaveAnswersParams } from './assessment.service';
+import { AssessmentService, Assessment, Submission, Review } from './assessment.service';
 import { UtilsService } from '../services/utils.service';
 import { NotificationService } from '@shared/notification/notification.service';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
@@ -211,8 +211,8 @@ export class AssessmentComponent extends RouterEnter {
 
 
 
-  submit(isInProgress: boolean) {
-    if ( isInProgress ) {
+  submit(saveInProgress: boolean) {
+    if ( saveInProgress ) {
       this.saving = true;
       this.savingMessage = 'Saving...';
       if (!this.savingButtonEnable) {
@@ -233,7 +233,7 @@ export class AssessmentComponent extends RouterEnter {
         context_id: this.contextId,
         in_progress: false
       };
-      if (isInProgress) {
+      if (saveInProgress) {
         assessment.in_progress = true;
       }
       this.utils.each(this.questionsForm.value, (value, key) => {
@@ -248,7 +248,7 @@ export class AssessmentComponent extends RouterEnter {
         }
       });
       // check if all required questions have answer when assessment done
-      if (!isInProgress) {
+      if (!saveInProgress) {
         if (!this.utils.isEmpty(requiredQuestions)) {
           this.submitting = false;
           // display a pop up if required question not answered
@@ -265,7 +265,7 @@ export class AssessmentComponent extends RouterEnter {
         submission_id: this.submission.id,
         in_progress: false
       };
-      if (isInProgress) {
+      if (saveInProgress) {
         assessment.in_progress = true;
       }
       this.utils.each(this.questionsForm.value, (value, key) => {
@@ -276,23 +276,14 @@ export class AssessmentComponent extends RouterEnter {
         }
       });
     }
-
-    const params: SaveAnswersParams = {
-      assessment: assessment,
-      answers: answers,
-      action: this.action
-    };
-    if (this.submission) {
-      params.AssessmentSubmissionId = this.submission.id;
-    }
     // save the submission/feedback
-    this.assessmentService.saveAnswers(params).subscribe(
+    this.assessmentService.saveAnswers(assessment, answers, this.action, this.submission.id ? this.submission.id : undefined).subscribe(
       result => {
         this.submitting = false;
         this.saving = false;
-        if (isInProgress) {
+        if (saveInProgress) {
           // display message for successfull saved answers
-          this.savingMessage = 'Last saved a mooment ago';
+          this.savingMessage = 'Last saved a moment ago';
         } else {
           // display a pop up for successful submission
           return this.notificationService.alert({
@@ -313,7 +304,7 @@ export class AssessmentComponent extends RouterEnter {
       err => {
         this.submitting = false;
         this.saving = false;
-        if (isInProgress) {
+        if (saveInProgress) {
           // display message when saving answers failed
           this.savingMessage = 'Auto save failed';
         } else {
