@@ -2,7 +2,6 @@ import { AuthService } from '../auth/auth.service';
 import { Injectable } from '@angular/core';
 import { CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot, Router, Route } from '@angular/router';
 import { Observable } from 'rxjs';
-import { BrowserStorageService } from '@services/storage.service';
 
 @Injectable()
 export class UnauthorizedGuard implements CanActivate {
@@ -10,8 +9,7 @@ export class UnauthorizedGuard implements CanActivate {
 
   constructor(
     private authService: AuthService,
-    private _router: Router,
-    private storage: BrowserStorageService
+    private router: Router
   ) {}
 
   canActivate(next: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> | Promise<boolean> | boolean {
@@ -22,7 +20,7 @@ export class UnauthorizedGuard implements CanActivate {
     }
 
     // navigate to not found page
-    this._router.navigate(['/app']);
+    this.router.navigate(['/app']);
     return false;
   }
 

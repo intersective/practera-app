@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import { SharedService, Profile } from '@services/shared.service';
-import { Observable, of } from 'rxjs';
 
 const api = {
   post: {
