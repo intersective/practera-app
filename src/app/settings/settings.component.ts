@@ -28,9 +28,6 @@ export class SettingsComponent extends RouterEnter {
   mask: Array<string|RegExp>;
   // variable to control the update button
   updating = false;
-  countryCodes;
-  formatMasks;
-
   helpline = 'help@practera.com';
 
   termsUrl = 'https://images.practera.com/terms_and_conditions/practera_terms_conditions.pdf';
@@ -45,8 +42,6 @@ export class SettingsComponent extends RouterEnter {
     private contact: ContactNumberFormat,
   ) {
     super(router);
-    this.countryCodes = contact.countryCodes;
-    this.formatMasks = contact.masks;
   }
 
   onEnter() {
@@ -60,14 +55,14 @@ export class SettingsComponent extends RouterEnter {
       this.checkCurrentContactNumberOrigin();
     } else {
       // by default, set Mask in Australian format.
-      this.mask = this.formatMasks[this.countryModel];
+      this.mask = this.contact.masks[this.countryModel];
 
       // user has no contact number, set the default mask
       // also check which the server which the APP talks to, i.e if the APP is consuming APIs from 'us.practera.com' then, it is APP V2 in US.
       // But if APP consumes APIs from 'api.practera.com' then it is APP V2 in AUS.
       if (environment.APIEndpoint.indexOf('us') !== -1) {
         this.countryModel = 'US';
-        this.mask = this.formatMasks[this.countryModel];
+        this.mask = this.contact.masks[this.countryModel];
       }
     }
   }
@@ -78,39 +73,39 @@ export class SettingsComponent extends RouterEnter {
 
     if (prefix === '+61') {
         this.countryModel = 'AUS';
-        this.mask = this.formatMasks['AUS'];
+        this.mask = this.contact.masks['AUS'];
         return;
     }
 
     prefix = contactNum.substring(0, 2);
     if (prefix === '61') {
         this.countryModel = 'AUS';
-        this.mask = this.formatMasks['AUS'];
+        this.mask = this.contact.masks['AUS'];
         return;
     }
 
     if (prefix === '04') {
         this.countryModel = 'AUS';
-        this.mask = this.formatMasks['AUS'];
+        this.mask = this.contact.masks['AUS'];
         return;
      }
 
     if (prefix === '+1') {
         this.countryModel = 'US';
-        this.mask = this.formatMasks['US'];
+        this.mask = this.contact.masks['US'];
         return;
     }
 
     prefix = contactNum.substring(0, 1);
     if (prefix === '1') {
         this.countryModel = 'US';
-        this.mask = this.formatMasks['US'];
+        this.mask = this.contact.masks['US'];
         return;
     }
 
     if (prefix === '0') {
         this.countryModel = 'AUS';
-        this.mask = this.formatMasks['AUS'];
+        this.mask = this.contact.masks['AUS'];
         return;
     }
   }
@@ -193,13 +188,13 @@ export class SettingsComponent extends RouterEnter {
 
   updateCountry() {
     const selectedCountry = this.countryModel;
-    const country = this.utils.find(this.countryCodes, eachCountry => {
+    const country = this.utils.find(this.contact.countryCodes, eachCountry => {
       return eachCountry.code === selectedCountry;
     });
     // set currentContactNumber to it's format.
     this.profile.contactNumber = country.format;
     // update the mask as per the newly selected country
-    this.mask = this.formatMasks[country.code];
+    this.mask = this.contact.masks[country.code];
   }
 
 

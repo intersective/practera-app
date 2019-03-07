@@ -4,7 +4,6 @@ import { GoMobileComponent } from './go-mobile/go-mobile.component';
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
 import { FastFeedbackComponent } from './fast-feedback/fast-feedback.component';
 import { AuthGuard } from './auth/auth.guard';
-import { UnauthorizedGuard } from './auth/unauthorized.guard';
 import { ProgramSelectedGuard } from './auth/program-selected.guard';
 
 const routes: Routes = [
