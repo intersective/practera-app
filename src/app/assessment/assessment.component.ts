@@ -55,7 +55,7 @@ export class AssessmentComponent extends RouterEnter {
   submitting = false;
   saving = false;
   savingButtonEnable = true;
-  savingMessage = 'Last saved ';
+  savingMessage = '';
   fromPage = '';
 
   constructor (
@@ -142,14 +142,14 @@ export class AssessmentComponent extends RouterEnter {
           this.doAssessment = true;
           this.doReview = false;
           if (this.submission.status === 'in progress') {
-            this.savingMessage += this.utils.timeFormatter(this.submission.modified);
+            this.savingMessage = 'Last saved ' + this.utils.timeFormatter(this.submission.modified);
             this.savingButtonEnable = false;
           }
           return ;
         }
         this.review = result.review;
         if (this.review.status === 'in progress') {
-          this.savingMessage += this.utils.timeFormatter(this.review.modified);
+          this.savingMessage = 'Last saved ' + this.utils.timeFormatter(this.review.modified);
           this.savingButtonEnable = false;
         }
         // this page is for doing review if the submission status is 'pending review' and action is review
@@ -236,12 +236,15 @@ export class AssessmentComponent extends RouterEnter {
       if (saveInProgress) {
         assessment.in_progress = true;
       }
+      console.log('this.questionsForm.value', this.questionsForm.value);
       this.utils.each(this.questionsForm.value, (value, key) => {
-        questionId = +key.replace('q-', '');
-        answers.push({
-          assessment_question_id: questionId,
-          answer: value
-        });
+        if (value) {
+          questionId = +key.replace('q-', '');
+          answers.push({
+            assessment_question_id: questionId,
+            answer: value
+          });
+        }
         // unset the required questions object
         if (requiredQuestions[questionId] && value) {
           this.utils.unset(requiredQuestions, questionId);
@@ -277,6 +280,7 @@ export class AssessmentComponent extends RouterEnter {
       });
     }
     // save the submission/feedback
+    console.log('saveAnswers', assessment, answers, this.action, this.submission.id);
     this.assessmentService.saveAnswers(assessment, answers, this.action, this.submission.id ? this.submission.id : undefined).subscribe(
       result => {
         this.submitting = false;

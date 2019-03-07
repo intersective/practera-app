@@ -19,8 +19,10 @@ export class MultipleComponent implements ControlValueAccessor, AfterViewInit {
   @Input() question;
   @Input() submission;
   @Input() review;
+  // this is for review status
+  @Input() reviewStatus;
   // this is for assessment status
-  @Input() status;
+  @Input() submissionStatus;
   // this is for doing an assessment or not
   @Input() doAssessment: Boolean;
   // this is for doing review or not
@@ -45,9 +47,7 @@ export class MultipleComponent implements ControlValueAccessor, AfterViewInit {
   ) {}
 
   ngAfterViewInit() {
-    if ((this.status === 'in progress') && (this.doReview)) {
-      this.comment = this.review.comment;
-    }
+    this._showSavedAnswers();
   }
 
   // propagate changes into the form control
@@ -111,6 +111,37 @@ export class MultipleComponent implements ControlValueAccessor, AfterViewInit {
   // From ControlValueAccessor interface
   registerOnTouched(fn: any) {
 
+  }
+  // adding save values to from control
+  private _showSavedAnswers() {
+    if ((this.reviewStatus === 'in progress') && (this.doReview)) {
+      if (this.review.comment) {
+        if (!this.innerValue) {
+          this.innerValue = {
+            answer: [],
+            comment: ''
+          };
+        }
+        this.innerValue.comment = this.review.comment;
+        this.comment = this.review.comment;
+      }
+      if (this.review.answer) {
+        if (!this.innerValue) {
+          this.innerValue = {
+            answer: [],
+            comment: ''
+          };
+        }
+        this.innerValue.answer = this.utils.addOrRemove(this.innerValue.answer, this.review.answer);
+      }
+    }
+    if ((this.submissionStatus === 'in progress') && (this.doAssessment)) {
+      if (!this.innerValue) {
+        this.innerValue = [];
+      }
+      this.innerValue = this.utils.addOrRemove(this.innerValue, this.submission.answer);
+    }
+    this.propagateChange(this.innerValue);
   }
 
 }
