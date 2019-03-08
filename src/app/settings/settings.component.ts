@@ -137,7 +137,6 @@ export class SettingsComponent extends RouterEnter {
           handler: () => {
             this.settingService.updateProfile({
               contact_number: this.profile.contactNumber,
-              email: this.profile.email,
             }).subscribe(result => {
               this.updating = false;
               if (result.success) {
