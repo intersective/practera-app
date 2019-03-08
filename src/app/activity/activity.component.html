@@ -50,7 +50,7 @@
           </div>
 
           <ng-container *ngIf="!task.loadingStatus; else iconSpinner">
-            <ng-container *ngIf="!task.status || task.status == 'feedback available'">
+            <ng-container *ngIf="!task.status || task.status == 'feedback available' || task.status == 'in progress'">
               <ion-icon name="arrow-forward" slot="end" color="primary" class="icon-forward"></ion-icon>
             </ng-container>
 
