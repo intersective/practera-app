@@ -53,7 +53,7 @@ export class AssessmentComponent extends RouterEnter {
   loadingSubmission = true;
   questionsForm = new FormGroup({});
   submitting = false;
-  savingButtonDisable = true;
+  savingButtonDisabled = true;
   savingMessage = '';
   fromPage = '';
 
@@ -142,14 +142,14 @@ export class AssessmentComponent extends RouterEnter {
           this.doReview = false;
           if (this.submission.status === 'in progress') {
             this.savingMessage = 'Last saved ' + this.utils.timeFormatter(this.submission.modified);
-            this.savingButtonDisable = false;
+            this.savingButtonDisabled = false;
           }
           return ;
         }
         this.review = result.review;
         if (this.review.status === 'in progress') {
           this.savingMessage = 'Last saved ' + this.utils.timeFormatter(this.review.modified);
-          this.savingButtonDisable = false;
+          this.savingButtonDisabled = false;
         }
         // this page is for doing review if the submission status is 'pending review' and action is review
         if (this.submission.status === 'pending review' && this.action === 'review') {
@@ -213,7 +213,7 @@ export class AssessmentComponent extends RouterEnter {
   submit(saveInProgress: boolean) {
     if ( saveInProgress ) {
       this.savingMessage = 'Saving...';
-      this.savingButtonDisable = true;
+      this.savingButtonDisabled = true;
     } else {
       this.submitting = true;
     }
@@ -276,7 +276,7 @@ export class AssessmentComponent extends RouterEnter {
     this.assessmentService.saveAnswers(assessment, answers, this.action, this.submission.id).subscribe(
       result => {
         this.submitting = false;
-        this.savingButtonDisable = false;
+        this.savingButtonDisabled = false;
         if (saveInProgress) {
           // display message for successfull saved answers
           this.savingMessage = 'Last saved a moment ago';
@@ -299,7 +299,7 @@ export class AssessmentComponent extends RouterEnter {
       },
       err => {
         this.submitting = false;
-        this.savingButtonDisable = false;
+        this.savingButtonDisabled = false;
         if (saveInProgress) {
           // display message when saving answers failed
           this.savingMessage = 'Auto save failed';
