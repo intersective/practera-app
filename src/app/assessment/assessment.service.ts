@@ -424,7 +424,7 @@ export class AssessmentService {
           Assessment: assessment,
           AssessmentSubmissionAnswer: answers
         };
-        if (submissionId) {
+        if (submissionId !== 0) {
           postData.AssessmentSubmission = {
             id: submissionId
           };

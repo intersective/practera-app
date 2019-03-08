@@ -2,8 +2,10 @@
   <ion-toolbar color="light">
     <ion-icon name="arrow-back" (click)="back()" color="primary" slot="start" margin-start></ion-icon>
     <ion-title text-center>Assessment</ion-title>
-    <ion-title *ngIf="saving || doAssessment || doReview" text-center class="subTitle">{{savingMessage}}</ion-title>
-    <ion-button *ngIf="doAssessment || doReview" [disabled]="savingButtonEnable" (click)="submit(true)" class="text-button" color="primary" slot="end" fill="clear" size="small">Save</ion-button>
+    <ng-container *ngIf="doAssessment || doReview">
+      <ion-title text-center class="subTitle">{{savingMessage}}</ion-title>
+    <ion-button [disabled]="savingButtonDisable" (click)="submit(true)" class="text-button" color="primary" slot="end" fill="clear" size="small">Save</ion-button>
+    </ng-container>
   </ion-toolbar>
 </ion-header>
 <ion-content padding color="light" text-center>
@@ -59,7 +61,7 @@
                 [submissionStatus]= "submission.status"
                 [formControlName]="'q-' + question.id"
                 [control]="questionsForm.controls['q-' + question.id]"
-                (saveProgress)="submit($event)"
+                (saveProgress)="submit(true)"
               ></app-text>
 
               <app-oneof
@@ -73,7 +75,7 @@
                 [submissionStatus]= "submission.status"
                 [formControlName]="'q-' + question.id"
                 [control]="questionsForm.controls['q-' + question.id]"
-                (saveProgress)="submit($event)"
+                (saveProgress)="submit(true)"
               ></app-oneof>
 
               <app-multiple
@@ -87,7 +89,7 @@
                 [submissionStatus]= "submission.status"
                 [formControlName]="'q-' + question.id"
                 [control]="questionsForm.controls['q-' + question.id]"
-                (saveProgress)="submit($event)"
+                (saveProgress)="submit(true)"
               ></app-multiple>
 
               <app-file
@@ -101,7 +103,7 @@
                 [submissionStatus]= "submission.status"
                 [formControlName]="'q-' + question.id"
                 [control]="questionsForm.controls['q-' + question.id]"
-                (saveProgress)="submit($event)"
+                (saveProgress)="submit(true)"
               ></app-file>
 
               <app-team-member-selector
@@ -115,7 +117,7 @@
                 [submissionStatus]= "submission.status"
                 [formControlName]="'q-' + question.id"
                 [control]="questionsForm.controls['q-' + question.id]"
-                (saveProgress)="submit($event)"
+                (saveProgress)="submit(true)"
               ></app-team-member-selector>
 
             </ion-card-content>

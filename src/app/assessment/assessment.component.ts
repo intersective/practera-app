@@ -53,8 +53,7 @@ export class AssessmentComponent extends RouterEnter {
   loadingSubmission = true;
   questionsForm = new FormGroup({});
   submitting = false;
-  saving = false;
-  savingButtonEnable = true;
+  savingButtonDisable = true;
   savingMessage = '';
   fromPage = '';
 
@@ -137,20 +136,20 @@ export class AssessmentComponent extends RouterEnter {
       .subscribe(result => {
         this.submission = result.submission;
         this.loadingSubmission = false;
-        // this page is for doing assessment if submission is empty
+        // this page is for doing assessment if submission is empty or submission is 'in progress'
         if (this.utils.isEmpty(this.submission) || this.submission.status === 'in progress') {
           this.doAssessment = true;
           this.doReview = false;
           if (this.submission.status === 'in progress') {
             this.savingMessage = 'Last saved ' + this.utils.timeFormatter(this.submission.modified);
-            this.savingButtonEnable = false;
+            this.savingButtonDisable = false;
           }
           return ;
         }
         this.review = result.review;
         if (this.review.status === 'in progress') {
           this.savingMessage = 'Last saved ' + this.utils.timeFormatter(this.review.modified);
-          this.savingButtonEnable = false;
+          this.savingButtonDisable = false;
         }
         // this page is for doing review if the submission status is 'pending review' and action is review
         if (this.submission.status === 'pending review' && this.action === 'review') {
@@ -213,11 +212,8 @@ export class AssessmentComponent extends RouterEnter {
 
   submit(saveInProgress: boolean) {
     if ( saveInProgress ) {
-      this.saving = true;
       this.savingMessage = 'Saving...';
-      if (!this.savingButtonEnable) {
-        this.savingButtonEnable = true;
-      }
+      this.savingButtonDisable = true;
     } else {
       this.submitting = true;
     }
@@ -236,7 +232,6 @@ export class AssessmentComponent extends RouterEnter {
       if (saveInProgress) {
         assessment.in_progress = true;
       }
-      console.log('this.questionsForm.value', this.questionsForm.value);
       this.utils.each(this.questionsForm.value, (value, key) => {
         if (value) {
           questionId = +key.replace('q-', '');
@@ -244,19 +239,17 @@ export class AssessmentComponent extends RouterEnter {
             assessment_question_id: questionId,
             answer: value
           });
-        }
-        // unset the required questions object
-        if (requiredQuestions[questionId] && value) {
-          this.utils.unset(requiredQuestions, questionId);
+          // unset the required questions object
+          if (requiredQuestions[questionId]) {
+            this.utils.unset(requiredQuestions, questionId);
+          }
         }
       });
       // check if all required questions have answer when assessment done
-      if (!saveInProgress) {
-        if (!this.utils.isEmpty(requiredQuestions)) {
-          this.submitting = false;
-          // display a pop up if required question not answered
-          return this.notificationService.popUp('shortMessage', {message: 'Required question answer missing!'});
-        }
+      if (!saveInProgress && !this.utils.isEmpty(requiredQuestions)) {
+        this.submitting = false;
+        // display a pop up if required question not answered
+        return this.notificationService.popUp('shortMessage', {message: 'Required question answer missing!'});
       }
     }
 
@@ -280,11 +273,9 @@ export class AssessmentComponent extends RouterEnter {
       });
     }
     // save the submission/feedback
-    console.log('saveAnswers', assessment, answers, this.action, this.submission.id);
-    this.assessmentService.saveAnswers(assessment, answers, this.action, this.submission.id ? this.submission.id : undefined).subscribe(
+    this.assessmentService.saveAnswers(assessment, answers, this.action, this.submission.id).subscribe(
       result => {
         this.submitting = false;
-        this.saving = false;
         if (saveInProgress) {
           // display message for successfull saved answers
           this.savingMessage = 'Last saved a moment ago';
@@ -307,7 +298,6 @@ export class AssessmentComponent extends RouterEnter {
       },
       err => {
         this.submitting = false;
-        this.saving = false;
         if (saveInProgress) {
           // display message when saving answers failed
           this.savingMessage = 'Auto save failed';
