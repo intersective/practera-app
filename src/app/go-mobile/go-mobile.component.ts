@@ -24,6 +24,7 @@ export class GoMobileComponent implements OnInit {
   countryModel = 'AUS';
   // default mask
   mask: Array<string|RegExp>;
+  countryCodes: any[];
 
   constructor(
     private goMobileService: GoMobileService,
@@ -31,7 +32,9 @@ export class GoMobileComponent implements OnInit {
     private notification: NotificationService,
     public storage: BrowserStorageService,
     private contact: ContactNumberFormat,
-  ) {}
+  ) {
+    this.countryCodes = contact.countryCodes;
+  }
 
   ngOnInit() {
     this.profile.contactNumber = this.storage.getUser().contactNumber;
