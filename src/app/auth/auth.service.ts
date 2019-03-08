@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { RequestService, QueryEncoder } from '@shared/request/request.service';
 import { HttpParams } from '@angular/common/http';
-import { map } from 'rxjs/operators';
-import { Observable, of } from 'rxjs';
+import { map, flatMap } from 'rxjs/operators';
+import { Observable, of, concat } from 'rxjs';
 import { Router } from '@angular/router';
 import { BrowserStorageService } from '@services/storage.service';
 import { UtilsService } from '@services/utils.service';
@@ -14,6 +14,7 @@ import { PusherService } from '@shared/pusher/pusher.service';
  * @type {Object}
  */
 const api = {
+  me: 'api/users.json',
   getConfig: 'api/v2/plan/experience/config',
   linkedin: 'api/auth_linkedin.json',
   login: 'api/auths.json',
@@ -96,9 +97,15 @@ export class AuthService {
       })
       .set('data[User][email]', email)
       .set('data[User][password]', password);
-    return this.request.post(api.login, body.toString(), {
+
+
+    const login = this.request.post(api.login, body.toString(), {
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
-      }).pipe(map(this._handleLoginResponse, this));
+      })
+      .pipe(map(this._handleLoginResponse, this));
+    const getUser = this.getMyInfo();
+
+    return concat(login, getUser);
   }
 
   /**
@@ -252,5 +259,32 @@ export class AuthService {
     .post(api.verifyResetPassword, data, {
       headers: { 'Content-Type': 'application/json' }
     });
+  }
+
+  /**
+   * @name getMyInfo
+   * @description get user info
+   */
+  getMyInfo(): Observable<any> {
+    return this.request.get(api.me).pipe(map(response => {
+      if (response.data) {
+        if (!this.utils.has(response, 'data.User')) {
+          return this.request.apiResponseFormatError('User format error');
+        }
+        const apiData = response.data.User;
+        this.storage.setUser({
+          name: apiData.name,
+          contactNumber: apiData.contact_number,
+          email: apiData.email,
+          role: apiData.role,
+          image: apiData.image,
+          linkedinConnected: apiData.linkedinConnected,
+          linkedinUrl: apiData.linkedin_url,
+          userHash: apiData.userhash,
+          maxAchievablePoints: this.utils.has(apiData, 'max_achievable_points') ? apiData.max_achievable_points : null
+        });
+      }
+      return response;
+    }));
   }
 }

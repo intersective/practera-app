@@ -6,6 +6,7 @@ import { UtilsService } from '@services/utils.service';
 import { BrowserStorageService } from '@services/storage.service';
 import { PusherService } from '@shared/pusher/pusher.service';
 import { SharedService } from '@services/shared.service';
+import { AuthService } from '../auth/auth.service';
 
 /**
  * @name api
@@ -13,7 +14,6 @@ import { SharedService } from '@services/shared.service';
  * @type {Object}
  */
 const api = {
-  me: 'api/users.json',
   teams: 'api/teams.json'
 };
 
@@ -59,7 +59,8 @@ export class SwitcherService {
     private request: RequestService,
     private utils: UtilsService,
     private storage: BrowserStorageService,
-    private sharedService: SharedService
+    private sharedService: SharedService,
+    private authService: AuthService,
   ) {}
 
   getPrograms() {
@@ -86,7 +87,7 @@ export class SwitcherService {
 
     await this.getTeamInfo().toPromise();
     this.sharedService.onPageLoad();
-    const myInfo = await this.getMyInfo().toPromise();
+    const myInfo = await this.authService.getMyInfo().toPromise();
     return myInfo;
   }
 
@@ -109,32 +110,4 @@ export class SwitcherService {
       })
     );
   }
-
-  /**
-   * @name getMyInfo
-   * @description get user info
-   */
-  getMyInfo(): Observable<any> {
-    return this.request.get(api.me).pipe(map(response => {
-      if (response.data) {
-        if (!this.utils.has(response, 'data.User')) {
-          return this.request.apiResponseFormatError('User format error');
-        }
-        const apiData = response.data.User;
-        this.storage.setUser({
-          name: apiData.name,
-          contactNumber: apiData.contact_number,
-          email: apiData.email,
-          role: apiData.role,
-          image: apiData.image,
-          linkedinConnected: apiData.linkedinConnected,
-          linkedinUrl: apiData.linkedin_url,
-          userHash: apiData.userhash,
-          maxAchievablePoints: this.utils.has(apiData, 'max_achievable_points') ? apiData.max_achievable_points : null
-        });
-      }
-      return response;
-    }));
-  }
-
 }
