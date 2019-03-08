@@ -335,8 +335,8 @@ export class AssessmentService {
           // we should change API so that it returns AssessmentReviewAnswer object later
           id: thisSubmission.AssessmentReviewAnswer[0].assessment_review_id,
           answers: {},
-          status: thisSubmission.AssessmentReview[0].status,
-          modified: thisSubmission.AssessmentReview[0].modified
+          status: this.utils.has(thisSubmission, 'AssessmentReview[0].status') ? thisSubmission.AssessmentReview[0].status : '',
+          modified: this.utils.has(thisSubmission, 'AssessmentReview[0].modified') ? thisSubmission.AssessmentReview[0].modified : ''
         };
       }
       thisSubmission.AssessmentReviewAnswer.forEach(answer => {
