@@ -49,11 +49,7 @@ export class AuthLoginComponent {
     }).subscribe(
       res => {
         this.isLoggingIn = false;
-        if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
-          this.router.navigate(['/switcher']);
-        } else {
-          this.router.navigate(['/go-mobile']);
-        }
+        this.router.navigate(['/switcher']);
       },
       err => {
         this.notificationService.alert({

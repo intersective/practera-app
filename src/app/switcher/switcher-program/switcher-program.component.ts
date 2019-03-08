@@ -31,9 +31,14 @@ export class SwitcherProgramComponent implements OnInit {
       });
   }
 
-  async switch(index) {
-    await this.switcherService.switchProgram(this.programs[index]);
-    return this.router.navigate(['/app/home']);
+  switch(index) {
+    this.switcherService.switchProgram(this.programs[index]).subscribe(() => {
+      if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
+        return this.router.navigate(['/app/home']);
+      } else {
+        return this.router.navigate(['/go-mobile']);
+      }
+    });
   }
 
   logout() {
