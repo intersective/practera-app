@@ -276,6 +276,7 @@ export class AssessmentComponent extends RouterEnter {
     this.assessmentService.saveAnswers(assessment, answers, this.action, this.submission.id).subscribe(
       result => {
         this.submitting = false;
+        this.savingButtonDisable = false;
         if (saveInProgress) {
           // display message for successfull saved answers
           this.savingMessage = 'Last saved a moment ago';
@@ -298,6 +299,7 @@ export class AssessmentComponent extends RouterEnter {
       },
       err => {
         this.submitting = false;
+        this.savingButtonDisable = false;
         if (saveInProgress) {
           // display message when saving answers failed
           this.savingMessage = 'Auto save failed';
