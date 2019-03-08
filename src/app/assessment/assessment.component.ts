@@ -208,8 +208,6 @@ export class AssessmentComponent extends RouterEnter {
     return requiredQuestions;
   }
 
-
-
   submit(saveInProgress: boolean) {
     if ( saveInProgress ) {
       this.savingMessage = 'Saving...';

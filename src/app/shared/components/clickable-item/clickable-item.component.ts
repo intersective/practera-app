@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
 
 @Component({
   selector: 'clickable-item',
@@ -6,5 +6,6 @@ import { Component } from '@angular/core';
   styleUrls: ['./clickable-item.component.scss']
 })
 export class ClickableItemComponent {
+  @Input() lines;
   constructor() {}
 }
