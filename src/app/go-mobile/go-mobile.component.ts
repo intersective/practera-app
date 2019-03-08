@@ -65,13 +65,14 @@ export class GoMobileComponent implements OnInit {
       sendsms: true,
     }).subscribe(res => {
       this.saved = true;
-      this.notification.alert({
+      const alertBox = this.notification.alert({
         header: 'Going Mobile!',
         message: 'You should get an SMS shortly... if not, contact our help team',
         buttons: [{
           text: 'OK',
           handler: () => {
-            return this.sendingSMS = false;
+            this.sendingSMS = false;
+            return this.notification.dismiss();
           },
         }],
       });

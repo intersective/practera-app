@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Observable, of } from 'rxjs';
+import { Observable, of, concat } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { RequestService } from '@shared/request/request.service';
 import { UtilsService } from '@services/utils.service';
@@ -14,6 +14,7 @@ import { AuthService } from '../auth/auth.service';
  * @type {Object}
  */
 const api = {
+  me: 'api/users.json',
   teams: 'api/teams.json'
 };
 
@@ -67,7 +68,7 @@ export class SwitcherService {
     return of(this.storage.get('programs'));
   }
 
-  async switchProgram(programObj: ProgramObj) {
+  switchProgram(programObj: ProgramObj) {
     const themeColor = this.utils.has(programObj, 'program.config.theme_color') ? programObj.program.config.theme_color : '#2bbfd4';
     let cardBackgroundImage = '';
     if (this.utils.has(programObj, 'program.config.card_style')) {
@@ -85,10 +86,8 @@ export class SwitcherService {
       activityCardImage: cardBackgroundImage
     });
 
-    await this.getTeamInfo().toPromise();
     this.sharedService.onPageLoad();
-    const myInfo = await this.authService.getMyInfo().toPromise();
-    return myInfo;
+    return concat(this.getTeamInfo(), this.getMyInfo());
   }
 
   getTeamInfo(): Observable<any> {
@@ -107,7 +106,33 @@ export class SwitcherService {
             teamId: response.data.Teams[0].id
           });
         }
-      })
-    );
+      }));
+  }
+
+  /**
+   * @name getMyInfo
+   * @description get user info
+   */
+  getMyInfo(): Observable<any> {
+    return this.request.get(api.me).pipe(map(response => {
+      if (response.data) {
+        if (!this.utils.has(response, 'data.User')) {
+          return this.request.apiResponseFormatError('User format error');
+        }
+        const apiData = response.data.User;
+        this.storage.setUser({
+          name: apiData.name,
+          contactNumber: apiData.contact_number,
+          email: apiData.email,
+          role: apiData.role,
+          image: apiData.image,
+          linkedinConnected: apiData.linkedinConnected,
+          linkedinUrl: apiData.linkedin_url,
+          userHash: apiData.userhash,
+          maxAchievablePoints: this.utils.has(apiData, 'max_achievable_points') ? apiData.max_achievable_points : null
+        });
+      }
+      return response;
+    }));
   }
 }
