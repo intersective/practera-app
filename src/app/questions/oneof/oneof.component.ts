@@ -105,24 +105,15 @@ export class OneofComponent implements ControlValueAccessor, AfterViewInit {
   // adding save values to from control
   private _showSavedAnswers() {
     if ((this.reviewStatus === 'in progress') && (this.doReview)) {
-      if (!this.innerValue) {
-        this.innerValue = {
-          answer: [],
-          comment: ''
-        };
-      }
-      if (this.review.comment) {
-        this.innerValue.comment = this.review.comment;
-        this.comment = this.review.comment;
-      }
-      if (this.review.answer) {
-        this.innerValue.answer = this.review.answer;
-      }
+      this.innerValue = {
+        answer: '',
+        comment: ''
+      };
+      this.innerValue.comment = this.review.comment;
+      this.comment = this.review.comment;
+      this.innerValue.answer = this.review.answer;
     }
     if ((this.submissionStatus === 'in progress') && (this.doAssessment)) {
-      if (!this.innerValue) {
-        this.innerValue = [];
-      }
       this.innerValue = this.submission.answer;
     }
     this.propagateChange(this.innerValue);
