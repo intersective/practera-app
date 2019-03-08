@@ -1,5 +1,6 @@
-import { Component, Input, forwardRef, ViewChild, ElementRef } from '@angular/core';
+import { Component, Input, Output, EventEmitter, forwardRef, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 import { NG_VALUE_ACCESSOR, ControlValueAccessor, FormControl } from '@angular/forms';
+import { UtilsService } from '@services/utils.service';
 
 @Component({
   selector: 'app-oneof',
@@ -13,11 +14,15 @@ import { NG_VALUE_ACCESSOR, ControlValueAccessor, FormControl } from '@angular/f
     }
   ]
 })
-export class OneofComponent implements ControlValueAccessor {
+export class OneofComponent implements ControlValueAccessor, AfterViewInit {
 
   @Input() question;
   @Input() submission;
   @Input() review;
+  // this is for review status
+  @Input() reviewStatus;
+  // this is for assessment status
+  @Input() submissionStatus;
   // this is for doing an assessment or not
   @Input() doAssessment: Boolean;
   // this is for doing review or not
@@ -28,6 +33,8 @@ export class OneofComponent implements ControlValueAccessor {
   @ViewChild('answerEle') answerRef: ElementRef;
   // comment field for reviewer
   @ViewChild('commentEle') commentRef: ElementRef;
+  // call back for save changes
+  @Output() saveProgress = new EventEmitter<boolean>();
 
   // the value of answer
   innerValue: any;
@@ -35,8 +42,11 @@ export class OneofComponent implements ControlValueAccessor {
   // validation errors array
   errors: Array<any> = [];
 
-  constructor() {}
+  constructor(private utils: UtilsService) {}
 
+  ngAfterViewInit() {
+    this._showSavedAnswers();
+  }
   // propagate changes into the form control
   propagateChange = (_: any) => {};
 
@@ -72,6 +82,7 @@ export class OneofComponent implements ControlValueAccessor {
         }
       }
     }
+    this.saveProgress.emit(true);
   }
 
   // From ControlValueAccessor interface
@@ -89,6 +100,23 @@ export class OneofComponent implements ControlValueAccessor {
   // From ControlValueAccessor interface
   registerOnTouched(fn: any) {
 
+  }
+
+  // adding save values to from control
+  private _showSavedAnswers() {
+    if ((this.reviewStatus === 'in progress') && (this.doReview)) {
+      this.innerValue = {
+        answer: '',
+        comment: ''
+      };
+      this.innerValue.comment = this.review.comment;
+      this.comment = this.review.comment;
+      this.innerValue.answer = this.review.answer;
+    }
+    if ((this.submissionStatus === 'in progress') && (this.doAssessment)) {
+      this.innerValue = this.submission.answer;
+    }
+    this.propagateChange(this.innerValue);
   }
 
 }

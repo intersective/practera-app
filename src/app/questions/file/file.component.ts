@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, forwardRef, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter, forwardRef, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 import { NG_VALUE_ACCESSOR, ControlValueAccessor, FormControl } from '@angular/forms';
 import { FilestackService } from '@shared/filestack/filestack.service';
 
@@ -14,7 +14,7 @@ import { FilestackService } from '@shared/filestack/filestack.service';
     }
   ]
 })
-export class FileComponent implements ControlValueAccessor, OnInit {
+export class FileComponent implements ControlValueAccessor, OnInit, AfterViewInit {
 
   @Input() question = {
     name: '',
@@ -24,6 +24,10 @@ export class FileComponent implements ControlValueAccessor, OnInit {
   };
   @Input() submission;
   @Input() review;
+  // this is for review status
+  @Input() reviewStatus;
+  // this is for assessment status
+  @Input() submissionStatus;
   // this is for doing an assessment or not
   @Input() doAssessment: Boolean;
   // this is for doing review or not
@@ -34,6 +38,8 @@ export class FileComponent implements ControlValueAccessor, OnInit {
   @ViewChild('answer') answerRef: ElementRef;
   // comment field for reviewer
   @ViewChild('commentEle') commentRef: ElementRef;
+  // call back for save changes
+  @Output() saveProgress = new EventEmitter<boolean>();
 
   uploadedFile;
   fileTypes = '';
@@ -50,6 +56,10 @@ export class FileComponent implements ControlValueAccessor, OnInit {
 
   ngOnInit() {
     this.fileTypes = this.filestackService.getFileTypes(this.question.fileType);
+  }
+
+  ngAfterViewInit() {
+    this._showSavedAnswers();
   }
 
   // propagate changes into the form control
@@ -94,6 +104,8 @@ export class FileComponent implements ControlValueAccessor, OnInit {
 
     // propagate value into form control using control value accessor interface
     this.propagateChange(this.innerValue);
+
+    this.saveProgress.emit(true);
   }
 
   // From ControlValueAccessor interface
@@ -111,6 +123,23 @@ export class FileComponent implements ControlValueAccessor, OnInit {
   // From ControlValueAccessor interface
   registerOnTouched(fn: any) {
 
+  }
+
+  // adding save values to from control
+  private _showSavedAnswers() {
+    if ((this.reviewStatus === 'in progress') && (this.doReview)) {
+      this.innerValue = {
+        answer: {},
+        comment: ''
+      };
+      this.innerValue.comment = this.review.comment;
+      this.comment = this.review.comment;
+      this.innerValue.answer = this.review.answer;
+    }
+    if ((this.submissionStatus === 'in progress') && (this.doAssessment)) {
+      this.innerValue = this.submission.answer;
+    }
+    this.propagateChange(this.innerValue);
   }
 
 }
