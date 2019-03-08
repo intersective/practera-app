@@ -36,28 +36,28 @@
       </ion-grid>
     </ion-item>
 
-    <ion-item (click)="switchProgram()" lines="none">
+    <clickable-item (click)="switchProgram()" lines="none">
       <ion-icon padding name="radio-button-on"></ion-icon>
       Switch to another program
-    </ion-item>
+    </clickable-item>
   </ion-card>
 
   <ion-card class="practera-card">
     <ion-item>Support</ion-item>
-    <ion-item (click)="mailTo()">
+    <clickable-item (click)="mailTo()">
       <ion-icon padding name="mail"></ion-icon>
       Email Help
-    </ion-item>
-    <ion-item (click)="openLink()" lines="none">
+    </clickable-item>
+    <clickable-item (click)="openLink()" lines="none">
       <ion-icon padding name="clipboard"></ion-icon>
       Terms of Use
-    </ion-item>
+    </clickable-item>
   </ion-card>
 
   <ion-card class="practera-card">
-    <ion-item (click)="logout()" lines="none">
+    <clickable-item (click)="logout()" lines="none">
       <ion-icon padding name="log-out"></ion-icon>
       Logout
-    </ion-item>
+    </clickable-item>
   </ion-card>
 </ion-content>

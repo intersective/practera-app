@@ -6,6 +6,7 @@ import { ActivityCardComponent } from '@shared/components/activity-card/activity
 import { AchievementBadgeComponent } from '@shared/components/achievement-badge/achievement-badge.component';
 import { EventCardComponent } from '@shared/components/event-card/event-card.component';
 import { DescriptionComponent } from '@shared/components/description/description.component';
+import { ClickableItemComponent } from '@shared/components/clickable-item/clickable-item.component';
 
 @NgModule({
   imports: [
@@ -17,13 +18,15 @@ import { DescriptionComponent } from '@shared/components/description/description
     ActivityCardComponent,
     AchievementBadgeComponent,
     EventCardComponent,
-    DescriptionComponent
+    DescriptionComponent,
+    ClickableItemComponent
   ],
   exports: [
     ActivityCardComponent,
     AchievementBadgeComponent,
     EventCardComponent,
     DescriptionComponent,
+    ClickableItemComponent,
     IonicModule,
     CommonModule,
   ],
