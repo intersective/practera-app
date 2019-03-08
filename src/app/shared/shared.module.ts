@@ -29,6 +29,7 @@ import { ClickableItemComponent } from '@shared/components/clickable-item/clicka
     ClickableItemComponent,
     IonicModule,
     CommonModule,
+    FormsModule
   ],
 })
 export class SharedModule {}
