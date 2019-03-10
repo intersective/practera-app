@@ -1,8 +1,6 @@
-import { IonicModule } from '@ionic/angular';
 import { RouterModule } from '@angular/router';
 import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { SharedModule } from '@shared/shared.module';
 import { ChatComponent } from './chat.component';
 import { ChatListComponent } from './chat-list/chat-list.component';
 import { ChatRoomComponent } from './chat-room/chat-room.component';
@@ -14,9 +12,7 @@ import { FilestackModule } from '../shared/filestack/filestack.module';
 
 @NgModule({
   imports: [
-    IonicModule,
-    CommonModule,
-    FormsModule,
+    SharedModule,
     ChatRoutingModule,
     FilestackModule,
   ],
