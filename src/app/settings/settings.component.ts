@@ -31,7 +31,6 @@ export class SettingsComponent extends RouterEnter {
   helpline = 'help@practera.com';
 
   termsUrl = 'https://images.practera.com/terms_and_conditions/practera_terms_conditions.pdf';
-  countryCodes: any[];
 
   constructor (
     public router: Router,
@@ -43,7 +42,6 @@ export class SettingsComponent extends RouterEnter {
     private contact: ContactNumberFormat,
   ) {
     super(router);
-    this.countryCodes = this.contact.countryCodes;
   }
 
   onEnter() {

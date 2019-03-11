@@ -4,7 +4,7 @@ import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { UtilsService, ContactNumberFormat } from '@services/utils.service';
 import { NotificationService } from '@shared/notification/notification.service';
 import { BrowserStorageService } from '@services/storage.service';
-import { environment } from '../../environments/environment.prod';
+import { environment } from '../../environments/environment';
 
 @Component({
   selector: 'go-mobile',
@@ -24,7 +24,6 @@ export class GoMobileComponent implements OnInit {
   countryModel = 'AUS';
   // default mask
   mask: Array<string|RegExp>;
-  countryCodes: any[];
 
   constructor(
     private goMobileService: GoMobileService,
@@ -32,9 +31,7 @@ export class GoMobileComponent implements OnInit {
     private notification: NotificationService,
     public storage: BrowserStorageService,
     private contact: ContactNumberFormat,
-  ) {
-    this.countryCodes = contact.countryCodes;
-  }
+  ) {}
 
   ngOnInit() {
     this.profile.contactNumber = this.storage.getUser().contactNumber;
