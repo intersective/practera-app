@@ -22,7 +22,7 @@
       "spaces",
       2
     ],
-    "align": [true, "parameters", "statements", "arguments"],
+    "align": [true, "parameters", "statements", "arguments", "members", "elements"],
     "interface-over-type-literal": true,
     "label-position": true,
     "max-line-length": [

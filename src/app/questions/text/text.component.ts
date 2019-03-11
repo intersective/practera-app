@@ -1,4 +1,4 @@
-import { Component, Input, forwardRef, ViewChild, ElementRef } from '@angular/core';
+import { Component, Input, Output, EventEmitter, forwardRef, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 import { NG_VALUE_ACCESSOR, ControlValueAccessor, FormControl } from '@angular/forms';
 
 @Component({
@@ -13,11 +13,15 @@ import { NG_VALUE_ACCESSOR, ControlValueAccessor, FormControl } from '@angular/f
     }
   ]
 })
-export class TextComponent implements ControlValueAccessor {
+export class TextComponent implements ControlValueAccessor, AfterViewInit {
 
   @Input() question;
   @Input() submission;
   @Input() review;
+  // this is for review status
+  @Input() reviewStatus;
+  // this is for assessment status
+  @Input() submissionStatus;
   // this is for doing an assessment or not
   @Input() doAssessment: Boolean;
   // this is for doing review or not
@@ -28,15 +32,21 @@ export class TextComponent implements ControlValueAccessor {
   @ViewChild('answerEle') answerRef: ElementRef;
   // comment field for reviewer
   @ViewChild('commentEle') commentRef: ElementRef;
+  // call back for save changes
+  @Output() saveProgress = new EventEmitter<boolean>();
 
   // the value of answer &| comment
   innerValue: any;
-  answer: string;
+  answer = '';
   comment: string;
   // validation errors array
   errors: Array<any> = [];
 
   constructor() {}
+
+  ngAfterViewInit() {
+    this._showSavedAnswers();
+  }
 
   // propagate changes into the form control
   propagateChange = (_: any) => {};
@@ -57,6 +67,7 @@ export class TextComponent implements ControlValueAccessor {
     } else {
       this.innerValue = this.answer;
     }
+    this.saveProgress.emit(true);
 
     // propagate value into form control using control value accessor interface
     this.propagateChange(this.innerValue);
@@ -96,4 +107,22 @@ export class TextComponent implements ControlValueAccessor {
 
   }
 
+  // adding save values to from control
+  private _showSavedAnswers() {
+    if ((this.reviewStatus === 'in progress') && (this.doReview)) {
+      this.innerValue = {
+        answer: [],
+        comment: ''
+      };
+      this.innerValue.comment = this.review.comment;
+      this.comment = this.review.comment;
+      this.innerValue.answer = this.review.answer;
+      this.answer = this.review.answer;
+    }
+    if ((this.submissionStatus === 'in progress') && (this.doAssessment)) {
+      this.innerValue = this.submission.answer;
+      this.answer = this.submission.answer;
+    }
+    this.propagateChange(this.innerValue);
+  }
 }
