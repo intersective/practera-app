@@ -6,7 +6,6 @@ import { UtilsService } from '@services/utils.service';
 import { BrowserStorageService } from '@services/storage.service';
 import { PusherService } from '@shared/pusher/pusher.service';
 import { SharedService } from '@services/shared.service';
-import { AuthService } from '../auth/auth.service';
 
 /**
  * @name api
@@ -61,7 +60,6 @@ export class SwitcherService {
     private utils: UtilsService,
     private storage: BrowserStorageService,
     private sharedService: SharedService,
-    private authService: AuthService,
   ) {}
 
   getPrograms() {
