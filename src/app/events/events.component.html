@@ -36,8 +36,8 @@
   </div>
 
   <ion-card class="activity-filter-wrap practera-card">
-    <ion-item lines="none">
-     <ion-label id="activity-filter" color="medium"><i>Filter by Activity</i></ion-label>
+    <clickable-item lines="none">
+      <ion-label id="activity-filter" color="medium"><i>Filter by Activity</i></ion-label>
       <ion-select
         multiple="true"
         aria-labelledby="activity-filter"
@@ -46,20 +46,22 @@
         #filterEle>
         <ion-select-option *ngFor="let activity of activities" [value]="activity.id" selected>{{ activity.name }}</ion-select-option>
       </ion-select>
-    </ion-item>
+    </clickable-item>
   </ion-card>
 
   <ng-container *ngFor="let eventObj of events">
     <h4 class="date-group" text-left>{{ eventObj.date }}</h4>
     <ion-card class="practera-card">
-      <ion-list *ngFor="let event of eventObj.events; let i = index">
-        <ion-item [lines]="i == eventObj.events.length - 1 ? 'none' : ''">
+      <ion-list>
+        <clickable-item
+          *ngFor="let event of eventObj.events; let i = index"
+          [lines]="i == eventObj.events.length - 1 ? 'none' : ''">
           <event-card
             [event]="event"
             [time]="timeDisplayed(event)"
             class="width-100"
             ></event-card>
-        </ion-item>
+        </clickable-item>
       </ion-list>
     </ion-card>
   </ng-container>
