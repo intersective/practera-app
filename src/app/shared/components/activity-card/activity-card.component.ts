@@ -19,7 +19,7 @@ export class ActivityCardComponent implements OnInit {
     leadImage?: string,
   };
   backgroundImageStyle = '';
-  activityLoading: boolean = true;
+  activityLoading = true;
   constructor ( @Inject(DOCUMENT) private document: Document ) { }
 
   ngOnInit() {
