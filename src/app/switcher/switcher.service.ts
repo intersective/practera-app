@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Observable, of } from 'rxjs';
+import { Observable, of, concat } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { RequestService } from '@shared/request/request.service';
 import { UtilsService } from '@services/utils.service';
@@ -59,7 +59,7 @@ export class SwitcherService {
     private request: RequestService,
     private utils: UtilsService,
     private storage: BrowserStorageService,
-    private sharedService: SharedService
+    private sharedService: SharedService,
   ) {}
 
   getPrograms() {
@@ -83,9 +83,9 @@ export class SwitcherService {
       themeColor: themeColor,
       activityCardImage: cardBackgroundImage
     });
-    this.getTeamInfo().subscribe();
+
     this.sharedService.onPageLoad();
-    return this.getMyInfo();
+    return concat(this.getTeamInfo(), this.getMyInfo());
   }
 
   getTeamInfo(): Observable<any> {
@@ -104,8 +104,7 @@ export class SwitcherService {
             teamId: response.data.Teams[0].id
           });
         }
-      })
-    );
+      }));
   }
 
   /**
@@ -134,5 +133,4 @@ export class SwitcherService {
       return response;
     }));
   }
-
 }
