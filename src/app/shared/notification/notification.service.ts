@@ -17,6 +17,10 @@ export class NotificationService {
     public achievementService: AchievementsService
   ) {}
 
+  dismiss() {
+    return this.modalController.dismiss();
+  }
+
   /**
    * @name modalConfig
    * @description futher customised filter

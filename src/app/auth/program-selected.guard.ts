@@ -1,26 +1,27 @@
-import { AuthService } from '../auth/auth.service';
 import { Injectable } from '@angular/core';
 import { CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot, Router, Route } from '@angular/router';
 import { Observable } from 'rxjs';
+import { BrowserStorageService } from '@services/storage.service';
 
 @Injectable()
-export class UnauthorizedGuard implements CanActivate {
+export class ProgramSelectedGuard implements CanActivate {
 
 
   constructor(
-    private authService: AuthService,
-    private router: Router
+    private router: Router,
+    private storage: BrowserStorageService
   ) {}
 
+  // if user hasn't selected a program
   canActivate(next: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> | Promise<boolean> | boolean {
-    const userIsAuthenticated = this.authService.isAuthenticated();
+    const timelineId = this.storage.getUser().timelineId;
 
-    if (userIsAuthenticated !== true) {
+    if (timelineId) {
       return true;
     }
 
     // navigate to not found page
-    this.router.navigate(['/app']);
+    this.router.navigate(['/switcher']);
     return false;
   }
 

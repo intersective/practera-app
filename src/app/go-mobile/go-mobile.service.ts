@@ -4,14 +4,13 @@ import { SharedService, Profile } from '@services/shared.service';
 @Injectable({
   providedIn: 'root'
 })
-export class SettingService {
+export class GoMobileService {
 
   constructor(
     private sharedService: SharedService,
-  ) { }
+  ) {}
 
-  updateProfile(data: Profile) {
-    return this.sharedService.updateProfile(data);
+  submit(profile: Profile) {
+    return this.sharedService.updateProfile(profile);
   }
-
 }

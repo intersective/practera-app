@@ -96,9 +96,12 @@ export class AuthService {
       })
       .set('data[User][email]', email)
       .set('data[User][password]', password);
+
+
     return this.request.post(api.login, body.toString(), {
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
-      }).pipe(map(this._handleLoginResponse, this));
+      })
+      .pipe(map(this._handleLoginResponse, this));
   }
 
   /**

@@ -44,7 +44,7 @@ export class AuthDirectLoginComponent implements OnInit {
   /**
    * Redirect user to a specific page if data is passed in, otherwise redirect to program switcher page
    */
-  private _redirect() {
+  private async _redirect() {
     const redirect = this.route.snapshot.paramMap.get('redirect');
     const timelineId = +this.route.snapshot.paramMap.get('tl');
     const activityId = +this.route.snapshot.paramMap.get('act');
@@ -63,39 +63,38 @@ export class AuthDirectLoginComponent implements OnInit {
       return this.router.navigate(['switcher']);
     }
     // switch to the program
-    this.switcherService.switchProgram(program)
-      .subscribe(() => {
-        switch (redirect) {
-          case 'home':
-            return this.router.navigate(['app', 'home']);
-          case 'project':
-            return this.router.navigate(['app', 'project']);
-          case 'activity':
-            if (!activityId) {
-              return this.router.navigate(['app', 'home']);
-            }
-            return this.router.navigate(['app', 'activity', activityId]);
-          case 'assessment':
-            if (!activityId || !contextId || !assessmentId) {
-              return this.router.navigate(['app', 'home']);
-            }
-            return this.router.navigate(['assessment', 'assessment', activityId, contextId, assessmentId]);
-          case 'reviews':
-            return this.router.navigate(['app', 'reviews']);
-          case 'review':
-            if (!contextId || !assessmentId || !submissionId) {
-              return this.router.navigate(['app', 'home']);
-            }
-            return this.router.navigate(['assessment', 'review', contextId, assessmentId, submissionId]);
-          case 'chat':
-            return this.router.navigate(['app', 'chat']);
-          case 'settings':
-            return this.router.navigate(['app', 'settings']);
-          default:
-            return this.router.navigate(['app', 'home']);
+    await this.switcherService.switchProgram(program);
+
+    switch (redirect) {
+      case 'home':
+        return this.router.navigate(['app', 'home']);
+      case 'project':
+        return this.router.navigate(['app', 'project']);
+      case 'activity':
+        if (!activityId) {
+          return this.router.navigate(['app', 'home']);
         }
-        this.router.navigate(['app', 'home']);
-      });
+        return this.router.navigate(['app', 'activity', activityId]);
+      case 'assessment':
+        if (!activityId || !contextId || !assessmentId) {
+          return this.router.navigate(['app', 'home']);
+        }
+        return this.router.navigate(['assessment', 'assessment', activityId, contextId, assessmentId]);
+      case 'reviews':
+        return this.router.navigate(['app', 'reviews']);
+      case 'review':
+        if (!contextId || !assessmentId || !submissionId) {
+          return this.router.navigate(['app', 'home']);
+        }
+        return this.router.navigate(['assessment', 'review', contextId, assessmentId, submissionId]);
+      case 'chat':
+        return this.router.navigate(['app', 'chat']);
+      case 'settings':
+        return this.router.navigate(['app', 'settings']);
+      default:
+        return this.router.navigate(['app', 'home']);
+    }
+    return this.router.navigate(['app', 'home']);
   }
 
   private _error() {
