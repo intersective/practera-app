@@ -70,7 +70,7 @@
   <ion-list class="todo-list" lines="none">
 
     <ng-container *ngIf="loadingTodoItems; else todoItemsTpl">
-      <ion-spinner></ion-spinner>
+      <app-todo-card [loading]="true" [todoItem]="false"></app-todo-card>
     </ng-container>
 
     <ng-template #todoItemsTpl>
