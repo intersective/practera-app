@@ -30,7 +30,7 @@ export class GoMobileComponent implements OnInit {
     private utils: UtilsService,
     private notification: NotificationService,
     public storage: BrowserStorageService,
-    private contact: ContactNumberFormat,
+    public contact: ContactNumberFormat,
   ) {}
 
   ngOnInit() {

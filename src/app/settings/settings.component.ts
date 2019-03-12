@@ -39,7 +39,7 @@ export class SettingsComponent extends RouterEnter {
     public storage: BrowserStorageService,
     public utils: UtilsService,
     private notificationService: NotificationService,
-    private contact: ContactNumberFormat,
+    public contact: ContactNumberFormat,
   ) {
     super(router);
   }
