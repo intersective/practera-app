@@ -5,7 +5,27 @@
   </a>
   <div text-center padding>
     <ng-container *ngIf="loadingProgress; else progressTpl">
-      <ion-spinner></ion-spinner>
+        <circle-progress
+        [toFixed]= 0
+        [showTitle]= false
+        [showSubtitle]= false
+        [showUnits]= false
+        [space]= -20
+        [percent]="100"
+        [radius]= "70"
+        [outerStrokeWidth]= 3
+        [outerStrokeColor]= "'#f0f0f0'"
+        [maxPercent]= "100"
+        [showInnerStroke]= false
+        [startFromZero]= false
+        [animation]= false
+        [animateTitle]= false
+        [outerStrokeLinecap]= "butt"
+        [backgroundColor]= "'#e6e6e6'"
+        [backgroundPadding]=0
+        [backgroundStrokeWidth]=0
+        >
+      </circle-progress>
     </ng-container>
     <ng-template #progressTpl>
       <circle-progress
@@ -85,7 +105,7 @@
 
   <ion-label color="medium">Current Activity</ion-label>
   <ng-container *ngIf="loadingActivity; else activityTpl">
-    <br><ion-spinner></ion-spinner>
+    <app-activity-card [loading]="true" [activity]="false" class="activity-card" ></app-activity-card>
   </ng-container>
   <ng-template #activityTpl>
     <app-activity-card [activity]="activity" (click)="!activity.isLocked && goToActivity(activity.id)"></app-activity-card>
