@@ -29,13 +29,18 @@ export class FilestackComponent implements OnInit {
         'video'
       ],
       storeTo: s3Config,
-      onFileUploadFailed: (data) => {
+      onFileSelected: data => {
+        // replace space with underscore '_' in file name
+        data.filename = data.filename.replace(/ /g, '_');
+        return data;
+      },
+      onFileUploadFailed: data => {
         this.complete.emit({
           success: false,
           data: data
         });
       },
-      onFileUploadFinished: (data) => {
+      onFileUploadFinished: data => {
         this.complete.emit({
           success: true,
           data: data

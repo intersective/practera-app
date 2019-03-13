@@ -1,0 +1,21 @@
+.go-mobile {
+  ion-grid {
+    .glazing-effect {
+      background-image: url(/assets/img/mobile-bg.png);
+      background-size: contain;
+      background-repeat: no-repeat;
+      background-position-x: center;
+      background-origin: content-box;
+    }
+
+    p {
+      padding-left: 10em;
+      padding-right: 10em;
+    }
+
+    img {
+      padding-top: 2em;
+      transform: rotate(-15deg);
+    }
+  }
+}
