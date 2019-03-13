@@ -40,7 +40,7 @@ export class AuthLoginComponent {
           }
         ]
       });
-      return ;
+      return;
     }
     this.isLoggingIn = true;
     this.authService.login({
@@ -61,9 +61,9 @@ export class AuthLoginComponent {
               handler: () => {
                 this.isLoggingIn = false;
                 return;
-              }
-            }
-          ]
+              },
+            },
+          ],
         });
       }
     );
