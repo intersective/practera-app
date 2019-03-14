@@ -150,45 +150,51 @@ $message-body-size: 224px;
         }
 
         &.video-attachment-container {
-          background: none !important;
+          min-width: $message-body-size;
+          min-height: 125px;
+          background: #eaeaea !important;
           line-height: 0;
           padding: 0;
           display:block;
           position:relative;
           cursor: pointer;
+          border: 1px #bbbbbb solid;
 
           #inner-box {
             border-radius: inherit;
-            height: 100%;
-            width: 100%;
-            max-width: inherit;
+            min-width: inherit;
+            min-height: inherit;
             position: absolute;
             padding: 0;
-            opacity: 0.6;
 
             p {
-              color: #fff;
-              line-height: $message-body-size;
+              color: var(--ion-color-primary);
+              margin-top: 1.5em;
               text-align: center;
-              height: inherit;
               ion-icon {
                 font-size: 5em !important;
               }
             }
           }
 
-          video {
+          .video {
             padding: inherit;
+            min-width: 100%;
             max-width: inherit;
+            min-height: 100%;
+            max-height: inherit;
             border-radius: inherit;
-
           }
+
+          .label {
+            margin-left: 0.8em;
+            text-shadow: 1px 1px white;
+          }
+
           &:hover {
-            #inner-box {
-              background: gray;
-              opacity: 0.9;
-              transition: 0.5s opacity, 0.5s background;
-            }
+            background: #bbbbbb !important;
+            opacity: 0.9;
+            transition: 0.5s opacity, 0.5s background;
           }
         }
       }

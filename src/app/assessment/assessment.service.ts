@@ -71,11 +71,14 @@ export interface Submission {
   status: string;
   answers: any;
   submitterName: string;
+  modified: string;
 }
 
 export interface Review {
   id: number;
   answers: any;
+  status: string;
+  modified: string;
 }
 
 @Injectable({
@@ -286,7 +289,8 @@ export class AssessmentService {
       id: thisSubmission.AssessmentSubmission.id,
       status: thisSubmission.AssessmentSubmission.status,
       answers: {},
-      submitterName: thisSubmission.Submitter.name
+      submitterName: thisSubmission.Submitter.name,
+      modified: thisSubmission.AssessmentSubmission.modified
     };
 
     // -- normalise submission answers
@@ -316,7 +320,9 @@ export class AssessmentService {
     if (this.utils.has(thisSubmission, 'AssessmentReview[0].id')) {
       review = {
         id: thisSubmission.AssessmentReview[0].id,
-        answers: {}
+        answers: {},
+        status: thisSubmission.AssessmentReview[0].status,
+        modified: thisSubmission.AssessmentReview[0].modified
       };
     }
     // only get the review answer if the review is published (submission.status === 'published') or this is from /assessment/review
@@ -328,7 +334,9 @@ export class AssessmentService {
           // we use the review id in this way only if AssessmentReviewAnswer is not returned,
           // we should change API so that it returns AssessmentReviewAnswer object later
           id: thisSubmission.AssessmentReviewAnswer[0].assessment_review_id,
-          answers: {}
+          answers: {},
+          status: '',
+          modified: ''
         };
       }
       thisSubmission.AssessmentReviewAnswer.forEach(answer => {
@@ -408,7 +416,7 @@ export class AssessmentService {
     return answer;
   }
 
-  saveAnswers(assessment, answers, action) {
+  saveAnswers(assessment, answers, action, submissionId?) {
     let postData;
     switch (action) {
       case 'assessment':
@@ -416,6 +424,11 @@ export class AssessmentService {
           Assessment: assessment,
           AssessmentSubmissionAnswer: answers
         };
+        if (submissionId !== 0) {
+          postData.AssessmentSubmission = {
+            id: submissionId
+          };
+        }
         return this.request.post(api.post.submissions, postData);
 
       case 'review':

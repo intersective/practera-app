@@ -1,9 +1,9 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '../auth/auth.service';
-import { SettingService, Profile } from './setting.service';
+import { SettingService } from './setting.service';
 import { BrowserStorageService } from '@services/storage.service';
-import { UtilsService } from '@services/utils.service';
+import { UtilsService, ContactNumberFormat } from '@services/utils.service';
 import { NotificationService } from '@shared/notification/notification.service';
 import { environment } from '../../environments/environment.prod';
 import { RouterEnter } from '@services/router-enter.service';
@@ -17,7 +17,7 @@ import { RouterEnter } from '@services/router-enter.service';
 export class SettingsComponent extends RouterEnter {
 
   routeUrl = '/app/settings';
-  profile: Profile = {
+  profile = {
     contactNumber: '',
     email: ''
   };
@@ -30,30 +30,6 @@ export class SettingsComponent extends RouterEnter {
   activeContactPattern = '';
   // variable to control the update button
   updating = false;
-  // supported countries
-  countryCodes = [
-    {
-      name: 'Australia',
-      code: 'AUS'
-    },
-    {
-        name: 'US/Canada',
-        code: 'US'
-    },
-  ];
-
-  formatMasks = {
-    AUS: {
-      format: '+61',
-      placeholder: '___ ___ ___',
-      pattern: '^((\([0-9]{3}\))|[0-9]{3})[\s\-]?[\0-9]{3}[\s\-]?[0-9]{3}$'
-    },
-    US: {
-      format: '+1',
-      placeholder: '___ ___ ____',
-      pattern: '^((\([0-9]{3}\))|[0-9]{3})[\s\-]?[\0-9]{3}[\s\-]?[0-9]{4}$'
-    }
-  };
 
   helpline = 'help@practera.com';
 
@@ -66,7 +42,7 @@ export class SettingsComponent extends RouterEnter {
     public storage: BrowserStorageService,
     public utils: UtilsService,
     private notificationService: NotificationService,
-
+    public contact: ContactNumberFormat,
   ) {
     super(router);
   }
@@ -83,13 +59,13 @@ export class SettingsComponent extends RouterEnter {
       // check which the server which the APP talks to, i.e if the APP is consuming APIs from 'us.practera.com' then, it is APP V2 in US.
       // But if APP consumes APIs from 'api.practera.com' then it is APP V2 in AUS.
       this.countryModel = 'US';
-      this.selectedCountryCode = this.formatMasks[this.countryModel].format;
-      this.activeContactPlaceholder = this.formatMasks[this.countryModel].placeholder;
-      this.activeContactPattern = this.formatMasks[this.countryModel].pattern;
+      this.selectedCountryCode = this.contact.masks[this.countryModel].format;
+      this.activeContactPlaceholder = this.contact.masks[this.countryModel].placeholder;
+      this.activeContactPattern = this.contact.masks[this.countryModel].pattern;
     } else {
-      this.selectedCountryCode = this.formatMasks[this.countryModel].format;
-      this.activeContactPlaceholder = this.formatMasks[this.countryModel].placeholder;
-      this.activeContactPattern = this.formatMasks[this.countryModel].pattern;
+      this.selectedCountryCode = this.contact.masks[this.countryModel].format;
+      this.activeContactPlaceholder = this.contact.masks[this.countryModel].placeholder;
+      this.activeContactPattern = this.contact.masks[this.countryModel].pattern;
     }
   }
 
@@ -101,9 +77,9 @@ export class SettingsComponent extends RouterEnter {
 
     if (prefix === '+61') {
         this.countryModel = 'AUS';
-        this.selectedCountryCode = this.formatMasks[this.countryModel].format;
-        this.activeContactPlaceholder = this.formatMasks[this.countryModel].placeholder;
-        this.activeContactPattern = this.formatMasks[this.countryModel].pattern;
+        this.selectedCountryCode = this.contact.masks[this.countryModel].format;
+        this.activeContactPlaceholder = this.contact.masks[this.countryModel].placeholder;
+        this.activeContactPattern = this.contact.masks[this.countryModel].pattern;
         return;
     }
 
@@ -112,25 +88,25 @@ export class SettingsComponent extends RouterEnter {
     this.contactNumber = this._separeteContactNumber(number);
     if (prefix === '61') {
         this.countryModel = 'AUS';
-        this.selectedCountryCode = this.formatMasks[this.countryModel].format;
-        this.activeContactPlaceholder = this.formatMasks[this.countryModel].placeholder;
-        this.activeContactPattern = this.formatMasks[this.countryModel].pattern;
+        this.selectedCountryCode = this.contact.masks[this.countryModel].format;
+        this.activeContactPlaceholder = this.contact.masks[this.countryModel].placeholder;
+        this.activeContactPattern = this.contact.masks[this.countryModel].pattern;
         return;
     }
 
     if (prefix === '04') {
         this.countryModel = 'AUS';
-        this.selectedCountryCode = this.formatMasks[this.countryModel].format;
-        this.activeContactPlaceholder = this.formatMasks[this.countryModel].placeholder;
-        this.activeContactPattern = this.formatMasks[this.countryModel].pattern;
+        this.selectedCountryCode = this.contact.masks[this.countryModel].format;
+        this.activeContactPlaceholder = this.contact.masks[this.countryModel].placeholder;
+        this.activeContactPattern = this.contact.masks[this.countryModel].pattern;
         return;
      }
 
     if (prefix === '+1') {
         this.countryModel = 'US';
-        this.selectedCountryCode = this.formatMasks[this.countryModel].format;
-        this.activeContactPlaceholder = this.formatMasks[this.countryModel].placeholder;
-        this.activeContactPattern = this.formatMasks[this.countryModel].pattern;
+        this.selectedCountryCode = this.contact.masks[this.countryModel].format;
+        this.activeContactPlaceholder = this.contact.masks[this.countryModel].placeholder;
+        this.activeContactPattern = this.contact.masks[this.countryModel].pattern;
         return;
     }
 
@@ -139,17 +115,17 @@ export class SettingsComponent extends RouterEnter {
     this.contactNumber = this._separeteContactNumber(number);
     if (prefix === '1') {
         this.countryModel = 'US';
-        this.selectedCountryCode = this.formatMasks[this.countryModel].format;
-        this.activeContactPlaceholder = this.formatMasks[this.countryModel].placeholder;
-        this.activeContactPattern = this.formatMasks[this.countryModel].pattern;
+        this.selectedCountryCode = this.contact.masks[this.countryModel].format;
+        this.activeContactPlaceholder = this.contact.masks[this.countryModel].placeholder;
+        this.activeContactPattern = this.contact.masks[this.countryModel].pattern;
         return;
     }
 
     if (prefix === '0') {
         this.countryModel = 'AUS';
-        this.selectedCountryCode = this.formatMasks[this.countryModel].format;
-        this.activeContactPlaceholder = this.formatMasks[this.countryModel].placeholder;
-        this.activeContactPattern = this.formatMasks[this.countryModel].pattern;
+        this.selectedCountryCode = this.contact.masks[this.countryModel].format;
+        this.activeContactPlaceholder = this.contact.masks[this.countryModel].placeholder;
+        this.activeContactPattern = this.contact.masks[this.countryModel].pattern;
         return;
     }
   }
@@ -178,7 +154,9 @@ export class SettingsComponent extends RouterEnter {
         {
           text: 'Okay',
           handler: () => {
-            this.settingService.updateProfile(this.profile).subscribe(result => {
+            this.settingService.updateProfile({
+              contact_number: this.profile.contactNumber,
+            }).subscribe(result => {
               this.updating = false;
               if (result.success) {
                 // update contact number in user local storage data array.
@@ -230,12 +208,12 @@ export class SettingsComponent extends RouterEnter {
 
   updateCountry() {
     const selectedCountry = this.countryModel;
-    const country = this.utils.find(this.countryCodes, eachCountry => {
+    const country = this.utils.find(this.contact.countryCodes, eachCountry => {
       return eachCountry.code === selectedCountry;
     });
-    this.selectedCountryCode = this.formatMasks[country.code].format;
-    this.activeContactPlaceholder = this.formatMasks[country.code].placeholder;
-    this.activeContactPattern = this.formatMasks[country.code].pattern;
+    this.selectedCountryCode = this.contact.masks[country.code].format;
+    this.activeContactPlaceholder = this.contact.masks[country.code].placeholder;
+    this.activeContactPattern = this.contact.masks[country.code].pattern;
     // set currentContactNumber to it's format.
     this.contactNumber = '';
   }
