@@ -21,21 +21,14 @@ export class FilestackComponent implements OnInit {
   async uploadFile() {
     const s3Config = this.filestackService.getS3Config(this.fileType);
     const pickerOptions = {
-      fromSources: [
-        'local_file_system',
-        'googledrive',
-        'dropbox',
-        'gmail',
-        'video'
-      ],
       storeTo: s3Config,
-      onFileUploadFailed: (data) => {
+      onFileUploadFailed: data => {
         this.complete.emit({
           success: false,
           data: data
         });
       },
-      onFileUploadFinished: (data) => {
+      onFileUploadFinished: data => {
         this.complete.emit({
           success: true,
           data: data
