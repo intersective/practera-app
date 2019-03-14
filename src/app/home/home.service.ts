@@ -197,7 +197,7 @@ export class HomeService {
           team_id: data.team_id,
           team_member_id: data.team_member_id,
           participants_only: data.participants_only
-        }
+        };
       }
     });
     if (unreadMessages > 1) {
