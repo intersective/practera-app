@@ -33,6 +33,9 @@ export interface TodoItem {
     assessment_submission_id?: number;
     assessment_name?: string;
     reviewer_name?: string;
+    team_id?: number;
+    team_member_id?: number;
+    participants_only?: boolean;
   };
 }
 
@@ -190,10 +193,17 @@ export class HomeService {
         todoItem.name = data.name;
         todoItem.description = data.last_message;
         todoItem.time = this.utils.timeFormatter(data.last_message_created);
+        todoItem.meta = {
+          team_id: data.team_id,
+          team_member_id: data.team_member_id,
+          participants_only: data.participants_only
+        };
       }
     });
     if (unreadMessages > 1) {
+      // group the chat notifiations
       todoItem.name = unreadMessages + ' messages from ' + noOfChats + ' chats';
+      todoItem.meta = {};
     }
     return todoItem;
   }
