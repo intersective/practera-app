@@ -188,8 +188,14 @@ export class HomeComponent extends RouterEnter implements OnDestroy {
     ]);
   }
 
-  goToChat() {
-    this.router.navigateByUrl('app/chat');
+  goToChat(todoItem?: TodoItem) {
+    if (this.utils.isEmpty(todoItem.meta)) {
+      return this.router.navigate(['app', 'chat']);
+    }
+    if (todoItem.meta.team_member_id) {
+      return this.router.navigate(['chat', 'chat-room', todoItem.meta.team_id, todoItem.meta.team_member_id]);
+    }
+    return this.router.navigate(['chat', 'chat-room', 'team', todoItem.meta.team_id, todoItem.meta.participants_only]);
   }
 
   ngOnDestroy(): void {
