@@ -28,6 +28,57 @@ export class HomeComponent extends RouterEnter implements OnDestroy {
   subscriptions: Subscription[] = [];
   achievements: Array<Achievement>;
   haveEvents = false;
+  progressConf: any = this.setCircleProgress();
+
+  setCircleProgress(data?) {
+    const beforeLoaded = {
+      animateTitle: false,
+      animation: false,
+      backgroundColor: '#e6e6e6',
+      backgroundPadding: 0,
+      maxPercent: 100,
+      outerStrokeColor: '#f0f0f0',
+      outerStrokeLinecap: 'butt',
+      outerStrokeWidth: 12,
+      percent: 100,
+      radius: 70,
+      showInnerStroke: false,
+      showSubtitle: false,
+      showTitle: false,
+      showUnits: false,
+      space: -20,
+      startFromZero: false,
+    };
+
+    const afterLoaded = {
+      // back to default
+      animateTitle: true,
+      animation: true,
+      backgroundColor: 'transparent',
+      outerStrokeColor: '#78C000',
+      outerStrokeLinecap: 'round',
+      showInnerStroke: true,
+      showSubtitle: true,
+      showTitle: true,
+      showUnits: true,
+      space: 4,
+
+      // custom
+      backgroundPadding: -10,
+      maxPercent: 100,
+      outerStrokeWidth: 12,
+      percent: 0,
+      radius: 70,
+      subtitle: "COMPLETE",
+      startFromZero: false,
+    };
+
+    let result = beforeLoaded;
+    if (data) {
+      result = Object.assign(afterLoaded, data);
+    }
+    return result;
+  }
 
   constructor(
     public router: Router,
@@ -98,6 +149,9 @@ export class HomeComponent extends RouterEnter implements OnDestroy {
     this.subscriptions.push(
       this.homeService.getProgress().subscribe(progress => {
         this.progress = progress;
+        this.progressConf = this.setCircleProgress({
+          percent: progress,
+        });
         this.loadingProgress = false;
         this.homeService.getCurrentActivity().subscribe(activity => {
           if (activity.id) {
