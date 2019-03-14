@@ -22,30 +22,38 @@ export class SettingsComponent extends RouterEnter {
     email: ''
   };
   currentProgramName = '';
+  contactNumber = '';
   // default country model
   countryModel = 'AUS';
-  // default mask
-  mask: Array<string|RegExp>;
+  selectedCountryCode = '';
+  activeContactPlaceholder = '';
+  activeContactPattern = '';
   // variable to control the update button
   updating = false;
   // supported countries
   countryCodes = [
     {
-        name: 'Australia',
-        code: 'AUS',
-        format: '+61 ___ ___ ___'
+      name: 'Australia',
+      code: 'AUS'
     },
     {
         name: 'US/Canada',
-        code: 'US',
-        format: '+1 ___ ___ ____'
+        code: 'US'
     },
   ];
 
   formatMasks = {
-      AUS: ['+', '6', '1', ' ', /[1-9]/, /\d/, /\d/, ' ', /\d/, /\d/, /\d/, ' ', /\d/, /\d/, /\d/],
-      US: ['+', '1', ' ', /[1-9]/, /\d/, /\d/, ' ', /\d/, /\d/, /\d/, ' ', /\d/, /\d/, /\d/, /\d/]
-   };
+    AUS: {
+      format: '+61',
+      placeholder: '___ ___ ___',
+      pattern: '^((\([0-9]{3}\))|[0-9]{3})[\s\-]?[\0-9]{3}[\s\-]?[0-9]{3}$'
+    },
+    US: {
+      format: '+1',
+      placeholder: '___ ___ ____',
+      pattern: '^((\([0-9]{3}\))|[0-9]{3})[\s\-]?[\0-9]{3}[\s\-]?[0-9]{4}$'
+    }
+  };
 
   helpline = 'help@practera.com';
 
@@ -66,70 +74,88 @@ export class SettingsComponent extends RouterEnter {
   onEnter() {
     // get contact number and email from local storage
     this.profile.email = this.storage.getUser().email;
-    this.profile.contactNumber = this.storage.getUser().contactNumber;
     // also get program name
     this.currentProgramName = this.storage.getUser().programName;
     // if user has the contact number
-    if (this.profile.contactNumber && this.profile.contactNumber != null) {
+    if (this.storage.getUser().contactNumber && this.storage.getUser().contactNumber != null) {
       this.checkCurrentContactNumberOrigin();
-    } else {
-      // by default, set Mask in Australian format.
-      this.mask = this.formatMasks[this.countryModel];
-
-      // user has no contact number, set the default mask
-      // also check which the server which the APP talks to, i.e if the APP is consuming APIs from 'us.practera.com' then, it is APP V2 in US.
+    } else if (environment.APIEndpoint.indexOf('us') !== -1) {
+      // check which the server which the APP talks to, i.e if the APP is consuming APIs from 'us.practera.com' then, it is APP V2 in US.
       // But if APP consumes APIs from 'api.practera.com' then it is APP V2 in AUS.
-      if (environment.APIEndpoint.indexOf('us') !== -1) {
-        this.countryModel = 'US';
-        this.mask = this.formatMasks[this.countryModel];
-      }
+      this.countryModel = 'US';
+      this.selectedCountryCode = this.formatMasks[this.countryModel].format;
+      this.activeContactPlaceholder = this.formatMasks[this.countryModel].placeholder;
+      this.activeContactPattern = this.formatMasks[this.countryModel].pattern;
+    } else {
+      this.selectedCountryCode = this.formatMasks[this.countryModel].format;
+      this.activeContactPlaceholder = this.formatMasks[this.countryModel].placeholder;
+      this.activeContactPattern = this.formatMasks[this.countryModel].pattern;
     }
   }
 
   private checkCurrentContactNumberOrigin() {
-    const contactNum = this.profile.contactNumber;
+    const contactNum = this.storage.getUser().contactNumber;
     let prefix = contactNum.substring(0, 3);
+    let number = contactNum.substring(3);
+    this.contactNumber = this._separeteContactNumber(number);
 
     if (prefix === '+61') {
         this.countryModel = 'AUS';
-        this.mask = this.formatMasks['AUS'];
+        this.selectedCountryCode = this.formatMasks[this.countryModel].format;
+        this.activeContactPlaceholder = this.formatMasks[this.countryModel].placeholder;
+        this.activeContactPattern = this.formatMasks[this.countryModel].pattern;
         return;
     }
 
     prefix = contactNum.substring(0, 2);
+    number = contactNum.substring(2);
+    this.contactNumber = this._separeteContactNumber(number);
     if (prefix === '61') {
         this.countryModel = 'AUS';
-        this.mask = this.formatMasks['AUS'];
+        this.selectedCountryCode = this.formatMasks[this.countryModel].format;
+        this.activeContactPlaceholder = this.formatMasks[this.countryModel].placeholder;
+        this.activeContactPattern = this.formatMasks[this.countryModel].pattern;
         return;
     }
 
     if (prefix === '04') {
         this.countryModel = 'AUS';
-        this.mask = this.formatMasks['AUS'];
+        this.selectedCountryCode = this.formatMasks[this.countryModel].format;
+        this.activeContactPlaceholder = this.formatMasks[this.countryModel].placeholder;
+        this.activeContactPattern = this.formatMasks[this.countryModel].pattern;
         return;
      }
 
     if (prefix === '+1') {
         this.countryModel = 'US';
-        this.mask = this.formatMasks['US'];
+        this.selectedCountryCode = this.formatMasks[this.countryModel].format;
+        this.activeContactPlaceholder = this.formatMasks[this.countryModel].placeholder;
+        this.activeContactPattern = this.formatMasks[this.countryModel].pattern;
         return;
     }
 
     prefix = contactNum.substring(0, 1);
+    number = contactNum.substring(1);
+    this.contactNumber = this._separeteContactNumber(number);
     if (prefix === '1') {
         this.countryModel = 'US';
-        this.mask = this.formatMasks['US'];
+        this.selectedCountryCode = this.formatMasks[this.countryModel].format;
+        this.activeContactPlaceholder = this.formatMasks[this.countryModel].placeholder;
+        this.activeContactPattern = this.formatMasks[this.countryModel].pattern;
         return;
     }
 
     if (prefix === '0') {
         this.countryModel = 'AUS';
-        this.mask = this.formatMasks['AUS'];
+        this.selectedCountryCode = this.formatMasks[this.countryModel].format;
+        this.activeContactPlaceholder = this.formatMasks[this.countryModel].placeholder;
+        this.activeContactPattern = this.formatMasks[this.countryModel].pattern;
         return;
     }
   }
 
   updateContactNumber() {
+    this.profile.contactNumber = this.selectedCountryCode + this.contactNumber;
     // strip out white spaces and underscores
     this.profile.contactNumber = this.profile.contactNumber.replace(/[^0-9+]+/ig, '');
     // check if newly input number is valid or not.
@@ -207,10 +233,11 @@ export class SettingsComponent extends RouterEnter {
     const country = this.utils.find(this.countryCodes, eachCountry => {
       return eachCountry.code === selectedCountry;
     });
+    this.selectedCountryCode = this.formatMasks[country.code].format;
+    this.activeContactPlaceholder = this.formatMasks[country.code].placeholder;
+    this.activeContactPattern = this.formatMasks[country.code].pattern;
     // set currentContactNumber to it's format.
-    this.profile.contactNumber = country.format;
-    // update the mask as per the newly selected country
-    this.mask = this.formatMasks[country.code];
+    this.contactNumber = '';
   }
 
 
@@ -245,15 +272,21 @@ export class SettingsComponent extends RouterEnter {
     return true;
   }
 
-  disableMiddleClicking(event) {
-    event = (event) ? event : window.event;
+  formatContactNumber() {
+    this.contactNumber = this._separeteContactNumber(this.contactNumber);
+  }
 
-    const cursorPosition = event.clientX;
-    if ( cursorPosition > 75 && cursorPosition < 146) {
-
-      return false;
+  private _separeteContactNumber(text) {
+    const result = [];
+    text = text.replace(/[^\d]/g, '');
+    while (text.length >= 3) {
+        result.push(text.substring(0, 3));
+        text = text.substring(3);
     }
-    return true;
+    if (text.length > 0) {
+      result.push(text);
+    }
+    return result.join(' ');
   }
 
 }
