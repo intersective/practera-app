@@ -26,12 +26,19 @@
               <ion-label>Contact No.</ion-label>
           </ion-col>
         </ion-row>
-        <ion-row class="text-field" nowrap align-items-start>
-          <ion-col align-self-start size="7">
-            <input [textMask]="{mask: mask, showMask: true, guide: true}" [(ngModel)]="profile.contactNumber" type="text"
-              class="contact-input" (keydown)="disableArrowKeys($event)" (mousedown)="disableMiddleClicking($event)" />
+        <ion-row class="text-field" nowrap align-items-center>
+          <ion-col>
+            <ion-row class="contact-details">
+              <ion-col size="4">
+                <p class="country-code">{{selectedCountryCode}}</p>
+              </ion-col>
+              <ion-col>
+                  <input maxlength="12" pattern="{{activeContactPattern}}" placeholder="{{activeContactPlaceholder}}" [(ngModel)]="contactNumber" type="text"
+                  class="contact-input" (keydown)="disableArrowKeys($event)" (keyup)="formatContactNumber()" />
+              </ion-col>
+            </ion-row>
           </ion-col>
-          <ion-col class="button-col" align-self-end size="5">
+          <ion-col size="5">
             <ion-button class="update-btn" [disabled]="updating" (click)="updateContactNumber()">
               <ng-container *ngIf="!updating">Update</ng-container>
               <ng-container *ngIf="updating">Updating..</ng-container>
