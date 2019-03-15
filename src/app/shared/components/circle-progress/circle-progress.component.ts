@@ -29,7 +29,7 @@ export class CircleProgressComponent implements OnChanges, OnInit {
     toFixed: 0,
   };
 
-  @Input('data') data = {};
+  @Input() data = {};
   @ViewChild('description') descriptionRef: ElementRef;
 
   ngOnInit() {
@@ -46,7 +46,7 @@ export class CircleProgressComponent implements OnChanges, OnInit {
     const result = this.config;
 
     // clear everything
-    let after = {
+    const after = {
       animateTitle: false,
       animation: true,
       backgroundColor: 'transparent',

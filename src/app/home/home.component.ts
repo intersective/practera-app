@@ -69,7 +69,7 @@ export class HomeComponent extends RouterEnter implements OnDestroy {
       outerStrokeWidth: 12,
       percent: 0,
       radius: 70,
-      subtitle: "COMPLETE",
+      subtitle: 'COMPLETE',
       startFromZero: false,
     };
 

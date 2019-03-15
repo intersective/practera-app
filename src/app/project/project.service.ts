@@ -15,6 +15,16 @@ const api = {
   progress: 'api/v2/motivations/progress/list.json'
 };
 
+// added for displaying empty placeholder (enhance UX)
+export interface DummyMilestone {
+  dummy?: boolean;
+  Activity?: Array<DummyActivity>;
+}
+
+export interface DummyActivity {
+  dummy?: boolean;
+}
+
 export interface Activity {
   id: number;
   name: string;
@@ -22,7 +32,6 @@ export interface Activity {
   isLocked: boolean;
   leadImage?: string;
   progress?: number;
-  dummy?: boolean; // added for displaying empty placeholder (enhance UX)
 }
 
 export interface Milestone {
@@ -31,8 +40,7 @@ export interface Milestone {
   description?: string;
   isLocked: boolean;
   progress: number;
-  dummy?: boolean; // added for displaying empty placeholder (enhance UX)
-  Activity: Array <Activity>;
+  Activity: Array <Activity | DummyActivity>;
 }
 
 @Injectable({
