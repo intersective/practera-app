@@ -19,6 +19,7 @@ import { PageNotFoundComponent } from './page-not-found/page-not-found.component
 import { EmbedVideo } from 'ngx-embed-video';
 import { environment } from '@environments/environment';
 import { PusherModule } from '@shared/pusher/pusher.module';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 @NgModule({
   declarations: [
@@ -27,6 +28,7 @@ import { PusherModule } from '@shared/pusher/pusher.module';
   ],
   imports: [
     BrowserModule,
+    BrowserAnimationsModule,
     IonicModule.forRoot(),
     AuthModule,
     RequestModule.forRoot({

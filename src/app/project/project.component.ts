@@ -5,6 +5,13 @@ import { HomeService } from '../home/home.service';
 import { RouterEnter } from '@services/router-enter.service';
 import { BrowserStorageService } from '@services/storage.service';
 import { UtilsService } from '@services/utils.service';
+import {
+  trigger,
+  state,
+  style,
+  animate,
+  transition,
+} from '@angular/animations';
 
 export interface Activity {
   id: number;
@@ -26,10 +33,10 @@ export interface Milestone {
 @Component({
   selector: 'app-project',
   templateUrl: 'project.component.html',
-  styleUrls: ['project.component.scss']
+  styleUrls: ['project.component.scss'],
 })
 export class ProjectComponent extends RouterEnter {
-
+  public openOr = true;
   public routeUrl = '/app/project';
   public programName: string;
   public milestones: Array<Milestone> = [];
