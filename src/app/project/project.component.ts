@@ -1,6 +1,6 @@
 import { Component, HostListener, ViewChild, ViewChildren, QueryList, ElementRef } from '@angular/core';
 import { Router } from '@angular/router';
-import { ProjectService, Milestone, Activity } from './project.service';
+import { ProjectService, Milestone, DummyMilestone } from './project.service';
 import { HomeService } from '../home/home.service';
 import { RouterEnter } from '@services/router-enter.service';
 import { BrowserStorageService } from '@services/storage.service';
@@ -22,7 +22,7 @@ export class ProjectComponent extends RouterEnter {
   public openOr = true;
   public routeUrl = '/app/project';
   public programName: string;
-  public milestones: Array<Milestone> = [];
+  public milestones: Array<Milestone | DummyMilestone> = [];
   public loadingActivity = true;
   public loadingMilestone = true;
   public loadingProgress = true;
@@ -42,14 +42,14 @@ export class ProjectComponent extends RouterEnter {
   }
 
   private _initialise() {
-    this.milestones = [{dummy: true}];
+    this.milestones = [{ dummy: true }];
     this.loadingActivity = true;
     this.loadingMilestone = true;
     this.loadingProgress = true;
   }
 
   private dummyActivity(milestones) {
-    for (var i = milestones.length - 1; i >= 0; i--) {
+    for (let i = milestones.length - 1; i >= 0; i--) {
       milestones[i].Activity = [{ dummy: true }];
     }
     return milestones;
