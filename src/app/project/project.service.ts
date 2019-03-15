@@ -22,6 +22,7 @@ export interface Activity {
   isLocked: boolean;
   leadImage?: string;
   progress?: number;
+  dummy?: boolean; // added for displaying empty placeholder (enhance UX)
 }
 
 export interface Milestone {
