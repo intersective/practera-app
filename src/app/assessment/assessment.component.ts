@@ -189,6 +189,9 @@ export class AssessmentComponent extends RouterEnter {
     if (this.fromPage && this.fromPage === 'reviews') {
       return this.router.navigate(['app', 'reviews']);
     }
+    if (this.fromPage && this.fromPage === 'events') {
+      return this.router.navigate(['events']);
+    }
     if (this.activityId) {
       return this.router.navigate(['app', 'activity', this.activityId ]);
     }
