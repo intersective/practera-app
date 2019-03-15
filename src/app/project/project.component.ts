@@ -42,7 +42,7 @@ export class ProjectComponent extends RouterEnter {
   }
 
   private _initialise() {
-    this.milestones = [];
+    this.milestones = [{dummy: true}];
     this.loadingActivity = true;
     this.loadingMilestone = true;
     this.loadingProgress = true;
@@ -115,7 +115,6 @@ export class ProjectComponent extends RouterEnter {
   private _getMilestonePositions() {
     this.milestonePositions = this.milestoneRefs.map(milestoneRef => {
       return milestoneRef.nativeElement.offsetTop;
-
     });
   }
 

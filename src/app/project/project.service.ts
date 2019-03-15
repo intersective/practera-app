@@ -31,6 +31,7 @@ export interface Milestone {
   description?: string;
   isLocked: boolean;
   progress: number;
+  dummy?: boolean; // added for displaying empty placeholder (enhance UX)
   Activity: Array <Activity>;
 }
 
