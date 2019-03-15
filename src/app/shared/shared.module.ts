@@ -7,19 +7,23 @@ import { AchievementBadgeComponent } from '@shared/components/achievement-badge/
 import { EventCardComponent } from '@shared/components/event-card/event-card.component';
 import { DescriptionComponent } from '@shared/components/description/description.component';
 import { ClickableItemComponent } from '@shared/components/clickable-item/clickable-item.component';
+import { CircleProgressComponent } from '@shared/components/circle-progress/circle-progress.component';
+import { NgCircleProgressModule } from 'ng-circle-progress';
 
 @NgModule({
   imports: [
     IonicModule,
     CommonModule,
-    FormsModule
+    FormsModule,
+    NgCircleProgressModule,
   ],
   declarations: [
     ActivityCardComponent,
     AchievementBadgeComponent,
     EventCardComponent,
     DescriptionComponent,
-    ClickableItemComponent
+    ClickableItemComponent,
+    CircleProgressComponent
   ],
   exports: [
     ActivityCardComponent,
@@ -27,9 +31,11 @@ import { ClickableItemComponent } from '@shared/components/clickable-item/clicka
     EventCardComponent,
     DescriptionComponent,
     ClickableItemComponent,
+    CircleProgressComponent,
     IonicModule,
     CommonModule,
-    FormsModule
+    FormsModule,
+    NgCircleProgressModule
   ],
 })
 export class SharedModule {}

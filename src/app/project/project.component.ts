@@ -1,6 +1,6 @@
 import { Component, HostListener, ViewChild, ViewChildren, QueryList, ElementRef } from '@angular/core';
 import { Router } from '@angular/router';
-import { ProjectService, Milestone } from './project.service';
+import { ProjectService, Milestone, Activity } from './project.service';
 import { HomeService } from '../home/home.service';
 import { RouterEnter } from '@services/router-enter.service';
 import { BrowserStorageService } from '@services/storage.service';
@@ -12,23 +12,6 @@ import {
   animate,
   transition,
 } from '@angular/animations';
-
-export interface Activity {
-  id: number;
-  name: string;
-  milestoneId?: number;
-  isLocked: boolean;
-  leadImage?: string;
-  progress?: number;
-}
-export interface Milestone {
-  id: number;
-  name: string;
-  description?: string;
-  isLocked: boolean;
-  progress: number;
-  Activity: Array <Activity>;
-}
 
 @Component({
   selector: 'app-project',
@@ -65,6 +48,13 @@ export class ProjectComponent extends RouterEnter {
     this.loadingProgress = true;
   }
 
+  private dummyActivity(milestones) {
+    for (var i = milestones.length - 1; i >= 0; i--) {
+      milestones[i].Activity = [{ dummy: true }];
+    }
+    return milestones;
+  }
+
   onEnter() {
     this._initialise();
     this.homeService.getProgramName().subscribe(programName => {
@@ -73,6 +63,8 @@ export class ProjectComponent extends RouterEnter {
 
     this.projectService.getMilestones()
       .subscribe(milestones => {
+        milestones = this.dummyActivity(milestones);
+
         this.milestones = milestones;
         this.loadingMilestone = false;
         this.activeMilestone = new Array(milestones.length);
@@ -80,6 +72,13 @@ export class ProjectComponent extends RouterEnter {
         this.activeMilestone[0] = true;
         this.projectService.getActivities(milestones)
           .subscribe(activities => {
+            // remove entire Activity object with dummy data for clean Activity injection
+            for (let i = this.milestones.length - 1; i >= 0; i--) {
+              if (this.utils.find(this.milestones[i].Activity, {dummy: true})) {
+                this.milestones[i].Activity = [];
+              }
+            }
+
             this.milestones = this._addActivitiesToEachMilestone(this.milestones, activities);
             this.loadingActivity = false;
             this.projectService.getProgress(this.milestones).subscribe(progresses => {
@@ -111,7 +110,6 @@ export class ProjectComponent extends RouterEnter {
   // scroll to a milestone. i is the index of milestone list
   scrollTo(i) {
     this.contentRef.nativeElement.scrollToPoint(0, this.milestonePositions[i], 500);
-
   }
 
   private _getMilestonePositions() {
