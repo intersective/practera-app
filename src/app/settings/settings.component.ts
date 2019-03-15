@@ -76,57 +76,57 @@ export class SettingsComponent extends RouterEnter {
     this.contactNumber = this._separeteContactNumber(number);
 
     if (prefix === '+61') {
-        this.countryModel = 'AUS';
-        this.selectedCountryCode = this.contact.masks[this.countryModel].format;
-        this.activeContactPlaceholder = this.contact.masks[this.countryModel].placeholder;
-        this.activeContactPattern = this.contact.masks[this.countryModel].pattern;
-        return;
+      this.countryModel = 'AUS';
+      this.selectedCountryCode = this.contact.masks[this.countryModel].format;
+      this.activeContactPlaceholder = this.contact.masks[this.countryModel].placeholder;
+      this.activeContactPattern = this.contact.masks[this.countryModel].pattern;
+      return;
     }
 
     prefix = contactNum.substring(0, 2);
     number = contactNum.substring(2);
     this.contactNumber = this._separeteContactNumber(number);
     if (prefix === '61') {
-        this.countryModel = 'AUS';
-        this.selectedCountryCode = this.contact.masks[this.countryModel].format;
-        this.activeContactPlaceholder = this.contact.masks[this.countryModel].placeholder;
-        this.activeContactPattern = this.contact.masks[this.countryModel].pattern;
-        return;
+      this.countryModel = 'AUS';
+      this.selectedCountryCode = this.contact.masks[this.countryModel].format;
+      this.activeContactPlaceholder = this.contact.masks[this.countryModel].placeholder;
+      this.activeContactPattern = this.contact.masks[this.countryModel].pattern;
+      return;
     }
 
     if (prefix === '04') {
-        this.countryModel = 'AUS';
-        this.selectedCountryCode = this.contact.masks[this.countryModel].format;
-        this.activeContactPlaceholder = this.contact.masks[this.countryModel].placeholder;
-        this.activeContactPattern = this.contact.masks[this.countryModel].pattern;
-        return;
-     }
+      this.countryModel = 'AUS';
+      this.selectedCountryCode = this.contact.masks[this.countryModel].format;
+      this.activeContactPlaceholder = this.contact.masks[this.countryModel].placeholder;
+      this.activeContactPattern = this.contact.masks[this.countryModel].pattern;
+      return;
+    }
 
     if (prefix === '+1') {
-        this.countryModel = 'US';
-        this.selectedCountryCode = this.contact.masks[this.countryModel].format;
-        this.activeContactPlaceholder = this.contact.masks[this.countryModel].placeholder;
-        this.activeContactPattern = this.contact.masks[this.countryModel].pattern;
-        return;
+      this.countryModel = 'US';
+      this.selectedCountryCode = this.contact.masks[this.countryModel].format;
+      this.activeContactPlaceholder = this.contact.masks[this.countryModel].placeholder;
+      this.activeContactPattern = this.contact.masks[this.countryModel].pattern;
+      return;
     }
 
     prefix = contactNum.substring(0, 1);
     number = contactNum.substring(1);
     this.contactNumber = this._separeteContactNumber(number);
     if (prefix === '1') {
-        this.countryModel = 'US';
-        this.selectedCountryCode = this.contact.masks[this.countryModel].format;
-        this.activeContactPlaceholder = this.contact.masks[this.countryModel].placeholder;
-        this.activeContactPattern = this.contact.masks[this.countryModel].pattern;
-        return;
+      this.countryModel = 'US';
+      this.selectedCountryCode = this.contact.masks[this.countryModel].format;
+      this.activeContactPlaceholder = this.contact.masks[this.countryModel].placeholder;
+      this.activeContactPattern = this.contact.masks[this.countryModel].pattern;
+      return;
     }
 
     if (prefix === '0') {
-        this.countryModel = 'AUS';
-        this.selectedCountryCode = this.contact.masks[this.countryModel].format;
-        this.activeContactPlaceholder = this.contact.masks[this.countryModel].placeholder;
-        this.activeContactPattern = this.contact.masks[this.countryModel].pattern;
-        return;
+      this.countryModel = 'AUS';
+      this.selectedCountryCode = this.contact.masks[this.countryModel].format;
+      this.activeContactPlaceholder = this.contact.masks[this.countryModel].placeholder;
+      this.activeContactPattern = this.contact.masks[this.countryModel].pattern;
+      return;
     }
   }
 
