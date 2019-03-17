@@ -16,5 +16,6 @@ export const environment = {
         video: '/appv2/local/uploads/'
       }
     }
-  }
+  },
+  goMobile: false,
 };
