@@ -8,6 +8,8 @@ import { AuthRoutingModule } from './auth-routing.module';
 
 import { AuthService } from './auth.service';
 
+import { UnauthorizedGuard } from './unauthorized.guard';
+import { ProgramSelectedGuard } from './program-selected.guard';
 import { AuthComponent } from './auth.component';
 import { AuthLoginComponent } from './auth-login/auth-login.component';
 import { AuthForgotPasswordComponent } from './auth-forgot-password/auth-forgot-password.component';
@@ -24,7 +26,7 @@ import { AuthDirectLoginComponent } from './auth-direct-login/auth-direct-login.
     AuthRoutingModule
   ],
   declarations: [
-    AuthComponent, 
+    AuthComponent,
     AuthLoginComponent,
     AuthForgotPasswordComponent,
     AuthRegistrationComponent,
@@ -34,6 +36,10 @@ import { AuthDirectLoginComponent } from './auth-direct-login/auth-direct-login.
   entryComponents: [
     AuthComponent
   ],
-  providers: [ AuthService ],
+  providers: [
+    AuthService,
+    UnauthorizedGuard,
+    ProgramSelectedGuard,
+  ],
 })
 export class AuthModule {}

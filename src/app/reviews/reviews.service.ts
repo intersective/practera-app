@@ -45,7 +45,7 @@ export class ReviewsService {
     if (!Array.isArray(data)) {
       return this.request.apiResponseFormatError('Reviews format error');
     }
-    let reviews = [];
+    const reviews = [];
     data.forEach(review => {
       if (!this.utils.has(review, 'Assessment.id') ||
           !this.utils.has(review, 'Assessment.name') ||
