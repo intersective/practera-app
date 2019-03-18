@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, Output, EventEmitter, forwardRef, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter, forwardRef, ViewChild, ElementRef } from '@angular/core';
 import { NG_VALUE_ACCESSOR, ControlValueAccessor, FormControl } from '@angular/forms';
 import { FilestackService } from '@shared/filestack/filestack.service';
 
@@ -14,7 +14,7 @@ import { FilestackService } from '@shared/filestack/filestack.service';
     }
   ]
 })
-export class FileComponent implements ControlValueAccessor, OnInit, AfterViewInit {
+export class FileComponent implements ControlValueAccessor, OnInit {
 
   @Input() question = {
     name: '',
@@ -56,9 +56,6 @@ export class FileComponent implements ControlValueAccessor, OnInit, AfterViewIni
 
   ngOnInit() {
     this.fileTypes = this.filestackService.getFileTypes(this.question.fileType);
-  }
-
-  ngAfterViewInit() {
     this._showSavedAnswers();
   }
 
