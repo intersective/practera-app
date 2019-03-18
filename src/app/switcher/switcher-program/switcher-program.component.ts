@@ -4,7 +4,7 @@ import { AuthService } from '../../auth/auth.service';
 import { Injectable, Inject } from '@angular/core';
 import { SwitcherService, ProgramObj } from '../switcher.service';
 import { RouterEnter } from '@services/router-enter.service';
-import { environment } from '../../../environments/environment';
+import { environment } from '@environments/environment';
 @Injectable({
   providedIn: 'root'
 })
