@@ -231,7 +231,6 @@ export class AssessmentComponent extends RouterEnter {
         assessment.in_progress = true;
       }
       this.utils.each(this.questionsForm.value, (value, key) => {
-        if (value) {
           questionId = +key.replace('q-', '');
           answers.push({
             assessment_question_id: questionId,
@@ -241,7 +240,6 @@ export class AssessmentComponent extends RouterEnter {
           if (requiredQuestions[questionId]) {
             this.utils.unset(requiredQuestions, questionId);
           }
-        }
       });
       // check if all required questions have answer when assessment done
       if (!saveInProgress && !this.utils.isEmpty(requiredQuestions)) {
