@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, forwardRef, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
+import { Component, Input, Output, EventEmitter, forwardRef, ViewChild, ElementRef, OnInit } from '@angular/core';
 import { NG_VALUE_ACCESSOR, ControlValueAccessor, FormControl } from '@angular/forms';
 
 @Component({
@@ -13,7 +13,7 @@ import { NG_VALUE_ACCESSOR, ControlValueAccessor, FormControl } from '@angular/f
     }
   ]
 })
-export class TextComponent implements ControlValueAccessor, AfterViewInit {
+export class TextComponent implements ControlValueAccessor, OnInit {
 
   @Input() question;
   @Input() submission;
@@ -44,7 +44,7 @@ export class TextComponent implements ControlValueAccessor, AfterViewInit {
 
   constructor() {}
 
-  ngAfterViewInit() {
+  ngOnInit() {
     this._showSavedAnswers();
   }
 
