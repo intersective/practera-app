@@ -11,7 +11,7 @@ import { PusherService } from '@shared/pusher/pusher.service';
 import { Achievement, AchievementsService } from '@app/achievements/achievements.service';
 import { EventsService } from '@app/events/events.service';
 import { Intercom } from 'ng-intercom';
-import { environment } from '../../environments/environment';
+import { environment } from '@environments/environment';
 
 @Component({
   selector: 'app-home',
