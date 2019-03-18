@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { ModalController } from '@ionic/angular';
+import { Router } from '@angular/router';
 import { UtilsService } from '@services/utils.service';
 import { Event } from '@app/events/events.service';
 import { EventDetailService } from './event-detail.service';
@@ -13,6 +14,7 @@ import { NotificationService } from '@shared/notification/notification.service';
 export class EventDetailComponent {
   event: Event;
   constructor(
+    private router: Router,
     public modalController: ModalController,
     public eventDetailService: EventDetailService,
     private notificationService: NotificationService,
@@ -78,7 +80,7 @@ export class EventDetailComponent {
       return 'Cancel Booking';
     }
     // for event that doesn't have check in
-    if (!this.utils.has(event, 'assessment.id')) {
+    if (!this.utils.has(this.event, 'assessment.id')) {
       return false;
     }
     // for event that have check in
