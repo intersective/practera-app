@@ -174,7 +174,7 @@ export class HomeComponent extends RouterEnter implements OnDestroy {
         user_id: this.storage.getUser().id, // current_user_id
         // Supports all optional configuration.
         widget: {
-          "activator": "#intercom"
+          'activator': '#intercom'
         }
       });
     }
