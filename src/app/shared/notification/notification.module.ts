@@ -22,7 +22,7 @@ import { NotificationService } from './notification.service';
   ],
   entryComponents: [
     PopUpComponent,
-    AchievementPopUpComponent
+    AchievementPopUpComponent,
   ]
 })
 

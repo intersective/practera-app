@@ -1,6 +1,9 @@
 <ion-content padding color="light">
-  <h1 text-center>{{ programName }}</h1>
-  <div text-center padding >
+  <h1 text-center>{{ programName }}</h1><br>
+  <a color="primary" routerLink="/events" *ngIf="haveEvents">
+    <ion-icon name="calendar" class="calendar" float-right></ion-icon>
+  </a>
+  <div text-center padding>
     <ng-container *ngIf="loadingProgress; else progressTpl">
       <ion-spinner></ion-spinner>
     </ng-container>
@@ -67,7 +70,7 @@
             <app-todo-card
               *ngSwitchCase="'chat'"
               [todoItem]="todoItem"
-              (click)="goToChat()"
+              (click)="goToChat(todoItem)"
             ></app-todo-card>
           </ng-container>
         </div>

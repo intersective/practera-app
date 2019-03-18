@@ -1,21 +1,21 @@
-import { Component, OnInit } from "@angular/core";
-import { Router, NavigationExtras } from "@angular/router";
-import { BrowserStorageService } from "@services/storage.service";
-import { RouterEnter } from "@services/router-enter.service";
-import { UtilsService } from "@services/utils.service";
+import { Component, OnInit } from '@angular/core';
+import { Router, NavigationExtras } from '@angular/router';
+import { BrowserStorageService } from '@services/storage.service';
+import { RouterEnter } from '@services/router-enter.service';
+import { UtilsService } from '@services/utils.service';
 
-import { ChatService, ChatListObject } from "../chat.service";
+import { ChatService, ChatListObject } from '../chat.service';
 
 @Component({
-  selector: "app-chat",
-  templateUrl: "chat-list.component.html",
-  styleUrls: ["chat-list.component.scss"]
+  selector: 'app-chat',
+  templateUrl: 'chat-list.component.html',
+  styleUrls: ['chat-list.component.scss']
 })
 export class ChatListComponent extends RouterEnter {
   routeUrl = '/app/chat';
   chatList: Array<ChatListObject>;
   haveMoreTeam: boolean;
-  loadingChatList: boolean = true;
+  loadingChatList = true;
 
   constructor(
     private chatService: ChatService,
@@ -24,7 +24,7 @@ export class ChatListComponent extends RouterEnter {
     public utils: UtilsService,
   ) {
     super(router);
-    let role = this.storage.getUser().role;
+    const role = this.storage.getUser().role;
     this.utils.getEvent('team-message').subscribe(event => {
       this._loadChatData();
     });
@@ -57,12 +57,12 @@ export class ChatListComponent extends RouterEnter {
    */
   private _checkHaveMoreTeam(): void {
     if (this.chatList.length > 0) {
-      let myRole = this.storage.getUser().role;
+      const myRole = this.storage.getUser().role;
       let index = 0;
       let teamCount = 0;
       for (index = 0; index < this.chatList.length; index++) {
         if (this.chatList[index].is_team) {
-          if (myRole === "mentor" || !this.chatList[index].participants_only) {
+          if (myRole === 'mentor' || !this.chatList[index].participants_only) {
             teamCount++;
           }
         }
@@ -82,24 +82,24 @@ export class ChatListComponent extends RouterEnter {
   navigateToChatRoom(chat) {
     if (chat.is_team) {
       this.router.navigate([
-        "chat",
-        "chat-room",
-        "team",
+        'chat',
+        'chat-room',
+        'team',
         chat.team_id,
         chat.participants_only
       ]);
     } else {
       if (chat.last_message_created) {
         this.router.navigate([
-          "chat",
-          "chat-room",
+          'chat',
+          'chat-room',
           chat.team_id,
           chat.team_member_id
         ]);
       } else {
         this.router.navigate([
-          "chat",
-          "chat-room",
+          'chat',
+          'chat-room',
           chat.team_id,
           chat.team_member_id,
           {

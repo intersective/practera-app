@@ -11,7 +11,7 @@ export class FileDisplayComponent {
   @Input() fileType = 'any';
   @Input() file: any;
 
-  constructor( private filestackService:FilestackService ) {}
+  constructor( private filestackService: FilestackService ) {}
   previewFile(file) {
     this.filestackService.previewFile(file);
   }
