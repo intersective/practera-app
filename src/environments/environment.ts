@@ -8,6 +8,7 @@ export const environment = {
   pusherKey: '255f010d210933ca7675',
   env: 'sandbox',
   APIEndpoint: 'https://stage-test.practera.com/',
+  intercomAppId: '',
   filestack: {
     key: 'AO6F4C72uTPGRywaEijdLz',
     s3Config: {
@@ -21,6 +22,7 @@ export const environment = {
       }
     }
   },
+  intercom: false,
   goMobile: false,
 };
 
