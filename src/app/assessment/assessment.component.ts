@@ -97,6 +97,9 @@ export class AssessmentComponent extends RouterEnter {
     this._initialise();
     this.action = this.route.snapshot.data.action;
     this.fromPage = this.route.snapshot.paramMap.get('from');
+    if (!this.fromPage) {
+      this.fromPage = this.route.snapshot.data.from;
+    }
     this.id = +this.route.snapshot.paramMap.get('id');
     this.activityId = +this.route.snapshot.paramMap.get('activityId');
     this.contextId = +this.route.snapshot.paramMap.get('contextId');
