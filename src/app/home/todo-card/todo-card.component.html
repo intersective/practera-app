@@ -1,6 +1,5 @@
-<ion-card color="primary-contrast" class="todo-card practera-card ion-activatable">
-  <ion-ripple-effect></ion-ripple-effect>
-  <ion-item>
+<ion-card color="primary-contrast" class="todo-card practera-card">
+  <clickable-item>
 
     <ng-container *ngIf="todoItem.type; else noOrLoading">
       <ng-container [ngSwitch]="todoItem.type">
@@ -36,5 +35,5 @@
       </div>
     </ng-template>
 
-  </ion-item>
+  </clickable-item>
 </ion-card>

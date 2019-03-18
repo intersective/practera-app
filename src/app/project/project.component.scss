@@ -33,7 +33,7 @@
   .project-card {
     width: 100%;
     .milestone-description {
-      color: var(--practera-milestone-name-font-color);
+      color: var(--practera-label-color);
       line-height: 20px;
       font-size: 14px;
     }
@@ -44,7 +44,7 @@
   background: var(--ion-color-light) !important;
 }
 .project-title {
-  color: var(--practera-milestone-name-font-color);
+  color: var(--practera-label-color);
   text-transform: capitalize;
   margin-top: 5px;
   margin-bottom: 10px;
@@ -81,7 +81,7 @@ ion-spinner {
 }
 
 .spacer {
-  height: 300px;
+  height: 480px;
 }
 
 .loading-card .practera-card {

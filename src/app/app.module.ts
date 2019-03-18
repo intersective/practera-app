@@ -9,16 +9,17 @@ import { NotificationModule } from '@shared/notification/notification.module';
 import { AuthModule } from './auth/auth.module';
 import { FastFeedbackModule } from './fast-feedback/fast-feedback.module';
 import { ReviewRatingModule } from './review-rating/review-rating.module';
+import { EventDetailModule } from './event-detail/event-detail.module';
 import { GoMobileModule } from './go-mobile/go-mobile.module';
 
 import { AppComponent } from './app.component';
 import { NgCircleProgressModule } from 'ng-circle-progress';
-import { UtilsService } from './services/utils.service';
+import { UtilsService, ContactNumberFormat } from './services/utils.service';
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
 import { EmbedVideo } from 'ngx-embed-video';
 import { environment } from '@environments/environment';
-import { PusherModule } from '@shared/pusher/pusher.module';
 import { IntercomModule } from 'ng-intercom';
+import { PusherModule } from '@shared/pusher/pusher.module';
 
 @NgModule({
   declarations: [
@@ -40,12 +41,13 @@ import { IntercomModule } from 'ng-intercom';
     FastFeedbackModule,
     GoMobileModule,
     ReviewRatingModule,
+    EventDetailModule,
     PusherModule.forRoot({
       apiurl: environment.APIEndpoint,
       pusherKey: environment.pusherKey,
     }),
     IntercomModule.forRoot({
-      appId: "pef1lmo8", // from your Intercom config
+      appId: environment.intercomAppId,
       updateOnRouterChange: true // will automatically run `update` on router event changes. Default: `false`
     })
   ],
@@ -53,6 +55,7 @@ import { IntercomModule } from 'ng-intercom';
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
     // Custom
     UtilsService,
+    ContactNumberFormat,
   ],
   bootstrap: [AppComponent],
 })

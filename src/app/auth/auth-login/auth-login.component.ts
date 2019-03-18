@@ -33,7 +33,7 @@ export class AuthLoginComponent {
         buttons: [
           {
             text: 'OK',
-            role: 'cancel',          
+            role: 'cancel',
             handler: () => {
               this.isLoggingIn = false;
               return;
@@ -41,33 +41,32 @@ export class AuthLoginComponent {
           }
         ]
       });
-      return ;
+      return;
     }
     this.isLoggingIn = true;
     this.authService.login({
       email: this.loginForm.value.email,
       password: this.loginForm.value.password,
-    }).subscribe(res => {
-      this.isLoggingIn = false;
-      if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
+    }).subscribe(
+      res => {
+        this.isLoggingIn = false;
         this.router.navigate(['/switcher']);
-      } else {
-        this.router.navigate(['/go-mobile']);
+      },
+      err => {
+        this.notificationService.alert({
+          message: 'Your email or password is incorrect, please try again.',
+          buttons: [
+            {
+              text: 'OK',
+              role: 'cancel',
+              handler: () => {
+                this.isLoggingIn = false;
+                return;
+              },
+            },
+          ],
+        });
       }
-    }, err => {
-      this.notificationService.alert({
-        message: 'Your email or password is incorrect, please try again.',
-        buttons: [
-          {
-            text: 'OK',
-            role: 'cancel',          
-            handler: () => {
-              this.isLoggingIn = false;
-              return;
-            }
-          }
-        ]
-      });
-    });
+    );
   }
 }

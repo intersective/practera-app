@@ -13,21 +13,21 @@ import { BrowserStorageService } from '@services/storage.service';
   styleUrls: ['./topic.component.scss']
 })
 export class TopicComponent extends RouterEnter {
-  routeUrl: string = '/topic/';
+  routeUrl = '/topic/';
   topic: Topic = {
     id: 0,
     title: '',
     content: '',
     videolink: '',
-    files:[],
+    files: [],
     hasComments: false
   };
-  iframeHtml: string ='';
-  btnToggleTopicIsDone: boolean = false;
-  loadingMarkedDone: boolean = true;
-  loadingTopic: boolean = true;
-  id: number = 0;
-  activityId: number = 0;
+  iframeHtml = '';
+  btnToggleTopicIsDone = false;
+  loadingMarkedDone = true;
+  loadingTopic = true;
+  id = 0;
+  activityId = 0;
   topicProgress: number;
 
   constructor(
@@ -48,7 +48,7 @@ export class TopicComponent extends RouterEnter {
       title: '',
       content: '',
       videolink: '',
-      files:[],
+      files: [],
       hasComments: false
     };
     this.loadingMarkedDone = true;
@@ -57,8 +57,8 @@ export class TopicComponent extends RouterEnter {
 
   onEnter() {
     this._initialise();
-    this.id = parseInt(this.route.snapshot.paramMap.get('id'));
-    this.activityId = parseInt(this.route.snapshot.paramMap.get('activityId'));
+    this.id = +this.route.snapshot.paramMap.get('id');
+    this.activityId = +this.route.snapshot.paramMap.get('activityId');
     this._getTopic();
     this._getTopicProgress();
   }
@@ -75,10 +75,9 @@ export class TopicComponent extends RouterEnter {
   }
 
   private _getTopicProgress() {
-    this.topicService.getTopicProgress(this.activityId,this.id)
+    this.topicService.getTopicProgress(this.activityId, this.id)
       .subscribe(result => {
         this.topicProgress = result;
-        
         if (this.topicProgress !== null && this.topicProgress !== undefined) {
           if (this.topicProgress === 1) {
             this.btnToggleTopicIsDone = true;

@@ -1,45 +1,57 @@
 <ion-header>
-    <ion-toolbar color="light">
-        <ion-title text-center>It's 10x better on mobile!</ion-title>
-    </ion-toolbar>
+  <ion-toolbar color="light">
+    <ion-title text-center>It's 10x better on mobile!</ion-title>
+  </ion-toolbar>
 </ion-header>
 <ion-content class='go-mobile'>
-    <form (ngSubmit)="submit()" >
-    <ion-grid>
-        <div *ngIf="profile.contactNumber && saved">
-            <ion-row justify-content-center>
-                <ion-col align-self-center text-center>
-                    <img src='/assets/img/mobile.png'/>
-                    <P>You can now launch Practera on your phone for a better experience. Just click below!</P>
-                </ion-col>
-            </ion-row>
-
-        </div>
-        <div *ngIf="!profile.contactNumber || !saved">
-            <ion-row justify-content-center>
-                <ion-col align-self-center text-center>
-                        <img src='/assets/img/mobile.png'/>
-                        <P>Add your mobile number to get the most out of Practera. We will never send you spam!</P>
-                </ion-col>
-            </ion-row>
-             <ion-row>
-                <ion-col size-sm size="12" text-right>
-                        <input [textMask]="{mask: mask, showMask: true, guide: true}" [(ngModel)]="profile.contactNumber" (keyup)="validateContactNumber()" (blur)="validateContactNumber()" name="contactNumber" type="text" class="contact-input"/>
-                </ion-col>
-                <ion-col size-sm size="12" text-left>
-                    <ion-select placeholder="Select Country" name="countryModel" [(ngModel)]="countryModel" (ionChange)="updateCountry()">
-                        <ion-select-option *ngFor="let countryCode of countryCodes" [value]="countryCode.code">{{countryCode.name}}</ion-select-option>
-                    </ion-select>
-                </ion-col>
-            </ion-row>
-        </div>
-        <div text-center>
-            <ion-button expand="block" type="submit" [disabled]="invalidNumber || loading">Send Instant-Login via SMS  <ion-spinner *ngIf="loading"></ion-spinner></ion-button>
-                
-            <a href="/switcher">not right now...</a>
-        </div>
-    </ion-grid>
-    </form>
+  <form (ngSubmit)="submit()" >
+  <ion-grid>
+    <div *ngIf="profile.contactNumber && saved">
+      <ion-row justify-content-center>
+        <ion-col class="glazing-effect" align-self-center text-center>
+          <img src='/assets/img/mobile.png'/>
+          <P>You can now launch Practera on your phone for a better experience. Just click below!</P>
+        </ion-col>
+      </ion-row>
+    </div>
+    <div *ngIf="!profile.contactNumber || !saved">
+      <ion-row justify-content-center>
+        <ion-col class="glazing-effect" align-self-center text-center>
+          <img src='/assets/img/mobile.png'/>
+          <P>Add your mobile number to get the most out of Practera. We will never send you spam!</P>
+        </ion-col>
+      </ion-row>
+      <ion-item lines="none">
+        <ion-col size="6" text-right>
+          <input [textMask]="{mask: mask, showMask: true, guide: true}"
+            [(ngModel)]="profile.contactNumber"
+            (keyup)="validateContactNumber()"
+            (blur)="validateContactNumber()"
+            name="contactNumber"
+            type="text"
+            class="contact-input"
+          />
+        </ion-col>
+        <ion-col size="6" text-left>
+            <ion-select placeholder="Select Country"
+              name="countryModel"
+              [(ngModel)]="countryModel"
+              (ionChange)="updateCountry()">
+                <ion-select-option *ngFor="let countryCode of contact.countryCodes" [value]="countryCode.code">
+                  {{countryCode.name}}
+                </ion-select-option>
+            </ion-select>
+        </ion-col>
+      </ion-item>
+    </div>
+    <div text-center>
+        <ion-button expand="block" type="submit" [disabled]="invalidNumber || sendingSMS">
+          Send Instant-Login via SMS  <ion-spinner *ngIf="sendingSMS"></ion-spinner>
+        </ion-button>
+        <a href="/app/home">not right now...</a>
+    </div>
+  </ion-grid>
+  </form>
 </ion-content>
-  
-  
+
+

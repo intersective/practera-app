@@ -1,107 +1,78 @@
-import { Router } from '@angular/router';
 import { Component, OnInit } from '@angular/core';
-import { ModalController } from '@ionic/angular';
-import { GoMobileService, Profile } from './go-mobile.service';
+import { GoMobileService } from './go-mobile.service';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
-import { UtilsService } from '@services/utils.service';
+import { UtilsService, ContactNumberFormat } from '@services/utils.service';
 import { NotificationService } from '@shared/notification/notification.service';
-import { BrowserStorageService } from "@services/storage.service";
-import { environment } from '../../environments/environment.prod';
+import { BrowserStorageService } from '@services/storage.service';
+import { environment } from '../../environments/environment';
 
 @Component({
-  selector: 'app-switcher',
+  selector: 'go-mobile',
   templateUrl: './go-mobile.component.html',
   styleUrls: ['./go-mobile.component.scss']
 })
 export class GoMobileComponent implements OnInit {
-  loading: boolean = false;
-  saved: boolean = false;
-  profile : Profile = {
+  sendingSMS = false;
+  saved = false;
+  profile = {
     contactNumber: '',
     email: '',
     sendsms: true
   };
-  invalidNumber: boolean = true;
+  invalidNumber = true;
   // default country model
-  countryModel = "AUS";
+  countryModel = 'AUS';
   // default mask
   mask: Array<string|RegExp>;
-  // variable to control the update button
-  updating = false;
-  // supported countries
-  countryCodes = [
-    {
-        name: "Australia",
-        code: "AUS",
-        format: '+61 ___ ___ ___'
-    },
-    {
-        name: "US/Canada",
-        code: "US",
-        format: '+1 ___ ___ ____'
-    },
-  ];
 
-  formatMasks = {
-      AUS: ['+','6','1',' ', /[1-9]/, /\d/, /\d/, ' ', /\d/, /\d/, /\d/, ' ', /\d/, /\d/, /\d/],
-      US: ['+','1', ' ',/[1-9]/, /\d/, /\d/, ' ', /\d/, /\d/, /\d/, ' ', /\d/, /\d/, /\d/, /\d/]
-   };
   constructor(
-    public modalController: ModalController,
-    private router: Router,
-    private GoMobileService: GoMobileService,
+    private goMobileService: GoMobileService,
     private utils: UtilsService,
     private notification: NotificationService,
     public storage: BrowserStorageService,
+    public contact: ContactNumberFormat,
   ) {}
 
   ngOnInit() {
-    if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
-      this.router.navigate(['/switcher']);
-    }
-    this.profile.email = this.storage.getUser().email;
     this.profile.contactNumber = this.storage.getUser().contactNumber;
     if (this.profile.contactNumber) {
       this.saved = true;
       this.invalidNumber = false;
     }
     // by default, set Mask in Australian format.
-    this.mask = this.formatMasks[this.countryModel];
     /*
-        user has no contact number, set the default mask
-          : also check which the server which the APP talks to, i.e if the APP is consuming APIs from 'us.practera.com' then, it is APP V2 in US.
-            But if APP consumes APIs from 'api.practera.com' then it is APP V2 in AUS.
-      */
+      user has no contact number, set the default mask
+        : also check which the server which the APP talks to, i.e if the APP is consuming APIs from 'us.practera.com' then, it is APP V2 in US.
+          But if APP consumes APIs from 'api.practera.com' then it is APP V2 in AUS.
+    */
     if (environment.APIEndpoint.indexOf('us') !== -1) {
       this.countryModel = 'US';
-      this.mask = this.formatMasks[this.countryModel];
     }
 
-  }
-
-  dismiss() {
-    // change the flag to false
-    this.modalController.dismiss();
+    this.mask = this.contact.masks[this.countryModel];
   }
 
   submit() {
-    this.loading = true;
-    this.profile.contactNumber = this.profile.contactNumber.replace(/[^0-9+]+/ig, "");
+    this.sendingSMS = true;
+    this.profile.contactNumber = this.profile.contactNumber.replace(/[^0-9+]+/ig, '');
     // check if newly input number is valid or not.
     if (!this.validateContactNumber()) {
       return this.notification.presentToast('Invalid contact number', false);
     }
 
-    this.GoMobileService.submit(this.profile).subscribe(res => {
+    this.goMobileService.submit({
+      contact_number: this.profile.contactNumber,
+      sendsms: true,
+    }).subscribe(res => {
       this.saved = true;
-      this.notification.alert({
+      const alertBox = this.notification.alert({
         header: 'Going Mobile!',
         message: 'You should get an SMS shortly... if not, contact our help team',
         buttons: [{
           text: 'OK',
           handler: () => {
-            this.loading = false;
-            return this.dismiss();
+            this.sendingSMS = false;
+            return this.notification.dismiss();
           },
         }],
       });
@@ -109,23 +80,23 @@ export class GoMobileComponent implements OnInit {
   }
 
   validateContactNumber() {
-    var contactNumber = this.profile.contactNumber.replace(/[^0-9+]+/ig, "");
+    const contactNumber = this.profile.contactNumber.replace(/[^0-9+]+/ig, '');
 
     switch (this.countryModel) {
-      case "AUS":
-        if (contactNumber.length == 12) {
+      case 'AUS':
+        if (contactNumber.length === 12) {
           this.invalidNumber = false;
           return true;
-        } else if(contactNumber.length == 3) {
+        } else if (contactNumber.length === 3) {
           this.profile.contactNumber = null;
         }
         break;
 
-      case "US" :
-        if (contactNumber.length == 12) {
+      case 'US' :
+        if (contactNumber.length === 12) {
           this.invalidNumber = false;
           return true;
-        } else if (contactNumber.length == 2) {
+        } else if (contactNumber.length === 2) {
           this.profile.contactNumber = null;
         }
         break;
@@ -135,14 +106,14 @@ export class GoMobileComponent implements OnInit {
   }
 
   updateCountry() {
-    var selectedCountry = this.countryModel;
-    var country = this.utils.find(this.countryCodes, function(country){
-      return country.code === selectedCountry;
+    const selectedCountry = this.countryModel;
+    const country = this.utils.find(this.contact.countryCodes, function(c) {
+      return c.code === selectedCountry;
     });
     // set currentContactNumber to it's format.
     this.profile.contactNumber = country.format;
     // update the mask as per the newly selected country
-    this.mask = this.formatMasks[country.code];
-  };
+    this.mask = this.contact.masks[country.code];
+  }
 
 }

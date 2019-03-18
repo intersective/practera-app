@@ -105,6 +105,10 @@ body {
   background: white;
 }
 
+.width-100 {
+  width: 100%;
+}
+
 // question name
 .q-title {
   font-size: 16px;
@@ -155,7 +159,6 @@ body {
   }
 }
 
-
 @media only screen and (max-device-width: 667px), screen and (max-width: 450px) {
   .intercom-namespace .intercom-launcher-badge-frame {
     transform: translateX(15px);
@@ -167,5 +170,40 @@ body {
     transform: scale(.7) translateX(30px);
     top: 0px !important;
     right: 0px !important;
+  }
+}
+
+.event-detail-popup {
+  .modal-wrapper {
+    --height: 90%;
+    --width: 80%;
+    --border-radius: 12px;
+    --box-shadow: none;
+  }
+}
+
+/******************
+  Filter buttons
+  Currently used on reviews & events page
+******************/
+.btn-filter {
+  ion-button {
+    margin: 0;
+    color: var(--ion-color-primary);
+    --background: white;
+  }
+  .btn-activated{
+    color: white;
+    --background: var(--ion-color-primary);
+  }
+  .btn-left-half {
+    --border-radius: 50px 0 0 50px;
+  }
+  .btn-middle {
+    --border-radius: 0;
+    margin: 0 2px;
+  }
+  .btn-right-half {
+    --border-radius: 0 50px 50px 0;
   }
 }

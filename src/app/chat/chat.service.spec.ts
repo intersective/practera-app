@@ -5,7 +5,7 @@ describe('ChatService', () => {
   let service: ChatService;
 
   beforeEach(() => {
-  	TestBed.configureTestingModule({})
+    TestBed.configureTestingModule({});
     service = TestBed.get(ChatService);
   });
 
@@ -14,32 +14,32 @@ describe('ChatService', () => {
   });
 
   it('should instantiated with variables', () => {
-  	expect(service['chatList']).toBeTruthy();
-  	expect(service['messageList']).toBeTruthy();
+    expect(service['chatList']).toBeTruthy();
+    expect(service['messageList']).toBeTruthy();
   });
 
   it('#getchatList should', () => {
-  	expect(service.getchatList).toBeTruthy();
+    expect(service.getchatList).toBeTruthy();
   });
 
   it('#getMessageList should', () => {
-  	expect(service.getMessageList).toBeTruthy();
+    expect(service.getMessageList).toBeTruthy();
   });
 
   it('#markMessagesAsSeen should', () => {
-  	expect(service.markMessagesAsSeen).toBeTruthy();
+    expect(service.markMessagesAsSeen).toBeTruthy();
   });
 
   it('#postNewMessage should', () => {
-  	expect(service.postNewMessage).toBeTruthy();
+    expect(service.postNewMessage).toBeTruthy();
   });
 
   it('#generateChatAvatarText should', () => {
-  	expect(service.generateChatAvatarText).toBeTruthy();
+    expect(service.generateChatAvatarText).toBeTruthy();
   });
 
   it('#getRandomColor should', () => {
-  	expect(service.getRandomColor).toBeTruthy();
+    expect(service.getRandomColor).toBeTruthy();
   });
 
 });
