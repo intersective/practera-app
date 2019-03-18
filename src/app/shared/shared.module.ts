@@ -7,6 +7,7 @@ import { AchievementBadgeComponent } from '@shared/components/achievement-badge/
 import { EventCardComponent } from '@shared/components/event-card/event-card.component';
 import { DescriptionComponent } from '@shared/components/description/description.component';
 import { ClickableItemComponent } from '@shared/components/clickable-item/clickable-item.component';
+import { ContactNumberFormComponent } from './components/contact-number-form/contact-number-form.component';
 
 @NgModule({
   imports: [
@@ -19,11 +20,13 @@ import { ClickableItemComponent } from '@shared/components/clickable-item/clicka
     AchievementBadgeComponent,
     EventCardComponent,
     DescriptionComponent,
-    ClickableItemComponent
+    ClickableItemComponent,
+    ContactNumberFormComponent
   ],
   exports: [
     ActivityCardComponent,
     AchievementBadgeComponent,
+    ContactNumberFormComponent,
     EventCardComponent,
     DescriptionComponent,
     ClickableItemComponent,
