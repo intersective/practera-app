@@ -16,5 +16,6 @@ export const environment = {
         video: '/media/fpvideo/upload/'
       }
     }
-  }
+  },
+  goMobile: false,
 };
