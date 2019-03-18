@@ -30,4 +30,17 @@ export class EventCardComponent implements OnInit {
     }
   }
 
+  isPast() {
+    if (!this.event.isPast) {
+      return false;
+    }
+    if (!this.utils.has(this.event, 'assessment.id')) {
+      return true;
+    }
+    if (this.event.assessment.isDone) {
+      return true;
+    }
+    return false;
+  }
+
 }
