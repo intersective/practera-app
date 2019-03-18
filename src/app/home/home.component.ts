@@ -10,6 +10,8 @@ import { RouterEnter } from '@services/router-enter.service';
 import { PusherService } from '@shared/pusher/pusher.service';
 import { Achievement, AchievementsService } from '@app/achievements/achievements.service';
 import { EventsService } from '@app/events/events.service';
+import { Intercom } from 'ng-intercom';
+import { environment } from '../../environments/environment';
 
 @Component({
   selector: 'app-home',
@@ -30,6 +32,7 @@ export class HomeComponent extends RouterEnter implements OnDestroy {
   haveEvents = false;
 
   constructor(
+    private intercom: Intercom,
     public router: Router,
     private homeService: HomeService,
     private fastFeedbackService: FastFeedbackService,
@@ -162,6 +165,19 @@ export class HomeComponent extends RouterEnter implements OnDestroy {
         this.haveEvents = !this.utils.isEmpty(events);
       })
     );
+
+    if (typeof environment.intercom !== 'undefined' && environment.intercom === true) {
+      this.intercom.boot({
+        app_id: environment.intercomAppId,
+        name: this.storage.getUser().name, // Full name
+        email: this.storage.getUser().email, // Email address
+        user_id: this.storage.getUser().id, // current_user_id
+        // Supports all optional configuration.
+        widget: {
+          "activator": "#intercom"
+        }
+      });
+    }
   }
 
   goToActivity(id) {
