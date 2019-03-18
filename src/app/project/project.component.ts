@@ -30,12 +30,12 @@ export interface Milestone {
 })
 export class ProjectComponent extends RouterEnter {
 
-  public routeUrl: string = '/app/project';
+  public routeUrl = '/app/project';
   public programName: string;
   public milestones: Array<Milestone> = [];
-  public loadingActivity: boolean = true;
-  public loadingMilestone: boolean = true;
-  public loadingProgress: boolean = true;
+  public loadingActivity = true;
+  public loadingMilestone = true;
+  public loadingProgress = true;
   @ViewChild('contentRef', {read: ElementRef}) contentRef: any;
   @ViewChildren('milestoneRef', {read: ElementRef}) milestoneRefs: QueryList<ElementRef>;
   private milestonePositions: Array<number> = [];
@@ -85,25 +85,32 @@ export class ProjectComponent extends RouterEnter {
   }
 
   trackScrolling(event) {
-    let activeMilestoneIndex = this.milestonePositions.findIndex((element, i) => {
-      if (i == this.milestonePositions.length - 1) {
+    const activeMilestoneIndex = this.milestonePositions.findIndex((element, i) => {
+
+      if (i === this.milestonePositions.length - 1) {
         return event.detail.currentY >= element;
       }
+
       return event.detail.currentY >= element && event.detail.currentY < this.milestonePositions[i + 1];
+
     });
     // update active milestone status
     this.activeMilestone.fill(false);
+
     this.activeMilestone[activeMilestoneIndex] = true;
+
   }
 
   // scroll to a milestone. i is the index of milestone list
   scrollTo(i) {
     this.contentRef.nativeElement.scrollToPoint(0, this.milestonePositions[i], 500);
+
   }
 
   private _getMilestonePositions() {
     this.milestonePositions = this.milestoneRefs.map(milestoneRef => {
       return milestoneRef.nativeElement.offsetTop;
+
     });
   }
 
@@ -113,8 +120,8 @@ export class ProjectComponent extends RouterEnter {
 
   private _addActivitiesToEachMilestone(milestones, activities) {
     activities.forEach(activity => {
-      let milestoneIndex = milestones.findIndex(milestone => {
-        return milestone.id === activity.milestoneId
+      const milestoneIndex = milestones.findIndex(milestone => {
+        return milestone.id === activity.milestoneId;
       });
       milestones[milestoneIndex].Activity.push(activity);
     });
@@ -123,13 +130,13 @@ export class ProjectComponent extends RouterEnter {
 
   private _populateMilestoneProgress(progresses, milestones) {
     progresses.Milestone.forEach(milestoneProgress => {
-      let milestoneIndex = milestones.findIndex(milestone => {
-        return milestone.id === milestoneProgress.id
+      const milestoneIndex = milestones.findIndex(milestone => {
+        return milestone.id === milestoneProgress.id;
       });
 
       milestones[milestoneIndex].progress = milestoneProgress.progress;
       milestones[milestoneIndex].Activity.forEach((activity, activityIndex) => {
-        var thisActivity = milestoneProgress.Activity.find(item => {
+        const thisActivity = milestoneProgress.Activity.find(item => {
           return item.id === activity.id;
         });
         if (this.utils.has(thisActivity, 'progress')) {

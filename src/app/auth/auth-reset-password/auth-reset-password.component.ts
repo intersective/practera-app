@@ -17,10 +17,13 @@ export class AuthResetPasswordComponent implements OnInit {
   verifySuccess = false;
   isResetting = false;
 
-  resetPasswordForm = new FormGroup({
-    password: new FormControl('', [Validators.required]),
-    confirmPassword: new FormControl(''),
-  }, { validators: this.checkPasswordMatching });
+  resetPasswordForm = new FormGroup(
+    {
+      password: new FormControl('', [Validators.required]),
+      confirmPassword: new FormControl(''),
+    },
+    { validators: this.checkPasswordMatching }
+  );
 
   constructor(
     private route: ActivatedRoute,
@@ -37,34 +40,40 @@ export class AuthResetPasswordComponent implements OnInit {
       return this._notifyAndRedirect('Invalid reset password link');
     }
     // Call API to verify that key and email parameters from reset password URL are valid
-    this.authService.verifyResetPassword({key: this.key, email: this.email}).subscribe(res => {
-      // verification of key and email is successfuly.
-      this.verifySuccess = true;
-    }, err => {
-      return this._notifyAndRedirect('Invalid reset password link');
-    });
+    this.authService.verifyResetPassword({key: this.key, email: this.email}).subscribe(
+      res => {
+        // verification of key and email is successfuly.
+        this.verifySuccess = true;
+      },
+      err => {
+        return this._notifyAndRedirect('Invalid reset password link');
+      }
+    );
   }
 
   resetPassword() {
-    let data = {
+    const data = {
       key: this.key,
       email: this.email,
       password: this.resetPasswordForm.controls.password.value,
       verify_password: this.resetPasswordForm.controls.confirmPassword.value
     };
 
-    this.authService.resetPassword(data).subscribe(res => {
-      return this._notifyAndRedirect('Password successfully changed!. Please login with the new password.');
-    },err => {
-      return this.notificationService.presentToast('Error updating password.Try again', false);
-    });
+    this.authService.resetPassword(data).subscribe(
+      res => {
+        return this._notifyAndRedirect('Password successfully changed!. Please login with the new password.');
+      },
+      err => {
+        return this.notificationService.presentToast('Error updating password.Try again', false);
+      }
+    );
   }
 
-  checkPasswordMatching(resetPasswordForm: FormGroup) { 
-    let password = resetPasswordForm.controls.password.value;
-    let confirmPassword = resetPasswordForm.controls.confirmPassword.value;
-    
-    return password === confirmPassword ? null : { notMatching : true }
+  checkPasswordMatching(resetPasswordForm: FormGroup) {
+    const password = resetPasswordForm.controls.password.value;
+    const confirmPassword = resetPasswordForm.controls.confirmPassword.value;
+
+    return password === confirmPassword ? null : { notMatching : true };
   }
 
   private _notifyAndRedirect(msg) {

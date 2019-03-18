@@ -4,9 +4,7 @@ $message-body-size: 224px;
   background-color: transparent !important;
 
   ion-item {
-
     ion-avatar {
-
       margin: 2px 6px 2px 0 !important;
       margin-left: -8px !important;
 
@@ -127,15 +125,13 @@ $message-body-size: 224px;
         width: fit-content;
 
         &.image {
+          background: none !important;
+          line-height: 0;
           padding: 0;
+          cursor: pointer;
         }
 
-        &.general-attachment {
-          border-radius: 25px;
-          max-width: $message-body-size;
-        }
-
-        p,.message-text {
+        p, .message-text {
           color: black;
           font-size: 16px;
           line-height: 24px;
@@ -152,12 +148,55 @@ $message-body-size: 224px;
             text-align: left;
           }
         }
-      }
 
-      video.message-body {
-        padding: 0;
-        max-width: $message-body-size;
-        border-radius: 25px;
+        &.video-attachment-container {
+          min-width: $message-body-size;
+          min-height: 125px;
+          background: #eaeaea !important;
+          line-height: 0;
+          padding: 0;
+          display:block;
+          position:relative;
+          cursor: pointer;
+          border: 1px #bbbbbb solid;
+
+          #inner-box {
+            border-radius: inherit;
+            min-width: inherit;
+            min-height: inherit;
+            position: absolute;
+            padding: 0;
+
+            p {
+              color: var(--ion-color-primary);
+              margin-top: 1.5em;
+              text-align: center;
+              ion-icon {
+                font-size: 5em !important;
+              }
+            }
+          }
+
+          .video {
+            padding: inherit;
+            min-width: 100%;
+            max-width: inherit;
+            min-height: 100%;
+            max-height: inherit;
+            border-radius: inherit;
+          }
+
+          .label {
+            margin-left: 0.8em;
+            text-shadow: 1px 1px white;
+          }
+
+          &:hover {
+            background: #bbbbbb !important;
+            opacity: 0.9;
+            transition: 0.5s opacity, 0.5s background;
+          }
+        }
       }
 
       .seen-text {
@@ -165,17 +204,11 @@ $message-body-size: 224px;
         color: var(--practera-chat-color-time-text-color);
       }
 
-      &.reserved-messages {
-
+      &.received-messages {
         text-align: left;
 
         .message-body {
           background-color: white;
-
-          // image attachment no need to contrast text colors
-          &.image {
-            background: none;
-          }
         }
 
         .time {
@@ -186,7 +219,6 @@ $message-body-size: 224px;
         &.no-avatar {
           margin-left: 10%;
         }
-
       }
 
       &.send-messages {
@@ -194,10 +226,6 @@ $message-body-size: 224px;
 
         .message-body {
           background-color: var(--ion-color-primary);
-
-          &.image {
-            background: none;
-          }
 
           // consistent colour to make attachment standout
           &.general-attachment {
@@ -210,17 +238,8 @@ $message-body-size: 224px;
           .message-text {
             color: white !important;
             a.linkified {
-              color: white !important;
-              font-size: 16px;
-              line-height: 24px;
-              margin: 0;
-              text-align: left;
+              color: white;
             }
-          }
-
-          video {
-            max-width: 190px; // to accommodate parent's 224px with fixed padding
-            padding: 0;
           }
         }
       }

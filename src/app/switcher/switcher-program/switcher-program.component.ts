@@ -4,7 +4,7 @@ import { AuthService } from '../../auth/auth.service';
 import { Injectable, Inject } from '@angular/core';
 import { SwitcherService, ProgramObj } from '../switcher.service';
 import { RouterEnter } from '@services/router-enter.service';
-
+import { environment } from '@environments/environment';
 @Injectable({
   providedIn: 'root'
 })
@@ -32,10 +32,14 @@ export class SwitcherProgramComponent implements OnInit {
   }
 
   switch(index) {
-    this.switcherService.switchProgram(this.programs[index])
-      .subscribe(() => {
-        this.router.navigate(['/app/home']);
-      });
+    this.switcherService.switchProgram(this.programs[index]).subscribe(() => {
+      if ((typeof environment.goMobile !== 'undefined' && environment.goMobile === false)
+        || /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
+        return this.router.navigate(['/app/home']);
+      } else {
+        return this.router.navigate(['/go-mobile']);
+      }
+    });
   }
 
   logout() {

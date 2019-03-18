@@ -34,8 +34,8 @@ export interface Achievement {
 })
 
 export class AchievementsService {
-  earnedPoints: number = 0;
-  totalPoints: number = 0;
+  earnedPoints = 0;
+  totalPoints = 0;
   constructor(
     private request: RequestService,
     private utils: UtilsService,
@@ -59,7 +59,7 @@ export class AchievementsService {
     if (!Array.isArray(data)) {
       return this.request.apiResponseFormatError('Achievement format error');
     }
-    let achievements: Array<Achievement> = [];
+    const achievements: Array<Achievement> = [];
     data.forEach(achievement => {
       if (!this.utils.has(achievement, 'id') ||
           !this.utils.has(achievement, 'name') ||
@@ -98,7 +98,7 @@ export class AchievementsService {
   }
 
   markAchievementAsSeen(achievementId) {
-    let postData = {
+    const postData = {
       project_id: this.storage.getUser().projectId,
       identifier: 'Achievement-' + achievementId,
       is_done: true
