@@ -1,17 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Observable, of } from 'rxjs';
-import { RequestService } from '@shared/request/request.service';
-
-const api = {
-  post: {
-    profile: 'api/v2/user/enrolment/edit.json',
-  }
-};
-
-export interface Profile {
-	contactNumber : string,
-	email : string
-}
+import { SharedService, Profile } from '@services/shared.service';
 
 @Injectable({
   providedIn: 'root'
@@ -19,16 +7,11 @@ export interface Profile {
 export class SettingService {
 
   constructor(
-  	private request : RequestService,
+    private sharedService: SharedService,
   ) { }
 
-  updateProfile(profile : Profile) {
-  	let postData;
-  	postData = {
-  		contact_number: profile.contactNumber
-  	};
-
-  	return this.request.post(api.post.profile, postData);
+  updateProfile(data: Profile) {
+    return this.sharedService.updateProfile(data);
   }
 
 }

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Observable, of } from 'rxjs';
+import { Observable, of, concat } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { RequestService } from '@shared/request/request.service';
 import { UtilsService } from '@services/utils.service';
@@ -13,7 +13,7 @@ import { SharedService } from '@services/shared.service';
  * @type {Object}
  */
 const api = {
-  me: "api/users.json",
+  me: 'api/users.json',
   teams: 'api/teams.json'
 };
 
@@ -46,7 +46,7 @@ export interface Timeline {
 }
 
 export interface Enrolment {
-  contact_number: string
+  contact_number: string;
 }
 
 @Injectable({
@@ -59,16 +59,19 @@ export class SwitcherService {
     private request: RequestService,
     private utils: UtilsService,
     private storage: BrowserStorageService,
-    private sharedService: SharedService
+    private sharedService: SharedService,
   ) {}
 
   getPrograms() {
     return of(this.storage.get('programs'));
   }
 
-  switchProgram(programObj:ProgramObj) {
-    let themeColor = this.utils.has(programObj, 'program.config.theme_color') ? programObj.program.config.theme_color : '#2bbfd4';
-    let cardBackgroundImage = this.utils.has(programObj, 'program.config.card_style') ? '/assets/' + programObj.program.config.card_style : '';
+  switchProgram(programObj: ProgramObj) {
+    const themeColor = this.utils.has(programObj, 'program.config.theme_color') ? programObj.program.config.theme_color : '#2bbfd4';
+    let cardBackgroundImage = '';
+    if (this.utils.has(programObj, 'program.config.card_style')) {
+      cardBackgroundImage = '/assets/' + programObj.program.config.card_style;
+    }
     this.storage.setUser({
       programId: programObj.program.id,
       programName: programObj.program.name,
@@ -80,9 +83,9 @@ export class SwitcherService {
       themeColor: themeColor,
       activityCardImage: cardBackgroundImage
     });
-    this.getTeamInfo().subscribe();
+
     this.sharedService.onPageLoad();
-    return this.getMyInfo();
+    return concat(this.getTeamInfo(), this.getMyInfo());
   }
 
   getTeamInfo(): Observable<any> {
@@ -101,8 +104,7 @@ export class SwitcherService {
             teamId: response.data.Teams[0].id
           });
         }
-      })
-    );
+      }));
   }
 
   /**
@@ -131,5 +133,4 @@ export class SwitcherService {
       return response;
     }));
   }
-
 }

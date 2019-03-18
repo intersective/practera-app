@@ -10,9 +10,9 @@ import { RouterEnter } from '@services/router-enter.service';
   styleUrls: ['achievements.component.scss']
 })
 export class AchievementsComponent extends RouterEnter {
-  routeUrl: string = '/achievements';
+  routeUrl = '/achievements';
   achievements: Array<Achievement>;
-  loadingAchievements: boolean = true;
+  loadingAchievements = true;
 
   constructor (
     public router: Router,
@@ -26,7 +26,7 @@ export class AchievementsComponent extends RouterEnter {
     this.achievementService.getAchievements().subscribe(achievements => {
       this.achievements = achievements;
       this.loadingAchievements = false;
-    })
+    });
   }
 
   back() {
