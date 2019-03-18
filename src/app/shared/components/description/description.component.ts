@@ -1,21 +1,23 @@
-import { Component, Input, ViewChild, ElementRef } from '@angular/core';
+import { Component, Input, ViewChild, ElementRef, AfterViewInit} from '@angular/core';
 
 @Component({
   selector: 'app-description',
   templateUrl: 'description.component.html',
   styleUrls: ['./description.component.scss']
 })
-export class DescriptionComponent {
-  heightLimit: number = 90;
-  isTruncating: boolean = true;
-  heightExceeded: boolean = false;
-  @Input() content: string = '';
-  @ViewChild('description') descriptionRef: ElementRef
+export class DescriptionComponent implements AfterViewInit {
+  heightLimit = 90;
+  isTruncating = true;
+  heightExceeded = false;
+  elementHeight: number;
+  @Input() content = '';
+  @ViewChild('description') descriptionRef: ElementRef;
 
   ngAfterViewInit() {
+    this.elementHeight = this.descriptionRef.nativeElement.clientHeight;
     setTimeout(() => {
-      this.heightExceeded = this.descriptionRef.nativeElement.clientHeight >= this.heightLimit;
-    }, 1500);
+      this.heightExceeded = this.elementHeight >= this.heightLimit;
+    });
   }
 
 }

@@ -37,7 +37,7 @@ describe('SettingsComponent', () => {
   /*it('should initiated with default values', () => {
     component.ngOnInit();
     expect(component.email.length).toBeGreaterThan(0);
-    expect(component.contact_number.length).toBeGreaterThan(0); 
+    expect(component.contact_number.length).toBeGreaterThan(0);
   });*/
 
   it('should navigate to switcher', () => {
@@ -58,7 +58,7 @@ describe('SettingsComponent', () => {
 
   it('should update profile', () => {
     expect(component.updateProfile).toBeDefined();
-    const testContactNumber = '0123456789'
+    const testContactNumber = '0123456789';
     expect(component.updateProfile(testContactNumber)).toBeTruthy();
   });
 });

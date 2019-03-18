@@ -1,15 +1,15 @@
 import { Subscription } from 'rxjs/Subscription';
 import { Component, HostListener, EventEmitter, Output, Input, OnInit } from '@angular/core';
-import { FilestackService } from "./filestack.service";
+import { FilestackService } from './filestack.service';
 
 @Component({
-  selector: "file-stack",
-  templateUrl: "filestack.component.html"
+  selector: 'file-stack',
+  templateUrl: 'filestack.component.html'
 })
 export class FilestackComponent implements OnInit {
-  @Input("accept") private fileTypes: any;
-  @Input("fileType") private fileType: string;
-  @Output("complete") private output: EventEmitter<any> = new EventEmitter();
+  @Input() accept: any;
+  @Input() fileType: string;
+  @Output() complete: EventEmitter<any> = new EventEmitter();
 
   constructor(
     private filestackService: FilestackService
@@ -19,32 +19,25 @@ export class FilestackComponent implements OnInit {
   ngOnInit() {}
 
   async uploadFile() {
-    let s3Config = this.filestackService.getS3Config(this.fileType);
-    let pickerOptions = {
-      fromSources: [
-        'local_file_system',
-        'googledrive',
-        'dropbox',
-        'gmail',
-        'video'
-      ],
+    const s3Config = this.filestackService.getS3Config(this.fileType);
+    const pickerOptions = {
       storeTo: s3Config,
-      onFileUploadFailed: (data) => {
-        this.output.emit({
+      onFileUploadFailed: data => {
+        this.complete.emit({
           success: false,
           data: data
         });
       },
-      onFileUploadFinished: (data) => {
-        this.output.emit({
+      onFileUploadFinished: data => {
+        this.complete.emit({
           success: true,
           data: data
         });
       }
     };
 
-    if (this.fileTypes) {
-      pickerOptions['accept'] = this.fileTypes;
+    if (this.accept) {
+      pickerOptions['accept'] = this.accept;
     }
 
     return await this.filestackService.open(pickerOptions);

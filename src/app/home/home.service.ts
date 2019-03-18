@@ -33,6 +33,9 @@ export interface TodoItem {
     assessment_submission_id?: number;
     assessment_name?: string;
     reviewer_name?: string;
+    team_id?: number;
+    team_member_id?: number;
+    participants_only?: boolean;
   };
 }
 
@@ -42,7 +45,7 @@ export interface TodoItem {
 
 export class HomeService {
 
-  currentActivityId: number = 0;
+  currentActivityId = 0;
 
   constructor(
     private storage: BrowserStorageService,
@@ -109,7 +112,7 @@ export class HomeService {
   }
 
   private _addTodoItemForFeedbackAvailable(todoItem, todoItems) {
-    let item: TodoItem = {
+    const item: TodoItem = {
       type: '',
       name: '',
       description: '',
@@ -132,7 +135,7 @@ export class HomeService {
   }
 
   private _addTodoItemForReview(todoItem, todoItems) {
-    let item: TodoItem = {
+    const item: TodoItem = {
       type: '',
       name: '',
       description: '',
@@ -162,15 +165,15 @@ export class HomeService {
       }));
   }
 
-  private _normaliseChatMessage(data): TodoItem {
-    if (!Array.isArray(data)) {
+  private _normaliseChatMessage(chatMessages): TodoItem {
+    if (!Array.isArray(chatMessages)) {
       this.request.apiResponseFormatError('Chat array format error');
       return {};
     }
     let unreadMessages = 0;
     let noOfChats = 0;
     let todoItem: TodoItem;
-    data.forEach(data => {
+    chatMessages.forEach(data => {
       if (!this.utils.has(data, 'unread_messages') ||
           !this.utils.has(data, 'name') ||
           !this.utils.has(data, 'last_message') ||
@@ -190,10 +193,17 @@ export class HomeService {
         todoItem.name = data.name;
         todoItem.description = data.last_message;
         todoItem.time = this.utils.timeFormatter(data.last_message_created);
+        todoItem.meta = {
+          team_id: data.team_id,
+          team_member_id: data.team_member_id,
+          participants_only: data.participants_only
+        };
       }
     });
     if (unreadMessages > 1) {
+      // group the chat notifiations
       todoItem.name = unreadMessages + ' messages from ' + noOfChats + ' chats';
+      todoItem.meta = {};
     }
     return todoItem;
   }
@@ -234,9 +244,9 @@ export class HomeService {
     this.currentActivityId = 0;
     data.Project.Milestone.forEach(this._loopThroughMilestones, this);
     // regard last activity as the current activity if all activities are finished
-    if (this.currentActivityId == 0) {
-      let milestones = data.Project.Milestone;
-      let activities = milestones[milestones.length - 1].Activity;
+    if (this.currentActivityId === 0) {
+      const milestones = data.Project.Milestone;
+      const activities = milestones[milestones.length - 1].Activity;
       this.currentActivityId = activities[activities.length - 1].id;
     }
   }
@@ -263,7 +273,7 @@ export class HomeService {
       return ;
     }
     if (activity.progress < 1) {
-      this.currentActivityId = activity.id
+      this.currentActivityId = activity.id;
     }
   }
 
@@ -292,7 +302,7 @@ export class HomeService {
         leadImage: ''
       };
     }
-    let thisActivity = data[0];
+    const thisActivity = data[0];
     return {
       id: this.currentActivityId,
       name: thisActivity.Activity.name,
@@ -313,7 +323,7 @@ export class HomeService {
     }
     switch (event.type) {
       // This is a feedback available event
-      case "assessment_review_published":
+      case 'assessment_review_published':
         if (!this.utils.has(event, 'meta.AssessmentReview.assessment_name') ||
             !this.utils.has(event, 'meta.AssessmentReview.reviewer_name') ||
             !this.utils.has(event, 'meta.AssessmentReview.published_date') ||
@@ -339,7 +349,7 @@ export class HomeService {
         };
 
       // This is a submission ready for review event
-      case "assessment_review_assigned":
+      case 'assessment_review_assigned':
         if (!this.utils.has(event, 'meta.AssessmentReview.assessment_name') ||
             !this.utils.has(event, 'meta.AssessmentReview.assigned_date') ||
             !this.utils.has(event, 'meta.AssessmentReview.assessment_id') ||
