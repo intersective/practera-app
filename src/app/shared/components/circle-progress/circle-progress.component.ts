@@ -7,7 +7,7 @@ import { CircleProgressOptionsInterface } from 'ng-circle-progress';
   styleUrls: ['./circle-progress.component.scss'],
 })
 export class CircleProgressComponent implements OnChanges, OnInit {
-  // default configuration
+  // default - gray out
   config = {
     animateTitle: false,
     animation: false,
@@ -49,16 +49,18 @@ export class CircleProgressComponent implements OnChanges, OnInit {
     const after = {
       animateTitle: false,
       animation: true,
-      backgroundColor: 'transparent',
+      backgroundColor: 'var(--ion-color-light)',
       backgroundPadding: 5,
       backgroundStrokeWidth: 2,
       maxPercent: 100,
-      outerStrokeColor: '#78C000',
+      outerStrokeColor: 'var(--ion-color-primary)',
+      innerStrokeColor: 'var(--ion-color-primary)',
       outerStrokeLinecap: 'butt',
       outerStrokeWidth: 10,
       showInnerStroke: false,
       showSubtitle: false,
       showTitle: false,
+      subtitleColor: 'var(--ion-color-dark-tint)',
       showUnits: false,
       space: -20,
       percent: 0,
