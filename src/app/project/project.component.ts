@@ -5,13 +5,6 @@ import { HomeService } from '../home/home.service';
 import { RouterEnter } from '@services/router-enter.service';
 import { BrowserStorageService } from '@services/storage.service';
 import { UtilsService } from '@services/utils.service';
-import {
-  trigger,
-  state,
-  style,
-  animate,
-  transition,
-} from '@angular/animations';
 
 @Component({
   selector: 'app-project',
@@ -48,7 +41,7 @@ export class ProjectComponent extends RouterEnter {
     this.loadingProgress = true;
   }
 
-  private dummyActivity(milestones) {
+  private _dummyActivity(milestones) {
     for (let i = milestones.length - 1; i >= 0; i--) {
       milestones[i].Activity = [{ dummy: true }];
     }
@@ -63,7 +56,7 @@ export class ProjectComponent extends RouterEnter {
 
     this.projectService.getMilestones()
       .subscribe(milestones => {
-        milestones = this.dummyActivity(milestones);
+        milestones = this._dummyActivity(milestones);
 
         this.milestones = milestones;
         this.loadingMilestone = false;
@@ -73,10 +66,12 @@ export class ProjectComponent extends RouterEnter {
         this.projectService.getActivities(milestones)
           .subscribe(activities => {
             // remove entire Activity object with dummy data for clean Activity injection
-            for (let i = this.milestones.length - 1; i >= 0; i--) {
-              if (this.utils.find(this.milestones[i].Activity, {dummy: true})) {
-                this.milestones[i].Activity = [];
-              }
+            if (this.milestones) {
+              this.milestones.forEach((milestone, i) => {
+                if (this.utils.find(this.milestones[i].Activity, {dummy: true})) {
+                  this.milestones[i].Activity = [];
+                }
+              });
             }
 
             this.milestones = this._addActivitiesToEachMilestone(this.milestones, activities);

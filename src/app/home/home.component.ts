@@ -54,8 +54,6 @@ export class HomeComponent extends RouterEnter implements OnDestroy {
       // back to default
       animateTitle: true,
       animation: true,
-      backgroundColor: 'transparent',
-      outerStrokeColor: '#78C000',
       outerStrokeLinecap: 'round',
       showInnerStroke: true,
       showSubtitle: true,
