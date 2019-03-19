@@ -9,6 +9,7 @@ import { Inject } from '@angular/core';
   styleUrls: ['./activity-card.component.scss']
 })
 export class ActivityCardComponent implements OnInit {
+  @Input() loading: boolean;
   @Input() activity: {
     id: number,
     name: string,
