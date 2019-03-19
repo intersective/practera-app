@@ -4,26 +4,7 @@
     <ion-icon name="calendar" class="calendar" float-right></ion-icon>
   </a>
   <div text-center padding>
-    <circle-progress
-      [showTitle]= progressConf.showTitle
-      [showSubtitle]= progressConf.showSubtitle
-      [showUnits]= progressConf.showUnits
-      [space]= progressConf.space
-      [percent]= progressConf.percent
-      [radius]= progressConf.radius
-      [subtitle]= progressConf.subtitle
-      [outerStrokeWidth]= progressConf.outerStrokeWidth
-      [outerStrokeColor]= progressConf.outerStrokeColor
-      [maxPercent]= progressConf.maxPercent
-      [showInnerStroke]= progressConf.showInnerStroke
-      [startFromZero]= progressConf.startFromZero
-      [animation]= progressConf.animation
-      [animateTitle]= progressConf.animateTitle
-      [outerStrokeLinecap]= progressConf.outerStrokeLinecap
-      [backgroundColor]= progressConf.backgroundColor
-      [backgroundPadding]= progressConf.backgroundPadding
-      >
-    </circle-progress>
+    <app-circle-progress [data]="progressConf"></app-circle-progress>
   </div>
 
   <ng-container *ngIf="achievements[0]">
