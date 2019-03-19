@@ -82,7 +82,7 @@ export class EventsComponent extends RouterEnter {
         if (!event.isBooked) {
           // group event for 'browse' type
           [this.eventsCategorised.browse, eventGroupBrowse, compareDateBrowse] = this._groupEvents(event, this.eventsCategorised.browse, eventGroupBrowse, compareDateBrowse, true);
-        } else if (this.utils.timeComparer(event.endTime) >= 0) {
+        } else if (this.utils.timeComparer(event.startTime) >= 0) {
           // group event for 'booked' type
           [this.eventsCategorised.booked, eventGroupBooked, compareDateBooked] = this._groupEvents(event, this.eventsCategorised.booked, eventGroupBooked, compareDateBooked);
         } else {
