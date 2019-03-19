@@ -97,6 +97,9 @@ export class AssessmentComponent extends RouterEnter {
     this._initialise();
     this.action = this.route.snapshot.data.action;
     this.fromPage = this.route.snapshot.paramMap.get('from');
+    if (!this.fromPage) {
+      this.fromPage = this.route.snapshot.data.from;
+    }
     this.id = +this.route.snapshot.paramMap.get('id');
     this.activityId = +this.route.snapshot.paramMap.get('activityId');
     this.contextId = +this.route.snapshot.paramMap.get('contextId');
@@ -188,6 +191,9 @@ export class AssessmentComponent extends RouterEnter {
   back() {
     if (this.fromPage && this.fromPage === 'reviews') {
       return this.router.navigate(['app', 'reviews']);
+    }
+    if (this.fromPage && this.fromPage === 'events') {
+      return this.router.navigate(['events']);
     }
     if (this.activityId) {
       return this.router.navigate(['app', 'activity', this.activityId ]);
