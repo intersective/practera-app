@@ -15,6 +15,7 @@ import { EventDetailComponent } from '@app/event-detail/event-detail.component';
 const api = {
   get: {
     events: 'api/v2/act/event/list.json',
+    submissions: 'api/submissions.json',
     activities: 'api/v2/plan/activity/list.json'
   }
 };
@@ -32,6 +33,11 @@ export interface Event {
   remainingCapacity: number;
   isBooked: boolean;
   isPast?: boolean;
+  assessment?: {
+    id: number;
+    contextId: number;
+    isDone?: boolean;
+  };
 }
 
 export interface Activity {
@@ -102,10 +108,26 @@ export class EventsService {
         capacity: event.capacity,
         remainingCapacity: event.remaining_capacity,
         isBooked: event.isBooked,
-        isPast: this.utils.timeComparer(event.start) < 0
+        isPast: this.utils.timeComparer(event.start) < 0,
+        assessment: this.utils.has(event, 'assessment.id') ? {
+          id: event.assessment.id,
+          contextId: event.assessment.context_id
+        } : null
       });
     });
     return this._sortEvent(events);
+  }
+
+  getSubmission(assessmentId, contextId): Observable<any> {
+    return this.request.get(api.get.submissions, {params: {
+        assessment_id: assessmentId,
+        context_id: contextId,
+        review: false
+      }})
+      .pipe(map(response => {
+        return !this.utils.isEmpty(response.data);
+      })
+    );
   }
 
   private _sortEvent(events) {

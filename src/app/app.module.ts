@@ -17,6 +17,7 @@ import { UtilsService, ContactNumberFormat } from './services/utils.service';
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
 import { EmbedVideo } from 'ngx-embed-video';
 import { environment } from '@environments/environment';
+import { IntercomModule } from 'ng-intercom';
 import { PusherModule } from '@shared/pusher/pusher.module';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
@@ -44,6 +45,10 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
     PusherModule.forRoot({
       apiurl: environment.APIEndpoint,
       pusherKey: environment.pusherKey,
+    }),
+    IntercomModule.forRoot({
+      appId: environment.intercomAppId,
+      updateOnRouterChange: true // will automatically run `update` on router event changes. Default: `false`
     })
   ],
   providers: [

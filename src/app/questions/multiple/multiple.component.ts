@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, forwardRef, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
+import { Component, Input, Output, EventEmitter, forwardRef, ViewChild, ElementRef, OnInit } from '@angular/core';
 import { NG_VALUE_ACCESSOR, ControlValueAccessor, FormControl } from '@angular/forms';
 import { UtilsService } from '@services/utils.service';
 
@@ -14,7 +14,7 @@ import { UtilsService } from '@services/utils.service';
     }
   ]
 })
-export class MultipleComponent implements ControlValueAccessor, AfterViewInit {
+export class MultipleComponent implements ControlValueAccessor, OnInit {
 
   @Input() question;
   @Input() submission;
@@ -46,7 +46,7 @@ export class MultipleComponent implements ControlValueAccessor, AfterViewInit {
     private utils: UtilsService
   ) {}
 
-  ngAfterViewInit() {
+  ngOnInit() {
     this._showSavedAnswers();
   }
 
