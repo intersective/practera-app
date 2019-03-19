@@ -97,6 +97,9 @@ export class AssessmentComponent extends RouterEnter {
     this._initialise();
     this.action = this.route.snapshot.data.action;
     this.fromPage = this.route.snapshot.paramMap.get('from');
+    if (!this.fromPage) {
+      this.fromPage = this.route.snapshot.data.from;
+    }
     this.id = +this.route.snapshot.paramMap.get('id');
     this.activityId = +this.route.snapshot.paramMap.get('activityId');
     this.contextId = +this.route.snapshot.paramMap.get('contextId');
@@ -189,6 +192,9 @@ export class AssessmentComponent extends RouterEnter {
     if (this.fromPage && this.fromPage === 'reviews') {
       return this.router.navigate(['app', 'reviews']);
     }
+    if (this.fromPage && this.fromPage === 'events') {
+      return this.router.navigate(['events']);
+    }
     if (this.activityId) {
       return this.router.navigate(['app', 'activity', this.activityId ]);
     }
@@ -231,7 +237,6 @@ export class AssessmentComponent extends RouterEnter {
         assessment.in_progress = true;
       }
       this.utils.each(this.questionsForm.value, (value, key) => {
-        if (value) {
           questionId = +key.replace('q-', '');
           answers.push({
             assessment_question_id: questionId,
@@ -241,7 +246,6 @@ export class AssessmentComponent extends RouterEnter {
           if (requiredQuestions[questionId]) {
             this.utils.unset(requiredQuestions, questionId);
           }
-        }
       });
       // check if all required questions have answer when assessment done
       if (!saveInProgress && !this.utils.isEmpty(requiredQuestions)) {

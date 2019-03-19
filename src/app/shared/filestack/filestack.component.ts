@@ -21,19 +21,7 @@ export class FilestackComponent implements OnInit {
   async uploadFile() {
     const s3Config = this.filestackService.getS3Config(this.fileType);
     const pickerOptions = {
-      fromSources: [
-        'local_file_system',
-        'googledrive',
-        'dropbox',
-        'gmail',
-        'video'
-      ],
       storeTo: s3Config,
-      onFileSelected: data => {
-        // replace space with underscore '_' in file name
-        data.filename = data.filename.replace(/ /g, '_');
-        return data;
-      },
       onFileUploadFailed: data => {
         this.complete.emit({
           success: false,

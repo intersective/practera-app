@@ -54,7 +54,7 @@
             <app-todo-card
               *ngSwitchCase="'chat'"
               [todoItem]="todoItem"
-              (click)="goToChat()"
+              (click)="goToChat(todoItem)"
             ></app-todo-card>
           </ng-container>
         </div>

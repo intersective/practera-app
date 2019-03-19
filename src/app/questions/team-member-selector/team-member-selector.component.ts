@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, forwardRef, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
+import { Component, Input, Output, EventEmitter, forwardRef, ViewChild, ElementRef, OnInit } from '@angular/core';
 import { NG_VALUE_ACCESSOR, ControlValueAccessor, FormControl } from '@angular/forms';
 
 @Component({
@@ -13,7 +13,7 @@ import { NG_VALUE_ACCESSOR, ControlValueAccessor, FormControl } from '@angular/f
     }
   ]
 })
-export class TeamMemberSelectorComponent implements ControlValueAccessor, AfterViewInit {
+export class TeamMemberSelectorComponent implements ControlValueAccessor, OnInit {
 
   @Input() question;
   @Input() submission;
@@ -43,7 +43,7 @@ export class TeamMemberSelectorComponent implements ControlValueAccessor, AfterV
 
   constructor() {}
 
-  ngAfterViewInit() {
+  ngOnInit() {
     this._showSavedAnswers();
   }
   // propagate changes into the form control

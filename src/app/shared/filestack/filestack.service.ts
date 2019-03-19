@@ -90,6 +90,11 @@ export class FilestackService {
         'video'
       ],
       storeTo: this.getS3Config(this.getFileTypes()),
+      onFileSelected: data => {
+        // replace space with underscore '_' in file name
+        data.filename = data.filename.replace(/ /g, '_');
+        return data;
+      },
       onFileUploadFailed: onError,
       onFileUploadFinished: onSuccess,
     };

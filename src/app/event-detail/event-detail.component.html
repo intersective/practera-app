@@ -27,14 +27,9 @@
     </ion-item>
   </ion-list>
 
-  <div class="div-btn" *ngIf="!event.isPast && (event.isBooked || event.remainingCapacity > 0)">
+  <div class="div-btn" *ngIf="buttonText()">
     <ion-button (click)="confirmed()" shape="round" color="primary" expand="full">
-      <ng-container *ngIf="!event.isBooked">
-        Book
-      </ng-container>
-      <ng-container *ngIf="event.isBooked">
-        Cancel Booking
-      </ng-container>
+      {{ buttonText() }}
     </ion-button>
   </div>
 
