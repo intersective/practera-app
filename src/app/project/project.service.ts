@@ -83,7 +83,7 @@ export class ProjectService {
         description: this.utils.has(eachMilestone, 'description') ? eachMilestone.description : '',
         isLocked: eachMilestone.is_locked,
         progress: 0,
-        Activity: []
+        Activity: [{ dummy: true }]
       });
     });
     return milestones;
