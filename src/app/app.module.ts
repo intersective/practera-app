@@ -13,13 +13,13 @@ import { EventDetailModule } from './event-detail/event-detail.module';
 import { GoMobileModule } from './go-mobile/go-mobile.module';
 
 import { AppComponent } from './app.component';
-import { NgCircleProgressModule } from 'ng-circle-progress';
 import { UtilsService, ContactNumberFormat } from './services/utils.service';
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
 import { EmbedVideo } from 'ngx-embed-video';
 import { environment } from '@environments/environment';
 import { IntercomModule } from 'ng-intercom';
 import { PusherModule } from '@shared/pusher/pusher.module';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 @NgModule({
   declarations: [
@@ -28,6 +28,7 @@ import { PusherModule } from '@shared/pusher/pusher.module';
   ],
   imports: [
     BrowserModule,
+    BrowserAnimationsModule,
     IonicModule.forRoot(),
     AuthModule,
     RequestModule.forRoot({
@@ -35,7 +36,6 @@ import { PusherModule } from '@shared/pusher/pusher.module';
       prefixUrl: environment.APIEndpoint,
     }),
     AppRoutingModule,
-    NgCircleProgressModule,
     EmbedVideo.forRoot(),
     NotificationModule,
     FastFeedbackModule,

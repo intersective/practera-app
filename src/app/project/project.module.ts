@@ -37,6 +37,5 @@ import { SharedModule } from '@shared/shared.module';
   providers: [
     ProjectService,
   ]
-
 })
 export class ProjectModule {}

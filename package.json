@@ -16,6 +16,7 @@
     "e2e": "ng e2e"
   },
   "dependencies": {
+    "@angular/animations": "^7.2.9",
     "@angular/common": "^7.2.2",
     "@angular/core": "^7.2.2",
     "@angular/forms": "^7.2.2",

@@ -4,23 +4,7 @@
     <ion-icon name="calendar" class="calendar" float-right></ion-icon>
   </a>
   <div text-center padding>
-    <ng-container *ngIf="loadingProgress; else progressTpl">
-      <ion-spinner></ion-spinner>
-    </ng-container>
-    <ng-template #progressTpl>
-      <circle-progress
-        [percent]="progress"
-        [radius]= "70"
-        [subtitle]="COMPLETE"
-        [outerStrokeWidth]= "12"
-        [backgroundPadding]= -10
-        [maxPercent]= 100
-        [showInnerStroke]= true
-        [startFromZero]= false
-        [outerStrokeLinecap]= "round"
-        >
-      </circle-progress>
-    </ng-template>
+    <app-circle-progress [data]="progressConfig" [type]="'large'"></app-circle-progress>
   </div>
 
   <ng-container *ngIf="achievements[0]">
@@ -50,7 +34,7 @@
   <ion-list class="todo-list" lines="none">
 
     <ng-container *ngIf="loadingTodoItems; else todoItemsTpl">
-      <ion-spinner></ion-spinner>
+      <app-todo-card [loading]="true" [todoItem]="false"></app-todo-card>
     </ng-container>
 
     <ng-template #todoItemsTpl>
@@ -85,7 +69,7 @@
 
   <ion-label color="medium">Current Activity</ion-label>
   <ng-container *ngIf="loadingActivity; else activityTpl">
-    <br><ion-spinner></ion-spinner>
+    <app-activity-card [loading]="true" [activity]="false" class="activity-card" ></app-activity-card>
   </ng-container>
   <ng-template #activityTpl>
     <app-activity-card [activity]="activity" (click)="!activity.isLocked && goToActivity(activity.id)"></app-activity-card>

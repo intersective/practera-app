@@ -30,6 +30,7 @@ export class HomeComponent extends RouterEnter implements OnDestroy {
   subscriptions: Subscription[] = [];
   achievements: Array<Achievement>;
   haveEvents = false;
+  progressConfig: any;
 
   constructor(
     private intercom: Intercom,
@@ -101,6 +102,7 @@ export class HomeComponent extends RouterEnter implements OnDestroy {
     this.subscriptions.push(
       this.homeService.getProgress().subscribe(progress => {
         this.progress = progress;
+        this.progressConfig = {percent: progress};
         this.loadingProgress = false;
         this.homeService.getCurrentActivity().subscribe(activity => {
           if (activity.id) {
