@@ -35,6 +35,8 @@ export class CircleProgressComponent implements OnChanges, OnInit {
     animateTitle: true,
     animation: true,
     outerStrokeLinecap: 'round',
+    backgroundColor: 'var(--ion-color-light)',
+    outerStrokeColor: 'var(--ion-color-primary)',
     showInnerStroke: true,
     showSubtitle: true,
     showTitle: true,
@@ -99,11 +101,12 @@ export class CircleProgressComponent implements OnChanges, OnInit {
   @ViewChild('description') descriptionRef: ElementRef;
 
   ngOnInit() {
-    if (this.data) { // by default, show small circle
+    if (this.data) {
       this.config = this.setCircleProgress(this.data);
     } else if (this.type === 'large') {
       this.config = this.largePlaceholderCircle;
     } else {
+      // by default, show small circle
       this.config = this.smallPlaceholderCircle;
     }
   }
@@ -113,15 +116,10 @@ export class CircleProgressComponent implements OnChanges, OnInit {
   }
 
   setCircleProgress(data: CircleProgressOptionsInterface) {
-    const result = this.config;
-
     if (this.type === 'large') {
       return Object.assign(this.largeCircleWithData, data);
-    } else if (data && data.percent >= 0) {
-      return Object.assign(this.smallCircleWithData, data);
     }
-
-    return result;
+    return Object.assign(this.smallCircleWithData, data);
   }
 
 }
