@@ -65,10 +65,10 @@ export class ProjectService {
       }));
   }
 
-  private _normaliseMilestones(data): Array<Milestone> {
+  private _normaliseMilestones(data): Array<Milestone | DummyMilestone> {
     if (!Array.isArray(data)) {
       this.request.apiResponseFormatError('Milestones array format error');
-      return [];
+      return [{ dummy: true }];
     }
     const milestones = [];
     data.forEach(eachMilestone => {

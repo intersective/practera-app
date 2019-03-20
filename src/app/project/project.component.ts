@@ -41,13 +41,6 @@ export class ProjectComponent extends RouterEnter {
     this.loadingProgress = true;
   }
 
-  private _dummyActivity(milestones) {
-    for (let i = milestones.length - 1; i >= 0; i--) {
-      milestones[i].Activity = [{ dummy: true }];
-    }
-    return milestones;
-  }
-
   onEnter() {
     this._initialise();
     this.homeService.getProgramName().subscribe(programName => {
@@ -56,8 +49,6 @@ export class ProjectComponent extends RouterEnter {
 
     this.projectService.getMilestones()
       .subscribe(milestones => {
-        milestones = this._dummyActivity(milestones);
-
         this.milestones = milestones;
         this.loadingMilestone = false;
         this.activeMilestone = new Array(milestones.length);

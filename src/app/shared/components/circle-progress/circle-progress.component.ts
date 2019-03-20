@@ -7,8 +7,51 @@ import { CircleProgressOptionsInterface } from 'ng-circle-progress';
   styleUrls: ['./circle-progress.component.scss'],
 })
 export class CircleProgressComponent implements OnChanges, OnInit {
-  // default - gray out
-  config = {
+  @Input() data = {};
+  @Input() type: string;
+  config: any;
+
+  largePlaceholderCircle = {
+    animateTitle: false,
+    animation: false,
+    backgroundColor: '#e6e6e6',
+    backgroundPadding: 0,
+    maxPercent: 100,
+    outerStrokeColor: '#f0f0f0',
+    outerStrokeLinecap: 'butt',
+    outerStrokeWidth: 12,
+    percent: 100,
+    radius: 70,
+    showInnerStroke: false,
+    showSubtitle: false,
+    showTitle: false,
+    showUnits: false,
+    space: -20,
+    startFromZero: false,
+  };
+
+  largeCircleWithData = {
+    // back to default
+    animateTitle: true,
+    animation: true,
+    outerStrokeLinecap: 'round',
+    showInnerStroke: true,
+    showSubtitle: true,
+    showTitle: true,
+    showUnits: true,
+    space: 4,
+
+    // custom
+    backgroundPadding: -10,
+    maxPercent: 100,
+    outerStrokeWidth: 12,
+    percent: 0,
+    radius: 70,
+    subtitle: 'COMPLETE',
+    startFromZero: false,
+  };
+
+  smallPlaceholderCircle = {
     animateTitle: false,
     animation: false,
     backgroundColor: '#e6e6e6',
@@ -29,12 +72,39 @@ export class CircleProgressComponent implements OnChanges, OnInit {
     toFixed: 0,
   };
 
-  @Input() data = {};
+  smallCircleWithData = {
+    animateTitle: false,
+    animation: true,
+    backgroundColor: 'var(--ion-color-light)',
+    backgroundPadding: 5,
+    backgroundStrokeWidth: 2,
+    maxPercent: 100,
+    outerStrokeColor: 'var(--ion-color-primary)',
+    innerStrokeColor: 'var(--ion-color-primary)',
+    outerStrokeLinecap: 'butt',
+    outerStrokeWidth: 10,
+    showInnerStroke: false,
+    showSubtitle: false,
+    showTitle: false,
+    subtitleColor: 'var(--ion-color-dark-tint)',
+    showUnits: false,
+    space: -20,
+    percent: 0,
+    radius: 5,
+    subtitle: false,
+    startFromZero: true,
+    toFixed: 0,
+  };
+
   @ViewChild('description') descriptionRef: ElementRef;
 
   ngOnInit() {
-    if (this.data) {
+    if (this.data) { // by default, show small circle
       this.config = this.setCircleProgress(this.data);
+    } else if (this.type === 'large') {
+      this.config = this.largePlaceholderCircle;
+    } else {
+      this.config = this.smallPlaceholderCircle;
     }
   }
 
@@ -45,33 +115,10 @@ export class CircleProgressComponent implements OnChanges, OnInit {
   setCircleProgress(data: CircleProgressOptionsInterface) {
     const result = this.config;
 
-    // clear everything
-    const after = {
-      animateTitle: false,
-      animation: true,
-      backgroundColor: 'var(--ion-color-light)',
-      backgroundPadding: 5,
-      backgroundStrokeWidth: 2,
-      maxPercent: 100,
-      outerStrokeColor: 'var(--ion-color-primary)',
-      innerStrokeColor: 'var(--ion-color-primary)',
-      outerStrokeLinecap: 'butt',
-      outerStrokeWidth: 10,
-      showInnerStroke: false,
-      showSubtitle: false,
-      showTitle: false,
-      subtitleColor: 'var(--ion-color-dark-tint)',
-      showUnits: false,
-      space: -20,
-      percent: 0,
-      radius: 5,
-      subtitle: false,
-      startFromZero: true,
-      toFixed: 0,
-    };
-
-    if (data && data.percent >= 0) {
-      return Object.assign(after, data);
+    if (this.type === 'large') {
+      return Object.assign(this.largeCircleWithData, data);
+    } else if (data && data.percent >= 0) {
+      return Object.assign(this.smallCircleWithData, data);
     }
 
     return result;
