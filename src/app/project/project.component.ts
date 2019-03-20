@@ -12,7 +12,6 @@ import { UtilsService } from '@services/utils.service';
   styleUrls: ['project.component.scss'],
 })
 export class ProjectComponent extends RouterEnter {
-  public openOr = true;
   public routeUrl = '/app/project';
   public programName: string;
   public milestones: Array<Milestone | DummyMilestone> = [];
