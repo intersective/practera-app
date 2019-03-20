@@ -1,7 +1,7 @@
 <ion-card color="primary-contrast" class="todo-card practera-card">
   <clickable-item>
 
-    <ng-container *ngIf="todoItem.type; else noItems">
+    <ng-container *ngIf="todoItem.type; else noOrLoading">
       <ng-container [ngSwitch]="todoItem.type">
         <ion-icon *ngSwitchCase="'feedback_available'" name="information-circle-outline" slot="start" color="primary"></ion-icon>
         <ion-icon *ngSwitchCase="'review_submission'" name="information-circle-outline" slot="start" color="primary"></ion-icon>
@@ -18,11 +18,21 @@
       <ion-icon class="ending-arrow" name="arrow-forward" color="primary" slot="end"></ion-icon>
     </ng-container>
 
-    <ng-template #noItems>
-      <ion-icon name="notifications" slot="start" color="primary"></ion-icon>
-      <div>
-        <ion-text color="medium">You have no new notifications.</ion-text>
-      </div>
+    <ng-template #noOrLoading>
+      <ng-container *ngIf="loading; else noItems">
+        <ion-icon name="hourglass" slot="start" color="primary"></ion-icon>
+        <div>
+          <ion-text color="medium">Loading</ion-text>
+          <ion-spinner name="dots" class="vertical-middle"></ion-spinner>
+        </div>
+      </ng-container>
+
+      <ng-template #noItems>
+        <ion-icon name="notifications" slot="start" color="primary"></ion-icon>
+        <div>
+          <ion-text color="medium">You have no new notifications.</ion-text>
+        </div>
+      </ng-template>
     </ng-template>
 
   </clickable-item>
