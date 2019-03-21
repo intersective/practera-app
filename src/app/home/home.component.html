@@ -60,7 +60,21 @@
         </div>
       </ng-container>
 
-      <ng-template #noItemsTpl>
+      <ng-container *ngFor="let event of eventReminders">
+        <ion-card class="practera-card">
+          <ion-list>
+            <clickable-item lines="none">
+              <event-card
+                [event]="event"
+                [time]="utils.utcToLocal(event.startTime, 'date')"
+                class="width-100"
+                ></event-card>
+            </clickable-item>
+          </ion-list>
+        </ion-card>
+      </ng-container>
+
+      <ng-template #noItemsTpl *ngIf="!eventReminders.length">
         <app-todo-card [todoItem]="false"></app-todo-card>
       </ng-template>
     </ng-template>

@@ -8,6 +8,7 @@ import { Activity } from '../project/project.service';
 import { FastFeedbackComponent } from '../fast-feedback/fast-feedback.component';
 import { Question, Meta} from '../fast-feedback/fast-feedback.service';
 import { NotificationService } from '@shared/notification/notification.service';
+import { Event } from '@app/events/events.service';
 
 /**
  * @name api
@@ -15,10 +16,16 @@ import { NotificationService } from '@shared/notification/notification.service';
  * @type {Object}
  */
 const api = {
-  activity: 'api/activities.json',
-  todoItem: 'api/v2/motivations/todo_item/list.json',
-  chat: 'api/v2/message/chat/list.json',
-  progress: 'api/v2/motivations/progress/list.json'
+  get: {
+    activity: 'api/activities.json',
+    todoItem: 'api/v2/motivations/todo_item/list.json',
+    chat: 'api/v2/message/chat/list.json',
+    progress: 'api/v2/motivations/progress/list.json',
+    events: 'api/v2/act/event/list.json',
+  },
+  post: {
+    todoItem: 'api/v2/motivations/todo_item/edit.json'
+  }
 };
 
 export interface TodoItem {
@@ -59,7 +66,7 @@ export class HomeService {
   }
 
   getTodoItems() {
-    return this.request.get(api.todoItem, {
+    return this.request.get(api.get.todoItem, {
         params: {
           project_id: this.storage.getUser().projectId
         }
@@ -105,6 +112,12 @@ export class HomeService {
           description: todoItem.meta.description,
           points: todoItem.meta.points,
           image: todoItem.meta.badge
+        });
+      }
+
+      if (todoItem.identifier.includes('EventReminder-')) {
+        this.utils.broadcastEvent('event-reminder', {
+          meta: todoItem.meta
         });
       }
     });
@@ -157,7 +170,7 @@ export class HomeService {
   }
 
   getChatMessage() {
-    return this.request.get(api.chat)
+    return this.request.get(api.get.chat)
       .pipe(map(response => {
         if (response.success && response.data) {
           return this._normaliseChatMessage(response.data);
@@ -209,7 +222,7 @@ export class HomeService {
   }
 
   getProgress() {
-    return this.request.get(api.progress, {
+    return this.request.get(api.get.progress, {
         params: {
           model: 'project',
           model_id: this.storage.getUser().projectId,
@@ -278,7 +291,7 @@ export class HomeService {
   }
 
   getCurrentActivity() {
-    return this.request.get(api.activity, {
+    return this.request.get(api.get.activity, {
         params: {
           id: this.currentActivityId
         }
@@ -373,6 +386,39 @@ export class HomeService {
         };
 
     }
+  }
+
+  getReminderEvent(data) {
+    if (!this.utils.has(data, 'meta.id')) {
+      this.request.apiResponseFormatError('Pusher notification event format error');
+      return of({});
+    }
+    return this.request.get(api.get.events, {
+        params: {
+          type: 'activity_session',
+          id: data.meta.id
+        }
+      })
+      .pipe(map(response => {
+        if (this.utils.isEmpty(response.data)) {
+          return {};
+        }
+        let event = response.data[0];
+        if (this.utils.timeComparer(event.start) < 0) {
+          // mark the todo item as done if event starts
+          this.postEventReminder(event);
+          return {};
+        }
+        return event;
+      }));
+  }
+
+  postEventReminder(event) {
+    return this.request.post(api.post.todoItem, {
+      project_id: this.storage.getUser().projectId,
+      identifier: 'EventReminder-' + event.id,
+      is_done: true
+    }).subscribe();
   }
 
   /**
