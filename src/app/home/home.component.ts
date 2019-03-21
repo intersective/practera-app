@@ -9,7 +9,7 @@ import { BrowserStorageService } from '@services/storage.service';
 import { RouterEnter } from '@services/router-enter.service';
 import { PusherService } from '@shared/pusher/pusher.service';
 import { Achievement, AchievementsService } from '@app/achievements/achievements.service';
-import { EventsService } from '@app/events/events.service';
+import { Event, EventsService } from '@app/events/events.service';
 import { Intercom } from 'ng-intercom';
 import { environment } from '@environments/environment';
 
@@ -24,6 +24,7 @@ export class HomeComponent extends RouterEnter implements OnDestroy {
   loadingProgress = true;
   programName: string;
   todoItems: Array<TodoItem> = [];
+  eventReminders: Array<Event> = [];
   loadingTodoItems = true;
   activity: Activity;
   loadingActivity = true;
@@ -55,6 +56,13 @@ export class HomeComponent extends RouterEnter implements OnDestroy {
       this.homeService.getChatMessage().subscribe(chatMessage => {
         if (!this.utils.isEmpty(chatMessage)) {
           this._addChatTodoItem(chatMessage);
+        }
+      });
+    });
+    this.utils.getEvent('event-reminder').subscribe(event => {
+      this.homeService.getReminderEvent(event).subscribe(session => {
+        if (!this.utils.isEmpty(session)) {
+          this.eventReminders.push(session);
         }
       });
     });
