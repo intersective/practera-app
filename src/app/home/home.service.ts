@@ -410,7 +410,7 @@ export class HomeService {
         if (this.utils.isEmpty(response.data)) {
           return null;
         }
-        let event = this.eventsService.normaliseEvents(response.data)[0];
+        const event = this.eventsService.normaliseEvents(response.data)[0];
         if (event.isPast) {
           // mark the todo item as done if event starts
           this.postEventReminder(event);
