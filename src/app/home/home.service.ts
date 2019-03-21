@@ -117,6 +117,8 @@ export class HomeService {
       }
 
       if (todoItem.identifier.includes('EventReminder-')) {
+        // when we get a Event Reminder todo item,
+        // fire an 'event-reminder' event, same as when we get this from Pusher
         this.utils.broadcastEvent('event-reminder', {
           meta: todoItem.meta
         });
@@ -389,10 +391,14 @@ export class HomeService {
     }
   }
 
+  /**
+   * When we get a notification event from Pusher about event reminder, we are querying API to get the event detail and normalise it
+   * @param {Obj} data [The event data from Pusher notification]
+   */
   getReminderEvent(data) {
     if (!this.utils.has(data, 'meta.id')) {
       this.request.apiResponseFormatError('Pusher notification event format error');
-      return of({});
+      return of(null);
     }
     return this.request.get(api.get.events, {
         params: {
@@ -402,13 +408,13 @@ export class HomeService {
       })
       .pipe(map(response => {
         if (this.utils.isEmpty(response.data)) {
-          return {};
+          return null;
         }
         let event = this.eventsService.normaliseEvents(response.data)[0];
         if (event.isPast) {
           // mark the todo item as done if event starts
           this.postEventReminder(event);
-          return {};
+          return null;
         }
         return event;
       }));
