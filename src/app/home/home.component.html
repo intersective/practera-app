@@ -40,17 +40,15 @@
     <ng-template #todoItemsTpl>
 
       <ng-container *ngFor="let event of eventReminders">
-        <ion-card class="practera-card">
-          <ion-list>
-            <clickable-item lines="none">
-              <event-card
-                [event]="event"
-                [time]="utils.utcToLocal(event.startTime, 'date')"
-                class="width-100"
-                ></event-card>
-            </clickable-item>
-          </ion-list>
-        </ion-card>
+        <app-todo-card
+          [todoItem]="{
+            name: event.name,
+            description: '',
+            type: 'event',
+            time: utils.timeFormatter(event.startTime)
+          }"
+          (click)="showEventDetail(event)"
+        ></app-todo-card>
       </ng-container>
 
       <ng-container *ngIf="todoItems.length; else noItemsTpl">
