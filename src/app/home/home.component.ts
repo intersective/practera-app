@@ -41,7 +41,7 @@ export class HomeComponent extends RouterEnter implements OnDestroy {
     public utils: UtilsService,
     public storage: BrowserStorageService,
     public achievementService: AchievementsService,
-    public eventService: EventsService
+    public eventsService: EventsService
   ) {
     super(router);
     const role = this.storage.getUser().role;
@@ -172,7 +172,7 @@ export class HomeComponent extends RouterEnter implements OnDestroy {
     );
 
     this.subscriptions.push(
-      this.eventService.getEvents().subscribe(events => {
+      this.eventsService.getEvents().subscribe(events => {
         this.haveEvents = !this.utils.isEmpty(events);
       })
     );
@@ -241,6 +241,10 @@ export class HomeComponent extends RouterEnter implements OnDestroy {
       this.todoItems.splice(currentChatTodoIndex, 1);
     }
     this.todoItems.push(chatTodoItem);
+  }
+
+  showEventDetail(event) {
+    this.eventsService.eventDetailPopUp(event);
   }
 
 }
