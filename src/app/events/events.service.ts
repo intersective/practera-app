@@ -71,12 +71,12 @@ export class EventsService {
     }
     return this.request.get(api.get.events, {params: params})
       .pipe(map(response => {
-        return this._normaliseEvents(response.data);
+        return this.normaliseEvents(response.data);
       })
     );
   }
 
-  private _normaliseEvents(data): Array<Event> {
+  normaliseEvents(data): Array<Event> {
     if (!Array.isArray(data)) {
       this.request.apiResponseFormatError('Event format error');
       return [];
