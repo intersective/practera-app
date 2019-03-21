@@ -281,7 +281,7 @@ export class AssessmentComponent extends RouterEnter {
         this.savingButtonDisabled = false;
         if (saveInProgress) {
           // display message for successfull saved answers
-          this.savingMessage = 'Last saved a moment ago';
+          this.savingMessage = 'Last saved ' + this._getCurrentTime();
         } else {
           // display a pop up for successful submission
           return this.notificationService.alert({
@@ -334,6 +334,14 @@ export class AssessmentComponent extends RouterEnter {
 
   showQuestionInfo(info) {
     this.notificationService.popUp('shortMessage', {message: info});
+  }
+
+  private _getCurrentTime() {
+    return new Intl.DateTimeFormat('en-GB', {
+      hour12: true,
+      hour: 'numeric',
+      minute: 'numeric'
+    }).format(new Date());
   }
 
 }
