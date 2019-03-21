@@ -8,7 +8,7 @@ import { Activity } from '../project/project.service';
 import { FastFeedbackComponent } from '../fast-feedback/fast-feedback.component';
 import { Question, Meta} from '../fast-feedback/fast-feedback.service';
 import { NotificationService } from '@shared/notification/notification.service';
-import { Event } from '@app/events/events.service';
+import { Event, EventsService } from '@app/events/events.service';
 
 /**
  * @name api
@@ -59,6 +59,7 @@ export class HomeService {
     private request: RequestService,
     private utils: UtilsService,
     private notification: NotificationService,
+    private eventsService: EventsService
   ) {}
 
   getProgramName() {
@@ -403,8 +404,8 @@ export class HomeService {
         if (this.utils.isEmpty(response.data)) {
           return {};
         }
-        let event = response.data[0];
-        if (this.utils.timeComparer(event.start) < 0) {
+        let event = this.eventsService.normaliseEvents(response.data)[0];
+        if (event.isPast) {
           // mark the todo item as done if event starts
           this.postEventReminder(event);
           return {};

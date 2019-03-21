@@ -79,6 +79,7 @@ export class HomeComponent extends RouterEnter implements OnDestroy {
 
   private _initialise() {
     this.todoItems = [];
+    this.eventReminders = [];
     this.loadingTodoItems = true;
     this.loadingProgress = true;
     this.loadingActivity = true;
