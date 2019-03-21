@@ -1,0 +1,102 @@
+<ion-card
+  color="primary"
+  class="card practera-card"
+  [ngClass]="{
+     'locked-card': path.isLocked,
+     'default-image-card': !path.leadImage
+  }"
+  [ngStyle]="{'background-image': backgroundImageStyle1 }"
+> 
+    <ion-card-content>
+      <h4 color="primary-contrast">Path</h4>
+      <h2 color="primary-contrast" class="path-name">Project Management</h2>
+    </ion-card-content>
+    <ion-list class='path-list'>
+      <clickable-item>
+        <ion-icon name="checkmark-circle" class="icon-done" color="primary"></ion-icon>
+        <div class="path-way">Project Management Fundamentals</div>
+        <ion-icon name="arrow-forward" slot="end" color="primary" class="icon-forward"></ion-icon>
+      </clickable-item>
+      <clickable-item>
+        <ion-icon name="checkmark-circle" class="icon-done" color="primary"></ion-icon>
+        <div class="path-way">First Project - Delivering to Plan</div>
+        <ion-icon name="arrow-forward" slot="end" color="primary" class="icon-forward"></ion-icon>
+      </clickable-item>
+      <clickable-item>
+        <circle-progress
+          [percent]="90"
+        >
+        </circle-progress>
+        <div class="path-way">Skill Building - Effective Project Teams</div>
+        <ion-icon name="arrow-forward" slot="end" color="primary" class="icon-forward"></ion-icon>
+      </clickable-item>
+      <clickable-item>
+          <circle-progress
+            [percent]="0"
+          >
+          </circle-progress>
+          <div class="path-way">Second Project - Project Planning</div>
+          <ion-icon name="arrow-forward" slot="end" color="primary" class="icon-forward"></ion-icon>
+        </clickable-item>
+    
+    
+          <!-- <div class="path-way">First Project - Delivering to Plan</div>
+          <ion-icon name="arrow-forward" slot="end" color="primary" class="icon-forward"></ion-icon>
+        </clickable-item>
+      <clickable-item>
+          <circle-progress
+          [percent]="0"
+        >
+        </circle-progress>
+          <div class="path-way">Skill Building - Effective Project Teams</div>
+          <ion-icon name="arrow-forward" slot="end" color="primary" class="icon-forward"></ion-icon>
+        </clickable-item>
+      <clickable-item>
+          <ion-icon name="lock" color="medium" class="icon-lock"></ion-icon>
+          <div class="path-way">Second Project - Project Planning</div>
+      </clickable-item> -->
+    </ion-list>
+
+</ion-card>
+
+<ion-card
+  color="primary"
+  class="card practera-card"
+  [ngClass]="{
+     'locked-card': path.isLocked,
+     'default-image-card': !path.leadImage
+  }"
+  [ngStyle]="{'background-image': backgroundImageStyle2 }"
+> 
+    <ion-card-content>
+      <h4 color="primary-contrast">Path</h4>
+      <h2 color="primary-contrast" class="path-name">{{path.name}}</h2>
+    </ion-card-content>
+    <ion-list class='path-list'>
+      <clickable-item>
+        <circle-progress
+        [percent]="20"
+      >
+      </circle-progress>
+          <div class="path-way">Preparing for your placement</div>
+          <ion-icon name="arrow-forward" slot="end" color="primary" class="icon-forward"></ion-icon>
+        </clickable-item>
+      <clickable-item>
+          <circle-progress
+          [percent]="0"
+        >
+        </circle-progress>
+          <div class="path-way">First Placement - Media monitoring</div>
+          <ion-icon name="arrow-forward" slot="end" color="primary" class="icon-forward"></ion-icon>
+        </clickable-item>
+      <clickable-item>
+        <ion-icon name="lock" color="medium" class="icon-lock"></ion-icon>
+        <div class="path-way">Team Project - Influencing</div>
+      </clickable-item>
+      <clickable-item>
+          <ion-icon name="lock" color="medium" class="icon-lock"></ion-icon>
+          <div class="path-way">Second Placement - Campaign</div>
+        </clickable-item>
+    </ion-list>
+
+</ion-card>
