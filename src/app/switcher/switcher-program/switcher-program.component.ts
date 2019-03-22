@@ -4,7 +4,9 @@ import { AuthService } from '../../auth/auth.service';
 import { Injectable, Inject } from '@angular/core';
 import { SwitcherService, ProgramObj } from '../switcher.service';
 import { RouterEnter } from '@services/router-enter.service';
+import { LoadingController } from '@ionic/angular';
 import { environment } from '@environments/environment';
+
 @Injectable({
   providedIn: 'root'
 })
@@ -19,6 +21,7 @@ export class SwitcherProgramComponent implements OnInit {
   programs: Array<ProgramObj>;
 
   constructor(
+    public loadingController: LoadingController,
     public router: Router,
     private authService: AuthService,
     private switcherService: SwitcherService,
@@ -31,8 +34,14 @@ export class SwitcherProgramComponent implements OnInit {
       });
   }
 
-  switch(index) {
+  async switch(index) {
+    const loading = await this.loadingController.create({
+      message: 'loading...'
+    });
+    await loading.present();
+
     this.switcherService.switchProgram(this.programs[index]).subscribe(() => {
+      loading.dismiss();
       if ((typeof environment.goMobile !== 'undefined' && environment.goMobile === false)
         || /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
         return this.router.navigate(['/app/home']);
