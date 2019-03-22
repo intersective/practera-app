@@ -13,6 +13,15 @@ Run `npm run start` to start a development server on your local, and calling sta
 
 Run `npm run local` to start a development server on your local, and calling 127.0.0.1:8080 for API
 
+### Release Processes
+
+1. Merge `develop` branch to `master` (if we are releasing develop branch)
+2. Merge `master` branch to `release/eos` 
+3. Create a new release in [Github](https://github.com/intersective/practera-app-v2/releases) with the release pull request link as the description
+4. Change the version number on Slack `team-dev` channel 
+  - `master` is always + 0.01 version ahead of `live`
+  - `develop` is always + 0.1 version ahead of `live`
+
 ## External link format
 
 ### 1. Direct link login 
