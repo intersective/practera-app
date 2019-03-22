@@ -186,27 +186,27 @@ export class UtilsService {
           }
         }
         return new Intl.DateTimeFormat('en-GB', {
-            month: 'short',
-            day: 'numeric',
-            year: 'numeric'
-          }).format(date);
+          month: 'short',
+          day: 'numeric',
+          year: 'numeric'
+        }).format(date);
 
       case 'time':
         return new Intl.DateTimeFormat('en-GB', {
-            hour12: true,
-            hour: 'numeric',
-            minute: 'numeric'
-          }).format(date);
+          hour12: true,
+          hour: 'numeric',
+          minute: 'numeric'
+        }).format(date);
 
       default:
         return new Intl.DateTimeFormat('en-GB', {
-            hour12: true,
-            hour: 'numeric',
-            minute: 'numeric',
-            month: 'short',
-            day: 'numeric',
-            year: 'numeric'
-          }).format(date);
+          hour12: true,
+          hour: 'numeric',
+          minute: 'numeric',
+          month: 'short',
+          day: 'numeric',
+          year: 'numeric'
+        }).format(date);
     }
   }
 
