@@ -1,5 +1,8 @@
 {
   "name": "practera-appv2",
-  "integrations": {},
-  "type": "angular"
+  "integrations": {
+    "cordova": {}
+  },
+  "type": "angular",
+  "id": "a5d733a7"
 }
