@@ -7,10 +7,10 @@ import { TodoItem } from '../home.service';
   styleUrls: ['./todo-card.component.scss']
 })
 export class TodoCardComponent implements OnInit {
+  @Input() loading: boolean;
+  @Input() todoItem: TodoItem;
 
   constructor() {}
-
-  @Input() todoItem: TodoItem;
 
   ngOnInit() {
   }

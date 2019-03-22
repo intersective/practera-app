@@ -15,6 +15,16 @@ const api = {
   progress: 'api/v2/motivations/progress/list.json'
 };
 
+// added for displaying empty placeholder (enhance UX)
+export interface DummyMilestone {
+  dummy?: boolean;
+  Activity?: Array<DummyActivity>;
+}
+
+export interface DummyActivity {
+  dummy?: boolean;
+}
+
 export interface Activity {
   id: number;
   name: string;
@@ -30,7 +40,7 @@ export interface Milestone {
   description?: string;
   isLocked: boolean;
   progress: number;
-  Activity: Array <Activity>;
+  Activity: Array <Activity | DummyActivity>;
 }
 
 @Injectable({
@@ -55,10 +65,10 @@ export class ProjectService {
       }));
   }
 
-  private _normaliseMilestones(data): Array<Milestone> {
+  private _normaliseMilestones(data): Array<Milestone | DummyMilestone> {
     if (!Array.isArray(data)) {
       this.request.apiResponseFormatError('Milestones array format error');
-      return [];
+      return [{ dummy: true }];
     }
     const milestones = [];
     data.forEach(eachMilestone => {
@@ -73,7 +83,7 @@ export class ProjectService {
         description: this.utils.has(eachMilestone, 'description') ? eachMilestone.description : '',
         isLocked: eachMilestone.is_locked,
         progress: 0,
-        Activity: []
+        Activity: [{ dummy: true }]
       });
     });
     return milestones;
