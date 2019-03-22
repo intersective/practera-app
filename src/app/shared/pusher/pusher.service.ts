@@ -148,6 +148,9 @@ export class PusherService {
         this.channels.notification.bind('achievement', data => {
           this.utils.broadcastEvent('achievement', data);
         });
+        this.channels.notification.bind('event-reminder', data => {
+          this.utils.broadcastEvent('event-reminder', data);
+        });
         return;
       }
       if (channel.channel.includes('presence-' + environment.env + '-team-')) {

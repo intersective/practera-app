@@ -9,6 +9,7 @@ import { Inject } from '@angular/core';
   styleUrls: ['./activity-card.component.scss']
 })
 export class ActivityCardComponent implements OnInit {
+  @Input() loading: boolean;
   @Input() activity: {
     id: number,
     name: string,
@@ -26,6 +27,5 @@ export class ActivityCardComponent implements OnInit {
       this.backgroundImageStyle = 'url(' + this.activity.leadImage + '), linear-gradient( rgba(0, 0, 0, .4), rgba(0, 0, 0, 0.2) )';
     }
   }
-
 }
 
