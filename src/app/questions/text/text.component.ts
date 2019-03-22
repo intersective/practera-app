@@ -138,7 +138,7 @@ export class TextComponent implements ControlValueAccessor, OnInit {
         () => {
           this.saving = false;
         },
-        3000);
+        10000);
     }
   }
 
