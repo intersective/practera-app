@@ -10,6 +10,8 @@ import { UtilsService } from '@services/utils.service';
 export class EventCardComponent implements OnInit {
   @Input() event: Event;
   @Input() time: string;
+  // if it is for todo item
+  @Input() layout: string;
   constructor(
     private eventsService: EventsService,
     private utils: UtilsService

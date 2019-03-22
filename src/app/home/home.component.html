@@ -38,6 +38,19 @@
     </ng-container>
 
     <ng-template #todoItemsTpl>
+
+      <ng-container *ngFor="let event of eventReminders">
+        <app-todo-card
+          [todoItem]="{
+            name: event.name,
+            description: '',
+            type: 'event',
+            time: utils.timeFormatter(event.startTime)
+          }"
+          (click)="showEventDetail(event)"
+        ></app-todo-card>
+      </ng-container>
+
       <ng-container *ngIf="todoItems.length; else noItemsTpl">
         <div *ngFor="let todoItem of todoItems">
           <ng-container [ngSwitch]="todoItem.type">
@@ -61,7 +74,7 @@
       </ng-container>
 
       <ng-template #noItemsTpl>
-        <app-todo-card [todoItem]="false"></app-todo-card>
+        <app-todo-card *ngIf="!eventReminders.length" [todoItem]="false"></app-todo-card>
       </ng-template>
     </ng-template>
 
