@@ -33,7 +33,9 @@ export class TabsComponent extends RouterEnter {
     const role = this.storage.getUser().role;
     this.utils.getEvent('notification').subscribe(event => {
       this.noOfTodoItems++;
-
+    });
+    this.utils.getEvent('event-reminder').subscribe(event => {
+      this.noOfTodoItems++;
     });
     this.utils.getEvent('team-message').subscribe(event => {
       this.tabsService.getNoOfChats().subscribe(noOfChats => {
