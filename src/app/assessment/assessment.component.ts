@@ -240,7 +240,7 @@ export class AssessmentComponent extends RouterEnter {
           questionId = +key.replace('q-', '');
           answers.push({
             assessment_question_id: questionId,
-            answer: value
+            answer: value ? value : ''
           });
           // unset the required questions object
           if (requiredQuestions[questionId]) {
@@ -268,7 +268,7 @@ export class AssessmentComponent extends RouterEnter {
       }
       this.utils.each(this.questionsForm.value, (value, key) => {
         if (value) {
-          const answer = value;
+          const answer = value ? value : '';
           answer.assessment_question_id = +key.replace('q-', '');
           answers.push(answer);
         }
