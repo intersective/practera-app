@@ -9,7 +9,7 @@
     <ion-row> 
       <ion-col class="bubbles-top" *ngIf="loadingMilestone"> 
           <ion-spinner></ion-spinner>
-        </ion-col> 
+      </ion-col> 
       <ion-col class="bubbles-top" (click)="scrollTo(i)" *ngFor="let milestone of milestones; let i = index">
         <ng-container *ngIf="loadingProgress; else progressTpl">
             <ng-container *ngTemplateOutlet="loadingCircle"></ng-container>
@@ -25,11 +25,8 @@
             <ng-template #milestoneLocked>
               <ion-icon name="lock" color="medium" class="icon-lock"></ion-icon>
             </ng-template>
-          </ng-container>
-          <ng-template #milestoneLocked>
-            <ion-icon name="lock" color="medium" class="icon-lock"></ion-icon>
-          </ng-template>
-        </div>
+          </div>
+        </ng-template>
       </ion-col>
     </ion-row>
   </ion-grid>
