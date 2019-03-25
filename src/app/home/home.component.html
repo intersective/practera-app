@@ -4,43 +4,7 @@
     <ion-icon name="calendar" class="calendar" float-right></ion-icon>
   </a>
   <div text-center padding>
-    <ng-container *ngIf="loadingProgress; else progressTpl">
-        <circle-progress
-        [toFixed]= 0
-        [showTitle]= false
-        [showSubtitle]= false
-        [showUnits]= false
-        [space]= -20
-        [percent]="100"
-        [radius]= "70"
-        [outerStrokeWidth]= 3
-        [outerStrokeColor]= "'#f0f0f0'"
-        [maxPercent]= "100"
-        [showInnerStroke]= false
-        [startFromZero]= false
-        [animation]= false
-        [animateTitle]= false
-        [outerStrokeLinecap]= "butt"
-        [backgroundColor]= "'#e6e6e6'"
-        [backgroundPadding]=0
-        [backgroundStrokeWidth]=0
-        >
-      </circle-progress>
-    </ng-container>
-    <ng-template #progressTpl>
-      <circle-progress
-        [percent]="progress"
-        [radius]= "70"
-        [subtitle]="COMPLETE"
-        [outerStrokeWidth]= "12"
-        [backgroundPadding]= -10
-        [maxPercent]= 100
-        [showInnerStroke]= true
-        [startFromZero]= false
-        [outerStrokeLinecap]= "round"
-        >
-      </circle-progress>
-    </ng-template>
+    <app-circle-progress [data]="progressConfig" [type]="'large'"></app-circle-progress>
   </div>
 
   <ng-container *ngIf="achievements[0]">
@@ -74,6 +38,19 @@
     </ng-container>
 
     <ng-template #todoItemsTpl>
+
+      <ng-container *ngFor="let event of eventReminders">
+        <app-todo-card
+          [todoItem]="{
+            name: event.name,
+            description: '',
+            type: 'event',
+            time: utils.timeFormatter(event.startTime)
+          }"
+          (click)="showEventDetail(event)"
+        ></app-todo-card>
+      </ng-container>
+
       <ng-container *ngIf="todoItems.length; else noItemsTpl">
         <div *ngFor="let todoItem of todoItems">
           <ng-container [ngSwitch]="todoItem.type">
@@ -97,7 +74,7 @@
       </ng-container>
 
       <ng-template #noItemsTpl>
-        <app-todo-card [todoItem]="false"></app-todo-card>
+        <app-todo-card *ngIf="!eventReminders.length" [todoItem]="false"></app-todo-card>
       </ng-template>
     </ng-template>
 
@@ -105,8 +82,8 @@
 
   <ion-label color="medium">Current Activity</ion-label>
   <ng-container *ngIf="loadingActivity; else activityTpl">
-      <app-activity-card [loading]="true" [activity]="false" class="activity-card" ></app-activity-card>
-    </ng-container>
+    <app-activity-card [loading]="true" [activity]="false" class="activity-card" ></app-activity-card>
+  </ng-container>
   <ng-template #activityTpl>
     <app-activity-card [activity]="activity" (click)="!activity.isLocked && goToActivity(activity.id)"></app-activity-card>
   </ng-template>

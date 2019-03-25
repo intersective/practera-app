@@ -31,6 +31,5 @@ export class ActivityCardComponent implements OnInit {
       this.backgroundImageStyle = 'url(' + this.activity.leadImage + '), linear-gradient( rgba(0, 0, 0, .4), rgba(0, 0, 0, 0.2) )';
     }
   }
-
 }
 
