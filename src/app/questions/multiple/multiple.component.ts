@@ -124,9 +124,11 @@ export class MultipleComponent implements ControlValueAccessor, OnInit {
       this.innerValue.answer = this.utils.addOrRemove(this.innerValue.answer, this.review.answer);
     }
     if ((this.submissionStatus === 'in progress') && (this.doAssessment)) {
+      this.innerValue = [];
       this.innerValue = this.utils.addOrRemove(this.innerValue, this.submission.answer);
     }
     this.propagateChange(this.innerValue);
+    this.control.setValue(this.innerValue);
   }
 
 }
