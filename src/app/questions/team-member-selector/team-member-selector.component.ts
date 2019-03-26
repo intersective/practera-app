@@ -116,5 +116,6 @@ export class TeamMemberSelectorComponent implements ControlValueAccessor, OnInit
       this.innerValue = this.submission.answer;
     }
     this.propagateChange(this.innerValue);
+    this.control.setValue(this.innerValue);
   }
 }
