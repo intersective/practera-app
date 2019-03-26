@@ -56,6 +56,10 @@ export class MultipleComponent implements ControlValueAccessor, OnInit {
   // event fired when checkbox is selected/unselected. propagate the change up to the form control using the custom value accessor interface
   // if 'type' is set, it means it comes from reviewer doing review, otherwise it comes from submitter doing assessment
   onChange(value, type) {
+    // innerValue should be either array or object, if it is a string, parse it
+    if (typeof this.innerValue === 'string') {
+      this.innerValue = JSON.parse(this.innerValue);
+    }
     // set changed value (answer or comment)
     if (type) {
       // initialise innerValue if not set
