@@ -128,6 +128,7 @@ export class TextComponent implements ControlValueAccessor, OnInit {
       this.answer = this.submission.answer;
     }
     this.propagateChange(this.innerValue);
+    this.control.setValue(this.innerValue);
   }
 
   saveAnswers() {
