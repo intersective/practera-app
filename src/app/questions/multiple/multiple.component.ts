@@ -75,7 +75,7 @@ export class MultipleComponent implements ControlValueAccessor, OnInit {
       if (!this.innerValue) {
         this.innerValue = [];
       }
-      this.innerValue = this.utils.addOrRemove(this.innerValue, value);
+      this.innerValue = this.utils.addOrRemove(JSON.parse(this.innerValue), value);
     }
 
     // propagate value into form control using control value accessor interface
@@ -124,8 +124,7 @@ export class MultipleComponent implements ControlValueAccessor, OnInit {
       this.innerValue.answer = this.utils.addOrRemove(this.innerValue.answer, this.review.answer);
     }
     if ((this.submissionStatus === 'in progress') && (this.doAssessment)) {
-      this.innerValue = [];
-      this.innerValue = this.utils.addOrRemove(this.innerValue, this.submission.answer);
+      this.innerValue = this.submission.answer;
     }
     this.propagateChange(this.innerValue);
     this.control.setValue(this.innerValue);
