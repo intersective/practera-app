@@ -283,7 +283,7 @@ export class AssessmentComponent extends RouterEnter {
       }
       this.utils.each(this.questionsForm.value, (value, key) => {
         if (value) {
-          const answer = value ? value : '';
+          const answer = value;
           answer.assessment_question_id = +key.replace('q-', '');
           answers.push(answer);
         }
