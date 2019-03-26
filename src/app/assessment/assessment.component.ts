@@ -237,15 +237,30 @@ export class AssessmentComponent extends RouterEnter {
         assessment.in_progress = true;
       }
       this.utils.each(this.questionsForm.value, (value, key) => {
-          questionId = +key.replace('q-', '');
-          answers.push({
-            assessment_question_id: questionId,
-            answer: value ? value : ''
+        questionId = +key.replace('q-', '');
+        let answer;
+        if (value) {
+          answer = value;
+        } else {
+          this.assessment.groups.forEach(group => {
+            const currentQuestion = group.questions.find(question => {
+              return question.id === questionId;
+            });
+            if (currentQuestion && currentQuestion.type === 'multiple') {
+              answer = [];
+            } else {
+              answer = '';
+            }
           });
-          // unset the required questions object
-          if (requiredQuestions[questionId]) {
-            this.utils.unset(requiredQuestions, questionId);
-          }
+        }
+        answers.push({
+          assessment_question_id: questionId,
+          answer: answer
+        });
+        // unset the required questions object
+        if (requiredQuestions[questionId]) {
+          this.utils.unset(requiredQuestions, questionId);
+        }
       });
       // check if all required questions have answer when assessment done
       if (!saveInProgress && !this.utils.isEmpty(requiredQuestions)) {
