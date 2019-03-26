@@ -402,6 +402,9 @@ export class AssessmentService {
           answer = +answer;
           break;
         case 'multiple':
+          if (this.utils.isEmpty(answer)) {
+            answer = [];
+          }
           if (!Array.isArray(answer)) {
             // re-format json string to array
             answer = JSON.parse(answer);
