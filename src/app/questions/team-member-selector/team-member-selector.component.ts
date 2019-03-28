@@ -40,10 +40,13 @@ export class TeamMemberSelectorComponent implements ControlValueAccessor, OnInit
   comment: string;
   // validation errors array
   errors: Array<any> = [];
+  // for controll autosave
+  saving: boolean;
 
   constructor() {}
 
   ngOnInit() {
+    this.saving = false;
     this._showSavedAnswers();
   }
   // propagate changes into the form control
@@ -81,7 +84,7 @@ export class TeamMemberSelectorComponent implements ControlValueAccessor, OnInit
         }
       }
     }
-    this.saveProgress.emit(true);
+    this._saveAnswers();
   }
 
   // From ControlValueAccessor interface
@@ -117,5 +120,17 @@ export class TeamMemberSelectorComponent implements ControlValueAccessor, OnInit
     }
     this.propagateChange(this.innerValue);
     this.control.setValue(this.innerValue);
+  }
+
+  private _saveAnswers() {
+    if (!this.saving) {
+      this.saving = true;
+      this.saveProgress.emit(true);
+      setTimeout(
+        () => {
+          this.saving = false;
+        },
+        10000);
+    }
   }
 }

@@ -56,6 +56,8 @@ export class AssessmentComponent extends RouterEnter {
   savingButtonDisabled = true;
   savingMessage = '';
   fromPage = '';
+  // to controll autosave when go back
+  haveChage: boolean;
 
   constructor (
     public router: Router,
@@ -91,6 +93,7 @@ export class AssessmentComponent extends RouterEnter {
     this.loadingAssessment = true;
     this.loadingSubmission = true;
     this.loadingFeedbackReviewed = true;
+    this.haveChage = false;
   }
 
   onEnter() {
@@ -189,6 +192,10 @@ export class AssessmentComponent extends RouterEnter {
   }
 
   back() {
+    // check is user did any change before go back and save them.
+    if (this.haveChage) {
+      this.submit(true);
+    }
     if (this.fromPage && this.fromPage === 'reviews') {
       return this.router.navigate(['app', 'reviews']);
     }
@@ -218,6 +225,7 @@ export class AssessmentComponent extends RouterEnter {
     if ( saveInProgress ) {
       this.savingMessage = 'Saving...';
       this.savingButtonDisabled = true;
+      this.haveChage = true;
     } else {
       this.submitting = true;
     }
