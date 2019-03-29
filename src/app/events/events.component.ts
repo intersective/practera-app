@@ -134,7 +134,9 @@ export class EventsComponent extends RouterEnter {
       // group all past events as one group named "Expired"
       if (compareDate !== 'Expired') {
         compareDate = 'Expired';
-        events.push(eventGroup);
+        if (!this.utils.isEmpty(eventGroup.events)) {
+          events.push(eventGroup);
+        }
         eventGroup = {
           date: compareDate,
           events: []
@@ -146,7 +148,9 @@ export class EventsComponent extends RouterEnter {
       eventGroup.events.push(event);
     } else {
       // create a new group for this date
-      events.push(eventGroup);
+      if (!this.utils.isEmpty(eventGroup.events)) {
+        events.push(eventGroup);
+      }
       compareDate = this.utils.utcToLocal(event.startTime, 'date');
       eventGroup = {
         date: compareDate,
