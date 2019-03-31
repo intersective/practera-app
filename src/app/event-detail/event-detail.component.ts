@@ -72,8 +72,8 @@ export class EventDetailComponent {
   }
 
   private _bookEvent() {
-    this.eventDetailService.bookEvent(this.event).subscribe(response => {
-      if (response.success) {
+    this.eventDetailService.bookEvent(this.event).subscribe(
+      response => {
         this.notificationService.alert({
           message: 'Booked Successfully!',
           buttons: [
@@ -85,8 +85,19 @@ export class EventDetailComponent {
         });
         // update the event list & activity detail page
         this.utils.broadcastEvent('update-event', null);
+      },
+      error => {
+        this.notificationService.alert({
+          message: 'Booking failed, please try again later!',
+          buttons: [
+            {
+              text: 'OK',
+              role: 'cancel'
+            }
+          ]
+        });
       }
-    });
+    );
   }
 
   buttonText() {
