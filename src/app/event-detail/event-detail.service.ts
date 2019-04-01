@@ -23,7 +23,7 @@ export class EventDetailService {
   bookEvent(event: Event) {
     return this.request.post(api.post.book, {
       event_id: event.id,
-      delete_previous: 'no'
+      delete_previous: event.singleBooking
     });
   }
 
