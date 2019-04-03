@@ -1,6 +1,6 @@
-<ion-content color="light" text-center>
+<ion-content color="{{custom.background || 'light'}}" text-center>
   <div class="div-logo">
-    <img src="/assets/logo.svg" width="60%">
+    <img [src]="custom.logo || '/assets/logo.svg'" width="60%">
   </div>
   <div class="div-after-logo">
     <form (ngSubmit)="login()" [formGroup]="loginForm" (keyup.enter)="login()">
