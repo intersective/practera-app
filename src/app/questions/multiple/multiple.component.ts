@@ -41,15 +41,12 @@ export class MultipleComponent implements ControlValueAccessor, OnInit {
   comment: string;
   // validation errors array
   errors: Array<any> = [];
-  // for controll autosave
-  saving: boolean;
 
   constructor(
     private utils: UtilsService
   ) {}
 
   ngOnInit() {
-    this.saving = false;
     this._showSavedAnswers();
   }
 
@@ -100,7 +97,7 @@ export class MultipleComponent implements ControlValueAccessor, OnInit {
         }
       }
     }
-    this._saveAnswers();
+    this.saveProgress.emit(true);
   }
 
   // From ControlValueAccessor interface
@@ -133,18 +130,6 @@ export class MultipleComponent implements ControlValueAccessor, OnInit {
     }
     this.propagateChange(this.innerValue);
     this.control.setValue(this.innerValue);
-  }
-
-  private _saveAnswers() {
-    if (!this.saving) {
-      this.saving = true;
-      this.saveProgress.emit(true);
-      setTimeout(
-        () => {
-          this.saving = false;
-        },
-        10000);
-    }
   }
 
 }

@@ -55,9 +55,8 @@ export class AssessmentComponent extends RouterEnter {
   submitting = false;
   savingButtonDisabled = true;
   savingMessage = '';
+  saving: boolean;
   fromPage = '';
-  // to controll autosave when go back
-  haveChage: boolean;
 
   constructor (
     public router: Router,
@@ -93,7 +92,7 @@ export class AssessmentComponent extends RouterEnter {
     this.loadingAssessment = true;
     this.loadingSubmission = true;
     this.loadingFeedbackReviewed = true;
-    this.haveChage = false;
+    this.saving = false;
   }
 
   onEnter() {
@@ -193,9 +192,7 @@ export class AssessmentComponent extends RouterEnter {
 
   back() {
     // check is user did any change before go back and save them.
-    if (this.haveChage) {
-      this.submit(true);
-    }
+    this.submit(true);
     if (this.fromPage && this.fromPage === 'reviews') {
       return this.router.navigate(['app', 'reviews']);
     }
@@ -225,9 +222,9 @@ export class AssessmentComponent extends RouterEnter {
     if ( saveInProgress ) {
       this.savingMessage = 'Saving...';
       this.savingButtonDisabled = true;
-      this.haveChage = true;
     } else {
       this.submitting = true;
+      this.saving = false;
     }
     const answers = [];
     let assessment;
@@ -277,7 +274,6 @@ export class AssessmentComponent extends RouterEnter {
         return this.notificationService.popUp('shortMessage', {message: 'Required question answer missing!'});
       }
     }
-
     // form feedback answers
     if (this.doReview) {
       assessment = {
@@ -298,50 +294,58 @@ export class AssessmentComponent extends RouterEnter {
       });
     }
     // save the submission/feedback
-    this.assessmentService.saveAnswers(assessment, answers, this.action, this.submission.id).subscribe(
-      result => {
-        this.submitting = false;
-        this.savingButtonDisabled = false;
-        if (saveInProgress) {
-          // display message for successfull saved answers
-          this.savingMessage = 'Last saved ' + this._getCurrentTime();
-        } else {
-          // display a pop up for successful submission
-          return this.notificationService.alert({
-            message: 'Submission Successful!',
-            buttons: [
-              {
-                text: 'OK',
-                role: 'cancel',
-                handler: () => {
-                  this.router.navigate(['app', 'home']);
-                  return;
+    if (!this.saving) {
+      this.saving = true;
+      this.assessmentService.saveAnswers(assessment, answers, this.action, this.submission.id).subscribe(
+        result => {
+          this.submitting = false;
+          this.savingButtonDisabled = false;
+          if (saveInProgress) {
+            // display message for successfull saved answers
+            this.savingMessage = 'Last saved ' + this._getCurrentTime();
+          } else {
+            // display a pop up for successful submission
+            return this.notificationService.alert({
+              message: 'Submission Successful!',
+              buttons: [
+                {
+                  text: 'OK',
+                  role: 'cancel',
+                  handler: () => {
+                    this.router.navigate(['app', 'home']);
+                    return;
+                  }
                 }
-              }
-            ]
-          });
+              ]
+            });
+          }
+        },
+        err => {
+          this.submitting = false;
+          this.savingButtonDisabled = false;
+          if (saveInProgress) {
+            // display message when saving answers failed
+            this.savingMessage = 'Auto save failed';
+          } else {
+            // display a pop up if submission failed
+            this.notificationService.alert({
+              message: 'Submission Failed, please try again later.',
+              buttons: [
+                {
+                  text: 'OK',
+                  role: 'cancel'
+                }
+              ]
+            });
+          }
         }
-      },
-      err => {
-        this.submitting = false;
-        this.savingButtonDisabled = false;
-        if (saveInProgress) {
-          // display message when saving answers failed
-          this.savingMessage = 'Auto save failed';
-        } else {
-          // display a pop up if submission failed
-          this.notificationService.alert({
-            message: 'Submission Failed, please try again later.',
-            buttons: [
-              {
-                text: 'OK',
-                role: 'cancel'
-              }
-            ]
-          });
-        }
-      }
-    );
+      );
+      setTimeout(
+        () => {
+          this.saving = false;
+        },
+        10000);
+    }
   }
 
   reviewFeedback() {
