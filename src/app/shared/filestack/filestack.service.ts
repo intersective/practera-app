@@ -7,7 +7,7 @@ import { BrowserStorageService } from '@services/storage.service';
 import { HttpClient } from '@angular/common/http'; // added to make one and only API call to filestack server
 import { Observable } from 'rxjs/Observable';
 
-export interface metadata {
+export interface Metadata {
   mimetype?: string;
   uploaded?: number;
   container?: string;
@@ -98,13 +98,13 @@ export class FilestackService {
     this.previewModal(fileUrl, file);
   }
 
-  metadata(file): Observable<metadata> {
-    if (!file.url) {
-      throw "File url missing.";
+  metadata(file): Observable<Metadata> {
+    try {
+      const handle = file.url.match(/([A-Za-z0-9]){20,}/);
+      return this.httpClient.get(api.metadata.replace('HANDLE', handle[0]));
+    } catch (e) {
+      throw `File url missing: ${e}`;
     }
-
-    const handle = file.url.match(/([A-Za-z0-9]){20,}/);
-    return this.httpClient.get(api.metadata.replace('HANDLE', handle[0]));
   }
 
   async open(options = {}, onSuccess = res => res, onError = err => err) {
