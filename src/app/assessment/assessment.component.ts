@@ -191,11 +191,8 @@ export class AssessmentComponent extends RouterEnter {
   }
 
   back() {
-    // check is user did any change before go back and save them.
-    if ((this.submission && this.submission.status === 'in progress') ||
-    (this.review && this.review.status === 'in progress')) {
-      this.submit(true);
-    }
+    // save answer before go back.
+    this.submit(true);
     if (this.fromPage && this.fromPage === 'reviews') {
       return this.router.navigate(['app', 'reviews']);
     }
