@@ -231,121 +231,122 @@ export class AssessmentComponent extends RouterEnter {
     const requiredQuestions = this.getRequiredQuestions();
     let questionId = 0;
 
-    if (!this.saving) {
-      this.saving = true;
-      // form submission answers
-      if (this.doAssessment) {
-        assessment = {
-          id: this.id,
-          context_id: this.contextId,
-          in_progress: false
-        };
-        if (saveInProgress) {
-          assessment.in_progress = true;
-        }
-        this.utils.each(this.questionsForm.value, (value, key) => {
-          questionId = +key.replace('q-', '');
-          let answer;
-          if (value) {
-            answer = value;
-          } else {
-            this.assessment.groups.forEach(group => {
-              const currentQuestion = group.questions.find(question => {
-                return question.id === questionId;
-              });
-              if (currentQuestion && currentQuestion.type === 'multiple') {
-                answer = [];
-              } else {
-                answer = '';
-              }
-            });
-          }
-          answers.push({
-            assessment_question_id: questionId,
-            answer: answer
-          });
-          // unset the required questions object
-          if (requiredQuestions[questionId]) {
-            this.utils.unset(requiredQuestions, questionId);
-          }
-        });
-        // check if all required questions have answer when assessment done
-        if (!saveInProgress && !this.utils.isEmpty(requiredQuestions)) {
-          this.submitting = false;
-          // display a pop up if required question not answered
-          return this.notificationService.popUp('shortMessage', {message: 'Required question answer missing!'});
-        }
-      }
-      // form feedback answers
-      if (this.doReview) {
-        assessment = {
-          id: this.id,
-          review_id: this.review.id,
-          submission_id: this.submission.id,
-          in_progress: false
-        };
-        if (saveInProgress) {
-          assessment.in_progress = true;
-        }
-        this.utils.each(this.questionsForm.value, (value, key) => {
-          if (value) {
-            const answer = value;
-            answer.assessment_question_id = +key.replace('q-', '');
-            answers.push(answer);
-          }
-        });
-      }
-      // save the submission/feedback
-      this.assessmentService.saveAnswers(assessment, answers, this.action, this.submission.id).subscribe(
-        result => {
-          this.submitting = false;
-          this.savingButtonDisabled = false;
-          if (saveInProgress) {
-            // display message for successfull saved answers
-            this.savingMessage = 'Last saved ' + this._getCurrentTime();
-          } else {
-            // display a pop up for successful submission
-            return this.notificationService.alert({
-              message: 'Submission Successful!',
-              buttons: [
-                {
-                  text: 'OK',
-                  role: 'cancel',
-                  handler: () => {
-                    this.router.navigate(['app', 'home']);
-                    return;
-                  }
-                }
-              ]
-            });
-          }
-        },
-        err => {
-          this.submitting = false;
-          this.savingButtonDisabled = false;
-          if (saveInProgress) {
-            // display message when saving answers failed
-            this.savingMessage = 'Auto save failed';
-          } else {
-            // display a pop up if submission failed
-            this.notificationService.alert({
-              message: 'Submission Failed, please try again later.',
-              buttons: [
-                {
-                  text: 'OK',
-                  role: 'cancel'
-                }
-              ]
-            });
-          }
-        }
-      );
-      setTimeout(
-        () => {
-          this.saving = false;
-        },
-        10000);
+    if (this.saving) {
+      return;
     }
+    this.saving = true;
+    // form submission answers
+    if (this.doAssessment) {
+      assessment = {
+        id: this.id,
+        context_id: this.contextId,
+        in_progress: false
+      };
+      if (saveInProgress) {
+        assessment.in_progress = true;
+      }
+      this.utils.each(this.questionsForm.value, (value, key) => {
+        questionId = +key.replace('q-', '');
+        let answer;
+        if (value) {
+          answer = value;
+        } else {
+          this.assessment.groups.forEach(group => {
+            const currentQuestion = group.questions.find(question => {
+              return question.id === questionId;
+            });
+            if (currentQuestion && currentQuestion.type === 'multiple') {
+              answer = [];
+            } else {
+              answer = '';
+            }
+          });
+        }
+        answers.push({
+          assessment_question_id: questionId,
+          answer: answer
+        });
+        // unset the required questions object
+        if (requiredQuestions[questionId]) {
+          this.utils.unset(requiredQuestions, questionId);
+        }
+      });
+      // check if all required questions have answer when assessment done
+      if (!saveInProgress && !this.utils.isEmpty(requiredQuestions)) {
+        this.submitting = false;
+        // display a pop up if required question not answered
+        return this.notificationService.popUp('shortMessage', {message: 'Required question answer missing!'});
+      }
+    }
+    // form feedback answers
+    if (this.doReview) {
+      assessment = {
+        id: this.id,
+        review_id: this.review.id,
+        submission_id: this.submission.id,
+        in_progress: false
+      };
+      if (saveInProgress) {
+        assessment.in_progress = true;
+      }
+      this.utils.each(this.questionsForm.value, (value, key) => {
+        if (value) {
+          const answer = value;
+          answer.assessment_question_id = +key.replace('q-', '');
+          answers.push(answer);
+        }
+      });
+    }
+    // save the submission/feedback
+    this.assessmentService.saveAnswers(assessment, answers, this.action, this.submission.id).subscribe(
+      result => {
+        this.submitting = false;
+        this.savingButtonDisabled = false;
+        if (saveInProgress) {
+          // display message for successfull saved answers
+          this.savingMessage = 'Last saved ' + this._getCurrentTime();
+        } else {
+          // display a pop up for successful submission
+          return this.notificationService.alert({
+            message: 'Submission Successful!',
+            buttons: [
+              {
+                text: 'OK',
+                role: 'cancel',
+                handler: () => {
+                  this.router.navigate(['app', 'home']);
+                  return;
+                }
+              }
+            ]
+          });
+        }
+      },
+      err => {
+        this.submitting = false;
+        this.savingButtonDisabled = false;
+        if (saveInProgress) {
+          // display message when saving answers failed
+          this.savingMessage = 'Auto save failed';
+        } else {
+          // display a pop up if submission failed
+          this.notificationService.alert({
+            message: 'Submission Failed, please try again later.',
+            buttons: [
+              {
+                text: 'OK',
+                role: 'cancel'
+              }
+            ]
+          });
+        }
+      }
+    );
+    setTimeout(
+      () => {
+        this.saving = false;
+      },
+      10000);
   }
 
   reviewFeedback() {
