@@ -6,6 +6,7 @@ import { FilestackService } from '@shared/filestack/filestack.service';
 import { RouterEnter } from '@services/router-enter.service';
 import { UtilsService } from '@services/utils.service';
 import { BrowserStorageService } from '@services/storage.service';
+import { NotificationService } from '@shared/notification/notification.service';
 
 @Component({
   selector: 'app-topic',
@@ -29,6 +30,7 @@ export class TopicComponent extends RouterEnter {
   id = 0;
   activityId = 0;
   topicProgress: number;
+  isLoadingPreview = false;
 
   constructor(
     private topicService: TopicService,
@@ -38,6 +40,7 @@ export class TopicComponent extends RouterEnter {
     private filestackService: FilestackService,
     public storage: BrowserStorageService,
     public utils: UtilsService,
+    public notificationService: NotificationService,
   ) {
     super(router);
   }
@@ -93,7 +96,37 @@ export class TopicComponent extends RouterEnter {
   }
 
   previewFile(file) {
-    this.filestackService.previewFile(file);
+    if (this.isLoadingPreview === false) {
+      this.isLoadingPreview = true;
+      this.filestackService.metadata(file).subscribe(metadata => {
+        this.isLoadingPreview = false;
+        const megabyte = (metadata && metadata.size) ? metadata.size / 1000 / 1000 : 0;
+
+        if (megabyte > 10) {
+          this.notificationService.alert({
+            subHeader: 'File size too large',
+            message: `Attachment size has exceeded the size of ${Math.floor(megabyte)}mb please consider downloading the file for better reading experience.`,
+            buttons: [
+              {
+                text: 'Download',
+                handler: () => {
+                  return this.utils.openUrl(file.url);
+                }
+              },
+              {
+                text: 'Cancel',
+                role: 'cancel',
+                handler: () => {
+                  return;
+                }
+              },
+            ]
+          });
+        } else {
+          this.filestackService.previewFile(file);
+        }
+      });
+    }
   }
 
   back() {
