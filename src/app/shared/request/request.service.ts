@@ -1,6 +1,6 @@
 import { Injectable, Optional, isDevMode } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams, HttpErrorResponse, HttpParameterCodec } from '@angular/common/http';
-import { Observable, of } from 'rxjs';
+import { Observable, of, throwError } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 import { UtilsService } from '@services/utils.service';
 import { BrowserStorageService } from '@services/storage.service';
@@ -97,7 +97,7 @@ export class RequestService {
       headers: this.appendHeaders(httpOptions.headers),
       params: this.setParams(httpOptions.params)
     }).pipe(
-      catchError(this.handleError<any>('API Request'))
+      catchError(this.handleError)
     );
   }
 
@@ -118,7 +118,7 @@ export class RequestService {
       headers: this.appendHeaders(httpOptions.headers),
       params: this.setParams(httpOptions.params)
     }).pipe(
-      catchError(this.handleError<any>('API Request'))
+      catchError(this.handleError)
     );
   }
 
@@ -139,7 +139,7 @@ export class RequestService {
       headers: this.appendHeaders(httpOptions.headers),
       params: this.setParams(httpOptions.params)
     }).pipe(
-      catchError(this.handleError<any>('API Request'))
+      catchError(this.handleError)
     );
   }
 
@@ -164,24 +164,12 @@ export class RequestService {
     return;
   }
 
-  private handleError<T> (operation = 'operation', result?: T) {
-    // when API response error is blank
-    if (!result) {
-      return (result as T);
+  private handleError(error: HttpErrorResponse) {
+    if (isDevMode()) {
+      console.error(error); // log to console instead
     }
-
-    return (error: any): Observable<T> => {
-      if (isDevMode()) {
-        console.error(error); // log to console instead
-        this.storage.append('errors', error);
-      }
-
-      // TODO: better job of transforming error for user consumption
-      this.log(`${operation} failed: ${error.message}`);
-
-      // Let the app keep running by returning an empty result.
-      return of(result as T);
-    };
+    // Return the error response data
+    return throwError(error.error);
   }
 
   // further enhance this for error reporting (piwik)
