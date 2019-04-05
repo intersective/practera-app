@@ -33,12 +33,17 @@ export class AuthLoginComponent implements OnInit {
   ngOnInit() {
     this.route.data
       .subscribe((response: any) => {
-        const config = response.config;
-        if (config.data.length > 0) {
-          this.custom.logo = config.data[0].logo;
-          if (config.data[0].themeColor) {
-            this.utils.changeThemeColor(config.data[0].themeColor);
+        try {
+          const expConfig = (response.config || {}).data;
+          if (expConfig.length > 0) {
+            this.custom.logo = expConfig[0].logo;
+            if (expConfig[0].config.theme_color) {
+              this.utils.changeThemeColor(expConfig[0].config.theme_color);
+            }
           }
+        } catch (err) {
+          console.log('Inconsistent Experince config.');
+          throw err;
         }
       });
   }

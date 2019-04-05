@@ -46,6 +46,20 @@ interface UserProfile {
   contactNumber: string;
 }
 
+interface ExperienceConfig {
+  name: string;
+  config?: {
+    theme_color?: string;
+    card_style?: string;
+    review_rating?: boolean;
+    review_rating_notification?: boolean;
+    deep_link_in_app?: boolean;
+    achievement_in_app_mentor?: boolean;
+    achievement_in_app_participant?: boolean;
+  };
+  logo: string;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -207,7 +221,7 @@ export class AuthService {
     }));
   }
 
-  getConfig(data: ConfigParams): Observable<any> {
+  getConfig(data: ConfigParams): Observable<{data: ExperienceConfig[]}> {
     return this.request.get(api.getConfig, {
       params: data
     });
