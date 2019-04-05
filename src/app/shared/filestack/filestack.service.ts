@@ -103,7 +103,8 @@ export class FilestackService {
       const handle = file.url.match(/([A-Za-z0-9]){20,}/);
       return this.httpClient.get(api.metadata.replace('HANDLE', handle[0]));
     } catch (e) {
-      throw `File url missing: ${e}`;
+      console.log(`File url missing: ${JSON.stringify(e)}`);
+      throw e;
     }
   }
 
