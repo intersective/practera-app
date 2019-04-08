@@ -41,13 +41,10 @@ export class TextComponent implements ControlValueAccessor, OnInit {
   comment: string;
   // validation errors array
   errors: Array<any> = [];
-  // for controll autosave
-  saving: boolean;
 
   constructor() {}
 
   ngOnInit() {
-    this.saving = false;
     this._showSavedAnswers();
   }
 
@@ -132,15 +129,7 @@ export class TextComponent implements ControlValueAccessor, OnInit {
   }
 
   saveAnswers() {
-    if (!this.saving) {
-      this.saving = true;
-      this.saveProgress.emit(true);
-      setTimeout(
-        () => {
-          this.saving = false;
-        },
-        10000);
-    }
+    this.saveProgress.emit(true);
   }
 
 }
