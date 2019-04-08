@@ -19,7 +19,9 @@ export class SettingsComponent extends RouterEnter {
   routeUrl = '/app/settings';
   profile = {
     contactNumber: '',
-    email: ''
+    email: '',
+    image: '',
+    name: ''
   };
   currentProgramName = '';
   // default country model
@@ -48,6 +50,8 @@ export class SettingsComponent extends RouterEnter {
     // get contact number and email from local storage
     this.profile.email = this.storage.getUser().email;
     this.profile.contactNumber = this.storage.getUser().contactNumber;
+    this.profile.image = this.storage.getUser().image;
+    this.profile.name = this.storage.getUser().name;
     // also get program name
     this.currentProgramName = this.storage.getUser().programName;
     // if user has the contact number
