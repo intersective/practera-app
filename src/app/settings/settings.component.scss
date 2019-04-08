@@ -23,6 +23,15 @@
       height: 80px;
       object-fit: cover;
     }
+    .loading-icon {
+      width: 80px;
+      margin: 0;
+      height: 80px;
+      text-align: center;
+      ion-spinner {
+        margin-top: 15%;
+      }
+    }
     .upload-icon {
       cursor: pointer;
       position: absolute; 

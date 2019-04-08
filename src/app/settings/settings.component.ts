@@ -7,6 +7,7 @@ import { UtilsService, ContactNumberFormat } from '@services/utils.service';
 import { NotificationService } from '@shared/notification/notification.service';
 import { environment } from '../../environments/environment.prod';
 import { RouterEnter } from '@services/router-enter.service';
+import { FilestackService } from '@shared/filestack/filestack.service';
 
 @Component({
   selector: 'app-settings',
@@ -33,6 +34,8 @@ export class SettingsComponent extends RouterEnter {
   helpline = 'help@practera.com';
 
   termsUrl = 'https://images.practera.com/terms_and_conditions/practera_terms_conditions.pdf';
+  // controll profile image updating
+  imageUpdating = false;
 
   constructor (
     public router: Router,
@@ -42,6 +45,7 @@ export class SettingsComponent extends RouterEnter {
     public utils: UtilsService,
     private notificationService: NotificationService,
     public contact: ContactNumberFormat,
+    private filestackService: FilestackService
   ) {
     super(router);
   }
@@ -241,6 +245,38 @@ export class SettingsComponent extends RouterEnter {
       return false;
     }
     return true;
+  }
+
+  async uploadProfileImage() {
+    const s3Config = this.filestackService.getS3Config('image');
+    const pickerOptions = {
+      storeTo: s3Config,
+      onFileUploadFailed: data => {
+        return this.notificationService.popUp('shortMessage', { message: 'Profile picture updating failed!'});
+      },
+      onFileUploadFinished: data => {
+        this.imageUpdating = true;
+        this.settingService.updateProfileImage({
+          image: data.url
+        }).subscribe(
+          success => {
+            this.imageUpdating = false;
+            this.profile.image = data.url;
+            const casheUser = this.storage.getUser();
+            casheUser.image = data.url;
+            this.storage.setUser(casheUser);
+            return this.notificationService.popUp('shortMessage', { message: 'Profile picture successfully updated!'});
+          },
+          err => {
+            this.imageUpdating = false;
+            return this.notificationService.popUp('shortMessage', { message: 'Profile picture updating failed!'});
+          });
+      }
+    };
+
+    pickerOptions['accept'] = ['.jpeg', '.jpg', '.png'];
+
+    return await this.filestackService.open(pickerOptions);
   }
 
 }
