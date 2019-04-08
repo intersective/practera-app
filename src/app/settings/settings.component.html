@@ -7,8 +7,9 @@
   <ion-card class="practera-card">
       <ion-item class="profile-info" lines="none">
           <ion-avatar class="profile-image" slot="start">
-            <img [src]="profile.image">
-            <p class="upload-icon" (click)="upload($event)"><ion-icon ios="ios-camera" md="md-camera"></ion-icon></p>
+            <img *ngIf="!imageUpdating" [src]="profile.image">
+            <p *ngIf="imageUpdating" class="loading-icon"><ion-spinner name="bubbles"></ion-spinner></p>
+            <p class="upload-icon" (click)="uploadProfileImage($event)"><ion-icon ios="ios-camera" md="md-camera"></ion-icon></p>
           </ion-avatar>
           <ion-label>
             <ion-label class="profile-name" *ngIf="profile.name">
@@ -21,20 +22,6 @@
         </ion-item>
   </ion-card>
   <ion-card class="practera-card">
-    <!-- <ion-item class="profile-info" lines="none">
-      <ion-avatar class="profile-image" slot="start">
-        <img [src]="profile.image">
-        <p class="upload-icon" (click)="upload($event)"><ion-icon ios="ios-camera" md="md-camera"></ion-icon></p>
-      </ion-avatar>
-      <ion-label>
-        <ion-label class="profile-name" *ngIf="profile.name">
-            {{profile.name}}
-        </ion-label>
-        <ion-label class="profile-email" *ngIf="profile.email">
-            {{profile.email}}
-        </ion-label>
-      </ion-label>
-    </ion-item> -->
 
     <ion-item>
       <ion-label>Select Country</ion-label>
