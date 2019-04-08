@@ -4,9 +4,27 @@ import { ModalController } from '@ionic/angular';
 import { PreviewComponent } from './preview/preview.component';
 import { environment } from '@environments/environment';
 import { BrowserStorageService } from '@services/storage.service';
+import { HttpClient } from '@angular/common/http'; // added to make one and only API call to filestack server
+import { Observable } from 'rxjs/Observable';
+
+export interface Metadata {
+  mimetype?: string;
+  uploaded?: number;
+  container?: string;
+  writeable?: boolean;
+  filename?: string;
+  location?: string;
+  key?: string;
+  path?: string;
+  size?: number;
+}
+
+// https://www.filestack.com/docs/api/file/#md-request
+const api = {
+  metadata: `https://www.filestackapi.com/api/file/HANDLE/metadata`
+};
 
 @Injectable()
-
 export class FilestackService {
   private filestack: any;
 
@@ -19,7 +37,8 @@ export class FilestackService {
 
   constructor(
     private modalController: ModalController,
-    private storage: BrowserStorageService
+    private storage: BrowserStorageService,
+    private httpClient: HttpClient,
   ) {
     this.filestack = filestack.init(this.getFilestackConfig());
 
@@ -77,6 +96,16 @@ export class FilestackService {
       fileUrl = 'https://cdn.filestackcontent.com/preview/' + file.handle;
     }
     this.previewModal(fileUrl, file);
+  }
+
+  metadata(file): Observable<Metadata> {
+    try {
+      const handle = file.url.match(/([A-Za-z0-9]){20,}/);
+      return this.httpClient.get(api.metadata.replace('HANDLE', handle[0]));
+    } catch (e) {
+      console.log(`File url missing: ${JSON.stringify(e)}`);
+      throw e;
+    }
   }
 
   async open(options = {}, onSuccess = res => res, onError = err => err) {
