@@ -16,6 +16,7 @@ import { AuthForgotPasswordComponent } from './auth-forgot-password/auth-forgot-
 import { AuthRegistrationComponent } from './auth-registration/auth-registration.component';
 import { AuthResetPasswordComponent } from './auth-reset-password/auth-reset-password.component';
 import { AuthDirectLoginComponent } from './auth-direct-login/auth-direct-login.component';
+import { SharedModule } from '@shared/shared.module';
 
 @NgModule({
   imports: [
@@ -23,7 +24,8 @@ import { AuthDirectLoginComponent } from './auth-direct-login/auth-direct-login.
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
-    AuthRoutingModule
+    AuthRoutingModule,
+    SharedModule,
   ],
   declarations: [
     AuthComponent,
@@ -41,5 +43,6 @@ import { AuthDirectLoginComponent } from './auth-direct-login/auth-direct-login.
     UnauthorizedGuard,
     ProgramSelectedGuard,
   ],
+  exports: [SharedModule]
 })
 export class AuthModule {}
