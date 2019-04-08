@@ -55,6 +55,7 @@ export class AssessmentComponent extends RouterEnter {
   submitting = false;
   savingButtonDisabled = true;
   savingMessage = '';
+  saving: boolean;
   fromPage = '';
 
   constructor (
@@ -91,6 +92,7 @@ export class AssessmentComponent extends RouterEnter {
     this.loadingAssessment = true;
     this.loadingSubmission = true;
     this.loadingFeedbackReviewed = true;
+    this.saving = false;
   }
 
   onEnter() {
@@ -189,6 +191,8 @@ export class AssessmentComponent extends RouterEnter {
   }
 
   back() {
+    // save answer before go back.
+    this.submit(true);
     if (this.fromPage && this.fromPage === 'reviews') {
       return this.router.navigate(['app', 'reviews']);
     }
@@ -220,12 +224,17 @@ export class AssessmentComponent extends RouterEnter {
       this.savingButtonDisabled = true;
     } else {
       this.submitting = true;
+      this.saving = false;
     }
     const answers = [];
     let assessment;
     const requiredQuestions = this.getRequiredQuestions();
     let questionId = 0;
 
+    if (this.saving) {
+      return;
+    }
+    this.saving = true;
     // form submission answers
     if (this.doAssessment) {
       assessment = {
@@ -269,7 +278,6 @@ export class AssessmentComponent extends RouterEnter {
         return this.notificationService.popUp('shortMessage', {message: 'Required question answer missing!'});
       }
     }
-
     // form feedback answers
     if (this.doReview) {
       assessment = {
@@ -334,6 +342,11 @@ export class AssessmentComponent extends RouterEnter {
         }
       }
     );
+    setTimeout(
+      () => {
+        this.saving = false;
+      },
+      10000);
   }
 
   reviewFeedback() {
