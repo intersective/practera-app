@@ -41,13 +41,10 @@ export class TextComponent implements ControlValueAccessor, OnInit {
   comment: string;
   // validation errors array
   errors: Array<any> = [];
-  // for controll autosave
-  saving: boolean;
 
   constructor() {}
 
   ngOnInit() {
-    this.saving = false;
     this._showSavedAnswers();
   }
 
@@ -74,7 +71,7 @@ export class TextComponent implements ControlValueAccessor, OnInit {
     // propagate value into form control using control value accessor interface
     this.propagateChange(this.innerValue);
 
-    this.saveAnswers();
+    this.saveProgress.emit(true);
 
     // 05/02/2019
     // Don't check "is required" error for now, it has some error.
@@ -129,18 +126,6 @@ export class TextComponent implements ControlValueAccessor, OnInit {
     }
     this.propagateChange(this.innerValue);
     this.control.setValue(this.innerValue);
-  }
-
-  saveAnswers() {
-    if (!this.saving) {
-      this.saving = true;
-      this.saveProgress.emit(true);
-      setTimeout(
-        () => {
-          this.saving = false;
-        },
-        10000);
-    }
   }
 
 }
