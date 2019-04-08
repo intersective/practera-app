@@ -1,6 +1,8 @@
 import { Component } from '@angular/core';
 import { NotificationService } from '@shared/notification/notification.service';
 import { AuthService } from '../auth.service';
+import { BrowserStorageService } from '@services/storage.service';
+import { UtilsService } from '@services/utils.service';
 
 @Component({
   selector: 'app-auth-forgot-password',
@@ -12,10 +14,23 @@ export class AuthForgotPasswordComponent {
   // variable to control the label of the button
   isSending = false;
 
+  custom = {
+    logo: null,
+  };
+
   constructor(
     private notificationService: NotificationService,
-    private authService: AuthService
+    private authService: AuthService,
+    private storage: BrowserStorageService,
+    private utils: UtilsService
   ) {}
+
+  ionViewWillEnter() {
+    this.custom.logo = this.storage.getUser().logo;
+    if (this.storage.getUser().themeColor) {
+      this.utils.changeThemeColor(this.storage.getUser().themeColor);
+    }
+  }
 
   async send() {
     // basic validation

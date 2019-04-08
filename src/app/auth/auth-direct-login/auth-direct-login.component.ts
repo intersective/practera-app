@@ -14,6 +14,10 @@ import { BrowserStorageService } from '@services/storage.service';
 })
 export class AuthDirectLoginComponent implements OnInit {
 
+  custom = {
+    logo: null,
+  };
+
   constructor(
     private router: Router,
     private route: ActivatedRoute,
@@ -39,6 +43,13 @@ export class AuthDirectLoginComponent implements OnInit {
         this._error();
       }
     );
+  }
+
+  ionViewWillEnter() {
+    this.custom.logo = this.storage.getUser().logo;
+    if (this.storage.getUser().themeColor) {
+      this.utils.changeThemeColor(this.storage.getUser().themeColor);
+    }
   }
 
   /**

@@ -34,6 +34,10 @@ export class AuthRegistrationComponent implements OnInit {
   // validation errors array
   errors: Array<any> = [];
 
+  custom = {
+    logo: null,
+  };
+
   constructor(
     private route: ActivatedRoute,
     private authService: AuthService,
@@ -51,6 +55,13 @@ export class AuthRegistrationComponent implements OnInit {
         ? 'appdev.practera.com'
         : this.domain;
     this.validateQueryParams();
+  }
+
+  ionViewWillEnter() {
+    this.custom.logo = this.storage.getUser().logo;
+    if (this.storage.getUser().themeColor) {
+      this.utils.changeThemeColor(this.storage.getUser().themeColor);
+    }
   }
 
   initForm() {
