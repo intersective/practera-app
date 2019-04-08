@@ -14,6 +14,9 @@ const routes: Routes = [
   {
     path: '',
     component: AuthComponent,
+    resolve: {
+      config: AuthResolverService,
+    },
     children: [
       {
         path: '',
@@ -23,9 +26,6 @@ const routes: Routes = [
       {
         path: 'login',
         component: AuthLoginComponent,
-        resolve: {
-          config: AuthResolverService,
-        },
         canActivate: [UnauthorizedGuard],
       },
       {

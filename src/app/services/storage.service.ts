@@ -24,6 +24,7 @@ export interface User {
   themeColor?: string;
   activityCardImage?: string;
   hasReviewRating?: boolean;
+  logo?: string;
 }
 
 @Injectable({
