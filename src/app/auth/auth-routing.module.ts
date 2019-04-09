@@ -8,7 +8,6 @@ import { AuthRegistrationComponent } from './auth-registration/auth-registration
 import { AuthResetPasswordComponent } from './auth-reset-password/auth-reset-password.component';
 import { AuthDirectLoginComponent } from './auth-direct-login/auth-direct-login.component';
 import { UnauthorizedGuard } from './unauthorized.guard';
-import { AuthResolverService } from './auth-resolver.service';
 
 const routes: Routes = [
   {

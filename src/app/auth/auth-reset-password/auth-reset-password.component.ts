@@ -17,10 +17,6 @@ export class AuthResetPasswordComponent implements OnInit {
   verifySuccess = false;
   isResetting = false;
 
-  custom = {
-    logo: null,
-  };
-
   resetPasswordForm = new FormGroup(
     {
       password: new FormControl('', [Validators.required]),

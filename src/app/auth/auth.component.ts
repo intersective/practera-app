@@ -9,11 +9,6 @@ import { BrowserStorageService } from '@services/storage.service';
   template: '<ion-router-outlet></ion-router-outlet>'
 })
 export class AuthComponent implements OnInit {
-  custom = {
-    logo: null,
-    background: null,
-  };
-
   constructor(
     private route: ActivatedRoute,
     private storage: BrowserStorageService,
