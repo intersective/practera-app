@@ -14,9 +14,6 @@ const routes: Routes = [
   {
     path: '',
     component: AuthComponent,
-    resolve: {
-      config: AuthResolverService,
-    },
     children: [
       {
         path: '',

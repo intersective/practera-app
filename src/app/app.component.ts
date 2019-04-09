@@ -3,8 +3,9 @@ import { Router } from '@angular/router';
 import { Platform } from '@ionic/angular';
 import { UtilsService } from '@services/utils.service';
 import { SharedService } from '@services/shared.service';
-// import { SplashScreen } from '@ionic-native/splash-screen/ngx';
-// import { StatusBar } from '@ionic-native/status-bar/ngx';
+import { Observable } from 'rxjs';
+import { AuthService } from './auth/auth.service';
+import { BrowserStorageService } from '@services/storage.service';
 
 @Component({
   selector: 'app-root',
@@ -15,7 +16,9 @@ export class AppComponent implements OnInit {
     private platform: Platform,
     private router: Router,
     public utils: UtilsService,
-    private sharedService: SharedService
+    private sharedService: SharedService,
+    private authService: AuthService,
+    private storage: BrowserStorageService
     // private splashScreen: SplashScreen,
     // private statusBar: StatusBar
   ) {
@@ -23,7 +26,22 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.sharedService.onPageLoad();
+    this.getExpConfig().subscribe((response: any) => {
+      try {
+        const expConfig = response.data;
+        if (expConfig.length > 0) {
+          this.storage.setUser({
+            'logo': expConfig[0].logo,
+            'themeColor': expConfig[0].config.theme_color
+          });
+        }
+        this.sharedService.onPageLoad();
+      } catch (err) {
+        console.log('Inconsistent Experince config.');
+        throw err;
+      }
+    });
+
     let searchParams = null;
     let queryString = '';
     if (window.location.search) {
@@ -61,6 +79,13 @@ export class AppComponent implements OnInit {
       // this.statusBar.styleDefault();
       // this.splashScreen.hide();
     });
+  }
+
+  getExpConfig(): Observable<any> {
+    let domain = window.location.hostname;
+    domain = (domain.indexOf('127.0.0.1') !== -1 || domain.indexOf('localhost') !== -1) ? 'appdev.practera.com' : domain;
+
+    return this.authService.getConfig({domain});
   }
 
 }
