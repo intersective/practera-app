@@ -3,8 +3,6 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { Validators, FormGroup, FormControl } from '@angular/forms';
 import { NotificationService } from '../../shared/notification/notification.service';
 import { AuthService } from '../auth.service';
-import { BrowserStorageService } from '@services/storage.service';
-import { UtilsService } from '../../services/utils.service';
 
 @Component({
   selector: 'app-auth-reset-password',
@@ -35,9 +33,7 @@ export class AuthResetPasswordComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private notificationService: NotificationService,
-    private authService: AuthService,
-    private utils: UtilsService,
-    private storage: BrowserStorageService,
+    private authService: AuthService
   ) { }
 
   ngOnInit() {
@@ -57,13 +53,6 @@ export class AuthResetPasswordComponent implements OnInit {
         return this._notifyAndRedirect('Invalid reset password link');
       }
     );
-  }
-
-  ionViewWillEnter() {
-    this.custom.logo = this.storage.getUser().logo;
-    if (this.storage.getUser().themeColor) {
-      this.utils.changeThemeColor(this.storage.getUser().themeColor);
-    }
   }
 
   resetPassword() {

@@ -45,13 +45,6 @@ export class AuthDirectLoginComponent implements OnInit {
     );
   }
 
-  ionViewWillEnter() {
-    this.custom.logo = this.storage.getUser().logo;
-    if (this.storage.getUser().themeColor) {
-      this.utils.changeThemeColor(this.storage.getUser().themeColor);
-    }
-  }
-
   /**
    * Redirect user to a specific page if data is passed in, otherwise redirect to program switcher page
    */
