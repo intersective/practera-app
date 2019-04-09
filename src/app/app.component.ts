@@ -6,6 +6,7 @@ import { SharedService } from '@services/shared.service';
 import { Observable } from 'rxjs';
 import { AuthService } from './auth/auth.service';
 import { BrowserStorageService } from '@services/storage.service';
+import { environment } from '@environments/environment';
 
 @Component({
   selector: 'app-root',
@@ -26,12 +27,18 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.getExpConfig().subscribe((response: any) => {
+    let domain = window.location.hostname;
+    this.authService.getConfig({domain}).subscribe((response: any) => {
       try {
         const expConfig = response.data;
         if (expConfig.length > 0) {
+          let logo = expConfig[0].logo;
+          // add the domain if the logo url is not a full url
+          if (!logo.includes('http')) {
+            logo = environment.APIEndpoint + logo;
+          }
           this.storage.setUser({
-            'logo': expConfig[0].logo,
+            'logo': logo,
             'themeColor': expConfig[0].config.theme_color
           });
         }
@@ -79,13 +86,6 @@ export class AppComponent implements OnInit {
       // this.statusBar.styleDefault();
       // this.splashScreen.hide();
     });
-  }
-
-  getExpConfig(): Observable<any> {
-    let domain = window.location.hostname;
-    domain = (domain.indexOf('127.0.0.1') !== -1 || domain.indexOf('localhost') !== -1) ? 'appdev.practera.com' : domain;
-
-    return this.authService.getConfig({domain});
   }
 
 }
