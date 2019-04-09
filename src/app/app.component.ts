@@ -33,14 +33,16 @@ export class AppComponent implements OnInit {
         const expConfig = response.data;
         if (expConfig.length > 0) {
           let logo = expConfig[0].logo;
+          const themeColor = expConfig[0].config.theme_color;
           // add the domain if the logo url is not a full url
           if (!logo.includes('http')) {
             logo = environment.APIEndpoint + logo;
           }
-          this.storage.setUser({
+          this.storage.setConfig({
             'logo': logo,
-            'themeColor': expConfig[0].config.theme_color
+            'color': themeColor
           });
+          this.utils.changeThemeColor(themeColor);
         }
         this.sharedService.onPageLoad();
       } catch (err) {
