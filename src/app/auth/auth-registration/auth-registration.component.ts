@@ -34,10 +34,6 @@ export class AuthRegistrationComponent implements OnInit {
   // validation errors array
   errors: Array<any> = [];
 
-  custom = {
-    logo: null,
-  };
-
   constructor(
     private route: ActivatedRoute,
     private authService: AuthService,

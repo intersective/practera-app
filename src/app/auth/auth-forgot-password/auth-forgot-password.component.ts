@@ -12,10 +12,6 @@ export class AuthForgotPasswordComponent {
   // variable to control the label of the button
   isSending = false;
 
-  custom = {
-    logo: null,
-  };
-
   constructor(
     private notificationService: NotificationService,
     private authService: AuthService

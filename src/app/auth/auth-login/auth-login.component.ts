@@ -17,9 +17,6 @@ export class AuthLoginComponent {
     password: new FormControl('', [Validators.required]),
   });
   isLoggingIn = false;
-  custom = {
-    logo: null,
-  };
 
   constructor(
     private router: Router,
