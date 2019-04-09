@@ -13,11 +13,6 @@ import { BrowserStorageService } from '@services/storage.service';
   styles: ['']
 })
 export class AuthDirectLoginComponent implements OnInit {
-
-  custom = {
-    logo: null,
-  };
-
   constructor(
     private router: Router,
     private route: ActivatedRoute,
