@@ -27,7 +27,7 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit() {
-    let domain = window.location.hostname;
+    const domain = window.location.hostname;
     this.authService.getConfig({domain}).subscribe((response: any) => {
       try {
         const expConfig = response.data;
