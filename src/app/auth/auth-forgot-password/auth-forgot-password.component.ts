@@ -1,8 +1,6 @@
 import { Component } from '@angular/core';
 import { NotificationService } from '@shared/notification/notification.service';
 import { AuthService } from '../auth.service';
-import { BrowserStorageService } from '@services/storage.service';
-import { UtilsService } from '@services/utils.service';
 
 @Component({
   selector: 'app-auth-forgot-password',
@@ -20,17 +18,8 @@ export class AuthForgotPasswordComponent {
 
   constructor(
     private notificationService: NotificationService,
-    private authService: AuthService,
-    private storage: BrowserStorageService,
-    private utils: UtilsService
+    private authService: AuthService
   ) {}
-
-  ionViewWillEnter() {
-    this.custom.logo = this.storage.getUser().logo;
-    if (this.storage.getUser().themeColor) {
-      this.utils.changeThemeColor(this.storage.getUser().themeColor);
-    }
-  }
 
   async send() {
     // basic validation

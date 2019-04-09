@@ -5,7 +5,6 @@ import { Observable, concat } from 'rxjs';
 import { Validators, FormGroup, FormControl } from '@angular/forms';
 import { NotificationService } from '@shared/notification/notification.service';
 import { UtilsService } from '@services/utils.service';
-import { BrowserStorageService } from '@services/storage.service';
 
 @Component({
   selector: 'app-auth-login',
@@ -26,16 +25,8 @@ export class AuthLoginComponent {
     private router: Router,
     private authService: AuthService,
     private notificationService: NotificationService,
-    private utils: UtilsService,
-    private storage: BrowserStorageService
+    private utils: UtilsService
   ) {}
-
-  ionViewWillEnter() {
-    this.custom.logo = this.storage.getUser().logo;
-    if (this.storage.getUser().themeColor) {
-      this.utils.changeThemeColor(this.storage.getUser().themeColor);
-    }
-  }
 
   login() {
     if (this.utils.isEmpty(this.loginForm.value.email) || this.utils.isEmpty(this.loginForm.value.password)) {

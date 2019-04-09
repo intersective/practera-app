@@ -57,13 +57,6 @@ export class AuthRegistrationComponent implements OnInit {
     this.validateQueryParams();
   }
 
-  ionViewWillEnter() {
-    this.custom.logo = this.storage.getUser().logo;
-    if (this.storage.getUser().themeColor) {
-      this.utils.changeThemeColor(this.storage.getUser().themeColor);
-    }
-  }
-
   initForm() {
     this.registerationForm = new FormGroup({
       password: new FormControl('', [
