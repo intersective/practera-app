@@ -35,7 +35,7 @@ export class AppComponent implements OnInit {
           let logo = expConfig[0].logo;
           const themeColor = expConfig[0].config.theme_color;
           // add the domain if the logo url is not a full url
-          if (!logo.includes('http')) {
+          if (!logo.includes('http') && !this.utils.isEmpty(logo)) {
             logo = environment.APIEndpoint + logo;
           }
           this.storage.setConfig({
