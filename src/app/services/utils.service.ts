@@ -74,7 +74,7 @@ export class UtilsService {
     return this.lodash.remove(collections, callback);
   }
 
-  openUrl(url, options?) {
+  openUrl(url, options?: { target: String }) {
     options = options || {target: '_self' };
     return window.open(url, options.target);
   }

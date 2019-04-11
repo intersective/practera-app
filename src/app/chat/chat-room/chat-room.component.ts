@@ -477,8 +477,8 @@ export class ChatRoomComponent extends RouterEnter {
     );
   }
 
-  previewFile(file) {
-    this.filestackService.previewFile(file);
+  async previewFile(file) {
+    return await this.filestackService.previewFile(file);
   }
 
   private postAttachment(file) {
