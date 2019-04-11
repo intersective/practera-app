@@ -100,9 +100,9 @@ export class FilestackService {
       fileUrl = 'https://cdn.filestackcontent.com/preview/' + file.handle;
     }
 
-    const metadata = await this.metadata(file).toPromise();
+    const metadata = await this.metadata(file);
 
-    if (metadata.mimetype.includes('application/')) {
+    if (metadata.mimetype && metadata.mimetype.includes('application/')) {
       const megabyte = (metadata && metadata.size) ? metadata.size / 1000 / 1000 : 0;
       if (megabyte > 10) {
         return this.notificationService.alert({
@@ -132,10 +132,10 @@ export class FilestackService {
     return new Promise(resolve => resolve(this.previewModal(fileUrl, file)));
   }
 
-  metadata(file): Observable<Metadata> {
+  async metadata(file): Promise<Metadata> {
     try {
       const handle = file.url.match(/([A-Za-z0-9]){20,}/);
-      return this.httpClient.get(api.metadata.replace('HANDLE', handle[0]));
+      return this.httpClient.get(api.metadata.replace('HANDLE', handle[0])).toPromise();
     } catch (e) {
       console.log(`File url missing: ${JSON.stringify(e)}`);
       throw e;
