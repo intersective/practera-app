@@ -46,6 +46,20 @@ interface UserProfile {
   contactNumber: string;
 }
 
+interface ExperienceConfig {
+  name: string;
+  config?: {
+    theme_color?: string;
+    card_style?: string;
+    review_rating?: boolean;
+    review_rating_notification?: boolean;
+    deep_link_in_app?: boolean;
+    achievement_in_app_mentor?: boolean;
+    achievement_in_app_participant?: boolean;
+  };
+  logo: string;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -121,7 +135,7 @@ export class AuthService {
   private _handleLoginResponse(response) {
     const norm = this._normaliseAuth(response);
     if (response.data) {
-      this.storage.set('apikey', norm.apikey);
+      this.storage.setUser({apikey: norm.apikey});
       this.storage.set('programs', norm.programs);
       this.storage.set('isLoggedIn', true);
     }
@@ -133,10 +147,13 @@ export class AuthService {
   }
 
   logout() {
-    // @TODO: clear ionic view history too
-    this.utils.changeThemeColor('#2bbfd4');
+    // use the config color
+    this.utils.changeThemeColor(this.storage.getConfig().color || '#2bbfd4');
     this.pusherService.unsubscribeChannels();
+    const config = this.storage.getConfig();
     this.storage.clear();
+    // still store config info even logout
+    this.storage.setConfig(config);
     return this.router.navigate(['/login']);
   }
 
@@ -180,7 +197,7 @@ export class AuthService {
   // Activity ID is no longer used as a parameter,
   // but needs to be there so just pass in a 1
   connectToLinkedIn () {
-    const url = '/api/auth_linkedin.json?apikey=' + this.storage.get('token') + '&appkey=' + this.storage.get('appkey') + '&timeline_id=' + this.storage.getUser().timelineId;
+    const url = '/api/auth_linkedin.json?apikey=' + this.storage.getUser().apikey + '&appkey=' + this.storage.get('appkey') + '&timeline_id=' + this.storage.getUser().timelineId;
 
     this.utils.openUrl(url);
     return;
@@ -197,7 +214,7 @@ export class AuthService {
       contact_number: data.contactNumber, // API accepts contact_numebr
     }).pipe(map(response => {
       if (response.data) {
-        this.storage.set('token', response.data.apikey);
+        this.storage.setUser({apikey: response.data.apikey});
         this.storage.set('tutorial', response.data.tutorial);
         this.storage.set('programs', response.data.timelines);
       }
@@ -207,7 +224,7 @@ export class AuthService {
     }));
   }
 
-  getConfig(data: ConfigParams): Observable<any> {
+  getConfig(data: ConfigParams): Observable<{data: ExperienceConfig[]}> {
     return this.request.get(api.getConfig, {
       params: data
     });
