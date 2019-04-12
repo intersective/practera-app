@@ -1,4 +1,4 @@
-import { inject,fakeAsync, tick, TestBed } from '@angular/core/testing';
+import { inject, fakeAsync, tick, TestBed } from '@angular/core/testing';
 import { ActivityService } from './activity.service';
 import { of } from 'rxjs';
 
@@ -6,7 +6,7 @@ describe('ActivityService', () => {
   let service: ActivityService;
 
   beforeEach(() => {
-  	TestBed.configureTestingModule({})
+    TestBed.configureTestingModule({});
     service = TestBed.get(ActivityService);
   });
 

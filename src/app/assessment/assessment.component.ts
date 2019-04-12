@@ -14,7 +14,7 @@ import { RouterEnter } from '@services/router-enter.service';
 })
 export class AssessmentComponent extends RouterEnter {
 
-  routeUrl = '/assessment/'
+  routeUrl = '/assessment/';
   // assessment id
   id: number;
   // activity id
@@ -36,21 +36,27 @@ export class AssessmentComponent extends RouterEnter {
     id: 0,
     status: '',
     answers: {},
-    submitterName: ''
+    submitterName: '',
+    modified: ''
   };
   review: Review = {
     id: 0,
-    answers: {}
+    answers: {},
+    status: '',
+    modified: ''
   };
-  doAssessment: boolean = false;
-  doReview: boolean = false;
-  feedbackReviewed: boolean = false;
-  loadingFeedbackReviewed: boolean = true;
-  loadingAssessment: boolean = true;
-  loadingSubmission: boolean = true;
+  doAssessment = false;
+  doReview = false;
+  feedbackReviewed = false;
+  loadingFeedbackReviewed = true;
+  loadingAssessment = true;
+  loadingSubmission = true;
   questionsForm = new FormGroup({});
-  submitting: boolean = false;
-  fromPage: string = '';
+  submitting = false;
+  savingButtonDisabled = true;
+  savingMessage = '';
+  saving: boolean;
+  fromPage = '';
 
   constructor (
     public router: Router,
@@ -74,21 +80,28 @@ export class AssessmentComponent extends RouterEnter {
       id: 0,
       status: '',
       answers: {},
-      submitterName: ''
+      submitterName: '',
+      modified: ''
     };
     this.review = {
       id: 0,
-      answers: {}
+      answers: {},
+      status: '',
+      modified: ''
     };
     this.loadingAssessment = true;
     this.loadingSubmission = true;
     this.loadingFeedbackReviewed = true;
+    this.saving = false;
   }
 
   onEnter() {
     this._initialise();
     this.action = this.route.snapshot.data.action;
     this.fromPage = this.route.snapshot.paramMap.get('from');
+    if (!this.fromPage) {
+      this.fromPage = this.route.snapshot.data.from;
+    }
     this.id = +this.route.snapshot.paramMap.get('id');
     this.activityId = +this.route.snapshot.paramMap.get('activityId');
     this.contextId = +this.route.snapshot.paramMap.get('contextId');
@@ -120,7 +133,7 @@ export class AssessmentComponent extends RouterEnter {
         this.loadingAssessment = false;
         this._getSubmission();
       });
-  };
+  }
 
   // get the submission answers &/| review answers
   private _getSubmission() {
@@ -128,22 +141,30 @@ export class AssessmentComponent extends RouterEnter {
       .subscribe(result => {
         this.submission = result.submission;
         this.loadingSubmission = false;
-        // this page is for doing assessment if submission is empty
-        if (this.utils.isEmpty(this.submission)) {
+        // this page is for doing assessment if submission is empty or submission is 'in progress'
+        if (this.utils.isEmpty(this.submission) || this.submission.status === 'in progress') {
           this.doAssessment = true;
           this.doReview = false;
+          if (this.submission.status === 'in progress') {
+            this.savingMessage = 'Last saved ' + this.utils.timeFormatter(this.submission.modified);
+            this.savingButtonDisabled = false;
+          }
           return ;
         }
         this.review = result.review;
+        if (this.review.status === 'in progress') {
+          this.savingMessage = 'Last saved ' + this.utils.timeFormatter(this.review.modified);
+          this.savingButtonDisabled = false;
+        }
         // this page is for doing review if the submission status is 'pending review' and action is review
-        if (this.submission.status == 'pending review' && this.action == 'review') {
+        if (this.submission.status === 'pending review' && this.action === 'review') {
           this.doReview = true;
         }
         // call todo item to check if the feedback has been reviewed or not
-        if (this.submission.status == 'published') {
+        if (this.submission.status === 'published') {
           this.assessmentService.getFeedbackReviewed(this.submission.id)
-            .subscribe(result => {
-              this.feedbackReviewed = result;
+            .subscribe(feedbackReviewed => {
+              this.feedbackReviewed = feedbackReviewed;
               this.loadingFeedbackReviewed = false;
             });
         }
@@ -153,7 +174,7 @@ export class AssessmentComponent extends RouterEnter {
   // Populate the question form with FormControls.
   // The name of form control is like 'q-2' (2 is an example of question id)
   populateQuestionsForm() {
-    let questionsFormObject = {};
+    const questionsFormObject = {};
     let validator = [];
     this.assessment.groups.forEach(group => {
       group.questions.forEach(question => {
@@ -164,14 +185,19 @@ export class AssessmentComponent extends RouterEnter {
           validator = [];
         }
         questionsFormObject['q-' + question.id] = new FormControl('', validator);
-      })
+      });
     });
     this.questionsForm = new FormGroup(questionsFormObject);
   }
 
   back() {
+    // save answer before go back.
+    this.submit(true);
     if (this.fromPage && this.fromPage === 'reviews') {
       return this.router.navigate(['app', 'reviews']);
+    }
+    if (this.fromPage && this.fromPage === 'events') {
+      return this.router.navigate(['events']);
     }
     if (this.activityId) {
       return this.router.navigate(['app', 'activity', this.activityId ]);
@@ -181,7 +207,7 @@ export class AssessmentComponent extends RouterEnter {
 
   // form an object of required questions
   getRequiredQuestions() {
-    let requiredQuestions = {};
+    const requiredQuestions = {};
     this.assessment.groups.forEach(group => {
       group.questions.forEach(question => {
         if (question.isRequired) {
@@ -192,91 +218,142 @@ export class AssessmentComponent extends RouterEnter {
     return requiredQuestions;
   }
 
-  submit() {
-    this.submitting = true;
-    let answers = [];
-    let assessment = {};
-    let requiredQuestions = this.getRequiredQuestions();
+  submit(saveInProgress: boolean) {
+    if ( saveInProgress ) {
+      this.savingMessage = 'Saving...';
+      this.savingButtonDisabled = true;
+    } else {
+      this.submitting = true;
+      this.saving = false;
+    }
+    const answers = [];
+    let assessment;
+    const requiredQuestions = this.getRequiredQuestions();
     let questionId = 0;
 
+    if (this.saving) {
+      return;
+    }
+    this.saving = true;
     // form submission answers
     if (this.doAssessment) {
       assessment = {
         id: this.id,
-        context_id: this.contextId
+        context_id: this.contextId,
+        in_progress: false
+      };
+      if (saveInProgress) {
+        assessment.in_progress = true;
       }
       this.utils.each(this.questionsForm.value, (value, key) => {
-        questionId = parseInt(key.replace('q-', ''));
+        questionId = +key.replace('q-', '');
+        let answer;
+        if (value) {
+          answer = value;
+        } else {
+          this.assessment.groups.forEach(group => {
+            const currentQuestion = group.questions.find(question => {
+              return question.id === questionId;
+            });
+            if (currentQuestion && currentQuestion.type === 'multiple') {
+              answer = [];
+            } else {
+              answer = '';
+            }
+          });
+        }
         answers.push({
           assessment_question_id: questionId,
-          answer: value
+          answer: answer
         });
         // unset the required questions object
-        if (requiredQuestions[questionId] && value) {
+        if (requiredQuestions[questionId]) {
           this.utils.unset(requiredQuestions, questionId);
         }
       });
-      // check if all required questions have answer
-      if (!this.utils.isEmpty(requiredQuestions)) {
+      // check if all required questions have answer when assessment done
+      if (!saveInProgress && !this.utils.isEmpty(requiredQuestions)) {
         this.submitting = false;
         // display a pop up if required question not answered
         return this.notificationService.popUp('shortMessage', {message: 'Required question answer missing!'});
       }
     }
-
     // form feedback answers
     if (this.doReview) {
       assessment = {
         id: this.id,
         review_id: this.review.id,
-        submission_id: this.submission.id
+        submission_id: this.submission.id,
+        in_progress: false
+      };
+      if (saveInProgress) {
+        assessment.in_progress = true;
       }
       this.utils.each(this.questionsForm.value, (value, key) => {
         if (value) {
-          let answer = value;
-          answer.assessment_question_id = parseInt(key.replace('q-', ''));
+          const answer = value;
+          answer.assessment_question_id = +key.replace('q-', '');
           answers.push(answer);
         }
       });
     }
-
     // save the submission/feedback
-    this.assessmentService.saveAnswers(assessment, answers, this.action)
-      .subscribe(result => {
+    this.assessmentService.saveAnswers(assessment, answers, this.action, this.submission.id).subscribe(
+      result => {
         this.submitting = false;
-        // display a pop up for successful submission
-        return this.notificationService.alert({
-          message: 'Submission Successful!',
-          buttons: [
-            {
-              text: 'OK',
-              role: 'cancel',
-              handler: () => {
-                this.router.navigate(['app','home']);
-                return;
+        this.savingButtonDisabled = false;
+        if (saveInProgress) {
+          // display message for successfull saved answers
+          this.savingMessage = 'Last saved ' + this._getCurrentTime();
+        } else {
+          // display a pop up for successful submission
+          return this.notificationService.alert({
+            message: 'Submission Successful!',
+            buttons: [
+              {
+                text: 'OK',
+                role: 'cancel',
+                handler: () => {
+                  this.router.navigate(['app', 'home']);
+                  return;
+                }
               }
-            }
-          ]
-        });
-      }, err => {
+            ]
+          });
+        }
+      },
+      err => {
         this.submitting = false;
-        // display a pop up if submission failed
-        this.notificationService.alert({
-          message: 'Submission Failed, please try again later.',
-          buttons: [
-            {
-              text: 'OK',
-              role: 'cancel'
-            }
-          ]
-        });
-      });
+        this.savingButtonDisabled = false;
+        if (saveInProgress) {
+          // display message when saving answers failed
+          this.savingMessage = 'Auto save failed';
+        } else {
+          // display a pop up if submission failed
+          this.notificationService.alert({
+            message: 'Submission Failed, please try again later.',
+            buttons: [
+              {
+                text: 'OK',
+                role: 'cancel'
+              }
+            ]
+          });
+        }
+      }
+    );
+    setTimeout(
+      () => {
+        this.saving = false;
+      },
+      10000);
   }
 
   reviewFeedback() {
     this.feedbackReviewed = true;
     this.assessmentService.saveFeedbackReviewed(this.submission.id).subscribe(result => {
-      // if review is successfully mark as read and program is configured to enable review rating, display review rating modal and then redirect to activity page.
+      // if review is successfully mark as read and program is configured to enable review rating,
+      // display review rating modal and then redirect to activity page.
       if (result.success && this.storage.getUser().hasReviewRating === true) {
         this.assessmentService.popUpReviewRating(this.review.id, ['app', 'home']);
       }
@@ -285,6 +362,14 @@ export class AssessmentComponent extends RouterEnter {
 
   showQuestionInfo(info) {
     this.notificationService.popUp('shortMessage', {message: info});
+  }
+
+  private _getCurrentTime() {
+    return new Intl.DateTimeFormat('en-GB', {
+      hour12: true,
+      hour: 'numeric',
+      minute: 'numeric'
+    }).format(new Date());
   }
 
 }

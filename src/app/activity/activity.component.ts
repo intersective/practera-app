@@ -7,6 +7,7 @@ import { UtilsService } from '../services/utils.service';
 import { NotificationService } from '@shared/notification/notification.service';
 import { BrowserStorageService } from '@services/storage.service';
 import { RouterEnter } from '@services/router-enter.service';
+import { Event, EventsService} from '@app/events/events.service';
 
 @Component({
   selector: 'app-activity',
@@ -15,7 +16,7 @@ import { RouterEnter } from '@services/router-enter.service';
 })
 export class ActivityComponent extends RouterEnter {
 
-  routeUrl: string = '/app/activity';
+  routeUrl = '/app/activity';
   id: number;
   activity: Activity = {
     id: 0,
@@ -23,7 +24,9 @@ export class ActivityComponent extends RouterEnter {
     description: '',
     tasks: []
   };
-  loadingActivity: boolean = true;
+  loadingActivity = true;
+  events: Array<Event>;
+  loadingEvents = true;
 
   constructor(
     public router: Router,
@@ -31,9 +34,14 @@ export class ActivityComponent extends RouterEnter {
     private activityService: ActivityService,
     public utils: UtilsService,
     private notificationService: NotificationService,
-    public storage: BrowserStorageService
+    public storage: BrowserStorageService,
+    private eventsService: EventsService
   ) {
     super(router);
+    // update event list after book/cancel an event
+    this.utils.getEvent('update-event').subscribe(event => {
+      this._getEvents();
+    });
   }
 
   private _initialise() {
@@ -48,8 +56,9 @@ export class ActivityComponent extends RouterEnter {
 
   onEnter() {
     this._initialise();
-    this.id = parseInt(this.route.snapshot.paramMap.get('id'));
+    this.id = +this.route.snapshot.paramMap.get('id');
     this._getActivity();
+    this._getEvents();
   }
 
   private _getActivity() {
@@ -66,7 +75,7 @@ export class ActivityComponent extends RouterEnter {
       .subscribe(tasks => {
         this.activity.tasks = tasks;
         this.activity.tasks.forEach((task, index) => {
-          if(task.type == 'Assessment') {
+          if (task.type === 'Assessment') {
             this._getAssessmentStatus(index);
           }
         });
@@ -80,6 +89,19 @@ export class ActivityComponent extends RouterEnter {
       });
   }
 
+  private _getEvents() {
+    this.loadingEvents = true;
+    this.events = [];
+    this.eventsService.getEvents(this.id).subscribe(events => {
+      if (events.length > 2) {
+        // only display 2 events
+        events.length = 2;
+      }
+      this.events = events;
+      this.loadingEvents = false;
+    });
+  }
+
   back() {
     this.router.navigate(['app', 'project' ]);
   }
@@ -91,7 +113,7 @@ export class ActivityComponent extends RouterEnter {
         let contextId = 0;
         let isForTeam = false;
         this.utils.each(this.activity.tasks, task => {
-          if (task.type === 'Assessment' && task.id == id) {
+          if (task.type === 'Assessment' && task.id === id) {
             contextId = task.contextId;
             isForTeam = task.isForTeam;
           }

@@ -1,4 +1,4 @@
-<ng-container *ngIf="submission.answer">
+<ng-container *ngIf="submissionStatus !== 'in progress' && submission.answer">
   <ion-list class="no-bg">
     <ion-radio-group [value]="submission.answer">
       <ion-item *ngFor="let teamMember of question.teamMembers;let i = index" color="light" [lines]="i == question.teamMembers.length - 1 ? 'none' : ''">
@@ -9,7 +9,7 @@
   </ion-list>
 </ng-container>
 
-<div *ngIf="review.answer || review.comment" class="q-reviews">
+<div *ngIf="reviewStatus !== 'in progress' && (review.answer || review.comment)" class="q-reviews">
   <ion-label class="q-title">Feedback</ion-label>
   <ng-container *ngIf="review.answer">
     <ion-list class="no-bg">
@@ -32,7 +32,7 @@
 
 <ng-container *ngIf="doAssessment">
   <ion-list class="no-bg">
-    <ion-radio-group #answerEle (ionChange)="onChange(answerEle.value)">
+    <ion-radio-group [value]="submission.answer" #answerEle (ionChange)="onChange(answerEle.value)">
       <ion-item *ngFor="let teamMember of question.teamMembers;let i = index" [lines]="i == question.teamMembers.length - 1 ? 'none' : ''">
         <ion-label class="white-space-normal">{{ teamMember.userName }}</ion-label>
         <ion-radio [value]="teamMember.key" mode="md"></ion-radio>
@@ -43,7 +43,7 @@
 
 <ng-container *ngIf="doReview">
   <ion-list class="no-bg" *ngIf="question.canAnswer">
-    <ion-radio-group #answerEle (ionChange)="onChange(answerEle.value, 'answer')">
+    <ion-radio-group #answerEle [value]="review.answer" (ionChange)="onChange(answerEle.value, 'answer')">
       <ion-list-header>
         <ion-label>Your Answer is</ion-label>
       </ion-list-header>
