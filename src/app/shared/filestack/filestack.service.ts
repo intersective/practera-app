@@ -6,6 +6,8 @@ import { environment } from '@environments/environment';
 import { BrowserStorageService } from '@services/storage.service';
 import { HttpClient } from '@angular/common/http'; // added to make one and only API call to filestack server
 import { Observable } from 'rxjs/Observable';
+import { NotificationService } from '@shared/notification/notification.service';
+import { UtilsService } from '@services/utils.service';
 
 export interface Metadata {
   mimetype?: string;
@@ -39,6 +41,8 @@ export class FilestackService {
     private modalController: ModalController,
     private storage: BrowserStorageService,
     private httpClient: HttpClient,
+    private notificationService: NotificationService,
+    private utils: UtilsService
   ) {
     this.filestack = filestack.init(this.getFilestackConfig());
 
@@ -82,7 +86,7 @@ export class FilestackService {
     };
   }
 
-  previewFile(file) {
+  async previewFile(file) {
     let fileUrl = file.url;
     if (fileUrl) {
       if (fileUrl.indexOf('www.filepicker.io/api/file') !== -1) {
@@ -95,13 +99,43 @@ export class FilestackService {
     } else if (file.handle) {
       fileUrl = 'https://cdn.filestackcontent.com/preview/' + file.handle;
     }
-    this.previewModal(fileUrl, file);
+
+    const metadata = await this.metadata(file);
+
+    if (metadata.mimetype && metadata.mimetype.includes('application/')) {
+      const megabyte = (metadata && metadata.size) ? metadata.size / 1000 / 1000 : 0;
+      if (megabyte > 10) {
+        return this.notificationService.alert({
+          subHeader: 'File size too large',
+          message: `Attachment size has exceeded the size of ${Math.floor(megabyte)}mb please consider downloading the file for better reading experience.`,
+          buttons: [
+            {
+              text: 'Download',
+              handler: () => {
+                return this.utils.openUrl(file.url, {
+                  target: '_blank',
+                });
+              }
+            },
+            {
+              text: 'Cancel',
+              role: 'cancel',
+              handler: () => {
+                return;
+              }
+            },
+          ]
+        });
+      }
+    }
+
+    return new Promise(resolve => resolve(this.previewModal(fileUrl, file)));
   }
 
-  metadata(file): Observable<Metadata> {
+  async metadata(file): Promise<Metadata> {
     try {
       const handle = file.url.match(/([A-Za-z0-9]){20,}/);
-      return this.httpClient.get(api.metadata.replace('HANDLE', handle[0]));
+      return this.httpClient.get(api.metadata.replace('HANDLE', handle[0])).toPromise();
     } catch (e) {
       console.log(`File url missing: ${JSON.stringify(e)}`);
       throw e;

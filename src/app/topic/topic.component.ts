@@ -95,37 +95,11 @@ export class TopicComponent extends RouterEnter {
     this.topicService.updateTopicProgress(this.id).subscribe();
   }
 
-  previewFile(file) {
+  async previewFile(file) {
     if (this.isLoadingPreview === false) {
       this.isLoadingPreview = true;
-      this.filestackService.metadata(file).subscribe(metadata => {
-        this.isLoadingPreview = false;
-        const megabyte = (metadata && metadata.size) ? metadata.size / 1000 / 1000 : 0;
-
-        if (megabyte > 10) {
-          this.notificationService.alert({
-            subHeader: 'File size too large',
-            message: `Attachment size has exceeded the size of ${Math.floor(megabyte)}mb please consider downloading the file for better reading experience.`,
-            buttons: [
-              {
-                text: 'Download',
-                handler: () => {
-                  return this.utils.openUrl(file.url);
-                }
-              },
-              {
-                text: 'Cancel',
-                role: 'cancel',
-                handler: () => {
-                  return;
-                }
-              },
-            ]
-          });
-        } else {
-          this.filestackService.previewFile(file);
-        }
-      });
+      await this.filestackService.previewFile(file);
+      this.isLoadingPreview = false;
     }
   }
 
