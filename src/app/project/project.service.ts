@@ -15,6 +15,16 @@ const api = {
   progress: 'api/v2/motivations/progress/list.json'
 };
 
+// added for displaying empty placeholder (enhance UX)
+export interface DummyMilestone {
+  dummy?: boolean;
+  Activity?: Array<DummyActivity>;
+}
+
+export interface DummyActivity {
+  dummy?: boolean;
+}
+
 export interface Activity {
   id: number;
   name: string;
@@ -30,7 +40,7 @@ export interface Milestone {
   description?: string;
   isLocked: boolean;
   progress: number;
-  Activity: Array <Activity>;
+  Activity: Array <Activity | DummyActivity>;
 }
 
 @Injectable({
@@ -55,12 +65,12 @@ export class ProjectService {
       }));
   }
 
-  private _normaliseMilestones(data): Array<Milestone>{
+  private _normaliseMilestones(data): Array<Milestone | DummyMilestone> {
     if (!Array.isArray(data)) {
       this.request.apiResponseFormatError('Milestones array format error');
-      return [];
+      return [{ dummy: true }];
     }
-    let milestones = [];
+    const milestones = [];
     data.forEach(eachMilestone => {
       if (!this.utils.has(eachMilestone, 'id') ||
           !this.utils.has(eachMilestone, 'name') ||
@@ -73,14 +83,14 @@ export class ProjectService {
         description: this.utils.has(eachMilestone, 'description') ? eachMilestone.description : '',
         isLocked: eachMilestone.is_locked,
         progress: 0,
-        Activity:[]
+        Activity: [{ dummy: true }]
       });
     });
     return milestones;
   }
 
   public getActivities(milestones) {
-    let milestoneIds = this._getMilestoneIds(milestones);
+    const milestoneIds = this._getMilestoneIds(milestones);
     return this.request.get(api.activity, {
       params: {
         milestone_id: JSON.stringify(milestoneIds)
@@ -107,7 +117,7 @@ export class ProjectService {
   }
 
   private _normaliseActivities(data: any) {
-    let activities: Array<Activity> = [];
+    const activities: Array<Activity> = [];
     if (!Array.isArray(data)) {
       this.request.apiResponseFormatError('Activities array format error');
       return [];
@@ -120,7 +130,7 @@ export class ProjectService {
         this.request.apiResponseFormatError('Activity.Activity format error');
         return ;
       }
-      let activity = eachActivity.Activity;
+      const activity = eachActivity.Activity;
       activities.push({
         id: activity.id,
         name: activity.name,
@@ -129,7 +139,7 @@ export class ProjectService {
         leadImage: this.utils.has(activity, 'lead_image') ? activity.lead_image : '',
         progress: 0,
       });
-    })
+    });
     return activities;
   }
 
@@ -143,7 +153,7 @@ export class ProjectService {
     })
     .pipe(map(response => {
       if (response.success && response.data) {
-        return this._normaliseProgress(response.data,milestones);
+        return this._normaliseProgress(response.data, milestones);
       }
     }));
   }

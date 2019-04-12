@@ -9,10 +9,10 @@ const api = {
 };
 
 export interface ReviewRating {
-  assessment_review_id : number;
-  rating : number;
-  comment : string;
-  tags : Array<string>;
+  assessment_review_id: number;
+  rating: number;
+  comment: string;
+  tags: Array<string>;
 }
 
 @Injectable({
@@ -21,17 +21,17 @@ export interface ReviewRating {
 export class ReviewRatingService {
 
   constructor(
-  	private request : RequestService,
+    private request: RequestService,
   ) {}
 
-  submitRating(data : ReviewRating) {
-  	let postData = {
+  submitRating(data: ReviewRating) {
+    const postData = {
       assessment_review_id: data.assessment_review_id,
       rating: data.rating,
       comment: data.comment,
       tags: data.tags
-  	};
+    };
 
-  	return this.request.post(api.post.reviewRating, postData);
+    return this.request.post(api.post.reviewRating, postData);
   }
 }

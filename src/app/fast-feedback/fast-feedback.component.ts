@@ -4,7 +4,7 @@ import { FastFeedbackService, Meta } from './fast-feedback.service';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { UtilsService } from '@services/utils.service';
 import { NotificationService } from '@shared/notification/notification.service';
-import { BrowserStorageService } from "@services/storage.service";
+import { BrowserStorageService } from '@services/storage.service';
 
 @Component({
   selector: 'app-fast-feedback',
@@ -15,7 +15,7 @@ export class FastFeedbackComponent implements OnInit {
   fastFeedbackForm: FormGroup;
   questions = [];
   meta: Meta;
-  loading: boolean = false;
+  loading = false;
 
   constructor(
     public modalController: ModalController,
@@ -26,7 +26,7 @@ export class FastFeedbackComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    let group: any = {};
+    const group: any = {};
     this.questions.forEach(question => {
       group[question.id] = new FormControl('', Validators.required);
     });
@@ -51,7 +51,7 @@ export class FastFeedbackComponent implements OnInit {
       });
     });
     // prepare parameters
-    let params = {
+    const params = {
       context_id: this.meta.context_id
     };
     // if team_id exist, pass team_id
