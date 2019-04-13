@@ -7,9 +7,6 @@
 <div>
   <ion-grid class="milestone-bar">
     <ion-row>
-      <ion-col class="bubbles-top" *ngIf="loadingMilestone">
-        <ion-spinner></ion-spinner>
-      </ion-col>
       <ion-col class="bubbles-top" (click)="scrollTo(i)" *ngFor="let milestone of milestones; let i = index">
         <div [class.active]="activeMilestone[i]">
           <ng-container *ngIf="!milestone.isLocked; else milestoneLocked">
