@@ -17,6 +17,14 @@ const routes: Routes = [
     data: {
       action: 'review'
     }
+  },
+  {
+    path: 'event/:contextId/:id',
+    component: AssessmentComponent,
+    data: {
+      action: 'assessment',
+      from: 'events'
+    }
   }
 ];
 

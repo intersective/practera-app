@@ -12,7 +12,7 @@ import { BrowserStorageService } from '@services/storage.service';
  */
 const api = {
   todoItem: 'api/v2/motivations/todo_item/list.json',
-  unreadMessages: "api/v2/message/chat/list_messages.json",
+  unreadMessages: 'api/v2/message/chat/list_messages.json',
 };
 
 @Injectable({
@@ -50,11 +50,14 @@ export class TabsService {
       if (!this.utils.has(todoItem, 'is_done')) {
         return this.request.apiResponseFormatError('TodoItem format error');
       }
-      if (todoItem.is_done ||
-         (!todoItem.identifier.includes('AssessmentReview') && !todoItem.identifier.includes('AssessmentSubmission'))) {
+      if (todoItem.is_done) {
         return ;
       }
-      noOfTodoItems ++;
+      // only count following todo items
+      if (todoItem.identifier.includes('AssessmentReview') ||
+          todoItem.identifier.includes('AssessmentSubmission')) {
+        noOfTodoItems ++;
+      }
     });
     return noOfTodoItems;
   }

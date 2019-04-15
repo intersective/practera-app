@@ -8,6 +8,7 @@ import { Activity } from '../project/project.service';
 import { FastFeedbackComponent } from '../fast-feedback/fast-feedback.component';
 import { Question, Meta} from '../fast-feedback/fast-feedback.service';
 import { NotificationService } from '@shared/notification/notification.service';
+import { Event, EventsService } from '@app/events/events.service';
 
 /**
  * @name api
@@ -15,10 +16,16 @@ import { NotificationService } from '@shared/notification/notification.service';
  * @type {Object}
  */
 const api = {
-  activity: 'api/activities.json',
-  todoItem: 'api/v2/motivations/todo_item/list.json',
-  chat: 'api/v2/message/chat/list.json',
-  progress: 'api/v2/motivations/progress/list.json'
+  get: {
+    activity: 'api/activities.json',
+    todoItem: 'api/v2/motivations/todo_item/list.json',
+    chat: 'api/v2/message/chat/list.json',
+    progress: 'api/v2/motivations/progress/list.json',
+    events: 'api/v2/act/event/list.json',
+  },
+  post: {
+    todoItem: 'api/v2/motivations/todo_item/edit.json'
+  }
 };
 
 export interface TodoItem {
@@ -33,6 +40,9 @@ export interface TodoItem {
     assessment_submission_id?: number;
     assessment_name?: string;
     reviewer_name?: string;
+    team_id?: number;
+    team_member_id?: number;
+    participants_only?: boolean;
   };
 }
 
@@ -42,13 +52,14 @@ export interface TodoItem {
 
 export class HomeService {
 
-  currentActivityId: number = 0;
+  currentActivityId = 0;
 
   constructor(
     private storage: BrowserStorageService,
     private request: RequestService,
     private utils: UtilsService,
     private notification: NotificationService,
+    private eventsService: EventsService
   ) {}
 
   getProgramName() {
@@ -56,7 +67,7 @@ export class HomeService {
   }
 
   getTodoItems() {
-    return this.request.get(api.todoItem, {
+    return this.request.get(api.get.todoItem, {
         params: {
           project_id: this.storage.getUser().projectId
         }
@@ -104,12 +115,20 @@ export class HomeService {
           image: todoItem.meta.badge
         });
       }
+
+      if (todoItem.identifier.includes('EventReminder-')) {
+        // when we get a Event Reminder todo item,
+        // fire an 'event-reminder' event, same as when we get this from Pusher
+        this.utils.broadcastEvent('event-reminder', {
+          meta: todoItem.meta
+        });
+      }
     });
     return todoItems;
   }
 
   private _addTodoItemForFeedbackAvailable(todoItem, todoItems) {
-    let item: TodoItem = {
+    const item: TodoItem = {
       type: '',
       name: '',
       description: '',
@@ -132,7 +151,7 @@ export class HomeService {
   }
 
   private _addTodoItemForReview(todoItem, todoItems) {
-    let item: TodoItem = {
+    const item: TodoItem = {
       type: '',
       name: '',
       description: '',
@@ -154,7 +173,7 @@ export class HomeService {
   }
 
   getChatMessage() {
-    return this.request.get(api.chat)
+    return this.request.get(api.get.chat)
       .pipe(map(response => {
         if (response.success && response.data) {
           return this._normaliseChatMessage(response.data);
@@ -162,15 +181,15 @@ export class HomeService {
       }));
   }
 
-  private _normaliseChatMessage(data): TodoItem {
-    if (!Array.isArray(data)) {
+  private _normaliseChatMessage(chatMessages): TodoItem {
+    if (!Array.isArray(chatMessages)) {
       this.request.apiResponseFormatError('Chat array format error');
       return {};
     }
     let unreadMessages = 0;
     let noOfChats = 0;
     let todoItem: TodoItem;
-    data.forEach(data => {
+    chatMessages.forEach(data => {
       if (!this.utils.has(data, 'unread_messages') ||
           !this.utils.has(data, 'name') ||
           !this.utils.has(data, 'last_message') ||
@@ -190,16 +209,23 @@ export class HomeService {
         todoItem.name = data.name;
         todoItem.description = data.last_message;
         todoItem.time = this.utils.timeFormatter(data.last_message_created);
+        todoItem.meta = {
+          team_id: data.team_id,
+          team_member_id: data.team_member_id,
+          participants_only: data.participants_only
+        };
       }
     });
     if (unreadMessages > 1) {
+      // group the chat notifiations
       todoItem.name = unreadMessages + ' messages from ' + noOfChats + ' chats';
+      todoItem.meta = {};
     }
     return todoItem;
   }
 
   getProgress() {
-    return this.request.get(api.progress, {
+    return this.request.get(api.get.progress, {
         params: {
           model: 'project',
           model_id: this.storage.getUser().projectId,
@@ -234,9 +260,9 @@ export class HomeService {
     this.currentActivityId = 0;
     data.Project.Milestone.forEach(this._loopThroughMilestones, this);
     // regard last activity as the current activity if all activities are finished
-    if (this.currentActivityId == 0) {
-      let milestones = data.Project.Milestone;
-      let activities = milestones[milestones.length - 1].Activity;
+    if (this.currentActivityId === 0) {
+      const milestones = data.Project.Milestone;
+      const activities = milestones[milestones.length - 1].Activity;
       this.currentActivityId = activities[activities.length - 1].id;
     }
   }
@@ -263,12 +289,12 @@ export class HomeService {
       return ;
     }
     if (activity.progress < 1) {
-      this.currentActivityId = activity.id
+      this.currentActivityId = activity.id;
     }
   }
 
   getCurrentActivity() {
-    return this.request.get(api.activity, {
+    return this.request.get(api.get.activity, {
         params: {
           id: this.currentActivityId
         }
@@ -292,7 +318,7 @@ export class HomeService {
         leadImage: ''
       };
     }
-    let thisActivity = data[0];
+    const thisActivity = data[0];
     return {
       id: this.currentActivityId,
       name: thisActivity.Activity.name,
@@ -313,7 +339,7 @@ export class HomeService {
     }
     switch (event.type) {
       // This is a feedback available event
-      case "assessment_review_published":
+      case 'assessment_review_published':
         if (!this.utils.has(event, 'meta.AssessmentReview.assessment_name') ||
             !this.utils.has(event, 'meta.AssessmentReview.reviewer_name') ||
             !this.utils.has(event, 'meta.AssessmentReview.published_date') ||
@@ -339,7 +365,7 @@ export class HomeService {
         };
 
       // This is a submission ready for review event
-      case "assessment_review_assigned":
+      case 'assessment_review_assigned':
         if (!this.utils.has(event, 'meta.AssessmentReview.assessment_name') ||
             !this.utils.has(event, 'meta.AssessmentReview.assigned_date') ||
             !this.utils.has(event, 'meta.AssessmentReview.assessment_id') ||
@@ -363,6 +389,43 @@ export class HomeService {
         };
 
     }
+  }
+
+  /**
+   * When we get a notification event from Pusher about event reminder, we are querying API to get the event detail and normalise it
+   * @param {Obj} data [The event data from Pusher notification]
+   */
+  getReminderEvent(data) {
+    if (!this.utils.has(data, 'meta.id')) {
+      this.request.apiResponseFormatError('Pusher notification event format error');
+      return of(null);
+    }
+    return this.request.get(api.get.events, {
+        params: {
+          type: 'activity_session',
+          id: data.meta.id
+        }
+      })
+      .pipe(map(response => {
+        if (this.utils.isEmpty(response.data)) {
+          return null;
+        }
+        const event = this.eventsService.normaliseEvents(response.data)[0];
+        if (event.isPast) {
+          // mark the todo item as done if event starts
+          this.postEventReminder(event);
+          return null;
+        }
+        return event;
+      }));
+  }
+
+  postEventReminder(event) {
+    return this.request.post(api.post.todoItem, {
+      project_id: this.storage.getUser().projectId,
+      identifier: 'EventReminder-' + event.id,
+      is_done: true
+    }).subscribe();
   }
 
   /**
