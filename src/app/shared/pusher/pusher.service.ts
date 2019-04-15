@@ -101,11 +101,11 @@ export class PusherService {
     });
   }
 
-  private _subscribeChannels(data) {
-    if (!Array.isArray(data) || this.utils.isEmpty(data)) {
+  private _subscribeChannels(channels) {
+    if (!Array.isArray(channels) || this.utils.isEmpty(channels)) {
       return this.request.apiResponseFormatError('Pusher channels format error');
     }
-    data.forEach(channel => {
+    channels.forEach(channel => {
       if (!this.utils.has(channel, 'channel')) {
         return this.request.apiResponseFormatError('Pusher channel format error');
       }
@@ -147,6 +147,9 @@ export class PusherService {
         });
         this.channels.notification.bind('achievement', data => {
           this.utils.broadcastEvent('achievement', data);
+        });
+        this.channels.notification.bind('event-reminder', data => {
+          this.utils.broadcastEvent('event-reminder', data);
         });
         return;
       }

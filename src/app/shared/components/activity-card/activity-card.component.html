@@ -2,9 +2,9 @@
   color="primary"
   class="card practera-card ion-activatable"
   [ngClass]="{
-     'loading-card': loading,
-     'locked-card': activity.isLocked,
-     'default-image-card': !activity.leadImage
+    'loading-card': loading,
+    'locked-card': activity.isLocked,
+    'default-image-card': !activity.leadImage
   }"
   [ngStyle]="{'background-image': backgroundImageStyle }"
 >
@@ -15,8 +15,9 @@
     <h2 color="primary-contrast" class="activity-name">{{activity.name}}</h2>
   </ion-card-content>
   <ion-card-content *ngIf="loading">
-      <h4 color="primary-contrast">
-      </h4>
-      <h2 color="primary-contrast" class="activity-name"><ion-spinner name="dots" class="vertical-middle"></ion-spinner> </h2>
+    <h4 color="primary-contrast"></h4>
+    <h2 color="primary-contrast" class="activity-name">
+      <ion-spinner name="dots" class="vertical-middle"></ion-spinner>
+    </h2>
   </ion-card-content>
 </ion-card>

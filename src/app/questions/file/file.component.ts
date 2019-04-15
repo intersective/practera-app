@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, forwardRef, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter, forwardRef, ViewChild, ElementRef } from '@angular/core';
 import { NG_VALUE_ACCESSOR, ControlValueAccessor, FormControl } from '@angular/forms';
 import { FilestackService } from '@shared/filestack/filestack.service';
 
@@ -24,6 +24,10 @@ export class FileComponent implements ControlValueAccessor, OnInit {
   };
   @Input() submission;
   @Input() review;
+  // this is for review status
+  @Input() reviewStatus;
+  // this is for assessment status
+  @Input() submissionStatus;
   // this is for doing an assessment or not
   @Input() doAssessment: Boolean;
   // this is for doing review or not
@@ -34,6 +38,8 @@ export class FileComponent implements ControlValueAccessor, OnInit {
   @ViewChild('answer') answerRef: ElementRef;
   // comment field for reviewer
   @ViewChild('commentEle') commentRef: ElementRef;
+  // call back for save changes
+  @Output() saveProgress = new EventEmitter<boolean>();
 
   uploadedFile;
   fileTypes = '';
@@ -50,16 +56,18 @@ export class FileComponent implements ControlValueAccessor, OnInit {
 
   ngOnInit() {
     this.fileTypes = this.filestackService.getFileTypes(this.question.fileType);
+    this._showSavedAnswers();
   }
 
-  //propagate changes into the form control
-  propagateChange = (_: any) => {}
+  // propagate changes into the form control
+  propagateChange = (_: any) => {};
 
   onFileUploadCompleted(file, type = null) {
     if (file.success) {
       // reset errors
       this.errors = [];
-      // currently we only support one file upload per question, if we need to support multiple file upload later, we need to change this to:
+      // currently we only support one file upload per question,
+      // if we need to support multiple file upload later, we need to change this to:
       // this.uploadedFiles = push(file.data);
       this.uploadedFile = file.data;
       this.onChange('', type);
@@ -71,8 +79,8 @@ export class FileComponent implements ControlValueAccessor, OnInit {
 
   // event fired when file is uploaded. propagate the change up to the form control using the custom value accessor interface
   // if 'type' is set, it means it comes from reviewer doing review, otherwise it comes from submitter doing assessment
-  onChange(value, type){
-    //set changed value (answer or comment)
+  onChange(value, type) {
+    // set changed value (answer or comment)
     if (type) {
       if (!this.innerValue) {
         this.innerValue = {
@@ -80,7 +88,7 @@ export class FileComponent implements ControlValueAccessor, OnInit {
           comment: ''
         };
       }
-      if (type == 'comment') {
+      if (type === 'comment') {
         // just pass the value for comment since comment is always just text
         this.innerValue.comment = value;
       } else {
@@ -93,23 +101,43 @@ export class FileComponent implements ControlValueAccessor, OnInit {
 
     // propagate value into form control using control value accessor interface
     this.propagateChange(this.innerValue);
+
+    this.saveProgress.emit(true);
   }
 
-  //From ControlValueAccessor interface
+  // From ControlValueAccessor interface
   writeValue(value: any) {
     if (value) {
       this.innerValue = value;
     }
   }
 
-  //From ControlValueAccessor interface
+  // From ControlValueAccessor interface
   registerOnChange(fn: any) {
     this.propagateChange = fn;
   }
 
-  //From ControlValueAccessor interface
+  // From ControlValueAccessor interface
   registerOnTouched(fn: any) {
 
+  }
+
+  // adding save values to from control
+  private _showSavedAnswers() {
+    if ((this.reviewStatus === 'in progress') && (this.doReview)) {
+      this.innerValue = {
+        answer: {},
+        comment: ''
+      };
+      this.innerValue.comment = this.review.comment;
+      this.comment = this.review.comment;
+      this.innerValue.answer = this.review.answer;
+    }
+    if ((this.submissionStatus === 'in progress') && (this.doAssessment)) {
+      this.innerValue = this.submission.answer;
+    }
+    this.propagateChange(this.innerValue);
+    this.control.setValue(this.innerValue);
   }
 
 }

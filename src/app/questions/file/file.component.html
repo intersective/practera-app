@@ -1,11 +1,11 @@
-<ng-container *ngIf="submission.answer">
+<ng-container *ngIf="submissionStatus !== 'in progress' && submission.answer">
   <app-file-display
     [file]="submission.answer"
     [fileType]="question.fileType"
   ></app-file-display>
 </ng-container>
 
-<div *ngIf="review.answer || review.comment" class="q-reviews">
+<div *ngIf="reviewStatus !== 'in progress' && (review.answer || review.comment)" class="q-reviews">
   <ion-label class="q-title">Feedback</ion-label>
   <ng-container *ngIf="review.answer">
     <app-file-display
@@ -29,7 +29,7 @@
     <p>{{error}}</p>
   </ion-text>
   <app-file-display
-    [file]="uploadedFile"
+    [file]="uploadedFile ? uploadedFile : submission.answer"
     [fileType]="question.fileType"
   ></app-file-display>
 
@@ -44,7 +44,7 @@
     >
     </file-stack>
     <app-file-display
-      [file]="uploadedFile"
+      [file]="uploadedFile ? uploadedFile : review.answer"
       [fileType]="question.fileType"
     ></app-file-display>
   </ng-container>

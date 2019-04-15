@@ -71,11 +71,14 @@ export interface Submission {
   status: string;
   answers: any;
   submitterName: string;
+  modified: string;
 }
 
 export interface Review {
   id: number;
   answers: any;
+  status: string;
+  modified: string;
 }
 
 @Injectable({
@@ -96,7 +99,7 @@ export class AssessmentService {
     return this.request.get(api.get.assessment, {params: {
         assessment_id: id,
         structured: true,
-        review: (action == 'review') ? true : false
+        review: (action === 'review') ? true : false
       }})
       .pipe(map(response => {
         if (response.success && response.data) {
@@ -109,7 +112,9 @@ export class AssessmentService {
   }
 
   private _normaliseAssessment(data) {
-    // In API response, 'data' is an array of assessments(since we passed assessment id, it will return only one assessment, but still in array format). That's why we use data[0]
+    // In API response, 'data' is an array of assessments
+    // (since we passed assessment id, it will return only one assessment, but still in array format).
+    // That's why we use data[0]
     if (!Array.isArray(data) ||
         !this.utils.has(data[0], 'Assessment') ||
         !this.utils.has(data[0], 'AssessmentGroup')) {
@@ -117,7 +122,7 @@ export class AssessmentService {
     }
     const thisAssessment = data[0];
 
-    let assessment: Assessment = {
+    const assessment: Assessment = {
       name: thisAssessment.Assessment.name,
       description: thisAssessment.Assessment.description,
       isForTeam: thisAssessment.Assessment.is_team,
@@ -131,7 +136,7 @@ export class AssessmentService {
           !Array.isArray(group.AssessmentGroupQuestion)) {
         return this.request.apiResponseFormatError('Assessment.AssessmentGroup format error');
       }
-      let questions: Array<Question> = [];
+      const questions: Array<Question> = [];
       group.AssessmentGroupQuestion.forEach(question => {
         if (!this.utils.has(question, 'AssessmentQuestion')) {
           return this.request.apiResponseFormatError('Assessment.AssessmentGroupQuestion format error');
@@ -149,8 +154,8 @@ export class AssessmentService {
         }
         // save question to "questions" object, for later use in normaliseSubmission()
         this.questions[question.AssessmentQuestion.id] = question.AssessmentQuestion;
-        let audience = question.AssessmentQuestion.audience;
-        let questionObject: Question = {
+        const audience = question.AssessmentQuestion.audience;
+        const questionObject: Question = {
           id: question.AssessmentQuestion.id,
           name: question.AssessmentQuestion.name,
           type: question.AssessmentQuestion.question_type,
@@ -170,7 +175,7 @@ export class AssessmentService {
               ) {
               return this.request.apiResponseFormatError('Assessment.AssessmentQuestionChoice format error');
             }
-            let choices: Array<Choice> = [];
+            const choices: Array<Choice> = [];
             let info = '';
             question.AssessmentQuestion.AssessmentQuestionChoice.forEach(questionChoice => {
               if (
@@ -179,14 +184,15 @@ export class AssessmentService {
                 ) {
                 return this.request.apiResponseFormatError('Assessment.AssessmentChoice format error');
               }
-              // Here we use the AssessmentQuestionChoice.id (instead of AssessmentChoice.id) as the choice id, this is the current logic from Practera server
+              // Here we use the AssessmentQuestionChoice.id (instead of AssessmentChoice.id) as the choice id,
+              // this is the current logic from Practera server
               choices.push({
                 id: questionChoice.id,
                 name: questionChoice.AssessmentChoice.name,
                 explanation: this.utils.has(questionChoice, 'AssessmentChoice.explanation') ? questionChoice.AssessmentChoice.explanation : ''
               });
               if (this.utils.has(questionChoice, 'AssessmentChoice.description') && questionChoice.AssessmentChoice.description) {
-                info += "<p>" + questionChoice.AssessmentChoice.name + " - " + questionChoice.AssessmentChoice.description + "</p>";
+                info += '<p>' + questionChoice.AssessmentChoice.name + ' - ' + questionChoice.AssessmentChoice.description + '</p>';
               }
             });
             if (info) {
@@ -210,7 +216,7 @@ export class AssessmentService {
               ) {
               return this.request.apiResponseFormatError('Assessment.TeamMember format error');
             }
-            let teamMembers: Array<TeamMember> = [];
+            const teamMembers: Array<TeamMember> = [];
             question.AssessmentQuestion.TeamMember.forEach(teamMember => {
               if (
                   !this.utils.has(teamMember, 'userName')
@@ -226,7 +232,7 @@ export class AssessmentService {
             break;
         }
         questions.push(questionObject);
-      })
+      });
       if (!this.utils.isEmpty(questions)) {
         assessment.groups.push({
           name: group.name,
@@ -240,7 +246,7 @@ export class AssessmentService {
 
   getSubmission(assessmentId, contextId, action, submissionId?): Observable<any> {
     let params;
-    if (action == 'review') {
+    if (action === 'review') {
       params = {
         assessment_id: assessmentId,
         context_id: contextId,
@@ -271,7 +277,9 @@ export class AssessmentService {
   }
 
   private _normaliseSubmission(data, action) {
-    // In API response, 'data' is an array of submissions(currently we only support one submission per assessment, but it is still in array format). That's why we use data[0]
+    // In API response, 'data' is an array of submissions
+    // (currently we only support one submission per assessment, but it is still in array format).
+    // That's why we use data[0]
     if (!Array.isArray(data) ||
         !this.utils.has(data[0], 'AssessmentSubmission')) {
       return this.request.apiResponseFormatError('AssessmentSubmission format error');
@@ -281,10 +289,11 @@ export class AssessmentService {
       id: thisSubmission.AssessmentSubmission.id,
       status: thisSubmission.AssessmentSubmission.status,
       answers: {},
-      submitterName: thisSubmission.Submitter.name
-    }
+      submitterName: thisSubmission.Submitter.name,
+      modified: thisSubmission.AssessmentSubmission.modified
+    };
 
-    //-- normalise submission answers
+    // -- normalise submission answers
     if (!this.utils.has(thisSubmission, 'AssessmentSubmissionAnswer') ||
         !Array.isArray(thisSubmission.AssessmentSubmissionAnswer)
         ) {
@@ -300,22 +309,24 @@ export class AssessmentService {
       submission.answers[answer.assessment_question_id] = {
         answer: answer.answer
       };
-      if (submission.status == 'published' || submission.status == 'done') {
+      if (submission.status === 'published' || submission.status === 'done') {
         submission = this._addChoiceExplanation(answer, submission);
       }
     });
 
-    //-- normalise reviewer answers
+    // -- normalise reviewer answers
     let review: Review;
     // AssessmentReview is in array format, current we only support one review per submission, that's why we use AssessmentReview[0]
     if (this.utils.has(thisSubmission, 'AssessmentReview[0].id')) {
       review = {
         id: thisSubmission.AssessmentReview[0].id,
-        answers: {}
+        answers: {},
+        status: thisSubmission.AssessmentReview[0].status,
+        modified: thisSubmission.AssessmentReview[0].modified
       };
     }
-    // only get the review answer if the review is published (submission.status == 'published') or this is from /assessment/review
-    if ( (submission.status == 'published' || action === 'review') &&
+    // only get the review answer if the review is published (submission.status === 'published') or this is from /assessment/review
+    if ( (submission.status === 'published' || action === 'review') &&
         this.utils.has(thisSubmission, 'AssessmentReviewAnswer') &&
         Array.isArray(thisSubmission.AssessmentReviewAnswer)) {
       if (!review) {
@@ -323,7 +334,9 @@ export class AssessmentService {
           // we use the review id in this way only if AssessmentReviewAnswer is not returned,
           // we should change API so that it returns AssessmentReviewAnswer object later
           id: thisSubmission.AssessmentReviewAnswer[0].assessment_review_id,
-          answers: {}
+          answers: {},
+          status: '',
+          modified: ''
         };
       }
       thisSubmission.AssessmentReviewAnswer.forEach(answer => {
@@ -351,8 +364,8 @@ export class AssessmentService {
    * For each question that has choice (oneof & multiple), show the choice explanation in the submission if it is not empty
    */
   private _addChoiceExplanation(submissionAnswer, submission): Submission {
-    let questionId = submissionAnswer.assessment_question_id;
-    let answer = submissionAnswer.answer;
+    const questionId = submissionAnswer.assessment_question_id;
+    const answer = submissionAnswer.answer;
     // don't do anything if there's no choices
     if (this.utils.isEmpty(this.questions[questionId].AssessmentQuestionChoice)) {
       return submission;
@@ -363,7 +376,7 @@ export class AssessmentService {
       this.questions[questionId].AssessmentQuestionChoice.forEach(choice => {
         // only display the explanation if it is not empty
         if (answer.includes(choice.id) && !this.utils.isEmpty(choice.explanation)) {
-          explanation += choice.AssessmentChoice.name + ' - ' + choice.explanation + "\n";
+          explanation += choice.AssessmentChoice.name + ' - ' + choice.explanation + '\n';
         }
       });
     } else {
@@ -384,18 +397,21 @@ export class AssessmentService {
   private _normaliseAnswer(questionId, answer) {
     if (this.questions[questionId]) {
       switch (this.questions[questionId].question_type) {
-        case "oneof":
+        case 'oneof':
           // re-format answer from string to number
-          answer = parseInt(answer);
+          answer = +answer;
           break;
-        case "multiple":
+        case 'multiple':
+          if (this.utils.isEmpty(answer)) {
+            answer = [];
+          }
           if (!Array.isArray(answer)) {
             // re-format json string to array
             answer = JSON.parse(answer);
           }
           // re-format answer from string to number
           answer = answer.map(value => {
-            return parseInt(value);
+            return +value;
           });
           break;
       }
@@ -403,13 +419,18 @@ export class AssessmentService {
     return answer;
   }
 
-  saveAnswers(assessment, answers, action) {
+  saveAnswers(assessment, answers, action, submissionId?) {
     let postData;
     switch (action) {
       case 'assessment':
         postData = {
           Assessment: assessment,
           AssessmentSubmissionAnswer: answers
+        };
+        if (submissionId) {
+          postData.AssessmentSubmission = {
+            id: submissionId
+          };
         }
         return this.request.post(api.post.submissions, postData);
 
@@ -417,7 +438,7 @@ export class AssessmentService {
         postData = {
           Assessment: assessment,
           AssessmentReviewAnswer: answers
-        }
+        };
         return this.request.post(api.post.reviews, postData);
     }
     return of({
@@ -441,7 +462,8 @@ export class AssessmentService {
   }
 
   private _normaliseFeedbackReviewed(data) {
-    // In API response, 'data' is an array of todo items. Since we passed "identifier", there should be just one in the array. That's why we use data[0]
+    // In API response, 'data' is an array of todo items.
+    // Since we passed "identifier", there should be just one in the array. That's why we use data[0]
     if (!Array.isArray(data) ||
         !this.utils.has(data[0], 'is_done')) {
       return this.request.apiResponseFormatError('TodoItem format error');
@@ -450,7 +472,7 @@ export class AssessmentService {
   }
 
   saveFeedbackReviewed(submissionId) {
-    let postData = {
+    const postData = {
       project_id: this.storage.getUser().projectId,
       identifier: 'AssessmentSubmission-' + submissionId,
       is_done: true
