@@ -12,7 +12,7 @@ export class FileDisplayComponent {
   @Input() file: any;
 
   constructor( private filestackService: FilestackService ) {}
-  previewFile(file) {
-    this.filestackService.previewFile(file);
+  async previewFile(file) {
+    return await this.filestackService.previewFile(file);
   }
 }

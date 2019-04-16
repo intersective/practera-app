@@ -33,6 +33,7 @@ export interface Event {
   remainingCapacity: number;
   isBooked: boolean;
   singleBooking: boolean;
+  canBook: boolean;
   isPast?: boolean;
   assessment?: {
     id: number;
@@ -94,7 +95,8 @@ export class EventsService {
           !this.utils.has(event, 'end') ||
           !this.utils.has(event, 'capacity') ||
           !this.utils.has(event, 'remaining_capacity') ||
-          !this.utils.has(event, 'isBooked') ||
+          !this.utils.has(event, 'is_booked') ||
+          !this.utils.has(event, 'can_book') ||
           !this.utils.has(event, 'single_booking')) {
         return this.request.apiResponseFormatError('Event object format error');
       }
@@ -109,8 +111,9 @@ export class EventsService {
         endTime: event.end,
         capacity: event.capacity,
         remainingCapacity: event.remaining_capacity,
-        isBooked: event.isBooked,
+        isBooked: event.is_booked,
         singleBooking: event.single_booking,
+        canBook: event.can_book,
         isPast: this.utils.timeComparer(event.start) < 0,
         assessment: this.utils.has(event, 'assessment.id') ? {
           id: event.assessment.id,
