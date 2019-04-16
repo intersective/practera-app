@@ -36,7 +36,7 @@ export class SettingsComponent extends RouterEnter {
   termsUrl = 'https://images.practera.com/terms_and_conditions/practera_terms_conditions.pdf';
   // controll profile image updating
   imageUpdating = false;
-  acceptFileTypes = ['.jpeg', '.jpg', '.png'];
+  acceptFileTypes;
 
   constructor (
     public router: Router,
@@ -55,8 +55,9 @@ export class SettingsComponent extends RouterEnter {
     // get contact number and email from local storage
     this.profile.email = this.storage.getUser().email;
     this.profile.contactNumber = this.storage.getUser().contactNumber;
-    this.profile.image = this.storage.getUser().image;
+    this.profile.image = this.storage.getUser().image ? this.storage.getUser().image : 'https://my.practera.com/img/user-512.png';
     this.profile.name = this.storage.getUser().name;
+    this.acceptFileTypes = this.filestackService.getFileTypes('image');
     // also get program name
     this.currentProgramName = this.storage.getUser().programName;
     // if user has the contact number
@@ -257,17 +258,41 @@ export class SettingsComponent extends RouterEnter {
         success => {
           this.imageUpdating = false;
           this.profile.image = file.data.url;
-          const casheUser = this.storage.getUser();
-          casheUser.image = file.data.url;
-          this.storage.setUser(casheUser);
-          return this.notificationService.popUp('shortMessage', { message: 'Profile picture successfully updated!'});
+          this.storage.setUser({
+            image: file.data.url
+          });
+          return this.notificationService.alert({
+            message: 'Profile picture successfully updated!',
+            buttons: [
+              {
+                text: 'OK',
+                role: 'cancel'
+              }
+            ]
+          });
         },
         err => {
           this.imageUpdating = false;
-          return this.notificationService.popUp('shortMessage', { message: 'File upload failed, please try again later.'});
+          return this.notificationService.alert({
+            message: 'File upload failed, please try again later.',
+            buttons: [
+              {
+                text: 'OK',
+                role: 'cancel'
+              }
+            ]
+          });
         });
     } else {
-      return this.notificationService.popUp('shortMessage', { message: 'File upload failed, please try again later.'});
+      return this.notificationService.alert({
+        message: 'File upload failed, please try again later.',
+        buttons: [
+          {
+            text: 'OK',
+            role: 'cancel'
+          }
+        ]
+      });
     }
   }
 
