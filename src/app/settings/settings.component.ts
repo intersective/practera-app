@@ -253,7 +253,7 @@ export class SettingsComponent extends RouterEnter {
       this.imageUpdating = true;
       this.settingService.updateProfileImage({
         image: file.data.url
-        }).subscribe(
+      }).subscribe(
         success => {
           this.imageUpdating = false;
           this.profile.image = file.data.url;
@@ -265,7 +265,8 @@ export class SettingsComponent extends RouterEnter {
         err => {
           this.imageUpdating = false;
           return this.notificationService.popUp('shortMessage', { message: 'File upload failed, please try again later.'});
-        });
+        }
+      );
     } else {
       return this.notificationService.popUp('shortMessage', { message: 'File upload failed, please try again later.'});
     }
