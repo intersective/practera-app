@@ -9,7 +9,13 @@
           <ion-avatar class="profile-image" slot="start">
             <img *ngIf="!imageUpdating" [src]="profile.image">
             <p *ngIf="imageUpdating" class="loading-icon"><ion-spinner name="bubbles"></ion-spinner></p>
-            <p class="upload-icon" (click)="uploadProfileImage($event)"><ion-icon ios="ios-camera" md="md-camera"></ion-icon></p>
+            <file-stack
+              [accept]="acceptFileTypes"
+              [fileType]="'image'"
+              [profileImage]="true"
+              (complete)="uploadProfileImage($event)"
+            >
+            </file-stack>
           </ion-avatar>
           <ion-label>
             <ion-label class="profile-name" *ngIf="profile.name">

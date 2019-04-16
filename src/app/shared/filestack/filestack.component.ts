@@ -4,12 +4,14 @@ import { FilestackService } from './filestack.service';
 
 @Component({
   selector: 'file-stack',
-  templateUrl: 'filestack.component.html'
+  templateUrl: 'filestack.component.html',
+  styleUrls: ['filestack.component.scss']
 })
 export class FilestackComponent implements OnInit {
   @Input() accept: any;
   @Input() fileType: string;
   @Output() complete: EventEmitter<any> = new EventEmitter();
+  @Input() profileImage?: boolean;
 
   constructor(
     private filestackService: FilestackService
