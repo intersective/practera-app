@@ -1,3 +1,9 @@
-<ion-button size="small" shape="round" (click)="uploadFile()">
-  <i>Upload File</i>
-</ion-button>
+<ng-container *ngIf="!profileImage">
+  <ion-button size="small" shape="round" (click)="uploadFile()">
+    <i>Upload File</i>
+  </ion-button>
+</ng-container>
+
+<ng-container *ngIf="profileImage">
+  <p class="upload-icon" (click)="uploadFile()"><ion-icon ios="ios-camera" md="md-camera"></ion-icon></p>
+</ng-container>

@@ -36,6 +36,7 @@ export class SettingsComponent extends RouterEnter {
   termsUrl = 'https://images.practera.com/terms_and_conditions/practera_terms_conditions.pdf';
   // controll profile image updating
   imageUpdating = false;
+  acceptFileTypes = ['.jpeg', '.jpg', '.png'];
 
   constructor (
     public router: Router,
@@ -247,36 +248,27 @@ export class SettingsComponent extends RouterEnter {
     return true;
   }
 
-  async uploadProfileImage() {
-    const s3Config = this.filestackService.getS3Config('image');
-    const pickerOptions = {
-      storeTo: s3Config,
-      onFileUploadFailed: data => {
-        return this.notificationService.popUp('shortMessage', { message: 'Profile picture updating failed!'});
-      },
-      onFileUploadFinished: data => {
-        this.imageUpdating = true;
-        this.settingService.updateProfileImage({
-          image: data.url
+  async uploadProfileImage(file, type = null) {
+    if (file.success) {
+      this.imageUpdating = true;
+      this.settingService.updateProfileImage({
+        image: file.data.url
         }).subscribe(
-          success => {
-            this.imageUpdating = false;
-            this.profile.image = data.url;
-            const casheUser = this.storage.getUser();
-            casheUser.image = data.url;
-            this.storage.setUser(casheUser);
-            return this.notificationService.popUp('shortMessage', { message: 'Profile picture successfully updated!'});
-          },
-          err => {
-            this.imageUpdating = false;
-            return this.notificationService.popUp('shortMessage', { message: 'Profile picture updating failed!'});
-          });
-      }
-    };
-
-    pickerOptions['accept'] = ['.jpeg', '.jpg', '.png'];
-
-    return await this.filestackService.open(pickerOptions);
+        success => {
+          this.imageUpdating = false;
+          this.profile.image = file.data.url;
+          const casheUser = this.storage.getUser();
+          casheUser.image = file.data.url;
+          this.storage.setUser(casheUser);
+          return this.notificationService.popUp('shortMessage', { message: 'Profile picture successfully updated!'});
+        },
+        err => {
+          this.imageUpdating = false;
+          return this.notificationService.popUp('shortMessage', { message: 'File upload failed, please try again later.'});
+        });
+    } else {
+      return this.notificationService.popUp('shortMessage', { message: 'File upload failed, please try again later.'});
+    }
   }
 
 }
