@@ -103,7 +103,7 @@ export class EventDetailComponent {
   buttonText() {
     // for not booked event
     if (!this.event.isBooked) {
-      if (!this.event.isPast && this.event.remainingCapacity > 0) {
+      if (!this.event.isPast && this.event.remainingCapacity > 0 && this.event.canBook) {
         return 'Book';
       }
       return false;
