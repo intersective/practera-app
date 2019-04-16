@@ -254,7 +254,7 @@ export class SettingsComponent extends RouterEnter {
       this.imageUpdating = true;
       this.settingService.updateProfileImage({
         image: file.data.url
-        }).subscribe(
+      }).subscribe(
         success => {
           this.imageUpdating = false;
           this.profile.image = file.data.url;
