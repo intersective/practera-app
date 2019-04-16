@@ -93,7 +93,7 @@ export class EventsService {
           !this.utils.has(event, 'end') ||
           !this.utils.has(event, 'capacity') ||
           !this.utils.has(event, 'remaining_capacity') ||
-          !this.utils.has(event, 'isBooked')) {
+          !this.utils.has(event, 'is_booked')) {
         return this.request.apiResponseFormatError('Event object format error');
       }
       events.push({
@@ -107,7 +107,7 @@ export class EventsService {
         endTime: event.end,
         capacity: event.capacity,
         remainingCapacity: event.remaining_capacity,
-        isBooked: event.isBooked,
+        isBooked: event.is_booked,
         isPast: this.utils.timeComparer(event.start) < 0,
         assessment: this.utils.has(event, 'assessment.id') ? {
           id: event.assessment.id,
