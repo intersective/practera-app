@@ -11,7 +11,7 @@ export class FilestackComponent implements OnInit {
   @Input() accept: any;
   @Input() fileType: string;
   @Output() complete: EventEmitter<any> = new EventEmitter();
-  @Input() profileImage?: boolean;
+  @Input() type?: string;
 
   constructor(
     private filestackService: FilestackService
