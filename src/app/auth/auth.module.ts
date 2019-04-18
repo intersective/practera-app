@@ -11,6 +11,7 @@ import { UnauthorizedGuard } from './unauthorized.guard';
 import { ProgramSelectedGuard } from './program-selected.guard';
 import { AuthComponent } from './auth.component';
 import { AuthLoginComponent } from './auth-login/auth-login.component';
+import { AuthLogoutComponent } from './auth-logout/auth-logout.component';
 import { AuthForgotPasswordComponent } from './auth-forgot-password/auth-forgot-password.component';
 import { AuthRegistrationComponent } from './auth-registration/auth-registration.component';
 import { AuthResetPasswordComponent } from './auth-reset-password/auth-reset-password.component';
@@ -25,6 +26,7 @@ import { AuthDirectLoginComponent } from './auth-direct-login/auth-direct-login.
   declarations: [
     AuthComponent,
     AuthLoginComponent,
+    AuthLogoutComponent,
     AuthForgotPasswordComponent,
     AuthRegistrationComponent,
     AuthResetPasswordComponent,
