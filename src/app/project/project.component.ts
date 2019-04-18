@@ -20,7 +20,6 @@ export class ProjectComponent extends RouterEnter {
   public loadingProgress = true;
   @ViewChild('contentRef', {read: ElementRef}) contentRef: any;
   @ViewChildren('milestoneRef', {read: ElementRef}) milestoneRefs: QueryList<ElementRef>;
-  private milestonePositions: Array<number> = [];
   public activeMilestone: Array<boolean> = [];
 
   constructor(
@@ -67,7 +66,6 @@ export class ProjectComponent extends RouterEnter {
             this.milestones = this._addActivitiesToEachMilestone(this.milestones, activities);
             this.loadingActivity = false;
             this.projectService.getProgress(this.milestones).subscribe(progresses => {
-              this._getMilestonePositions();
               this.milestones = this._populateMilestoneProgress(progresses, this.milestones);
               this.loadingProgress = false;
             });
@@ -75,32 +73,16 @@ export class ProjectComponent extends RouterEnter {
       });
   }
 
-  trackScrolling(event) {
-    const activeMilestoneIndex = this.milestonePositions.findIndex((element, i) => {
-
-      if (i === this.milestonePositions.length - 1) {
-        return event.detail.currentY >= element;
-      }
-
-      return event.detail.currentY >= element && event.detail.currentY < this.milestonePositions[i + 1];
-
-    });
+  scrollTo(id, index) {
     // update active milestone status
     this.activeMilestone.fill(false);
+    this.activeMilestone[index] = true;
 
-    this.activeMilestone[activeMilestoneIndex] = true;
+    let el = document.getElementById(id);
+    el.scrollIntoView({ block: 'start', behavior: 'smooth', inline: 'nearest' });
 
-  }
-
-  // scroll to a milestone. i is the index of milestone list
-  scrollTo(i) {
-    this.contentRef.nativeElement.scrollToPoint(0, this.milestonePositions[i], 500);
-  }
-
-  private _getMilestonePositions() {
-    this.milestonePositions = this.milestoneRefs.map(milestoneRef => {
-      return milestoneRef.nativeElement.offsetTop;
-    });
+    el.classList.add('highlighted');
+    setTimeout(() => el.classList.remove('highlighted'), 1000);
   }
 
   goToActivity(id) {
