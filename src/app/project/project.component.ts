@@ -65,11 +65,11 @@ export class ProjectComponent extends RouterEnter {
   }
 
   scrollTo(id, index) {
-    // update active milestone status
+    // update active milestone status (mark whatever user select)
     this.activeMilestone.fill(false);
     this.activeMilestone[index] = true;
 
-    let el = document.getElementById(id);
+    const el = document.getElementById(id);
     el.scrollIntoView({ block: 'start', behavior: 'smooth', inline: 'nearest' });
 
     el.classList.add('highlighted');
