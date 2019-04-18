@@ -14,7 +14,7 @@
     <ng-container *ngFor="let message of messageList">
       <ion-item color="light">
         <ng-container *ngIf="checkIsLastMessage(message)">
-          <ion-avatar slot="start">
+          <ion-avatar [ngClass]="!checkToShowMessageTime(message) ? 'no-time': ''" slot="start">
             <img [src]="message.sender_image">
           </ion-avatar>
         </ng-container>
