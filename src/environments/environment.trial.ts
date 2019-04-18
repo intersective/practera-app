@@ -4,6 +4,7 @@ export const environment = {
   pusherKey: '255f010d210933ca7675',
   env: 'live',
   APIEndpoint: 'https://trial.practera.com/',
+  intercomAppId: '',
   filestack: {
     key: 'AO6F4C72uTPGRywaEijdLz',
     s3Config: {
@@ -12,9 +13,11 @@ export const environment = {
       region: 'ap-southeast-2',
       paths: {
         any: '/appv2/live/uploads/',
-         image: '/appv2/live/uploads/',
+        image: '/appv2/live/uploads/',
         video: '/media/fpvideo/upload/'
       }
     }
-  }
+  },
+  intercom: true,
+  goMobile: false,
 };
