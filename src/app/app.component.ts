@@ -27,29 +27,30 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit() {
-    const domain = window.location.hostname;
-    this.authService.getConfig({domain}).subscribe((response: any) => {
-      try {
-        const expConfig = response.data;
-        if (expConfig.length > 0) {
-          let logo = expConfig[0].logo;
-          const themeColor = expConfig[0].config.theme_color;
-          // add the domain if the logo url is not a full url
-          if (!logo.includes('http') && !this.utils.isEmpty(logo)) {
-            logo = environment.APIEndpoint + logo;
-          }
-          this.storage.setConfig({
-            'logo': logo,
-            'color': themeColor
-          });
-          this.utils.changeThemeColor(themeColor);
-        }
-        this.sharedService.onPageLoad();
-      } catch (err) {
-        console.log('Inconsistent Experince config.');
-        throw err;
-      }
-    });
+    this.sharedService.onPageLoad();
+    // don't do the custom config for now, need to build a new micro service to get the config, instead of from 'api/v2/plan/experience/config'
+    // const domain = window.location.hostname;
+    // this.authService.getConfig({domain}).subscribe((response: any) => {
+    //   try {
+    //     const expConfig = response.data;
+    //     if (expConfig.length > 0) {
+    //       let logo = expConfig[0].logo;
+    //       const themeColor = expConfig[0].config.theme_color;
+    //       // add the domain if the logo url is not a full url
+    //       if (!logo.includes('http') && !this.utils.isEmpty(logo)) {
+    //         logo = environment.APIEndpoint + logo;
+    //       }
+    //       this.storage.setConfig({
+    //         'logo': logo,
+    //         'color': themeColor
+    //       });
+    //       this.utils.changeThemeColor(themeColor);
+    //     }
+    //   } catch (err) {
+    //     console.log('Inconsistent Experince config.');
+    //     throw err;
+    //   }
+    // });
 
     let searchParams = null;
     let queryString = '';
