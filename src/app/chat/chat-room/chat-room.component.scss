@@ -7,6 +7,9 @@ $message-body-size: 224px;
     ion-avatar {
       margin: 2px 6px 2px 0 !important;
       margin-left: -8px !important;
+      &.no-time {
+        margin-top: -8% !important;
+      }
     }
 
     ion-label {
