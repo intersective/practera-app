@@ -1,7 +1,8 @@
 import { Injectable, Optional, isDevMode } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams, HttpErrorResponse, HttpParameterCodec } from '@angular/common/http';
+import { Router } from '@angular/router';
 import { Observable, of, throwError } from 'rxjs';
-import { catchError, tap } from 'rxjs/operators';
+import { catchError, tap, concatMap } from 'rxjs/operators';
 import { UtilsService } from '@services/utils.service';
 import { BrowserStorageService } from '@services/storage.service';
 
@@ -39,6 +40,7 @@ export class RequestService {
     private http: HttpClient,
     private utils: UtilsService,
     private storage: BrowserStorageService,
+    private router: Router,
     @Optional() config: RequestConfig
   ) {
     if (config) {
@@ -96,9 +98,14 @@ export class RequestService {
     return this.http.get<any>(this.prefixUrl + endPoint, {
       headers: this.appendHeaders(httpOptions.headers),
       params: this.setParams(httpOptions.params)
-    }).pipe(
-      catchError(this.handleError)
-    );
+    })
+      .pipe(concatMap(response => {
+        this._refreshApikey(response);
+        return of(response);
+      }))
+      .pipe(
+        catchError((error) => this.handleError(error))
+      );
   }
 
   post(endPoint: string = '', data, httpOptions?: any): Observable<any> {
@@ -117,9 +124,14 @@ export class RequestService {
     return this.http.post<any>(this.prefixUrl + endPoint, data, {
       headers: this.appendHeaders(httpOptions.headers),
       params: this.setParams(httpOptions.params)
-    }).pipe(
-      catchError(this.handleError)
-    );
+    })
+      .pipe(concatMap(response => {
+        this._refreshApikey(response);
+        return of(response);
+      }))
+      .pipe(
+        catchError((error) => this.handleError(error))
+      );
   }
 
   delete(endPoint: string = '', httpOptions?: any): Observable<any> {
@@ -138,9 +150,14 @@ export class RequestService {
     return this.http.delete<any>(this.prefixUrl + endPoint, {
       headers: this.appendHeaders(httpOptions.headers),
       params: this.setParams(httpOptions.params)
-    }).pipe(
-      catchError(this.handleError)
-    );
+    })
+      .pipe(concatMap(response => {
+        this._refreshApikey(response);
+        return of(response);
+      }))
+      .pipe(
+        catchError((error) => this.handleError(error))
+      );
   }
 
   /**
@@ -168,8 +185,22 @@ export class RequestService {
     if (isDevMode()) {
       console.error(error); // log to console instead
     }
+    // log the user out if jwt expired
+    if (this.utils.has(error, 'error.message') && error.error.message === 'Session expired') {
+      this.router.navigate(['logout']);
+    }
     // Return the error response data
     return throwError(error.error);
+  }
+
+  /**
+   * Refresh the apikey (JWT token) if API returns it
+   *
+   */
+  private _refreshApikey(response) {
+    if (this.utils.has(response, 'apikey')) {
+      this.storage.setUser({apikey: response.apikey});
+    }
   }
 
   // further enhance this for error reporting (piwik)
