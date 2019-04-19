@@ -30,7 +30,6 @@ export interface ChatListObject {
   last_message?: string;
   is_team: boolean;
   participants_only: boolean;
-  chat_color?: string;
   team_member_image: string;
 }
 
@@ -263,7 +262,6 @@ export class ChatService {
         ) {
         return this.request.apiResponseFormatError('Chat object format error');
       }
-      chat['chat_color'] = chat.is_team ? 'color-team' : '';
       chat.name = this._getChatName(chat);
       chats.push(chat);
     });
