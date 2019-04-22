@@ -34,3 +34,30 @@
     </ion-grid>
   </ion-item>
 </ng-container>
+<ng-container *ngIf="page === 'go-mobile'">
+  <ion-item lines="none">
+    <ion-row class="text-field" nowrap align-items-center>
+      <ion-col>
+        <ion-row class="contact-details">
+          <ion-col size="4">
+            <p class="country-code">{{selectedCountryCode}}</p>
+          </ion-col>
+          <ion-col>
+            <input maxlength="12" pattern="{{activeContactPattern}}" placeholder="{{activeContactPlaceholder}}" [(ngModel)]="contactNumber" type="text"
+              class="contact-input" (keydown)="disableArrowKeys($event)" (blur)="formatContactNumber()" (keyup)="formatContactNumber()" />
+          </ion-col>
+        </ion-row>
+      </ion-col>
+      <ion-col size="5">
+        <ion-select placeholder="Select Country"
+          name="countryModel"
+          [(ngModel)]="countryModel"
+          (ionChange)="updateCountry()">
+          <ion-select-option *ngFor="let countryCode of contact.countryCodes" [value]="countryCode.code">
+            {{countryCode.name}}
+          </ion-select-option>
+        </ion-select>
+      </ion-col>
+    </ion-row>
+  </ion-item>
+</ng-container>

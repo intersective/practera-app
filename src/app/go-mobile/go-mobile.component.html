@@ -14,7 +14,7 @@
         </ion-col>
       </ion-row>
     </div>
-    <div *ngIf="!profile.contactNumber || !saved">
+    <div>
       <ion-row justify-content-center>
         <ion-col class="glazing-effect" align-self-center text-center>
           <img src='/assets/img/mobile.png'/>
@@ -43,6 +43,7 @@
             </ion-select>
         </ion-col>
       </ion-item>
+      <app-contact-number-form [page]="'go-mobile'"></app-contact-number-form>
     </div>
     <div text-center>
         <ion-button expand="block" type="submit" [disabled]="invalidNumber || sendingSMS">
