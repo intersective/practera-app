@@ -36,7 +36,12 @@ export class ContactNumberFormComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    console.log(this.page);
+    if (this.page === 'settings') {
+      this._initSettingsPage();
+    }
+  }
+
+  private _initSettingsPage() {
     // if user has the contact number
     if (this.storage.getUser().contactNumber && this.storage.getUser().contactNumber != null) {
       this._checkCurrentContactNumberOrigin();
@@ -53,7 +58,6 @@ export class ContactNumberFormComponent implements OnInit {
       this.activeContactPattern = this.contact.masks[this.countryModel].pattern;
     }
   }
-
 
   private _checkCurrentContactNumberOrigin() {
     const contactNum = this.storage.getUser().contactNumber;

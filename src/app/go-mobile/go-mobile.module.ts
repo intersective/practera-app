@@ -6,6 +6,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { GoMobileComponent } from './go-mobile.component';
 import { GoMobileService } from './go-mobile.service';
 import { TextMaskModule } from 'angular2-text-mask';
+import { SharedModule } from '@shared/shared.module';
 
 @NgModule({
   imports: [
@@ -13,7 +14,8 @@ import { TextMaskModule } from 'angular2-text-mask';
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
-    TextMaskModule
+    TextMaskModule,
+    SharedModule
   ],
   declarations: [
     GoMobileComponent
