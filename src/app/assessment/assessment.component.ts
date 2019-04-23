@@ -57,6 +57,7 @@ export class AssessmentComponent extends RouterEnter {
   savingMessage = '';
   saving: boolean;
   fromPage = '';
+  canSubmit = false;
 
   constructor (
     public router: Router,
@@ -218,6 +219,24 @@ export class AssessmentComponent extends RouterEnter {
     return requiredQuestions;
   }
 
+  getUnansweredCompulsoryQuestion(answers) {
+    let result = [];
+    let missing = [];
+    const required = this.getRequiredQuestions();
+
+    this.utils.each(required, (question, questionId) => {
+      if (missing.length === 0) {
+        this.utils.each(answers, answer => {
+          if (answer.assessment_question_id === +questionId && !answer.answer) {
+            missing.push({ assessment_question_id: +questionId, answer: answer.answer });
+          }
+        });
+      }
+    });
+
+    return missing;
+  }
+
   submit(saveInProgress: boolean) {
     if ( saveInProgress ) {
       this.savingMessage = 'Saving...';
@@ -228,7 +247,6 @@ export class AssessmentComponent extends RouterEnter {
     }
     const answers = [];
     let assessment;
-    const requiredQuestions = this.getRequiredQuestions();
     let questionId = 0;
 
     if (this.saving) {
@@ -266,13 +284,10 @@ export class AssessmentComponent extends RouterEnter {
           assessment_question_id: questionId,
           answer: answer
         });
-        // unset the required questions object
-        if (requiredQuestions[questionId]) {
-          this.utils.unset(requiredQuestions, questionId);
-        }
       });
       // check if all required questions have answer when assessment done
-      if (!saveInProgress && !this.utils.isEmpty(requiredQuestions)) {
+      const requiredQuestions = this.getUnansweredCompulsoryQuestion(answers);
+      if (!saveInProgress && requiredQuestions.length > 0) {
         this.submitting = false;
         // display a pop up if required question not answered
         return this.notificationService.popUp('shortMessage', {message: 'Required question answer missing!'});
@@ -297,6 +312,7 @@ export class AssessmentComponent extends RouterEnter {
         }
       });
     }
+
     // save the submission/feedback
     this.assessmentService.saveAnswers(assessment, answers, this.action, this.submission.id).subscribe(
       result => {
