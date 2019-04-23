@@ -220,8 +220,8 @@ export class AssessmentComponent extends RouterEnter {
   }
 
   getUnansweredCompulsoryQuestion(answers) {
-    let result = [];
-    let missing = [];
+    const result = [];
+    const missing = [];
     const required = this.getRequiredQuestions();
 
     this.utils.each(required, (question, questionId) => {
