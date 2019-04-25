@@ -13,12 +13,14 @@ export class ContactNumberFormat {
     AUS: {
       format: '+61',
       placeholder: '___ ___ ___',
-      pattern: '^((\([0-9]{3}\))|[0-9]{3})[\s\-]?[\0-9]{3}[\s\-]?[0-9]{3}$'
+      pattern: '^[0-9]{3}[\s\-]?[\0-9]{3}[\s\-]?[0-9]{3}$',
+      numberLength: '11'
     },
     US: {
       format: '+1',
       placeholder: '___ ___ ____',
-      pattern: '^((\([0-9]{3}\))|[0-9]{3})[\s\-]?[\0-9]{3}[\s\-]?[0-9]{4}$'
+      pattern: '^[0-9]{3}[\s\-]?[\0-9]{3}[\s\-]?[0-9]{4}$',
+      numberLength: '12'
     }
   };
 
