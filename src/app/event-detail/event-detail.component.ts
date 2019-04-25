@@ -24,21 +24,25 @@ export class EventDetailComponent {
   confirmed() {
     switch (this.buttonText()) {
       case 'Book':
-        this.eventDetailService.bookEvent(this.event).subscribe(response => {
-          if (response.success) {
-            this.notificationService.alert({
-              message: 'Booked Successfully!',
-              buttons: [
-                {
-                  text: 'OK',
-                  role: 'cancel'
+        if (this.event.singleBooking) {
+          this.notificationService.alert({
+            message: 'Booking this event will cancel your booking for other events within the same activity, do you still wanna book?',
+            buttons: [
+              {
+                text: 'OK',
+                handler: () => {
+                  this._bookEvent();
                 }
-              ]
-            });
-            // update the event list & activity detail page
-            this.utils.broadcastEvent('update-event', null);
-          }
-        });
+              },
+              {
+                text: 'Cancel',
+                role: 'cancel'
+              }
+            ]
+          });
+        } else {
+          this._bookEvent();
+        }
         break;
 
       case 'Cancel Booking':
@@ -67,10 +71,39 @@ export class EventDetailComponent {
     this.modalController.dismiss();
   }
 
+  private _bookEvent() {
+    this.eventDetailService.bookEvent(this.event).subscribe(
+      response => {
+        this.notificationService.alert({
+          message: 'Booked Successfully!',
+          buttons: [
+            {
+              text: 'OK',
+              role: 'cancel'
+            }
+          ]
+        });
+        // update the event list & activity detail page
+        this.utils.broadcastEvent('update-event', null);
+      },
+      error => {
+        this.notificationService.alert({
+          message: 'Booking failed, please try again later!',
+          buttons: [
+            {
+              text: 'OK',
+              role: 'cancel'
+            }
+          ]
+        });
+      }
+    );
+  }
+
   buttonText() {
     // for not booked event
     if (!this.event.isBooked) {
-      if (!this.event.isPast && this.event.remainingCapacity > 0) {
+      if (!this.event.isPast && this.event.remainingCapacity > 0 && this.event.canBook) {
         return 'Book';
       }
       return false;
