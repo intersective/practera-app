@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { ContactNumberFormat, UtilsService } from '@services/utils.service';
 import { BrowserStorageService } from '@services/storage.service';
 import { environment } from '../../../../environments/environment.prod';
@@ -13,6 +13,7 @@ import { NotificationService } from '@shared/notification/notification.service';
 export class ContactNumberFormComponent implements OnInit {
 
   @Input() page;
+  @Output() updateNumber?: EventEmitter<string>;
 
   profile = {
     contactNumber: '',
@@ -36,16 +37,12 @@ export class ContactNumberFormComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    if (this.page === 'settings') {
-      this._initSettingsPage();
-    }
+    this.updateNumber = new EventEmitter<string>();
+    this._initcomponent();
   }
 
-  private _initSettingsPage() {
-    // if user has the contact number
-    if (this.storage.getUser().contactNumber && this.storage.getUser().contactNumber != null) {
-      this._checkCurrentContactNumberOrigin();
-    } else if (environment.APIEndpoint.indexOf('us') !== -1) {
+  private _initcomponent() {
+    if (environment.APIEndpoint.indexOf('us') !== -1) {
       // check which the server which the APP talks to, i.e if the APP is consuming APIs from 'us.practera.com' then, it is APP V2 in US.
       // But if APP consumes APIs from 'api.practera.com' then it is APP V2 in AUS.
       this.countryModel = 'US';
@@ -56,6 +53,10 @@ export class ContactNumberFormComponent implements OnInit {
       this.selectedCountryCode = this.contact.masks[this.countryModel].format;
       this.activeContactPlaceholder = this.contact.masks[this.countryModel].placeholder;
       this.activeContactPattern = this.contact.masks[this.countryModel].pattern;
+    }
+    // if user has the contact number
+    if (this.page === 'settings' && (this.storage.getUser().contactNumber && this.storage.getUser().contactNumber != null)) {
+      this._checkCurrentContactNumberOrigin();
     }
   }
 
@@ -135,6 +136,9 @@ export class ContactNumberFormComponent implements OnInit {
 
   formatContactNumber() {
     this.contactNumber = this._separeteContactNumber(this.contactNumber);
+    if (this.page === 'go-mobile') {
+      this.updateNumber.emit(this.selectedCountryCode + this.contactNumber);
+    }
   }
 
   private _separeteContactNumber(text) {
@@ -160,6 +164,9 @@ export class ContactNumberFormComponent implements OnInit {
     this.activeContactPattern = this.contact.masks[country.code].pattern;
     // set currentContactNumber to it's format.
     this.contactNumber = '';
+    if (this.page === 'go-mobile') {
+      this.updateNumber.emit(this.selectedCountryCode + this.contactNumber);
+    }
   }
 
   updateContactNumber() {
