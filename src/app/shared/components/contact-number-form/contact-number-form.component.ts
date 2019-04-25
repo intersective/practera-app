@@ -25,6 +25,7 @@ export class ContactNumberFormComponent implements OnInit {
   selectedCountryCode = '';
   activeContactPlaceholder = '';
   activeContactPattern = '';
+  activeNumberLength = '';
   // variable to control the update button
   updating = false;
 
@@ -49,10 +50,12 @@ export class ContactNumberFormComponent implements OnInit {
       this.selectedCountryCode = this.contact.masks[this.countryModel].format;
       this.activeContactPlaceholder = this.contact.masks[this.countryModel].placeholder;
       this.activeContactPattern = this.contact.masks[this.countryModel].pattern;
+      this.activeNumberLength = this.contact.masks[this.countryModel].numberLength;
     } else {
       this.selectedCountryCode = this.contact.masks[this.countryModel].format;
       this.activeContactPlaceholder = this.contact.masks[this.countryModel].placeholder;
       this.activeContactPattern = this.contact.masks[this.countryModel].pattern;
+      this.activeNumberLength = this.contact.masks[this.countryModel].numberLength;
     }
     // if user has the contact number
     if (this.page === 'settings' && (this.storage.getUser().contactNumber && this.storage.getUser().contactNumber != null)) {
@@ -71,6 +74,7 @@ export class ContactNumberFormComponent implements OnInit {
         this.selectedCountryCode = this.contact.masks[this.countryModel].format;
         this.activeContactPlaceholder = this.contact.masks[this.countryModel].placeholder;
         this.activeContactPattern = this.contact.masks[this.countryModel].pattern;
+        this.activeNumberLength = this.contact.masks[this.countryModel].numberLength;
         return;
     }
 
@@ -82,6 +86,7 @@ export class ContactNumberFormComponent implements OnInit {
         this.selectedCountryCode = this.contact.masks[this.countryModel].format;
         this.activeContactPlaceholder = this.contact.masks[this.countryModel].placeholder;
         this.activeContactPattern = this.contact.masks[this.countryModel].pattern;
+        this.activeNumberLength = this.contact.masks[this.countryModel].numberLength;
         return;
     }
 
@@ -90,6 +95,7 @@ export class ContactNumberFormComponent implements OnInit {
         this.selectedCountryCode = this.contact.masks[this.countryModel].format;
         this.activeContactPlaceholder = this.contact.masks[this.countryModel].placeholder;
         this.activeContactPattern = this.contact.masks[this.countryModel].pattern;
+        this.activeNumberLength = this.contact.masks[this.countryModel].numberLength;
         return;
      }
 
@@ -98,6 +104,7 @@ export class ContactNumberFormComponent implements OnInit {
         this.selectedCountryCode = this.contact.masks[this.countryModel].format;
         this.activeContactPlaceholder = this.contact.masks[this.countryModel].placeholder;
         this.activeContactPattern = this.contact.masks[this.countryModel].pattern;
+        this.activeNumberLength = this.contact.masks[this.countryModel].numberLength;
         return;
     }
 
@@ -109,6 +116,7 @@ export class ContactNumberFormComponent implements OnInit {
         this.selectedCountryCode = this.contact.masks[this.countryModel].format;
         this.activeContactPlaceholder = this.contact.masks[this.countryModel].placeholder;
         this.activeContactPattern = this.contact.masks[this.countryModel].pattern;
+        this.activeNumberLength = this.contact.masks[this.countryModel].numberLength;
         return;
     }
 
@@ -117,6 +125,7 @@ export class ContactNumberFormComponent implements OnInit {
         this.selectedCountryCode = this.contact.masks[this.countryModel].format;
         this.activeContactPlaceholder = this.contact.masks[this.countryModel].placeholder;
         this.activeContactPattern = this.contact.masks[this.countryModel].pattern;
+        this.activeNumberLength = this.contact.masks[this.countryModel].numberLength;
         return;
     }
   }
@@ -162,6 +171,7 @@ export class ContactNumberFormComponent implements OnInit {
     this.selectedCountryCode = this.contact.masks[country.code].format;
     this.activeContactPlaceholder = this.contact.masks[country.code].placeholder;
     this.activeContactPattern = this.contact.masks[country.code].pattern;
+    this.activeNumberLength = this.contact.masks[this.countryModel].numberLength;
     // set currentContactNumber to it's format.
     this.contactNumber = '';
     if (this.page === 'go-mobile') {

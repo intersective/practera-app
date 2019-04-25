@@ -19,7 +19,7 @@
               <p class="country-code">{{selectedCountryCode}}</p>
             </ion-col>
             <ion-col>
-                <input maxlength="12" pattern="{{activeContactPattern}}" placeholder="{{activeContactPlaceholder}}" [(ngModel)]="contactNumber" type="text"
+                <input maxlength="{{activeNumberLength}}" pattern="{{activeContactPattern}}" placeholder="{{activeContactPlaceholder}}" [(ngModel)]="contactNumber" type="text"
                 class="contact-input" (keydown)="disableArrowKeys($event)" (keyup)="formatContactNumber()" />
             </ion-col>
           </ion-row>
