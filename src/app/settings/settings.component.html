@@ -5,13 +5,29 @@
 </ion-header>
 <ion-content padding color="light">
   <ion-card class="practera-card">
-    <ion-item>
-      <ion-label>My Account
-        <div *ngIf="profile.email">
-          <ion-label color="medium">Email: {{profile.email}}</ion-label>
-        </div>
-      </ion-label>
-    </ion-item>
+      <ion-item class="profile-info" lines="none">
+          <ion-avatar class="profile-image" slot="start">
+            <img *ngIf="!imageUpdating" [src]="profile.image">
+            <p *ngIf="imageUpdating" class="loading-icon"><ion-spinner name="bubbles"></ion-spinner></p>
+            <file-stack
+              [accept]="acceptFileTypes"
+              [fileType]="'image'"
+              [type]="'profileImage'"
+              (complete)="uploadProfileImage($event)"
+            >
+            </file-stack>
+          </ion-avatar>
+          <ion-label>
+            <ion-label class="profile-name" *ngIf="profile.name">
+                {{profile.name}}
+            </ion-label>
+            <ion-label class="profile-email" *ngIf="profile.email">
+                {{profile.email}}
+            </ion-label>
+          </ion-label>
+        </ion-item>
+  </ion-card>
+  <ion-card class="practera-card">
 
     <app-contact-number-form [page]="'settings'"></app-contact-number-form>
 

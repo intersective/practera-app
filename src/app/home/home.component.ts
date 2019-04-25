@@ -9,7 +9,9 @@ import { BrowserStorageService } from '@services/storage.service';
 import { RouterEnter } from '@services/router-enter.service';
 import { PusherService } from '@shared/pusher/pusher.service';
 import { Achievement, AchievementsService } from '@app/achievements/achievements.service';
-import { EventsService } from '@app/events/events.service';
+import { Event, EventsService } from '@app/events/events.service';
+import { Intercom } from 'ng-intercom';
+import { environment } from '@environments/environment';
 
 @Component({
   selector: 'app-home',
@@ -22,21 +24,24 @@ export class HomeComponent extends RouterEnter implements OnDestroy {
   loadingProgress = true;
   programName: string;
   todoItems: Array<TodoItem> = [];
+  eventReminders: Array<Event> = [];
   loadingTodoItems = true;
   activity: Activity;
   loadingActivity = true;
   subscriptions: Subscription[] = [];
   achievements: Array<Achievement>;
   haveEvents = false;
+  progressConfig: any;
 
   constructor(
+    private intercom: Intercom,
     public router: Router,
     private homeService: HomeService,
     private fastFeedbackService: FastFeedbackService,
     public utils: UtilsService,
     public storage: BrowserStorageService,
     public achievementService: AchievementsService,
-    public eventService: EventsService
+    public eventsService: EventsService
   ) {
     super(router);
     const role = this.storage.getUser().role;
@@ -54,6 +59,13 @@ export class HomeComponent extends RouterEnter implements OnDestroy {
         }
       });
     });
+    this.utils.getEvent('event-reminder').subscribe(event => {
+      this.homeService.getReminderEvent(event).subscribe(session => {
+        if (!this.utils.isEmpty(session)) {
+          this.eventReminders.push(session);
+        }
+      });
+    });
     if (role !== 'mentor') {
       this.utils.getEvent('team-no-mentor-message').subscribe(event => {
         this.homeService.getChatMessage().subscribe(chatMessage => {
@@ -67,6 +79,7 @@ export class HomeComponent extends RouterEnter implements OnDestroy {
 
   private _initialise() {
     this.todoItems = [];
+    this.eventReminders = [];
     this.loadingTodoItems = true;
     this.loadingProgress = true;
     this.loadingActivity = true;
@@ -98,6 +111,7 @@ export class HomeComponent extends RouterEnter implements OnDestroy {
     this.subscriptions.push(
       this.homeService.getProgress().subscribe(progress => {
         this.progress = progress;
+        this.progressConfig = {percent: progress};
         this.loadingProgress = false;
         this.homeService.getCurrentActivity().subscribe(activity => {
           if (activity.id) {
@@ -158,10 +172,23 @@ export class HomeComponent extends RouterEnter implements OnDestroy {
     );
 
     this.subscriptions.push(
-      this.eventService.getEvents().subscribe(events => {
+      this.eventsService.getEvents().subscribe(events => {
         this.haveEvents = !this.utils.isEmpty(events);
       })
     );
+
+    if (typeof environment.intercom !== 'undefined' && environment.intercom === true) {
+      this.intercom.boot({
+        app_id: environment.intercomAppId,
+        name: this.storage.getUser().name, // Full name
+        email: this.storage.getUser().email, // Email address
+        user_id: this.storage.getUser().id, // current_user_id
+        // Supports all optional configuration.
+        widget: {
+          'activator': '#intercom'
+        }
+      });
+    }
   }
 
   goToActivity(id) {
@@ -214,6 +241,10 @@ export class HomeComponent extends RouterEnter implements OnDestroy {
       this.todoItems.splice(currentChatTodoIndex, 1);
     }
     this.todoItems.push(chatTodoItem);
+  }
+
+  showEventDetail(event) {
+    this.eventsService.eventDetailPopUp(event);
   }
 
 }
