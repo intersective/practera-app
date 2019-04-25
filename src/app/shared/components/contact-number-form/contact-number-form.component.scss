@@ -16,8 +16,6 @@
   
     ion-row {
       &.text-field {
-        width: -webkit-fill-available !important;
-        background-color: blueviolet;
         ion-col {
           padding-top: 0px;
           padding-left: 0;
@@ -54,5 +52,31 @@
     &:focus {
       outline: none;
     }
+  }
+
+  .text-field {
+    ion-col {
+      padding-top: 0px;
+      padding-left: 0;
+      padding-right: 0;
+      text-align: center;
+
+      p {
+        &.country-code {
+          margin-bottom: 0;
+          margin-top: 10px;
+          font-weight: bold;
+        }
+      }
+
+      &.contact-details {
+        padding-bottom: 0;
+        padding-left: 0;
+      }
+    }
+  }
+
+  ion-select {
+    max-width: 100%;
   }
   
