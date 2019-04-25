@@ -15,6 +15,7 @@ import { EventDetailComponent } from '@app/event-detail/event-detail.component';
 const api = {
   get: {
     events: 'api/v2/act/event/list.json',
+    submissions: 'api/submissions.json',
     activities: 'api/v2/plan/activity/list.json'
   }
 };
@@ -31,7 +32,14 @@ export interface Event {
   capacity: number;
   remainingCapacity: number;
   isBooked: boolean;
+  singleBooking: boolean;
+  canBook: boolean;
   isPast?: boolean;
+  assessment?: {
+    id: number;
+    contextId: number;
+    isDone?: boolean;
+  };
 }
 
 export interface Activity {
@@ -65,12 +73,12 @@ export class EventsService {
     }
     return this.request.get(api.get.events, {params: params})
       .pipe(map(response => {
-        return this._normaliseEvents(response.data);
+        return this.normaliseEvents(response.data);
       })
     );
   }
 
-  private _normaliseEvents(data): Array<Event> {
+  normaliseEvents(data): Array<Event> {
     if (!Array.isArray(data)) {
       this.request.apiResponseFormatError('Event format error');
       return [];
@@ -87,7 +95,9 @@ export class EventsService {
           !this.utils.has(event, 'end') ||
           !this.utils.has(event, 'capacity') ||
           !this.utils.has(event, 'remaining_capacity') ||
-          !this.utils.has(event, 'isBooked')) {
+          !this.utils.has(event, 'is_booked') ||
+          !this.utils.has(event, 'can_book') ||
+          !this.utils.has(event, 'single_booking')) {
         return this.request.apiResponseFormatError('Event object format error');
       }
       events.push({
@@ -101,11 +111,29 @@ export class EventsService {
         endTime: event.end,
         capacity: event.capacity,
         remainingCapacity: event.remaining_capacity,
-        isBooked: event.isBooked,
-        isPast: this.utils.timeComparer(event.start) < 0
+        isBooked: event.is_booked,
+        singleBooking: event.single_booking,
+        canBook: event.can_book,
+        isPast: this.utils.timeComparer(event.start) < 0,
+        assessment: this.utils.has(event, 'assessment.id') ? {
+          id: event.assessment.id,
+          contextId: event.assessment.context_id
+        } : null
       });
     });
     return this._sortEvent(events);
+  }
+
+  getSubmission(assessmentId, contextId): Observable<any> {
+    return this.request.get(api.get.submissions, {params: {
+        assessment_id: assessmentId,
+        context_id: contextId,
+        review: false
+      }})
+      .pipe(map(response => {
+        return !this.utils.isEmpty(response.data);
+      })
+    );
   }
 
   private _sortEvent(events) {

@@ -62,7 +62,7 @@ export class PusherService {
           headers: {
             'Authorization': 'pusherKey=' + this.pusherKey,
             'appkey': environment.appkey,
-            'apikey': this.storage.get('apikey'),
+            'apikey': this.storage.getUser().apikey,
             'timelineid': this.storage.getUser().timelineId
           },
         },
@@ -147,6 +147,9 @@ export class PusherService {
         });
         this.channels.notification.bind('achievement', data => {
           this.utils.broadcastEvent('achievement', data);
+        });
+        this.channels.notification.bind('event-reminder', data => {
+          this.utils.broadcastEvent('event-reminder', data);
         });
         return;
       }

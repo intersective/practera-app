@@ -6,6 +6,7 @@ import { FilestackService } from '@shared/filestack/filestack.service';
 import { RouterEnter } from '@services/router-enter.service';
 import { UtilsService } from '@services/utils.service';
 import { BrowserStorageService } from '@services/storage.service';
+import { NotificationService } from '@shared/notification/notification.service';
 
 @Component({
   selector: 'app-topic',
@@ -29,6 +30,7 @@ export class TopicComponent extends RouterEnter {
   id = 0;
   activityId = 0;
   topicProgress: number;
+  isLoadingPreview = false;
 
   constructor(
     private topicService: TopicService,
@@ -38,6 +40,7 @@ export class TopicComponent extends RouterEnter {
     private filestackService: FilestackService,
     public storage: BrowserStorageService,
     public utils: UtilsService,
+    public notificationService: NotificationService,
   ) {
     super(router);
   }
@@ -92,8 +95,12 @@ export class TopicComponent extends RouterEnter {
     this.topicService.updateTopicProgress(this.id).subscribe();
   }
 
-  previewFile(file) {
-    this.filestackService.previewFile(file);
+  async previewFile(file) {
+    if (this.isLoadingPreview === false) {
+      this.isLoadingPreview = true;
+      await this.filestackService.previewFile(file);
+      this.isLoadingPreview = false;
+    }
   }
 
   back() {
