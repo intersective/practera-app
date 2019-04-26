@@ -57,7 +57,6 @@ export class AssessmentComponent extends RouterEnter {
   savingMessage = '';
   saving: boolean;
   fromPage = '';
-  canSubmit = false;
 
   constructor (
     public router: Router,
@@ -206,9 +205,15 @@ export class AssessmentComponent extends RouterEnter {
     return this.router.navigate(['app', 'home']);
   }
 
-  // form an object of required questions
-  getRequiredQuestions() {
+  /**
+   * @name compulsoryQuestionsAnswered
+   * @description to check if every compulsory question has been answered
+   * @param {Object[]} answers a list of answer object (in submission-based format)
+   */
+  compulsoryQuestionsAnswered(answers) {
+    const result = [];
     const requiredQuestions = {};
+    let missing = [];
     this.assessment.groups.forEach(group => {
       group.questions.forEach(question => {
         if (question.isRequired) {
@@ -216,18 +221,11 @@ export class AssessmentComponent extends RouterEnter {
         }
       });
     });
-    return requiredQuestions;
-  }
 
-  getUnansweredCompulsoryQuestion(answers) {
-    const result = [];
-    const missing = [];
-    const required = this.getRequiredQuestions();
-
-    this.utils.each(required, (question, questionId) => {
+    this.utils.each(requiredQuestions, (question, questionId) => {
       if (missing.length === 0) {
         this.utils.each(answers, answer => {
-          if (answer.assessment_question_id === +questionId && !answer.answer) {
+          if (answer.assessment_question_id === +questionId && this.utils.isEmpty(answer.answer)) {
             missing.push({ assessment_question_id: +questionId, answer: answer.answer });
           }
         });
@@ -286,7 +284,7 @@ export class AssessmentComponent extends RouterEnter {
         });
       });
       // check if all required questions have answer when assessment done
-      const requiredQuestions = this.getUnansweredCompulsoryQuestion(answers);
+      const requiredQuestions = this.compulsoryQuestionsAnswered(answers);
       if (!saveInProgress && requiredQuestions.length > 0) {
         this.submitting = false;
         // display a pop up if required question not answered
