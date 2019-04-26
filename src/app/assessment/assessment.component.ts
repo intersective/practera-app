@@ -213,7 +213,7 @@ export class AssessmentComponent extends RouterEnter {
   compulsoryQuestionsAnswered(answers) {
     const result = [];
     const requiredQuestions = {};
-    let missing = [];
+    const missing = [];
     this.assessment.groups.forEach(group => {
       group.questions.forEach(question => {
         if (question.isRequired) {
