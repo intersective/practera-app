@@ -60,22 +60,22 @@ describe('AssessmentComponent', () => {
     };
 
     const answers = {
-      "Assessment": {
-        "id": 1,
-        "context_id": 1,
-        "in_progress": false
+      'Assessment': {
+        'id': 1,
+        'context_id': 1,
+        'in_progress': false
       },
-      "AssessmentSubmission": {
-        "id": 1
+      'AssessmentSubmission': {
+        'id': 1
       },
-      "AssessmentSubmissionAnswer": [
+      'AssessmentSubmissionAnswer': [
         {
-          "assessment_question_id": 123,
-          "answer": null
+          'assessment_question_id': 123,
+          'answer': null
         },
         {
-          "assessment_question_id": 124,
-          "answer": null
+          'assessment_question_id': 124,
+          'answer': null
         }
       ]
     };
