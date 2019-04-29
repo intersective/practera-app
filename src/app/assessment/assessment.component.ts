@@ -212,26 +212,26 @@ export class AssessmentComponent extends RouterEnter {
    */
   compulsoryQuestionsAnswered(answers) {
     const result = [];
-    const requiredQuestions = {};
     const missing = [];
-    this.assessment.groups.forEach(group => {
-      group.questions.forEach(question => {
-        if (question.isRequired) {
-          requiredQuestions[question.id] = true;
-        }
-      });
-    });
+    if (answers && answers.length > 0) {
+      this.assessment.groups.forEach(group => {
+        group.questions.forEach(question => {
+          if (question.isRequired && missing.length === 0) {
 
-    this.utils.each(requiredQuestions, (question, questionId) => {
-      if (missing.length === 0) {
-        this.utils.each(answers, answer => {
-          if (answer.assessment_question_id === +questionId && this.utils.isEmpty(answer.answer)) {
-            missing.push({ assessment_question_id: +questionId, answer: answer.answer });
+            // check every answers value has all the compulsory questions covered
+            const compulsoryQuestions = answers.filter(answer => {
+              return answer.assessment_question_id === +question.id;
+            });
+
+            this.utils.each(compulsoryQuestions, answer => {
+              if (typeof answer.answer !== 'number' && this.utils.isEmpty(answer.answer)) {
+                missing.push(answer);
+              }
+            });
           }
         });
-      }
-    });
-
+      });
+    }
     return missing;
   }
 
