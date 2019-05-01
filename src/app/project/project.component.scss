@@ -23,9 +23,12 @@
   .active {
     background-color: lightgrey;
     border-radius: 50%;
-    width: 44px;
-    height: 44px;
-    display: inline-block;
+    width: 42px;
+    height: 2.6em;
+    position: relative;
+    margin-left: auto;
+    margin-right: auto;
+    line-height: 0.5em;
   }
 }
 
@@ -110,7 +113,7 @@ ion-spinner {
   &:after {
     content: '';
     position: absolute;
-    left: 0; 
+    left: 0;
     top: 0;
     display: block;
     width: 100%;
