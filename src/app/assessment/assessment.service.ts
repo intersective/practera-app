@@ -50,7 +50,7 @@ export interface Question {
   canAnswer: boolean;
   choices?: Array<Choice>;
   teamMembers?: Array<TeamMember>;
-  audience: Array<string>;
+  audience: string[];
   submitterOnly?: boolean;
   reviewerOnly?: boolean;
 }
