@@ -209,7 +209,8 @@ export class AssessmentComponent extends RouterEnter {
     // save answer before go back (if it's not a team assessment)
     if (this.assessment.isForTeam && !this.questionsForm.pristine) {
       return this.notificationService.alert({
-        message: 'Leaving without submitting',
+        header: 'Confirm leaving?',
+        message: 'All the unsubmitted answers would not be saved.',
         buttons: [
           {
             text: 'Cancel',
