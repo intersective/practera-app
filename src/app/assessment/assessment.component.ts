@@ -230,17 +230,34 @@ export class AssessmentComponent extends RouterEnter {
     return this.navigationRoute();
   }
 
-  // form an object of required questions
-  getRequiredQuestions() {
-    const requiredQuestions = {};
-    this.assessment.groups.forEach(group => {
-      group.questions.forEach(question => {
-        if (question.isRequired) {
-          requiredQuestions[question.id] = true;
-        }
+  /**
+   * @name compulsoryQuestionsAnswered
+   * @description to check if every compulsory question has been answered
+   * @param {Object[]} answers a list of answer object (in submission-based format)
+   */
+  compulsoryQuestionsAnswered(answers) {
+    const result = [];
+    const missing = [];
+    if (answers && answers.length > 0) {
+      this.assessment.groups.forEach(group => {
+        group.questions.forEach(question => {
+          if (question.isRequired && missing.length === 0) {
+
+            // check every answers value has all the compulsory questions covered
+            const compulsoryQuestions = answers.filter(answer => {
+              return answer.assessment_question_id === +question.id;
+            });
+
+            this.utils.each(compulsoryQuestions, answer => {
+              if (typeof answer.answer !== 'number' && this.utils.isEmpty(answer.answer)) {
+                missing.push(answer);
+              }
+            });
+          }
+        });
       });
-    });
-    return requiredQuestions;
+    }
+    return missing;
   }
 
   submit(saveInProgress: boolean) {
@@ -257,7 +274,7 @@ export class AssessmentComponent extends RouterEnter {
       this.saving = false;
     }
     const answers = [];
-    const requiredQuestions = this.getRequiredQuestions();
+    let questionId = 0;
     let assessment: {
       id: number;
       in_progress: boolean;
@@ -268,7 +285,6 @@ export class AssessmentComponent extends RouterEnter {
       id: this.id,
       in_progress: false,
     };
-    let questionId = 0;
 
     if (this.saving) {
       return;
@@ -304,13 +320,10 @@ export class AssessmentComponent extends RouterEnter {
           assessment_question_id: questionId,
           answer: answer
         });
-        // unset the required questions object
-        if (requiredQuestions[questionId]) {
-          this.utils.unset(requiredQuestions, questionId);
-        }
       });
       // check if all required questions have answer when assessment done
-      if (!saveInProgress && !this.utils.isEmpty(requiredQuestions)) {
+      const requiredQuestions = this.compulsoryQuestionsAnswered(answers);
+      if (!saveInProgress && requiredQuestions.length > 0) {
         this.submitting = false;
         // display a pop up if required question not answered
         return this.notificationService.popUp('shortMessage', {message: 'Required question answer missing!'});

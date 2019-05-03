@@ -126,7 +126,7 @@
       </ng-container>
     </ng-container>
 
-    <ion-button *ngIf="doAssessment || doReview" [disabled]="submitting" (click)="submit(false)" shape="round" expand="full">
+    <ion-button *ngIf="doAssessment || doReview" [disabled]="submitting || questionsForm.invalid" (click)="submit(false)" shape="round" expand="full">
       <ng-container *ngIf="!submitting">Submit</ng-container>
       <ng-container *ngIf="submitting">Submitting...</ng-container>
     </ion-button>
