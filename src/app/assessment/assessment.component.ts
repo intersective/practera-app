@@ -7,6 +7,8 @@ import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { BrowserStorageService } from '@services/storage.service';
 import { RouterEnter } from '@services/router-enter.service';
 
+const SAVE_PROGRESS_TIMEOUT = 10000;
+
 @Component({
   selector: 'app-assessment',
   templateUrl: 'assessment.component.html',
@@ -54,7 +56,7 @@ export class AssessmentComponent extends RouterEnter {
   questionsForm = new FormGroup({});
   submitting = false;
   savingButtonDisabled = true;
-  savingMessage = '';
+  savingMessage: string;
   saving: boolean;
   fromPage = '';
 
@@ -190,9 +192,7 @@ export class AssessmentComponent extends RouterEnter {
     this.questionsForm = new FormGroup(questionsFormObject);
   }
 
-  back() {
-    // save answer before go back.
-    this.submit(true);
+  navigationRoute() {
     if (this.fromPage && this.fromPage === 'reviews') {
       return this.router.navigate(['app', 'reviews']);
     }
@@ -203,6 +203,31 @@ export class AssessmentComponent extends RouterEnter {
       return this.router.navigate(['app', 'activity', this.activityId ]);
     }
     return this.router.navigate(['app', 'home']);
+  }
+
+  back() {
+    // save answer before go back (if it's not a team assessment)
+    if (this.assessment.isForTeam && !this.questionsForm.pristine) {
+      return this.notificationService.alert({
+        header: 'Confirm leaving?',
+        message: 'All the unsubmitted answers would not be saved.',
+        buttons: [
+          {
+            text: 'Cancel',
+            role: 'cancel',
+          },
+          {
+            text: 'Ok',
+            handler: () => {
+              return this.navigationRoute();
+            }
+          }
+        ]
+      });
+    }
+
+    this.submit(true);
+    return this.navigationRoute();
   }
 
   /**
@@ -236,7 +261,12 @@ export class AssessmentComponent extends RouterEnter {
   }
 
   submit(saveInProgress: boolean) {
-    if ( saveInProgress ) {
+    // team submission only accept submit and no save
+    if (this.assessment.isForTeam && saveInProgress === true) {
+      return;
+    }
+
+    if (saveInProgress) {
       this.savingMessage = 'Saving...';
       this.savingButtonDisabled = true;
     } else {
@@ -244,20 +274,28 @@ export class AssessmentComponent extends RouterEnter {
       this.saving = false;
     }
     const answers = [];
-    let assessment;
     let questionId = 0;
+    let assessment: {
+      id: number;
+      in_progress: boolean;
+      context_id?: number;
+      review_id?: number;
+      submission_id?: number;
+    } = {
+      id: this.id,
+      in_progress: false,
+    };
 
     if (this.saving) {
       return;
     }
     this.saving = true;
+
+
     // form submission answers
     if (this.doAssessment) {
-      assessment = {
-        id: this.id,
-        context_id: this.contextId,
-        in_progress: false
-      };
+      assessment.context_id = this.contextId;
+
       if (saveInProgress) {
         assessment.in_progress = true;
       }
@@ -291,20 +329,17 @@ export class AssessmentComponent extends RouterEnter {
         return this.notificationService.popUp('shortMessage', {message: 'Required question answer missing!'});
       }
     }
+
     // form feedback answers
     if (this.doReview) {
-      assessment = {
-        id: this.id,
+      assessment = Object.assign(assessment, {
         review_id: this.review.id,
         submission_id: this.submission.id,
-        in_progress: false
-      };
-      if (saveInProgress) {
-        assessment.in_progress = true;
-      }
-      this.utils.each(this.questionsForm.value, (value, key) => {
-        if (value) {
-          const answer = value;
+        in_progress: (saveInProgress) ? true : false,
+      });
+
+      this.utils.each(this.questionsForm.value, (answer, key) => {
+        if (answer) {
           answer.assessment_question_id = +key.replace('q-', '');
           answers.push(answer);
         }
@@ -356,11 +391,9 @@ export class AssessmentComponent extends RouterEnter {
         }
       }
     );
-    setTimeout(
-      () => {
-        this.saving = false;
-      },
-      10000);
+
+    // if timeout, reset this.saving flag to false, to enable saving again
+    setTimeout(() => this.saving = false, SAVE_PROGRESS_TIMEOUT);
   }
 
   reviewFeedback() {
