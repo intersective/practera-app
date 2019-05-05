@@ -2,7 +2,9 @@
 .sourcemaps/
 .sass-cache/
 .tmp/
-
+platforms/
+plugins/
+resources/
 coverage/
 platforms
 plugins
