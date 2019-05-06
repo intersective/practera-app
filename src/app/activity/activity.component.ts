@@ -26,7 +26,7 @@ export class ActivityComponent extends RouterEnter {
   };
   loadingActivity = true;
   events: Array<Event>;
-  loadingEvents = false;
+  loadingEvents = true;
 
   constructor(
     public router: Router,
@@ -98,6 +98,8 @@ export class ActivityComponent extends RouterEnter {
         events.length = 2;
       }
       this.events = events;
+      this.loadingEvents = false;
+    }, err => {
       this.loadingEvents = false;
     });
   }

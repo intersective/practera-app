@@ -2,13 +2,10 @@
 .sourcemaps/
 .sass-cache/
 .tmp/
+coverage/
 platforms/
 plugins/
 resources/
-coverage/
-platforms
-plugins
-resources
 node_modules
 src/coverage
 *.DS_Store

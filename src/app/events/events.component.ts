@@ -61,6 +61,7 @@ export class EventsComponent extends RouterEnter {
         this.loadingEvents = false;
         return;
       }
+
       // initialise the date to compare with
       let compareDateBrowse = '';
       let compareDateBooked = '';
@@ -78,6 +79,7 @@ export class EventsComponent extends RouterEnter {
         date: compareDateAttended,
         events: []
       };
+
       events.forEach(event => {
         if (!event.isBooked) {
           // group event for 'browse' type
@@ -90,6 +92,7 @@ export class EventsComponent extends RouterEnter {
           [this.eventsCategorised.attended, eventGroupAttended, compareDateAttended] = this._groupEvents(event, this.eventsCategorised.attended, eventGroupAttended, compareDateAttended);
         }
       });
+
       if (eventGroupBrowse.events.length) {
         this.eventsCategorised.browse.push(eventGroupBrowse);
       }
@@ -106,7 +109,10 @@ export class EventsComponent extends RouterEnter {
         this.onSelect([activityId]);
       }
       this.loadingEvents = false;
+    }, err => {
+      this.loadingEvents = false;
     });
+
     this.eventService.getActivities().subscribe(activities => {
       this.activities = activities;
     });
