@@ -39,7 +39,7 @@
     }
     transition: border 0.5s, border-radius 0.5s;
     &.highlighted {
-      border: 1px solid var(--practera-label-color);
+      border: 1px solid var(--ion-color-primary);
       border-radius: 1em;
     }
   }
