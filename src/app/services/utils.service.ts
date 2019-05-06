@@ -7,36 +7,6 @@ import { map, filter } from 'rxjs/operators';
 // @TODO: enhance Window reference later, we shouldn't refer directly to browser's window object like this
 declare var window: any;
 
-// contact number format should be consistent throughout the app (GoMobile & Setting)
-export class ContactNumberFormat {
-  masks = {
-    AUS: {
-      format: '+61',
-      placeholder: '___ ___ ___',
-      pattern: '^[0-9]{3}[\s\-]?[\0-9]{3}[\s\-]?[0-9]{3}$',
-      numberLength: '11'
-    },
-    US: {
-      format: '+1',
-      placeholder: '___ ___ ____',
-      pattern: '^[0-9]{3}[\s\-]?[\0-9]{3}[\s\-]?[0-9]{4}$',
-      numberLength: '12'
-    }
-  };
-
-  // supported countries
-  countryCodes = [
-    {
-      name: 'Australia',
-      code: 'AUS'
-    },
-    {
-        name: 'US/Canada',
-        code: 'US'
-    },
-  ];
-}
-
 @Injectable({
   providedIn: 'root'
 })

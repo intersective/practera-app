@@ -1,10 +1,39 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
-import { ContactNumberFormat, UtilsService } from '@services/utils.service';
+import { UtilsService } from '@services/utils.service';
 import { BrowserStorageService } from '@services/storage.service';
-import { environment } from '../../../../environments/environment.prod';
-import { SettingService } from '../../../settings/setting.service';
+import { environment } from '@environments/environment';
+import { SettingService } from '@app/settings/setting.service';
 import { NotificationService } from '@shared/notification/notification.service';
 
+// contact number format should be consistent throughout the app (GoMobile & Setting)
+export class ContactNumberFormat {
+  masks = {
+    AUS: {
+      format: '+61',
+      placeholder: '___ ___ ___',
+      pattern: '^[0-9]{3}[\s\-]?[\0-9]{3}[\s\-]?[0-9]{3}$',
+      numberLength: '11'
+    },
+    US: {
+      format: '+1',
+      placeholder: '___ ___ ____',
+      pattern: '^[0-9]{3}[\s\-]?[\0-9]{3}[\s\-]?[0-9]{4}$',
+      numberLength: '12'
+    }
+  };
+
+  // supported countries
+  countryCodes = [
+    {
+      name: 'Australia',
+      code: 'AUS'
+    },
+    {
+        name: 'US/Canada',
+        code: 'US'
+    },
+  ];
+}
 @Component({
   selector: 'app-contact-number-form',
   templateUrl: './contact-number-form.component.html',
@@ -47,16 +76,11 @@ export class ContactNumberFormComponent implements OnInit {
       // check which the server which the APP talks to, i.e if the APP is consuming APIs from 'us.practera.com' then, it is APP V2 in US.
       // But if APP consumes APIs from 'api.practera.com' then it is APP V2 in AUS.
       this.countryModel = 'US';
-      this.selectedCountryCode = this.contact.masks[this.countryModel].format;
-      this.activeContactPlaceholder = this.contact.masks[this.countryModel].placeholder;
-      this.activeContactPattern = this.contact.masks[this.countryModel].pattern;
-      this.activeNumberLength = this.contact.masks[this.countryModel].numberLength;
-    } else {
-      this.selectedCountryCode = this.contact.masks[this.countryModel].format;
-      this.activeContactPlaceholder = this.contact.masks[this.countryModel].placeholder;
-      this.activeContactPattern = this.contact.masks[this.countryModel].pattern;
-      this.activeNumberLength = this.contact.masks[this.countryModel].numberLength;
     }
+    this.selectedCountryCode = this.contact.masks[this.countryModel].format;
+    this.activeContactPlaceholder = this.contact.masks[this.countryModel].placeholder;
+    this.activeContactPattern = this.contact.masks[this.countryModel].pattern;
+    this.activeNumberLength = this.contact.masks[this.countryModel].numberLength;
     // if user has the contact number
     if (this.page === 'settings' && (this.storage.getUser().contactNumber && this.storage.getUser().contactNumber != null)) {
       this._checkCurrentContactNumberOrigin();
