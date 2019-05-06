@@ -13,7 +13,7 @@
   <ion-text color="medium" text-left>
     <app-description *ngIf="assessment.description" [content]="assessment.description"></app-description>
   </ion-text>
-  <div class="review-submitter" *ngIf="assessment.isForTeam && submission.status != 'in progress'" text-left>
+  <div class="review-submitter" *ngIf="!doAssessment" text-left>
     <p class="title">
       Submitted by {{ submission.submitterName }}
     </p>
