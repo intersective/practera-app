@@ -86,7 +86,7 @@ export class HomeComponent extends RouterEnter implements OnDestroy {
     this.achievements = [];
     this.haveEvents = false;
     // add a flag in local storage to indicate that is there any fast feedback open
-    this.storage.set('fastFeedbackOpening', false);    
+    this.storage.set('fastFeedbackOpening', false);
     this.intercom.boot({
       app_id: "pef1lmo8",
       name: this.storage.getUser().name, // Full name
@@ -94,14 +94,14 @@ export class HomeComponent extends RouterEnter implements OnDestroy {
       user_id: this.storage.getUser().id, // current_user_id
       // Supports all optional configuration.
       widget: {
-        "activator": "#intercom" 
+        "activator": "#intercom"
       }
     });
   }
 
   onEnter() {
     this._initialise();
-    
+
     this.subscriptions.push(
       this.homeService.getTodoItems().subscribe(todoItems => {
         this.todoItems = this.todoItems.concat(todoItems);
@@ -185,6 +185,9 @@ export class HomeComponent extends RouterEnter implements OnDestroy {
     this.subscriptions.push(
       this.eventsService.getEvents().subscribe(events => {
         this.haveEvents = !this.utils.isEmpty(events);
+      }, err => {
+        // assign original value, otherwise go false
+        this.haveEvents = this.haveEvents || false;
       })
     );
 

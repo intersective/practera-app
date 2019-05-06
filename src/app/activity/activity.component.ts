@@ -99,6 +99,8 @@ export class ActivityComponent extends RouterEnter {
       }
       this.events = events;
       this.loadingEvents = false;
+    }, err => {
+      this.loadingEvents = false;
     });
   }
 
