@@ -16,10 +16,10 @@
         <ion-col>
           <ion-row class="contact-details">
             <ion-col size="4">
-              <p class="country-code">{{selectedCountryCode}}</p>
+              <p class="country-code">{{activeCountryModelInfo.countryCode}}</p>
             </ion-col>
             <ion-col>
-                <input maxlength="{{activeNumberLength}}" pattern="{{activeContactPattern}}" placeholder="{{activeContactPlaceholder}}" [(ngModel)]="contactNumber" type="text"
+                <input maxlength="{{activeCountryModelInfo.length}}" pattern="{{activeCountryModelInfo.pattern}}" placeholder="{{activeCountryModelInfo.placeholder}}" [(ngModel)]="contactNumber" type="text"
                 class="contact-input" (keydown)="disableArrowKeys($event)" (keyup)="formatContactNumber()" />
             </ion-col>
           </ion-row>
@@ -39,10 +39,10 @@
       <ion-col>
         <ion-row class="contact-details">
           <ion-col size="4">
-            <p class="country-code">{{selectedCountryCode}}</p>
+            <p class="country-code">{{activeCountryModelInfo.countryCode}}</p>
           </ion-col>
           <ion-col>
-            <input maxlength="12" pattern="{{activeContactPattern}}" placeholder="{{activeContactPlaceholder}}" [(ngModel)]="contactNumber" type="text"
+            <input maxlength="{{activeCountryModelInfo.length}}" pattern="{{activeCountryModelInfo.pattern}}" placeholder="{{activeCountryModelInfo.placeholder}}" [(ngModel)]="contactNumber" type="text"
               class="contact-input" (keydown)="disableArrowKeys($event)" (blur)="formatContactNumber()" (keyup)="formatContactNumber()" />
           </ion-col>
         </ion-row>
