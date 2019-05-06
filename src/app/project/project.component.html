@@ -7,7 +7,7 @@
 <div>
   <ion-grid class="milestone-bar">
     <ion-row>
-      <ion-col class="bubbles-top" (click)="scrollTo(i)" *ngFor="let milestone of milestones; let i = index">
+      <ion-col class="bubbles-top" (click)="scrollTo('milestone-' + milestone.id, i)" *ngFor="let milestone of milestones; let i = index">
         <div [class.active]="activeMilestone[i]">
           <ng-container *ngIf="!milestone.isLocked; else milestoneLocked">
             <ion-icon *ngIf="milestone.progress >= 1; else circleProgress" name="checkmark-circle" class="icon-done" color="primary"></ion-icon>
@@ -24,13 +24,13 @@
   </ion-grid>
 </div>
 
-<ion-content color="light" [scrollEvents]="true" (ionScroll)="trackScrolling($event)" #contentRef>
+<ion-content color="light" [scrollEvents]="true" #contentRef>
   <ion-list class="project-list">
     <ion-item *ngIf="loadingMilestone" color="light">
     </ion-item>
 
     <ion-item *ngFor="let milestone of milestones" color="light" #milestoneRef>
-      <div color="light" class="project-card">
+      <div color="light" class="project-card" id="milestone-{{milestone.id}}">
         <ng-container *ngIf="milestone.dummy; else actualMilestoneTpl">
           <ng-container *ngTemplateOutlet="loadingMilestoneTpl"></ng-container>
         </ng-container>
@@ -76,7 +76,6 @@
       </div>
     </ion-item>
   </ion-list>
-  <div class="spacer"></div>
 </ion-content>
 
 <ng-template #loadingMilestoneTpl>

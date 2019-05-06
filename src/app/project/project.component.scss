@@ -37,6 +37,11 @@
       line-height: 20px;
       font-size: 14px;
     }
+    transition: border 0.5s, border-radius 0.5s;
+    &.highlighted {
+      border: 1px solid var(--ion-color-primary);
+      border-radius: 1em;
+    }
   }
   :last-child {
     --inner-border-width: 0px !important;
@@ -76,8 +81,4 @@
 ion-spinner {
   display: block;
   margin: auto;
-}
-
-.spacer {
-  height: 480px;
 }
