@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 import { AuthService } from '../auth/auth.service';
 import { SettingService } from './setting.service';
 import { BrowserStorageService } from '@services/storage.service';
-import { UtilsService, ContactNumberFormat } from '@services/utils.service';
+import { UtilsService } from '@services/utils.service';
 import { NotificationService } from '@shared/notification/notification.service';
 import { environment } from '../../environments/environment.prod';
 import { RouterEnter } from '@services/router-enter.service';
@@ -40,7 +40,6 @@ export class SettingsComponent extends RouterEnter {
     public storage: BrowserStorageService,
     public utils: UtilsService,
     private notificationService: NotificationService,
-    public contact: ContactNumberFormat,
     private filestackService: FilestackService
   ) {
     super(router);

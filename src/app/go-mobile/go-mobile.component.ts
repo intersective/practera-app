@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { GoMobileService } from './go-mobile.service';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
-import { UtilsService, ContactNumberFormat } from '@services/utils.service';
+import { UtilsService } from '@services/utils.service';
 import { NotificationService } from '@shared/notification/notification.service';
 import { BrowserStorageService } from '@services/storage.service';
 import { environment } from '../../environments/environment';
@@ -28,7 +28,6 @@ export class GoMobileComponent implements OnInit {
     private utils: UtilsService,
     private notification: NotificationService,
     public storage: BrowserStorageService,
-    public contact: ContactNumberFormat,
   ) {}
 
   ngOnInit() {
