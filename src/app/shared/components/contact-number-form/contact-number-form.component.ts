@@ -15,17 +15,22 @@ export class ContactNumberFormComponent implements OnInit {
   @Input() page;
   @Output() updateNumber?: EventEmitter<string>;
 
+  // use to pass data to api
   profile = {
     contactNumber: '',
     email: ''
   };
+  // use as a ngModel to controll contact number input
   contactNumber = '';
   // default country model
   countryModel = 'AUS';
-  selectedCountryCode = '';
-  activeContactPlaceholder = '';
-  activeContactPattern = '';
-  activeNumberLength = '';
+  // country model infomation
+  activeCountryModelInfo = {
+    countryCode: '',
+    placeholder: '',
+    pattern: '',
+    length: ''
+  };
   // variable to control the update button
   updating = false;
   contactNumberFormat = {
@@ -73,10 +78,10 @@ export class ContactNumberFormComponent implements OnInit {
       // But if APP consumes APIs from 'api.practera.com' then it is APP V2 in AUS.
       this.countryModel = 'US';
     }
-    this.selectedCountryCode = this.contactNumberFormat.masks[this.countryModel].format;
-    this.activeContactPlaceholder = this.contactNumberFormat.masks[this.countryModel].placeholder;
-    this.activeContactPattern = this.contactNumberFormat.masks[this.countryModel].pattern;
-    this.activeNumberLength = this.contactNumberFormat.masks[this.countryModel].numberLength;
+    this.activeCountryModelInfo.countryCode = this.contactNumberFormat.masks[this.countryModel].format;
+    this.activeCountryModelInfo.placeholder = this.contactNumberFormat.masks[this.countryModel].placeholder;
+    this.activeCountryModelInfo.pattern = this.contactNumberFormat.masks[this.countryModel].pattern;
+    this.activeCountryModelInfo.length = this.contactNumberFormat.masks[this.countryModel].numberLength;
     // if user has the contact number
     if (this.page === 'settings' && (this.storage.getUser().contactNumber && this.storage.getUser().contactNumber != null)) {
       this._checkCurrentContactNumberOrigin();
@@ -90,63 +95,63 @@ export class ContactNumberFormComponent implements OnInit {
     this.contactNumber = this._separeteContactNumber(number);
 
     if (prefix === '+61') {
-        this.countryModel = 'AUS';
-        this.selectedCountryCode = this.contactNumberFormat.masks[this.countryModel].format;
-        this.activeContactPlaceholder = this.contactNumberFormat.masks[this.countryModel].placeholder;
-        this.activeContactPattern = this.contactNumberFormat.masks[this.countryModel].pattern;
-        this.activeNumberLength = this.contactNumberFormat.masks[this.countryModel].numberLength;
-        return;
+      this.countryModel = 'AUS';
+      this.activeCountryModelInfo.countryCode = this.contactNumberFormat.masks[this.countryModel].format;
+      this.activeCountryModelInfo.placeholder = this.contactNumberFormat.masks[this.countryModel].placeholder;
+      this.activeCountryModelInfo.pattern = this.contactNumberFormat.masks[this.countryModel].pattern;
+      this.activeCountryModelInfo.length = this.contactNumberFormat.masks[this.countryModel].numberLength;
+      return;
     }
 
     prefix = contactNum.substring(0, 2);
     number = contactNum.substring(2);
     this.contactNumber = this._separeteContactNumber(number);
     if (prefix === '61') {
-        this.countryModel = 'AUS';
-        this.selectedCountryCode = this.contactNumberFormat.masks[this.countryModel].format;
-        this.activeContactPlaceholder = this.contactNumberFormat.masks[this.countryModel].placeholder;
-        this.activeContactPattern = this.contactNumberFormat.masks[this.countryModel].pattern;
-        this.activeNumberLength = this.contactNumberFormat.masks[this.countryModel].numberLength;
-        return;
+      this.countryModel = 'AUS';
+      this.activeCountryModelInfo.countryCode = this.contactNumberFormat.masks[this.countryModel].format;
+      this.activeCountryModelInfo.placeholder = this.contactNumberFormat.masks[this.countryModel].placeholder;
+      this.activeCountryModelInfo.pattern = this.contactNumberFormat.masks[this.countryModel].pattern;
+      this.activeCountryModelInfo.length = this.contactNumberFormat.masks[this.countryModel].numberLength;
+      return;
     }
 
     if (prefix === '04') {
-        this.countryModel = 'AUS';
-        this.selectedCountryCode = this.contactNumberFormat.masks[this.countryModel].format;
-        this.activeContactPlaceholder = this.contactNumberFormat.masks[this.countryModel].placeholder;
-        this.activeContactPattern = this.contactNumberFormat.masks[this.countryModel].pattern;
-        this.activeNumberLength = this.contactNumberFormat.masks[this.countryModel].numberLength;
-        return;
+      this.countryModel = 'AUS';
+      this.activeCountryModelInfo.countryCode = this.contactNumberFormat.masks[this.countryModel].format;
+      this.activeCountryModelInfo.placeholder = this.contactNumberFormat.masks[this.countryModel].placeholder;
+      this.activeCountryModelInfo.pattern = this.contactNumberFormat.masks[this.countryModel].pattern;
+      this.activeCountryModelInfo.length = this.contactNumberFormat.masks[this.countryModel].numberLength;
+      return;
      }
 
     if (prefix === '+1') {
-        this.countryModel = 'US';
-        this.selectedCountryCode = this.contactNumberFormat.masks[this.countryModel].format;
-        this.activeContactPlaceholder = this.contactNumberFormat.masks[this.countryModel].placeholder;
-        this.activeContactPattern = this.contactNumberFormat.masks[this.countryModel].pattern;
-        this.activeNumberLength = this.contactNumberFormat.masks[this.countryModel].numberLength;
-        return;
+      this.countryModel = 'US';
+      this.activeCountryModelInfo.countryCode = this.contactNumberFormat.masks[this.countryModel].format;
+      this.activeCountryModelInfo.placeholder = this.contactNumberFormat.masks[this.countryModel].placeholder;
+      this.activeCountryModelInfo.pattern = this.contactNumberFormat.masks[this.countryModel].pattern;
+      this.activeCountryModelInfo.length = this.contactNumberFormat.masks[this.countryModel].numberLength;
+      return;
     }
 
     prefix = contactNum.substring(0, 1);
     number = contactNum.substring(1);
     this.contactNumber = this._separeteContactNumber(number);
     if (prefix === '1') {
-        this.countryModel = 'US';
-        this.selectedCountryCode = this.contactNumberFormat.masks[this.countryModel].format;
-        this.activeContactPlaceholder = this.contactNumberFormat.masks[this.countryModel].placeholder;
-        this.activeContactPattern = this.contactNumberFormat.masks[this.countryModel].pattern;
-        this.activeNumberLength = this.contactNumberFormat.masks[this.countryModel].numberLength;
-        return;
+      this.countryModel = 'US';
+      this.activeCountryModelInfo.countryCode = this.contactNumberFormat.masks[this.countryModel].format;
+      this.activeCountryModelInfo.placeholder = this.contactNumberFormat.masks[this.countryModel].placeholder;
+      this.activeCountryModelInfo.pattern = this.contactNumberFormat.masks[this.countryModel].pattern;
+      this.activeCountryModelInfo.length = this.contactNumberFormat.masks[this.countryModel].numberLength;
+      return;
     }
 
     if (prefix === '0') {
-        this.countryModel = 'AUS';
-        this.selectedCountryCode = this.contactNumberFormat.masks[this.countryModel].format;
-        this.activeContactPlaceholder = this.contactNumberFormat.masks[this.countryModel].placeholder;
-        this.activeContactPattern = this.contactNumberFormat.masks[this.countryModel].pattern;
-        this.activeNumberLength = this.contactNumberFormat.masks[this.countryModel].numberLength;
-        return;
+      this.countryModel = 'AUS';
+      this.activeCountryModelInfo.countryCode = this.contactNumberFormat.masks[this.countryModel].format;
+      this.activeCountryModelInfo.placeholder = this.contactNumberFormat.masks[this.countryModel].placeholder;
+      this.activeCountryModelInfo.pattern = this.contactNumberFormat.masks[this.countryModel].pattern;
+      this.activeCountryModelInfo.length = this.contactNumberFormat.masks[this.countryModel].numberLength;
+      return;
     }
   }
 
@@ -166,7 +171,7 @@ export class ContactNumberFormComponent implements OnInit {
   formatContactNumber() {
     this.contactNumber = this._separeteContactNumber(this.contactNumber);
     if (this.page === 'go-mobile') {
-      this.updateNumber.emit(this.selectedCountryCode + this.contactNumber);
+      this.updateNumber.emit(this.activeCountryModelInfo.countryCode + this.contactNumber);
     }
   }
 
@@ -188,19 +193,19 @@ export class ContactNumberFormComponent implements OnInit {
     const country = this.utils.find(this.contactNumberFormat.countryCodes, eachCountry => {
       return eachCountry.code === selectedCountry;
     });
-    this.selectedCountryCode = this.contactNumberFormat.masks[country.code].format;
-    this.activeContactPlaceholder = this.contactNumberFormat.masks[country.code].placeholder;
-    this.activeContactPattern = this.contactNumberFormat.masks[country.code].pattern;
-    this.activeNumberLength = this.contactNumberFormat.masks[this.countryModel].numberLength;
+    this.activeCountryModelInfo.countryCode = this.contactNumberFormat.masks[this.countryModel].format;
+    this.activeCountryModelInfo.placeholder = this.contactNumberFormat.masks[this.countryModel].placeholder;
+    this.activeCountryModelInfo.pattern = this.contactNumberFormat.masks[this.countryModel].pattern;
+    this.activeCountryModelInfo.length = this.contactNumberFormat.masks[this.countryModel].numberLength;
     // set currentContactNumber to it's format.
     this.contactNumber = '';
     if (this.page === 'go-mobile') {
-      this.updateNumber.emit(this.selectedCountryCode + this.contactNumber);
+      this.updateNumber.emit(this.activeCountryModelInfo.countryCode + this.contactNumber);
     }
   }
 
   updateContactNumber() {
-    this.profile.contactNumber = this.selectedCountryCode + this.contactNumber;
+    this.profile.contactNumber = this.activeCountryModelInfo.countryCode + this.contactNumber;
     // strip out white spaces and underscores
     this.profile.contactNumber = this.profile.contactNumber.replace(/[^0-9+]+/ig, '');
     // check if newly input number is valid or not.
