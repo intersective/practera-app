@@ -5,35 +5,6 @@ import { environment } from '@environments/environment';
 import { SettingService } from '@app/settings/setting.service';
 import { NotificationService } from '@shared/notification/notification.service';
 
-// contact number format should be consistent throughout the app (GoMobile & Setting)
-export class ContactNumberFormat {
-  masks = {
-    AUS: {
-      format: '+61',
-      placeholder: '___ ___ ___',
-      pattern: '^[0-9]{3}[\s\-]?[\0-9]{3}[\s\-]?[0-9]{3}$',
-      numberLength: '11'
-    },
-    US: {
-      format: '+1',
-      placeholder: '___ ___ ____',
-      pattern: '^[0-9]{3}[\s\-]?[\0-9]{3}[\s\-]?[0-9]{4}$',
-      numberLength: '12'
-    }
-  };
-
-  // supported countries
-  countryCodes = [
-    {
-      name: 'Australia',
-      code: 'AUS'
-    },
-    {
-        name: 'US/Canada',
-        code: 'US'
-    },
-  ];
-}
 @Component({
   selector: 'app-contact-number-form',
   templateUrl: './contact-number-form.component.html',
@@ -57,9 +28,34 @@ export class ContactNumberFormComponent implements OnInit {
   activeNumberLength = '';
   // variable to control the update button
   updating = false;
+  contactNumberFormat = {
+    masks : {
+      AUS: {
+        format: '+61',
+        placeholder: '___ ___ ___',
+        pattern: '^[0-9]{3}[\s\-]?[\0-9]{3}[\s\-]?[0-9]{3}$',
+        numberLength: '11'
+      },
+      US: {
+        format: '+1',
+        placeholder: '___ ___ ____',
+        pattern: '^[0-9]{3}[\s\-]?[\0-9]{3}[\s\-]?[0-9]{4}$',
+        numberLength: '12'
+      }
+    },
+    countryCodes : [
+      {
+        name: 'Australia',
+        code: 'AUS'
+      },
+      {
+          name: 'US/Canada',
+          code: 'US'
+      },
+    ]
+  };
 
   constructor(
-    public contact: ContactNumberFormat,
     public storage: BrowserStorageService,
     public utils: UtilsService,
     private settingService: SettingService,
@@ -77,10 +73,10 @@ export class ContactNumberFormComponent implements OnInit {
       // But if APP consumes APIs from 'api.practera.com' then it is APP V2 in AUS.
       this.countryModel = 'US';
     }
-    this.selectedCountryCode = this.contact.masks[this.countryModel].format;
-    this.activeContactPlaceholder = this.contact.masks[this.countryModel].placeholder;
-    this.activeContactPattern = this.contact.masks[this.countryModel].pattern;
-    this.activeNumberLength = this.contact.masks[this.countryModel].numberLength;
+    this.selectedCountryCode = this.contactNumberFormat.masks[this.countryModel].format;
+    this.activeContactPlaceholder = this.contactNumberFormat.masks[this.countryModel].placeholder;
+    this.activeContactPattern = this.contactNumberFormat.masks[this.countryModel].pattern;
+    this.activeNumberLength = this.contactNumberFormat.masks[this.countryModel].numberLength;
     // if user has the contact number
     if (this.page === 'settings' && (this.storage.getUser().contactNumber && this.storage.getUser().contactNumber != null)) {
       this._checkCurrentContactNumberOrigin();
@@ -95,10 +91,10 @@ export class ContactNumberFormComponent implements OnInit {
 
     if (prefix === '+61') {
         this.countryModel = 'AUS';
-        this.selectedCountryCode = this.contact.masks[this.countryModel].format;
-        this.activeContactPlaceholder = this.contact.masks[this.countryModel].placeholder;
-        this.activeContactPattern = this.contact.masks[this.countryModel].pattern;
-        this.activeNumberLength = this.contact.masks[this.countryModel].numberLength;
+        this.selectedCountryCode = this.contactNumberFormat.masks[this.countryModel].format;
+        this.activeContactPlaceholder = this.contactNumberFormat.masks[this.countryModel].placeholder;
+        this.activeContactPattern = this.contactNumberFormat.masks[this.countryModel].pattern;
+        this.activeNumberLength = this.contactNumberFormat.masks[this.countryModel].numberLength;
         return;
     }
 
@@ -107,28 +103,28 @@ export class ContactNumberFormComponent implements OnInit {
     this.contactNumber = this._separeteContactNumber(number);
     if (prefix === '61') {
         this.countryModel = 'AUS';
-        this.selectedCountryCode = this.contact.masks[this.countryModel].format;
-        this.activeContactPlaceholder = this.contact.masks[this.countryModel].placeholder;
-        this.activeContactPattern = this.contact.masks[this.countryModel].pattern;
-        this.activeNumberLength = this.contact.masks[this.countryModel].numberLength;
+        this.selectedCountryCode = this.contactNumberFormat.masks[this.countryModel].format;
+        this.activeContactPlaceholder = this.contactNumberFormat.masks[this.countryModel].placeholder;
+        this.activeContactPattern = this.contactNumberFormat.masks[this.countryModel].pattern;
+        this.activeNumberLength = this.contactNumberFormat.masks[this.countryModel].numberLength;
         return;
     }
 
     if (prefix === '04') {
         this.countryModel = 'AUS';
-        this.selectedCountryCode = this.contact.masks[this.countryModel].format;
-        this.activeContactPlaceholder = this.contact.masks[this.countryModel].placeholder;
-        this.activeContactPattern = this.contact.masks[this.countryModel].pattern;
-        this.activeNumberLength = this.contact.masks[this.countryModel].numberLength;
+        this.selectedCountryCode = this.contactNumberFormat.masks[this.countryModel].format;
+        this.activeContactPlaceholder = this.contactNumberFormat.masks[this.countryModel].placeholder;
+        this.activeContactPattern = this.contactNumberFormat.masks[this.countryModel].pattern;
+        this.activeNumberLength = this.contactNumberFormat.masks[this.countryModel].numberLength;
         return;
      }
 
     if (prefix === '+1') {
         this.countryModel = 'US';
-        this.selectedCountryCode = this.contact.masks[this.countryModel].format;
-        this.activeContactPlaceholder = this.contact.masks[this.countryModel].placeholder;
-        this.activeContactPattern = this.contact.masks[this.countryModel].pattern;
-        this.activeNumberLength = this.contact.masks[this.countryModel].numberLength;
+        this.selectedCountryCode = this.contactNumberFormat.masks[this.countryModel].format;
+        this.activeContactPlaceholder = this.contactNumberFormat.masks[this.countryModel].placeholder;
+        this.activeContactPattern = this.contactNumberFormat.masks[this.countryModel].pattern;
+        this.activeNumberLength = this.contactNumberFormat.masks[this.countryModel].numberLength;
         return;
     }
 
@@ -137,19 +133,19 @@ export class ContactNumberFormComponent implements OnInit {
     this.contactNumber = this._separeteContactNumber(number);
     if (prefix === '1') {
         this.countryModel = 'US';
-        this.selectedCountryCode = this.contact.masks[this.countryModel].format;
-        this.activeContactPlaceholder = this.contact.masks[this.countryModel].placeholder;
-        this.activeContactPattern = this.contact.masks[this.countryModel].pattern;
-        this.activeNumberLength = this.contact.masks[this.countryModel].numberLength;
+        this.selectedCountryCode = this.contactNumberFormat.masks[this.countryModel].format;
+        this.activeContactPlaceholder = this.contactNumberFormat.masks[this.countryModel].placeholder;
+        this.activeContactPattern = this.contactNumberFormat.masks[this.countryModel].pattern;
+        this.activeNumberLength = this.contactNumberFormat.masks[this.countryModel].numberLength;
         return;
     }
 
     if (prefix === '0') {
         this.countryModel = 'AUS';
-        this.selectedCountryCode = this.contact.masks[this.countryModel].format;
-        this.activeContactPlaceholder = this.contact.masks[this.countryModel].placeholder;
-        this.activeContactPattern = this.contact.masks[this.countryModel].pattern;
-        this.activeNumberLength = this.contact.masks[this.countryModel].numberLength;
+        this.selectedCountryCode = this.contactNumberFormat.masks[this.countryModel].format;
+        this.activeContactPlaceholder = this.contactNumberFormat.masks[this.countryModel].placeholder;
+        this.activeContactPattern = this.contactNumberFormat.masks[this.countryModel].pattern;
+        this.activeNumberLength = this.contactNumberFormat.masks[this.countryModel].numberLength;
         return;
     }
   }
@@ -189,13 +185,13 @@ export class ContactNumberFormComponent implements OnInit {
 
   updateCountry() {
     const selectedCountry = this.countryModel;
-    const country = this.utils.find(this.contact.countryCodes, eachCountry => {
+    const country = this.utils.find(this.contactNumberFormat.countryCodes, eachCountry => {
       return eachCountry.code === selectedCountry;
     });
-    this.selectedCountryCode = this.contact.masks[country.code].format;
-    this.activeContactPlaceholder = this.contact.masks[country.code].placeholder;
-    this.activeContactPattern = this.contact.masks[country.code].pattern;
-    this.activeNumberLength = this.contact.masks[this.countryModel].numberLength;
+    this.selectedCountryCode = this.contactNumberFormat.masks[country.code].format;
+    this.activeContactPlaceholder = this.contactNumberFormat.masks[country.code].placeholder;
+    this.activeContactPattern = this.contactNumberFormat.masks[country.code].pattern;
+    this.activeNumberLength = this.contactNumberFormat.masks[this.countryModel].numberLength;
     // set currentContactNumber to it's format.
     this.contactNumber = '';
     if (this.page === 'go-mobile') {
