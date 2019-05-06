@@ -26,7 +26,7 @@ export class ActivityComponent extends RouterEnter {
   };
   loadingActivity = true;
   events: Array<Event>;
-  loadingEvents = false;
+  loadingEvents = true;
 
   constructor(
     public router: Router,
