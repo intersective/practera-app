@@ -174,7 +174,6 @@ export class AssessmentComponent extends RouterEnter {
   // Populate the question form with FormControls.
   // The name of form control is like 'q-2' (2 is an example of question id)
   populateQuestionsForm() {
-    const questionsFormObject = {};
     let validator = [];
     this.assessment.groups.forEach(group => {
       group.questions.forEach(question => {
@@ -184,10 +183,10 @@ export class AssessmentComponent extends RouterEnter {
         } else {
           validator = [];
         }
-        questionsFormObject['q-' + question.id] = new FormControl('', validator);
+
+        this.questionsForm.addControl('q-' + question.id, new FormControl('', validator));
       });
     });
-    this.questionsForm = new FormGroup(questionsFormObject);
   }
 
   back() {
