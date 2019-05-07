@@ -59,6 +59,7 @@
                 [review]="(review.answers && review.answers[question.id]) ? review.answers[question.id] : {}"
                 [reviewStatus]="review.status"
                 [submissionStatus]= "submission.status"
+                [formControlName]="'q-' + question.id"
                 [control]="questionsForm.controls['q-' + question.id]"
                 (saveProgress)="submit(true)"
               ></app-text>
@@ -72,6 +73,7 @@
                 [review]="(review.answers && review.answers[question.id]) ? review.answers[question.id] : {}"
                 [reviewStatus]="review.status"
                 [submissionStatus]= "submission.status"
+                [formControlName]="'q-' + question.id"
                 [control]="questionsForm.controls['q-' + question.id]"
                 (saveProgress)="submit(true)"
               ></app-oneof>
@@ -85,6 +87,7 @@
                 [review]="(review.answers && review.answers[question.id]) ? review.answers[question.id] : {}"
                 [reviewStatus]="review.status"
                 [submissionStatus]= "submission.status"
+                [formControlName]="'q-' + question.id"
                 [control]="questionsForm.controls['q-' + question.id]"
                 (saveProgress)="submit(true)"
               ></app-multiple>
@@ -98,6 +101,7 @@
                 [review]="(review.answers && review.answers[question.id]) ? review.answers[question.id] : {}"
                 [reviewStatus]="review.status"
                 [submissionStatus]= "submission.status"
+                [formControlName]="'q-' + question.id"
                 [control]="questionsForm.controls['q-' + question.id]"
                 (saveProgress)="submit(true)"
               ></app-file>
@@ -111,6 +115,7 @@
                 [review]="(review.answers && review.answers[question.id]) ? review.answers[question.id] : {}"
                 [reviewStatus]="review.status"
                 [submissionStatus]= "submission.status"
+                [formControlName]="'q-' + question.id"
                 [control]="questionsForm.controls['q-' + question.id]"
                 (saveProgress)="submit(true)"
               ></app-team-member-selector>
@@ -120,7 +125,6 @@
         </ion-card>
       </ng-container>
     </ng-container>
-
 
     <ion-button *ngIf="doAssessment || doReview" [disabled]="submitting || questionsForm.invalid" (click)="submit(false)" shape="round" expand="full">
       <ng-container *ngIf="!submitting">Submit</ng-container>
