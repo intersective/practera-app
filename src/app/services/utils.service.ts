@@ -226,4 +226,55 @@ export class UtilsService {
       return 1;
     }
   }
+
+  /**
+   * This method check due dates of assessment or activity.
+   * - Check due date is today, tomorrow, upcoming date or overdue date.
+   * - If due date is upcoming one this will returns 'Due (date)' ex: 'Due 06-30-2019'.
+   * - If due date is overdue one this will returns 'Overdue (date)' ex: 'Overdue 01-10-2019'.
+   * - If due date is today this will return 'Due Today'.
+   * - If due date is tomorrow this will return 'Due Tomorrow'.
+   * @param dueDate - due date of assessment or activity.
+   */
+  validateDueDates(dueDate: string) {
+    const difference = this.comparerDate(dueDate);
+    if (difference === 0) {
+      return 'Due Today';
+    }
+    if (difference === -1) {
+      return 'Due Tomorrow';
+    }
+    if (difference < -1) {
+      return 'Due ' + new Intl.DateTimeFormat('en-GB', {
+        month: 'numeric',
+        day: 'numeric',
+        year: 'numeric'
+      }).format(new Date(dueDate + 'Z'));
+    }
+    if (difference > 0) {
+      return 'Overdue ' + new Intl.DateTimeFormat('en-GB', {
+        month: 'numeric',
+        day: 'numeric',
+        year: 'numeric'
+      }).format(new Date(dueDate + 'Z'));
+    }
+  }
+
+  /**
+   * This method comparing any two dates and return difference in days.
+   * @param dateString date need to compare
+   * @param comparedDateString comparing date (optinal) if didn't get value default value is today.
+   */
+  comparerDate(dateString: string, comparedDateString?: string) {
+    const date = new Date(dateString + 'Z');
+    let comparedDate = new Date();
+    if (comparedDateString) {
+      comparedDate = new Date(comparedDateString + 'Z');
+    }
+    // Calculate the difference and return
+    return Math.floor(
+      (Date.UTC(comparedDate.getFullYear(), comparedDate.getMonth(), comparedDate.getDate()) -
+      Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()) ) / (1000 * 60 * 60 * 24));
+  }
+
 }
