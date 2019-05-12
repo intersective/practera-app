@@ -7,12 +7,12 @@
 
   /** primary **/
   --ion-color-primary: #2bbfd4;
-  --ion-color-primary-rgb: 43,191,212;
+  --ion-color-primary-rgb: rgb(var(--ion-color-primary));
   --ion-color-primary-contrast: #ffffff;
   --ion-color-primary-contrast-rgb: 255,255,255;
   --ion-color-primary-shade: #2bbfd4;
   --ion-color-primary-tint: #40c5d8;
-  --ion-color-primary-light: lighten(var(--ion-color-primary), 50%);
+  // --ion-color-primary-light: rgba(var(--ion-color-primar), 0.5);
 
   /** customised colors **/
   --ion-tabbar-text-color-active: var(--ion-color-primary);

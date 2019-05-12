@@ -372,4 +372,8 @@ export class AssessmentComponent extends RouterEnter {
     }).format(new Date());
   }
 
+  getValidDuedate(dueDate) {
+    return this.utils.validateDueDates(dueDate);
+  }
+
 }

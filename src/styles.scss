@@ -210,32 +210,32 @@ body {
 
 // animation for pulseing
 .pulseing {
-  animation: pulse 1.5s infinite;
-  -webkit-animation: pulse 1.5s infinite;
+  animation: pulse 2s infinite;
+  -webkit-animation: pulse 2s infinite;
 }
 
 @-webkit-keyframes pulse {
   0% {
-    -webkit-box-shadow: 0 0 0 0 rgba(204,169,44, 0.4);
+    -webkit-box-shadow: 0 0 0 0 rgba(var(--ion-color-primar), 0.5);
   }
   70% {
-      -webkit-box-shadow: 0 0 0 10px rgba(204,169,44, 0);
+      -webkit-box-shadow: 0 0 0 15px rgba(var(--ion-color-primar), 0.5);
   }
   100% {
-      -webkit-box-shadow: 0 0 0 0 rgba(204,169,44, 0);
+      -webkit-box-shadow: 0 0 0 0 rgba(var(--ion-color-primar), 0.5);
   }
 }
 @keyframes pulse {
   0% {
-    -moz-box-shadow: 0 0 0 0 rgba(204,169,44, 0.4);
-    box-shadow: 0 0 0 0 rgba(204,169,44, 0.4);
+    -moz-box-shadow: 0 0 0 0 rgba(var(--ion-color-primar), 0.5);
+    box-shadow: 0 0 0 0 rgba(var(--ion-color-primar), 0.5);
   }
   70% {
-      -moz-box-shadow: 0 0 0 10px rgba(204,169,44, 0);
-      box-shadow: 0 0 0 10px rgba(204,169,44, 0);
+      -moz-box-shadow: 0 0 0 15px rgba(var(--ion-color-primar), 0.5);
+      box-shadow: 0 0 0 15px rgba(var(--ion-color-primar), 0.5);
   }
   100% {
-      -moz-box-shadow: 0 0 0 0 rgba(204,169,44, 0);
-      box-shadow: 0 0 0 0 rgba(204,169,44, 0);
+      -moz-box-shadow: 0 0 0 0 rgba(var(--ion-color-primar), 0.5);
+      box-shadow: 0 0 0 0 rgba(var(--ion-color-primar), 0.5);
   }
 }
