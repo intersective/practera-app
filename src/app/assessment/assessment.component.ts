@@ -30,6 +30,7 @@ export class AssessmentComponent extends RouterEnter {
     name: '',
     description: '',
     isForTeam: false,
+    dueDate: '',
     groups: []
   };
   submission: Submission = {
@@ -74,6 +75,7 @@ export class AssessmentComponent extends RouterEnter {
       name: '',
       description: '',
       isForTeam: false,
+      dueDate: '',
       groups: []
     };
     this.submission = {

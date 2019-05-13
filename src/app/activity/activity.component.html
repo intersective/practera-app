@@ -40,12 +40,10 @@
 
           <div class="icon-item">
             <h4>{{ task.name }}</h4>
-            <p *ngIf="task.type != 'Locked'" class="due-date">
-              <ion-text color="primary">
-                <!-- @TODO need to chaeck api return data -->
-                <!-- {{getValidDuedate(task.created)}} -->
-                Due Tomorrow
-              </ion-text>
+            <p *ngIf="task.type === 'Assessment'" class="due-date over">
+              <!-- @TODO need to chaeck api return data -->
+              <!-- {{getValidDuedate(task.created)}} -->
+              Due Tomorrow
             </p>
             <p>
               <ion-text *ngIf="task.type != 'Locked'" [color]="task.status == 'feedback available' ? 'primary' : 'medium'">

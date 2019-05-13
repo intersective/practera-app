@@ -94,6 +94,13 @@ export class UtilsService {
   changeThemeColor(color) {
     this.document.documentElement.style.setProperty('--ion-color-primary', color);
     this.document.documentElement.style.setProperty('--ion-color-primary-shade', color);
+    // convert hex color to rgb and update css variable
+    const hex = color.replace('#', '');
+    const red = parseInt(hex.substring(0, 2), 16);
+    const green = parseInt(hex.substring(2, 4), 16);
+    const blue = parseInt(hex.substring(4, 6), 16);
+
+    this.document.documentElement.style.setProperty('--ion-color-primary-rgb', red + ',' + green + ',' + blue);
   }
 
   changeCardBackgroundImage(image) {

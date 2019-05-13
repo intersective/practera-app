@@ -7,6 +7,10 @@
 .icon-forward {
   font-size: 20px;
 }
-.due-date {
-  margin-bottom: 0;
+div {
+  &.icon-item {
+    p {
+      font-size: 12px;
+    }
+  }
 }

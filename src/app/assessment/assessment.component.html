@@ -13,11 +13,11 @@
   <ion-text color="medium" text-left>
     <app-description *ngIf="assessment.description" [content]="assessment.description"></app-description>
   </ion-text>
-  <ion-text color="primary" text-center>
+  <p class="due-date assessment over" *ngIf="doAssessment" text-center>
     <!-- @TODO need to chaeck api return data -->
     <!-- {{getValidDuedate(task.created)}} -->
-    Due Tomorrow
-  </ion-text>
+    <ion-icon name="md-calendar"></ion-icon> Due Tomorrow
+  </p>
   <div class="review-submitter" *ngIf="assessment.isForTeam && submission.status != 'in progress'" text-left>
     <p class="title">
       Submitted by {{ submission.submitterName }}
