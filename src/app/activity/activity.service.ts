@@ -25,6 +25,7 @@ export interface Task {
   feedbackReviewed?: boolean;
   loadingStatus?: boolean;
   isForTeam?: boolean;
+  dueDate?: string;
 }
 
 export interface Activity {
@@ -111,7 +112,8 @@ export class ActivityService {
             type: 'Assessment',
             contextId: contextIds[element[element.model].id] || 0,
             loadingStatus: true,
-            isForTeam: element[element.model].is_team
+            isForTeam: element[element.model].is_team,
+            dueDate: element[element.model].dueDate
           });
           break;
       }

@@ -208,34 +208,53 @@ body {
   }
 }
 
-// animation for pulseing
+// styles use for due dates and pulseing animation
+.due-date {
+  margin-bottom: 0;
+  color: var(--ion-color-primary);
+  font-size: 12px !important;
+  font-weight: bold !important;
+  // use in assessment page to show due dates
+  &.assessment {
+    font-size: 16px !important;
+    font-weight: normal !important;
+    ion-icon {
+      vertical-align: bottom;
+    }
+  }
+  // use to show overdue dates
+  &.over {
+    color: var(--practera-ovderdue-color);
+  }
+}
+
 .pulseing {
-  animation: pulse 2s infinite;
   -webkit-animation: pulse 2s infinite;
+  animation: pulse 2s infinite;
 }
 
 @-webkit-keyframes pulse {
   0% {
-    -webkit-box-shadow: 0 0 0 0 rgba(var(--ion-color-primar), 0.5);
+    -webkit-box-shadow: 0 0 0 0 rgba(var(--ion-color-primary-rgb), 0.5);
   }
   70% {
-      -webkit-box-shadow: 0 0 0 15px rgba(var(--ion-color-primar), 0.5);
+      -webkit-box-shadow: 0 0 0 15px rgba(var(--ion-color-primary-rgb), 0);
   }
   100% {
-      -webkit-box-shadow: 0 0 0 0 rgba(var(--ion-color-primar), 0.5);
+      -webkit-box-shadow: 0 0 0 0 rgba(var(--ion-color-primary-rgb), 0);
   }
 }
 @keyframes pulse {
   0% {
-    -moz-box-shadow: 0 0 0 0 rgba(var(--ion-color-primar), 0.5);
-    box-shadow: 0 0 0 0 rgba(var(--ion-color-primar), 0.5);
+    -moz-box-shadow: 0 0 0 0 rgba(var(--ion-color-primary-rgb), 0.5);
+    box-shadow: 0 0 0 0 rgba(var(--ion-color-primary-rgb), 0.5);
   }
   70% {
-      -moz-box-shadow: 0 0 0 15px rgba(var(--ion-color-primar), 0.5);
-      box-shadow: 0 0 0 15px rgba(var(--ion-color-primar), 0.5);
+      -moz-box-shadow: 0 0 0 15px rgba(var(--ion-color-primary-rgb), 0);
+      box-shadow: 0 0 0 15px rgba(var(--ion-color-primary-rgb), 0);
   }
   100% {
-      -moz-box-shadow: 0 0 0 0 rgba(var(--ion-color-primar), 0.5);
-      box-shadow: 0 0 0 0 rgba(var(--ion-color-primar), 0.5);
+      -moz-box-shadow: 0 0 0 0 rgba(var(--ion-color-primary-rgb), 0);
+      box-shadow: 0 0 0 0 rgba(var(--ion-color-primary-rgb), 0);
   }
 }

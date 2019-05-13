@@ -29,6 +29,7 @@ export interface Assessment {
   name: string;
   description: string;
   isForTeam: boolean;
+  dueDate?: string;
   groups: Array<Group>;
 }
 
@@ -126,6 +127,7 @@ export class AssessmentService {
       name: thisAssessment.Assessment.name,
       description: thisAssessment.Assessment.description,
       isForTeam: thisAssessment.Assessment.is_team,
+      dueDate: thisAssessment.Assessment.dueDate,
       groups: []
     };
 
