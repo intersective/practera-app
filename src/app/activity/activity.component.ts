@@ -132,9 +132,4 @@ export class ActivityComponent extends RouterEnter {
         break;
     }
   }
-
-  getValidDuedate(dueDate) {
-    return this.utils.validateDueDates(dueDate);
-  }
-
 }
