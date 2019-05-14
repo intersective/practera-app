@@ -26,6 +26,8 @@ export interface Task {
   loadingStatus?: boolean;
   isForTeam?: boolean;
   dueDate?: string;
+  isOverdue?: boolean;
+  iconClass?: string;
 }
 
 export interface Activity {
@@ -113,7 +115,10 @@ export class ActivityService {
             contextId: contextIds[element[element.model].id] || 0,
             loadingStatus: true,
             isForTeam: element[element.model].is_team,
-            dueDate: element[element.model].dueDate
+            // @TODO need to update after api ready
+            dueDate: this.utils.validateDueDates(element[element.model].deadline),
+            isOverdue: this.utils.validateDueDates(element[element.model].deadline).indexOf('Overdue') !== -1 ? true : false,
+            iconClass: this.utils.validateDueDates(element[element.model].deadline).indexOf('Due Today') !== -1 ? 'pulseing' : '',
           });
           break;
       }
@@ -225,6 +230,9 @@ export class ActivityService {
       default:
         task.status = thisSubmission.AssessmentSubmission.status;
         break;
+    }
+    if (task.status === 'done') {
+      task.iconClass = 'ng-star-inserted ion-color ion-color-primary hydrated';
     }
     task.loadingStatus = false;
     return task;

@@ -30,6 +30,7 @@ export interface Assessment {
   description: string;
   isForTeam: boolean;
   dueDate?: string;
+  isOverdue?: boolean;
   groups: Array<Group>;
 }
 
@@ -127,7 +128,8 @@ export class AssessmentService {
       name: thisAssessment.Assessment.name,
       description: thisAssessment.Assessment.description,
       isForTeam: thisAssessment.Assessment.is_team,
-      dueDate: thisAssessment.Assessment.dueDate,
+      // @TODO need to update after api ready
+      dueDate: this.utils.validateDueDates(thisAssessment.Assessment.deadline),
       groups: []
     };
 

@@ -13,10 +13,8 @@
   <ion-text color="medium" text-left>
     <app-description *ngIf="assessment.description" [content]="assessment.description"></app-description>
   </ion-text>
-  <p class="due-date assessment over" *ngIf="doAssessment" text-center>
-    <!-- @TODO need to chaeck api return data -->
-    <!-- {{getValidDuedate(task.created)}} -->
-    <ion-icon name="md-calendar"></ion-icon> Due Tomorrow
+  <p [class]="assessment.isOverdue ? 'due-date assessment over' : 'due-date assessment'" *ngIf="doAssessment" text-center>
+    {{assessment.dueDate}}
   </p>
   <div class="review-submitter" *ngIf="!doAssessment" text-left>
     <p class="title">
