@@ -40,7 +40,7 @@
 
           <div class="icon-item">
             <h4>{{ task.name }}</h4>
-            <p *ngIf="task.type === 'Assessment' && !(task.status === 'done' && task.isOverdue)" [class]="task.isOverdue ? 'due-date over' : 'due-date'">
+            <p *ngIf="task.type === 'Assessment' && task.status != 'done'" [class]="task.isOverdue ? 'due-date over' : 'due-date'">
               <ng-container *ngIf="!task.loadingStatus">{{ task.dueDate }}</ng-container>
             </p>
             <p>

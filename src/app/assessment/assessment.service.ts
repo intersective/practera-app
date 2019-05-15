@@ -129,7 +129,7 @@ export class AssessmentService {
       description: thisAssessment.Assessment.description,
       isForTeam: thisAssessment.Assessment.is_team,
       // @TODO need to update after api ready
-      dueDate: this.utils.validateDueDates(thisAssessment.Assessment.deadline),
+      dueDate: this.utils.validateDueDates(thisAssessment.Assessment.deadline, true),
       groups: []
     };
 
