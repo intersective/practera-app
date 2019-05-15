@@ -16,7 +16,7 @@
   <p [class]="assessment.isOverdue ? 'due-date assessment over' : 'due-date assessment'" *ngIf="doAssessment" text-center>
     {{assessment.dueDate}}
   </p>
-  <div class="review-submitter" *ngIf="!doAssessment" text-left>
+  <div class="review-submitter" *ngIf="!doAssessment && doReview" text-left>
     <p class="title">
       Submitted by {{ submission.submitterName }}
     </p>

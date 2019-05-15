@@ -222,28 +222,37 @@ export class UtilsService {
    * - If due date is tomorrow this will return 'Due Tomorrow'.
    * @param dueDate - due date of assessment or activity.
    */
-  validateDueDates(dueDate: string) {
+  validateDueDates(dueDate: string, withTime?: boolean) {
     const difference = this.comparerDate(dueDate);
+    let formattedDuedate = '';
     if (difference === 0) {
-      return 'Due Today';
+      formattedDuedate = 'Due Today';
     }
     if (difference === -1) {
-      return 'Due Tomorrow';
+      formattedDuedate = 'Due Tomorrow';
     }
     if (difference < -1) {
-      return 'Due ' + new Intl.DateTimeFormat('en-GB', {
+      formattedDuedate = 'Due ' + new Intl.DateTimeFormat('en-GB', {
         month: 'numeric',
         day: 'numeric',
         year: 'numeric'
       }).format(new Date(dueDate + 'Z'));
     }
     if (difference > 0) {
-      return 'Overdue ' + new Intl.DateTimeFormat('en-GB', {
+      formattedDuedate = 'Overdue ' + new Intl.DateTimeFormat('en-GB', {
         month: 'numeric',
         day: 'numeric',
         year: 'numeric'
       }).format(new Date(dueDate + 'Z'));
     }
+    if (withTime) {
+      formattedDuedate += ' ' + new Intl.DateTimeFormat('en-GB', {
+        hour12: true,
+        hour: 'numeric',
+        minute: 'numeric',
+      }).format(new Date(dueDate + 'Z'));
+    }
+    return formattedDuedate;
   }
 
   /**
