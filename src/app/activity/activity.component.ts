@@ -132,4 +132,5 @@ export class ActivityComponent extends RouterEnter {
         break;
     }
   }
+
 }
