@@ -117,7 +117,6 @@ export class AssessmentComponent extends RouterEnter {
     this.assessmentService.getAssessment(this.id, this.action)
       .subscribe(assessment => {
         this.assessment = assessment;
-        this.assessment.isOverdue = assessment.dueDate.indexOf('Overdue') !== -1 ? true : false;
         this.populateQuestionsForm();
         if (this.doAssessment && this.assessment.isForTeam && !this.storage.getUser().teamId) {
           return this.notificationService.alert({
