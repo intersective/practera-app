@@ -157,24 +157,21 @@ export class UtilsService {
     time = time.replace(' ', 'T');
     // add "Z" to declare that it is UTC time, it will automatically convert to local time
     const date = new Date(time + 'Z');
-    const today = new Date();
+    const formattedTime = new Intl.DateTimeFormat('en-GB', {
+      hour12: true,
+      hour: 'numeric',
+      minute: 'numeric'
+    }).format(date);
+
     switch (display) {
       case 'date':
         return this.dateFormatter(date);
 
       case 'time':
-        return new Intl.DateTimeFormat('en-GB', {
-          hour12: true,
-          hour: 'numeric',
-          minute: 'numeric'
-        }).format(date);
+        return formattedTime;
 
       default:
-      return this.dateFormatter(date) + ' ' + new Intl.DateTimeFormat('en-GB', {
-        hour12: true,
-        hour: 'numeric',
-        minute: 'numeric'
-      }).format(date);
+      return this.dateFormatter(date) + ' ' + formattedTime;
     }
   }
 
@@ -206,7 +203,9 @@ export class UtilsService {
     if (comparedString) {
       compared = new Date(comparedString + 'Z');
     }
-    if (compareDate && (time.getDate() === compared.getDate() && time.getTime() >= compared.getTime())) {
+    if (compareDate && (time.getDate() === compared.getDate() &&
+    time.getMonth() === compared.getMonth() &&
+    time.getFullYear() === compared.getFullYear())) {
       return 0;
     }
     if (time.getTime() < compared.getTime()) {
