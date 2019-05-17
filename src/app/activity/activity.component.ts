@@ -8,6 +8,7 @@ import { NotificationService } from '@shared/notification/notification.service';
 import { BrowserStorageService } from '@services/storage.service';
 import { RouterEnter } from '@services/router-enter.service';
 import { Event, EventsService} from '@app/events/events.service';
+import { SharedService } from '@services/shared.service';
 
 @Component({
   selector: 'app-activity',
@@ -35,7 +36,8 @@ export class ActivityComponent extends RouterEnter {
     public utils: UtilsService,
     private notificationService: NotificationService,
     public storage: BrowserStorageService,
-    private eventsService: EventsService
+    private eventsService: EventsService,
+    public sharedService: SharedService
   ) {
     super(router);
     // update event list after book/cancel an event
