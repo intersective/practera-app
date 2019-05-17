@@ -35,12 +35,12 @@
             <ion-icon name="list-box" slot="start" color="primary"></ion-icon>
           </ng-container>
           <ng-container *ngSwitchCase="'Assessment'">
-            <ion-icon name="clipboard" slot="start" [class]="task.isDueToday ? 'pulsing' : 'ng-star-inserted ion-color ion-color-primary hydrated'" color="primary"></ion-icon>
+            <ion-icon name="clipboard" slot="start" [class]="(task.isDueToday && task.status != 'done') ? 'pulsing' : 'ng-star-inserted ion-color ion-color-primary hydrated'" color="primary"></ion-icon>
           </ng-container>
           <div class="icon-item">
             <h4>{{ task.name }}</h4>
             <p *ngIf="task.type === 'Assessment' && (task.status === '' || task.status === 'in progress')" [class]="task.isOverdue ? 'due-date over' : 'due-date'">
-              <ng-container *ngIf="!task.loadingStatus">{{ this.utils.dueDateFormatter(task.dueDate) }}</ng-container>
+              <ng-container *ngIf="!task.loadingStatus">{{ this.sharedService.dueDateFormatter(task.dueDate) }}</ng-container>
             </p>
             <p>
               <ion-text *ngIf="task.type != 'Locked'" [color]="task.status == 'feedback available' ? 'primary' : 'medium'">

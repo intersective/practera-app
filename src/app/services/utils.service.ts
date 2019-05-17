@@ -170,11 +170,15 @@ export class UtilsService {
         }).format(date);
 
       default:
-      return this.dateFormatter(date, true);
+      return this.dateFormatter(date) + ' ' + new Intl.DateTimeFormat('en-GB', {
+        hour12: true,
+        hour: 'numeric',
+        minute: 'numeric'
+      }).format(date);
     }
   }
 
-  dateFormatter(date: Date, isDuedate?: boolean) {
+  dateFormatter(date: Date) {
     const today = new Date();
     let formattedDate = new Intl.DateTimeFormat('en-GB', {
       month: 'short',
@@ -192,32 +196,17 @@ export class UtilsService {
       if (date.getDate() === today.getDate() + 1) {
         formattedDate = 'Tomorrow';
       }
-      if (isDuedate && date.getDate() > today.getDate() + 1) {
-        formattedDate = new Intl.DateTimeFormat('en-GB', {
-          month: 'numeric',
-          day: 'numeric',
-          year: 'numeric'
-        }).format(date);
-      }
-    }
-
-    if (isDuedate) {
-      formattedDate += ' ' + new Intl.DateTimeFormat('en-GB', {
-        hour12: true,
-        hour: 'numeric',
-        minute: 'numeric'
-      }).format(date);
     }
     return formattedDate;
   }
 
-  timeComparer(timeString: string, comparedString?: string, dueToday?: boolean) {
+  timeComparer(timeString: string, comparedString?: string, compareDate?: boolean) {
     const time = new Date(timeString + 'Z');
     let compared = new Date();
     if (comparedString) {
       compared = new Date(comparedString + 'Z');
     }
-    if (dueToday && (time.getDate() === compared.getDate() && time.getTime() >= compared.getTime())) {
+    if (compareDate && (time.getDate() === compared.getDate() && time.getTime() >= compared.getTime())) {
       return 0;
     }
     if (time.getTime() < compared.getTime()) {
@@ -229,22 +218,5 @@ export class UtilsService {
     if (time.getTime() > compared.getTime()) {
       return 1;
     }
-  }
-
-  /**
-   * This method check due dates of assessment or activity.
-   * - Check due date is today, tomorrow, upcoming date or overdue date.
-   * - If due date is upcoming one this will returns 'Due (date)' ex: 'Due 06-30-2019'.
-   * - If due date is overdue one this will returns 'Overdue (date)' ex: 'Overdue 01-10-2019'.
-   * - If due date is today this will return 'Due Today'.
-   * - If due date is tomorrow this will return 'Due Tomorrow'.
-   * @param dueDate - due date of assessment or activity.
-   */
-  dueDateFormatter(dueDate: string) {
-    const difference = this.timeComparer(dueDate);
-    if (difference < 0) {
-      return 'Overdue ' + this.utcToLocal(dueDate);
-    }
-    return 'Due ' + this.utcToLocal(dueDate);
   }
 }

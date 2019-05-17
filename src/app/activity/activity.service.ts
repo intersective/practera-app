@@ -230,9 +230,6 @@ export class ActivityService {
         task.status = thisSubmission.AssessmentSubmission.status;
         break;
     }
-    if (task.status === 'done') {
-      task.isDueToday = false;
-    }
     task.loadingStatus = false;
     return task;
   }
