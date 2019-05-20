@@ -53,28 +53,14 @@ export class AuthLoginComponent {
       },
       err => {
         if (this.utils.has(err, 'data.type')) {
-          if (err.data.type === 'password_compromised' &&
-            this.utils.has(err, 'data.reset_url') &&
-            this.utils.has(err, 'data.directlogin_url')) {
-            const resetUrl = err.data.reset_url.replace(/.+\?/, '/?');
-            const directLoginUrl = err.data.directlogin_url.replace(/.+\?/, '/?');
+          if (err.data.type === 'password_compromised') {
             return this.notificationService.alert({
-              message: 'Sorry, we tested that password and it is not strong enough.',
+              message: 'Oops, we tested this password and it appears to be insecure. We have sent you a link to reset your password.',
               buttons: [
                 {
-                  text: 'Reset Password',
-                  handler: () => {
-                    window.location.replace(resetUrl);
-                    return;
-                  },
-                },
-                {
-                  text: 'Continue Login',
-                  handler: () => {
-                    window.location.replace(directLoginUrl);
-                    return;
-                  },
-                },
+                  text: 'OK',
+                  role: 'cancel'
+                }
               ],
             });
           }

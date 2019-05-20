@@ -3,6 +3,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { Validators, FormGroup, FormControl } from '@angular/forms';
 import { NotificationService } from '../../shared/notification/notification.service';
 import { AuthService } from '../auth.service';
+import { UtilsService } from '@services/utils.service';
 
 @Component({
   selector: 'app-auth-reset-password',
@@ -29,7 +30,8 @@ export class AuthResetPasswordComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private notificationService: NotificationService,
-    private authService: AuthService
+    private authService: AuthService,
+    private utils: UtilsService
   ) { }
 
   ngOnInit() {
@@ -64,6 +66,19 @@ export class AuthResetPasswordComponent implements OnInit {
         return this._notifyAndRedirect('Password successfully changed!. Please login with the new password.');
       },
       err => {
+        if (this.utils.has(err, 'data.type')) {
+          if (err.data.type === 'password_compromised') {
+            return this.notificationService.alert({
+              message: 'Oops, we tested this password and it appears to be insecure. We have sent you a link to reset your password.',
+              buttons: [
+                {
+                  text: 'OK',
+                  role: 'cancel'
+                }
+              ],
+            });
+          }
+        }
         return this.notificationService.presentToast('Error updating password.Try again', false);
       }
     );
