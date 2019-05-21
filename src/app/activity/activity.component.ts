@@ -93,10 +93,6 @@ export class ActivityComponent extends RouterEnter {
     this.loadingEvents = true;
     this.events = [];
     this.eventsService.getEvents(this.id).subscribe(events => {
-      if (events.length > 2) {
-        // only display 2 events
-        events.length = 2;
-      }
       this.events = events;
       this.loadingEvents = false;
     });
