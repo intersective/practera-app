@@ -69,7 +69,9 @@ export class AuthResetPasswordComponent implements OnInit {
         if (this.utils.has(err, 'data.type')) {
           if (err.data.type === 'password_compromised') {
             return this.notificationService.alert({
-              message: 'Oops, we tested this password and it appears to be insecure.<br>We have sent you a link to reset your password.<br>See: <a href="https://haveibeenpwned.com/Passwords">Why is it insecure?</a>',
+              message: `Oops, we tested this password and it appears to be insecure.<br>
+                We have sent you a link to reset your password.<br>
+                See: <a href="https://haveibeenpwned.com/Passwords">Why is it insecure?</a>`,
               buttons: [
                 {
                   text: 'OK',
