@@ -109,8 +109,8 @@ export class AuthService {
         encoder: new QueryEncoder()
       })
       .set('data[User][email]', email)
-      .set('data[User][password]', password);
-
+      .set('data[User][password]', password)
+      .set('domain', this.getDomain());
 
     return this.request.post(api.login, body.toString(), {
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
@@ -164,16 +164,20 @@ export class AuthService {
    * @return {Observable<any>}      [description]
    */
   forgotPassword(email: string): Observable<any>  {
+    return this.request.post(api.forgotPassword, {
+      email: email,
+      domain: this.getDomain()
+    });
+  }
+
+  getDomain() {
     let domain = window.location.hostname;
     domain =
       domain.indexOf('127.0.0.1') !== -1 ||
       domain.indexOf('localhost') !== -1
         ? 'dev.app-v2.practera.com'
         : domain;
-    return this.request.post(api.forgotPassword, {
-      email: email,
-      domain: domain
-    });
+    return domain;
   }
 
   /**
