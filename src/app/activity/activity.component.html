@@ -89,7 +89,7 @@
               <clickable-item *ngIf="i < 2">
                   <event-card
                     [event]="event"
-                    [time]="utils.utcToLocal(event.startTime)"
+                    [time]="displayEventTime(event)"
                     class="width-100"
                   ></event-card>
                 </clickable-item>
