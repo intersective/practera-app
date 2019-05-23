@@ -131,4 +131,8 @@ export class ActivityComponent extends RouterEnter {
     }
   }
 
+  displayEventTime(event) {
+    return this.utils.utcToLocal(event.startTime) + ' - ' + this.utils.utcToLocal(event.endTime, 'time');
+  }
+
 }
