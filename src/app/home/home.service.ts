@@ -43,6 +43,7 @@ export interface TodoItem {
     team_id?: number;
     team_member_id?: number;
     participants_only?: boolean;
+    due_date?: boolean;
   };
 }
 
@@ -123,6 +124,11 @@ export class HomeService {
           meta: todoItem.meta
         });
       }
+
+      // todo item for user to submit the assessment
+      if (todoItem.identifier.includes('AssessmentSubmissionReminder-')) {
+        todoItems = this._addTodoItemSubmissionReminder(todoItem, todoItems);
+      }
     });
     return todoItems;
   }
@@ -167,6 +173,31 @@ export class HomeService {
     item.name = todoItem.meta.assessment_name;
     item.description = 'Please review the assessment';
     item.time = this.utils.timeFormatter(todoItem.created);
+    item.meta = todoItem.meta;
+    todoItems.push(item);
+    return todoItems;
+  }
+
+  private _addTodoItemSubmissionReminder(todoItem, todoItems) {
+    const item: TodoItem = {
+      type: '',
+      name: '',
+      description: '',
+      time: '',
+      meta: {}
+    };
+    item.type = 'assessment_submission_reminder';
+    if (!this.utils.has(todoItem, 'meta.assessment_name') ||
+        !this.utils.has(todoItem, 'meta.context_id') ||
+        !this.utils.has(todoItem, 'meta.activity_id') ||
+        !this.utils.has(todoItem, 'meta.assessment_id') ||
+        !this.utils.has(todoItem, 'meta.due_date')) {
+      this.request.apiResponseFormatError('TodoItem meta format error');
+      return todoItems;
+    }
+    item.name = todoItem.meta.assessment_name;
+    item.description = this.utils.validateDueDates(todoItem.created);
+    item.time = '';
     item.meta = todoItem.meta;
     todoItems.push(item);
     return todoItems;
@@ -388,6 +419,28 @@ export class HomeService {
           }
         };
 
+      case 'assessment_submission_reminder':
+        if (!this.utils.has(event, 'meta.AssessmentReview.assessment_name') ||
+            !this.utils.has(event, 'meta.AssessmentReview.context_id') ||
+            !this.utils.has(event, 'meta.AssessmentReview.activity_id') ||
+            !this.utils.has(event, 'meta.AssessmentReview.assessment_id') ||
+            !this.utils.has(event, 'meta.AssessmentReview.due_date')
+          ) {
+          this.request.apiResponseFormatError('TodoItem meta format error');
+        }
+        return {
+          type: '',
+          name: event.meta.AssessmentReview.assessment_name,
+          description: this.utils.validateDueDates(event.meta.AssessmentReview.created),
+          time: '',
+          meta: {
+            context_id: event.meta.AssessmentReview.context_id,
+            assessment_id: event.meta.AssessmentReview.assessment_id,
+            assessment_name: event.meta.AssessmentReview.assessment_name,
+            activity_id: event.meta.AssessmentReview.activity_id,
+            due_date: event.meta.AssessmentReview.due_date
+          }
+        };
     }
   }
 
