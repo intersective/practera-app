@@ -1,8 +1,7 @@
-import { IonicModule } from '@ionic/angular';
 import { RouterModule } from '@angular/router';
 import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { SharedModule } from '@shared/shared.module';
+import { ReactiveFormsModule } from '@angular/forms';
 
 import { AuthRoutingModule } from './auth-routing.module';
 
@@ -19,11 +18,9 @@ import { AuthDirectLoginComponent } from './auth-direct-login/auth-direct-login.
 
 @NgModule({
   imports: [
-    IonicModule,
-    CommonModule,
-    FormsModule,
+    SharedModule,
     ReactiveFormsModule,
-    AuthRoutingModule
+    AuthRoutingModule,
   ],
   declarations: [
     AuthComponent,
@@ -41,5 +38,6 @@ import { AuthDirectLoginComponent } from './auth-direct-login/auth-direct-login.
     UnauthorizedGuard,
     ProgramSelectedGuard,
   ],
+  exports: [SharedModule]
 })
 export class AuthModule {}
