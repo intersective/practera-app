@@ -195,7 +195,16 @@ export class HomeComponent extends RouterEnter implements OnDestroy {
     this.router.navigateByUrl('app/activity/' + id);
   }
 
-  goToAssessment(activityId, contextId, assessmentId) {
+  goToAssessment(activityId, contextId, assessmentId, isReminder: boolean = false) {
+    if (isReminder) {
+      this.router.navigate([
+        'assessment',
+        'reminder',
+        activityId,
+        contextId,
+        assessmentId
+      ]);
+    }
     this.router.navigate([
       'assessment',
       'assessment',
