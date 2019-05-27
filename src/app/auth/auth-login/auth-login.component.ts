@@ -52,6 +52,33 @@ export class AuthLoginComponent {
         this.router.navigate(['/switcher']);
       },
       err => {
+        if (this.utils.has(err, 'data.type')) {
+          if (err.data.type === 'password_compromised' &&
+            this.utils.has(err, 'data.reset_url') &&
+            this.utils.has(err, 'data.directlogin_url')) {
+            const resetUrl = err.data.reset_url.replace(/.+\?/, '/?');
+            const directLoginUrl = err.data.directlogin_url.replace(/.+\?/, '/?');
+            return this.notificationService.alert({
+              message: 'Sorry, we tested that password and it is not strong enough.',
+              buttons: [
+                {
+                  text: 'Reset Password',
+                  handler: () => {
+                    window.location.replace(resetUrl);
+                    return;
+                  },
+                },
+                {
+                  text: 'Continue Login',
+                  handler: () => {
+                    window.location.replace(directLoginUrl);
+                    return;
+                  },
+                },
+              ],
+            });
+          }
+        }
         this.notificationService.alert({
           message: 'Your email or password is incorrect, please try again.',
           buttons: [

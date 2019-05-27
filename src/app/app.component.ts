@@ -27,6 +27,8 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit() {
+    // @TODO: need to build a new micro service to get the config and serve the custom branding config from a microservice
+
     const domain = window.location.hostname;
     this.authService.getConfig({domain}).subscribe((response: any) => {
       const expConfig = response.data;
@@ -35,7 +37,7 @@ export class AppComponent implements OnInit {
         let logo = expConfig[0].logo;
         const themeColor = expConfig[0].config.theme_color;
         // add the domain if the logo url is not a full url
-        if (!logo.includes('http')) {
+        if (!logo.includes('http') && !this.utils.isEmpty(logo)) {
           logo = environment.APIEndpoint + logo;
         }
         this.storage.setConfig({
