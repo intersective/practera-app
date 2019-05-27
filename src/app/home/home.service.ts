@@ -9,6 +9,7 @@ import { FastFeedbackComponent } from '../fast-feedback/fast-feedback.component'
 import { Question, Meta} from '../fast-feedback/fast-feedback.service';
 import { NotificationService } from '@shared/notification/notification.service';
 import { Event, EventsService } from '@app/events/events.service';
+import { SharedService } from '@services/shared.service';
 
 /**
  * @name api
@@ -60,7 +61,8 @@ export class HomeService {
     private request: RequestService,
     private utils: UtilsService,
     private notification: NotificationService,
-    private eventsService: EventsService
+    private eventsService: EventsService,
+    public sharedService: SharedService
   ) {}
 
   getProgramName() {
@@ -196,8 +198,8 @@ export class HomeService {
       return todoItems;
     }
     item.name = todoItem.meta.assessment_name;
-    item.description = this.utils.validateDueDates(todoItem.created);
-    item.time = '';
+    item.description = this.sharedService.dueDateFormatter(todoItem.meta.due_date);
+    item.time = this.utils.timeFormatter(todoItem.created);
     item.meta = todoItem.meta;
     todoItems.push(item);
     return todoItems;
@@ -424,15 +426,16 @@ export class HomeService {
             !this.utils.has(event, 'meta.AssessmentReview.context_id') ||
             !this.utils.has(event, 'meta.AssessmentReview.activity_id') ||
             !this.utils.has(event, 'meta.AssessmentReview.assessment_id') ||
-            !this.utils.has(event, 'meta.AssessmentReview.due_date')
+            !this.utils.has(event, 'meta.AssessmentReview.due_date') ||
+            !this.utils.has(event, 'meta.AssessmentReview.reminded_date')
           ) {
           this.request.apiResponseFormatError('TodoItem meta format error');
         }
         return {
-          type: '',
+          type: 'assessment_submission_reminder',
           name: event.meta.AssessmentReview.assessment_name,
-          description: this.utils.validateDueDates(event.meta.AssessmentReview.created),
-          time: '',
+          description: this.sharedService.dueDateFormatter(event.meta.AssessmentReview.due_date),
+          time: this.utils.timeFormatter(event.meta.AssessmentReview.reminded_date),
           meta: {
             context_id: event.meta.AssessmentReview.context_id,
             assessment_id: event.meta.AssessmentReview.assessment_id,
