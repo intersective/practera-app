@@ -14,9 +14,9 @@
     <app-description *ngIf="assessment.description" [content]="assessment.description"></app-description>
   </ion-text>
   <p [class]="assessment.isOverdue ? 'due-date assessment over' : 'due-date assessment'" *ngIf="doAssessment" text-center>
-    {{assessment.dueDate}}
+    {{ this.sharedService.dueDateFormatter(assessment.dueDate) }}
   </p>
-  <div class="review-submitter" *ngIf="!doAssessment && doReview" text-left>
+  <div class="review-submitter" *ngIf="!doAssessment" text-left>
     <p class="title">
       Submitted by {{ submission.submitterName }}
     </p>

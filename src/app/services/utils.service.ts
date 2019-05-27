@@ -157,50 +157,56 @@ export class UtilsService {
     time = time.replace(' ', 'T');
     // add "Z" to declare that it is UTC time, it will automatically convert to local time
     const date = new Date(time + 'Z');
+    const formattedTime = new Intl.DateTimeFormat('en-GB', {
+      hour12: true,
+      hour: 'numeric',
+      minute: 'numeric'
+    }).format(date);
+
     switch (display) {
       case 'date':
-        const today = new Date();
-        if (date.getFullYear() === today.getFullYear() && date.getMonth() === today.getMonth()) {
-          if (date.getDate() === today.getDate() - 1) {
-            return 'Yesterday';
-          }
-          if (date.getDate() === today.getDate()) {
-            return 'Today';
-          }
-          if (date.getDate() === today.getDate() + 1) {
-            return 'Tomorrow';
-          }
-        }
-        return new Intl.DateTimeFormat('en-GB', {
-          month: 'short',
-          day: 'numeric',
-          year: 'numeric'
-        }).format(date);
+        return this.dateFormatter(date);
 
       case 'time':
-        return new Intl.DateTimeFormat('en-GB', {
-          hour12: true,
-          hour: 'numeric',
-          minute: 'numeric'
-        }).format(date);
+        return formattedTime;
 
       default:
-        return new Intl.DateTimeFormat('en-GB', {
-          hour12: true,
-          hour: 'numeric',
-          minute: 'numeric',
-          month: 'short',
-          day: 'numeric',
-          year: 'numeric'
-        }).format(date);
+      return this.dateFormatter(date) + ' ' + formattedTime;
     }
   }
 
-  timeComparer(timeString: string, comparedString?: string) {
+  dateFormatter(date: Date) {
+    const today = new Date();
+    let formattedDate = new Intl.DateTimeFormat('en-GB', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric'
+    }).format(date);
+
+    if (date.getFullYear() === today.getFullYear() && date.getMonth() === today.getMonth()) {
+      if (date.getDate() === today.getDate() - 1) {
+        formattedDate = 'Yesterday';
+      }
+      if (date.getDate() === today.getDate()) {
+        formattedDate = 'Today';
+      }
+      if (date.getDate() === today.getDate() + 1) {
+        formattedDate = 'Tomorrow';
+      }
+    }
+    return formattedDate;
+  }
+
+  timeComparer(timeString: string, comparedString?: string, compareDate?: boolean) {
     const time = new Date(timeString + 'Z');
     let compared = new Date();
     if (comparedString) {
       compared = new Date(comparedString + 'Z');
+    }
+    if (compareDate && (time.getDate() === compared.getDate() &&
+    time.getMonth() === compared.getMonth() &&
+    time.getFullYear() === compared.getFullYear())) {
+      return 0;
     }
     if (time.getTime() < compared.getTime()) {
       return -1;
@@ -212,64 +218,4 @@ export class UtilsService {
       return 1;
     }
   }
-
-  /**
-   * This method check due dates of assessment or activity.
-   * - Check due date is today, tomorrow, upcoming date or overdue date.
-   * - If due date is upcoming one this will returns 'Due (date)' ex: 'Due 06-30-2019'.
-   * - If due date is overdue one this will returns 'Overdue (date)' ex: 'Overdue 01-10-2019'.
-   * - If due date is today this will return 'Due Today'.
-   * - If due date is tomorrow this will return 'Due Tomorrow'.
-   * @param dueDate - due date of assessment or activity.
-   */
-  validateDueDates(dueDate: string, withTime?: boolean) {
-    const difference = this.comparerDate(dueDate);
-    let formattedDuedate = '';
-    if (difference === 0) {
-      formattedDuedate = 'Due Today';
-    }
-    if (difference === -1) {
-      formattedDuedate = 'Due Tomorrow';
-    }
-    if (difference < -1) {
-      formattedDuedate = 'Due ' + new Intl.DateTimeFormat('en-GB', {
-        month: 'numeric',
-        day: 'numeric',
-        year: 'numeric'
-      }).format(new Date(dueDate + 'Z'));
-    }
-    if (difference > 0) {
-      formattedDuedate = 'Overdue ' + new Intl.DateTimeFormat('en-GB', {
-        month: 'numeric',
-        day: 'numeric',
-        year: 'numeric'
-      }).format(new Date(dueDate + 'Z'));
-    }
-    if (withTime) {
-      formattedDuedate += ' ' + new Intl.DateTimeFormat('en-GB', {
-        hour12: true,
-        hour: 'numeric',
-        minute: 'numeric',
-      }).format(new Date(dueDate + 'Z'));
-    }
-    return formattedDuedate;
-  }
-
-  /**
-   * This method comparing any two dates and return difference in days.
-   * @param dateString date need to compare
-   * @param comparedDateString comparing date (optinal) if didn't get value default value is today.
-   */
-  comparerDate(dateString: string, comparedDateString?: string) {
-    const date = new Date(dateString + 'Z');
-    let comparedDate = new Date();
-    if (comparedDateString) {
-      comparedDate = new Date(comparedDateString + 'Z');
-    }
-    // Calculate the difference and return
-    return Math.floor(
-      (Date.UTC(comparedDate.getFullYear(), comparedDate.getMonth(), comparedDate.getDate()) -
-      Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()) ) / (1000 * 60 * 60 * 24));
-  }
-
 }
