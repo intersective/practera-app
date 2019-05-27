@@ -8,6 +8,7 @@ import { NotificationService } from '@shared/notification/notification.service';
 import { BrowserStorageService } from '@services/storage.service';
 import { RouterEnter } from '@services/router-enter.service';
 import { Event, EventsService} from '@app/events/events.service';
+import { SharedService } from '@services/shared.service';
 
 @Component({
   selector: 'app-activity',
@@ -35,7 +36,8 @@ export class ActivityComponent extends RouterEnter {
     public utils: UtilsService,
     private notificationService: NotificationService,
     public storage: BrowserStorageService,
-    private eventsService: EventsService
+    private eventsService: EventsService,
+    public sharedService: SharedService
   ) {
     super(router);
     // update event list after book/cancel an event
@@ -93,10 +95,6 @@ export class ActivityComponent extends RouterEnter {
     this.loadingEvents = true;
     this.events = [];
     this.eventsService.getEvents(this.id).subscribe(events => {
-      if (events.length > 2) {
-        // only display 2 events
-        events.length = 2;
-      }
       this.events = events;
       this.loadingEvents = false;
     });
@@ -132,4 +130,9 @@ export class ActivityComponent extends RouterEnter {
         break;
     }
   }
+
+  displayEventTime(event) {
+    return this.utils.utcToLocal(event.startTime) + ' - ' + this.utils.utcToLocal(event.endTime, 'time');
+  }
+
 }
