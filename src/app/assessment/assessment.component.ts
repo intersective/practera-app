@@ -115,11 +115,6 @@ export class AssessmentComponent extends RouterEnter {
     this.contextId = +this.route.snapshot.paramMap.get('contextId');
     this.submissionId = +this.route.snapshot.paramMap.get('submissionId');
 
-    // if action is 'reminder' calling TODO api in background to update TODO iteam
-    if (this.action === 'reminder') {
-      this.assessmentService.UpdateSubmissionReminder();
-    }
-
     // get assessment structure and populate the question form
     this.assessmentService.getAssessment(this.id, this.action)
       .subscribe(assessment => {

@@ -72,7 +72,7 @@
             <app-todo-card
               *ngSwitchCase="'assessment_submission_reminder'"
               [todoItem]="todoItem"
-              (click)="goToAssessment(todoItem.meta.activity_id, todoItem.meta.context_id, todoItem.meta.assessment_id, true)"
+              (click)="goToAssessment(todoItem.meta.activity_id, todoItem.meta.context_id, todoItem.meta.assessment_id)"
             ></app-todo-card>
           </ng-container>
         </div>

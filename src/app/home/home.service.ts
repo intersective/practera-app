@@ -422,26 +422,26 @@ export class HomeService {
         };
 
       case 'assessment_submission_reminder':
-        if (!this.utils.has(event, 'meta.AssessmentReview.assessment_name') ||
-            !this.utils.has(event, 'meta.AssessmentReview.context_id') ||
-            !this.utils.has(event, 'meta.AssessmentReview.activity_id') ||
-            !this.utils.has(event, 'meta.AssessmentReview.assessment_id') ||
-            !this.utils.has(event, 'meta.AssessmentReview.due_date') ||
-            !this.utils.has(event, 'meta.AssessmentReview.reminded_date')
+        if (!this.utils.has(event, 'meta.AssessmentSubmissionReminder.assessment_name') ||
+            !this.utils.has(event, 'meta.AssessmentSubmissionReminder.context_id') ||
+            !this.utils.has(event, 'meta.AssessmentSubmissionReminder.activity_id') ||
+            !this.utils.has(event, 'meta.AssessmentSubmissionReminder.assessment_id') ||
+            !this.utils.has(event, 'meta.AssessmentSubmissionReminder.due_date') ||
+            !this.utils.has(event, 'meta.AssessmentSubmissionReminder.reminded_date')
           ) {
           this.request.apiResponseFormatError('TodoItem meta format error');
         }
         return {
           type: 'assessment_submission_reminder',
-          name: event.meta.AssessmentReview.assessment_name,
-          description: this.sharedService.dueDateFormatter(event.meta.AssessmentReview.due_date),
-          time: this.utils.timeFormatter(event.meta.AssessmentReview.reminded_date),
+          name: event.meta.AssessmentSubmissionReminder.assessment_name,
+          description: this.sharedService.dueDateFormatter(event.meta.AssessmentSubmissionReminder.due_date),
+          time: this.utils.timeFormatter(event.meta.AssessmentSubmissionReminder.reminded_date),
           meta: {
-            context_id: event.meta.AssessmentReview.context_id,
-            assessment_id: event.meta.AssessmentReview.assessment_id,
-            assessment_name: event.meta.AssessmentReview.assessment_name,
-            activity_id: event.meta.AssessmentReview.activity_id,
-            due_date: event.meta.AssessmentReview.due_date
+            context_id: event.meta.AssessmentSubmissionReminder.context_id,
+            assessment_id: event.meta.AssessmentSubmissionReminder.assessment_id,
+            assessment_name: event.meta.AssessmentSubmissionReminder.assessment_name,
+            activity_id: event.meta.AssessmentSubmissionReminder.activity_id,
+            due_date: event.meta.AssessmentSubmissionReminder.due_date
           }
         };
     }
