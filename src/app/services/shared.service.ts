@@ -78,6 +78,9 @@ export class SharedService {
    * @param dueDate - due date of assessment or activity.
    */
   dueDateFormatter(dueDate: string) {
+    if (!dueDate) {
+      return '';
+    }
     const difference = this.utils.timeComparer(dueDate);
     if (difference < 0) {
       return 'Overdue ' + this.utils.utcToLocal(dueDate);

@@ -496,15 +496,6 @@ export class AssessmentService {
     });
   }
 
-  UpdateSubmissionReminder() {
-    const postData = {
-      project_id: this.storage.getUser().projectId,
-      identifier: 'AssessmentSubmissionReminder-',
-      is_done: true
-    };
-    return this.request.post(api.post.todoitem, postData);
-  }
-
 }
 
 
