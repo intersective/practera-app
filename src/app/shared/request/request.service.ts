@@ -186,7 +186,7 @@ export class RequestService {
       console.error(error); // log to console instead
     }
     // log the user out if jwt expired
-    if (this.utils.has(error, 'error.message') && error.error.message === 'Session expired') {
+    if (this.utils.has(error, 'error.message') && error.error.message === 'Expired apikey') {
       this.router.navigate(['logout']);
     }
     // Return the error response data
