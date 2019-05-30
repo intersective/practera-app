@@ -10,6 +10,16 @@
   </ng-container>
   <ion-grid>
     <ion-row>
+      <ion-col size="3">
+        <img style="width: 35%" src="/assets/achievement_trophy.svg">
+      </ion-col>
+      <ion-col align-items-start>
+        <p>Total Points : {{totalEarnedPoints}}</p>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+  <ion-grid>
+    <ion-row>
       <ion-col
         *ngFor="let achievement of achievements; let i = index;"
         size-xs="4"
