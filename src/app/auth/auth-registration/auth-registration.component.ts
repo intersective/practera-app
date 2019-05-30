@@ -161,6 +161,21 @@ export class AuthRegistrationComponent implements OnInit {
                   this.showPopupMessages('shortMessage', 'Registration success!', redirect);
                 },
                 err => {
+                  if (this.utils.has(err, 'data.type')) {
+                    if (err.data.type === 'password_compromised') {
+                      return this.notificationService.alert({
+                        message: `Oops, we tested this password and it appears to be insecure.<br>
+                          Please try again.<br>
+                          See: <a href="https://haveibeenpwned.com/Passwords">Why is it insecure?</a>`,
+                        buttons: [
+                          {
+                            text: 'OK',
+                            role: 'cancel'
+                          }
+                        ],
+                      });
+                    }
+                  }
                   this.showPopupMessages('shortMessage', 'Registration not compleate!');
                 }
               );
