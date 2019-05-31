@@ -3,7 +3,6 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { AchievementsService, Achievement } from './achievements.service';
 import { UtilsService } from '@services/utils.service';
 import { RouterEnter } from '@services/router-enter.service';
-import { element } from '../../../node_modules/protractor';
 
 @Component({
   selector: 'app-achievements',
