@@ -55,9 +55,9 @@ export class AuthLoginComponent {
         if (this.utils.has(err, 'data.type')) {
           if (err.data.type === 'password_compromised') {
             return this.notificationService.alert({
-              message: `Oops, we tested this password and it appears to be insecure.<br>
-                We have sent you a link to reset your password.<br>
-                See: <a href="https://haveibeenpwned.com/Passwords">Why is it insecure?</a>`,
+              message: `We’ve checked this password against a global database of insecure passwords and your password was on it. <br>
+                We have sent you an email with a link to reset your password. <br>
+                You can learn more about how we check that <a href="https://haveibeenpwned.com/Passwords">database</a>`,
               buttons: [
                 {
                   text: 'OK',
