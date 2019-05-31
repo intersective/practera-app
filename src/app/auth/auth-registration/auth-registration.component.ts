@@ -176,12 +176,12 @@ export class AuthRegistrationComponent implements OnInit {
                       });
                     }
                   }
-                  this.showPopupMessages('shortMessage', 'Registration not compleate!');
+                  this.showPopupMessages('shortMessage', 'Registration not complete!');
                 }
               );
           },
           error => {
-            this.showPopupMessages('shortMessage', 'Registration not compleate!');
+            this.showPopupMessages('shortMessage', 'Registration not complete!');
           }
         );
     }
