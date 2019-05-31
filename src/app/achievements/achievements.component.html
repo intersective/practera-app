@@ -9,12 +9,12 @@
     <ion-spinner></ion-spinner>
   </ng-container>
   <ion-grid>
-    <ion-row>
-      <ion-col size="3">
-        <img style="width: 35%" src="/assets/achievement_trophy.svg">
+    <ion-row class="total-points">
+      <ion-col class="trophy" size="3">
+          <ion-icon ios="md-trophy" md="md-trophy"></ion-icon>
       </ion-col>
-      <ion-col align-items-start>
-        <p>Total Points : {{totalEarnedPoints}}</p>
+      <ion-col class="points" align-items-start>
+        <h4>Total Points : {{totalEarnedPoints}}</h4>
       </ion-col>
     </ion-row>
   </ion-grid>
