@@ -50,7 +50,7 @@ export class CircleProgressComponent implements OnChanges, OnInit {
     percent: 0,
     radius: 70,
     subtitle: 'COMPLETE',
-    startFromZero: false,
+    startFromZero: true,
   };
 
   smallPlaceholderCircle = {
