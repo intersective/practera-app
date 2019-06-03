@@ -64,6 +64,7 @@ export class AuthLoginComponent {
                 {
                   text: 'Reset Password',
                   handler: () => {
+                    this.isLoggingIn = false;
                     window.location.replace(resetUrl);
                     return;
                   },
@@ -71,6 +72,7 @@ export class AuthLoginComponent {
                 {
                   text: 'Continue Login',
                   handler: () => {
+                    this.isLoggingIn = false;
                     window.location.replace(directLoginUrl);
                     return;
                   },
