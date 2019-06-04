@@ -54,6 +54,7 @@ export class AuthLoginComponent {
       err => {
         if (this.utils.has(err, 'data.type')) {
           if (err.data.type === 'password_compromised') {
+            this.isLoggingIn = false;
             return this.notificationService.alert({
               message: `We’ve checked this password against a global database of insecure passwords and your password was on it. <br>
                 We have sent you an email with a link to reset your password. <br>
