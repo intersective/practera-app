@@ -43,6 +43,10 @@
             <p>
               <ion-text *ngIf="task.type != 'Locked'" [color]="task.status == 'feedback available' ? 'primary' : 'medium'">
                 {{ task.type }}
+                <!-- @TODO need to check lock/unlock reaturning from API. -->
+                <!-- if lock need to show this of unlock need to show tatus. -->
+                <!-- @TODO need to add user name who working on it. -->
+                <!-- <ng-container> - Locked by Alice</ng-container> -->
                 <ng-container *ngIf="!task.loadingStatus; else spinner">{{ task.status }}</ng-container>
                 <ng-template #spinner><ion-spinner name="dots" class="vertical-middle"></ion-spinner></ng-template>
               </ion-text>
@@ -61,6 +65,11 @@
             <ng-container *ngIf="task.status == 'pending review'">
               <ion-icon name="hourglass" slot="end" color="primary"></ion-icon>
             </ng-container>
+
+            <!-- @TODO need to check lock/unlock reaturning from API. if lock need to show this icon -->
+            <!-- <ng-container>
+              <ion-icon name="md-lock" slot="end" color="medium"></ion-icon>
+            </ng-container> -->
           </ng-container>
 
           <ng-template #iconSpinner>
