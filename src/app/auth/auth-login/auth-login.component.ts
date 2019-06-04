@@ -56,6 +56,7 @@ export class AuthLoginComponent {
           if (err.data.type === 'password_compromised' &&
             this.utils.has(err, 'data.reset_url') &&
             this.utils.has(err, 'data.directlogin_url')) {
+            this.isLoggingIn = false;
             const resetUrl = err.data.reset_url.replace(/.+\?/, '/?');
             const directLoginUrl = err.data.directlogin_url.replace(/.+\?/, '/?');
             return this.notificationService.alert({
