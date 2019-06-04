@@ -53,29 +53,17 @@ export class AuthLoginComponent {
       },
       err => {
         if (this.utils.has(err, 'data.type')) {
-          if (err.data.type === 'password_compromised' &&
-            this.utils.has(err, 'data.reset_url') &&
-            this.utils.has(err, 'data.directlogin_url')) {
+          if (err.data.type === 'password_compromised') {
             this.isLoggingIn = false;
-            const resetUrl = err.data.reset_url.replace(/.+\?/, '/?');
-            const directLoginUrl = err.data.directlogin_url.replace(/.+\?/, '/?');
             return this.notificationService.alert({
-              message: 'Sorry, we tested that password and it is not strong enough.',
+              message: `We’ve checked this password against a global database of insecure passwords and your password was on it. <br>
+                We have sent you an email with a link to reset your password. <br>
+                You can learn more about how we check that <a href="https://haveibeenpwned.com/Passwords">database</a>`,
               buttons: [
                 {
-                  text: 'Reset Password',
-                  handler: () => {
-                    window.location.replace(resetUrl);
-                    return;
-                  },
-                },
-                {
-                  text: 'Continue Login',
-                  handler: () => {
-                    window.location.replace(directLoginUrl);
-                    return;
-                  },
-                },
+                  text: 'OK',
+                  role: 'cancel'
+                }
               ],
             });
           }
