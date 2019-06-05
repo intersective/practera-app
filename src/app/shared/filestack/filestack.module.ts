@@ -4,11 +4,14 @@ import { CommonModule } from '@angular/common';
 import { FilestackService } from './filestack.service';
 import { FilestackComponent } from './filestack.component';
 import { PreviewComponent } from './preview/preview.component';
+import { HttpClientModule } from '@angular/common/http';
+
 
 @NgModule({
   imports: [
     IonicModule,
-    CommonModule
+    CommonModule,
+    HttpClientModule,
   ],
   providers: [
     FilestackService
@@ -18,10 +21,11 @@ import { PreviewComponent } from './preview/preview.component';
     PreviewComponent
   ],
   exports: [
-    FilestackComponent
+    FilestackComponent,
+    HttpClientModule,
   ],
   entryComponents: [
-    PreviewComponent
+    PreviewComponent,
   ]
 })
 
