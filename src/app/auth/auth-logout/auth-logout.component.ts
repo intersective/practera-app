@@ -1,19 +1,22 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { AuthService } from '../auth.service';
 import { Router } from '@angular/router';
+import { RouterEnter } from '@services/router-enter.service';
 
 @Component({
   selector: 'app-auth-logout',
   template: '',
 })
-export class AuthLogoutComponent implements OnInit {
-
+export class AuthLogoutComponent extends RouterEnter {
+  routeUrl = '/logout';
   constructor(
-    private router: Router,
+    public router: Router,
     private authService: AuthService
-  ) {}
+  ) {
+    super(router);
+  }
 
-  ngOnInit() {
+  onEnter() {
     this.authService.logout();
   }
 
