@@ -106,7 +106,6 @@ export class ChatRoomComponent extends RouterEnter {
       is_team: false,
       team_id: null,
       team_member_id: null,
-      chat_color: null,
       participants_only: false
     };
   }
@@ -143,7 +142,7 @@ export class ChatRoomComponent extends RouterEnter {
       };
     }
     this.chatService
-      .getMessageList(data, this.selectedChat.is_team, this.selectedChat.chat_color)
+      .getMessageList(data, this.selectedChat.is_team)
       .subscribe(
         messages => {
           if (messages) {
@@ -217,10 +216,6 @@ export class ChatRoomComponent extends RouterEnter {
       }
     }
     this.loadingChatMessages = false;
-  }
-
-  getChatAvatarText(senderName) {
-    return this.chatService.generateChatAvatarText(senderName);
   }
 
   back() {
@@ -332,17 +327,6 @@ export class ChatRoomComponent extends RouterEnter {
       return 'received-messages';
     } else {
       return 'send-messages';
-    }
-  }
-  /**
-   * check message time and return related css class for avatar
-   * @param {object} message
-   */
-  getClassForAvatar(message) {
-    if (this.checkToShowMessageTime(message)) {
-      return message.chat_color;
-    } else {
-      return message.chat_color + ' no-time';
     }
   }
 
@@ -477,8 +461,8 @@ export class ChatRoomComponent extends RouterEnter {
     );
   }
 
-  previewFile(file) {
-    this.filestackService.previewFile(file);
+  async previewFile(file) {
+    return await this.filestackService.previewFile(file);
   }
 
   private postAttachment(file) {

@@ -52,6 +52,22 @@ export class AuthLoginComponent {
         this.router.navigate(['/switcher']);
       },
       err => {
+        if (this.utils.has(err, 'data.type')) {
+          if (err.data.type === 'password_compromised') {
+            this.isLoggingIn = false;
+            return this.notificationService.alert({
+              message: `We’ve checked this password against a global database of insecure passwords and your password was on it. <br>
+                We have sent you an email with a link to reset your password. <br>
+                You can learn more about how we check that <a href="https://haveibeenpwned.com/Passwords">database</a>`,
+              buttons: [
+                {
+                  text: 'OK',
+                  role: 'cancel'
+                }
+              ],
+            });
+          }
+        }
         this.notificationService.alert({
           message: 'Your email or password is incorrect, please try again.',
           buttons: [

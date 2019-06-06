@@ -29,3 +29,13 @@ p {
 .past {
   color: var(--ion-color-medium);
 }
+.expired-batch {
+  font-size: 12px;
+  position: absolute;
+  top: 15%;
+  right: 15px;
+  border-radius: 12px;
+  border: 1px var(--ion-color-medium);
+  border-style: solid;
+  padding: 1px 10px 1px 10px;
+}

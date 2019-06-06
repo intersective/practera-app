@@ -29,6 +29,8 @@ export interface Assessment {
   name: string;
   description: string;
   isForTeam: boolean;
+  dueDate?: string;
+  isOverdue?: boolean;
   groups: Array<Group>;
 }
 
@@ -50,7 +52,7 @@ export interface Question {
   canAnswer: boolean;
   choices?: Array<Choice>;
   teamMembers?: Array<TeamMember>;
-  audience: Array<string>;
+  audience: string[];
   submitterOnly?: boolean;
   reviewerOnly?: boolean;
 }
@@ -126,6 +128,8 @@ export class AssessmentService {
       name: thisAssessment.Assessment.name,
       description: thisAssessment.Assessment.description,
       isForTeam: thisAssessment.Assessment.is_team,
+      dueDate: thisAssessment.Assessment.deadline,
+      isOverdue: this.utils.timeComparer(thisAssessment.Assessment.deadline) < 0 ? true : false,
       groups: []
     };
 
@@ -399,7 +403,12 @@ export class AssessmentService {
       switch (this.questions[questionId].question_type) {
         case 'oneof':
           // re-format answer from string to number
-          answer = +answer;
+          if (typeof answer === 'string' && answer.length === 0) {
+            // Caution: let answer be null if question wasn't answered previously, 0 could be a possible answer ID
+            answer = null;
+          } else {
+            answer = +answer;
+          }
           break;
         case 'multiple':
           if (this.utils.isEmpty(answer)) {
@@ -486,6 +495,7 @@ export class AssessmentService {
       redirect
     });
   }
+
 }
 
 
