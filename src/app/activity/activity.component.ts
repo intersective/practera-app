@@ -105,6 +105,11 @@ export class ActivityComponent extends RouterEnter {
   }
 
   goto(type, id) {
+    // @TODO need to check lock/ unloc in team assessment and call this new popup
+    // this.notificationService.lockTeamAssessmentPopUp({
+    //   name: 'Alice',
+    //   image: 'https://www.teenlittlespace.com/images/avatars/generator/1179_1557268204.png'
+    // });
     switch (type) {
       case 'Assessment':
         // get the context id of this assessment
