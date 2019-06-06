@@ -187,7 +187,7 @@ export class RequestService {
       console.error(error); // log to console instead
     }
     // log the user out if jwt expired
-    if (this.utils.has(error, 'error.message') && ['Expired apikey', 'Invalid apikey'].includes(error.error.message) && !this.loggedOut) {
+    if (this.utils.has(error, 'error.message') && ['Request must contain an apikey', 'Expired apikey', 'Invalid apikey'].includes(error.error.message) && !this.loggedOut) {
       // in case lots of api returns the same apikey invalid at the same time
       this.loggedOut = true;
       setTimeout(
