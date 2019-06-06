@@ -159,6 +159,16 @@ body {
   }
 }
 
+.lock-assessment-popup {
+  .modal-wrapper {
+    --height: 37%;
+    --width: 70%;
+    --background: transparent;
+    --box-shadow: none;
+    --border-radius: 12px;
+  }
+}
+
 @media only screen and (max-device-width: 667px), screen and (max-width: 450px) {
   .intercom-namespace .intercom-launcher-badge-frame {
     transform: translateX(15px);

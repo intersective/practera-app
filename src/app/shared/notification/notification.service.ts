@@ -3,6 +3,7 @@ import { ModalController, AlertController, ToastController } from '@ionic/angula
 import { AlertOptions } from '@ionic/core';
 import { PopUpComponent } from './pop-up/pop-up.component';
 import { AchievementPopUpComponent } from './achievement-pop-up/achievement-pop-up.component';
+import { LockTeamAssessmentPopUpComponent } from './lock-team-assessment-pop-up/lock-team-assessment-pop-up.component';
 import { Achievement, AchievementsService } from '@app/achievements/achievements.service';
 
 @Injectable({
@@ -104,6 +105,24 @@ export class NotificationService {
       cssClass: 'achievement-popup',
       keyboardClose: false,
       backdropDismiss: false
+    });
+    return modal;
+  }
+
+  /**
+   * pop up to show user click on locked team assessment.
+   * @param data
+   * sample data object
+   * NotificationService.lockTeamAssessmentPopUp({
+   *    image: 'url' (optinal - have default one),
+   *    name: "Alice"
+   * });
+   */
+  async lockTeamAssessmentPopUp(data) {
+    console.log('data 1', data);
+    const component = LockTeamAssessmentPopUpComponent;
+    const modal = await this.modal(component, data, {
+      cssClass: 'lock-assessment-popup'
     });
     return modal;
   }
