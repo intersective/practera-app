@@ -190,9 +190,12 @@ export class RequestService {
     if (this.utils.has(error, 'error.message') && ['Expired apikey', 'Invalid apikey'].includes(error.error.message) && !this.loggedOut) {
       // in case lots of api returns the same apikey invalid at the same time
       this.loggedOut = true;
-      setTimeout(() => {
-        this.loggedOut = false;
-      }, 2000);
+      setTimeout(
+        () => {
+          this.loggedOut = false;
+        },
+        2000
+      );
       this.router.navigate(['logout']);
     }
     // Return the error response data
