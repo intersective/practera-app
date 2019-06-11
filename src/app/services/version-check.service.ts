@@ -15,7 +15,7 @@ export class VersionCheckService {
 
   // check every 5 seconds
   initiateVersionCheck(frequency = 1000 * 5) {
-    return this.trackVersion(frequency).subscribe((res: {hash: string; version: string;}) => {
+    return this.trackVersion(frequency).subscribe((res: { hash: string; version: string; }) => {
       if (this.hasHashChanged(this.currentHash, res.hash)) {
         this.router.navigate(['logout']);
       }
