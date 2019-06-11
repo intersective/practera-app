@@ -76,6 +76,15 @@ export class RequestService {
     return params;
   }
 
+  private getEndpointUrl(endpoint) {
+    let endpointUrl = this.prefixUrl + endpoint;
+    if (endpoint.includes('https://') || endpoint.includes('http://')) {
+      endpointUrl = endpoint;
+    }
+
+    return endpointUrl;
+  }
+
   /**
    *
    * @param {string} endPoint
@@ -96,7 +105,8 @@ export class RequestService {
     if (!this.utils.has(httpOptions, 'params')) {
       httpOptions.params = '';
     }
-    return this.http.get<any>(this.prefixUrl + endPoint, {
+
+    return this.http.get<any>(this.getEndpointUrl(endPoint), {
       headers: this.appendHeaders(httpOptions.headers),
       params: this.setParams(httpOptions.params)
     })
@@ -122,7 +132,8 @@ export class RequestService {
     if (!this.utils.has(httpOptions, 'params')) {
       httpOptions.params = '';
     }
-    return this.http.post<any>(this.prefixUrl + endPoint, data, {
+
+    return this.http.post<any>(this.getEndpointUrl(endPoint), data, {
       headers: this.appendHeaders(httpOptions.headers),
       params: this.setParams(httpOptions.params)
     })
@@ -187,7 +198,7 @@ export class RequestService {
       console.error(error); // log to console instead
     }
     // log the user out if jwt expired
-    if (this.utils.has(error, 'error.message') && ['Expired apikey', 'Invalid apikey'].includes(error.error.message) && !this.loggedOut) {
+    if (this.utils.has(error, 'error.message') && ['Request must contain an apikey', 'Expired apikey', 'Invalid apikey'].includes(error.error.message) && !this.loggedOut) {
       // in case lots of api returns the same apikey invalid at the same time
       this.loggedOut = true;
       setTimeout(
