@@ -7,11 +7,12 @@
 
   /** primary **/
   --ion-color-primary: #2bbfd4;
-  --ion-color-primary-rgb: 43,191,212;
+  --ion-color-primary-rgb: rgb(var(--ion-color-primary));
   --ion-color-primary-contrast: #ffffff;
   --ion-color-primary-contrast-rgb: 255,255,255;
   --ion-color-primary-shade: #2bbfd4;
   --ion-color-primary-tint: #40c5d8;
+  // --ion-color-primary-light: rgba(var(--ion-color-primar), 0.5);
 
   /** customised colors **/
   --ion-tabbar-text-color-active: var(--ion-color-primary);
@@ -81,26 +82,6 @@
   --ion-color-light-tint: #f5f6f9;
 
   /** Colors for chat **/
-  --practera-chat-color-colorteam:tomato;
-  --practera-chat-color-color1:#E57373;
-  --practera-chat-color-color2:#F48FB1;
-  --practera-chat-color-color3:#CE93D8;
-  --practera-chat-color-color4:#B39DDB;
-  --practera-chat-color-color5:#9FA8DA;
-  --practera-chat-color-color6:#90CAF9;
-  --practera-chat-color-color7:#81D4FA;
-  --practera-chat-color-color8:#80DEEA;
-  --practera-chat-color-color9:#80CBC4;
-  --practera-chat-color-color10:#A5D6A7;
-  --practera-chat-color-color11:#C5E1A5;
-  --practera-chat-color-color12:#DCE775;
-  --practera-chat-color-color13:#FDD835;
-  --practera-chat-color-color14:#FFE082;
-  --practera-chat-color-color15:#FFCC80;
-  --practera-chat-color-color16:#FFAB91;
-  --practera-chat-color-color17:#BCAAA4;
-  --practera-chat-color-color18:#BDBDBD;
-  --practera-chat-color-color19:#B0BEC5;
   --practera-chat-color-time-text-color:#AFB5D2;
   --practera-chat-footer-text-color:rgba(0, 0, 0, 0.822);
   --practera-chat-footer-border-color:rgba(34, 36, 40, 0.82);
@@ -115,4 +96,6 @@
   --practera-input-number-color: #EEEEEE;
   --practera-card-background-image: url('/assets/waves-light.png');
 
+  /** colors for due dates */
+  --practera-ovderdue-color: #FF4081;
 }

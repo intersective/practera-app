@@ -34,8 +34,7 @@ describe('ChatRoomComponent', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
-    expect(component.loadMessages).toBeDefined();
-    expect(component.getChatAvatarText).toBeDefined();
+    // expect(component._loadMessages).toBeDefined();
     expect(component.back).toBeDefined();
     expect(component.sendMessage).toBeDefined();
   });
@@ -44,7 +43,6 @@ describe('ChatRoomComponent', () => {
     // spyOn(component, 'validateRoutePrams').and.returnValue(true);
 
     component.ngOnInit();
-    expect(component.chatColors).toBeDefined();
     expect(component.selectedChat).toBeDefined();
     expect(component['validateRoutePrams']).toHaveBeenCalled();
   });
