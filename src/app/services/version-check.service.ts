@@ -1,6 +1,6 @@
 import { Inject, Injectable, InjectionToken } from '@angular/core';
 import { Observable, interval, pipe } from 'rxjs';
-import { switchMap, concatMap } from 'rxjs/operators';
+import { switchMap, concatMap, tap, retryWhen, take, delay } from 'rxjs/operators';
 import { RequestService } from '@shared/request/request.service';
 import { Router } from '@angular/router';
 
@@ -17,9 +17,9 @@ export class VersionCheckService {
   initiateVersionCheck(frequency = 1000 * 5) {
     return this.trackVersion(frequency).subscribe((res: { hash: string; version: string; }) => {
       if (this.hasHashChanged(this.currentHash, res.hash)) {
-        this.router.navigate(['logout']);
+        this.router.navigate(['logout', { t: new Date().getTime() }]);
       }
-    });
+    }, err => console.log(err));
   }
 
   trackVersion(frequency): Observable<any> {
@@ -30,7 +30,11 @@ export class VersionCheckService {
           'Pragma': 'no-cache',
           'Expires': 0,
         }}),
-      ));
+      ),
+      retryWhen(errors => {
+        // retry for 5 times if anything go wrong
+        return errors.pipe(delay(1000), take(5));
+      }));
   }
 
   private hasHashChanged(currentHash, newHash) {
