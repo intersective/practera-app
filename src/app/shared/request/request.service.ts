@@ -214,7 +214,7 @@ export class RequestService {
     // Return the error response data
     if (error.error) {
       switch (error.name) {
-        case "HttpErrorResponse":
+        case 'HttpErrorResponse':
           return throwError(error.message);
 
         default:
