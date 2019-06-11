@@ -21,6 +21,7 @@ phases:
     commands:
       - aws s3 sync www/ s3://$S3_BUCKET/ --delete
       - aws cloudfront create-invalidation --distribution-id $CF_DIST_ID --paths '/*'
+      - sudo npm run generate-version
       - echo Build completed on `date`
 artifacts:
   type: zip
