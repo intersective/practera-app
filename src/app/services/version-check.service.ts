@@ -30,7 +30,6 @@ export class VersionCheckService {
           'Pragma': 'no-cache',
           'Expires': 0,
         }}),
-        // headers: { responseType: 'text' as 'json' },
       ));
   }
 
