@@ -146,7 +146,7 @@ export class AuthService {
     return this.isLoggedIn || this.storage.get('isLoggedIn');
   }
 
-  logout() {
+  logout(navigationParams = {}) {
     // use the config color
     this.utils.changeThemeColor(this.storage.getConfig().color || '#2bbfd4');
     this.pusherService.unsubscribeChannels();
@@ -154,7 +154,7 @@ export class AuthService {
     this.storage.clear();
     // still store config info even logout
     this.storage.setConfig(config);
-    return this.router.navigate(['/login']);
+    return this.router.navigate(['/login'], navigationParams);
   }
 
    /**

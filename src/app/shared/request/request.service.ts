@@ -197,6 +197,7 @@ export class RequestService {
     if (isDevMode()) {
       console.error(error); // log to console instead
     }
+
     // log the user out if jwt expired
     if (this.utils.has(error, 'error.message') && ['Request must contain an apikey', 'Expired apikey', 'Invalid apikey'].includes(error.error.message) && !this.loggedOut) {
       // in case lots of api returns the same apikey invalid at the same time
@@ -209,8 +210,19 @@ export class RequestService {
       );
       this.router.navigate(['logout']);
     }
+
     // Return the error response data
-    return throwError(error.error);
+    if (error.error) {
+      switch (error.name) {
+        case "HttpErrorResponse":
+          return throwError(error.message);
+
+        default:
+          return throwError(error.error);
+      }
+    }
+
+    return throwError(error);
   }
 
   /**
