@@ -76,9 +76,6 @@ export class ChatListComponent extends RouterEnter {
     }
   }
 
-  getChatAvatarText(chatName) {
-    return this.chatService.generateChatAvatarText(chatName);
-  }
   navigateToChatRoom(chat) {
     if (chat.is_team) {
       this.router.navigate([
