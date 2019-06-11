@@ -34,12 +34,4 @@ describe('ChatService', () => {
     expect(service.postNewMessage).toBeTruthy();
   });
 
-  it('#generateChatAvatarText should', () => {
-    expect(service.generateChatAvatarText).toBeTruthy();
-  });
-
-  it('#getRandomColor should', () => {
-    expect(service.getRandomColor).toBeTruthy();
-  });
-
 });

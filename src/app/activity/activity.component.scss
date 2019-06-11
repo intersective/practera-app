@@ -7,3 +7,10 @@
 .icon-forward {
   font-size: 20px;
 }
+div {
+  &.icon-item {
+    p {
+      font-size: 12px;
+    }
+  }
+}
