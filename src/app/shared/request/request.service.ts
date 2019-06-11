@@ -76,6 +76,15 @@ export class RequestService {
     return params;
   }
 
+  private getEndpointUrl(endpoint) {
+    let endpointUrl = this.prefixUrl + endpoint;
+    if (endpoint.includes('https://') || endpoint.includes('http://')) {
+      endpointUrl = endpoint;
+    }
+
+    return endpointUrl;
+  }
+
   /**
    *
    * @param {string} endPoint
@@ -96,7 +105,8 @@ export class RequestService {
     if (!this.utils.has(httpOptions, 'params')) {
       httpOptions.params = '';
     }
-    return this.http.get<any>(this.prefixUrl + endPoint, {
+
+    return this.http.get<any>(this.getEndpointUrl(endPoint), {
       headers: this.appendHeaders(httpOptions.headers),
       params: this.setParams(httpOptions.params)
     })
@@ -122,7 +132,8 @@ export class RequestService {
     if (!this.utils.has(httpOptions, 'params')) {
       httpOptions.params = '';
     }
-    return this.http.post<any>(this.prefixUrl + endPoint, data, {
+
+    return this.http.post<any>(this.getEndpointUrl(endPoint), data, {
       headers: this.appendHeaders(httpOptions.headers),
       params: this.setParams(httpOptions.params)
     })
