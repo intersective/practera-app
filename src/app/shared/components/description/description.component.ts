@@ -1,4 +1,5 @@
-import { Component, Input, ViewChild, ElementRef, AfterViewInit} from '@angular/core';
+import { Component, Input, ViewChild, ElementRef, AfterViewInit, OnChanges, SimpleChange } from '@angular/core';
+import { DomSanitizer } from '@angular/platform-browser';
 import { trigger, state, transition, style, animate } from '@angular/animations';
 
 @Component({
@@ -21,13 +22,19 @@ import { trigger, state, transition, style, animate } from '@angular/animations'
     ]),
   ]
 })
-export class DescriptionComponent implements AfterViewInit {
+export class DescriptionComponent implements AfterViewInit, OnChanges {
   heightLimit = 90;
   isTruncating = true;
   heightExceeded = false;
   elementHeight: number;
-  @Input() content = '';
+  @Input() content;
   @ViewChild('description') descriptionRef: ElementRef;
+
+  constructor(private sanitizer: DomSanitizer) {}
+
+  ngOnChanges(changes: { [propKey: string]: SimpleChange}) {
+    this.content = this.sanitizer.bypassSecurityTrustHtml(changes.content.currentValue);
+  }
 
   ngAfterViewInit() {
     this.elementHeight = this.descriptionRef.nativeElement.clientHeight;

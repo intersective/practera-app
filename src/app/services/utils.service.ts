@@ -7,28 +7,6 @@ import { map, filter } from 'rxjs/operators';
 // @TODO: enhance Window reference later, we shouldn't refer directly to browser's window object like this
 declare var window: any;
 
-// contact number format should be consistent throughout the app (GoMobile & Setting)
-export class ContactNumberFormat {
-  masks = {
-    AUS: ['+', '6', '1', ' ', /[1-9]/, /\d/, /\d/, ' ', /\d/, /\d/, /\d/, ' ', /\d/, /\d/, /\d/],
-    US: ['+', '1', ' ', /[1-9]/, /\d/, /\d/, ' ', /\d/, /\d/, /\d/, ' ', /\d/, /\d/, /\d/, /\d/],
-  };
-
-  // supported countries
-  countryCodes = [
-    {
-      name: 'Australia',
-      code: 'AUS',
-      format: '+61 ___ ___ ___'
-    },
-    {
-      name: 'US/Canada',
-      code: 'US',
-      format: '+1 ___ ___ ____'
-    },
-  ];
-}
-
 @Injectable({
   providedIn: 'root'
 })
@@ -95,6 +73,13 @@ export class UtilsService {
   changeThemeColor(color) {
     this.document.documentElement.style.setProperty('--ion-color-primary', color);
     this.document.documentElement.style.setProperty('--ion-color-primary-shade', color);
+    // convert hex color to rgb and update css variable
+    const hex = color.replace('#', '');
+    const red = parseInt(hex.substring(0, 2), 16);
+    const green = parseInt(hex.substring(2, 4), 16);
+    const blue = parseInt(hex.substring(4, 6), 16);
+
+    this.document.documentElement.style.setProperty('--ion-color-primary-rgb', red + ',' + green + ',' + blue);
   }
 
   changeCardBackgroundImage(image) {
@@ -172,50 +157,56 @@ export class UtilsService {
     time = time.replace(' ', 'T');
     // add "Z" to declare that it is UTC time, it will automatically convert to local time
     const date = new Date(time + 'Z');
+    const formattedTime = new Intl.DateTimeFormat('en-GB', {
+      hour12: true,
+      hour: 'numeric',
+      minute: 'numeric'
+    }).format(date);
+
     switch (display) {
       case 'date':
-        const today = new Date();
-        if (date.getFullYear() === today.getFullYear() && date.getMonth() === today.getMonth()) {
-          if (date.getDate() === today.getDate() - 1) {
-            return 'Yesterday';
-          }
-          if (date.getDate() === today.getDate()) {
-            return 'Today';
-          }
-          if (date.getDate() === today.getDate() + 1) {
-            return 'Tomorrow';
-          }
-        }
-        return new Intl.DateTimeFormat('en-GB', {
-          month: 'short',
-          day: 'numeric',
-          year: 'numeric'
-        }).format(date);
+        return this.dateFormatter(date);
 
       case 'time':
-        return new Intl.DateTimeFormat('en-GB', {
-          hour12: true,
-          hour: 'numeric',
-          minute: 'numeric'
-        }).format(date);
+        return formattedTime;
 
       default:
-        return new Intl.DateTimeFormat('en-GB', {
-          hour12: true,
-          hour: 'numeric',
-          minute: 'numeric',
-          month: 'short',
-          day: 'numeric',
-          year: 'numeric'
-        }).format(date);
+      return this.dateFormatter(date) + ' ' + formattedTime;
     }
   }
 
-  timeComparer(timeString: string, comparedString?: string) {
+  dateFormatter(date: Date) {
+    const today = new Date();
+    let formattedDate = new Intl.DateTimeFormat('en-GB', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric'
+    }).format(date);
+
+    if (date.getFullYear() === today.getFullYear() && date.getMonth() === today.getMonth()) {
+      if (date.getDate() === today.getDate() - 1) {
+        formattedDate = 'Yesterday';
+      }
+      if (date.getDate() === today.getDate()) {
+        formattedDate = 'Today';
+      }
+      if (date.getDate() === today.getDate() + 1) {
+        formattedDate = 'Tomorrow';
+      }
+    }
+    return formattedDate;
+  }
+
+  timeComparer(timeString: string, comparedString?: string, compareDate?: boolean) {
     const time = new Date(timeString + 'Z');
     let compared = new Date();
     if (comparedString) {
       compared = new Date(comparedString + 'Z');
+    }
+    if (compareDate && (time.getDate() === compared.getDate() &&
+    time.getMonth() === compared.getMonth() &&
+    time.getFullYear() === compared.getFullYear())) {
+      return 0;
     }
     if (time.getTime() < compared.getTime()) {
       return -1;

@@ -17,12 +17,13 @@ describe('ActivityService', () => {
   it('#getActivity should be return observable', fakeAsync(() => {
     expect(service.getActivity).toBeTruthy();
 
-    spyOn(service, 'getActivity').and.returnValue(of(service.activity));
+    spyOn(service, 'getActivity').and.returnValue(of({}));
+
     let res = {};
-    service.getActivity('activityId').subscribe(_res => {
+    service.getActivity(1).subscribe(_res => {
       res = _res;
     });
     tick();
-    expect(res).toEqual(service.activity);
+    expect(res).toEqual({});
   }));
 });
