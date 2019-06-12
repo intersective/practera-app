@@ -21,6 +21,11 @@
       Submitted by {{ submission.submitterName }}
     </p>
   </div>
+  <div *ngIf="action === 'assessment' && submission.status == 'published'" class="review-submitter" text-left>
+    <p class="title">
+      Submitted by {{ submission.reviewerName }}
+    </p>
+  </div>
 
   <form [formGroup]="questionsForm">
     <ng-container *ngIf="loadingAssessment">
