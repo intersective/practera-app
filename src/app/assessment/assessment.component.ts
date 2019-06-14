@@ -101,6 +101,13 @@ export class AssessmentComponent extends RouterEnter {
     this.loadingSubmission = true;
     this.loadingFeedbackReviewed = true;
     this.saving = false;
+    this.doAssessment = false;
+    this.doReview = false;
+    this.feedbackReviewed = false;
+    this.questionsForm = new FormGroup({});
+    this.submitting = false;
+    this.savingButtonDisabled = true;
+    this.savingMessage = '';
   }
 
   onEnter() {
