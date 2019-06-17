@@ -53,7 +53,7 @@ readDir(path.join(__dirname, '../www/'))
     const mainFilepath = path.join(__dirname, '../www/', mainBundleFile);
     return readFile(mainFilepath, 'utf8')
       .then(mainFileData => {
-        const replacedFile = mainFileData.replace('{{POST_BUILD_ENTERS_HASH_HERE}}', mainHash);
+        const replacedFile = mainFileData.replace(/{{POST_BUILD_ENTERS_HASH_HERE}}/g, mainHash);
         return writeFile(mainFilepath, replacedFile);
       });
   }).catch(err => {
