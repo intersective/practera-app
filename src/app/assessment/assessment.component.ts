@@ -42,7 +42,8 @@ export class AssessmentComponent extends RouterEnter {
     status: '',
     answers: {},
     submitterName: '',
-    modified: ''
+    modified: '',
+    reviewerName: ''
   };
   review: Review = {
     id: 0,
@@ -89,7 +90,8 @@ export class AssessmentComponent extends RouterEnter {
       status: '',
       answers: {},
       submitterName: '',
-      modified: ''
+      modified: '',
+      reviewerName: ''
     };
     this.review = {
       id: 0,
