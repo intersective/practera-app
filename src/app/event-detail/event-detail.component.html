@@ -4,10 +4,12 @@
   </ion-toolbar>
 </ion-header>
 <ion-content color="light" text-center>
-  <h1>{{ event.name }}</h1>
-  <div class="div-activity-name">{{ event.activityName }}</div>
-  <app-description *ngIf="event.description" [content]="event.description"></app-description>
-  <h3 *ngIf="event.isPast" class="expired-text">Event Expired</h3>
+  <div padding>
+    <h1>{{ event.name }}</h1>
+    <div class="div-activity-name">{{ event.activityName }}</div>
+    <app-description *ngIf="event.description" [content]="event.description"></app-description>
+    <h3 *ngIf="event.isPast" class="expired-text">Event Expired</h3>
+  </div>
 
   <ion-list>
     <ion-item>

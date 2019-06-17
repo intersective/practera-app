@@ -8,7 +8,7 @@
   <div text-center margin-top *ngIf="loadingTopic">
     <ion-spinner></ion-spinner>
   </div>
-  <h3 text-center>{{topic.title}}</h3>
+  <h3 padding text-center>{{topic.title}}</h3>
     <div *ngIf="topic.videolink && topic.videolink !=='magiclink'" class="text-center" padding-bottom>
       <div text-center padding [innerHtml]="iframeHtml"></div>
     </div>
