@@ -23,7 +23,7 @@ export class ContactNumberFormComponent implements OnInit {
   // use as a ngModel to controll contact number input
   contactNumber = '';
   // default country model
-  countryModel = '';
+  countryModel: string;
   // country model infomation
   activeCountryModelInfo = {
     countryCode: '',
