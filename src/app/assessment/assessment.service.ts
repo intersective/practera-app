@@ -298,7 +298,7 @@ export class AssessmentService {
       answers: {},
       submitterName: thisSubmission.Submitter.name,
       modified: thisSubmission.AssessmentSubmission.modified,
-      reviewerName: thisSubmission.Reviewer.name
+      reviewerName: thisSubmission.Reviewer ? thisSubmission.Reviewer.name : undefined
     };
 
     // -- normalise submission answers
