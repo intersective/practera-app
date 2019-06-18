@@ -298,7 +298,7 @@ export class AssessmentService {
       answers: {},
       submitterName: thisSubmission.Submitter.name,
       modified: thisSubmission.AssessmentSubmission.modified,
-      reviewerName: thisSubmission.Reviewer ? thisSubmission.Reviewer.name : undefined
+      reviewerName: this.checkReviewer(thisSubmission.Reviewer)
     };
 
     // -- normalise submission answers
@@ -499,6 +499,13 @@ export class AssessmentService {
       reviewId,
       redirect
     });
+  }
+
+  checkReviewer(reviewer) {
+    if (!reviewer) {
+      return undefined;
+    }
+    return reviewer.name !== this.storage.getUser().name ? reviewer.name : undefined;
   }
 
 }
