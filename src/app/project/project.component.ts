@@ -22,6 +22,7 @@ export class ProjectComponent extends RouterEnter {
   @ViewChild('contentRef', {read: ElementRef}) contentRef: any;
   @ViewChildren('milestoneRef', {read: ElementRef}) milestoneRefs: QueryList<ElementRef>;
   public activeMilestone: Array<boolean> = [];
+  private milestonePositions: Array<number> = [];
 
   constructor(
     public router: Router,
@@ -71,11 +72,37 @@ export class ProjectComponent extends RouterEnter {
             this.milestones = this._addActivitiesToEachMilestone(this.milestones, activities);
             this.loadingActivity = false;
             this.projectService.getProgress(this.milestones).subscribe(progresses => {
+              this.milestonePositions = this.milestoneRefs.map(milestoneRef => {
+                return milestoneRef.nativeElement.offsetTop;
+              });
+
               this.milestones = this._populateMilestoneProgress(progresses, this.milestones);
               this.loadingProgress = false;
             });
           });
       });
+  }
+
+  trackScrolling(event) {
+    const activeMilestoneIndex = this.milestonePositions.findIndex((element, i) => {
+      const {
+        detail, // current scrolling event
+        srcElement // ion-content's height
+      } = event;
+      const screenMidPoint = detail.currentY + (srcElement.offsetHeight / 2);
+
+      if (i === this.milestonePositions.length - 1) {
+        return screenMidPoint >= element;
+      }
+
+      return screenMidPoint >= element && screenMidPoint < this.milestonePositions[i + 1];
+    });
+
+    // activeMilestoneIndex starts from -1
+    if (this.activeMilestone[activeMilestoneIndex] !== true && activeMilestoneIndex !== -1) {
+      this.activeMilestone.fill(false);
+      this.activeMilestone[activeMilestoneIndex] = true;
+    }
   }
 
   scrollTo(id, index) {
