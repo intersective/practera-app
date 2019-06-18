@@ -14,7 +14,7 @@ import { PusherService } from '@shared/pusher/pusher.service';
  * @type {Object}
  */
 const api = {
-  getConfig: 'api/v2/plan/experience/config',
+  getConfig: 'api/v2/plan/experience/list',
   linkedin: 'api/auth_linkedin.json',
   login: 'api/auths.json',
   setProfile: 'api/v2/user/enrolment/edit.json',
