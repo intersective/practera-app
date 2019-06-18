@@ -42,6 +42,7 @@ export interface Activity {
 })
 
 export class ActivityService {
+  private tasks: array<any>;
 
   constructor(
     private request: RequestService,
