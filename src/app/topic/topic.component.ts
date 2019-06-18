@@ -88,11 +88,21 @@ export class TopicComponent extends RouterEnter {
         }
         this.loadingMarkedDone = false;
       });
-   }
+  }
 
-  markAsDone() {
-    this.btnToggleTopicIsDone = true;
-    this.topicService.updateTopicProgress(this.id).subscribe();
+  /**
+   * @name markAsDone
+   * @description set a topic as read by providing current id
+   * @param {Function} callback optional callback function for further action after subcription is completed
+   */
+  markAsDone(callback?) {
+    return this.topicService.updateTopicProgress(this.id).subscribe(() => {
+      // toggle event change should happen after subscription is completed
+      this.btnToggleTopicIsDone = true;
+      if (callback !== undefined) {
+        return callback();
+      }
+    });
   }
 
   async previewFile(file) {
@@ -103,8 +113,54 @@ export class TopicComponent extends RouterEnter {
     }
   }
 
+  nextStepPrompt() {
+    return this.notificationService.alert({
+      header: 'Topic complete',
+      message: 'You have now progressed to the next topic. Would you like to continue?',
+      buttons: [
+        {
+          text: 'No',
+          handler: () => {
+            return this.router.navigate(['app', 'activity', this.activityId]);
+          },
+        },
+        {
+          text: 'Yes',
+          handler: () => {
+            console.log('proceed to next topic!');
+            return;
+          }
+        }
+      ]
+    });
+  }
+
   back() {
-    this.router.navigate(['app', 'activity', this.activityId]);
+    if (this.btnToggleTopicIsDone) {
+      return this.router.navigate(['app', 'activity', this.activityId]);
+    }
+
+    const type = 'Topic';
+    return this.notificationService.alert({
+      header: `Complete ${type}?`,
+      message: 'Would you like to mark this task as done?',
+      buttons: [
+        {
+          text: 'No',
+          handler: () => {
+            return this.router.navigate(['app', 'activity', this.activityId]);
+          },
+        },
+        {
+          text: 'Yes',
+          handler: () => {
+            return this.markAsDone(() => {
+              return this.nextStepPrompt();
+            });
+          }
+        }
+      ]
+    });
   }
 
 }
