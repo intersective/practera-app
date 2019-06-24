@@ -42,7 +42,7 @@ export interface Activity {
 })
 
 export class ActivityService {
-  private tasks: array<any>;
+  public tasks: Array<any>;
 
   constructor(
     private request: RequestService,
@@ -234,5 +234,6 @@ export class ActivityService {
     task.loadingStatus = false;
     return task;
   }
+
 
 }
