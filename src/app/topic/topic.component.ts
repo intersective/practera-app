@@ -7,6 +7,8 @@ import { RouterEnter } from '@services/router-enter.service';
 import { UtilsService } from '@services/utils.service';
 import { BrowserStorageService } from '@services/storage.service';
 import { NotificationService } from '@shared/notification/notification.service';
+import { ActivityService } from '../activity/activity.service';
+import { SharedService } from '@services/shared.service';
 
 @Component({
   selector: 'app-topic',
@@ -41,6 +43,8 @@ export class TopicComponent extends RouterEnter {
     public storage: BrowserStorageService,
     public utils: UtilsService,
     public notificationService: NotificationService,
+    private activityService: ActivityService,
+    private sharedService: SharedService
   ) {
     super(router);
   }
@@ -113,32 +117,90 @@ export class TopicComponent extends RouterEnter {
     }
   }
 
-  nextStepPrompt() {
-    return this.notificationService.alert({
-      header: 'Topic complete',
-      message: 'You have now progressed to the next topic. Would you like to continue?',
-      buttons: [
-        {
-          text: 'No',
-          handler: () => {
-            return this.router.navigate(['app', 'activity', this.activityId]);
-          },
-        },
-        {
-          text: 'Yes',
-          handler: () => {
-            console.log('proceed to next topic!');
-            return;
-          }
-        }
-      ]
+  private findNext(tasks) {
+    const currentIndex = tasks.findIndex(task => {
+      return task.id === this.id;
     });
+
+    const nextIndex = currentIndex + 1;
+    if (tasks[nextIndex]) {
+      return tasks[nextIndex];
+    }
+
+    return null;
+  }
+
+  /**
+   * @name navigateBySequence
+   * @param {[type]} sequence [description]
+   */
+  private navigateBySequence(sequence) {
+    const { contextId, isForTeam, id, type } = sequence;
+
+    switch (type) {
+      case 'Assessment':
+        if (isForTeam && !this.storage.getUser().teamId) {
+          return this.notificationService.popUp('shortMessage', {message: 'To do this assessment, you have to be in a team.'});
+        }
+        return this.router.navigate(['assessment', 'assessment', this.activityId , contextId, id]);
+      case 'Topic':
+        this.router.navigate(['topic', this.activityId, id]);
+        break;
+
+      default:
+        return this.router.navigate(['app', 'activity', this.activityId]);
+    }
+  }
+
+  getNextSequence() {
+    const tasks = this.sharedService.getCache('tasks');
+    let nextTask = null;
+
+    // added extra if-statement for efficient data reuse (no need extra API call if cache exist)
+    if (tasks && tasks.length > 0) {
+      nextTask = this.findNext(tasks);
+    } else {
+      this.loadingTopic = true;
+      this.activityService.getActivity(this.activityId).subscribe(activity => {
+        this.loadingTopic = false;
+        this.sharedService.setCache('tasks', activity.tasks);
+        nextTask = this.findNext(activity.tasks);
+      });
+    }
+
+    return nextTask;
+  }
+
+  nextStepPrompt() {
+    const nextSequence = this.getNextSequence();
+    if (nextSequence) {
+      return this.notificationService.alert({
+        header: 'Topic complete',
+        message: 'You have now progressed to the next topic. Would you like to continue?',
+        buttons: [
+          {
+            text: 'No',
+            handler: () => {
+              return this.router.navigate(['app', 'activity', this.activityId]);
+            },
+          },
+          {
+            text: 'Yes',
+            handler: () => {
+              return this.navigateBySequence(nextSequence);
+            }
+          }
+        ]
+      });
+    }
+
+    return this.router.navigate(['app', 'activity', this.activityId]);
   }
 
   back() {
-    if (this.btnToggleTopicIsDone) {
-      return this.router.navigate(['app', 'activity', this.activityId]);
-    }
+    // if (this.btnToggleTopicIsDone) {
+    //   return this.router.navigate(['app', 'activity', this.activityId]);
+    // }
 
     const type = 'Topic';
     return this.notificationService.alert({
@@ -154,9 +216,16 @@ export class TopicComponent extends RouterEnter {
         {
           text: 'Yes',
           handler: () => {
-            return this.markAsDone(() => {
+            // return this.markAsDone(() => {
+              // back to project, if next sequence isn't available
+              const nextSequence = this.getNextSequence();
+              if (!nextSequence) {
+                this.notificationService.popUp('shortMessage', { message: 'You\'ve completed the topic!' });
+                return this.router.navigate(['app', 'project']);
+              }
+
               return this.nextStepPrompt();
-            });
+            // });
           }
         }
       ]

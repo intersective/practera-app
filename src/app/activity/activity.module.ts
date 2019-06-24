@@ -16,6 +16,6 @@ import { ActivityService } from './activity.service';
   ],
   providers: [
     ActivityService
-  ]
+  ],
 })
 export class ActivityModule {}
