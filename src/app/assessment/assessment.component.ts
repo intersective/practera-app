@@ -7,6 +7,7 @@ import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { BrowserStorageService } from '@services/storage.service';
 import { RouterEnter } from '@services/router-enter.service';
 import { SharedService } from '@services/shared.service';
+import { ActivityService } from '../activity/activity.service';
 
 const SAVE_PROGRESS_TIMEOUT = 10000;
 
@@ -71,7 +72,8 @@ export class AssessmentComponent extends RouterEnter {
     public utils: UtilsService,
     private notificationService: NotificationService,
     public storage: BrowserStorageService,
-    public sharedService: SharedService
+    public sharedService: SharedService,
+    private activityService: ActivityService
   ) {
     super(router);
   }
@@ -370,19 +372,29 @@ export class AssessmentComponent extends RouterEnter {
           this.savingMessage = 'Last saved ' + this._getCurrentTime();
         } else {
           // display a pop up for successful submission
-          return this.notificationService.alert({
-            message: 'Submission Successful!',
-            buttons: [
-              {
-                text: 'OK',
-                role: 'cancel',
-                handler: () => {
-                  this.router.navigate(['app', 'home']);
-                  return;
+          const nextSequence = this.getNextSequence();
+          if (nextSequence) {
+            return this.notificationService.alert({
+              header: 'Submission successful!',
+              message: 'You have now progressed to the next activity. Would you like to continue?',
+              buttons: [
+                {
+                  text: 'No',
+                  handler: () => {
+                    return this.router.navigate(['app', 'activity', this.activityId]);
+                  },
+                },
+                {
+                  text: 'Yes',
+                  handler: () => {
+                    return this.navigateBySequence(nextSequence);
+                  }
                 }
-              }
-            ]
-          });
+              ]
+            });
+          }
+
+          return this.router.navigate(['app', 'home']);
         }
       },
       err => {
@@ -431,5 +443,57 @@ export class AssessmentComponent extends RouterEnter {
       hour: 'numeric',
       minute: 'numeric'
     }).format(new Date());
+  }
+
+  private findNext(tasks) {
+    const currentIndex = tasks.findIndex(task => {
+      return task.id === this.id;
+    });
+
+    const nextIndex = currentIndex + 1;
+    if (tasks[nextIndex]) {
+      return tasks[nextIndex];
+    }
+
+    return null;
+  }
+
+  private getNextSequence() {
+    const tasks = this.sharedService.getCache('tasks');
+    let nextTask = null;
+
+    // added extra if-statement for efficient data reuse (no need extra API call if cache exist)
+    if (tasks && tasks.length > 0) {
+      nextTask = this.findNext(tasks);
+    } else {
+      this.activityService.getActivity(this.activityId).subscribe(activity => {
+        this.sharedService.setCache('tasks', activity.tasks);
+        nextTask = this.findNext(activity.tasks);
+      });
+    }
+
+    return nextTask;
+  }
+
+  /**
+   * @name navigateBySequence
+   * @param {[type]} sequence [description]
+   */
+  private navigateBySequence(sequence) {
+    const { contextId, isForTeam, id, type } = sequence;
+
+    switch (type) {
+      case 'Assessment':
+        if (isForTeam && !this.storage.getUser().teamId) {
+          return this.notificationService.popUp('shortMessage', {message: 'To do this assessment, you have to be in a team.'});
+        }
+        return this.router.navigate(['assessment', 'assessment', this.activityId , contextId, id]);
+      case 'Topic':
+        this.router.navigate(['topic', this.activityId, id]);
+        break;
+
+      default:
+        return this.router.navigate(['app', 'activity', this.activityId]);
+    }
   }
 }
