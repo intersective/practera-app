@@ -161,11 +161,26 @@ export class AuthRegistrationComponent implements OnInit {
                   this.showPopupMessages('shortMessage', 'Registration success!', redirect);
                 },
                 err => {
-                  this.showPopupMessages('shortMessage', 'Registration not compleate!');
+                  this.showPopupMessages('shortMessage', 'Registration not complete!');
                 }
               );
           },
           error => {
+            if (this.utils.has(error, 'data.type')) {
+              if (error.data.type === 'password_compromised') {
+                return this.notificationService.alert({
+                  message: `We’ve checked this password against a global database of insecure passwords and your password was on it. <br>
+                    Please try again. <br>
+                    You can learn more about how we check that <a href="https://haveibeenpwned.com/Passwords">database</a>`,
+                  buttons: [
+                    {
+                      text: 'OK',
+                      role: 'cancel'
+                    }
+                  ],
+                });
+              }
+            }
             this.showPopupMessages('shortMessage', 'Registration not complete!');
           }
         );

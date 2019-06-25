@@ -67,10 +67,11 @@ export class TextComponent implements ControlValueAccessor, OnInit {
     } else {
       this.innerValue = this.answer;
     }
-    this.saveProgress.emit(true);
 
     // propagate value into form control using control value accessor interface
     this.propagateChange(this.innerValue);
+
+    this.saveProgress.emit(true);
 
     // 05/02/2019
     // Don't check "is required" error for now, it has some error.
@@ -124,5 +125,7 @@ export class TextComponent implements ControlValueAccessor, OnInit {
       this.answer = this.submission.answer;
     }
     this.propagateChange(this.innerValue);
+    this.control.setValue(this.innerValue);
   }
+
 }

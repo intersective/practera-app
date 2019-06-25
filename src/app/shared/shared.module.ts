@@ -8,30 +8,32 @@ import { AchievementBadgeComponent } from '@shared/components/achievement-badge/
 import { EventCardComponent } from '@shared/components/event-card/event-card.component';
 import { DescriptionComponent } from '@shared/components/description/description.component';
 import { ClickableItemComponent } from '@shared/components/clickable-item/clickable-item.component';
+import { CircleProgressComponent } from '@shared/components/circle-progress/circle-progress.component';
 import { NgCircleProgressModule } from 'ng-circle-progress';
+import { BrandingLogoComponent } from '@shared/components/branding-logo/branding-logo.component';
+
+const largeCircleDefaultConfig = {
+  backgroundColor: 'var(--ion-color-light)',
+  subtitleColor: 'var(--ion-color-dark-tint)',
+  showInnerStroke: false,
+  startFromZero: false,
+  outerStrokeColor: 'var(--ion-color-primary)',
+  innerStrokeColor: 'var(--ion-color-primary)',
+  subtitle: [
+    'COMPLETE'
+  ],
+  animation: true,
+  animationDuration: 1000,
+  titleFontSize: '32',
+  subtitleFontSize: '18',
+};
 
 @NgModule({
   imports: [
     IonicModule,
     CommonModule,
     FormsModule,
-    NgCircleProgressModule.forRoot({
-      'outerStrokeLinecap': 'butt',
-      'toFixed': 0,
-      'outerStrokeColor': 'var(--ion-color-primary)',
-      'backgroundColor': 'var(--ion-color-light)',
-      'backgroundStroke': 'var(--ion-color-primary)',
-      'showTitle': false,
-      'showSubtitle': false,
-      'startFromZero': false,
-      'showInnerStroke': false,
-      'showUnits': false,
-      'backgroundStrokeWidth': 2,
-      'maxPercent': 100,
-      'outerStrokeWidth': 8,
-      'radius': 4,
-      'space': -20
-    })
+    NgCircleProgressModule.forRoot(largeCircleDefaultConfig),
   ],
   declarations: [
     PathCardComponent,
@@ -39,7 +41,9 @@ import { NgCircleProgressModule } from 'ng-circle-progress';
     AchievementBadgeComponent,
     EventCardComponent,
     DescriptionComponent,
-    ClickableItemComponent
+    ClickableItemComponent,
+    CircleProgressComponent,
+    BrandingLogoComponent,
   ],
   exports: [
     PathCardComponent,
@@ -48,9 +52,11 @@ import { NgCircleProgressModule } from 'ng-circle-progress';
     EventCardComponent,
     DescriptionComponent,
     ClickableItemComponent,
+    CircleProgressComponent,
     IonicModule,
     CommonModule,
-    FormsModule
+    FormsModule,
+    BrandingLogoComponent,
   ],
 })
 export class SharedModule {}

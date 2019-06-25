@@ -6,6 +6,7 @@
         <ion-icon *ngSwitchCase="'feedback_available'" name="information-circle-outline" slot="start" color="primary"></ion-icon>
         <ion-icon *ngSwitchCase="'review_submission'" name="information-circle-outline" slot="start" color="primary"></ion-icon>
         <ion-icon *ngSwitchCase="'chat'" name="chatboxes" slot="start" color="primary"></ion-icon>
+        <ion-icon *ngSwitchCase="'event'" name="calendar" slot="start" color="primary"></ion-icon>
       </ng-container>
 
       <div class="icon-item">
@@ -24,15 +25,15 @@
         <div>
           <ion-text color="medium">Loading</ion-text>
           <ion-spinner name="dots" class="vertical-middle"></ion-spinner>
-          
         </div>
       </ng-container>
-    </ng-template>    
-    <ng-template #noItems>
-      <ion-icon name="notifications" slot="start" color="primary"></ion-icon>
-      <div>
-        <ion-text color="medium">You have no new notifications.</ion-text>
-      </div>
+
+      <ng-template #noItems>
+        <ion-icon name="notifications" slot="start" color="primary"></ion-icon>
+        <div>
+          <ion-text color="medium">You have no new notifications.</ion-text>
+        </div>
+      </ng-template>
     </ng-template>
 
   </clickable-item>

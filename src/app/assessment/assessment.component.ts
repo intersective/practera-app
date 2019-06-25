@@ -55,6 +55,7 @@ export class AssessmentComponent extends RouterEnter {
   submitting = false;
   savingButtonDisabled = true;
   savingMessage = '';
+  saving: boolean;
   fromPage = '';
 
   constructor (
@@ -91,12 +92,16 @@ export class AssessmentComponent extends RouterEnter {
     this.loadingAssessment = true;
     this.loadingSubmission = true;
     this.loadingFeedbackReviewed = true;
+    this.saving = false;
   }
 
   onEnter() {
     this._initialise();
     this.action = this.route.snapshot.data.action;
     this.fromPage = this.route.snapshot.paramMap.get('from');
+    if (!this.fromPage) {
+      this.fromPage = this.route.snapshot.data.from;
+    }
     this.id = +this.route.snapshot.paramMap.get('id');
     this.activityId = +this.route.snapshot.paramMap.get('activityId');
     this.contextId = +this.route.snapshot.paramMap.get('contextId');
@@ -186,8 +191,13 @@ export class AssessmentComponent extends RouterEnter {
   }
 
   back() {
+    // save answer before go back.
+    this.submit(true);
     if (this.fromPage && this.fromPage === 'reviews') {
       return this.router.navigate(['app', 'reviews']);
+    }
+    if (this.fromPage && this.fromPage === 'events') {
+      return this.router.navigate(['events']);
     }
     if (this.activityId) {
       return this.router.navigate(['app', 'activity', this.activityId ]);
@@ -214,12 +224,17 @@ export class AssessmentComponent extends RouterEnter {
       this.savingButtonDisabled = true;
     } else {
       this.submitting = true;
+      this.saving = false;
     }
     const answers = [];
     let assessment;
     const requiredQuestions = this.getRequiredQuestions();
     let questionId = 0;
 
+    if (this.saving) {
+      return;
+    }
+    this.saving = true;
     // form submission answers
     if (this.doAssessment) {
       assessment = {
@@ -231,16 +246,29 @@ export class AssessmentComponent extends RouterEnter {
         assessment.in_progress = true;
       }
       this.utils.each(this.questionsForm.value, (value, key) => {
+        questionId = +key.replace('q-', '');
+        let answer;
         if (value) {
-          questionId = +key.replace('q-', '');
-          answers.push({
-            assessment_question_id: questionId,
-            answer: value
+          answer = value;
+        } else {
+          this.assessment.groups.forEach(group => {
+            const currentQuestion = group.questions.find(question => {
+              return question.id === questionId;
+            });
+            if (currentQuestion && currentQuestion.type === 'multiple') {
+              answer = [];
+            } else {
+              answer = '';
+            }
           });
-          // unset the required questions object
-          if (requiredQuestions[questionId]) {
-            this.utils.unset(requiredQuestions, questionId);
-          }
+        }
+        answers.push({
+          assessment_question_id: questionId,
+          answer: answer
+        });
+        // unset the required questions object
+        if (requiredQuestions[questionId]) {
+          this.utils.unset(requiredQuestions, questionId);
         }
       });
       // check if all required questions have answer when assessment done
@@ -250,7 +278,6 @@ export class AssessmentComponent extends RouterEnter {
         return this.notificationService.popUp('shortMessage', {message: 'Required question answer missing!'});
       }
     }
-
     // form feedback answers
     if (this.doReview) {
       assessment = {
@@ -277,7 +304,7 @@ export class AssessmentComponent extends RouterEnter {
         this.savingButtonDisabled = false;
         if (saveInProgress) {
           // display message for successfull saved answers
-          this.savingMessage = 'Last saved a moment ago';
+          this.savingMessage = 'Last saved ' + this._getCurrentTime();
         } else {
           // display a pop up for successful submission
           return this.notificationService.alert({
@@ -300,11 +327,11 @@ export class AssessmentComponent extends RouterEnter {
         this.savingButtonDisabled = false;
         if (saveInProgress) {
           // display message when saving answers failed
-          this.savingMessage = 'Auto save failed';
+          this.savingMessage = 'Auto save unavailable';
         } else {
           // display a pop up if submission failed
           this.notificationService.alert({
-            message: 'Submission Failed, please try again later.',
+            message: 'Submission failed, please check that all required questions have been answered.',
             buttons: [
               {
                 text: 'OK',
@@ -315,6 +342,11 @@ export class AssessmentComponent extends RouterEnter {
         }
       }
     );
+    setTimeout(
+      () => {
+        this.saving = false;
+      },
+      10000);
   }
 
   reviewFeedback() {
@@ -330,6 +362,14 @@ export class AssessmentComponent extends RouterEnter {
 
   showQuestionInfo(info) {
     this.notificationService.popUp('shortMessage', {message: info});
+  }
+
+  private _getCurrentTime() {
+    return new Intl.DateTimeFormat('en-GB', {
+      hour12: true,
+      hour: 'numeric',
+      minute: 'numeric'
+    }).format(new Date());
   }
 
 }

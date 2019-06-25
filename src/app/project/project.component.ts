@@ -1,44 +1,25 @@
 import { Component, HostListener, ViewChild, ViewChildren, QueryList, ElementRef } from '@angular/core';
 import { Router } from '@angular/router';
-import { ProjectService, Milestone } from './project.service';
+import { ProjectService, Milestone, DummyMilestone } from './project.service';
 import { HomeService } from '../home/home.service';
 import { RouterEnter } from '@services/router-enter.service';
 import { BrowserStorageService } from '@services/storage.service';
 import { UtilsService } from '@services/utils.service';
 
-export interface Activity {
-  id: number;
-  name: string;
-  milestoneId?: number;
-  isLocked: boolean;
-  leadImage?: string;
-  progress?: number;
-}
-export interface Milestone {
-  id: number;
-  name: string;
-  description?: string;
-  isLocked: boolean;
-  progress: number;
-  Activity: Array <Activity>;
-}
-
 @Component({
   selector: 'app-project',
   templateUrl: 'project.component.html',
-  styleUrls: ['project.component.scss']
+  styleUrls: ['project.component.scss'],
 })
 export class ProjectComponent extends RouterEnter {
-
   public routeUrl = '/app/project';
   public programName: string;
-  public milestones: Array<Milestone> = [];
+  public milestones: Array<Milestone | DummyMilestone> = [];
   public loadingActivity = true;
   public loadingMilestone = true;
   public loadingProgress = true;
   @ViewChild('contentRef', {read: ElementRef}) contentRef: any;
   @ViewChildren('milestoneRef', {read: ElementRef}) milestoneRefs: QueryList<ElementRef>;
-  private milestonePositions: Array<number> = [];
   public activeMilestone: Array<boolean> = [];
 
   constructor(
@@ -52,7 +33,7 @@ export class ProjectComponent extends RouterEnter {
   }
 
   private _initialise() {
-    this.milestones = [];
+    this.milestones = [{ dummy: true }];
     this.loadingActivity = true;
     this.loadingMilestone = true;
     this.loadingProgress = true;
@@ -73,10 +54,18 @@ export class ProjectComponent extends RouterEnter {
         this.activeMilestone[0] = true;
         this.projectService.getActivities(milestones)
           .subscribe(activities => {
+            // remove entire Activity object with dummy data for clean Activity injection
+            if (this.milestones) {
+              this.milestones.forEach((milestone, i) => {
+                if (this.utils.find(this.milestones[i].Activity, {dummy: true})) {
+                  this.milestones[i].Activity = [];
+                }
+              });
+            }
+
             this.milestones = this._addActivitiesToEachMilestone(this.milestones, activities);
             this.loadingActivity = false;
             this.projectService.getProgress(this.milestones).subscribe(progresses => {
-              this._getMilestonePositions();
               this.milestones = this._populateMilestoneProgress(progresses, this.milestones);
               this.loadingProgress = false;
             });
@@ -84,34 +73,16 @@ export class ProjectComponent extends RouterEnter {
       });
   }
 
-  trackScrolling(event) {
-    const activeMilestoneIndex = this.milestonePositions.findIndex((element, i) => {
-
-      if (i === this.milestonePositions.length - 1) {
-        return event.detail.currentY >= element;
-      }
-
-      return event.detail.currentY >= element && event.detail.currentY < this.milestonePositions[i + 1];
-
-    });
-    // update active milestone status
+  scrollTo(id, index) {
+    // update active milestone status (mark whatever user select)
     this.activeMilestone.fill(false);
+    this.activeMilestone[index] = true;
 
-    this.activeMilestone[activeMilestoneIndex] = true;
+    const el = document.getElementById(id);
+    el.scrollIntoView({ block: 'start', behavior: 'smooth', inline: 'nearest' });
 
-  }
-
-  // scroll to a milestone. i is the index of milestone list
-  scrollTo(i) {
-    this.contentRef.nativeElement.scrollToPoint(0, this.milestonePositions[i], 500);
-
-  }
-
-  private _getMilestonePositions() {
-    this.milestonePositions = this.milestoneRefs.map(milestoneRef => {
-      return milestoneRef.nativeElement.offsetTop;
-
-    });
+    el.classList.add('highlighted');
+    setTimeout(() => el.classList.remove('highlighted'), 1000);
   }
 
   goToActivity(id) {

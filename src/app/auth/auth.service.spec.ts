@@ -11,12 +11,16 @@ describe('AuthService', () => {
   };
   const BrowserStorageService = {};
   const UtilsService = {};
+  const RouterService = {};
+  const PusherService = {};
 
   beforeEach(() => {
     service = new AuthService(
       RequestService,
       BrowserStorageService,
-      UtilsService
+      UtilsService,
+      RouterService,
+      PusherService
     );
   });
 

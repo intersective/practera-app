@@ -1,7 +1,8 @@
 import { Injectable, Optional, isDevMode } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams, HttpErrorResponse, HttpParameterCodec } from '@angular/common/http';
-import { Observable, of } from 'rxjs';
-import { catchError, tap } from 'rxjs/operators';
+import { Router } from '@angular/router';
+import { Observable, of, throwError } from 'rxjs';
+import { catchError, tap, concatMap } from 'rxjs/operators';
 import { UtilsService } from '@services/utils.service';
 import { BrowserStorageService } from '@services/storage.service';
 
@@ -34,11 +35,13 @@ export class QueryEncoder implements HttpParameterCodec {
 export class RequestService {
   private appkey: string;
   private prefixUrl: string;
+  private loggedOut: boolean;
 
   constructor(
     private http: HttpClient,
     private utils: UtilsService,
     private storage: BrowserStorageService,
+    private router: Router,
     @Optional() config: RequestConfig
   ) {
     if (config) {
@@ -96,9 +99,14 @@ export class RequestService {
     return this.http.get<any>(this.prefixUrl + endPoint, {
       headers: this.appendHeaders(httpOptions.headers),
       params: this.setParams(httpOptions.params)
-    }).pipe(
-      catchError(this.handleError<any>('API Request'))
-    );
+    })
+      .pipe(concatMap(response => {
+        this._refreshApikey(response);
+        return of(response);
+      }))
+      .pipe(
+        catchError((error) => this.handleError(error))
+      );
   }
 
   post(endPoint: string = '', data, httpOptions?: any): Observable<any> {
@@ -117,9 +125,14 @@ export class RequestService {
     return this.http.post<any>(this.prefixUrl + endPoint, data, {
       headers: this.appendHeaders(httpOptions.headers),
       params: this.setParams(httpOptions.params)
-    }).pipe(
-      catchError(this.handleError<any>('API Request'))
-    );
+    })
+      .pipe(concatMap(response => {
+        this._refreshApikey(response);
+        return of(response);
+      }))
+      .pipe(
+        catchError((error) => this.handleError(error))
+      );
   }
 
   delete(endPoint: string = '', httpOptions?: any): Observable<any> {
@@ -138,9 +151,14 @@ export class RequestService {
     return this.http.delete<any>(this.prefixUrl + endPoint, {
       headers: this.appendHeaders(httpOptions.headers),
       params: this.setParams(httpOptions.params)
-    }).pipe(
-      catchError(this.handleError<any>('API Request'))
-    );
+    })
+      .pipe(concatMap(response => {
+        this._refreshApikey(response);
+        return of(response);
+      }))
+      .pipe(
+        catchError((error) => this.handleError(error))
+      );
   }
 
   /**
@@ -164,24 +182,34 @@ export class RequestService {
     return;
   }
 
-  private handleError<T> (operation = 'operation', result?: T) {
-    // when API response error is blank
-    if (!result) {
-      return (result as T);
+  private handleError(error: HttpErrorResponse) {
+    if (isDevMode()) {
+      console.error(error); // log to console instead
     }
+    // log the user out if jwt expired
+    if (this.utils.has(error, 'error.message') && ['Request must contain an apikey', 'Expired apikey', 'Invalid apikey'].includes(error.error.message) && !this.loggedOut) {
+      // in case lots of api returns the same apikey invalid at the same time
+      this.loggedOut = true;
+      setTimeout(
+        () => {
+          this.loggedOut = false;
+        },
+        2000
+      );
+      this.router.navigate(['logout']);
+    }
+    // Return the error response data
+    return throwError(error.error);
+  }
 
-    return (error: any): Observable<T> => {
-      if (isDevMode()) {
-        console.error(error); // log to console instead
-        this.storage.append('errors', error);
-      }
-
-      // TODO: better job of transforming error for user consumption
-      this.log(`${operation} failed: ${error.message}`);
-
-      // Let the app keep running by returning an empty result.
-      return of(result as T);
-    };
+  /**
+   * Refresh the apikey (JWT token) if API returns it
+   *
+   */
+  private _refreshApikey(response) {
+    if (this.utils.has(response, 'apikey')) {
+      this.storage.setUser({apikey: response.apikey});
+    }
   }
 
   // further enhance this for error reporting (piwik)

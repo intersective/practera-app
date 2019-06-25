@@ -56,6 +56,10 @@ export class MultipleComponent implements ControlValueAccessor, OnInit {
   // event fired when checkbox is selected/unselected. propagate the change up to the form control using the custom value accessor interface
   // if 'type' is set, it means it comes from reviewer doing review, otherwise it comes from submitter doing assessment
   onChange(value, type) {
+    // innerValue should be either array or object, if it is a string, parse it
+    if (typeof this.innerValue === 'string') {
+      this.innerValue = JSON.parse(this.innerValue);
+    }
     // set changed value (answer or comment)
     if (type) {
       // initialise innerValue if not set
@@ -116,17 +120,16 @@ export class MultipleComponent implements ControlValueAccessor, OnInit {
   private _showSavedAnswers() {
     if ((this.reviewStatus === 'in progress') && (this.doReview)) {
       this.innerValue = {
-        answer: [],
-        comment: ''
+        answer: this.review.answer,
+        comment: this.review.comment
       };
-      this.innerValue.comment = this.review.comment;
       this.comment = this.review.comment;
-      this.innerValue.answer = this.utils.addOrRemove(this.innerValue.answer, this.review.answer);
     }
     if ((this.submissionStatus === 'in progress') && (this.doAssessment)) {
-      this.innerValue = this.utils.addOrRemove(this.innerValue, this.submission.answer);
+      this.innerValue = this.submission.answer;
     }
     this.propagateChange(this.innerValue);
+    this.control.setValue(this.innerValue);
   }
 
 }
