@@ -48,6 +48,8 @@ export class AppComponent implements OnInit {
           });
           this.utils.changeThemeColor(themeColor);
         }
+
+        // initiate pusher subcriptions and user data
         this.sharedService.onPageLoad();
       }
     });
@@ -86,7 +88,9 @@ export class AppComponent implements OnInit {
 
   initializeApp() {
     this.platform.ready().then(() => {
+      // watch version update
       this.versionCheckService.initiateVersionCheck();
+
       // this.statusBar.styleDefault();
       // this.splashScreen.hide();
     });

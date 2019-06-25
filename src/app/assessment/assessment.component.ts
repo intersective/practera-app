@@ -8,6 +8,7 @@ import { BrowserStorageService } from '@services/storage.service';
 import { RouterEnter } from '@services/router-enter.service';
 import { SharedService } from '@services/shared.service';
 import { ActivityService } from '../activity/activity.service';
+import { FastFeedbackService } from '../fast-feedback/fast-feedback.service';
 
 const SAVE_PROGRESS_TIMEOUT = 10000;
 
@@ -73,7 +74,8 @@ export class AssessmentComponent extends RouterEnter {
     private notificationService: NotificationService,
     public storage: BrowserStorageService,
     public sharedService: SharedService,
-    private activityService: ActivityService
+    private activityService: ActivityService,
+    private fastFeedbackService: FastFeedbackService
   ) {
     super(router);
   }
@@ -222,6 +224,11 @@ export class AssessmentComponent extends RouterEnter {
   }
 
   back() {
+    this.fastFeedbackService.pullFastFeedback().subscribe(res => {
+      console.log('res::', res);
+    });
+    return;
+
     // save answer before go back (if it's not a team assessment)
     if (this.assessment.isForTeam && !this.questionsForm.pristine) {
       return this.notificationService.alert({

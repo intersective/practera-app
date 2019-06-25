@@ -22,6 +22,9 @@ import { QuestionComponent } from './question/question.component';
   exports: [
     FastFeedbackComponent,
     FormsModule,
+    IonicModule,
+    CommonModule,
+    ReactiveFormsModule,
   ]
 })
 export class FastFeedbackModule {}
