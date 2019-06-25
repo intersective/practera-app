@@ -19,11 +19,12 @@ phases:
       - npm rebuild node-sass
   build:
     commands:
-      - echo Build started on `date`
+      - echo Building $BUILD_CONFIG at `date`
       - ng build --configuration=$BUILD_CONFIG
   post_build:
     commands:
       # - s3cmd sync www/ s3://$S3_BUCKET/ --delete-removed --recursive --cf-invalidate --add-header=Cache-Control:max-age=0,public
+      - echo Storing to $S3_BUCKET
       - aws s3 sync www/ s3://$S3_BUCKET/ --delete
       - aws cloudfront create-invalidation --distribution-id $CF_DIST_ID --paths '/*'
       - echo Build completed on `date`
