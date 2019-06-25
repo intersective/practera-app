@@ -390,11 +390,11 @@ export class AssessmentComponent extends RouterEnter {
         this.savingButtonDisabled = false;
         if (saveInProgress) {
           // display message when saving answers failed
-          this.savingMessage = 'Auto save failed';
+          this.savingMessage = 'Auto save unavailable';
         } else {
           // display a pop up if submission failed
           this.notificationService.alert({
-            message: 'Submission Failed, please try again later.',
+            message: 'Submission failed, please check that all required questions have been answered.',
             buttons: [
               {
                 text: 'OK',
