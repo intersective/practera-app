@@ -7,8 +7,9 @@ import { UtilsService } from '../services/utils.service';
 import { NotificationService } from '@shared/notification/notification.service';
 import { BrowserStorageService } from '@services/storage.service';
 import { RouterEnter } from '@services/router-enter.service';
-import { Event, EventsService} from '@app/events/events.service';
+import { Event, EventsService } from '@app/events/events.service';
 import { SharedService } from '@services/shared.service';
+import { FastFeedbackService } from '../fast-feedback/fast-feedback.service';
 
 @Component({
   selector: 'app-activity',
@@ -37,7 +38,8 @@ export class ActivityComponent extends RouterEnter {
     private notificationService: NotificationService,
     public storage: BrowserStorageService,
     private eventsService: EventsService,
-    public sharedService: SharedService
+    public sharedService: SharedService,
+    public fastFeedbackService: FastFeedbackService
   ) {
     super(router);
     // update event list after book/cancel an event
@@ -61,6 +63,8 @@ export class ActivityComponent extends RouterEnter {
     this.id = +this.route.snapshot.paramMap.get('id');
     this._getActivity();
     this._getEvents();
+
+    this.fastFeedbackService.pullFastFeedback().subscribe();
   }
 
   private _getActivity() {

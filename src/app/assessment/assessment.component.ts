@@ -224,11 +224,6 @@ export class AssessmentComponent extends RouterEnter {
   }
 
   back() {
-    this.fastFeedbackService.pullFastFeedback().subscribe(res => {
-      console.log('res::', res);
-    });
-    return;
-
     // save answer before go back (if it's not a team assessment)
     if (this.assessment.isForTeam && !this.questionsForm.pristine) {
       return this.notificationService.alert({
@@ -394,7 +389,10 @@ export class AssessmentComponent extends RouterEnter {
                 {
                   text: 'Yes',
                   handler: () => {
-                    return this.navigateBySequence(nextSequence);
+                    // check if user has new fastFeedback request
+                    this.fastFeedbackService.pullFastFeedback().subscribe(res => {
+                      return this.navigateBySequence(nextSequence);
+                    });
                   }
                 }
               ]
