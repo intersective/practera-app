@@ -3,13 +3,13 @@
 <ng-container *ngIf="heightExceeded">
   <ng-container *ngIf="isTruncating">
     <div text-left>
-      <a href="javascript:void(0)" color="primary" (click)="isTruncating = false">show more</a>
+      <a href="javascript:void(0)" aria-expanded="false" aria-controls="more-1" color="primary" (click)="isTruncating = false">show more</a>
     </div>
   </ng-container>
 
   <ng-container *ngIf="!isTruncating">
     <div text-left>
-      <a href="javascript:void(0)" color="primary" (click)="isTruncating = true">show less</a>
+      <a href="javascript:void(0)" aria-expanded="true" aria-controls="less-1" color="primary" (click)="isTruncating = true">show less</a>
     </div>
   </ng-container>
 </ng-container>

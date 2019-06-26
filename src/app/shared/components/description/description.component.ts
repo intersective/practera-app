@@ -12,7 +12,7 @@ import { trigger, state, transition, style, animate } from '@angular/animations'
         'overflow-y': 'scroll',
       })),
       state('hide', style({
-        'max-height': '90px',
+        'max-height': '200px',
         'overflow-y': 'hidden',
       })),
       transition('* <=> *', [
@@ -22,7 +22,7 @@ import { trigger, state, transition, style, animate } from '@angular/animations'
   ]
 })
 export class DescriptionComponent implements AfterViewInit {
-  heightLimit = 90;
+  heightLimit = 120;
   isTruncating = true;
   heightExceeded = false;
   elementHeight: number;
