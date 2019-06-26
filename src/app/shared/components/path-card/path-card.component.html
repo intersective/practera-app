@@ -1,15 +1,3 @@
-<style>
-    ion-card {
-      background-color: #000 !important;
-      color: #fff ;
-      --ion-color-primary: #000;
-      --ion-color-primary-contrast: #fff;
-    }
-    .default-image-card {
-        background-color: transparent !important;
-    }
-</style>
-    
 
 <ion-card
   color="primary"
@@ -52,41 +40,42 @@
     </ion-card-content>
 
     <ion-list class='path-list'>
-      <clickable-item>
-        <ion-icon name="checkmark-circle" class="icon-done" color="primary"></ion-icon>
-        <div class="path-way">Communications</div>
+        <clickable-item>
+            <circle-progress [percent]="60"></circle-progress>
+            <div class="path-way">Financial Literacy</div>
+            <ion-icon name="arrow-forward" slot="end" color="primary" class="icon-forward"></ion-icon>
+        </clickable-item>
+
+        <clickable-item>
+            <circle-progress [percent]="20"></circle-progress>
+            <div class="path-way">Digital Literacy</div>
+            <ion-icon name="arrow-forward" slot="end" color="primary" class="icon-forward"></ion-icon>
+        </clickable-item>
+  
+        <clickable-item>
+            <circle-progress [percent]="0"></circle-progress>
+            <div class="path-way">Communication</div>
         <ion-icon name="arrow-forward" slot="end" color="primary" class="icon-forward"></ion-icon>
       </clickable-item>
 
       <clickable-item>
-        <ion-icon name="checkmark-circle" class="icon-done" color="primary"></ion-icon>
+          <circle-progress [percent]="0"></circle-progress>
         <div class="path-way">Teamwork</div>
         <ion-icon name="arrow-forward" slot="end" color="primary" class="icon-forward"></ion-icon>
       </clickable-item>
 
       <clickable-item>
-        <circle-progress [percent]="90"></circle-progress>
+          <ion-icon name="checkmark-circle" class="icon-done" color="primary"></ion-icon>
         <div class="path-way">Critical Thinking</div>
         <ion-icon name="arrow-forward" slot="end" color="primary" class="icon-forward"></ion-icon>
       </clickable-item>
 
       <clickable-item>
-          <circle-progress [percent]="0"></circle-progress>
+          <ion-icon name="checkmark-circle" class="icon-done" color="primary"></ion-icon>
           <div class="path-way">Problem Solving</div>
           <ion-icon name="arrow-forward" slot="end" color="primary" class="icon-forward"></ion-icon>
       </clickable-item>  
 
-      <clickable-item>
-          <circle-progress [percent]="0"></circle-progress>
-          <div class="path-way">Digital Literacy</div>
-          <ion-icon name="arrow-forward" slot="end" color="primary" class="icon-forward"></ion-icon>
-      </clickable-item>
-
-      <clickable-item>
-          <circle-progress [percent]="0"></circle-progress>
-          <div class="path-way">Financial Literacy</div>
-          <ion-icon name="arrow-forward" slot="end" color="primary" class="icon-forward"></ion-icon>
-      </clickable-item>
     </ion-list>
 </ion-card>
 
@@ -117,14 +106,14 @@
         </clickable-item>
     
         <clickable-item>
-          <circle-progress [percent]="0"></circle-progress>
+          <ion-icon name="lock" color="medium" class="icon-lock"></ion-icon>
           <div class="path-way">Data-Driven Marketing</div>
           <ion-icon name="arrow-forward" slot="end" color="primary" class="icon-forward"></ion-icon>
         </clickable-item>
 
         <clickable-item>
-          <circle-progress [percent]="0"></circle-progress>
-          <div class="path-way">Data Analytics</div>
+            <ion-icon name="lock" color="medium" class="icon-lock"></ion-icon>
+            <div class="path-way">Data Analytics</div>
           <ion-icon name="arrow-forward" slot="end" color="primary" class="icon-forward"></ion-icon>
         </clickable-item>
     

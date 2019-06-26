@@ -23,8 +23,8 @@ import { trigger, state, transition, style, animate } from '@angular/animations'
   ]
 })
 export class DescriptionComponent implements AfterViewInit, OnChanges {
-  heightLimit = 120;
-  isTruncating = true;
+  heightLimit = 200;
+  isTruncating = false;
   heightExceeded = false;
   elementHeight: number;
   @Input() content;
@@ -38,9 +38,9 @@ export class DescriptionComponent implements AfterViewInit, OnChanges {
 
   ngAfterViewInit() {
     this.elementHeight = this.descriptionRef.nativeElement.clientHeight;
-    setTimeout(() => {
-      this.heightExceeded = this.elementHeight >= this.heightLimit;
-    });
+    // setTimeout(() => {
+    //   this.heightExceeded = this.elementHeight >= this.heightLimit;
+    // });
   }
 
 }

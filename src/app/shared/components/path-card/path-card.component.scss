@@ -1,4 +1,6 @@
+
 .card {
+  
   margin-top: 20px;
   // max-height: 100%;
   // height: 100%;
@@ -22,30 +24,35 @@
     margin-top: 40px;
     margin-left: 0px;
     padding-bottom: 0px;
-  
-    .icon-lock {
+ 
+    ion-icon {
+      font-size: 2em;
       margin-left: 2px;
-      font-size: 32px;
-  
+      width: 35px;
     }
-    .path-way {
-      height: 100%;
-      padding-top: 10px;
-      padding-left: 10px;
+    
+    .icon-lock {
     }
 
     .icon-done {
-      font-size: 33px;
-      margin-left: 2px;
     }
-    
+   
+
+    .path-way {
+      // height: 100%;
+      // padding-top: 10px;
+      padding-left: 10px;
+      padding-right: 10px;
+      font-size: .9em;
+    }
+
     .item {
       --border-width: 0px !important;
       --inner-border-width: 0px !important;
     }
  
   }
- 
+
 }
 .locked-card {
   background-color: var(--ion-color-medium);
@@ -62,3 +69,12 @@
   background-color: #ddd !important;
 }
 
+ion-card {
+  background-color: #000 !important;
+  color: #fff ;
+  --ion-color-primary: #000;
+  --ion-color-primary-contrast: #fff;
+}
+.default-image-card {
+    background-color: transparent !important;
+}
