@@ -110,6 +110,8 @@ export class TopicComponent extends RouterEnter {
       if (callback !== undefined) {
         return callback();
       }
+      return this.nextStepPrompt();
+
     });
   }
 
@@ -179,8 +181,8 @@ export class TopicComponent extends RouterEnter {
     const nextSequence = this.getNextSequence();
     if (nextSequence) {
       return this.notificationService.alert({
-        header: 'Topic complete',
-        message: 'You have now progressed to the next topic. Would you like to continue?',
+        header: 'Task complete',
+        message: 'Continue to next task?',
         buttons: [
           {
             text: 'No',
@@ -227,7 +229,7 @@ export class TopicComponent extends RouterEnter {
               // back to project, if next sequence isn't available
               const nextSequence = this.getNextSequence();
               if (!nextSequence) {
-                this.notificationService.popUp('shortMessage', { message: 'You\'ve completed the topic!' });
+                this.notificationService.popUp('shortMessage', { message: 'You\'ve completed the task!' });
                 return this.router.navigate(['app', 'project']);
               }
               return this.router.navigate(['app', 'activity', this.activityId]);
