@@ -196,7 +196,7 @@ export class AuthRegistrationComponent implements OnInit {
     this.errors = [];
     if (this.hide_password) {
       if (!this.isAgreed) {
-        this.errors.push('You need to agree with terms and Conditions.');
+        this.errors.push('You need to agree with the Terms and Conditions.');
         isValid = false;
         return isValid;
       } else {
@@ -210,7 +210,7 @@ export class AuthRegistrationComponent implements OnInit {
         isValid = false;
         return isValid;
       } else if (!this.isAgreed) {
-        this.errors.push('You need to agree with terms and Conditions.');
+        this.errors.push('You need to agree with the Terms and Conditions.');
         isValid = false;
         return isValid;
       } else {
