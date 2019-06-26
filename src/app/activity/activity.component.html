@@ -37,11 +37,13 @@
             <ion-icon name="list-box" slot="start" color="primary"></ion-icon>
           </ng-container>
           <ng-container *ngSwitchCase="'Assessment'">
-            <ion-icon name="clipboard" slot="start" color="primary"></ion-icon>
+            <ion-icon name="clipboard" slot="start" [class]="(task.isDueToday && (task.status === '' || task.status === 'in progress')) ? 'pulsing ng-star-inserted ion-color ion-color-primary hydrated' : 'ng-star-inserted ion-color ion-color-primary hydrated'" color="primary"></ion-icon>
           </ng-container>
-
           <div class="icon-item">
             <h4>{{ task.name }}</h4>
+            <p *ngIf="task.type === 'Assessment' && (task.status === '' || task.status === 'in progress')" [class]="task.isOverdue ? 'due-date over' : 'due-date'">
+              <ng-container *ngIf="!task.loadingStatus">{{ this.sharedService.dueDateFormatter(task.dueDate) }}</ng-container>
+            </p>
             <p>
               <ion-text *ngIf="task.type != 'Locked'" [color]="task.status == 'feedback available' ? 'primary' : 'medium'">
                 {{ task.type }}
@@ -85,14 +87,17 @@
     </div>
     <ion-card class="practera-card">
       <ion-list>
-        <clickable-item *ngFor="let event of events; let i = index">
-          <event-card
-            [event]="event"
-            [time]="utils.utcToLocal(event.startTime, 'date')"
-            class="width-100"
-            ></event-card>
-        </clickable-item>
+          <ng-container *ngFor="let event of events; let i = index">
+              <clickable-item *ngIf="i < 2">
+                  <event-card
+                    [event]="event"
+                    [time]="displayEventTime(event)"
+                    class="width-100"
+                  ></event-card>
+                </clickable-item>
+          </ng-container>
         <clickable-item
+          *ngIf="events.length > 2"
           lines="none"
           (click)="router.navigate(['events', {activityId: id}])">
           <ion-icon name="more" color="primary" margin-end></ion-icon>

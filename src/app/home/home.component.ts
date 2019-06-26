@@ -85,18 +85,6 @@ export class HomeComponent extends RouterEnter implements OnDestroy {
     this.loadingActivity = true;
     this.achievements = [];
     this.haveEvents = false;
-    // add a flag in local storage to indicate that is there any fast feedback open
-    this.storage.set('fastFeedbackOpening', false);    
-    this.intercom.boot({
-      app_id: "pef1lmo8",
-      name: this.storage.getUser().name, // Full name
-      email: this.storage.getUser().email, // Email address
-      user_id: this.storage.getUser().id, // current_user_id
-      // Supports all optional configuration.
-      widget: {
-        "activator": "#intercom" 
-      }
-    });
   }
 
   onEnter() {
@@ -132,26 +120,10 @@ export class HomeComponent extends RouterEnter implements OnDestroy {
         });
       })
     );
+
     this.homeService.getProgramName().subscribe(programName => {
       this.programName = programName;
     });
-    this.subscriptions.push(
-      this.fastFeedbackService.getFastFeedback().subscribe(res => {
-        // popup instant feedback view if question quantity found > 0
-        if (!this.utils.isEmpty(res.data) && res.data.slider.length > 0) {
-          if (this.storage.get('fastFeedbackOpening')) {
-            // don't open it again if there's one opening
-            return ;
-          }
-          // add a flag to indicate that a fast feedback pop up is opening
-          this.storage.set('fastFeedbackOpening', true);
-          return this.homeService.popUpFastFeedback({
-            questions: res.data.slider,
-            meta: res.data.meta
-          });
-        }
-      })
-    );
 
     this.subscriptions.push(
       this.achievementService.getAchievements('desc').subscribe(achievements => {

@@ -25,6 +25,9 @@ export interface Task {
   feedbackReviewed?: boolean;
   loadingStatus?: boolean;
   isForTeam?: boolean;
+  dueDate?: string;
+  isOverdue?: boolean;
+  isDueToday?: boolean;
 }
 
 export interface Activity {
@@ -39,6 +42,7 @@ export interface Activity {
 })
 
 export class ActivityService {
+  public tasks: Array<any>;
 
   constructor(
     private request: RequestService,
@@ -111,7 +115,10 @@ export class ActivityService {
             type: 'Assessment',
             contextId: contextIds[element[element.model].id] || 0,
             loadingStatus: true,
-            isForTeam: element[element.model].is_team
+            isForTeam: element[element.model].is_team,
+            dueDate: element[element.model].deadline,
+            isOverdue: this.utils.timeComparer(element[element.model].deadline) < 0 ? true : false,
+            isDueToday: this.utils.timeComparer(element[element.model].deadline, undefined, true) === 0 ? true : false,
           });
           break;
       }
@@ -227,5 +234,6 @@ export class ActivityService {
     task.loadingStatus = false;
     return task;
   }
+
 
 }

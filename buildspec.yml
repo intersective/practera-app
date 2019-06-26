@@ -21,6 +21,7 @@ phases:
     commands:
       - echo Building $BUILD_CONFIG at `date`
       - ng build --configuration=$BUILD_CONFIG
+      - npm run generate-version
   post_build:
     commands:
       # - s3cmd sync www/ s3://$S3_BUCKET/ --delete-removed --recursive --cf-invalidate --add-header=Cache-Control:max-age=0,public

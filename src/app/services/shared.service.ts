@@ -22,6 +22,8 @@ const api = {
 })
 export class SharedService {
   private achievementEvent;
+  private memoryCache = {};
+
   constructor(
     private utils: UtilsService,
     private storage: BrowserStorageService,
@@ -29,6 +31,24 @@ export class SharedService {
     private notification: NotificationService,
     private request: RequestService
   ) {}
+
+  /**
+   * @name setCache
+   * @description reset entire cache by their index/key everytime
+   * @param {string} type data type ('activity', 'milestone', 'achievement'), keep the name singular
+   * @param {object} data object of any kind
+   */
+  setCache(type: string, data) {
+    this.memoryCache[type] = data;
+    return this.memoryCache[type];
+  }
+
+  getCache(type: string) {
+    if (this.memoryCache[type]) {
+      return this.memoryCache[type];
+    }
+    return null;
+  }
 
   // call this function on every page refresh
   onPageLoad() {
@@ -66,5 +86,25 @@ export class SharedService {
 
   updateProfile(data: Profile) {
     return this.request.post(api.post.profile, data);
+  }
+
+  /**
+   * This method check due dates of assessment or activity.
+   * - Check due date is today, tomorrow, upcoming date or overdue date.
+   * - If due date is upcoming one this will returns 'Due (date)' ex: 'Due 06-30-2019'.
+   * - If due date is overdue one this will returns 'Overdue (date)' ex: 'Overdue 01-10-2019'.
+   * - If due date is today this will return 'Due Today'.
+   * - If due date is tomorrow this will return 'Due Tomorrow'.
+   * @param dueDate - due date of assessment or activity.
+   */
+  dueDateFormatter(dueDate: string) {
+    if (!dueDate) {
+      return '';
+    }
+    const difference = this.utils.timeComparer(dueDate);
+    if (difference < 0) {
+      return 'Overdue ' + this.utils.utcToLocal(dueDate);
+    }
+    return 'Due ' + this.utils.utcToLocal(dueDate);
   }
 }

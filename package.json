@@ -7,13 +7,18 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
+    "poststart": "npm run generate-version",
     "local": "ng serve -c local",
+    "postlocal": "npm run generate-version",
     "development": "ng serve -c stage --host 0.0.0.0 --port 8080 --disable-host-check --ssl true",
-    "build": "ng build && git commit -am 'Build'",
+    "build": "ng build",
+    "postbuild": "npm run generate-version",
     "deploy": "ng build --base-href '/practera-app-v2/' && git commit -am 'Build to Github Page' && git subtree push --prefix www origin gh-pages",
+    "postdeploy": "npm run generate-version",
     "test": "ng test",
     "lint": "ng lint",
-    "e2e": "ng e2e"
+    "e2e": "ng e2e",
+    "generate-version": "node ./hooks/post-build.js"
   },
   "dependencies": {
     "@angular/animations": "^7.2.9",
