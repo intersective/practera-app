@@ -6,6 +6,7 @@ import { UtilsService } from '@services/utils.service';
 import { BrowserStorageService } from '@services/storage.service';
 import { NotificationService } from '@shared/notification/notification.service';
 import { ReviewRatingComponent } from '../review-rating/review-rating.component';
+import { DomSanitizer } from '@angular/platform-browser';
 
 /**
  * @name api
@@ -50,7 +51,7 @@ export interface Question {
   canAnswer: boolean;
   choices?: Array<Choice>;
   teamMembers?: Array<TeamMember>;
-  audience: Array<string>;
+  audience: string[];
   submitterOnly?: boolean;
   reviewerOnly?: boolean;
 }
@@ -93,6 +94,7 @@ export class AssessmentService {
     private utils: UtilsService,
     private storage: BrowserStorageService,
     private notification: NotificationService,
+    public sanitizer: DomSanitizer,
   ) {}
 
   getAssessment(id, action): Observable<any> {
@@ -389,7 +391,8 @@ export class AssessmentService {
       });
     }
     // put the explanation in the submission
-    submission.answers[questionId].explanation = explanation;
+    const thisExplanation = explanation.replace(/text-align: center;/gi, 'text-align: center; text-align: -webkit-center;');
+    submission.answers[questionId].explanation = this.sanitizer.bypassSecurityTrustHtml(thisExplanation);
 
     return submission;
   }
@@ -399,7 +402,12 @@ export class AssessmentService {
       switch (this.questions[questionId].question_type) {
         case 'oneof':
           // re-format answer from string to number
-          answer = +answer;
+          if (typeof answer === 'string' && answer.length === 0) {
+            // Caution: let answer be null if question wasn't answered previously, 0 could be a possible answer ID
+            answer = null;
+          } else {
+            answer = +answer;
+          }
           break;
         case 'multiple':
           if (this.utils.isEmpty(answer)) {

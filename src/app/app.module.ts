@@ -14,6 +14,7 @@ import { GoMobileModule } from './go-mobile/go-mobile.module';
 
 import { AppComponent } from './app.component';
 import { UtilsService } from './services/utils.service';
+import { VersionCheckService } from './services/version-check.service';
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
 import { EmbedVideo } from 'ngx-embed-video';
 import { environment } from '@environments/environment';
@@ -55,6 +56,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
     // Custom
     UtilsService,
+    VersionCheckService,
   ],
   bootstrap: [AppComponent],
 })
