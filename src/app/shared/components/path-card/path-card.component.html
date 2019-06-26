@@ -1,3 +1,16 @@
+<style>
+    ion-card {
+      background-color: #000 !important;
+      color: #fff ;
+      --ion-color-primary: #000;
+      --ion-color-primary-contrast: #fff;
+    }
+    .default-image-card {
+        background-color: transparent !important;
+    }
+</style>
+    
+
 <ion-card
   color="primary"
   class="card practera-card"
@@ -141,7 +154,7 @@
      'locked-card': path.isLocked,
      'default-image-card': !path.leadImage
   }"
-  [ngStyle]="{'background-image': backgroundImageStyle3 }"
+  [ngStyle]="{'background-image': backgroundImageStyle4 }"
 > 
     <ion-card-content>
       <h4 color="primary-contrast">Destination</h4>
