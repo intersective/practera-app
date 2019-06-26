@@ -10,6 +10,7 @@ import { ClickableItemComponent } from '@shared/components/clickable-item/clicka
 import { CircleProgressComponent } from '@shared/components/circle-progress/circle-progress.component';
 import { NgCircleProgressModule } from 'ng-circle-progress';
 import { BrandingLogoComponent } from '@shared/components/branding-logo/branding-logo.component';
+import { ContactNumberFormComponent } from '@shared/components/contact-number-form/contact-number-form.component';
 
 const largeCircleDefaultConfig = {
   backgroundColor: 'var(--ion-color-light)',
@@ -42,6 +43,7 @@ const largeCircleDefaultConfig = {
     ClickableItemComponent,
     CircleProgressComponent,
     BrandingLogoComponent,
+    ContactNumberFormComponent
   ],
   exports: [
     ActivityCardComponent,
@@ -54,6 +56,7 @@ const largeCircleDefaultConfig = {
     CommonModule,
     FormsModule,
     BrandingLogoComponent,
+    ContactNumberFormComponent,
   ],
 })
 export class SharedModule {}
