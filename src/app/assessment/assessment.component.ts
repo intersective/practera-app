@@ -176,7 +176,6 @@ export class AssessmentComponent extends RouterEnter {
   // Populate the question form with FormControls.
   // The name of form control is like 'q-2' (2 is an example of question id)
   populateQuestionsForm() {
-    const questionsFormObject = {};
     let validator = [];
     this.assessment.groups.forEach(group => {
       group.questions.forEach(question => {
@@ -186,10 +185,10 @@ export class AssessmentComponent extends RouterEnter {
         } else {
           validator = [];
         }
-        questionsFormObject['q-' + question.id] = new FormControl('', validator);
+
+        this.questionsForm.addControl('q-' + question.id, new FormControl('', validator));
       });
     });
-    this.questionsForm = new FormGroup(questionsFormObject);
   }
 
   navigationRoute() {
@@ -376,11 +375,11 @@ export class AssessmentComponent extends RouterEnter {
         this.savingButtonDisabled = false;
         if (saveInProgress) {
           // display message when saving answers failed
-          this.savingMessage = 'Auto save failed';
+          this.savingMessage = 'Auto save unavailable';
         } else {
           // display a pop up if submission failed
           this.notificationService.alert({
-            message: 'Submission Failed, please try again later.',
+            message: 'Submission failed, please check that all required questions have been answered.',
             buttons: [
               {
                 text: 'OK',
