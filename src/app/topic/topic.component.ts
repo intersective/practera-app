@@ -33,6 +33,7 @@ export class TopicComponent extends RouterEnter {
   activityId = 0;
   topicProgress: number;
   isLoadingPreview = false;
+  timer = 0;
 
   constructor(
     private topicService: TopicService,
@@ -44,7 +45,8 @@ export class TopicComponent extends RouterEnter {
     public utils: UtilsService,
     public notificationService: NotificationService,
     private activityService: ActivityService,
-    private sharedService: SharedService
+    private sharedService: SharedService,
+
   ) {
     super(router);
   }
@@ -64,6 +66,8 @@ export class TopicComponent extends RouterEnter {
 
   onEnter() {
     this._initialise();
+    var dateObj = new Date();
+    this.timer = dateObj.getTime();
     this.id = +this.route.snapshot.paramMap.get('id');
     this.activityId = +this.route.snapshot.paramMap.get('activityId');
     this._getTopic();
@@ -198,10 +202,13 @@ export class TopicComponent extends RouterEnter {
   }
 
   back() {
-    // if (this.btnToggleTopicIsDone) {
-    //   return this.router.navigate(['app', 'activity', this.activityId]);
-    // }
-
+    if (this.btnToggleTopicIsDone) {
+      return this.router.navigate(['app', 'activity', this.activityId]);
+    }
+    var dateObj = new Date();
+    if (dateObj.getTime() - this.timer < 10000) {
+      return this.router.navigate(['app', 'activity', this.activityId]);
+    }
     const type = 'Topic';
     return this.notificationService.alert({
       header: `Complete ${type}?`,
@@ -216,16 +223,17 @@ export class TopicComponent extends RouterEnter {
         {
           text: 'Yes',
           handler: () => {
-            // return this.markAsDone(() => {
+            return this.markAsDone(() => {
               // back to project, if next sequence isn't available
               const nextSequence = this.getNextSequence();
               if (!nextSequence) {
                 this.notificationService.popUp('shortMessage', { message: 'You\'ve completed the topic!' });
                 return this.router.navigate(['app', 'project']);
               }
+              return this.router.navigate(['app', 'activity', this.activityId]);
 
-              return this.nextStepPrompt();
-            // });
+              //return this.nextStepPrompt();
+            });
           }
         }
       ]

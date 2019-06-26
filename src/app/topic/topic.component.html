@@ -35,7 +35,7 @@
       </div>
     </div>
     <div padding text-right>
-      <span class="vertical-middle" class="margin-right" >Mark topic as read</span>
+      <span class="vertical-middle" class="margin-right" >Mark task as done</span>
       <ng-container *ngIf="!loadingMarkedDone; else spinnerTmpl">
         <ion-toggle  [checked]="btnToggleTopicIsDone" (ionChange)="markAsDone()" [disabled]="btnToggleTopicIsDone"  class="vertical-middle" ></ion-toggle>
       </ng-container>
