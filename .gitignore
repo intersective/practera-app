@@ -4,6 +4,9 @@
 .tmp/
 
 coverage/
+platforms
+resources
+plugins
 node_modules
 src/coverage
 *.DS_Store

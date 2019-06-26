@@ -23,9 +23,12 @@
   .active {
     background-color: lightgrey;
     border-radius: 50%;
-    width: 40px;
-    height: 40px;
-    display: inline-block;
+    width: 42px;
+    height: 2.6em;
+    position: relative;
+    margin-left: auto;
+    margin-right: auto;
+    line-height: 0.5em;
   }
 }
 
@@ -36,6 +39,11 @@
       color: var(--practera-label-color);
       line-height: 20px;
       font-size: 14px;
+    }
+    transition: border 0.5s, border-radius 0.5s;
+    &.highlighted {
+      border: 1px solid var(--ion-color-primary);
+      border-radius: 1em;
     }
   }
   :last-child {
@@ -76,8 +84,4 @@
 ion-spinner {
   display: block;
   margin: auto;
-}
-
-.spacer {
-  height: 480px;
 }
