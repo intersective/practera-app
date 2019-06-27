@@ -6,6 +6,7 @@ import { NotificationService } from '@shared/notification/notification.service';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { BrowserStorageService } from '@services/storage.service';
 import { RouterEnter } from '@services/router-enter.service';
+import { SharedService } from '@services/shared.service';
 
 const SAVE_PROGRESS_TIMEOUT = 10000;
 
@@ -32,6 +33,8 @@ export class AssessmentComponent extends RouterEnter {
     name: '',
     description: '',
     isForTeam: false,
+    dueDate: '',
+    isOverdue: false,
     groups: []
   };
   submission: Submission = {
@@ -67,6 +70,7 @@ export class AssessmentComponent extends RouterEnter {
     public utils: UtilsService,
     private notificationService: NotificationService,
     public storage: BrowserStorageService,
+    public sharedService: SharedService
   ) {
     super(router);
   }
@@ -76,6 +80,8 @@ export class AssessmentComponent extends RouterEnter {
       name: '',
       description: '',
       isForTeam: false,
+      dueDate: '',
+      isOverdue: false,
       groups: []
     };
     this.submission = {
@@ -417,5 +423,4 @@ export class AssessmentComponent extends RouterEnter {
       minute: 'numeric'
     }).format(new Date());
   }
-
 }
