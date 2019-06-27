@@ -30,6 +30,8 @@ export interface Assessment {
   name: string;
   description: string;
   isForTeam: boolean;
+  dueDate?: string;
+  isOverdue?: boolean;
   groups: Array<Group>;
 }
 
@@ -128,6 +130,8 @@ export class AssessmentService {
       name: thisAssessment.Assessment.name,
       description: thisAssessment.Assessment.description,
       isForTeam: thisAssessment.Assessment.is_team,
+      dueDate: thisAssessment.Assessment.deadline,
+      isOverdue: this.utils.timeComparer(thisAssessment.Assessment.deadline) < 0 ? true : false,
       groups: []
     };
 
