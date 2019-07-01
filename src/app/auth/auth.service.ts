@@ -14,7 +14,7 @@ import { PusherService } from '@shared/pusher/pusher.service';
  * @type {Object}
  */
 const api = {
-  getConfig: 'api/v2/plan/experience/config',
+  getConfig: 'api/v2/plan/experience/list',
   linkedin: 'api/auth_linkedin.json',
   login: 'api/auths.json',
   setProfile: 'api/v2/user/enrolment/edit.json',
@@ -146,7 +146,7 @@ export class AuthService {
     return this.isLoggedIn || this.storage.get('isLoggedIn');
   }
 
-  logout() {
+  logout(navigationParams = {}) {
     // use the config color
     this.utils.changeThemeColor(this.storage.getConfig().color || '#2bbfd4');
     this.pusherService.unsubscribeChannels();
@@ -154,7 +154,7 @@ export class AuthService {
     this.storage.clear();
     // still store config info even logout
     this.storage.setConfig(config);
-    return this.router.navigate(['/login']);
+    return this.router.navigate(['/login'], navigationParams);
   }
 
    /**

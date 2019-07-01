@@ -53,10 +53,16 @@ export class PusherService {
   }
 
   initialisePusher() {
+
+    // @CHAW: we shouldn't be reinstantiating this class every page request. It should be done once
+    // during the app execution lifecycle
+    if (typeof this.pusher !== 'undefined') {
+      return;
+    }
     try {
       this.pusher = new Pusher(this.pusherKey, {
         cluster: 'mt1',
-        encrypted: true,
+        forceTLS: true,
         authEndpoint: this.apiurl + api.pusherAuth,
         auth: {
           headers: {
@@ -75,6 +81,8 @@ export class PusherService {
   getChannels() {
     // unsubscribe channels before subscribe the new ones
     this.unsubscribeChannels();
+    // @CHAW we should cache this response locally for 15 minutes - the channel list is unlikely to 
+    // change in that time period. This will help with server load
     return this.request.get(api.channels, {params: {
         env: environment.env
       }})

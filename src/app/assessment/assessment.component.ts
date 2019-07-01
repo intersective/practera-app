@@ -6,6 +6,9 @@ import { NotificationService } from '@shared/notification/notification.service';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { BrowserStorageService } from '@services/storage.service';
 import { RouterEnter } from '@services/router-enter.service';
+import { SharedService } from '@services/shared.service';
+
+const SAVE_PROGRESS_TIMEOUT = 10000;
 
 @Component({
   selector: 'app-assessment',
@@ -30,6 +33,8 @@ export class AssessmentComponent extends RouterEnter {
     name: '',
     description: '',
     isForTeam: false,
+    dueDate: '',
+    isOverdue: false,
     groups: []
   };
   submission: Submission = {
@@ -54,7 +59,7 @@ export class AssessmentComponent extends RouterEnter {
   questionsForm = new FormGroup({});
   submitting = false;
   savingButtonDisabled = true;
-  savingMessage = '';
+  savingMessage: string;
   saving: boolean;
   fromPage = '';
 
@@ -65,6 +70,7 @@ export class AssessmentComponent extends RouterEnter {
     public utils: UtilsService,
     private notificationService: NotificationService,
     public storage: BrowserStorageService,
+    public sharedService: SharedService
   ) {
     super(router);
   }
@@ -74,6 +80,8 @@ export class AssessmentComponent extends RouterEnter {
       name: '',
       description: '',
       isForTeam: false,
+      dueDate: '',
+      isOverdue: false,
       groups: []
     };
     this.submission = {
@@ -174,7 +182,6 @@ export class AssessmentComponent extends RouterEnter {
   // Populate the question form with FormControls.
   // The name of form control is like 'q-2' (2 is an example of question id)
   populateQuestionsForm() {
-    const questionsFormObject = {};
     let validator = [];
     this.assessment.groups.forEach(group => {
       group.questions.forEach(question => {
@@ -184,15 +191,13 @@ export class AssessmentComponent extends RouterEnter {
         } else {
           validator = [];
         }
-        questionsFormObject['q-' + question.id] = new FormControl('', validator);
+
+        this.questionsForm.addControl('q-' + question.id, new FormControl('', validator));
       });
     });
-    this.questionsForm = new FormGroup(questionsFormObject);
   }
 
-  back() {
-    // save answer before go back.
-    this.submit(true);
+  navigationRoute() {
     if (this.fromPage && this.fromPage === 'reviews') {
       return this.router.navigate(['app', 'reviews']);
     }
@@ -205,21 +210,68 @@ export class AssessmentComponent extends RouterEnter {
     return this.router.navigate(['app', 'home']);
   }
 
-  // form an object of required questions
-  getRequiredQuestions() {
-    const requiredQuestions = {};
-    this.assessment.groups.forEach(group => {
-      group.questions.forEach(question => {
-        if (question.isRequired) {
-          requiredQuestions[question.id] = true;
-        }
+  back() {
+    // save answer before go back (if it's not a team assessment)
+    if (this.assessment.isForTeam && !this.questionsForm.pristine) {
+      return this.notificationService.alert({
+        header: 'Confirm leaving?',
+        message: 'All the unsubmitted answers would not be saved.',
+        buttons: [
+          {
+            text: 'Cancel',
+            role: 'cancel',
+          },
+          {
+            text: 'Ok',
+            handler: () => {
+              return this.navigationRoute();
+            }
+          }
+        ]
       });
-    });
-    return requiredQuestions;
+    }
+
+    this.submit(true);
+    return this.navigationRoute();
+  }
+
+  /**
+   * @name compulsoryQuestionsAnswered
+   * @description to check if every compulsory question has been answered
+   * @param {Object[]} answers a list of answer object (in submission-based format)
+   */
+  compulsoryQuestionsAnswered(answers) {
+    const result = [];
+    const missing = [];
+    if (answers && answers.length > 0) {
+      this.assessment.groups.forEach(group => {
+        group.questions.forEach(question => {
+          if (question.isRequired && missing.length === 0) {
+
+            // check every answers value has all the compulsory questions covered
+            const compulsoryQuestions = answers.filter(answer => {
+              return answer.assessment_question_id === +question.id;
+            });
+
+            this.utils.each(compulsoryQuestions, answer => {
+              if (typeof answer.answer !== 'number' && this.utils.isEmpty(answer.answer)) {
+                missing.push(answer);
+              }
+            });
+          }
+        });
+      });
+    }
+    return missing;
   }
 
   submit(saveInProgress: boolean) {
-    if ( saveInProgress ) {
+    // team submission only accept submit and no save
+    if (this.assessment.isForTeam && saveInProgress === true) {
+      return;
+    }
+
+    if (saveInProgress) {
       this.savingMessage = 'Saving...';
       this.savingButtonDisabled = true;
     } else {
@@ -227,21 +279,28 @@ export class AssessmentComponent extends RouterEnter {
       this.saving = false;
     }
     const answers = [];
-    let assessment;
-    const requiredQuestions = this.getRequiredQuestions();
     let questionId = 0;
+    let assessment: {
+      id: number;
+      in_progress: boolean;
+      context_id?: number;
+      review_id?: number;
+      submission_id?: number;
+    } = {
+      id: this.id,
+      in_progress: false,
+    };
 
     if (this.saving) {
       return;
     }
     this.saving = true;
+
+
     // form submission answers
     if (this.doAssessment) {
-      assessment = {
-        id: this.id,
-        context_id: this.contextId,
-        in_progress: false
-      };
+      assessment.context_id = this.contextId;
+
       if (saveInProgress) {
         assessment.in_progress = true;
       }
@@ -266,37 +325,32 @@ export class AssessmentComponent extends RouterEnter {
           assessment_question_id: questionId,
           answer: answer
         });
-        // unset the required questions object
-        if (requiredQuestions[questionId]) {
-          this.utils.unset(requiredQuestions, questionId);
-        }
       });
       // check if all required questions have answer when assessment done
-      if (!saveInProgress && !this.utils.isEmpty(requiredQuestions)) {
+      const requiredQuestions = this.compulsoryQuestionsAnswered(answers);
+      if (!saveInProgress && requiredQuestions.length > 0) {
         this.submitting = false;
         // display a pop up if required question not answered
         return this.notificationService.popUp('shortMessage', {message: 'Required question answer missing!'});
       }
     }
+
     // form feedback answers
     if (this.doReview) {
-      assessment = {
-        id: this.id,
+      assessment = Object.assign(assessment, {
         review_id: this.review.id,
         submission_id: this.submission.id,
-        in_progress: false
-      };
-      if (saveInProgress) {
-        assessment.in_progress = true;
-      }
-      this.utils.each(this.questionsForm.value, (value, key) => {
-        if (value) {
-          const answer = value;
+        in_progress: (saveInProgress) ? true : false,
+      });
+
+      this.utils.each(this.questionsForm.value, (answer, key) => {
+        if (answer) {
           answer.assessment_question_id = +key.replace('q-', '');
           answers.push(answer);
         }
       });
     }
+
     // save the submission/feedback
     this.assessmentService.saveAnswers(assessment, answers, this.action, this.submission.id).subscribe(
       result => {
@@ -342,11 +396,9 @@ export class AssessmentComponent extends RouterEnter {
         }
       }
     );
-    setTimeout(
-      () => {
-        this.saving = false;
-      },
-      10000);
+
+    // if timeout, reset this.saving flag to false, to enable saving again
+    setTimeout(() => this.saving = false, SAVE_PROGRESS_TIMEOUT);
   }
 
   reviewFeedback() {
@@ -371,5 +423,4 @@ export class AssessmentComponent extends RouterEnter {
       minute: 'numeric'
     }).format(new Date());
   }
-
 }
