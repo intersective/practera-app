@@ -13,7 +13,7 @@ import { EventDetailModule } from './event-detail/event-detail.module';
 import { GoMobileModule } from './go-mobile/go-mobile.module';
 
 import { AppComponent } from './app.component';
-import { UtilsService, ContactNumberFormat } from './services/utils.service';
+import { UtilsService } from './services/utils.service';
 import { VersionCheckService } from './services/version-check.service';
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
 import { EmbedVideo } from 'ngx-embed-video';
@@ -56,7 +56,6 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
     // Custom
     UtilsService,
-    ContactNumberFormat,
     VersionCheckService,
   ],
   bootstrap: [AppComponent],

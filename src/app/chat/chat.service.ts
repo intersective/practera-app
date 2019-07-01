@@ -1,9 +1,7 @@
 import { Injectable } from '@angular/core';
 import { RequestService } from '@shared/request/request.service';
-import { HttpParams } from '@angular/common/http';
 import { map } from 'rxjs/operators';
 import { Observable, of } from 'rxjs';
-import { BrowserStorageService } from '@services/storage.service';
 import { UtilsService } from '@services/utils.service';
 import { PusherService } from '@shared/pusher/pusher.service';
 import { environment } from '@environments/environment';
@@ -32,7 +30,7 @@ export interface ChatListObject {
   last_message?: string;
   is_team: boolean;
   participants_only: boolean;
-  chat_color?: string;
+  team_member_image: string;
 }
 
 export interface ChatRoomObject {
@@ -41,7 +39,6 @@ export interface ChatRoomObject {
   is_team?: boolean;
   team_id: number;
   team_member_id: number;
-  chat_color?: string;
   participants_only?: boolean;
 }
 
@@ -52,10 +49,10 @@ export interface Message {
   message?: string;
   sent_time?: string;
   is_sender?: boolean;
-  chat_color?: string;
   noAvatar?: boolean;
   file?: object;
   preview?: string;
+  sender_image: string;
 }
 interface NewMessage {
   to: number | string;
@@ -84,13 +81,6 @@ interface UnreadMessagePrams {
   filter: string;
 }
 
-export interface ChatColor {
-  team_member_id: number;
-  team_id: number;
-  name: string;
-  chat_color: string;
-}
-
 @Injectable({
   providedIn: 'root'
 })
@@ -98,7 +88,6 @@ export class ChatService {
 
   constructor(
     private request: RequestService,
-    private storage: BrowserStorageService,
     private utils: UtilsService,
     private pusherService: PusherService
   ) {}
@@ -127,7 +116,7 @@ export class ChatService {
    *  size:20
    * }
    */
-  getMessageList(data: MessageListPrams, isTeam: boolean, chatColor: string): Observable<any> {
+  getMessageList(data: MessageListPrams, isTeam: boolean): Observable<any> {
     return this.request
       .get(api.getChatMessages, {
         params: data
@@ -137,8 +126,7 @@ export class ChatService {
           if (response.success && response.data) {
             return this._normaliseeMessageListResponse(
               response.data,
-              isTeam,
-              chatColor
+              isTeam
             );
           }
         })
@@ -238,12 +226,9 @@ export class ChatService {
       message: data.event.message,
       sender_name: data.event.sender_name,
       sent_time: data.event.sent_time,
-      chat_color : '',
       file: data.event.file,
+      sender_image: data.event.sender_image
     };
-    if (!message.is_sender) {
-      message.chat_color = this._getAvataColor(message.sender_name, data.event.team_id);
-    }
     return message;
   }
 
@@ -252,26 +237,6 @@ export class ChatService {
       return this.request.apiResponseFormatError('Team format error');
     }
     return data.Team.name;
-  }
-
-  generateChatAvatarText(text) {
-    const chatNameArray = text.split(' ');
-    let avatarText = '';
-    if (chatNameArray[0] && chatNameArray[1]) {
-      avatarText += chatNameArray[0].charAt(0).toUpperCase();
-      avatarText += chatNameArray[1].charAt(0).toUpperCase();
-    } else {
-      avatarText += chatNameArray[0].charAt(0).toUpperCase();
-      avatarText += chatNameArray[0].charAt(1).toUpperCase();
-    }
-
-    return avatarText;
-  }
-
-  private _getRandomColor() {
-    // currently we have 19 colors
-    const randomNumber = Math.floor(Math.random() * 19) + 1;
-    return 'color-' + randomNumber;
   }
 
   /**
@@ -297,7 +262,6 @@ export class ChatService {
         ) {
         return this.request.apiResponseFormatError('Chat object format error');
       }
-      chat['chat_color'] = this._getAvataColor(chat.name, chat.team_id);
       chat.name = this._getChatName(chat);
       chats.push(chat);
     });
@@ -319,9 +283,8 @@ export class ChatService {
    * modify the message list response
    * @param data
    * @param isTeam
-   * @param chatColor
    */
-  private _normaliseeMessageListResponse(data, isTeam, chatColor) {
+  private _normaliseeMessageListResponse(data, isTeam) {
     if (!Array.isArray(data)) {
       return this.request.apiResponseFormatError('Message array format error');
     }
@@ -337,52 +300,8 @@ export class ChatService {
           !this.utils.has(message, 'is_sender')) {
         return this.request.apiResponseFormatError('Message format error');
       }
-      if (!message.is_sender) {
-        message.chat_color = this._getAvataColor(message.sender_name);
-      }
       messageList.push(message);
     });
     return messageList;
-  }
-
-  /**
-   * Get the avatar color of a person
-   * @param {string} name   [Name of this person]
-   * @param {number} teamId [This person's team id]
-   */
-  private _getAvataColor(name, teamId?) {
-    if (!teamId) {
-      teamId = this.storage.getUser().teamId;
-    }
-    // get colors from local storage
-    let chatColors = this.storage.get('chatAvatarColors');
-    if (!chatColors) {
-      chatColors = [];
-    }
-    if (chatColors) {
-      // find the color for this person
-      const chatcolor = chatColors.find(function(chat) {
-        // the reason of storing & checking name instead of id is that the API
-        // 1. returns the actually id in /message/chat/list.json,
-        // 2. returns UUID in send-event from Pusher
-        // 3. doesn't return id in /message/chat/list_message.json
-        // @TODO we need to change API so that it returns UUID all the time later
-        return (chat.name === name && chat.teamId === teamId);
-      });
-      if (chatcolor) {
-        // just return the color if found
-        return chatcolor.color;
-      }
-    }
-    // generate a random color if not found
-    const color = this._getRandomColor();
-    chatColors.push({
-      teamId: teamId,
-      name: name,
-      color: color
-    });
-    // save the new color to local storage
-    this.storage.set('chatAvatarColors', chatColors);
-    return color;
   }
 }
