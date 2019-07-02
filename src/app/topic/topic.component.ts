@@ -9,6 +9,7 @@ import { BrowserStorageService } from '@services/storage.service';
 import { NotificationService } from '@shared/notification/notification.service';
 import { ActivityService, Task } from '../activity/activity.service';
 import { SharedService } from '@services/shared.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-topic',
@@ -99,7 +100,7 @@ export class TopicComponent extends RouterEnter {
    * @description set a topic as read by providing current id
    * @param {Function} callback optional callback function for further action after subcription is completed
    */
-  markAsDone(callback?) {
+  markAsDone(callback?): Subscription {
     return this.topicService.updateTopicProgress(this.id).subscribe(() => {
       // toggle event change should happen after subscription is completed
       this.btnToggleTopicIsDone = true;
@@ -109,11 +110,36 @@ export class TopicComponent extends RouterEnter {
     });
   }
 
+  /**
+   * @name continue
+   * @description button action to trigger `nextStepPrompt`
+   */
+  continue(): Subscription | Promise<any> {
+    // if topic has been marked as read
+    if (this.btnToggleTopicIsDone) {
+      const nextSequence = this.getNextSequence();
+      if (nextSequence) {
+        return this.navigateBySequence(nextSequence);
+      }
+
+      return this.router.navigate(['app', 'activity', this.activityId]);
+    }
+
+    // mark topic as done
+    return this.markAsDone(() => this.nextStepPrompt());
+  }
+
+  /**
+   * @name previewFile
+   * @description open and preview file in a modal
+   * @param {object} file filestack object
+   */
   async previewFile(file) {
     if (this.isLoadingPreview === false) {
       this.isLoadingPreview = true;
-      await this.filestackService.previewFile(file);
+      const filestack = await this.filestackService.previewFile(file);
       this.isLoadingPreview = false;
+      return filestack;
     }
   }
 
@@ -150,8 +176,7 @@ export class TopicComponent extends RouterEnter {
         }
         return this.router.navigate(['assessment', 'assessment', this.activityId , contextId, id]);
       case 'Topic':
-        this.router.navigate(['topic', this.activityId, id]);
-        break;
+        return this.router.navigate(['topic', this.activityId, id]);
 
       default:
         return this.router.navigate(['app', 'activity', this.activityId]);
@@ -177,8 +202,13 @@ export class TopicComponent extends RouterEnter {
     return nextTask;
   }
 
-  nextStepPrompt() {
+  /**
+   * @name nextStepPrompt
+   * @description 
+   */
+  nextStepPrompt(): any {
     const nextSequence = this.getNextSequence();
+
     if (nextSequence) {
       return this.notificationService.alert({
         header: 'Topic completed!',
@@ -192,6 +222,8 @@ export class TopicComponent extends RouterEnter {
           }
         ]
       });
+
+      return;
     }
 
     return this.notificationService.alert({
@@ -211,9 +243,9 @@ export class TopicComponent extends RouterEnter {
   }
 
   back() {
-    // if (this.btnToggleTopicIsDone) {
-    //   return this.router.navigate(['app', 'activity', this.activityId]);
-    // }
+    if (this.btnToggleTopicIsDone) {
+      return this.router.navigate(['app', 'activity', this.activityId]);
+    }
 
     const type = 'Topic';
     return this.notificationService.alert({
