@@ -126,7 +126,9 @@ export class TopicComponent extends RouterEnter {
     }
 
     // mark topic as done
-    return this.markAsDone(() => this.nextStepPrompt());
+    return this.markAsDone(() => {
+      return this.nextStepPrompt();
+    });
   }
 
   /**
@@ -153,7 +155,15 @@ export class TopicComponent extends RouterEnter {
       return tasks[nextIndex];
     } else {
       // condition: if next task is a completed activity, pick the first undone from the list
-      const prioritisedTasks: Task[] = tasks.filter(task => task.status !== 'done');
+      const prioritisedTasks: Task[] = tasks.filter(task => {
+        // avoid team assessment if user isn't in a team
+        if (task.isForTeam && !this.storage.getUser().teamId) {
+          return false;
+        }
+
+        return task.status !== 'done';
+      });
+      
       if (prioritisedTasks.length > 0) {
         return prioritisedTasks[0];
       }
