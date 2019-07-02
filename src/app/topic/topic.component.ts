@@ -9,7 +9,7 @@ import { BrowserStorageService } from '@services/storage.service';
 import { NotificationService } from '@shared/notification/notification.service';
 import { ActivityService, Task } from '../activity/activity.service';
 import { SharedService } from '@services/shared.service';
-import { Subscription } from 'rxjs';
+import { Subscription, Observable } from 'rxjs';
 
 @Component({
   selector: 'app-topic',
@@ -100,13 +100,11 @@ export class TopicComponent extends RouterEnter {
    * @description set a topic as read by providing current id
    * @param {Function} callback optional callback function for further action after subcription is completed
    */
-  markAsDone(callback?): Subscription {
-    return this.topicService.updateTopicProgress(this.id).subscribe(() => {
+  markAsDone(callback?): Observable<any> {
+    return this.topicService.updateTopicProgress(this.id).pipe(response => {
       // toggle event change should happen after subscription is completed
       this.btnToggleTopicIsDone = true;
-      if (callback !== undefined) {
-        return callback();
-      }
+      return response;
     });
   }
 
@@ -114,10 +112,10 @@ export class TopicComponent extends RouterEnter {
    * @name continue
    * @description button action to trigger `nextStepPrompt`
    */
-  continue(): Subscription | Promise<any> {
+  async continue(): Promise<any> {
     // if topic has been marked as read
     if (this.btnToggleTopicIsDone) {
-      const nextSequence = this.getNextSequence();
+      const nextSequence = await this.getNextSequence();
       if (nextSequence) {
         return this.navigateBySequence(nextSequence);
       }
@@ -126,7 +124,7 @@ export class TopicComponent extends RouterEnter {
     }
 
     // mark topic as done
-    return this.markAsDone(() => {
+    return this.markAsDone().subscribe(() => {
       return this.nextStepPrompt();
     });
   }
@@ -163,7 +161,7 @@ export class TopicComponent extends RouterEnter {
 
         return task.status !== 'done';
       });
-      
+
       if (prioritisedTasks.length > 0) {
         return prioritisedTasks[0];
       }
@@ -181,9 +179,6 @@ export class TopicComponent extends RouterEnter {
 
     switch (type) {
       case 'Assessment':
-        if (isForTeam && !this.storage.getUser().teamId) {
-          return this.notificationService.popUp('shortMessage', {message: 'To do this assessment, you have to be in a team.'});
-        }
         return this.router.navigate(['assessment', 'assessment', this.activityId , contextId, id]);
       case 'Topic':
         return this.router.navigate(['topic', this.activityId, id]);
@@ -193,20 +188,19 @@ export class TopicComponent extends RouterEnter {
     }
   }
 
-  getNextSequence() {
-    const tasks = this.sharedService.getCache('tasks');
+  async getNextSequence() {
+    let tasks = this.sharedService.getCache('tasks');
     let nextTask = null;
 
-    // added extra if-statement for efficient data reuse (no need extra API call if cache exist)
+    // reuse cached tasks (if cache present, so no extra API call needed)
     if (tasks && tasks.length > 0) {
       nextTask = this.findNext(tasks);
     } else {
       this.loadingTopic = true;
-      this.activityService.getActivity(this.activityId).subscribe(activity => {
-        this.loadingTopic = false;
-        this.sharedService.setCache('tasks', activity.tasks);
-        nextTask = this.findNext(activity.tasks);
-      });
+      tasks = await this.activityService.getTaskWithStatusByActivityId(this.activityId);
+      this.loadingTopic = false;
+      this.sharedService.setCache('tasks', tasks);
+      nextTask = this.findNext(tasks);
     }
 
     return nextTask;
@@ -214,10 +208,10 @@ export class TopicComponent extends RouterEnter {
 
   /**
    * @name nextStepPrompt
-   * @description 
+   * @description
    */
-  nextStepPrompt(): any {
-    const nextSequence = this.getNextSequence();
+  async nextStepPrompt(): Promise<any> {
+    const nextSequence = await this.getNextSequence();
 
     if (nextSequence) {
       return this.notificationService.alert({
@@ -271,7 +265,7 @@ export class TopicComponent extends RouterEnter {
         {
           text: 'Yes',
           handler: () => {
-            return this.markAsDone(() => {
+            return this.markAsDone().subscribe(() => {
               this.notificationService.popUp('shortMessage', { message: 'You\'ve completed the topic!' });
               return this.router.navigate(['app', 'activity', this.activityId]);
             });
