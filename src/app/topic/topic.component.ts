@@ -143,33 +143,6 @@ export class TopicComponent extends RouterEnter {
     }
   }
 
-  private findNext(tasks: Task[]): Task | null {
-    const currentIndex = tasks.findIndex(task => {
-      return task.id === this.id;
-    });
-
-    const nextIndex = currentIndex + 1;
-    if (tasks[nextIndex] && tasks[nextIndex].status !== 'done') {
-      return tasks[nextIndex];
-    } else {
-      // condition: if next task is a completed activity, pick the first undone from the list
-      const prioritisedTasks: Task[] = tasks.filter(task => {
-        // avoid team assessment if user isn't in a team
-        if (task.isForTeam && !this.storage.getUser().teamId) {
-          return false;
-        }
-
-        return task.status !== 'done';
-      });
-
-      if (prioritisedTasks.length > 0) {
-        return prioritisedTasks[0];
-      }
-    }
-
-    return null;
-  }
-
   /**
    * @name navigateBySequence
    * @param {[type]} sequence [description]
@@ -188,19 +161,23 @@ export class TopicComponent extends RouterEnter {
     }
   }
 
-  async getNextSequence() {
+  private async getNextSequence() {
     let tasks = this.sharedService.getCache('tasks');
     let nextTask = null;
+    const options = {
+      id: this.id,
+      teamId: this.storage.getUser().teamId
+    };
 
     // reuse cached tasks (if cache present, so no extra API call needed)
     if (tasks && tasks.length > 0) {
-      nextTask = this.findNext(tasks);
+      nextTask = this.activityService.findNext(tasks, options);
     } else {
       this.loadingTopic = true;
       tasks = await this.activityService.getTaskWithStatusByActivityId(this.activityId);
       this.loadingTopic = false;
       this.sharedService.setCache('tasks', tasks);
-      nextTask = this.findNext(tasks);
+      nextTask = this.activityService.findNext(tasks, options);
     }
 
     return nextTask;

@@ -278,6 +278,11 @@ export class AssessmentComponent extends RouterEnter {
     return missing;
   }
 
+  /**
+   * handle submission and autosave
+   * @name submit
+   * @param {boolean} saveInProgress set true for autosaving or it treat the action as final submision
+   */
   submit(saveInProgress: boolean) {
     // team submission only accept submit and no save
     if (this.assessment.isForTeam && saveInProgress === true) {
@@ -347,7 +352,9 @@ export class AssessmentComponent extends RouterEnter {
       if (!saveInProgress && requiredQuestions.length > 0) {
         this.submitting = false;
         // display a pop up if required question not answered
-        return this.notificationService.popUp('shortMessage', {message: 'Required question answer missing!'});
+        return this.notificationService.popUp('shortMessage', {
+          message: 'Required question answer missing!'
+        });
       }
     }
 
@@ -376,33 +383,32 @@ export class AssessmentComponent extends RouterEnter {
           // display message for successfull saved answers
           this.savingMessage = 'Last saved ' + this._getCurrentTime();
         } else {
-          // display a pop up for successful submission
-          const nextSequence = this.getNextSequence();
-          if (nextSequence) {
-            return this.notificationService.alert({
-              header: 'Submission successful!',
-              message: 'You have now progressed to the next activity. Would you like to continue?',
-              buttons: [
-                {
-                  text: 'No',
-                  handler: () => {
-                    return this.router.navigate(['app', 'activity', this.activityId]);
-                  },
-                },
-                {
-                  text: 'Yes',
-                  handler: () => {
-                    // check if user has new fastFeedback request
-                    this.fastFeedbackService.pullFastFeedback().subscribe(res => {
-                      return this.navigateBySequence(nextSequence);
-                    });
-                  }
-                }
-              ]
-            });
-          }
 
-          return this.router.navigate(['app', 'home']);
+          this.fastFeedbackService.pullFastFeedback().subscribe(
+            res => {
+              // display a pop up for successful submission
+              const nextSequence = this.getNextSequence();
+              if (nextSequence) {
+                return this.notificationService.alert({
+                  header: 'Submission successful!',
+                  message: 'You may continue to the next learning task.',
+                  buttons: [
+                    {
+                      text: 'CONTINUE',
+                      handler: () => {
+                        // check if user has new fastFeedback request
+                          return this.navigateBySequence(nextSequence);
+                      }
+                    }
+                  ]
+                });
+              }
+            },
+            error => {
+              console.log(error);
+              return this.router.navigate(['app', 'home']);
+            }
+          );
         }
       },
       err => {
@@ -453,31 +459,21 @@ export class AssessmentComponent extends RouterEnter {
     }).format(new Date());
   }
 
-  private findNext(tasks) {
-    const currentIndex = tasks.findIndex(task => {
-      return task.id === this.id;
-    });
-
-    const nextIndex = currentIndex + 1;
-    if (tasks[nextIndex]) {
-      return tasks[nextIndex];
-    }
-
-    return null;
-  }
-
-  private getNextSequence() {
-    const tasks = this.sharedService.getCache('tasks');
+  private async getNextSequence() {
+    let tasks = this.sharedService.getCache('tasks');
     let nextTask = null;
+    const options = {
+      id: this.id,
+      teamId: this.storage.getUser().teamId
+    };
 
-    // added extra if-statement for efficient data reuse (no need extra API call if cache exist)
+    // reuse cached tasks (if cache present, so no extra API call needed)
     if (tasks && tasks.length > 0) {
-      nextTask = this.findNext(tasks);
+      nextTask = this.activityService.findNext(tasks, options);
     } else {
-      this.activityService.getActivity(this.activityId).subscribe(activity => {
-        this.sharedService.setCache('tasks', activity.tasks);
-        nextTask = this.findNext(activity.tasks);
-      });
+      tasks = await this.activityService.getTaskWithStatusByActivityId(this.activityId);
+      this.sharedService.setCache('tasks', tasks);
+      nextTask = this.activityService.findNext(tasks, options);
     }
 
     return nextTask;
@@ -492,9 +488,6 @@ export class AssessmentComponent extends RouterEnter {
 
     switch (type) {
       case 'Assessment':
-        if (isForTeam && !this.storage.getUser().teamId) {
-          return this.notificationService.popUp('shortMessage', {message: 'To do this assessment, you have to be in a team.'});
-        }
         return this.router.navigate(['assessment', 'assessment', this.activityId , contextId, id]);
       case 'Topic':
         this.router.navigate(['topic', this.activityId, id]);
