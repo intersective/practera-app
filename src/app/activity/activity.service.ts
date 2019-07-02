@@ -224,6 +224,42 @@ export class ActivityService {
       }));
   }
 
+  /**
+   * get next task from the provided list of tasks based on array's order
+   * @param  {Task[]}     tasks task list
+   * @param  {object}     options id and teamId
+   * @return {Task}       single task object
+   */
+  findNext(tasks: Task[], options: {
+    id: number;
+    teamId: number;
+  }): Task | null {
+    const currentIndex = tasks.findIndex(task => {
+      return task.id === options.id;
+    });
+
+    const nextIndex = currentIndex + 1;
+    if (tasks[nextIndex] && tasks[nextIndex].status !== 'done') {
+      return tasks[nextIndex];
+    } else {
+      // condition: if next task is a completed activity, pick the first undone from the list
+      const prioritisedTasks: Task[] = tasks.filter(task => {
+        // avoid team assessment if user isn't in a team
+        if (task.isForTeam && !options.teamId) {
+          return false;
+        }
+
+        return task.status !== 'done';
+      });
+
+      if (prioritisedTasks.length > 0) {
+        return prioritisedTasks[0];
+      }
+    }
+
+    return null;
+  }
+
   private _normaliseAssessmentStatus(data: any, task: Task) {
     if (this.utils.isEmpty(data)) {
       task.status = '';
