@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Observable, of } from 'rxjs';
+import { Observable, of, forkJoin } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { RequestService } from '@shared/request/request.service';
 import { UtilsService } from '@services/utils.service';
@@ -48,6 +48,33 @@ export class ActivityService {
     private request: RequestService,
     private utils: UtilsService,
   ) {}
+
+  /**
+   * combine all (get activity, progress for both topic and assessment) steps into one function
+   * so we can access to tasks with progress information easily
+   * @param  {number}       id activity id
+   * @return {Promise<any>}    Promise
+   */
+  async getTaskWithStatusByActivityId(id): Promise<any> {
+    const activity = await this.getActivity(id).toPromise();
+    const tasksWithProgress = await this.getTasksProgress(activity).toPromise();
+
+    // extract assessment type task
+    const assessmentApiCalls = [];
+    const nonAssessments = [];
+    tasksWithProgress.forEach(task => {
+      if (task.type === 'Assessment') {
+        assessmentApiCalls.push(this.getAssessmentStatus(task));
+      } else {
+        nonAssessments.push(task);
+      }
+    });
+
+    // extract assessment type task
+    const assessmentProgresses = await forkJoin(assessmentApiCalls).toPromise();
+
+    return nonAssessments.concat(assessmentProgresses);
+  }
 
   getActivity(id: number): Observable<any> {
     return this.request.get(api.activity, {params: {id: id}})

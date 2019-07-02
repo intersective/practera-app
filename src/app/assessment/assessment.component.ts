@@ -291,6 +291,7 @@ export class AssessmentComponent extends RouterEnter {
       this.submitting = true;
       this.saving = false;
     }
+
     const answers = [];
     let questionId = 0;
     let assessment: {
@@ -299,7 +300,9 @@ export class AssessmentComponent extends RouterEnter {
       context_id?: number;
       review_id?: number;
       submission_id?: number;
-    } = {
+    };
+
+    assessment = {
       id: this.id,
       in_progress: false,
     };
@@ -308,7 +311,6 @@ export class AssessmentComponent extends RouterEnter {
       return;
     }
     this.saving = true;
-
 
     // form submission answers
     if (this.doAssessment) {
@@ -339,6 +341,7 @@ export class AssessmentComponent extends RouterEnter {
           answer: answer
         });
       });
+
       // check if all required questions have answer when assessment done
       const requiredQuestions = this.compulsoryQuestionsAnswered(answers);
       if (!saveInProgress && requiredQuestions.length > 0) {
