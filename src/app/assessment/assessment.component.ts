@@ -278,6 +278,60 @@ export class AssessmentComponent extends RouterEnter {
     return missing;
   }
 
+  // - check if fastfeedback is available
+  // - show next sequence if submission successful
+  private pullFeedbackAndShowNext() {
+    // check if user has new fastFeedback request
+    this.fastFeedbackService.pullFastFeedback().subscribe(
+      res => {
+        // display a pop up for successful submission
+        return this.getNextSequence().then(
+          nextSequence => {
+            this.submitting = false;
+
+            return this.notificationService.alert({
+              header: 'Submission successful!',
+              message: 'You may continue to the next learning task.',
+              buttons: [
+                {
+                  text: 'CONTINUE',
+                  handler: () => {
+                    if (nextSequence) {
+                      return this.navigateBySequence(nextSequence);
+                    }
+
+                    return this.notificationService.alert({
+                      header: 'Activity completed!',
+                      message: 'You may now proceed to the next activity while we process your feedback.',
+                      buttons: [
+                        {
+                          text: 'CONTINUE',
+                          handler: () => {
+                            return this.router.navigate(['app', 'project']);
+                          }
+                        }
+                      ]
+                    });
+                  }
+                }
+              ]
+            });
+          },
+          error => {
+            this.submitting = false;
+            console.log('nextSequence::', error);
+            return this.router.navigate(['app', 'home']);
+          }
+        );
+      },
+      error => {
+        this.submitting = false;
+        console.log('', error);
+        return this.router.navigate(['app', 'home']);
+      }
+    );
+  }
+
   /**
    * handle submission and autosave
    * @name submit
@@ -377,38 +431,13 @@ export class AssessmentComponent extends RouterEnter {
     // save the submission/feedback
     this.assessmentService.saveAnswers(assessment, answers, this.action, this.submission.id).subscribe(
       result => {
-        this.submitting = false;
         this.savingButtonDisabled = false;
         if (saveInProgress) {
+          this.submitting = false;
           // display message for successfull saved answers
           this.savingMessage = 'Last saved ' + this._getCurrentTime();
         } else {
-
-          this.fastFeedbackService.pullFastFeedback().subscribe(
-            res => {
-              // display a pop up for successful submission
-              const nextSequence = this.getNextSequence();
-              if (nextSequence) {
-                return this.notificationService.alert({
-                  header: 'Submission successful!',
-                  message: 'You may continue to the next learning task.',
-                  buttons: [
-                    {
-                      text: 'CONTINUE',
-                      handler: () => {
-                        // check if user has new fastFeedback request
-                          return this.navigateBySequence(nextSequence);
-                      }
-                    }
-                  ]
-                });
-              }
-            },
-            error => {
-              console.log(error);
-              return this.router.navigate(['app', 'home']);
-            }
-          );
+          return this.pullFeedbackAndShowNext();
         }
       },
       err => {
@@ -471,7 +500,11 @@ export class AssessmentComponent extends RouterEnter {
     if (tasks && tasks.length > 0) {
       nextTask = this.activityService.findNext(tasks, options);
     } else {
-      tasks = await this.activityService.getTaskWithStatusByActivityId(this.activityId);
+      tasks = await this.activityService.getTaskWithStatusByActivityId(this.activityId, {
+        key: 'status',
+        value: 'done',
+      });
+
       this.sharedService.setCache('tasks', tasks);
       nextTask = this.activityService.findNext(tasks, options);
     }
@@ -490,9 +523,7 @@ export class AssessmentComponent extends RouterEnter {
       case 'Assessment':
         return this.router.navigate(['assessment', 'assessment', this.activityId , contextId, id]);
       case 'Topic':
-        this.router.navigate(['topic', this.activityId, id]);
-        break;
-
+        return this.router.navigate(['topic', this.activityId, id]);
       default:
         return this.router.navigate(['app', 'activity', this.activityId]);
     }

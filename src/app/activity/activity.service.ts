@@ -55,7 +55,10 @@ export class ActivityService {
    * @param  {number}       id activity id
    * @return {Promise<any>}    Promise
    */
-  async getTaskWithStatusByActivityId(id): Promise<any> {
+  async getTaskWithStatusByActivityId(id, filters?: {
+    key: string;
+    value: string;
+  }): Promise<any> {
     const activity = await this.getActivity(id).toPromise();
     const tasksWithProgress = await this.getTasksProgress(activity).toPromise();
 
@@ -71,7 +74,13 @@ export class ActivityService {
     });
 
     // extract assessment type task
-    const assessmentProgresses = await forkJoin(assessmentApiCalls).toPromise();
+    let assessmentProgresses = await forkJoin(assessmentApiCalls).toPromise();
+
+    if (filters) {
+      assessmentProgresses = assessmentProgresses.filter(progress => {
+        return progress[filters.key] === filters.value;
+      });
+    }
 
     return nonAssessments.concat(assessmentProgresses);
   }
