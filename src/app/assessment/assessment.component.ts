@@ -194,8 +194,9 @@ export class AssessmentComponent extends RouterEnter {
     let validator = [];
     this.assessment.groups.forEach(group => {
       group.questions.forEach(question => {
-        // put 'required' validator in FormControl
-        if (question.isRequired) {
+        // check if the compulsory is mean for current user's role
+        if (question.isRequired && question.audience.includes(this.storage.getUser().role)) {
+          // put 'required' validator in FormControl
           validator = [Validators.required];
         } else {
           validator = [];
