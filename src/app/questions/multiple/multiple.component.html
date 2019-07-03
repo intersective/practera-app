@@ -5,7 +5,7 @@
       <ion-checkbox [checked]="submission.answer.includes(choice.id)" disabled mode="md"></ion-checkbox>
     </ion-item>
   </ion-list>
-  <div *ngIf="submission.explanation" class="q-reviews">
+  <div *ngIf="submission.explanation.changingThisBreaksApplicationSecurity" class="q-reviews">
     <ion-label class="q-title">Explanation</ion-label>
     <p class="paragraph" [innerHtml]="submission.explanation"></p>
   </div>
