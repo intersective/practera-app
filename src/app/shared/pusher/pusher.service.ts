@@ -6,8 +6,24 @@ import { RequestService } from '@shared/request/request.service';
 import { environment } from '@environments/environment';
 import { UtilsService } from '@services/utils.service';
 import { BrowserStorageService } from '@services/storage.service';
+import { PusherStatic, Pusher, Config, AuthConfig } from 'pusher-js';
+import * as PusherLib from 'pusher-js';
 
-declare const Pusher: any;
+export interface PusherTypeConfig {
+  authEndpoint: string;
+  cluster: string;
+  forceTLS: boolean;
+  auth: {
+    headers: {
+      Authorization: string;
+      appkey: string;
+      apikey: string;
+      timelineid: string;
+    };
+  };
+  [propName: string]: any;
+}
+
 const api = {
   pusherAuth: 'api/v2/message/notify/pusher_auth.json',
   channels: 'api/v2/message/notify/channels.json'
@@ -25,7 +41,7 @@ export class PusherConfig {
 export class PusherService {
   private pusherKey: string;
   private apiurl: string;
-  private pusher;
+  private pusher: Pusher;
   private channelNames = {
     presence: null,
     team: null,
@@ -52,15 +68,26 @@ export class PusherService {
     }
   }
 
-  initialisePusher() {
+  // check if pusher has been instanitated correctly
+  isInitantiated() {
+    console.log(this.pusher);
+    return !this.utils.isEmpty(this.pusher);
+  }
 
-    // @CHAW: we shouldn't be reinstantiating this class every page request. It should be done once
+  initialisePusher() {
     // during the app execution lifecycle
     if (typeof this.pusher !== 'undefined') {
       return;
     }
+
+    // prevent pusher auth before user authenticated (skip silently)
+    const { apikey, timelineId } = this.storage.getUser();
+    if (!apikey || !timelineId) {
+      return;
+    }
+
     try {
-      this.pusher = new Pusher(this.pusherKey, {
+      const config: Config = {
         cluster: 'mt1',
         forceTLS: true,
         authEndpoint: this.apiurl + api.pusherAuth,
@@ -72,7 +99,9 @@ export class PusherService {
             'timelineid': this.storage.getUser().timelineId
           },
         },
-      });
+      };
+
+      this.pusher = new PusherLib(this.pusherKey, config);
     } catch (err) {
       throw new Error(err);
     }
@@ -81,7 +110,8 @@ export class PusherService {
   getChannels() {
     // unsubscribe channels before subscribe the new ones
     this.unsubscribeChannels();
-    // @CHAW we should cache this response locally for 15 minutes - the channel list is unlikely to 
+
+    // @CHAW we should cache this response locally for 15 minutes - the channel list is unlikely to
     // change in that time period. This will help with server load
     return this.request.get(api.channels, {params: {
         env: environment.env
@@ -110,14 +140,23 @@ export class PusherService {
   }
 
   private _subscribeChannels(channels) {
-    if (!Array.isArray(channels) || this.utils.isEmpty(channels)) {
-      return this.request.apiResponseFormatError('Pusher channels format error');
+    // channels format verification
+    if (this.utils.isEmpty(channels)) {
+      return this.request.apiResponseFormatError('Pusher channels cannot be empty');
     }
+
+    if (!Array.isArray(channels)) {
+      return this.request.apiResponseFormatError('Pusher channels must be an array');
+    }
+
+    const incorrectChannelName = channels.find(channel => !this.utils.has(channel, 'channel'));
+    if (incorrectChannelName) {
+      return this.request.apiResponseFormatError('Pusher channel format error');
+    }
+
     channels.forEach(channel => {
-      if (!this.utils.has(channel, 'channel')) {
-        return this.request.apiResponseFormatError('Pusher channel format error');
-      }
       // subscribe channels and bind events
+      // team
       if (channel.channel.includes('private-' + environment.env + '-team-') &&
           !channel.channel.includes('nomentor')) {
         this.channelNames.team = channel.channel;
@@ -133,6 +172,8 @@ export class PusherService {
         });
         return;
       }
+
+      // team without mentor
       if (channel.channel.includes('private-' + environment.env + '-team-nomentor-')) {
         this.channelNames.teamNoMentor = channel.channel;
         this.channels.teamNoMentor = this.pusher.subscribe(channel.channel);
@@ -147,6 +188,8 @@ export class PusherService {
         });
         return;
       }
+
+      // notification
       if (channel.channel.includes('private-' + environment.env + '-notification-')) {
         this.channelNames.notification = channel.channel;
         this.channels.notification = this.pusher.subscribe(channel.channel);
@@ -161,6 +204,8 @@ export class PusherService {
         });
         return;
       }
+
+      // team member presence
       if (channel.channel.includes('presence-' + environment.env + '-team-')) {
         this.channelNames.presence = channel.channel;
         this.channels.presence = this.pusher.subscribe(channel.channel);
