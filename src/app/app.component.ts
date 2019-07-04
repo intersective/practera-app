@@ -91,13 +91,7 @@ export class AppComponent implements OnInit {
       this.versionCheckService.initiateVersionCheck();
 
       // initialise Pusher
-      this.pusherService.initialisePusher();
-
-      // @CHAW: do we need the .subscribe() since getChannels also calls subscribe?
-      // subscribe to Pusher channels
-      this.pusherService.getChannels().subscribe();
-      // this.statusBar.styleDefault();
-      // this.splashScreen.hide();
+      this.pusherService.initantiate();
     });
   }
 

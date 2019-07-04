@@ -1,28 +1,13 @@
 import { Injectable, Optional } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams, HttpErrorResponse, HttpParameterCodec } from '@angular/common/http';
 import { Observable, of, Subject } from 'rxjs';
-import { catchError, map, filter } from 'rxjs/operators';
+import { catchError, map } from 'rxjs/operators';
 import { RequestService } from '@shared/request/request.service';
 import { environment } from '@environments/environment';
 import { UtilsService } from '@services/utils.service';
 import { BrowserStorageService } from '@services/storage.service';
-import { PusherStatic, Pusher, Config, AuthConfig } from 'pusher-js';
+import { PusherStatic, Pusher, Config } from 'pusher-js';
 import * as PusherLib from 'pusher-js';
-
-export interface PusherTypeConfig {
-  authEndpoint: string;
-  cluster: string;
-  forceTLS: boolean;
-  auth: {
-    headers: {
-      Authorization: string;
-      appkey: string;
-      apikey: string;
-      timelineid: string;
-    };
-  };
-  [propName: string]: any;
-}
 
 const api = {
   pusherAuth: 'api/v2/message/notify/pusher_auth.json',
@@ -68,22 +53,42 @@ export class PusherService {
     }
   }
 
+  // instantiate + subscribe to channels at one go
+  async initantiate() {
+    const pusher = await this.initialisePusher();
+    if (!pusher) {
+      return {};
+    }
+
+    // subscribe to event only when pusher is available
+    const channels = await this.getChannels().toPromise();
+    return {
+      pusher,
+      channels
+    };
+  }
+
   // check if pusher has been instanitated correctly
   isInitantiated() {
     console.log(this.pusher);
     return !this.utils.isEmpty(this.pusher);
   }
 
-  initialisePusher() {
+  private async initialisePusher(): Promise<Pusher> {
     // during the app execution lifecycle
     if (typeof this.pusher !== 'undefined') {
-      return;
+      return this.pusher;
     }
 
     // prevent pusher auth before user authenticated (skip silently)
     const { apikey, timelineId } = this.storage.getUser();
     if (!apikey || !timelineId) {
-      return;
+      return this.pusher;
+    }
+
+    // never reinstantiate another instance of Pusher
+    if (!this.utils.isEmpty(this.pusher)) {
+      return this.pusher;
     }
 
     try {
@@ -101,10 +106,12 @@ export class PusherService {
         },
       };
 
-      this.pusher = new PusherLib(this.pusherKey, config);
+      this.pusher = await new PusherLib(this.pusherKey, config);
     } catch (err) {
       throw new Error(err);
     }
+
+    return this.pusher;
   }
 
   getChannels() {
