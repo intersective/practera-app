@@ -1,7 +1,7 @@
 import { Injectable, Optional } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams, HttpErrorResponse, HttpParameterCodec } from '@angular/common/http';
 import { Observable, of, Subject } from 'rxjs';
-import { catchError, map } from 'rxjs/operators';
+import { catchError, map, debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
 import { RequestService } from '@shared/request/request.service';
 import { environment } from '@environments/environment';
 import { UtilsService } from '@services/utils.service';
@@ -51,6 +51,8 @@ export class PusherService {
     teamNoMentor: null,
     notification: null
   };
+
+  private typingAction = new Subject<any>();
 
   constructor(
     private http: HttpClient,
@@ -126,12 +128,11 @@ export class PusherService {
     return this.pusher;
   }
 
-  getChannels() {
-    // unsubscribe channels before subscribe the new ones
-    this.unsubscribeChannels();
+  validateChannels() {
 
-    // @CHAW we should cache this response locally for 15 minutes - the channel list is unlikely to
-    // change in that time period. This will help with server load
+  }
+
+  getChannels() {
     return this.request.get(api.channels, {
       params: { env: environment.env }
     }).pipe(map(response => {
@@ -190,7 +191,7 @@ export class PusherService {
             this.utils.broadcastEvent('team-typing', data);
           })
           .bind('pusher:subscription_succeeded', data => {
-            this.channelNames.team.subscription = data;
+            this.channelNames.team.subscription = true;
           })
           .bind('pusher:subscription_error', () => {
             this.channelNames.team.subscription = `${channel.channel} channel subscription failed.`;
@@ -215,7 +216,7 @@ export class PusherService {
             this.utils.broadcastEvent('team-no-mentor-typing', data);
           })
           .bind('pusher:subscription_succeeded', data => {
-            this.channelNames.teamNoMentor.subscription = data;
+            this.channelNames.teamNoMentor.subscription = true;
           })
           .bind('pusher:subscription_error', data => {
             this.channelNames.teamNoMentor.subscription = `${channel.channel} channel subscription failed.`;
@@ -239,7 +240,7 @@ export class PusherService {
             this.utils.broadcastEvent('event-reminder', data);
           })
           .bind('pusher:subscription_succeeded', data => {
-            this.channelNames.notification.subscription = data;
+            this.channelNames.notification.subscription = true;
           })
           .bind('pusher:subscription_error', data => {
             this.channelNames.notification.subscription = `${channel.channel} channel subscription failed.`;
@@ -254,7 +255,7 @@ export class PusherService {
 
         this.channels.presence
           .bind('pusher:subscription_succeeded', data => {
-            this.channelNames.presence.subscription = data;
+            this.channelNames.presence.subscription = true;
           })
           .bind('pusher:subscription_error', data => {
             this.channelNames.presence.subscription = `${channel.channel} channel subscription failed.`;
@@ -263,7 +264,9 @@ export class PusherService {
       }
     });
 
-    return this.pusher.channels;
+    return this.initiateTypingEvent().subscribe(data => {
+      return this.pusher.channels;
+    });
   }
 
   getMyPresenceChannelId() {
@@ -272,12 +275,28 @@ export class PusherService {
     }
   }
 
-  triggerTypingEvent(data, participantsOnly) {
+  triggerTyping(data, participantsOnly) {
     if (participantsOnly) {
-      this.channels.teamNoMentor.trigger('client-typing-event', data);
-    } else {
-      this.channels.team.trigger('client-typing-event', data);
+      return this.typingAction.next({
+        data,
+        channel: this.channels.teamNoMentor,
+      });
     }
+
+    return this.typingAction.next({
+      data,
+      channel: this.channels.team
+    });
+  }
+
+  initiateTypingEvent() {
+    return this.typingAction.pipe(
+      debounceTime(300),
+      switchMap(event => {
+        return of(event.channel.trigger('client-typing-event', event.data));
+      })
+    );
+
   }
 
 }
