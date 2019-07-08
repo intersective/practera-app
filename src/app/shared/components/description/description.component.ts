@@ -38,10 +38,13 @@ export class DescriptionComponent implements AfterViewInit, OnChanges {
 
   ngAfterViewInit() {
     // if it is used in modal window, the clientHeight is 0 here, so we delayed 500 ms to check it
-    setTimeout(() => {
-      this.elementHeight = this.descriptionRef.nativeElement.clientHeight;
-      this.heightExceeded = this.elementHeight >= this.heightLimit;
-    }, 500);
+    setTimeout(
+      () => {
+        this.elementHeight = this.descriptionRef.nativeElement.clientHeight;
+        this.heightExceeded = this.elementHeight >= this.heightLimit;
+      },
+      500
+    );
   }
 
 }
