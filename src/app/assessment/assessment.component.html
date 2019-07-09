@@ -131,7 +131,7 @@
 
     <ion-button
       *ngIf="doAssessment || doReview"
-      [disabled]="submitting"
+      [disabled]="submitting || questionsForm.invalid"
       (click)="submit(false)"
       shape="round"
       expand="full">
