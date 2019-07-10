@@ -1,4 +1,4 @@
-<ion-header>
+<ion-header mode="ios">
   <ion-toolbar color="light">
     <ion-icon name="arrow-back" (click)="back()" color="primary" slot="start" margin-start></ion-icon>
     <ion-title text-center>Assessment</ion-title>
@@ -131,7 +131,7 @@
 
     <ion-button
       *ngIf="doAssessment || doReview"
-      [disabled]="submitting"
+      [disabled]="submitting || questionsForm.invalid"
       (click)="submit(false)"
       shape="round"
       expand="full">

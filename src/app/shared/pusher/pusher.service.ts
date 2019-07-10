@@ -81,7 +81,7 @@ export class PusherService {
   getChannels() {
     // unsubscribe channels before subscribe the new ones
     this.unsubscribeChannels();
-    // @CHAW we should cache this response locally for 15 minutes - the channel list is unlikely to 
+    // @CHAW we should cache this response locally for 15 minutes - the channel list is unlikely to
     // change in that time period. This will help with server load
     return this.request.get(api.channels, {params: {
         env: environment.env
