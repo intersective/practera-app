@@ -18,6 +18,7 @@ export const environment = {
       }
     }
   },
+  defaultCountryModel: 'AUS',
   intercom: true,
   goMobile: false,
 };

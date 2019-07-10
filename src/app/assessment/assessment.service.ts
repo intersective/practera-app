@@ -75,6 +75,7 @@ export interface Submission {
   answers: any;
   submitterName: string;
   modified: string;
+  reviewerName: string;
 }
 
 export interface Review {
@@ -296,7 +297,8 @@ export class AssessmentService {
       status: thisSubmission.AssessmentSubmission.status,
       answers: {},
       submitterName: thisSubmission.Submitter.name,
-      modified: thisSubmission.AssessmentSubmission.modified
+      modified: thisSubmission.AssessmentSubmission.modified,
+      reviewerName: this.checkReviewer(thisSubmission.Reviewer)
     };
 
     // -- normalise submission answers
@@ -497,6 +499,13 @@ export class AssessmentService {
       reviewId,
       redirect
     });
+  }
+
+  checkReviewer(reviewer) {
+    if (!reviewer) {
+      return undefined;
+    }
+    return reviewer.name !== this.storage.getUser().name ? reviewer.name : undefined;
   }
 
 }

@@ -22,6 +22,7 @@ export const environment = {
       }
     }
   },
+  defaultCountryModel: 'AUS',
   intercom: false,
   goMobile: false,
 };

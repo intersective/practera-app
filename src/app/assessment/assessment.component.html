@@ -1,4 +1,4 @@
-<ion-header>
+<ion-header mode="ios">
   <ion-toolbar color="light">
     <ion-icon name="arrow-back" (click)="back()" color="primary" slot="start" margin-start></ion-icon>
     <ion-title text-center>Assessment</ion-title>
@@ -19,6 +19,11 @@
   <div class="review-submitter" *ngIf="!doAssessment" text-left>
     <p class="title">
       Submitted by {{ submission.submitterName }}
+    </p>
+  </div>
+  <div *ngIf="submission.reviewerName" class="review-submitter" text-left>
+    <p class="title">
+      Reviewed by {{ submission.reviewerName }} {{review.status}}
     </p>
   </div>
 
