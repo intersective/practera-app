@@ -42,7 +42,8 @@ export class AssessmentComponent extends RouterEnter {
     status: '',
     answers: {},
     submitterName: '',
-    modified: ''
+    modified: '',
+    reviewerName: ''
   };
   review: Review = {
     id: 0,
@@ -89,7 +90,8 @@ export class AssessmentComponent extends RouterEnter {
       status: '',
       answers: {},
       submitterName: '',
-      modified: ''
+      modified: '',
+      reviewerName: ''
     };
     this.review = {
       id: 0,
@@ -101,6 +103,13 @@ export class AssessmentComponent extends RouterEnter {
     this.loadingSubmission = true;
     this.loadingFeedbackReviewed = true;
     this.saving = false;
+    this.doAssessment = false;
+    this.doReview = false;
+    this.feedbackReviewed = false;
+    this.questionsForm = new FormGroup({});
+    this.submitting = false;
+    this.savingButtonDisabled = true;
+    this.savingMessage = '';
   }
 
   onEnter() {
@@ -185,8 +194,9 @@ export class AssessmentComponent extends RouterEnter {
     let validator = [];
     this.assessment.groups.forEach(group => {
       group.questions.forEach(question => {
-        // put 'required' validator in FormControl
-        if (question.isRequired) {
+        // check if the compulsory is mean for current user's role
+        if (question.isRequired && question.audience.includes(this.storage.getUser().role)) {
+          // put 'required' validator in FormControl
           validator = [Validators.required];
         } else {
           validator = [];
