@@ -42,10 +42,11 @@ export class SwitcherProgramComponent implements OnInit {
     });
     await loading.present();
 
+    // reset pusher (upon new timelineId)
+    this.pusherService.initantiate({ unsubscribe: true });
+
     return this.switcherService.switchProgram(this.programs[index]).subscribe(() => {
       loading.dismiss().then(() => {
-        // reset pusher (due to newly selected timelineId)
-        this.pusherService.initantiate();
 
         if ((typeof environment.goMobile !== 'undefined' && environment.goMobile === false)
           || /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
