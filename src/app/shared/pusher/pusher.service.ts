@@ -6,7 +6,7 @@ import { RequestService } from '@shared/request/request.service';
 import { environment } from '@environments/environment';
 import { UtilsService } from '@services/utils.service';
 import { BrowserStorageService } from '@services/storage.service';
-import { PusherStatic, Pusher, Config } from 'pusher-js';
+import { PusherStatic, Pusher, Config, Channel } from 'pusher-js';
 import * as PusherLib from 'pusher-js';
 
 const api = {
@@ -68,10 +68,26 @@ export class PusherService {
   }
 
   // instantiate + subscribe to channels at one go
-  async initantiate() {
-    const pusher = await this.initialisePusher();
-    if (!pusher) {
-      return {};
+  async initantiate(options?: {
+    unsubscribe?: boolean;
+  }) {
+    let pusher = this.pusher;
+
+    // make sure pusher is connected
+    if (!this.pusher) {
+      pusher = await this.initialisePusher();
+    }
+
+    if (options && options.unsubscribe) {
+      this.unsubscribeChannels();
+      this.typingAction = new Subject<any>();
+    }
+
+    // handling condition at re-login without rebuilding pusher (where isInstantiated() is false)
+    if (this.pusher.connection.state !== 'connected') {
+      // reconnect pusher
+      this.pusher.connect();
+      pusher = this.pusher;
     }
 
     // subscribe to event only when pusher is available
@@ -82,10 +98,21 @@ export class PusherService {
     };
   }
 
+  disconnect(): any {
+    return this.pusher.disconnect();
+  }
+
   // check if pusher has been instantiated correctly
-  isInstantiated() {
-    console.log(this.pusher);
-    return !this.utils.isEmpty(this.pusher);
+  isInstantiated(): boolean {
+    if (this.utils.isEmpty(this.pusher)) {
+      return false;
+    }
+
+    if (this.pusher.connection.state === 'disconnected') {
+      return false;
+    }
+
+    return true;
   }
 
   private async initialisePusher(): Promise<Pusher> {
@@ -130,16 +157,20 @@ export class PusherService {
 
   /**
    * check if every channel has been subscribed properly
+   * true: subscribed
+   * false: haven't subscribed
    */
-  validateChannels(): number {
-    const failedSubscription = [];
-    this.utils.each(this.channelNames, channel => {
-      if (channel.subscription === null) {
-        failedSubscription.push(channel);
+  isSubscribed(newChannelName): boolean {
+    const channels = this.pusher.allChannels();
+    let subscribedChannel = false;
+
+    this.utils.each(channels, (channel: Channel) => {
+      if (channel.name === newChannelName && channel.subscribed) {
+        subscribedChannel = true;
       }
     });
 
-    return failedSubscription.length;
+    return subscribedChannel;
   }
 
   /**
@@ -147,13 +178,6 @@ export class PusherService {
    * connected + authorizded pusher
    */
   getChannels(): Observable<any> {
-    // avoid redundant API call to server & pusher
-    if (this.validateChannels() === 0) {
-      return of(true);
-    }
-
-    this.unsubscribeChannels();
-
     return this.request.get(api.channels, {
       params: { env: environment.env }
     }).pipe(map(response => {
@@ -163,17 +187,21 @@ export class PusherService {
     }));
   }
 
-  // unsubscribe all channels
-  unsubscribeChannels() {
+  /**
+   * unsubscribe all channels
+   * (use case: after switching program)
+   */
+  unsubscribeChannels(): void {
     this.utils.each(this.channelNames, (channel, key) => {
       if (channel) {
         this.channelNames[key] = { name: null, subscription: null };
         if (this.channels[key]) {
           // unbind all events from this channel
-          this.channels[key].unbind();
+          this.channels[key].unbind_all();
           this.channels[key] = null;
         }
-        this.pusher.unsubscribe(channel);
+        this.pusher.unbind_all();
+        this.pusher.unsubscribe(channel.name);
       }
     });
   }
@@ -198,6 +226,10 @@ export class PusherService {
       // team
       if (channel.channel.includes('private-' + environment.env + '-team-') &&
           !channel.channel.includes('nomentor')) {
+        if (this.isSubscribed(channel.channel)) {
+          return;
+        }
+
         this.channelNames.team.name = channel.channel;
         this.channels.team = this.pusher.subscribe(channel.channel);
 
@@ -223,6 +255,10 @@ export class PusherService {
 
       // team without mentor
       if (channel.channel.includes('private-' + environment.env + '-team-nomentor-')) {
+        if (this.isSubscribed(channel.channel)) {
+          return;
+        }
+
         this.channelNames.teamNoMentor.name = channel.channel;
         this.channels.teamNoMentor = this.pusher.subscribe(channel.channel);
 
@@ -247,6 +283,10 @@ export class PusherService {
 
       // notification
       if (channel.channel.includes('private-' + environment.env + '-notification-')) {
+        if (this.isSubscribed(channel.channel)) {
+          return;
+        }
+
         this.channelNames.notification.name = channel.channel;
         this.channels.notification = this.pusher.subscribe(channel.channel);
 
@@ -271,6 +311,10 @@ export class PusherService {
 
       // team member presence
       if (channel.channel.includes('presence-' + environment.env + '-team-')) {
+        if (this.isSubscribed(channel.channel)) {
+          return;
+        }
+
         this.channelNames.presence.name = channel.channel;
         this.channels.presence = this.pusher.subscribe(channel.channel);
 
@@ -285,18 +329,24 @@ export class PusherService {
       }
     });
 
+    // subscribe to typing event
     return this.initiateTypingEvent().subscribe(data => {
       return this.pusher.channels;
     });
   }
 
-  getMyPresenceChannelId() {
+  getMyPresenceChannelId(): any {
     if (!this.utils.isEmpty(this.channels.presence) && this.utils.has(this.channels.presence, 'members')) {
       return this.channels.presence.members.me.id;
     }
+    return;
   }
 
-  triggerTyping(data, participantsOnly) {
+  /**
+   * prepare subsequent "next" trigger for hot observable,
+   * let rxjs handle the repeated trigger before API
+   */
+  triggerTyping(data, participantsOnly): void {
     if (participantsOnly) {
       return this.typingAction.next({
         data,
@@ -310,14 +360,17 @@ export class PusherService {
     });
   }
 
-  initiateTypingEvent() {
+  initiateTypingEvent(): Observable<any> {
     return this.typingAction.pipe(
       debounceTime(300),
       switchMap(event => {
-        return of(event.channel.trigger('client-typing-event', event.data));
+        if (event.channel) {
+          return of(event.channel.trigger('client-typing-event', event.data));
+        }
+        // error handling for unsubscribed pusher channel
+        return of(true);
       })
     );
-
   }
 
 }

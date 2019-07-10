@@ -150,6 +150,7 @@ export class AuthService {
     // use the config color
     this.utils.changeThemeColor(this.storage.getConfig().color || '#2bbfd4');
     this.pusherService.unsubscribeChannels();
+    this.pusherService.disconnect();
     const config = this.storage.getConfig();
     this.storage.clear();
     // still store config info even logout
