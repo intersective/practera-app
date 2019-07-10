@@ -128,11 +128,32 @@ export class PusherService {
     return this.pusher;
   }
 
-  validateChannels() {
+  /**
+   * check if every channel has been subscribed properly
+   */
+  validateChannels(): number {
+    const failedSubscription = [];
+    this.utils.each(this.channelNames, channel => {
+      if (channel.subscription === null) {
+        failedSubscription.push(channel);
+      }
+    });
 
+    return failedSubscription.length;
   }
 
-  getChannels() {
+  /**
+   * get a list of channels from API request and subscribe every of them into
+   * connected + authorizded pusher
+   */
+  getChannels(): Observable<any> {
+    // avoid redundant API call to server & pusher
+    if (this.validateChannels() === 0) {
+      return of(true);
+    }
+
+    this.unsubscribeChannels();
+
     return this.request.get(api.channels, {
       params: { env: environment.env }
     }).pipe(map(response => {
