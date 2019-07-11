@@ -67,6 +67,8 @@ export class SharedService {
     }
     // initialise Pusher
     this.pusherService.initialisePusher();
+
+    // @CHAW: do we need the .subscribe() since getChannels also calls subscribe?
     // subscribe to Pusher channels
     this.pusherService.getChannels().subscribe();
 
