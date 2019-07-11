@@ -377,7 +377,7 @@ export class ChatRoomComponent extends RouterEnter {
    * Trigger typing event when user is typing
    */
   typing() {
-    this.pusherService.triggerTypingEvent(
+    this.pusherService.triggerTyping(
       {
         from: this.pusherService.getMyPresenceChannelId(),
         to: this.selectedChat.name,
