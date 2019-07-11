@@ -1,0 +1,38 @@
+.contain {
+  height: 400px;
+  width: 400px;
+  text-align: center;
+  margin: auto;
+  svg {
+    width: 100%;
+    height: 100%;
+    rect {
+      animation-name: flash;
+      animation-duration: 1s;
+      animation-iteration-count: infinite;
+      fill: var(--ion-color-primary);
+      opacity: 0;
+      &:nth-child(2) {
+        animation-delay: 0.25s;
+      }
+      &:nth-child(3) {
+        animation-delay: 0.5s;
+      }
+      &:nth-child(4) {
+        animation-delay: 0.75s;
+      }
+    }
+  }
+}
+
+@keyframes flash {
+  0% {
+    opacity: 1;
+  }
+  25% {
+    opacity: 1;
+  }
+  26% {
+    opacity: 0;
+  }
+}
