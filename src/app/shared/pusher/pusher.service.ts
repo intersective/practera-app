@@ -78,6 +78,10 @@ export class PusherService {
       pusher = await this.initialisePusher();
     }
 
+    if (!pusher) {
+      return {};
+    }
+
     if (options && options.unsubscribe) {
       this.unsubscribeChannels();
       this.typingAction = new Subject<any>();
