@@ -21,11 +21,14 @@ import { environment } from '@environments/environment';
 import { IntercomModule } from 'ng-intercom';
 import { PusherModule } from '@shared/pusher/pusher.module';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { SvgNotFoundComponent } from '@components/svg-not-found/svg-not-found.component';
+
 
 @NgModule({
   declarations: [
     AppComponent,
-    PageNotFoundComponent
+    PageNotFoundComponent,
+    SvgNotFoundComponent
   ],
   imports: [
     BrowserModule,
