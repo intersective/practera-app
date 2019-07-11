@@ -6,6 +6,7 @@ import { SwitcherService, ProgramObj } from '../switcher.service';
 import { RouterEnter } from '@services/router-enter.service';
 import { LoadingController } from '@ionic/angular';
 import { environment } from '@environments/environment';
+import { PusherService } from '@shared/pusher/pusher.service';
 
 @Injectable({
   providedIn: 'root'
@@ -24,6 +25,7 @@ export class SwitcherProgramComponent implements OnInit {
     public loadingController: LoadingController,
     public router: Router,
     private authService: AuthService,
+    private pusherService: PusherService,
     private switcherService: SwitcherService,
   ) {}
 
@@ -40,14 +42,19 @@ export class SwitcherProgramComponent implements OnInit {
     });
     await loading.present();
 
-    this.switcherService.switchProgram(this.programs[index]).subscribe(() => {
-      loading.dismiss();
-      if ((typeof environment.goMobile !== 'undefined' && environment.goMobile === false)
-        || /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
-        return this.router.navigate(['/app/home']);
-      } else {
-        return this.router.navigate(['/go-mobile']);
-      }
+    // reset pusher (upon new timelineId)
+    this.pusherService.initantiate({ unsubscribe: true });
+
+    return this.switcherService.switchProgram(this.programs[index]).subscribe(() => {
+      loading.dismiss().then(() => {
+
+        if ((typeof environment.goMobile !== 'undefined' && environment.goMobile === false)
+          || /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
+          return this.router.navigate(['/app/home']);
+        } else {
+          return this.router.navigate(['/go-mobile']);
+        }
+      });
     });
   }
 
