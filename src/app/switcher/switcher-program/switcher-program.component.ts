@@ -38,16 +38,16 @@ export class SwitcherProgramComponent implements OnInit {
     const loading = await this.loadingController.create({
       message: 'loading...'
     });
-    await loading.present();
-
-    this.switcherService.switchProgram(this.programs[index]).subscribe(() => {
-      loading.dismiss();
-      if ((typeof environment.goMobile !== 'undefined' && environment.goMobile === false)
-        || /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
-        return this.router.navigate(['/app/home']);
-      } else {
-        return this.router.navigate(['/go-mobile']);
-      }
+    loading.present().then(() => {
+      this.switcherService.switchProgram(this.programs[index]).subscribe(test => {
+        loading.dismiss();
+        if ((typeof environment.goMobile !== 'undefined' && environment.goMobile === false)
+          || /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
+          return this.router.navigate(['/app/home']);
+        } else {
+          return this.router.navigate(['/go-mobile']);
+        }
+      });
     });
   }
 
