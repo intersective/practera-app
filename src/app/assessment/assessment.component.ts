@@ -518,7 +518,7 @@ export class AssessmentComponent extends RouterEnter {
 
   /**
    * @name navigateBySequence
-   * @param {[type]} sequence [description]
+   * @param {Task} sequence task object from activity service
    */
   private navigateBySequence(sequence, options?: {
     routeOnly?: boolean;
