@@ -283,7 +283,7 @@ export class AssessmentComponent extends RouterEnter {
   // - show next sequence if submission successful
   private pullFeedbackAndShowNext() {
     // check if user has new fastFeedback request
-    this.fastFeedbackService.pullFastFeedback().subscribe(
+    return this.fastFeedbackService.pullFastFeedback().subscribe(
       res => {
         // display a pop up for successful submission
         return this.getNextSequence().then(
@@ -466,13 +466,16 @@ export class AssessmentComponent extends RouterEnter {
     setTimeout(() => this.saving = false, SAVE_PROGRESS_TIMEOUT);
   }
 
+  // mark review as read
   reviewFeedback() {
     this.feedbackReviewed = true;
     this.assessmentService.saveFeedbackReviewed(this.submission.id).subscribe(result => {
       // if review is successfully mark as read and program is configured to enable review rating,
       // display review rating modal and then redirect to activity page.
       if (result.success && this.storage.getUser().hasReviewRating === true) {
-        this.assessmentService.popUpReviewRating(this.review.id, ['app', 'home']);
+        this.getNextSequence().then(nextSequence => {
+          this.assessmentService.popUpReviewRating(this.review.id, this.navigateBySequence(nextSequence, {routeOnly: true}));
+        });
       }
     });
   }
@@ -517,16 +520,25 @@ export class AssessmentComponent extends RouterEnter {
    * @name navigateBySequence
    * @param {[type]} sequence [description]
    */
-  private navigateBySequence(sequence) {
+  private navigateBySequence(sequence, options?: {
+    routeOnly?: boolean;
+  }) {
     const { contextId, isForTeam, id, type } = sequence;
+    let route = ['app', 'activity', this.activityId];
 
     switch (type) {
       case 'Assessment':
-        return this.router.navigate(['assessment', 'assessment', this.activityId , contextId, id]);
+        route = ['assessment', 'assessment', this.activityId , contextId, id];
+        break;
       case 'Topic':
-        return this.router.navigate(['topic', this.activityId, id]);
-      default:
-        return this.router.navigate(['app', 'activity', this.activityId]);
+        route = ['topic', this.activityId, id];
+        break;
     }
+
+    if (options && options.routeOnly) {
+      return route;
+    }
+
+    return this.router.navigate(route);
   }
 }
