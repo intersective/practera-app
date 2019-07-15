@@ -22,19 +22,19 @@
     </p>
   </div>
 
-  <!-- <ion-list class="member-detail-container no-bg" lines="none">
+  <ion-list *ngIf="submission.isLock" class="member-detail-container no-bg" lines="none">
     <ion-item lines="none">
       <ion-avatar slot="start">
-        <img src="https://www.bitgab.com/uploads/profile/files/default.png">
+        <img [src]="submission.image">
       </ion-avatar>
       <ion-label>
-        <h4>Locked by Alice Chapman</h4>
+        <h4>Locked by {{ submission.submitterName }}</h4>
         <p>Please wait until the user finishes editing</p>
       </ion-label>
     </ion-item>
-  </ion-list> -->
+  </ion-list>
 
-  <form [formGroup]="questionsForm">
+  <form [ngClass]="{'readOnly': submission.isLock}" [formGroup]="questionsForm">
     <ng-container *ngIf="loadingAssessment">
       <ion-spinner></ion-spinner>
     </ng-container>
