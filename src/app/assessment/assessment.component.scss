@@ -52,3 +52,9 @@ ion-toolbar {
     }
   }
 }
+
+.readOnly {
+  ion-button, ion-toggle, ion-radio, ion-checkbox, file-stack, app-file-display, ion-textarea {
+    pointer-events: none;
+  }
+}

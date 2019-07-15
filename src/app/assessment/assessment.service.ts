@@ -74,6 +74,8 @@ export interface Submission {
   answers: any;
   submitterName: string;
   modified: string;
+  isLock: boolean;
+  image: string;
 }
 
 export interface Review {
@@ -294,7 +296,9 @@ export class AssessmentService {
       status: thisSubmission.AssessmentSubmission.status,
       answers: {},
       submitterName: thisSubmission.Submitter.name,
-      modified: thisSubmission.AssessmentSubmission.modified
+      modified: thisSubmission.AssessmentSubmission.modified,
+      isLock: thisSubmission.AssessmentSubmission.is_locked,
+      image: thisSubmission.Submitter.image
     };
 
     // -- normalise submission answers

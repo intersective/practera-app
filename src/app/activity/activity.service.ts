@@ -28,6 +28,8 @@ export interface Task {
   dueDate?: string;
   isOverdue?: boolean;
   isDueToday?: boolean;
+  isLock?: boolean;
+  submitterName?: string;
 }
 
 export interface Activity {
@@ -206,9 +208,13 @@ export class ActivityService {
     // but we only support one submission per assessment now.
     // That's why we use data[0] - the first submission
     const thisSubmission = data[0];
-    if (!Array.isArray(data) || !this.utils.has(thisSubmission, 'AssessmentSubmission')) {
+    if (!Array.isArray(data) || !this.utils.has(thisSubmission, 'AssessmentSubmission') || !this.utils.has(thisSubmission, 'Submitter')) {
       return this.request.apiResponseFormatError('Submission format error');
     }
+
+    // getting submitter name and lock or unlock for team assessment.
+    task.isLock = thisSubmission.AssessmentSubmission.is_locked;
+    task.submitterName = thisSubmission.Submitter.name;
 
     switch (thisSubmission.AssessmentSubmission.status) {
       case 'pending approval':
