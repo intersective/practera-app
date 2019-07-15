@@ -233,6 +233,23 @@ export class ActivityService {
       }));
   }
 
+  // when not done (empty status/feedback available/)
+  private isTaskCompleted(task: Task): boolean {
+    // take locked story as "completed" for now to skip to the next one
+    if (!task.status && task.type === 'Locked') {
+      return true;
+    }
+
+    switch (task.status) {
+      case 'feedback available':
+      case 'pending review':
+      case 'done':
+        return true;
+    }
+
+    return false;
+  }
+
   /**
    * get next task from the provided list of tasks based on array's order
    * @param  {Task[]}     tasks task list
@@ -248,7 +265,7 @@ export class ActivityService {
     });
 
     const nextIndex = currentIndex + 1;
-    if (tasks[nextIndex] && tasks[nextIndex].status !== 'done') {
+    if (tasks[nextIndex] && !this.isTaskCompleted(tasks[nextIndex])) {
       return tasks[nextIndex];
     } else {
       // condition: if next task is a completed activity, pick the first undone from the list
@@ -258,7 +275,7 @@ export class ActivityService {
           return false;
         }
 
-        return task.status !== 'done';
+        return !this.isTaskCompleted(task);
       });
 
       if (prioritisedTasks.length > 0) {
