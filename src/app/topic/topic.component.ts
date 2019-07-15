@@ -147,18 +147,26 @@ export class TopicComponent extends RouterEnter {
    * @name navigateBySequence
    * @param {[type]} sequence [description]
    */
-  private navigateBySequence(sequence) {
+  private navigateBySequence(sequence, options?: {
+    routeOnly?: boolean;
+  }) {
     const { contextId, isForTeam, id, type } = sequence;
+    let route = ['app', 'activity', this.activityId];
 
     switch (type) {
       case 'Assessment':
-        return this.router.navigate(['assessment', 'assessment', this.activityId , contextId, id]);
+        route = ['assessment', 'assessment', this.activityId , contextId, id];
+        break;
       case 'Topic':
-        return this.router.navigate(['topic', this.activityId, id]);
-
-      default:
-        return this.router.navigate(['app', 'activity', this.activityId]);
+        route = ['topic', this.activityId, id];
+        break;
     }
+
+    if (options && options.routeOnly) {
+      return route;
+    }
+
+    return this.router.navigate(route);
   }
 
   private async getNextSequence() {
