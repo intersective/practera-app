@@ -182,7 +182,11 @@ export class TopicComponent extends RouterEnter {
       nextTask = this.activityService.findNext(tasks, options);
     } else {
       this.loadingTopic = true;
-      tasks = await this.activityService.getTaskWithStatusByActivityId(this.activityId);
+      tasks = await this.activityService.getTaskWithStatusByActivityId(this.activityId, {
+        key: 'status',
+        value: 'done',
+      });
+
       this.loadingTopic = false;
       this.sharedService.setCache('tasks', tasks);
       nextTask = this.activityService.findNext(tasks, options);
@@ -211,8 +215,6 @@ export class TopicComponent extends RouterEnter {
           }
         ]
       });
-
-      return;
     }
 
     return this.notificationService.alert({
