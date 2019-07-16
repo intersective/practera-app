@@ -253,8 +253,13 @@ export class TopicComponent extends RouterEnter {
           text: 'Yes',
           handler: () => {
             return this.markAsDone().subscribe(() => {
-              this.notificationService.popUp('shortMessage', { message: 'You\'ve completed the topic!' });
-              return this.router.navigate(['app', 'activity', this.activityId]);
+              return this.notificationService.popUp('shortMessage', {
+                message: 'You\'ve completed the topic!'
+              }).then(() => this.router.navigate([
+                'app',
+                'activity',
+                this.activityId,
+              ]));
             });
           }
         }

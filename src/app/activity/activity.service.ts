@@ -78,6 +78,10 @@ export class ActivityService {
 
     if (filters) {
       assessmentProgresses = assessmentProgresses.filter(progress => {
+        // Handle inconsistency: sometimes, incomplete status is an empty string ''
+        if (filters.key === 'status') {
+          return progress[filters.key] === '';
+        }
         return progress[filters.key] === filters.value;
       });
     }
@@ -247,6 +251,7 @@ export class ActivityService {
         return true;
     }
 
+    // potential status: "in progress"
     return false;
   }
 
