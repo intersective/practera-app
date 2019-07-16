@@ -532,10 +532,7 @@ export class AssessmentComponent extends RouterEnter {
       teamId: this.storage.getUser().teamId
     };
 
-    const tasks = await this.activityService.getTaskWithStatusByActivityId(this.activityId, {
-      key: 'status',
-      value: 'done',
-    });
+    const tasks = await this.activityService.getTaskWithStatusByActivityId(this.activityId);
 
     this.sharedService.setCache('tasks', tasks);
     nextTask = this.activityService.findNext(tasks, options);
