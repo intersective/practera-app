@@ -493,25 +493,19 @@ export class AssessmentComponent extends RouterEnter {
   }
 
   private async getNextSequence() {
-    let tasks = this.sharedService.getCache('tasks');
     let nextTask = null;
     const options = {
       id: this.id,
       teamId: this.storage.getUser().teamId
     };
 
-    // reuse cached tasks (if cache present, so no extra API call needed)
-    if (tasks && tasks.length > 0) {
-      nextTask = this.activityService.findNext(tasks, options);
-    } else {
-      tasks = await this.activityService.getTaskWithStatusByActivityId(this.activityId, {
-        key: 'status',
-        value: 'done',
-      });
+    const tasks = await this.activityService.getTaskWithStatusByActivityId(this.activityId, {
+      key: 'status',
+      value: 'done',
+    });
 
-      this.sharedService.setCache('tasks', tasks);
-      nextTask = this.activityService.findNext(tasks, options);
-    }
+    this.sharedService.setCache('tasks', tasks);
+    nextTask = this.activityService.findNext(tasks, options);
 
     return nextTask;
   }
