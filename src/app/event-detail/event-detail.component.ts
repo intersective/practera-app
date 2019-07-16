@@ -101,13 +101,13 @@ export class EventDetailComponent {
   }
 
   buttonText() {
-    // for expired event
-    if (this.event.isPast) {
-      return 'Expired';
-    }
     // for not booked event
     if (!this.event.isBooked) {
-      if (!this.event.isPast && this.event.remainingCapacity > 0 && this.event.canBook) {
+      // for expired event
+      if (this.event.isPast) {
+        return 'Expired';
+      }
+      if (this.event.remainingCapacity > 0 && this.event.canBook) {
         return 'Book';
       }
       return false;

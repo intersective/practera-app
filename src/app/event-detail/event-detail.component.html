@@ -9,7 +9,7 @@
     <div class="div-activity-name">{{ event.activityName }}</div>
     <app-description *ngIf="event.description" [content]="event.description"></app-description>
   </div>
-  <h3 *ngIf="event.isPast" class="expired-text">Event Expired</h3>
+  <h3 *ngIf="event.isPast && !event.isBooked" class="expired-text">Event Expired</h3>
 
   <ion-list>
     <ion-item>
@@ -31,7 +31,7 @@
   </ion-list>
 
   <div class="div-btn" *ngIf="buttonText()">
-    <ion-button (click)="confirmed()" [disabled]="event.isPast" shape="round" [color]="event.isPast ? 'medium' : 'primary'" expand="full">
+    <ion-button (click)="confirmed()" [disabled]="event.isPast && !event.isBooked" shape="round" [color]="event.isPast && !event.isBooked ? 'medium' : 'primary'" expand="full">
       {{ buttonText() }}
     </ion-button>
   </div>
