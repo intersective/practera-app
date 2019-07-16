@@ -9,6 +9,8 @@ import { RouterEnter } from '@services/router-enter.service';
 import { SharedService } from '@services/shared.service';
 import { ActivityService } from '../activity/activity.service';
 import { FastFeedbackService } from '../fast-feedback/fast-feedback.service';
+import { interval, timer } from 'rxjs';
+import { map, takeUntil } from 'rxjs/operators';
 
 const SAVE_PROGRESS_TIMEOUT = 10000;
 
@@ -60,7 +62,7 @@ export class AssessmentComponent extends RouterEnter {
   loadingAssessment = true;
   loadingSubmission = true;
   questionsForm = new FormGroup({});
-  submitting = false;
+  submitting: boolean | string = false;
   savingButtonDisabled = true;
   savingMessage: string;
   saving: boolean;
@@ -243,8 +245,36 @@ export class AssessmentComponent extends RouterEnter {
           }
         ]
       });
+    } else if (this.action === 'assessment' && this.submission.status == 'published') {
+      return this.notificationService.alert({
+        header: `Mark review as read?`,
+        message: 'Would you like to mark this review as read?',
+        buttons: [
+          {
+            text: 'No',
+            handler: () => {
+              return this.router.navigate(['app', 'activity', this.activityId]);
+            },
+          },
+          {
+            text: 'Yes',
+            handler: () => {
+              return this.markReviewFeedbackAsRead().subscribe(() => {
+                return this.notificationService.popUp('shortMessage', {
+                  message: 'You\'ve completed the topic!'
+                }).then(() => this.router.navigate([
+                  'app',
+                  'activity',
+                  this.activityId,
+                ]));
+              });
+            }
+          }
+        ]
+      });
     }
 
+    // force saving progress
     this.submit(true);
     return this.navigationRoute();
   }
@@ -279,9 +309,12 @@ export class AssessmentComponent extends RouterEnter {
     return missing;
   }
 
-  // - check if fastfeedback is available
-  // - show next sequence if submission successful
+  /**
+   * - check if fastfeedback is available
+   * - show next sequence if submission successful
+   */
   private pullFeedbackAndShowNext() {
+    this.submitting = 'Retrieving new task...';
     // check if user has new fastFeedback request
     return this.fastFeedbackService.pullFastFeedback().subscribe(
       res => {
@@ -348,7 +381,7 @@ export class AssessmentComponent extends RouterEnter {
       this.savingMessage = 'Saving...';
       this.savingButtonDisabled = true;
     } else {
-      this.submitting = true;
+      this.submitting = 'Submitting...';
       this.saving = false;
     }
 
@@ -467,17 +500,17 @@ export class AssessmentComponent extends RouterEnter {
   }
 
   // mark review as read
-  reviewFeedback() {
+  async markReviewFeedbackAsRead(): Promise<void> {
     this.feedbackReviewed = true;
-    this.assessmentService.saveFeedbackReviewed(this.submission.id).subscribe(result => {
-      // if review is successfully mark as read and program is configured to enable review rating,
-      // display review rating modal and then redirect to activity page.
-      if (result.success && this.storage.getUser().hasReviewRating === true) {
-        this.getNextSequence().then(nextSequence => {
-          this.assessmentService.popUpReviewRating(this.review.id, this.navigateBySequence(nextSequence, {routeOnly: true}));
-        });
-      }
-    });
+    const result = await this.assessmentService.saveFeedbackReviewed(this.submission.id).toPromise();
+
+    // if review is successfully mark as read and program is configured to enable review rating,
+    // display review rating modal and then redirect to activity page.
+    if (result.success && this.storage.getUser().hasReviewRating === true) {
+      const nextSequence = await this.getNextSequence();
+
+      return this.assessmentService.popUpReviewRating(this.review.id, this.navigateBySequence(nextSequence, {routeOnly: true}));
+    }
   }
 
   showQuestionInfo(info) {

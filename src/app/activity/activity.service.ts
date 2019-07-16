@@ -79,8 +79,8 @@ export class ActivityService {
     if (filters) {
       assessmentProgresses = assessmentProgresses.filter(progress => {
         // Handle inconsistency: sometimes, incomplete status is an empty string ''
-        if (filters.key === 'status') {
-          return progress[filters.key] === '';
+        if (filters.key === 'status' && progress[filters.key] === '') {
+          return true;
         }
         return progress[filters.key] === filters.value;
       });
@@ -305,8 +305,11 @@ export class ActivityService {
       return this.request.apiResponseFormatError('Submission format error');
     }
 
+    // standardize and restrict statuses into 3 main categorises
+    // eg. (pending review / feedback available / done)
     switch (thisSubmission.AssessmentSubmission.status) {
       case 'pending approval':
+      case 'pending review':
         task.status = 'pending review';
         break;
 
@@ -321,13 +324,20 @@ export class ActivityService {
         }
         break;
 
+      case 'done':
+        task.status = 'done';
+        break;
+
       default:
+        // Potential status: '' (empty string) / 'in progress'
         task.status = thisSubmission.AssessmentSubmission.status;
+
+        if (['', 'in progress'].indexOf(task.status) === -1) {
+          console.warn(`Potential incompatible assessment status: ${thisSubmission.AssessmentSubmission.status}`);
+        }
         break;
     }
     task.loadingStatus = false;
     return task;
   }
-
-
 }
