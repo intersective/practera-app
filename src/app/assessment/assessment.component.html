@@ -141,7 +141,7 @@
       shape="round"
       expand="full">
       <ng-container *ngIf="!submitting">Submit</ng-container>
-      <ng-container *ngIf="submitting">Submitting...</ng-container>
+      <ng-container *ngIf="submitting">{{ submitting }}</ng-container>
     </ion-button>
 
   </form>
