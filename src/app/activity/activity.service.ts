@@ -76,6 +76,7 @@ export class ActivityService {
     // extract assessment type task
     let assessmentProgresses = await forkJoin(assessmentApiCalls).toPromise();
 
+    // optional filter to filter based on "key" & "value"
     if (filters) {
       assessmentProgresses = assessmentProgresses.filter(progress => {
         // Handle inconsistency: sometimes, incomplete status is an empty string ''
