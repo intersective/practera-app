@@ -506,9 +506,9 @@ export class AssessmentComponent extends RouterEnter {
 
     // allow only if it hasnt reviewed
     if (!this.feedbackReviewed) {
+      this.feedbackReviewed = true;
       this.markingAsReview = 'Marking as read...';
       const result = await this.assessmentService.saveFeedbackReviewed(this.submission.id).toPromise();
-      this.feedbackReviewed = true;
     }
 
     // if review is successfully mark as read and program is configured to enable review rating,
@@ -520,7 +520,7 @@ export class AssessmentComponent extends RouterEnter {
 
       return this.assessmentService.popUpReviewRating(
         this.review.id,
-        this.navigateBySequence(nextSequence)
+        this.navigateBySequence(nextSequence, {routeOnly: true})
       );
     } catch (error) {
       console.warn(error);
