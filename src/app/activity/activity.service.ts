@@ -246,13 +246,12 @@ export class ActivityService {
     }
 
     switch (task.status) {
-      case 'feedback available':
       case 'pending review':
       case 'done':
         return true;
     }
 
-    // potential status: "in progress"
+    // potential status: "in progress"/"feedback available"
     return false;
   }
 
