@@ -67,6 +67,7 @@ export class AssessmentComponent extends RouterEnter {
   savingMessage: string;
   saving: boolean;
   fromPage = '';
+  markingAsReview = 'Continue';
 
   constructor (
     public router: Router,
@@ -116,6 +117,7 @@ export class AssessmentComponent extends RouterEnter {
     this.submitting = false;
     this.savingButtonDisabled = true;
     this.savingMessage = '';
+    this.markingAsReview = 'Continue';
   }
 
   onEnter() {
@@ -245,10 +247,10 @@ export class AssessmentComponent extends RouterEnter {
           }
         ]
       });
-    } else if (this.action === 'assessment' && this.submission.status == 'published') {
+    } else if (this.action === 'assessment' && this.submission.status === 'published') {
       return this.notificationService.alert({
-        header: `Mark review as read?`,
-        message: 'Would you like to mark this review as read?',
+        header: `Mark feedback as read?`,
+        message: 'Would you like to mark the feedback as read?',
         buttons: [
           {
             text: 'No',
@@ -259,7 +261,7 @@ export class AssessmentComponent extends RouterEnter {
           {
             text: 'Yes',
             handler: () => {
-              return this.markReviewFeedbackAsRead().subscribe(() => {
+              return this.markReviewFeedbackAsRead().then(() => {
                 return this.notificationService.popUp('shortMessage', {
                   message: 'You\'ve completed the topic!'
                 }).then(() => this.router.navigate([
@@ -501,16 +503,34 @@ export class AssessmentComponent extends RouterEnter {
 
   // mark review as read
   async markReviewFeedbackAsRead(): Promise<void> {
-    this.feedbackReviewed = true;
-    const result = await this.assessmentService.saveFeedbackReviewed(this.submission.id).toPromise();
+
+    // allow only if it hasnt reviewed
+    if (!this.feedbackReviewed) {
+      this.markingAsReview = 'Marking as read...';
+      const result = await this.assessmentService.saveFeedbackReviewed(this.submission.id).toPromise();
+      this.feedbackReviewed = true;
+    }
 
     // if review is successfully mark as read and program is configured to enable review rating,
     // display review rating modal and then redirect to activity page.
-    if (result.success && this.storage.getUser().hasReviewRating === true) {
+    // if (result.success && this.storage.getUser().hasReviewRating === true) {
+    try {
+      this.markingAsReview = 'Retrieving New Task...';
       const nextSequence = await this.getNextSequence();
 
-      return this.assessmentService.popUpReviewRating(this.review.id, this.navigateBySequence(nextSequence, {routeOnly: true}));
+      return this.assessmentService.popUpReviewRating(
+        this.review.id,
+        this.navigateBySequence(nextSequence)
+      );
+    } catch (error) {
+      console.warn(error);
+      this.feedbackReviewed = true;
+      this.loadingFeedbackReviewed = false;
     }
+
+    this.markingAsReview = 'Continue';
+    // }
+    return;
   }
 
   showQuestionInfo(info) {
@@ -547,16 +567,18 @@ export class AssessmentComponent extends RouterEnter {
   private navigateBySequence(sequence, options?: {
     routeOnly?: boolean;
   }) {
-    const { contextId, isForTeam, id, type } = sequence;
     let route = ['app', 'activity', this.activityId];
 
-    switch (type) {
-      case 'Assessment':
-        route = ['assessment', 'assessment', this.activityId , contextId, id];
-        break;
-      case 'Topic':
-        route = ['topic', this.activityId, id];
-        break;
+    if (sequence) {
+      const { contextId, isForTeam, id, type } = sequence;
+      switch (type) {
+        case 'Assessment':
+          route = ['assessment', 'assessment', this.activityId , contextId, id];
+          break;
+        case 'Topic':
+          route = ['topic', this.activityId, id];
+          break;
+      }
     }
 
     if (options && options.routeOnly) {

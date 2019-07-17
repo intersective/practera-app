@@ -154,12 +154,12 @@
       name="dots"
       class="vertical-middle text-center"
     ></ion-spinner>
-    <ion-button *ngIf="!loadingMarkedDone"
+    <ion-button *ngIf="!loadingMarkedDone && !loadingFeedbackReviewed"
       [disabled]="feedbackReviewed"
-      (click)="reviewFeedback()"
+      (click)="markReviewFeedbackAsRead()"
       shape="round"
       expand="full">
-      CONTINUE
+      {{markingAsReview}}
     </ion-button>
   </ion-toolbar>
 </ion-footer>

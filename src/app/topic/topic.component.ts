@@ -124,9 +124,9 @@ export class TopicComponent extends RouterEnter {
     }
 
     // mark topic as done
-    return this.markAsDone().subscribe(() => {
-      return this.nextStepPrompt();
-    });
+    await this.markAsDone().toPromise();
+    const navigation = await this.nextStepPrompt();
+    return navigation;
   }
 
   /**
@@ -170,24 +170,18 @@ export class TopicComponent extends RouterEnter {
   }
 
   private async getNextSequence() {
-    let tasks = this.sharedService.getCache('tasks');
     let nextTask = null;
     const options = {
       id: this.id,
       teamId: this.storage.getUser().teamId
     };
 
-    // reuse cached tasks (if cache present, so no extra API call needed)
-    if (tasks && tasks.length > 0) {
-      nextTask = this.activityService.findNext(tasks, options);
-    } else {
-      this.loadingTopic = true;
-      tasks = await this.activityService.getTaskWithStatusByActivityId(this.activityId);
+    this.loadingTopic = true;
+    const tasks = await this.activityService.getTaskWithStatusByActivityId(this.activityId);
 
-      this.loadingTopic = false;
-      this.sharedService.setCache('tasks', tasks);
-      nextTask = this.activityService.findNext(tasks, options);
-    }
+    this.sharedService.setCache('tasks', tasks);
+    nextTask = this.activityService.findNext(tasks, options);
+    this.loadingTopic = false;
 
     return nextTask;
   }
@@ -202,7 +196,7 @@ export class TopicComponent extends RouterEnter {
     if (nextSequence) {
       return this.notificationService.alert({
         header: 'Topic completed!',
-        message: 'You may now proceed to the next topic.',
+        message: 'You may now proceed to the next task.',
         buttons: [
           {
             text: 'OK',
@@ -216,10 +210,10 @@ export class TopicComponent extends RouterEnter {
 
     return this.notificationService.alert({
       header: 'Activity completed!',
-      message: 'You may now proceed to the next activity.',
+      message: 'You may now proceed to the next milestone.',
       buttons: [
         {
-          text: 'OK',
+          text: 'Continue',
           handler: () => {
             return this.router.navigate(['app', 'project']);
           }
