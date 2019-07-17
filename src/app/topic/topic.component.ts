@@ -7,6 +7,9 @@ import { RouterEnter } from '@services/router-enter.service';
 import { UtilsService } from '@services/utils.service';
 import { BrowserStorageService } from '@services/storage.service';
 import { NotificationService } from '@shared/notification/notification.service';
+import { ActivityService, Task } from '../activity/activity.service';
+import { SharedService } from '@services/shared.service';
+import { Subscription, Observable } from 'rxjs';
 
 @Component({
   selector: 'app-topic',
@@ -41,6 +44,8 @@ export class TopicComponent extends RouterEnter {
     public storage: BrowserStorageService,
     public utils: UtilsService,
     public notificationService: NotificationService,
+    private activityService: ActivityService,
+    private sharedService: SharedService
   ) {
     super(router);
   }
@@ -88,23 +93,169 @@ export class TopicComponent extends RouterEnter {
         }
         this.loadingMarkedDone = false;
       });
-   }
-
-  markAsDone() {
-    this.btnToggleTopicIsDone = true;
-    this.topicService.updateTopicProgress(this.id).subscribe();
   }
 
+  /**
+   * @name markAsDone
+   * @description set a topic as read by providing current id
+   * @param {Function} callback optional callback function for further action after subcription is completed
+   */
+  markAsDone(callback?): Observable<any> {
+    return this.topicService.updateTopicProgress(this.id).pipe(response => {
+      // toggle event change should happen after subscription is completed
+      this.btnToggleTopicIsDone = true;
+      return response;
+    });
+  }
+
+  /**
+   * @name continue
+   * @description button action to trigger `nextStepPrompt`
+   */
+  async continue(): Promise<any> {
+    // if topic has been marked as read
+    if (this.btnToggleTopicIsDone) {
+      const nextSequence = await this.getNextSequence();
+      if (nextSequence) {
+        return this.navigateBySequence(nextSequence);
+      }
+
+      return this.router.navigate(['app', 'activity', this.activityId]);
+    }
+
+    // mark topic as done
+    await this.markAsDone().toPromise();
+    const navigation = await this.nextStepPrompt();
+    return navigation;
+  }
+
+  /**
+   * @name previewFile
+   * @description open and preview file in a modal
+   * @param {object} file filestack object
+   */
   async previewFile(file) {
     if (this.isLoadingPreview === false) {
       this.isLoadingPreview = true;
-      await this.filestackService.previewFile(file);
+      const filestack = await this.filestackService.previewFile(file);
       this.isLoadingPreview = false;
+      return filestack;
     }
   }
 
+  /**
+   * @name navigateBySequence
+   * @param {[type]} sequence [description]
+   */
+  private navigateBySequence(sequence, options?: {
+    routeOnly?: boolean;
+  }) {
+    const { contextId, isForTeam, id, type } = sequence;
+    let route = ['app', 'activity', this.activityId];
+
+    switch (type) {
+      case 'Assessment':
+        route = ['assessment', 'assessment', this.activityId , contextId, id];
+        break;
+      case 'Topic':
+        route = ['topic', this.activityId, id];
+        break;
+    }
+
+    if (options && options.routeOnly) {
+      return route;
+    }
+
+    return this.router.navigate(route);
+  }
+
+  private async getNextSequence() {
+    let nextTask = null;
+    const options = {
+      id: this.id,
+      teamId: this.storage.getUser().teamId
+    };
+
+    this.loadingTopic = true;
+    const tasks = await this.activityService.getTaskWithStatusByActivityId(this.activityId);
+
+    this.sharedService.setCache('tasks', tasks);
+    nextTask = this.activityService.findNext(tasks, options);
+    this.loadingTopic = false;
+
+    return nextTask;
+  }
+
+  /**
+   * @name nextStepPrompt
+   * @description
+   */
+  async nextStepPrompt(): Promise<any> {
+    const nextSequence = await this.getNextSequence();
+
+    if (nextSequence) {
+      return this.notificationService.alert({
+        header: 'Topic completed!',
+        message: 'You may now proceed to the next task.',
+        buttons: [
+          {
+            text: 'OK',
+            handler: () => {
+              return this.navigateBySequence(nextSequence);
+            }
+          }
+        ]
+      });
+    }
+
+    return this.notificationService.alert({
+      header: 'Activity completed!',
+      message: 'You may now proceed to the next milestone.',
+      buttons: [
+        {
+          text: 'Continue',
+          handler: () => {
+            return this.router.navigate(['app', 'project']);
+          }
+        }
+      ]
+    });
+
+    return this.router.navigate(['app', 'activity', this.activityId]);
+  }
+
   back() {
-    this.router.navigate(['app', 'activity', this.activityId]);
+    if (this.btnToggleTopicIsDone) {
+      return this.router.navigate(['app', 'activity', this.activityId]);
+    }
+
+    const type = 'Topic';
+    return this.notificationService.alert({
+      header: `Complete ${type}?`,
+      message: 'Would you like to mark this task as done?',
+      buttons: [
+        {
+          text: 'No',
+          handler: () => {
+            return this.router.navigate(['app', 'activity', this.activityId]);
+          },
+        },
+        {
+          text: 'Yes',
+          handler: () => {
+            return this.markAsDone().subscribe(() => {
+              return this.notificationService.popUp('shortMessage', {
+                message: 'You\'ve completed the topic!'
+              }).then(() => this.router.navigate([
+                'app',
+                'activity',
+                this.activityId,
+              ]));
+            });
+          }
+        }
+      ]
+    });
   }
 
 }

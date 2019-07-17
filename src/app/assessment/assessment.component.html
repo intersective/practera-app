@@ -141,17 +141,25 @@
       shape="round"
       expand="full">
       <ng-container *ngIf="!submitting">Submit</ng-container>
-      <ng-container *ngIf="submitting">Submitting...</ng-container>
+      <ng-container *ngIf="submitting">{{ submitting }}</ng-container>
     </ion-button>
-
-    <div *ngIf="action === 'assessment' && submission.status == 'published'" class="text-right">
-      <span class="vertical-middle">Mark feedback as read</span>
-      <ng-container *ngIf="!loadingFeedbackReviewed; else spinnerTmpl">
-        <ion-toggle [checked]="feedbackReviewed" [disabled]="feedbackReviewed" (ionChange)="reviewFeedback()" margin-start class="vertical-middle"></ion-toggle>
-      </ng-container>
-      <ng-template #spinnerTmpl><ion-spinner name="dots" class="vertical-middle"></ion-spinner></ng-template>
-
-    </div>
 
   </form>
 </ion-content>
+
+<ion-footer color="light" *ngIf="action === 'assessment' && submission.status == 'published'">
+  <ion-toolbar>
+    <ion-spinner style="width: 100%;"
+      *ngIf="loadingFeedbackReviewed"
+      name="dots"
+      class="vertical-middle text-center"
+    ></ion-spinner>
+    <ion-button *ngIf="!loadingMarkedDone && !loadingFeedbackReviewed"
+      [disabled]="feedbackReviewed"
+      (click)="markReviewFeedbackAsRead()"
+      shape="round"
+      expand="full">
+      {{markingAsReview}}
+    </ion-button>
+  </ion-toolbar>
+</ion-footer>
