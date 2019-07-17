@@ -39,11 +39,11 @@
 <ion-footer color="light">
   <ion-toolbar>
     <ion-spinner style="width: 100%;"
-      *ngIf="loadingMarkedDone"
+      *ngIf="loadingMarkedDone || loadingTopic"
       name="dots"
       class="vertical-middle text-center"
     ></ion-spinner>
-    <ion-button *ngIf="!loadingMarkedDone"
+    <ion-button *ngIf="!loadingMarkedDone && !loadingTopic"
       (click)="continue()"
       shape="round"
       expand="full">
