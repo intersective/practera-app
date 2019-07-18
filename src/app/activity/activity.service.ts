@@ -167,14 +167,22 @@ export class ActivityService {
     return activity;
   }
 
-  getTasksProgress(activity: Activity): Observable<any> {
-    return this.request.get(api.progress, {
-        params: {
-          model: 'Activity',
-          model_id: activity.id,
-          scope: 'Task'
-        }
-      })
+  getTasksProgress(activity: Activity, options?: {
+    model?: string;
+    model_id?: number;
+    scope?: string;
+  }): Observable<any> {
+    let params = {
+      model: 'Activity',
+      model_id: activity.id,
+      scope: 'Task'
+    };
+
+    if (options) {
+      params = Object.assign(params, options);
+    }
+
+    return this.request.get(api.progress, { params })
       .pipe(map(response => {
         if (response.success && response.data) {
           return this._normaliseTasksProgress(response.data, activity.tasks);
@@ -197,6 +205,7 @@ export class ActivityService {
         topicProgresses[topic.id] = topic.progress;
       });
     }
+
     if (this.utils.has(data, 'Activity.Assessment')) {
       data.Activity.Assessment.forEach(assessment => {
         if (!this.utils.has(assessment, 'id') || !this.utils.has(assessment, 'progress')) {
@@ -205,6 +214,7 @@ export class ActivityService {
         assessmentProgresses[assessment.id] = assessment.progress;
       });
     }
+
     tasks.forEach((task, index) => {
       switch (task.type) {
         case 'Topic':
