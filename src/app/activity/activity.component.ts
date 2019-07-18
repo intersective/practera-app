@@ -70,7 +70,6 @@ export class ActivityComponent extends RouterEnter {
   private _getActivity() {
     this.activityService.getActivity(this.id)
       .subscribe(activity => {
-        this.sharedService.setCache('tasks', activity.tasks);
         this.activity = activity;
         this.loadingActivity = false;
         this._getTasksProgress();
