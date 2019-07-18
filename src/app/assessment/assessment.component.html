@@ -34,7 +34,7 @@
     </ion-item>
   </ion-list>
 
-  <form class="readOnly" [formGroup]="questionsForm">
+  <form [ngClass]="{'readonly-assessment' : submission.isLock}" [formGroup]="questionsForm">
     <ng-container *ngIf="loadingAssessment">
       <ion-spinner></ion-spinner>
     </ng-container>
