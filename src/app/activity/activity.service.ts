@@ -37,6 +37,49 @@ export interface Activity {
   tasks: Array<Task>;
 }
 
+export interface OverviewActivity {
+  id: number;
+  name: string;
+  type: string;
+  is_locked: boolean;
+  progress: number;
+}
+
+export interface OverviewTopic {
+  id: number;
+  name: string;
+  type: string;
+  context_id: number;
+  is_locked: boolean;
+  status: string;
+  is_team: boolean;
+  progress: number;
+  Submitter: {
+      id: number;
+      name: string;
+      email: string;
+      image: string;
+  };
+}
+
+export interface Overview {
+  progress: number;
+  Milestone: {
+    id: number;
+    name: string;
+    progress: number;
+    Activity: {
+      id: number;
+      branch: string;
+      name: string;
+      progress: number;
+      Assessment?: OverviewActivity[];
+      Topic?: OverviewTopic[];
+      Tasks?: Array<OverviewActivity | OverviewTopic>;
+    }[];
+  }[];
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -49,6 +92,57 @@ export class ActivityService {
     private utils: UtilsService,
   ) {}
 
+  private _normaliseOverviews(project: Overview): any {
+    const { progress, Milestone } = project;
+
+    const milestones = Milestone.map(milestone => {
+      const activity = milestone.Activity.map(act => {
+        let assessments = (act.Assessment) ? act.Assessment : [];
+        let topics = (act.Topic) ? act.Topic : [];
+
+        assessments = assessments.map(assessment => {
+          return Object.assign(assessment, { type: 'Assessment' });
+        });
+        topics = topics.map(topic => {
+          return Object.assign(topic, { type: 'Topic' });
+        });
+        const tasks = assessments.concat(topics);
+
+        return {
+          id: act.id,
+          branch: act.branch,
+          name: act.name,
+          progress: act.progress,
+          Tasks: tasks,
+        };
+      });
+
+      return {
+        id: milestone.id,
+        name: milestone.name,
+        progress: milestone.progress,
+        Activities: activity,
+      };
+    });
+
+    return {
+      progress,
+      Milestones: milestones
+    };
+  }
+
+  async getTaskWithStatusByProjectId(id): Promise<any> {
+    const tasksWithProgress = await this.getTasksProgress({
+      model: 'project',
+      model_id: id,
+      scope: 'task',
+    }).pipe(map(response => {
+      return this._normaliseOverviews(response.data.Project);
+    })).toPromise();
+
+    return tasksWithProgress;
+  }
+
   /**
    * combine all (get activity, progress for both topic and assessment) steps into one function
    * so we can access to tasks with progress information easily
@@ -59,8 +153,13 @@ export class ActivityService {
     key: string;
     value: string;
   }): Promise<any> {
-    const activity = await this.getActivity(id).toPromise();
-    const tasksWithProgress = await this.getTasksProgress(activity).toPromise();
+    const activity: Activity = await this.getActivity(id).toPromise();
+    const tasksWithProgress = await this.getTasksProgress({
+      model: 'activity',
+      model_id: activity.id,
+      scope: 'task',
+      tasks: activity.tasks,
+    }).toPromise();
 
     // extract assessment type task
     const assessmentApiCalls = [];
@@ -167,34 +266,42 @@ export class ActivityService {
     return activity;
   }
 
-  getTasksProgress(activity: Activity, options?: {
+  /**
+   * get and inject progress value (from 0 to 1) for each task
+   * @param  {Activity}        activity object
+   * @param  {object}          options model & model_id & scope
+   * @return {Observable<any>}
+   */
+  getTasksProgress(options: {
+    model_id: number; // model id
     model?: string;
-    model_id?: number;
     scope?: string;
+    tasks?: Task[];
   }): Observable<any> {
-    let params = {
-      model: 'Activity',
-      model_id: activity.id,
-      scope: 'Task'
+    const params = {
+      model_id: options.model_id,
+      model: options.model || 'Activity',
+      scope: options.scope || 'Task',
     };
-
-    if (options) {
-      params = Object.assign(params, options);
-    }
 
     return this.request.get(api.progress, { params })
       .pipe(map(response => {
         if (response.success && response.data) {
-          return this._normaliseTasksProgress(response.data, activity.tasks);
+          if (options.tasks) {
+            return this._normaliseTasksProgress(response.data, options.tasks);
+          }
+
+          return response;
         }
       })
     );
   }
 
-  private _normaliseTasksProgress(data: any, tasks: Array<Task>) {
+  private _normaliseTasksProgress(data: any, tasks: Array<Task>): Task[] | void {
     if (!this.utils.has(data, 'Activity.Topic') && !this.utils.has(data, 'Activity.Assessment')) {
       return this.request.apiResponseFormatError('Progress.Activity format error');
     }
+
     const topicProgresses = {};
     const assessmentProgresses = {};
     if (this.utils.has(data, 'Activity.Topic')) {
