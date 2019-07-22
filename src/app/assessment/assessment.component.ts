@@ -342,6 +342,23 @@ export class AssessmentComponent extends RouterEnter {
     return hasIncompletedTask.length > 0;
   }
 
+  // allow progression if milestone isnt completed yet
+  redirectToNextMilestoneTask(nextMilestone) {
+    const firstActivity = nextMilestone.Activities[0]; // implement filter
+    const isIncompleted = this.isActivityIncomplete(firstActivity);
+    const firstTask = firstActivity.Tasks[0]; // implement filter
+
+console.log('isIncompleted::', isIncompleted);
+    switch (firstTask.type) {
+      case 'Assessment':
+        return this.router.navigate(['assessment', 'assessment', firstActivity.id, 'contextId', firstTask.id]);
+
+      case 'Topic':
+        return this.router.navigate(['topic', firstActivity.id, firstTask.id]);
+    }
+    return this.router.navigate(['app', 'activity', firstActivity.id]);
+  }
+
   // get sequence detail and move on to next new task
   async skipToNextTask(sequence) {
     if (sequence) {
@@ -349,42 +366,13 @@ export class AssessmentComponent extends RouterEnter {
     }
 
     const overview = await this.activityService.getTaskWithStatusByProjectId(this.storage.getUser().projectId);
-
-    const currentMilestone = overview.Milestones.findIndex(milestone => {
-      return milestone.Activities.findIndex(activity => {
-        return activity.id === this.activityId;
-      });
+    const nextIncompletedMilestone = overview.Milestones.findIndex(milestone => {
+      return this.isMilestoneIncomplete(milestone);
     });
 
-    const nextMilestone = overview.Milestones[currentMilestone + 1];
-    const incompletedMilestone = this.isMilestoneIncomplete(nextMilestone);
-console.log('incompletedMilestone::', incompletedMilestone);
-
-    // allow progression if milestone isnt completed yet
-    if (nextMilestone.progress < 1) {
-      const firstActivity = nextMilestone.Activities[0]; // implement filter
-      const isIncompleted = this.isActivityIncomplete(firstActivity);
-      const firstTask = firstActivity.Tasks[0]; // implement filter
-
-console.log('isIncompleted::', isIncompleted);
-      switch (firstTask.type) {
-        case 'Assessment':
-          return this.router.navigate(['assessment', 'assessment', firstActivity.id, 'contextId', firstTask.id]);
-
-        case 'Topic':
-          return this.router.navigate(['topic', firstActivity.id, firstTask.id]);
-      }
-      return this.router.navigate(['app', 'activity', firstActivity.id]);
+    if (nextIncompletedMilestone !== -1) {
+      return this.redirectToNextMilestoneTask(nextIncompletedMilestone);
     }
-
-console.log(currentMilestone);
-    // 2 steps:
-    // - find next milestone and (done)
-    // - find next activity in new milestone (done)
-    // -- evaluate/redirect to incompleted activity
-    // - find next task in new milestone (done)
-    // -- evaluate/redirect to incompleted task
-    // this.utils.find(overview.Milestone)
 
     return this.notificationService.alert({
       header: 'Activity completed!',
