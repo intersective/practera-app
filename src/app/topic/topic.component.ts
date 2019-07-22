@@ -179,7 +179,6 @@ export class TopicComponent extends RouterEnter {
     this.loadingTopic = true;
     const tasks = await this.activityService.getTaskWithStatusByActivityId(this.activityId);
 
-    this.sharedService.setCache('tasks', tasks);
     nextTask = this.activityService.findNext(tasks, options);
     this.loadingTopic = false;
 
