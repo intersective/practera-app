@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Observable, of } from 'rxjs';
+import { Observable, of, forkJoin } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { RequestService } from '@shared/request/request.service';
 import { UtilsService } from '@services/utils.service';
@@ -45,11 +45,53 @@ export interface Activity {
 })
 
 export class ActivityService {
+  public tasks: Array<any>;
 
   constructor(
     private request: RequestService,
     private utils: UtilsService,
   ) {}
+
+  /**
+   * combine all (get activity, progress for both topic and assessment) steps into one function
+   * so we can access to tasks with progress information easily
+   * @param  {number}       id activity id
+   * @return {Promise<any>}    Promise
+   */
+  async getTaskWithStatusByActivityId(id, filters?: {
+    key: string;
+    value: string;
+  }): Promise<any> {
+    const activity = await this.getActivity(id).toPromise();
+    const tasksWithProgress = await this.getTasksProgress(activity).toPromise();
+
+    // extract assessment type task
+    const assessmentApiCalls = [];
+    const nonAssessments = [];
+    tasksWithProgress.forEach(task => {
+      if (task.type === 'Assessment') {
+        assessmentApiCalls.push(this.getAssessmentStatus(task));
+      } else {
+        nonAssessments.push(task);
+      }
+    });
+
+    // extract assessment type task
+    let assessmentProgresses = await forkJoin(assessmentApiCalls).toPromise();
+
+    // optional filter to filter based on "key" & "value"
+    if (filters) {
+      assessmentProgresses = assessmentProgresses.filter(progress => {
+        // Handle inconsistency: sometimes, incomplete status is an empty string ''
+        if (filters.key === 'status' && progress[filters.key] === '') {
+          return true;
+        }
+        return progress[filters.key] === filters.value;
+      });
+    }
+
+    return nonAssessments.concat(assessmentProgresses);
+  }
 
   getActivity(id: number): Observable<any> {
     return this.request.get(api.activity, {params: {id: id}})
@@ -199,6 +241,59 @@ export class ActivityService {
       }));
   }
 
+  // when not done (empty status/feedback available/)
+  private isTaskCompleted(task: Task): boolean {
+    // take locked story as "completed" for now to skip to the next one
+    if (!task.status && task.type === 'Locked') {
+      return true;
+    }
+
+    switch (task.status) {
+      case 'pending review':
+      case 'done':
+        return true;
+    }
+
+    // potential status: "in progress"/"feedback available"
+    return false;
+  }
+
+  /**
+   * get next task from the provided list of tasks based on array's order
+   * @param  {Task[]}     tasks task list
+   * @param  {object}     options id and teamId
+   * @return {Task}       single task object
+   */
+  findNext(tasks: Task[], options: {
+    id: number;
+    teamId: number;
+  }): Task | null {
+    const currentIndex = tasks.findIndex(task => {
+      return task.id === options.id;
+    });
+
+    const nextIndex = currentIndex + 1;
+    if (tasks[nextIndex] && !this.isTaskCompleted(tasks[nextIndex])) {
+      return tasks[nextIndex];
+    } else {
+      // condition: if next task is a completed activity, pick the first undone from the list
+      const prioritisedTasks: Task[] = tasks.filter(task => {
+        // avoid team assessment if user isn't in a team
+        if (task.isForTeam && !options.teamId) {
+          return false;
+        }
+
+        return !this.isTaskCompleted(task);
+      });
+
+      if (prioritisedTasks.length > 0) {
+        return prioritisedTasks[0];
+      }
+    }
+
+    return null;
+  }
+
   private _normaliseAssessmentStatus(data: any, task: Task) {
     if (this.utils.isEmpty(data)) {
       task.status = '';
@@ -218,8 +313,11 @@ export class ActivityService {
     task.submitterName = thisSubmission.Submitter.name;
     task.image = thisSubmission.Submitter.image;
 
+    // standardize and restrict statuses into 3 main categorises
+    // eg. (pending review / feedback available / done)
     switch (thisSubmission.AssessmentSubmission.status) {
       case 'pending approval':
+      case 'pending review':
         task.status = 'pending review';
         break;
 
@@ -234,12 +332,20 @@ export class ActivityService {
         }
         break;
 
+      case 'done':
+        task.status = 'done';
+        break;
+
       default:
+        // Potential status: '' (empty string) / 'in progress'
         task.status = thisSubmission.AssessmentSubmission.status;
+
+        if (['', 'in progress'].indexOf(task.status) === -1) {
+          console.warn(`Potential incompatible assessment status: ${thisSubmission.AssessmentSubmission.status}`);
+        }
         break;
     }
     task.loadingStatus = false;
     return task;
   }
-
 }

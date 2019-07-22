@@ -1,4 +1,4 @@
-<ion-header>
+<ion-header mode="ios">
   <ion-toolbar class="project-toolbar" color="light">
     <ion-title center padding-horizontal>{{programName}}</ion-title>
   </ion-toolbar>
@@ -24,7 +24,7 @@
   </ion-grid>
 </div>
 
-<ion-content color="light" [scrollEvents]="true" #contentRef>
+<ion-content color="light" [scrollEvents]="true" (ionScroll)="trackScrolling($event)" #contentRef>
   <ion-list class="project-list">
     <ion-item *ngIf="loadingMilestone" color="light">
     </ion-item>
@@ -38,8 +38,7 @@
         <ng-template #actualMilestoneTpl>
           <div class="milestone" padding>
             <ion-icon *ngIf="milestone.isLocked" name="lock" color="medium" class="icon-lock"></ion-icon>
-            <ion-text color="medium">MILESTONE</ion-text>
-            <p class="project-title">{{ milestone.name }}</p>
+            <ion-text class="project-title">{{ milestone.name }}</ion-text>
 
             <div class="milestone-description">
               <app-description *ngIf="milestone.description" [content]="milestone.description"></app-description>
@@ -81,8 +80,7 @@
 <ng-template #loadingMilestoneTpl>
   <div color="light" class="project-card">
     <div class="milestone" padding >
-      <ion-text color="medium">MILESTONE</ion-text>
-      <p class="project-title"></p>
+      <ion-text class="project-title"></ion-text>
       <div class="milestone-description"></div>
       <ion-list class="activity-list" color="light">
         <ion-item class="activity-item" color="light">
