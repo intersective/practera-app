@@ -7,6 +7,10 @@ import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { BrowserStorageService } from '@services/storage.service';
 import { RouterEnter } from '@services/router-enter.service';
 import { SharedService } from '@services/shared.service';
+import { ActivityService } from '../activity/activity.service';
+import { FastFeedbackService } from '../fast-feedback/fast-feedback.service';
+import { interval, timer } from 'rxjs';
+import { map, takeUntil } from 'rxjs/operators';
 
 const SAVE_PROGRESS_TIMEOUT = 10000;
 
@@ -44,7 +48,8 @@ export class AssessmentComponent extends RouterEnter {
     submitterName: '',
     modified: '',
     isLock: false,
-    image: ''
+    image: '',
+    reviewerName: ''
   };
   review: Review = {
     id: 0,
@@ -59,11 +64,12 @@ export class AssessmentComponent extends RouterEnter {
   loadingAssessment = true;
   loadingSubmission = true;
   questionsForm = new FormGroup({});
-  submitting = false;
+  submitting: boolean | string = false;
   savingButtonDisabled = true;
   savingMessage: string;
   saving: boolean;
   fromPage = '';
+  markingAsReview = 'Continue';
 
   constructor (
     public router: Router,
@@ -72,7 +78,9 @@ export class AssessmentComponent extends RouterEnter {
     public utils: UtilsService,
     private notificationService: NotificationService,
     public storage: BrowserStorageService,
-    public sharedService: SharedService
+    public sharedService: SharedService,
+    private activityService: ActivityService,
+    private fastFeedbackService: FastFeedbackService
   ) {
     super(router);
   }
@@ -93,7 +101,8 @@ export class AssessmentComponent extends RouterEnter {
       submitterName: '',
       modified: '',
       isLock: false,
-      image: ''
+      image: '',
+      reviewerName: ''
     };
     this.review = {
       id: 0,
@@ -105,6 +114,14 @@ export class AssessmentComponent extends RouterEnter {
     this.loadingSubmission = true;
     this.loadingFeedbackReviewed = true;
     this.saving = false;
+    this.doAssessment = false;
+    this.doReview = false;
+    this.feedbackReviewed = false;
+    this.questionsForm = new FormGroup({});
+    this.submitting = false;
+    this.savingButtonDisabled = true;
+    this.savingMessage = '';
+    this.markingAsReview = 'Continue';
   }
 
   onEnter() {
@@ -189,8 +206,9 @@ export class AssessmentComponent extends RouterEnter {
     let validator = [];
     this.assessment.groups.forEach(group => {
       group.questions.forEach(question => {
-        // put 'required' validator in FormControl
-        if (question.isRequired) {
+        // check if the compulsory is mean for current user's role
+        if (question.isRequired && question.audience.includes(this.storage.getUser().role)) {
+          // put 'required' validator in FormControl
           validator = [Validators.required];
         } else {
           validator = [];
@@ -215,6 +233,36 @@ export class AssessmentComponent extends RouterEnter {
   }
 
   back() {
+    if (this.action === 'assessment' && this.submission.status === 'published') {
+      return this.notificationService.alert({
+        header: `Mark feedback as read?`,
+        message: 'Would you like to mark the feedback as read?',
+        buttons: [
+          {
+            text: 'No',
+            handler: () => {
+              return this.router.navigate(['app', 'activity', this.activityId]);
+            },
+          },
+          {
+            text: 'Yes',
+            handler: () => {
+              return this.markReviewFeedbackAsRead().then(() => {
+                return this.notificationService.popUp('shortMessage', {
+                  message: 'You\'ve completed the topic!'
+                }).then(() => this.router.navigate([
+                  'app',
+                  'activity',
+                  this.activityId,
+                ]));
+              });
+            }
+          }
+        ]
+      });
+    }
+
+    // force saving progress
     this.submit(true , true);
     return this.navigationRoute();
   }
@@ -249,15 +297,78 @@ export class AssessmentComponent extends RouterEnter {
     return missing;
   }
 
+  /**
+   * - check if fastfeedback is available
+   * - show next sequence if submission successful
+   */
+  private pullFeedbackAndShowNext() {
+    this.submitting = 'Retrieving new task...';
+    // check if user has new fastFeedback request
+    return this.fastFeedbackService.pullFastFeedback().subscribe(
+      res => {
+        // display a pop up for successful submission
+        return this.getNextSequence().then(
+          nextSequence => {
+            this.submitting = false;
+
+            return this.notificationService.alert({
+              header: 'Submission successful!',
+              message: 'You may continue to the next learning task.',
+              buttons: [
+                {
+                  text: 'CONTINUE',
+                  handler: () => {
+                    if (nextSequence) {
+                      return this.navigateBySequence(nextSequence);
+                    }
+
+                    return this.notificationService.alert({
+                      header: 'Activity completed!',
+                      message: 'You may now proceed to the next activity while we process your feedback.',
+                      buttons: [
+                        {
+                          text: 'CONTINUE',
+                          handler: () => {
+                            return this.router.navigate(['app', 'project']);
+                          }
+                        }
+                      ]
+                    });
+                  }
+                }
+              ]
+            });
+          },
+          error => {
+            this.submitting = false;
+            console.log('nextSequence::', error);
+            return this.router.navigate(['app', 'home']);
+          }
+        );
+      },
+      error => {
+        this.submitting = false;
+        console.log('', error);
+        return this.router.navigate(['app', 'home']);
+      }
+    );
+  }
+
+  /**
+   * handle submission and autosave
+   * @name submit
+   * @param {boolean} saveInProgress set true for autosaving or it treat the action as final submision
+   */
   submit(saveInProgress: boolean, goBack?: boolean) {
 
     if (saveInProgress) {
       this.savingMessage = 'Saving...';
       this.savingButtonDisabled = true;
     } else {
-      this.submitting = true;
+      this.submitting = 'Submitting...';
       this.saving = false;
     }
+
     const answers = [];
     let questionId = 0;
     let assessment: {
@@ -267,7 +378,9 @@ export class AssessmentComponent extends RouterEnter {
       review_id?: number;
       submission_id?: number;
       unlock?: boolean;
-    } = {
+    };
+
+    assessment = {
       id: this.id,
       in_progress: false
     };
@@ -276,7 +389,6 @@ export class AssessmentComponent extends RouterEnter {
       return;
     }
     this.saving = true;
-
 
     // form submission answers
     if (this.doAssessment) {
@@ -310,12 +422,15 @@ export class AssessmentComponent extends RouterEnter {
           answer: answer
         });
       });
+
       // check if all required questions have answer when assessment done
       const requiredQuestions = this.compulsoryQuestionsAnswered(answers);
       if (!saveInProgress && requiredQuestions.length > 0) {
         this.submitting = false;
         // display a pop up if required question not answered
-        return this.notificationService.popUp('shortMessage', {message: 'Required question answer missing!'});
+        return this.notificationService.popUp('shortMessage', {
+          message: 'Required question answer missing!'
+        });
       }
     }
 
@@ -338,26 +453,13 @@ export class AssessmentComponent extends RouterEnter {
     // save the submission/feedback
     this.assessmentService.saveAnswers(assessment, answers, this.action, this.submission.id).subscribe(
       result => {
-        this.submitting = false;
         this.savingButtonDisabled = false;
         if (saveInProgress) {
+          this.submitting = false;
           // display message for successfull saved answers
           this.savingMessage = 'Last saved ' + this._getCurrentTime();
         } else {
-          // display a pop up for successful submission
-          return this.notificationService.alert({
-            message: 'Submission Successful!',
-            buttons: [
-              {
-                text: 'OK',
-                role: 'cancel',
-                handler: () => {
-                  this.router.navigate(['app', 'home']);
-                  return;
-                }
-              }
-            ]
-          });
+          return this.pullFeedbackAndShowNext();
         }
       },
       err => {
@@ -365,11 +467,11 @@ export class AssessmentComponent extends RouterEnter {
         this.savingButtonDisabled = false;
         if (saveInProgress) {
           // display message when saving answers failed
-          this.savingMessage = 'Auto save failed';
+          this.savingMessage = 'Auto save unavailable';
         } else {
           // display a pop up if submission failed
           this.notificationService.alert({
-            message: 'Submission Failed, please try again later.',
+            message: 'Submission failed, please check that all required questions have been answered.',
             buttons: [
               {
                 text: 'OK',
@@ -385,15 +487,36 @@ export class AssessmentComponent extends RouterEnter {
     setTimeout(() => this.saving = false, SAVE_PROGRESS_TIMEOUT);
   }
 
-  reviewFeedback() {
-    this.feedbackReviewed = true;
-    this.assessmentService.saveFeedbackReviewed(this.submission.id).subscribe(result => {
-      // if review is successfully mark as read and program is configured to enable review rating,
-      // display review rating modal and then redirect to activity page.
-      if (result.success && this.storage.getUser().hasReviewRating === true) {
-        this.assessmentService.popUpReviewRating(this.review.id, ['app', 'home']);
-      }
-    });
+  // mark review as read
+  async markReviewFeedbackAsRead(): Promise<any> {
+
+    // allow only if it hasnt reviewed
+    if (!this.feedbackReviewed) {
+      this.feedbackReviewed = true;
+      this.markingAsReview = 'Marking as read...';
+      const result = await this.assessmentService.saveFeedbackReviewed(this.submission.id).toPromise();
+    }
+
+    // if review is successfully mark as read and program is configured to enable review rating,
+    // display review rating modal and then redirect to activity page.
+    // if (result.success && this.storage.getUser().hasReviewRating === true) {
+    try {
+      this.markingAsReview = 'Retrieving New Task...';
+      const nextSequence = await this.getNextSequence();
+
+      return this.assessmentService.popUpReviewRating(
+        this.review.id,
+        this.navigateBySequence(nextSequence, {routeOnly: true})
+      );
+    } catch (error) {
+      console.warn(error);
+      this.feedbackReviewed = true;
+      this.loadingFeedbackReviewed = false;
+    }
+
+    this.markingAsReview = 'Continue';
+    // }
+    return;
   }
 
   showQuestionInfo(info) {
@@ -406,5 +529,48 @@ export class AssessmentComponent extends RouterEnter {
       hour: 'numeric',
       minute: 'numeric'
     }).format(new Date());
+  }
+
+  private async getNextSequence() {
+    let nextTask = null;
+    const options = {
+      id: this.id,
+      teamId: this.storage.getUser().teamId
+    };
+
+    const tasks = await this.activityService.getTaskWithStatusByActivityId(this.activityId);
+
+    this.sharedService.setCache('tasks', tasks);
+    nextTask = this.activityService.findNext(tasks, options);
+
+    return nextTask;
+  }
+
+  /**
+   * @name navigateBySequence
+   * @param {Task} sequence task object from activity service
+   */
+  private navigateBySequence(sequence, options?: {
+    routeOnly?: boolean;
+  }) {
+    let route = ['app', 'activity', this.activityId];
+
+    if (sequence) {
+      const { contextId, isForTeam, id, type } = sequence;
+      switch (type) {
+        case 'Assessment':
+          route = ['assessment', 'assessment', this.activityId , contextId, id];
+          break;
+        case 'Topic':
+          route = ['topic', this.activityId, id];
+          break;
+      }
+    }
+
+    if (options && options.routeOnly) {
+      return route;
+    }
+
+    return this.router.navigate(route);
   }
 }
