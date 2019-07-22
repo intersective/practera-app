@@ -102,8 +102,11 @@ export class PusherService {
     };
   }
 
-  disconnect(): any {
-    return this.pusher.disconnect();
+  disconnect(): void {
+    if (this.pusher) {
+      return this.pusher.disconnect();
+    }
+    return;
   }
 
   // check if pusher has been instantiated correctly
