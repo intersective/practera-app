@@ -215,27 +215,7 @@ export class AssessmentComponent extends RouterEnter {
   }
 
   back() {
-    // save answer before go back (if it's not a team assessment)
-    if (this.assessment.isForTeam && !this.questionsForm.pristine) {
-      return this.notificationService.alert({
-        header: 'Confirm leaving?',
-        message: 'All the unsubmitted answers would not be saved.',
-        buttons: [
-          {
-            text: 'Cancel',
-            role: 'cancel',
-          },
-          {
-            text: 'Ok',
-            handler: () => {
-              return this.navigationRoute();
-            }
-          }
-        ]
-      });
-    }
-
-    this.submit(true);
+    this.submit(true , true);
     return this.navigationRoute();
   }
 
@@ -269,11 +249,7 @@ export class AssessmentComponent extends RouterEnter {
     return missing;
   }
 
-  submit(saveInProgress: boolean) {
-    // team submission only accept submit and no save
-    if (this.assessment.isForTeam && saveInProgress === true) {
-      return;
-    }
+  submit(saveInProgress: boolean, goBack?: boolean) {
 
     if (saveInProgress) {
       this.savingMessage = 'Saving...';
@@ -290,9 +266,10 @@ export class AssessmentComponent extends RouterEnter {
       context_id?: number;
       review_id?: number;
       submission_id?: number;
+      unlock?: boolean;
     } = {
       id: this.id,
-      in_progress: false,
+      in_progress: false
     };
 
     if (this.saving) {
@@ -307,6 +284,9 @@ export class AssessmentComponent extends RouterEnter {
 
       if (saveInProgress) {
         assessment.in_progress = true;
+      }
+      if (this.assessment.isForTeam && goBack) {
+        assessment.unlock = true;
       }
       this.utils.each(this.questionsForm.value, (value, key) => {
         questionId = +key.replace('q-', '');

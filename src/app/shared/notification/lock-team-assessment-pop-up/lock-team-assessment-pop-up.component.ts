@@ -13,10 +13,9 @@ export class LockTeamAssessmentPopUpComponent {
   constructor(
     public modalController: ModalController
   ) {
-    console.log('data', this.data);
   }
 
   confirmed() {
-    this.modalController.dismiss();
+    this.modalController.dismiss(true);
   }
 }

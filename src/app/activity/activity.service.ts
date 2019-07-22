@@ -30,6 +30,7 @@ export interface Task {
   isDueToday?: boolean;
   isLock?: boolean;
   submitterName?: string;
+  image?: string;
 }
 
 export interface Activity {
@@ -212,9 +213,10 @@ export class ActivityService {
       return this.request.apiResponseFormatError('Submission format error');
     }
 
-    // getting submitter name and lock or unlock for team assessment.
+    // getting submitter name, image and lock or unlock for team assessment.
     task.isLock = thisSubmission.AssessmentSubmission.is_locked;
     task.submitterName = thisSubmission.Submitter.name;
+    task.image = thisSubmission.Submitter.image;
 
     switch (thisSubmission.AssessmentSubmission.status) {
       case 'pending approval':

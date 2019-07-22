@@ -104,12 +104,26 @@ export class ActivityComponent extends RouterEnter {
     this.router.navigate(['app', 'project' ]);
   }
 
+  // check assessment lock or not before go to assessment.
+  checkAssessment(type, id, isLock, submitterName, image) {
+    if (isLock) {
+      this.notificationService.lockTeamAssessmentPopUp(
+        {
+          name: submitterName,
+          image: image
+        } ,
+        (data) => {
+          if (data.data) {
+            this.goto(type, id);
+          }
+        }
+      );
+      return ;
+    }
+    this.goto(type, id);
+  }
+
   goto(type, id) {
-    // @TODO need to check lock/ unloc in team assessment and call this new popup
-    // this.notificationService.lockTeamAssessmentPopUp({
-    //   name: 'Alice',
-    //   image: 'https://www.teenlittlespace.com/images/avatars/generator/1179_1557268204.png'
-    // });
     switch (type) {
       case 'Assessment':
         // get the context id of this assessment
