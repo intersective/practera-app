@@ -366,12 +366,12 @@ console.log('isIncompleted::', isIncompleted);
     }
 
     const overview = await this.activityService.getTaskWithStatusByProjectId(this.storage.getUser().projectId);
-    const nextIncompletedMilestone = overview.Milestones.findIndex(milestone => {
+    const incompletedMilestoneIndex = overview.Milestones.findIndex(milestone => {
       return this.isMilestoneIncomplete(milestone);
     });
 
-    if (nextIncompletedMilestone !== -1) {
-      return this.redirectToNextMilestoneTask(nextIncompletedMilestone);
+    if (incompletedMilestoneIndex !== -1) {
+      return this.redirectToNextMilestoneTask(overview.Milestones[incompletedMilestoneIndex]);
     }
 
     return this.notificationService.alert({
