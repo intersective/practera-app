@@ -102,8 +102,11 @@ export class PusherService {
     };
   }
 
-  disconnect(): any {
-    return this.pusher.disconnect();
+  disconnect(): void {
+    if (this.pusher) {
+      return this.pusher.disconnect();
+    }
+    return;
   }
 
   // check if pusher has been instantiated correctly
@@ -204,8 +207,12 @@ export class PusherService {
           this.channels[key].unbind_all();
           this.channels[key] = null;
         }
-        this.pusher.unbind_all();
-        this.pusher.unsubscribe(channel.name);
+
+        // handle issue logout at first load of program-switching view
+        if (this.pusher) {
+          this.pusher.unbind_all();
+          this.pusher.unsubscribe(channel.name);
+        }
       }
     });
   }
