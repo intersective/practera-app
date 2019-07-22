@@ -1,4 +1,4 @@
-<ion-header>
+<ion-header mode="ios">
   <ion-toolbar color="light">
     <ion-icon name="arrow-back" (click)="back()" color="primary" slot="start" margin-start></ion-icon>
     <ion-title text-center>Assessment</ion-title>
@@ -19,6 +19,11 @@
   <div class="review-submitter" *ngIf="!doAssessment" text-left>
     <p class="title">
       Submitted by {{ submission.submitterName }}
+    </p>
+  </div>
+  <div *ngIf="submission.reviewerName" class="review-submitter" text-left>
+    <p class="title">
+      Reviewed by {{ submission.reviewerName }} {{review.status}}
     </p>
   </div>
 
@@ -141,19 +146,32 @@
       </ng-container>
     </ng-container>
 
-    <ion-button *ngIf="doAssessment || doReview" [disabled]="submitting || questionsForm.invalid" (click)="submit(false)" shape="round" expand="full">
+    <ion-button
+      *ngIf="doAssessment || doReview"
+      [disabled]="submitting || questionsForm.invalid"
+      (click)="submit(false)"
+      shape="round"
+      expand="full">
       <ng-container *ngIf="!submitting">Submit</ng-container>
-      <ng-container *ngIf="submitting">Submitting...</ng-container>
+      <ng-container *ngIf="submitting">{{ submitting }}</ng-container>
     </ion-button>
-
-    <div *ngIf="action === 'assessment' && submission.status == 'published'" class="text-right">
-      <span class="vertical-middle">Mark feedback as read</span>
-      <ng-container *ngIf="!loadingFeedbackReviewed; else spinnerTmpl">
-        <ion-toggle [checked]="feedbackReviewed" [disabled]="feedbackReviewed" (ionChange)="reviewFeedback()" margin-start class="vertical-middle"></ion-toggle>
-      </ng-container>
-      <ng-template #spinnerTmpl><ion-spinner name="dots" class="vertical-middle"></ion-spinner></ng-template>
-
-    </div>
 
   </form>
 </ion-content>
+
+<ion-footer color="light" *ngIf="action === 'assessment' && submission.status == 'published'">
+  <ion-toolbar>
+    <ion-spinner style="width: 100%;"
+      *ngIf="loadingFeedbackReviewed"
+      name="dots"
+      class="vertical-middle text-center"
+    ></ion-spinner>
+    <ion-button *ngIf="!loadingMarkedDone && !loadingFeedbackReviewed"
+      [disabled]="feedbackReviewed"
+      (click)="markReviewFeedbackAsRead()"
+      shape="round"
+      expand="full">
+      {{markingAsReview}}
+    </ion-button>
+  </ion-toolbar>
+</ion-footer>

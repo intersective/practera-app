@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { UtilsService } from '@services/utils.service';
 import { BrowserStorageService } from '@services/storage.service';
-import { PusherService } from '@shared/pusher/pusher.service';
 import { NotificationService } from '@shared/notification/notification.service';
 import { RequestService } from '@shared/request/request.service';
 
@@ -22,13 +21,32 @@ const api = {
 })
 export class SharedService {
   private achievementEvent;
+  private memoryCache = {};
+
   constructor(
     private utils: UtilsService,
     private storage: BrowserStorageService,
-    public pusherService: PusherService,
     private notification: NotificationService,
     private request: RequestService
   ) {}
+
+  /**
+   * @name setCache
+   * @description reset entire cache by their index/key everytime
+   * @param {string} type data type ('activity', 'milestone', 'achievement'), keep the name singular
+   * @param {object} data object of any kind
+   */
+  setCache(type: string, data) {
+    this.memoryCache[type] = data;
+    return this.memoryCache[type];
+  }
+
+  getCache(type: string) {
+    if (this.memoryCache[type]) {
+      return this.memoryCache[type];
+    }
+    return null;
+  }
 
   // call this function on every page refresh
   onPageLoad() {
@@ -45,10 +63,6 @@ export class SharedService {
     if (image) {
       this.utils.changeCardBackgroundImage(image);
     }
-    // initialise Pusher
-    this.pusherService.initialisePusher();
-    // subscribe to Pusher channels
-    this.pusherService.getChannels().subscribe();
 
     // listen to the achievement event
     if (!this.achievementEvent) {

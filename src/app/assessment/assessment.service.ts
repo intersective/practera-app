@@ -6,6 +6,7 @@ import { UtilsService } from '@services/utils.service';
 import { BrowserStorageService } from '@services/storage.service';
 import { NotificationService } from '@shared/notification/notification.service';
 import { ReviewRatingComponent } from '../review-rating/review-rating.component';
+import { DomSanitizer } from '@angular/platform-browser';
 
 /**
  * @name api
@@ -76,6 +77,7 @@ export interface Submission {
   modified: string;
   isLock: boolean;
   image: string;
+  reviewerName: string;
 }
 
 export interface Review {
@@ -97,6 +99,7 @@ export class AssessmentService {
     private utils: UtilsService,
     private storage: BrowserStorageService,
     private notification: NotificationService,
+    public sanitizer: DomSanitizer,
   ) {}
 
   getAssessment(id, action): Observable<any> {
@@ -298,7 +301,8 @@ export class AssessmentService {
       submitterName: thisSubmission.Submitter.name,
       modified: thisSubmission.AssessmentSubmission.modified,
       isLock: thisSubmission.AssessmentSubmission.is_locked,
-      image: thisSubmission.Submitter.image
+      image: thisSubmission.Submitter.image,
+      reviewerName: this.checkReviewer(thisSubmission.Reviewer)
     };
 
     // -- normalise submission answers
@@ -397,7 +401,8 @@ export class AssessmentService {
       });
     }
     // put the explanation in the submission
-    submission.answers[questionId].explanation = explanation;
+    const thisExplanation = explanation.replace(/text-align: center;/gi, 'text-align: center; text-align: -webkit-center;');
+    submission.answers[questionId].explanation = this.sanitizer.bypassSecurityTrustHtml(thisExplanation);
 
     return submission;
   }
@@ -498,6 +503,13 @@ export class AssessmentService {
       reviewId,
       redirect
     });
+  }
+
+  checkReviewer(reviewer) {
+    if (!reviewer) {
+      return undefined;
+    }
+    return reviewer.name !== this.storage.getUser().name ? reviewer.name : undefined;
   }
 
 }
