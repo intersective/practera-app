@@ -76,9 +76,11 @@ export class ActivityComponent extends RouterEnter {
       });
   }
 
-  private _getTasksProgress() {
-    this.activityService.getTasksProgress(this.activity)
-      .subscribe(tasks => {
+  private _getTasksProgress(): void {
+    this.activityService.getTasksProgress({
+      model_id: this.activity.id,
+      tasks: this.activity.tasks,
+    }).subscribe(tasks => {
         this.activity.tasks = tasks;
         this.activity.tasks.forEach((task, index) => {
           if (task.type === 'Assessment') {
@@ -105,7 +107,7 @@ export class ActivityComponent extends RouterEnter {
   }
 
   back() {
-    this.router.navigate(['app', 'project' ]);
+    this.router.navigate([ 'app', 'project' ]);
   }
 
   goto(type, id) {
