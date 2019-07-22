@@ -48,13 +48,13 @@ export class NotificationService {
       data,
       redirect,
     };
-    const modal = await this.modal(component, componentProps);
-    return modal;
+    const modal = await this.modal(component, componentProps, true);
+    return modal.present();
   }
 
   async modal(component, componentProps, options?) {
     const modal = await this.modalController.create(this.modalConfig({ component, componentProps }, options));
-    return await modal.present();
+    return modal;
   }
 
   async alert(config: AlertOptions) {
@@ -106,7 +106,7 @@ export class NotificationService {
       keyboardClose: false,
       backdropDismiss: false
     });
-    return modal;
+    return modal.present();
   }
 
   /**
@@ -118,13 +118,16 @@ export class NotificationService {
    *    name: "Alice"
    * });
    */
-  async lockTeamAssessmentPopUp(data) {
-    console.log('data 1', data);
+  async lockTeamAssessmentPopUp(data, event) {
     const component = LockTeamAssessmentPopUpComponent;
     const modal = await this.modal(component, data, {
       cssClass: 'lock-assessment-popup'
     });
-    return modal;
+    modal.onDidDismiss()
+      // tslint:disable-next-line:no-shadowed-variable
+      .then((data) => {
+        event(data);
+    });
+    return modal.present();
   }
-
 }

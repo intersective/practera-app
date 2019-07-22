@@ -7,6 +7,7 @@
   .imgage-content {
     text-align: -webkit-center;
     margin-top: 20px;
+    margin-bottom: 20px;
 
     .image {
       background-color: #ffffff !important;
@@ -27,11 +28,11 @@
   }
 
   .div-after-img {
-    margin: 0 15px 15px;
+    margin: 0 15px 0;
 
     .description {
       text-align: -webkit-center;
-      font-weight: bold;
+      font-weight: 600;
       color: var(--ion-color-medium);
       font-size: 12px;
       line-height: 17px;
