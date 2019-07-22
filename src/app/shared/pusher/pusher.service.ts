@@ -204,8 +204,12 @@ export class PusherService {
           this.channels[key].unbind_all();
           this.channels[key] = null;
         }
-        this.pusher.unbind_all();
-        this.pusher.unsubscribe(channel.name);
+
+        // handle issue logout at first load of program-switching view
+        if (this.pusher) {
+          this.pusher.unbind_all();
+          this.pusher.unsubscribe(channel.name);
+        }
       }
     });
   }
