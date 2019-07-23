@@ -116,11 +116,7 @@ export class TopicComponent extends RouterEnter {
     // if topic has been marked as read
     if (this.btnToggleTopicIsDone) {
       const nextSequence = await this.getNextSequence();
-      if (nextSequence) {
-        return this.navigateBySequence(nextSequence);
-      }
-
-      return this.router.navigate(['app', 'activity', this.activityId]);
+      return this.skipToNextTask(nextSequence);
     }
 
     // mark topic as done
@@ -185,6 +181,54 @@ export class TopicComponent extends RouterEnter {
     return nextTask;
   }
 
+  // allow progression if milestone isnt completed yet
+  private redirectToNextMilestoneTask(nextMilestone) {
+    const firstActivity = nextMilestone.Activities[0]; // implement filter
+    const isIncompleted = this.activityService.isActivityIncomplete(firstActivity);
+    const firstTask = firstActivity.Tasks[0]; // implement filter
+
+console.log('isIncompleted::', isIncompleted);
+
+    switch (firstTask.type) {
+      case 'Assessment':
+        return this.router.navigate(['assessment', 'assessment', firstActivity.id, 'contextId', firstTask.id]);
+
+      case 'Topic':
+        return this.router.navigate(['topic', firstActivity.id, firstTask.id]);
+    }
+    return this.router.navigate(['app', 'activity', firstActivity.id]);
+  }
+
+  // get sequence detail and move on to next new task
+  async skipToNextTask(sequence) {
+    // double confirm if `sequence` is empty, because we only allow skipping to next activity's task if all the tasks in current activity.
+    if (sequence) {
+      return this.navigateBySequence(sequence);
+    }
+
+    const overview = await this.activityService.getTaskWithStatusByProjectId(this.storage.getUser().projectId);
+    const incompletedMilestoneIndex = overview.Milestones.findIndex(milestone => {
+      return this.activityService.isMilestoneIncomplete(milestone);
+    });
+
+    if (incompletedMilestoneIndex !== -1) {
+      return this.redirectToNextMilestoneTask(overview.Milestones[incompletedMilestoneIndex]);
+    }
+
+    return this.notificationService.alert({
+      header: 'Activity completed!',
+      message: 'You may now proceed to the next activity while we process your feedback.',
+      buttons: [
+        {
+          text: 'CONTINUE',
+          handler: () => {
+            return this.router.navigate(['app', 'project']);
+          }
+        }
+      ]
+    });
+  }
+
   /**
    * @name nextStepPrompt
    * @description
@@ -200,7 +244,7 @@ export class TopicComponent extends RouterEnter {
           {
             text: 'OK',
             handler: () => {
-              return this.navigateBySequence(nextSequence);
+              return this.skipToNextTask(nextSequence);
             }
           }
         ]

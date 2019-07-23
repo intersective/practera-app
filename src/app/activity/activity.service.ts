@@ -457,4 +457,30 @@ export class ActivityService {
     task.loadingStatus = false;
     return task;
   }
+
+  /**
+   * definition of incomplete:
+   * - for assessment, submission could be done, but hasn't review or awaiting feedback
+   * - for topic, hasn't marked as read
+   * @param {[type]} assessment [description]
+   */
+  isActivityIncomplete(assessment): boolean {
+    const hasIncompletedTask = assessment.Tasks.filter(task => {
+      if (task.type === 'Assessment') {
+        // don't include 'pending review/pending approval'
+        return (task.progress < 1 && (task.status === 'in progress' || task.status === 'feedback available' || task.status === ''));
+      }
+
+      return task.progress < 1;
+    });
+
+    return hasIncompletedTask.length > 0;
+  }
+
+  isMilestoneIncomplete(milestone): boolean {
+    const isIncompleted = milestone.Activities.filter(activity => {
+      return this.isActivityIncomplete(activity);
+    });
+    return isIncompleted.length > 0;
+  }
 }

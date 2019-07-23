@@ -316,36 +316,10 @@ export class AssessmentComponent extends RouterEnter {
     return missing;
   }
 
-  isMilestoneIncomplete(milestone): boolean {
-    const isIncompleted = milestone.Activities.filter(activity => {
-      return this.isActivityIncomplete(activity);
-    });
-    return isIncompleted.length > 0;
-  }
-
-  /**
-   * definition of incomplete:
-   * - for assessment, submission could be done, but hasn't review or awaiting feedback
-   * - for topic, hasn't marked as read
-   * @param {[type]} assessment [description]
-   */
-  isActivityIncomplete(assessment): boolean {
-    const hasIncompletedTask = assessment.Tasks.filter(task => {
-      if (task.type === 'Assessment') {
-        // don't include 'pending review/pending approval'
-        return (task.progress < 1 && (task.status === 'in progress' || task.status === 'feedback available' || task.status === ''));
-      }
-
-      return task.progress < 1;
-    });
-
-    return hasIncompletedTask.length > 0;
-  }
-
   // allow progression if milestone isnt completed yet
   redirectToNextMilestoneTask(nextMilestone) {
     const firstActivity = nextMilestone.Activities[0]; // implement filter
-    const isIncompleted = this.isActivityIncomplete(firstActivity);
+    const isIncompleted = this.activityService.isActivityIncomplete(firstActivity);
     const firstTask = firstActivity.Tasks[0]; // implement filter
 
 console.log('isIncompleted::', isIncompleted);
@@ -367,7 +341,7 @@ console.log('isIncompleted::', isIncompleted);
 
     const overview = await this.activityService.getTaskWithStatusByProjectId(this.storage.getUser().projectId);
     const incompletedMilestoneIndex = overview.Milestones.findIndex(milestone => {
-      return this.isMilestoneIncomplete(milestone);
+      return this.activityService.isMilestoneIncomplete(milestone);
     });
 
     if (incompletedMilestoneIndex !== -1) {
