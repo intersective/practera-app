@@ -7,7 +7,7 @@
       </ion-item>
     </ion-radio-group>
   </ion-list>
-  <div *ngIf="submission.explanation" class="q-reviews">
+  <div *ngIf="submission.explanation && submission.explanation.changingThisBreaksApplicationSecurity" class="q-reviews">
     <ion-label class="q-title">Explanation</ion-label>
     <p class="paragraph" [innerHtml]="submission.explanation"></p>
   </div>
