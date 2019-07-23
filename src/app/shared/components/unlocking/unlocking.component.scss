@@ -1,3 +1,7 @@
+@mixin animation {
+  animation-duration: 10s;
+}
+
 .contain {
   text-align: center;
   margin: auto;
@@ -5,21 +9,116 @@
   background-size: 100%;
   background-repeat: no-repeat;
   svg {
-    width: 45%;
+    width: 60%;
     height: 100%;
-    margin: 8% 0 30% 45%;
-    .lock-body {
+    margin: 8% 0 30% 35%;
+    .lock-color {
       fill: var(--ion-color-primary);
     }
-    .lock-head {
-      animation-name: animate;
-      animation-duration: 2s;
-      transform: matrix( -1, 0, 0, 1, 85.5,-10);
+    .blur-only {
+      @include animation;
+      animation-name: animation-blur-only;
+      opacity: 0;
     }
+    .blur-filter {
+      @include animation;
+      animation-name: animation-blur-filter;
+      filter: url(#blur-filter-6);
+    }
+    .blur-lock {
+      @include animation;
+      animation-name: animation-blur-lock;
+      transform: matrix( 0.84478759765625, 0, 0, 0.84454345703125, 200,173);
+    }
+    .lock-only {
+      @include animation;
+      animation-name: animation-lock-only;
+      opacity: 1;
+    }
+    .lock-body {
+      @include animation;
+      animation-name: animation-lock-body;
+      transform: matrix( 1, 0, 0, 1, 0.1,81.4);
+    }
+    // .lock-head {
+    //   @include animation;
+    //   animation-name: animation;
+    //   transform: matrix( -1, 0, 0, 1, 85.5,-10);
+    // }
   }
 }
 
-@keyframes animate {
+@keyframes animation-blur-only {
+  0% {
+    opacity: 1;
+  }
+  5% {
+    opacity: 1;
+  }
+  6% {
+    opacity: 0;
+  }
+}
+@keyframes animation-blur-filter {
+  0% {
+    filter: url(#blur-filter-1);
+  }
+  1% {
+    filter: url(#blur-filter-2);
+  }
+  2% {
+    filter: url(#blur-filter-3);
+  }
+  3% {
+    filter: url(#blur-filter-4);
+  }
+  4% {
+    filter: url(#blur-filter-5);
+  }
+  5% {
+    filter: url(#blur-filter-6);
+  }
+}
+@keyframes animation-blur-lock {
+  0% {
+    transform: matrix( 0.844818115234375, 0, 0, 0.844573974609375, 199.95,253);
+  }
+  1% {
+    transform: matrix( 0.84478759765625, 0, 0, 0.84454345703125, 200,237);
+  }
+  2% {
+    transform: matrix( 0.84478759765625, 0, 0, 0.84454345703125, 200,221);
+  }
+  3% {
+    transform: matrix( 0.84478759765625, 0, 0, 0.84454345703125, 200,205);
+  }
+  4% {
+    transform: matrix( 0.84478759765625, 0, 0, 0.84454345703125, 200,189.05);
+  }
+  5% {
+    transform: matrix( 0.84478759765625, 0, 0, 0.84454345703125, 200,173);
+  }
+}
+@keyframes animation-lock-only {
+  0% {
+    opacity: 0;
+  }
+  5% {
+    opacity: 0;
+  }
+  6% {
+    opacity: 1;
+  }
+}
+@keyframes animation-lock-body {
+  6% {
+    transform: matrix( 1, 0, 0, 1, 0.1,84.7);
+  }
+  7% {
+    transform: matrix( 1, 0, 0, 1, 0.1,81.4);
+  }
+}
+@keyframes animation {
   0% {
     transform: matrix( 1, 0, 0, 1, 35.9,80);
   }
