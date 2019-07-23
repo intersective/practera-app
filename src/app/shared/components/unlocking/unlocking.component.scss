@@ -1,16 +1,20 @@
 .contain {
   text-align: center;
   margin: auto;
+  background-image: url("/assets/unlocking-background.gif");
+  background-size: 100%;
+  background-repeat: no-repeat;
   svg {
-    width: 100%;
+    width: 45%;
     height: 100%;
+    margin: 8% 0 30% 45%;
     .lock-body {
       fill: var(--ion-color-primary);
     }
     .lock-head {
       animation-name: animate;
-      animation-duration: 1.5s;
-      animation-iteration-count: infinite;
+      animation-duration: 2s;
+      transform: matrix( -1, 0, 0, 1, 85.5,-10);
     }
   }
 }
