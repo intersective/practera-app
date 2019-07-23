@@ -322,7 +322,6 @@ export class AssessmentComponent extends RouterEnter {
     const isIncompleted = this.activityService.isActivityIncomplete(firstActivity);
     const firstTask = firstActivity.Tasks[0]; // implement filter
 
-console.log('isIncompleted::', isIncompleted);
     switch (firstTask.type) {
       case 'Assessment':
         return this.router.navigate(['assessment', 'assessment', firstActivity.id, 'contextId', firstTask.id]);
@@ -339,7 +338,7 @@ console.log('isIncompleted::', isIncompleted);
       return this.navigateBySequence(sequence);
     }
 
-    const overview = await this.activityService.getTaskWithStatusByProjectId(this.storage.getUser().projectId);
+    const overview = await this.activityService.getOverview(this.storage.getUser().projectId).toPromise();
     const incompletedMilestoneIndex = overview.Milestones.findIndex(milestone => {
       return this.activityService.isMilestoneIncomplete(milestone);
     });
@@ -586,7 +585,7 @@ console.log('isIncompleted::', isIncompleted);
       teamId: this.storage.getUser().teamId
     };
 
-    const tasks = await this.activityService.getTaskWithStatusByActivityId(this.activityId);
+    const tasks = await this.activityService.getTaskWithStatusByActivityId(this.storage.getUser().projectId, this.activityId);
     nextTask = this.activityService.findNext(tasks, options);
 
     return nextTask;

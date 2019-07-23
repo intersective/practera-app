@@ -33,9 +33,11 @@ import { SharedModule } from '@shared/shared.module';
     ProjectComponent,
     ProjectRoutingComponent
   ],
-
   providers: [
     ProjectService,
+  ],
+  exports: [
+    SharedModule,
   ]
 })
 export class ProjectModule {}
