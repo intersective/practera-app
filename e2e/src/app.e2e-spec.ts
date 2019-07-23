@@ -21,6 +21,6 @@ describe('Login Page', () => {
     expect(loginButton.getAttribute('disabled')).toBeFalsy();
     loginButton.click();
 
-    expect(page.getTitle()).toEqual('Select A Program');
+    expect(page.getTitle()).toEqual('Select an Experience');
   });
 });
