@@ -173,7 +173,7 @@ export class TopicComponent extends RouterEnter {
     };
 
     this.loadingTopic = true;
-    const tasks = await this.activityService.getTaskWithStatusByActivityId(this.activityId);
+    const tasks = await this.activityService.getTaskWithStatusByActivityId(this.storage.getUser().projectId, this.activityId);
 
     nextTask = this.activityService.findNext(tasks, options);
     this.loadingTopic = false;
@@ -186,8 +186,6 @@ export class TopicComponent extends RouterEnter {
     const firstActivity = nextMilestone.Activities[0]; // implement filter
     const isIncompleted = this.activityService.isActivityIncomplete(firstActivity);
     const firstTask = firstActivity.Tasks[0]; // implement filter
-
-console.log('isIncompleted::', isIncompleted);
 
     switch (firstTask.type) {
       case 'Assessment':
@@ -206,7 +204,7 @@ console.log('isIncompleted::', isIncompleted);
       return this.navigateBySequence(sequence);
     }
 
-    const overview = await this.activityService.getTaskWithStatusByProjectId(this.storage.getUser().projectId);
+    const overview = await this.activityService.getTaskWithStatusByActivityId(this.storage.getUser().projectId, this.activityId);
     const incompletedMilestoneIndex = overview.Milestones.findIndex(milestone => {
       return this.activityService.isMilestoneIncomplete(milestone);
     });
