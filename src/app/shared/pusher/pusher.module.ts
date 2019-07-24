@@ -7,7 +7,8 @@ import { PusherConfig, PusherService } from './pusher.service';
   imports: [
     CommonModule
   ],
-  providers: [PusherService]
+  providers: [PusherService],
+  exports: [CommonModule]
 })
 export class PusherModule {
   constructor(@Optional() @SkipSelf() parentModule: PusherModule) {
