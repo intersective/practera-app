@@ -165,7 +165,8 @@ export class TopicComponent extends RouterEnter {
     return this.router.navigate(route);
   }
 
-  private async getNextSequence() {
+
+  private async getNextSequence(activity?) {
     let nextTask = null;
     const options = {
       id: this.id,
@@ -173,44 +174,35 @@ export class TopicComponent extends RouterEnter {
     };
 
     this.loadingTopic = true;
-    const tasks = await this.activityService.getTaskWithStatusByActivityId(this.storage.getUser().projectId, this.activityId);
-
-    nextTask = this.activityService.findNext(tasks, options);
+    if (!activity) {
+      activity = await this.activityService.getTasksByActivityId(this.storage.getUser().projectId, this.activityId);
+    }
+    nextTask = this.activityService.findNext(activity.Tasks, options);
     this.loadingTopic = false;
 
     return nextTask;
   }
 
   // allow progression if milestone isnt completed yet
-  private redirectToNextMilestoneTask(nextMilestone) {
-    const firstActivity = nextMilestone.Activities[0]; // implement filter
-    const isIncompleted = this.activityService.isActivityIncomplete(firstActivity);
-    const firstTask = firstActivity.Tasks[0]; // implement filter
+  async redirectToNextMilestoneTask(activity) {
+    const nextTask = await this.getNextSequence(activity);
 
-    switch (firstTask.type) {
-      case 'Assessment':
-        return this.router.navigate(['assessment', 'assessment', firstActivity.id, 'contextId', firstTask.id]);
+    switch (nextTask.type) {
+      case 'assessment':
+        return this.router.navigate(['assessment', 'assessment', activity.id, nextTask.context_id, nextTask.id]);
 
-      case 'Topic':
-        return this.router.navigate(['topic', firstActivity.id, firstTask.id]);
+      case 'topic':
+        return this.router.navigate(['topic', activity.id, nextTask.id]);
     }
-    return this.router.navigate(['app', 'activity', firstActivity.id]);
+    return this.router.navigate(['app', 'activity', activity.id]);
   }
 
   // get sequence detail and move on to next new task
   async skipToNextTask(sequence) {
     // double confirm if `sequence` is empty, because we only allow skipping to next activity's task if all the tasks in current activity.
-    if (sequence) {
-      return this.navigateBySequence(sequence);
-    }
-
-    const overview = await this.activityService.getTaskWithStatusByActivityId(this.storage.getUser().projectId, this.activityId);
-    const incompletedMilestoneIndex = overview.Milestones.findIndex(milestone => {
-      return this.activityService.isMilestoneIncomplete(milestone);
-    });
-
-    if (incompletedMilestoneIndex !== -1) {
-      return this.redirectToNextMilestoneTask(overview.Milestones[incompletedMilestoneIndex]);
+    const activity = await this.activityService.getTasksByActivityId(this.storage.getUser().projectId, this.activityId);
+    if (activity) {
+      return this.redirectToNextMilestoneTask(activity);
     }
 
     return this.notificationService.alert({
