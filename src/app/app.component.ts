@@ -8,6 +8,7 @@ import { AuthService } from './auth/auth.service';
 import { BrowserStorageService } from '@services/storage.service';
 import { VersionCheckService } from '@services/version-check.service';
 import { environment } from '@environments/environment';
+import { PusherService } from '@shared/pusher/pusher.service';
 
 @Component({
   selector: 'app-root',
@@ -21,7 +22,8 @@ export class AppComponent implements OnInit {
     private sharedService: SharedService,
     private authService: AuthService,
     private storage: BrowserStorageService,
-    private versionCheckService: VersionCheckService
+    private versionCheckService: VersionCheckService,
+    private pusherService: PusherService,
     // private splashScreen: SplashScreen,
     // private statusBar: StatusBar
   ) {
@@ -87,8 +89,9 @@ export class AppComponent implements OnInit {
   initializeApp() {
     this.platform.ready().then(() => {
       this.versionCheckService.initiateVersionCheck();
-      // this.statusBar.styleDefault();
-      // this.splashScreen.hide();
+
+      // initialise Pusher
+      this.pusherService.initantiate();
     });
   }
 
