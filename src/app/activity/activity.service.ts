@@ -47,6 +47,7 @@ export interface OverviewTask {
   status?: string;
   is_team?: boolean;
   progress: number;
+  deadline: string;
   Submitter?: {
       id: number;
       name: string;
@@ -94,21 +95,49 @@ export class ActivityService {
    * @param  {number}       activityId activity id
    * @return {Promise<any>}    Promise
    */
-  async getTaskWithStatusByActivityId(projectId: number, activityId: number): Promise<any> {
-    let currentActivity: OverviewActivity;
+  async getTasksByActivityId(projectId: number, activityId: number): Promise<OverviewActivity> {
+    let currentMilestone: OverviewMilestone;
+    let nextActivity: OverviewActivity;
     const overview = await this.getOverview(projectId).toPromise();
 
-    overview.Milestones.forEach(milestone => {
-      return milestone.Activities.forEach(activity => {
+    const currentMilestoneIndex: number = overview.Milestones.findIndex(milestone => {
+      // find current activity
+      const currentActivity = milestone.Activities.find(activity => {
         if (activity.id === activityId) {
-          currentActivity = activity;
           return true;
         }
         return false;
       });
-    })
 
-    return currentActivity.Tasks;
+      // insert current milestone to "currentMilestone"
+      if (currentActivity) {
+        currentMilestone = milestone;
+        return true;
+      }
+
+      return false;
+    });
+
+    // if current milestone is completed, search next incompleted milestone with incompleted task
+    let nextMilestone: OverviewMilestone;
+    if (!this.isMilestoneIncomplete(currentMilestone)) {
+      // get next milestone by the order of milestone array
+      for (let i = currentMilestoneIndex; i < overview.Milestones.length; i++) {
+        if (this.isMilestoneIncomplete(overview.Milestones[i]) && nextMilestone === undefined) {
+          nextMilestone = overview.Milestones[i];
+        }
+      }
+    }
+
+    // if nextMilestone not present
+    nextActivity = (nextMilestone || currentMilestone).Activities.find(activity => {
+      if (this.isActivityIncomplete(activity)) {
+        return true;
+      }
+      return false;
+    });
+
+    return nextActivity;
   }
 
   getActivity(id: number): Observable<any> {
@@ -165,6 +194,43 @@ export class ActivityService {
     return tasks;
   }
 
+  public _normaliseOverviewTasks(tasks: OverviewTask[]) {
+    const result = tasks.map(task => {
+      if (task.is_locked) {
+        return {
+          id: 0,
+          type: 'Locked',
+          name: 'Locked',
+          loadingStatus: false
+        }
+      }
+
+      switch (task.type) {
+        case 'topic':
+          return {
+            id: task.id,
+            name: task.name,
+            type: 'Topic',
+            loadingStatus: true
+          }
+
+        case 'assessment':
+          return {
+            id: task.id,
+            name: task.name,
+            type: 'Assessment',
+            contextId: task.context_id || 0,
+            loadingStatus: true,
+            isForTeam: task.is_team,
+            dueDate: task.deadline,
+            isOverdue: this.utils.timeComparer(task.deadline) < 0 ? true : false,
+            isDueToday: this.utils.timeComparer(task.deadline, undefined, true) === 0 ? true : false,
+          }
+      }
+    });
+    return result;
+  }
+
   private _normaliseTaskStatuses
 
   private getContextAssessment(thisActivity) {
@@ -197,14 +263,6 @@ export class ActivityService {
     activity.id = thisActivity.Activity.id;
     activity.name = thisActivity.Activity.name;
     activity.description = thisActivity.Activity.description;
-
-    const contextIds = {};
-    thisActivity.References.forEach(element => {
-      if (!this.utils.has(element, 'Assessment.id') || !this.utils.has(element, 'context_id')) {
-        return this.request.apiResponseFormatError('Activity.References format error');
-      }
-      contextIds[element.Assessment.id] = element.context_id;
-    });
 
     activity.tasks = this._extractTasks(thisActivity);
     return activity;
@@ -307,6 +365,7 @@ export class ActivityService {
       return true;
     }
 
+    // 'done' and 'progress=0' can be coexistent
     if (task.type === 'assessment' && ['pending review', 'done'].indexOf(task.status) !== -1) {
       return true;
     }
@@ -318,19 +377,20 @@ export class ActivityService {
   /**
    * get next task from the provided list of tasks based on array's order
    * @param  {Task[]}     tasks task list
-   * @param  {object}     options id and teamId
+   * @param  {object}     options current taskId and teamId
    * @return {Task}       single task object
    */
   findNext(tasks: OverviewTask[], options: {
     id: number;
     teamId: number;
   }): Task | null {
+    // currentIndex can be -1 because the tasks list can be from different Activity's tasks set
     const currentIndex = tasks.findIndex(task => {
       return task.id === options.id;
     });
 
     const nextIndex = currentIndex + 1;
-    if (tasks[nextIndex] && !this.isTaskCompleted(tasks[nextIndex])) {
+    if (currentIndex !== -1 && tasks[nextIndex] && !this.isTaskCompleted(tasks[nextIndex])) {
       return tasks[nextIndex];
     } else {
       // condition: if next task is a completed activity, pick the first undone from the list
@@ -409,7 +469,7 @@ export class ActivityService {
    */
   isActivityIncomplete(assessment): boolean {
     const hasIncompletedTask = assessment.Tasks.filter(task => {
-      if (task.type === 'Assessment') {
+      if (task.type === 'assessment') {
         // don't include 'pending review/pending approval'
         return (task.progress < 1 && (task.status === 'in progress' || task.status === 'feedback available' || task.status === ''));
       }
