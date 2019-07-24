@@ -169,6 +169,7 @@ export class ActivityService {
       }
 
       switch (sequence.model) {
+        case 'Story.Comm':
         case 'Story.Topic':
           return {
             id: sequence[sequence.model].id,
@@ -188,6 +189,14 @@ export class ActivityService {
             dueDate: sequence[sequence.model].deadline,
             isOverdue: this.utils.timeComparer(sequence[sequence.model].deadline) < 0 ? true : false,
             isDueToday: this.utils.timeComparer(sequence[sequence.model].deadline, undefined, true) === 0 ? true : false,
+          }
+        default:
+          console.warn(`Unsupported model type ${sequence.model}`);
+          return {
+            id: sequence[sequence.model].id,
+            name: sequence[sequence.model].title,
+            type: sequence.model,
+            loadingStatus: true
           }
       }
     });

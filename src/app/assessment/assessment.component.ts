@@ -228,7 +228,7 @@ export class AssessmentComponent extends RouterEnter {
     return this.router.navigate(['app', 'home']);
   }
 
-  back(): any {
+  back(): Promise<void | boolean> {
     // save answer before go back (if it's not a team assessment)
     if (this.assessment.isForTeam && !this.questionsForm.pristine) {
       return this.notificationService.alert({
@@ -262,7 +262,7 @@ export class AssessmentComponent extends RouterEnter {
             text: 'Yes',
             handler: () => {
               return this.markReviewFeedbackAsRead().then(() => {
-                return this.notificationService.popUp('shortMessage', {
+                return this.notificationService.customToast({
                   message: 'You\'ve completed the topic!'
                 }).then(() => this.router.navigate([
                   'app',
@@ -363,17 +363,16 @@ export class AssessmentComponent extends RouterEnter {
       return this.router.navigate(['app', 'home']);
     }
 
-    return this.notificationService.alert({
-      header: 'Submission successful!',
+    return this.notificationService.customToast({
       message: 'You may continue to the next learning task.',
       buttons: [
         {
           text: 'CONTINUE',
-          handler: async () => {
-             return this.skipToNextTask();
-          }
+          role: 'cancel',
         }
       ]
+    }).then(val => {
+      return this.skipToNextTask();
     });
   }
 
