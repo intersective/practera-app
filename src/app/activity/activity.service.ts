@@ -28,9 +28,11 @@ export interface Task {
   dueDate?: string;
   isOverdue?: boolean;
   isDueToday?: boolean;
-  isLock?: boolean;
-  submitterName?: string;
-  image?: string;
+  isLocked?: boolean;
+  submitter?: {
+    name: string;
+    image: string;
+  };
 }
 
 export interface Activity {
@@ -309,9 +311,11 @@ export class ActivityService {
     }
 
     // getting submitter name, image and lock or unlock for team assessment.
-    task.isLock = thisSubmission.AssessmentSubmission.is_locked;
-    task.submitterName = thisSubmission.Submitter.name;
-    task.image = thisSubmission.Submitter.image;
+    task.isLocked = thisSubmission.AssessmentSubmission.is_locked;
+    task.submitter = {
+      name : thisSubmission.Submitter.name,
+      image : thisSubmission.Submitter.image
+    };
 
     // standardize and restrict statuses into 3 main categorises
     // eg. (pending review / feedback available / done)
