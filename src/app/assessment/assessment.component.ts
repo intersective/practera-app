@@ -323,10 +323,10 @@ export class AssessmentComponent extends RouterEnter {
     const firstTask = firstActivity.Tasks[0]; // implement filter
 
     switch (firstTask.type) {
-      case 'Assessment':
+      case 'assessment':
         return this.router.navigate(['assessment', 'assessment', firstActivity.id, 'contextId', firstTask.id]);
 
-      case 'Topic':
+      case 'topic':
         return this.router.navigate(['topic', firstActivity.id, firstTask.id]);
     }
     return this.router.navigate(['app', 'activity', firstActivity.id]);
