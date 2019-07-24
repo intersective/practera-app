@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { UtilsService } from '@services/utils.service';
 import { BrowserStorageService } from '@services/storage.service';
-import { PusherService } from '@shared/pusher/pusher.service';
 import { NotificationService } from '@shared/notification/notification.service';
 import { RequestService } from '@shared/request/request.service';
 
@@ -25,7 +24,6 @@ export class SharedService {
   constructor(
     private utils: UtilsService,
     private storage: BrowserStorageService,
-    public pusherService: PusherService,
     private notification: NotificationService,
     private request: RequestService
   ) {}
@@ -45,12 +43,6 @@ export class SharedService {
     if (image) {
       this.utils.changeCardBackgroundImage(image);
     }
-    // initialise Pusher
-    this.pusherService.initialisePusher();
-
-    // @CHAW: do we need the .subscribe() since getChannels also calls subscribe?
-    // subscribe to Pusher channels
-    this.pusherService.getChannels().subscribe();
 
     // listen to the achievement event
     if (!this.achievementEvent) {
