@@ -48,13 +48,20 @@ export class NotificationService {
       data,
       redirect,
     };
-    const modal = await this.modal(component, componentProps, true);
-    return modal.present();
+    const modal = await this.modal(component, componentProps);
+    return modal;
   }
 
-  async modal(component, componentProps, options?) {
+  async modal(component, componentProps,  options?, event?) {
     const modal = await this.modalController.create(this.modalConfig({ component, componentProps }, options));
-    return modal;
+    if (event) {
+      modal.onDidDismiss()
+      // tslint:disable-next-line:no-shadowed-variable
+      .then((data) => {
+        event(data);
+      });
+    }
+    return modal.present();
   }
 
   async alert(config: AlertOptions) {
@@ -106,7 +113,7 @@ export class NotificationService {
       keyboardClose: false,
       backdropDismiss: false
     });
-    return modal.present();
+    return modal;
   }
 
   /**
@@ -120,14 +127,13 @@ export class NotificationService {
    */
   async lockTeamAssessmentPopUp(data, event) {
     const component = LockTeamAssessmentPopUpComponent;
-    const modal = await this.modal(component, data, {
+    const modal = await this.modal(
+      component, data,
+      {
       cssClass: 'lock-assessment-popup'
-    });
-    modal.onDidDismiss()
-      // tslint:disable-next-line:no-shadowed-variable
-      .then((data) => {
-        event(data);
-    });
-    return modal.present();
+      },
+      event
+    );
+    return modal;
   }
 }
