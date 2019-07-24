@@ -203,9 +203,8 @@ export class TopicComponent extends RouterEnter {
       return this.redirectToNextMilestoneTask(activity);
     }
 
-    return this.notificationService.alert({
-      header: 'Activity completed!',
-      message: 'You may now proceed to the next activity while we process your feedback.',
+    return this.notificationService.customToast({
+      message: 'Activity completed!',
       buttons: [
         {
           text: 'CONTINUE',
@@ -222,7 +221,9 @@ export class TopicComponent extends RouterEnter {
    * @description
    */
   async nextStepPrompt(): Promise<any> {
-    await this.notificationService.presentToast('Topic completed!');
+    await this.notificationService.customToast({
+      message: 'Topic completed!'
+    });
     return this.skipToNextTask();
 
     // code below will be skipped for temporary (until "unlock" feature implemented)
@@ -262,8 +263,8 @@ export class TopicComponent extends RouterEnter {
           text: 'Yes',
           handler: () => {
             return this.markAsDone().subscribe(() => {
-              return this.notificationService.popUp('shortMessage', {
-                message: 'You\'ve completed the topic!'
+              return this.notificationService.customToast({
+                message:'You\'ve completed the topic!',
               }).then(() => this.router.navigate([
                 'app',
                 'activity',
