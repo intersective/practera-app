@@ -4,7 +4,7 @@
     <ion-title text-center>Assessment</ion-title>
     <ng-container *ngIf="doAssessment || doReview">
       <ion-title text-center class="subTitle">{{savingMessage}}</ion-title>
-      <ion-button [disabled]="savingButtonDisabled || submission.isLock" (click)="submit(true)" class="text-button" color="primary" slot="end" fill="clear" size="small">Save</ion-button>
+      <ion-button [disabled]="savingButtonDisabled" (click)="submit(true)" class="text-button" color="primary" slot="end" fill="clear" size="small">Save</ion-button>
     </ng-container>
   </ion-toolbar>
 </ion-header>
@@ -27,10 +27,10 @@
     </p>
   </div>
 
-  <ion-list *ngIf="submission.isLock" class="member-detail-container no-bg" lines="none">
+  <ion-list *ngIf="submission.isLocked" class="member-detail-container no-bg" lines="none">
     <ion-item lines="none">
       <ion-avatar slot="start">
-        <img [src]="submission.image ? submission.image : 'https://my.practera.com/img/user-512.png'">
+        <img [src]="submission.submitterImage ? submission.submitterImage : 'https://my.practera.com/img/user-512.png'">
       </ion-avatar>
       <ion-label>
         <h4>Locked by {{ submission.submitterName }}</h4>
@@ -39,7 +39,7 @@
     </ion-item>
   </ion-list>
 
-  <form [ngClass]="{'readonly-assessment' : submission.isLock}" [formGroup]="questionsForm">
+  <form [formGroup]="questionsForm">
     <ng-container *ngIf="loadingAssessment">
       <ion-spinner></ion-spinner>
     </ng-container>
