@@ -101,8 +101,12 @@ export class ActivityComponent extends RouterEnter {
             throw tasks;
           }
 
-          tasks.forEach((task, index) => {
-            this.activity.tasks[index] = task;
+          tasks.forEach(res => {
+            const taskIndex = this.activity.tasks.findIndex(task => {
+              return task.id === res.id && task.type === 'Assessment';
+            });
+
+            this.activity.tasks[taskIndex] = res;
           });
         });
       });
