@@ -62,15 +62,17 @@ export interface OverviewActivity {
   Tasks?: Array<OverviewTask>;
 }
 
+export interface OverviewMilestone {
+  id: number;
+  name: string;
+  is_locked: boolean;
+  Activities: OverviewActivity[];
+}
+
 export interface Overview {
   id: number;
   name: string;
-  Milestones: {
-    id: number;
-    name: string;
-    is_locked: boolean;
-    Activities: OverviewActivity[];
-  }[];
+  Milestones: OverviewMilestone[];
 }
 
 @Injectable({
@@ -95,8 +97,9 @@ export class ActivityService {
   async getTaskWithStatusByActivityId(projectId: number, activityId: number): Promise<any> {
     let currentActivity: OverviewActivity;
     const overview = await this.getOverview(projectId).toPromise();
-    const currentMilestone = overview.Milestones.findIndex(milestone => {
-      return milestone.Activities.findIndex(activity => {
+
+    overview.Milestones.forEach(milestone => {
+      return milestone.Activities.forEach(activity => {
         if (activity.id === activityId) {
           currentActivity = activity;
           return true;
@@ -297,16 +300,15 @@ export class ActivityService {
   }
 
   // when not done (empty status/feedback available/)
-  private isTaskCompleted(task: Task): boolean {
-    // take locked story as "completed" for now to skip to the next one
-    if (!task.status && task.type === 'Locked') {
+  private isTaskCompleted(task: OverviewTask): boolean {
+    // is_locked: take is_locked story as "completed" for now (so we skip to the next one)
+    // progress: 0 = not done, 1 = marked as read (done)
+    if (task.is_locked || task.progress === 1) {
       return true;
     }
 
-    switch (task.status) {
-      case 'pending review':
-      case 'done':
-        return true;
+    if (task.type === 'assessment' && ['pending review', 'done'].indexOf(task.status) !== -1) {
+      return true;
     }
 
     // potential status: "in progress"/"feedback available"
