@@ -115,8 +115,7 @@ export class TopicComponent extends RouterEnter {
   async continue(): Promise<any> {
     // if topic has been marked as read
     if (this.btnToggleTopicIsDone) {
-      const nextSequence = await this.getNextSequence();
-      return this.skipToNextTask(nextSequence);
+      return this.skipToNextTask();
     }
 
     // mark topic as done
@@ -198,8 +197,7 @@ export class TopicComponent extends RouterEnter {
   }
 
   // get sequence detail and move on to next new task
-  async skipToNextTask(sequence) {
-    // double confirm if `sequence` is empty, because we only allow skipping to next activity's task if all the tasks in current activity.
+  async skipToNextTask() {
     const activity = await this.activityService.getTasksByActivityId(this.storage.getUser().projectId, this.activityId);
     if (activity) {
       return this.redirectToNextMilestoneTask(activity);
@@ -224,24 +222,11 @@ export class TopicComponent extends RouterEnter {
    * @description
    */
   async nextStepPrompt(): Promise<any> {
-    const nextSequence = await this.getNextSequence();
+    await this.notificationService.presentToast('Topic completed!');
+    return this.skipToNextTask();
 
-    if (nextSequence) {
-      return this.notificationService.alert({
-        header: 'Topic completed!',
-        message: 'You may now proceed to the next task.',
-        buttons: [
-          {
-            text: 'OK',
-            handler: () => {
-              return this.skipToNextTask(nextSequence);
-            }
-          }
-        ]
-      });
-    }
-
-    return this.notificationService.alert({
+    // code below will be skipped for temporary (until "unlock" feature implemented)
+    /*return this.notificationService.alert({
       header: 'Activity completed!',
       message: 'You may now proceed to the next milestone.',
       buttons: [
@@ -254,7 +239,7 @@ export class TopicComponent extends RouterEnter {
       ]
     });
 
-    return this.router.navigate(['app', 'activity', this.activityId]);
+    return this.router.navigate(['app', 'activity', this.activityId]);*/
   }
 
   back() {

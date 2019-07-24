@@ -14,7 +14,7 @@ export class NotificationService {
     private modalController: ModalController,
     private alertController: AlertController,
     private toastController: ToastController,
-    public achievementService: AchievementsService
+    public achievementService: AchievementsService,
   ) {}
 
   dismiss() {
@@ -107,5 +107,4 @@ export class NotificationService {
     });
     return modal;
   }
-
 }
