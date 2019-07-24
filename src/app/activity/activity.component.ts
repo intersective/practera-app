@@ -1,8 +1,8 @@
 import { Component, Input } from '@angular/core';
 import { Router, ActivatedRoute, ParamMap } from '@angular/router';
-import { switchMap } from 'rxjs/operators';
-import { Observable } from 'rxjs';
-import { ActivityService, Activity } from './activity.service';
+import { Observable, of, forkJoin } from 'rxjs';
+import { catchError } from 'rxjs/operators';
+import { ActivityService, Activity, OverviewActivity, Task } from './activity.service';
 import { UtilsService } from '../services/utils.service';
 import { NotificationService } from '@shared/notification/notification.service';
 import { BrowserStorageService } from '@services/storage.service';
@@ -72,29 +72,48 @@ export class ActivityComponent extends RouterEnter {
       .subscribe(activity => {
         this.activity = activity;
         this.loadingActivity = false;
+
         this._getTasksProgress();
       });
   }
 
+  /**
+   * extract and insert "progress" & "status='done'" (for topic) value to the tasks element
+   */
   private _getTasksProgress(): void {
     this.activityService.getTasksProgress({
       model_id: this.activity.id,
       tasks: this.activity.tasks,
     }).subscribe(tasks => {
         this.activity.tasks = tasks;
+
+        const requests = [];
         this.activity.tasks.forEach((task, index) => {
           if (task.type === 'Assessment') {
-            this._getAssessmentStatus(index);
+            requests.push(this._getAssessmentStatus(index));
           }
+        });
+
+        forkJoin(requests)
+        .pipe(catchError(val => of(`API Response error: ${val}`)))
+        .subscribe(tasks => {
+          if (typeof tasks === 'string') {
+            throw tasks;
+          }
+
+          tasks.forEach((task, index) => {
+            this.activity.tasks[index] = task;
+          });
         });
       });
   }
 
-  private _getAssessmentStatus(index) {
-    this.activityService.getAssessmentStatus(this.activity.tasks[index])
-      .subscribe(task => {
-        this.activity.tasks[index] = task;
-      });
+  /**
+   * involving in calling get submission API to get and evaluate assessment status based on latest submission status
+   * @param {number} index task array index value
+   */
+  private _getAssessmentStatus(index): Observable<any> {
+    return this.activityService.getAssessmentStatus(this.activity.tasks[index]);
   }
 
   private _getEvents() {
