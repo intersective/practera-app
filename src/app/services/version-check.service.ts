@@ -13,8 +13,8 @@ export class VersionCheckService {
 
   constructor(private requestService: RequestService, private router: Router) {}
 
-  // check every 5 seconds
-  initiateVersionCheck(frequency = 1000 * 5) {
+  // check every 3 minutes
+  initiateVersionCheck(frequency = 1000 * 60 * 3) {
     return this.trackVersion(frequency).subscribe(
       (res: { hash: string; version: string; }) => {
         if (this.hasHashChanged(this.currentHash, res.hash)) {
