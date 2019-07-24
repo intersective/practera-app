@@ -110,22 +110,22 @@ export class ActivityComponent extends RouterEnter {
   }
 
   // check assessment lock or not before go to assessment.
-  checkAssessment(type, id, isLock, submitterName, image) {
-    if (isLock) {
+  checkAssessment(task) {
+    if (task.isLocked) {
       this.notificationService.lockTeamAssessmentPopUp(
         {
-          name: submitterName,
-          image: image
+          name: task.submitter.name,
+          image: task.submitter.image
         } ,
         (data) => {
           if (data.data) {
-            this.goto(type, id);
+            this.goto(task.type, task.id);
           }
         }
       );
       return ;
     }
-    this.goto(type, id);
+    this.goto(task.type, task.id);
   }
 
   goto(type, id) {

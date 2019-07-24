@@ -47,8 +47,8 @@ export class AssessmentComponent extends RouterEnter {
     answers: {},
     submitterName: '',
     modified: '',
-    isLock: false,
-    image: '',
+    isLocked: false,
+    submitterImage: '',
     reviewerName: ''
   };
   review: Review = {
@@ -100,8 +100,8 @@ export class AssessmentComponent extends RouterEnter {
       answers: {},
       submitterName: '',
       modified: '',
-      isLock: false,
-      image: '',
+      isLocked: false,
+      submitterImage: '',
       reviewerName: ''
     };
     this.review = {
@@ -170,6 +170,13 @@ export class AssessmentComponent extends RouterEnter {
       .subscribe(result => {
         this.submission = result.submission;
         this.loadingSubmission = false;
+        // If team assessment locked set readonly view.
+        if (this.submission.isLocked) {
+          this.doAssessment = false;
+          this.doReview = true;
+          this.savingButtonDisabled = true;
+          return ;
+        }
         // this page is for doing assessment if submission is empty or submission is 'in progress'
         if (this.utils.isEmpty(this.submission) || this.submission.status === 'in progress') {
           this.doAssessment = true;
