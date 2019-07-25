@@ -76,9 +76,9 @@ export class NotificationService {
   }
 
   async customToast(options: ToastOptions) {
-    const toast = await this.toastController.create(Object.assign({
-      duration: 2000,
-    }, options));
+    const toast = await this.toastController.create(
+      Object.assign({ duration: 2000 }, options)
+    );
     return toast.present();
   }
 
