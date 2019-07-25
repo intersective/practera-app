@@ -30,24 +30,6 @@ export class SharedService {
     private request: RequestService
   ) {}
 
-  /**
-   * @name setCache
-   * @description reset entire cache by their index/key everytime
-   * @param {string} type data type ('activity', 'milestone', 'achievement'), keep the name singular
-   * @param {object} data object of any kind
-   */
-  setCache(type: string, data) {
-    this.memoryCache[type] = data;
-    return this.memoryCache[type];
-  }
-
-  getCache(type: string) {
-    if (this.memoryCache[type]) {
-      return this.memoryCache[type];
-    }
-    return null;
-  }
-
   // call this function on every page refresh
   onPageLoad() {
     // only do these if a timeline is choosen

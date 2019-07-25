@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { ModalController, AlertController, ToastController } from '@ionic/angular';
-import { AlertOptions } from '@ionic/core';
+import { AlertOptions, ToastOptions } from '@ionic/core';
 import { PopUpComponent } from './pop-up/pop-up.component';
 import { AchievementPopUpComponent } from './achievement-pop-up/achievement-pop-up.component';
 import { LockTeamAssessmentPopUpComponent } from './lock-team-assessment-pop-up/lock-team-assessment-pop-up.component';
@@ -15,7 +15,7 @@ export class NotificationService {
     private modalController: ModalController,
     private alertController: AlertController,
     private toastController: ToastController,
-    public achievementService: AchievementsService
+    public achievementService: AchievementsService,
   ) {}
 
   dismiss() {
@@ -70,18 +70,24 @@ export class NotificationService {
   }
 
   // toast message pop up, by default, shown success message for 2 seconds.
-  async presentToast(message, success= true, duration= 2000) {
+  async presentToast(message, success = true, duration?) {
     let color = 'success';
     if (!success) {
       color = 'danger';
     }
-    const toast = await this.toastController.create({
+    return this.customToast({
       message: message,
       duration: duration,
       position: 'top',
       color : color
     });
-    toast.present();
+  }
+
+  async customToast(options: ToastOptions) {
+    const toast = await this.toastController.create(
+      Object.assign({ duration: 2000 }, options)
+    );
+    return toast.present();
   }
 
   /**
