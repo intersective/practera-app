@@ -2,7 +2,7 @@
   <ion-toolbar color="light">
     <ion-icon name="arrow-back" (click)="back()" color="primary" slot="start" margin-start></ion-icon>
     <ion-title text-center>Assessment</ion-title>
-    <ng-container *ngIf="!assessment.isForTeam && (doAssessment || doReview)">
+    <ng-container *ngIf="doAssessment || doReview">
       <ion-title text-center class="subTitle">{{savingMessage}}</ion-title>
       <ion-button [disabled]="savingButtonDisabled" (click)="submit(true)" class="text-button" color="primary" slot="end" fill="clear" size="small">Save</ion-button>
     </ng-container>
@@ -26,6 +26,18 @@
       Reviewed by {{ submission.reviewerName }} {{review.status}}
     </p>
   </div>
+
+  <ion-list *ngIf="submission.isLocked" class="member-detail-container no-bg" lines="none">
+    <ion-item lines="none">
+      <ion-avatar slot="start">
+        <img [src]="submission.submitterImage ? submission.submitterImage : 'https://my.practera.com/img/user-512.png'">
+      </ion-avatar>
+      <ion-label>
+        <h4>Locked by {{ submission.submitterName }}</h4>
+        <p>Please wait until the user finishes editing</p>
+      </ion-label>
+    </ion-item>
+  </ion-list>
 
   <form [formGroup]="questionsForm">
     <ng-container *ngIf="loadingAssessment">
