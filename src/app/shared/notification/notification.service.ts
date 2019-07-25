@@ -78,7 +78,7 @@ export class NotificationService {
     }
     return this.customToast({
       message: message,
-      duration: duration,
+      duration: duration || 2000,
       position: 'top',
       color : color
     });

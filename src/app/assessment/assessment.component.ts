@@ -7,7 +7,7 @@ import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { BrowserStorageService } from '@services/storage.service';
 import { RouterEnter } from '@services/router-enter.service';
 import { SharedService } from '@services/shared.service';
-import { ActivityService, OverviewActivity } from '../activity/activity.service';
+import { ActivityService, OverviewActivity, OverviewTask } from '../activity/activity.service';
 import { FastFeedbackService } from '../fast-feedback/fast-feedback.service';
 import { interval, timer } from 'rxjs';
 import { map, takeUntil } from 'rxjs/operators';
@@ -259,7 +259,7 @@ export class AssessmentComponent extends RouterEnter {
             handler: () => {
               return this.markReviewFeedbackAsRead().then(() => {
                 return this.notificationService.customToast({
-                  message: 'You\'ve completed the topic!'
+                  message: 'Assessment completed! Please proceed to the next learning task.'
                 }).then(() => this.router.navigate([
                   'app',
                   'activity',
@@ -308,42 +308,58 @@ export class AssessmentComponent extends RouterEnter {
   }
 
   // allow progression if milestone isnt completed yet
-  async redirectToNextMilestoneTask(activity): Promise<boolean> {
+  async redirectToNextMilestoneTask(activity, options? : {
+    routeOnly: boolean;
+  }): Promise<any> {
     const nextTask = await this.getNextSequence(activity);
+
+    if (this.activityId !== activity.id) {
+      await this.notificationService.alert({
+        header: 'Activity completed!',
+        message: 'You may now proceed to the next activity.',
+        buttons: [
+          {
+            text: 'Ok',
+            role: 'cancel',
+          }
+        ]
+      });
+    }
+
+    let route = ['app', 'activity', activity.id];
 
     switch (nextTask.type) {
       case 'assessment':
-        return this.router.navigate(['assessment', 'assessment', activity.id, nextTask.context_id, nextTask.id]);
+        route = ['assessment', 'assessment', activity.id, nextTask.context_id, nextTask.id];
+        break;
 
       case 'topic':
-        return this.router.navigate(['topic', activity.id, nextTask.id]);
+        route = ['topic', activity.id, nextTask.id];
+        break;
     }
 
-    if (this.activityId !== activity.id) {
-      return this.notificationService.customToast({
-        message: 'Activity completed! Please proceed to the next activity.',
-        buttons: [
-          {
-            text: 'CONTINUE',
-          }
-        ]
-      }).then(val => {
-        return this.router.navigate(['app', 'activity', activity.id]);
-      });
+    if (options && options.routeOnly) {
+      return route;
     }
+
+    return this.router.navigate(route);
   }
 
   // get sequence detail and move on to next new task
-  async skipToNextTask(): Promise<boolean | void> {
+  async skipToNextTask(options?): Promise<boolean> {
     try {
       const activity = await this.activityService.getTasksByActivityId(this.storage.getUser().projectId, this.activityId);
-      return this.redirectToNextMilestoneTask(activity);
+      return this.redirectToNextMilestoneTask(activity, options);
     } catch (err) {
       const toasted = await this.notificationService.alert({
         header: 'Project overview API Error',
         message: err
       });
-      return toasted;
+
+      if (this.submitting) {
+        this.submitting = false;
+      }
+      throw new Error(err);
     }
   }
 
@@ -351,28 +367,31 @@ export class AssessmentComponent extends RouterEnter {
    * - check if fastfeedback is available
    * - show next sequence if submission successful
    */
-  private async pullFeedbackAndShowNext(): Promise<boolean | void> {
+  private async pullFeedbackAndShowNext(): Promise<boolean> {
     this.submitting = 'Retrieving new task...';
     // check if user has new fastFeedback request
     try {
       await this.fastFeedbackService.pullFastFeedback().toPromise();
+    } catch (err) {
+      const toasted = await this.notificationService.alert({
+        header: 'Error retrieving pulse check data',
+        message: err
+      });
       this.submitting = false;
-    } catch (error) {
-      this.submitting = false;
-      console.log('', error);
-      return this.router.navigate(['app', 'home']);
+      throw new Error(err);
     }
 
     await this.notificationService.customToast({
       message: 'You may continue to the next learning task.'
     });
 
-    return this.skipToNextTask();
+    const nextTask = await this.skipToNextTask();
+    this.submitting = false;
+    return nextTask;
   }
 
   /**
    * handle submission and autosave
-   * @name submit
    * @param {boolean} saveInProgress set true for autosaving or it treat the action as final submision
    */
   submit(saveInProgress: boolean, goBack?: boolean) {
@@ -487,7 +506,8 @@ export class AssessmentComponent extends RouterEnter {
         } else {
           // display a pop up if submission failed
           this.notificationService.alert({
-            message: 'Submission failed, please check that all required questions have been answered.',
+            header: 'Submission failed',
+            message: err,
             buttons: [
               {
                 text: 'OK',
@@ -495,6 +515,7 @@ export class AssessmentComponent extends RouterEnter {
               }
             ]
           });
+          throw new Error(err);
         }
       }
     );
@@ -509,10 +530,10 @@ export class AssessmentComponent extends RouterEnter {
     // allow only if it hasnt reviewed
     if (!this.feedbackReviewed) {
       this.markingAsReview = 'Marking as read...';
+      this.feedbackReviewed = true;
 
       try {
         result = await this.assessmentService.saveFeedbackReviewed(this.submission.id).toPromise();
-        this.feedbackReviewed = true;
         this.loadingFeedbackReviewed = false;
       } catch (err) {
         const toasted = await this.notificationService.alert({
@@ -520,6 +541,7 @@ export class AssessmentComponent extends RouterEnter {
           message: err
         });
 
+        this.feedbackReviewed = false;
         this.loadingFeedbackReviewed = false;
         this.markingAsReview = 'Continue';
         return toasted;
@@ -533,11 +555,11 @@ export class AssessmentComponent extends RouterEnter {
       // 2. program configuration is set enabled presenting review rating screen
       if (result.success && this.storage.getUser().hasReviewRating === true) {
         this.markingAsReview = 'Retrieving New Task...';
-        const nextSequence = await this.getNextSequence();
 
+        const nextSequence = await this.skipToNextTask({routeOnly: true});
         const popup = await this.assessmentService.popUpReviewRating(
           this.review.id,
-          this.navigateBySequence(nextSequence, {routeOnly: true})
+          nextSequence
         );
 
         this.loadingFeedbackReviewed = false;
@@ -567,8 +589,8 @@ export class AssessmentComponent extends RouterEnter {
     }).format(new Date());
   }
 
-  private async getNextSequence(activity?) {
-    let nextTask = null;
+  private async getNextSequence(activity?): Promise<OverviewTask> {
+    let nextTask: OverviewTask;
     const options = {
       id: this.id,
       teamId: this.storage.getUser().teamId
@@ -582,39 +604,11 @@ export class AssessmentComponent extends RouterEnter {
           header: 'Project overview API Error',
           message: err
         });
-        return toasted;
+        throw new Error(err);
       }
     }
     nextTask = this.activityService.findNext(activity.Tasks, options);
 
     return nextTask;
-  }
-
-  /**
-   * @name navigateBySequence
-   * @param {Task} sequence task object from activity service
-   */
-  private navigateBySequence(sequence, options?: {
-    routeOnly?: boolean;
-  }) {
-    let route = ['app', 'activity', this.activityId];
-
-    if (sequence) {
-      const { contextId, isForTeam, id, type } = sequence;
-      switch (type) {
-        case 'Assessment':
-          route = ['assessment', 'assessment', this.activityId , contextId, id];
-          break;
-        case 'Topic':
-          route = ['topic', this.activityId, id];
-          break;
-      }
-    }
-
-    if (options && options.routeOnly) {
-      return route;
-    }
-
-    return this.router.navigate(route);
   }
 }
