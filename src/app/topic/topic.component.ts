@@ -115,12 +115,7 @@ export class TopicComponent extends RouterEnter {
   async continue(): Promise<any> {
     // if topic has been marked as read
     if (this.btnToggleTopicIsDone) {
-      const nextSequence = await this.getNextSequence();
-      if (nextSequence) {
-        return this.navigateBySequence(nextSequence);
-      }
-
-      return this.router.navigate(['app', 'activity', this.activityId]);
+      return this.skipToNextTask();
     }
 
     // mark topic as done
@@ -169,7 +164,8 @@ export class TopicComponent extends RouterEnter {
     return this.router.navigate(route);
   }
 
-  private async getNextSequence() {
+
+  private async getNextSequence(activity?) {
     let nextTask = null;
     const options = {
       id: this.id,
@@ -177,13 +173,47 @@ export class TopicComponent extends RouterEnter {
     };
 
     this.loadingTopic = true;
-    const tasks = await this.activityService.getTaskWithStatusByActivityId(this.activityId);
-
-    this.sharedService.setCache('tasks', tasks);
-    nextTask = this.activityService.findNext(tasks, options);
+    if (!activity) {
+      activity = await this.activityService.getTasksByActivityId(this.storage.getUser().projectId, this.activityId);
+    }
+    nextTask = this.activityService.findNext(activity.Tasks, options);
     this.loadingTopic = false;
 
     return nextTask;
+  }
+
+  // allow progression if milestone isnt completed yet
+  async redirectToNextMilestoneTask(activity) {
+    const nextTask = await this.getNextSequence(activity);
+
+    switch (nextTask.type) {
+      case 'assessment':
+        return this.router.navigate(['assessment', 'assessment', activity.id, nextTask.context_id, nextTask.id]);
+
+      case 'topic':
+        return this.router.navigate(['topic', activity.id, nextTask.id]);
+    }
+    return this.router.navigate(['app', 'activity', activity.id]);
+  }
+
+  // get sequence detail and move on to next new task
+  async skipToNextTask() {
+    const activity = await this.activityService.getTasksByActivityId(this.storage.getUser().projectId, this.activityId);
+    if (activity) {
+      return this.redirectToNextMilestoneTask(activity);
+    }
+
+    return this.notificationService.customToast({
+      message: 'Activity completed!',
+      buttons: [
+        {
+          text: 'CONTINUE',
+          handler: () => {
+            return this.router.navigate(['app', 'project']);
+          }
+        }
+      ]
+    });
   }
 
   /**
@@ -191,24 +221,13 @@ export class TopicComponent extends RouterEnter {
    * @description
    */
   async nextStepPrompt(): Promise<any> {
-    const nextSequence = await this.getNextSequence();
+    await this.notificationService.customToast({
+      message: 'Topic completed!'
+    });
+    return this.skipToNextTask();
 
-    if (nextSequence) {
-      return this.notificationService.alert({
-        header: 'Topic completed!',
-        message: 'You may now proceed to the next task.',
-        buttons: [
-          {
-            text: 'OK',
-            handler: () => {
-              return this.navigateBySequence(nextSequence);
-            }
-          }
-        ]
-      });
-    }
-
-    return this.notificationService.alert({
+    // code below will be skipped for temporary (until "unlock" feature implemented)
+    /*return this.notificationService.alert({
       header: 'Activity completed!',
       message: 'You may now proceed to the next milestone.',
       buttons: [
@@ -221,7 +240,7 @@ export class TopicComponent extends RouterEnter {
       ]
     });
 
-    return this.router.navigate(['app', 'activity', this.activityId]);
+    return this.router.navigate(['app', 'activity', this.activityId]);*/
   }
 
   back() {
@@ -244,7 +263,7 @@ export class TopicComponent extends RouterEnter {
           text: 'Yes',
           handler: () => {
             return this.markAsDone().subscribe(() => {
-              return this.notificationService.popUp('shortMessage', {
+              return this.notificationService.customToast({
                 message: 'You\'ve completed the topic!'
               }).then(() => this.router.navigate([
                 'app',
