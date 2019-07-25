@@ -47,6 +47,8 @@ export class AssessmentComponent extends RouterEnter {
     answers: {},
     submitterName: '',
     modified: '',
+    isLocked: false,
+    submitterImage: '',
     reviewerName: ''
   };
   review: Review = {
@@ -98,6 +100,8 @@ export class AssessmentComponent extends RouterEnter {
       answers: {},
       submitterName: '',
       modified: '',
+      isLocked: false,
+      submitterImage: '',
       reviewerName: ''
     };
     this.review = {
@@ -166,6 +170,16 @@ export class AssessmentComponent extends RouterEnter {
       .subscribe(result => {
         this.submission = result.submission;
         this.loadingSubmission = false;
+        // If team assessment locked set readonly view.
+        // set doAssessment, doReview to false - because when assessment lock we can't do both.
+        // set submission status to done - because we need to show readonly answers in question components.
+        if (this.submission.isLocked) {
+          this.doAssessment = false;
+          this.doReview = false;
+          this.savingButtonDisabled = true;
+          this.submission.status = 'done';
+          return ;
+        }
         // this page is for doing assessment if submission is empty or submission is 'in progress'
         if (this.utils.isEmpty(this.submission) || this.submission.status === 'in progress') {
           this.doAssessment = true;
@@ -229,25 +243,7 @@ export class AssessmentComponent extends RouterEnter {
   }
 
   back(): Promise<void | boolean> {
-    // save answer before go back (if it's not a team assessment)
-    if (this.assessment.isForTeam && !this.questionsForm.pristine) {
-      return this.notificationService.alert({
-        header: 'Confirm leaving?',
-        message: 'All the unsubmitted answers would not be saved.',
-        buttons: [
-          {
-            text: 'Cancel',
-            role: 'cancel',
-          },
-          {
-            text: 'Ok',
-            handler: () => {
-              return this.navigationRoute();
-            }
-          }
-        ]
-      });
-    } else if (this.action === 'assessment' && this.submission.status === 'published') {
+    if (this.action === 'assessment' && this.submission.status === 'published') {
       return this.notificationService.alert({
         header: `Mark feedback as read?`,
         message: 'Would you like to mark the feedback as read?',
@@ -277,7 +273,7 @@ export class AssessmentComponent extends RouterEnter {
     }
 
     // force saving progress
-    this.submit(true);
+    this.submit(true , true);
     return this.navigationRoute();
   }
 
@@ -375,11 +371,7 @@ export class AssessmentComponent extends RouterEnter {
    * @name submit
    * @param {boolean} saveInProgress set true for autosaving or it treat the action as final submision
    */
-  submit(saveInProgress: boolean) {
-    // team submission only accept submit and no save
-    if (this.assessment.isForTeam && saveInProgress === true) {
-      return;
-    }
+  submit(saveInProgress: boolean, goBack?: boolean) {
 
     if (saveInProgress) {
       this.savingMessage = 'Saving...';
@@ -397,11 +389,12 @@ export class AssessmentComponent extends RouterEnter {
       context_id?: number;
       review_id?: number;
       submission_id?: number;
+      unlock?: boolean;
     };
 
     assessment = {
       id: this.id,
-      in_progress: false,
+      in_progress: false
     };
 
     if (this.saving) {
@@ -415,6 +408,9 @@ export class AssessmentComponent extends RouterEnter {
 
       if (saveInProgress) {
         assessment.in_progress = true;
+      }
+      if (this.assessment.isForTeam && goBack) {
+        assessment.unlock = true;
       }
       this.utils.each(this.questionsForm.value, (value, key) => {
         questionId = +key.replace('q-', '');
@@ -504,7 +500,7 @@ export class AssessmentComponent extends RouterEnter {
   }
 
   // mark review as read
-  async markReviewFeedbackAsRead(): Promise<void> {
+  async markReviewFeedbackAsRead(): Promise<any> {
 
     // allow only if it hasnt reviewed
     if (!this.feedbackReviewed) {
