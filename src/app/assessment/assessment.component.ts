@@ -7,7 +7,7 @@ import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { BrowserStorageService } from '@services/storage.service';
 import { RouterEnter } from '@services/router-enter.service';
 import { SharedService } from '@services/shared.service';
-import { ActivityService } from '../activity/activity.service';
+import { ActivityService, OverviewActivity } from '../activity/activity.service';
 import { FastFeedbackService } from '../fast-feedback/fast-feedback.service';
 import { interval, timer } from 'rxjs';
 import { map, takeUntil } from 'rxjs/operators';
@@ -242,7 +242,7 @@ export class AssessmentComponent extends RouterEnter {
     return this.router.navigate(['app', 'home']);
   }
 
-  back() {
+  back(): Promise<void | boolean> {
     if (this.action === 'assessment' && this.submission.status === 'published') {
       return this.notificationService.alert({
         header: `Mark feedback as read?`,
@@ -258,7 +258,7 @@ export class AssessmentComponent extends RouterEnter {
             text: 'Yes',
             handler: () => {
               return this.markReviewFeedbackAsRead().then(() => {
-                return this.notificationService.popUp('shortMessage', {
+                return this.notificationService.customToast({
                   message: 'You\'ve completed the topic!'
                 }).then(() => this.router.navigate([
                   'app',
@@ -307,61 +307,69 @@ export class AssessmentComponent extends RouterEnter {
     return missing;
   }
 
+  // allow progression if milestone isnt completed yet
+  async redirectToNextMilestoneTask(activity) {
+    const nextTask = await this.getNextSequence(activity);
+
+    switch (nextTask.type) {
+      case 'assessment':
+        return this.router.navigate(['assessment', 'assessment', activity.id, nextTask.context_id, nextTask.id]);
+
+      case 'topic':
+        return this.router.navigate(['topic', activity.id, nextTask.id]);
+    }
+    return this.router.navigate(['app', 'activity', activity.id]);
+  }
+
+  // get sequence detail and move on to next new task
+  async skipToNextTask() {
+    const activity = await this.activityService.getTasksByActivityId(this.storage.getUser().projectId, this.activityId);
+    if (activity) {
+      return this.redirectToNextMilestoneTask(activity);
+    }
+
+    // activity will always be available, so they'll skip below until "unlock" feature is ready.
+    return this.notificationService.alert({
+      header: 'Activity completed!',
+      message: 'You may now proceed to the next activity while we process your feedback.',
+      buttons: [
+        {
+          text: 'CONTINUE',
+          handler: () => {
+            return this.router.navigate(['app', 'project']);
+          }
+        }
+      ]
+    });
+  }
+
   /**
    * - check if fastfeedback is available
    * - show next sequence if submission successful
    */
-  private pullFeedbackAndShowNext() {
+  private async pullFeedbackAndShowNext() {
     this.submitting = 'Retrieving new task...';
     // check if user has new fastFeedback request
-    return this.fastFeedbackService.pullFastFeedback().subscribe(
-      res => {
-        // display a pop up for successful submission
-        return this.getNextSequence().then(
-          nextSequence => {
-            this.submitting = false;
+    try {
+      await this.fastFeedbackService.pullFastFeedback().toPromise();
+      this.submitting = false;
+    } catch (error) {
+      this.submitting = false;
+      console.log('', error);
+      return this.router.navigate(['app', 'home']);
+    }
 
-            return this.notificationService.alert({
-              header: 'Submission successful!',
-              message: 'You may continue to the next learning task.',
-              buttons: [
-                {
-                  text: 'CONTINUE',
-                  handler: () => {
-                    if (nextSequence) {
-                      return this.navigateBySequence(nextSequence);
-                    }
-
-                    return this.notificationService.alert({
-                      header: 'Activity completed!',
-                      message: 'You may now proceed to the next activity while we process your feedback.',
-                      buttons: [
-                        {
-                          text: 'CONTINUE',
-                          handler: () => {
-                            return this.router.navigate(['app', 'project']);
-                          }
-                        }
-                      ]
-                    });
-                  }
-                }
-              ]
-            });
-          },
-          error => {
-            this.submitting = false;
-            console.log('nextSequence::', error);
-            return this.router.navigate(['app', 'home']);
-          }
-        );
-      },
-      error => {
-        this.submitting = false;
-        console.log('', error);
-        return this.router.navigate(['app', 'home']);
-      }
-    );
+    return this.notificationService.customToast({
+      message: 'You may continue to the next learning task.',
+      buttons: [
+        {
+          text: 'CONTINUE',
+          role: 'cancel',
+        }
+      ]
+    }).then(val => {
+      return this.skipToNextTask();
+    });
   }
 
   /**
@@ -541,17 +549,17 @@ export class AssessmentComponent extends RouterEnter {
     }).format(new Date());
   }
 
-  private async getNextSequence() {
+  private async getNextSequence(activity?) {
     let nextTask = null;
     const options = {
       id: this.id,
       teamId: this.storage.getUser().teamId
     };
 
-    const tasks = await this.activityService.getTaskWithStatusByActivityId(this.activityId);
-
-    this.sharedService.setCache('tasks', tasks);
-    nextTask = this.activityService.findNext(tasks, options);
+    if (!activity) {
+      activity = await this.activityService.getTasksByActivityId(this.storage.getUser().projectId, this.activityId);
+    }
+    nextTask = this.activityService.findNext(activity.Tasks, options);
 
     return nextTask;
   }
