@@ -160,12 +160,12 @@ export class ActivityService {
           type: 'Locked',
           name: 'Locked',
           loadingStatus: false
-        }
+        };
       }
 
       if (!this.utils.has(sequence, 'model') || !this.utils.has(sequence, sequence.model)) {
         this.request.apiResponseFormatError('Activity.ActivitySequence format error');
-        throw 'Activity.ActivitySequence format error';
+        throw new Error('Activity.ActivitySequence format error');
       }
 
       switch (sequence.model) {
@@ -176,7 +176,7 @@ export class ActivityService {
             name: sequence[sequence.model].title,
             type: 'Topic',
             loadingStatus: true
-          }
+          };
 
         case 'Assess.Assessment':
           return {
@@ -189,7 +189,7 @@ export class ActivityService {
             dueDate: sequence[sequence.model].deadline,
             isOverdue: this.utils.timeComparer(sequence[sequence.model].deadline) < 0 ? true : false,
             isDueToday: this.utils.timeComparer(sequence[sequence.model].deadline, undefined, true) === 0 ? true : false,
-          }
+          };
         default:
           console.warn(`Unsupported model type ${sequence.model}`);
           return {
@@ -197,7 +197,7 @@ export class ActivityService {
             name: sequence[sequence.model].title,
             type: sequence.model,
             loadingStatus: true
-          }
+          };
       }
     });
     return tasks;
@@ -211,7 +211,7 @@ export class ActivityService {
           type: 'Locked',
           name: 'Locked',
           loadingStatus: false
-        }
+        };
       }
 
       switch (task.type) {
@@ -221,7 +221,7 @@ export class ActivityService {
             name: task.name,
             type: 'Topic',
             loadingStatus: true
-          }
+          };
 
         case 'assessment':
           return {
@@ -234,13 +234,11 @@ export class ActivityService {
             dueDate: task.deadline,
             isOverdue: this.utils.timeComparer(task.deadline) < 0 ? true : false,
             isDueToday: this.utils.timeComparer(task.deadline, undefined, true) === 0 ? true : false,
-          }
+          };
       }
     });
     return result;
   }
-
-  private _normaliseTaskStatuses
 
   private getContextAssessment(thisActivity) {
     const contextIds = {};
