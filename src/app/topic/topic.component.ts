@@ -113,6 +113,8 @@ export class TopicComponent extends RouterEnter {
    * @description button action to trigger `nextStepPrompt`
    */
   async continue(): Promise<any> {
+    this.loadingTopic = true;
+
     // if topic has been marked as read
     if (this.btnToggleTopicIsDone) {
       return this.skipToNextTask();
@@ -121,6 +123,7 @@ export class TopicComponent extends RouterEnter {
     // mark topic as done
     await this.markAsDone().toPromise();
     const navigation = await this.nextStepPrompt();
+    this.loadingTopic = false;
     return navigation;
   }
 
@@ -172,13 +175,12 @@ export class TopicComponent extends RouterEnter {
       teamId: this.storage.getUser().teamId
     };
 
-    this.loadingTopic = true;
     if (!activity) {
       activity = await this.activityService.getTasksByActivityId(this.storage.getUser().projectId, this.activityId);
     }
     nextTask = this.activityService.findNext(activity.Tasks, options);
-    this.loadingTopic = false;
 
+    this.loadingTopic = false;
     return nextTask;
   }
 
@@ -193,7 +195,21 @@ export class TopicComponent extends RouterEnter {
       case 'topic':
         return this.router.navigate(['topic', activity.id, nextTask.id]);
     }
-    return this.router.navigate(['app', 'activity', activity.id]);
+
+    // if activity are different = moving to another set of activity.
+    if (this.activityId !== activity.id) {
+      return this.notificationService.customToast({
+        message: 'Activity completed! Please proceed to the next activity.',
+        buttons: [
+          {
+            text: 'CONTINUE',
+            handler: () => {
+              return this.router.navigate(['app', 'activity', activity.id]);
+            }
+          }
+        ]
+      });
+    }
   }
 
   // get sequence detail and move on to next new task
@@ -202,18 +218,6 @@ export class TopicComponent extends RouterEnter {
     if (activity) {
       return this.redirectToNextMilestoneTask(activity);
     }
-
-    return this.notificationService.customToast({
-      message: 'Activity completed!',
-      buttons: [
-        {
-          text: 'CONTINUE',
-          handler: () => {
-            return this.router.navigate(['app', 'project']);
-          }
-        }
-      ]
-    });
   }
 
   /**
@@ -222,25 +226,9 @@ export class TopicComponent extends RouterEnter {
    */
   async nextStepPrompt(): Promise<any> {
     await this.notificationService.customToast({
-      message: 'Topic completed!'
+      message: 'Topic completed! Please proceed to the next learning task.'
     });
     return this.skipToNextTask();
-
-    // code below will be skipped for temporary (until "unlock" feature implemented)
-    /*return this.notificationService.alert({
-      header: 'Activity completed!',
-      message: 'You may now proceed to the next milestone.',
-      buttons: [
-        {
-          text: 'Continue',
-          handler: () => {
-            return this.router.navigate(['app', 'project']);
-          }
-        }
-      ]
-    });
-
-    return this.router.navigate(['app', 'activity', this.activityId]);*/
   }
 
   back() {
