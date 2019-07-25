@@ -57,9 +57,6 @@ export class ProjectComponent extends RouterEnter {
         this.activeMilestone[0] = true;
         this.projectService.getActivities(milestones)
           .subscribe(activities => {
-            const cached = this.sharedService.setCache('activity', activities);
-            console.log(cached);
-
             // remove entire Activity object with dummy data for clean Activity injection
             if (this.milestones) {
               this.milestones.forEach((milestone, i) => {
