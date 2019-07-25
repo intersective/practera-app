@@ -7,7 +7,7 @@ import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { BrowserStorageService } from '@services/storage.service';
 import { RouterEnter } from '@services/router-enter.service';
 import { SharedService } from '@services/shared.service';
-import { ActivityService, OverviewActivity } from '../activity/activity.service';
+import { ActivityService, OverviewActivity, OverviewTask } from '../activity/activity.service';
 import { FastFeedbackService } from '../fast-feedback/fast-feedback.service';
 import { interval, timer } from 'rxjs';
 import { map, takeUntil } from 'rxjs/operators';
@@ -229,7 +229,7 @@ export class AssessmentComponent extends RouterEnter {
     });
   }
 
-  navigationRoute() {
+  navigationRoute(): Promise<boolean> {
     if (this.fromPage && this.fromPage === 'reviews') {
       return this.router.navigate(['app', 'reviews']);
     }
@@ -259,7 +259,7 @@ export class AssessmentComponent extends RouterEnter {
             handler: () => {
               return this.markReviewFeedbackAsRead().then(() => {
                 return this.notificationService.customToast({
-                  message: 'You\'ve completed the topic!'
+                  message: 'Assessment completed! Please proceed to the next learning task.'
                 }).then(() => this.router.navigate([
                   'app',
                   'activity',
@@ -282,7 +282,7 @@ export class AssessmentComponent extends RouterEnter {
    * @description to check if every compulsory question has been answered
    * @param {Object[]} answers a list of answer object (in submission-based format)
    */
-  compulsoryQuestionsAnswered(answers) {
+  compulsoryQuestionsAnswered(answers): object[] {
     const result = [];
     const missing = [];
     if (answers && answers.length > 0) {
@@ -308,67 +308,90 @@ export class AssessmentComponent extends RouterEnter {
   }
 
   // allow progression if milestone isnt completed yet
-  async redirectToNextMilestoneTask(activity) {
+  async redirectToNextMilestoneTask(activity, options? : {
+    routeOnly: boolean;
+  }): Promise<any> {
     const nextTask = await this.getNextSequence(activity);
+
+    if (this.activityId !== activity.id) {
+      await this.notificationService.alert({
+        header: 'Activity completed!',
+        message: 'You may now proceed to the next activity.',
+        buttons: [
+          {
+            text: 'Ok',
+            role: 'cancel',
+          }
+        ]
+      });
+    }
+
+    let route = ['app', 'activity', activity.id];
 
     switch (nextTask.type) {
       case 'assessment':
-        return this.router.navigate(['assessment', 'assessment', activity.id, nextTask.context_id, nextTask.id]);
+        route = ['assessment', 'assessment', activity.id, nextTask.context_id, nextTask.id];
+        break;
 
       case 'topic':
-        return this.router.navigate(['topic', activity.id, nextTask.id]);
+        route = ['topic', activity.id, nextTask.id];
+        break;
     }
-    return this.router.navigate(['app', 'activity', activity.id]);
+
+    if (options && options.routeOnly) {
+      return route;
+    }
+
+    return this.router.navigate(route);
   }
 
   // get sequence detail and move on to next new task
-  async skipToNextTask() {
-    const activity = await this.activityService.getTasksByActivityId(this.storage.getUser().projectId, this.activityId);
-    if (activity) {
-      return this.redirectToNextMilestoneTask(activity);
-    }
+  async skipToNextTask(options?): Promise<boolean> {
+    try {
+      const activity = await this.activityService.getTasksByActivityId(this.storage.getUser().projectId, this.activityId);
+      return this.redirectToNextMilestoneTask(activity, options);
+    } catch (err) {
+      const toasted = await this.notificationService.alert({
+        header: 'Project overview API Error',
+        message: err
+      });
 
-    // activity will always be available, so they'll skip below until "unlock" feature is ready.
-    return this.notificationService.alert({
-      header: 'Activity completed!',
-      message: 'You may now proceed to the next activity while we process your feedback.',
-      buttons: [
-        {
-          text: 'CONTINUE',
-          handler: () => {
-            return this.router.navigate(['app', 'project']);
-          }
-        }
-      ]
-    });
+      if (this.submitting) {
+        this.submitting = false;
+      }
+      throw new Error(err);
+    }
   }
 
   /**
    * - check if fastfeedback is available
    * - show next sequence if submission successful
    */
-  private async pullFeedbackAndShowNext() {
+  private async pullFeedbackAndShowNext(): Promise<boolean> {
     this.submitting = 'Retrieving new task...';
     // check if user has new fastFeedback request
     try {
       await this.fastFeedbackService.pullFastFeedback().toPromise();
+    } catch (err) {
+      const toasted = await this.notificationService.alert({
+        header: 'Error retrieving pulse check data',
+        message: err
+      });
       this.submitting = false;
-    } catch (error) {
-      this.submitting = false;
-      console.log('', error);
-      return this.router.navigate(['app', 'home']);
+      throw new Error(err);
     }
 
-    return this.notificationService.customToast({
+    await this.notificationService.customToast({
       message: 'You may continue to the next learning task.'
-    }).then(val => {
-      return this.skipToNextTask();
     });
+
+    const nextTask = await this.skipToNextTask();
+    this.submitting = false;
+    return nextTask;
   }
 
   /**
    * handle submission and autosave
-   * @name submit
    * @param {boolean} saveInProgress set true for autosaving or it treat the action as final submision
    */
   submit(saveInProgress: boolean, goBack?: boolean) {
@@ -483,7 +506,8 @@ export class AssessmentComponent extends RouterEnter {
         } else {
           // display a pop up if submission failed
           this.notificationService.alert({
-            message: 'Submission failed, please check that all required questions have been answered.',
+            header: 'Submission failed',
+            message: err,
             buttons: [
               {
                 text: 'OK',
@@ -491,6 +515,7 @@ export class AssessmentComponent extends RouterEnter {
               }
             ]
           });
+          throw new Error(err);
         }
       }
     );
@@ -500,35 +525,56 @@ export class AssessmentComponent extends RouterEnter {
   }
 
   // mark review as read
-  async markReviewFeedbackAsRead(): Promise<any> {
-
+  async markReviewFeedbackAsRead(): Promise<void> {
+    let result: { success: boolean; };
     // allow only if it hasnt reviewed
     if (!this.feedbackReviewed) {
-      this.feedbackReviewed = true;
       this.markingAsReview = 'Marking as read...';
-      const result = await this.assessmentService.saveFeedbackReviewed(this.submission.id).toPromise();
-    }
-
-    // if review is successfully mark as read and program is configured to enable review rating,
-    // display review rating modal and then redirect to activity page.
-    // if (result.success && this.storage.getUser().hasReviewRating === true) {
-    try {
-      this.markingAsReview = 'Retrieving New Task...';
-      const nextSequence = await this.getNextSequence();
-
-      return this.assessmentService.popUpReviewRating(
-        this.review.id,
-        this.navigateBySequence(nextSequence, {routeOnly: true})
-      );
-    } catch (error) {
-      console.warn(error);
       this.feedbackReviewed = true;
-      this.loadingFeedbackReviewed = false;
+
+      try {
+        result = await this.assessmentService.saveFeedbackReviewed(this.submission.id).toPromise();
+        this.loadingFeedbackReviewed = false;
+      } catch (err) {
+        const toasted = await this.notificationService.alert({
+          header: 'Error marking feedback as completed',
+          message: err
+        });
+
+        this.feedbackReviewed = false;
+        this.loadingFeedbackReviewed = false;
+        this.markingAsReview = 'Continue';
+        return toasted;
+      }
     }
 
-    this.markingAsReview = 'Continue';
-    // }
-    return;
+    try {
+      // display review rating modal and then redirect to task screen under proper activity.
+      // Conditions:
+      // 1. if review is successfully mark as read (from above) and
+      // 2. program configuration is set enabled presenting review rating screen
+      if (result.success && this.storage.getUser().hasReviewRating === true) {
+        this.markingAsReview = 'Retrieving New Task...';
+
+        const nextSequence = await this.skipToNextTask({routeOnly: true});
+        const popup = await this.assessmentService.popUpReviewRating(
+          this.review.id,
+          nextSequence
+        );
+
+        this.loadingFeedbackReviewed = false;
+        this.markingAsReview = 'Continue';
+        return popup;
+      }
+    } catch (err) {
+      const toasted = await this.notificationService.alert({
+        header: 'Error retrieving rating page',
+        message: err
+      });
+      this.loadingFeedbackReviewed = false;
+      this.markingAsReview = 'Continue';
+      return toasted;
+    }
   }
 
   showQuestionInfo(info) {
@@ -543,46 +589,26 @@ export class AssessmentComponent extends RouterEnter {
     }).format(new Date());
   }
 
-  private async getNextSequence(activity?) {
-    let nextTask = null;
+  private async getNextSequence(activity?): Promise<OverviewTask> {
+    let nextTask: OverviewTask;
     const options = {
       id: this.id,
       teamId: this.storage.getUser().teamId
     };
 
     if (!activity) {
-      activity = await this.activityService.getTasksByActivityId(this.storage.getUser().projectId, this.activityId);
+      try {
+        activity = await this.activityService.getTasksByActivityId(this.storage.getUser().projectId, this.activityId);
+      } catch (err) {
+        const toasted = await this.notificationService.alert({
+          header: 'Project overview API Error',
+          message: err
+        });
+        throw new Error(err);
+      }
     }
     nextTask = this.activityService.findNext(activity.Tasks, options);
 
     return nextTask;
-  }
-
-  /**
-   * @name navigateBySequence
-   * @param {Task} sequence task object from activity service
-   */
-  private navigateBySequence(sequence, options?: {
-    routeOnly?: boolean;
-  }) {
-    let route = ['app', 'activity', this.activityId];
-
-    if (sequence) {
-      const { contextId, isForTeam, id, type } = sequence;
-      switch (type) {
-        case 'Assessment':
-          route = ['assessment', 'assessment', this.activityId , contextId, id];
-          break;
-        case 'Topic':
-          route = ['topic', this.activityId, id];
-          break;
-      }
-    }
-
-    if (options && options.routeOnly) {
-      return route;
-    }
-
-    return this.router.navigate(route);
   }
 }
