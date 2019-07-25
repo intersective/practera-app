@@ -171,10 +171,13 @@ export class AssessmentComponent extends RouterEnter {
         this.submission = result.submission;
         this.loadingSubmission = false;
         // If team assessment locked set readonly view.
+        // set doAssessment, doReview to false - because when assessment lock we can't do both.
+        // set submission status to done - because we need to show readonly answers in question components.
         if (this.submission.isLocked) {
           this.doAssessment = false;
-          this.doReview = true;
+          this.doReview = false;
           this.savingButtonDisabled = true;
+          this.submission.status = 'done';
           return ;
         }
         // this page is for doing assessment if submission is empty or submission is 'in progress'
