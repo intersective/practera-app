@@ -77,6 +77,25 @@ export class ActivityComponent extends RouterEnter {
       });
   }
 
+  private _parallelAPI(requests) {
+    return forkJoin(requests)
+      .pipe(catchError(val => of(`API Response error: ${val}`)))
+      .subscribe(tasks => {
+        // throw error when it's string
+        if (typeof tasks === 'string') {
+          throw tasks;
+        }
+
+        tasks.forEach((res: Task) => {
+          const taskIndex = this.activity.tasks.findIndex(task => {
+            return task.id === res.id && task.type === 'Assessment';
+          });
+
+          this.activity.tasks[taskIndex] = res;
+        });
+      });
+  }
+
   /**
    * extract and insert "progress" & "status='done'" (for topic) value to the tasks element
    */
@@ -94,21 +113,7 @@ export class ActivityComponent extends RouterEnter {
           }
         });
 
-        forkJoin(requests)
-        .pipe(catchError(val => of(`API Response error: ${val}`)))
-        .subscribe(tasks => {
-          if (typeof tasks === 'string') {
-            throw tasks;
-          }
-
-          tasks.forEach(res => {
-            const taskIndex = this.activity.tasks.findIndex(task => {
-              return task.id === res.id && task.type === 'Assessment';
-            });
-
-            this.activity.tasks[taskIndex] = res;
-          });
-        });
+        return this._parallelAPI(requests);
       });
   }
 
