@@ -272,16 +272,3 @@ body {
       box-shadow: 0 0 0 0 rgba(var(--ion-color-primary-rgb), 0);
   }
 }
-
-// stules use in assessment page to show read only assessment content
-.readonly-assessment {
-  ion-button, ion-toggle, ion-radio, ion-checkbox, ion-textarea, ion-img, video, a, img, ion-icon {
-    pointer-events: none;
-  }
-  ion-textarea, ion-item {
-    opacity: 0.65;
-  }
-  ion-button, ion-toggle, ion-radio, ion-checkbox {
-    opacity: 0.4;
-  }
-}
