@@ -46,9 +46,9 @@ export class ReviewRatingComponent {
     this.reviewRatingService.submitRating(this.ratingData).subscribe(result => {
       this.isSubmitting = false;
       if (result) {
-          this.notificationService.presentToast('Successfully submitted.');
+          this.notificationService.customToast({ message: 'Successfully submitted.' });
       } else {
-          this.notificationService.presentToast('Error submtting review rating.', false);
+          this.notificationService.customToast({ message: 'Error submtting review rating.' });
       }
       this._closeReviewRating();
     });
