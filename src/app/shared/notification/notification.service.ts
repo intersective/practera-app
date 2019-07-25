@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { ModalController, AlertController, ToastController } from '@ionic/angular';
-import { AlertOptions, ToastOptions } from '@ionic/core';
+import { AlertOptions, ToastOptions, ModalOptions } from '@ionic/core';
 import { PopUpComponent } from './pop-up/pop-up.component';
 import { AchievementPopUpComponent } from './achievement-pop-up/achievement-pop-up.component';
 import { LockTeamAssessmentPopUpComponent } from './lock-team-assessment-pop-up/lock-team-assessment-pop-up.component';
@@ -26,7 +26,7 @@ export class NotificationService {
    * @name modalConfig
    * @description futher customised filter
    */
-  private modalConfig({ component, componentProps }, options = {}) {
+  private modalConfig({ component, componentProps }, options = {}): ModalOptions {
     const config = Object.assign(
       {
         component,
@@ -52,7 +52,7 @@ export class NotificationService {
     return modal;
   }
 
-  async modal(component, componentProps,  options?, event?) {
+  async modal(component, componentProps,  options?, event?): Promise<void> {
     const modal = await this.modalController.create(this.modalConfig({ component, componentProps }, options));
     if (event) {
       modal.onDidDismiss()
@@ -61,6 +61,7 @@ export class NotificationService {
         event(data);
       });
     }
+
     return modal.present();
   }
 
