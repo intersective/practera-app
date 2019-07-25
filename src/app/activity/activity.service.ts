@@ -94,6 +94,7 @@ export class ActivityService {
   ) {}
 
   /**
+   * Purpose: get next task (look for next incomplete milestone/activity/task)
    * combine all (get activity, progress for both topic and assessment) steps into one function
    * so we can access to tasks with progress information easily
    * @param  {number}       projectId project id
@@ -103,11 +104,13 @@ export class ActivityService {
   async getTasksByActivityId(projectId: number, activityId: number): Promise<OverviewActivity> {
     let currentMilestone: OverviewMilestone;
     let nextActivity: OverviewActivity;
+    let currentActivity: OverviewActivity;
     const overview = await this.getOverview(projectId).toPromise();
 
+    // firstly, check current milestone
     const currentMilestoneIndex: number = overview.Milestones.findIndex(milestone => {
       // find current activity
-      const currentActivity = milestone.Activities.find(activity => {
+      currentActivity = milestone.Activities.find(activity => {
         if (activity.id === activityId) {
           return true;
         }
@@ -122,6 +125,11 @@ export class ActivityService {
 
       return false;
     });
+
+    // 2ndly, check activity first (direct return if current activity is still incomplete)
+    if (this.isActivityIncomplete(currentActivity)) {
+      return currentActivity;
+    }
 
     // if current milestone is completed, search next incompleted milestone with incompleted task
     let nextMilestone: OverviewMilestone;
@@ -371,14 +379,19 @@ export class ActivityService {
 
   // when not done (empty status/feedback available/)
   private isTaskCompleted(task: OverviewTask): boolean {
+    // Topic: 'not started' and 'progress=1' can be coexistent
+    if (task.type === 'assessment' && task.status === 'not started' && task.progress === 1) {
+      return false;
+    }
+
     // is_locked: take is_locked story as "completed" for now (so we skip to the next one)
     // progress: 0 = not done, 1 = marked as read (done)
     if (task.is_locked || task.progress === 1) {
       return true;
     }
 
-    // 'done' and 'progress=0' can be coexistent
-    if (task.type === 'assessment' && ['pending review', 'done'].indexOf(task.status) !== -1) {
+    // Assessment: 'done' and 'progress=0' can be coexistent
+    if (task.type === 'assessment' && ['pending review', 'done'].indexOf(task.status) !== -1 && task.progress !== 1) {
       return true;
     }
 
@@ -395,7 +408,7 @@ export class ActivityService {
   findNext(tasks: OverviewTask[], options: {
     id: number;
     teamId: number;
-  }): Task | null {
+  }): OverviewTask {
     // currentIndex can be -1 because the tasks list can be from different Activity's tasks set
     const currentIndex = tasks.findIndex(task => {
       return task.id === options.id;
@@ -406,7 +419,7 @@ export class ActivityService {
       return tasks[nextIndex];
     } else {
       // condition: if next task is a completed activity, pick the first undone from the list
-      const prioritisedTasks: Task[] = tasks.filter(task => {
+      const prioritisedTasks = tasks.filter(task => {
         // avoid team assessment if user isn't in a team
         if (task.is_team && !options.teamId) {
           return false;
@@ -420,7 +433,8 @@ export class ActivityService {
       }
     }
 
-    return null;
+    // backup plan: return same task instead of breaking the code
+    return tasks[currentIndex];
   }
 
   private _normaliseAssessmentStatus(data: any, task: Task) {
@@ -489,6 +503,10 @@ export class ActivityService {
   isActivityIncomplete(assessment): boolean {
     const hasIncompletedTask = assessment.Tasks.filter(task => {
       if (task.type === 'assessment') {
+        if (task.progress === 1 && task.status === 'not started') {
+          return true;
+        }
+
         // don't include 'pending review/pending approval'
         return (task.progress < 1 && (task.status === 'in progress' || task.status === 'feedback available' || task.status === ''));
       }
