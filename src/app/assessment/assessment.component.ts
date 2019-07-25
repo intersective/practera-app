@@ -215,7 +215,7 @@ export class AssessmentComponent extends RouterEnter {
     });
   }
 
-  navigationRoute() {
+  navigationRoute(): Promise<boolean> {
     if (this.fromPage && this.fromPage === 'reviews') {
       return this.router.navigate(['app', 'reviews']);
     }
@@ -286,7 +286,7 @@ export class AssessmentComponent extends RouterEnter {
    * @description to check if every compulsory question has been answered
    * @param {Object[]} answers a list of answer object (in submission-based format)
    */
-  compulsoryQuestionsAnswered(answers) {
+  compulsoryQuestionsAnswered(answers): object[] {
     const result = [];
     const missing = [];
     if (answers && answers.length > 0) {
@@ -312,7 +312,7 @@ export class AssessmentComponent extends RouterEnter {
   }
 
   // allow progression if milestone isnt completed yet
-  async redirectToNextMilestoneTask(activity) {
+  async redirectToNextMilestoneTask(activity): Promise<boolean> {
     const nextTask = await this.getNextSequence(activity);
 
     switch (nextTask.type) {
@@ -322,36 +322,32 @@ export class AssessmentComponent extends RouterEnter {
       case 'topic':
         return this.router.navigate(['topic', activity.id, nextTask.id]);
     }
-    return this.router.navigate(['app', 'activity', activity.id]);
+
+    if (this.activityId !== activity.id) {
+      return this.notificationService.customToast({
+        message: 'Activity completed! Please proceed to the next activity.',
+        buttons: [
+          {
+            text: 'CONTINUE',
+          }
+        ]
+      }).then(val => {
+        return this.router.navigate(['app', 'activity', activity.id]);
+      });
+    }
   }
 
   // get sequence detail and move on to next new task
-  async skipToNextTask() {
+  async skipToNextTask(): Promise<boolean> {
     const activity = await this.activityService.getTasksByActivityId(this.storage.getUser().projectId, this.activityId);
-    if (activity) {
-      return this.redirectToNextMilestoneTask(activity);
-    }
-
-    // activity will always be available, so they'll skip below until "unlock" feature is ready.
-    return this.notificationService.alert({
-      header: 'Activity completed!',
-      message: 'You may now proceed to the next activity while we process your feedback.',
-      buttons: [
-        {
-          text: 'CONTINUE',
-          handler: () => {
-            return this.router.navigate(['app', 'project']);
-          }
-        }
-      ]
-    });
+    return this.redirectToNextMilestoneTask(activity);
   }
 
   /**
    * - check if fastfeedback is available
    * - show next sequence if submission successful
    */
-  private async pullFeedbackAndShowNext() {
+  private async pullFeedbackAndShowNext(): Promise<boolean> {
     this.submitting = 'Retrieving new task...';
     // check if user has new fastFeedback request
     try {

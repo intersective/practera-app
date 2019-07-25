@@ -171,6 +171,8 @@ export class HomeComponent extends RouterEnter implements OnDestroy {
         }
       });
     }
+
+    this.fastFeedbackService.pullFastFeedback().subscribe();
   }
 
   goToActivity(id) {
