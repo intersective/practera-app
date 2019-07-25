@@ -5,7 +5,7 @@ import { RequestService } from '@shared/request/request.service';
 import { NotificationService } from '@shared/notification/notification.service';
 import { BrowserStorageService } from '@services/storage.service';
 import { UtilsService } from '@services/utils.service';
-import { pipe, of, from } from 'rxjs';
+import { pipe, of, from, Observable } from 'rxjs';
 import { switchMap, delay, take, retryWhen } from 'rxjs/operators';
 
 export interface Choice {
@@ -62,7 +62,7 @@ export class FastFeedbackService {
     return modal;
   }
 
-  pullFastFeedback() {
+  pullFastFeedback(): Observable<any> {
     return this.getFastFeedback().pipe(
       switchMap(res => {
         // don't open it again if there's one opening
