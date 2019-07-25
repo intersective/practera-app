@@ -109,7 +109,7 @@ export class TopicComponent extends RouterEnter {
   }
 
   /**
-   * @name continue
+   * continue (mark as read) button
    * @description button action to trigger `nextStepPrompt`
    */
   async continue(): Promise<any> {
@@ -121,7 +121,17 @@ export class TopicComponent extends RouterEnter {
     }
 
     // mark topic as done
-    await this.markAsDone().toPromise();
+    try {
+      await this.markAsDone().toPromise();
+    } catch (err) {
+      const toasted = await this.notificationService.alert({
+        header: 'Error marking topic as completed.',
+        message: err
+      });
+      this.loadingTopic = false;
+      return toasted;
+    }
+
     const navigation = await this.nextStepPrompt();
     this.loadingTopic = false;
     return navigation;
@@ -135,9 +145,19 @@ export class TopicComponent extends RouterEnter {
   async previewFile(file) {
     if (this.isLoadingPreview === false) {
       this.isLoadingPreview = true;
-      const filestack = await this.filestackService.previewFile(file);
-      this.isLoadingPreview = false;
-      return filestack;
+
+      try {
+        const filestack = await this.filestackService.previewFile(file);
+        this.isLoadingPreview = false;
+        return filestack;
+      } catch (err) {
+        const toasted = await this.notificationService.alert({
+          header: 'Error Previewing file',
+          message: err
+        });
+        this.loadingTopic = false;
+        return toasted;
+      }
     }
   }
 
@@ -213,10 +233,19 @@ export class TopicComponent extends RouterEnter {
   }
 
   // get sequence detail and move on to next new task
-  async skipToNextTask() {
-    const activity = await this.activityService.getTasksByActivityId(this.storage.getUser().projectId, this.activityId);
-    if (activity) {
-      return this.redirectToNextMilestoneTask(activity);
+  async skipToNextTask(): Promise<boolean | void> {
+    try {
+      const activity = await this.activityService.getTasksByActivityId(this.storage.getUser().projectId, this.activityId);
+      if (activity) {
+        return this.redirectToNextMilestoneTask(activity);
+      }
+    } catch (err) {
+      const toasted = await this.notificationService.alert({
+        header: 'Project overview API Error',
+        message: err
+      });
+      this.loadingTopic = false;
+      return toasted;
     }
   }
 

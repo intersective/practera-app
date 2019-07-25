@@ -334,16 +334,24 @@ export class AssessmentComponent extends RouterEnter {
   }
 
   // get sequence detail and move on to next new task
-  async skipToNextTask(): Promise<boolean> {
-    const activity = await this.activityService.getTasksByActivityId(this.storage.getUser().projectId, this.activityId);
-    return this.redirectToNextMilestoneTask(activity);
+  async skipToNextTask(): Promise<boolean | void> {
+    try {
+      const activity = await this.activityService.getTasksByActivityId(this.storage.getUser().projectId, this.activityId);
+      return this.redirectToNextMilestoneTask(activity);
+    } catch (err) {
+      const toasted = await this.notificationService.alert({
+        header: 'Project overview API Error',
+        message: err
+      });
+      return toasted;
+    }
   }
 
   /**
    * - check if fastfeedback is available
    * - show next sequence if submission successful
    */
-  private async pullFeedbackAndShowNext(): Promise<boolean> {
+  private async pullFeedbackAndShowNext(): Promise<boolean | void> {
     this.submitting = 'Retrieving new task...';
     // check if user has new fastFeedback request
     try {
@@ -355,11 +363,11 @@ export class AssessmentComponent extends RouterEnter {
       return this.router.navigate(['app', 'home']);
     }
 
-    return this.notificationService.customToast({
+    await this.notificationService.customToast({
       message: 'You may continue to the next learning task.'
-    }).then(val => {
-      return this.skipToNextTask();
     });
+
+    return this.skipToNextTask();
   }
 
   /**
@@ -496,35 +504,55 @@ export class AssessmentComponent extends RouterEnter {
   }
 
   // mark review as read
-  async markReviewFeedbackAsRead(): Promise<any> {
-
+  async markReviewFeedbackAsRead(): Promise<void> {
+    let result: { success: boolean; };
     // allow only if it hasnt reviewed
     if (!this.feedbackReviewed) {
-      this.feedbackReviewed = true;
       this.markingAsReview = 'Marking as read...';
-      const result = await this.assessmentService.saveFeedbackReviewed(this.submission.id).toPromise();
+
+      try {
+        result = await this.assessmentService.saveFeedbackReviewed(this.submission.id).toPromise();
+        this.feedbackReviewed = true;
+        this.loadingFeedbackReviewed = false;
+      } catch (err) {
+        const toasted = await this.notificationService.alert({
+          header: 'Error marking feedback as completed',
+          message: err
+        });
+
+        this.loadingFeedbackReviewed = false;
+        this.markingAsReview = 'Continue';
+        return toasted;
+      }
     }
 
-    // if review is successfully mark as read and program is configured to enable review rating,
-    // display review rating modal and then redirect to activity page.
-    // if (result.success && this.storage.getUser().hasReviewRating === true) {
     try {
-      this.markingAsReview = 'Retrieving New Task...';
-      const nextSequence = await this.getNextSequence();
+      // display review rating modal and then redirect to task screen under proper activity.
+      // Conditions:
+      // 1. if review is successfully mark as read (from above) and
+      // 2. program configuration is set enabled presenting review rating screen
+      if (result.success && this.storage.getUser().hasReviewRating === true) {
+        this.markingAsReview = 'Retrieving New Task...';
+        const nextSequence = await this.getNextSequence();
 
-      return this.assessmentService.popUpReviewRating(
-        this.review.id,
-        this.navigateBySequence(nextSequence, {routeOnly: true})
-      );
-    } catch (error) {
-      console.warn(error);
-      this.feedbackReviewed = true;
+        const popup = await this.assessmentService.popUpReviewRating(
+          this.review.id,
+          this.navigateBySequence(nextSequence, {routeOnly: true})
+        );
+
+        this.loadingFeedbackReviewed = false;
+        this.markingAsReview = 'Continue';
+        return popup;
+      }
+    } catch (err) {
+      const toasted = await this.notificationService.alert({
+        header: 'Error retrieving rating page',
+        message: err
+      });
       this.loadingFeedbackReviewed = false;
+      this.markingAsReview = 'Continue';
+      return toasted;
     }
-
-    this.markingAsReview = 'Continue';
-    // }
-    return;
   }
 
   showQuestionInfo(info) {
@@ -547,7 +575,15 @@ export class AssessmentComponent extends RouterEnter {
     };
 
     if (!activity) {
-      activity = await this.activityService.getTasksByActivityId(this.storage.getUser().projectId, this.activityId);
+      try {
+        activity = await this.activityService.getTasksByActivityId(this.storage.getUser().projectId, this.activityId);
+      } catch (err) {
+        const toasted = await this.notificationService.alert({
+          header: 'Project overview API Error',
+          message: err
+        });
+        return toasted;
+      }
     }
     nextTask = this.activityService.findNext(activity.Tasks, options);
 
