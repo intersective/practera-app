@@ -14,14 +14,14 @@ import { ActivityModule } from '../activity/activity.module';
     AssessmentRoutingModule,
     ReactiveFormsModule,
     QuestionsModule,
-    ActivityModule
+    ActivityModule,
   ],
   declarations: [
     AssessmentComponent
   ],
   exports: [
     SharedModule,
-    ActivityModule
+    ActivityModule,
   ]
 })
 

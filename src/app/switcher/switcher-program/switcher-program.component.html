@@ -1,12 +1,12 @@
 <ion-header mode="ios">
   <ion-toolbar color="light">
-    <ion-title>Select A Program</ion-title>
+    <ion-title>Select an Experience</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content padding color="light">
   <ion-card class="practera-card">
-    <ion-list class="no-bg" *ngFor="let program of programs; let i = index">
+    <ion-list *ngFor="let program of programs; let i = index">
       <clickable-item (click)="switch(i)" color="light" [lines]="i == programs.length - 1 ? 'none' : ''">
         <img src="/assets/thumbs/practera_icon.png" height="25" width="25" class="img-inline"> {{ program.program.name }}
       </clickable-item>

@@ -27,6 +27,7 @@ import { ActivityModule } from '../activity/activity.module';
     IonicModule,
     CommonModule,
     FormsModule,
+    FilestackModule,
     ActivityModule
   ]
 })
