@@ -360,13 +360,7 @@ export class AssessmentComponent extends RouterEnter {
     }
 
     return this.notificationService.customToast({
-      message: 'You may continue to the next learning task.',
-      buttons: [
-        {
-          text: 'CONTINUE',
-          role: 'cancel',
-        }
-      ]
+      message: 'You may continue to the next learning task.'
     }).then(val => {
       return this.skipToNextTask();
     });
