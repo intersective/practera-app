@@ -75,6 +75,8 @@ export interface Submission {
   answers: any;
   submitterName: string;
   modified: string;
+  isLocked: boolean;
+  submitterImage: string;
   reviewerName: string;
 }
 
@@ -298,6 +300,8 @@ export class AssessmentService {
       answers: {},
       submitterName: thisSubmission.Submitter.name,
       modified: thisSubmission.AssessmentSubmission.modified,
+      isLocked: thisSubmission.AssessmentSubmission.is_locked,
+      submitterImage: thisSubmission.Submitter.image,
       reviewerName: this.checkReviewer(thisSubmission.Reviewer)
     };
 
