@@ -36,6 +36,7 @@ export interface Achievement {
 export class AchievementsService {
   earnedPoints = 0;
   totalPoints = 0;
+  isPointsConfigured = false;
   constructor(
     private request: RequestService,
     private utils: UtilsService,
@@ -59,6 +60,9 @@ export class AchievementsService {
     if (!Array.isArray(data)) {
       return this.request.apiResponseFormatError('Achievement format error');
     }
+    this.earnedPoints = 0;
+    this.totalPoints = 0;
+    this.isPointsConfigured = false;
     const achievements: Array<Achievement> = [];
     data.forEach(achievement => {
       if (!this.utils.has(achievement, 'id') ||
@@ -81,6 +85,7 @@ export class AchievementsService {
       });
       if (achievement.points) {
         this.totalPoints += +achievement.points;
+        this.isPointsConfigured = true;
         if (achievement.isEarned) {
           this.earnedPoints += +achievement.points;
         }
@@ -95,6 +100,10 @@ export class AchievementsService {
 
   getTotalPoints() {
     return this.totalPoints;
+  }
+
+  getIsPointsConfigured() {
+    return this.isPointsConfigured;
   }
 
   markAchievementAsSeen(achievementId) {
