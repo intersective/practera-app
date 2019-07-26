@@ -135,9 +135,10 @@ export class ActivityService {
     let nextMilestone: OverviewMilestone;
     if (!this.isMilestoneIncomplete(currentMilestone)) {
       // get next milestone by the order of milestone array
-      for (let i = currentMilestoneIndex; i < overview.Milestones.length; i++) {
-        if (this.isMilestoneIncomplete(overview.Milestones[i]) && nextMilestone === undefined) {
-          nextMilestone = overview.Milestones[i];
+      for (let i = currentMilestoneIndex, trial = 1; trial <= overview.Milestones.length; i++, trial++) {
+        const milestoneIndex = i%overview.Milestones.length;
+        if (this.isMilestoneIncomplete(overview.Milestones[milestoneIndex]) && nextMilestone === undefined) {
+          nextMilestone = overview.Milestones[milestoneIndex];
         }
       }
     }
