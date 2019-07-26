@@ -8,7 +8,7 @@
   <ng-container *ngIf="loadingAchievements">
     <ion-spinner></ion-spinner>
   </ng-container>
-  <ion-grid>
+  <ion-grid *ngIf="this.achievementService.getIsPointsConfigured() && !loadingAchievements">
     <ion-row class="total-points">
       <ion-col class="trophy" size="3">
         <div class="circle-background">
@@ -16,11 +16,11 @@
         </div>
       </ion-col>
       <ion-col class="points" align-items-start>
-        <h4>Total Points Earned : {{totalEarnedPoints}}</h4>
+        <h4>Total Points Earned : {{ this.achievementService.getEarnedPoints() }}</h4>
       </ion-col>
     </ion-row>
   </ion-grid>
-  <hr>
+  <hr *ngIf="this.achievementService.getIsPointsConfigured()">
   <ion-grid>
     <ion-row>
       <ion-col class="title-container">
