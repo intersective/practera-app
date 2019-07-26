@@ -6,7 +6,7 @@ import { Component, Input } from '@angular/core';
   styleUrls: ['./unlocking.component.scss']
 })
 export class UnlockingComponent {
-
+  @Input() badgeUrl: string;
   constructor(
   ) {}
 
