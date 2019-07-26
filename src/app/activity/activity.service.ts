@@ -379,8 +379,8 @@ export class ActivityService {
 
   // when not done (empty status/feedback available/)
   private isTaskCompleted(task: OverviewTask): boolean {
-    // Topic: 'not started' and 'progress=1' can be coexistent
-    if (task.type === 'assessment' && task.status === 'not started' && task.progress === 1) {
+    // Topic/Assessment: when it's 'not started', we dont care progress value
+    if (task.type === 'assessment' && task.status === 'not started') {
       return false;
     }
 
@@ -503,7 +503,7 @@ export class ActivityService {
   isActivityIncomplete(assessment): boolean {
     const hasIncompletedTask = assessment.Tasks.filter(task => {
       if (task.type === 'assessment') {
-        if (task.progress === 1 && task.status === 'not started') {
+        if (task.status === 'not started') {
           return true;
         }
 
