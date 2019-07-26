@@ -16,7 +16,7 @@ export class AchievementsComponent extends RouterEnter {
 
   constructor (
     public router: Router,
-    private achievementService: AchievementsService,
+    public achievementService: AchievementsService,
     public utils: UtilsService
   ) {
     super(router);
