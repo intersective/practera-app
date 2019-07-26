@@ -2,13 +2,13 @@
 
   <div class="imgage-content">
     <div class="image">
-        <img [src]="image ? image : 'https://my.practera.com/img/user-512.png'">
+        <img [src]="data.image ? data.image : 'https://my.practera.com/img/user-512.png'">
     </div>
   </div>
 
   <div class="details-container">
     <div class="div-after-img">
-      <div class="description" *ngIf="name">{{name}} is currently edting this team submission.</div>
+      <div class="description" *ngIf="name">{{ data.name }} is currently edting this team submission.</div>
       <div class="description" *ngIf="name">Click on 'View Read Only' to open in read only mode.</div>
     </div>
 
