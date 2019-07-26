@@ -310,7 +310,7 @@ export class AssessmentComponent extends RouterEnter {
   }
 
   // allow progression if milestone isnt completed yet
-  async redirectToNextMilestoneTask(options? : {
+  async redirectToNextMilestoneTask(options?: {
     routeOnly: boolean;
   }): Promise<any> {
     const { activity, nextTask } = await this.getNextSequence();
@@ -527,6 +527,8 @@ export class AssessmentComponent extends RouterEnter {
 
   // mark review as read
   async markReviewFeedbackAsRead(): Promise<void | boolean> {
+    let nextSequence;
+
     // step 1.0: allow only if it hasnt reviewed
     if (!this.feedbackReviewed) {
       let result: { success: boolean; };
@@ -558,7 +560,7 @@ export class AssessmentComponent extends RouterEnter {
         if (result.success && this.storage.getUser().hasReviewRating === true) {
           this.markingAsReview = 'Retrieving New Task...';
 
-          const nextSequence = await this.redirectToNextMilestoneTask({routeOnly: true});
+          nextSequence = await this.redirectToNextMilestoneTask({routeOnly: true});
           const popup = await this.assessmentService.popUpReviewRating(
             this.review.id,
             nextSequence
@@ -582,7 +584,7 @@ export class AssessmentComponent extends RouterEnter {
     // step 2.0: if feedback had been marked as read beforehand,
     //         straightaway redirect user to the next task instead.
     this.markingAsReview = 'Retrieving New Task...';
-    const nextSequence = await this.redirectToNextMilestoneTask();
+    nextSequence = await this.redirectToNextMilestoneTask();
     this.loadingFeedbackReviewed = false;
     this.markingAsReview = 'Continue';
     return nextSequence;
@@ -611,7 +613,7 @@ export class AssessmentComponent extends RouterEnter {
 
     try {
       const activity = await this.activityService.getTasksByActivityId(this.storage.getUser().projectId, this.activityId);
-      let nextTask = undefined;
+      let nextTask;
       if (activity) {
         nextTask = this.activityService.findNext(activity.Tasks, options);
       }
