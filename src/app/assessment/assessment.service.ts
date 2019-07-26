@@ -77,7 +77,7 @@ export interface Submission {
   modified: string;
   isLocked: boolean;
   submitterImage: string;
-  reviewerName: string;
+  reviewerName: string | void;
 }
 
 export interface Review {
@@ -498,14 +498,14 @@ export class AssessmentService {
     return this.request.post(api.post.todoitem, postData);
   }
 
-  popUpReviewRating(reviewId, redirect) {
+  popUpReviewRating(reviewId, redirect): Promise<void> {
     return this.notification.modal(ReviewRatingComponent, {
       reviewId,
       redirect
     });
   }
 
-  checkReviewer(reviewer) {
+  checkReviewer(reviewer): string | void {
     if (!reviewer) {
       return undefined;
     }
