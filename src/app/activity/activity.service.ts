@@ -392,7 +392,7 @@ export class ActivityService {
     }
 
     // Assessment: 'done' and 'progress=0' can be coexistent
-    if (task.type === 'assessment' && ['pending review', 'done'].indexOf(task.status) !== -1 && task.progress !== 1) {
+    if (task.type === 'assessment' && ['pending review', 'done', 'pending approval'].indexOf(task.status) !== -1 && task.progress !== 1) {
       return true;
     }
 
@@ -509,7 +509,7 @@ export class ActivityService {
         }
 
         // don't include 'pending review/pending approval'
-        return (task.progress < 1 && (task.status === 'in progress' || task.status === 'feedback available' || task.status === ''));
+        return (task.progress < 1 && (task.status === 'published' || task.status === 'in progress' || task.status === 'feedback available' || task.status === ''));
       }
 
       return task.progress < 1;
