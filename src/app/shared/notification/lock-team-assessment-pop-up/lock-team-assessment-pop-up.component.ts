@@ -7,8 +7,8 @@ import { ModalController } from '@ionic/angular';
   styleUrls: ['lock-team-assessment-pop-up.component.scss']
 })
 export class LockTeamAssessmentPopUpComponent {
-  type = '';
-  data = {};
+  name = '';
+  image = '';
 
   constructor(
     public modalController: ModalController
