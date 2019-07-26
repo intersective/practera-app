@@ -6,13 +6,24 @@
 .contain {
   text-align: center;
   margin: auto;
-  background-image: url("/assets/unlocking-background.gif");
+  background-image: url("/assets/img/unlocking-background.gif");
   background-size: 100%;
   background-repeat: no-repeat;
-  svg {
+  .badge {
+    width: 25%;
+    float: left;
+    margin: 25% 0 0 20%;
+    animation-name: animation-badge;
+    animation-duration: 1.5s;
+  }
+  .div-svg {
+    display: inline-block;
+    margin: 10% 0 30% -10%;
     width: 60%;
+  }
+  svg {
+    width: 100%;
     height: 100%;
-    margin: 8% 0 30% 35%;
     .lock-color {
       fill: var(--ion-color-primary);
     }
@@ -117,7 +128,20 @@
     }
   }
 }
-
+@keyframes animation-badge {
+  0% {
+    transform: scale(0.1, 0.1);
+  }
+  60% {
+    transform: scale(1.2, 1.2);
+  }
+  70% {
+    transform: scale(0.8, 0.8);
+  }
+  80% {
+    transform: scale(1.1, 1.1);
+  }
+}
 @keyframes animation-blur-only {
   // frame 1
   0% {
