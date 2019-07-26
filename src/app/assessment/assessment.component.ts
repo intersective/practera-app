@@ -243,7 +243,9 @@ export class AssessmentComponent extends RouterEnter {
   }
 
   back(): Promise<void | boolean> {
-    if (this.action === 'assessment' && this.submission.status === 'published') {
+    if (this.action === 'assessment'
+      && this.submission.status === 'published'
+      && !this.feedbackReviewed) {
       return this.notificationService.alert({
         header: `Mark feedback as read?`,
         message: 'Would you like to mark the feedback as read?',
@@ -525,13 +527,14 @@ export class AssessmentComponent extends RouterEnter {
   }
 
   // mark review as read
-  async markReviewFeedbackAsRead(): Promise<void> {
-    let result: { success: boolean; };
-    // allow only if it hasnt reviewed
+  async markReviewFeedbackAsRead(): Promise<void | boolean> {
+    // step 1.0: allow only if it hasnt reviewed
     if (!this.feedbackReviewed) {
+      let result: { success: boolean; };
       this.markingAsReview = 'Marking as read...';
       this.feedbackReviewed = true;
 
+      // step 1.1: Mark feedback as read
       try {
         result = await this.assessmentService.saveFeedbackReviewed(this.submission.id).toPromise();
         this.loadingFeedbackReviewed = false;
@@ -544,37 +547,46 @@ export class AssessmentComponent extends RouterEnter {
         this.feedbackReviewed = false;
         this.loadingFeedbackReviewed = false;
         this.markingAsReview = 'Continue';
-        return toasted;
+        throw new Error(err);
       }
-    }
 
-    try {
-      // display review rating modal and then redirect to task screen under proper activity.
-      // Conditions:
-      // 1. if review is successfully mark as read (from above) and
-      // 2. program configuration is set enabled presenting review rating screen
-      if (result.success && this.storage.getUser().hasReviewRating === true) {
-        this.markingAsReview = 'Retrieving New Task...';
+      // step 1.2: after feedback marked as read, popup review rating screen
+      try {
+        // display review rating modal and then redirect to task screen under proper activity.
+        // Conditions:
+        // 1. if review is successfully mark as read (from above) and
+        // 2. hasReviewRating (activation): program configuration is set enabled presenting review rating screen
+        if (result.success && this.storage.getUser().hasReviewRating === true) {
+          this.markingAsReview = 'Retrieving New Task...';
 
-        const nextSequence = await this.skipToNextTask({routeOnly: true});
-        const popup = await this.assessmentService.popUpReviewRating(
-          this.review.id,
-          nextSequence
-        );
+          const nextSequence = await this.skipToNextTask({routeOnly: true});
+          const popup = await this.assessmentService.popUpReviewRating(
+            this.review.id,
+            nextSequence
+          );
 
+          this.loadingFeedbackReviewed = false;
+          this.markingAsReview = 'Continue';
+          return popup;
+        }
+      } catch (err) {
+        const toasted = await this.notificationService.alert({
+          header: 'Error retrieving rating page',
+          message: err
+        });
         this.loadingFeedbackReviewed = false;
         this.markingAsReview = 'Continue';
-        return popup;
+        throw new Error(err);
       }
-    } catch (err) {
-      const toasted = await this.notificationService.alert({
-        header: 'Error retrieving rating page',
-        message: err
-      });
-      this.loadingFeedbackReviewed = false;
-      this.markingAsReview = 'Continue';
-      return toasted;
     }
+
+    // step 2.0: if feedback had been marked as read beforehand,
+    //         straightaway redirect user to the next task instead.
+    this.markingAsReview = 'Retrieving New Task...';
+    const nextSequence = await this.skipToNextTask();
+    this.loadingFeedbackReviewed = false;
+    this.markingAsReview = 'Continue';
+    return nextSequence;
   }
 
   showQuestionInfo(info) {
