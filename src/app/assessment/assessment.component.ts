@@ -308,7 +308,7 @@ export class AssessmentComponent extends RouterEnter {
   }
 
   // allow progression if milestone isnt completed yet
-  async redirectToNextMilestoneTask(activity, options? : {
+  async redirectToNextMilestoneTask(activity, options?: {
     routeOnly: boolean;
   }): Promise<any> {
     const nextTask = await this.getNextSequence(activity);

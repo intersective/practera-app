@@ -133,9 +133,13 @@ export class NotificationService {
    * });
    */
   async lockTeamAssessmentPopUp(data, event) {
+    const componentProps = {
+      name: data.name,
+      image: data.image
+    };
     const component = LockTeamAssessmentPopUpComponent;
     const modal = await this.modal(
-      component, data,
+      component, componentProps,
       {
       cssClass: 'lock-assessment-popup'
       },
