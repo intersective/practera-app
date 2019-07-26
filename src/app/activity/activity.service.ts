@@ -135,9 +135,10 @@ export class ActivityService {
     let nextMilestone: OverviewMilestone;
     if (!this.isMilestoneIncomplete(currentMilestone)) {
       // get next milestone by the order of milestone array
-      for (let i = currentMilestoneIndex; i < overview.Milestones.length; i++) {
-        if (this.isMilestoneIncomplete(overview.Milestones[i]) && nextMilestone === undefined) {
-          nextMilestone = overview.Milestones[i];
+      for (let i = currentMilestoneIndex, trial = 1; trial <= overview.Milestones.length; i++, trial++) {
+        const milestoneIndex = i % overview.Milestones.length;
+        if (this.isMilestoneIncomplete(overview.Milestones[milestoneIndex]) && nextMilestone === undefined) {
+          nextMilestone = overview.Milestones[milestoneIndex];
         }
       }
     }
@@ -391,7 +392,7 @@ export class ActivityService {
     }
 
     // Assessment: 'done' and 'progress=0' can be coexistent
-    if (task.type === 'assessment' && ['pending review', 'done'].indexOf(task.status) !== -1 && task.progress !== 1) {
+    if (task.type === 'assessment' && ['pending review', 'done', 'pending approval'].indexOf(task.status) !== -1 && task.progress !== 1) {
       return true;
     }
 
@@ -508,7 +509,7 @@ export class ActivityService {
         }
 
         // don't include 'pending review/pending approval'
-        return (task.progress < 1 && (task.status === 'in progress' || task.status === 'feedback available' || task.status === ''));
+        return (task.progress < 1 && (task.status === 'published' || task.status === 'in progress' || task.status === 'feedback available' || task.status === ''));
       }
 
       return task.progress < 1;
