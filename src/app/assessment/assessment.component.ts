@@ -243,7 +243,9 @@ export class AssessmentComponent extends RouterEnter {
   }
 
   back(): Promise<void | boolean> {
-    if (this.action === 'assessment' && this.submission.status === 'published') {
+    if (this.action === 'assessment'
+      && this.submission.status === 'published'
+      && !this.feedbackReviewed) {
       return this.notificationService.alert({
         header: `Mark feedback as read?`,
         message: 'Would you like to mark the feedback as read?',
@@ -308,10 +310,25 @@ export class AssessmentComponent extends RouterEnter {
   }
 
   // allow progression if milestone isnt completed yet
-  async redirectToNextMilestoneTask(activity, options?: {
+  async redirectToNextMilestoneTask(options?: {
     routeOnly: boolean;
   }): Promise<any> {
-    const nextTask = await this.getNextSequence(activity);
+    const { activity, nextTask } = await this.getNextSequence();
+
+    // Empty activity value: no more incompleted activity (when everything is completed)
+    if (!activity) {
+      await this.notificationService.alert({
+        header: 'Milestone completed!',
+        message: 'You may now proceed to project list and learn about your overall progress.',
+        buttons: [
+          {
+            text: 'Ok',
+            role: 'cancel',
+          }
+        ]
+      });
+      return this.router.navigate(['app', 'project']);
+    }
 
     if (this.activityId !== activity.id) {
       await this.notificationService.alert({
@@ -328,14 +345,16 @@ export class AssessmentComponent extends RouterEnter {
 
     let route = ['app', 'activity', activity.id];
 
-    switch (nextTask.type) {
-      case 'assessment':
-        route = ['assessment', 'assessment', activity.id, nextTask.context_id, nextTask.id];
-        break;
+    if (nextTask) {
+      switch (nextTask.type) {
+        case 'assessment':
+          route = ['assessment', 'assessment', activity.id, nextTask.context_id, nextTask.id];
+          break;
 
-      case 'topic':
-        route = ['topic', activity.id, nextTask.id];
-        break;
+        case 'topic':
+          route = ['topic', activity.id, nextTask.id];
+          break;
+      }
     }
 
     if (options && options.routeOnly) {
@@ -343,24 +362,6 @@ export class AssessmentComponent extends RouterEnter {
     }
 
     return this.router.navigate(route);
-  }
-
-  // get sequence detail and move on to next new task
-  async skipToNextTask(options?): Promise<boolean> {
-    try {
-      const activity = await this.activityService.getTasksByActivityId(this.storage.getUser().projectId, this.activityId);
-      return this.redirectToNextMilestoneTask(activity, options);
-    } catch (err) {
-      const toasted = await this.notificationService.alert({
-        header: 'Project overview API Error',
-        message: err
-      });
-
-      if (this.submitting) {
-        this.submitting = false;
-      }
-      throw new Error(err);
-    }
   }
 
   /**
@@ -385,7 +386,7 @@ export class AssessmentComponent extends RouterEnter {
       message: 'You may continue to the next learning task.'
     });
 
-    const nextTask = await this.skipToNextTask();
+    const nextTask = await this.redirectToNextMilestoneTask();
     this.submitting = false;
     return nextTask;
   }
@@ -525,13 +526,16 @@ export class AssessmentComponent extends RouterEnter {
   }
 
   // mark review as read
-  async markReviewFeedbackAsRead(): Promise<void> {
-    let result: { success: boolean; };
-    // allow only if it hasnt reviewed
+  async markReviewFeedbackAsRead(): Promise<void | boolean> {
+    let nextSequence;
+
+    // step 1.0: allow only if it hasnt reviewed
     if (!this.feedbackReviewed) {
+      let result: { success: boolean; };
       this.markingAsReview = 'Marking as read...';
       this.feedbackReviewed = true;
 
+      // step 1.1: Mark feedback as read
       try {
         result = await this.assessmentService.saveFeedbackReviewed(this.submission.id).toPromise();
         this.loadingFeedbackReviewed = false;
@@ -544,37 +548,46 @@ export class AssessmentComponent extends RouterEnter {
         this.feedbackReviewed = false;
         this.loadingFeedbackReviewed = false;
         this.markingAsReview = 'Continue';
-        return toasted;
+        throw new Error(err);
       }
-    }
 
-    try {
-      // display review rating modal and then redirect to task screen under proper activity.
-      // Conditions:
-      // 1. if review is successfully mark as read (from above) and
-      // 2. program configuration is set enabled presenting review rating screen
-      if (result.success && this.storage.getUser().hasReviewRating === true) {
-        this.markingAsReview = 'Retrieving New Task...';
+      // step 1.2: after feedback marked as read, popup review rating screen
+      try {
+        // display review rating modal and then redirect to task screen under proper activity.
+        // Conditions:
+        // 1. if review is successfully mark as read (from above) and
+        // 2. hasReviewRating (activation): program configuration is set enabled presenting review rating screen
+        if (result.success && this.storage.getUser().hasReviewRating === true) {
+          this.markingAsReview = 'Retrieving New Task...';
 
-        const nextSequence = await this.skipToNextTask({routeOnly: true});
-        const popup = await this.assessmentService.popUpReviewRating(
-          this.review.id,
-          nextSequence
-        );
+          nextSequence = await this.redirectToNextMilestoneTask({routeOnly: true});
+          const popup = await this.assessmentService.popUpReviewRating(
+            this.review.id,
+            nextSequence
+          );
 
+          this.loadingFeedbackReviewed = false;
+          this.markingAsReview = 'Continue';
+          return popup;
+        }
+      } catch (err) {
+        const toasted = await this.notificationService.alert({
+          header: 'Error retrieving rating page',
+          message: err
+        });
         this.loadingFeedbackReviewed = false;
         this.markingAsReview = 'Continue';
-        return popup;
+        throw new Error(err);
       }
-    } catch (err) {
-      const toasted = await this.notificationService.alert({
-        header: 'Error retrieving rating page',
-        message: err
-      });
-      this.loadingFeedbackReviewed = false;
-      this.markingAsReview = 'Continue';
-      return toasted;
     }
+
+    // step 2.0: if feedback had been marked as read beforehand,
+    //         straightaway redirect user to the next task instead.
+    this.markingAsReview = 'Retrieving New Task...';
+    nextSequence = await this.redirectToNextMilestoneTask();
+    this.loadingFeedbackReviewed = false;
+    this.markingAsReview = 'Continue';
+    return nextSequence;
   }
 
   showQuestionInfo(info) {
@@ -589,26 +602,36 @@ export class AssessmentComponent extends RouterEnter {
     }).format(new Date());
   }
 
-  private async getNextSequence(activity?): Promise<OverviewTask> {
-    let nextTask: OverviewTask;
+  private async getNextSequence(): Promise<{
+    activity: OverviewActivity;
+    nextTask: OverviewTask;
+  }> {
     const options = {
       id: this.id,
       teamId: this.storage.getUser().teamId
     };
 
-    if (!activity) {
-      try {
-        activity = await this.activityService.getTasksByActivityId(this.storage.getUser().projectId, this.activityId);
-      } catch (err) {
-        const toasted = await this.notificationService.alert({
-          header: 'Project overview API Error',
-          message: err
-        });
-        throw new Error(err);
+    try {
+      const activity = await this.activityService.getTasksByActivityId(this.storage.getUser().projectId, this.activityId);
+      let nextTask;
+      if (activity) {
+        nextTask = this.activityService.findNext(activity.Tasks, options);
       }
-    }
-    nextTask = this.activityService.findNext(activity.Tasks, options);
 
-    return nextTask;
+      return {
+        activity,
+        nextTask
+      };
+    } catch (err) {
+      const toasted = await this.notificationService.alert({
+        header: 'Project overview API Error',
+        message: err
+      });
+
+      if (this.submitting) {
+        this.submitting = false;
+      }
+      throw new Error(err);
+    }
   }
 }
