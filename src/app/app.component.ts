@@ -93,9 +93,6 @@ export class AppComponent implements OnInit {
       // watch version update
       this.versionCheckService.initiateVersionCheck();
 
-      // this.statusBar.styleDefault();
-      // this.splashScreen.hide();
-
       // initialise Pusher
       this.pusherService.initantiate();
     });
