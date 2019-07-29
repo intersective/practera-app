@@ -73,6 +73,7 @@ export class UtilsService {
   changeThemeColor(color) {
     this.document.documentElement.style.setProperty('--ion-color-primary', color);
     this.document.documentElement.style.setProperty('--ion-color-primary-shade', color);
+    this.document.documentElement.style.setProperty('--ion-color-primary-tint', color);
     // convert hex color to rgb and update css variable
     const hex = color.replace('#', '');
     const red = parseInt(hex.substring(0, 2), 16);
