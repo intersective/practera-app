@@ -262,13 +262,11 @@ export class AssessmentComponent extends RouterEnter {
             text: 'Yes',
             handler: () => {
               return this.markReviewFeedbackAsRead().then(() => {
-                return this.notificationService.customToast({
-                  message: 'Assessment completed! Please proceed to the next learning task.'
-                }).then(() => this.router.navigate([
+                return this.router.navigate([
                   'app',
                   'activity',
                   this.activityId,
-                ]));
+                ]);
               });
             }
           }
@@ -550,6 +548,7 @@ export class AssessmentComponent extends RouterEnter {
       let result: { success: boolean; };
       this.markingAsReview = 'Marking as read...';
       this.feedbackReviewed = true;
+      this.isRedirectingToNextMilestoneTask = true;
 
       // step 1.1: Mark feedback as read
       try {
@@ -561,11 +560,18 @@ export class AssessmentComponent extends RouterEnter {
           message: err
         });
 
+        // deactivate loading indicator on fail
         this.feedbackReviewed = false;
+        this.isRedirectingToNextMilestoneTask = false;
         this.loadingFeedbackReviewed = false;
         this.markingAsReview = 'Continue';
         throw new Error(err);
       }
+
+      // mark as read successful
+      await this.notificationService.customToast({
+        message: 'Assessment completed! Please proceed to the next learning task.'
+      });
 
       // step 1.2: after feedback marked as read, popup review rating screen
       try {
@@ -575,6 +581,7 @@ export class AssessmentComponent extends RouterEnter {
         // 2. hasReviewRating (activation): program configuration is set enabled presenting review rating screen
         if (result.success && this.storage.getUser().hasReviewRating === true) {
           this.markingAsReview = 'Retrieving New Task...';
+        this.isRedirectingToNextMilestoneTask = true;
 
           nextSequence = await this.redirectToNextMilestoneTask({routeOnly: true});
           const popup = await this.assessmentService.popUpReviewRating(
@@ -591,7 +598,10 @@ export class AssessmentComponent extends RouterEnter {
           header: 'Error retrieving rating page',
           message: err
         });
+
+        // deactivate loading indicator on fail
         this.loadingFeedbackReviewed = false;
+        this.isRedirectingToNextMilestoneTask = false;
         this.markingAsReview = 'Continue';
         throw new Error(err);
       }
@@ -600,7 +610,7 @@ export class AssessmentComponent extends RouterEnter {
     // step 2.0: if feedback had been marked as read beforehand,
     //         straightaway redirect user to the next task instead.
     this.markingAsReview = 'Retrieving New Task...';
-    nextSequence = await this.redirectToNextMilestoneTask();
+    nextSequence = await this.redirectToNextMilestoneTask({ continue: true });
     this.loadingFeedbackReviewed = false;
     this.markingAsReview = 'Continue';
     return nextSequence;
