@@ -423,6 +423,7 @@ export class ActivityService {
       const prioritisedTasks = tasks.filter(task => {
         // avoid team assessment if user isn't in a team
         if (task.is_team && !options.teamId) {
+          console.warn('user isn\'t in a team.');
           return false;
         }
 
