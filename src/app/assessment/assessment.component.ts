@@ -60,7 +60,7 @@ export class AssessmentComponent extends RouterEnter {
   doAssessment = false;
   doReview = false;
   feedbackReviewed = false;
-  loadingFeedbackReviewed = true;
+  loadingFeedbackReviewed: boolean;
   loadingAssessment = true;
   loadingSubmission = true;
   questionsForm = new FormGroup({});
@@ -70,6 +70,7 @@ export class AssessmentComponent extends RouterEnter {
   saving: boolean;
   fromPage = '';
   markingAsReview = 'Continue';
+  isRedirectingToNextMilestoneTask: boolean;
 
   constructor (
     public router: Router,
@@ -122,6 +123,7 @@ export class AssessmentComponent extends RouterEnter {
     this.savingButtonDisabled = true;
     this.savingMessage = '';
     this.markingAsReview = 'Continue';
+    this.isRedirectingToNextMilestoneTask = false;
   }
 
   onEnter() {
@@ -242,11 +244,11 @@ export class AssessmentComponent extends RouterEnter {
     return this.router.navigate(['app', 'home']);
   }
 
-  back(): Promise<void | boolean> {
+  async back(): Promise<void | boolean> {
     if (this.action === 'assessment'
       && this.submission.status === 'published'
       && !this.feedbackReviewed) {
-      return this.notificationService.alert({
+      await this.notificationService.alert({
         header: `Mark feedback as read?`,
         message: 'Would you like to mark the feedback as read?',
         buttons: [
@@ -309,38 +311,49 @@ export class AssessmentComponent extends RouterEnter {
     return missing;
   }
 
-  // allow progression if milestone isnt completed yet
+  /**
+   * allow progression if milestone isnt completed yet
+   * @param  {boolean;   }}          options
+   * @return {Promise<any>}
+   */
   async redirectToNextMilestoneTask(options?: {
-    routeOnly: boolean;
+    continue?: boolean; // extra parameter to allow "options" appear as well-defined variable
+    routeOnly?: boolean; // routeOnly: True, return route in string. False, return navigated route (promise<void>)
   }): Promise<any> {
-    const { activity, nextTask } = await this.getNextSequence();
-
-    // Empty activity value: no more incompleted activity (when everything is completed)
-    if (!activity) {
-      await this.notificationService.alert({
-        header: 'Milestone completed!',
-        message: 'You may now proceed to project list and learn about your overall progress.',
-        buttons: [
-          {
-            text: 'Ok',
-            role: 'cancel',
-          }
-        ]
-      });
-      return this.router.navigate(['app', 'project']);
+    if (options && options.continue) {
+      this.isRedirectingToNextMilestoneTask = true;
     }
 
-    if (this.activityId !== activity.id) {
-      await this.notificationService.alert({
-        header: 'Activity completed!',
-        message: 'You may now proceed to the next activity.',
-        buttons: [
-          {
-            text: 'Ok',
-            role: 'cancel',
-          }
-        ]
-      });
+    const { activity, nextTask } = await this.getNextSequence();
+
+    if (options === undefined || (options && options.routeOnly)) {
+      // Empty activity value: no more incompleted activity (when everything is completed)
+      if (!activity) {
+        await this.notificationService.alert({
+          header: 'Milestone completed!',
+          message: 'You may now proceed to project list and learn about your overall progress.',
+          buttons: [
+            {
+              text: 'Ok',
+              role: 'cancel',
+            }
+          ]
+        });
+        return this.router.navigate(['app', 'project']);
+      }
+
+      if (this.activityId !== activity.id) {
+        await this.notificationService.alert({
+          header: 'Activity completed!',
+          message: 'You may now proceed to the next activity.',
+          buttons: [
+            {
+              text: 'Ok',
+              role: 'cancel',
+            }
+          ]
+        });
+      }
     }
 
     let route = ['app', 'activity', activity.id];
@@ -361,7 +374,9 @@ export class AssessmentComponent extends RouterEnter {
       return route;
     }
 
-    return this.router.navigate(route);
+    await this.router.navigate(route);
+    this.isRedirectingToNextMilestoneTask = false;
+    return;
   }
 
   /**
@@ -382,8 +397,9 @@ export class AssessmentComponent extends RouterEnter {
       throw new Error(err);
     }
 
+    // submission successful
     await this.notificationService.customToast({
-      message: 'You may continue to the next learning task.'
+      message: 'Submission successful! Please proceed to the next learning task'
     });
 
     const nextTask = await this.redirectToNextMilestoneTask();
@@ -395,7 +411,7 @@ export class AssessmentComponent extends RouterEnter {
    * handle submission and autosave
    * @param {boolean} saveInProgress set true for autosaving or it treat the action as final submision
    */
-  submit(saveInProgress: boolean, goBack?: boolean) {
+  async submit(saveInProgress: boolean, goBack?: boolean): Promise<any> {
 
     if (saveInProgress) {
       this.savingMessage = 'Saving...';
