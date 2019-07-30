@@ -168,14 +168,13 @@
       name="dots"
       class="vertical-middle text-center"
     ></ion-spinner>
-    <ion-button *ngIf="!loadingMarkedDone && !loadingFeedbackReviewed && submission.status == 'published'"
-      [disabled]="feedbackReviewed"
+    <ion-button *ngIf="!loadingMarkedDone && !loadingFeedbackReviewed && submission.status == 'published' && !feedbackReviewed"
       (click)="markReviewFeedbackAsRead()"
       shape="round"
       expand="full">
       {{markingAsReview}}
     </ion-button>
-    <ion-button *ngIf="['pending review', 'done', 'pending approval'].indexOf(submission.status) !== -1"
+    <ion-button *ngIf="['pending review', 'done', 'pending approval'].indexOf(submission.status) !== -1 || (feedbackReviewed && submission.status == 'published')"
       (click)="redirectToNextMilestoneTask({ continue: true })"
       [disabled]="isRedirectingToNextMilestoneTask"
       shape="round"
