@@ -172,7 +172,7 @@
       (click)="markReviewFeedbackAsRead()"
       shape="round"
       expand="full">
-      {{submission.status}} {{markingAsReview}}
+      {{markingAsReview}}
     </ion-button>
     <ion-button *ngIf="['pending review', 'done', 'pending approval'].indexOf(submission.status) !== -1 || (feedbackReviewed && submission.status == 'published')"
       (click)="redirectToNextMilestoneTask({ continue: true })"
