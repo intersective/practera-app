@@ -159,19 +159,28 @@
   </form>
 </ion-content>
 
-<ion-footer color="light" *ngIf="action === 'assessment' && submission.status == 'published'">
+<ion-footer color="light"
+  *ngIf="action === 'assessment' && (loadingSubmission ||
+  ['pending review', 'done', 'pending approval', 'published'].indexOf(submission.status) !== -1)">
   <ion-toolbar>
     <ion-spinner style="width: 100%;"
-      *ngIf="loadingFeedbackReviewed"
+      *ngIf="loadingSubmission || (loadingFeedbackReviewed && submission.status == 'published')"
       name="dots"
       class="vertical-middle text-center"
     ></ion-spinner>
-    <ion-button *ngIf="!loadingMarkedDone && !loadingFeedbackReviewed"
+    <ion-button *ngIf="!loadingMarkedDone && !loadingFeedbackReviewed && submission.status == 'published'"
       [disabled]="feedbackReviewed"
       (click)="markReviewFeedbackAsRead()"
       shape="round"
       expand="full">
       {{markingAsReview}}
+    </ion-button>
+    <ion-button *ngIf="['pending review', 'done', 'pending approval'].indexOf(submission.status) !== -1"
+      (click)="redirectToNextMilestoneTask({ continue: true })"
+      [disabled]="isRedirectingToNextMilestoneTask"
+      shape="round"
+      expand="full">
+      {{ isRedirectingToNextMilestoneTask ? 'Loading next task...' : 'Continue' }}
     </ion-button>
   </ion-toolbar>
 </ion-footer>
