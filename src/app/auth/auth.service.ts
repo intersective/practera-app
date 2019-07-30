@@ -128,18 +128,21 @@ export class AuthService {
       success: rawData.success,
       tutorial: data.tutorial,
       apikey: data.apikey,
-      programs: data.Timelines.map( timeline => {
-        // make sure 'Program.config.theme_color' exist
-        if (!this.utils.has(timeline, 'Program.config.theme_color')) {
-          timeline.Program.config.theme_color = 'var(--ion-color-primary)';
-        }
-        return {
-          enrolment: timeline.Enrolment,
-          program: timeline.Program,
-          project: timeline.Project,
-          timeline: timeline.Timeline
-        };
-      }, this),
+      programs: data.Timelines.map(
+        timeline => {
+          // make sure 'Program.config.theme_color' exist
+          if (!this.utils.has(timeline, 'Program.config.theme_color')) {
+            timeline.Program.config.theme_color = 'var(--ion-color-primary)';
+          }
+          return {
+            enrolment: timeline.Enrolment,
+            program: timeline.Program,
+            project: timeline.Project,
+            timeline: timeline.Timeline
+          };
+        },
+        this
+      ),
       config: (data.Experience || {}).config || {},
       _raw: rawData
     };
