@@ -244,39 +244,35 @@ export class AssessmentComponent extends RouterEnter {
     return this.router.navigate(['app', 'home']);
   }
 
-  async back(): Promise<void | boolean> {
+  back() {
     if (this.action === 'assessment'
       && this.submission.status === 'published'
       && !this.feedbackReviewed) {
-      await this.notificationService.alert({
+      return this.notificationService.alert({
         header: `Mark feedback as read?`,
         message: 'Would you like to mark the feedback as read?',
         buttons: [
           {
             text: 'No',
             handler: () => {
-              return this.router.navigate(['app', 'activity', this.activityId]);
+              return this.navigationRoute();
             },
           },
           {
             text: 'Yes',
             handler: () => {
               return this.markReviewFeedbackAsRead().then(() => {
-                return this.router.navigate([
-                  'app',
-                  'activity',
-                  this.activityId,
-                ]);
+                return this.navigationRoute();
               });
             }
           }
         ]
       });
+    } else {
+      // force saving progress
+      this.submit(true , true);
+      return this.navigationRoute();
     }
-
-    // force saving progress
-    this.submit(true , true);
-    return this.navigationRoute();
   }
 
   /**
@@ -581,7 +577,7 @@ export class AssessmentComponent extends RouterEnter {
         // 2. hasReviewRating (activation): program configuration is set enabled presenting review rating screen
         if (result.success && this.storage.getUser().hasReviewRating === true) {
           this.markingAsReview = 'Retrieving New Task...';
-        this.isRedirectingToNextMilestoneTask = true;
+          this.isRedirectingToNextMilestoneTask = true;
 
           nextSequence = await this.redirectToNextMilestoneTask({routeOnly: true});
           const popup = await this.assessmentService.popUpReviewRating(
