@@ -211,18 +211,12 @@ export class RequestService {
       this.router.navigate(['logout']);
     }
 
-    // Return the error response data
-    if (error.error) {
-      switch (error.name) {
-        case 'HttpErrorResponse':
-          return throwError(error.message);
-
-        default:
-          return throwError(error.error);
-      }
+    // if error.error is a html template error (when try to read remote version.txt)
+    if (typeof error.error === 'string' && error.error.indexOf('<!DOCTYPE html>') !== -1) {
+      return throwError(error.message);
     }
 
-    return throwError(error);
+    return throwError(error.error);
   }
 
   /**
