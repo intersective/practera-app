@@ -16,7 +16,7 @@
   <p [class]="assessment.isOverdue ? 'due-date assessment over' : 'due-date assessment'" *ngIf="doAssessment" text-center>
     {{ this.sharedService.dueDateFormatter(assessment.dueDate) }}
   </p>
-  <div class="review-submitter" *ngIf="!doAssessment" text-left>
+  <div *ngIf="!doAssessment && submission.submitterName && !submission.isLocked" class="review-submitter" text-left>
     <p class="title">
       Submitted by {{ submission.submitterName }}
     </p>
