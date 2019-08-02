@@ -94,21 +94,20 @@ export class ActivityService {
   ) {}
 
   /**
-   * Purpose: get next task (look for next incomplete milestone/activity/task)
-   * combine all (get activity, progress for both topic and assessment) steps into one function
-   * so we can access to tasks with progress information easily
-   * @param  {number}       projectId project id
-   * @param  {number}       activityId activity id
-   * @return {Promise<any>}    Promise
+   * loop through all milestone in current project
+   * @param {OverviewMilestone[]} milestones object project overview api
+   * @param {number} activityId activity id
    */
-  async getTasksByActivityId(projectId: number, activityId: number): Promise<OverviewActivity> {
-    let currentMilestone: OverviewMilestone;
-    let nextActivity: OverviewActivity;
+  private getCurrentActivity(milestones, activityId): {
+    currentMilestoneIndex: number;
+    currentMilestone: OverviewMilestone;
+    currentActivity: OverviewActivity;
+  } {
     let currentActivity: OverviewActivity;
-    const overview = await this.getOverview(projectId).toPromise();
+    let currentMilestone: OverviewMilestone;
 
     // firstly, check current milestone
-    const currentMilestoneIndex: number = overview.Milestones.findIndex(milestone => {
+    const currentMilestoneIndex = milestones.findIndex(milestone => {
       // find current activity
       currentActivity = milestone.Activities.find(activity => {
         if (activity.id === activityId) {
@@ -125,6 +124,43 @@ export class ActivityService {
 
       return false;
     });
+
+    return {
+      currentMilestoneIndex,
+      currentMilestone,
+      currentActivity,
+    };
+  }
+
+  /**
+   * this function has a little similarity to `getTasksByActivityId`.
+   * The objective of getTaskStatusesForActivity, step by order:
+   * 1) pull latest project overview API response
+   * 2) evaluate by tasks completion status of current activity
+   * 3) determine next incompleted task or indicate
+   */
+  async getCurrentActivityStatus(projectId: number, activityId: number) {
+    const overview = await this.getOverview(projectId).toPromise();
+    const { currentActivity } = this.getCurrentActivity(overview.Milestones, activityId);
+
+    return currentActivity;
+  }
+
+  /**
+   * Purpose: get next task (look for next incomplete milestone/activity/task),
+   * this function will loop through entire status available in a project (from milestone to task-specific) to get the next incompleted task as next task to be redirected to
+   *
+   * combine all (get activity, progress for both topic and assessment) steps into one function
+   * so we can access to tasks with progress information easily
+   * @param  {number}       projectId project id
+   * @param  {number}       activityId activity id
+   * @return {Promise<any>}    Promise
+   */
+  async getTasksByActivityId(projectId: number, activityId: number): Promise<OverviewActivity> {
+    const overview = await this.getOverview(projectId).toPromise();
+
+    // firstly, check current milestone
+    const { currentMilestoneIndex, currentActivity, currentMilestone } = this.getCurrentActivity(overview.Milestones, activityId);
 
     // 2ndly, check activity first (direct return if current activity is still incomplete)
     if (this.isActivityIncomplete(currentActivity)) {
@@ -144,16 +180,19 @@ export class ActivityService {
     }
 
     // if nextMilestone not present
-    nextActivity = (nextMilestone || currentMilestone).Activities.find(activity => {
+    return (nextMilestone || currentMilestone).Activities.find(activity => {
       if (this.isActivityIncomplete(activity)) {
         return true;
       }
       return false;
     });
-
-    return nextActivity;
   }
 
+  /**
+   * get actuvity from API response, and inject proper statuses to each of the activity.
+   * @param  {number}          id activityId
+   * @return {Observable<any>}
+   */
   getActivity(id: number): Observable<any> {
     return this.request.get(api.activity, {params: {id: id}})
       .pipe(map(response => {
