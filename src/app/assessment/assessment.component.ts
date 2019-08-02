@@ -319,12 +319,13 @@ export class AssessmentComponent extends RouterEnter {
     }
 
     const { activity, nextTask } = await this.getNextSequence();
+    let route = ['app', 'activity', activity.id];
 
     if (options === undefined || (options && options.routeOnly)) {
       // Empty activity value: no more incompleted activity (when everything is completed)
-      if (!activity) {
+      if (!activity || this.activityService.isActivityIncomplete(activity)) {
         await this.notificationService.alert({
-          header: 'Milestone completed!',
+          header: 'Activity completed!',
           message: 'You may now proceed to project list and learn about your overall progress.',
           buttons: [
             {
@@ -333,24 +334,10 @@ export class AssessmentComponent extends RouterEnter {
             }
           ]
         });
-        return this.router.navigate(['app', 'project']);
-      }
-
-      if (this.activityId !== activity.id) {
-        await this.notificationService.alert({
-          header: 'Activity completed!',
-          message: 'You may now proceed to the next activity.',
-          buttons: [
-            {
-              text: 'Ok',
-              role: 'cancel',
-            }
-          ]
-        });
+        route = ['app', 'project'];
       }
     }
 
-    let route = ['app', 'activity', activity.id];
 
     if (nextTask) {
       switch (nextTask.type) {
@@ -634,14 +621,14 @@ export class AssessmentComponent extends RouterEnter {
     };
 
     try {
-      const activity = await this.activityService.getTasksByActivityId(this.storage.getUser().projectId, this.activityId);
+      const currentActivity = await this.activityService.getCurrentActivityStatus(this.storage.getUser().projectId, this.activityId);
       let nextTask;
-      if (activity) {
-        nextTask = this.activityService.findNext(activity.Tasks, options);
+      if (currentActivity) {
+        nextTask = this.activityService.findNext(currentActivity.Tasks, options);
       }
 
       return {
-        activity,
+        activity: currentActivity,
         nextTask
       };
     } catch (err) {
