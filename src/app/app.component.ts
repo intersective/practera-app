@@ -31,9 +31,11 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit() {
-    // need to set the theme color and card style immediately after page load
+    // do the same thing on every page load
     this.sharedService.onPageLoad();
+
     // @TODO: need to build a new micro service to get the config and serve the custom branding config from a microservice
+    // Get the custom branding info and update the theme color if needed
     const domain = window.location.hostname;
     this.authService.getConfig({domain}).subscribe((response: any) => {
       if (response !== null) {
@@ -52,9 +54,6 @@ export class AppComponent implements OnInit {
           });
           this.utils.changeThemeColor(themeColor);
         }
-
-        // initiate pusher subcriptions and user data
-        this.sharedService.onPageLoad();
       }
     });
 

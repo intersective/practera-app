@@ -335,6 +335,7 @@ export class AssessmentComponent extends RouterEnter {
         ]
       });
     }
+
     let route = ['app', 'activity', activity.id];
 
     if (options === undefined || (options && options.routeOnly)) {
@@ -353,7 +354,6 @@ export class AssessmentComponent extends RouterEnter {
         route = ['app', 'project'];
       }
     }
-
 
     if (nextTask) {
       switch (nextTask.type) {
