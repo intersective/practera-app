@@ -320,6 +320,24 @@ export class AssessmentComponent extends RouterEnter {
 
     const { activity, nextTask } = await this.getNextSequence();
 
+    // redirection for reviewer
+    if (!this.activityId && !activity) {
+      return this.notificationService.alert({
+        message: 'Submission Successful!',
+        buttons: [
+          {
+            text: 'OK',
+            role: 'cancel',
+            handler: () => {
+              return this.router.navigate(['app', 'home']);
+            }
+          }
+        ]
+      });
+    }
+
+    let route = ['app', 'activity', activity.id];
+
     if (options === undefined || (options && options.routeOnly)) {
       // Empty activity value: no more incompleted activity (when everything is completed)
       if (!activity) {
@@ -349,8 +367,6 @@ export class AssessmentComponent extends RouterEnter {
         });
       }
     }
-
-    let route = ['app', 'activity', activity.id];
 
     if (nextTask) {
       switch (nextTask.type) {
@@ -391,10 +407,12 @@ export class AssessmentComponent extends RouterEnter {
       throw new Error(err);
     }
 
-    // submission successful
-    await this.notificationService.customToast({
-      message: 'Submission successful! Please proceed to the next learning task'
-    });
+    // only when activityId availabe (reviewer screen dont have it)
+    if (this.activityId) {
+      await this.notificationService.customToast({
+        message: 'Submission successful! Please proceed to the next learning task'
+      });
+    }
 
     const nextTask = await this.redirectToNextMilestoneTask();
     this.submitting = false;
