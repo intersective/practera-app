@@ -318,10 +318,8 @@ export class AssessmentComponent extends RouterEnter {
       this.isRedirectingToNextMilestoneTask = true;
     }
 
-    const { activity, nextTask } = await this.getNextSequence();
-
-    // redirection for reviewer
-    if (!this.activityId && !activity) {
+    // redirection for reviewer (this.activityId is 0)
+    if (!this.activityId && this.activityId === 0) {
       return this.notificationService.alert({
         message: 'Submission Successful!',
         buttons: [
@@ -337,6 +335,7 @@ export class AssessmentComponent extends RouterEnter {
     }
 
     let route: any = ['app', 'project'];
+    const { activity, nextTask } = await this.getNextSequence();
 
     // if no options provided OR routeOnly == true
     if (options === undefined || (options && options.routeOnly)) {
