@@ -48,6 +48,7 @@ export class DescriptionComponent implements AfterViewInit, OnChanges {
       () => {
         this.elementHeight = this.descriptionRef.nativeElement.clientHeight;
         this.heightExceeded = this.elementHeight >= this.heightLimit;
+        this.isTruncating = true;
       },
       500
     );
