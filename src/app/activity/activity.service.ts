@@ -94,22 +94,20 @@ export class ActivityService {
   ) {}
 
   /**
-   * Purpose: get next task (look for next incomplete milestone/activity/task)
-   * combine all (get activity, progress for both topic and assessment) steps into one function
-   * so we can access to tasks with progress information easily
-   * @param  {number}       projectId project id
-   * @param  {number}       activityId activity id
-   * @return {Promise<any>}    Promise
+   * loop through all milestone in current project
+   * @param {OverviewMilestone[]} milestones object project overview api
+   * @param {number} activityId activity id
    */
-  async getTasksByActivityId(projectId: number, activityId: number): Promise<OverviewActivity> {
-    let currentMilestone: OverviewMilestone;
-    let nextActivity: OverviewActivity;
+  private getCurrentActivity(milestones, activityId): {
+    currentMilestoneIndex: number;
+    currentMilestone: OverviewMilestone;
+    currentActivity: OverviewActivity;
+  } {
     let currentActivity: OverviewActivity;
-    const overview = await this.getOverview(projectId).toPromise();
-    const { Milestones } = overview;
+    let currentMilestone: OverviewMilestone;
 
     // firstly, check current milestone
-    const currentMilestoneIndex: number = Milestones.findIndex(milestone => {
+    const currentMilestoneIndex: number = milestones.findIndex(milestone => {
       const { Activities } = milestone;
 
       // find current activity
@@ -129,38 +127,161 @@ export class ActivityService {
       return false;
     });
 
-    // 2ndly, check activity first (direct return if current activity is still incomplete)
-    if (currentActivity && this.isActivityIncomplete(currentActivity)) {
-      return currentActivity;
+    return {
+      currentMilestoneIndex,
+      currentMilestone,
+      currentActivity,
+    };
+  }
+
+  /**
+   * get next milestone unconditionally
+   */
+  private getNextMilestone(milestones, currentMilestone, currentMilestoneIndex) {
+    let nextMilestone: OverviewMilestone;
+
+    const nextMilestoneIndex = currentMilestoneIndex + 1; // skip checking current
+    // get next milestone by the order of milestone array
+    for (let i = nextMilestoneIndex, trial = 1; trial <= milestones.length; i++, trial++) {
+      const milestoneIndex = i % milestones.length;
+      if (nextMilestone === undefined) {
+        nextMilestone = milestones[milestoneIndex];
+      }
     }
 
-    // if current milestone is completed, search next incompleted milestone with incompleted task
+    return nextMilestone;
+  }
+
+  /**
+   * get next incompleted milestone only (status check is compulsory)
+   */
+  private getNextIncompletedMilestone(milestones, currentMilestone, currentMilestoneIndex) {
     let nextMilestone: OverviewMilestone;
+
+    if (this.isMilestoneIncomplete(currentMilestone)) {
+      return currentMilestone;
+    }
+
     if (!this.isMilestoneIncomplete(currentMilestone)) {
       // get next milestone by the order of milestone array
-      for (let i = currentMilestoneIndex, trial = 1; trial <= overview.Milestones.length; i++, trial++) {
-        const milestoneIndex = i % overview.Milestones.length;
-        if (this.isMilestoneIncomplete(overview.Milestones[milestoneIndex]) && nextMilestone === undefined) {
-          nextMilestone = overview.Milestones[milestoneIndex];
+      for (let i = currentMilestoneIndex, trial = 1; trial <= milestones.length; i++, trial++) {
+        const milestoneIndex = i % milestones.length;
+        if (this.isMilestoneIncomplete(milestones[milestoneIndex]) && nextMilestone === undefined) {
+          nextMilestone = milestones[milestoneIndex];
         }
       }
     }
 
-    if (!nextMilestone && !currentMilestone) {
-      return undefined;
+    return nextMilestone;
+  }
+
+  /**
+   * this function has a little similarity to `getTasksByActivityId`.
+   * The objective of getTaskStatusesForActivity, step by order:
+   * 1) pull latest project overview API response
+   * 2) evaluate by tasks completion status of current activity
+   * 3) determine next incompleted task or indicate
+   */
+  async getCurrentActivityStatus(projectId: number, activityId: number) {
+    const overview = await this.getOverview(projectId).toPromise();
+    const { currentActivity } = this.getCurrentActivity(overview.Milestones, activityId);
+
+    return currentActivity;
+  }
+
+  /**
+   * Purpose: get next task (look for next incomplete milestone/activity/task),
+   * this function will loop through entire status available in a project (from milestone to task-specific) to get the next incompleted task as next task to be redirected to
+   *
+   * combine all (get activity, progress for both topic and assessment) steps into one function
+   * so we can access to tasks with progress information easily
+   * @param  {number}       projectId project id
+   * @param  {number}       activityId activity id
+   * @return {Promise<any>}    Promise
+   */
+  async getTasksByActivityId(projectId: number, activityId: number, options: {
+    currentTaskId: number;
+    teamId: number;
+  }): Promise<{
+    currentActivity: OverviewActivity;
+    nextTask: OverviewTask;
+  }> {
+    // project overview
+    const overview = await this.getOverview(projectId).toPromise();
+
+    // firstly, check current milestone
+    const {
+      currentMilestoneIndex,
+      currentActivity,
+      currentMilestone
+    } = this.getCurrentActivity(overview.Milestones, activityId);
+
+    // search next incompleted milestone
+    const nextMilestone: OverviewMilestone = this.getNextIncompletedMilestone(
+      overview.Milestones,
+      currentMilestone,
+      currentMilestoneIndex
+    );
+
+    let nextTask;
+
+    // conditions: nextMilestone = undefined, means all milestone has been completed
+    if (nextMilestone === undefined) {
+      let nextActivity;
+      // find next task
+      nextTask = this.utils.getNextArrayElement(currentActivity.Tasks, options.currentTaskId);
+
+      // find next activity
+      if (nextTask === undefined) {
+        nextActivity = this.utils.getNextArrayElement(currentMilestone.Activities, currentActivity.id);
+      } else {
+        nextActivity = currentActivity;
+      }
+
+      // find next milestone
+      if (nextActivity === undefined) {
+        const nextUnconditionalMilestone = this.getNextMilestone(
+          overview.Milestones,
+          currentMilestone,
+          currentMilestoneIndex
+        );
+
+        return {
+          // first task and activity in the milestone as next
+          currentActivity: nextUnconditionalMilestone.Activities[0],
+          nextTask: nextUnconditionalMilestone.Activities[0].Tasks[0],
+        };
+      } else {
+        nextTask = this.utils.getNextArrayElement(nextActivity.Tasks, options.currentTaskId);
+      }
+
+      return {
+        currentActivity: nextActivity,
+        nextTask,
+      };
     }
 
     // if nextMilestone not present, use currentMilestone as backup
-    nextActivity = (nextMilestone || currentMilestone).Activities.find(activity => {
+    const incompletedActivity = nextMilestone.Activities.find(activity => {
       if (this.isActivityIncomplete(activity)) {
         return true;
       }
       return false;
     });
 
-    return nextActivity;
+    nextTask = this.findNext(incompletedActivity.Tasks, options);
+
+    return {
+      currentActivity: incompletedActivity,
+      nextTask,
+    };
   }
 
+  /**
+   * get actuvity from API response, and inject proper statuses to each of the activity.
+   * @param  {number}          id activityId
+   * @return {Observable<any>}
+   */
   getActivity(id: number): Observable<any> {
     return this.request.get(api.activity, {params: {id: id}})
       .pipe(map(response => {
@@ -414,36 +535,30 @@ export class ActivityService {
    * @return {Task}       single task object
    */
   findNext(tasks: OverviewTask[], options: {
-    id: number;
+    currentTaskId: number;
     teamId: number;
   }): OverviewTask {
     // currentIndex can be -1 because the tasks list can be from different Activity's tasks set
     const currentIndex = tasks.findIndex(task => {
-      return task.id === options.id;
+      return task.id === options.currentTaskId;
     });
 
     const nextIndex = currentIndex + 1;
     if (currentIndex !== -1 && tasks[nextIndex] && !this.isTaskCompleted(tasks[nextIndex])) {
       return tasks[nextIndex];
-    } else {
-      // condition: if next task is a completed activity, pick the first undone from the list
-      const prioritisedTasks = tasks.filter(task => {
-        // avoid team assessment if user isn't in a team
-        if (task.is_team && !options.teamId) {
-          console.warn('user isn\'t in a team.');
-          return false;
-        }
-
-        return !this.isTaskCompleted(task);
-      });
-
-      if (prioritisedTasks.length > 0) {
-        return prioritisedTasks[0];
-      }
     }
 
-    // backup plan: return same task instead of breaking the code
-    return tasks[currentIndex];
+    // condition: if next task is a completed activity, pick the first undone from the list
+    const prioritisedTasks = tasks.filter(task => {
+      // avoid team assessment if user isn't in a team
+      if (task.is_team && !options.teamId) {
+        console.warn('user isn\'t in a team.');
+        return false;
+      }
+
+      return !this.isTaskCompleted(task);
+    });
+    return prioritisedTasks[0];
   }
 
   private _normaliseAssessmentStatus(data: any, task: Task) {
