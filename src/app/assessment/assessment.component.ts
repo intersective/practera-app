@@ -310,10 +310,10 @@ export class AssessmentComponent extends RouterEnter {
    * @param  {boolean;   }}          options
    * @return {Promise<any>}
    */
-  async redirectToNextMilestoneTask(options?: {
+  async redirectToNextMilestoneTask(options: {
     continue?: boolean; // extra parameter to allow "options" appear as well-defined variable
     routeOnly?: boolean; // routeOnly: True, return route in string. False, return navigated route (promise<void>)
-  }): Promise<any> {
+  } = {}): Promise<any> {
     if (options && options.continue) {
       this.isRedirectingToNextMilestoneTask = true;
     }
@@ -335,11 +335,31 @@ export class AssessmentComponent extends RouterEnter {
     }
 
     let route: any = ['app', 'project'];
+    let navigationParams;
     const { activity, nextTask } = await this.getNextSequence();
 
-    // if no options provided OR routeOnly == true
-    if (options === undefined || (options && options.routeOnly)) {
-      if (!activity || !this.activityService.isActivityIncomplete(activity)) {
+    // to next incompleted task in current activity
+    if (activity.id === this.activityId && nextTask) {
+      switch (nextTask.type) {
+        case 'assessment':
+          route = ['assessment', 'assessment', activity.id, nextTask.context_id, nextTask.id];
+          break;
+
+        case 'topic':
+          route = ['topic', activity.id, nextTask.id];
+          break;
+      }
+    }
+
+    if (options.routeOnly === true) {
+      return route;
+    }
+
+    // if found new activity, force back to milestone page
+    if (activity.id !== this.activityId) {
+      navigationParams = { queryParams: { activityId: activity.id } };
+
+      if (options.continue !== true) {
         await this.notificationService.alert({
           header: 'Activity completed!',
           message: 'You may now proceed to project list and learn about your overall progress.',
@@ -353,24 +373,7 @@ export class AssessmentComponent extends RouterEnter {
       }
     }
 
-    // to next incompleted task
-    if (nextTask) {
-      switch (nextTask.type) {
-        case 'assessment':
-          route = ['assessment', 'assessment', activity.id, nextTask.context_id, nextTask.id];
-          break;
-
-        case 'topic':
-          route = ['topic', activity.id, nextTask.id];
-          break;
-      }
-    }
-
-    if (options && options.routeOnly) {
-      return route;
-    }
-
-    await this.router.navigate(route);
+    await this.router.navigate(route, navigationParams);
     this.isRedirectingToNextMilestoneTask = false;
     return;
   }

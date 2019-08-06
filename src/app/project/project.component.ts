@@ -1,5 +1,5 @@
 import { Component, HostListener, ViewChild, ViewChildren, QueryList, ElementRef } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { ProjectService, Milestone, DummyMilestone } from './project.service';
 import { HomeService } from '../home/home.service';
 import { RouterEnter } from '@services/router-enter.service';
@@ -7,6 +7,7 @@ import { BrowserStorageService } from '@services/storage.service';
 import { UtilsService } from '@services/utils.service';
 import { SharedService } from '@services/shared.service';
 import { FastFeedbackService } from '../fast-feedback/fast-feedback.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-project',
@@ -24,9 +25,11 @@ export class ProjectComponent extends RouterEnter {
   @ViewChildren('milestoneRef', {read: ElementRef}) milestoneRefs: QueryList<ElementRef>;
   public activeMilestone: Array<boolean> = [];
   private milestonePositions: Array<number> = [];
+  private highlightedActivityId: number;
 
   constructor(
     public router: Router,
+    private route: ActivatedRoute,
     public utils: UtilsService,
     public storage: BrowserStorageService,
     private projectService: ProjectService,
@@ -46,6 +49,9 @@ export class ProjectComponent extends RouterEnter {
 
   onEnter() {
     this._initialise();
+    this.route.queryParamMap.subscribe(params => {
+      this.highlightedActivityId = +params.get('activityId') || undefined;
+    });
     this.homeService.getProgramName().subscribe(programName => {
       this.programName = programName;
     });
@@ -147,6 +153,10 @@ export class ProjectComponent extends RouterEnter {
           milestones[milestoneIndex].Activity[activityIndex].progress = thisActivity.progress;
         } else {
           milestones[milestoneIndex].Activity[activityIndex].progress = 0;
+        }
+
+        if (this.highlightedActivityId && activity.id === this.highlightedActivityId) {
+          milestones[milestoneIndex].Activity[activityIndex].highlighted = true;
         }
       });
     });
