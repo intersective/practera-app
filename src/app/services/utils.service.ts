@@ -232,10 +232,6 @@ export class UtilsService {
 
     const nextElement = target[index + 1];
 
-    if (nextElement) {
-      return undefined;
-    }
-
     return target[index + 1];
   }
 

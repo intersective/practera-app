@@ -140,8 +140,9 @@ export class ActivityService {
   private getNextMilestone(milestones, currentMilestone, currentMilestoneIndex) {
     let nextMilestone: OverviewMilestone;
 
+    const nextMilestoneIndex = currentMilestoneIndex + 1; // skip checking current
     // get next milestone by the order of milestone array
-    for (let i = currentMilestoneIndex, trial = 1; trial <= milestones.length; i++, trial++) {
+    for (let i = nextMilestoneIndex, trial = 1; trial <= milestones.length; i++, trial++) {
       const milestoneIndex = i % milestones.length;
       if (nextMilestone === undefined) {
         nextMilestone = milestones[milestoneIndex];
@@ -156,6 +157,11 @@ export class ActivityService {
    */
   private getNextIncompletedMilestone(milestones, currentMilestone, currentMilestoneIndex) {
     let nextMilestone: OverviewMilestone;
+
+    if (this.isMilestoneIncomplete(currentMilestone)) {
+      return currentMilestone;
+    }
+
     if (!this.isMilestoneIncomplete(currentMilestone)) {
       // get next milestone by the order of milestone array
       for (let i = currentMilestoneIndex, trial = 1; trial <= milestones.length; i++, trial++) {
@@ -196,15 +202,10 @@ export class ActivityService {
   async getTasksByActivityId(projectId: number, activityId: number, options: {
     currentTaskId: number;
     teamId: number;
-    incompletedOnly?: boolean;
   }): Promise<{
     currentActivity: OverviewActivity;
     nextTask: OverviewTask;
   }> {
-    const conditions = {
-      incompletedOnly: (options.incompletedOnly !== undefined) ? options.incompletedOnly : true,
-    };
-
     // project overview
     const overview = await this.getOverview(projectId).toPromise();
 
@@ -224,20 +225,20 @@ export class ActivityService {
 
     let nextTask;
 
-    // conditions:
-    // - incompletedOnly: false, to skip completion status check
-    // - nextMilestone: undefined, all milestone has been completed
-    if (conditions.incompletedOnly === false) {
+    // conditions: nextMilestone = undefined, means all milestone has been completed
+    if (nextMilestone === undefined) {
+      let nextActivity;
       // find next task
       nextTask = this.utils.getNextArrayElement(currentActivity.Tasks, options.currentTaskId);
 
-      // undefined = current one is last task
-      let nextActivity;
+      // find next activity
       if (nextTask === undefined) {
         nextActivity = this.utils.getNextArrayElement(currentMilestone.Activities, currentActivity.id);
+      } else {
+        nextActivity = currentActivity;
       }
 
-      // undefined = current one is last task
+      // find next milestone
       if (nextActivity === undefined) {
         const nextUnconditionalMilestone = this.getNextMilestone(
           overview.Milestones,
@@ -248,8 +249,10 @@ export class ActivityService {
         return {
           // first activity in the milestone
           currentActivity: nextUnconditionalMilestone.Activities[0],
-          nextTask,
+          nextTask: nextUnconditionalMilestone.Activities[0].Tasks[0],
         };
+      } else {
+        nextTask = this.utils.getNextArrayElement(nextActivity.Tasks, options.currentTaskId);
       }
 
       return {
@@ -258,21 +261,15 @@ export class ActivityService {
       };
     }
 
-    if (!nextMilestone && !currentMilestone) {
-      return undefined;
-    }
-
     // if nextMilestone not present, use currentMilestone as backup
-    const incompletedActivity = (nextMilestone || currentMilestone).Activities.find(activity => {
+    const incompletedActivity = nextMilestone.Activities.find(activity => {
       if (this.isActivityIncomplete(activity)) {
         return true;
       }
       return false;
     });
 
-    if (incompletedActivity) {
-      nextTask = this.findNext(incompletedActivity.Tasks, options);
-    }
+    nextTask = this.findNext(incompletedActivity.Tasks, options);
 
     return {
       currentActivity,
@@ -540,12 +537,7 @@ export class ActivityService {
   findNext(tasks: OverviewTask[], options: {
     currentTaskId: number;
     teamId: number;
-    incompletedOnly?: boolean;
   }): OverviewTask {
-    const conditions = {
-      incompletedOnly: options.incompletedOnly || true, // check
-    };
-
     // currentIndex can be -1 because the tasks list can be from different Activity's tasks set
     const currentIndex = tasks.findIndex(task => {
       return task.id === options.currentTaskId;
@@ -556,23 +548,17 @@ export class ActivityService {
       return tasks[nextIndex];
     }
 
-    if (options.incompletedOnly === true) {
-      // condition: if next task is a completed activity, pick the first undone from the list
-      const prioritisedTasks = tasks.filter(task => {
-        // avoid team assessment if user isn't in a team
-        if (task.is_team && !options.teamId) {
-          console.warn('user isn\'t in a team.');
-          return false;
-        }
+    // condition: if next task is a completed activity, pick the first undone from the list
+    const prioritisedTasks = tasks.filter(task => {
+      // avoid team assessment if user isn't in a team
+      if (task.is_team && !options.teamId) {
+        console.warn('user isn\'t in a team.');
+        return false;
+      }
 
-        return !this.isTaskCompleted(task);
-      });
-      return prioritisedTasks[0];
-    } else {
-
-      return undefined;
-    }
-
+      return !this.isTaskCompleted(task);
+    });
+    return prioritisedTasks[0];
   }
 
   private _normaliseAssessmentStatus(data: any, task: Task) {
