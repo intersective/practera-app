@@ -638,17 +638,20 @@ export class AssessmentComponent extends RouterEnter {
     nextTask: OverviewTask;
   }> {
     const options = {
-      id: this.id,
+      currentTaskId: this.id,
       teamId: this.storage.getUser().teamId
     };
 
     try {
-      const { currentActivity, incompletedActivity } = await this.activityService.getTasksByActivityId(this.storage.getUser().projectId, this.activityId);
-      let nextTask;
-      if (currentActivity) {
-        nextTask = this.activityService.findNext(currentActivity.Tasks, options);
-      }
-      console.log(incompletedActivity);
+      const {
+        currentActivity,
+        nextTask
+      } = await this.activityService.getTasksByActivityId(
+        this.storage.getUser().projectId,
+        this.activityId,
+        options
+      );
+
       return {
         activity: currentActivity,
         nextTask
