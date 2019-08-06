@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Observable, of, concat } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { RequestService } from '@shared/request/request.service';
 import { UtilsService } from '@services/utils.service';
@@ -85,7 +85,8 @@ export class SwitcherService {
     });
 
     this.sharedService.onPageLoad();
-    return concat(this.getTeamInfo(), this.getMyInfo());
+    this.getTeamInfo().subscribe();
+    return this.getMyInfo();
   }
 
   getTeamInfo(): Observable<any> {
