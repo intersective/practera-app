@@ -135,6 +135,41 @@ export class ActivityService {
   }
 
   /**
+   * get next milestone unconditionally
+   */
+  private getNextMilestone(milestones, currentMilestone, currentMilestoneIndex) {
+    let nextMilestone: OverviewMilestone;
+
+    // get next milestone by the order of milestone array
+    for (let i = currentMilestoneIndex, trial = 1; trial <= milestones.length; i++, trial++) {
+      const milestoneIndex = i % milestones.length;
+      if (nextMilestone === undefined) {
+        nextMilestone = milestones[milestoneIndex];
+      }
+    }
+
+    return nextMilestone;
+  }
+
+  /**
+   * get next incompleted milestone only (status check is compulsory)
+   */
+  private getNextIncompletedMilestone(milestones, currentMilestone, currentMilestoneIndex) {
+    let nextMilestone: OverviewMilestone;
+    if (!this.isMilestoneIncomplete(currentMilestone)) {
+      // get next milestone by the order of milestone array
+      for (let i = currentMilestoneIndex, trial = 1; trial <= milestones.length; i++, trial++) {
+        const milestoneIndex = i % milestones.length;
+        if (this.isMilestoneIncomplete(milestones[milestoneIndex]) && nextMilestone === undefined) {
+          nextMilestone = milestones[milestoneIndex];
+        }
+      }
+    }
+
+    return nextMilestone;
+  }
+
+  /**
    * this function has a little similarity to `getTasksByActivityId`.
    * The objective of getTaskStatusesForActivity, step by order:
    * 1) pull latest project overview API response
@@ -158,30 +193,69 @@ export class ActivityService {
    * @param  {number}       activityId activity id
    * @return {Promise<any>}    Promise
    */
-  async getTasksByActivityId(projectId: number, activityId: number): Promise<{
+  async getTasksByActivityId(projectId: number, activityId: number, options: {
+    currentTaskId: number;
+    teamId: number;
+    incompletedOnly?: boolean;
+  }): Promise<{
     currentActivity: OverviewActivity;
-    incompletedActivity: OverviewActivity;
+    nextTask: OverviewTask;
   }> {
+    const conditions = {
+      incompletedOnly: (options.incompletedOnly !== undefined) ? options.incompletedOnly : true,
+    };
+
+    // project overview
     const overview = await this.getOverview(projectId).toPromise();
 
     // firstly, check current milestone
-    const { currentMilestoneIndex, currentActivity, currentMilestone } = this.getCurrentActivity(overview.Milestones, activityId);
+    const {
+      currentMilestoneIndex,
+      currentActivity,
+      currentMilestone
+    } = this.getCurrentActivity(overview.Milestones, activityId);
 
-    // 2ndly, check activity first (direct return if current activity is still incomplete)
-    // if (currentActivity && this.isActivityIncomplete(currentActivity)) {
-    //   return currentActivity;
-    // }
+    // search next incompleted milestone
+    const nextMilestone: OverviewMilestone = this.getNextIncompletedMilestone(
+      overview.Milestones,
+      currentMilestone,
+      currentMilestoneIndex
+    );
 
-    // if current milestone is completed, search next incompleted milestone with incompleted task
-    let nextMilestone: OverviewMilestone;
-    if (!this.isMilestoneIncomplete(currentMilestone)) {
-      // get next milestone by the order of milestone array
-      for (let i = currentMilestoneIndex, trial = 1; trial <= overview.Milestones.length; i++, trial++) {
-        const milestoneIndex = i % overview.Milestones.length;
-        if (this.isMilestoneIncomplete(overview.Milestones[milestoneIndex]) && nextMilestone === undefined) {
-          nextMilestone = overview.Milestones[milestoneIndex];
-        }
+    let nextTask;
+
+    // conditions:
+    // - incompletedOnly: false, to skip completion status check
+    // - nextMilestone: undefined, all milestone has been completed
+    if (conditions.incompletedOnly === false) {
+      // find next task
+      nextTask = this.utils.getNextArrayElement(currentActivity.Tasks, options.currentTaskId);
+
+      // undefined = current one is last task
+      let nextActivity;
+      if (nextTask === undefined) {
+        nextActivity = this.utils.getNextArrayElement(currentMilestone.Activities, currentActivity.id);
       }
+
+      // undefined = current one is last task
+      if (nextActivity === undefined) {
+        const nextUnconditionalMilestone = this.getNextMilestone(
+          overview.Milestones,
+          currentMilestone,
+          currentMilestoneIndex
+        );
+
+        return {
+          // first activity in the milestone
+          currentActivity: nextUnconditionalMilestone.Activities[0],
+          nextTask,
+        };
+      }
+
+      return {
+        currentActivity: nextActivity,
+        nextTask,
+      };
     }
 
     if (!nextMilestone && !currentMilestone) {
@@ -196,9 +270,13 @@ export class ActivityService {
       return false;
     });
 
+    if (incompletedActivity) {
+      nextTask = this.findNext(incompletedActivity.Tasks, options);
+    }
+
     return {
       currentActivity,
-      incompletedActivity,
+      nextTask,
     };
   }
 
@@ -460,12 +538,17 @@ export class ActivityService {
    * @return {Task}       single task object
    */
   findNext(tasks: OverviewTask[], options: {
-    id: number;
+    currentTaskId: number;
     teamId: number;
+    incompletedOnly?: boolean;
   }): OverviewTask {
+    const conditions = {
+      incompletedOnly: options.incompletedOnly || true, // check
+    };
+
     // currentIndex can be -1 because the tasks list can be from different Activity's tasks set
     const currentIndex = tasks.findIndex(task => {
-      return task.id === options.id;
+      return task.id === options.currentTaskId;
     });
 
     const nextIndex = currentIndex + 1;
@@ -473,18 +556,23 @@ export class ActivityService {
       return tasks[nextIndex];
     }
 
-    // condition: if next task is a completed activity, pick the first undone from the list
-    const prioritisedTasks = tasks.filter(task => {
-      // avoid team assessment if user isn't in a team
-      if (task.is_team && !options.teamId) {
-        console.warn('user isn\'t in a team.');
-        return false;
-      }
+    if (options.incompletedOnly === true) {
+      // condition: if next task is a completed activity, pick the first undone from the list
+      const prioritisedTasks = tasks.filter(task => {
+        // avoid team assessment if user isn't in a team
+        if (task.is_team && !options.teamId) {
+          console.warn('user isn\'t in a team.');
+          return false;
+        }
 
-      return !this.isTaskCompleted(task);
-    });
+        return !this.isTaskCompleted(task);
+      });
+      return prioritisedTasks[0];
+    } else {
 
-    return prioritisedTasks[0];
+      return undefined;
+    }
+
   }
 
   private _normaliseAssessmentStatus(data: any, task: Task) {
