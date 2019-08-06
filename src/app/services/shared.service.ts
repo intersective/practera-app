@@ -20,7 +20,6 @@ const api = {
   providedIn: 'root'
 })
 export class SharedService {
-  private achievementEvent;
   constructor(
     private utils: UtilsService,
     private storage: BrowserStorageService,
@@ -28,7 +27,7 @@ export class SharedService {
     private request: RequestService
   ) {}
 
-  // call this function on every page refresh
+  // call this function on every page refresh and after switch program
   onPageLoad() {
     // only do these if a timeline is choosen
     if (!this.storage.getUser().timelineId) {
@@ -44,9 +43,9 @@ export class SharedService {
       this.utils.changeCardBackgroundImage(image);
     }
 
-    // listen to the achievement event
-    if (!this.achievementEvent) {
-      this.achievementEvent = this.utils.getEvent('achievement').subscribe(event => {
+    // subscribe to the achievement event if it is not subscribed
+    if (!this.utils.has(this.storage.getUser(), 'watchAchievement') || !this.storage.getUser().watchAchievement) {
+      this.utils.getEvent('achievement').subscribe(event => {
         this.notification.achievementPopUp('notification', {
           id: event.meta.Achievement.id,
           name: event.meta.Achievement.name,
@@ -55,6 +54,7 @@ export class SharedService {
           image: event.meta.Achievement.badge
         });
       });
+      this.storage.setUser({watchAchievement: true});
     }
   }
 
