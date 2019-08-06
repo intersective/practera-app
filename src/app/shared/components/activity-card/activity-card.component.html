@@ -3,7 +3,8 @@
   class="card practera-card"
   [ngClass]="{
     'locked-card': activity.isLocked,
-    'default-image-card': !activity.leadImage
+    'default-image-card': !activity.leadImage,
+    'highlighted': activity.highlighted
   }"
   [ngStyle]="{'background-image': backgroundImageStyle }"
 >
