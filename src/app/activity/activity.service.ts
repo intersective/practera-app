@@ -106,11 +106,14 @@ export class ActivityService {
     let nextActivity: OverviewActivity;
     let currentActivity: OverviewActivity;
     const overview = await this.getOverview(projectId).toPromise();
+    const { Milestones } = overview;
 
     // firstly, check current milestone
-    const currentMilestoneIndex: number = overview.Milestones.findIndex(milestone => {
+    const currentMilestoneIndex: number = Milestones.findIndex(milestone => {
+      const { Activities } = milestone;
+
       // find current activity
-      currentActivity = milestone.Activities.find(activity => {
+      currentActivity = Activities.find(activity => {
         if (activity.id === activityId) {
           return true;
         }
@@ -127,7 +130,7 @@ export class ActivityService {
     });
 
     // 2ndly, check activity first (direct return if current activity is still incomplete)
-    if (this.isActivityIncomplete(currentActivity)) {
+    if (currentActivity && this.isActivityIncomplete(currentActivity)) {
       return currentActivity;
     }
 
@@ -143,7 +146,11 @@ export class ActivityService {
       }
     }
 
-    // if nextMilestone not present
+    if (!nextMilestone && !currentMilestone) {
+      return undefined;
+    }
+
+    // if nextMilestone not present, use currentMilestone as backup
     nextActivity = (nextMilestone || currentMilestone).Activities.find(activity => {
       if (this.isActivityIncomplete(activity)) {
         return true;
@@ -503,7 +510,9 @@ export class ActivityService {
    * @param {[type]} assessment [description]
    */
   isActivityIncomplete(assessment): boolean {
-    const hasIncompletedTask = assessment.Tasks.filter(task => {
+    const { Tasks } = assessment;
+
+    const hasIncompletedTask = Tasks.filter(task => {
       if (task.type === 'assessment') {
         if (task.status === 'not started') {
           return true;
@@ -520,7 +529,8 @@ export class ActivityService {
   }
 
   isMilestoneIncomplete(milestone): boolean {
-    const isIncompleted = milestone.Activities.filter(activity => {
+    const { Activities } = milestone;
+    const isIncompleted = Activities.filter(activity => {
       return this.isActivityIncomplete(activity);
     });
     return isIncompleted.length > 0;
