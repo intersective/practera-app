@@ -25,6 +25,7 @@ export interface User {
   themeColor?: string;
   activityCardImage?: string;
   hasReviewRating?: boolean;
+  watchAchievement?: boolean;
 }
 
 export interface Config {
