@@ -204,16 +204,34 @@ export class TopicComponent extends RouterEnter {
   async redirectToNextMilestoneTask(options: {
     continue?: boolean;
   } = {}): Promise<any> {
-    if (options && options.continue) {
+    if (options.continue === true) {
       this.isRedirectingToNextMilestoneTask = true;
     }
 
     const { activity, nextTask } = await this.getNextSequence();
     let route: any = ['app', 'project'];
 
-    if (!activity && !nextTask) {
+    if (this.activityId === activity.id && nextTask) {
+      switch (nextTask.type) {
+        case 'assessment':
+          route = [
+            'assessment',
+            'assessment',
+            activity.id,
+            nextTask.context_id,
+            nextTask.id
+          ];
+          break;
+
+        case 'topic':
+          route = ['topic', activity.id, nextTask.id];
+          break;
+      }
+    }
+
+    if (options.continue !== true && this.activityId !== activity.id) {
       await this.notificationService.alert({
-        header: 'Milestone completed!',
+        header: 'Activity completed!',
         message: 'You may now proceed to project list and learn about your overall progress.',
         buttons: [
           {
@@ -222,34 +240,6 @@ export class TopicComponent extends RouterEnter {
           }
         ]
       });
-      return this.router.navigate(route);
-    }
-
-    if (options.continue === undefined) {
-      if (this.activityId !== activity.id) {
-        await this.notificationService.alert({
-          header: 'Activity completed!',
-          message: 'Please proceed to the next activity.',
-          buttons: [
-            {
-              text: 'Ok',
-              role: 'cancel',
-            }
-          ]
-        });
-      }
-    }
-
-    if (nextTask) {
-      switch (nextTask.type) {
-        case 'assessment':
-          route = ['assessment', 'assessment', activity.id, nextTask.context_id, nextTask.id];
-          break;
-
-        case 'topic':
-          route = ['topic', activity.id, nextTask.id];
-          break;
-      }
     }
 
     await this.router.navigate(route);
