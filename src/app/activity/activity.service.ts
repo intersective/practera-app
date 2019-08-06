@@ -247,7 +247,7 @@ export class ActivityService {
         );
 
         return {
-          // first activity in the milestone
+          // first task and activity in the milestone as next
           currentActivity: nextUnconditionalMilestone.Activities[0],
           nextTask: nextUnconditionalMilestone.Activities[0].Tasks[0],
         };
@@ -272,7 +272,7 @@ export class ActivityService {
     nextTask = this.findNext(incompletedActivity.Tasks, options);
 
     return {
-      currentActivity,
+      currentActivity: incompletedActivity,
       nextTask,
     };
   }
