@@ -156,16 +156,19 @@ export class ActivityService {
    * @param  {number}       activityId activity id
    * @return {Promise<any>}    Promise
    */
-  async getTasksByActivityId(projectId: number, activityId: number): Promise<OverviewActivity> {
+  async getTasksByActivityId(projectId: number, activityId: number): Promise<{
+    currentActivity: OverviewActivity;
+    incompletedActivity: OverviewActivity;
+  }> {
     const overview = await this.getOverview(projectId).toPromise();
 
     // firstly, check current milestone
     const { currentMilestoneIndex, currentActivity, currentMilestone } = this.getCurrentActivity(overview.Milestones, activityId);
 
     // 2ndly, check activity first (direct return if current activity is still incomplete)
-    if (this.isActivityIncomplete(currentActivity)) {
-      return currentActivity;
-    }
+    // if (this.isActivityIncomplete(currentActivity)) {
+    //   return currentActivity;
+    // }
 
     // if current milestone is completed, search next incompleted milestone with incompleted task
     let nextMilestone: OverviewMilestone;
@@ -180,12 +183,17 @@ export class ActivityService {
     }
 
     // if nextMilestone not present
-    return (nextMilestone || currentMilestone).Activities.find(activity => {
+    const incompletedActivity = (nextMilestone || currentMilestone).Activities.find(activity => {
       if (this.isActivityIncomplete(activity)) {
         return true;
       }
       return false;
     });
+
+    return {
+      currentActivity,
+      incompletedActivity,
+    };
   }
 
   /**
@@ -457,25 +465,20 @@ export class ActivityService {
     const nextIndex = currentIndex + 1;
     if (currentIndex !== -1 && tasks[nextIndex] && !this.isTaskCompleted(tasks[nextIndex])) {
       return tasks[nextIndex];
-    } else {
-      // condition: if next task is a completed activity, pick the first undone from the list
-      const prioritisedTasks = tasks.filter(task => {
-        // avoid team assessment if user isn't in a team
-        if (task.is_team && !options.teamId) {
-          console.warn('user isn\'t in a team.');
-          return false;
-        }
-
-        return !this.isTaskCompleted(task);
-      });
-
-      if (prioritisedTasks.length > 0) {
-        return prioritisedTasks[0];
-      }
     }
 
-    // backup plan: return same task instead of breaking the code
-    return tasks[currentIndex];
+    // condition: if next task is a completed activity, pick the first undone from the list
+    const prioritisedTasks = tasks.filter(task => {
+      // avoid team assessment if user isn't in a team
+      if (task.is_team && !options.teamId) {
+        console.warn('user isn\'t in a team.');
+        return false;
+      }
+
+      return !this.isTaskCompleted(task);
+    });
+
+    return prioritisedTasks[0];
   }
 
   private _normaliseAssessmentStatus(data: any, task: Task) {

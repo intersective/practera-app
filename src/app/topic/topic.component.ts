@@ -128,7 +128,7 @@ export class TopicComponent extends RouterEnter {
     } catch (err) {
       const toasted = await this.notificationService.alert({
         header: 'Error marking topic as completed.',
-        message: err
+        message: err.msg || JSON.stringify(err)
       });
       this.loadingTopic = false;
       throw new Error(err);
@@ -155,7 +155,7 @@ export class TopicComponent extends RouterEnter {
       } catch (err) {
         const toasted = await this.notificationService.alert({
           header: 'Error Previewing file',
-          message: err
+          message: err.msg || JSON.stringify(err)
         });
         this.loadingTopic = false;
         throw new Error(err);
@@ -173,21 +173,21 @@ export class TopicComponent extends RouterEnter {
     };
 
     try {
-      const activity = await this.activityService.getTasksByActivityId(this.storage.getUser().projectId, this.activityId);
+      const { currentActivity } = await this.activityService.getTasksByActivityId(this.storage.getUser().projectId, this.activityId);
       let nextTask;
-      if (activity) {
-        nextTask = this.activityService.findNext(activity.Tasks, options);
+      if (currentActivity) {
+        nextTask = this.activityService.findNext(currentActivity.Tasks, options);
       }
 
       this.loadingTopic = false;
       return {
-        activity,
+        activity: currentActivity,
         nextTask
       };
     } catch (err) {
       const toasted = await this.notificationService.alert({
         header: 'Project overview API Error',
-        message: err
+        message: err.msg || JSON.stringify(err)
       });
 
       if (this.loadingTopic) {
@@ -206,6 +206,7 @@ export class TopicComponent extends RouterEnter {
     }
 
     const { activity, nextTask } = await this.getNextSequence();
+    let route: any = ['app', 'project'];
 
     if (!activity && !nextTask) {
       await this.notificationService.alert({
@@ -218,7 +219,7 @@ export class TopicComponent extends RouterEnter {
           }
         ]
       });
-      return this.router.navigate(['app', 'project']);
+      return this.router.navigate(route);
     }
 
     if (options.continue === undefined) {
@@ -236,7 +237,6 @@ export class TopicComponent extends RouterEnter {
       }
     }
 
-    let route = ['app', 'activity', activity.id];
     if (nextTask) {
       switch (nextTask.type) {
         case 'assessment':
