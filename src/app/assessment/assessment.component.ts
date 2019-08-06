@@ -336,11 +336,11 @@ export class AssessmentComponent extends RouterEnter {
       });
     }
 
-    let route = ['app', 'activity', activity.id];
+    let route: any = ['app', 'project'];
 
+    // if no options provided OR routeOnly == true
     if (options === undefined || (options && options.routeOnly)) {
-      // Empty activity value: no more incompleted activity (when everything is completed)
-      if (!activity || this.activityService.isActivityIncomplete(activity)) {
+      if (!activity || !this.activityService.isActivityIncomplete(activity)) {
         await this.notificationService.alert({
           header: 'Activity completed!',
           message: 'You may now proceed to project list and learn about your overall progress.',
@@ -351,10 +351,10 @@ export class AssessmentComponent extends RouterEnter {
             }
           ]
         });
-        route = ['app', 'project'];
       }
     }
 
+    // to next incompleted task
     if (nextTask) {
       switch (nextTask.type) {
         case 'assessment':
@@ -388,7 +388,7 @@ export class AssessmentComponent extends RouterEnter {
     } catch (err) {
       const toasted = await this.notificationService.alert({
         header: 'Error retrieving pulse check data',
-        message: err
+        message: err.msg || JSON.stringify(err)
       });
       this.submitting = false;
       throw new Error(err);
@@ -523,7 +523,7 @@ export class AssessmentComponent extends RouterEnter {
           // display a pop up if submission failed
           this.notificationService.alert({
             header: 'Submission failed',
-            message: err,
+            message: err.msg || JSON.stringify(err),
             buttons: [
               {
                 text: 'OK',
@@ -531,7 +531,7 @@ export class AssessmentComponent extends RouterEnter {
               }
             ]
           });
-          throw new Error(err);
+          throw new Error(err.msg || JSON.stringify(err));
         }
       }
     );
@@ -558,7 +558,7 @@ export class AssessmentComponent extends RouterEnter {
       } catch (err) {
         const toasted = await this.notificationService.alert({
           header: 'Error marking feedback as completed',
-          message: err
+          message: err.msg || JSON.stringify(err)
         });
 
         // deactivate loading indicator on fail
@@ -597,7 +597,7 @@ export class AssessmentComponent extends RouterEnter {
       } catch (err) {
         const toasted = await this.notificationService.alert({
           header: 'Error retrieving rating page',
-          message: err
+          message: err.msg || JSON.stringify(err)
         });
 
         // deactivate loading indicator on fail
@@ -629,6 +629,11 @@ export class AssessmentComponent extends RouterEnter {
     }).format(new Date());
   }
 
+  /**
+   * when all task in an activity is completed, activity & nextTask are empty
+   * when has incompleted task, activity would be available
+   * @return {Promise} [description]
+   */
   private async getNextSequence(): Promise<{
     activity: OverviewActivity;
     nextTask: OverviewTask;
@@ -639,12 +644,12 @@ export class AssessmentComponent extends RouterEnter {
     };
 
     try {
-      const currentActivity = await this.activityService.getCurrentActivityStatus(this.storage.getUser().projectId, this.activityId);
+      const { currentActivity, incompletedActivity } = await this.activityService.getTasksByActivityId(this.storage.getUser().projectId, this.activityId);
       let nextTask;
       if (currentActivity) {
         nextTask = this.activityService.findNext(currentActivity.Tasks, options);
       }
-
+      console.log(incompletedActivity);
       return {
         activity: currentActivity,
         nextTask
@@ -652,7 +657,7 @@ export class AssessmentComponent extends RouterEnter {
     } catch (err) {
       const toasted = await this.notificationService.alert({
         header: 'Project overview API Error',
-        message: err
+        message: err.msg || JSON.stringify(err)
       });
 
       if (this.submitting) {
