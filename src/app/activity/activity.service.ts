@@ -261,18 +261,24 @@ export class ActivityService {
       };
     }
 
-    // if nextMilestone not present, use currentMilestone as backup
-    const incompletedActivity = nextMilestone.Activities.find(activity => {
-      if (this.isActivityIncomplete(activity)) {
-        return true;
-      }
-      return false;
-    });
+    let incompletedActivity;
+    // skip only if current activity is completed
+    if (this.isActivityIncomplete(currentActivity)) {
+      nextTask = this.findNext(currentActivity.Tasks, options);
+    } else {
+      // if nextMilestone not present, use currentMilestone as backup
+      incompletedActivity = nextMilestone.Activities.find(activity => {
+        if (this.isActivityIncomplete(activity)) {
+          return true;
+        }
+        return false;
+      });
 
-    nextTask = this.findNext(incompletedActivity.Tasks, options);
+      nextTask = this.findNext(incompletedActivity.Tasks, options);
+    }
 
     return {
-      currentActivity: incompletedActivity,
+      currentActivity: incompletedActivity || currentActivity,
       nextTask,
     };
   }
