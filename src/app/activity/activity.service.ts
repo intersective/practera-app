@@ -116,8 +116,8 @@ export class ActivityService {
             loadingStatus: true,
             isForTeam: element[element.model].is_team,
             dueDate: element[element.model].deadline,
-            isOverdue: this.utils.timeComparer(element[element.model].deadline) < 0 ? true : false,
-            isDueToday: this.utils.timeComparer(element[element.model].deadline, undefined, true) === 0 ? true : false,
+            isOverdue: element[element.model].deadline ? this.utils.timeComparer(element[element.model].deadline) < 0 : false,
+            isDueToday: element[element.model].deadline ? this.utils.timeComparer(element[element.model].deadline, undefined, true) === 0 : false
           });
           break;
       }
