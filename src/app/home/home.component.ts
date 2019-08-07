@@ -91,7 +91,6 @@ export class HomeComponent extends RouterEnter implements OnDestroy {
 
   onEnter() {
     this._initialise();
-console.log('on enter home');
     this.subscriptions.push(
       this.homeService.getTodoItems().subscribe(todoItems => {
         this.todoItems = this.todoItems.concat(todoItems);
