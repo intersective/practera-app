@@ -25,6 +25,7 @@ export interface User {
   themeColor?: string;
   activityCardImage?: string;
   hasReviewRating?: boolean;
+  truncateDescription?: boolean;
 }
 
 export interface Config {
