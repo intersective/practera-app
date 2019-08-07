@@ -359,7 +359,7 @@ export class AssessmentComponent extends RouterEnter {
     if (activity.id !== this.activityId) {
       navigationParams = { queryParams: { activityId: activity.id } };
 
-      // if (options.continue !== true) {
+      if (options.continue !== true) {
         await this.notificationService.alert({
           header: 'Congratulations!',
           message: 'You have successfully completed this activity.<br>Let\'s take you to the next one.',
@@ -370,7 +370,7 @@ export class AssessmentComponent extends RouterEnter {
             }
           ]
         });
-      // }
+      }
     }
 
     await this.router.navigate(route, navigationParams);
