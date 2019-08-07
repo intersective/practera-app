@@ -58,6 +58,7 @@ export class ProjectComponent extends RouterEnter {
 
     this.projectService.getMilestones()
       .subscribe(milestones => {
+
         this.milestones = milestones;
         this.loadingMilestone = false;
         this.activeMilestone = new Array(milestones.length);
@@ -83,6 +84,8 @@ export class ProjectComponent extends RouterEnter {
 
               this.milestones = this._populateMilestoneProgress(progresses, this.milestones);
               this.loadingProgress = false;
+
+              this.scrollTo(`activity-card-${this.highlightedActivityId}`);
             });
           });
       });
@@ -112,12 +115,15 @@ export class ProjectComponent extends RouterEnter {
     }
   }
 
-  scrollTo(id, index) {
+  scrollTo(domId: string, index?: number): void {
+    if (index) {
+      this.activeMilestone[index] = true;
+    }
+
     // update active milestone status (mark whatever user select)
     this.activeMilestone.fill(false);
-    this.activeMilestone[index] = true;
 
-    const el = document.getElementById(id);
+    const el = document.getElementById(domId);
     el.scrollIntoView({ block: 'start', behavior: 'smooth', inline: 'nearest' });
 
     el.classList.add('highlighted');
