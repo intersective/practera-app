@@ -88,7 +88,6 @@ export class HomeService {
       this.request.apiResponseFormatError('TodoItem array format error');
       return [];
     }
-console.log('normalise todo item');
     data.forEach(todoItem => {
       if (!this.utils.has(todoItem, 'identifier') ||
           !this.utils.has(todoItem, 'is_done') ||
