@@ -20,6 +20,7 @@ const api = {
   providedIn: 'root'
 })
 export class SharedService {
+  private achievementEvent;
   constructor(
     private utils: UtilsService,
     private storage: BrowserStorageService,
@@ -44,8 +45,8 @@ export class SharedService {
     }
 
     // subscribe to the achievement event if it is not subscribed
-    if (!this.utils.has(this.storage.getUser(), 'watchAchievement') || !this.storage.getUser().watchAchievement) {
-      this.utils.getEvent('achievement').subscribe(event => {
+    if (!this.achievementEvent) {
+      this.achievementEvent = this.utils.getEvent('achievement').subscribe(event => {
         this.notification.achievementPopUp('notification', {
           id: event.meta.Achievement.id,
           name: event.meta.Achievement.name,
@@ -54,7 +55,6 @@ export class SharedService {
           image: event.meta.Achievement.badge
         });
       });
-      this.storage.setUser({watchAchievement: true});
     }
   }
 
