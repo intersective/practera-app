@@ -44,6 +44,7 @@ export class SwitcherProgramComponent implements OnInit {
 
     return this.switcherService.switchProgram(this.programs[index]).subscribe(() => {
       loading.dismiss().then(() => {
+console.log('initialise pusher');
         // reset pusher (upon new timelineId)
         this.pusherService.initialise({ unsubscribe: true });
 
