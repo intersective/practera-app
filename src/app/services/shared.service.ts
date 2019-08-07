@@ -45,9 +45,7 @@ export class SharedService {
 
     // subscribe to the achievement event if it is not subscribed
     if (!this.utils.has(this.storage.getUser(), 'watchAchievement') || !this.storage.getUser().watchAchievement) {
-console.log('listening to achievement event');
       this.utils.getEvent('achievement').subscribe(event => {
-console.log('achievement pop up from event');
         this.notification.achievementPopUp('notification', {
           id: event.meta.Achievement.id,
           name: event.meta.Achievement.name,
