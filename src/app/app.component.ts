@@ -31,8 +31,6 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit() {
-    // we are not subscribing the achievement event yet when page refreshed
-    this.storage.setUser({watchAchievement: false});
     // do the same thing on every page load
     this.sharedService.onPageLoad();
 
