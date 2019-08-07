@@ -1,6 +1,7 @@
 import { Component, Input, ViewChild, ElementRef, AfterViewInit, OnChanges, SimpleChange } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
 import { trigger, state, transition, style, animate } from '@angular/animations';
+import { BrowserStorageService } from '@services/storage.service';
 
 @Component({
   selector: 'app-description',
@@ -23,28 +24,34 @@ import { trigger, state, transition, style, animate } from '@angular/animations'
   ]
 })
 export class DescriptionComponent implements AfterViewInit, OnChanges {
-  heightLimit = 90;
-  isTruncating = true;
+  heightLimit = 120;
+  isTruncating = false;
   heightExceeded = false;
   elementHeight: number;
   @Input() content;
   @ViewChild('description') descriptionRef: ElementRef;
 
-  constructor(private sanitizer: DomSanitizer) {}
+  constructor(
+    private storage: BrowserStorageService,
+    private sanitizer: DomSanitizer
+  ) {}
 
   ngOnChanges(changes: { [propKey: string]: SimpleChange}) {
     this.content = this.sanitizer.bypassSecurityTrustHtml(changes.content.currentValue);
   }
 
   ngAfterViewInit() {
-    // if it is used in modal window, the clientHeight is 0 here, so we delayed 500 ms to check it
+    if (!this.storage.getUser().truncateDescription) {
+      return;
+    }
     setTimeout(
       () => {
         this.elementHeight = this.descriptionRef.nativeElement.clientHeight;
         this.heightExceeded = this.elementHeight >= this.heightLimit;
+        this.isTruncating = true;
       },
       500
     );
   }
-
 }
+
