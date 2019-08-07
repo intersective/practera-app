@@ -229,10 +229,10 @@ export class TopicComponent extends RouterEnter {
       }
     }
 
-    if (options.continue !== true && this.activityId !== activity.id) {
+    // if (options.continue !== true && this.activityId !== activity.id) {
       await this.notificationService.alert({
-        header: 'Activity completed!',
-        message: 'You may now proceed to project list and learn about your overall progress.',
+        header: 'Congratulations!',
+        message: 'You have successfully completed this activity.<br>Let\'s take you to the next one.',
         buttons: [
           {
             text: 'Ok',
@@ -240,7 +240,7 @@ export class TopicComponent extends RouterEnter {
           }
         ]
       });
-    }
+    // }
 
     await this.router.navigate(route);
     this.isRedirectingToNextMilestoneTask = false;
