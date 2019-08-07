@@ -77,6 +77,7 @@ export class ProjectComponent extends RouterEnter {
 
             this.milestones = this._addActivitiesToEachMilestone(this.milestones, activities);
             this.loadingActivity = false;
+
             this.projectService.getProgress(this.milestones).subscribe(progresses => {
               this.milestonePositions = this.milestoneRefs.map(milestoneRef => {
                 return milestoneRef.nativeElement.offsetTop;
@@ -85,7 +86,9 @@ export class ProjectComponent extends RouterEnter {
               this.milestones = this._populateMilestoneProgress(progresses, this.milestones);
               this.loadingProgress = false;
 
-              this.scrollTo(`activity-card-${this.highlightedActivityId}`);
+              if (this.highlightedActivityId) {
+                this.scrollTo(`activity-card-${this.highlightedActivityId}`);
+              }
             });
           });
       });
