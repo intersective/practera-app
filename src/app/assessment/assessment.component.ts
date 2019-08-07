@@ -361,8 +361,8 @@ export class AssessmentComponent extends RouterEnter {
 
       if (options.continue !== true) {
         await this.notificationService.alert({
-          header: 'Activity completed!',
-          message: 'You may now proceed to project list and learn about your overall progress.',
+          header: 'Congratulations!',
+          message: 'You have successfully completed this activity.<br>Let\'s take you to the next one.',
           buttons: [
             {
               text: 'Ok',
