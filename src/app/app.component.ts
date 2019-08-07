@@ -31,9 +31,13 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit() {
-    // need to set the theme color and card style immediately after page load
+    // we are not subscribing the achievement event yet when page refreshed
+    this.storage.setUser({watchAchievement: false});
+    // do the same thing on every page load
     this.sharedService.onPageLoad();
+
     // @TODO: need to build a new micro service to get the config and serve the custom branding config from a microservice
+    // Get the custom branding info and update the theme color if needed
     const domain = window.location.hostname;
     this.authService.getConfig({domain}).subscribe((response: any) => {
       if (response !== null) {
@@ -50,9 +54,11 @@ export class AppComponent implements OnInit {
             'logo': logo,
             'color': themeColor
           });
-          this.utils.changeThemeColor(themeColor);
+          // use brand color if no theme color
+          if (!this.utils.has(this.storage.getUser(), 'themeColor') || !this.storage.getUser().themeColor) {
+            this.utils.changeThemeColor(themeColor);
+          }
         }
-        this.sharedService.onPageLoad();
       }
     });
 
@@ -93,7 +99,7 @@ export class AppComponent implements OnInit {
       this.versionCheckService.initiateVersionCheck();
 
       // initialise Pusher
-      this.pusherService.initantiate();
+      this.pusherService.initialise();
     });
   }
 
