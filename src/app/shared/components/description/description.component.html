@@ -1,4 +1,4 @@
-<p (click)="isTruncating = !isTruncating" [@truncation]="isTruncating ? 'hide' : 'show'" #description [innerHtml]="content" [ngClass]="{'limit-height': isTruncating}"></p>
+<p [@truncation]="isTruncating ? 'hide' : 'show'" #description [innerHtml]="content" [ngClass]="{'limit-height': isTruncating}"></p>
 
 <ng-container *ngIf="heightExceeded">
   <ng-container *ngIf="isTruncating">
