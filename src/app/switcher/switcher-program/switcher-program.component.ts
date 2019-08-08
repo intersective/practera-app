@@ -49,7 +49,7 @@ export class SwitcherProgramComponent implements OnInit {
 
         if ((typeof environment.goMobile !== 'undefined' && environment.goMobile === false)
           || /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
-          return this.router.navigate(['/app/home']);
+          return this.router.navigate(['app', 'home']);
         } else {
           return this.router.navigate(['go-mobile']);
         }
