@@ -23,7 +23,7 @@ export class ContactNumberFormComponent implements OnInit {
   // use as a ngModel to controll contact number input
   contactNumber = '';
   // default country model
-  countryModel = 'AUS';
+  countryModel: string;
   // country model infomation
   activeCountryModelInfo = {
     countryCode: '',
@@ -73,11 +73,7 @@ export class ContactNumberFormComponent implements OnInit {
   }
 
   private _initcomponent() {
-    if (environment.APIEndpoint.indexOf('us') !== -1) {
-      // check which the server which the APP talks to, i.e if the APP is consuming APIs from 'us.practera.com' then, it is APP V2 in US.
-      // But if APP consumes APIs from 'api.practera.com' then it is APP V2 in AUS.
-      this.countryModel = 'US';
-    }
+    this.countryModel = environment.defaultCountryModel;
     this.activeCountryModelInfo.countryCode = this.contactNumberFormat.masks[this.countryModel].format;
     this.activeCountryModelInfo.placeholder = this.contactNumberFormat.masks[this.countryModel].placeholder;
     this.activeCountryModelInfo.pattern = this.contactNumberFormat.masks[this.countryModel].pattern;
