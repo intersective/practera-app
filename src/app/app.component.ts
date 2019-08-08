@@ -52,7 +52,10 @@ export class AppComponent implements OnInit {
             'logo': logo,
             'color': themeColor
           });
-          this.utils.changeThemeColor(themeColor);
+          // use brand color if no theme color
+          if (!this.utils.has(this.storage.getUser(), 'themeColor') || !this.storage.getUser().themeColor) {
+            this.utils.changeThemeColor(themeColor);
+          }
         }
       }
     });
@@ -95,7 +98,7 @@ export class AppComponent implements OnInit {
       this.versionCheckService.initiateVersionCheck();
 
       // initialise Pusher
-      this.pusherService.initantiate();
+      this.pusherService.initialise();
     });
   }
 
