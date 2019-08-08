@@ -75,6 +75,9 @@ export interface Submission {
   answers: any;
   submitterName: string;
   modified: string;
+  isLocked: boolean;
+  submitterImage: string;
+  reviewerName: string | void;
 }
 
 export interface Review {
@@ -296,7 +299,10 @@ export class AssessmentService {
       status: thisSubmission.AssessmentSubmission.status,
       answers: {},
       submitterName: thisSubmission.Submitter.name,
-      modified: thisSubmission.AssessmentSubmission.modified
+      modified: thisSubmission.AssessmentSubmission.modified,
+      isLocked: thisSubmission.AssessmentSubmission.is_locked,
+      submitterImage: thisSubmission.Submitter.image,
+      reviewerName: this.checkReviewer(thisSubmission.Reviewer)
     };
 
     // -- normalise submission answers
@@ -492,11 +498,18 @@ export class AssessmentService {
     return this.request.post(api.post.todoitem, postData);
   }
 
-  popUpReviewRating(reviewId, redirect) {
+  popUpReviewRating(reviewId, redirect): Promise<void> {
     return this.notification.modal(ReviewRatingComponent, {
       reviewId,
       redirect
     });
+  }
+
+  checkReviewer(reviewer): string | void {
+    if (!reviewer) {
+      return undefined;
+    }
+    return reviewer.name !== this.storage.getUser().name ? reviewer.name : undefined;
   }
 
 }

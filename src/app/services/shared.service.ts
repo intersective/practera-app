@@ -21,6 +21,8 @@ const api = {
 })
 export class SharedService {
   private achievementEvent;
+  private memoryCache = {};
+
   constructor(
     private utils: UtilsService,
     private storage: BrowserStorageService,

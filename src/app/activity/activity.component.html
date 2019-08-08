@@ -23,7 +23,7 @@
     <ion-list>
       <clickable-item
         *ngFor="let task of activity.tasks; let i = index"
-        (click)="goto(task.type, task.id)"
+        (click)="checkAssessment(task)"
         [lines]="i == activity.tasks.length - 1 ? 'none' : ''">
 
         <ng-container [ngSwitch]="task.type">
@@ -45,24 +45,33 @@
             <p>
               <ion-text *ngIf="task.type != 'Locked'" [color]="task.status == 'feedback available' ? 'primary' : 'medium'">
                 {{ task.type }}
-                <ng-container *ngIf="!task.loadingStatus; else spinner">{{ task.status }}</ng-container>
+                <ng-container *ngIf="!task.loadingStatus; else spinner">
+                  <ng-container *ngIf="task.isLocked; else status"> - Locked by {{task.submitter.name}}</ng-container>
+                  <ng-template #status>{{ task.status }}</ng-template>
+                </ng-container>
                 <ng-template #spinner><ion-spinner name="dots" class="vertical-middle"></ion-spinner></ng-template>
               </ion-text>
             </p>
           </div>
 
           <ng-container *ngIf="!task.loadingStatus; else iconSpinner">
-            <ng-container *ngIf="!task.status || task.status == 'feedback available' || task.status == 'in progress'">
-              <ion-icon name="arrow-forward" slot="end" color="primary" class="icon-forward"></ion-icon>
+            <ng-container *ngIf="task.isLocked; else otherIcons">
+              <ion-icon name="md-lock" slot="end" color="medium"></ion-icon>
             </ng-container>
+            <ng-template #otherIcons>
+              <ng-container *ngIf="!task.status || task.status == 'feedback available' || task.status == 'in progress'">
+                <ion-icon name="arrow-forward" slot="end" color="primary" class="icon-forward"></ion-icon>
+              </ng-container>
 
-            <ng-container *ngIf="task.status == 'done'">
-              <ion-icon name="checkmark" slot="end" color="primary" class="icon-check"></ion-icon>
-            </ng-container>
+              <ng-container *ngIf="task.status == 'done'">
+                <ion-icon name="checkmark" slot="end" color="primary" class="icon-check"></ion-icon>
+              </ng-container>
 
-            <ng-container *ngIf="task.status == 'pending review'">
-              <ion-icon name="hourglass" slot="end" color="primary"></ion-icon>
-            </ng-container>
+              <ng-container *ngIf="task.status == 'pending review'">
+                <ion-icon name="hourglass" slot="end" color="primary"></ion-icon>
+              </ng-container>
+            </ng-template>
+
           </ng-container>
 
           <ng-template #iconSpinner>

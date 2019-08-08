@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
 import { ModalController, AlertController, ToastController } from '@ionic/angular';
-import { AlertOptions } from '@ionic/core';
+import { AlertOptions, ToastOptions, ModalOptions } from '@ionic/core';
 import { PopUpComponent } from './pop-up/pop-up.component';
 import { AchievementPopUpComponent } from './achievement-pop-up/achievement-pop-up.component';
+import { LockTeamAssessmentPopUpComponent } from './lock-team-assessment-pop-up/lock-team-assessment-pop-up.component';
 import { Achievement, AchievementsService } from '@app/achievements/achievements.service';
 
 @Injectable({
@@ -14,7 +15,7 @@ export class NotificationService {
     private modalController: ModalController,
     private alertController: AlertController,
     private toastController: ToastController,
-    public achievementService: AchievementsService
+    public achievementService: AchievementsService,
   ) {}
 
   dismiss() {
@@ -25,7 +26,7 @@ export class NotificationService {
    * @name modalConfig
    * @description futher customised filter
    */
-  private modalConfig({ component, componentProps }, options = {}) {
+  private modalConfig({ component, componentProps }, options = {}): ModalOptions {
     const config = Object.assign(
       {
         component,
@@ -51,9 +52,17 @@ export class NotificationService {
     return modal;
   }
 
-  async modal(component, componentProps, options?) {
+  async modal(component, componentProps,  options?, event?): Promise<void> {
     const modal = await this.modalController.create(this.modalConfig({ component, componentProps }, options));
-    return await modal.present();
+    if (event) {
+      modal.onDidDismiss()
+      // tslint:disable-next-line:no-shadowed-variable
+      .then((data) => {
+        event(data);
+      });
+    }
+
+    return modal.present();
   }
 
   async alert(config: AlertOptions) {
@@ -62,18 +71,24 @@ export class NotificationService {
   }
 
   // toast message pop up, by default, shown success message for 2 seconds.
-  async presentToast(message, success= true, duration= 2000) {
+  async presentToast(message, success = true, duration?) {
     let color = 'success';
     if (!success) {
       color = 'danger';
     }
-    const toast = await this.toastController.create({
+    return this.customToast({
       message: message,
-      duration: duration,
+      duration: duration || 2000,
       position: 'top',
       color : color
     });
-    toast.present();
+  }
+
+  async customToast(options: ToastOptions) {
+    const toast = await this.toastController.create(
+      Object.assign({ duration: 2000 }, options)
+    );
+    return toast.present();
   }
 
   /**
@@ -108,4 +123,28 @@ export class NotificationService {
     return modal;
   }
 
+  /**
+   * pop up to show user click on locked team assessment.
+   * @param data
+   * sample data object
+   * NotificationService.lockTeamAssessmentPopUp({
+   *    image: 'url' (optinal - have default one),
+   *    name: "Alice"
+   * });
+   */
+  async lockTeamAssessmentPopUp(data, event) {
+    const componentProps = {
+      name: data.name,
+      image: data.image
+    };
+    const component = LockTeamAssessmentPopUpComponent;
+    const modal = await this.modal(
+      component, componentProps,
+      {
+      cssClass: 'lock-assessment-popup'
+      },
+      event
+    );
+    return modal;
+  }
 }
