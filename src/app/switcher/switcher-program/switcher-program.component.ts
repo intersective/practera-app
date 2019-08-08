@@ -40,6 +40,7 @@ export class SwitcherProgramComponent implements OnInit {
     const loading = await this.loadingController.create({
       message: 'loading...'
     });
+
     await loading.present();
 
     return this.switcherService.switchProgram(this.programs[index]).subscribe(() => {
