@@ -214,6 +214,34 @@ export class UtilsService {
   }
 
   /**
+   * get next element in an array,
+   * return undefined if the next value is not available
+   */
+  getNextArrayElement(target: any[], currentId: number): any {
+    const length = target.length;
+    const index = target.findIndex(datum => {
+      return datum.id === currentId;
+    });
+
+    const nextElement = target[index + 1];
+
+    return target[index + 1];
+  }
+
+  /**
+   * check if the targeted element in an array is located at the last in the last index
+   */
+  checkOrderById(target: any[], currentId, options: {
+    isLast: boolean;
+  }): boolean {
+    const length = target.length;
+    const index = target.findIndex(datum => {
+      return datum.id === currentId;
+    });
+
+    return (length - 1) === index;
+  }
+  /**
    * Format the time string
    * 1. Add 'T' between date and time, for compatibility with Safari
    * 2. Add 'Z' at last to indicate that it is UTC time, browser will automatically convert the time to local time

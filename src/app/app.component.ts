@@ -94,6 +94,7 @@ export class AppComponent implements OnInit {
 
   initializeApp() {
     this.platform.ready().then(() => {
+      // watch version update
       this.versionCheckService.initiateVersionCheck();
 
       // initialise Pusher

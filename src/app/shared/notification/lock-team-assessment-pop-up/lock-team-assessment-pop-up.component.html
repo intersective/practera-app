@@ -1,0 +1,20 @@
+<ion-content color="light" class="pop-up-content" text-center>
+
+  <div class="imgage-content">
+    <div class="image">
+        <img [src]="image ? image : 'https://my.practera.com/img/user-512.png'">
+    </div>
+  </div>
+
+  <div class="details-container">
+    <div class="div-after-img">
+      <div class="description" *ngIf="name">{{ name }} is currently edting this team submission.</div>
+      <div class="description" *ngIf="name">Click on 'View Read Only' to open in read only mode.</div>
+    </div>
+
+    <div class="div-after-img">
+      <ion-button (click)="confirmed()" shape="round" color="primary" expand="full">View Read Only</ion-button>
+    </div>
+  </div>
+
+</ion-content>
