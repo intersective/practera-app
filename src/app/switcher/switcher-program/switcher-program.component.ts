@@ -51,7 +51,7 @@ export class SwitcherProgramComponent implements OnInit {
           || /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
           return this.router.navigate(['/app/home']);
         } else {
-          return this.router.navigate(['/go-mobile']);
+          return this.router.navigate(['go-mobile']);
         }
       });
     });
