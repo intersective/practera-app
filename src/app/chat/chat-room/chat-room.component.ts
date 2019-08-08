@@ -219,7 +219,7 @@ export class ChatRoomComponent extends RouterEnter {
   }
 
   back() {
-    this.router.navigate(['/app/chat']);
+    this.router.navigate(['app', 'chat']);
   }
 
   sendMessage() {
