@@ -7,7 +7,9 @@ import { UtilsService } from '@services/utils.service';
 import { NotificationService } from '@shared/notification/notification.service';
 import { environment } from '../../environments/environment.prod';
 import { RouterEnter } from '@services/router-enter.service';
+import { FastFeedbackService } from '../fast-feedback/fast-feedback.service';
 import { FilestackService } from '@shared/filestack/filestack.service';
+
 
 @Component({
   selector: 'app-settings',
@@ -40,7 +42,8 @@ export class SettingsComponent extends RouterEnter {
     public storage: BrowserStorageService,
     public utils: UtilsService,
     private notificationService: NotificationService,
-    private filestackService: FilestackService
+    private filestackService: FilestackService,
+    public fastFeedbackService: FastFeedbackService
   ) {
     super(router);
   }
@@ -54,6 +57,7 @@ export class SettingsComponent extends RouterEnter {
     this.acceptFileTypes = this.filestackService.getFileTypes('image');
     // also get program name
     this.currentProgramName = this.storage.getUser().programName;
+    this.fastFeedbackService.pullFastFeedback().subscribe();
   }
 
   openLink() {

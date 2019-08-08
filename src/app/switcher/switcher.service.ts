@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Observable, of, concat } from 'rxjs';
+import { Observable, of, forkJoin } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { RequestService } from '@shared/request/request.service';
 import { UtilsService } from '@services/utils.service';
@@ -35,6 +35,7 @@ export interface ProgramConfig {
   theme_color?: string;
   card_style?: string;
   review_rating?: boolean;
+  truncate_description?: boolean;
 }
 
 export interface Project {
@@ -76,6 +77,7 @@ export class SwitcherService {
       programId: programObj.program.id,
       programName: programObj.program.name,
       hasReviewRating: this.utils.has(programObj, 'program.config.review_rating') ? programObj.program.config.review_rating : false,
+      truncateDescription: this.utils.has(programObj, 'program.config.truncate_description') ? programObj.program.config.truncate_description : true,
       experienceId: programObj.program.experience_id,
       projectId: programObj.project.id,
       timelineId: programObj.timeline.id,
@@ -85,7 +87,10 @@ export class SwitcherService {
     });
 
     this.sharedService.onPageLoad();
-    return concat(this.getTeamInfo(), this.getMyInfo());
+    return forkJoin(
+      this.getTeamInfo(),
+      this.getMyInfo(),
+    );
   }
 
   getTeamInfo(): Observable<any> {

@@ -1,10 +1,13 @@
 import { Component, HostListener, ViewChild, ViewChildren, QueryList, ElementRef } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { ProjectService, Milestone, DummyMilestone } from './project.service';
 import { HomeService } from '../home/home.service';
 import { RouterEnter } from '@services/router-enter.service';
 import { BrowserStorageService } from '@services/storage.service';
 import { UtilsService } from '@services/utils.service';
+import { SharedService } from '@services/shared.service';
+import { FastFeedbackService } from '../fast-feedback/fast-feedback.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-project',
@@ -22,13 +25,17 @@ export class ProjectComponent extends RouterEnter {
   @ViewChildren('milestoneRef', {read: ElementRef}) milestoneRefs: QueryList<ElementRef>;
   public activeMilestone: Array<boolean> = [];
   private milestonePositions: Array<number> = [];
+  private highlightedActivityId: number;
 
   constructor(
     public router: Router,
+    private route: ActivatedRoute,
     public utils: UtilsService,
     public storage: BrowserStorageService,
     private projectService: ProjectService,
     private homeService: HomeService,
+    private sharedService: SharedService,
+    public fastFeedbackService: FastFeedbackService
    ) {
     super(router);
   }
@@ -42,12 +49,16 @@ export class ProjectComponent extends RouterEnter {
 
   onEnter() {
     this._initialise();
+    this.route.queryParamMap.subscribe(params => {
+      this.highlightedActivityId = +params.get('activityId') || undefined;
+    });
     this.homeService.getProgramName().subscribe(programName => {
       this.programName = programName;
     });
 
     this.projectService.getMilestones()
       .subscribe(milestones => {
+
         this.milestones = milestones;
         this.loadingMilestone = false;
         this.activeMilestone = new Array(milestones.length);
@@ -66,6 +77,7 @@ export class ProjectComponent extends RouterEnter {
 
             this.milestones = this._addActivitiesToEachMilestone(this.milestones, activities);
             this.loadingActivity = false;
+
             this.projectService.getProgress(this.milestones).subscribe(progresses => {
               this.milestonePositions = this.milestoneRefs.map(milestoneRef => {
                 return milestoneRef.nativeElement.offsetTop;
@@ -73,9 +85,15 @@ export class ProjectComponent extends RouterEnter {
 
               this.milestones = this._populateMilestoneProgress(progresses, this.milestones);
               this.loadingProgress = false;
+
+              if (this.highlightedActivityId) {
+                this.scrollTo(`activity-card-${this.highlightedActivityId}`);
+              }
             });
           });
       });
+
+    this.fastFeedbackService.pullFastFeedback().subscribe();
   }
 
   trackScrolling(event) {
@@ -100,12 +118,15 @@ export class ProjectComponent extends RouterEnter {
     }
   }
 
-  scrollTo(id, index) {
+  scrollTo(domId: string, index?: number): void {
+    if (index) {
+      this.activeMilestone[index] = true;
+    }
+
     // update active milestone status (mark whatever user select)
     this.activeMilestone.fill(false);
-    this.activeMilestone[index] = true;
 
-    const el = document.getElementById(id);
+    const el = document.getElementById(domId);
     el.scrollIntoView({ block: 'start', behavior: 'smooth', inline: 'nearest' });
 
     el.classList.add('highlighted');
@@ -141,6 +162,10 @@ export class ProjectComponent extends RouterEnter {
           milestones[milestoneIndex].Activity[activityIndex].progress = thisActivity.progress;
         } else {
           milestones[milestoneIndex].Activity[activityIndex].progress = 0;
+        }
+
+        if (this.highlightedActivityId && activity.id === this.highlightedActivityId) {
+          milestones[milestoneIndex].Activity[activityIndex].highlighted = true;
         }
       });
     });
