@@ -192,7 +192,7 @@ export class HomeComponent extends RouterEnter implements OnDestroy {
   }
 
   goToActivity(id) {
-    this.router.navigateByUrl('app/activity/' + id);
+    this.router.navigate(['app', 'activity', id]);
   }
 
   goToAssessment(activityId, contextId, assessmentId) {
