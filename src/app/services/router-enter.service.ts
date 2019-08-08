@@ -12,7 +12,6 @@ export class RouterEnter implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.onEnter();
-    console.log('subscribe from ' + this.routeUrl);
     this.subscription = this.router.events.subscribe(event => {
       if (event instanceof NavigationEnd && event.url.includes(this.routeUrl)) {
         this.onEnter();
