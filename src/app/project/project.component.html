@@ -7,7 +7,9 @@
 <div>
   <ion-grid class="milestone-bar">
     <ion-row>
-      <ion-col class="bubbles-top" (click)="scrollTo('milestone-' + milestone.id, i)" *ngFor="let milestone of milestones; let i = index">
+      <ion-col class="bubbles-top"
+        (click)="scrollTo('milestone-' + milestone.id, i)"
+        *ngFor="let milestone of milestones; let i = index">
         <div [class.active]="activeMilestone[i]">
           <ng-container *ngIf="!milestone.isLocked; else milestoneLocked">
             <ion-icon *ngIf="milestone.progress >= 1; else circleProgress" name="checkmark-circle" class="icon-done" color="primary"></ion-icon>
@@ -62,7 +64,7 @@
                     <ng-template #activityLocked>
                       <ion-icon name="lock" color="medium" class="icon-lock"></ion-icon>
                     </ng-template>
-                    <app-activity-card [activity]="activity"
+                    <app-activity-card id="activity-card-{{activity.id}}" [activity]="activity"
                       (click)="!activity.isLocked && goToActivity(activity.id)"
                       class="activity-card"
                     ></app-activity-card>
