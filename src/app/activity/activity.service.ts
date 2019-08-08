@@ -335,8 +335,8 @@ export class ActivityService {
             loadingStatus: true,
             isForTeam: sequence[sequence.model].is_team,
             dueDate: sequence[sequence.model].deadline,
-            isOverdue: this.utils.timeComparer(sequence[sequence.model].deadline) < 0 ? true : false,
-            isDueToday: this.utils.timeComparer(sequence[sequence.model].deadline, undefined, true) === 0 ? true : false,
+            isOverdue: sequence[sequence.model].deadline ? this.utils.timeComparer(sequence[sequence.model].deadline) < 0 : false,
+            isDueToday: sequence[sequence.model].deadline ? this.utils.timeComparer(sequence[sequence.model].deadline, undefined, true) === 0 : false,
           };
         default:
           console.warn(`Unsupported model type ${sequence.model}`);
