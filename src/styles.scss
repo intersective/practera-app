@@ -161,13 +161,11 @@ body {
 
 .lock-assessment-popup {
   .modal-wrapper {
-    --height: 40%;
-    --width: 70%;
+    --height: 260px;
+    --width: 260px;
     --background: transparent;
     --box-shadow: none;
     --border-radius: 12px;
-    max-height: 266px;
-    min-height: 266px;
     .inner-scroll, .scroll-y, .overscroll {
       --overflow: hidden;
     }

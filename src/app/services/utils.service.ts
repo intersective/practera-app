@@ -199,6 +199,8 @@ export class UtilsService {
   }
 
   timeComparer(timeString: string, comparedString?: string, compareDate?: boolean) {
+    // add "T" between date and time to works on Safari
+    timeString = timeString.replace(' ', 'T');
     const time = new Date(timeString + 'Z');
     let compared = new Date();
     if (comparedString) {
