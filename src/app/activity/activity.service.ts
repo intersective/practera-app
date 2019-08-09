@@ -380,8 +380,8 @@ export class ActivityService {
             loadingStatus: true,
             isForTeam: task.is_team,
             dueDate: task.deadline,
-            isOverdue: this.utils.timeComparer(task.deadline) < 0 ? true : false,
-            isDueToday: this.utils.timeComparer(task.deadline, undefined, true) === 0 ? true : false,
+            isOverdue: task.deadline ? this.utils.timeComparer(task.deadline) < 0 : false,
+            isDueToday: task.deadline ? this.utils.timeComparer(task.deadline, undefined, true) === 0 : false,
           };
       }
     });
