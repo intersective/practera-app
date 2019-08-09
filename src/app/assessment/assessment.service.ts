@@ -134,7 +134,7 @@ export class AssessmentService {
       description: thisAssessment.Assessment.description,
       isForTeam: thisAssessment.Assessment.is_team,
       dueDate: thisAssessment.Assessment.deadline,
-      isOverdue: this.utils.timeComparer(thisAssessment.Assessment.deadline) < 0 ? true : false,
+      isOverdue: thisAssessment.Assessment.deadline ? this.utils.timeComparer(thisAssessment.Assessment.deadline) < 0 : false,
       groups: []
     };
 
