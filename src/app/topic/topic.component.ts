@@ -35,6 +35,7 @@ export class TopicComponent extends RouterEnter {
   topicProgress: number;
   isLoadingPreview = false;
   isRedirectingToNextMilestoneTask: boolean;
+  askForMarkAsDone: boolean;
 
   constructor(
     private topicService: TopicService,
@@ -63,6 +64,7 @@ export class TopicComponent extends RouterEnter {
     this.loadingMarkedDone = true;
     this.loadingTopic = true;
     this.isRedirectingToNextMilestoneTask = false;
+    this.askForMarkAsDone = false;
   }
 
   onEnter() {
@@ -71,6 +73,7 @@ export class TopicComponent extends RouterEnter {
     this.activityId = +this.route.snapshot.paramMap.get('activityId');
     this._getTopic();
     this._getTopicProgress();
+    setTimeout(() => this.askForMarkAsDone = true, 15000);
   }
 
   private _getTopic() {
@@ -259,7 +262,7 @@ export class TopicComponent extends RouterEnter {
   }
 
   back() {
-    if (this.btnToggleTopicIsDone) {
+    if (this.btnToggleTopicIsDone || !this.askForMarkAsDone) {
       return this.router.navigate(['app', 'activity', this.activityId]);
     }
 
