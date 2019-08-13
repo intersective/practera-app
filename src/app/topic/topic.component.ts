@@ -3,7 +3,6 @@ import { Component, OnInit } from '@angular/core';
 import { EmbedVideoService } from 'ngx-embed-video';
 import { Router, ActivatedRoute } from '@angular/router';
 import { FilestackService } from '@shared/filestack/filestack.service';
-import { RouterEnter } from '@services/router-enter.service';
 import { UtilsService } from '@services/utils.service';
 import { BrowserStorageService } from '@services/storage.service';
 import { NotificationService } from '@shared/notification/notification.service';
@@ -16,7 +15,7 @@ import { Subscription, Observable } from 'rxjs';
   templateUrl: './topic.component.html',
   styleUrls: ['./topic.component.scss']
 })
-export class TopicComponent extends RouterEnter {
+export class TopicComponent {
   routeUrl = '/topic/';
   topic: Topic = {
     id: 0,
@@ -48,9 +47,7 @@ export class TopicComponent extends RouterEnter {
     public notificationService: NotificationService,
     private activityService: ActivityService,
     private sharedService: SharedService
-  ) {
-    super(router);
-  }
+  ) {}
 
   private _initialise() {
     this.topic = {
@@ -67,7 +64,7 @@ export class TopicComponent extends RouterEnter {
     this.askForMarkAsDone = false;
   }
 
-  onEnter() {
+  ionViewWillEnter() {
     this._initialise();
     this.id = +this.route.snapshot.paramMap.get('id');
     this.activityId = +this.route.snapshot.paramMap.get('activityId');
