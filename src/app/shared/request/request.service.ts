@@ -42,7 +42,7 @@ export class RequestService {
     private utils: UtilsService,
     private storage: BrowserStorageService,
     private router: Router,
-    @Optional() config: RequestConfig
+    @Optional() config: RequestConfig,
   ) {
     if (config) {
       this.appkey = config.appkey;

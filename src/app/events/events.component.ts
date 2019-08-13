@@ -35,7 +35,7 @@ export class EventsComponent {
   ) {
     // update event list after book/cancel an event
     this.utils.getEvent('update-event').subscribe(event => {
-      this.onEnter();
+      this.ionViewWillEnter();
     });
   }
 
