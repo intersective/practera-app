@@ -209,7 +209,6 @@ export class HomeComponent implements OnDestroy {
 
   ngOnDestroy(): void {
     // run ngOnDestroy from RouterEnter
-    super.ngOnDestroy();
     this.subscriptions.forEach(subscription => subscription.unsubscribe());
   }
 

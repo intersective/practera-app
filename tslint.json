@@ -1,4 +1,5 @@
 {
+  "extends": "tslint:recommended",
   "rulesDirectory": [
     "node_modules/codelyzer"
   ],
@@ -11,9 +12,15 @@
       "check-space"
     ],
     "curly": true,
+    "array-type": false,
+    "arrow-parens": false,
     "deprecation": {
       "severity": "warn"
     },
+    "import-blacklist": [
+      true,
+      "rxjs/Rx"
+    ],
     "eofline": true,
     "forin": true,
     "import-spacing": true,
@@ -43,6 +50,7 @@
     ],
     "no-arg": true,
     "no-bitwise": true,
+    "no-consecutive-blank-lines": false,
     "no-console": [
       true,
       "debug",
@@ -81,6 +89,7 @@
       "check-whitespace"
     ],
     "prefer-const": true,
+    "ordered-imports": false,
     "quotemark": [
       true,
       "single"
@@ -126,6 +135,12 @@
       "app",
       "page",
       "kebab-case"
+    ],
+    "one-variable-per-declaration": false,
+    "component-class-suffix": [
+      true,
+      "Page",
+      "Component"
     ],
     "no-output-on-prefix": true,
     "use-input-property-decorator": true,
