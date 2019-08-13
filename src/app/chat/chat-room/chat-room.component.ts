@@ -2,7 +2,6 @@ import { Component, OnInit, ViewChild, AfterContentInit, AfterViewInit } from '@
 import { Router, ActivatedRoute } from '@angular/router';
 import { IonContent, ModalController } from '@ionic/angular';
 import { BrowserStorageService } from '@services/storage.service';
-import { RouterEnter } from '@services/router-enter.service';
 import { UtilsService } from '@services/utils.service';
 import { PusherService } from '@shared/pusher/pusher.service';
 import { FilestackService } from '@shared/filestack/filestack.service';
@@ -15,7 +14,7 @@ import { ChatPreviewComponent } from '../chat-preview/chat-preview.component';
   templateUrl: './chat-room.component.html',
   styleUrls: ['./chat-room.component.scss']
 })
-export class ChatRoomComponent extends RouterEnter {
+export class ChatRoomComponent {
   @ViewChild(IonContent) content: IonContent;
 
   routeUrl = '/chat-room/';
@@ -39,7 +38,6 @@ export class ChatRoomComponent extends RouterEnter {
     private filestackService: FilestackService,
     private modalController: ModalController,
   ) {
-    super(router);
     const role = this.storage.getUser().role;
 
     // message by team
@@ -92,7 +90,7 @@ export class ChatRoomComponent extends RouterEnter {
     }
   }
 
-  onEnter() {
+  ionViewWillEnter() {
     this._initialise();
     this._validateRouteParams();
     this._loadMessages();

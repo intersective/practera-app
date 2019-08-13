@@ -59,7 +59,12 @@ export class EventsService {
     private notificationService: NotificationService
   ) {}
 
-  getEvents(activityId?): Observable<any> {
+  /**
+   * get list of event for an activity (activityId present) or all activity_session
+   * @param  {number}          activityId (optional)
+   * @return {Observable<any>}            [description]
+   */
+  getEvents(activityId?: number): Observable<any> {
     let params = {};
     if (activityId) {
       params = {

@@ -6,7 +6,6 @@ import { Activity } from '../project/project.service';
 import { UtilsService } from '@services/utils.service';
 import { Subscription } from 'rxjs';
 import { BrowserStorageService } from '@services/storage.service';
-import { RouterEnter } from '@services/router-enter.service';
 import { PusherService } from '@shared/pusher/pusher.service';
 import { Achievement, AchievementsService } from '@app/achievements/achievements.service';
 import { Event, EventsService } from '@app/events/events.service';
@@ -18,7 +17,7 @@ import { environment } from '@environments/environment';
   templateUrl: 'home.component.html',
   styleUrls: ['home.component.scss']
 })
-export class HomeComponent extends RouterEnter implements OnDestroy {
+export class HomeComponent implements OnDestroy {
   routeUrl = '/app/home';
   progress = 0;
   loadingProgress = true;
@@ -43,7 +42,6 @@ export class HomeComponent extends RouterEnter implements OnDestroy {
     public achievementService: AchievementsService,
     public eventsService: EventsService
   ) {
-    super(router);
     const role = this.storage.getUser().role;
     this.utils.getEvent('notification').subscribe(event => {
       const todoItem = this.homeService.getTodoItemFromEvent(event);
@@ -87,7 +85,7 @@ export class HomeComponent extends RouterEnter implements OnDestroy {
     this.haveEvents = false;
   }
 
-  onEnter() {
+  ionViewWillEnter() {
     this._initialise();
     this.subscriptions.push(
       this.homeService.getTodoItems().subscribe(todoItems => {
