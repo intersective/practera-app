@@ -2,7 +2,6 @@ import { Component } from '@angular/core';
 import { TabsService } from './tabs.service';
 import { UtilsService } from '@services/utils.service';
 import { BrowserStorageService } from '@services/storage.service';
-import { RouterEnter } from '@services/router-enter.service';
 import { SwitcherService } from '../switcher/switcher.service';
 import { ReviewsService } from '../reviews/reviews.service';
 import { Router } from '@angular/router';
@@ -12,7 +11,7 @@ import { Router } from '@angular/router';
   templateUrl: 'tabs.component.html',
   styleUrls: ['tabs.component.scss']
 })
-export class TabsComponent extends RouterEnter {
+export class TabsComponent {
   routeUrl = '/app/';
   showReview = false;
   showChat = false;
@@ -28,8 +27,6 @@ export class TabsComponent extends RouterEnter {
     private switcherService: SwitcherService,
     private reviewsService: ReviewsService,
   ) {
-    super(router);
-
     const role = this.storage.getUser().role;
     this.utils.getEvent('notification').subscribe(event => {
       this.noOfTodoItems++;
@@ -56,7 +53,7 @@ export class TabsComponent extends RouterEnter {
     this.showReview = false;
   }
 
-  onEnter() {
+  ionViewWillEnter() {
     this._initialise();
     this._checkRoute();
     this.tabsService.getNoOfTodoItems().subscribe(noOfTodoItems => {
