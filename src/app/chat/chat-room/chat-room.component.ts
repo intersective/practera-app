@@ -1,4 +1,5 @@
 import { Component, OnInit, ViewChild, AfterContentInit, AfterViewInit } from '@angular/core';
+import { trigger, state, transition, style, animate } from '@angular/animations';
 import { Router, ActivatedRoute } from '@angular/router';
 import { IonContent, ModalController } from '@ionic/angular';
 import { BrowserStorageService } from '@services/storage.service';
@@ -13,7 +14,22 @@ import { ChatPreviewComponent } from '../chat-preview/chat-preview.component';
 @Component({
   selector: 'app-chat-room',
   templateUrl: './chat-room.component.html',
-  styleUrls: ['./chat-room.component.scss']
+  styleUrls: ['./chat-room.component.scss'],
+  animations: [
+    trigger('expandField', [
+      state('expand', style({
+        'height': '56px',
+        'overflow-y': 'scroll',
+      })),
+      state('compress', style({
+        'height': '36px',
+        'overflow-y': 'hidden',
+      })),
+      transition('* <=> *', [
+        animate('0.5s ease-out')
+      ])
+    ]),
+  ]
 })
 export class ChatRoomComponent extends RouterEnter {
   @ViewChild(IonContent) content: IonContent;
@@ -28,6 +44,7 @@ export class ChatRoomComponent extends RouterEnter {
   loadingMesageSend = false;
   isTyping = false;
   typingMessage: string;
+  expandTextField = false;
 
   constructor(
     private chatService: ChatService,
@@ -100,6 +117,7 @@ export class ChatRoomComponent extends RouterEnter {
   }
 
   private _initialise() {
+    this.expandTextField = false;
     this.loadingChatMessages = true;
     this.selectedChat = {
       name: '',
@@ -377,6 +395,7 @@ export class ChatRoomComponent extends RouterEnter {
    * Trigger typing event when user is typing
    */
   typing() {
+    this.extendTextArea();
     this.pusherService.triggerTyping(
       {
         from: this.pusherService.getMyPresenceChannelId(),
@@ -621,5 +640,26 @@ export class ChatRoomComponent extends RouterEnter {
     c.height = h;
     ctx.drawImage(video, 0, 0, w, h);            // draw in frame
     return c;                                    // return canvas
+  }
+
+  extendTextArea() {
+    // console.log(textArea);
+    // textArea.el.style.height = 'inherit';
+    // console.log('inherit height', textArea.el.style.height);
+    // const computed = window.getComputedStyle(textArea.el);
+    // const height = parseInt(computed.getPropertyValue('border-top-width'), 10)
+    // + parseInt(computed.getPropertyValue('padding-top'), 10)
+    // + textArea.el.scrollHeight
+    // + parseInt(computed.getPropertyValue('padding-bottom'), 10)
+    // + parseInt(computed.getPropertyValue('border-bottom-width'), 10);
+    // textArea.el.style.height = height + 'px';
+    // console.log('new height', textArea.el.style.height);
+    if (this.message.split(/\r*\n/).length > 2) {
+      console.log(this.message.split(/\r*\n/).length);
+      this.expandTextField = true;
+      return;
+    }
+    this.expandTextField = false;
+    // console.log(this.message.split(/\r*\n/).length);
   }
 }
