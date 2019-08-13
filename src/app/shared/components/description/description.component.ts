@@ -29,7 +29,7 @@ export class DescriptionComponent implements AfterViewInit, OnChanges {
   heightExceeded = false;
   elementHeight: number;
   @Input() content;
-  @ViewChild('description') descriptionRef: ElementRef;
+  @ViewChild('description', { static: false }) descriptionRef: ElementRef;
 
   constructor(
     private storage: BrowserStorageService,

@@ -20,7 +20,7 @@ export class ProjectComponent {
   public loadingActivity = true;
   public loadingMilestone = true;
   public loadingProgress = true;
-  @ViewChild('contentRef', {read: ElementRef}) contentRef: any;
+  @ViewChild('contentRef', {read: ElementRef, static: false}) contentRef: any;
   @ViewChildren('milestoneRef', {read: ElementRef}) milestoneRefs: QueryList<ElementRef>;
   public activeMilestone: Array<boolean> = [];
   private milestonePositions: Array<number> = [];
