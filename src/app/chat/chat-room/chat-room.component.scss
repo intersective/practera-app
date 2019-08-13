@@ -163,20 +163,26 @@ $message-body-size: 224px;
 .footer {
   ion-grid {
     background-color: white;
+    border-top: 0.1px solid var(--practera-chat-footer-border-color) !important;
   }
 
-  ion-item, ion-grid {
-    border-top: 0.1px solid var(--practera-chat-footer-border-color) !important;
-
-    ion-button {
-      ion-icon {
-        color: var(--practera-chat-footer-text-color) !important;
+  ion-grid {
+    ion-row {
+      ion-col {
+        ion-button {
+          ion-icon {
+            // color: var(--practera-chat-footer-text-color) !important;
+          }
+        }
+        ion-textarea {
+          --padding-top: 0;
+          --padding-end: 0;
+          --padding-bottom: 0;
+          --padding-start: 0;
+          min-height: 36px !important;
+          max-height: 100px !important;
+        }
       }
-    }
-
-    ion-input {
-      color: var(--practera-chat-footer-text-color) !important;
-      font-size: small;
     }
   }
 }
