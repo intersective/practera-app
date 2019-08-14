@@ -15,7 +15,7 @@ import { environment } from '@environments/environment';
 @Component({
   selector: 'app-home',
   templateUrl: 'home.component.html',
-  styleUrls: ['home.component.scss']
+  styleUrls: ['home.component.scss'],
 })
 export class HomeComponent implements OnDestroy {
   routeUrl = '/app/home';
@@ -40,7 +40,7 @@ export class HomeComponent implements OnDestroy {
     public utils: UtilsService,
     public storage: BrowserStorageService,
     public achievementService: AchievementsService,
-    public eventsService: EventsService
+    public eventsService: EventsService,
   ) {
     const role = this.storage.getUser().role;
     this.utils.getEvent('notification').subscribe(event => {
@@ -91,7 +91,7 @@ export class HomeComponent implements OnDestroy {
       this.homeService.getTodoItems().subscribe(todoItems => {
         this.todoItems = this.todoItems.concat(todoItems);
         this.loadingTodoItems = false;
-      })
+      }),
     );
     // only get the number of chats if user is in team
     if (this.storage.getUser().teamId) {
@@ -101,7 +101,7 @@ export class HomeComponent implements OnDestroy {
             this._addChatTodoItem(chatMessage);
           }
           this.loadingTodoItems = false;
-        })
+        }),
       );
     }
     this.subscriptions.push(
@@ -115,7 +115,7 @@ export class HomeComponent implements OnDestroy {
             this.loadingActivity = false;
           }
         });
-      })
+      }),
     );
 
     this.homeService.getProgramName().subscribe(programName => {
@@ -148,13 +148,13 @@ export class HomeComponent implements OnDestroy {
           this.achievements[1] = earned[1];
           this.achievements[2] = unEarned[0];
         }
-      })
+      }),
     );
 
     this.subscriptions.push(
       this.eventsService.getEvents().subscribe(events => {
         this.haveEvents = !this.utils.isEmpty(events);
-      })
+      }),
     );
 
     if (typeof environment.intercom !== 'undefined' && environment.intercom === true) {
@@ -165,8 +165,8 @@ export class HomeComponent implements OnDestroy {
         user_id: this.storage.getUser().id, // current_user_id
         // Supports all optional configuration.
         widget: {
-          'activator': '#intercom'
-        }
+          activator: '#intercom',
+        },
       });
     }
 
@@ -183,7 +183,7 @@ export class HomeComponent implements OnDestroy {
       'assessment',
       activityId,
       contextId,
-      assessmentId
+      assessmentId,
     ]);
   }
 
@@ -193,7 +193,7 @@ export class HomeComponent implements OnDestroy {
       'review',
       contextId,
       assessmentId,
-      submissionId
+      submissionId,
     ]);
   }
 
