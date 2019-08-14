@@ -18,8 +18,8 @@ import { ChatPreviewComponent } from '../chat-preview/chat-preview.component';
   animations: [
     trigger('expandField', [
       state('expand', style({
-        'height': '56px',
-        'overflow-y': 'scroll',
+        'height': '72px',
+        'overflow-y': 'hidden',
       })),
       state('compress', style({
         'height': '36px',
