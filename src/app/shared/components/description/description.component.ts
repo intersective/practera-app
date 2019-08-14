@@ -50,8 +50,7 @@ export class DescriptionComponent implements AfterViewInit, OnChanges {
         this.heightExceeded = this.elementHeight >= this.heightLimit;
         this.isTruncating = true;
       },
-      500
-    );
+      500);
   }
 }
 
