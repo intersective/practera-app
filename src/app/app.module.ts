@@ -28,7 +28,7 @@ import { UnlockingComponent } from '@components/unlocking/unlocking.component';
   declarations: [
     AppComponent,
     PageNotFoundComponent,
-    UnlockingComponent
+    UnlockingComponent,
   ],
   imports: [
     BrowserModule,
@@ -52,8 +52,8 @@ import { UnlockingComponent } from '@components/unlocking/unlocking.component';
     }),
     IntercomModule.forRoot({
       appId: environment.intercomAppId,
-      updateOnRouterChange: true // will automatically run `update` on router event changes. Default: `false`
-    })
+      updateOnRouterChange: true, // will automatically run `update` on router event changes. Default: `false`
+    }),
   ],
   providers: [
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
