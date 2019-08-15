@@ -83,4 +83,23 @@ export class SharedService {
     }
     return 'Due ' + this.utils.utcToLocal(dueDate);
   }
+
+  stopPlayingViodes() {
+    console.log('stopPlayingViodes');
+    const iframes = document.querySelectorAll( 'iframe');
+    const videos = document.querySelectorAll( 'video' );
+    console.log('stopPlayingViodes - iframes', iframes);
+    console.log('stopPlayingViodes - videos', videos);
+    if ( iframes ) {
+      iframes.forEach(frame => {
+        frame.src = frame.src;
+      });
+    }
+    if ( videos ) {
+      videos.forEach(video => {
+        video.pause();
+      });
+    }
+  }
+
 }
