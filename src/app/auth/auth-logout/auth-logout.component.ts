@@ -1,21 +1,18 @@
 import { Component } from '@angular/core';
 import { AuthService } from '../auth.service';
-import { Router, ActivatedRoute } from '@angular/router';
-import { RouterEnter } from '@services/router-enter.service';
+import { ActivatedRoute } from '@angular/router';
 import { switchMap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-auth-logout',
   template: '',
 })
-export class AuthLogoutComponent extends RouterEnter {
+export class AuthLogoutComponent {
   routeUrl = '/logout';
   constructor(
-    public router: Router,
     private authService: AuthService,
     private route: ActivatedRoute
   ) {
-    super(router);
   }
 
   onEnter() {

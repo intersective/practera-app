@@ -6,7 +6,6 @@ import { Activity } from '../project/project.service';
 import { UtilsService } from '@services/utils.service';
 import { Subscription } from 'rxjs';
 import { BrowserStorageService } from '@services/storage.service';
-import { RouterEnter } from '@services/router-enter.service';
 import { PusherService } from '@shared/pusher/pusher.service';
 import { Achievement, AchievementsService } from '@app/achievements/achievements.service';
 import { Event, EventsService } from '@app/events/events.service';
@@ -16,9 +15,9 @@ import { environment } from '@environments/environment';
 @Component({
   selector: 'app-home',
   templateUrl: 'home.component.html',
-  styleUrls: ['home.component.scss']
+  styleUrls: ['home.component.scss'],
 })
-export class HomeComponent extends RouterEnter implements OnDestroy {
+export class HomeComponent implements OnDestroy {
   routeUrl = '/app/home';
   progress = 0;
   loadingProgress = true;
@@ -41,9 +40,8 @@ export class HomeComponent extends RouterEnter implements OnDestroy {
     public utils: UtilsService,
     public storage: BrowserStorageService,
     public achievementService: AchievementsService,
-    public eventsService: EventsService
+    public eventsService: EventsService,
   ) {
-    super(router);
     const role = this.storage.getUser().role;
     this.utils.getEvent('notification').subscribe(event => {
       const todoItem = this.homeService.getTodoItemFromEvent(event);
@@ -87,13 +85,13 @@ export class HomeComponent extends RouterEnter implements OnDestroy {
     this.haveEvents = false;
   }
 
-  onEnter() {
+  ionViewWillEnter() {
     this._initialise();
     this.subscriptions.push(
       this.homeService.getTodoItems().subscribe(todoItems => {
         this.todoItems = this.todoItems.concat(todoItems);
         this.loadingTodoItems = false;
-      })
+      }),
     );
     // only get the number of chats if user is in team
     if (this.storage.getUser().teamId) {
@@ -103,7 +101,7 @@ export class HomeComponent extends RouterEnter implements OnDestroy {
             this._addChatTodoItem(chatMessage);
           }
           this.loadingTodoItems = false;
-        })
+        }),
       );
     }
     this.subscriptions.push(
@@ -117,7 +115,7 @@ export class HomeComponent extends RouterEnter implements OnDestroy {
             this.loadingActivity = false;
           }
         });
-      })
+      }),
     );
 
     this.homeService.getProgramName().subscribe(programName => {
@@ -150,13 +148,13 @@ export class HomeComponent extends RouterEnter implements OnDestroy {
           this.achievements[1] = earned[1];
           this.achievements[2] = unEarned[0];
         }
-      })
+      }),
     );
 
     this.subscriptions.push(
       this.eventsService.getEvents().subscribe(events => {
         this.haveEvents = !this.utils.isEmpty(events);
-      })
+      }),
     );
 
     if (typeof environment.intercom !== 'undefined' && environment.intercom === true) {
@@ -167,8 +165,8 @@ export class HomeComponent extends RouterEnter implements OnDestroy {
         user_id: this.storage.getUser().id, // current_user_id
         // Supports all optional configuration.
         widget: {
-          'activator': '#intercom'
-        }
+          activator: '#intercom',
+        },
       });
     }
 
@@ -185,7 +183,7 @@ export class HomeComponent extends RouterEnter implements OnDestroy {
       'assessment',
       activityId,
       contextId,
-      assessmentId
+      assessmentId,
     ]);
   }
 
@@ -195,7 +193,7 @@ export class HomeComponent extends RouterEnter implements OnDestroy {
       'review',
       contextId,
       assessmentId,
-      submissionId
+      submissionId,
     ]);
   }
 
@@ -211,7 +209,6 @@ export class HomeComponent extends RouterEnter implements OnDestroy {
 
   ngOnDestroy(): void {
     // run ngOnDestroy from RouterEnter
-    super.ngOnDestroy();
     this.subscriptions.forEach(subscription => subscription.unsubscribe());
   }
 
