@@ -46,8 +46,8 @@
     "ng-intercom": "^8.0.0",
     "ngx-embed-video": "^1.0.4",
     "pusher-js": "^4.4.0",
-    "rxjs": "~6.5.1",
-    "rxjs-compat": "~6.5.1",
+    "rxjs": "~6.5.2",
+    "rxjs-compat": "~6.5.2",
     "ts-md5": "^1.2.4",
     "tslib": "^1.9.0",
     "zone.js": "~0.9.1"

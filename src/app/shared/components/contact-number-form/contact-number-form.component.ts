@@ -151,9 +151,7 @@ export class ContactNumberFormComponent implements OnInit {
     }
   }
 
-  disableArrowKeys(event) {
-    event = (event) ? event : window.event;
-
+  disableArrowKeys(event: KeyboardEvent): boolean {
     // charCode is the code of each Key
     const charCode = (event.which) ? event.which : event.keyCode;
 

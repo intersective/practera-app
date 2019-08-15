@@ -87,10 +87,10 @@ export class SwitcherService {
     });
 
     this.sharedService.onPageLoad();
-    return forkJoin(
+    return forkJoin([
       this.getTeamInfo(),
       this.getMyInfo(),
-    );
+    ]);
   }
 
   getTeamInfo(): Observable<any> {
