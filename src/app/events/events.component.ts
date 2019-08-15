@@ -2,7 +2,6 @@ import { Component, Input } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { EventsService, Event, Activity } from './events.service';
 import { UtilsService } from '@services/utils.service';
-import { RouterEnter } from '@services/router-enter.service';
 
 interface EventGroup {
   date: string;
@@ -15,7 +14,7 @@ interface EventGroup {
   styleUrls: ['events.component.scss']
 })
 
-export class EventsComponent extends RouterEnter {
+export class EventsComponent {
   routeUrl = '/events';
   events: Array<EventGroup>;
   eventsCategorised: {
@@ -34,10 +33,9 @@ export class EventsComponent extends RouterEnter {
     private eventService: EventsService,
     public utils: UtilsService
   ) {
-    super(router);
     // update event list after book/cancel an event
     this.utils.getEvent('update-event').subscribe(event => {
-      this.onEnter();
+      this.ionViewWillEnter();
     });
   }
 
@@ -54,7 +52,7 @@ export class EventsComponent extends RouterEnter {
     this.activated = 'browse';
   }
 
-  onEnter() {
+  ionViewWillEnter() {
     this._initialise();
     this.eventService.getEvents().subscribe(events => {
       if (this.utils.isEmpty(events)) {
