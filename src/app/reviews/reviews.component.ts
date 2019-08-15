@@ -1,7 +1,6 @@
 import { Component } from '@angular/core';
 import { ReviewsService, Review } from './reviews.service';
 import { Router } from '@angular/router';
-import { RouterEnter } from '@services/router-enter.service';
 import { UtilsService } from '../services/utils.service';
 import { BrowserStorageService } from '@services/storage.service';
 
@@ -10,7 +9,7 @@ import { BrowserStorageService } from '@services/storage.service';
   templateUrl: './reviews.component.html',
   styleUrls: ['./reviews.component.scss']
 })
-export class ReviewsComponent extends RouterEnter {
+export class ReviewsComponent {
 
   public routeUrl = '/app/reviews';
   public reviews: Array<Review> = [];
@@ -23,7 +22,6 @@ export class ReviewsComponent extends RouterEnter {
     public utils: UtilsService,
     public storage: BrowserStorageService,
   ) {
-    super(router);
   }
 
   onEnter() {
