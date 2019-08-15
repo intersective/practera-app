@@ -20,6 +20,12 @@ export class RequestInterceptor implements HttpInterceptor {
 
     const headers = {};
 
+    // inherit the existing headers
+    const keys = req.headers.keys();
+    keys.forEach(key => {
+      headers[key] = req.headers.get(key);
+    });
+
     // inject appkey
     if (this.currenConfig.appkey) {
       headers['appkey'] = this.currenConfig.appkey;
