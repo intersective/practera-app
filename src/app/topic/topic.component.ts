@@ -76,6 +76,10 @@ export class TopicComponent extends RouterEnter {
     setTimeout(() => this.askForMarkAsDone = true, 15000);
   }
 
+  ionViewWillLeave() {
+    this.sharedService.stopPlayingViodes();
+  }
+
   private _getTopic() {
     this.topicService.getTopic(this.id)
       .subscribe(topic => {
