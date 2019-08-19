@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, OnInit, OnDestroy } from '@angular/core';
 import { Router, ActivatedRoute, ParamMap } from '@angular/router';
 import { Observable, of, forkJoin } from 'rxjs';
 import { catchError } from 'rxjs/operators';
@@ -17,8 +17,8 @@ import { FastFeedbackService } from '../fast-feedback/fast-feedback.service';
   styleUrls: ['./activity.component.scss']
 })
 export class ActivityComponent extends RouterEnter {
+  routeUrl = '/app/activity'; // mandatory for RouterEnter parent class
 
-  routeUrl = '/app/activity';
   id: number;
   activity: Activity = {
     id: 0,
@@ -41,12 +41,23 @@ export class ActivityComponent extends RouterEnter {
     public sharedService: SharedService,
     public fastFeedbackService: FastFeedbackService
   ) {
+    super(router);
+
     this.events = []; // initiate events array
 
     // update event list after book/cancel an event
-    this.utils.getEvent('update-event').subscribe(event => {
-      this._getEvents();
-    });
+    /*this.utils.getEvent('update-event').subscribe(event => {
+console.log('event::', event);
+      // this._getEvents();
+    });*/
+  }
+
+  ngOnInit() {
+    console.log('inited');
+  }
+
+  ngOnDestroy() {
+    console.log('destroyed');
   }
 
   private _initialise() {
@@ -59,11 +70,11 @@ export class ActivityComponent extends RouterEnter {
     this.loadingActivity = true;
   }
 
-  ionViewWillEnter() {
-    this.route.data
+  onEnter() {
+    /*this.route.data
       .subscribe((data: { events: Event[]}) => {
         this._getEvents(data.events);
-      });
+      });*/
 
     this._initialise();
     this.id = +this.route.snapshot.paramMap.get('id');
@@ -80,6 +91,14 @@ export class ActivityComponent extends RouterEnter {
 
         this._getTasksProgress();
       });
+  }
+
+  ngOnInit() {
+    console.log('inited');
+  }
+
+  ngOnDestroy() {
+    console.log('destroyed');
   }
 
   private _parallelAPI(requests) {

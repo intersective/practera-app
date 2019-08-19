@@ -15,7 +15,8 @@ import { Subscription } from 'rxjs';
   styleUrls: ['project.component.scss'],
 })
 export class ProjectComponent extends RouterEnter {
-  public routeUrl = '/app/project';
+  public routeUrl = '/app/project'; // mandatory for RouterEnter parent class
+
   public programName: string;
   public milestones: Array<Milestone | DummyMilestone> = [];
   public loadingActivity = true;
@@ -58,7 +59,6 @@ export class ProjectComponent extends RouterEnter {
 
     this.projectService.getMilestones()
       .subscribe(milestones => {
-
         this.milestones = milestones;
         this.loadingMilestone = false;
         this.activeMilestone = new Array(milestones.length);
