@@ -67,10 +67,6 @@ export class ActivityComponent extends RouterEnter {
     this.fastFeedbackService.pullFastFeedback().subscribe();
   }
 
-  ionViewWillLeave() {
-    this.sharedService.stopPlayingViodes();
-  }
-
   private _getActivity() {
     this.activityService.getActivity(this.id)
       .subscribe(activity => {

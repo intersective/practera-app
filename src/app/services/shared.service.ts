@@ -84,12 +84,12 @@ export class SharedService {
     return 'Due ' + this.utils.utcToLocal(dueDate);
   }
 
+  /**
+   * This method get all iframe and videos from documents and stop playing videos.
+   */
   stopPlayingViodes() {
-    console.log('stopPlayingViodes');
-    const iframes = document.querySelectorAll( 'iframe');
-    const videos = document.querySelectorAll( 'video' );
-    console.log('stopPlayingViodes - iframes', iframes);
-    console.log('stopPlayingViodes - videos', videos);
+    const iframes = Array.from(document.querySelectorAll( 'iframe'));
+    const videos = Array.from(document.querySelectorAll( 'video' ));
     if ( iframes ) {
       iframes.forEach(frame => {
         frame.src = frame.src;
