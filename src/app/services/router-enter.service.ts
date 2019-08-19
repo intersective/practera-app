@@ -1,8 +1,8 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, AfterViewInit } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
 import { Subscription } from 'rxjs';
 
-export class RouterEnter implements OnInit, OnDestroy {
+export class RouterEnter implements OnInit, OnDestroy, AfterViewInit {
   subscription: Subscription;
   routeUrl: string;
 
@@ -13,6 +13,7 @@ export class RouterEnter implements OnInit, OnDestroy {
   ngOnInit() {
     this.onEnter();
     this.subscription = this.router.events.subscribe(event => {
+// console.log(event);
       if (event instanceof NavigationEnd && event.url.includes(this.routeUrl)) {
         this.onEnter();
       }
@@ -25,5 +26,17 @@ export class RouterEnter implements OnInit, OnDestroy {
 
   onEnter() {
 
+  }
+
+  ngAfterViewInit() {
+    console.log('ngAfterViewInit');
+  }
+
+  ionViewWillEnter() {
+    console.log('ionViewWillEnter');
+  }
+
+  ionViewWillLeave() {
+    console.log('ionViewWillLeave');
   }
 }
