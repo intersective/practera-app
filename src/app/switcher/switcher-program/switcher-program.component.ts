@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { AuthService } from '../../auth/auth.service';
 import { Injectable, Inject } from '@angular/core';
 import { SwitcherService, ProgramObj } from '../switcher.service';
+import { RouterEnter } from '@services/router-enter.service';
 import { LoadingController } from '@ionic/angular';
 import { environment } from '@environments/environment';
 import { PusherService } from '@shared/pusher/pusher.service';

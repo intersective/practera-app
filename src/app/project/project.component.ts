@@ -2,6 +2,7 @@ import { Component, HostListener, ViewChild, ViewChildren, QueryList, ElementRef
 import { Router, ActivatedRoute } from '@angular/router';
 import { ProjectService, Milestone, DummyMilestone } from './project.service';
 import { HomeService } from '../home/home.service';
+import { RouterEnter } from '@services/router-enter.service';
 import { BrowserStorageService } from '@services/storage.service';
 import { UtilsService } from '@services/utils.service';
 import { SharedService } from '@services/shared.service';
@@ -13,7 +14,7 @@ import { Subscription } from 'rxjs';
   templateUrl: 'project.component.html',
   styleUrls: ['project.component.scss'],
 })
-export class ProjectComponent {
+export class ProjectComponent extends RouterEnter {
   public routeUrl = '/app/project';
   public programName: string;
   public milestones: Array<Milestone | DummyMilestone> = [];
@@ -36,6 +37,7 @@ export class ProjectComponent {
     private sharedService: SharedService,
     public fastFeedbackService: FastFeedbackService
    ) {
+    super(router);
   }
 
   private _initialise() {
@@ -45,7 +47,7 @@ export class ProjectComponent {
     this.loadingProgress = true;
   }
 
-  ionViewWillEnter() {
+  onEnter() {
     this._initialise();
     this.route.queryParamMap.subscribe(params => {
       this.highlightedActivityId = +params.get('activityId') || undefined;

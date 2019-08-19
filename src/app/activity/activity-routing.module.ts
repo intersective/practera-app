@@ -3,7 +3,6 @@ import { RouterModule, Routes } from '@angular/router';
 
 import { ActivityComponent } from './activity.component';
 import { ActivityRoutingComponent } from './activity-routing.component';
-import { EventResolverService } from '../events/event-resolver.service';
 
 const routes: Routes = [
   {
@@ -12,10 +11,7 @@ const routes: Routes = [
     children: [
       {
         path: ':id',
-        component: ActivityComponent,
-        resolve: {
-          events: EventResolverService,
-        }
+        component: ActivityComponent
       }
     ]
   }
