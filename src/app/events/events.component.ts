@@ -37,7 +37,7 @@ export class EventsComponent extends RouterEnter {
     super(router);
     // update event list after book/cancel an event
     this.utils.getEvent('update-event').subscribe(event => {
-      this.ionViewWillEnter();
+      this.onEnter();
     });
   }
 
