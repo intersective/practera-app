@@ -14,6 +14,11 @@ export class RequestInterceptor implements HttpInterceptor {
     this.currenConfig = config;
   }
 
+  private enforcedString(value): string {
+    const result = (typeof value === 'string') ? value : JSON.stringify(value);
+    return result;
+  }
+
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     const { apikey, timelineId, teamId } = this.storage.getUser();
     const paramsInject = req.params;
@@ -28,21 +33,26 @@ export class RequestInterceptor implements HttpInterceptor {
 
     // inject appkey
     if (this.currenConfig.appkey) {
-      headers['appkey'] = this.currenConfig.appkey;
+      headers['appkey'] = this.enforcedString(this.currenConfig.appkey);
     }
     if (apikey) {
-      headers['apikey'] = apikey;
+      headers['apikey'] = this.enforcedString(apikey);
     }
     if (timelineId) {
-      headers['timelineId'] = timelineId;
+      headers['timelineId'] = this.enforcedString(timelineId);
     }
 
     // do not need to pass team id for teams.json
     // do not need to pass team id for chat api calls
-    if (teamId && !req.url.includes('/teams.json') &&
-    !req.url.includes('/message/chat/list.json') && !req.url.includes('/message/chat/create_message') &&
-    !req.url.includes('/message/chat/edit_message') && !req.url.includes('/message/chat/list_messages.json')) {
-      headers['teamId'] = teamId;
+    if (
+      teamId &&
+      !req.url.includes('/teams.json') &&
+      !req.url.includes('/message/chat/list.json') &&
+      !req.url.includes('/message/chat/create_message') &&
+      !req.url.includes('/message/chat/edit_message') &&
+      !req.url.includes('/message/chat/list_messages.json')
+    ) {
+      headers['teamId'] = this.enforcedString(teamId);
     }
 
     const newRequest = req.clone({
