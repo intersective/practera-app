@@ -27,8 +27,8 @@ export class ActivityComponent extends RouterEnter {
     tasks: []
   };
   loadingActivity = true;
-  events: Array<Event>;
-  loadingEvents = true;
+  events: Event[];
+  loadingEvents: boolean;
 
   constructor(
     public router: Router,
@@ -41,7 +41,8 @@ export class ActivityComponent extends RouterEnter {
     public sharedService: SharedService,
     public fastFeedbackService: FastFeedbackService
   ) {
-    super(router);
+    this.events = []; // initiate events array
+
     // update event list after book/cancel an event
     this.utils.getEvent('update-event').subscribe(event => {
       this._getEvents();
@@ -58,11 +59,15 @@ export class ActivityComponent extends RouterEnter {
     this.loadingActivity = true;
   }
 
-  onEnter() {
+  ionViewWillEnter() {
+    this.route.data
+      .subscribe((data: { events: Event[]}) => {
+        this._getEvents(data.events);
+      });
+
     this._initialise();
     this.id = +this.route.snapshot.paramMap.get('id');
     this._getActivity();
-    this._getEvents();
 
     this.fastFeedbackService.pullFastFeedback().subscribe();
   }
@@ -125,13 +130,16 @@ export class ActivityComponent extends RouterEnter {
     return this.activityService.getAssessmentStatus(this.activity.tasks[index]);
   }
 
-  private _getEvents() {
-    this.loadingEvents = true;
-    this.events = [];
-    this.eventsService.getEvents(this.id).subscribe(events => {
-      this.events = events;
-      this.loadingEvents = false;
-    });
+  private _getEvents(events?: Event[]) {
+    this.events = events || [];
+
+    if (events === undefined) {
+      this.loadingEvents = true;
+      this.eventsService.getEvents(this.id).subscribe(res => {
+        this.events = res;
+        this.loadingEvents = false;
+      });
+    }
   }
 
   back() {
