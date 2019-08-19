@@ -1,5 +1,5 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { Router, NavigationEnd } from '@angular/router';
+import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { Platform } from '@ionic/angular';
 import { UtilsService } from '@services/utils.service';
 import { SharedService } from '@services/shared.service';
@@ -9,17 +9,12 @@ import { BrowserStorageService } from '@services/storage.service';
 import { VersionCheckService } from '@services/version-check.service';
 import { environment } from '@environments/environment';
 import { PusherService } from '@shared/pusher/pusher.service';
-import { Subscription } from 'rxjs';
-
 
 @Component({
   selector: 'app-root',
   templateUrl: 'app.component.html'
 })
-export class AppComponent implements OnInit, OnDestroy {
-  subscription: Subscription;
-  routeUrl: string;
-
+export class AppComponent implements OnInit {
   constructor(
     private platform: Platform,
     private router: Router,
@@ -33,10 +28,6 @@ export class AppComponent implements OnInit, OnDestroy {
     // private statusBar: StatusBar
   ) {
     this.initializeApp();
-  }
-
-  ngOnDestroy(): void {
-    this.subscription.unsubscribe();
   }
 
   ngOnInit() {
