@@ -6,6 +6,7 @@ import { ActivityService, Activity, OverviewActivity, Task } from './activity.se
 import { UtilsService } from '../services/utils.service';
 import { NotificationService } from '@shared/notification/notification.service';
 import { BrowserStorageService } from '@services/storage.service';
+import { RouterEnter } from '@services/router-enter.service';
 import { Event, EventsService } from '@app/events/events.service';
 import { SharedService } from '@services/shared.service';
 import { FastFeedbackService } from '../fast-feedback/fast-feedback.service';
@@ -15,7 +16,7 @@ import { FastFeedbackService } from '../fast-feedback/fast-feedback.service';
   templateUrl: './activity.component.html',
   styleUrls: ['./activity.component.scss']
 })
-export class ActivityComponent {
+export class ActivityComponent extends RouterEnter {
 
   routeUrl = '/app/activity';
   id: number;
