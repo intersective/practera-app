@@ -3,6 +3,7 @@ import { Router, NavigationEnd } from '@angular/router';
 import { Subscription } from 'rxjs';
 
 export class RouterEnter implements OnInit, OnDestroy, AfterViewInit {
+  routerEvents: Subscription;
   subscription: Subscription;
   routeUrl: string;
 
@@ -12,21 +13,26 @@ export class RouterEnter implements OnInit, OnDestroy, AfterViewInit {
 
   ngOnInit() {
     this.onEnter();
-    this.subscription = this.router.events.subscribe(event => {
-// console.log(event);
-      if (event instanceof NavigationEnd && event.url.includes(this.routeUrl)) {
-        this.onEnter();
+    this.routerEvents = this.router.events.subscribe(res => {
+      if (res instanceof NavigationEnd) {
+        if (res.url === this.routeUrl) {
+        // if (res.url.includes(this.routeUrl)) {
+          this.onEnter();
+        } else {
+          this.unsubscribeAll();
+        }
       }
     });
   }
 
   ngOnDestroy(): void {
     this.subscription.unsubscribe();
+    this.routerEvents.unsubscribe();
   }
 
-  onEnter() {
+  onEnter() {}
 
-  }
+  unsubscribeAll() {}
 
   ngAfterViewInit() {
     console.log('ngAfterViewInit');

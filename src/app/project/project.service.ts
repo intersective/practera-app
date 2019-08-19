@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { RequestService } from '@shared/request/request.service';
 import { UtilsService } from '@services/utils.service';
@@ -50,7 +50,7 @@ export interface Milestone {
 })
 
 export class ProjectService {
-  public activities: Array<Activity> = [];
+  public activities$: Subject<Activity[]> = new Subject();
 
   constructor(
     private request: RequestService,
@@ -100,7 +100,9 @@ export class ProjectService {
     })
     .pipe(map(response => {
       if (response.success && response.data) {
-        return this._normaliseActivities(response.data);
+        const activities = this._normaliseActivities(response.data);
+        this.activities$.next(activities);
+        return activities;
       }
     }));
   }
