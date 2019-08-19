@@ -5,6 +5,7 @@ import { UtilsService } from '../services/utils.service';
 import { NotificationService } from '@shared/notification/notification.service';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { BrowserStorageService } from '@services/storage.service';
+import { RouterEnter } from '@services/router-enter.service';
 import { SharedService } from '@services/shared.service';
 import { ActivityService, OverviewActivity, OverviewTask } from '../activity/activity.service';
 import { FastFeedbackService } from '../fast-feedback/fast-feedback.service';
@@ -18,7 +19,7 @@ const SAVE_PROGRESS_TIMEOUT = 10000;
   templateUrl: 'assessment.component.html',
   styleUrls: ['assessment.component.scss']
 })
-export class AssessmentComponent {
+export class AssessmentComponent extends RouterEnter {
 
   routeUrl = '/assessment/';
   // assessment id
@@ -82,6 +83,7 @@ export class AssessmentComponent {
     private activityService: ActivityService,
     private fastFeedbackService: FastFeedbackService
   ) {
+    super(router);
   }
 
   private _initialise() {
@@ -124,7 +126,7 @@ export class AssessmentComponent {
     this.isRedirectingToNextMilestoneTask = false;
   }
 
-  ionViewWillEnter() {
+  onEnter() {
     this._initialise();
     this.action = this.route.snapshot.data.action;
     this.fromPage = this.route.snapshot.paramMap.get('from');
