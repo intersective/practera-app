@@ -15,7 +15,8 @@ export class RouterEnter implements OnInit, OnDestroy, AfterViewInit {
     this.onEnter();
     this.routerEvents = this.router.events.subscribe(res => {
       if (res instanceof NavigationEnd) {
-        if (res.url.includes(this.routeUrl) && this.router.isActive(this.routeUrl, false)) {
+        if (res.url.indexOf(this.routeUrl) === 0) {
+        // if (res.url.includes(this.routeUrl) && this.router.isActive(this.routeUrl, false)) {
           this.onEnter();
         } else {
           this.unsubscribeAll();
