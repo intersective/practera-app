@@ -1,6 +1,6 @@
 import { Component, Input, OnInit, OnDestroy } from '@angular/core';
 import { Router, ActivatedRoute, ParamMap } from '@angular/router';
-import { Observable, of, forkJoin } from 'rxjs';
+import { Observable, of, forkJoin, Subscription } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { ActivityService, Activity, OverviewActivity, Task } from './activity.service';
 import { UtilsService } from '../services/utils.service';
@@ -29,6 +29,11 @@ export class ActivityComponent extends RouterEnter {
   loadingActivity = true;
   events: Event[];
   loadingEvents: boolean;
+  private feedbackPopup: Subscription;
+  private getEventPusher: Subscription;
+  private getActivity: Subscription;
+  // private getTasksProgresses: Subscription;
+  private getEvents: Subscription;
 
   constructor(
     public router: Router,
@@ -42,25 +47,14 @@ export class ActivityComponent extends RouterEnter {
     public fastFeedbackService: FastFeedbackService
   ) {
     super(router);
-
-    this.events = []; // initiate events array
-
     // update event list after book/cancel an event
-    /*this.utils.getEvent('update-event').subscribe(event => {
-console.log('event::', event);
-      // this._getEvents();
-    });*/
-  }
-
-  ngOnInit() {
-    console.log('inited');
-  }
-
-  ngOnDestroy() {
-    console.log('destroyed');
+    this.getEventPusher = this.utils.getEvent('update-event').subscribe(event => {
+      this._getEvents();
+    });
   }
 
   private _initialise() {
+    this.events = []; // initiate events array
     this.activity = {
       id: 0,
       name: '',
@@ -71,34 +65,31 @@ console.log('event::', event);
   }
 
   onEnter() {
-    /*this.route.data
-      .subscribe((data: { events: Event[]}) => {
-        this._getEvents(data.events);
-      });*/
-
     this._initialise();
     this.id = +this.route.snapshot.paramMap.get('id');
     this._getActivity();
+    this._getEvents();
+    this.feedbackPopup = this.fastFeedbackService.pullFastFeedback().subscribe();
+  }
 
-    this.fastFeedbackService.pullFastFeedback().subscribe();
+  unsubscribeAll() {
+    this.feedbackPopup.unsubscribe();
+    this.getEventPusher.unsubscribe();
+    this.getActivity.unsubscribe();
+    // this.getTasksProgresses.unsubscribe();
+    if (this.getEvents) {
+      this.getEvents.unsubscribe();
+    }
   }
 
   private _getActivity() {
-    this.activityService.getActivity(this.id)
+    this.getActivity = this.activityService.getActivity(this.id)
       .subscribe(activity => {
         this.activity = activity;
         this.loadingActivity = false;
 
         this._getTasksProgress();
-      });
-  }
-
-  ngOnInit() {
-    console.log('inited');
-  }
-
-  ngOnDestroy() {
-    console.log('destroyed');
+      }, err => console.log(err));
   }
 
   private _parallelAPI(requests) {
@@ -128,17 +119,17 @@ console.log('event::', event);
       model_id: this.activity.id,
       tasks: this.activity.tasks,
     }).subscribe(tasks => {
-        this.activity.tasks = tasks;
+      this.activity.tasks = tasks;
 
-        const requests = [];
-        this.activity.tasks.forEach((task, index) => {
-          if (task.type === 'Assessment') {
-            requests.push(this._getAssessmentStatus(index));
-          }
-        });
-
-        return this._parallelAPI(requests);
+      const requests = [];
+      this.activity.tasks.forEach((task, index) => {
+        if (task.type === 'Assessment') {
+          requests.push(this._getAssessmentStatus(index));
+        }
       });
+
+      return this._parallelAPI(requests);
+    });
   }
 
   /**
@@ -154,9 +145,11 @@ console.log('event::', event);
 
     if (events === undefined) {
       this.loadingEvents = true;
-      this.eventsService.getEvents(this.id).subscribe(res => {
+      this.getEvents = this.eventsService.getEvents(this.id).subscribe(res => {
         this.events = res;
         this.loadingEvents = false;
+      }, err => {
+        console.log(err);
       });
     }
   }

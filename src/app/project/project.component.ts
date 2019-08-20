@@ -28,7 +28,6 @@ export class ProjectComponent implements OnInit {
   private milestonePositions: Array<number> = [];
   private highlightedActivityId: number;
   private routeData: Subscription;
-  private routeEvents: Subscription;
   private routeQuery: Subscription;
   private homeProgramName: Subscription;
   private activities: Subscription;
@@ -44,7 +43,6 @@ export class ProjectComponent implements OnInit {
     private sharedService: SharedService,
     public fastFeedbackService: FastFeedbackService
   ) {
-    // super(router);
   }
 
   ngOnInit() {
@@ -107,7 +105,6 @@ export class ProjectComponent implements OnInit {
   private unsubscribeAll() {
     console.log('project_component::destroyed');
     this.routeData.unsubscribe();
-    this.routeEvents.unsubscribe();
     this.routeQuery.unsubscribe();
     this.homeProgramName.unsubscribe();
     this.projectProgresses.unsubscribe();
