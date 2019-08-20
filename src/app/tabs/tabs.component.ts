@@ -5,6 +5,7 @@ import { BrowserStorageService } from '@services/storage.service';
 import { SwitcherService } from '../switcher/switcher.service';
 import { ReviewsService } from '../reviews/reviews.service';
 import { Router } from '@angular/router';
+import { SharedService } from '@services/shared.service';
 
 @Component({
   selector: 'app-tabs',
@@ -26,6 +27,7 @@ export class TabsComponent {
     public utils: UtilsService,
     private switcherService: SwitcherService,
     private reviewsService: ReviewsService,
+    private sharedService: SharedService,
   ) {
     const role = this.storage.getUser().role;
     this.utils.getEvent('notification').subscribe(event => {
@@ -56,6 +58,7 @@ export class TabsComponent {
   ionViewWillEnter() {
     this._initialise();
     this._checkRoute();
+    this._stopPlayingVideos();
     this.tabsService.getNoOfTodoItems().subscribe(noOfTodoItems => {
       this.noOfTodoItems = noOfTodoItems;
     });
@@ -108,4 +111,9 @@ export class TabsComponent {
         break;
     }
   }
+
+  private _stopPlayingVideos() {
+    this.sharedService.stopPlayingViodes();
+  }
+
 }
