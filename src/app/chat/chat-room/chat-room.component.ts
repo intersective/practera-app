@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, AfterContentInit, AfterViewInit } from '@angular/core';
+import { Component, OnInit, ViewChild, AfterContentInit, AfterViewInit, ElementRef } from '@angular/core';
 import { trigger, state, transition, style, animate } from '@angular/animations';
 import { Router, ActivatedRoute } from '@angular/router';
 import { IonContent, ModalController } from '@ionic/angular';
@@ -55,6 +55,7 @@ export class ChatRoomComponent extends RouterEnter {
     public pusherService: PusherService,
     private filestackService: FilestackService,
     private modalController: ModalController,
+    public element: ElementRef
   ) {
     super(router);
     const role = this.storage.getUser().role;
@@ -395,7 +396,7 @@ export class ChatRoomComponent extends RouterEnter {
    * Trigger typing event when user is typing
    */
   typing() {
-    this.extendTextArea();
+    // this.extendTextArea();
     this.pusherService.triggerTyping(
       {
         from: this.pusherService.getMyPresenceChannelId(),
@@ -642,24 +643,39 @@ export class ChatRoomComponent extends RouterEnter {
     return c;                                    // return canvas
   }
 
-  extendTextArea() {
-    // console.log(textArea);
-    // textArea.el.style.height = 'inherit';
-    // console.log('inherit height', textArea.el.style.height);
-    // const computed = window.getComputedStyle(textArea.el);
-    // const height = parseInt(computed.getPropertyValue('border-top-width'), 10)
-    // + parseInt(computed.getPropertyValue('padding-top'), 10)
-    // + textArea.el.scrollHeight
-    // + parseInt(computed.getPropertyValue('padding-bottom'), 10)
-    // + parseInt(computed.getPropertyValue('border-bottom-width'), 10);
-    // textArea.el.style.height = height + 'px';
-    // console.log('new height', textArea.el.style.height);
-    if (this.message.split(/\r*\n/).length > 2) {
-      console.log(this.message.split(/\r*\n/).length);
-      this.expandTextField = true;
-      return;
-    }
-    this.expandTextField = false;
-    // console.log(this.message.split(/\r*\n/).length);
-  }
+  // extendTextArea() {
+  //   // // console.log(textArea);
+  //   // // textArea.el.style.height = 'inherit';
+  //   // // console.log('inherit height', textArea.el.style.height);
+  //   // // const computed = window.getComputedStyle(textArea.el);
+  //   // // const height = parseInt(computed.getPropertyValue('border-top-width'), 10)
+  //   // // + parseInt(computed.getPropertyValue('padding-top'), 10)
+  //   // // + textArea.el.scrollHeight
+  //   // // + parseInt(computed.getPropertyValue('padding-bottom'), 10)
+  //   // // + parseInt(computed.getPropertyValue('border-bottom-width'), 10);
+  //   // // textArea.el.style.height = height + 'px';
+  //   // // console.log('new height', textArea.el.style.height);
+  //   // if (this.message.split(/\r*\n/).length > 2) {
+  //   //   console.log(this.message.split(/\r*\n/).length);
+  //   //   this.expandTextField = true;
+  //   //   return;
+  //   // }
+  //   // this.expandTextField = false;
+  //   // // console.log(this.message.split(/\r*\n/).length);
+  //   const maxHeight = 100;
+  //   const ta = this.element.nativeElement.querySelector('textarea');
+  //   let newHeight;
+  //   if (ta) {
+  //     ta.style.overflowY = 'auto';
+  //     ta.style.height = 'auto';
+  //     if (maxHeight) {
+  //     console.log('this.maxHeight', maxHeight);
+  //     newHeight = Math.min(ta.scrollHeight, maxHeight);
+  //     console.log('newHeight', newHeight);
+  //     } else {
+  //       newHeight = ta.scrollHeight;
+  //     }
+  //     ta.style.height = newHeight + 'px';
+  //   }
+  // }
 }
