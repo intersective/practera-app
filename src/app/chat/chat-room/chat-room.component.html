@@ -122,13 +122,13 @@
       </ion-col>
       <ion-col size="9">
         <ion-textarea
-          [@expandField]="expandTextField ? 'expand' : 'compress'"
           #textField
           placeholder="Enter your message"
           required="true"
           name="message"
           [(ngModel)]="message"
           (ngModelChange)="typing()"
+          appAutoresize="100"
         ></ion-textarea>
       </ion-col>
       <ion-col size="1" no-padding text-center>

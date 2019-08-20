@@ -11,6 +11,7 @@ import { CircleProgressComponent } from '@shared/components/circle-progress/circ
 import { NgCircleProgressModule } from 'ng-circle-progress';
 import { BrandingLogoComponent } from '@shared/components/branding-logo/branding-logo.component';
 import { ContactNumberFormComponent } from '@shared/components/contact-number-form/contact-number-form.component';
+import { AutoresizeDirective } from './directives/autoresize/autoresize.directive';
 
 const largeCircleDefaultConfig = {
   backgroundColor: 'var(--ion-color-light)',
@@ -43,7 +44,8 @@ const largeCircleDefaultConfig = {
     ClickableItemComponent,
     CircleProgressComponent,
     BrandingLogoComponent,
-    ContactNumberFormComponent
+    ContactNumberFormComponent,
+    AutoresizeDirective
   ],
   exports: [
     ActivityCardComponent,
