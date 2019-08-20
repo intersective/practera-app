@@ -166,6 +166,10 @@ export class AssessmentComponent extends RouterEnter {
       });
   }
 
+  ionViewWillLeave() {
+    this.sharedService.stopPlayingViodes();
+  }
+
   // get the submission answers &/| review answers
   private _getSubmission() {
     this.assessmentService.getSubmission(this.id, this.contextId, this.action, this.submissionId)
