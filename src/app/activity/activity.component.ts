@@ -148,8 +148,6 @@ export class ActivityComponent extends RouterEnter {
       this.getEvents = this.eventsService.getEvents(this.id).subscribe(res => {
         this.events = res;
         this.loadingEvents = false;
-      }, err => {
-        console.log(err);
       });
     }
   }
@@ -168,16 +166,16 @@ export class ActivityComponent extends RouterEnter {
         } ,
         (data) => {
           if (data.data) {
-            this.goto(task.type, task.id);
+            return this.goto(task.type, task.id);
           }
         }
       );
       return ;
     }
-    this.goto(task.type, task.id);
+    return this.goto(task.type, task.id);
   }
 
-  goto(type, id) {
+  goto(type, id): Promise<any> {
     switch (type) {
       case 'Assessment':
         // get the context id of this assessment
@@ -189,18 +187,21 @@ export class ActivityComponent extends RouterEnter {
             isForTeam = task.isForTeam;
           }
         });
+
         if (isForTeam && !this.storage.getUser().teamId) {
-          this.notificationService.popUp('shortMessage', {message: 'To do this assessment, you have to be in a team.'});
-          break;
+          return this.notificationService.popUp('shortMessage', {
+            message: 'To do this assessment, you have to be in a team.'
+          });
         }
-        this.router.navigate(['assessment', 'assessment', this.id , contextId, id]);
-        break;
+        return this.router.navigate(['assessment', 'assessment', this.id , contextId, id]);
+
       case 'Topic':
-        this.router.navigate(['topic', this.id, id]);
-        break;
+        return this.router.navigate(['topic', this.id, id]);
+
       case 'Locked':
-        this.notificationService.popUp('shortMessage', {message: 'This part of the app is still locked. You can unlock the features by engaging with the app and completing all tasks.'});
-        break;
+        return this.notificationService.popUp('shortMessage', {
+          message: 'This part of the app is still locked. You can unlock the features by engaging with the app and completing all tasks.'
+        });
     }
   }
 
