@@ -1,4 +1,4 @@
-import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { CUSTOM_ELEMENTS_SCHEMA, Directive } from '@angular/core';
 import { async, ComponentFixture, TestBed, fakeAsync } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Router } from '@angular/router';
@@ -10,7 +10,12 @@ import { FastFeedbackService } from '@app/fast-feedback/fast-feedback.service';
 import { AchievementsService } from '@app/achievements/achievements.service';
 import { EventsService } from '@app/events/events.service';
 import { BrowserStorageService } from '@services/storage.service';
-import { of } from 'rxjs';
+import { of, Observable } from 'rxjs';
+
+@Directive({
+  selector: '[routerLink], [routerLinkActive]'
+})
+class DummyRouterLinkDirective {}
 
 fdescribe('HomeComponent', () => {
   let component: HomeComponent;
@@ -21,11 +26,12 @@ fdescribe('HomeComponent', () => {
   let achieventsServiceSpy: jasmine.SpyObj<AchievementsService>;
   let fastFeedbackServiceSpy: jasmine.SpyObj<FastFeedbackService>;
   let storageServiceSpy: jasmine.SpyObj<BrowserStorageService>;
+  let routerSpy: jasmine.SpyObj<Router>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [RouterTestingModule],
-      declarations: [HomeComponent],
+      // imports: [RouterTestingModule],
+      declarations: [HomeComponent, DummyRouterLinkDirective],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
       providers: [
         {
@@ -59,6 +65,14 @@ fdescribe('HomeComponent', () => {
         },
         {
           provide: Intercom
+        },
+        {
+          provide: Router,
+          useValue: {
+            url: '/app/home',
+            navigate: jasmine.createSpy('navigate'),
+            events: of()
+          }
         }
       ]
     }).compileComponents();
@@ -73,6 +87,7 @@ fdescribe('HomeComponent', () => {
     achieventsServiceSpy = TestBed.get(AchievementsService);
     fastFeedbackServiceSpy = TestBed.get(FastFeedbackService);
     storageServiceSpy = TestBed.get(BrowserStorageService);
+    routerSpy = TestBed.get(Router);
   });
 
   beforeEach(() => {
@@ -120,6 +135,59 @@ fdescribe('HomeComponent', () => {
     expect(element.querySelectorAll('app-todo-card').length).toBe(2, '2 todo cards');
   });
 
+  it('should display 1 todo card if there\'s 1 chat message', () => {
+    homeServiceSpy.getChatMessage.and.returnValue(of(
+      {
+        type: 'chat',
+        name: 'Test chat 1',
+        description: 'Test description',
+        time: '2019-03-02'
+      }
+    ));
+    fixture.detectChanges();
+    expect(component.todoItems.length).toEqual(1, '1 todo item');
+    expect(component.loadingTodoItems).toBe(false, 'todo item loaded');
+    expect(homeServiceSpy.getChatMessage.calls.count()).toBe(1, 'one call');
+    expect(element.querySelectorAll('app-todo-card').length).toBe(1, '1 todo card');
+  });
+
+  it('should not call getChatMessage if no team id', () => {
+    storageServiceSpy.getUser.and.returnValue(
+      {
+        role: 'participant',
+        teamId: null,
+        name: 'Test User',
+        email: 'user@test.com',
+        id: 1
+      }
+    );
+    fixture.detectChanges();
+    expect(component.todoItems.length).toEqual(0, 'no todo item');
+    expect(homeServiceSpy.getChatMessage.calls.count()).toBe(0, 'no call');
+    expect(element.querySelectorAll('app-todo-card').length).toBe(1, '1 todo card');
+  });
+
+  it('should get the correct progress', () => {
+    fixture.detectChanges();
+    expect(component.progressConfig).toEqual({percent: 10});
+    expect(homeServiceSpy.getProgress.calls.count()).toBe(1, 'one call');
+    expect(component.loadingProgress).toBe(false, 'progress loaded');
+  });
+
+  it('should get the correct current activity', () => {
+    const mock = {
+      id: 1,
+      name: 'Test activity',
+      isLocked: false,
+      leadImage: ''
+    };
+    homeServiceSpy.getCurrentActivity.and.returnValue(of(mock));
+    fixture.detectChanges();
+    expect(component.activity).toEqual(mock, 'activity match');
+    expect(homeServiceSpy.getCurrentActivity.calls.count()).toBe(1, 'one call');
+    expect(component.loadingActivity).toBe(false, 'activity loaded');
+  });
+
   it('should display the correct program name', () => {
     fixture.detectChanges();
     expect(component.programName).toEqual('Test Program');
@@ -127,10 +195,237 @@ fdescribe('HomeComponent', () => {
     expect(element.querySelector('h1').innerHTML).toEqual('Test Program', 'program name match');
   });
 
+  it('should not display achievement if there\'s no achievement', () => {
+    fixture.detectChanges();
+    expect(component.achievements).toEqual([], 'no achievement');
+    expect(achieventsServiceSpy.getAchievements.calls.count()).toBe(1, 'one call');
+    expect(element.querySelector('.achievement')).toBeFalsy();
+    expect(element.textContent).not.toContain('My Badges');
+  });
+
+  it('should display all achievements if there\'re less than 4 achievements', () => {
+    const mock = [
+      {
+        id: 1,
+        name: 'Test achievement1',
+        description: '',
+        isEarned: false,
+      },
+      {
+        id: 2,
+        name: 'Test achievement1',
+        description: '',
+        isEarned: true,
+      }
+    ];
+    achieventsServiceSpy.getAchievements.and.returnValue(of(mock));
+    fixture.detectChanges();
+    expect(component.achievements).toEqual(mock, 'no achievement');
+    expect(achieventsServiceSpy.getAchievements.calls.count()).toBe(1, 'one call');
+    expect(element.querySelector('.achievement')).toBeTruthy();
+    expect(element.textContent).toContain('My Badges');
+  });
+
+  it('should display first 3 achievements if all achievements are unearned', () => {
+    const expected = [
+      {
+        id: 1,
+        name: 'Test achievement1',
+        description: '',
+        isEarned: false,
+      },
+      {
+        id: 2,
+        name: 'Test achievement2',
+        description: '',
+        isEarned: false,
+      },
+      {
+        id: 3,
+        name: 'Test achievement3',
+        description: '',
+        isEarned: false,
+      }
+    ];
+    const mock = [
+      ...expected,
+      {
+        id: 4,
+        name: 'Test achievement4',
+        description: '',
+        isEarned: false,
+      }
+    ];
+    achieventsServiceSpy.getAchievements.and.returnValue(of(mock));
+    fixture.detectChanges();
+    expect(component.achievements).toEqual(expected, 'first 3 achievement');
+  });
+
+  it('should display first 3 achievements if all achievements are earned', () => {
+    const expected = [
+      {
+        id: 1,
+        name: 'Test achievement1',
+        description: '',
+        isEarned: true,
+      },
+      {
+        id: 2,
+        name: 'Test achievement2',
+        description: '',
+        isEarned: true,
+      },
+      {
+        id: 3,
+        name: 'Test achievement3',
+        description: '',
+        isEarned: true,
+      }
+    ];
+    const mock = [
+      ...expected,
+      {
+        id: 4,
+        name: 'Test achievement4',
+        description: '',
+        isEarned: true,
+      }
+    ];
+    achieventsServiceSpy.getAchievements.and.returnValue(of(mock));
+    fixture.detectChanges();
+    expect(component.achievements).toEqual(expected, 'first 3 achievement');
+  });
+
+  it('should display 1 earned and two unearned achievements if there\'s only one earned achievement', () => {
+    const expected = [
+      {
+        id: 1,
+        name: 'Test achievement1',
+        description: '',
+        isEarned: true,
+      },
+      {
+        id: 2,
+        name: 'Test achievement2',
+        description: '',
+        isEarned: false,
+      },
+      {
+        id: 3,
+        name: 'Test achievement3',
+        description: '',
+        isEarned: false,
+      }
+    ];
+    const mock = [
+      ...expected,
+      {
+        id: 4,
+        name: 'Test achievement4',
+        description: '',
+        isEarned: false,
+      }
+    ];
+    achieventsServiceSpy.getAchievements.and.returnValue(of(mock));
+    fixture.detectChanges();
+    expect(component.achievements).toEqual(expected);
+  });
+
+  it('should display 2 earned and 1 unearned achievements if there\'re more than one earned achievement', () => {
+    const expected = [
+      {
+        id: 1,
+        name: 'Test achievement1',
+        description: '',
+        isEarned: true,
+      },
+      {
+        id: 2,
+        name: 'Test achievement2',
+        description: '',
+        isEarned: true,
+      },
+      {
+        id: 3,
+        name: 'Test achievement3',
+        description: '',
+        isEarned: false,
+      }
+    ];
+    const mock = [
+      ...expected,
+      {
+        id: 4,
+        name: 'Test achievement4',
+        description: '',
+        isEarned: true,
+      },
+      {
+        id: 5,
+        name: 'Test achievement5',
+        description: '',
+        isEarned: false,
+      }
+    ];
+    achieventsServiceSpy.getAchievements.and.returnValue(of(mock));
+    fixture.detectChanges();
+    expect(component.achievements).toEqual(expected);
+  });
+
   it('should not display event icon if there\'s no event', () => {
     fixture.detectChanges();
     expect(component.haveEvents).toBeFalsy();
     expect(eventsServiceSpy.getEvents.calls.count()).toBe(1, 'one call');
     expect(element.querySelector('ion-icon.calendar')).toBeFalsy();
+  });
+
+  it('should display event icon if there\'s event', () => {
+    eventsServiceSpy.getEvents.and.returnValue(of([{id: 1}]));
+    fixture.detectChanges();
+    expect(component.haveEvents).toBe(true);
+    expect(eventsServiceSpy.getEvents.calls.count()).toBe(1, 'one call');
+    expect(element.querySelector('ion-icon.calendar')).toBeTruthy();
+  });
+
+  it('should navigate to the correct activity page', () => {
+    component.goToActivity(1);
+    expect(routerSpy.navigate.calls.first().args[0]).toEqual(['app', 'activity', 1]);
+  });
+
+  it('should navigate to the correct assessment page', () => {
+    component.goToAssessment(1, 2, 3);
+    expect(routerSpy.navigate.calls.first().args[0]).toEqual(['assessment', 'assessment', 1, 2, 3]);
+  });
+
+  it('should navigate to the correct review page', () => {
+    component.goToReview(1, 2, 3);
+    expect(routerSpy.navigate.calls.first().args[0]).toEqual(['assessment', 'review', 1, 2, 3]);
+  });
+
+  it('should navigate to the correct chat page 1', () => {
+    component.goToChat({
+      meta: null
+    });
+    expect(routerSpy.navigate.calls.first().args[0]).toEqual(['app', 'chat']);
+  });
+
+  it('should navigate to the correct chat page 2', () => {
+    component.goToChat({
+      meta: {
+        team_id: 2,
+        team_member_id: 1
+      }
+    });
+    expect(routerSpy.navigate.calls.first().args[0]).toEqual(['chat', 'chat-room', 2, 1]);
+  });
+
+  it('should navigate to the correct chat page 3', () => {
+    component.goToChat({
+      meta: {
+        team_id: 2,
+        participants_only: true
+      }
+    });
+    expect(routerSpy.navigate.calls.first().args[0]).toEqual(['chat', 'chat-room', 'team', 2, true]);
   });
 });
