@@ -43,7 +43,7 @@ export interface TodoItem {
     team_id?: number;
     team_member_id?: number;
     participants_only?: boolean;
-    due_date?: boolean;
+    due_date?: string;
   };
 }
 
