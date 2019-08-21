@@ -103,7 +103,7 @@ export class ProjectComponent extends RouterEnter {
   }
 
   // clear every subscription to avoid memory leaks
-  private unsubscribeAll() {
+  unsubscribeAll() {
     console.log('project_component::destroyed');
     this.routeData.unsubscribe();
     this.routeQuery.unsubscribe();
