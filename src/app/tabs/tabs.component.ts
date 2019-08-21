@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, AfterViewInit, OnDestroy, OnInit } from '@angular/core';
 import { TabsService } from './tabs.service';
 import { UtilsService } from '@services/utils.service';
 import { BrowserStorageService } from '@services/storage.service';
@@ -7,19 +7,25 @@ import { SwitcherService } from '../switcher/switcher.service';
 import { ReviewsService } from '../reviews/reviews.service';
 import { Router } from '@angular/router';
 import { SharedService } from '@services/shared.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-tabs',
   templateUrl: 'tabs.component.html',
   styleUrls: ['tabs.component.scss']
 })
-export class TabsComponent extends RouterEnter {
+export class TabsComponent implements AfterViewInit, OnDestroy, OnInit {
   routeUrl = '/app/';
   showReview = false;
   showChat = false;
   noOfTodoItems = 0;
   noOfChats = 0;
   selectedTab = '';
+
+  private getNoOfTodoItems: Subscription;
+  private getNoOfChats: Subscription;
+  private getTeamInfo: Subscription;
+  private getReviews: Subscription;
 
   constructor(
     public router: Router,
@@ -30,9 +36,9 @@ export class TabsComponent extends RouterEnter {
     private reviewsService: ReviewsService,
     private sharedService: SharedService,
   ) {
-    super(router);
+    // super(router);
 
-    const role = this.storage.getUser().role;
+    const { role } = this.storage.getUser();
     this.utils.getEvent('notification').subscribe(event => {
       this.noOfTodoItems++;
     });
@@ -53,32 +59,60 @@ export class TabsComponent extends RouterEnter {
     }
   }
 
+  ionViewWillEnter() {
+    this.ngOnInit();
+  }
+
+  ionViewWillLeave() {
+    this.ngOnDestroy();
+  }
+
+  ngOnDestroy() {
+    console.log('TabComponent::onDestroy');
+  // unsubscribeAll() {
+    if (this.getNoOfTodoItems) {
+      this.getNoOfTodoItems.unsubscribe();
+    }
+    if (this.getNoOfChats) {
+      this.getNoOfChats.unsubscribe();
+    }
+    if (this.getTeamInfo) {
+      this.getTeamInfo.unsubscribe();
+    }
+    if (this.getReviews) {
+      this.getReviews.unsubscribe();
+    }
+  }
+
   private _initialise() {
     this.showChat = false;
     this.showReview = false;
   }
 
-  onEnter() {
+  ngOnInit() {
+    console.log('TabComponent::onInit');
     this._initialise();
     this._checkRoute();
     this._stopPlayingVideos();
-    this.tabsService.getNoOfTodoItems().subscribe(noOfTodoItems => {
+    this.getNoOfTodoItems = this.tabsService.getNoOfTodoItems().subscribe(noOfTodoItems => {
       this.noOfTodoItems = noOfTodoItems;
     });
+
+    const { teamId } = this.storage.getUser();
     // only get the number of chats if user is in team
-    if (this.storage.getUser().teamId) {
-      this.tabsService.getNoOfChats().subscribe(noOfChats => {
+    if (teamId) {
+      this.getNoOfChats = this.tabsService.getNoOfChats().subscribe(noOfChats => {
         this.noOfChats = noOfChats;
       });
     }
-    this.switcherService.getTeamInfo().subscribe(data => {
-      if (this.storage.getUser().teamId) {
+    this.getTeamInfo = this.switcherService.getTeamInfo().subscribe(data => {
+      if (teamId) {
         this.showChat = true;
       } else {
         this.showChat = false;
       }
     });
-    this.reviewsService.getReviews().subscribe(data => {
+    this.getReviews = this.reviewsService.getReviews().subscribe(data => {
       if (data.length) {
         this.showReview = true;
       }
@@ -118,5 +152,4 @@ export class TabsComponent extends RouterEnter {
   private _stopPlayingVideos() {
     this.sharedService.stopPlayingViodes();
   }
-
 }
