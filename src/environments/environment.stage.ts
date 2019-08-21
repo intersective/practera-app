@@ -2,7 +2,7 @@ export const environment = {
   production: true,
   appkey: 'b11e7c189b',
   pusherKey: '255f010d210933ca7675',
-  env: 'sandbox',
+  env: 'stage',
   APIEndpoint: 'https://stage.practera.com/',
   intercomAppId: 'pef1lmo8',
   filestack: {
@@ -18,6 +18,7 @@ export const environment = {
       }
     }
   },
+  defaultCountryModel: 'AUS',
   intercom: false,
   goMobile: false,
 };
