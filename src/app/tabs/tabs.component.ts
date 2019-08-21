@@ -1,4 +1,4 @@
-import { Component, AfterViewInit, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { TabsService } from './tabs.service';
 import { UtilsService } from '@services/utils.service';
 import { BrowserStorageService } from '@services/storage.service';
@@ -14,7 +14,7 @@ import { Subscription } from 'rxjs';
   templateUrl: 'tabs.component.html',
   styleUrls: ['tabs.component.scss']
 })
-export class TabsComponent implements AfterViewInit, OnDestroy, OnInit {
+export class TabsComponent implements OnDestroy, OnInit {
   showReview = false;
   showChat = false;
   noOfTodoItems = 0;
