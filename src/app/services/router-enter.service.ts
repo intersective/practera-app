@@ -26,7 +26,10 @@ export class RouterEnter implements OnInit, OnDestroy, AfterViewInit {
   }
 
   ngOnDestroy(): void {
-    this.subscription.unsubscribe();
+    if (this.subscription) {
+      this.subscription.unsubscribe();
+    }
+
     this.routerEvents.unsubscribe();
   }
 
