@@ -83,6 +83,10 @@ export class TopicComponent extends RouterEnter {
     this.topicProgressSubscription.unsubscribe();
   }
 
+  ionViewWillLeave() {
+    this.sharedService.stopPlayingViodes();
+  }
+
   private _getTopic() {
     this.topicSubscription = this.topicService.getTopic(this.id)
       .subscribe(topic => {
