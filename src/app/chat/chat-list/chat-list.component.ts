@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router, NavigationExtras } from '@angular/router';
 import { BrowserStorageService } from '@services/storage.service';
+import { RouterEnter } from '@services/router-enter.service';
 import { UtilsService } from '@services/utils.service';
 import { FastFeedbackService } from '../../fast-feedback/fast-feedback.service';
 import { ChatService, ChatListObject } from '../chat.service';
@@ -10,7 +11,7 @@ import { ChatService, ChatListObject } from '../chat.service';
   templateUrl: 'chat-list.component.html',
   styleUrls: ['chat-list.component.scss']
 })
-export class ChatListComponent {
+export class ChatListComponent extends RouterEnter {
   routeUrl = '/app/chat';
   chatList: Array<ChatListObject>;
   haveMoreTeam: boolean;
@@ -23,6 +24,7 @@ export class ChatListComponent {
     public utils: UtilsService,
     public fastFeedbackService: FastFeedbackService
   ) {
+    super(router);
     const role = this.storage.getUser().role;
     this.utils.getEvent('team-message').subscribe(event => {
       this._loadChatData();
@@ -34,7 +36,7 @@ export class ChatListComponent {
     }
   }
 
-  ionViewWillEnter() {
+  onEnter() {
     this._initialise();
     this._loadChatData();
     this.fastFeedbackService.pullFastFeedback().subscribe();

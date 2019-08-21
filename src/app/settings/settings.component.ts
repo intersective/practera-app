@@ -6,6 +6,7 @@ import { BrowserStorageService } from '@services/storage.service';
 import { UtilsService } from '@services/utils.service';
 import { NotificationService } from '@shared/notification/notification.service';
 import { environment } from '../../environments/environment.prod';
+import { RouterEnter } from '@services/router-enter.service';
 import { FastFeedbackService } from '../fast-feedback/fast-feedback.service';
 import { FilestackService } from '@shared/filestack/filestack.service';
 
@@ -16,7 +17,7 @@ import { FilestackService } from '@shared/filestack/filestack.service';
   styleUrls: ['settings.component.scss']
 })
 
-export class SettingsComponent {
+export class SettingsComponent extends RouterEnter {
 
   routeUrl = '/app/settings';
   profile = {
@@ -44,9 +45,10 @@ export class SettingsComponent {
     private filestackService: FilestackService,
     public fastFeedbackService: FastFeedbackService
   ) {
+    super(router);
   }
 
-  ionViewWillEnter() {
+  onEnter() {
     // get contact number and email from local storage
     this.profile.email = this.storage.getUser().email;
     this.profile.contactNumber = this.storage.getUser().contactNumber;

@@ -152,11 +152,12 @@ export class ContactNumberFormComponent implements OnInit {
   }
 
   disableArrowKeys(event: KeyboardEvent): boolean {
-    // charCode is the code of each Key
-    const charCode = (event.which) ? event.which : event.keyCode;
+    if (['ArrowLeft', 'ArrowRight', 'Backspace', 'Delete'].indexOf(event.code) !== -1) {
+      return true;
+    }
 
     // just allow number keys to enter
-    if (charCode > 31 && (charCode < 48 || charCode > 57)) {
+    if (['1', '2', '3', '4', '5', '6', '7', '8', '9', '0'].indexOf(event.key) === -1) {
         return false;
     }
     return true;
