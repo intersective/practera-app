@@ -72,7 +72,8 @@ export class HomeService {
   }
 
   getTodoItems() {
-    return this.todoService.getItems().pipe(map(response => {
+    return this.todoService.todo$.pipe(map(response => {
+      console.log('todo$ + normalize:', response);
       if (response.success && response.data) {
         return this._normaliseTodoItems(response.data);
       }
