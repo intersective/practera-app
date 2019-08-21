@@ -2,6 +2,7 @@ import { CUSTOM_ELEMENTS_SCHEMA, Directive } from '@angular/core';
 import { async, ComponentFixture, TestBed, fakeAsync } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Router } from '@angular/router';
+import { DOCUMENT } from '@angular/common';
 
 import { HomeComponent } from './home.component';
 import { Intercom } from 'ng-intercom';
@@ -10,7 +11,9 @@ import { FastFeedbackService } from '@app/fast-feedback/fast-feedback.service';
 import { AchievementsService } from '@app/achievements/achievements.service';
 import { EventsService } from '@app/events/events.service';
 import { BrowserStorageService } from '@services/storage.service';
-import { of, Observable } from 'rxjs';
+import { UtilsService } from '@services/utils.service';
+import { of, Observable, Subject } from 'rxjs';
+import { map, filter } from 'rxjs/operators';
 
 @Directive({
   selector: '[routerLink], [routerLinkActive]'
@@ -27,6 +30,7 @@ fdescribe('HomeComponent', () => {
   let fastFeedbackServiceSpy: jasmine.SpyObj<FastFeedbackService>;
   let storageServiceSpy: jasmine.SpyObj<BrowserStorageService>;
   let routerSpy: jasmine.SpyObj<Router>;
+  let utils: UtilsService;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
@@ -36,7 +40,7 @@ fdescribe('HomeComponent', () => {
       providers: [
         {
           provide: HomeService,
-          useValue: jasmine.createSpyObj('HomeService', ['getTodoItems', 'getChatMessage', 'getProgress', 'getCurrentActivity', 'getProgramName'])
+          useValue: jasmine.createSpyObj('HomeService', ['getTodoItemFromEvent', 'getReminderEvent', 'getTodoItems', 'getChatMessage', 'getProgress', 'getCurrentActivity', 'getProgramName'])
         },
         {
           provide: EventsService,
@@ -64,12 +68,15 @@ fdescribe('HomeComponent', () => {
           })
         },
         {
+          provide: UtilsService,
+          useValue: new UtilsService(new Document())
+        },
+        {
           provide: Intercom
         },
         {
           provide: Router,
           useValue: {
-            url: '/app/home',
             navigate: jasmine.createSpy('navigate'),
             events: of()
           }
@@ -88,6 +95,7 @@ fdescribe('HomeComponent', () => {
     fastFeedbackServiceSpy = TestBed.get(FastFeedbackService);
     storageServiceSpy = TestBed.get(BrowserStorageService);
     routerSpy = TestBed.get(Router);
+    utils = TestBed.get(UtilsService);
   });
 
   beforeEach(() => {
@@ -103,6 +111,67 @@ fdescribe('HomeComponent', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('should display correct todo card with notification/team-message/event-reminder/team-no-mentor-message event(Pusher)', () => {
+    // mock getTodoItems()
+    homeServiceSpy.getTodoItems.and.returnValue(of([
+      {
+        type: 'feedback_available'
+      },
+      {
+        type: 'review_submission'
+      }
+    ]));
+    fixture.detectChanges();
+    // before any events
+    // 2 todo items
+    expect(component.todoItems.length).toEqual(2);
+    expect(element.querySelectorAll('app-todo-card').length).toBe(2);
+
+    // mock getTodoItemFromEvent()
+    homeServiceSpy.getTodoItemFromEvent.and.returnValue({
+      type: 'feedback_available'
+    });
+    // after 'notification' triggers
+    utils.broadcastEvent('notification', {});
+    fixture.detectChanges();
+    expect(homeServiceSpy.getTodoItemFromEvent.calls.count()).toBe(1, 'one service call');
+    expect(component.todoItems.length).toEqual(3);
+    expect(element.querySelectorAll('app-todo-card').length).toBe(3);
+
+    // mock getChatMessage()
+    homeServiceSpy.getChatMessage.and.returnValue(of({
+      type: 'chat'
+    }));
+    // after 'team-message' triggers
+    utils.broadcastEvent('team-message', {});
+    fixture.detectChanges();
+    // 2 calls, 1 from onEnter(), 1 from the event
+    expect(homeServiceSpy.getChatMessage.calls.count()).toBe(2, '2 service call');
+    // there're still 4 todo items instead of 5, because all chat messages are gathered to only 1 todo item
+    expect(component.todoItems.length).toEqual(4);
+    expect(element.querySelectorAll('app-todo-card').length).toBe(4);
+
+    // mock getReminderEvent()
+    homeServiceSpy.getReminderEvent.and.returnValue(of({
+      name: 'Test Event',
+    }));
+    // after 'event-reminder' triggers
+    utils.broadcastEvent('event-reminder', {});
+    fixture.detectChanges();
+    expect(homeServiceSpy.getReminderEvent.calls.count()).toBe(1, '1 service call');
+    expect(component.eventReminders.length).toEqual(1, '1 event reminder');
+    expect(element.querySelectorAll('app-todo-card').length).toBe(5);
+
+    // after 'team-no-mentor-message' triggers
+    utils.broadcastEvent('team-no-mentor-message', {});
+    fixture.detectChanges();
+    // 3 calls, 1 from onEnter(), 2 from the event
+    expect(homeServiceSpy.getChatMessage.calls.count()).toBe(3, 'one service call');
+    // todo items and todo card won't increase, because all chat messages are gathered to only 1 todo item
+    expect(component.todoItems.length).toEqual(4);
+    expect(element.querySelectorAll('app-todo-card').length).toBe(5);
   });
 
   it('should display no todo card if there\'s no todo item', () => {
