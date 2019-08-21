@@ -16,7 +16,7 @@ import { environment } from '@environments/environment';
 @Component({
   selector: 'app-home',
   templateUrl: 'home.component.html',
-  styleUrls: ['home.component.scss']
+  styleUrls: ['home.component.scss'],
 })
 export class HomeComponent extends RouterEnter implements OnDestroy {
   routeUrl = '/app/home';
@@ -41,7 +41,7 @@ export class HomeComponent extends RouterEnter implements OnDestroy {
     public utils: UtilsService,
     public storage: BrowserStorageService,
     public achievementService: AchievementsService,
-    public eventsService: EventsService
+    public eventsService: EventsService,
   ) {
     super(router);
     const role = this.storage.getUser().role;
@@ -85,8 +85,6 @@ export class HomeComponent extends RouterEnter implements OnDestroy {
     this.loadingActivity = true;
     this.achievements = [];
     this.haveEvents = false;
-    // add a flag in local storage to indicate that is there any fast feedback open
-    this.storage.set('fastFeedbackOpening', false);
   }
 
   onEnter() {
@@ -95,7 +93,7 @@ export class HomeComponent extends RouterEnter implements OnDestroy {
       this.homeService.getTodoItems().subscribe(todoItems => {
         this.todoItems = this.todoItems.concat(todoItems);
         this.loadingTodoItems = false;
-      })
+      }),
     );
     // only get the number of chats if user is in team
     if (this.storage.getUser().teamId) {
@@ -105,7 +103,7 @@ export class HomeComponent extends RouterEnter implements OnDestroy {
             this._addChatTodoItem(chatMessage);
           }
           this.loadingTodoItems = false;
-        })
+        }),
       );
     }
     this.subscriptions.push(
@@ -119,28 +117,12 @@ export class HomeComponent extends RouterEnter implements OnDestroy {
             this.loadingActivity = false;
           }
         });
-      })
+      }),
     );
+
     this.homeService.getProgramName().subscribe(programName => {
       this.programName = programName;
     });
-    this.subscriptions.push(
-      this.fastFeedbackService.getFastFeedback().subscribe(res => {
-        // popup instant feedback view if question quantity found > 0
-        if (!this.utils.isEmpty(res.data) && res.data.slider.length > 0) {
-          if (this.storage.get('fastFeedbackOpening')) {
-            // don't open it again if there's one opening
-            return ;
-          }
-          // add a flag to indicate that a fast feedback pop up is opening
-          this.storage.set('fastFeedbackOpening', true);
-          return this.homeService.popUpFastFeedback({
-            questions: res.data.slider,
-            meta: res.data.meta
-          });
-        }
-      })
-    );
 
     this.subscriptions.push(
       this.achievementService.getAchievements('desc').subscribe(achievements => {
@@ -168,13 +150,13 @@ export class HomeComponent extends RouterEnter implements OnDestroy {
           this.achievements[1] = earned[1];
           this.achievements[2] = unEarned[0];
         }
-      })
+      }),
     );
 
     this.subscriptions.push(
       this.eventsService.getEvents().subscribe(events => {
         this.haveEvents = !this.utils.isEmpty(events);
-      })
+      }),
     );
 
     if (typeof environment.intercom !== 'undefined' && environment.intercom === true) {
@@ -185,14 +167,16 @@ export class HomeComponent extends RouterEnter implements OnDestroy {
         user_id: this.storage.getUser().id, // current_user_id
         // Supports all optional configuration.
         widget: {
-          'activator': '#intercom'
-        }
+          activator: '#intercom',
+        },
       });
     }
+
+    this.fastFeedbackService.pullFastFeedback().subscribe();
   }
 
   goToActivity(id) {
-    this.router.navigateByUrl('app/activity/' + id);
+    this.router.navigate(['app', 'activity', id]);
   }
 
   goToAssessment(activityId, contextId, assessmentId) {
@@ -201,7 +185,7 @@ export class HomeComponent extends RouterEnter implements OnDestroy {
       'assessment',
       activityId,
       contextId,
-      assessmentId
+      assessmentId,
     ]);
   }
 
@@ -211,7 +195,7 @@ export class HomeComponent extends RouterEnter implements OnDestroy {
       'review',
       contextId,
       assessmentId,
-      submissionId
+      submissionId,
     ]);
   }
 
@@ -226,6 +210,7 @@ export class HomeComponent extends RouterEnter implements OnDestroy {
   }
 
   ngOnDestroy(): void {
+    // run ngOnDestroy from RouterEnter
     this.subscriptions.forEach(subscription => subscription.unsubscribe());
   }
 

@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { NotificationService } from '@shared/notification/notification.service';
+import { UtilsService } from '@services/utils.service';
 import { AuthService } from '../auth.service';
 
 @Component({
@@ -14,7 +15,8 @@ export class AuthForgotPasswordComponent {
 
   constructor(
     private notificationService: NotificationService,
-    private authService: AuthService
+    private authService: AuthService,
+    private utils: UtilsService
   ) {}
 
   async send() {
@@ -37,6 +39,20 @@ export class AuthForgotPasswordComponent {
       },
       err => {
         this.isSending = false;
+        if (this.utils.has(err, 'data.type')) {
+          // pop up if trying to reset password too frequently
+          if (err.data.type === 'reset_too_frequently') {
+            return this.notificationService.alert({
+              message: `Please wait 2 minutes before attempting to reset your password again`,
+              buttons: [
+                {
+                  text: 'OK',
+                  role: 'cancel'
+                }
+              ],
+            });
+          }
+        }
         return this.notificationService.presentToast('Issue occured. Please try again', false);
       }
     );

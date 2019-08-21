@@ -16,7 +16,7 @@ import { ChatPreviewComponent } from '../chat-preview/chat-preview.component';
   styleUrls: ['./chat-room.component.scss']
 })
 export class ChatRoomComponent extends RouterEnter {
-  @ViewChild(IonContent) content: IonContent;
+  @ViewChild(IonContent, { static: false }) content: IonContent;
 
   routeUrl = '/chat-room/';
   message: string;
@@ -220,7 +220,7 @@ export class ChatRoomComponent extends RouterEnter {
   }
 
   back() {
-    this.router.navigate(['/app/chat']);
+    this.router.navigate(['app', 'chat']);
   }
 
   sendMessage() {

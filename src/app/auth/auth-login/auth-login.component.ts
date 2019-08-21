@@ -50,7 +50,7 @@ export class AuthLoginComponent {
     }).subscribe(
       res => {
         this.isLoggingIn = false;
-        return this.router.navigate(['/switcher']);
+        return this.router.navigate(['switcher']);
       },
       err => {
         // notify user about weak password

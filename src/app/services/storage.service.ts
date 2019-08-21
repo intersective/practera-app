@@ -25,6 +25,7 @@ export interface User {
   themeColor?: string;
   activityCardImage?: string;
   hasReviewRating?: boolean;
+  truncateDescription?: boolean;
 }
 
 export interface Config {
@@ -37,6 +38,8 @@ export interface Config {
 })
 
 export class BrowserStorageService {
+  public memoryCache: any;
+
   constructor(@Inject(BROWSER_STORAGE) public storage: Storage) {}
 
   get(key: string) {

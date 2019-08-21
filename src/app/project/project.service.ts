@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { Observable, Subject } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { RequestService } from '@shared/request/request.service';
 import { UtilsService } from '@services/utils.service';
@@ -12,7 +13,8 @@ import { BrowserStorageService } from '@services/storage.service';
 const api = {
   milestone: 'api/milestone.json',
   activity: 'api/activities.json',
-  progress: 'api/v2/motivations/progress/list.json'
+  progress: 'api/v2/motivations/progress/list.json',
+  overview: '/api/v2/plans/project/overview.json'
 };
 
 // added for displaying empty placeholder (enhance UX)
@@ -48,7 +50,7 @@ export interface Milestone {
 })
 
 export class ProjectService {
-  public activities: Array<Activity> = [];
+  public activities$: Subject<Activity[]> = new Subject();
 
   constructor(
     private request: RequestService,
@@ -98,7 +100,9 @@ export class ProjectService {
     })
     .pipe(map(response => {
       if (response.success && response.data) {
-        return this._normaliseActivities(response.data);
+        const activities = this._normaliseActivities(response.data);
+        this.activities$.next(activities);
+        return activities;
       }
     }));
   }
@@ -156,6 +160,15 @@ export class ProjectService {
         return this._normaliseProgress(response.data, milestones);
       }
     }));
+  }
+
+  // get overview of statuses for the entire project
+  public getOverview(): Observable<any> {
+    const { projectId } = this.storage.getUser();
+
+    return this.request.get(api.overview, {
+      params: { id: projectId }
+    });
   }
 
   private _normaliseProgress(data: any, milestones) {
