@@ -9,6 +9,7 @@ import { Question, Meta} from '../fast-feedback/fast-feedback.service';
 import { NotificationService } from '@shared/notification/notification.service';
 import { Event, EventsService } from '@app/events/events.service';
 import { SharedService } from '@services/shared.service';
+import { TodoService } from '@services/todo.service';
 
 /**
  * @name api
@@ -61,24 +62,21 @@ export class HomeService {
     private utils: UtilsService,
     private notification: NotificationService,
     private eventsService: EventsService,
-    public sharedService: SharedService
-  ) {}
+    public sharedService: SharedService,
+    private todoService: TodoService
+  ) {
+  }
 
   getProgramName() {
     return of(this.storage.getUser().programName);
   }
 
   getTodoItems() {
-    return this.request.get(api.get.todoItem, {
-        params: {
-          project_id: this.storage.getUser().projectId
-        }
-      })
-      .pipe(map(response => {
-        if (response.success && response.data) {
-          return this._normaliseTodoItems(response.data);
-        }
-      }));
+    return this.todoService.getItems().pipe(map(response => {
+      if (response.success && response.data) {
+        return this._normaliseTodoItems(response.data);
+      }
+    }));
   }
 
   private _normaliseTodoItems(data): Array<TodoItem> {
