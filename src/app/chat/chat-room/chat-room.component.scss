@@ -170,8 +170,11 @@ $message-body-size: 224px;
     ion-row {
       ion-col {
         ion-button {
+          min-height: 28px;
+          max-height: 100px;
+          height: auto;
           ion-icon {
-            // color: var(--practera-chat-footer-text-color) !important;
+            font-size: 24px;
           }
         }
         ion-textarea {
@@ -179,8 +182,6 @@ $message-body-size: 224px;
           --padding-end: 0;
           --padding-bottom: 0;
           --padding-start: 0;
-          min-height: 36px !important;
-          max-height: 100px !important;
         }
       }
     }
