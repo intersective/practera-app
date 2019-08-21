@@ -23,7 +23,11 @@ export class RouterEnter implements OnInit, OnDestroy {
     this.routerEvents = this.router.events.subscribe(res => {
       if (res instanceof NavigationEnd) {
       console.log(this);
-        if (res.url.indexOf(this.routeUrl) === 0) {
+        if (
+          (this.routeUrl !== '/app/' && res.url !== '/app/' && res.url.indexOf(this.routeUrl) === 0) ||
+          res.url === '/app/' && this.routeUrl === '/app/'
+        ) {
+        // if (res.url.indexOf(this.routeUrl) === 0) {
         // if (res.url.includes(this.routeUrl) && this.router.isActive(this.routeUrl, false)) {
           this.onEnter();
         } else {
