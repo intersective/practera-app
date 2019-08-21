@@ -89,7 +89,7 @@ export class ActivityComponent extends RouterEnter {
         this.loadingActivity = false;
 
         this._getTasksProgress();
-      }, err => console.log(err));
+      });
   }
 
   private _parallelAPI(requests) {
