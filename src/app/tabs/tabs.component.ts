@@ -5,7 +5,7 @@ import { BrowserStorageService } from '@services/storage.service';
 import { RouterEnter } from '@services/router-enter.service';
 import { SwitcherService } from '../switcher/switcher.service';
 import { ReviewsService } from '../reviews/reviews.service';
-import { Router } from '@angular/router';
+import { Router, NavigationEnd } from '@angular/router';
 import { SharedService } from '@services/shared.service';
 import { Subscription } from 'rxjs';
 
@@ -15,7 +15,6 @@ import { Subscription } from 'rxjs';
   styleUrls: ['tabs.component.scss']
 })
 export class TabsComponent implements AfterViewInit, OnDestroy, OnInit {
-  routeUrl = '/app/';
   showReview = false;
   showChat = false;
   noOfTodoItems = 0;
@@ -36,8 +35,6 @@ export class TabsComponent implements AfterViewInit, OnDestroy, OnInit {
     private reviewsService: ReviewsService,
     private sharedService: SharedService,
   ) {
-    // super(router);
-
     const { role } = this.storage.getUser();
     this.utils.getEvent('notification').subscribe(event => {
       this.noOfTodoItems++;
@@ -57,10 +54,36 @@ export class TabsComponent implements AfterViewInit, OnDestroy, OnInit {
         });
       });
     }
-  }
 
-  ionViewWillEnter() {
-    this.ngOnInit();
+    // keep manually fire API call for latest data (every route change)
+    this.router.events.subscribe(res => {
+      if (res instanceof NavigationEnd) {
+        this.ngOnInit();
+        this.getNoOfTodoItems = this.tabsService.getNoOfTodoItems().subscribe(noOfTodoItems => {
+          this.noOfTodoItems = noOfTodoItems;
+        });
+
+        const { teamId } = this.storage.getUser();
+        // only get the number of chats if user is in team
+        if (teamId) {
+          this.getNoOfChats = this.tabsService.getNoOfChats().subscribe(noOfChats => {
+            this.noOfChats = noOfChats;
+          });
+        }
+        this.getTeamInfo = this.switcherService.getTeamInfo().subscribe(data => {
+          if (teamId) {
+            this.showChat = true;
+          } else {
+            this.showChat = false;
+          }
+        });
+        this.getReviews = this.reviewsService.getReviews().subscribe(data => {
+          if (data.length) {
+            this.showReview = true;
+          }
+        });
+      }
+    });
   }
 
   ionViewWillLeave() {
@@ -69,7 +92,6 @@ export class TabsComponent implements AfterViewInit, OnDestroy, OnInit {
 
   ngOnDestroy() {
     console.log('TabComponent::onDestroy');
-  // unsubscribeAll() {
     if (this.getNoOfTodoItems) {
       this.getNoOfTodoItems.unsubscribe();
     }
@@ -90,33 +112,9 @@ export class TabsComponent implements AfterViewInit, OnDestroy, OnInit {
   }
 
   ngOnInit() {
-    console.log('TabComponent::onInit');
     this._initialise();
     this._checkRoute();
     this._stopPlayingVideos();
-    this.getNoOfTodoItems = this.tabsService.getNoOfTodoItems().subscribe(noOfTodoItems => {
-      this.noOfTodoItems = noOfTodoItems;
-    });
-
-    const { teamId } = this.storage.getUser();
-    // only get the number of chats if user is in team
-    if (teamId) {
-      this.getNoOfChats = this.tabsService.getNoOfChats().subscribe(noOfChats => {
-        this.noOfChats = noOfChats;
-      });
-    }
-    this.getTeamInfo = this.switcherService.getTeamInfo().subscribe(data => {
-      if (teamId) {
-        this.showChat = true;
-      } else {
-        this.showChat = false;
-      }
-    });
-    this.getReviews = this.reviewsService.getReviews().subscribe(data => {
-      if (data.length) {
-        this.showReview = true;
-      }
-    });
   }
 
   private _checkRoute() {
