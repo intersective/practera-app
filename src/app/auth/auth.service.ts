@@ -78,26 +78,6 @@ export class AuthService {
     // do clear user cache here
   }
 
-  private _normaliseAuth(rawData): any {
-    const data = rawData.data;
-
-    return {
-      success: rawData.success,
-      tutorial: data.tutorial,
-      apikey: data.apikey,
-      programs: data.Timelines.map(function(timeline) {
-        return {
-          enrolment: timeline.Enrolment,
-          program: timeline.Program,
-          project: timeline.Project,
-          timeline: timeline.Timeline
-        };
-      }),
-      config: (data.Experience || {}).config || {},
-      _raw: rawData
-    };
-  }
-
   /**
    * @name login
    * @description login API specifically only accept request data in encodedUrl formdata,
@@ -142,6 +122,32 @@ export class AuthService {
     return response;
   }
 
+  private _normaliseAuth(rawData): any {
+    const data = rawData.data;
+    return {
+      success: rawData.success,
+      tutorial: data.tutorial,
+      apikey: data.apikey,
+      programs: data.Timelines.map(
+        timeline => {
+          // make sure 'Program.config.theme_color' exist
+          if (!this.utils.has(timeline, 'Program.config.theme_color')) {
+            timeline.Program.config.theme_color = 'var(--ion-color-primary)';
+          }
+          return {
+            enrolment: timeline.Enrolment,
+            program: timeline.Program,
+            project: timeline.Project,
+            timeline: timeline.Timeline
+          };
+        },
+        this
+      ),
+      config: (data.Experience || {}).config || {},
+      _raw: rawData
+    };
+  }
+
   isAuthenticated(): boolean {
     return this.isLoggedIn || this.storage.get('isLoggedIn');
   }
@@ -155,7 +161,7 @@ export class AuthService {
     this.storage.clear();
     // still store config info even logout
     this.storage.setConfig(config);
-    return this.router.navigate(['/login'], navigationParams);
+    return this.router.navigate(['login'], navigationParams);
   }
 
    /**

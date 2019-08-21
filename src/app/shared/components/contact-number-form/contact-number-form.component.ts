@@ -23,7 +23,7 @@ export class ContactNumberFormComponent implements OnInit {
   // use as a ngModel to controll contact number input
   contactNumber = '';
   // default country model
-  countryModel = 'AUS';
+  countryModel: string;
   // country model infomation
   activeCountryModelInfo = {
     countryCode: '',
@@ -73,11 +73,7 @@ export class ContactNumberFormComponent implements OnInit {
   }
 
   private _initcomponent() {
-    if (environment.APIEndpoint.indexOf('us') !== -1) {
-      // check which the server which the APP talks to, i.e if the APP is consuming APIs from 'us.practera.com' then, it is APP V2 in US.
-      // But if APP consumes APIs from 'api.practera.com' then it is APP V2 in AUS.
-      this.countryModel = 'US';
-    }
+    this.countryModel = environment.defaultCountryModel;
     this.activeCountryModelInfo.countryCode = this.contactNumberFormat.masks[this.countryModel].format;
     this.activeCountryModelInfo.placeholder = this.contactNumberFormat.masks[this.countryModel].placeholder;
     this.activeCountryModelInfo.pattern = this.contactNumberFormat.masks[this.countryModel].pattern;
@@ -155,14 +151,13 @@ export class ContactNumberFormComponent implements OnInit {
     }
   }
 
-  disableArrowKeys(event) {
-    event = (event) ? event : window.event;
-
-    // charCode is the code of each Key
-    const charCode = (event.which) ? event.which : event.keyCode;
+  disableArrowKeys(event: KeyboardEvent): boolean {
+    if (['ArrowLeft', 'ArrowRight', 'Backspace', 'Delete'].indexOf(event.code) !== -1) {
+      return true;
+    }
 
     // just allow number keys to enter
-    if (charCode > 31 && (charCode < 48 || charCode > 57)) {
+    if (['1', '2', '3', '4', '5', '6', '7', '8', '9', '0'].indexOf(event.key) === -1) {
         return false;
     }
     return true;

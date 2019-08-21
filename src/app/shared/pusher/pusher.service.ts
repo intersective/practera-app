@@ -67,8 +67,8 @@ export class PusherService {
     }
   }
 
-  // instantiate + subscribe to channels at one go
-  async initantiate(options?: {
+  // initialise + subscribe to channels at one go
+  async initialise(options?: {
     unsubscribe?: boolean;
   }) {
     let pusher = this.pusher;

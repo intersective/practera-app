@@ -6,6 +6,7 @@ import { RouterEnter } from '@services/router-enter.service';
 import { SwitcherService } from '../switcher/switcher.service';
 import { ReviewsService } from '../reviews/reviews.service';
 import { Router } from '@angular/router';
+import { SharedService } from '@services/shared.service';
 
 @Component({
   selector: 'app-tabs',
@@ -27,6 +28,7 @@ export class TabsComponent extends RouterEnter {
     public utils: UtilsService,
     private switcherService: SwitcherService,
     private reviewsService: ReviewsService,
+    private sharedService: SharedService,
   ) {
     super(router);
 
@@ -59,6 +61,7 @@ export class TabsComponent extends RouterEnter {
   onEnter() {
     this._initialise();
     this._checkRoute();
+    this._stopPlayingVideos();
     this.tabsService.getNoOfTodoItems().subscribe(noOfTodoItems => {
       this.noOfTodoItems = noOfTodoItems;
     });
@@ -111,4 +114,9 @@ export class TabsComponent extends RouterEnter {
         break;
     }
   }
+
+  private _stopPlayingVideos() {
+    this.sharedService.stopPlayingViodes();
+  }
+
 }
