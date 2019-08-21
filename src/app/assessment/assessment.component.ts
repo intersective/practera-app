@@ -9,7 +9,7 @@ import { RouterEnter } from '@services/router-enter.service';
 import { SharedService } from '@services/shared.service';
 import { ActivityService, OverviewActivity, OverviewTask } from '../activity/activity.service';
 import { FastFeedbackService } from '../fast-feedback/fast-feedback.service';
-import { interval, timer } from 'rxjs';
+import { interval, timer, Subscription } from 'rxjs';
 import { map, takeUntil } from 'rxjs/operators';
 
 const SAVE_PROGRESS_TIMEOUT = 10000;
@@ -71,6 +71,10 @@ export class AssessmentComponent extends RouterEnter {
   fromPage = '';
   markingAsReview = 'Continue';
   isRedirectingToNextMilestoneTask: boolean;
+  getAssessment: Subscription;
+  getSubmission: Subscription;
+  getFeedbackReviewed: Subscription;
+  saveAnswers: Subscription;
 
   constructor (
     public router: Router,
@@ -126,6 +130,21 @@ export class AssessmentComponent extends RouterEnter {
     this.isRedirectingToNextMilestoneTask = false;
   }
 
+  unsubscribeAll() {
+    if (this.getAssessment) {
+      this.getAssessment.unsubscribe();
+    }
+    if (this.getSubmission) {
+      this.getSubmission.unsubscribe();
+    }
+    if (this.getFeedbackReviewed) {
+      this.getFeedbackReviewed.unsubscribe();
+    }
+    if (this.saveAnswers) {
+      this.saveAnswers.unsubscribe();
+    }
+  }
+
   onEnter() {
     this._initialise();
     this.action = this.route.snapshot.data.action;
@@ -139,7 +158,7 @@ export class AssessmentComponent extends RouterEnter {
     this.submissionId = +this.route.snapshot.paramMap.get('submissionId');
 
     // get assessment structure and populate the question form
-    this.assessmentService.getAssessment(this.id, this.action)
+    this.getAssessment = this.assessmentService.getAssessment(this.id, this.action)
       .subscribe(assessment => {
         this.assessment = assessment;
         this.populateQuestionsForm();
@@ -168,7 +187,7 @@ export class AssessmentComponent extends RouterEnter {
 
   // get the submission answers &/| review answers
   private _getSubmission() {
-    this.assessmentService.getSubmission(this.id, this.contextId, this.action, this.submissionId)
+    this.getSubmission = this.assessmentService.getSubmission(this.id, this.contextId, this.action, this.submissionId)
       .subscribe(result => {
         this.submission = result.submission;
         this.loadingSubmission = false;
@@ -203,7 +222,7 @@ export class AssessmentComponent extends RouterEnter {
         }
         // call todo item to check if the feedback has been reviewed or not
         if (this.submission.status === 'published') {
-          this.assessmentService.getFeedbackReviewed(this.submission.id)
+          this.getFeedbackReviewed = this.assessmentService.getFeedbackReviewed(this.submission.id)
             .subscribe(feedbackReviewed => {
               this.feedbackReviewed = feedbackReviewed;
               this.loadingFeedbackReviewed = false;
@@ -504,7 +523,7 @@ export class AssessmentComponent extends RouterEnter {
     }
 
     // save the submission/feedback
-    this.assessmentService.saveAnswers(assessment, answers, this.action, this.submission.id).subscribe(
+    this.saveAnswers = this.assessmentService.saveAnswers(assessment, answers, this.action, this.submission.id).subscribe(
       result => {
         this.savingButtonDisabled = false;
         if (saveInProgress) {
