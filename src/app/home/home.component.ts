@@ -1,4 +1,4 @@
-import { Component, OnDestroy } from '@angular/core';
+import { Component } from '@angular/core';
 import { HomeService, TodoItem } from './home.service';
 import { Router, NavigationEnd } from '@angular/router';
 import { FastFeedbackService } from '../fast-feedback/fast-feedback.service';
@@ -126,9 +126,9 @@ export class HomeComponent extends RouterEnter {
       }),
     );
 
-    this.homeService.getProgramName().subscribe(programName => {
+    this.subscriptions.push(this.homeService.getProgramName().subscribe(programName => {
       this.programName = programName;
-    });
+    }));
 
     this.subscriptions.push(
       this.achievementService.getAchievements('desc').subscribe(achievements => {
