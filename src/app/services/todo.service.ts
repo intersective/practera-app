@@ -13,6 +13,7 @@ const API = {
 })
 export class TodoService {
   todo$: Subject<any> = new Subject<any>();
+  projectTodos = {};
 
   constructor(
     private request: RequestService,
@@ -22,13 +23,17 @@ export class TodoService {
   getItems(): Observable<any> {
     const { projectId } = this.storage.getUser();
 
-    return this.request.get(API.todoItem, {
-      params: {
-        project_id: projectId
-      }
-    }).pipe(map(response => {
-      this.todo$.next(response);
-      return response;
-    }));
+    if (!this.projectTodos[projectId]) {
+      this.projectTodos[projectId] = this.request.get(API.todoItem, {
+        params: {
+          project_id: projectId
+        }
+      }).pipe(map(response => {
+        this.todo$.next(response);
+        return response;
+      }));
+    }
+
+    return this.projectTodos[projectId];
   }
 }
