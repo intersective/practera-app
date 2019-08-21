@@ -3,6 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { EmbedVideoService } from 'ngx-embed-video';
 import { Router, ActivatedRoute } from '@angular/router';
 import { FilestackService } from '@shared/filestack/filestack.service';
+import { RouterEnter } from '@services/router-enter.service';
 import { UtilsService } from '@services/utils.service';
 import { BrowserStorageService } from '@services/storage.service';
 import { NotificationService } from '@shared/notification/notification.service';
@@ -15,7 +16,7 @@ import { Subscription, Observable } from 'rxjs';
   templateUrl: './topic.component.html',
   styleUrls: ['./topic.component.scss']
 })
-export class TopicComponent {
+export class TopicComponent extends RouterEnter {
   routeUrl = '/topic/';
   topic: Topic = {
     id: 0,
@@ -25,7 +26,7 @@ export class TopicComponent {
     files: [],
     hasComments: false
   };
-  iframeHtml = '';
+  iframeHtml: string;
   btnToggleTopicIsDone = false;
   loadingMarkedDone = true;
   loadingTopic = true;
@@ -35,6 +36,8 @@ export class TopicComponent {
   isLoadingPreview = false;
   isRedirectingToNextMilestoneTask: boolean;
   askForMarkAsDone: boolean;
+  topicProgressSubscription: Subscription;
+  topicSubscription: Subscription;
 
   constructor(
     private topicService: TopicService,
@@ -47,7 +50,9 @@ export class TopicComponent {
     public notificationService: NotificationService,
     private activityService: ActivityService,
     private sharedService: SharedService
-  ) {}
+  ) {
+    super(router);
+  }
 
   private _initialise() {
     this.topic = {
@@ -64,7 +69,7 @@ export class TopicComponent {
     this.askForMarkAsDone = false;
   }
 
-  ionViewWillEnter() {
+  onEnter() {
     this._initialise();
     this.id = +this.route.snapshot.paramMap.get('id');
     this.activityId = +this.route.snapshot.paramMap.get('activityId');
@@ -73,12 +78,17 @@ export class TopicComponent {
     setTimeout(() => this.askForMarkAsDone = true, 15000);
   }
 
+  unsubscribeAll() {
+    this.topicSubscription.unsubscribe();
+    this.topicProgressSubscription.unsubscribe();
+  }
+
   ionViewWillLeave() {
     this.sharedService.stopPlayingViodes();
   }
 
   private _getTopic() {
-    this.topicService.getTopic(this.id)
+    this.topicSubscription = this.topicService.getTopic(this.id)
       .subscribe(topic => {
         this.topic = topic;
         this.loadingTopic = false;
@@ -89,7 +99,7 @@ export class TopicComponent {
   }
 
   private _getTopicProgress() {
-    this.topicService.getTopicProgress(this.activityId, this.id)
+    this.topicProgressSubscription = this.topicService.getTopicProgress(this.activityId, this.id)
       .subscribe(result => {
         this.topicProgress = result;
         if (this.topicProgress !== null && this.topicProgress !== undefined) {
