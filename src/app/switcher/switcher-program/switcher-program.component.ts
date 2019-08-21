@@ -40,18 +40,19 @@ export class SwitcherProgramComponent implements OnInit {
     const loading = await this.loadingController.create({
       message: 'loading...'
     });
+
     await loading.present();
 
     return this.switcherService.switchProgram(this.programs[index]).subscribe(() => {
       loading.dismiss().then(() => {
         // reset pusher (upon new timelineId)
-        this.pusherService.initantiate({ unsubscribe: true });
+        this.pusherService.initialise({ unsubscribe: true });
 
         if ((typeof environment.goMobile !== 'undefined' && environment.goMobile === false)
           || /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
-          return this.router.navigate(['/app/home']);
+          return this.router.navigate(['app', 'home']);
         } else {
-          return this.router.navigate(['/go-mobile']);
+          return this.router.navigate(['go-mobile']);
         }
       });
     });
