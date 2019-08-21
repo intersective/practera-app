@@ -20,7 +20,6 @@ const api = {
 })
 
 export class TabsService {
-
   constructor(
     private storage: BrowserStorageService,
     private request: RequestService,
