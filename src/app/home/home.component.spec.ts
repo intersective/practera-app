@@ -2,7 +2,6 @@ import { CUSTOM_ELEMENTS_SCHEMA, Directive } from '@angular/core';
 import { async, ComponentFixture, TestBed, fakeAsync } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Router } from '@angular/router';
-import { DOCUMENT } from '@angular/common';
 
 import { HomeComponent } from './home.component';
 import { Intercom } from 'ng-intercom';
@@ -12,7 +11,7 @@ import { AchievementsService } from '@app/achievements/achievements.service';
 import { EventsService } from '@app/events/events.service';
 import { BrowserStorageService } from '@services/storage.service';
 import { UtilsService } from '@services/utils.service';
-import { of, Observable, Subject } from 'rxjs';
+import { of } from 'rxjs';
 import { map, filter } from 'rxjs/operators';
 
 @Directive({
@@ -20,7 +19,7 @@ import { map, filter } from 'rxjs/operators';
 })
 class DummyRouterLinkDirective {}
 
-fdescribe('HomeComponent', () => {
+describe('HomeComponent', () => {
   let component: HomeComponent;
   let fixture: ComponentFixture<HomeComponent>;
   let element: HTMLElement;
@@ -38,6 +37,10 @@ fdescribe('HomeComponent', () => {
       declarations: [HomeComponent, DummyRouterLinkDirective],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
       providers: [
+        UtilsService,
+        {
+          provide: Intercom
+        },
         {
           provide: HomeService,
           useValue: jasmine.createSpyObj('HomeService', ['getTodoItemFromEvent', 'getReminderEvent', 'getTodoItems', 'getChatMessage', 'getProgress', 'getCurrentActivity', 'getProgramName'])
@@ -66,13 +69,6 @@ fdescribe('HomeComponent', () => {
               id: 1
             }
           })
-        },
-        {
-          provide: UtilsService,
-          useValue: new UtilsService(new Document())
-        },
-        {
-          provide: Intercom
         },
         {
           provide: Router,
@@ -471,14 +467,14 @@ fdescribe('HomeComponent', () => {
     expect(routerSpy.navigate.calls.first().args[0]).toEqual(['assessment', 'review', 1, 2, 3]);
   });
 
-  it('should navigate to the correct chat page 1', () => {
+  it('should navigate to the correct chat page #1', () => {
     component.goToChat({
       meta: null
     });
     expect(routerSpy.navigate.calls.first().args[0]).toEqual(['app', 'chat']);
   });
 
-  it('should navigate to the correct chat page 2', () => {
+  it('should navigate to the correct chat page #2', () => {
     component.goToChat({
       meta: {
         team_id: 2,
@@ -488,7 +484,7 @@ fdescribe('HomeComponent', () => {
     expect(routerSpy.navigate.calls.first().args[0]).toEqual(['chat', 'chat-room', 2, 1]);
   });
 
-  it('should navigate to the correct chat page 3', () => {
+  it('should navigate to the correct chat page #3', () => {
     component.goToChat({
       meta: {
         team_id: 2,
