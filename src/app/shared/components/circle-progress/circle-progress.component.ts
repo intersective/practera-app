@@ -98,7 +98,7 @@ export class CircleProgressComponent implements OnChanges, OnInit {
     toFixed: 0,
   };
 
-  @ViewChild('description') descriptionRef: ElementRef;
+  @ViewChild('description', { static: false }) descriptionRef: ElementRef;
 
   ngOnInit() {
     if (this.data) {

@@ -55,6 +55,7 @@ export class AuthRegistrationComponent implements OnInit {
 
   initForm() {
     this.registerationForm = new FormGroup({
+      email: new FormControl('', [Validators.email]),
       password: new FormControl('', [
         Validators.required,
         Validators.minLength(8)
