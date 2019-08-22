@@ -22,7 +22,8 @@
       "@services/*": ["app/services/*"],
       "@components/*": ["app/shared/components/*"],
       "@shared/*": ["app/shared/*"],
-      "@environments/*": ["environments/*"]
+      "@environments/*": ["environments/*"],
+      "@testing/*": ["testing/*"]
     }
   }
 }
