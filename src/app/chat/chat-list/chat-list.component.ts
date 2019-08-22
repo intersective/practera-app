@@ -78,9 +78,9 @@ export class ChatListComponent extends RouterEnter {
     }
   }
 
-  navigateToChatRoom(chat) {
+  navigateToChatRoom(chat): Promise<boolean> {
     if (chat.is_team) {
-      this.router.navigate([
+      return this.router.navigate([
         'chat',
         'chat-room',
         'team',
@@ -89,14 +89,14 @@ export class ChatListComponent extends RouterEnter {
       ]);
     } else {
       if (chat.last_message_created) {
-        this.router.navigate([
+        return this.router.navigate([
           'chat',
           'chat-room',
           chat.team_id,
           chat.team_member_id
         ]);
       } else {
-        this.router.navigate([
+        return this.router.navigate([
           'chat',
           'chat-room',
           chat.team_id,

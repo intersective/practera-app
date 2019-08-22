@@ -41,7 +41,7 @@ export class ChatRoomComponent extends RouterEnter {
     private ngZone: NgZone
   ) {
     super(router);
-    const role = this.storage.getUser().role;
+    const { role } = this.storage.getUser();
 
     // message by team
     this.utils.getEvent('team-message').subscribe(event => {
