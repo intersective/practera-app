@@ -6,11 +6,13 @@ import { UtilsService } from '@services/utils.service';
 
 import { HomeService } from './home.service';
 import { NotificationService } from '@shared/notification/notification.service';
+import { EventsService } from '@app/events/events.service';
 
 fdescribe('HomeService', () => {
   let service: HomeService;
   let requestSpy: jasmine.SpyObj<RequestService>;
   let notificationSpy: jasmine.SpyObj<NotificationService>;
+  let eventsSpy: jasmine.SpyObj<EventsService>;
   let utils: UtilsService;
 
   beforeEach(() => {
@@ -24,7 +26,7 @@ fdescribe('HomeService', () => {
         },
         {
           provide: RequestService,
-          useValue: jasmine.createSpyObj('RequestService', ['get', 'apiResponseFormatError'])
+          useValue: jasmine.createSpyObj('RequestService', ['get', 'post', 'apiResponseFormatError'])
         },
         {
           provide: BrowserStorageService,
@@ -35,11 +37,16 @@ fdescribe('HomeService', () => {
             }
           })
         },
+        {
+          provide: EventsService,
+          useValue: jasmine.createSpyObj('EventsService', ['normaliseEvents'])
+        },
       ]
     });
     service = TestBed.get(HomeService);
     requestSpy = TestBed.get(RequestService);
     notificationSpy = TestBed.get(NotificationService);
+    eventsSpy = TestBed.get(EventsService);
     utils = TestBed.get(UtilsService);
   });
 
@@ -311,5 +318,221 @@ fdescribe('HomeService', () => {
     expect(requestSpy.get.calls.count()).toBe(1);
   });
 
+  it('should get correct activity', async() => {
+    service.currentActivityId = 1;
+    const requestResponse = {
+      success: true,
+      data: [
+        {
+          Activity: {
+            name: 'activity',
+            is_locked: false,
+            lead_image: ''
+          }
+        }
+      ]
+    };
+    const expected = {
+      id: 1,
+      name: requestResponse.data[0].Activity.name,
+      isLocked: requestResponse.data[0].Activity.is_locked,
+      leadImage: requestResponse.data[0].Activity.lead_image
+    };
+    requestSpy.get.and.returnValue(of(requestResponse));
+    service.getCurrentActivity().subscribe(
+      res => expect(res).toEqual(expected)
+    );
+    expect(requestSpy.get.calls.count()).toBe(1);
+  });
+
+  it('should get correct todo item from event #1', async() => {
+    const event = {};
+    const expected = {};
+    expect(service.getTodoItemFromEvent(event)).toEqual(expected);
+    expect(requestSpy.apiResponseFormatError.calls.count()).toBe(1);
+  });
+
+  it('should get correct todo item from event #2', async() => {
+    const event = {
+      type: 'assessment_review_published',
+      meta: {
+        AssessmentReview: {}
+      }
+    };
+    const expected = {};
+    expect(service.getTodoItemFromEvent(event)).toEqual(expected);
+    expect(requestSpy.apiResponseFormatError.calls.count()).toBe(1);
+  });
+
+  it('should get correct todo item from event #3', async() => {
+    const event = {
+      type: 'assessment_review_published',
+      meta: {
+        AssessmentReview: {
+          assessment_name: 'asssessment name',
+          reviewer_name: 'reviewer name',
+          published_date: '2019-02-02',
+          assessment_id: 1,
+          activity_id: 2,
+          context_id: 3
+        }
+      }
+    };
+    const expected = {
+      type: 'feedback_available',
+      name: event.meta.AssessmentReview.assessment_name,
+      description: event.meta.AssessmentReview.reviewer_name + ' has provided feedback',
+      time: '2 Feb',
+      meta: {
+        activity_id: event.meta.AssessmentReview.activity_id,
+        context_id: event.meta.AssessmentReview.context_id,
+        assessment_id: event.meta.AssessmentReview.assessment_id,
+        assessment_name: event.meta.AssessmentReview.assessment_name,
+        reviewer_name: event.meta.AssessmentReview.reviewer_name,
+      }
+    };
+    expect(service.getTodoItemFromEvent(event)).toEqual(expected);
+  });
+
+  it('should get correct todo item from event #4', async() => {
+    const event = {
+      type: 'assessment_review_assigned',
+      meta: {
+        AssessmentReview: {}
+      }
+    };
+    const expected = {};
+    expect(service.getTodoItemFromEvent(event)).toEqual(expected);
+    expect(requestSpy.apiResponseFormatError.calls.count()).toBe(1);
+  });
+
+  it('should get correct todo item from event #5', async() => {
+    const event = {
+      type: 'assessment_review_assigned',
+      meta: {
+        AssessmentReview: {
+          assessment_name: 'asssessment name',
+          assigned_date: '2019-02-02',
+          assessment_id: 1,
+          assessment_submission_id: 2,
+          context_id: 3
+        }
+      }
+    };
+    const expected = {
+      type: 'review_submission',
+      name: event.meta.AssessmentReview.assessment_name,
+      description: 'Please review the assessment',
+      time: '2 Feb',
+      meta: {
+        context_id: event.meta.AssessmentReview.context_id,
+        assessment_id: event.meta.AssessmentReview.assessment_id,
+        assessment_name: event.meta.AssessmentReview.assessment_name,
+        assessment_submission_id: event.meta.AssessmentReview.assessment_submission_id,
+      }
+    };
+    expect(service.getTodoItemFromEvent(event)).toEqual(expected);
+  });
+
+  it('should get correct todo item from event #6', async() => {
+    const event = {
+      type: 'assessment_submission_reminder',
+      meta: {
+        AssessmentSubmissionReminder: {}
+      }
+    };
+    const expected = {};
+    expect(service.getTodoItemFromEvent(event)).toEqual(expected);
+    expect(requestSpy.apiResponseFormatError.calls.count()).toBe(1);
+  });
+
+  it('should get correct todo item from event #7', async() => {
+    const event = {
+      type: 'assessment_submission_reminder',
+      meta: {
+        AssessmentSubmissionReminder: {
+          assessment_name: 'asssessment name',
+          due_date: '2019-02-02',
+          reminded_date: '2019-02-03',
+          assessment_id: 1,
+          activity_id: 2,
+          context_id: 3
+        }
+      }
+    };
+    const expected = {
+      type: 'assessment_submission_reminder',
+      name: event.meta.AssessmentSubmissionReminder.assessment_name,
+      description: 'Overdue 2 Feb 2019 ' + new Intl.DateTimeFormat('en-GB', {
+          hour12: true,
+          hour: 'numeric',
+          minute: 'numeric'
+        }).format(new Date(event.meta.AssessmentSubmissionReminder.due_date + 'Z')),
+      time: '3 Feb',
+      meta: {
+        context_id: event.meta.AssessmentSubmissionReminder.context_id,
+        assessment_id: event.meta.AssessmentSubmissionReminder.assessment_id,
+        assessment_name: event.meta.AssessmentSubmissionReminder.assessment_name,
+        activity_id: event.meta.AssessmentSubmissionReminder.activity_id,
+        due_date: event.meta.AssessmentSubmissionReminder.due_date
+      }
+    };
+    expect(service.getTodoItemFromEvent(event)).toEqual(expected);
+  });
+
+  it('should get correct reminder event #1', async() => {
+    const data = {
+      meta: {}
+    };
+    service.getReminderEvent(data).subscribe(res => expect(res).toEqual(null));
+    expect(requestSpy.apiResponseFormatError.calls.count()).toBe(1);
+  });
+
+  it('should get correct reminder event #2', async() => {
+    const data = {
+      meta: {id:1}
+    };
+    const requestResponse = {
+      data: {
+        name: 'name'
+      }
+    };
+    const eventResponse = [
+      {
+        // should call postEventReminder()
+        isPast: true
+      }
+    ];
+    requestSpy.get.and.returnValue(of(requestResponse));
+    requestSpy.post.and.returnValue(of());
+    eventsSpy.normaliseEvents.and.returnValue(eventResponse);
+    service.getReminderEvent(data).subscribe(res => expect(res).toEqual(null));
+    expect(requestSpy.apiResponseFormatError.calls.count()).toBe(0);
+    expect(eventsSpy.normaliseEvents.calls.count()).toBe(1);
+    expect(requestSpy.post.calls.count()).toBe(1);
+  });
+
+  it('should get correct reminder event #3', async() => {
+    const data = {
+      meta: {id:1}
+    };
+    const requestResponse = {
+      data: {
+        name: 'name'
+      }
+    };
+    const eventResponse = [
+      {
+        isPast: false,
+        name: 'name'
+      }
+    ];
+    requestSpy.get.and.returnValue(of(requestResponse));
+    eventsSpy.normaliseEvents.and.returnValue(eventResponse);
+    service.getReminderEvent(data).subscribe(res => expect(res).toEqual(eventResponse[0]));
+    expect(requestSpy.apiResponseFormatError.calls.count()).toBe(0);
+    expect(eventsSpy.normaliseEvents.calls.count()).toBe(1);
+    expect(requestSpy.post.calls.count()).toBe(0);
+  });
 
 });
