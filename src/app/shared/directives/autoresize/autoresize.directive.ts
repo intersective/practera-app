@@ -19,6 +19,15 @@ export class AutoresizeDirective implements OnInit {
     this.adjust();
   }
 
+  /**
+   * in this method we resize textarea releted to text in side it.
+   * when user type on textarea it will expand untill scroll height lower than max height.
+   *  if scroll height biger than max height textare will not expand and it will scroll content.
+   * - select textare.
+   * - set 'aoto' to height and overflow properties.
+   * - check min value from scrollheight and maxheight and get it as the newheight.
+   * - set that new height to textarea height.
+   */
   adjust(): void {
     const ta = this.element.nativeElement.querySelector('textarea');
     let newHeight;

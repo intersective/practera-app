@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, AfterContentInit, AfterViewInit, ElementRef } from '@angular/core';
+import { Component, OnInit, ViewChild, AfterContentInit, AfterViewInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { IonContent, ModalController } from '@ionic/angular';
 import { BrowserStorageService } from '@services/storage.service';
@@ -38,7 +38,6 @@ export class ChatRoomComponent extends RouterEnter {
     public pusherService: PusherService,
     private filestackService: FilestackService,
     private modalController: ModalController,
-    public element: ElementRef
   ) {
     super(router);
     const role = this.storage.getUser().role;
@@ -378,7 +377,6 @@ export class ChatRoomComponent extends RouterEnter {
    * Trigger typing event when user is typing
    */
   typing() {
-    // this.extendTextArea();
     this.pusherService.triggerTyping(
       {
         from: this.pusherService.getMyPresenceChannelId(),
