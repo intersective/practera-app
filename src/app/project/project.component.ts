@@ -1,4 +1,4 @@
-import { Component, HostListener, ViewChild, ViewChildren, QueryList, ElementRef, OnInit, OnDestroy } from '@angular/core';
+import { Component, HostListener, ViewChild, ViewChildren, QueryList, ElementRef, OnDestroy } from '@angular/core';
 import { Router, ActivatedRoute, NavigationEnd } from '@angular/router';
 import { ProjectService, Milestone, DummyMilestone } from './project.service';
 import { HomeService } from '../home/home.service';
@@ -14,7 +14,7 @@ import { Subscription } from 'rxjs';
   templateUrl: 'project.component.html',
   styleUrls: ['project.component.scss'],
 })
-export class ProjectComponent implements OnInit {
+export class ProjectComponent extends RouterEnter {
   public routeUrl = '/app/project'; // mandatory for RouterEnter parent class
 
   public programName: string;
@@ -43,9 +43,10 @@ export class ProjectComponent implements OnInit {
     private sharedService: SharedService,
     public fastFeedbackService: FastFeedbackService
   ) {
+    super(router);
   }
 
-  ngOnInit() {
+  onEnter() {
     this.routeData = this.route.data.subscribe(data => {
       this._initialise();
       this.routeQuery = this.route.queryParamMap.subscribe(params => {
@@ -102,7 +103,7 @@ export class ProjectComponent implements OnInit {
   }
 
   // clear every subscription to avoid memory leaks
-  private unsubscribeAll() {
+  unsubscribeAll() {
     console.log('project_component::destroyed');
     this.routeData.unsubscribe();
     this.routeQuery.unsubscribe();
