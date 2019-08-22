@@ -429,6 +429,7 @@ export class HomeService {
             !this.utils.has(event, 'meta.AssessmentSubmissionReminder.reminded_date')
           ) {
           this.request.apiResponseFormatError('TodoItem meta format error');
+          return {};
         }
         return {
           type: 'assessment_submission_reminder',
