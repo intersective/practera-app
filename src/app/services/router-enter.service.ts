@@ -37,11 +37,7 @@ export class RouterEnter implements OnInit, OnDestroy {
 
   unsubscribeAll() {}
 
-  ionViewWillEnter() {
-    console.log('ionViewWillEnter', this.routeUrl);
-  }
+  ionViewWillEnter() {}
 
-  ionViewWillLeave() {
-    console.log('ionViewWillLeave', this.routeUrl);
-  }
+  ionViewWillLeave() {}
 }
