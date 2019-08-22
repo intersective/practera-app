@@ -43,7 +43,7 @@ const largeCircleDefaultConfig = {
     ClickableItemComponent,
     CircleProgressComponent,
     BrandingLogoComponent,
-    ContactNumberFormComponent
+    ContactNumberFormComponent,
   ],
   exports: [
     ActivityCardComponent,

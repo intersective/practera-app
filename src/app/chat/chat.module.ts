@@ -9,6 +9,7 @@ import { ChatRoutingModule } from './chat-routing.module';
 import { ChatService } from './chat.service';
 import { LinkifyPipe } from '../shared/pipes/linkify/linkify.pipe';
 import { FilestackModule } from '../shared/filestack/filestack.module';
+import { AutoresizeDirective } from '../shared/directives/autoresize/autoresize.directive';
 import { FastFeedbackModule } from '../fast-feedback/fast-feedback.module';
 
 @NgModule({
@@ -23,7 +24,8 @@ import { FastFeedbackModule } from '../fast-feedback/fast-feedback.module';
     ChatListComponent,
     ChatPreviewComponent,
     ChatRoomComponent,
-    LinkifyPipe
+    LinkifyPipe,
+    AutoresizeDirective
   ],
   entryComponents: [ChatPreviewComponent],
   providers: [ChatService],
