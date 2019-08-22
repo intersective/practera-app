@@ -8,7 +8,7 @@ import { HomeService } from './home.service';
 import { NotificationService } from '@shared/notification/notification.service';
 import { EventsService } from '@app/events/events.service';
 
-fdescribe('HomeService', () => {
+describe('HomeService', () => {
   let service: HomeService;
   let requestSpy: jasmine.SpyObj<RequestService>;
   let notificationSpy: jasmine.SpyObj<NotificationService>;
