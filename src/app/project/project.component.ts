@@ -104,7 +104,6 @@ export class ProjectComponent extends RouterEnter {
 
   // clear every subscription to avoid memory leaks
   unsubscribeAll() {
-    console.log('project_component::destroyed');
     this.routeData.unsubscribe();
     this.routeQuery.unsubscribe();
     this.homeProgramName.unsubscribe();
