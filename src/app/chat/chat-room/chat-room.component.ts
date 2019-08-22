@@ -40,7 +40,7 @@ export class ChatRoomComponent extends RouterEnter {
     private modalController: ModalController,
   ) {
     super(router);
-    const role = this.storage.getUser().role;
+    const { role } = this.storage.getUser();
 
     // message by team
     this.utils.getEvent('team-message').subscribe(event => {
