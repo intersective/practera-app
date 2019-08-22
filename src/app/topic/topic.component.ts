@@ -26,7 +26,7 @@ export class TopicComponent extends RouterEnter {
     files: [],
     hasComments: false
   };
-  iframeHtml = '';
+  iframeHtml: string;
   btnToggleTopicIsDone = false;
   loadingMarkedDone = true;
   loadingTopic = true;
@@ -36,6 +36,8 @@ export class TopicComponent extends RouterEnter {
   isLoadingPreview = false;
   isRedirectingToNextMilestoneTask: boolean;
   askForMarkAsDone: boolean;
+  topicProgressSubscription: Subscription;
+  topicSubscription: Subscription;
 
   constructor(
     private topicService: TopicService,
@@ -77,12 +79,17 @@ export class TopicComponent extends RouterEnter {
     setTimeout(() => this.askForMarkAsDone = true, 15000);
   }
 
+  unsubscribeAll() {
+    this.topicSubscription.unsubscribe();
+    this.topicProgressSubscription.unsubscribe();
+  }
+
   ionViewWillLeave() {
     this.sharedService.stopPlayingViodes();
   }
 
   private _getTopic() {
-    this.topicService.getTopic(this.id)
+    this.topicSubscription = this.topicService.getTopic(this.id)
       .subscribe(topic => {
         this.topic = topic;
         this.loadingTopic = false;
@@ -93,7 +100,7 @@ export class TopicComponent extends RouterEnter {
   }
 
   private _getTopicProgress() {
-    this.topicService.getTopicProgress(this.activityId, this.id)
+    this.topicProgressSubscription = this.topicService.getTopicProgress(this.activityId, this.id)
       .subscribe(result => {
         this.topicProgress = result;
         if (this.topicProgress !== null && this.topicProgress !== undefined) {

@@ -1,5 +1,5 @@
 import { Injectable, Optional } from '@angular/core';
-import { HttpEvent, HttpInterceptor, HttpHandler, HttpRequest, HttpParams } from '@angular/common/http';
+import { HttpEvent, HttpInterceptor, HttpHandler, HttpRequest, HttpParams, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs/Observable';
 import { RequestConfig } from './request.service';
 import { BrowserStorageService } from '@services/storage.service';
@@ -14,36 +14,52 @@ export class RequestInterceptor implements HttpInterceptor {
     this.currenConfig = config;
   }
 
+  private enforcedString(value): string {
+    const result = (typeof value === 'string') ? value : JSON.stringify(value);
+    return result;
+  }
+
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    const apikey = this.storage.getUser().apikey;
-    const timelineId = this.storage.getUser().timelineId;
-    const teamId = this.storage.getUser().teamId;
-    let headerClone = req.headers;
+    const { apikey, timelineId, teamId } = this.storage.getUser();
     const paramsInject = req.params;
+
+    const headers = {};
+
+    // inherit the existing headers
+    const keys = req.headers.keys();
+    keys.forEach(key => {
+      headers[key] = req.headers.get(key);
+    });
 
     // inject appkey
     if (this.currenConfig.appkey) {
-      const appkey = this.currenConfig.appkey;
-      headerClone = headerClone.set('appkey', appkey);
+      headers['appkey'] = this.enforcedString(this.currenConfig.appkey);
     }
     if (apikey) {
-      headerClone = headerClone.set('apikey', apikey);
+      headers['apikey'] = this.enforcedString(apikey);
     }
     if (timelineId) {
-      headerClone = headerClone.set('timelineId', timelineId);
+      headers['timelineId'] = this.enforcedString(timelineId);
     }
 
     // do not need to pass team id for teams.json
     // do not need to pass team id for chat api calls
-    if (teamId && !req.url.includes('/teams.json') &&
-    !req.url.includes('/message/chat/list.json') && !req.url.includes('/message/chat/create_message') &&
-    !req.url.includes('/message/chat/edit_message') && !req.url.includes('/message/chat/list_messages.json')) {
-      headerClone = headerClone.set('teamId', teamId);
+    if (
+      teamId &&
+      !req.url.includes('/teams.json') &&
+      !req.url.includes('/message/chat/list.json') &&
+      !req.url.includes('/message/chat/create_message') &&
+      !req.url.includes('/message/chat/edit_message') &&
+      !req.url.includes('/message/chat/list_messages.json')
+    ) {
+      headers['teamId'] = this.enforcedString(teamId);
     }
 
-    return next.handle(req.clone({
-      headers: headerClone,
+    const newRequest = req.clone({
+      headers: new HttpHeaders(headers),
       params: paramsInject,
-    }));
+    });
+
+    return next.handle(newRequest);
   }
 }
