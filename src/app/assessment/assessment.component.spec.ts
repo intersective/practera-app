@@ -3,8 +3,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { Router, ActivatedRoute } from '@angular/router';
-import { ActivatedRouteStub } from '@testing/activated-route-stub';
+import { Router, ActivatedRoute, convertToParamMap } from '@angular/router';
 import { AssessmentComponent } from './assessment.component';
 import { AssessmentService } from './assessment.service';
 import { UtilsService } from '@services/utils.service';
@@ -23,7 +22,7 @@ fdescribe('AssessmentComponent', () => {
   let activitySpy: jasmine.SpyObj<ActivityService>;
   let fastFeedbackSpy: jasmine.SpyObj<FastFeedbackService>;
   let routerSpy: jasmine.SpyObj<Router>;
-  let routeStub: Partial<ActivatedRouteStub>;
+  let routeStub: Partial<ActivatedRoute>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
@@ -51,7 +50,7 @@ fdescribe('AssessmentComponent', () => {
         {
           provide: BrowserStorageService,
           useValue: jasmine.createSpyObj('BrowserStorageService', {
-            'getUser': {
+            getUser: {
               role: 'participant',
               teamId: 1,
               name: 'Test User',
@@ -69,7 +68,20 @@ fdescribe('AssessmentComponent', () => {
         },
         {
           provide: ActivatedRoute,
-          useValue: routeStub
+          useValue: {
+            snapshot: {
+              paramMap: convertToParamMap({
+                id: 1,
+                activityId: 2,
+                contextId: 3,
+                submissionId: 4
+              }),
+              data: {
+                action: 'assessment',
+                from: ''
+              }
+            }
+          }
         }
       ]
     }).compileComponents();
@@ -82,10 +94,17 @@ fdescribe('AssessmentComponent', () => {
     notificationSpy = TestBed.get(NotificationService);
     activitySpy = TestBed.get(ActivityService);
     fastFeedbackSpy = TestBed.get(FastFeedbackService);
+    routeStub = TestBed.get(ActivatedRoute);
   });
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('should get correct parameters from routing', () => {
+    fixture.detectChanges();
+    expect(component.id).toEqual(1);
+    expect(component.activityId).toEqual(2);
   });
 
   it('should list unanswered question compulsoryQuestionsAnswered', () => {
