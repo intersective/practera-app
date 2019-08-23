@@ -103,10 +103,6 @@ export class ChatRoomComponent extends RouterEnter {
       this._validateRouteParams(params);
       this._loadMessages();
     });
-
-    this.route.data.subscribe(res => {
-      console.log('resolver:', res);
-    });
   }
 
   onEnter() {
