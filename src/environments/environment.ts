@@ -7,7 +7,8 @@ export const environment = {
   appkey: 'b11e7c189b',
   pusherKey: '255f010d210933ca7675',
   env: 'sandbox',
-  APIEndpoint: 'https://sandbox.practera.com/',
+  APIEndpoint: 'https://stage.practera.com/',
+  // APIEndpoint: 'https://sandbox.practera.com/',
   intercomAppId: '',
   filestack: {
     key: 'AO6F4C72uTPGRywaEijdLz',
