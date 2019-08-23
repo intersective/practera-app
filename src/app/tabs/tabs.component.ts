@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
 import { TabsService } from './tabs.service';
 import { UtilsService } from '@services/utils.service';
 import { BrowserStorageService } from '@services/storage.service';
@@ -14,7 +14,7 @@ import { Subscription } from 'rxjs';
   templateUrl: 'tabs.component.html',
   styleUrls: ['tabs.component.scss']
 })
-export class TabsComponent implements OnDestroy, OnInit {
+export class TabsComponent implements OnDestroy {
   showReview = false;
   showChat = false;
   noOfTodoItems = 0;
@@ -58,7 +58,10 @@ export class TabsComponent implements OnDestroy, OnInit {
     // keep manually fire API call for latest data (every route change)
     this.router.events.subscribe(res => {
       if (res instanceof NavigationEnd) {
-        this.ngOnInit();
+        this._initialise();
+        this._checkRoute();
+        this._stopPlayingVideos();
+
         this.getNoOfTodoItems = this.tabsService.getNoOfTodoItems().subscribe(noOfTodoItems => {
           this.noOfTodoItems = noOfTodoItems;
         });
@@ -91,7 +94,6 @@ export class TabsComponent implements OnDestroy, OnInit {
   }
 
   ngOnDestroy() {
-    console.log('TabComponent::onDestroy');
     if (this.getNoOfTodoItems) {
       this.getNoOfTodoItems.unsubscribe();
     }
@@ -109,12 +111,6 @@ export class TabsComponent implements OnDestroy, OnInit {
   private _initialise() {
     this.showChat = false;
     this.showReview = false;
-  }
-
-  ngOnInit() {
-    this._initialise();
-    this._checkRoute();
-    this._stopPlayingVideos();
   }
 
   private _checkRoute() {

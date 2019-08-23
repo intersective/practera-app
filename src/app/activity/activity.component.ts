@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, OnDestroy } from '@angular/core';
+import { Component, Input, NgZone } from '@angular/core';
 import { Router, ActivatedRoute, ParamMap } from '@angular/router';
 import { Observable, of, forkJoin, Subscription } from 'rxjs';
 import { catchError } from 'rxjs/operators';
@@ -44,12 +44,20 @@ export class ActivityComponent extends RouterEnter {
     public storage: BrowserStorageService,
     private eventsService: EventsService,
     public sharedService: SharedService,
-    public fastFeedbackService: FastFeedbackService
+    public fastFeedbackService: FastFeedbackService,
+    private ngZone: NgZone
   ) {
     super(router);
     // update event list after book/cancel an event
     this.getEventPusher = this.utils.getEvent('update-event').subscribe(event => {
       this._getEvents();
+    });
+  }
+
+  // force every navigation happen under radar of angular
+  private navigate(direction): Promise<boolean> {
+    return this.ngZone.run(() => {
+      return this.router.navigate(direction);
     });
   }
 
@@ -153,7 +161,7 @@ export class ActivityComponent extends RouterEnter {
   }
 
   back() {
-    this.router.navigate([ 'app', 'project' ]);
+    this.navigate([ 'app', 'project' ]);
   }
 
   // check assessment lock or not before go to assessment.
@@ -193,10 +201,10 @@ export class ActivityComponent extends RouterEnter {
             message: 'To do this assessment, you have to be in a team.'
           });
         }
-        return this.router.navigate(['assessment', 'assessment', this.id , contextId, id]);
+        return this.navigate(['assessment', 'assessment', this.id , contextId, id]);
 
       case 'Topic':
-        return this.router.navigate(['topic', this.id, id]);
+        return this.navigate(['topic', this.id, id]);
 
       case 'Locked':
         return this.notificationService.popUp('shortMessage', {
