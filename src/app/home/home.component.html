@@ -7,7 +7,7 @@
     <app-circle-progress [data]="progressConfig" [type]="'large'"></app-circle-progress>
   </div>
 
-  <ng-container *ngIf="achievements[0]">
+  <ng-container *ngIf="achievements && achievements[0]">
     <div class="achievement">
       <ion-label color="medium">My Badges</ion-label>
       <ion-label >

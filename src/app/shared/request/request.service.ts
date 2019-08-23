@@ -42,7 +42,7 @@ export class RequestService {
     private utils: UtilsService,
     private storage: BrowserStorageService,
     private router: Router,
-    @Optional() config: RequestConfig
+    @Optional() config: RequestConfig,
   ) {
     if (config) {
       this.appkey = config.appkey;
@@ -56,8 +56,14 @@ export class RequestService {
    * @returns {HttpHeaders}
    */
   appendHeaders(header = {'Content-Type': 'application/json'}) {
-    const headers = new HttpHeaders(header);
-    return headers;
+    const headers = {};
+    for (const head in header) {
+      if (header.hasOwnProperty(head)) {
+        headers[head] = header[head];
+      }
+    }
+
+    return new HttpHeaders(headers);
   }
 
   /**
@@ -96,7 +102,7 @@ export class RequestService {
     if (!httpOptions) {
       httpOptions = {
         headers: '',
-        params: ''
+        params: '',
       };
     }
     if (!this.utils.has(httpOptions, 'headers')) {
@@ -110,13 +116,13 @@ export class RequestService {
       headers: this.appendHeaders(httpOptions.headers),
       params: this.setParams(httpOptions.params)
     })
-      .pipe(concatMap(response => {
+    .pipe(
+      concatMap(response => {
         this._refreshApikey(response);
         return of(response);
-      }))
-      .pipe(
-        catchError((error) => this.handleError(error))
-      );
+      }),
+      catchError((error) => this.handleError(error))
+    );
   }
 
   post(endPoint: string = '', data, httpOptions?: any): Observable<any> {
@@ -137,11 +143,11 @@ export class RequestService {
       headers: this.appendHeaders(httpOptions.headers),
       params: this.setParams(httpOptions.params)
     })
-      .pipe(concatMap(response => {
-        this._refreshApikey(response);
-        return of(response);
-      }))
       .pipe(
+        concatMap(response => {
+          this._refreshApikey(response);
+          return of(response);
+        }),
         catchError((error) => this.handleError(error))
       );
   }
@@ -163,11 +169,11 @@ export class RequestService {
       headers: this.appendHeaders(httpOptions.headers),
       params: this.setParams(httpOptions.params)
     })
-      .pipe(concatMap(response => {
-        this._refreshApikey(response);
-        return of(response);
-      }))
       .pipe(
+        concatMap(response => {
+          this._refreshApikey(response);
+          return of(response);
+        }),
         catchError((error) => this.handleError(error))
       );
   }

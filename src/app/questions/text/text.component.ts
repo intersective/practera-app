@@ -29,9 +29,9 @@ export class TextComponent implements ControlValueAccessor, OnInit {
   // FormControl that is passed in from parent component
   @Input() control: FormControl;
   // answer field for submitter & reviewer
-  @ViewChild('answerEle') answerRef: ElementRef;
+  @ViewChild('answerEle', { static: false }) answerRef: ElementRef;
   // comment field for reviewer
-  @ViewChild('commentEle') commentRef: ElementRef;
+  @ViewChild('commentEle', { static: false }) commentRef: ElementRef;
   // call back for save changes
   @Output() saveProgress = new EventEmitter<boolean>();
 
