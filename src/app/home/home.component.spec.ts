@@ -19,10 +19,45 @@ import { map, filter } from 'rxjs/operators';
 })
 class DummyRouterLinkDirective {}
 
+class Page {
+  // getter properties wait to query the DOM until called.
+  get todoCards() {
+    return this.queryAll<HTMLElement>('app-todo-card');
+  }
+  get title() {
+    return this.query<HTMLElement>('h1');
+  }
+  get achievement() {
+    return this.query<HTMLElement>('.achievement');
+  }
+  get calendarIcon() {
+    return this.query<HTMLElement>('ion-icon.calendar');
+  }
+
+  navigateSpy:  jasmine.Spy;
+  fixture: ComponentFixture<HomeComponent>
+
+  constructor(fixture: ComponentFixture<HomeComponent>) {
+    // get the navigate spy from the injected router spy object
+    const routerSpy = <any> fixture.debugElement.injector.get(Router);
+    this.navigateSpy = routerSpy.navigate;
+    this.fixture = fixture;
+  }
+
+  //// query helpers ////
+  private query<T>(selector: string): T {
+    return this.fixture.nativeElement.querySelector(selector);
+  }
+
+  private queryAll<T>(selector: string): T[] {
+    return this.fixture.nativeElement.querySelectorAll(selector);
+  }
+}
+
 describe('HomeComponent', () => {
   let component: HomeComponent;
   let fixture: ComponentFixture<HomeComponent>;
-  let element: HTMLElement;
+  let page: Page;
   let homeServiceSpy: jasmine.SpyObj<HomeService>;
   let eventsServiceSpy: jasmine.SpyObj<EventsService>;
   let achieventsServiceSpy: jasmine.SpyObj<AchievementsService>;
@@ -84,7 +119,7 @@ describe('HomeComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(HomeComponent);
     component = fixture.componentInstance;
-    element = fixture.nativeElement;
+    page = new Page(fixture);
     homeServiceSpy = TestBed.get(HomeService);
     eventsServiceSpy = TestBed.get(EventsService);
     achieventsServiceSpy = TestBed.get(AchievementsService);
@@ -123,7 +158,7 @@ describe('HomeComponent', () => {
     // before any events
     // 2 todo items
     expect(component.todoItems.length).toEqual(2);
-    expect(element.querySelectorAll('app-todo-card').length).toBe(2);
+    expect(page.todoCards.length).toBe(2);
 
     // mock getTodoItemFromEvent()
     homeServiceSpy.getTodoItemFromEvent.and.returnValue({
@@ -134,7 +169,7 @@ describe('HomeComponent', () => {
     fixture.detectChanges();
     expect(homeServiceSpy.getTodoItemFromEvent.calls.count()).toBe(1, 'one service call');
     expect(component.todoItems.length).toEqual(3);
-    expect(element.querySelectorAll('app-todo-card').length).toBe(3);
+    expect(page.todoCards.length).toBe(3);
 
     // mock getChatMessage()
     homeServiceSpy.getChatMessage.and.returnValue(of({
@@ -147,7 +182,7 @@ describe('HomeComponent', () => {
     expect(homeServiceSpy.getChatMessage.calls.count()).toBe(2, '2 service call');
     // there're still 4 todo items instead of 5, because all chat messages are gathered to only 1 todo item
     expect(component.todoItems.length).toEqual(4);
-    expect(element.querySelectorAll('app-todo-card').length).toBe(4);
+    expect(page.todoCards.length).toBe(4);
 
     // mock getReminderEvent()
     homeServiceSpy.getReminderEvent.and.returnValue(of({
@@ -158,7 +193,7 @@ describe('HomeComponent', () => {
     fixture.detectChanges();
     expect(homeServiceSpy.getReminderEvent.calls.count()).toBe(1, '1 service call');
     expect(component.eventReminders.length).toEqual(1, '1 event reminder');
-    expect(element.querySelectorAll('app-todo-card').length).toBe(5);
+    expect(page.todoCards.length).toBe(5);
 
     // after 'team-no-mentor-message' triggers
     utils.broadcastEvent('team-no-mentor-message', {});
@@ -167,7 +202,7 @@ describe('HomeComponent', () => {
     expect(homeServiceSpy.getChatMessage.calls.count()).toBe(3, 'one service call');
     // todo items and todo card won't increase, because all chat messages are gathered to only 1 todo item
     expect(component.todoItems.length).toEqual(4);
-    expect(element.querySelectorAll('app-todo-card').length).toBe(5);
+    expect(page.todoCards.length).toBe(5);
   });
 
   it('should display no todo card if there\'s no todo item', () => {
@@ -175,7 +210,7 @@ describe('HomeComponent', () => {
     expect(component.todoItems).toEqual([], 'no todo item');
     expect(component.loadingTodoItems).toBe(false, 'todo item loaded');
     expect(homeServiceSpy.getTodoItems.calls.count()).toBe(1, 'one call');
-    expect(element.querySelectorAll('app-todo-card').length).toBe(1, 'one todo card');
+    expect(page.todoCards.length).toBe(1, 'one todo card');
   });
 
   it('should display 2 todo cards if there\'re 2 todo items', () => {
@@ -197,7 +232,7 @@ describe('HomeComponent', () => {
     expect(component.todoItems.length).toEqual(2, '2 todo items');
     expect(component.loadingTodoItems).toBe(false, 'todo item loaded');
     expect(homeServiceSpy.getTodoItems.calls.count()).toBe(1, 'one call');
-    expect(element.querySelectorAll('app-todo-card').length).toBe(2, '2 todo cards');
+    expect(page.todoCards.length).toBe(2, '2 todo cards');
   });
 
   it('should display 1 todo card if there\'s 1 chat message', () => {
@@ -213,7 +248,7 @@ describe('HomeComponent', () => {
     expect(component.todoItems.length).toEqual(1, '1 todo item');
     expect(component.loadingTodoItems).toBe(false, 'todo item loaded');
     expect(homeServiceSpy.getChatMessage.calls.count()).toBe(1, 'one call');
-    expect(element.querySelectorAll('app-todo-card').length).toBe(1, '1 todo card');
+    expect(page.todoCards.length).toBe(1, '1 todo card');
   });
 
   it('should not call getChatMessage if no team id', () => {
@@ -229,7 +264,7 @@ describe('HomeComponent', () => {
     fixture.detectChanges();
     expect(component.todoItems.length).toEqual(0, 'no todo item');
     expect(homeServiceSpy.getChatMessage.calls.count()).toBe(0, 'no call');
-    expect(element.querySelectorAll('app-todo-card').length).toBe(1, '1 todo card');
+    expect(page.todoCards.length).toBe(1, '1 todo card');
   });
 
   it('should get the correct progress', () => {
@@ -257,15 +292,14 @@ describe('HomeComponent', () => {
     fixture.detectChanges();
     expect(component.programName).toEqual('Test Program');
     expect(homeServiceSpy.getProgramName.calls.count()).toBe(1, 'one call');
-    expect(element.querySelector('h1').innerHTML).toEqual('Test Program', 'program name match');
+    expect(page.title.innerHTML).toEqual('Test Program', 'program name match');
   });
 
   it('should not display achievement if there\'s no achievement', () => {
     fixture.detectChanges();
     expect(component.achievements).toEqual([], 'no achievement');
     expect(achieventsServiceSpy.getAchievements.calls.count()).toBe(1, 'one call');
-    expect(element.querySelector('.achievement')).toBeFalsy();
-    expect(element.textContent).not.toContain('My Badges');
+    expect(page.achievement).toBeFalsy();
   });
 
   it('should display all achievements if there\'re less than 4 achievements', () => {
@@ -287,8 +321,8 @@ describe('HomeComponent', () => {
     fixture.detectChanges();
     expect(component.achievements).toEqual(mock, 'no achievement');
     expect(achieventsServiceSpy.getAchievements.calls.count()).toBe(1, 'one call');
-    expect(element.querySelector('.achievement')).toBeTruthy();
-    expect(element.textContent).toContain('My Badges');
+    expect(page.achievement).toBeTruthy();
+    expect(page.achievement.textContent).toContain('My Badges');
   });
 
   it('should display first 3 achievements if all achievements are unearned', () => {
@@ -441,7 +475,7 @@ describe('HomeComponent', () => {
     fixture.detectChanges();
     expect(component.haveEvents).toBeFalsy();
     expect(eventsServiceSpy.getEvents.calls.count()).toBe(1, 'one call');
-    expect(element.querySelector('ion-icon.calendar')).toBeFalsy();
+    expect(page.calendarIcon).toBeFalsy();
   });
 
   it('should display event icon if there\'s event', () => {
@@ -449,7 +483,7 @@ describe('HomeComponent', () => {
     fixture.detectChanges();
     expect(component.haveEvents).toBe(true);
     expect(eventsServiceSpy.getEvents.calls.count()).toBe(1, 'one call');
-    expect(element.querySelector('ion-icon.calendar')).toBeTruthy();
+    expect(page.calendarIcon).toBeTruthy();
   });
 
   it('should navigate to the correct activity page', () => {
