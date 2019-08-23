@@ -1,4 +1,4 @@
-import { Component, HostListener, ViewChild, ViewChildren, QueryList, ElementRef, OnDestroy } from '@angular/core';
+import { Component, HostListener, ViewChild, ViewChildren, QueryList, ElementRef } from '@angular/core';
 import { Router, ActivatedRoute, NavigationEnd } from '@angular/router';
 import { ProjectService, Milestone, DummyMilestone } from './project.service';
 import { HomeService } from '../home/home.service';
@@ -14,7 +14,7 @@ import { Subscription } from 'rxjs';
   templateUrl: 'project.component.html',
   styleUrls: ['project.component.scss'],
 })
-export class ProjectComponent extends RouterEnter {
+export class ProjectComponent {
   public routeUrl = '/app/project'; // mandatory for RouterEnter parent class
 
   public programName: string;
@@ -43,10 +43,6 @@ export class ProjectComponent extends RouterEnter {
     private sharedService: SharedService,
     public fastFeedbackService: FastFeedbackService
   ) {
-    super(router);
-  }
-
-  onEnter() {
     this.routeData = this.route.data.subscribe(data => {
       this._initialise();
       this.routeQuery = this.route.queryParamMap.subscribe(params => {
@@ -100,14 +96,6 @@ export class ProjectComponent extends RouterEnter {
     this.loadingActivity = true;
     this.loadingMilestone = true;
     this.loadingProgress = true;
-  }
-
-  // clear every subscription to avoid memory leaks
-  unsubscribeAll() {
-    this.routeData.unsubscribe();
-    this.routeQuery.unsubscribe();
-    this.homeProgramName.unsubscribe();
-    this.projectProgresses.unsubscribe();
   }
 
   trackScrolling(event) {
