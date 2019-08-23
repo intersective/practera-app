@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, NgZone } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { AuthService } from '../auth.service';
 import { Observable, concat } from 'rxjs';
@@ -21,6 +21,7 @@ export class AuthDirectLoginComponent implements OnInit {
     public utils: UtilsService,
     private switcherService: SwitcherService,
     private storage: BrowserStorageService,
+    private ngZone: NgZone
   ) {}
 
   ngOnInit() {
@@ -40,6 +41,13 @@ export class AuthDirectLoginComponent implements OnInit {
     );
   }
 
+  // force every navigation happen under radar of angular
+  private navigate(direction): Promise<boolean> {
+    return this.ngZone.run(() => {
+      return this.router.navigate(direction);
+    });
+  }
+
   /**
    * Redirect user to a specific page if data is passed in, otherwise redirect to program switcher page
    */
@@ -52,48 +60,48 @@ export class AuthDirectLoginComponent implements OnInit {
     const submissionId = +this.route.snapshot.paramMap.get('sm');
     if (!redirect || !timelineId) {
       // if there's no redirection or timeline id
-      return this.router.navigate(['switcher']);
+      return this.navigate(['switcher']);
     }
     const program = this.utils.find(this.storage.get('programs'), value => {
       return value.timeline.id === timelineId;
     });
     if (this.utils.isEmpty(program)) {
       // if the timeline id is not found
-      return this.router.navigate(['switcher']);
+      return this.navigate(['switcher']);
     }
     // switch to the program
     await this.switcherService.switchProgram(program);
 
     switch (redirect) {
       case 'home':
-        return this.router.navigate(['app', 'home']);
+        return this.navigate(['app', 'home']);
       case 'project':
-        return this.router.navigate(['app', 'project']);
+        return this.navigate(['app', 'project']);
       case 'activity':
         if (!activityId) {
-          return this.router.navigate(['app', 'home']);
+          return this.navigate(['app', 'home']);
         }
-        return this.router.navigate(['app', 'activity', activityId]);
+        return this.navigate(['app', 'activity', activityId]);
       case 'assessment':
         if (!activityId || !contextId || !assessmentId) {
-          return this.router.navigate(['app', 'home']);
+          return this.navigate(['app', 'home']);
         }
-        return this.router.navigate(['assessment', 'assessment', activityId, contextId, assessmentId]);
+        return this.navigate(['assessment', 'assessment', activityId, contextId, assessmentId]);
       case 'reviews':
-        return this.router.navigate(['app', 'reviews']);
+        return this.navigate(['app', 'reviews']);
       case 'review':
         if (!contextId || !assessmentId || !submissionId) {
-          return this.router.navigate(['app', 'home']);
+          return this.navigate(['app', 'home']);
         }
-        return this.router.navigate(['assessment', 'review', contextId, assessmentId, submissionId]);
+        return this.navigate(['assessment', 'review', contextId, assessmentId, submissionId]);
       case 'chat':
-        return this.router.navigate(['app', 'chat']);
+        return this.navigate(['app', 'chat']);
       case 'settings':
-        return this.router.navigate(['app', 'settings']);
+        return this.navigate(['app', 'settings']);
       default:
-        return this.router.navigate(['app', 'home']);
+        return this.navigate(['app', 'home']);
     }
-    return this.router.navigate(['app', 'home']);
+    return this.navigate(['app', 'home']);
   }
 
   private _error() {
@@ -104,7 +112,7 @@ export class AuthDirectLoginComponent implements OnInit {
           text: 'OK',
           role: 'cancel',
           handler: () => {
-            this.router.navigate(['login']);
+            this.navigate(['login']);
           }
         }
       ]

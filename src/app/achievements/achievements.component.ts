@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, NgZone } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { AchievementsService, Achievement } from './achievements.service';
 import { UtilsService } from '@services/utils.service';
@@ -17,7 +17,8 @@ export class AchievementsComponent extends RouterEnter {
   constructor (
     public router: Router,
     public achievementService: AchievementsService,
-    public utils: UtilsService
+    public utils: UtilsService,
+    private ngZone: NgZone
   ) {
     super(router);
   }
@@ -31,7 +32,6 @@ export class AchievementsComponent extends RouterEnter {
   }
 
   back() {
-    this.router.navigate(['app', 'home']);
+    return this.ngZone.run(() => this.router.navigate(['app', 'home']));
   }
-
 }
