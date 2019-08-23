@@ -108,11 +108,11 @@ export class AuthService {
     const body = new HttpParams()
       .set('auth_token', authToken);
     return this.request.post(api.login, body.toString(), {
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
-      }).pipe(map(this._handleLoginResponse, this));
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+    }).pipe(map(res => this._handleLoginResponse(res)));
   }
 
-  private _handleLoginResponse(response) {
+  private _handleLoginResponse(response): Observable<any> {
     const norm = this._normaliseAuth(response);
     if (response.data) {
       this.storage.setUser({apikey: norm.apikey});

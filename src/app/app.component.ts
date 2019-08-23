@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, NgZone } from '@angular/core';
 import { Router } from '@angular/router';
 import { Platform } from '@ionic/angular';
 import { UtilsService } from '@services/utils.service';
@@ -24,10 +24,18 @@ export class AppComponent implements OnInit {
     private storage: BrowserStorageService,
     private versionCheckService: VersionCheckService,
     private pusherService: PusherService,
+    private ngZone: NgZone
     // private splashScreen: SplashScreen,
     // private statusBar: StatusBar
   ) {
     this.initializeApp();
+  }
+
+  // force every navigation happen under radar of angular
+  private navigate(direction): Promise<boolean> {
+    return this.ngZone.run(() => {
+      return this.router.navigate(direction);
+    });
   }
 
   ngOnInit() {
@@ -74,18 +82,30 @@ export class AppComponent implements OnInit {
         case 'secure':
           if (searchParams.has('auth_token')) {
             const queries = this.utils.urlQueryToObject(queryString);
-            this.router.navigate(['secure', searchParams.get('auth_token'), queries]);
+            this.navigate([
+              'secure',
+              searchParams.get('auth_token'),
+              queries
+            ]);
           }
           break;
         case 'resetpassword':
           if (searchParams.has('key') && searchParams.has('email')) {
-            this.router.navigate(['reset_password', searchParams.get('key'), searchParams.get('email')]);
+            this.navigate([
+              'reset_password',
+              searchParams.get('key'),
+              searchParams.get('email')
+            ]);
           }
           break;
 
         case 'registration':
           if (searchParams.has('key') && searchParams.has('email')) {
-            this.router.navigate(['registration', searchParams.get('email'), searchParams.get('key') ]);
+            this.navigate([
+              'registration',
+              searchParams.get('email'),
+              searchParams.get('key')
+            ]);
           }
           break;
       }
