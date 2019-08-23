@@ -1,6 +1,6 @@
 import { Component, Input, NgZone } from '@angular/core';
 import { Router, ActivatedRoute, ParamMap } from '@angular/router';
-import { Observable, of, forkJoin } from 'rxjs';
+import { Observable, of, forkJoin, Subscription } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { ActivityService, Activity, OverviewActivity, Task } from './activity.service';
 import { UtilsService } from '../services/utils.service';
@@ -17,8 +17,8 @@ import { FastFeedbackService } from '../fast-feedback/fast-feedback.service';
   styleUrls: ['./activity.component.scss']
 })
 export class ActivityComponent extends RouterEnter {
+  routeUrl = '/app/activity'; // mandatory for RouterEnter parent class
 
-  routeUrl = '/app/activity';
   id: number;
   activity: Activity = {
     id: 0,
@@ -27,8 +27,13 @@ export class ActivityComponent extends RouterEnter {
     tasks: []
   };
   loadingActivity = true;
-  events: Array<Event>;
-  loadingEvents = true;
+  events: Event[];
+  loadingEvents: boolean;
+  private feedbackPopup: Subscription;
+  private getEventPusher: Subscription;
+  private getActivity: Subscription;
+  // private getTasksProgresses: Subscription;
+  private getEvents: Subscription;
 
   constructor(
     public router: Router,
@@ -44,7 +49,7 @@ export class ActivityComponent extends RouterEnter {
   ) {
     super(router);
     // update event list after book/cancel an event
-    this.utils.getEvent('update-event').subscribe(event => {
+    this.getEventPusher = this.utils.getEvent('update-event').subscribe(event => {
       this._getEvents();
     });
   }
@@ -57,6 +62,7 @@ export class ActivityComponent extends RouterEnter {
   }
 
   private _initialise() {
+    this.events = []; // initiate events array
     this.activity = {
       id: 0,
       name: '',
@@ -71,12 +77,21 @@ export class ActivityComponent extends RouterEnter {
     this.id = +this.route.snapshot.paramMap.get('id');
     this._getActivity();
     this._getEvents();
+    this.feedbackPopup = this.fastFeedbackService.pullFastFeedback().subscribe();
+  }
 
-    this.fastFeedbackService.pullFastFeedback().subscribe();
+  unsubscribeAll() {
+    this.feedbackPopup.unsubscribe();
+    this.getEventPusher.unsubscribe();
+    this.getActivity.unsubscribe();
+    // this.getTasksProgresses.unsubscribe();
+    if (this.getEvents) {
+      this.getEvents.unsubscribe();
+    }
   }
 
   private _getActivity() {
-    this.activityService.getActivity(this.id)
+    this.getActivity = this.activityService.getActivity(this.id)
       .subscribe(activity => {
         this.activity = activity;
         this.loadingActivity = false;
@@ -112,17 +127,17 @@ export class ActivityComponent extends RouterEnter {
       model_id: this.activity.id,
       tasks: this.activity.tasks,
     }).subscribe(tasks => {
-        this.activity.tasks = tasks;
+      this.activity.tasks = tasks;
 
-        const requests = [];
-        this.activity.tasks.forEach((task, index) => {
-          if (task.type === 'Assessment') {
-            requests.push(this._getAssessmentStatus(index));
-          }
-        });
-
-        return this._parallelAPI(requests);
+      const requests = [];
+      this.activity.tasks.forEach((task, index) => {
+        if (task.type === 'Assessment') {
+          requests.push(this._getAssessmentStatus(index));
+        }
       });
+
+      return this._parallelAPI(requests);
+    });
   }
 
   /**
@@ -133,13 +148,16 @@ export class ActivityComponent extends RouterEnter {
     return this.activityService.getAssessmentStatus(this.activity.tasks[index]);
   }
 
-  private _getEvents() {
-    this.loadingEvents = true;
-    this.events = [];
-    this.eventsService.getEvents(this.id).subscribe(events => {
-      this.events = events;
-      this.loadingEvents = false;
-    });
+  private _getEvents(events?: Event[]) {
+    this.events = events || [];
+
+    if (events === undefined) {
+      this.loadingEvents = true;
+      this.getEvents = this.eventsService.getEvents(this.id).subscribe(res => {
+        this.events = res;
+        this.loadingEvents = false;
+      });
+    }
   }
 
   back() {
@@ -156,16 +174,16 @@ export class ActivityComponent extends RouterEnter {
         } ,
         (data) => {
           if (data.data) {
-            this.goto(task.type, task.id);
+            return this.goto(task.type, task.id);
           }
         }
       );
       return ;
     }
-    this.goto(task.type, task.id);
+    return this.goto(task.type, task.id);
   }
 
-  goto(type, id) {
+  goto(type, id): Promise<any> {
     switch (type) {
       case 'Assessment':
         // get the context id of this assessment
@@ -177,18 +195,21 @@ export class ActivityComponent extends RouterEnter {
             isForTeam = task.isForTeam;
           }
         });
+
         if (isForTeam && !this.storage.getUser().teamId) {
-          this.notificationService.popUp('shortMessage', {message: 'To do this assessment, you have to be in a team.'});
-          break;
+          return this.notificationService.popUp('shortMessage', {
+            message: 'To do this assessment, you have to be in a team.'
+          });
         }
-        this.navigate(['assessment', 'assessment', this.id , contextId, id]);
-        break;
+        return this.navigate(['assessment', 'assessment', this.id , contextId, id]);
+
       case 'Topic':
-        this.navigate(['topic', this.id, id]);
-        break;
+        return this.navigate(['topic', this.id, id]);
+
       case 'Locked':
-        this.notificationService.popUp('shortMessage', {message: 'This part of the app is still locked. You can unlock the features by engaging with the app and completing all tasks.'});
-        break;
+        return this.notificationService.popUp('shortMessage', {
+          message: 'This part of the app is still locked. You can unlock the features by engaging with the app and completing all tasks.'
+        });
     }
   }
 
