@@ -10,6 +10,12 @@ import { FilestackService } from '@shared/filestack/filestack.service';
 import { ChatService, ChatRoomObject, Message } from '../chat.service';
 import { ChatPreviewComponent } from '../chat-preview/chat-preview.component';
 
+export interface ChatRouteParams {
+  teamId: string;
+  teamMemberId: string;
+  participantsOnly ?: string;
+}
+
 @Component({
   selector: 'app-chat-room',
   templateUrl: './chat-room.component.html',
@@ -91,12 +97,19 @@ export class ChatRoomComponent extends RouterEnter {
         this._showTyping(event);
       });
     }
+
+    this.route.params.subscribe((params: ChatRouteParams) => {
+      this._initialise();
+      this._validateRouteParams(params);
+      this._loadMessages();
+    });
+
+    this.route.data.subscribe(res => {
+      console.log('resolver:', res);
+    });
   }
 
   onEnter() {
-    this._initialise();
-    this._validateRouteParams();
-    this._loadMessages();
     this._scrollToBottom();
   }
 
@@ -111,14 +124,15 @@ export class ChatRoomComponent extends RouterEnter {
     };
   }
 
-  private _validateRouteParams() {
-    const teamId = Number(this.route.snapshot.paramMap.get('teamId'));
-    this.selectedChat.team_id = teamId;
-    if (Number(this.route.snapshot.paramMap.get('teamMemberId'))) {
-      this.selectedChat.team_member_id = Number(this.route.snapshot.paramMap.get('teamMemberId'));
+  private _validateRouteParams(params: ChatRouteParams): void {
+    const { teamId, teamMemberId, participantsOnly } = params;
+
+    this.selectedChat.team_id = +teamId;
+    if (teamMemberId) {
+      this.selectedChat.team_member_id = +teamMemberId;
     } else {
       this.selectedChat.is_team = true;
-      this.selectedChat.participants_only = JSON.parse(this.route.snapshot.paramMap.get('participantsOnly'));
+      this.selectedChat.participants_only = JSON.parse(participantsOnly);
     }
   }
 
