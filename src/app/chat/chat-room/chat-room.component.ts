@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, AfterContentInit, AfterViewInit } from '@angular/core';
+import { Component, OnInit, ViewChild, NgZone } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { IonContent, ModalController } from '@ionic/angular';
 import { BrowserStorageService } from '@services/storage.service';
@@ -38,9 +38,10 @@ export class ChatRoomComponent extends RouterEnter {
     public pusherService: PusherService,
     private filestackService: FilestackService,
     private modalController: ModalController,
+    private ngZone: NgZone
   ) {
     super(router);
-    const role = this.storage.getUser().role;
+    const { role } = this.storage.getUser();
 
     // message by team
     this.utils.getEvent('team-message').subscribe(event => {
@@ -219,7 +220,7 @@ export class ChatRoomComponent extends RouterEnter {
   }
 
   back() {
-    this.router.navigate(['app', 'chat']);
+    return this.ngZone.run(() => this.router.navigate(['app', 'chat']));
   }
 
   sendMessage() {
