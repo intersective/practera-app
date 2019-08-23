@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, AfterContentInit, AfterViewInit } from '@angular/core';
+import { Component, OnInit, ViewChild, NgZone } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { IonContent, ModalController } from '@ionic/angular';
 import { BrowserStorageService } from '@services/storage.service';
@@ -9,6 +9,12 @@ import { FilestackService } from '@shared/filestack/filestack.service';
 
 import { ChatService, ChatRoomObject, Message } from '../chat.service';
 import { ChatPreviewComponent } from '../chat-preview/chat-preview.component';
+
+export interface ChatRouteParams {
+  teamId: string;
+  teamMemberId: string;
+  participantsOnly ?: string;
+}
 
 @Component({
   selector: 'app-chat-room',
@@ -38,9 +44,10 @@ export class ChatRoomComponent extends RouterEnter {
     public pusherService: PusherService,
     private filestackService: FilestackService,
     private modalController: ModalController,
+    private ngZone: NgZone
   ) {
     super(router);
-    const role = this.storage.getUser().role;
+    const { role } = this.storage.getUser();
 
     // message by team
     this.utils.getEvent('team-message').subscribe(event => {
@@ -90,12 +97,15 @@ export class ChatRoomComponent extends RouterEnter {
         this._showTyping(event);
       });
     }
+
+    this.route.params.subscribe((params: ChatRouteParams) => {
+      this._initialise();
+      this._validateRouteParams(params);
+      this._loadMessages();
+    });
   }
 
   onEnter() {
-    this._initialise();
-    this._validateRouteParams();
-    this._loadMessages();
     this._scrollToBottom();
   }
 
@@ -110,14 +120,15 @@ export class ChatRoomComponent extends RouterEnter {
     };
   }
 
-  private _validateRouteParams() {
-    const teamId = Number(this.route.snapshot.paramMap.get('teamId'));
-    this.selectedChat.team_id = teamId;
-    if (Number(this.route.snapshot.paramMap.get('teamMemberId'))) {
-      this.selectedChat.team_member_id = Number(this.route.snapshot.paramMap.get('teamMemberId'));
+  private _validateRouteParams(params: ChatRouteParams): void {
+    const { teamId, teamMemberId, participantsOnly } = params;
+
+    this.selectedChat.team_id = +teamId;
+    if (teamMemberId) {
+      this.selectedChat.team_member_id = +teamMemberId;
     } else {
       this.selectedChat.is_team = true;
-      this.selectedChat.participants_only = JSON.parse(this.route.snapshot.paramMap.get('participantsOnly'));
+      this.selectedChat.participants_only = JSON.parse(participantsOnly);
     }
   }
 
@@ -219,7 +230,7 @@ export class ChatRoomComponent extends RouterEnter {
   }
 
   back() {
-    this.router.navigate(['app', 'chat']);
+    return this.ngZone.run(() => this.router.navigate(['app', 'chat']));
   }
 
   sendMessage() {
