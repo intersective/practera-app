@@ -1,4 +1,4 @@
-import { Component, OnDestroy } from '@angular/core';
+import { Component } from '@angular/core';
 import { HomeService, TodoItem } from './home.service';
 import { Router, NavigationEnd } from '@angular/router';
 import { FastFeedbackService } from '../fast-feedback/fast-feedback.service';
@@ -16,9 +16,9 @@ import { environment } from '@environments/environment';
 @Component({
   selector: 'app-home',
   templateUrl: 'home.component.html',
-  styleUrls: ['home.component.scss']
+  styleUrls: ['home.component.scss'],
 })
-export class HomeComponent extends RouterEnter implements OnDestroy {
+export class HomeComponent extends RouterEnter {
   routeUrl = '/app/home';
   progress = 0;
   loadingProgress = true;
@@ -41,7 +41,7 @@ export class HomeComponent extends RouterEnter implements OnDestroy {
     public utils: UtilsService,
     public storage: BrowserStorageService,
     public achievementService: AchievementsService,
-    public eventsService: EventsService
+    public eventsService: EventsService,
   ) {
     super(router);
     const role = this.storage.getUser().role;
@@ -52,6 +52,7 @@ export class HomeComponent extends RouterEnter implements OnDestroy {
         this.todoItems.push(todoItem);
       }
     });
+
     this.utils.getEvent('team-message').subscribe(event => {
       this.homeService.getChatMessage().subscribe(chatMessage => {
         if (!this.utils.isEmpty(chatMessage)) {
@@ -59,6 +60,7 @@ export class HomeComponent extends RouterEnter implements OnDestroy {
         }
       });
     });
+
     this.utils.getEvent('event-reminder').subscribe(event => {
       this.homeService.getReminderEvent(event).subscribe(session => {
         if (!this.utils.isEmpty(session)) {
@@ -66,6 +68,7 @@ export class HomeComponent extends RouterEnter implements OnDestroy {
         }
       });
     });
+
     if (role !== 'mentor') {
       this.utils.getEvent('team-no-mentor-message').subscribe(event => {
         this.homeService.getChatMessage().subscribe(chatMessage => {
@@ -93,19 +96,22 @@ export class HomeComponent extends RouterEnter implements OnDestroy {
       this.homeService.getTodoItems().subscribe(todoItems => {
         this.todoItems = this.todoItems.concat(todoItems);
         this.loadingTodoItems = false;
-      })
+      }),
     );
+
+    const { teamId, name, email, id } = this.storage.getUser();
     // only get the number of chats if user is in team
-    if (this.storage.getUser().teamId) {
+    if (teamId) {
       this.subscriptions.push(
         this.homeService.getChatMessage().subscribe(chatMessage => {
           if (!this.utils.isEmpty(chatMessage)) {
             this._addChatTodoItem(chatMessage);
           }
           this.loadingTodoItems = false;
-        })
+        }),
       );
     }
+
     this.subscriptions.push(
       this.homeService.getProgress().subscribe(progress => {
         this.progress = progress;
@@ -117,12 +123,12 @@ export class HomeComponent extends RouterEnter implements OnDestroy {
             this.loadingActivity = false;
           }
         });
-      })
+      }),
     );
 
-    this.homeService.getProgramName().subscribe(programName => {
+    this.subscriptions.push(this.homeService.getProgramName().subscribe(programName => {
       this.programName = programName;
-    });
+    }));
 
     this.subscriptions.push(
       this.achievementService.getAchievements('desc').subscribe(achievements => {
@@ -150,29 +156,30 @@ export class HomeComponent extends RouterEnter implements OnDestroy {
           this.achievements[1] = earned[1];
           this.achievements[2] = unEarned[0];
         }
-      })
+      }),
     );
 
     this.subscriptions.push(
       this.eventsService.getEvents().subscribe(events => {
         this.haveEvents = !this.utils.isEmpty(events);
-      })
+      }),
     );
 
+    // intercom
     if (typeof environment.intercom !== 'undefined' && environment.intercom === true) {
       this.intercom.boot({
         app_id: environment.intercomAppId,
-        name: this.storage.getUser().name, // Full name
-        email: this.storage.getUser().email, // Email address
-        user_id: this.storage.getUser().id, // current_user_id
+        name, // Full name
+        email, // Email address
+        user_id: id, // current_user_id
         // Supports all optional configuration.
         widget: {
-          'activator': '#intercom'
-        }
+          activator: '#intercom',
+        },
       });
     }
 
-    this.fastFeedbackService.pullFastFeedback().subscribe();
+    this.subscriptions.push(this.fastFeedbackService.pullFastFeedback().subscribe());
   }
 
   goToActivity(id) {
@@ -180,22 +187,22 @@ export class HomeComponent extends RouterEnter implements OnDestroy {
   }
 
   goToAssessment(activityId, contextId, assessmentId) {
-    this.router.navigate([
+    return this.router.navigate([
       'assessment',
       'assessment',
       activityId,
       contextId,
-      assessmentId
+      assessmentId,
     ]);
   }
 
   goToReview(contextId, assessmentId, submissionId) {
-    this.router.navigate([
+    return this.router.navigate([
       'assessment',
       'review',
       contextId,
       assessmentId,
-      submissionId
+      submissionId,
     ]);
   }
 
@@ -209,9 +216,7 @@ export class HomeComponent extends RouterEnter implements OnDestroy {
     return this.router.navigate(['chat', 'chat-room', 'team', todoItem.meta.team_id, todoItem.meta.participants_only]);
   }
 
-  ngOnDestroy(): void {
-    // run ngOnDestroy from RouterEnter
-    super.ngOnDestroy();
+  unsubscribeAll(): void {
     this.subscriptions.forEach(subscription => subscription.unsubscribe());
   }
 
