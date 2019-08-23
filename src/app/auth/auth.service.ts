@@ -78,6 +78,12 @@ export class AuthService {
     // do clear user cache here
   }
 
+  private _login(body: HttpParams) {
+    return this.request.post(api.login, body.toString(), {
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+    }).pipe(map(res => this._handleLoginResponse(res)));
+  }
+
   /**
    * @name login
    * @description login API specifically only accept request data in encodedUrl formdata,
@@ -92,10 +98,7 @@ export class AuthService {
       .set('data[User][password]', password)
       .set('domain', this.getDomain());
 
-    return this.request.post(api.login, body.toString(), {
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
-      })
-      .pipe(map(this._handleLoginResponse, this));
+    return this._login(body);
   }
 
   /**
@@ -107,9 +110,7 @@ export class AuthService {
   directLogin({ authToken }): Observable<any> {
     const body = new HttpParams()
       .set('auth_token', authToken);
-    return this.request.post(api.login, body.toString(), {
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
-    }).pipe(map(res => this._handleLoginResponse(res)));
+    return this._login(body);
   }
 
   private _handleLoginResponse(response): Observable<any> {
