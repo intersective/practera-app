@@ -1,5 +1,5 @@
-import { Component, HostListener, ViewChild, ViewChildren, QueryList, ElementRef } from '@angular/core';
-import { Router, ActivatedRoute } from '@angular/router';
+import { Component, HostListener, ViewChild, ViewChildren, QueryList, ElementRef, OnDestroy } from '@angular/core';
+import { Router, ActivatedRoute, NavigationEnd } from '@angular/router';
 import { ProjectService, Milestone, DummyMilestone } from './project.service';
 import { HomeService } from '../home/home.service';
 import { RouterEnter } from '@services/router-enter.service';
@@ -15,17 +15,23 @@ import { Subscription } from 'rxjs';
   styleUrls: ['project.component.scss'],
 })
 export class ProjectComponent extends RouterEnter {
-  public routeUrl = '/app/project';
+  public routeUrl = '/app/project'; // mandatory for RouterEnter parent class
+
   public programName: string;
   public milestones: Array<Milestone | DummyMilestone> = [];
   public loadingActivity = true;
   public loadingMilestone = true;
   public loadingProgress = true;
-  @ViewChild('contentRef', {read: ElementRef}) contentRef: any;
+  @ViewChild('contentRef', {read: ElementRef, static: false}) contentRef: any;
   @ViewChildren('milestoneRef', {read: ElementRef}) milestoneRefs: QueryList<ElementRef>;
   public activeMilestone: Array<boolean> = [];
   private milestonePositions: Array<number> = [];
   private highlightedActivityId: number;
+  private routeData: Subscription;
+  private routeQuery: Subscription;
+  private homeProgramName: Subscription;
+  private activities: Subscription;
+  private projectProgresses: Subscription;
 
   constructor(
     public router: Router,
@@ -36,8 +42,57 @@ export class ProjectComponent extends RouterEnter {
     private homeService: HomeService,
     private sharedService: SharedService,
     public fastFeedbackService: FastFeedbackService
-   ) {
+  ) {
     super(router);
+  }
+
+  onEnter() {
+    this.routeData = this.route.data.subscribe(data => {
+      this._initialise();
+      this.routeQuery = this.route.queryParamMap.subscribe(params => {
+        this.highlightedActivityId = +params.get('activityId') || undefined;
+      });
+      this.homeProgramName = this.homeService.getProgramName().subscribe(programName => {
+        this.programName = programName;
+      });
+
+      const milestones = data[0];
+      this.milestones = data[0];
+
+      this.loadingMilestone = false;
+      this.activeMilestone = new Array(milestones.length);
+      this.activeMilestone.fill(false);
+      this.activeMilestone[0] = true;
+      this.activities = this.projectService.getActivities(milestones)
+        .subscribe(activities => {
+          // remove entire Activity object with dummy data for clean Activity injection
+          if (this.milestones) {
+            this.milestones.forEach((milestone, i) => {
+              if (this.utils.find(this.milestones[i].Activity, { dummy: true })) {
+                this.milestones[i].Activity = [];
+              }
+            });
+          }
+
+          this.milestones = this._addActivitiesToEachMilestone(this.milestones, activities);
+          this.loadingActivity = false;
+
+          this.projectProgresses = this.projectService.getProgress(this.milestones).subscribe(progresses => {
+            this.milestonePositions = this.milestoneRefs.map(milestoneRef => {
+              return milestoneRef.nativeElement.offsetTop;
+            });
+
+            this.milestones = this._populateMilestoneProgress(progresses, this.milestones);
+            this.loadingProgress = false;
+
+            if (this.highlightedActivityId) {
+              this.scrollTo(`activity-card-${this.highlightedActivityId}`);
+            }
+          });
+        });
+
+      this.fastFeedbackService.pullFastFeedback().subscribe();
+    });
   }
 
   private _initialise() {
@@ -47,53 +102,12 @@ export class ProjectComponent extends RouterEnter {
     this.loadingProgress = true;
   }
 
-  onEnter() {
-    this._initialise();
-    this.route.queryParamMap.subscribe(params => {
-      this.highlightedActivityId = +params.get('activityId') || undefined;
-    });
-    this.homeService.getProgramName().subscribe(programName => {
-      this.programName = programName;
-    });
-
-    this.projectService.getMilestones()
-      .subscribe(milestones => {
-
-        this.milestones = milestones;
-        this.loadingMilestone = false;
-        this.activeMilestone = new Array(milestones.length);
-        this.activeMilestone.fill(false);
-        this.activeMilestone[0] = true;
-        this.projectService.getActivities(milestones)
-          .subscribe(activities => {
-            // remove entire Activity object with dummy data for clean Activity injection
-            if (this.milestones) {
-              this.milestones.forEach((milestone, i) => {
-                if (this.utils.find(this.milestones[i].Activity, {dummy: true})) {
-                  this.milestones[i].Activity = [];
-                }
-              });
-            }
-
-            this.milestones = this._addActivitiesToEachMilestone(this.milestones, activities);
-            this.loadingActivity = false;
-
-            this.projectService.getProgress(this.milestones).subscribe(progresses => {
-              this.milestonePositions = this.milestoneRefs.map(milestoneRef => {
-                return milestoneRef.nativeElement.offsetTop;
-              });
-
-              this.milestones = this._populateMilestoneProgress(progresses, this.milestones);
-              this.loadingProgress = false;
-
-              if (this.highlightedActivityId) {
-                this.scrollTo(`activity-card-${this.highlightedActivityId}`);
-              }
-            });
-          });
-      });
-
-    this.fastFeedbackService.pullFastFeedback().subscribe();
+  // clear every subscription to avoid memory leaks
+  unsubscribeAll() {
+    this.routeData.unsubscribe();
+    this.routeQuery.unsubscribe();
+    this.homeProgramName.unsubscribe();
+    this.projectProgresses.unsubscribe();
   }
 
   trackScrolling(event) {
