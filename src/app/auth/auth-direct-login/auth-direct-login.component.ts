@@ -10,7 +10,7 @@ import { BrowserStorageService } from '@services/storage.service';
 @Component({
   selector: 'app-auth-direct-login',
   templateUrl: 'auth-direct-login.component.html',
-  styles: ['']
+  // styles: ['']
 })
 export class AuthDirectLoginComponent implements OnInit {
   constructor(
@@ -24,21 +24,19 @@ export class AuthDirectLoginComponent implements OnInit {
     private ngZone: NgZone
   ) {}
 
-  ngOnInit() {
+  async ngOnInit() {
     const authToken = this.route.snapshot.paramMap.get('authToken');
     if (!authToken) {
       return this._error();
     }
-    this.authService.directLogin({
-      authToken: authToken
-    }).subscribe(
-      res => {
-        this._redirect();
-      },
-      err => {
-        this._error();
-      }
-    );
+
+    try {
+      const loginStatus = await this.authService.directLogin({ authToken }).toPromise();
+      const userInfo = await this.switcherService.getMyInfo().toPromise();
+      return this._redirect();
+    } catch (err) {
+      this._error();
+    }
   }
 
   // force every navigation happen under radar of angular
@@ -51,7 +49,7 @@ export class AuthDirectLoginComponent implements OnInit {
   /**
    * Redirect user to a specific page if data is passed in, otherwise redirect to program switcher page
    */
-  private async _redirect() {
+  private async _redirect(): Promise<boolean> {
     const redirect = this.route.snapshot.paramMap.get('redirect');
     const timelineId = +this.route.snapshot.paramMap.get('tl');
     const activityId = +this.route.snapshot.paramMap.get('act');
@@ -104,8 +102,8 @@ export class AuthDirectLoginComponent implements OnInit {
     return this.navigate(['app', 'home']);
   }
 
-  private _error() {
-    this.notificationService.alert({
+  private _error(): Promise<any> {
+    return this.notificationService.alert({
       message: 'Your link is invalid or expired.',
       buttons: [
         {
