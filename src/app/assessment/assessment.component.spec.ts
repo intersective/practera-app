@@ -68,7 +68,7 @@ class Page {
     return this.query<HTMLButtonElement>('#btn-submit');
   }
 
-  fixture: ComponentFixture<AssessmentComponent>
+  fixture: ComponentFixture<AssessmentComponent>;
 
   constructor(fixture: ComponentFixture<AssessmentComponent>) {
     this.fixture = fixture;
@@ -240,7 +240,7 @@ fdescribe('AssessmentComponent', () => {
       group.questions.forEach((question, questionIndex) => {
         expect(page.questionNames[questionIndex].innerHTML).toContain(question.name);
         expect(page.questionDescriptions[questionIndex]).toBeTruthy();
-      })
+      });
     });
   });
 
