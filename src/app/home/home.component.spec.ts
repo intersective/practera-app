@@ -35,7 +35,7 @@ class Page {
   }
 
   navigateSpy:  jasmine.Spy;
-  fixture: ComponentFixture<HomeComponent>
+  fixture: ComponentFixture<HomeComponent>;
 
   constructor(fixture: ComponentFixture<HomeComponent>) {
     // get the navigate spy from the injected router spy object
