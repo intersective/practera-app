@@ -83,4 +83,23 @@ export class SharedService {
     }
     return 'Due ' + this.utils.utcToLocal(dueDate);
   }
+
+  /**
+   * This method get all iframe and videos from documents and stop playing videos.
+   */
+  stopPlayingViodes() {
+    const iframes = Array.from(document.querySelectorAll( 'iframe'));
+    const videos = Array.from(document.querySelectorAll( 'video' ));
+    if ( iframes ) {
+      iframes.forEach(frame => {
+        frame.src = frame.src;
+      });
+    }
+    if ( videos ) {
+      videos.forEach(video => {
+        video.pause();
+      });
+    }
+  }
+
 }
