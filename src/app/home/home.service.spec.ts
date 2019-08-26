@@ -490,7 +490,7 @@ describe('HomeService', () => {
 
   it('should get correct reminder event #2', async() => {
     const data = {
-      meta: {id:1}
+      meta: {id: 1}
     };
     const requestResponse = {
       data: {
@@ -514,7 +514,7 @@ describe('HomeService', () => {
 
   it('should get correct reminder event #3', async() => {
     const data = {
-      meta: {id:1}
+      meta: {id: 1}
     };
     const requestResponse = {
       data: {
