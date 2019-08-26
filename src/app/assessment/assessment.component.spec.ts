@@ -1,7 +1,8 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { ReactiveFormsModule, FormsModule } from '@angular/forms';
+import { ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { QuestionsModule } from '@app/questions/questions.module';
 
 import { Router, ActivatedRoute, convertToParamMap } from '@angular/router';
 import { AssessmentComponent } from './assessment.component';
@@ -14,10 +15,79 @@ import { BrowserStorageService } from '@services/storage.service';
 import { SharedService } from '@services/shared.service';
 import { of } from 'rxjs';
 
+class Page {
+  get savingMessage() {
+    return this.query<HTMLElement>('ion-title.subTitle');
+  }
+  get assessmentName() {
+    return this.query<HTMLElement>('h1');
+  }
+  get assessmentDescription() {
+    return this.query<HTMLElement>('ion-content app-description');
+  }
+  get overDueMsg() {
+    return this.query<HTMLElement>('p.over');
+  }
+  get dueMsg() {
+    return this.query<HTMLElement>('p.due-date');
+  }
+  get submitterMsg() {
+    return this.query<HTMLElement>('.review-submitter .title');
+  }
+  get lockedImg() {
+    return this.query<HTMLElement>('ion-list.member-detail-container ion-avatar img');
+  }
+  get lockedTitle() {
+    return this.query<HTMLElement>('ion-list.member-detail-container ion-label h4');
+  }
+  get groupNames() {
+    return this.queryAll<HTMLElement>('form h3');
+  }
+  get groupDescriptions() {
+    return this.queryAll<HTMLElement>('.g-description');
+  }
+  get questionNames() {
+    return this.queryAll<HTMLElement>('.q-title');
+  }
+  get questionRequiredIndicators() {
+    return this.queryAll<HTMLElement>('.required-indicator');
+  }
+  get questionInfos() {
+    return this.queryAll<HTMLElement>('.icon-info');
+  }
+  get questionDescriptions() {
+    return this.queryAll<HTMLElement>('.q-description');
+  }
+  get questionContent() {
+    return this.queryAll<HTMLElement>('.q-content');
+  }
+  get noAnswerMsg() {
+    return this.queryAll<HTMLElement>('.q-content p');
+  }
+  get submitBtn() {
+    return this.query<HTMLButtonElement>('#btn-submit');
+  }
+
+  fixture: ComponentFixture<AssessmentComponent>
+
+  constructor(fixture: ComponentFixture<AssessmentComponent>) {
+    this.fixture = fixture;
+  }
+
+  //// query helpers ////
+  private query<T>(selector: string): T {
+    return this.fixture.nativeElement.querySelector(selector);
+  }
+
+  private queryAll<T>(selector: string): T[] {
+    return this.fixture.nativeElement.querySelectorAll(selector);
+  }
+}
+
 fdescribe('AssessmentComponent', () => {
   let component: AssessmentComponent;
   let fixture: ComponentFixture<AssessmentComponent>;
-  let element: HTMLElement;
+  let page: Page;
   let assessmentSpy: jasmine.SpyObj<AssessmentService>;
   let notificationSpy: jasmine.SpyObj<NotificationService>;
   let activitySpy: jasmine.SpyObj<ActivityService>;
@@ -52,7 +122,7 @@ fdescribe('AssessmentComponent', () => {
           canAnswer: true,
           canComment: false,
           type: 'text',
-          isRequired: true,
+          isRequired: false,
           audience: ['participant', 'mentor']
         }
       ],
@@ -61,7 +131,7 @@ fdescribe('AssessmentComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [ReactiveFormsModule, FormsModule, HttpClientModule],
+      imports: [ReactiveFormsModule, QuestionsModule, HttpClientModule],
       declarations: [AssessmentComponent],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
       providers: [
@@ -126,6 +196,7 @@ fdescribe('AssessmentComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(AssessmentComponent);
     component = fixture.componentInstance;
+    page = new Page(fixture);
     assessmentSpy = TestBed.get(AssessmentService);
     notificationSpy = TestBed.get(NotificationService);
     activitySpy = TestBed.get(ActivityService);
@@ -134,6 +205,7 @@ fdescribe('AssessmentComponent', () => {
     shared = TestBed.get(SharedService);
     // initialise service calls
     assessmentSpy.getAssessment.and.returnValue(of(mockAssessment));
+    // no submissions by default
     assessmentSpy.getSubmission.and.returnValue(of({
       submission: {},
       review: {}
@@ -157,11 +229,19 @@ fdescribe('AssessmentComponent', () => {
     fixture.detectChanges();
     expect(component.assessment).toEqual(mockAssessment);
     expect(component.loadingAssessment).toEqual(false);
-    expect(element.querySelector('ion-title.subTitle')).toBeTruthy();
-    expect(element.querySelector('h1').innerHTML).toEqual(mockAssessment.name);
-    expect(element.querySelector('app-description')).toBeTruthy();
-    expect(element.querySelector('p.over')).toBeFalsy();
-    expect(element.querySelector('p.due-date').innerHTML).toEqual(shared.dueDateFormatter(mockAssessment.dueDate));
+    expect(page.savingMessage).toBeTruthy();
+    expect(page.assessmentName.innerHTML).toEqual(mockAssessment.name);
+    expect(page.assessmentDescription).toBeTruthy();
+    expect(page.overDueMsg).toBeFalsy();
+    expect(page.dueMsg.innerHTML.trim()).toEqual(shared.dueDateFormatter(mockAssessment.dueDate));
+    mockAssessment.groups.forEach((group, groupIndex) => {
+      expect(page.groupNames[groupIndex].innerHTML).toEqual(group.name);
+      expect(page.groupDescriptions[groupIndex]).toBeTruthy();
+      group.questions.forEach((question, questionIndex) => {
+        expect(page.questionNames[questionIndex].innerHTML).toContain(question.name);
+        expect(page.questionDescriptions[questionIndex]).toBeTruthy();
+      })
+    });
   });
 
   it('should list unanswered question compulsoryQuestionsAnswered', () => {
