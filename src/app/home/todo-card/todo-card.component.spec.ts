@@ -24,7 +24,7 @@ class Page {
     return this.query<HTMLElement>('.time-stamp');
   }
 
-  fixture: ComponentFixture<TodoCardComponent>
+  fixture: ComponentFixture<TodoCardComponent>;
 
   constructor(fixture: ComponentFixture<TodoCardComponent>) {
     this.fixture = fixture;
