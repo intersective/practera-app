@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, NgZone } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { EventsService, Event, Activity } from './events.service';
 import { UtilsService } from '@services/utils.service';
@@ -32,7 +32,8 @@ export class EventsComponent extends RouterEnter {
     public router: Router,
     private route: ActivatedRoute,
     private eventService: EventsService,
-    public utils: UtilsService
+    public utils: UtilsService,
+    private ngZone: NgZone
   ) {
     super(router);
     // update event list after book/cancel an event
@@ -174,7 +175,7 @@ export class EventsComponent extends RouterEnter {
   }
 
   back() {
-    this.router.navigate(['app', 'home']);
+    return this.ngZone.run(() => this.router.navigate(['app', 'home']));
   }
 
   showBrowse() {
