@@ -31,7 +31,7 @@
     <ion-item *ngIf="loadingMilestone" color="light">
     </ion-item>
 
-    <ion-item *ngFor="let milestone of milestones" color="light" #milestoneRef>
+    <ion-item class="project-item" lines="none" *ngFor="let milestone of milestones" color="light" #milestoneRef>
       <div color="light" class="project-card" id="milestone-{{milestone.id}}">
         <ng-container *ngIf="milestone.dummy; else actualMilestoneTpl">
           <ng-container *ngTemplateOutlet="loadingMilestoneTpl"></ng-container>
@@ -39,8 +39,10 @@
 
         <ng-template #actualMilestoneTpl>
           <div class="milestone ion-padding-top ion-padding-bottom">
-            <ion-icon *ngIf="milestone.isLocked" name="lock" color="medium" class="icon-lock"></ion-icon>
-            <ion-text class="project-title">{{ milestone.name }}</ion-text>
+            <div align-items-end>
+                <ion-icon name="lock" color="medium" class="icon-lock"></ion-icon>
+                <ion-text class="project-title">{{ milestone.name }}</ion-text>
+            </div>
 
             <div class="milestone-description">
               <app-description *ngIf="milestone.description" [content]="milestone.description"></app-description>
