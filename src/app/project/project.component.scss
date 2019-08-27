@@ -33,6 +33,11 @@
 }
 
 .project-list {
+  .project-item {
+    --inner-padding-start:0px;
+    --ion-safe-area-right: 0px;
+    --inner-padding-end: 16px;
+  }
   .project-card {
     width: 100%;
     .milestone-description {
@@ -66,6 +71,9 @@
     margin-right: 18px;
     font-size: 32px;
   }
+  .row-cards {
+    margin-left: -5px;
+  }
 }
 .activity-item {
   --border-width: 0px !important;
@@ -73,6 +81,9 @@
   --padding-start: 0px;
   --ion-safe-area-left: 0px;
   --padding-end:0px;
+  --inner-padding-start:0px;
+  --ion-safe-area-right: 0px;
+  --inner-padding-end: 0px;
 }
 .icon-done {
   font-size: 33px;
