@@ -70,6 +70,9 @@
 .activity-item {
   --border-width: 0px !important;
   --inner-border-width: 0px !important;
+  --padding-start: 0px;
+  --ion-safe-area-left: 0px;
+  --padding-end:0px;
 }
 .icon-done {
   font-size: 33px;
