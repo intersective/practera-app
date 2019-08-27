@@ -38,7 +38,7 @@
         </ng-container>
 
         <ng-template #actualMilestoneTpl>
-          <div class="milestone" padding>
+          <div class="milestone ion-padding-top ion-padding-bottom">
             <ion-icon *ngIf="milestone.isLocked" name="lock" color="medium" class="icon-lock"></ion-icon>
             <ion-text class="project-title">{{ milestone.name }}</ion-text>
 
@@ -58,9 +58,14 @@
                   </ng-container>
 
                   <ng-template #actualTpl>
-                    <div class="row-cards" *ngIf="!activity.isLocked; else activityLocked">
-                      <app-circle-progress [data]='{ percent: activity.progress * 100 }'></app-circle-progress>
-                    </div>
+                    <ng-container *ngIf="!activity.isLocked; else activityLocked">
+                      <ion-icon *ngIf="activity.progress >= 1; else activityCircleProgress" name="checkmark-circle" class="icon-done" color="primary"></ion-icon>
+                    </ng-container>
+                    <ng-template #activityCircleProgress>
+                      <div class="row-cards">
+                        <app-circle-progress [data]='{ percent: activity.progress * 100 }'></app-circle-progress>
+                      </div>
+                    </ng-template>
                     <ng-template #activityLocked>
                       <ion-icon name="lock" color="medium" class="icon-lock"></ion-icon>
                     </ng-template>
@@ -81,7 +86,7 @@
 
 <ng-template #loadingMilestoneTpl>
   <div color="light" class="project-card">
-    <div class="milestone" padding >
+    <div class="milestone">
       <ion-text class="project-title"></ion-text>
       <div class="milestone-description"></div>
       <ion-list class="activity-list" color="light">
