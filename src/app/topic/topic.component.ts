@@ -1,5 +1,5 @@
 import { TopicService, Topic } from './topic.service';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, NgZone } from '@angular/core';
 import { EmbedVideoService } from 'ngx-embed-video';
 import { Router, ActivatedRoute } from '@angular/router';
 import { FilestackService } from '@shared/filestack/filestack.service';
@@ -35,6 +35,7 @@ export class TopicComponent extends RouterEnter {
   topicProgress: number;
   isLoadingPreview = false;
   isRedirectingToNextMilestoneTask: boolean;
+  askForMarkAsDone: boolean;
 
   constructor(
     private topicService: TopicService,
@@ -46,7 +47,8 @@ export class TopicComponent extends RouterEnter {
     public utils: UtilsService,
     public notificationService: NotificationService,
     private activityService: ActivityService,
-    private sharedService: SharedService
+    private sharedService: SharedService,
+    private ngZone: NgZone
   ) {
     super(router);
   }
@@ -63,6 +65,7 @@ export class TopicComponent extends RouterEnter {
     this.loadingMarkedDone = true;
     this.loadingTopic = true;
     this.isRedirectingToNextMilestoneTask = false;
+    this.askForMarkAsDone = false;
   }
 
   onEnter() {
@@ -71,6 +74,11 @@ export class TopicComponent extends RouterEnter {
     this.activityId = +this.route.snapshot.paramMap.get('activityId');
     this._getTopic();
     this._getTopicProgress();
+    setTimeout(() => this.askForMarkAsDone = true, 15000);
+  }
+
+  ionViewWillLeave() {
+    this.sharedService.stopPlayingViodes();
   }
 
   private _getTopic() {
@@ -242,9 +250,16 @@ export class TopicComponent extends RouterEnter {
       });
     }
 
-    await this.router.navigate(route);
+    await this.navigate(route);
     this.isRedirectingToNextMilestoneTask = false;
     return;
+  }
+
+  // force every navigation happen under radar of angular
+  private navigate(direction): Promise<boolean> {
+    return this.ngZone.run(() => {
+      return this.router.navigate(direction);
+    });
   }
 
   /**
@@ -259,8 +274,8 @@ export class TopicComponent extends RouterEnter {
   }
 
   back() {
-    if (this.btnToggleTopicIsDone) {
-      return this.router.navigate(['app', 'activity', this.activityId]);
+    if (this.btnToggleTopicIsDone || !this.askForMarkAsDone) {
+      return this.navigate(['app', 'activity', this.activityId]);
     }
 
     const type = 'Topic';
@@ -271,7 +286,7 @@ export class TopicComponent extends RouterEnter {
         {
           text: 'No',
           handler: () => {
-            return this.router.navigate(['app', 'activity', this.activityId]);
+            return this.navigate(['app', 'activity', this.activityId]);
           },
         },
         {
@@ -280,7 +295,7 @@ export class TopicComponent extends RouterEnter {
             return this.markAsDone().subscribe(() => {
               return this.notificationService.customToast({
                 message: 'You\'ve completed the topic!'
-              }).then(() => this.router.navigate([
+              }).then(() => this.navigate([
                 'app',
                 'activity',
                 this.activityId,

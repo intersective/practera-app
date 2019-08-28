@@ -63,7 +63,7 @@ export class AuthResetPasswordComponent implements OnInit {
 
     this.authService.resetPassword(data).subscribe(
       res => {
-        return this._notifyAndRedirect('Password successfully changed!. Please login with the new password.');
+        return this._notifyAndRedirect('Password successfully changed! Please login with the new password.');
       },
       err => {
         if (this.utils.has(err, 'data.type')) {
