@@ -63,13 +63,11 @@
                     <ng-container *ngIf="!activity.isLocked; else activityLocked">
                       <div class="row-cards">
                         <ion-icon *ngIf="activity.progress >= 1; else activityCircleProgress" name="checkmark-circle" class="icon-done" color="primary"></ion-icon>
+                        <ng-template #activityCircleProgress>
+                          <app-circle-progress [data]='{ percent: activity.progress * 100, radius: 3 }'></app-circle-progress>
+                        </ng-template>
                       </div>
                     </ng-container>
-                    <ng-template #activityCircleProgress>
-                      <div class="row-cards">
-                        <app-circle-progress [data]='{ percent: activity.progress * 100 }'></app-circle-progress>
-                      </div>
-                    </ng-template>
                     <ng-template #activityLocked>
                       <div class="row-cards">
                         <ion-icon name="lock" color="medium" class="icon-lock"></ion-icon>
