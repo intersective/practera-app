@@ -16,7 +16,7 @@
       padding-top: 3px;
     }
     .icon-lock {
-      font-size: 31px;
+      font-size: 35px;
     }
   }
 
@@ -40,6 +40,13 @@
   }
   .project-card {
     width: 100%;
+    .milestone {
+      .milestone-lock {
+        font-size: 37px;
+        margin-right: 12px;
+        margin-bottom: -3px;
+      }
+    }
     .milestone-description {
       color: var(--practera-label-color);
       line-height: 20px;
@@ -66,13 +73,14 @@
 }
 .activity-list {
   background: transparent;
+  margin-bottom: 0px;
 
-  .icon-lock {
+  .icon-lock, .icon-done {
     margin-right: 18px;
-    font-size: 32px;
+    font-size: 37px;
   }
   .row-cards {
-    margin-left: -5px;
+    margin-left: -0.8%;
   }
 }
 .activity-item {
@@ -84,6 +92,7 @@
   --inner-padding-start:0px;
   --ion-safe-area-right: 0px;
   --inner-padding-end: 0px;
+  margin-bottom: 32px;
 }
 .icon-done {
   font-size: 33px;
