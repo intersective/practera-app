@@ -443,32 +443,66 @@ fdescribe('AssessmentComponent', () => {
   });
 
   describe('should get correct assessment answers when', () => {
+    let assessment;
+    let answers;
     beforeEach(() => {
-      component.doAssessment = true;
-      component.contextId = 1;
       fixture.detectChanges();
+      component.id = 1;
+      component.doAssessment = true;
+      component.contextId = 2;
+      component.assessment.isForTeam = true;
       component.questionsForm.patchValue({
         'q-123': 'abc',
         'q-124': null,
         'q-125': null
       });
     });
-
     afterEach(() => {
       expect(component.savingButtonDisabled).toBe(false);
       expect(component.saving).toBe(true);
+      expect(notificationSpy.popUp.calls.count()).toBe(0);
+      expect(assessment.id).toBe(1);
+      expect(assessment.context_id).toBe(2);
+      expect(answers).toEqual([
+        {
+          assessment_question_id: 123,
+          answer: 'abc'
+        },
+        {
+          assessment_question_id: 124,
+          answer: ''
+        },
+        {
+          assessment_question_id: 125,
+          answer: []
+        }
+      ]);
     });
 
     it('saving in progress', () => {
       component.submit(true);
+      assessment = assessmentSpy.saveAnswers.calls.first().args[0];
+      answers = assessmentSpy.saveAnswers.calls.first().args[1];
       expect(component.submitting).toBe(false);
       expect(component.savingMessage).toContain('Last saved');
+      expect(assessment.in_progress).toBe(true);
+      expect(assessment.unlock).toBeFalsy();
+    });
+
+    it('saving in progress, and unlock the submission for team assessment', () => {
+      component.submit(true, true);
+      assessment = assessmentSpy.saveAnswers.calls.first().args[0];
+      answers = assessmentSpy.saveAnswers.calls.first().args[1];
+      expect(assessment.unlock).toBe(true);
     });
 
     it('submitting', () => {
       component.submit(false);
+      assessment = assessmentSpy.saveAnswers.calls.first().args[0];
+      answers = assessmentSpy.saveAnswers.calls.first().args[1];
       expect(component.submitting).toEqual('Retrieving new task...');
       expect(component.saving).toBe(true);
+      expect(assessment.in_progress).toBe(false);
     });
   });
 
