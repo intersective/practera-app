@@ -84,7 +84,7 @@ class Page {
   }
 }
 
-fdescribe('AssessmentComponent', () => {
+describe('AssessmentComponent', () => {
   let component: AssessmentComponent;
   let fixture: ComponentFixture<AssessmentComponent>;
   let page: Page;
@@ -242,7 +242,7 @@ fdescribe('AssessmentComponent', () => {
     }));
     assessmentSpy.saveAnswers.and.returnValue(of({}));
     fastFeedbackSpy.pullFastFeedback.and.returnValue(of({}));
-    activitySpy.getTasksByActivityId.and.returnValue({currentActivity: {id: 1}, nextTask: {}});
+    activitySpy.getTasksByActivityId.and.returnValue({currentActivity: {id: 1}, nextTask: {type: 'assessment'}});
     storageSpy.getUser.and.returnValue(mockUser);
   });
 
