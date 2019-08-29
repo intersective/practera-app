@@ -226,8 +226,7 @@ export class ActivityService {
     nextTask: OverviewTask;
   }> {
     // project overview
-    const overviewAPIResponse = await this.getOverview(projectId).toPromise();
-    const overview = this.normaliseOverview(overviewAPIResponse);
+    const overview = await this.getOverview(projectId).toPromise();
 
     // firstly, check current milestone
     const {
@@ -681,6 +680,6 @@ export class ActivityService {
   public getOverview(projectId: number): Observable<Overview> {
     return this.request.get(api.projectOverview, {
       params: { id: projectId }
-    }).pipe(map(res => res.data));
+    }).pipe(map(res => this.normaliseOverview(res.data)));
   }
 }
