@@ -38,9 +38,9 @@
         </ng-container>
 
         <ng-template #actualMilestoneTpl>
-          <div class="milestone ion-padding-top ion-padding-bottom">
-            <div align-items-end>
-                <ion-icon name="lock" color="medium" class="icon-lock"></ion-icon>
+          <div class="milestone ion-padding-top">
+            <div>
+                <ion-icon *ngIf="milestone.isLocked" name="lock" color="medium" class="icon-lock milestone-lock"></ion-icon>
                 <ion-text class="project-title">{{ milestone.name }}</ion-text>
             </div>
 
@@ -61,7 +61,9 @@
 
                   <ng-template #actualTpl>
                     <ng-container *ngIf="!activity.isLocked; else activityLocked">
-                      <ion-icon *ngIf="activity.progress >= 1; else activityCircleProgress" name="checkmark-circle" class="icon-done" color="primary"></ion-icon>
+                      <div class="row-cards">
+                        <ion-icon *ngIf="activity.progress >= 1; else activityCircleProgress" name="checkmark-circle" class="icon-done" color="primary"></ion-icon>
+                      </div>
                     </ng-container>
                     <ng-template #activityCircleProgress>
                       <div class="row-cards">
@@ -69,7 +71,9 @@
                       </div>
                     </ng-template>
                     <ng-template #activityLocked>
-                      <ion-icon name="lock" color="medium" class="icon-lock"></ion-icon>
+                      <div class="row-cards">
+                        <ion-icon name="lock" color="medium" class="icon-lock"></ion-icon>
+                      </div>
                     </ng-template>
                     <app-activity-card id="activity-card-{{activity.id}}" [activity]="activity"
                       (click)="!activity.isLocked && goToActivity(activity.id)"

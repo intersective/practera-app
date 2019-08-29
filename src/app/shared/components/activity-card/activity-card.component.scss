@@ -1,5 +1,6 @@
 .card {
-  margin-top: 20px;
+  margin-top: 0px;
+  margin-bottom: 0px;
   max-height: 120px;
   height: 120px;
   background-size: cover;
@@ -10,9 +11,6 @@
   .activity-name {
     font-size: 18px;
     font-weight: bold;
-  }
-  &:last-child {
-    margin-bottom: 5px;
   }
 }
 .locked-card {
