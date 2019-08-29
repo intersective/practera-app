@@ -189,6 +189,25 @@ export class ActivityService {
     return currentActivity;
   }
 
+  private normaliseOverview(rawResponse: Overview): Overview {
+    const milestones = rawResponse.Milestones;
+
+    // make sure every activity is available
+    const normalisedMilestones = milestones.filter(milestone => {
+      if (milestone.Activities.length > 0) {
+        return true;
+      }
+
+      return false;
+    });
+
+    return {
+      id: rawResponse.id,
+      name: rawResponse.name,
+      Milestones: normalisedMilestones
+    };
+  }
+
   /**
    * Purpose: get next task (look for next incomplete milestone/activity/task),
    * this function will loop through entire status available in a project (from milestone to task-specific) to get the next incompleted task as next task to be redirected to
@@ -207,7 +226,8 @@ export class ActivityService {
     nextTask: OverviewTask;
   }> {
     // project overview
-    const overview = await this.getOverview(projectId).toPromise();
+    const overviewAPIResponse = await this.getOverview(projectId).toPromise();
+    const overview = this.normaliseOverview(overviewAPIResponse);
 
     // firstly, check current milestone
     const {
