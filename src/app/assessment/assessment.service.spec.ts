@@ -409,11 +409,202 @@ fdescribe('AssessmentService', () => {
     });
   });
 
-  describe('when testing getAssessment()', () => {
+  describe('when testing getSubmission()', () => {
     let requestResponse;
     let expected;
     beforeEach(() => {
-      requestResponse = {}
+      requestResponse = {
+        success: true,
+        data: [{
+          AssessmentSubmission: {
+            id: 1,
+            status: 'in progress',
+            modified: '2019-02-02',
+            is_locked: false
+          },
+          Submitter: {
+            name: 'test name',
+            image: ''
+          },
+          Reviewer: {
+            name: 'test reviewer name'
+          },
+          AssessmentSubmissionAnswer: [
+            {
+              assessment_question_id: 1,
+              answer: ''
+            },
+            {
+              assessment_question_id: 2,
+              answer: ''
+            },
+            {
+              assessment_question_id: 3,
+              answer: '123'
+            },
+            {
+              assessment_question_id: 4,
+              answer: ''
+            },
+            {
+              assessment_question_id: 5,
+              answer: '[1,2,3]'
+            },
+            {
+              assessment_question_id: 6,
+              answer: ['2','3','4']
+            }
+          ]
+        }]
+      };
+      const submission = requestResponse.data[0];
+      expected = {
+        submission: {
+          id: submission.AssessmentSubmission.id,
+          status: submission.AssessmentSubmission.status,
+          answers: {
+            1: {
+              answer: ''
+            },
+            2: {
+              answer: null
+            },
+            3: {
+              answer: 123
+            },
+            4: {
+              answer: []
+            },
+            5: {
+              answer: [1,2,3]
+            },
+            6: {
+              answer: [2,3,4]
+            }
+          },
+          submitterName: submission.Submitter.name,
+          modified: submission.AssessmentSubmission.modified,
+          isLocked: submission.AssessmentSubmission.is_locked,
+          submitterImage: submission.Submitter.image,
+          reviewerName: submission.Reviewer.name
+        },
+        review: {}
+      }
+      service.questions = {
+        1: {
+          question_type: 'text'
+        },
+        2: {
+          question_type: 'oneof',
+          AssessmentQuestionChoice: [
+            {
+              id: 123,
+              AssessmentChoice: {
+                name: 'choice name 123'
+              },
+              explanation: 'exp 123'
+            }
+          ]
+        },
+        3: {
+          question_type: 'oneof',
+          AssessmentQuestionChoice: [
+            {
+              id: 123,
+              AssessmentChoice: {
+                name: 'choice name 123'
+              },
+              explanation: 'exp 123'
+            }
+          ]
+        },
+        4: {
+          question_type: 'multiple'
+        },
+        5: {
+          question_type: 'multiple',
+          AssessmentQuestionChoice: [
+            {
+              id: 22,
+              AssessmentChoice: {
+                name: 'choice name 2'
+              },
+              explanation: 'exp 2'
+            }
+          ]
+        },
+        6: {
+          question_type: 'multiple',
+          AssessmentQuestionChoice: [
+            {
+              id: 3,
+              AssessmentChoice: {
+                name: 'choice name 3'
+              },
+              explanation: 'exp 3'
+            }
+          ]
+        }
+      };
+    });
+
+    it('should return empty submission and review, if return data is empty', () => {
+      const tmpRes = JSON.parse(JSON.stringify(requestResponse));
+      tmpRes.data = [];
+      requestSpy.get.and.returnValue(of(tmpRes));
+      service.getSubmission(1, 2, 'assessment').subscribe(res => expect(res).toEqual({
+        submission: {},
+        review: {}
+      }));
+    });
+
+    it('should throw AssessmentSubmission format error, if data format not match', () => {
+      const tmpRes = JSON.parse(JSON.stringify(requestResponse));
+      tmpRes.data[0] = {};
+      requestSpy.get.and.returnValue(of(tmpRes));
+      service.getSubmission(1, 2, 'assessment').subscribe();
+      expect(requestSpy.apiResponseFormatError.calls.count()).toBe(1);
+    });
+
+    it('should throw AssessmentSubmissionAnswer format error, if data format not match', () => {
+      const tmpRes = JSON.parse(JSON.stringify(requestResponse));
+      tmpRes.data[0].AssessmentSubmissionAnswer = {};
+      requestSpy.get.and.returnValue(of(tmpRes));
+      service.getSubmission(1, 2, 'assessment').subscribe();
+      expect(requestSpy.apiResponseFormatError.calls.count()).toBe(1);
+    });
+
+    it('should throw AssessmentSubmissionAnswer.answer format error, if data format not match', () => {
+      const tmpRes = JSON.parse(JSON.stringify(requestResponse));
+      tmpRes.data[0].AssessmentSubmissionAnswer[0] = {};
+      requestSpy.get.and.returnValue(of(tmpRes));
+      service.getSubmission(1, 2, 'assessment').subscribe();
+      expect(requestSpy.apiResponseFormatError.calls.count()).toBe(1);
+    });
+
+    it('should get correct submission data', () => {
+      requestSpy.get.and.returnValue(of(requestResponse));
+      service.getSubmission(1, 2, 'assessment').subscribe(
+        res => expect(res).toEqual(expected)
+      );
+      expect(requestSpy.get.calls.count()).toBe(1);
+    });
+
+    it('should get correct submission data with choice explanation added', () => {
+      const tmpRes = JSON.parse(JSON.stringify(requestResponse));
+      tmpRes.data[0].AssessmentSubmission.status = 'done';
+      requestSpy.get.and.returnValue(of(tmpRes));
+      service.getSubmission(1, 2, 'review', 3).subscribe(
+        res => {
+          expect(res.submission.answers[1].explanation).toBeFalsy();
+          expect(res.submission.answers[2].explanation).toBeTruthy();
+          expect(res.submission.answers[3].explanation).toBeTruthy();
+          expect(res.submission.answers[4].explanation).toBeFalsy();
+          expect(res.submission.answers[5].explanation).toBeTruthy();
+          expect(res.submission.answers[6].explanation).toBeTruthy();
+        }
+      );
+      expect(requestSpy.get.calls.count()).toBe(1);
     });
   });
 
