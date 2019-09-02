@@ -64,7 +64,7 @@
                       <div class="row-cards">
                         <ion-icon *ngIf="activity.progress >= 1; else activityCircleProgress" name="checkmark-circle" class="icon-done" color="primary"></ion-icon>
                         <ng-template #activityCircleProgress>
-                          <app-circle-progress [data]='{ percent: activity.progress * 100, radius: 3 }'></app-circle-progress>
+                          <app-circle-progress class="progress-icon" [data]='{ percent: activity.progress * 100, radius: 3 }'></app-circle-progress>
                         </ng-template>
                       </div>
                     </ng-container>

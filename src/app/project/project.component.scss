@@ -75,12 +75,19 @@
   background: transparent;
   margin-bottom: 0px;
 
-  .icon-lock, .icon-done {
+  .icon-done {
     margin-right: 18px;
     font-size: 32px;
   }
+  .icon-lock {
+    margin-right: 18px;
+    font-size: 32px;
+    margin-left: -3px;
+  }
+  .progress-icon {
+    margin-left: -3px;
+  }
   .row-cards {
-    margin-left: -0.8%;
     margin-top: -18px;
   }
 }
