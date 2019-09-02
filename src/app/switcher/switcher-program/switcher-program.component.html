@@ -5,9 +5,9 @@
 </ion-header>
 
 <ion-content padding color="light">
-  <ion-list class="no-bg" *ngFor="let program of programs; let i = index">
-      <app-path-card class="path-card" [path]=program.program [loading]="true"></app-path-card>
-  </ion-list>
+  <app-path-card class="path-card" [programs]=programs [loading]="true"></app-path-card>
+    <!-- <ion-list class="no-bg" *ngFor="let program of programs; let i = index">
+  </ion-list> -->
   <ion-card class="practera-card">
     <clickable-item>
       <ion-item (click)="logout()" lines="none">
