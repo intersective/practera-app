@@ -285,7 +285,7 @@ describe('AssessmentComponent', () => {
     tmpAssessment.isForTeam = true;
     assessmentSpy.getAssessment.and.returnValue(of(tmpAssessment));
     const tmpUser = JSON.parse(JSON.stringify(mockUser));
-    tmpUser.teamId = null
+    tmpUser.teamId = null;
     storageSpy.getUser.and.returnValue(tmpUser);
     fixture.detectChanges();
     expect(notificationSpy.alert.calls.count()).toBe(1);
@@ -297,7 +297,7 @@ describe('AssessmentComponent', () => {
     assessmentSpy.getSubmission.and.returnValue(of({
       submission: mockSubmission,
       review: {}
-    }))
+    }));
     fixture.detectChanges();
     expect(component.submission).toEqual(mockSubmission);
     expect(component.loadingSubmission).toEqual(false);
@@ -313,7 +313,7 @@ describe('AssessmentComponent', () => {
     assessmentSpy.getSubmission.and.returnValue(of({
       submission: tmpSubmission,
       review: {}
-    }))
+    }));
     fixture.detectChanges();
     expect(component.doAssessment).toBe(false);
     expect(component.doReview).toBe(false);
