@@ -253,7 +253,9 @@ fdescribe('AssessmentService', () => {
                 audience: question2.audience,
                 submitterOnly: false,
                 reviewerOnly: false,
-                info: `<h3>Choice Description:</h3><p>${question2.AssessmentQuestionChoice[0].AssessmentChoice.name} - ${question2.AssessmentQuestionChoice[0].AssessmentChoice.description}</p><p>${question2.AssessmentQuestionChoice[1].AssessmentChoice.name} - ${question2.AssessmentQuestionChoice[1].AssessmentChoice.description}</p>`,
+                info: `<h3>Choice Description:</h3><p>${question2.AssessmentQuestionChoice[0].AssessmentChoice.name} ` +
+                  `- ${question2.AssessmentQuestionChoice[0].AssessmentChoice.description}</p><p>${question2.AssessmentQuestionChoice[1].AssessmentChoice.name} ` +
+                  `- ${question2.AssessmentQuestionChoice[1].AssessmentChoice.description}</p>`,
                 choices: [
                   {
                     id: question2.AssessmentQuestionChoice[0].id,
@@ -452,7 +454,7 @@ fdescribe('AssessmentService', () => {
             },
             {
               assessment_question_id: 6,
-              answer: ['2','3','4']
+              answer: ['2', '3', '4']
             }
           ],
           AssessmentReview: [{
@@ -488,7 +490,7 @@ fdescribe('AssessmentService', () => {
             },
             {
               assessment_question_id: 6,
-              answer: ['2','3','4'],
+              answer: ['2', '3', '4'],
               comment: ''
             }
           ]
@@ -513,10 +515,10 @@ fdescribe('AssessmentService', () => {
               answer: []
             },
             5: {
-              answer: [1,2,3]
+              answer: [1, 2, 3]
             },
             6: {
-              answer: [2,3,4]
+              answer: [2, 3, 4]
             }
           },
           submitterName: submission.Submitter.name,
@@ -547,16 +549,16 @@ fdescribe('AssessmentService', () => {
               comment: ''
             },
             5: {
-              answer: [1,2,3],
+              answer: [1, 2, 3],
               comment: ''
             },
             6: {
-              answer: [2,3,4],
+              answer: [2, 3, 4],
               comment: ''
             }
           }
         }
-      }
+      };
       service.questions = {
         1: {
           question_type: 'text'
@@ -651,7 +653,7 @@ fdescribe('AssessmentService', () => {
 
     it('should throw AssessmentReviewAnswer format error, if data format not match', () => {
       const tmpRes = JSON.parse(JSON.stringify(requestResponse));
-      tmpRes.data[0].AssessmentSubmission.status = 'published'
+      tmpRes.data[0].AssessmentSubmission.status = 'published';
       tmpRes.data[0].AssessmentReviewAnswer[0] = {};
       requestSpy.get.and.returnValue(of(tmpRes));
       service.getSubmission(1, 2, 'review').subscribe();
