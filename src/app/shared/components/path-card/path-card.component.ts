@@ -59,6 +59,10 @@ export class PathCardComponent implements OnInit {
     // }
   }
 
+  async passport() {
+
+  }
+  
   async switch(index) {
     const loading = await this.loadingController.create({
       message: 'loading...'

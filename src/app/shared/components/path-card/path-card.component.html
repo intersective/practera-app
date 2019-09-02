@@ -2,7 +2,7 @@
 <ion-card
   color="primary"
   class="card practera-card"
-  [ngClass]="{
+  notNgClass="{
      'locked-card': path.isLocked,
      'default-image-card': !path.leadImage
   }"
@@ -14,8 +14,8 @@
     </ion-card-content>
     <ion-list class='path-list'>
       <clickable-item (click)="switch(0)">
-        <circle-progress [percent]="20">
-      </circle-progress>
+        <app-circle-progress [data]="{percent: 20, radius: 4}">
+      </app-circle-progress>
           <div class="path-way">Skills Assessment</div>
           <ion-icon name="arrow-forward" slot="end" color="primary" class="icon-forward"></ion-icon>
         </clickable-item>
@@ -26,7 +26,7 @@
 <ion-card
   color="primary"
   class="card practera-card"
-  [ngClass]="{
+  notNgClass="{
      'locked-card': path.isLocked,
      'default-image-card': !path.leadImage
   }"
@@ -39,19 +39,19 @@
 
     <ion-list class='path-list'>
         <clickable-item (click)="switch(1)">
-            <circle-progress [percent]="60"></circle-progress>
+            <app-circle-progress [data]="{percent: 60, radius: 4}"></app-circle-progress>
             <div class="path-way">Self Leadership</div>
             <ion-icon name="arrow-forward" slot="end" color="primary" class="icon-forward"></ion-icon>
         </clickable-item>
 
         <clickable-item  (click)="switch(1)">
-            <circle-progress [percent]="20"></circle-progress>
+            <app-circle-progress [data]="{percent: 40, radius: 4}"></app-circle-progress>
             <div class="path-way">Team Leadership</div>
             <ion-icon name="arrow-forward" slot="end" color="primary" class="icon-forward"></ion-icon>
         </clickable-item>
   
         <clickable-item  (click)="switch(1)">
-            <circle-progress [percent]="0"></circle-progress>
+            <app-circle-progress [data]="{percent: 0, radius: 4}"></app-circle-progress>
             <div class="path-way">Interpersonal Leadership</div>
         <ion-icon name="arrow-forward" slot="end" color="primary" class="icon-forward"></ion-icon>
       </clickable-item>
@@ -62,7 +62,7 @@
 <ion-card
   color="primary"
   class="card practera-card"
-  [ngClass]="{
+  notNgClass="{
      'locked-card': path.isLocked,
      'default-image-card': !path.leadImage
   }"
@@ -75,7 +75,7 @@
     <ion-list class='path-list'>     
 
         <clickable-item  (click)="switch(1)">
-            <ion-icon name="checkmark-circle" class="icon-done" color="primary"></ion-icon>
+          <ion-icon name="checkmark-circle" class="icon-done" color="primary"></ion-icon>
           <div class="path-way">Critical Thinking</div>
           <ion-icon name="arrow-forward" slot="end" color="primary" class="icon-forward"></ion-icon>
         </clickable-item>
@@ -87,7 +87,7 @@
         </clickable-item>  
 
         <clickable-item  (click)="switch(1)">
-         <circle-progress [percent]="0"></circle-progress>
+         <app-circle-progress [data]="{percent: 0, radius: 4}"></app-circle-progress>
           <div class="path-way">Teamwork</div>
           <ion-icon name="arrow-forward" slot="end" color="primary" class="icon-forward"></ion-icon>
         </clickable-item>
@@ -99,7 +99,7 @@
 <ion-card
   color="primary"
   class="card practera-card"
-  [ngClass]="{
+  notNgClass="{
      'locked-card': path.isLocked,
      'default-image-card': !path.leadImage
   }"
@@ -130,7 +130,7 @@
 <ion-card
   color="primary"
   class="card practera-card"
-  [ngClass]="{
+  notNgClass="{
      'locked-card': path.isLocked,
      'default-image-card': !path.leadImage
   }"
@@ -143,13 +143,13 @@
 
     <ion-list class='path-list'>
       <clickable-item>
-        <circle-progress [percent]="0"></circle-progress>
+        <app-circle-progress [data]="{percent: 0, radius: 4}"></app-circle-progress>
         <div class="path-way">Customer Service</div>
         <ion-icon name="arrow-forward" slot="end" color="primary" class="icon-forward"></ion-icon>
       </clickable-item>
     
       <clickable-item>
-        <circle-progress [percent]="0"></circle-progress>
+        <app-circle-progress [data]="{percent: 0, radius: 4}"></app-circle-progress>
         <div class="path-way">Digital Marketing</div>
         <ion-icon name="arrow-forward" slot="end" color="primary" class="icon-forward"></ion-icon>
       </clickable-item>
@@ -171,7 +171,7 @@
 <ion-card
   color="primary"
   class="card practera-card"
-  [ngClass]="{
+  notNgClass="{
      'locked-card': path.isLocked,
      'default-image-card': !path.leadImage
   }"
