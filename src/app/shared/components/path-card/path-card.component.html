@@ -38,19 +38,19 @@
     </ion-card-content>
 
     <ion-list class='path-list'>
-        <clickable-item (click)="switch(1)">
+        <clickable-item (click)="go('https://www.udemy.com/course/tltw-self-leadership/')">
             <app-circle-progress class="progress-icon" [data]="{percent: 60, radius: 4}"></app-circle-progress>
             <div class="path-way">Self Leadership</div>
             <ion-icon name="arrow-forward" slot="end" color="primary" class="icon-forward"></ion-icon>
         </clickable-item>
 
-        <clickable-item  (click)="switch(1)">
+        <clickable-item  (click)="switch(0)">
             <app-circle-progress class="progress-icon" [data]="{percent: 40, radius: 4}"></app-circle-progress>
             <div class="path-way">Team Leadership</div>
             <ion-icon name="arrow-forward" slot="end" color="primary" class="icon-forward"></ion-icon>
         </clickable-item>
   
-        <clickable-item  (click)="switch(1)">
+        <clickable-item  (click)="switch(0)">
             <app-circle-progress class="progress-icon" [data]="{percent: 0, radius: 4}"></app-circle-progress>
             <div class="path-way">Interpersonal Leadership</div>
         <ion-icon name="arrow-forward" slot="end" color="primary" class="icon-forward"></ion-icon>
@@ -74,19 +74,19 @@
     </ion-card-content>
     <ion-list class='path-list'>     
 
-        <clickable-item  (click)="switch(1)">
+        <clickable-item  (click)="switch(0)">
           <ion-icon name="checkmark-circle" class="icon-done" color="primary"></ion-icon>
           <div class="path-way">Critical Thinking</div>
           <ion-icon name="arrow-forward" slot="end" color="primary" class="icon-forward"></ion-icon>
         </clickable-item>
   
-        <clickable-item  (click)="switch(1)">
+        <clickable-item  (click)="switch(0)">
             <ion-icon name="checkmark-circle" class="icon-done" color="primary"></ion-icon>
             <div class="path-way">Problem Solving</div>
             <ion-icon name="arrow-forward" slot="end" color="primary" class="icon-forward"></ion-icon>
         </clickable-item>  
 
-        <clickable-item  (click)="switch(1)">
+        <clickable-item  (click)="switch(0)">
          <app-circle-progress class="progress-icon" [data]="{percent: 0, radius: 4}"></app-circle-progress>
           <div class="path-way">Teamwork</div>
           <ion-icon name="arrow-forward" slot="end" color="primary" class="icon-forward"></ion-icon>
