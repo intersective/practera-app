@@ -1,7 +1,16 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { DOCUMENT } from '@angular/common';
-import { Inject } from '@angular/core';
+import { Injectable, Inject } from '@angular/core';
 
+// import { Router } from '@angular/router';
+// import { LoadingController } from '@ionic/angular';
+// import { environment } from '@environments/environment';
+// import { PusherService } from '@shared/pusher/pusher.service';
+// import { SwitcherService, ProgramObj } from '../../../switcher/switcher.service';
+
+@Injectable({
+  providedIn: 'root'
+})
 
 @Component({
   selector: 'app-path-card',
@@ -24,7 +33,13 @@ export class PathCardComponent implements OnInit {
   backgroundImageStyle3: string = '';
   backgroundImageStyle4: string = '';
   pathLoading: boolean = true;
-  constructor ( @Inject(DOCUMENT) private document: Document ) { }
+  constructor ( 
+    @Inject(DOCUMENT) private document: Document,
+    // public router: Router,
+    // private pusherService: PusherService,
+    // private switcherService: SwitcherService,
+    // public loadingController: LoadingController
+   ) { }
 
   ngOnInit() {
     if (!this.path) {
@@ -42,5 +57,30 @@ export class PathCardComponent implements OnInit {
     }
   }
 
-}
+  // async switch(index) {
+  //   const loading = await this.loadingController.create({
+  //     message: 'loading...'
+  //   });
 
+  //   await loading.present();
+
+  //   // for passport redirect to skills passport app
+  //   if (index == 'passport') {
+
+  //   } else {
+  //     return this.switcherService.switchProgram(this.programs[index]).subscribe(() => {
+  //       loading.dismiss().then(() => {
+  //         // reset pusher (upon new timelineId)
+  //         this.pusherService.initialise({ unsubscribe: true });
+
+  //         if ((typeof environment.goMobile !== 'undefined' && environment.goMobile === false)
+  //           || /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
+  //           return this.router.navigate(['app', 'home']);
+  //         } else {
+  //           return this.router.navigate(['go-mobile']);
+  //         }
+  //       });
+  //     });
+  //   }
+  // }
+}
