@@ -14,9 +14,7 @@
     </ion-card-content>
     <ion-list class='path-list'>
       <clickable-item (click)="switch(0)">
-        <circle-progress
-        [percent]="20"
-      >
+        <circle-progress [percent]="20">
       </circle-progress>
           <div class="path-way">Skills Assessment</div>
           <ion-icon name="arrow-forward" slot="end" color="primary" class="icon-forward"></ion-icon>
@@ -93,7 +91,6 @@
           <div class="path-way">Teamwork</div>
           <ion-icon name="arrow-forward" slot="end" color="primary" class="icon-forward"></ion-icon>
         </clickable-item>
-                   
 
     </ion-list>
 
@@ -125,7 +122,7 @@
       <clickable-item>
           <ion-icon name="lock" color="medium" class="icon-lock"></ion-icon>
           <div class="path-way">Second Project - Project Planning</div>
-      </clickable-item> -->
+      </clickable-item> 
 
     </ion-list>
 </ion-card>
@@ -144,7 +141,8 @@
       <h2 color="primary-contrast" class="path-name">Technical</h2>
     </ion-card-content>
 
-    <clickable-item>
+    <ion-list class='path-list'>
+      <clickable-item>
         <circle-progress [percent]="0"></circle-progress>
         <div class="path-way">Customer Service</div>
         <ion-icon name="arrow-forward" slot="end" color="primary" class="icon-forward"></ion-icon>
@@ -158,7 +156,7 @@
   
       <clickable-item>
         <ion-icon name="lock" color="medium" class="icon-lock"></ion-icon>
-        <div class="path-way">Data-Driven Marketing</div>        <ion-icon name="arrow-forward" slot="end" color="primary" class="icon-forward"></ion-icon>
+        <div class="path-way">Data-Driven Marketing</div>
       </clickable-item>
 
       <clickable-item>
@@ -184,8 +182,7 @@
       <h2 color="primary-contrast" class="path-name">Get Credentials</h2>
     </ion-card-content>
     <ion-list class='path-list'>
-      <clickable-item  href="https://skills.practera.com">
-        </circle-progress>
+      <clickable-item href="https://skills.practera.com">
           <div class="path-way">Submit Evidence</div>
           <ion-icon name="arrow-forward" slot="end" color="primary" class="icon-forward"></ion-icon>
         </clickable-item>
