@@ -71,24 +71,24 @@ export class NotificationService {
   }
 
   // toast message pop up, by default, shown success message for 2 seconds.
-  async presentToast(message, success = true, duration?) {
-    let color = 'success';
-    if (!success) {
-      color = 'danger';
-    }
-    return this.customToast({
+  async presentToast(message, success = false, duration?, customOptions?: ToastOptions) {
+    let toastOptions: ToastOptions = {
       message: message,
-      duration: duration || 2000,
+      duration: duration || 200000,
       position: 'top',
-      color : color
-    });
+    };
+    console.log('customOptions', customOptions);
+    if (customOptions) {
+      toastOptions = Object.assign(customOptions, toastOptions);
+    } else {
+      toastOptions = Object.assign({color : success ? 'success' : 'danger'}, toastOptions);
+    }
+    const toast = await this.toastController.create(toastOptions);
+    return toast.present();
   }
 
   async customToast(options: ToastOptions) {
-    const toast = await this.toastController.create(
-      Object.assign({ duration: 2000 }, options)
-    );
-    return toast.present();
+    return this.presentToast(options.message, false, options.duration , { cssClass: 'practera-toast' });
   }
 
   /**
