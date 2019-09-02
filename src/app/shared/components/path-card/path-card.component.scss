@@ -25,18 +25,18 @@
     margin-left: 0px;
     padding-bottom: 0px;
  
-    ion-icon {
+    ion-icon.icon-done, ion-icon.icon-lock {
       font-size: 2em;
-      margin-left: 2px;
+      margin-left: 4px;
+      margin-right: 20px;
       width: 35px;
     }
-    
-    .icon-lock {
-    }
 
-    .icon-done {
-    }
+  
    
+    circle-progress {
+        margin-right: 0px !important;
+    }
 
     .path-way {
       // height: 100%;
@@ -69,12 +69,13 @@
   background-color: #ddd !important;
 }
 
-ion-card {
-  background-color: #000 !important;
-  color: #fff ;
-  --ion-color-primary: #000;
-  --ion-color-primary-contrast: #fff;
-}
+// ion-card {
+  // background-color: #000 !important;
+  // color: #fff ;
+  // --ion-color-primary: #000;
+  // --ion-color-primary-contrast: #fff;
+//}
+
 .default-image-card {
     background-color: transparent !important;
 }

@@ -14,7 +14,7 @@
     </ion-card-content>
     <ion-list class='path-list'>
       <clickable-item (click)="switch(0)">
-        <app-circle-progress [data]="{percent: 20, radius: 4}">
+        <app-circle-progress class="progress-icon" [data]="{percent: 20, radius: 4}">
       </app-circle-progress>
           <div class="path-way">Skills Assessment</div>
           <ion-icon name="arrow-forward" slot="end" color="primary" class="icon-forward"></ion-icon>
@@ -39,19 +39,19 @@
 
     <ion-list class='path-list'>
         <clickable-item (click)="switch(1)">
-            <app-circle-progress [data]="{percent: 60, radius: 4}"></app-circle-progress>
+            <app-circle-progress class="progress-icon" [data]="{percent: 60, radius: 4}"></app-circle-progress>
             <div class="path-way">Self Leadership</div>
             <ion-icon name="arrow-forward" slot="end" color="primary" class="icon-forward"></ion-icon>
         </clickable-item>
 
         <clickable-item  (click)="switch(1)">
-            <app-circle-progress [data]="{percent: 40, radius: 4}"></app-circle-progress>
+            <app-circle-progress class="progress-icon" [data]="{percent: 40, radius: 4}"></app-circle-progress>
             <div class="path-way">Team Leadership</div>
             <ion-icon name="arrow-forward" slot="end" color="primary" class="icon-forward"></ion-icon>
         </clickable-item>
   
         <clickable-item  (click)="switch(1)">
-            <app-circle-progress [data]="{percent: 0, radius: 4}"></app-circle-progress>
+            <app-circle-progress class="progress-icon" [data]="{percent: 0, radius: 4}"></app-circle-progress>
             <div class="path-way">Interpersonal Leadership</div>
         <ion-icon name="arrow-forward" slot="end" color="primary" class="icon-forward"></ion-icon>
       </clickable-item>
@@ -87,7 +87,7 @@
         </clickable-item>  
 
         <clickable-item  (click)="switch(1)">
-         <app-circle-progress [data]="{percent: 0, radius: 4}"></app-circle-progress>
+         <app-circle-progress class="progress-icon" [data]="{percent: 0, radius: 4}"></app-circle-progress>
           <div class="path-way">Teamwork</div>
           <ion-icon name="arrow-forward" slot="end" color="primary" class="icon-forward"></ion-icon>
         </clickable-item>
@@ -143,13 +143,13 @@
 
     <ion-list class='path-list'>
       <clickable-item>
-        <app-circle-progress [data]="{percent: 0, radius: 4}"></app-circle-progress>
+        <app-circle-progress class="progress-icon" [data]="{percent: 0, radius: 4}"></app-circle-progress>
         <div class="path-way">Customer Service</div>
         <ion-icon name="arrow-forward" slot="end" color="primary" class="icon-forward"></ion-icon>
       </clickable-item>
     
       <clickable-item>
-        <app-circle-progress [data]="{percent: 0, radius: 4}"></app-circle-progress>
+        <app-circle-progress class="progress-icon" [data]="{percent: 0, radius: 4}"></app-circle-progress>
         <div class="path-way">Digital Marketing</div>
         <ion-icon name="arrow-forward" slot="end" color="primary" class="icon-forward"></ion-icon>
       </clickable-item>
@@ -182,9 +182,10 @@
       <h2 color="primary-contrast" class="path-name">Get Credentials</h2>
     </ion-card-content>
     <ion-list class='path-list'>
-      <clickable-item href="https://skills.practera.com">
-          <div class="path-way">Submit Evidence</div>
-          <ion-icon name="arrow-forward" slot="end" color="primary" class="icon-forward"></ion-icon>
+      <clickable-item (click)="go('https://skills.practera.com')">
+        <app-circle-progress class="progress-icon" [data]="{percent: 0, radius: 4}"></app-circle-progress>
+        <div class="path-way">Submit Evidence</div>
+        <ion-icon name="arrow-forward" slot="end" color="primary" class="icon-forward"></ion-icon>
         </clickable-item>
       <clickable-item>
         <ion-icon name="lock" color="medium" class="icon-lock"></ion-icon>
