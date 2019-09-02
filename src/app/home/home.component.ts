@@ -172,10 +172,12 @@ export class HomeComponent extends RouterEnter implements OnDestroy {
         }
       });
     }
+
+    this.fastFeedbackService.pullFastFeedback().subscribe();
   }
 
   goToActivity(id) {
-    this.router.navigateByUrl('app/activity/' + id);
+    this.router.navigate(['app', 'activity', id]);
   }
 
   goToAssessment(activityId, contextId, assessmentId) {
@@ -209,6 +211,8 @@ export class HomeComponent extends RouterEnter implements OnDestroy {
   }
 
   ngOnDestroy(): void {
+    // run ngOnDestroy from RouterEnter
+    super.ngOnDestroy();
     this.subscriptions.forEach(subscription => subscription.unsubscribe());
   }
 

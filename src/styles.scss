@@ -66,7 +66,7 @@ body {
   }
 
   p {
-    font-size: 14px;
+    font-size: 12px;
     font-weight: 500;
     text-overflow: ellipsis;
     margin-top: 0px;
@@ -159,6 +159,19 @@ body {
   }
 }
 
+.lock-assessment-popup {
+  .modal-wrapper {
+    --height: 260px;
+    --width: 260px;
+    --background: transparent;
+    --box-shadow: none;
+    --border-radius: 12px;
+    .inner-scroll, .scroll-y, .overscroll {
+      --overflow: hidden;
+    }
+  }
+}
+
 @media only screen and (max-device-width: 667px), screen and (max-width: 450px) {
   .intercom-namespace .intercom-launcher-badge-frame {
     transform: translateX(15px);
@@ -175,8 +188,8 @@ body {
 
 .event-detail-popup {
   .modal-wrapper {
-    --height: 90%;
-    --width: 80%;
+    --height: 100%;
+    --width: 100%;
     --border-radius: 12px;
     --box-shadow: none;
   }

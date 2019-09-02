@@ -39,8 +39,8 @@ describe('Component: Login', () => {
   it('login will make API request with AuthService', () => {
     spyOn(component, 'login').and.returnValue(true);
 
-    component.email = 'test@practera.com';
-    component.password = 'test1234';
+    // component.email = 'test@practera.com';
+    // component.password = 'test1234';
     expect(component.login).toBeTruthy();
     component.login();
     expect(component.login).toHaveBeenCalled();

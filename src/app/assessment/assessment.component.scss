@@ -29,3 +29,26 @@
 ion-toolbar {
   min-height: 56px;
 }
+
+.member-detail-container {
+  margin-bottom: 0px;
+  margin-top: 15px;
+  ion-item {
+    height: 64px;
+    --background: transparent;
+    --padding-start: 0px;
+  }
+  ion-avatar {
+    height: 48px;
+    width: 48px;
+  }
+  ion-label {
+    h4 {
+      font-size: 16px;
+    }
+    p {
+      font-size: 12px;
+      color: var(--ion-color-medium-shade);
+    }
+  }
+}

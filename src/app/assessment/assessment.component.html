@@ -1,8 +1,8 @@
-<ion-header>
+<ion-header mode="ios">
   <ion-toolbar color="light">
     <ion-icon name="arrow-back" (click)="back()" color="primary" slot="start" margin-start></ion-icon>
     <ion-title text-center>Assessment</ion-title>
-    <ng-container *ngIf="!assessment.isForTeam && (doAssessment || doReview)">
+    <ng-container *ngIf="doAssessment || doReview">
       <ion-title text-center class="subTitle">{{savingMessage}}</ion-title>
       <ion-button [disabled]="savingButtonDisabled" (click)="submit(true)" class="text-button" color="primary" slot="end" fill="clear" size="small">Save</ion-button>
     </ng-container>
@@ -16,7 +16,7 @@
   <p [class]="assessment.isOverdue ? 'due-date assessment over' : 'due-date assessment'" *ngIf="doAssessment" text-center>
     {{ this.sharedService.dueDateFormatter(assessment.dueDate) }}
   </p>
-  <div class="review-submitter" *ngIf="!doAssessment" text-left>
+  <div *ngIf="!doAssessment && submission.submitterName && !submission.isLocked" class="review-submitter" text-left>
     <p class="title">
       Submitted by {{ submission.submitterName }}
     </p>
@@ -26,6 +26,18 @@
       Reviewed by {{ submission.reviewerName }} {{review.status}}
     </p>
   </div>
+
+  <ion-list *ngIf="submission.isLocked" class="member-detail-container no-bg" lines="none">
+    <ion-item lines="none">
+      <ion-avatar slot="start">
+        <img [src]="submission.submitterImage ? submission.submitterImage : 'https://my.practera.com/img/user-512.png'">
+      </ion-avatar>
+      <ion-label>
+        <h4>Locked by {{ submission.submitterName }}</h4>
+        <p>Please wait until the user finishes editing</p>
+      </ion-label>
+    </ion-item>
+  </ion-list>
 
   <form [formGroup]="questionsForm">
     <ng-container *ngIf="loadingAssessment">
@@ -134,19 +146,40 @@
       </ng-container>
     </ng-container>
 
-    <ion-button *ngIf="doAssessment || doReview" [disabled]="submitting || questionsForm.invalid" (click)="submit(false)" shape="round" expand="full">
+    <ion-button
+      *ngIf="doAssessment || doReview"
+      [disabled]="submitting || questionsForm.invalid"
+      (click)="submit(false)"
+      shape="round"
+      expand="full">
       <ng-container *ngIf="!submitting">Submit</ng-container>
-      <ng-container *ngIf="submitting">Submitting...</ng-container>
+      <ng-container *ngIf="submitting">{{ submitting }}</ng-container>
     </ion-button>
-
-    <div *ngIf="action === 'assessment' && submission.status == 'published'" class="text-right">
-      <span class="vertical-middle">Mark feedback as read</span>
-      <ng-container *ngIf="!loadingFeedbackReviewed; else spinnerTmpl">
-        <ion-toggle [checked]="feedbackReviewed" [disabled]="feedbackReviewed" (ionChange)="reviewFeedback()" margin-start class="vertical-middle"></ion-toggle>
-      </ng-container>
-      <ng-template #spinnerTmpl><ion-spinner name="dots" class="vertical-middle"></ion-spinner></ng-template>
-
-    </div>
 
   </form>
 </ion-content>
+
+<ion-footer color="light"
+  *ngIf="action === 'assessment' && (loadingSubmission ||
+  ['pending review', 'done', 'pending approval', 'published'].indexOf(submission.status) !== -1)">
+  <ion-toolbar>
+    <ion-spinner style="width: 100%;"
+      *ngIf="loadingSubmission || (loadingFeedbackReviewed && submission.status == 'published')"
+      name="dots"
+      class="vertical-middle text-center"
+    ></ion-spinner>
+    <ion-button *ngIf="!loadingMarkedDone && !loadingFeedbackReviewed && submission.status == 'published' && !feedbackReviewed"
+      (click)="markReviewFeedbackAsRead()"
+      shape="round"
+      expand="full">
+      {{markingAsReview}}
+    </ion-button>
+    <ion-button *ngIf="['pending review', 'done', 'pending approval'].indexOf(submission.status) !== -1 || (feedbackReviewed && submission.status == 'published')"
+      (click)="redirectToNextMilestoneTask({ continue: true })"
+      [disabled]="isRedirectingToNextMilestoneTask"
+      shape="round"
+      expand="full">
+      {{ isRedirectingToNextMilestoneTask ? 'Loading next task...' : 'Continue' }}
+    </ion-button>
+  </ion-toolbar>
+</ion-footer>

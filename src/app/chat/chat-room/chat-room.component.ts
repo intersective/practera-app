@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, AfterContentInit, AfterViewInit } from '@angular/core';
+import { Component, OnInit, ViewChild, NgZone, AfterContentInit, AfterViewInit, ElementRef } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { IonContent, ModalController } from '@ionic/angular';
 import { BrowserStorageService } from '@services/storage.service';
@@ -38,6 +38,8 @@ export class ChatRoomComponent extends RouterEnter {
     public pusherService: PusherService,
     private filestackService: FilestackService,
     private modalController: ModalController,
+    private ngZone: NgZone,
+    public element: ElementRef
   ) {
     super(router);
     const role = this.storage.getUser().role;
@@ -219,7 +221,7 @@ export class ChatRoomComponent extends RouterEnter {
   }
 
   back() {
-    this.router.navigate(['/app/chat']);
+    return this.ngZone.run(() => this.router.navigate(['app', 'chat']));
   }
 
   sendMessage() {
@@ -228,8 +230,9 @@ export class ChatRoomComponent extends RouterEnter {
     }
     this.loadingMesageSend = true;
     const message = this.message;
-    // remove typed message from text field.
+    // remove typed message from text area and shrink text area.
     this.message = '';
+    this.element.nativeElement.querySelector('textarea').style.height = 'auto';
     // createing prams need to send message
     let data: any;
     if (this.selectedChat.is_team) {
@@ -377,7 +380,7 @@ export class ChatRoomComponent extends RouterEnter {
    * Trigger typing event when user is typing
    */
   typing() {
-    this.pusherService.triggerTypingEvent(
+    this.pusherService.triggerTyping(
       {
         from: this.pusherService.getMyPresenceChannelId(),
         to: this.selectedChat.name,

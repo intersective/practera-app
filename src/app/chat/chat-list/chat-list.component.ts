@@ -3,7 +3,7 @@ import { Router, NavigationExtras } from '@angular/router';
 import { BrowserStorageService } from '@services/storage.service';
 import { RouterEnter } from '@services/router-enter.service';
 import { UtilsService } from '@services/utils.service';
-
+import { FastFeedbackService } from '../../fast-feedback/fast-feedback.service';
 import { ChatService, ChatListObject } from '../chat.service';
 
 @Component({
@@ -22,6 +22,7 @@ export class ChatListComponent extends RouterEnter {
     public router: Router,
     public storage: BrowserStorageService,
     public utils: UtilsService,
+    public fastFeedbackService: FastFeedbackService
   ) {
     super(router);
     const role = this.storage.getUser().role;
@@ -38,6 +39,7 @@ export class ChatListComponent extends RouterEnter {
   onEnter() {
     this._initialise();
     this._loadChatData();
+    this.fastFeedbackService.pullFastFeedback().subscribe();
   }
 
   private _initialise() {

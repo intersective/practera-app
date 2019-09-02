@@ -44,15 +44,17 @@ export class AuthLoginComponent {
       return;
     }
     this.isLoggingIn = true;
-    this.authService.login({
+
+    return this.authService.login({
       email: this.loginForm.value.email,
       password: this.loginForm.value.password,
     }).subscribe(
       res => {
         this.isLoggingIn = false;
-        this.router.navigate(['/switcher']);
+        return this.router.navigate(['switcher']);
       },
       err => {
+        // notify user about weak password
         if (this.utils.has(err, 'data.type')) {
           if (err.data.type === 'password_compromised') {
             this.isLoggingIn = false;
@@ -69,6 +71,8 @@ export class AuthLoginComponent {
             });
           }
         }
+
+        // credential issue
         this.notificationService.alert({
           message: 'Your email or password is incorrect, please try again.',
           buttons: [

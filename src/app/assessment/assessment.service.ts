@@ -75,7 +75,9 @@ export interface Submission {
   answers: any;
   submitterName: string;
   modified: string;
-  reviewerName: string;
+  isLocked: boolean;
+  submitterImage: string;
+  reviewerName: string | void;
 }
 
 export interface Review {
@@ -132,7 +134,7 @@ export class AssessmentService {
       description: thisAssessment.Assessment.description,
       isForTeam: thisAssessment.Assessment.is_team,
       dueDate: thisAssessment.Assessment.deadline,
-      isOverdue: this.utils.timeComparer(thisAssessment.Assessment.deadline) < 0 ? true : false,
+      isOverdue: thisAssessment.Assessment.deadline ? this.utils.timeComparer(thisAssessment.Assessment.deadline) < 0 : false,
       groups: []
     };
 
@@ -298,6 +300,8 @@ export class AssessmentService {
       answers: {},
       submitterName: thisSubmission.Submitter.name,
       modified: thisSubmission.AssessmentSubmission.modified,
+      isLocked: thisSubmission.AssessmentSubmission.is_locked,
+      submitterImage: thisSubmission.Submitter.image,
       reviewerName: this.checkReviewer(thisSubmission.Reviewer)
     };
 
@@ -494,14 +498,14 @@ export class AssessmentService {
     return this.request.post(api.post.todoitem, postData);
   }
 
-  popUpReviewRating(reviewId, redirect) {
+  popUpReviewRating(reviewId, redirect): Promise<void> {
     return this.notification.modal(ReviewRatingComponent, {
       reviewId,
       redirect
     });
   }
 
-  checkReviewer(reviewer) {
+  checkReviewer(reviewer): string | void {
     if (!reviewer) {
       return undefined;
     }

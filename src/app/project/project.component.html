@@ -1,4 +1,4 @@
-<ion-header>
+<ion-header mode="ios">
   <ion-toolbar class="project-toolbar" color="light">
     <ion-title text-center padding-horizontal>{{programName}}</ion-title>
   </ion-toolbar>
@@ -7,7 +7,9 @@
 <div>
   <ion-grid class="milestone-bar">
     <ion-row>
-      <ion-col class="bubbles-top" (click)="scrollTo('milestone-' + milestone.id, i)" *ngFor="let milestone of milestones; let i = index">
+      <ion-col class="bubbles-top"
+        (click)="scrollTo('milestone-' + milestone.id, i)"
+        *ngFor="let milestone of milestones; let i = index">
         <div [class.active]="activeMilestone[i]">
           <ng-container *ngIf="!milestone.isLocked; else milestoneLocked">
             <ion-icon *ngIf="milestone.progress >= 1; else circleProgress" name="checkmark-circle" class="icon-done" color="primary"></ion-icon>
@@ -29,17 +31,18 @@
     <ion-item *ngIf="loadingMilestone" color="light">
     </ion-item>
 
-    <ion-item *ngFor="let milestone of milestones" color="light" #milestoneRef>
+    <ion-item class="project-item" lines="none" *ngFor="let milestone of milestones" color="light" #milestoneRef>
       <div color="light" class="project-card" id="milestone-{{milestone.id}}">
         <ng-container *ngIf="milestone.dummy; else actualMilestoneTpl">
           <ng-container *ngTemplateOutlet="loadingMilestoneTpl"></ng-container>
         </ng-container>
 
         <ng-template #actualMilestoneTpl>
-          <div class="milestone" padding>
-            <ion-icon *ngIf="milestone.isLocked" name="lock" color="medium" class="icon-lock"></ion-icon>
-            <ion-text color="medium">MILESTONE</ion-text>
-            <p class="project-title">{{ milestone.name }}</p>
+          <div class="milestone ion-padding-top">
+            <div>
+                <ion-icon *ngIf="milestone.isLocked" name="lock" color="medium" class="icon-lock milestone-lock"></ion-icon>
+                <ion-text class="project-title">{{ milestone.name }}</ion-text>
+            </div>
 
             <div class="milestone-description">
               <app-description *ngIf="milestone.description" [content]="milestone.description"></app-description>
@@ -57,13 +60,20 @@
                   </ng-container>
 
                   <ng-template #actualTpl>
-                    <div class="row-cards" *ngIf="!activity.isLocked; else activityLocked">
-                      <app-circle-progress [data]='{ percent: activity.progress * 100 }'></app-circle-progress>
-                    </div>
+                    <ng-container *ngIf="!activity.isLocked; else activityLocked">
+                      <div class="row-cards">
+                        <ion-icon *ngIf="activity.progress >= 1; else activityCircleProgress" name="checkmark-circle" class="icon-done" color="primary"></ion-icon>
+                        <ng-template #activityCircleProgress>
+                          <app-circle-progress class="progress-icon" [data]='{ percent: activity.progress * 100, radius: 3 }'></app-circle-progress>
+                        </ng-template>
+                      </div>
+                    </ng-container>
                     <ng-template #activityLocked>
-                      <ion-icon name="lock" color="medium" class="icon-lock"></ion-icon>
+                      <div class="row-cards">
+                        <ion-icon name="lock" color="medium" class="icon-lock"></ion-icon>
+                      </div>
                     </ng-template>
-                    <app-activity-card [activity]="activity"
+                    <app-activity-card id="activity-card-{{activity.id}}" [activity]="activity"
                       (click)="!activity.isLocked && goToActivity(activity.id)"
                       class="activity-card"
                     ></app-activity-card>
@@ -80,9 +90,8 @@
 
 <ng-template #loadingMilestoneTpl>
   <div color="light" class="project-card">
-    <div class="milestone" padding >
-      <ion-text color="medium">MILESTONE</ion-text>
-      <p class="project-title"></p>
+    <div class="milestone">
+      <ion-text class="project-title"></ion-text>
       <div class="milestone-description"></div>
       <ion-list class="activity-list" color="light">
         <ion-item class="activity-item" color="light">

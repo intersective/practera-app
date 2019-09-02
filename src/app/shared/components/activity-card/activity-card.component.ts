@@ -11,15 +11,17 @@ import { Inject } from '@angular/core';
 export class ActivityCardComponent implements OnInit {
   @Input() loading: boolean;
   @Input() activity: {
-    id: number,
-    name: string,
-    isLocked?: boolean,
-    progress?: number,
-    hasFeedback?: boolean,
-    leadImage?: string,
-  }
+    id: number;
+    name: string;
+    isLocked?: boolean;
+    progress?: number;
+    hasFeedback?: boolean;
+    leadImage?: string;
+    highlighted?: boolean;
+  };
   backgroundImageStyle: string = '';
   activityLoading: boolean = true;
+
   constructor ( @Inject(DOCUMENT) private document: Document ) { }
 
   ngOnInit() {

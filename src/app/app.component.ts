@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, NgZone } from '@angular/core';
 import { Router } from '@angular/router';
 import { Platform } from '@ionic/angular';
 import { UtilsService } from '@services/utils.service';
@@ -8,6 +8,7 @@ import { AuthService } from './auth/auth.service';
 import { BrowserStorageService } from '@services/storage.service';
 import { VersionCheckService } from '@services/version-check.service';
 import { environment } from '@environments/environment';
+import { PusherService } from '@shared/pusher/pusher.service';
 
 @Component({
   selector: 'app-root',
@@ -21,15 +22,28 @@ export class AppComponent implements OnInit {
     private sharedService: SharedService,
     private authService: AuthService,
     private storage: BrowserStorageService,
-    private versionCheckService: VersionCheckService
+    private versionCheckService: VersionCheckService,
+    private pusherService: PusherService,
+    private ngZone: NgZone
     // private splashScreen: SplashScreen,
     // private statusBar: StatusBar
   ) {
     this.initializeApp();
   }
 
+  // force every navigation happen under radar of angular
+  private navigate(direction): Promise<boolean> {
+    return this.ngZone.run(() => {
+      return this.router.navigate(direction);
+    });
+  }
+
   ngOnInit() {
+    // do the same thing on every page load
+    this.sharedService.onPageLoad();
+
     // @TODO: need to build a new micro service to get the config and serve the custom branding config from a microservice
+    // Get the custom branding info and update the theme color if needed
     const domain = window.location.hostname;
     this.authService.getConfig({domain}).subscribe((response: any) => {
       if (response !== null) {
@@ -46,11 +60,11 @@ export class AppComponent implements OnInit {
             'logo': logo,
             'color': themeColor
           });
-          this.utils.changeThemeColor(themeColor);
+          // use brand color if no theme color
+          if (!this.utils.has(this.storage.getUser(), 'themeColor') || !this.storage.getUser().themeColor) {
+            this.utils.changeThemeColor(themeColor);
+          }
         }
-
-        // initiate pusher subcriptions and user data
-        this.sharedService.onPageLoad();
       }
     });
 
@@ -68,18 +82,30 @@ export class AppComponent implements OnInit {
         case 'secure':
           if (searchParams.has('auth_token')) {
             const queries = this.utils.urlQueryToObject(queryString);
-            this.router.navigate(['secure', searchParams.get('auth_token'), queries]);
+            this.navigate([
+              'secure',
+              searchParams.get('auth_token'),
+              queries
+            ]);
           }
           break;
         case 'resetpassword':
           if (searchParams.has('key') && searchParams.has('email')) {
-            this.router.navigate(['reset_password', searchParams.get('key'), searchParams.get('email')]);
+            this.navigate([
+              'reset_password',
+              searchParams.get('key'),
+              searchParams.get('email')
+            ]);
           }
           break;
 
         case 'registration':
           if (searchParams.has('key') && searchParams.has('email')) {
-            this.router.navigate(['registration', searchParams.get('email'), searchParams.get('key') ]);
+            this.navigate([
+              'registration',
+              searchParams.get('email'),
+              searchParams.get('key')
+            ]);
           }
           break;
       }
@@ -91,8 +117,8 @@ export class AppComponent implements OnInit {
       // watch version update
       this.versionCheckService.initiateVersionCheck();
 
-      // this.statusBar.styleDefault();
-      // this.splashScreen.hide();
+      // initialise Pusher
+      this.pusherService.initialise();
     });
   }
 

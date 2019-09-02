@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { UtilsService } from '@services/utils.service';
 import { BrowserStorageService } from '@services/storage.service';
-import { PusherService } from '@shared/pusher/pusher.service';
 import { NotificationService } from '@shared/notification/notification.service';
 import { RequestService } from '@shared/request/request.service';
 
@@ -27,30 +26,11 @@ export class SharedService {
   constructor(
     private utils: UtilsService,
     private storage: BrowserStorageService,
-    public pusherService: PusherService,
     private notification: NotificationService,
     private request: RequestService
   ) {}
 
-  /**
-   * @name setCache
-   * @description reset entire cache by their index/key everytime
-   * @param {string} type data type ('activity', 'milestone', 'achievement'), keep the name singular
-   * @param {object} data object of any kind
-   */
-  setCache(type: string, data) {
-    this.memoryCache[type] = data;
-    return this.memoryCache[type];
-  }
-
-  getCache(type: string) {
-    if (this.memoryCache[type]) {
-      return this.memoryCache[type];
-    }
-    return null;
-  }
-
-  // call this function on every page refresh
+  // call this function on every page refresh and after switch program
   onPageLoad() {
     // only do these if a timeline is choosen
     if (!this.storage.getUser().timelineId) {
@@ -65,12 +45,8 @@ export class SharedService {
     if (image) {
       this.utils.changeCardBackgroundImage(image);
     }
-    // initialise Pusher
-    this.pusherService.initialisePusher();
-    // subscribe to Pusher channels
-    this.pusherService.getChannels().subscribe();
 
-    // listen to the achievement event
+    // subscribe to the achievement event if it is not subscribed
     if (!this.achievementEvent) {
       this.achievementEvent = this.utils.getEvent('achievement').subscribe(event => {
         this.notification.achievementPopUp('notification', {
@@ -107,4 +83,23 @@ export class SharedService {
     }
     return 'Due ' + this.utils.utcToLocal(dueDate);
   }
+
+  /**
+   * This method get all iframe and videos from documents and stop playing videos.
+   */
+  stopPlayingViodes() {
+    const iframes = Array.from(document.querySelectorAll( 'iframe'));
+    const videos = Array.from(document.querySelectorAll( 'video' ));
+    if ( iframes ) {
+      iframes.forEach(frame => {
+        frame.src = frame.src;
+      });
+    }
+    if ( videos ) {
+      videos.forEach(video => {
+        video.pause();
+      });
+    }
+  }
+
 }

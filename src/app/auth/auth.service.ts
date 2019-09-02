@@ -78,25 +78,10 @@ export class AuthService {
     // do clear user cache here
   }
 
-  private _normaliseAuth(rawData): any {
-    const data = rawData.data;
-
-    return {
-      success: rawData.success,
-      tutorial: data.tutorial,
-      apikey: data.apikey,
-      contact_number: data.contact_number,
-      programs: data.Timelines.map(function(timeline) {
-        return {
-          enrolment: timeline.Enrolment,
-          program: timeline.Program,
-          project: timeline.Project,
-          timeline: timeline.Timeline
-        };
-      }),
-      config: (data.Experience || {}).config || {},
-      _raw: rawData
-    };
+  private _login(body: HttpParams) {
+    return this.request.post(api.login, body.toString(), {
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+    }).pipe(map(res => this._handleLoginResponse(res)));
   }
 
   /**
@@ -113,10 +98,7 @@ export class AuthService {
       .set('data[User][password]', password)
       .set('domain', this.getDomain());
 
-    return this.request.post(api.login, body.toString(), {
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
-      })
-      .pipe(map(this._handleLoginResponse, this));
+    return this._login(body);
   }
 
   /**
@@ -128,12 +110,10 @@ export class AuthService {
   directLogin({ authToken }): Observable<any> {
     const body = new HttpParams()
       .set('auth_token', authToken);
-    return this.request.post(api.login, body.toString(), {
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
-      }).pipe(map(this._handleLoginResponse, this));
+    return this._login(body);
   }
 
-  private _handleLoginResponse(response) {
+  private _handleLoginResponse(response): Observable<any> {
     const norm = this._normaliseAuth(response);
     if (response.data) {
       this.storage.setUser({ contactNumber: norm.contact_number});
@@ -144,6 +124,32 @@ export class AuthService {
     return response;
   }
 
+  private _normaliseAuth(rawData): any {
+    const data = rawData.data;
+    return {
+      success: rawData.success,
+      tutorial: data.tutorial,
+      apikey: data.apikey,
+      programs: data.Timelines.map(
+        timeline => {
+          // make sure 'Program.config.theme_color' exist
+          if (!this.utils.has(timeline, 'Program.config.theme_color')) {
+            timeline.Program.config.theme_color = 'var(--ion-color-primary)';
+          }
+          return {
+            enrolment: timeline.Enrolment,
+            program: timeline.Program,
+            project: timeline.Project,
+            timeline: timeline.Timeline
+          };
+        },
+        this
+      ),
+      config: (data.Experience || {}).config || {},
+      _raw: rawData
+    };
+  }
+
   isAuthenticated(): boolean {
     return this.isLoggedIn || this.storage.get('isLoggedIn');
   }
@@ -152,11 +158,12 @@ export class AuthService {
     // use the config color
     this.utils.changeThemeColor(this.storage.getConfig().color || '#2bbfd4');
     this.pusherService.unsubscribeChannels();
+    this.pusherService.disconnect();
     const config = this.storage.getConfig();
     this.storage.clear();
     // still store config info even logout
     this.storage.setConfig(config);
-    return this.router.navigate(['/login'], navigationParams);
+    return this.router.navigate(['login'], navigationParams);
   }
 
    /**

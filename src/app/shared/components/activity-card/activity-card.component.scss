@@ -1,5 +1,6 @@
 .card {
-  margin-top: 20px;
+  margin-top: 0px;
+  margin-bottom: 32px;
   max-height: 120px;
   height: 120px;
   background-size: cover;
@@ -7,12 +8,10 @@
   background-position: center;
   background-blend-mode: soft-light;
   background-color: transparent;
+  box-shadow: -3px 3px 4px rgba(0, 0, 0, 0.21);
   .activity-name {
     font-size: 18px;
     font-weight: bold;
-  }
-  &:last-child {
-    margin-bottom: 5px;
   }
 }
 .locked-card {
@@ -28,4 +27,18 @@
 
 .loading-card {
   background-color: #ddd !important;
+}
+
+.highlighted {
+  -webkit-animation: glow 800ms ease-out infinite alternate;
+  animation: glow 800ms ease-out infinite alternate;
+}
+
+@keyframes glow {
+    0% {
+      box-shadow: 0 0 5px rgba(0,255,0,.2), inset 0 0 5px rgba(0,255,0,.1), 0 2px 0 var(--ion-color-primary);
+    }
+    100% {
+      box-shadow: 0 0 20px rgba(0,255,0,.6), inset 0 0 10px rgba(0,255,0, 1), 0 2px 0 var(--ion-color-primary);
+    }
 }

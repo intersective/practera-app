@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, NgZone } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { AchievementsService, Achievement } from './achievements.service';
 import { UtilsService } from '@services/utils.service';
@@ -13,35 +13,25 @@ export class AchievementsComponent extends RouterEnter {
   routeUrl = '/achievements';
   achievements: Array<Achievement>;
   loadingAchievements = true;
-  totalEarnedPoints: number;
 
   constructor (
     public router: Router,
-    private achievementService: AchievementsService,
-    public utils: UtilsService
+    public achievementService: AchievementsService,
+    public utils: UtilsService,
+    private ngZone: NgZone
   ) {
     super(router);
   }
 
   onEnter() {
+    this.loadingAchievements = true;
     this.achievementService.getAchievements().subscribe(achievements => {
       this.achievements = achievements;
       this.loadingAchievements = false;
-      this.countTotalEarnedPoints();
     });
   }
 
   back() {
-    this.router.navigate(['app', 'home']);
+    return this.ngZone.run(() => this.router.navigate(['app', 'home']));
   }
-
-  countTotalEarnedPoints() {
-    this.totalEarnedPoints = 0;
-    this.achievements.forEach(achievement => {
-      if (achievement.isEarned && achievement.points > 0) {
-        this.totalEarnedPoints += achievement.points;
-      }
-    });
-  }
-
 }
