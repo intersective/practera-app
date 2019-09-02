@@ -418,7 +418,7 @@ fdescribe('AssessmentService', () => {
         data: [{
           AssessmentSubmission: {
             id: 1,
-            status: 'in progress',
+            status: 'pending approval',
             modified: '2019-02-02',
             is_locked: false
           },
@@ -454,6 +454,43 @@ fdescribe('AssessmentService', () => {
               assessment_question_id: 6,
               answer: ['2','3','4']
             }
+          ],
+          AssessmentReview: [{
+            id: 2,
+            status: 'done',
+            modified: '2019-02-02',
+          }],
+          AssessmentReviewAnswer: [
+            {
+              assessment_question_id: 1,
+              answer: '',
+              comment: ''
+            },
+            {
+              assessment_question_id: 2,
+              answer: '',
+              comment: ''
+            },
+            {
+              assessment_question_id: 3,
+              answer: '123',
+              comment: ''
+            },
+            {
+              assessment_question_id: 4,
+              answer: '',
+              comment: ''
+            },
+            {
+              assessment_question_id: 5,
+              answer: '[1,2,3]',
+              comment: ''
+            },
+            {
+              assessment_question_id: 6,
+              answer: ['2','3','4'],
+              comment: ''
+            }
           ]
         }]
       };
@@ -488,7 +525,37 @@ fdescribe('AssessmentService', () => {
           submitterImage: submission.Submitter.image,
           reviewerName: submission.Reviewer.name
         },
-        review: {}
+        review: {
+          id: submission.AssessmentReview[0].id,
+          status: submission.AssessmentReview[0].status,
+          modified: submission.AssessmentReview[0].modified,
+          answers: {
+            1: {
+              answer: '',
+              comment: ''
+            },
+            2: {
+              answer: null,
+              comment: ''
+            },
+            3: {
+              answer: 123,
+              comment: ''
+            },
+            4: {
+              answer: [],
+              comment: ''
+            },
+            5: {
+              answer: [1,2,3],
+              comment: ''
+            },
+            6: {
+              answer: [2,3,4],
+              comment: ''
+            }
+          }
+        }
       }
       service.questions = {
         1: {
@@ -582,9 +649,19 @@ fdescribe('AssessmentService', () => {
       expect(requestSpy.apiResponseFormatError.calls.count()).toBe(1);
     });
 
-    it('should get correct submission data', () => {
+    it('should throw AssessmentReviewAnswer format error, if data format not match', () => {
+      const tmpRes = JSON.parse(JSON.stringify(requestResponse));
+      tmpRes.data[0].AssessmentSubmission.status = 'published'
+      tmpRes.data[0].AssessmentReviewAnswer[0] = {};
+      requestSpy.get.and.returnValue(of(tmpRes));
+      service.getSubmission(1, 2, 'review').subscribe();
+      expect(requestSpy.apiResponseFormatError.calls.count()).toBe(1);
+      expect(requestSpy.apiResponseFormatError.calls.first().args[0]).toBe('AssessmentReviewAnswer format error');
+    });
+
+    it('should get correct submission & review data', () => {
       requestSpy.get.and.returnValue(of(requestResponse));
-      service.getSubmission(1, 2, 'assessment').subscribe(
+      service.getSubmission(1, 2, 'review').subscribe(
         res => expect(res).toEqual(expected)
       );
       expect(requestSpy.get.calls.count()).toBe(1);
@@ -605,6 +682,128 @@ fdescribe('AssessmentService', () => {
         }
       );
       expect(requestSpy.get.calls.count()).toBe(1);
+    });
+
+    it('should get correct submission data without review', () => {
+      const tmpRes = JSON.parse(JSON.stringify(requestResponse));
+      tmpRes.data[0].AssessmentReview = {};
+      const tmpExp = JSON.parse(JSON.stringify(expected));
+      tmpExp.review = {};
+      requestSpy.get.and.returnValue(of(tmpRes));
+      service.getSubmission(1, 2, 'assessment').subscribe(
+        res => expect(res).toEqual(tmpExp)
+      );
+      expect(requestSpy.get.calls.count()).toBe(1);
+    });
+  });
+
+  describe('when testing saveAnswers()', () => {
+    const assessment = {assessment: true};
+    const answers = {answers: true};
+    beforeEach(() => {
+      requestSpy.post.and.returnValue(of(true));
+    });
+
+    it('should save assessment answers correctly', () => {
+      service.saveAnswers(assessment, answers, 'assessment').subscribe();
+      expect(requestSpy.post.calls.count()).toBe(1);
+      expect(requestSpy.post.calls.first().args[1]).toEqual({
+        Assessment: assessment,
+        AssessmentSubmissionAnswer: answers
+      });
+    });
+
+    it('should save assessment answers correctly with submission id', () => {
+      service.saveAnswers(assessment, answers, 'assessment', 1).subscribe();
+      expect(requestSpy.post.calls.count()).toBe(1);
+      expect(requestSpy.post.calls.first().args[1]).toEqual({
+        Assessment: assessment,
+        AssessmentSubmissionAnswer: answers,
+        AssessmentSubmission: {id: 1}
+      });
+    });
+
+    it('should save review answers correctly', () => {
+      service.saveAnswers(assessment, answers, 'review').subscribe();
+      expect(requestSpy.post.calls.count()).toBe(1);
+      expect(requestSpy.post.calls.first().args[1]).toEqual({
+        Assessment: assessment,
+        AssessmentReviewAnswer: answers
+      });
+    });
+
+    it('should return success false if action not correct', () => {
+      service.saveAnswers(assessment, answers, 'incorrect').subscribe(res => expect(res.success).toBe(false));
+      expect(requestSpy.post.calls.count()).toBe(0);
+    });
+  });
+
+  describe('when testing getFeedbackReviewed()', () => {
+    it('should return correct feedback reviewed status #1', () => {
+      requestSpy.get.and.returnValue(of({
+        success: true,
+        data: [{is_done: true}]
+      }));
+      service.getFeedbackReviewed(1).subscribe(res => expect(res).toBe(true));
+      expect(requestSpy.get.calls.count()).toBe(1);
+    });
+    it('should return correct feedback reviewed status #2', () => {
+      requestSpy.get.and.returnValue(of({
+        success: true,
+        data: [{is_done: false}]
+      }));
+      service.getFeedbackReviewed(1).subscribe(res => expect(res).toBe(false));
+      expect(requestSpy.get.calls.count()).toBe(1);
+    });
+    it('should return false if response.success is false', () => {
+      requestSpy.get.and.returnValue(of({
+        success: false,
+        data: [{is_done: true}]
+      }));
+      service.getFeedbackReviewed(1).subscribe(res => expect(res).toBe(false));
+      expect(requestSpy.get.calls.count()).toBe(1);
+    });
+    it('should throw error if data format incorrect', () => {
+      requestSpy.get.and.returnValue(of({
+        success: true,
+        data: [{}]
+      }));
+      service.getFeedbackReviewed(1).subscribe();
+      expect(requestSpy.get.calls.count()).toBe(1);
+      expect(requestSpy.apiResponseFormatError.calls.count()).toBe(1);
+      expect(requestSpy.apiResponseFormatError.calls.first().args[0]).toEqual('TodoItem format error');
+    });
+  });
+
+  describe('when testing saveFeedbackReviewed()', () => {
+    it('should post correct data', () => {
+      service.saveFeedbackReviewed(11);
+      expect(requestSpy.post.calls.count()).toBe(1);
+      expect(requestSpy.post.calls.first().args[1]).toEqual({
+        project_id: 1,
+        identifier: 'AssessmentSubmission-11',
+        is_done: true
+      });
+    });
+  });
+
+  describe('when testing popUpReviewRating()', () => {
+    it('should pass the correct data to notification modal', () => {
+      service.popUpReviewRating(1, 'home');
+      expect(notificationSpy.modal.calls.count()).toBe(1);
+      expect(notificationSpy.modal.calls.first().args[1]).toEqual({
+        reviewId: 1,
+        redirect: 'home'
+      });
+    });
+  });
+
+  describe('when testing checkReviewer()', () => {
+    it('should return undefined if no reviewer passed in', () => {
+      expect(service.checkReviewer(null)).toEqual(undefined);
+    });
+    it('should return undefined if reviewer is the current person', () => {
+      expect(service.checkReviewer({name: 'Test'})).toEqual(undefined);
     });
   });
 
