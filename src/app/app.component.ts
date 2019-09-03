@@ -38,8 +38,14 @@ export class AppComponent implements OnInit {
     });
   }
 
+  private configVerification(): void {
+    if (this.storage.getConfig('fastFeedbackOpening')) { // set default modal status
+      this.storage.set('fastFeedbackOpening', false);
+    }
+  }
+
   ngOnInit() {
-    // do the same thing on every page load
+    this.configVerification();
     this.sharedService.onPageLoad();
 
     // @TODO: need to build a new micro service to get the config and serve the custom branding config from a microservice
