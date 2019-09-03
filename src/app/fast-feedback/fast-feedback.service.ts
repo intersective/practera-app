@@ -63,7 +63,7 @@ export class FastFeedbackService {
   ): Promise<HTMLIonModalElement | void> {
     if (modalOnly) {
       return this.notificationService.modalOnly(FastFeedbackComponent, props, {
-        backdropDismiss: false,
+        backdropDismiss: true,
         showBackdrop: false,
       });
     }
