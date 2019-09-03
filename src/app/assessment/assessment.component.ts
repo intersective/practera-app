@@ -40,6 +40,7 @@ export class AssessmentComponent extends RouterEnter {
     isOverdue: false,
     groups: []
   };
+
   submission: Submission = {
     id: 0,
     status: '',
@@ -389,7 +390,13 @@ export class AssessmentComponent extends RouterEnter {
 
     // check if user has new fastFeedback request
     try {
-      await this.fastFeedbackService.pullFastFeedback().toPromise();
+      const modal = await this.fastFeedbackService.pullFastFeedback({ modalOnly: true });
+      // const presentedModal = await modal.present();
+      // presentedModal.onDidDismiss(() => {
+      //   console.log('onDidDismiss');
+      //   console.log(arguments);
+      // });
+      // const modal = await modal.present();
     } catch (err) {
       const toasted = await this.notificationService.alert({
         header: 'Error retrieving pulse check data',

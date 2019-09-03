@@ -39,7 +39,7 @@ export class AppComponent implements OnInit {
   }
 
   private configVerification(): void {
-    if (this.storage.getConfig('fastFeedbackOpening')) { // set default modal status
+    if (this.storage.get('fastFeedbackOpening')) { // set default modal status
       this.storage.set('fastFeedbackOpening', false);
     }
   }
