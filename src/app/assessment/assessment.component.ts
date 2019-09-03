@@ -1,6 +1,6 @@
 import { Component, Input, NgZone } from '@angular/core';
 import { Router, ActivatedRoute, ParamMap } from '@angular/router';
-import { AssessmentService, Assessment, Submission, Review } from './assessment.service';
+import { AssessmentService, Assessment, Submission, Review, AssessmentSubmission } from './assessment.service';
 import { UtilsService } from '../services/utils.service';
 import { NotificationService } from '@shared/notification/notification.service';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
@@ -281,7 +281,7 @@ export class AssessmentComponent extends RouterEnter {
     return this.navigate(['app', 'home']);
   }
 
-  back(): Promise<boolean> {
+  back(): Promise<boolean | void> {
     if (this.action === 'assessment'
       && this.submission.status === 'published'
       && !this.feedbackReviewed) {
@@ -355,7 +355,7 @@ export class AssessmentComponent extends RouterEnter {
       this.isRedirectingToNextMilestoneTask = true;
     }
 
-    let route: string[] = ['app', 'project'];
+    let route: Array<string | number> = ['app', 'project'];
     let navigationParams: any;
     const { activity, nextTask } = await this.getNextSequence();
 
@@ -405,6 +405,14 @@ export class AssessmentComponent extends RouterEnter {
    */
   private async pullFeedbackAndShowNext(): Promise<boolean> {
     this.submitting = 'Retrieving new task...';
+
+    // only when activityId availabe (reviewer screen dont have it)
+    if (this.activityId) {
+      await this.notificationService.customToast({
+        message: 'Submission successful! Please proceed to the next learning task'
+      });
+    }
+
     // check if user has new fastFeedback request
     try {
       await this.fastFeedbackService.pullFastFeedback().toPromise();
@@ -415,13 +423,6 @@ export class AssessmentComponent extends RouterEnter {
       });
       this.submitting = false;
       throw new Error(err);
-    }
-
-    // only when activityId availabe (reviewer screen dont have it)
-    if (this.activityId) {
-      await this.notificationService.customToast({
-        message: 'Submission successful! Please proceed to the next learning task'
-      });
     }
 
     const nextTask = await this.redirectToNextMilestoneTask();
@@ -444,14 +445,7 @@ export class AssessmentComponent extends RouterEnter {
 
     const answers = [];
     let questionId = 0;
-    let assessment: {
-      id: number;
-      in_progress: boolean;
-      context_id?: number;
-      review_id?: number;
-      submission_id?: number;
-      unlock?: boolean;
-    };
+    let assessment: AssessmentSubmission;
 
     assessment = {
       id: this.id,
@@ -524,8 +518,13 @@ export class AssessmentComponent extends RouterEnter {
     }
 
     // save the submission/feedback
-    this.saveAnswers = this.assessmentService.saveAnswers(assessment, answers, this.action, this.submission.id).subscribe(
-      result => {
+    this.saveAnswers = this.assessmentService.saveAnswers(
+      assessment,
+      answers,
+      this.action,
+      this.submission.id
+    ).subscribe(
+      (result: any) => {
         this.savingButtonDisabled = false;
         if (saveInProgress) {
           this.submitting = false;
@@ -535,7 +534,7 @@ export class AssessmentComponent extends RouterEnter {
           return this.pullFeedbackAndShowNext();
         }
       },
-      err => {
+      (err: {msg: string}) => {
         this.submitting = false;
         this.savingButtonDisabled = false;
         if (saveInProgress) {
