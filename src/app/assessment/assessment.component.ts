@@ -10,7 +10,6 @@ import { SharedService } from '@services/shared.service';
 import { ActivityService, OverviewActivity, OverviewTask } from '../activity/activity.service';
 import { FastFeedbackService } from '../fast-feedback/fast-feedback.service';
 import { interval, timer } from 'rxjs';
-import { map, takeUntil } from 'rxjs/operators';
 
 const SAVE_PROGRESS_TIMEOUT = 10000;
 
@@ -146,6 +145,8 @@ export class AssessmentComponent extends RouterEnter {
     this.contextId = +this.route.snapshot.paramMap.get('contextId');
     this.submissionId = +this.route.snapshot.paramMap.get('submissionId');
 
+    this.notificationService.
+
     // get assessment structure and populate the question form
     this.assessmentService.getAssessment(this.id, this.action)
       .subscribe(assessment => {
@@ -171,6 +172,7 @@ export class AssessmentComponent extends RouterEnter {
         }
         this.loadingAssessment = false;
         this._getSubmission();
+        this.notificationService.loading();
       });
   }
 
@@ -256,7 +258,7 @@ export class AssessmentComponent extends RouterEnter {
     return this.navigate(['app', 'home']);
   }
 
-  back() {
+  back(): Promise<boolean> {
     if (this.action === 'assessment'
       && this.submission.status === 'published'
       && !this.feedbackReviewed) {
@@ -330,24 +332,8 @@ export class AssessmentComponent extends RouterEnter {
       this.isRedirectingToNextMilestoneTask = true;
     }
 
-    // redirection for reviewer (this.activityId is 0)
-    if (!this.activityId && this.activityId === 0) {
-      return this.notificationService.alert({
-        message: 'Submission Successful!',
-        buttons: [
-          {
-            text: 'OK',
-            role: 'cancel',
-            handler: () => {
-              return this.navigate(['app', 'home']);
-            }
-          }
-        ]
-      });
-    }
-
-    let route: any = ['app', 'project'];
-    let navigationParams;
+    let route: string[] = ['app', 'project'];
+    let navigationParams: any;
     const { activity, nextTask } = await this.getNextSequence();
 
     // to next incompleted task in current activity
@@ -425,7 +411,6 @@ export class AssessmentComponent extends RouterEnter {
    * @param {boolean} saveInProgress set true for autosaving or it treat the action as final submision
    */
   async submit(saveInProgress: boolean, goBack?: boolean): Promise<any> {
-
     if (saveInProgress) {
       this.savingMessage = 'Saving...';
       this.savingButtonDisabled = true;
