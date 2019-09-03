@@ -1,6 +1,6 @@
 .card {
-  margin-top: 0px;
-  margin-bottom: 32px;
+  margin-top: 16px;
+  margin-bottom: 16px;
   max-height: 120px;
   height: 120px;
   background-size: cover;
@@ -12,6 +12,15 @@
   .activity-name {
     font-size: 18px;
     font-weight: bold;
+  }
+  ion-card-content {
+    max-height: 120px;
+    height: 120px;
+    width: 100%;
+    padding-top: 12px;
+    padding-bottom: 12px;
+    padding-left: 16px;
+    padding-right: 16px;
   }
 }
 .locked-card {
