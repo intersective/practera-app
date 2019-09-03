@@ -96,14 +96,6 @@ export class ProjectComponent {
     this.loadingActivity = true;
     this.loadingMilestone = true;
     this.loadingProgress = true;
-    this.test();
-  }
-
-  async test() {
-    // this.fastFeedbackService.pullFastFeedback().subscribe();
-    const modal = await this.fastFeedbackService.pullFastFeedback().toPromise();
-    const presented = modal.present();
-    const { data } = await modal.onWillDismiss();
   }
 
   trackScrolling(event) {

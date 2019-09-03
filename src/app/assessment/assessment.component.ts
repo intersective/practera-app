@@ -416,13 +416,9 @@ export class AssessmentComponent extends RouterEnter {
 
     // check if user has new fastFeedback request
     try {
-      const modal = await this.fastFeedbackService.pullFastFeedback({ modalOnly: true });
-      // const presentedModal = await modal.present();
-      // presentedModal.onDidDismiss(() => {
-      //   console.log('onDidDismiss');
-      //   console.log(arguments);
-      // });
-      // const modal = await modal.present();
+      const modal = await this.fastFeedbackService.pullFastFeedback({ modalOnly: true }).toPromise();
+      const presentedModal = await modal.present();
+      await modal.onDidDismiss();
     } catch (err) {
       const toasted = await this.notificationService.alert({
         header: 'Error retrieving pulse check data',
