@@ -53,17 +53,19 @@ export class NotificationService {
     return modal;
   }
 
-  async modal(component, componentProps,  options?, event?): Promise<void> {
+  async modal(component, componentProps, options?, event?): Promise<void> {
+    const modal = await this.modalOnly(component, componentProps, options, event);
+    return modal.present();
+  }
+
+  async modalOnly(component, componentProps, options?, event?): Promise<HTMLIonModalElement> {
     const modal = await this.modalController.create(this.modalConfig({ component, componentProps }, options));
+
     if (event) {
-      modal.onDidDismiss()
-      // tslint:disable-next-line:no-shadowed-variable
-      .then((data) => {
-        event(data);
-      });
+      modal.onDidDismiss().then(event);
     }
 
-    return modal.present();
+    return modal;
   }
 
   async alert(config: AlertOptions) {
