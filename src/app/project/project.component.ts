@@ -93,14 +93,7 @@ export class ProjectComponent extends RouterEnter {
           });
       });
 
-    this.test();
-  }
-
-  async test() {
-    // this.fastFeedbackService.pullFastFeedback().subscribe();
-    const modal = await this.fastFeedbackService.pullFastFeedback().toPromise();
-    const presented = modal.present();
-    const { data } = await modal.onWillDismiss();
+    this.fastFeedbackService.pullFastFeedback().subscribe();
   }
 
   trackScrolling(event) {
