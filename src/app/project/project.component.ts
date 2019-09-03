@@ -73,7 +73,7 @@ export class ProjectComponent {
           this.milestones = this._addActivitiesToEachMilestone(this.milestones, activities);
           this.loadingActivity = false;
 
-          this.projectProgresses = this.projectService.getProgress(this.milestones).subscribe(progresses => {
+          this.projectProgresses = this.projectService.getProgress().subscribe(progresses => {
             this.milestonePositions = this.milestoneRefs.map(milestoneRef => {
               return milestoneRef.nativeElement.offsetTop;
             });
@@ -96,6 +96,14 @@ export class ProjectComponent {
     this.loadingActivity = true;
     this.loadingMilestone = true;
     this.loadingProgress = true;
+    this.test();
+  }
+
+  async test() {
+    // this.fastFeedbackService.pullFastFeedback().subscribe();
+    const modal = await this.fastFeedbackService.pullFastFeedback().toPromise();
+    const presented = modal.present();
+    const { data } = await modal.onWillDismiss();
   }
 
   trackScrolling(event) {
