@@ -54,7 +54,10 @@ export class FastFeedbackService {
   /**
    * Pop up the fast feedback modal window
    */
-  async popUpFastFeedback(props: { questions?: Array<Question>, meta?: Meta } = {}) {
+  async popUpFastFeedback(props: {
+    questions?: Array<Question>;
+    meta?: Meta;
+  }) {
     const modal = await this.notificationService.modal(FastFeedbackComponent, props, {
       backdropDismiss: false,
       showBackdrop: false,
