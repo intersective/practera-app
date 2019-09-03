@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { ModalController, AlertController, ToastController } from '@ionic/angular';
-import { AlertOptions, ToastOptions, ModalOptions } from '@ionic/core';
+import { ModalController, AlertController, ToastController, LoadingController } from '@ionic/angular';
+import { AlertOptions, ToastOptions, ModalOptions, LoadingOptions } from '@ionic/core';
 import { PopUpComponent } from './pop-up/pop-up.component';
 import { AchievementPopUpComponent } from './achievement-pop-up/achievement-pop-up.component';
 import { LockTeamAssessmentPopUpComponent } from './lock-team-assessment-pop-up/lock-team-assessment-pop-up.component';
@@ -15,6 +15,7 @@ export class NotificationService {
     private modalController: ModalController,
     private alertController: AlertController,
     private toastController: ToastController,
+    private loadingController: LoadingController,
     public achievementService: AchievementsService,
   ) {}
 
@@ -146,5 +147,13 @@ export class NotificationService {
       event
     );
     return modal;
+  }
+
+  async loading(opts?: LoadingOptions): Promise<void> {
+    const loading = await this.loadingController.create(opts || {
+      spinner: 'dots',
+
+    });
+    return loading.present();
   }
 }
