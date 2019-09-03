@@ -145,8 +145,6 @@ export class AssessmentComponent extends RouterEnter {
     this.contextId = +this.route.snapshot.paramMap.get('contextId');
     this.submissionId = +this.route.snapshot.paramMap.get('submissionId');
 
-    this.notificationService.
-
     // get assessment structure and populate the question form
     this.assessmentService.getAssessment(this.id, this.action)
       .subscribe(assessment => {
@@ -172,7 +170,6 @@ export class AssessmentComponent extends RouterEnter {
         }
         this.loadingAssessment = false;
         this._getSubmission();
-        this.notificationService.loading();
       });
   }
 
