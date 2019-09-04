@@ -13,7 +13,7 @@
     padding-top: 3px;
     text-align: center;
     ion-icon {
-      padding-top: 3px;
+      padding-top: 4px;
     }
     .icon-lock {
       font-size: 32px;
@@ -41,16 +41,24 @@
   .project-card {
     width: 100%;
     .milestone {
+      padding-top: 16px;
       .milestone-lock {
         font-size: 32px;
         margin-right: 12px;
         margin-bottom: -5px;
+      }
+
+      &.lock {
+        padding-bottom: 16px;
       }
     }
     .milestone-description {
       color: var(--practera-label-color);
       line-height: 20px;
       font-size: 14px;
+      p {
+        background-color: black;
+      }
     }
     transition: border 0.5s, border-radius 0.5s;
     &.highlighted {
@@ -70,6 +78,10 @@
   margin-bottom: 10px;
   font-weight: 400;
   height: 39.67px;
+
+  &.no-desc {
+    margin-bottom: 14px;
+  }
 }
 .activity-list {
   background: transparent;
