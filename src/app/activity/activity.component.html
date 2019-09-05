@@ -19,7 +19,7 @@
     </ion-label>
   </div>
 
-  <ion-card class="practera-card">
+  <ion-card class="practera-card" id="tasks-card">
     <ion-list>
       <clickable-item
         *ngFor="let task of activity.tasks; let i = index"
@@ -92,7 +92,7 @@
         Events
       </ion-label>
     </div>
-    <ion-card class="practera-card">
+    <ion-card class="practera-card" id="events-card">
       <ion-list>
           <ng-container *ngFor="let event of events; let i = index">
               <clickable-item *ngIf="i < 2">
