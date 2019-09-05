@@ -38,17 +38,14 @@
         </ng-container>
 
         <ng-template #actualMilestoneTpl>
-          <div class="milestone ion-padding-top">
+          <div class="milestone" [ngClass]="{'lock': milestone.isLocked}">
             <div>
                 <ion-icon *ngIf="milestone.isLocked" name="lock" color="medium" class="icon-lock milestone-lock"></ion-icon>
-                <ion-text class="project-title">{{ milestone.name }}</ion-text>
+                <ion-text class="project-title" [ngClass]="{'no-desc': milestone.description}">{{ milestone.name }}</ion-text>
+                <app-description class="milestone-description" *ngIf="milestone.description" [content]="milestone.description"></app-description>
             </div>
 
-            <div class="milestone-description">
-              <app-description *ngIf="milestone.description" [content]="milestone.description"></app-description>
-            </div>
-
-            <div *ngIf="milestone.Activity" class="milestone-activities">
+            <div *ngIf="milestone.Activity && !milestone.isLocked" class="milestone-activities">
               <ion-list class="activity-list" color="light">
 
                 <ion-item class="activity-item" *ngFor="let activity of milestone.Activity" color="light">
