@@ -7,7 +7,6 @@ import { UtilsService } from '@services/utils.service';
 describe('ActivityService', () => {
   let service: ActivityService;
   let requestSpy: jasmine.SpyObj<RequestService>;
-  let utils: UtilsService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
