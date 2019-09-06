@@ -4,6 +4,7 @@ import { PopUpComponent } from './pop-up/pop-up.component';
 import { AchievementPopUpComponent } from './achievement-pop-up/achievement-pop-up.component';
 import { LockTeamAssessmentPopUpComponent } from './lock-team-assessment-pop-up/lock-team-assessment-pop-up.component';
 import { NotificationService } from './notification.service';
+import { CustomToastComponent } from './custom-toast/custom-toast.component';
 
 
 @NgModule({
@@ -16,17 +17,20 @@ import { NotificationService } from './notification.service';
   declarations: [
     PopUpComponent,
     AchievementPopUpComponent,
-    LockTeamAssessmentPopUpComponent
+    LockTeamAssessmentPopUpComponent,
+    CustomToastComponent
   ],
   exports: [
     PopUpComponent,
     AchievementPopUpComponent,
-    LockTeamAssessmentPopUpComponent
+    LockTeamAssessmentPopUpComponent,
+    CustomToastComponent
   ],
   entryComponents: [
     PopUpComponent,
     AchievementPopUpComponent,
-    LockTeamAssessmentPopUpComponent
+    LockTeamAssessmentPopUpComponent,
+    CustomToastComponent
   ]
 })
 
