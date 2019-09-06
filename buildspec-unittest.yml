@@ -10,7 +10,7 @@ phases:
       - echo "Nothing to pre_build"
   build:
     commands:
-      - ng build --configuration=stage
+      - ng build --configuration=$BUILD_CONFIG
       - ng test --karmaConfig=src/karma.conf.aws.js --no-watch
   post_build:
     commands:
