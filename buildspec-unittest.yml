@@ -1,0 +1,16 @@
+version: 2.0
+phases:
+  install:
+    commands:
+      - echo "Missing Libs" || ldd ./node_modules/puppeteer/.local-chromium/linux-549031/chrome-linux/chrome | grep not
+      - npm install
+  pre_build:
+    commands:
+      - echo "Nothing to pre_build"
+  build:
+    commands:
+      - ng build
+      - ng test --karmaConfig=src/karma.conf.aws.js --no-watch
+  post_build:
+    commands:
+      - printenv
