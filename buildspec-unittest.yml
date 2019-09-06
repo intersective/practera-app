@@ -14,4 +14,5 @@ phases:
       - ng test --karmaConfig=src/karma.conf.aws.js --no-watch
   post_build:
     commands:
+      - now=$(date -u +'%S-%M-%H-%d-%m-%Y') && aws s3 sync coverage/ s3://sydney-test-data/ui-automation/reports/appv2_coverage/coverage_$now
       - printenv
