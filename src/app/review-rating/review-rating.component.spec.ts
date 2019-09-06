@@ -3,8 +3,8 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { ReviewRatingComponent } from './review-rating.component';
 
 describe('ReviewRatingComponent', () => {
-  let component: ReviewRatingComponent;
-  let fixture: ComponentFixture<ReviewRatingComponent>;
+  // let component: ReviewRatingComponent;
+  // let fixture: ComponentFixture<ReviewRatingComponent>;
 
   beforeEach(async(() => {
     // TestBed.configureTestingModule({

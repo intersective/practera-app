@@ -6,8 +6,8 @@ import { SettingsComponent } from './settings.component';
 import { of } from 'rxjs';
 
 describe('SettingsComponent', () => {
-  let component: SettingsComponent;
-  let fixture: ComponentFixture<SettingsComponent>;
+  // let component: SettingsComponent;
+  // let fixture: ComponentFixture<SettingsComponent>;
 
   beforeEach(async(() => {
     // TestBed.configureTestingModule({
