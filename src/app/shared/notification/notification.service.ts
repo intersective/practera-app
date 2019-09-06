@@ -5,7 +5,13 @@ import { PopUpComponent } from './pop-up/pop-up.component';
 import { AchievementPopUpComponent } from './achievement-pop-up/achievement-pop-up.component';
 import { LockTeamAssessmentPopUpComponent } from './lock-team-assessment-pop-up/lock-team-assessment-pop-up.component';
 import { Achievement, AchievementsService } from '@app/achievements/achievements.service';
+import { CustomToastComponent } from './custom-toast/custom-toast.component';
 
+export interface CustomTostOptions {
+  message: string;
+  icon: string;
+  duration?: string;
+}
 @Injectable({
   providedIn: 'root'
 })
@@ -87,8 +93,27 @@ export class NotificationService {
     return toast.present();
   }
 
-  async customToast(options: ToastOptions) {
-    return this.presentToast('<ion-icon name="checkmark" class="icon"></ion-icon> ' + options.message, false, options.duration , { cssClass: 'practera-toast' });
+  async customToast(options: CustomTostOptions) {
+    const component = CustomToastComponent;
+    const icon = options.icon;
+    const message = options.message;
+    const duration = options.duration;
+    const componentProps = {
+      icon,
+      message,
+      duration
+    };
+    const modal = await this.modal(component, componentProps, {
+      cssClass: 'practera-toast',
+      keyboardClose: false,
+      backdropDismiss: false,
+      showBackdrop: false
+    });
+    return modal;
+    // if (options.icon === 'checkmark') {
+    //   options.message =  '<ion-icon name="checkmark"></ion-icon> ' + options.message;
+    // }
+    // return this.presentToast(options.message, false, options.duration , { cssClass: 'practera-toast' });
   }
 
   /**
