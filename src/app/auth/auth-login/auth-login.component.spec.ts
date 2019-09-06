@@ -10,9 +10,9 @@ import { AuthService } from '../auth.service';
 
 describe('Component: Login', () => {
 
-  let component: AuthLoginComponent;
-  let fixture: ComponentFixture<AuthLoginComponent>;
-  let authService: AuthService;
+  // let component: AuthLoginComponent;
+  // let fixture: ComponentFixture<AuthLoginComponent>;
+  // let authService: AuthService;
 
   // beforeEach(() => {
   //   TestBed.configureTestingModule({

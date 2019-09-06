@@ -4,8 +4,8 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { SwitcherProgramComponent } from './switcher-program.component';
 
 describe('SwitcherProgramComponent', () => {
-  let component: SwitcherProgramComponent;
-  let fixture: ComponentFixture<SwitcherProgramComponent>;
+  // let component: SwitcherProgramComponent;
+  // let fixture: ComponentFixture<SwitcherProgramComponent>;
 
   beforeEach(async(() => {
     // TestBed.configureTestingModule({
