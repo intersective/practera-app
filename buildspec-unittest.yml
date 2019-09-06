@@ -2,7 +2,6 @@ version: 2.0
 phases:
   install:
     commands:
-      - echo "Missing Libs" || ldd ./node_modules/puppeteer/.local-chromium/linux-549031/chrome-linux/chrome | grep not
       - npm install
   pre_build:
     commands:
