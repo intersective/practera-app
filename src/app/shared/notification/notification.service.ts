@@ -88,7 +88,7 @@ export class NotificationService {
   }
 
   async customToast(options: ToastOptions) {
-    return this.presentToast(options.message, false, options.duration , { cssClass: 'practera-toast' });
+    return this.presentToast('<ion-icon name="checkmark" class="icon"></ion-icon> ' + options.message, false, options.duration , { cssClass: 'practera-toast' });
   }
 
   /**
