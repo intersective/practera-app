@@ -3,9 +3,10 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { EventsComponent } from './events.component';
 import { EventsService } from './events.service';
 import { Observable, of, pipe } from 'rxjs';
-import { Router, ActivatedRoute, convertToParamMap } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { SharedModule } from '@shared/shared.module';
 import { UtilsService } from '@services/utils.service';
+import { ActivatedRouteStub } from '@testing/activated-route-stub';
 
 class Page {
   get eventItems() {
@@ -31,7 +32,7 @@ fdescribe('EventsComponent', () => {
   let page: Page;
   let eventsSpy: jasmine.SpyObj<EventsService>;
   let routerSpy: jasmine.SpyObj<Router>;
-  let routeStub: Partial<ActivatedRoute>;
+  let routeStub: ActivatedRouteStub;
   let utils: UtilsService;
 
   beforeEach(async(() => {
@@ -54,11 +55,7 @@ fdescribe('EventsComponent', () => {
         },
         {
           provide: ActivatedRoute,
-          useValue: {
-            snapshot: {
-              paramMap: convertToParamMap({ })
-            }
-          }
+          useValue: new ActivatedRouteStub({ activityId: null })
         }
       ],
     })
@@ -211,7 +208,17 @@ fdescribe('EventsComponent', () => {
     });
 
     it(`should get correct events grouped and filtered by activity`, () => {
-      // routeStub.snapshot.paramMap. = convertToParamMap({ id: 1 });
+      routeStub.setParamMap({ activityId: 1 });
+      expectedEvents = [
+        { // group 1
+          date: utils.utcToLocal(startTimes[0], 'date'),
+          events: [mockEvents[0]]
+        },
+        { // group 2
+          date: utils.utcToLocal(startTimes[2], 'date'),
+          events: [mockEvents[2]]
+        }
+      ]
     });
 
   });
