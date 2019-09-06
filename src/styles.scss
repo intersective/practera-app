@@ -276,10 +276,15 @@ body {
   --color:white;
   --border-radius: 12px;
   --box-shadow: 0 4px 16px rgba(0,0,0,.12);
+  font-size: 18px !important;
+  --min-height: 44px !important;
+  --height: 44px;
+  --width: 90%;
+  .modal-wrapper {
+    position: absolute;
+    top: 15px;
+  }
   .icon {
     font-size: 18px !important;
-  }
-  .toast-content {
-    background-color: red;
   }
 }
