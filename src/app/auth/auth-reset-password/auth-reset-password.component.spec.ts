@@ -3,8 +3,8 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { AuthResetPasswordComponent } from './auth-reset-password.component';
 
 describe('AuthResetPasswordComponent', () => {
-  let component: AuthResetPasswordComponent;
-  let fixture: ComponentFixture<AuthResetPasswordComponent>;
+  // let component: AuthResetPasswordComponent;
+  // let fixture: ComponentFixture<AuthResetPasswordComponent>;
 
   // beforeEach(async(() => {
   //   TestBed.configureTestingModule({

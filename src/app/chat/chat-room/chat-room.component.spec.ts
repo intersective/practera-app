@@ -7,8 +7,8 @@ import { ChatService } from '../chat.service';
 import { of } from 'rxjs';
 
 describe('ChatRoomComponent', () => {
-  let component: ChatRoomComponent;
-  let fixture: ComponentFixture<ChatRoomComponent>;
+  // let component: ChatRoomComponent;
+  // let fixture: ComponentFixture<ChatRoomComponent>;
 
   // beforeEach(async(() => {
   //   TestBed.configureTestingModule({
