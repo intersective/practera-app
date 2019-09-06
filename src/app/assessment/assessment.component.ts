@@ -137,7 +137,7 @@ export class AssessmentComponent extends RouterEnter {
   onEnter() {
     this._initialise();
     this.notificationService.customToast({
-      message: ' &#xf383 Assessment completed!'
+      message: 'Assessment completed!'
     });
     this.action = this.route.snapshot.data.action;
     this.fromPage = this.route.snapshot.paramMap.get('from');
