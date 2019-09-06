@@ -189,6 +189,7 @@ fdescribe('EventsComponent', () => {
     });
 
     it(`should get correct full events grouped and activities`, () => {
+      fixture.detectChanges();
       expect(eventsSpy.getActivities.calls.count()).toBe(1);
       expect(component.activities).toEqual(mockActivities);
     });
