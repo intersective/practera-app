@@ -86,7 +86,7 @@ describe('AchievementsService', () => {
         points: res.points,
         isEarned: res.isEarned,
         earnedDate: res.earnedDate
-      }
+      };
     });
 
     describe('should throw error', () => {
