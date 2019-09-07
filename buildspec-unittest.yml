@@ -1,8 +1,6 @@
 version: 0.2
 phases:
   install:
-    runtime-versions:
-      nodejs: 10
     commands:
       - npm install
   pre_build:
@@ -10,7 +8,7 @@ phases:
       - echo "Nothing to pre_build"
   build:
     commands:
-      - ng build
+      - ng build --configuration=$BUILD_CONFIG
       - ng test --karmaConfig=src/karma.conf.aws.js --no-watch
   post_build:
     commands:
