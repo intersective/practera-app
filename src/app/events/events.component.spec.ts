@@ -100,13 +100,13 @@ describe('EventsComponent', () => {
       canBook: true,
       isPast: false,
       assessment: null
-    }
+    };
   });
   const mockActivities = [1, 2, 3].map(i => {
     return {
       id: i,
       name: 'activity' + 1
-    }
+    };
   });
   let browse;
   let booked;
