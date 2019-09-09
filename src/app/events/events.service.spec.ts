@@ -5,9 +5,10 @@ import { RequestService } from '@shared/request/request.service';
 import { UtilsService } from '@services/utils.service';
 import { NotificationService } from '@shared/notification/notification.service';
 
-fdescribe('EventsService', () => {
+describe('EventsService', () => {
   let service: EventsService;
   let requestSpy: jasmine.SpyObj<RequestService>;
+  let notificationSpy: jasmine.SpyObj<NotificationService>;
   let utils: UtilsService;
 
   beforeEach(() => {
@@ -28,6 +29,7 @@ fdescribe('EventsService', () => {
     service = TestBed.get(EventsService);
     requestSpy = TestBed.get(RequestService);
     utils = TestBed.get(UtilsService);
+    notificationSpy = TestBed.get(NotificationService);
   });
 
   it('should be created', () => {
@@ -199,4 +201,8 @@ fdescribe('EventsService', () => {
     });
   });
 
+  it('when testing eventDetailPopUp(), it should pop up the modal', () => {
+    service.eventDetailPopUp(null);
+    expect(notificationSpy.modal.calls.count()).toBe(1);
+  });
 });
