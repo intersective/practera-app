@@ -26,7 +26,7 @@ class Page {
   }
 }
 
-fdescribe('EventsComponent', () => {
+describe('EventsComponent', () => {
   let component: EventsComponent;
   let fixture: ComponentFixture<EventsComponent>;
   let page: Page;
@@ -218,9 +218,39 @@ fdescribe('EventsComponent', () => {
           date: utils.utcToLocal(startTimes[2], 'date'),
           events: [mockEvents[2]]
         }
-      ]
+      ];
     });
 
+    it(`should get correct events grouped (browse) and filtered by activity`, () => {
+      routeStub.setParamMap({ activityId: 2 });
+      expectedEvents = [
+        { // group 1
+          date: utils.utcToLocal(startTimes[0], 'date'),
+          events: [mockEvents[1]]
+        }
+      ];
+      fixture.detectChanges();
+      component.showBrowse();
+    });
+
+    it(`should get correct events grouped (booked) and filtered by activity`, () => {
+      routeStub.setParamMap({ activityId: 2 });
+      expectedEvents = booked;
+      fixture.detectChanges();
+      component.showBooked();
+    });
+
+    it(`should get correct events grouped (attended) and filtered by activity`, () => {
+      routeStub.setParamMap({ activityId: 2 });
+      expectedEvents = attended;
+      fixture.detectChanges();
+      component.showAttended();
+    });
+  });
+
+  it('when testing back(), it should navigate to the correct page', () => {
+    component.back();
+    expect(routerSpy.navigate.calls.first().args[0]).toEqual(['app', 'home']);
   });
 
 });
