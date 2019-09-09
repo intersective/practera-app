@@ -12,5 +12,5 @@ phases:
       - ng test --karmaConfig=src/karma.conf.aws.js --no-watch
   post_build:
     commands:
-      - now=$(date -u +'%S-%M-%H-%d-%m-%Y') && aws s3 sync coverage/ s3://sydney-test-data/ui-automation/reports/appv2_coverage/coverage_$now
+      - export now=$(date -u +'%S-%M-%H-%d-%m-%Y') && aws s3 sync coverage/ $REPORT_PATH/coverage_$now && aws sns publish --topic-arn $NOTIFIER_TOPIC --message "practea-app-v2 tests completed for "$CODEBUILD_SOURCE_VERSION", the report is "$REPORT_URL"/coverage_$now/index.html"
       - printenv
