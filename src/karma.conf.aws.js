@@ -17,16 +17,9 @@ module.exports = function (config) {
             clearContext: false
         },
         coverageIstanbulReporter: {
-            dir: require('path').join(__dirname, '../coverage'),
             reports: ['html', 'lcovonly'],
             fixWebpackSourcePaths: true,
-            thresholds: {
-              statements: 80,
-              lines: 80,
-              branches: 80,
-              functions: 80
-            }
-          },
+        },
         htmlReporter: {
             outputFile: require('path').join(__dirname, '../tests/result.html'),
             pageTitle: 'Practera App V2 Unit Tests',
