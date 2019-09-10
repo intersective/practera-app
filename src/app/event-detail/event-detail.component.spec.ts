@@ -102,13 +102,13 @@ fdescribe('EventDetailComponent', () => {
 
   const mockEvent = {
     id: 1,
-    title: 'event',
+    name: 'event',
     description: 'des',
     location: 'location',
     activityId: 2,
     activityName: 'activity2',
-    start: testUtils.getDateString(-2, 0),
-    end: testUtils.getDateString(-2, 0),
+    startTime: testUtils.getDateString(-2, 0),
+    endTime: testUtils.getDateString(-2, 0),
     capacity: 10,
     remainingCapacity: 1,
     isBooked: false,
@@ -132,6 +132,20 @@ fdescribe('EventDetailComponent', () => {
       component.event = tmpEvent;
       fixture.detectChanges();
       expect(component.buttonText()).toEqual(expected);
+      expect(page.eventName.innerHTML).toEqual(tmpEvent.name);
+      expect(page.activityName.innerHTML).toEqual(tmpEvent.activityName);
+      if (expected === 'Expired') {
+        expect(page.expired).toBeTruthy();
+      } else {
+        expect(page.expired).toBeFalsy();
+      }
+      expect(page.date.innerHTML).toEqual(utils.utcToLocal(tmpEvent.startTime, 'date'));
+      expect(page.time.innerHTML).toEqual(`${utils.utcToLocal(tmpEvent.startTime, 'time')} - ${utils.utcToLocal(tmpEvent.endTime, 'time')}`);
+      expect(page.location.innerHTML).toEqual(tmpEvent.location);
+      expect(page.capacity.innerHTML).toEqual(`${tmpEvent.remainingCapacity} Seats Available Out of ${tmpEvent.capacity}`);
+      if (expected) {
+        expect(page.button.innerHTML.trim()).toEqual(expected);
+      }
     });
 
     it(`should return 'Expired' if the event is not booked and is past`, () => {
@@ -140,12 +154,51 @@ fdescribe('EventDetailComponent', () => {
       expected = 'Expired';
     });
 
-    it(`should return 'Booked' if the event is not booked and is past`, () => {
-      tmpEvent.isBooked = false;
+    describe(`should return 'Booked' if the event is not booked and is past`, () => {
+      beforeEach(() => {
+        tmpEvent.isBooked = false;
+        tmpEvent.isPast = false;
+        tmpEvent.remainingCapacity = 1;
+        tmpEvent.canBook = true;
+        expected = 'Book';
+      });
+
+      it(`should pop up alert if it is single booking`, () => {
+
+      });
+    });
+
+    it(`should return 'Cancel Booking' if the event is booked and is not started`, () => {
+      tmpEvent.isBooked = true;
       tmpEvent.isPast = false;
-      tmpEvent.remainingCapacity = 1;
-      tmpEvent.canBook = true;
-      expected = 'Book';
+      expected = 'Cancel Booking';
+    });
+
+    it(`should return false if the event is attended and there's no check in assessment`, () => {
+      tmpEvent.isBooked = true;
+      tmpEvent.isPast = true;
+      tmpEvent.assessment = null;
+      expected = false;
+    });
+
+    it(`should return 'View Check In' if the event's check in assessment is done`, () => {
+      tmpEvent.isBooked = true;
+      tmpEvent.isPast = true;
+      tmpEvent.assessment = {
+        id: 1,
+        isDone: true
+      };
+      expected = 'View Check In';
+    });
+
+    it(`should return false if the event is booked`, () => {
+      tmpEvent.isBooked = true;
+      tmpEvent.isPast = true;
+      tmpEvent.assessment = {
+        id: 1,
+        isDone: false
+      };
+      expected = 'Check In';
     });
   });
 
