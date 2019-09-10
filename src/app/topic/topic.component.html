@@ -55,7 +55,7 @@
       <ng-container *ngIf="!btnToggleTopicIsDone; else showAsCompleted">CONTINUE</ng-container>
       <ng-template #showAsCompleted>
         <ion-item lines="none" no-paddings color="primary">
-          <ion-icon slot="start" name="checkmark"></ion-icon>
+          <img slot="start" src="/assets/checkmark.svg" height="25">
           <ion-text>Continue</ion-text>
         </ion-item>
       </ng-template>
