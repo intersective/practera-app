@@ -1,5 +1,5 @@
 import { TopicService, Topic } from './topic.service';
-import { Component, OnInit, NgZone } from '@angular/core';
+import { Component, OnInit, NgZone, Input } from '@angular/core';
 import { EmbedVideoService } from 'ngx-embed-video';
 import { Router, ActivatedRoute } from '@angular/router';
 import { FilestackService } from '@shared/filestack/filestack.service';
@@ -17,6 +17,8 @@ import { Subscription, Observable } from 'rxjs';
   styleUrls: ['./topic.component.scss']
 })
 export class TopicComponent extends RouterEnter {
+  @Input() inputActivityId: number;
+  @Input() inputId: number;
   routeUrl = '/topic/';
   topic: Topic = {
     id: 0,
@@ -70,8 +72,16 @@ export class TopicComponent extends RouterEnter {
 
   onEnter() {
     this._initialise();
-    this.id = +this.route.snapshot.paramMap.get('id');
-    this.activityId = +this.route.snapshot.paramMap.get('activityId');
+    if (this.inputId) {
+      this.id = this.inputId;
+    } else {
+      this.id = +this.route.snapshot.paramMap.get('id');
+    }
+    if (this.inputActivityId) {
+      this.activityId = this.inputActivityId;
+    } else {
+      this.activityId = +this.route.snapshot.paramMap.get('activityId');
+    }
     this._getTopic();
     this._getTopicProgress();
     setTimeout(() => this.askForMarkAsDone = true, 15000);

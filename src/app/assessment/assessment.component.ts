@@ -20,7 +20,9 @@ const SAVE_PROGRESS_TIMEOUT = 10000;
   styleUrls: ['assessment.component.scss']
 })
 export class AssessmentComponent extends RouterEnter {
-
+  @Input() inputId: number;
+  @Input() inputActivityId: number;
+  @Input() inputContextId: number;
   routeUrl = '/assessment/';
   // assessment id
   id: number;
@@ -141,9 +143,21 @@ export class AssessmentComponent extends RouterEnter {
     if (!this.fromPage) {
       this.fromPage = this.route.snapshot.data.from;
     }
-    this.id = +this.route.snapshot.paramMap.get('id');
-    this.activityId = +this.route.snapshot.paramMap.get('activityId');
-    this.contextId = +this.route.snapshot.paramMap.get('contextId');
+    if (this.inputId) {
+      this.id = this.inputId;
+    } else {
+      this.id = +this.route.snapshot.paramMap.get('id');
+    }
+    if (this.inputActivityId) {
+      this.activityId = this.inputActivityId;
+    } else {
+      this.activityId = +this.route.snapshot.paramMap.get('activityId');
+    }
+    if (this.inputContextId) {
+      this.contextId = this.inputContextId;
+    } else {
+      this.contextId = +this.route.snapshot.paramMap.get('contextId');
+    }
     this.submissionId = +this.route.snapshot.paramMap.get('submissionId');
 
     // get assessment structure and populate the question form

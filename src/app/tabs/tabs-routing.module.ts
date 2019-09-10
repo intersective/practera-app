@@ -39,6 +39,15 @@ const routes: Routes = [
         ]
       },
       {
+        path: 'tasks',
+        children: [
+          {
+            path: '',
+            loadChildren: '../tasks/tasks.module#TasksModule'
+          }
+        ]
+      },
+      {
         path: 'reviews',
         children: [
           {
