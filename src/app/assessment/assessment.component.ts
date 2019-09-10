@@ -136,6 +136,10 @@ export class AssessmentComponent extends RouterEnter {
 
   onEnter() {
     this._initialise();
+    this.notificationService.customToast({
+      message: 'Assessment completed!',
+      icon: 'checkmark'
+    });
     this.action = this.route.snapshot.data.action;
     this.fromPage = this.route.snapshot.paramMap.get('from');
     if (!this.fromPage) {
@@ -396,7 +400,8 @@ export class AssessmentComponent extends RouterEnter {
     // only when activityId availabe (reviewer screen dont have it)
     if (this.activityId) {
       await this.notificationService.customToast({
-        message: 'Submission successful! Please proceed to the next learning task'
+        message: 'Submission successful! Please proceed to the next learning task',
+        icon: 'checkmark'
       });
     }
 
@@ -580,7 +585,8 @@ export class AssessmentComponent extends RouterEnter {
 
       // mark as read successful
       await this.notificationService.customToast({
-        message: 'Assessment completed! Please proceed to the next learning task.'
+        message: 'Assessment completed! Please proceed to the next learning task.',
+        icon: 'checkmark'
       });
 
       // step 1.2: after feedback marked as read, popup review rating screen

@@ -5,7 +5,13 @@ import { PopUpComponent } from './pop-up/pop-up.component';
 import { AchievementPopUpComponent } from './achievement-pop-up/achievement-pop-up.component';
 import { LockTeamAssessmentPopUpComponent } from './lock-team-assessment-pop-up/lock-team-assessment-pop-up.component';
 import { Achievement, AchievementsService } from '@app/achievements/achievements.service';
+import { CustomToastComponent } from './custom-toast/custom-toast.component';
 
+export interface CustomTostOptions {
+  message: string;
+  icon: string;
+  duration?: string;
+}
 @Injectable({
   providedIn: 'root'
 })
@@ -74,24 +80,43 @@ export class NotificationService {
   }
 
   // toast message pop up, by default, shown success message for 2 seconds.
-  async presentToast(message, success = true, duration?) {
-    let color = 'success';
-    if (!success) {
-      color = 'danger';
-    }
-    return this.customToast({
+  async presentToast(message, success = false, duration?, customOptions?: ToastOptions) {
+    let toastOptions: ToastOptions = {
       message: message,
-      duration: duration || 2000,
+      duration: duration || 200000,
       position: 'top',
-      color : color
-    });
+    };
+    console.log('customOptions', customOptions);
+    if (customOptions) {
+      toastOptions = Object.assign(customOptions, toastOptions);
+    } else {
+      toastOptions = Object.assign({color : success ? 'success' : 'danger'}, toastOptions);
+    }
+    const toast = await this.toastController.create(toastOptions);
+    return toast.present();
   }
 
-  async customToast(options: ToastOptions) {
-    const toast = await this.toastController.create(
-      Object.assign({ duration: 2000 }, options)
-    );
-    return toast.present();
+  async customToast(options: CustomTostOptions) {
+    const component = CustomToastComponent;
+    const icon = options.icon;
+    const message = options.message;
+    const duration = options.duration;
+    const componentProps = {
+      icon,
+      message,
+      duration
+    };
+    const modal = await this.modal(component, componentProps, {
+      cssClass: 'practera-toast',
+      keyboardClose: false,
+      backdropDismiss: false,
+      showBackdrop: false
+    });
+    return modal;
+    // if (options.icon === 'checkmark') {
+    //   options.message =  '<ion-icon name="checkmark"></ion-icon> ' + options.message;
+    // }
+    // return this.presentToast(options.message, false, options.duration , { cssClass: 'practera-toast' });
   }
 
   /**
