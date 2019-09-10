@@ -7,7 +7,6 @@ import { SwitcherService } from '../switcher/switcher.service';
 import { ReviewsService } from '../reviews/reviews.service';
 import { Router } from '@angular/router';
 import { SharedService } from '@services/shared.service';
-import { Platform } from '@ionic/angular';
 
 @Component({
   selector: 'app-tabs',
@@ -30,7 +29,6 @@ export class TabsComponent extends RouterEnter {
     private switcherService: SwitcherService,
     private reviewsService: ReviewsService,
     private sharedService: SharedService,
-    public platform: Platform
   ) {
     super(router);
 

@@ -1,4 +1,4 @@
-<ion-header mode="ios">
+<ion-header mode="ios" [ngClass]="{'ion-toolbar-absolute': !utils.isMobile()}">
   <ion-toolbar color="light">
     <ion-icon name="arrow-back" (click)="back()" color="primary" slot="start" margin-start></ion-icon>
     <ion-title text-center>Topic</ion-title>
@@ -41,7 +41,7 @@
   </div>
 </ion-content>
 
-<ion-footer color="light">
+<ion-footer color="light" [ngClass]="{'ion-footer-absolute': !utils.isMobile()}">
   <ion-toolbar>
     <ion-spinner style="width: 100%;"
       *ngIf="loadingMarkedDone || loadingTopic"

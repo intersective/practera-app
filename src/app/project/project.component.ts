@@ -8,6 +8,7 @@ import { UtilsService } from '@services/utils.service';
 import { SharedService } from '@services/shared.service';
 import { FastFeedbackService } from '../fast-feedback/fast-feedback.service';
 import { Subscription } from 'rxjs';
+import { Platform } from '@ionic/angular';
 
 @Component({
   selector: 'app-project',
@@ -35,7 +36,8 @@ export class ProjectComponent extends RouterEnter {
     private projectService: ProjectService,
     private homeService: HomeService,
     private sharedService: SharedService,
-    public fastFeedbackService: FastFeedbackService
+    public fastFeedbackService: FastFeedbackService,
+    private platform: Platform
    ) {
     super(router);
   }
@@ -134,7 +136,11 @@ export class ProjectComponent extends RouterEnter {
   }
 
   goToActivity(id) {
-    this.router.navigate(['app', 'activity', id]);
+    if (this.utils.isMobile()) {
+      this.router.navigate(['app', 'activity', id]);
+    } else {
+      this.router.navigate(['app', 'tasks', id]);
+    }
   }
 
   private _addActivitiesToEachMilestone(milestones, activities) {
