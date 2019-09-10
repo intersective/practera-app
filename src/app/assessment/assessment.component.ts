@@ -156,10 +156,7 @@ export class AssessmentComponent extends RouterEnter {
 
   onEnter() {
     this._initialise();
-    this.notificationService.customToast({
-      message: 'Assessment completed!',
-      icon: 'checkmark'
-    });
+
     this.action = this.route.snapshot.data.action;
     this.fromPage = this.route.snapshot.paramMap.get('from');
     if (!this.fromPage) {
@@ -396,6 +393,7 @@ export class AssessmentComponent extends RouterEnter {
       }
     }
 
+    // submitting is true, when awaiting submission response
     if (this.submitting) {
       this.submitting = 'redirecting';
       return setTimeout(

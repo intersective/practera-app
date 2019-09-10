@@ -38,6 +38,7 @@ export class TopicComponent extends RouterEnter {
   askForMarkAsDone: boolean;
   topicProgressSubscription: Subscription;
   topicSubscription: Subscription;
+  redirecting = false;
 
   constructor(
     private topicService: TopicService,
@@ -127,7 +128,7 @@ export class TopicComponent extends RouterEnter {
 
   /**
    * continue (mark as read) button
-   * @description button action to trigger `nextStepPrompt`
+   * @description button action to trigger `redirectToNextMilestoneTask`
    */
   async continue(): Promise<any> {
     this.loadingTopic = true;
@@ -149,9 +150,16 @@ export class TopicComponent extends RouterEnter {
       throw new Error(err);
     }
 
-    const navigation = await this.nextStepPrompt();
-    this.loadingTopic = false;
-    return navigation;
+    this.redirecting = true;
+    return setTimeout(
+      async () => {
+        const navigation = await this.redirectToNextMilestoneTask();
+        this.redirecting = false;
+        this.loadingTopic = false;
+        return navigation;
+      },
+      2000
+    );
   }
 
   /**
@@ -258,7 +266,6 @@ export class TopicComponent extends RouterEnter {
     }
 
     await this.navigate(route);
-    this.isRedirectingToNextMilestoneTask = false;
     return;
   }
 
@@ -267,14 +274,6 @@ export class TopicComponent extends RouterEnter {
     return this.ngZone.run(() => {
       return this.router.navigate(direction);
     });
-  }
-
-  /**
-   * @name nextStepPrompt
-   * @description
-   */
-  async nextStepPrompt(): Promise<any> {
-    return this.redirectToNextMilestoneTask();
   }
 
   back() {
