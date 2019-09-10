@@ -189,7 +189,7 @@ export class ActivityService {
     return currentActivity;
   }
 
-  private normaliseOverview(rawResponse: Overview): Overview {
+  private _normaliseOverview(rawResponse: Overview): Overview {
     const milestones = rawResponse.Milestones;
 
     // make sure every activity is available
@@ -332,7 +332,8 @@ export class ActivityService {
 
       if (!this.utils.has(sequence, 'model') || !this.utils.has(sequence, sequence.model)) {
         this.request.apiResponseFormatError('Activity.ActivitySequence format error');
-        throw new Error('Activity.ActivitySequence format error');
+        return {};
+        // throw new Error('Activity.ActivitySequence format error');
       }
 
       switch (sequence.model) {
@@ -680,6 +681,6 @@ export class ActivityService {
   public getOverview(projectId: number): Observable<Overview> {
     return this.request.get(api.projectOverview, {
       params: { id: projectId }
-    }).pipe(map(res => this.normaliseOverview(res.data)));
+    }).pipe(map(res => this._normaliseOverview(res.data)));
   }
 }
