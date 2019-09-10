@@ -28,7 +28,8 @@ import { ActivityModule } from '../activity/activity.module';
     CommonModule,
     FormsModule,
     FilestackModule,
-    ActivityModule
+    ActivityModule,
+    TopicComponent
   ]
 })
 export class TopicModule {}

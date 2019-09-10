@@ -2,6 +2,22 @@ body {
   background-color: #c7cbe1;
 }
 
+// used for desktop view
+.ion-header-absolute {
+  height: 60px;
+  position: absolute;
+}
+.ion-content-absolute {
+  position: absolute;
+  top: 60px;
+  z-index: 20;
+}
+.ion-footer-absolute {
+  position: absolute;
+  bottom: 0;
+  z-index: 30;
+}
+
 #mainContainer {
   // position: absolute;
   // top: 0;

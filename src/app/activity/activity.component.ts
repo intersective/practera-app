@@ -1,4 +1,4 @@
-import { Component, Input, NgZone } from '@angular/core';
+import { Component, Input, NgZone, Output, EventEmitter } from '@angular/core';
 import { Router, ActivatedRoute, ParamMap } from '@angular/router';
 import { Observable, of, forkJoin } from 'rxjs';
 import { catchError } from 'rxjs/operators';
@@ -17,7 +17,8 @@ import { FastFeedbackService } from '../fast-feedback/fast-feedback.service';
   styleUrls: ['./activity.component.scss']
 })
 export class ActivityComponent extends RouterEnter {
-
+  @Input() activityId: number;
+  @Output() navigate = new EventEmitter();
   routeUrl = '/app/activity';
   id: number;
   activity: Activity = {
@@ -50,10 +51,33 @@ export class ActivityComponent extends RouterEnter {
   }
 
   // force every navigation happen under radar of angular
-  private navigate(direction): Promise<boolean> {
-    return this.ngZone.run(() => {
-      return this.router.navigate(direction);
-    });
+  private _navigate(direction) {
+    if (this.utils.isMobile()) {
+      return this.ngZone.run(() => {
+        return this.router.navigate(direction);
+      });
+    } else {
+      switch (direction[0]) {
+        case 'topic':
+          this.navigate.emit({
+            type: 'topic',
+            topicId: direction[2]
+          });
+          break;
+        case 'assessment':
+          this.navigate.emit({
+            type: 'assessment',
+            contextId: direction[3],
+            assessmentId: direction[4]
+          });
+          break;
+        default:
+          return this.ngZone.run(() => {
+            return this.router.navigate(direction);
+          });
+      }
+
+    }
   }
 
   private _initialise() {
@@ -68,7 +92,11 @@ export class ActivityComponent extends RouterEnter {
 
   onEnter() {
     this._initialise();
-    this.id = +this.route.snapshot.paramMap.get('id');
+    if (this.activityId) {
+      this.id = this.activityId;
+    } else {
+      this.id = +this.route.snapshot.paramMap.get('id');
+    }
     this._getActivity();
     this._getEvents();
 
@@ -143,7 +171,7 @@ export class ActivityComponent extends RouterEnter {
   }
 
   back() {
-    this.navigate([ 'app', 'project' ]);
+    this._navigate([ 'app', 'project' ]);
   }
 
   // check assessment lock or not before go to assessment.
@@ -181,10 +209,10 @@ export class ActivityComponent extends RouterEnter {
           this.notificationService.popUp('shortMessage', {message: 'To do this assessment, you have to be in a team.'});
           break;
         }
-        this.navigate(['assessment', 'assessment', this.id , contextId, id]);
+        this._navigate(['assessment', 'assessment', this.id , contextId, id]);
         break;
       case 'Topic':
-        this.navigate(['topic', this.id, id]);
+        this._navigate(['topic', this.id, id]);
         break;
       case 'Locked':
         this.notificationService.popUp('shortMessage', {message: 'This part of the app is still locked. You can unlock the features by engaging with the app and completing all tasks.'});

@@ -3,6 +3,7 @@ import * as _ from 'lodash';
 import { DOCUMENT } from '@angular/common';
 import { Observable, Subject } from 'rxjs';
 import { map, filter } from 'rxjs/operators';
+import { Platform } from '@ionic/angular';
 
 // @TODO: enhance Window reference later, we shouldn't refer directly to browser's window object like this
 declare var window: any;
@@ -16,12 +17,17 @@ export class UtilsService {
 
   constructor(
     @Inject(DOCUMENT) private document: Document,
+    private platform: Platform
   ) {
     if (_) {
       this.lodash = _;
     } else {
       throw new Error('Lodash not available');
     }
+  }
+
+  isMobile() {
+    return this.platform.is('mobile') && !this.platform.is('tablet');
   }
 
   isEmpty(value: any): boolean {

@@ -1,5 +1,5 @@
 <ion-header mode="ios">
-  <ion-toolbar color="light">
+  <ion-toolbar color="light" [ngClass]="{'ion-toolbar-absolute': !utils.isMobile()}">
     <ion-icon name="arrow-back" (click)="back()" color="primary" slot="start" margin-start></ion-icon>
     <ion-title text-center>Assessment</ion-title>
     <ng-container *ngIf="doAssessment || doReview">
@@ -8,7 +8,7 @@
     </ng-container>
   </ion-toolbar>
 </ion-header>
-<ion-content padding color="light" text-center>
+<ion-content padding color="light" text-center [ngClass]="{'ion-content-absolute': !utils.isMobile()}">
   <h1>{{ assessment.name }}</h1>
   <ion-text color="medium" text-left>
     <app-description *ngIf="assessment.description" [content]="assessment.description"></app-description>
