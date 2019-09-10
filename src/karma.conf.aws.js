@@ -29,7 +29,6 @@ module.exports = function (config) {
           },
         htmlReporter: {
             outputFile: require('path').join(__dirname, '../tests/result.html'),
-            // Optional
             pageTitle: 'Practera App V2 Unit Tests',
             subPageTitle: 'Practera App V2',
             groupSuites: true,
@@ -37,7 +36,7 @@ module.exports = function (config) {
             useLegacyStyle: true,
             showOnlyFailed: false
         },
-        reporters: ['progress', 'html'],
+        reporters: ['progress', 'kjhtml', 'html'],
         port: 19876,
         colors: true,
         logLevel: config.LOG_INFO,
