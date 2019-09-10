@@ -5,6 +5,7 @@ import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { UtilsService } from '@services/utils.service';
 import { NotificationService } from '@shared/notification/notification.service';
 import { BrowserStorageService } from '@services/storage.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-fast-feedback',
@@ -16,6 +17,7 @@ export class FastFeedbackComponent implements OnInit {
   questions = [];
   meta: Meta;
   loading = false;
+  submissionCompleted: Boolean;
 
   constructor(
     public modalController: ModalController,
@@ -31,15 +33,16 @@ export class FastFeedbackComponent implements OnInit {
       group[question.id] = new FormControl('', Validators.required);
     });
     this.fastFeedbackForm = new FormGroup(group);
+    this.submissionCompleted = false;
   }
 
-  dismiss() {
+  dismiss(data) {
     // change the flag to false
     this.storage.set('fastFeedbackOpening', false);
-    this.modalController.dismiss();
+    this.modalController.dismiss(data);
   }
 
-  submit() {
+  async submit(): Promise<any> {
     this.loading = true;
     const formData = this.fastFeedbackForm.value;
     const data = [];
@@ -62,18 +65,10 @@ export class FastFeedbackComponent implements OnInit {
       params['target_user_id'] = this.meta.target_user_id;
     }
 
-    this.fastFeedbackService.submit(data, params).subscribe(res => {
-      this.notification.alert({
-        header: 'Submission Successful',
-        message: 'Thanks for taking time to answer the feedback question.',
-        buttons: [{
-          text: 'OK',
-          handler: () => {
-            this.loading = false;
-            return this.dismiss();
-          },
-        }],
-      });
-    });
+    const submissionResult = await this.fastFeedbackService.submit(data, params).toPromise();
+    this.submissionCompleted = true;
+    return setTimeout(() => {
+      return this.dismiss(submissionResult);
+    }, 2000);
   }
 }
