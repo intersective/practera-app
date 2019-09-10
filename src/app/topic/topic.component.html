@@ -52,7 +52,13 @@
       (click)="continue()"
       shape="round"
       expand="full">
-      CONTINUE
+      <ng-container *ngIf="!btnToggleTopicIsDone; else showAsCompleted">CONTINUE</ng-container>
+      <ng-template #showAsCompleted>
+        <ion-item lines="none" no-paddings color="primary">
+          <ion-icon slot="start" name="checkmark"></ion-icon>
+          <ion-text>Continue</ion-text>
+        </ion-item>
+      </ng-template>
     </ion-button>
   </ion-toolbar>
 </ion-footer>
