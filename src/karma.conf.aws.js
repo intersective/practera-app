@@ -10,16 +10,34 @@ module.exports = function (config) {
             require('karma-chrome-launcher'),
             require('karma-jasmine-html-reporter'),
             require('karma-coverage-istanbul-reporter'),
+            require('karma-htmlfile-reporter'),
             require('@angular-devkit/build-angular/plugins/karma')
         ],
         client:{
             clearContext: false
         },
         coverageIstanbulReporter: {
-            reports: [ 'html', 'lcovonly' ],
-            fixWebpackSourcePaths: true
+            dir: require('path').join(__dirname, '../coverage'),
+            reports: ['html', 'lcovonly'],
+            fixWebpackSourcePaths: true,
+            thresholds: {
+              statements: 80,
+              lines: 80,
+              branches: 80,
+              functions: 80
+            }
+          },
+        htmlReporter: {
+            outputFile: require('path').join(__dirname, '../tests/result.html'),
+            // Optional
+            pageTitle: 'Practera App V2 Unit Tests',
+            subPageTitle: 'Practera App V2',
+            groupSuites: true,
+            useCompactStyle: true,
+            useLegacyStyle: true,
+            showOnlyFailed: false
         },
-        reporters: ['progress', 'kjhtml'],
+        reporters: ['progress', 'html'],
         port: 19876,
         colors: true,
         logLevel: config.LOG_INFO,
