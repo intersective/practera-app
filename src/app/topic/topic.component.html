@@ -43,11 +43,20 @@
 
 <ion-footer color="light">
   <ion-toolbar>
-    <ion-spinner style="width: 100%;"
-      *ngIf="loadingMarkedDone || loadingTopic"
-      name="dots"
-      class="vertical-middle text-center"
-    ></ion-spinner>
+    <ng-container *ngIf="loadingMarkedDone || loadingTopic">
+      <ion-spinner
+        *ngIf="!redirecting; else showRedirecting"
+        style="width: 100%;"
+        name="dots"
+        class="vertical-middle text-center"
+      ></ion-spinner>
+      <ng-template #showRedirecting>
+        <ion-button shape="round" expand="full">
+          <ion-icon src="/assets/checkmark.svg"></ion-icon>
+        </ion-button>
+      </ng-template>
+    </ng-container>
+
     <ion-button *ngIf="!loadingMarkedDone && !loadingTopic"
       (click)="continue()"
       shape="round"
@@ -55,7 +64,7 @@
       <ng-container *ngIf="!btnToggleTopicIsDone; else showAsCompleted">CONTINUE</ng-container>
       <ng-template #showAsCompleted>
         <ion-item lines="none" no-paddings color="primary">
-          <img slot="start" src="/assets/checkmark.svg" height="25">
+          <ion-icon slot="start" src="/assets/checkmark.svg"></ion-icon>
           <ion-text>Continue</ion-text>
         </ion-item>
       </ng-template>
