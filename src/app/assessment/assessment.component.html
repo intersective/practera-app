@@ -154,7 +154,12 @@
       shape="round"
       expand="full">
       <ng-container *ngIf="!submitting">Submit</ng-container>
-      <ng-container *ngIf="submitting">{{ submitting }}</ng-container>
+      <ng-container *ngIf="submitting !== false && submitting === 'redirecting'">
+        <ion-icon slot="start" name="checkmark"></ion-icon>
+      </ng-container>
+      <ng-container *ngIf="submitting !== false && submitting !== 'redirecting'">
+        <ion-spinner style="width: 100%;" name="dots" class="vertical-middle text-center"></ion-spinner>
+      </ng-container>
     </ion-button>
 
   </form>
@@ -186,7 +191,12 @@
         <ion-spinner style="width: 100%;" name="dots" class="vertical-middle text-center"></ion-spinner>
       </ng-container>
 
-      <ng-template #continue>Continue</ng-template>
+      <ng-template #continue>
+        <ion-item lines="none" no-paddings color="primary">
+          <ion-icon slot="start" name="checkmark"></ion-icon>
+          <ion-text>Continue</ion-text>
+        </ion-item>
+      </ng-template>
     </ion-button>
 
   </ion-toolbar>
