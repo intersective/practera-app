@@ -155,7 +155,7 @@
       expand="full">
       <ng-container *ngIf="!submitting">Submit</ng-container>
       <ng-container *ngIf="submitting !== false && submitting === 'redirecting'">
-        <ion-icon slot="start" name="checkmark"></ion-icon>
+        <img src="/assets/checkmark.svg" height="25">
       </ng-container>
       <ng-container *ngIf="submitting !== false && submitting !== 'redirecting'">
         <ion-spinner style="width: 100%;" name="dots" class="vertical-middle text-center"></ion-spinner>
@@ -193,7 +193,7 @@
 
       <ng-template #continue>
         <ion-item lines="none" no-paddings color="primary">
-          <ion-icon slot="start" name="checkmark"></ion-icon>
+          <img slot="start" src="/assets/checkmark.svg" height="25">
           <ion-text>Continue</ion-text>
         </ion-item>
       </ng-template>

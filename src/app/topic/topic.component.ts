@@ -134,7 +134,7 @@ export class TopicComponent extends RouterEnter {
     try {
       await this.markAsDone().toPromise();
     } catch (err) {
-      const toasted = await this.notificationService.alert({
+      await this.notificationService.alert({
         header: 'Error marking topic as completed.',
         message: err.msg || JSON.stringify(err)
       });
@@ -267,15 +267,16 @@ export class TopicComponent extends RouterEnter {
    * @description
    */
   async nextStepPrompt(): Promise<any> {
-    // await this.notificationService.customToast({
-    //   message: 'Topic completed! Please proceed to the next learning task.'
-    // });
     return this.redirectToNextMilestoneTask();
   }
 
   back() {
     if (this.btnToggleTopicIsDone || !this.askForMarkAsDone) {
-      return this.navigate(['app', 'activity', this.activityId]);
+      return this.navigate([
+        'app',
+        'activity',
+        this.activityId
+      ]);
     }
 
     const type = 'Topic';
