@@ -396,9 +396,21 @@ export class AssessmentComponent extends RouterEnter {
       }
     }
 
-    await this.navigate(route, navigationParams);
-    this.isRedirectingToNextMilestoneTask = false;
-    return;
+    if (this.submitting) {
+      this.submitting = 'redirecting';
+      return setTimeout(
+        async () => {
+          await this.navigate(route, navigationParams);
+          this.isRedirectingToNextMilestoneTask = false;
+          return;
+        },
+        2000
+      );
+    } else {
+      await this.navigate(route, navigationParams);
+      this.isRedirectingToNextMilestoneTask = false;
+      return;
+    }
   }
 
   /**
@@ -419,7 +431,7 @@ export class AssessmentComponent extends RouterEnter {
     try {
       const modal = await this.fastFeedbackService.pullFastFeedback({ modalOnly: true }).toPromise();
       const presentedModal = await modal.present();
-      await modal.onDidDismiss();
+      const test = await modal.onDidDismiss();
     } catch (err) {
       const toasted = await this.notificationService.alert({
         header: 'Error retrieving pulse check data',
@@ -438,7 +450,6 @@ export class AssessmentComponent extends RouterEnter {
     }
 
     const nextTask = await this.redirectToNextMilestoneTask();
-    this.submitting = false;
     return nextTask;
   }
 
