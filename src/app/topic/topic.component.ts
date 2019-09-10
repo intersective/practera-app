@@ -151,11 +151,11 @@ export class TopicComponent extends RouterEnter {
     }
 
     this.redirecting = true;
+    this.loadingTopic = false;
     return setTimeout(
       async () => {
         const navigation = await this.redirectToNextMilestoneTask();
         this.redirecting = false;
-        this.loadingTopic = false;
         return navigation;
       },
       2000
