@@ -8,7 +8,6 @@ import { TopicRoutingModule } from './topic-routing.module';
 import { FilestackModule } from '@shared/filestack/filestack.module';
 import { SharedModule } from '@shared/shared.module';
 import { ActivityModule } from '../activity/activity.module';
-import { IconComponent } from '@shared/components/icon/icon.component';
 
 @NgModule({
   imports: [
@@ -22,7 +21,6 @@ import { IconComponent } from '@shared/components/icon/icon.component';
   ],
   declarations: [
     TopicComponent,
-    IconComponent
   ],
   providers: [
     TopicService
