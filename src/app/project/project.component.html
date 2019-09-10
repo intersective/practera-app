@@ -30,58 +30,63 @@
   <ion-list class="project-list">
     <ion-item *ngIf="loadingMilestone" color="light">
     </ion-item>
+    <ion-grid>
+      <ion-item class="project-item" lines="none" *ngFor="let milestone of milestones" color="light" #milestoneRef>
+        <div color="light" class="project-card" id="milestone-{{milestone.id}}">
+          <ng-container *ngIf="milestone.dummy; else actualMilestoneTpl">
+            <ng-container *ngTemplateOutlet="loadingMilestoneTpl"></ng-container>
+          </ng-container>
 
-    <ion-item class="project-item" lines="none" *ngFor="let milestone of milestones" color="light" #milestoneRef>
-      <div color="light" class="project-card" id="milestone-{{milestone.id}}">
-        <ng-container *ngIf="milestone.dummy; else actualMilestoneTpl">
-          <ng-container *ngTemplateOutlet="loadingMilestoneTpl"></ng-container>
-        </ng-container>
+          <ng-template #actualMilestoneTpl>
+            <div class="milestone" [ngClass]="{'lock': milestone.isLocked}">
+              <div>
+                  <ion-icon *ngIf="milestone.isLocked" name="lock" color="medium" class="icon-lock milestone-lock"></ion-icon>
+                  <ion-text class="project-title" [ngClass]="{'no-desc': milestone.description}">{{ milestone.name }}</ion-text>
+                  <app-description class="milestone-description" *ngIf="milestone.description" [content]="milestone.description"></app-description>
+              </div>
 
-        <ng-template #actualMilestoneTpl>
-          <div class="milestone" [ngClass]="{'lock': milestone.isLocked}">
-            <div>
-                <ion-icon *ngIf="milestone.isLocked" name="lock" color="medium" class="icon-lock milestone-lock"></ion-icon>
-                <ion-text class="project-title" [ngClass]="{'no-desc': milestone.description}">{{ milestone.name }}</ion-text>
-                <app-description class="milestone-description" *ngIf="milestone.description" [content]="milestone.description"></app-description>
-            </div>
+              <div *ngIf="milestone.Activity && !milestone.isLocked" class="milestone-activities">
+                <ion-list class="activity-list" color="light">
 
-            <div *ngIf="milestone.Activity && !milestone.isLocked" class="milestone-activities">
-              <ion-list class="activity-list" color="light">
+                  <ion-row>
+                    <ion-col *ngFor="let activity of milestone.Activity" size="12" size-md="6" size-lg="4" size-xl="3">
+                      <ion-item class="activity-item" color="light">
+                        <ng-container *ngIf="activity && activity.dummy; else actualTpl">
+                          <div class='row-cards'>
+                            <app-circle-progress></app-circle-progress>
+                          </div>
+                          <app-activity-card class="activity-card" [activity]="false" [loading]="true"></app-activity-card>
+                        </ng-container>
 
-                <ion-item class="activity-item" *ngFor="let activity of milestone.Activity" color="light">
-                  <ng-container *ngIf="activity && activity.dummy; else actualTpl">
-                    <div class='row-cards'>
-                      <app-circle-progress></app-circle-progress>
-                    </div>
-                    <app-activity-card class="activity-card" [activity]="false" [loading]="true"></app-activity-card>
-                  </ng-container>
-
-                  <ng-template #actualTpl>
-                    <ng-container *ngIf="!activity.isLocked; else activityLocked">
-                      <div class="row-cards">
-                        <ion-icon *ngIf="activity.progress >= 1; else activityCircleProgress" name="checkmark-circle" class="icon-done" color="primary"></ion-icon>
-                        <ng-template #activityCircleProgress>
-                          <app-circle-progress class="progress-icon" [data]='{ percent: activity.progress * 100, radius: 3 }'></app-circle-progress>
+                        <ng-template #actualTpl>
+                          <ng-container *ngIf="!activity.isLocked; else activityLocked">
+                            <div class="row-cards">
+                              <ion-icon *ngIf="activity.progress >= 1; else activityCircleProgress" name="checkmark-circle" class="icon-done" color="primary"></ion-icon>
+                              <ng-template #activityCircleProgress>
+                                <app-circle-progress class="progress-icon" [data]='{ percent: activity.progress * 100, radius: 3 }'></app-circle-progress>
+                              </ng-template>
+                            </div>
+                          </ng-container>
+                          <ng-template #activityLocked>
+                            <div class="row-cards">
+                              <ion-icon name="lock" color="medium" class="icon-lock"></ion-icon>
+                            </div>
+                          </ng-template>
+                          <app-activity-card id="activity-card-{{activity.id}}" [activity]="activity"
+                            (click)="!activity.isLocked && goToActivity(activity.id)"
+                            class="activity-card"
+                          ></app-activity-card>
                         </ng-template>
-                      </div>
-                    </ng-container>
-                    <ng-template #activityLocked>
-                      <div class="row-cards">
-                        <ion-icon name="lock" color="medium" class="icon-lock"></ion-icon>
-                      </div>
-                    </ng-template>
-                    <app-activity-card id="activity-card-{{activity.id}}" [activity]="activity"
-                      (click)="!activity.isLocked && goToActivity(activity.id)"
-                      class="activity-card"
-                    ></app-activity-card>
-                  </ng-template>
-                </ion-item>
-              </ion-list>
+                      </ion-item>
+                    </ion-col>
+                  </ion-row>
+                </ion-list>
+              </div>
             </div>
-          </div>
-        </ng-template>
-      </div>
-    </ion-item>
+          </ng-template>
+        </div>
+      </ion-item>
+    </ion-grid>
   </ion-list>
 </ion-content>
 
