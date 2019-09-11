@@ -19,10 +19,13 @@ export class AuthResetPasswordComponent implements OnInit {
 
   resetPasswordForm = new FormGroup(
     {
-      email: new FormControl({
-        value: this.email,
-        disabled: true,
-      }, [ Validators.email ]),
+      email: new FormControl(
+        {
+          value: this.email,
+          disabled: true,
+        },
+        [ Validators.email ]
+      ),
       password: new FormControl('', [Validators.required]),
       confirmPassword: new FormControl(''),
     },
