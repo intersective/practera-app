@@ -11,7 +11,6 @@ import { UtilsService } from '@services/utils.service';
   styleUrls: ['./auth-reset-password.component.scss']
 })
 export class AuthResetPasswordComponent implements OnInit {
-
   email: string;
   key: string;
 
@@ -20,6 +19,10 @@ export class AuthResetPasswordComponent implements OnInit {
 
   resetPasswordForm = new FormGroup(
     {
+      email: new FormControl({
+        value: this.email,
+        disabled: true,
+      }, [ Validators.email ]),
       password: new FormControl('', [Validators.required]),
       confirmPassword: new FormControl(''),
     },
