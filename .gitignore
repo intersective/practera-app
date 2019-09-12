@@ -4,6 +4,7 @@
 .tmp/
 
 coverage/
+tests/
 platforms
 resources
 plugins
