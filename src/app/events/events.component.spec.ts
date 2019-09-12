@@ -51,7 +51,8 @@ describe('EventsComponent', () => {
         {
           provide: Router,
           useValue: {
-            navigate: jasmine.createSpy('navigate')
+            navigate: jasmine.createSpy('navigate'),
+            events: of()
           }
         },
         {
