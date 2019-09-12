@@ -1,5 +1,5 @@
+import { Directive } from '@angular/core';
 export class TestUtils {
-
   /**
    * Get a date string
    * @param day  number of dates after today. if < 0, is number of days before today
@@ -30,3 +30,8 @@ export class TestUtils {
     return number < 10 ? '0' + number : number;
   }
 }
+
+@Directive({
+  selector: '[routerLink], [routerLinkActive]'
+})
+export class DummyRouterLinkDirective {}
