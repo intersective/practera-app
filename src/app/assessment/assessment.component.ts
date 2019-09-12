@@ -152,7 +152,7 @@ export class AssessmentComponent extends RouterEnter {
       .subscribe(assessment => {
         this.assessment = assessment;
         this.populateQuestionsForm();
-        if (this.doAssessment && this.assessment.isForTeam && !this.storage.getUser().teamId) {
+        if (this.assessment.isForTeam && !this.storage.getUser().teamId) {
           return this.notificationService.alert({
             message: 'To do this assessment, you have to be in a team.',
             buttons: [
@@ -587,11 +587,7 @@ export class AssessmentComponent extends RouterEnter {
       }
 
       // mark as read successful
-      // @TODO need to remove
-      // await this.notificationService.customToast({
-      //   message: 'Assessment completed! Please proceed to the next learning task.',
-      //   icon: 'checkmark'
-      // });
+      // @TODO need to show three dots and tick icon
 
       // step 1.2: after feedback marked as read, popup review rating screen
       try {

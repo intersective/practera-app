@@ -267,10 +267,6 @@ export class TopicComponent extends RouterEnter {
    * @description
    */
   async nextStepPrompt(): Promise<any> {
-    // @TODO need to remove
-    // await this.notificationService.customToast({
-    //   message: 'Topic completed! Please proceed to the next learning task.'
-    // });
     return this.redirectToNextMilestoneTask();
   }
 
@@ -294,14 +290,11 @@ export class TopicComponent extends RouterEnter {
           text: 'Yes',
           handler: () => {
             return this.markAsDone().subscribe(() => {
-              // @TODO need to remove
-              // return this.notificationService.customToast({
-              //   message: 'You\'ve completed the topic!'
-              // }).then(() => this.navigate([
-              //   'app',
-              //   'activity',
-              //   this.activityId,
-              // ]));
+              this.navigate([
+                  'app',
+                  'activity',
+                  this.activityId,
+                ]);
             });
           }
         }

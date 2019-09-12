@@ -46,16 +46,16 @@
     <ng-container *ngFor="let group of assessment.groups">
       <h3>{{ group.name }}</h3>
       <ion-text color="medium" text-left>
-        <app-description *ngIf="group.description" [content]="group.description"></app-description>
+        <app-description class="g-description" *ngIf="group.description" [content]="group.description"></app-description>
       </ion-text>
       <ng-container *ngFor="let question of group.questions">
         <ion-card class="practera-card" text-left>
           <ion-card-header class="q-title">
             {{ question.name }}
-            <ion-text color="danger" *ngIf="question.isRequired">*</ion-text>
+            <ion-text class="required-indicator" color="danger" *ngIf="question.isRequired">*</ion-text>
             <ion-icon *ngIf="question.info" color="primary" class="icon-info vertical-middle" (click)="showQuestionInfo(question.info)" name="information-circle-outline"></ion-icon>
             <ion-text color="medium" class="paragraph" text-left>
-              <app-description *ngIf="question.description" [content]="question.description"></app-description>
+              <app-description class="q-description" *ngIf="question.description" [content]="question.description"></app-description>
             </ion-text>
           </ion-card-header>
           <div text-center margin-bottom *ngIf="loadingSubmission; else submissionTpl">
@@ -147,6 +147,7 @@
     </ng-container>
 
     <ion-button
+      id="btn-submit"
       *ngIf="doAssessment || doReview"
       [disabled]="submitting || questionsForm.invalid"
       (click)="submit(false)"
