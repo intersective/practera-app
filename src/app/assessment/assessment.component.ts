@@ -136,7 +136,9 @@ export class AssessmentComponent extends RouterEnter {
 
   onEnter() {
     this._initialise();
-    this.notificationService.presentToast('Submission succeccfull!', false, '', true);
+    // @TODO only use for testing, need to add this if assessment have pluscheck and remove from this place
+    // commeted because unite test getting failed
+    // this.notificationService.presentToast('Submission successful!', false, '', true);
     this.action = this.route.snapshot.data.action;
     this.fromPage = this.route.snapshot.paramMap.get('from');
     if (!this.fromPage) {
