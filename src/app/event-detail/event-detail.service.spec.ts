@@ -57,7 +57,7 @@ describe('EventDetailService', () => {
   it('should pass correct parameter to cancelEvent()', () => {
     requestSpy.delete.and.returnValue(of({}));
     service.cancelEvent(mockEvent).subscribe();
-    expect(requestSpy.delete.calls.first().args[1]).toEqual({params:{
+    expect(requestSpy.delete.calls.first().args[1]).toEqual({params: {
         event_id: mockEvent.id
       }
     });
