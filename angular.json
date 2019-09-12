@@ -43,8 +43,8 @@
               }
             ],
             "scripts": [
-              "./node_modules/pusher-js/dist/web/pusher.min.js",
-            ],
+              "./node_modules/pusher-js/dist/web/pusher.min.js"
+            ]
           },
           "configurations": {
             "production": {
