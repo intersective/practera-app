@@ -9,6 +9,7 @@ import { UtilsService } from '@services/utils.service';
 import { NotificationService } from '@shared/notification/notification.service';
 import { TestUtils } from '@testing/utils';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { ModalController } from '@ionic/angular';
 
 class Page {
   get eventName() {
@@ -49,7 +50,7 @@ class Page {
   }
 }
 
-fdescribe('EventDetailComponent', () => {
+describe('EventDetailComponent', () => {
   let component: EventDetailComponent;
   let fixture: ComponentFixture<EventDetailComponent>;
   let page: Page;
@@ -57,6 +58,7 @@ fdescribe('EventDetailComponent', () => {
   let routerSpy: jasmine.SpyObj<Router>;
   let utils: UtilsService;
   let notificationSpy: jasmine.SpyObj<NotificationService>;
+  let modalSpy: jasmine.SpyObj<ModalController>;
   const testUtils = new TestUtils();
 
   beforeEach(async(() => {
@@ -80,6 +82,12 @@ fdescribe('EventDetailComponent', () => {
           provide: NotificationService,
           useValue: jasmine.createSpyObj('NotificationService', ['alert'])
         },
+        {
+          provide: ModalController,
+          useValue: {
+            dismiss: jasmine.createSpy('dismiss')
+          }
+        },
       ],
     })
     .compileComponents();
@@ -93,11 +101,12 @@ fdescribe('EventDetailComponent', () => {
     routerSpy = TestBed.get(Router);
     utils = TestBed.get(UtilsService);
     notificationSpy = TestBed.get(NotificationService);
+    modalSpy = TestBed.get(ModalController);
   });
 
   beforeEach(() => {
     serviceSpy.bookEvent.and.returnValue(of({}));
-    serviceSpy.cancelEvent.and.returnValue(of({}));
+    serviceSpy.cancelEvent.and.returnValue(of({success: true}));
   });
 
   const mockEvent = {
@@ -125,6 +134,7 @@ fdescribe('EventDetailComponent', () => {
   describe('when testing buttonText() and confirmed()', () => {
     let tmpEvent;
     let expected;
+    const confirmedExpectedArray = [];
     beforeEach(() => {
       tmpEvent = JSON.parse(JSON.stringify(mockEvent));
     });
@@ -164,14 +174,51 @@ fdescribe('EventDetailComponent', () => {
       });
 
       it(`should pop up alert if it is single booking`, () => {
+        tmpEvent.singleBooking = true;
+        component.event = tmpEvent;
+        fixture.detectChanges();
+        component.confirmed();
+        expect(notificationSpy.alert.calls.count()).toBe(1);
+        expect(serviceSpy.bookEvent.calls.count()).toBe(0);
+        notificationSpy.alert.calls.first().args[0].buttons[0].handler();
+        expect(serviceSpy.bookEvent.calls.count()).toBe(1);
+        expect(modalSpy.dismiss.calls.count()).toEqual(1);
+      });
 
+      it(`should book event directly it is not single booking`, () => {
+        tmpEvent.singleBooking = false;
+        component.event = tmpEvent;
+        fixture.detectChanges();
+        component.confirmed();
+        expect(notificationSpy.alert.calls.count()).toBe(1);
+        expect(serviceSpy.bookEvent.calls.count()).toBe(1);
+        expect(modalSpy.dismiss.calls.count()).toEqual(1);
       });
     });
 
-    it(`should return 'Cancel Booking' if the event is booked and is not started`, () => {
-      tmpEvent.isBooked = true;
+    it(`should return false if the event capacity is full`, () => {
+      tmpEvent.isBooked = false;
       tmpEvent.isPast = false;
-      expected = 'Cancel Booking';
+      tmpEvent.remainingCapacity = 0;
+      tmpEvent.canBook = true;
+      expected = false;
+    });
+
+    describe(`should return 'Cancel Booking' if the event is booked and is not started`, () => {
+      beforeEach(() => {
+        tmpEvent.isBooked = true;
+        tmpEvent.isPast = false;
+        expected = 'Cancel Booking';
+      });
+
+      it(`should cancel booking if confirmed`, () => {
+        component.event = tmpEvent;
+        fixture.detectChanges();
+        component.confirmed();
+        expect(notificationSpy.alert.calls.count()).toBe(1);
+        expect(serviceSpy.cancelEvent.calls.count()).toBe(1);
+        expect(modalSpy.dismiss.calls.count()).toEqual(1);
+      });
     });
 
     it(`should return false if the event is attended and there's no check in assessment`, () => {
@@ -186,26 +233,40 @@ fdescribe('EventDetailComponent', () => {
       tmpEvent.isPast = true;
       tmpEvent.assessment = {
         id: 1,
+        contextId: 2,
         isDone: true
       };
       expected = 'View Check In';
+
+      component.event = tmpEvent;
+      fixture.detectChanges();
+      component.confirmed();
+      expect(routerSpy.navigate.calls.first().args[0]).toEqual(['assessment', 'event', 2, 1]);
+      expect(modalSpy.dismiss.calls.count()).toEqual(1);
     });
 
-    it(`should return false if the event is booked`, () => {
+    it(`should return 'Check In' if the event is booked`, () => {
       tmpEvent.isBooked = true;
       tmpEvent.isPast = true;
       tmpEvent.assessment = {
         id: 1,
+        contextId: 2,
         isDone: false
       };
       expected = 'Check In';
+
+      component.event = tmpEvent;
+      fixture.detectChanges();
+      component.confirmed();
+      expect(routerSpy.navigate.calls.first().args[0]).toEqual(['assessment', 'event', 2, 1]);
+      expect(modalSpy.dismiss.calls.count()).toEqual(1);
     });
   });
 
-  // it('when testing back(), it should navigate to the correct page', () => {
-  //   component.back();
-  //   expect(routerSpy.navigate.calls.first().args[0]).toEqual(['app', 'home']);
-  // });
+  it('when testing close(), it should dismiss the modal controller', () => {
+    component.close();
+    expect(modalSpy.dismiss.calls.count()).toEqual(1);
+  });
 
 });
 
