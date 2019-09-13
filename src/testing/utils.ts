@@ -1,4 +1,3 @@
-import { Directive } from '@angular/core';
 export class TestUtils {
   /**
    * Get a date string
@@ -31,7 +30,3 @@ export class TestUtils {
   }
 }
 
-@Directive({
-  selector: '[routerLink], [routerLinkActive]'
-})
-export class DummyRouterLinkDirective {}
