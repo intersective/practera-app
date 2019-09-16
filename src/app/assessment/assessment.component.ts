@@ -136,7 +136,7 @@ export class AssessmentComponent extends RouterEnter {
 
   onEnter() {
     this._initialise();
-    // @TODO only use for testing, need to add this if assessment have pluscheck and remove from this place
+    // @TODO only use for testing after complete need to remove, need to add this if assessment have pluscheck and remove from this place
     // commeted because unite test getting failed
     // this.notificationService.presentToast('Submission successful!', false, '', true);
     this.action = this.route.snapshot.data.action;
@@ -400,6 +400,7 @@ export class AssessmentComponent extends RouterEnter {
   private async pullFeedbackAndShowNext(): Promise<boolean> {
     this.submitting = 'Retrieving new task...';
     // check if user has new fastFeedback request
+    // need to check puls chaneck on. need to call new api for that.
     try {
       await this.fastFeedbackService.pullFastFeedback().toPromise();
     } catch (err) {
@@ -412,12 +413,12 @@ export class AssessmentComponent extends RouterEnter {
     }
 
     // only when activityId availabe (reviewer screen dont have it)
+    // need to show toast if plus check is turn on
     if (this.activityId) {
-      // @TODO need to remove
-      // await this.notificationService.customToast({
-      //   message: 'Submission successful! Please proceed to the next learning task',
-      //   icon: 'checkmark'
-      // });
+      const fastFeedbackIsOpened = this.storage.get('fastFeedbackOpening');
+      if (fastFeedbackIsOpened) {
+        this.notificationService.presentToast('Submission successful!', false, '', true);
+      }
     }
 
     const nextTask = await this.redirectToNextMilestoneTask();
