@@ -24,7 +24,7 @@ export class ProjectComponent extends RouterEnter {
   @ViewChild('contentRef', {read: ElementRef}) contentRef: any;
   @ViewChildren('milestoneRef', {read: ElementRef}) milestoneRefs: QueryList<ElementRef>;
   public activeMilestone: Array<boolean> = [];
-  private milestonePositions: Array<number> = [];
+  public milestonePositions: Array<number> = [];
   private highlightedActivityId: number;
 
   constructor(
@@ -121,12 +121,12 @@ export class ProjectComponent extends RouterEnter {
   }
 
   scrollTo(domId: string, index?: number): void {
-    if (index) {
+    // update active milestone status (mark whatever user select)
+    this.activeMilestone.fill(false);
+    if (index > -1) {
       this.activeMilestone[index] = true;
     }
 
-    // update active milestone status (mark whatever user select)
-    this.activeMilestone.fill(false);
 
     const el = document.getElementById(domId);
     if (el) {
