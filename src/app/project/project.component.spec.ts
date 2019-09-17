@@ -40,7 +40,7 @@ class Page {
   }
 }
 
-fdescribe('ProjectComponent', () => {
+describe('ProjectComponent', () => {
   let component: ProjectComponent;
   let fixture: ComponentFixture<ProjectComponent>;
   let page: Page;
@@ -103,68 +103,108 @@ fdescribe('ProjectComponent', () => {
     homeSpy.getProgramName.and.returnValue(of('program name'));
     fastfeedbackSpy.pullFastFeedback.and.returnValue(of({}));
   });
+  let milestones, activities, progresses, expected;
+  beforeEach(() => {
+    milestones = Array.from({length: 5}, (x, i) => {
+      return {
+        id: i + 1,
+        name: 'm' + i,
+        description: 'des' + i,
+        isLocked: false,
+        progress: 0,
+        Activity: []
+      };
+    });
+    activities = Array.from({length: 5}, (x, i) => {
+      return Array.from({length: 3}, (y, j) => {
+        return {
+          id: i * 10 + j + 1,
+          name: 'activity name' + j,
+          milestoneId: i + 1,
+          isLocked: false,
+          leadImage: '',
+          progress: 0,
+        };
+      });
+    });
+    progresses = {
+      Milestone: Array.from({length: 5}, (x, i) => {
+        return {
+          id: i + 1,
+          progress: (i + 1) / 10,
+          Activity: Array.from({length: 3}, (y, j) => {
+            return {
+              id: i * 10 + j + 1,
+              progress: (i * 10 + j + 1) / 100
+            };
+          })
+        };
+      })
+    };
+    expected = milestones.map((milestone, i) => {
+      milestone.Activity = activities[i].map((activity, j) => {
+        activity.progress = (i * 10 + j + 1) / 100;
+        return activity;
+      });
+      milestone.progress = (i + 1) / 10;
+      return milestone;
+    });
+    projectSpy.getMilestones.and.returnValue(of(milestones));
+    projectSpy.getActivities.and.returnValue(of(utils.flatten(activities)));
+    projectSpy.getProgress.and.returnValue(of(progresses));
+  });
 
   it('should create', () => {
     expect(component).toBeDefined();
   });
 
-  describe('when testing onEnter()', () => {
-    it('should get correct data', () => {
-      const milestones = Array.from({length: 5}, (x, i) => {
-        return {
-          id: i + 1,
-          name: 'm' + i,
-          description: 'des' + i,
-          isLocked: false,
-          progress: 0,
-          Activity: []
-        };
-      });
-      const activities = Array.from({length: 5}, (x, i) => {
-        return Array.from({length: 3}, (y, j) => {
-          return {
-            id: i * 10 + j + 1,
-            name: 'activity name' + j,
-            milestoneId: i + 1,
-            isLocked: false,
-            leadImage: '',
-            progress: 0,
-          };
-        });
-      });
-      const progresses = {
-        Milestone: Array.from({length: 5}, (x, i) => {
-          return {
-            id: i + 1,
-            progress: (i + 1) / 10,
-            Activity: Array.from({length: 3}, (y, j) => {
-              return {
-                id: i * 10 + j + 1,
-                progress: (i * 10 + j + 1) / 100
-              };
-            })
-          };
-        })
-      };
-      const expected = milestones.map((milestone, i) => {
-        milestone.Activity = activities[i].map((activity, j) => {
-          activity.progress = (i * 10 + j + 1) / 100;
-          return activity;
-        });
-        milestone.progress = (i + 1) / 10;
-        return milestone;
-      });
-      projectSpy.getMilestones.and.returnValue(of(milestones));
-      projectSpy.getActivities.and.returnValue(of(utils.flatten(activities)));
-      projectSpy.getProgress.and.returnValue(of(progresses));
+  it('when testing onEnter(), should get correct data', () => {
+    fixture.detectChanges();
+    expect(component.loadingMilestone).toBe(false);
+    expect(component.loadingActivity).toBe(false);
+    expect(component.loadingProgress).toBe(false);
+    expect(component.milestones).toEqual(expected);
+    expect(fastfeedbackSpy.pullFastFeedback.calls.count()).toBe(1);
+  });
+
+  describe('when testing trackScrolling()', () => {
+    it('should get correct activeMilestone array if active milestone is in middle', () => {
       fixture.detectChanges();
-      expect(component.loadingMilestone).toBe(false);
-      expect(component.loadingActivity).toBe(false);
-      expect(component.loadingProgress).toBe(false);
-      expect(component.milestones).toEqual(expected);
-      expect(fastfeedbackSpy.pullFastFeedback.calls.count()).toBe(1);
+      component.milestonePositions = [2, 5, 10, 20];
+      component.trackScrolling({
+        detail: {
+          currentY: 10
+        },
+        srcElement: {
+          offsetHeight: 10
+        }
+      });
+      expect(component.activeMilestone).toEqual(Array(5).fill(false).map((x, i) => i === 2));
+    });
+    it('should get correct activeMilestone array if active milestone is the last one', () => {
+      fixture.detectChanges();
+      component.milestonePositions = [2, 5, 10, 12];
+      component.trackScrolling({
+        detail: {
+          currentY: 10
+        },
+        srcElement: {
+          offsetHeight: 10
+        }
+      });
+      expect(component.activeMilestone).toEqual(Array(5).fill(false).map((x, i) => i === 3));
     });
   });
 
+  it('when testing scrollTo(), should get correct activeMilestone array', () => {
+    fixture.detectChanges();
+    component.scrollTo('milestone-2', 1);
+    expect(component.activeMilestone).toEqual(Array(5).fill(false).map((x, i) => i === 1));
+  });
+
+  it('when testing goToActivity(), should navigate to the correct page', () => {
+    component.goToActivity(1);
+    expect(routerSpy.navigate.calls.first().args[0]).toEqual(['app', 'activity', 1]);
+  });
 });
 
