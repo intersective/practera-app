@@ -79,11 +79,13 @@ export class ProjectComponent extends RouterEnter {
             this.loadingActivity = false;
 
             this.projectService.getProgress(this.milestones).subscribe(progresses => {
-              this.milestonePositions = this.milestoneRefs.map(milestoneRef => {
-                return milestoneRef.nativeElement.offsetTop;
-              });
-
+              if (this.milestoneRefs) {
+                this.milestonePositions = this.milestoneRefs.map(milestoneRef => {
+                  return milestoneRef.nativeElement.offsetTop;
+                });
+              }
               this.milestones = this._populateMilestoneProgress(progresses, this.milestones);
+
               this.loadingProgress = false;
 
               if (this.highlightedActivityId) {
@@ -127,10 +129,11 @@ export class ProjectComponent extends RouterEnter {
     this.activeMilestone.fill(false);
 
     const el = document.getElementById(domId);
-    el.scrollIntoView({ block: 'start', behavior: 'smooth', inline: 'nearest' });
-
-    el.classList.add('highlighted');
-    setTimeout(() => el.classList.remove('highlighted'), 1000);
+    if (el) {
+      el.scrollIntoView({ block: 'start', behavior: 'smooth', inline: 'nearest' });
+      el.classList.add('highlighted');
+      setTimeout(() => el.classList.remove('highlighted'), 1000);
+    }
   }
 
   goToActivity(id) {
