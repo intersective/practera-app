@@ -78,7 +78,7 @@ export class ProjectComponent extends RouterEnter {
             this.milestones = this._addActivitiesToEachMilestone(this.milestones, activities);
             this.loadingActivity = false;
 
-            this.projectService.getProgress(this.milestones).subscribe(progresses => {
+            this.projectService.getProgress().subscribe(progresses => {
               if (this.milestoneRefs) {
                 this.milestonePositions = this.milestoneRefs.map(milestoneRef => {
                   return milestoneRef.nativeElement.offsetTop;
