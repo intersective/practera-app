@@ -7,6 +7,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { SharedModule } from '@shared/shared.module';
 import { UtilsService } from '@services/utils.service';
 import { ActivatedRouteStub } from '@testing/activated-route-stub';
+import { TestUtils } from '@testing/utils';
 
 class Page {
   get eventItems() {
@@ -34,6 +35,7 @@ describe('EventsComponent', () => {
   let routerSpy: jasmine.SpyObj<Router>;
   let routeStub: ActivatedRouteStub;
   let utils: UtilsService;
+  const testUtils = new TestUtils();
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
@@ -75,12 +77,12 @@ describe('EventsComponent', () => {
   // data needed to create mock events
   const activityIds = [1, 2, 1, 3, 2, 2];
   const startTimes = [
-    _getDateString(2, 0), // browse group 1
-    _getDateString(2, 1), // browse group 1
-    _getDateString(3, 0), // browse group 2
-    _getDateString(-2, 0), // browse expired
-    _getDateString(2, 0), // booked
-    _getDateString(-2, 0) // attended
+    testUtils.getDateString(2, 0), // browse group 1
+    testUtils.getDateString(2, 1), // browse group 1
+    testUtils.getDateString(3, 0), // browse group 2
+    testUtils.getDateString(-2, 0), // browse expired
+    testUtils.getDateString(2, 0), // booked
+    testUtils.getDateString(-2, 0) // attended
   ];
   const isBookeds = [false, false, false, false, true, true];
   const mockEvents = Array.from({length: 6}, (x, i) => {
@@ -111,22 +113,6 @@ describe('EventsComponent', () => {
   let browse;
   let booked;
   let attended;
-
-  function _getDateString(day: number, hour: number) {
-    const date = new Date();
-    date.setDate(date.getDate() + day);
-    date.setHours(date.getHours() + hour);
-    return `${date.getFullYear()}-` +
-      `${_numberFormatter(date.getMonth() + 1)}-` +
-      `${_numberFormatter(date.getDate())} ` +
-      `${_numberFormatter(date.getHours())}:` +
-      `${_numberFormatter(date.getMinutes())}:` +
-      `${_numberFormatter(date.getSeconds())}`;
-  }
-
-  function _numberFormatter(number: number) {
-    return number < 10 ? '0' + number : number;
-  }
 
   beforeEach(() => {
     eventsSpy.getEvents.and.returnValue(of(mockEvents));
