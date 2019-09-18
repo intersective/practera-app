@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { ModalController } from '@ionic/angular';
 import { FastFeedbackComponent } from './fast-feedback.component';
 import { RequestService } from '@shared/request/request.service';
 import { NotificationService } from '@shared/notification/notification.service';
@@ -28,7 +27,6 @@ export interface Meta {
 
 const api = {
   fastFeedback: 'api/v2/observation/slider/list.json',
-  submit: 'api/v2/observation/slider/create.json',
 };
 
 @Injectable({
@@ -36,7 +34,6 @@ const api = {
 })
 export class FastFeedbackService {
   constructor(
-    private modalController: ModalController,
     private request: RequestService,
     private notificationService: NotificationService,
     private storage: BrowserStorageService,
@@ -45,10 +42,6 @@ export class FastFeedbackService {
 
   getFastFeedback() {
     return this.request.get(api.fastFeedback);
-  }
-
-  submit(data, params) {
-    return this.request.post(api.submit, data, {params: params});
   }
 
   /**
