@@ -1,0 +1,7 @@
+ion-header {
+  // program switcher title no menu buttons required
+  ion-toolbar > ion-title {
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+}
