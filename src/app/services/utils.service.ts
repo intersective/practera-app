@@ -44,6 +44,10 @@ export class UtilsService {
     return this.lodash.has(object, path);
   }
 
+  flatten(array) {
+    return this.lodash.flatten(array);
+  }
+
   indexOf(array, value, fromIndex= 0) {
     return this.lodash.indexOf(array, value, fromIndex);
   }

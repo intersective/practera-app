@@ -24,7 +24,7 @@ export class ProjectComponent extends RouterEnter {
   @ViewChild('contentRef', {read: ElementRef}) contentRef: any;
   @ViewChildren('milestoneRef', {read: ElementRef}) milestoneRefs: QueryList<ElementRef>;
   public activeMilestone: Array<boolean> = [];
-  private milestonePositions: Array<number> = [];
+  public milestonePositions: Array<number> = [];
   private highlightedActivityId: number;
 
   constructor(
@@ -78,12 +78,14 @@ export class ProjectComponent extends RouterEnter {
             this.milestones = this._addActivitiesToEachMilestone(this.milestones, activities);
             this.loadingActivity = false;
 
-            this.projectService.getProgress(this.milestones).subscribe(progresses => {
-              this.milestonePositions = this.milestoneRefs.map(milestoneRef => {
-                return milestoneRef.nativeElement.offsetTop;
-              });
-
+            this.projectService.getProgress().subscribe(progresses => {
+              if (this.milestoneRefs) {
+                this.milestonePositions = this.milestoneRefs.map(milestoneRef => {
+                  return milestoneRef.nativeElement.offsetTop;
+                });
+              }
               this.milestones = this._populateMilestoneProgress(progresses, this.milestones);
+
               this.loadingProgress = false;
 
               if (this.highlightedActivityId) {
@@ -119,18 +121,19 @@ export class ProjectComponent extends RouterEnter {
   }
 
   scrollTo(domId: string, index?: number): void {
-    if (index) {
+    // update active milestone status (mark whatever user select)
+    this.activeMilestone.fill(false);
+    if (index > -1) {
       this.activeMilestone[index] = true;
     }
 
-    // update active milestone status (mark whatever user select)
-    this.activeMilestone.fill(false);
 
     const el = document.getElementById(domId);
-    el.scrollIntoView({ block: 'start', behavior: 'smooth', inline: 'nearest' });
-
-    el.classList.add('highlighted');
-    setTimeout(() => el.classList.remove('highlighted'), 1000);
+    if (el) {
+      el.scrollIntoView({ block: 'start', behavior: 'smooth', inline: 'nearest' });
+      el.classList.add('highlighted');
+      setTimeout(() => el.classList.remove('highlighted'), 1000);
+    }
   }
 
   goToActivity(id) {
