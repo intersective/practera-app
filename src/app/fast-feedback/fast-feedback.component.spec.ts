@@ -92,7 +92,7 @@ describe('FastFeedbackComponent', () => {
   it('when testing dismiss(), it should dismiss', () => {
     component.dismiss();
     expect(modalSpy.dismiss.calls.count()).toBe(1);
-  })
+  });
 
   describe('when testing submit()', () => {
     beforeEach(() => {
@@ -115,7 +115,7 @@ describe('FastFeedbackComponent', () => {
         target_user_id: 3,
         team_name: 'team',
         assessment_name: 'asmt'
-      }
+      };
       fastfeedbackSpy.submit.and.returnValue(of({}));
     });
     afterEach(() => {
