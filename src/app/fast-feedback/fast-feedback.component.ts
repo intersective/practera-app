@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ModalController } from '@ionic/angular';
-import { FastFeedbackService, Meta } from './fast-feedback.service';
+import { Meta } from './fast-feedback.service';
+import { FastFeedbackSubmitterService } from './fast-feedback-submitter.service';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { UtilsService } from '@services/utils.service';
 import { NotificationService } from '@shared/notification/notification.service';
@@ -21,7 +22,7 @@ export class FastFeedbackComponent implements OnInit {
 
   constructor(
     public modalController: ModalController,
-    private fastFeedbackService: FastFeedbackService,
+    private fastFeedbackSubmitterService: FastFeedbackSubmitterService,
     private utils: UtilsService,
     private notification: NotificationService,
     public storage: BrowserStorageService,
@@ -65,10 +66,14 @@ export class FastFeedbackComponent implements OnInit {
       params['target_user_id'] = this.meta.target_user_id;
     }
 
-    const submissionResult = await this.fastFeedbackService.submit(data, params).toPromise();
+    const submissionResult = await this.fastFeedbackSubmitterService.submit(data, params).toPromise();
+
     this.submissionCompleted = true;
-    return setTimeout(() => {
-      return this.dismiss(submissionResult);
-    }, 2000);
+    return setTimeout(
+      () => {
+        return this.dismiss(submissionResult);
+      },
+      2000
+    );
   }
 }
