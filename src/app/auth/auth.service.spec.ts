@@ -1,67 +1,32 @@
 import { AuthService } from './auth.service';
+import { TestBed } from '@angular/core/testing';
+import { of } from 'rxjs';
+import { RequestService } from '@shared/request/request.service';
+import { TestUtils } from '@testing/utils';
 
-describe('AuthService', () => {
-  // let service: AuthService;
-  // const RequestService = {
-  //   appkey: '',
-  //   prefixUrl: '',
-  //   http: {},
-  //   utils: {},
-  //   storage: {},
-  // };
-  // const BrowserStorageService = {};
-  // const UtilsService = {};
+fdescribe('AuthService', () => {
+  let service: AuthService;
+  let requestSpy: jasmine.SpyObj<RequestService>;
+  const testUtils = new TestUtils();
 
-  // beforeEach(() => {
-  //   // service = new AuthService(
-  //   //   RequestService,
-  //   //   BrowserStorageService,
-  //   //   UtilsService
-  //   // );
-  // });
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      providers: [
+        AuthService,
+        {
+          provide: RequestService,
+          useValue: jasmine.createSpyObj('RequestService', ['delete', 'post'])
+        },
+      ]
+    });
+    service = TestBed.get(AuthService);
+    requestSpy = TestBed.get(RequestService);
+  });
 
-  // it('should be created', () => {
-  //   expect(service).toBeDefined();
-  // });
+  it('should be created', () => {
+    expect(service).toBeTruthy();
+  });
 
-  // it('private #isLoggedIn should be false by default', () => {
-  //   expect(service['isLoggedIn']).toBeDefined();
-  // });
 
-  // it('RequestService');
-  // it('#isAuthenticated should', () => {
-  //   expect(service.isAuthenticated).toBeDefined();
-  // });
-
-  // it('#me should', () => {
-  //   // expect(service.me).toBeDefined();
-  // });
-
-  // it('#logout should', () => {
-  //   expect(service.logout).toBeDefined();
-  // });
-
-  // it('#linkedinAuthenticated should', () => {
-  //   expect(service.linkedinAuthenticated).toBeDefined();
-  // });
-
-  // it('#connectToLinkedIn should', () => {
-  //   expect(service.connectToLinkedIn).toBeDefined();
-  // });
-
-  // it('#contactNumberLogin should', () => {
-  //   expect(service.contactNumberLogin).toBeDefined();
-  // });
-
-  // it('#getConfig should', () => {
-  //   expect(service.getConfig).toBeDefined();
-  // });
-
-  // it('#checkDomain should', () => {
-  //   expect(service.checkDomain).toBeDefined();
-  // });
-
-  // it('#updateProfile should', () => {
-  //   expect(service.updateProfile).toBeDefined();
-  // });
 });
+
