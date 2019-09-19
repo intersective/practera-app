@@ -90,7 +90,7 @@ describe('FastFeedbackComponent', () => {
   });
 
   it('when testing dismiss(), it should dismiss', () => {
-    component.dismiss();
+    component.dismiss({});
     expect(modalSpy.dismiss.calls.count()).toBe(1);
   });
 

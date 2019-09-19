@@ -1,4 +1,4 @@
-import { TestBed } from '@angular/core/testing';
+import { TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { ActivityService, Overview } from './activity.service';
 import { of } from 'rxjs';
 import { RequestService } from '@shared/request/request.service';
@@ -12,9 +12,14 @@ describe('ActivityService', () => {
     TestBed.configureTestingModule({
       providers: [
         ActivityService,
+        MockBackend,
         {
           provide: RequestService,
-          useValue: jasmine.createSpyObj('RequestService', ['get', 'post', 'apiResponseFormatError'])
+          useValue: jasmine.createSpyObj('RequestService', [
+            'get',
+            'post',
+            'apiResponseFormatError'
+          ])
         },
       ]
     });
@@ -24,6 +29,35 @@ describe('ActivityService', () => {
 
   it('should be created', () => {
     expect(service).toBeTruthy();
+  });
+
+  describe('getCurrentActivityStatus()', () => {
+    const projectId = 1;
+    const activityId = 1;
+
+    const expectedResult = {
+      currentMilestoneIndex: null,
+      currentMilestone: null,
+      currentActivity: null,
+    };
+
+    it('getOverview should be triggered', async () => {
+      service.getCurrentActivityStatus(projectId, activityId);
+      expect(service.getOverview).toHaveBeenCalled();
+    });
+  });
+
+  describe('getTasksByActivityId()', () => {
+    const projectId = 1;
+    const activityId = 1;
+
+    it('getOverview should be triggered', async () => {
+      service.getTasksByActivityId(projectId, activityId, {
+        currentTaskId: 1,
+        teamId: 1,
+      });
+      expect(service.getOverview).toHaveBeenCalled();
+    });
   });
 
   describe('when testing getActivity()', () => {
@@ -355,6 +389,12 @@ describe('ActivityService', () => {
       service.getTasksProgress(options).subscribe(res => expect(res).toEqual(expected));
     });
 
+  });
+
+  describe('getOverview()', function() {
+    it('should ', async () => {
+
+    });
   });
 
 });
