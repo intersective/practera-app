@@ -1,11 +1,17 @@
 import { Injectable } from '@angular/core';
-import { ModalController, AlertController, ToastController } from '@ionic/angular';
-import { AlertOptions, ToastOptions, ModalOptions } from '@ionic/core';
+import { ModalController, AlertController, ToastController, LoadingController } from '@ionic/angular';
+import { AlertOptions, ToastOptions, ModalOptions, LoadingOptions } from '@ionic/core';
 import { PopUpComponent } from './pop-up/pop-up.component';
 import { AchievementPopUpComponent } from './achievement-pop-up/achievement-pop-up.component';
 import { LockTeamAssessmentPopUpComponent } from './lock-team-assessment-pop-up/lock-team-assessment-pop-up.component';
 import { Achievement, AchievementsService } from '@app/achievements/achievements.service';
+import { CustomToastComponent } from './custom-toast/custom-toast.component';
 
+export interface CustomTostOptions {
+  message: string;
+  icon: string;
+  duration?: string;
+}
 @Injectable({
   providedIn: 'root'
 })
@@ -15,6 +21,7 @@ export class NotificationService {
     private modalController: ModalController,
     private alertController: AlertController,
     private toastController: ToastController,
+    private loadingController: LoadingController,
     public achievementService: AchievementsService,
   ) {}
 
@@ -52,17 +59,19 @@ export class NotificationService {
     return modal;
   }
 
-  async modal(component, componentProps,  options?, event?): Promise<void> {
+  async modal(component, componentProps, options?, event?): Promise<void> {
+    const modal = await this.modalOnly(component, componentProps, options, event);
+    return modal.present();
+  }
+
+  async modalOnly(component, componentProps, options?, event?): Promise<HTMLIonModalElement> {
     const modal = await this.modalController.create(this.modalConfig({ component, componentProps }, options));
+
     if (event) {
-      modal.onDidDismiss()
-      // tslint:disable-next-line:no-shadowed-variable
-      .then((data) => {
-        event(data);
-      });
+      modal.onDidDismiss().then(event);
     }
 
-    return modal.present();
+    return modal;
   }
 
   async alert(config: AlertOptions) {
@@ -71,24 +80,43 @@ export class NotificationService {
   }
 
   // toast message pop up, by default, shown success message for 2 seconds.
-  async presentToast(message, success = true, duration?) {
-    let color = 'success';
-    if (!success) {
-      color = 'danger';
-    }
-    return this.customToast({
+  async presentToast(message, success = false, duration?, customOptions?: ToastOptions) {
+    let toastOptions: ToastOptions = {
       message: message,
-      duration: duration || 2000,
+      duration: duration || 200000,
       position: 'top',
-      color : color
-    });
+    };
+    console.log('customOptions', customOptions);
+    if (customOptions) {
+      toastOptions = Object.assign(customOptions, toastOptions);
+    } else {
+      toastOptions = Object.assign({color : success ? 'success' : 'danger'}, toastOptions);
+    }
+    const toast = await this.toastController.create(toastOptions);
+    return toast.present();
   }
 
-  async customToast(options: ToastOptions) {
-    const toast = await this.toastController.create(
-      Object.assign({ duration: 2000 }, options)
-    );
-    return toast.present();
+  async customToast(options: CustomTostOptions) {
+    const component = CustomToastComponent;
+    const icon = options.icon;
+    const message = options.message;
+    const duration = options.duration;
+    const componentProps = {
+      icon,
+      message,
+      duration
+    };
+    const modal = await this.modal(component, componentProps, {
+      cssClass: 'practera-toast',
+      keyboardClose: false,
+      backdropDismiss: false,
+      showBackdrop: false
+    });
+    return modal;
+    // if (options.icon === 'checkmark') {
+    //   options.message =  '<ion-icon name="checkmark"></ion-icon> ' + options.message;
+    // }
+    // return this.presentToast(options.message, false, options.duration , { cssClass: 'practera-toast' });
   }
 
   /**
@@ -146,5 +174,13 @@ export class NotificationService {
       event
     );
     return modal;
+  }
+
+  async loading(opts?: LoadingOptions): Promise<void> {
+    const loading = await this.loadingController.create(opts || {
+      spinner: 'dots',
+
+    });
+    return loading.present();
   }
 }
