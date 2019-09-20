@@ -62,8 +62,8 @@ export class AssessmentComponent extends RouterEnter {
   doReview = false;
   feedbackReviewed = false;
   loadingFeedbackReviewed: boolean;
-  loadingAssessment = true;
-  loadingSubmission = true;
+  loadingAssessment: boolean;
+  loadingSubmission: boolean;
   questionsForm = new FormGroup({});
   submitting: boolean | string = false;
   savingButtonDisabled = true;
@@ -167,8 +167,6 @@ export class AssessmentComponent extends RouterEnter {
     this.contextId = +this.route.snapshot.paramMap.get('contextId');
     this.submissionId = +this.route.snapshot.paramMap.get('submissionId');
 
-    this.notificationService.
-
     // get assessment structure and populate the question form
     this.getAssessment = this.assessmentService.getAssessment(this.id, this.action)
       .subscribe(assessment => {
@@ -192,9 +190,9 @@ export class AssessmentComponent extends RouterEnter {
             ]
           });
         }
+
         this.loadingAssessment = false;
         this._getSubmission();
-        this.notificationService.loading();
       });
   }
 
@@ -418,18 +416,20 @@ export class AssessmentComponent extends RouterEnter {
   private async pullFeedbackAndShowNext(): Promise<boolean> {
     this.submitting = 'Retrieving new task...';
 
-    // only when activityId availabe (reviewer screen dont have it)
-    if (this.activityId) {
-      await this.notificationService.customToast({
-        message: 'Submission successful! Please proceed to the next learning task'
-      });
-    }
-
     // check if user has new fastFeedback request
     try {
       const modal = await this.fastFeedbackService.pullFastFeedback({ modalOnly: true }).toPromise();
-      const presentedModal = await modal.present();
-      const test = await modal.onDidDismiss();
+
+      if (modal) {
+        await this.notificationService.customToast({
+          message: 'Submission successful!',
+          icon: 'checkmark',
+          duration: '2000',
+        });
+
+        const presentedModal = await modal.present();
+        const test = await modal.onDidDismiss();
+      }
     } catch (err) {
       const toasted = await this.notificationService.alert({
         header: 'Error retrieving pulse check data',
@@ -437,14 +437,6 @@ export class AssessmentComponent extends RouterEnter {
       });
       this.submitting = false;
       throw new Error(err);
-    }
-
-    // only when activityId availabe (reviewer screen dont have it)
-    if (this.activityId) {
-      await this.notificationService.customToast({
-        message: 'Submission successful! Please proceed to the next learning task',
-        icon: 'checkmark'
-      });
     }
 
     const nextTask = await this.redirectToNextMilestoneTask();
