@@ -6,6 +6,7 @@ import { TopicComponent} from './topic.component';
 import { TopicService } from './topic.service';
 import { TopicRoutingModule } from './topic-routing.module';
 import { FilestackModule } from '@shared/filestack/filestack.module';
+import { SharedModule } from '@shared/shared.module';
 import { ActivityModule } from '../activity/activity.module';
 
 @NgModule({
@@ -15,10 +16,11 @@ import { ActivityModule } from '../activity/activity.module';
     FormsModule,
     TopicRoutingModule,
     FilestackModule,
+    SharedModule,
     ActivityModule
   ],
   declarations: [
-    TopicComponent
+    TopicComponent,
   ],
   providers: [
     TopicService
@@ -28,6 +30,7 @@ import { ActivityModule } from '../activity/activity.module';
     CommonModule,
     FormsModule,
     FilestackModule,
+    SharedModule,
     ActivityModule
   ]
 })
