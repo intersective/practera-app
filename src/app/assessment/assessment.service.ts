@@ -33,6 +33,7 @@ export interface Assessment {
   dueDate?: string;
   isOverdue?: boolean;
   groups: Array<Group>;
+  pulseCheck: boolean;
 }
 
 export interface Group {
@@ -135,7 +136,8 @@ export class AssessmentService {
       isForTeam: thisAssessment.Assessment.is_team,
       dueDate: thisAssessment.Assessment.deadline,
       isOverdue: thisAssessment.Assessment.deadline ? this.utils.timeComparer(thisAssessment.Assessment.deadline) < 0 : false,
-      groups: []
+      groups: [],
+      pulseCheck: thisAssessment.pulse_check
     };
 
     thisAssessment.AssessmentGroup.forEach(group => {
