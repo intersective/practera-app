@@ -1,17 +1,18 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '../auth.service';
 import { Observable, concat } from 'rxjs';
 import { Validators, FormGroup, FormControl } from '@angular/forms';
 import { NotificationService } from '@shared/notification/notification.service';
 import { UtilsService } from '@services/utils.service';
+import { NewRelicService } from '@shared/new-relic/new-relic.service';
 
 @Component({
   selector: 'app-auth-login',
   templateUrl: 'auth-login.component.html',
   styleUrls: ['auth-login.component.scss']
 })
-export class AuthLoginComponent {
+export class AuthLoginComponent implements OnInit {
   loginForm = new FormGroup({
     email: new FormControl('', [Validators.required]),
     password: new FormControl('', [Validators.required]),
@@ -22,8 +23,13 @@ export class AuthLoginComponent {
     private router: Router,
     private authService: AuthService,
     private notificationService: NotificationService,
-    private utils: UtilsService
+    private utils: UtilsService,
+    private newRelic: NewRelicService
   ) {}
+
+  ngOnInit() {
+    this.newRelic.setPageViewName('login');
+  }
 
   login() {
     if (this.utils.isEmpty(this.loginForm.value.email) || this.utils.isEmpty(this.loginForm.value.password)) {
