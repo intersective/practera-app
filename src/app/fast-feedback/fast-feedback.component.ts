@@ -67,8 +67,9 @@ export class FastFeedbackComponent implements OnInit {
 
     const submissionResult = await this.fastFeedbackService.submit(data, params).toPromise();
     this.submissionCompleted = true;
-    return setTimeout(() => {
-      return this.dismiss(submissionResult);
-    }, 2000);
+    return setTimeout(
+      () => this.dismiss(submissionResult),
+      2000
+    );
   }
 }
