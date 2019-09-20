@@ -39,7 +39,8 @@ export class AssessmentComponent extends RouterEnter {
     isForTeam: false,
     dueDate: '',
     isOverdue: false,
-    groups: []
+    groups: [],
+    pulseCheck: false
   };
   submission: Submission = {
     id: 0,
@@ -101,7 +102,8 @@ export class AssessmentComponent extends RouterEnter {
       isForTeam: false,
       dueDate: '',
       isOverdue: false,
-      groups: []
+      groups: [],
+      pulseCheck: false
     };
     this.submission = {
       id: 0,
@@ -399,25 +401,25 @@ export class AssessmentComponent extends RouterEnter {
    */
   private async pullFeedbackAndShowNext(): Promise<boolean> {
     this.submitting = 'Retrieving new task...';
-    // check if user has new fastFeedback request
-    // need to check puls chaneck on. need to call new api for that.
-    try {
-      await this.fastFeedbackService.pullFastFeedback().toPromise();
-    } catch (err) {
-      const toasted = await this.notificationService.alert({
-        header: 'Error retrieving pulse check data',
-        message: err.msg || JSON.stringify(err)
-      });
-      this.submitting = false;
-      throw new Error(err);
-    }
+    // check if this assessment have plus check turn on, if it's on show plus check and toast message
+    if (this.assessment.pulseCheck) {
+      try {
+        await this.fastFeedbackService.pullFastFeedback().toPromise();
+      } catch (err) {
+        const toasted = await this.notificationService.alert({
+          header: 'Error retrieving pulse check data',
+          message: err.msg || JSON.stringify(err)
+        });
+        this.submitting = false;
+        throw new Error(err);
+      }
 
-    // only when activityId availabe (reviewer screen dont have it)
-    // need to show toast if plus check is turn on
-    if (this.activityId) {
-      const fastFeedbackIsOpened = this.storage.get('fastFeedbackOpening');
-      if (fastFeedbackIsOpened) {
-        this.notificationService.presentToast('Submission successful!', false, '', true);
+      // only when activityId availabe (reviewer screen dont have it)
+      if (this.activityId) {
+        const fastFeedbackIsOpened = this.storage.get('fastFeedbackOpening');
+        if (fastFeedbackIsOpened) {
+          this.notificationService.presentToast('Submission successful!', false, '', true);
+        }
       }
     }
 
