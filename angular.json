@@ -61,6 +61,10 @@
                 {
                   "replace": "src/index.html",
                   "with": "src/index.prod.html"
+                },
+                {
+                  "replace": "./assets/newrelic.js",
+                  "with": "./assets/newrelic.js.prod"
                 }
               ],
               "optimization": true,
@@ -78,6 +82,10 @@
                 {
                   "replace": "src/environments/environment.ts",
                   "with": "src/environments/environment.stage.ts"
+                },
+                {
+                  "replace": "./assets/newrelic.js",
+                  "with": "./assets/newrelic.js.dev"
                 }
               ],
               "optimization": true,
@@ -95,6 +103,10 @@
                 {
                   "replace": "src/environments/environment.ts",
                   "with": "src/environments/environment.dev.ts"
+                },
+                {
+                  "replace": "./assets/newrelic.js",
+                  "with": "./assets/newrelic.js.dev"
                 }
               ],
               "optimization": true,
@@ -112,6 +124,10 @@
                 {
                   "replace": "src/environments/environment.ts",
                   "with": "src/environments/environment.local.ts"
+                },
+                {
+                  "replace": "./assets/newrelic.js",
+                  "with": "./assets/newrelic.js.dev"
                 }
               ],
               "optimization": false,
