@@ -8,6 +8,7 @@ import { ReviewsService } from '../reviews/reviews.service';
 import { Router, NavigationEnd } from '@angular/router';
 import { SharedService } from '@services/shared.service';
 import { Subscription } from 'rxjs';
+import { NewRelicService } from '@shared/new-relic/new-relic.service';
 
 @Component({
   selector: 'app-tabs',
@@ -34,8 +35,11 @@ export class TabsComponent implements OnDestroy {
     private switcherService: SwitcherService,
     private reviewsService: ReviewsService,
     private sharedService: SharedService,
+    private newRelic: NewRelicService,
   ) {
     const { role } = this.storage.getUser();
+    this.newRelic.setPageViewName('tab');
+
     this.utils.getEvent('notification').subscribe(event => {
       this.noOfTodoItems++;
     });
@@ -114,6 +118,7 @@ export class TabsComponent implements OnDestroy {
   }
 
   private _checkRoute() {
+    this.newRelic.actionText(`selected ${this.router.url}`);
     switch (this.router.url) {
       case '/app/home':
         this.selectedTab = 'home';
