@@ -29,11 +29,6 @@
                 "glob": "**/*.svg",
                 "input": "node_modules/ionicons/dist/ionicons/svg",
                 "output": "./svg"
-              },
-              {
-                "glob": "newrelic.js",
-                "input": "assets",
-                "output": "assets"
               }
             ],
             "styles": [
@@ -63,8 +58,8 @@
                   "with": "src/index.prod.html"
                 },
                 {
-                  "replace": "./assets/newrelic.js",
-                  "with": "./assets/newrelic.js.prod"
+                  "replace": "src/assets/newrelic.js",
+                  "with": "assets/newrelic.js.prod"
                 }
               ],
               "optimization": true,
@@ -84,8 +79,8 @@
                   "with": "src/environments/environment.stage.ts"
                 },
                 {
-                  "replace": "./assets/newrelic.js",
-                  "with": "./assets/newrelic.js.dev"
+                  "replace": "src/assets/newrelic.js",
+                  "with": "src/scripts/newrelic.js.dev"
                 }
               ],
               "optimization": true,
@@ -105,8 +100,8 @@
                   "with": "src/environments/environment.dev.ts"
                 },
                 {
-                  "replace": "./assets/newrelic.js",
-                  "with": "./assets/newrelic.js.dev"
+                  "replace": "src/assets/newrelic.js",
+                  "with": "src/scripts/newrelic.js.dev"
                 }
               ],
               "optimization": true,
@@ -126,8 +121,8 @@
                   "with": "src/environments/environment.local.ts"
                 },
                 {
-                  "replace": "./assets/newrelic.js",
-                  "with": "./assets/newrelic.js.dev"
+                  "replace": "src/assets/newrelic.js",
+                  "with": "src/scripts/newrelic.js.dev"
                 }
               ],
               "optimization": false,
