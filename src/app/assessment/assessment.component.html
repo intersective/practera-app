@@ -8,6 +8,7 @@
     </ng-container>
   </ion-toolbar>
 </ion-header>
+
 <ion-content padding color="light" text-center>
   <h1>{{ assessment.name }}</h1>
   <ion-text color="medium" text-left>
@@ -186,12 +187,9 @@
       [disabled]="isRedirectingToNextMilestoneTask"
       shape="round"
       expand="full">
-      <ng-container *ngIf="isRedirectingToNextMilestoneTask; else loadingDots">
-        Continue
-      </ng-container>
-      <ng-template #loadingDots>
+      <ng-container *ngIf="isRedirectingToNextMilestoneTask; else continue">
         <ion-spinner style="width: 100%;" name="dots" class="vertical-middle text-center"></ion-spinner>
-      </ng-template>
+      </ng-container>
 
       <ng-template #continue>
         <ion-item lines="none" no-paddings color="primary">

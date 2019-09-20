@@ -94,7 +94,7 @@ export class FastFeedbackService {
             options.modalOnly,
           ));
         }
-        return of(res);
+        return of(false);
       }),
       retryWhen(errors => {
         // retry for 3 times if API go wrong

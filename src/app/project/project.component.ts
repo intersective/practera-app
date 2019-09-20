@@ -73,7 +73,7 @@ export class ProjectComponent {
           this.milestones = this._addActivitiesToEachMilestone(this.milestones, activities);
           this.loadingActivity = false;
 
-          this.projectProgresses = this.projectService.getProgress().subscribe(progresses => {
+          this.projectProgresses = this.projectService.getProgress(this.milestones).subscribe(progresses => {
             this.milestonePositions = this.milestoneRefs.map(milestoneRef => {
               return milestoneRef.nativeElement.offsetTop;
             });
