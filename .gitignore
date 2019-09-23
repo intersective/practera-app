@@ -3,6 +3,7 @@
 .sass-cache/
 .tmp/
 
+assets/newrelic.js
 coverage/
 tests/
 platforms
