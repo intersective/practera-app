@@ -12,7 +12,6 @@ describe('ActivityService', () => {
     TestBed.configureTestingModule({
       providers: [
         ActivityService,
-        MockBackend,
         {
           provide: RequestService,
           useValue: jasmine.createSpyObj('RequestService', [

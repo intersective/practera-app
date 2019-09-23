@@ -1,4 +1,11 @@
 export class TestUtils {
+
+  static createRouterSpy() {
+    return {
+      navigate: jasmine.createSpy('navigate'),
+    };
+  }
+
   /**
    * Get a date string
    * @param day  number of dates after today. if < 0, is number of days before today
