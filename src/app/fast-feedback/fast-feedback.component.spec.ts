@@ -1,5 +1,5 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { async, ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { Observable, of, pipe } from 'rxjs';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { UtilsService } from '@services/utils.service';
@@ -120,32 +120,34 @@ describe('FastFeedbackComponent', () => {
     });
     afterEach(() => {
       expect(fastfeedbackSpy.submit.calls.count()).toBe(1);
-      expect(notificationSpy.alert.calls.count()).toBe(1);
-      notificationSpy.alert.calls.first().args[0].buttons[0].handler();
       expect(modalSpy.dismiss.calls.count()).toBe(1);
     });
-    it('should submit correct data #1', () => {
+    it('should submit correct data when submission answer is provided in full', fakeAsync(() => {
       component.submit();
+      tick(2500);
       expect(fastfeedbackSpy.submit.calls.first().args[1]).toEqual({
         context_id: 1,
         team_id: 2
       });
-    });
-    it('should submit correct data #2', () => {
+    }));
+    it('should submit correct data when user isn\'t in a team', fakeAsync(() => {
       component.meta.team_id = null;
       component.submit();
+      tick(2500);
+
       expect(fastfeedbackSpy.submit.calls.first().args[1]).toEqual({
         context_id: 1,
         target_user_id: 3
       });
-    });
-    it('should submit correct data #3', () => {
+    }));
+    it('should submit correct data when team_id and target_user_id is null', fakeAsync(() => {
       component.meta.team_id = null;
       component.meta.target_user_id = null;
       component.submit();
+      tick(2500);
       expect(fastfeedbackSpy.submit.calls.first().args[1]).toEqual({
         context_id: 1
       });
-    });
+    }));
   });
 });
