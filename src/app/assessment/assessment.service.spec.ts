@@ -59,7 +59,8 @@ describe('AssessmentService', () => {
               name: 'test',
               description: 'des',
               is_team: false,
-              deadline: '2019-02-02'
+              deadline: '2019-02-02',
+              pulseCheck: false
             },
             AssessmentGroup: [
               {
@@ -201,6 +202,7 @@ describe('AssessmentService', () => {
         isForTeam: assessment.Assessment.is_team,
         dueDate: assessment.Assessment.deadline,
         isOverdue: assessment.Assessment.deadline ? utils.timeComparer(assessment.Assessment.deadline) < 0 : false,
+        pulseCheck: assessment.pulseCheck,
         groups: [
           {
             name: group0.name,

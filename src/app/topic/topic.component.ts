@@ -293,13 +293,11 @@ export class TopicComponent extends RouterEnter {
           text: 'Yes',
           handler: () => {
             return this.markAsDone().subscribe(() => {
-              // return this.notificationService.customToast({
-              //   message: 'You\'ve completed the topic!'
-              // }).then(() => this.navigate([
-              //   'app',
-              //   'activity',
-              //   this.activityId,
-              // ]));
+              this.navigate([
+                  'app',
+                  'activity',
+                  this.activityId,
+                ]);
             });
           }
         }
