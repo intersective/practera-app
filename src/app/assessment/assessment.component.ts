@@ -561,7 +561,6 @@ export class AssessmentComponent extends RouterEnter {
           });
           throw new Error(err.msg || JSON.stringify(err));
         }
-        ,
       }
     );
 
