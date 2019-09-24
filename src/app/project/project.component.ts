@@ -8,6 +8,7 @@ import { UtilsService } from '@services/utils.service';
 import { SharedService } from '@services/shared.service';
 import { FastFeedbackService } from '../fast-feedback/fast-feedback.service';
 import { Subscription } from 'rxjs';
+import { NewRelicService } from '@shared/new-relic/new-relic.service';
 
 @Component({
   selector: 'app-project',
@@ -35,7 +36,8 @@ export class ProjectComponent extends RouterEnter {
     private projectService: ProjectService,
     private homeService: HomeService,
     private sharedService: SharedService,
-    public fastFeedbackService: FastFeedbackService
+    public fastFeedbackService: FastFeedbackService,
+    private newRelic: NewRelicService,
    ) {
     super(router);
   }
@@ -52,9 +54,14 @@ export class ProjectComponent extends RouterEnter {
     this.route.queryParamMap.subscribe(params => {
       this.highlightedActivityId = +params.get('activityId') || undefined;
     });
-    this.homeService.getProgramName().subscribe(programName => {
-      this.programName = programName;
-    });
+    this.homeService.getProgramName().subscribe(
+      programName => {
+        this.programName = programName;
+      },
+      error => {
+        this.newRelic.noticeError(error);
+      }
+    );
 
     this.projectService.getMilestones()
       .subscribe(milestones => {
@@ -91,7 +98,13 @@ export class ProjectComponent extends RouterEnter {
               if (this.highlightedActivityId) {
                 this.scrollTo(`activity-card-${this.highlightedActivityId}`);
               }
+            },
+            error => {
+              this.newRelic.noticeError(error);
             });
+          },
+          error => {
+            this.newRelic.noticeError(error);
           });
       });
 
