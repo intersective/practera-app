@@ -9,7 +9,7 @@ import { RouterEnter } from '@services/router-enter.service';
 import { SharedService } from '@services/shared.service';
 import { ActivityService, OverviewActivity, OverviewTask } from '../activity/activity.service';
 import { FastFeedbackService } from '../fast-feedback/fast-feedback.service';
-import { interval, timer } from 'rxjs';
+import { interval, timer, Subscription } from 'rxjs';
 import { map, takeUntil } from 'rxjs/operators';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
 
@@ -21,7 +21,7 @@ const SAVE_PROGRESS_TIMEOUT = 10000;
   styleUrls: ['assessment.component.scss']
 })
 export class AssessmentComponent extends RouterEnter {
-
+  getSubmission: Subscription;
   routeUrl = '/assessment/';
   // assessment id
   id: number;
@@ -149,34 +149,37 @@ export class AssessmentComponent extends RouterEnter {
     this.submissionId = +this.route.snapshot.paramMap.get('submissionId');
 
     // get assessment structure and populate the question form
-    this.assessmentService.getAssessment(this.id, this.action)
-      .subscribe(assessment => {
-        this.assessment = assessment;
-        this.populateQuestionsForm();
-        if (this.assessment.isForTeam && !this.storage.getUser().teamId) {
-          return this.notificationService.alert({
-            message: 'To do this assessment, you have to be in a team.',
-            buttons: [
-              {
-                text: 'OK',
-                role: 'cancel',
-                handler: () => {
-                  if (this.activityId) {
-                    this.navigate(['app', 'activity', this.activityId ]);
-                  } else {
-                    this.navigate(['app', 'home']);
+    this.getAssessment = this.assessmentService.getAssessment(this.id, this.action)
+      .subscribe(
+        assessment => {
+          this.assessment = assessment;
+          this.populateQuestionsForm();
+          if (this.doAssessment && this.assessment.isForTeam && !this.storage.getUser().teamId) {
+            return this.notificationService.alert({
+              message: 'To do this assessment, you have to be in a team.',
+              buttons: [
+                {
+                  text: 'OK',
+                  role: 'cancel',
+                  handler: () => {
+                    if (this.activityId) {
+                      this.navigate(['app', 'activity', this.activityId ]);
+                    } else {
+                      this.navigate(['app', 'home']);
+                    }
                   }
                 }
-              }
-            ]
-          });
+              ]
+            });
+          }
+
+          this.loadingAssessment = false;
+          this._getSubmission();
+        },
+        (error) => {
+          this.newRelic.noticeError(error);
         }
-        this.loadingAssessment = false;
-        this._getSubmission();
-      },
-      (error) => {
-        this.newRelic.noticeError(error);
-      });
+      );
   }
 
   ionViewWillLeave() {
@@ -185,8 +188,9 @@ export class AssessmentComponent extends RouterEnter {
 
   // get the submission answers &/| review answers
   private _getSubmission() {
-    this.assessmentService.getSubmission(this.id, this.contextId, this.action, this.submissionId)
-      .subscribe(result => {
+    this.getSubmission = this.assessmentService.getSubmission(this.id, this.contextId, this.action, this.submissionId)
+      .subscribe(
+      result => {
         this.submission = result.submission;
         this.loadingSubmission = false;
         // If team assessment locked set readonly view.
