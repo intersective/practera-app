@@ -10,6 +10,7 @@ import { RouterEnter } from '@services/router-enter.service';
 import { Event, EventsService } from '@app/events/events.service';
 import { SharedService } from '@services/shared.service';
 import { FastFeedbackService } from '../fast-feedback/fast-feedback.service';
+import { NewRelicService } from '@shared/new-relic/new-relic.service';
 
 @Component({
   selector: 'app-activity',
@@ -45,13 +46,19 @@ export class ActivityComponent extends RouterEnter {
     private eventsService: EventsService,
     public sharedService: SharedService,
     public fastFeedbackService: FastFeedbackService,
+    private newRelic: NewRelicService,
     private ngZone: NgZone
   ) {
     super(router);
     // update event list after book/cancel an event
-    this.getEventPusher = this.utils.getEvent('update-event').subscribe(event => {
-      this._getEvents();
-    });
+    this.getEventPusher = this.utils.getEvent('update-event').subscribe(
+      event => {
+        this._getEvents();
+      },
+      (error) => {
+        this.newRelic.noticeError(error);
+      }
+    );
   }
 
   // force every navigation happen under radar of angular
@@ -73,6 +80,7 @@ export class ActivityComponent extends RouterEnter {
   }
 
   onEnter() {
+    this.newRelic.setPageViewName('activity components');
     this._initialise();
     this.id = +this.route.snapshot.paramMap.get('id');
     this._getActivity();
@@ -92,31 +100,41 @@ export class ActivityComponent extends RouterEnter {
 
   private _getActivity() {
     this.getActivity = this.activityService.getActivity(this.id)
-      .subscribe(activity => {
-        this.activity = activity;
-        this.loadingActivity = false;
+      .subscribe(
+        activity => {
+          this.activity = activity;
+          this.loadingActivity = false;
 
-        this._getTasksProgress();
-      });
+          this._getTasksProgress();
+        },
+        (error) => {
+          this.newRelic.noticeError(error);
+        }
+      );
   }
 
   private _parallelAPI(requests) {
     return forkJoin(requests)
       .pipe(catchError(val => of(`API Response error: ${val}`)))
-      .subscribe(tasks => {
-        // throw error when it's string
-        if (typeof tasks === 'string') {
-          throw tasks;
-        }
+      .subscribe(
+        tasks => {
+          // throw error when it's string
+          if (typeof tasks === 'string') {
+            throw tasks;
+          }
 
-        tasks.forEach((res: Task) => {
-          const taskIndex = this.activity.tasks.findIndex(task => {
-            return task.id === res.id && task.type === 'Assessment';
+          tasks.forEach((res: Task) => {
+            const taskIndex = this.activity.tasks.findIndex(task => {
+              return task.id === res.id && task.type === 'Assessment';
+            });
+
+            this.activity.tasks[taskIndex] = res;
           });
-
-          this.activity.tasks[taskIndex] = res;
-        });
-      });
+        },
+        error => {
+          this.newRelic.noticeError(error);
+        }
+      );
   }
 
   /**
@@ -126,18 +144,23 @@ export class ActivityComponent extends RouterEnter {
     this.activityService.getTasksProgress({
       model_id: this.activity.id,
       tasks: this.activity.tasks,
-    }).subscribe(tasks => {
-      this.activity.tasks = tasks;
+    }).subscribe(
+      tasks => {
+        this.activity.tasks = tasks;
 
-      const requests = [];
-      this.activity.tasks.forEach((task, index) => {
-        if (task.type === 'Assessment') {
-          requests.push(this._getAssessmentStatus(index));
-        }
-      });
+        const requests = [];
+        this.activity.tasks.forEach((task, index) => {
+          if (task.type === 'Assessment') {
+            requests.push(this._getAssessmentStatus(index));
+          }
+        });
 
-      return this._parallelAPI(requests);
-    });
+        return this._parallelAPI(requests);
+      },
+      error => {
+        this.newRelic.noticeError(error);
+      }
+    );
   }
 
   /**
@@ -153,10 +176,15 @@ export class ActivityComponent extends RouterEnter {
 
     if (events === undefined) {
       this.loadingEvents = true;
-      this.getEvents = this.eventsService.getEvents(this.id).subscribe(res => {
-        this.events = res;
-        this.loadingEvents = false;
-      });
+      this.getEvents = this.eventsService.getEvents(this.id).subscribe(
+        res => {
+          this.events = res;
+          this.loadingEvents = false;
+        },
+        error => {
+          this.newRelic.noticeError(error);
+        }
+      );
     }
   }
 
