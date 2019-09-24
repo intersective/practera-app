@@ -8,6 +8,7 @@ import { UtilsService } from '@services/utils.service';
 import { SharedService } from '@services/shared.service';
 import { FastFeedbackService } from '../fast-feedback/fast-feedback.service';
 import { Subscription } from 'rxjs';
+import { NewRelicService } from '@shared/new-relic/new-relic.service';
 
 @Component({
   selector: 'app-project',
@@ -41,16 +42,22 @@ export class ProjectComponent {
     private projectService: ProjectService,
     private homeService: HomeService,
     private sharedService: SharedService,
-    public fastFeedbackService: FastFeedbackService
+    public fastFeedbackService: FastFeedbackService,
+    private newRelic: NewRelicService,
   ) {
     this.routeData = this.route.data.subscribe(data => {
       this._initialise();
       this.routeQuery = this.route.queryParamMap.subscribe(params => {
         this.highlightedActivityId = +params.get('activityId') || undefined;
       });
-      this.homeProgramName = this.homeService.getProgramName().subscribe(programName => {
-        this.programName = programName;
-      });
+      this.homeProgramName = this.homeService.getProgramName().subscribe(
+        programName => {
+          this.programName = programName;
+        },
+        error => {
+          this.newRelic.noticeError(error);
+        }
+      );
 
       const milestones = data[0];
       this.milestones = data[0];
@@ -84,7 +91,13 @@ export class ProjectComponent {
             if (this.highlightedActivityId) {
               this.scrollTo(`activity-card-${this.highlightedActivityId}`);
             }
+          },
+          error => {
+            this.newRelic.noticeError(error);
           });
+        },
+        error => {
+          this.newRelic.noticeError(error);
         });
 
       this.fastFeedbackService.pullFastFeedback().subscribe();
