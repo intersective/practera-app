@@ -103,6 +103,7 @@ describe('AssessmentComponent', () => {
     isForTeam: false,
     dueDate: '2029-02-02',
     isOverdue: false,
+    pulseCheck: false,
     groups: [{
       name: 'test groups',
       description: 'test groups description',

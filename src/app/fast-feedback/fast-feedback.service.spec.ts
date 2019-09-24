@@ -47,10 +47,10 @@ describe('FastFeedbackService', () => {
     expect(requestSpy.get.calls.count()).toBe(1);
   });
 
-  it('should open fastfeedback modal', () => {
-    service.popUpFastFeedback();
+  /*it('should open fastfeedback modal', () => {
+    service.fastFeedbackModal();
     expect(notificationSpy.modal.calls.count()).toBe(1);
-  });
+  });*/
 
   describe('when testing pullFastFeedback()', () => {
     it('should pop up modal', () => {
