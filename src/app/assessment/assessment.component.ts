@@ -11,6 +11,7 @@ import { ActivityService, OverviewActivity, OverviewTask } from '../activity/act
 import { FastFeedbackService } from '../fast-feedback/fast-feedback.service';
 import { interval, timer, Subscription } from 'rxjs';
 import { map, takeUntil } from 'rxjs/operators';
+import { NewRelicService } from '@shared/new-relic/new-relic.service';
 
 const SAVE_PROGRESS_TIMEOUT = 10000;
 
@@ -87,7 +88,8 @@ export class AssessmentComponent extends RouterEnter {
     public sharedService: SharedService,
     private activityService: ActivityService,
     private fastFeedbackService: FastFeedbackService,
-    private ngZone: NgZone
+    private ngZone: NgZone,
+    private newRelic: NewRelicService,
   ) {
     super(router);
   }
@@ -169,31 +171,36 @@ export class AssessmentComponent extends RouterEnter {
 
     // get assessment structure and populate the question form
     this.getAssessment = this.assessmentService.getAssessment(this.id, this.action)
-      .subscribe(assessment => {
-        this.assessment = assessment;
-        this.populateQuestionsForm();
-        if (this.doAssessment && this.assessment.isForTeam && !this.storage.getUser().teamId) {
-          return this.notificationService.alert({
-            message: 'To do this assessment, you have to be in a team.',
-            buttons: [
-              {
-                text: 'OK',
-                role: 'cancel',
-                handler: () => {
-                  if (this.activityId) {
-                    this.navigate(['app', 'activity', this.activityId ]);
-                  } else {
-                    this.navigate(['app', 'home']);
+      .subscribe(
+        assessment => {
+          this.assessment = assessment;
+          this.populateQuestionsForm();
+          if (this.doAssessment && this.assessment.isForTeam && !this.storage.getUser().teamId) {
+            return this.notificationService.alert({
+              message: 'To do this assessment, you have to be in a team.',
+              buttons: [
+                {
+                  text: 'OK',
+                  role: 'cancel',
+                  handler: () => {
+                    if (this.activityId) {
+                      this.navigate(['app', 'activity', this.activityId ]);
+                    } else {
+                      this.navigate(['app', 'home']);
+                    }
                   }
                 }
-              }
-            ]
-          });
-        }
+              ]
+            });
+          }
 
-        this.loadingAssessment = false;
-        this._getSubmission();
-      });
+          this.loadingAssessment = false;
+          this._getSubmission();
+        },
+        (error) => {
+          this.newRelic.noticeError(error);
+        }
+      );
   }
 
   ionViewWillLeave() {
@@ -203,7 +210,8 @@ export class AssessmentComponent extends RouterEnter {
   // get the submission answers &/| review answers
   private _getSubmission() {
     this.getSubmission = this.assessmentService.getSubmission(this.id, this.contextId, this.action, this.submissionId)
-      .subscribe(result => {
+      .subscribe(
+      result => {
         this.submission = result.submission;
         this.loadingSubmission = false;
         // If team assessment locked set readonly view.
@@ -243,6 +251,9 @@ export class AssessmentComponent extends RouterEnter {
               this.loadingFeedbackReviewed = false;
             });
         }
+      },
+      (error) => {
+        this.newRelic.noticeError(error);
       });
   }
 
@@ -548,6 +559,8 @@ export class AssessmentComponent extends RouterEnter {
         }
       },
       (err: {msg: string}) => {
+        this.newRelic.noticeError(err);
+
         this.submitting = false;
         this.savingButtonDisabled = false;
         if (saveInProgress) {
