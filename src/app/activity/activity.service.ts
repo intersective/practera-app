@@ -678,7 +678,7 @@ export class ActivityService {
   }
 
   // get overview of statuses for the entire project
-  public getOverview(projectId: number): Observable<Overview> {
+  getOverview(projectId: number): Observable<Overview> {
     return this.request.get(api.projectOverview, {
       params: { id: projectId }
     }).pipe(map(res => this._normaliseOverview(res.data)));
