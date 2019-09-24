@@ -18,6 +18,7 @@ import { NewRelicService } from '@shared/new-relic/new-relic.service';
   styleUrls: ['./activity.component.scss']
 })
 export class ActivityComponent extends RouterEnter {
+  getEventPusher: Subscription;
   getEvents: Subscription;
   routeUrl = '/app/activity';
   id: number;
@@ -46,7 +47,7 @@ export class ActivityComponent extends RouterEnter {
   ) {
     super(router);
     // update event list after book/cancel an event
-    this.utils.getEvent('update-event').subscribe(
+    this.getEventPusher = this.utils.getEvent('update-event').subscribe(
       event => {
         this._getEvents();
       },
@@ -101,23 +102,25 @@ export class ActivityComponent extends RouterEnter {
   private _parallelAPI(requests) {
     return forkJoin(requests)
       .pipe(catchError(val => of(`API Response error: ${val}`)))
-      .subscribe(tasks => {
-        // throw error when it's string
-        if (typeof tasks === 'string') {
-          throw tasks;
-        }
+      .subscribe(
+        tasks => {
+          // throw error when it's string
+          if (typeof tasks === 'string') {
+            throw tasks;
+          }
 
-        tasks.forEach((res: Task) => {
-          const taskIndex = this.activity.tasks.findIndex(task => {
-            return task.id === res.id && task.type === 'Assessment';
+          tasks.forEach((res: Task) => {
+            const taskIndex = this.activity.tasks.findIndex(task => {
+              return task.id === res.id && task.type === 'Assessment';
+            });
+
+            this.activity.tasks[taskIndex] = res;
           });
-
-          this.activity.tasks[taskIndex] = res;
-        });
-      },
-      (error) => {
-        this.newRelic.noticeError(error);
-      });
+        },
+        error => {
+          this.newRelic.noticeError(error);
+        }
+      );
   }
 
   /**
@@ -127,7 +130,8 @@ export class ActivityComponent extends RouterEnter {
     this.activityService.getTasksProgress({
       model_id: this.activity.id,
       tasks: this.activity.tasks,
-    }).subscribe(tasks => {
+    }).subscribe(
+      tasks => {
         this.activity.tasks = tasks;
 
         const requests = [];
@@ -137,11 +141,12 @@ export class ActivityComponent extends RouterEnter {
           }
         });
 
-      return this._parallelAPI(requests);
-    },
-    (error) => {
-      this.newRelic.noticeError(error);
-    });
+        return this._parallelAPI(requests);
+      },
+      error => {
+        this.newRelic.noticeError(error);
+      }
+    );
   }
 
   /**
@@ -162,7 +167,7 @@ export class ActivityComponent extends RouterEnter {
           this.events = res;
           this.loadingEvents = false;
         },
-        (error) => {
+        error => {
           this.newRelic.noticeError(error);
         }
       );
