@@ -51,12 +51,14 @@ export class ActivityComponent extends RouterEnter {
   ) {
     super(router);
     // update event list after book/cancel an event
-    this.getEventPusher = this.utils.getEvent('update-event').subscribe(event => {
-      this._getEvents();
-    },
-    (error) => {
-      this.newRelic.noticeError(error);
-    });
+    this.getEventPusher = this.utils.getEvent('update-event').subscribe(
+      event => {
+        this._getEvents();
+      },
+      (error) => {
+        this.newRelic.noticeError(error);
+      }
+    );
   }
 
   // force every navigation happen under radar of angular
@@ -114,23 +116,25 @@ export class ActivityComponent extends RouterEnter {
   private _parallelAPI(requests) {
     return forkJoin(requests)
       .pipe(catchError(val => of(`API Response error: ${val}`)))
-      .subscribe(tasks => {
-        // throw error when it's string
-        if (typeof tasks === 'string') {
-          throw tasks;
-        }
+      .subscribe(
+        tasks => {
+          // throw error when it's string
+          if (typeof tasks === 'string') {
+            throw tasks;
+          }
 
-        tasks.forEach((res: Task) => {
-          const taskIndex = this.activity.tasks.findIndex(task => {
-            return task.id === res.id && task.type === 'Assessment';
+          tasks.forEach((res: Task) => {
+            const taskIndex = this.activity.tasks.findIndex(task => {
+              return task.id === res.id && task.type === 'Assessment';
+            });
+
+            this.activity.tasks[taskIndex] = res;
           });
-
-          this.activity.tasks[taskIndex] = res;
-        });
-      },
-      (error) => {
-        this.newRelic.noticeError(error);
-      });
+        },
+        error => {
+          this.newRelic.noticeError(error);
+        }
+      );
   }
 
   /**
@@ -140,21 +144,23 @@ export class ActivityComponent extends RouterEnter {
     this.activityService.getTasksProgress({
       model_id: this.activity.id,
       tasks: this.activity.tasks,
-    }).subscribe(tasks => {
-      this.activity.tasks = tasks;
+    }).subscribe(
+      tasks => {
+        this.activity.tasks = tasks;
 
-      const requests = [];
-      this.activity.tasks.forEach((task, index) => {
-        if (task.type === 'Assessment') {
-          requests.push(this._getAssessmentStatus(index));
-        }
-      });
+        const requests = [];
+        this.activity.tasks.forEach((task, index) => {
+          if (task.type === 'Assessment') {
+            requests.push(this._getAssessmentStatus(index));
+          }
+        });
 
-      return this._parallelAPI(requests);
-    },
-    (error) => {
-      this.newRelic.noticeError(error);
-    });
+        return this._parallelAPI(requests);
+      },
+      error => {
+        this.newRelic.noticeError(error);
+      }
+    );
   }
 
   /**
@@ -170,13 +176,15 @@ export class ActivityComponent extends RouterEnter {
 
     if (events === undefined) {
       this.loadingEvents = true;
-      this.getEvents = this.eventsService.getEvents(this.id).subscribe(res => {
-        this.events = res;
-        this.loadingEvents = false;
-      },
-      (error) => {
-        this.newRelic.noticeError(error);
-      });
+      this.getEvents = this.eventsService.getEvents(this.id).subscribe(
+        res => {
+          this.events = res;
+          this.loadingEvents = false;
+        },
+        error => {
+          this.newRelic.noticeError(error);
+        }
+      );
     }
   }
 
