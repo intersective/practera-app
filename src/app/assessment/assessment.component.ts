@@ -171,34 +171,36 @@ export class AssessmentComponent extends RouterEnter {
 
     // get assessment structure and populate the question form
     this.getAssessment = this.assessmentService.getAssessment(this.id, this.action)
-      .subscribe(assessment => {
-        this.assessment = assessment;
-        this.populateQuestionsForm();
-        if (this.doAssessment && this.assessment.isForTeam && !this.storage.getUser().teamId) {
-          return this.notificationService.alert({
-            message: 'To do this assessment, you have to be in a team.',
-            buttons: [
-              {
-                text: 'OK',
-                role: 'cancel',
-                handler: () => {
-                  if (this.activityId) {
-                    this.navigate(['app', 'activity', this.activityId ]);
-                  } else {
-                    this.navigate(['app', 'home']);
+      .subscribe(
+        assessment => {
+          this.assessment = assessment;
+          this.populateQuestionsForm();
+          if (this.doAssessment && this.assessment.isForTeam && !this.storage.getUser().teamId) {
+            return this.notificationService.alert({
+              message: 'To do this assessment, you have to be in a team.',
+              buttons: [
+                {
+                  text: 'OK',
+                  role: 'cancel',
+                  handler: () => {
+                    if (this.activityId) {
+                      this.navigate(['app', 'activity', this.activityId ]);
+                    } else {
+                      this.navigate(['app', 'home']);
+                    }
                   }
                 }
-              }
-            ]
-          });
-        }
+              ]
+            });
+          }
 
-        this.loadingAssessment = false;
-        this._getSubmission();
-      },
-      (error) => {
-        this.newRelic.noticeError(error);
-      });
+          this.loadingAssessment = false;
+          this._getSubmission();
+        },
+        (error) => {
+          this.newRelic.noticeError(error);
+        }
+      );
   }
 
   ionViewWillLeave() {
@@ -208,7 +210,8 @@ export class AssessmentComponent extends RouterEnter {
   // get the submission answers &/| review answers
   private _getSubmission() {
     this.getSubmission = this.assessmentService.getSubmission(this.id, this.contextId, this.action, this.submissionId)
-      .subscribe(result => {
+      .subscribe(
+      result => {
         this.submission = result.submission;
         this.loadingSubmission = false;
         // If team assessment locked set readonly view.
