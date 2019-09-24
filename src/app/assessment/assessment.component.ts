@@ -38,7 +38,8 @@ export class AssessmentComponent extends RouterEnter {
     isForTeam: false,
     dueDate: '',
     isOverdue: false,
-    groups: []
+    groups: [],
+    pulseCheck: false,
   };
 
   submission: Submission = {
@@ -101,7 +102,8 @@ export class AssessmentComponent extends RouterEnter {
       isForTeam: false,
       dueDate: '',
       isOverdue: false,
-      groups: []
+      groups: [],
+      pulseCheck: false,
     };
     this.submission = {
       id: 0,
@@ -137,6 +139,9 @@ export class AssessmentComponent extends RouterEnter {
   onEnter() {
     this._initialise();
 
+    // @TODO only use for testing after complete need to remove, need to add this if assessment have pluscheck and remove from this place
+    // commeted because unite test getting failed
+    // this.notificationService.presentToast('Submission successful!', false, '', true);
     this.action = this.route.snapshot.data.action;
     this.fromPage = this.route.snapshot.paramMap.get('from');
     if (!this.fromPage) {
@@ -395,26 +400,28 @@ export class AssessmentComponent extends RouterEnter {
   private async pullFeedbackAndShowNext(): Promise<boolean> {
     this.submitting = 'Retrieving new task...';
 
-    // only when activityId availabe (reviewer screen dont have it)
-    if (this.activityId) {
-      await this.notificationService.customToast({
-        message: 'Submission successful! Please proceed to the next learning task',
-        icon: 'checkmark'
-      });
-    }
+    // check if this assessment have plus check turn on, if it's on show plus check and toast message
+    if (this.assessment.pulseCheck) {
+      try {
+        const modal = await this.fastFeedbackService.pullFastFeedback({ modalOnly: true }).toPromise();
+        const presentedModal = await modal.present();
+        const test = await modal.onDidDismiss();
+      } catch (err) {
+        const toasted = await this.notificationService.alert({
+          header: 'Error retrieving pulse check data',
+          message: err.msg || JSON.stringify(err)
+        });
+        this.submitting = false;
+        throw new Error(err);
+      }
 
-    // check if user has new fastFeedback request
-    try {
-      const modal = await this.fastFeedbackService.pullFastFeedback({ modalOnly: true }).toPromise();
-      const presentedModal = await modal.present();
-      const test = await modal.onDidDismiss();
-    } catch (err) {
-      const toasted = await this.notificationService.alert({
-        header: 'Error retrieving pulse check data',
-        message: err.msg || JSON.stringify(err)
-      });
-      this.submitting = false;
-      throw new Error(err);
+      // only when activityId availabe (reviewer screen dont have it)
+      if (this.activityId) {
+        const fastFeedbackIsOpened = this.storage.get('fastFeedbackOpening');
+        if (fastFeedbackIsOpened) {
+          this.notificationService.presentToast('Submission successful!', false, '', true);
+        }
+      }
     }
 
     const nextTask = await this.redirectToNextMilestoneTask();
@@ -582,10 +589,7 @@ export class AssessmentComponent extends RouterEnter {
       }
 
       // mark as read successful
-      await this.notificationService.customToast({
-        message: 'Assessment completed! Please proceed to the next learning task.',
-        icon: 'checkmark'
-      });
+      // @TODO need to show three dots and tick icon
 
       // step 1.2: after feedback marked as read, popup review rating screen
       try {
