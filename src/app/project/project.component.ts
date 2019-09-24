@@ -67,7 +67,8 @@ export class ProjectComponent {
       this.activeMilestone.fill(false);
       this.activeMilestone[0] = true;
       this.activities = this.projectService.getActivities(milestones)
-        .subscribe(activities => {
+        .subscribe(
+        activities => {
           // remove entire Activity object with dummy data for clean Activity injection
           if (this.milestones) {
             this.milestones.forEach((milestone, i) => {
@@ -80,7 +81,8 @@ export class ProjectComponent {
           this.milestones = this._addActivitiesToEachMilestone(this.milestones, activities);
           this.loadingActivity = false;
 
-          this.projectProgresses = this.projectService.getProgress(this.milestones).subscribe(progresses => {
+          this.projectProgresses = this.projectService.getProgress(this.milestones).subscribe(
+          progresses => {
             this.milestonePositions = this.milestoneRefs.map(milestoneRef => {
               return milestoneRef.nativeElement.offsetTop;
             });
