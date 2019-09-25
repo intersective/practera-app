@@ -261,6 +261,7 @@ export class AssessmentService {
         });
       }
     });
+console.log(assessment);
     return assessment;
   }
 
