@@ -60,7 +60,6 @@ describe('ActivityService', () => {
         teamId: 1,
       });
       tick();
-      console.log(test);
       expect(service.getOverview).toHaveBeenCalled();
     }));
   });*/
