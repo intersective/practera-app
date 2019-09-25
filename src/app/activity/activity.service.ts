@@ -191,7 +191,6 @@ export class ActivityService {
 
   private _normaliseOverview(rawResponse: Overview): Overview {
     const milestones = rawResponse.Milestones;
-console.log(rawResponse);
     // make sure every activity is available
     const normalisedMilestones = milestones.filter(milestone => {
       if (milestone.Activities.length > 0) {
@@ -262,7 +261,7 @@ console.log(rawResponse);
         const nextUnconditionalMilestone = this.getNextMilestone(
           overview.Milestones,
           currentMilestone,
-          currentMilestoneIndex
+          currentMilestoneIndex,
         );
 
         return {
