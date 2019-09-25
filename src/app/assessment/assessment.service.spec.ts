@@ -55,6 +55,7 @@ describe('AssessmentService', () => {
         success: true,
         data: [
           {
+            pulse_check: false,
             Assessment: {
               name: 'test',
               description: 'des',
@@ -202,7 +203,7 @@ describe('AssessmentService', () => {
         isForTeam: assessment.Assessment.is_team,
         dueDate: assessment.Assessment.deadline,
         isOverdue: assessment.Assessment.deadline ? utils.timeComparer(assessment.Assessment.deadline) < 0 : false,
-        pulseCheck: assessment.pulseCheck,
+        pulseCheck: assessment.pulse_check,
         groups: [
           {
             name: group0.name,
@@ -394,7 +395,9 @@ describe('AssessmentService', () => {
     it('should get correct assessment data', () => {
       requestSpy.get.and.returnValue(of(requestResponse));
       service.getAssessment(1, 'assessment').subscribe(
-        assessment => expect(assessment).toEqual(expected)
+        assessment => {
+          expect(assessment).toEqual(expected);
+        }
       );
       expect(requestSpy.get.calls.count()).toBe(1);
     });
@@ -409,6 +412,16 @@ describe('AssessmentService', () => {
       requestSpy.get.and.returnValue(of(tmpRes));
       service.getAssessment(1, 'assessment').subscribe(
         assessment => expect(assessment).toEqual(tmpExp)
+      );
+      expect(requestSpy.get).toHaveBeenCalledWith(
+        'api/assessments.json',
+        {
+          params: {
+            assessment_id: 1,
+            structured: true,
+            review: false
+          }
+        }
       );
       expect(requestSpy.get.calls.count()).toBe(1);
     });
