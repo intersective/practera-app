@@ -216,7 +216,9 @@ export class AssessmentComponent extends RouterEnter {
           this.savingButtonDisabled = false;
         }
         // this page is for doing review if the submission status is 'pending review' and action is review
-        if (this.submission.status === 'pending review' && this.action === 'review') {
+        if ((
+          this.submission.status === 'pending approval' || this.submission.status === 'pending review'
+        ) && this.action === 'review') {
           this.doReview = true;
         }
         // call todo item to check if the feedback has been reviewed or not
@@ -419,9 +421,13 @@ export class AssessmentComponent extends RouterEnter {
       if (this.activityId) {
         const fastFeedbackIsOpened = this.storage.get('fastFeedbackOpening');
         if (fastFeedbackIsOpened) {
-          this.notificationService.presentToast('Submission successful!', false, '', true);
+          this.notificationService.presentToast('Submission successful!', false);
         }
       }
+    }
+
+    if (this.doReview) {
+      return this.navigationRoute();
     }
 
     const nextTask = await this.redirectToNextMilestoneTask();
