@@ -165,10 +165,12 @@ describe('EventsComponent', () => {
     afterEach(() => {
       eventsSpy.getEvents.and.returnValue(of(tmpEvents));
       fixture.detectChanges();
-      expect(component.loadingEvents).toBe(false);
-      expect(eventsSpy.getEvents.calls.count()).toBe(1);
-      expect(component.events).toEqual(expectedEvents);
-      expect(component.eventsCategorised).toEqual(expectedCategorised);
+      fixture.whenStable().then(() => {
+        expect(component.loadingEvents).toBe(false);
+        expect(eventsSpy.getEvents.calls.count()).toBe(1);
+        expect(component.events).toEqual(expectedEvents);
+        expect(component.eventsCategorised).toEqual(expectedCategorised);
+      });
     });
 
     it(`should get correct full events grouped and activities`, () => {
