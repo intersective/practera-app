@@ -182,6 +182,9 @@ export class AuthService {
       domain.indexOf('localhost') !== -1
         ? 'dev.app-v2.practera.com'
         : domain;
+    if (domain == undefined || !domain) {
+      domain = 'practera.app';
+    }
     return domain;
   }
 

@@ -31,6 +31,7 @@ export class AuthRegistrationComponent implements OnInit {
     id: null
   };
   domain = window.location.hostname;
+  
   // validation errors array
   errors: Array<any> = [];
 
@@ -50,6 +51,9 @@ export class AuthRegistrationComponent implements OnInit {
       this.domain.indexOf('localhost') !== -1
         ? 'appdev.practera.com'
         : this.domain;
+    if (this.domain == undefined || !this.domain) {
+      this.domain = "practera.app";
+    }
     this.validateQueryParams();
   }
 
