@@ -187,7 +187,7 @@ export class HomeComponent extends RouterEnter {
   }
 
   goToActivity(id) {
-    this.newRelic.actionText('goToActivity');
+    this.newRelic.actionText(`goToActivity ID: ${id}`);
     this.router.navigate(['app', 'activity', id]);
   }
 
