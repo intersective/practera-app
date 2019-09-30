@@ -21,7 +21,6 @@ const SAVE_PROGRESS_TIMEOUT = 10000;
   styleUrls: ['assessment.component.scss']
 })
 export class AssessmentComponent extends RouterEnter {
-
   routeUrl = '/assessment/';
   // assessment id
   id: number;
