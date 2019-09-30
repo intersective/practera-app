@@ -6,6 +6,7 @@
 assets/newrelic.js
 coverage/
 tests/
+ios*
 platforms*
 electron*
 resources*

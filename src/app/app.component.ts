@@ -46,7 +46,7 @@ export class AppComponent implements OnInit {
     // Get the custom branding info and update the theme color if needed
     let domain = window.location.hostname;
     if (domain == undefined || !domain) {
-      domain = "practera.app";
+      domain = environment.nativeDomain;
     }
     this.authService.getConfig({domain}).subscribe((response: any) => {
       if (response !== null) {

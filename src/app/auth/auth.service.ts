@@ -7,6 +7,7 @@ import { Router } from '@angular/router';
 import { BrowserStorageService } from '@services/storage.service';
 import { UtilsService } from '@services/utils.service';
 import { PusherService } from '@shared/pusher/pusher.service';
+import { environment } from '@environments/environment';
 
 /**
  * @name api
@@ -183,7 +184,7 @@ export class AuthService {
         ? 'dev.app-v2.practera.com'
         : domain;
     if (domain == undefined || !domain) {
-      domain = 'practera.app';
+      domain = environment.nativeDomain;
     }
     return domain;
   }

@@ -3,6 +3,8 @@ import { Router, ActivatedRoute, ParamMap } from '@angular/router';
 import { UtilsService } from '@services/utils.service';
 import { NotificationService } from '@shared/notification/notification.service';
 import { Md5 } from 'ts-md5/dist/md5';
+import { environment } from '@environments/environment';
+
 import {
   Validators,
   FormControl,
@@ -52,7 +54,8 @@ export class AuthRegistrationComponent implements OnInit {
         ? 'appdev.practera.com'
         : this.domain;
     if (this.domain == undefined || !this.domain) {
-      this.domain = "practera.app";
+      this.domain = environment.nativeDomain;
+
     }
     this.validateQueryParams();
   }
