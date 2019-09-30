@@ -47,6 +47,7 @@ export class ActivityComponent extends RouterEnter {
     private ngZone: NgZone
   ) {
     super(router);
+
     // update event list after book/cancel an event
     this.getEventPusher = this.utils.getEvent('update-event').subscribe(
       event => {
@@ -93,6 +94,7 @@ export class ActivityComponent extends RouterEnter {
           this.loadingActivity = false;
 
           this._getTasksProgress();
+          this.newRelic.setPageViewName(`Activity ${this.activity.name}, ID: ${this.id}`);
         },
         (error) => {
           this.newRelic.noticeError(error);
@@ -177,6 +179,7 @@ export class ActivityComponent extends RouterEnter {
 
   back() {
     this.navigate([ 'app', 'project' ]);
+    this.newRelic.actionText('Back button pressed on Activities Page.');
   }
 
   // check assessment lock or not before go to assessment.
@@ -199,6 +202,8 @@ export class ActivityComponent extends RouterEnter {
   }
 
   goto(type, id) {
+    this.newRelic.actionText(`Selected Task (${type}): ID ${id}`);
+
     switch (type) {
       case 'Assessment':
         // get the context id of this assessment
