@@ -43,8 +43,7 @@
               }
             ],
             "scripts": [
-              "./node_modules/pusher-js/dist/web/pusher.min.js",
-              "./assets/newrelic.js"
+              "./node_modules/pusher-js/dist/web/pusher.min.js"
             ]
           },
           "configurations": {
