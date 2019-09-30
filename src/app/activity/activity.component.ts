@@ -19,7 +19,6 @@ import { NewRelicService } from '@shared/new-relic/new-relic.service';
 })
 export class ActivityComponent extends RouterEnter {
   routeUrl = '/app/activity'; // mandatory for RouterEnter parent class
-
   id: number;
   activity: Activity = {
     id: 0,
