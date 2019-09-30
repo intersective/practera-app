@@ -47,10 +47,14 @@ export class NewRelicService {
     return newrelic.addPageAction(name, customAttr);
   }
 
+  setCustomAttribute(name, value) {
+    return newrelic.setCustomAttribute(name, value);
+  }
+
   noticeError(error, customAttr?) {
     const { userHash, enrolment } = this.storage.getUser();
-    this.setCustomAttribute('enrolment ID', enrolment.id).save();
-    this.setCustomAttribute('user hash', userHash).save();
+    this.setCustomAttribute('enrolment ID', enrolment.id);
+    this.setCustomAttribute('user hash', userHash);
     return newrelic.noticeError(error);
   }
 
@@ -62,7 +66,7 @@ export class NewRelicService {
     return this.newrelic.actionText(name).save();
   }
 
-  setCustomAttribute(name, value) {
-    return this.newrelic.setCustomAttribute(name, value).save();
+  setAttribute(name, value) {
+    return this.newrelic.setAttribute(name, value).save();
   }
 }
