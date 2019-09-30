@@ -40,12 +40,13 @@ export class ProjectComponent extends RouterEnter {
     private sharedService: SharedService,
     public fastFeedbackService: FastFeedbackService,
     private newRelic: NewRelicService,
+    private readonly document: Document
    ) {
     super(router);
   }
 
   private _initialise() {
-    this.milestones = [{ dummy: true }];
+    this.milestones = [{ dummy: true }]; // initial value
     this.loadingActivity = true;
     this.loadingMilestone = true;
     this.loadingProgress = true;
@@ -53,6 +54,7 @@ export class ProjectComponent extends RouterEnter {
 
   onEnter() {
     this._initialise();
+    this.newRelic.setPageViewName('Project View');
     this.route.queryParamMap.subscribe(params => {
       this.highlightedActivityId = +params.get('activityId') || undefined;
     });
@@ -145,8 +147,7 @@ export class ProjectComponent extends RouterEnter {
       this.activeMilestone[index] = true;
     }
 
-
-    const el = document.getElementById(domId);
+    const el = this.document.getElementById(domId);
     if (el) {
       el.scrollIntoView({ block: 'start', behavior: 'smooth', inline: 'nearest' });
       el.classList.add('highlighted');
@@ -156,6 +157,7 @@ export class ProjectComponent extends RouterEnter {
 
   goToActivity(id) {
     this.router.navigate(['app', 'activity', id]);
+    this.newRelic.addPageAction('Navigate activity', id);
   }
 
   private _addActivitiesToEachMilestone(milestones, activities) {
