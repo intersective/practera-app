@@ -32,8 +32,8 @@ export class TabsComponent extends RouterEnter {
     private sharedService: SharedService,
     private newRelic: NewRelicService,
   ) {
-    this.newRelic.setPageViewName('tab');
     super(router);
+    this.newRelic.setPageViewName('tab');
 
     const role = this.storage.getUser().role;
     this.utils.getEvent('notification').subscribe(event => {

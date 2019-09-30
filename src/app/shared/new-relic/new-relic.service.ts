@@ -6,8 +6,9 @@ import { RequestService } from '@shared/request/request.service';
 import { environment } from '@environments/environment';
 import { UtilsService } from '@services/utils.service';
 import { BrowserStorageService } from '@services/storage.service';
-// import { noticeError } from 'new-relic-browser';
+// import { noticeError } from 'newrelic';
 // import * as newrelic from './../../../../assets/newrelic';
+// import 'newrelic';
 declare var newrelic: any;
 
 @Injectable({
