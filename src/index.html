@@ -36,5 +36,13 @@
   <div id="mainContainer">
     <app-root></app-root>
   </div>
+  <div id="BLOCKED-TESTING" style="text-align:center;display: none;">
+    Please deactivate adblocker to enjoy the full experience provided by our app.
+  </div>
+  <script type="text/javascript">
+    if (typeof newrelic === 'undefined') {
+      document.getElementById('BLOCKED-TESTING').style.display='block';
+    }
+  </script>
 </body>
 </html>

@@ -180,7 +180,7 @@ export class HomeComponent extends RouterEnter implements OnDestroy {
   }
 
   goToActivity(id) {
-    this.newRelic.actionText('goToActivity');
+    this.newRelic.actionText(`goToActivity ID: ${id}`);
     this.router.navigate(['app', 'activity', id]);
   }
 
