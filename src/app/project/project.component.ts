@@ -1,4 +1,5 @@
-import { Component, HostListener, ViewChild, ViewChildren, QueryList, ElementRef } from '@angular/core';
+import { Component, HostListener, ViewChild, ViewChildren, QueryList, ElementRef, Inject } from '@angular/core';
+import { DOCUMENT } from '@angular/common';
 import { Router, ActivatedRoute, NavigationEnd } from '@angular/router';
 import { ProjectService, Milestone, DummyMilestone } from './project.service';
 import { HomeService } from '../home/home.service';
@@ -44,7 +45,7 @@ export class ProjectComponent {
     private sharedService: SharedService,
     public fastFeedbackService: FastFeedbackService,
     private newRelic: NewRelicService,
-    private readonly document: Document
+    @Inject(DOCUMENT) private readonly document: Document
   ) {
     this.routeData = this.route.data.subscribe(data => {
       this._initialise();
@@ -149,7 +150,11 @@ export class ProjectComponent {
 
     const el = this.document.getElementById(domId);
     if (el) {
-      el.scrollIntoView({ block: 'start', behavior: 'smooth', inline: 'nearest' });
+      el.scrollIntoView({
+        block: 'start',
+        behavior: 'smooth',
+        inline: 'nearest'
+      });
       el.classList.add('highlighted');
       setTimeout(() => el.classList.remove('highlighted'), 1000);
     }
