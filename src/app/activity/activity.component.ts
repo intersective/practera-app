@@ -18,6 +18,7 @@ import { NewRelicService } from '@shared/new-relic/new-relic.service';
   styleUrls: ['./activity.component.scss']
 })
 export class ActivityComponent extends RouterEnter {
+  getActivity: Subscription;
   getEventPusher: Subscription;
   getEvents: Subscription;
   routeUrl = '/app/activity';
