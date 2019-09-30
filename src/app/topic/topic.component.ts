@@ -10,6 +10,7 @@ import { NotificationService } from '@shared/notification/notification.service';
 import { ActivityService, Task, OverviewActivity, OverviewTask } from '../activity/activity.service';
 import { SharedService } from '@services/shared.service';
 import { Subscription, Observable } from 'rxjs';
+import { NewRelicService } from '@shared/new-relic/new-relic.service';
 
 @Component({
   selector: 'app-topic',
@@ -51,7 +52,8 @@ export class TopicComponent extends RouterEnter {
     public notificationService: NotificationService,
     private activityService: ActivityService,
     private sharedService: SharedService,
-    private ngZone: NgZone
+    private ngZone: NgZone,
+    private newRelic: NewRelicService
   ) {
     super(router);
   }
@@ -91,26 +93,37 @@ export class TopicComponent extends RouterEnter {
 
   private _getTopic() {
     this.topicSubscription = this.topicService.getTopic(this.id)
-      .subscribe(topic => {
-        this.topic = topic;
-        this.loadingTopic = false;
-        if ( topic.videolink ) {
-          this.iframeHtml = this.embedService.embed(this.topic.videolink);
+      .subscribe(
+        topic => {
+          this.topic = topic;
+          this.loadingTopic = false;
+          if ( topic.videolink ) {
+            this.iframeHtml = this.embedService.embed(this.topic.videolink);
+          }
+          this.newRelic.setPageViewName(`Topic ${this.topic.title} ID: ${this.topic.id}`);
+        },
+        err => {
+          this.newRelic.noticeError(`${JSON.stringify(err)}`);
         }
-      });
+      );
   }
 
   private _getTopicProgress() {
     this.topicProgressSubscription = this.topicService.getTopicProgress(this.activityId, this.id)
-      .subscribe(result => {
-        this.topicProgress = result;
-        if (this.topicProgress !== null && this.topicProgress !== undefined) {
-          if (this.topicProgress === 1) {
-            this.btnToggleTopicIsDone = true;
+      .subscribe(
+        result => {
+          this.topicProgress = result;
+          if (this.topicProgress !== null && this.topicProgress !== undefined) {
+            if (this.topicProgress === 1) {
+              this.btnToggleTopicIsDone = true;
+            }
           }
+          this.loadingMarkedDone = false;
+        },
+        err => {
+          this.newRelic.noticeError(`${JSON.stringify(err)}`);
         }
-        this.loadingMarkedDone = false;
-      });
+      );
   }
 
   /**

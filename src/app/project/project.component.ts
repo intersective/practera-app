@@ -44,12 +44,16 @@ export class ProjectComponent {
     private sharedService: SharedService,
     public fastFeedbackService: FastFeedbackService,
     private newRelic: NewRelicService,
+    private readonly document: Document
   ) {
     this.routeData = this.route.data.subscribe(data => {
       this._initialise();
+      this.newRelic.setPageViewName('Project View');
+
       this.routeQuery = this.route.queryParamMap.subscribe(params => {
         this.highlightedActivityId = +params.get('activityId') || undefined;
       });
+
       this.homeProgramName = this.homeService.getProgramName().subscribe(
         programName => {
           this.programName = programName;
@@ -143,15 +147,17 @@ export class ProjectComponent {
     // update active milestone status (mark whatever user select)
     this.activeMilestone.fill(false);
 
-    const el = document.getElementById(domId);
-    el.scrollIntoView({ block: 'start', behavior: 'smooth', inline: 'nearest' });
-
-    el.classList.add('highlighted');
-    setTimeout(() => el.classList.remove('highlighted'), 1000);
+    const el = this.document.getElementById(domId);
+    if (el) {
+      el.scrollIntoView({ block: 'start', behavior: 'smooth', inline: 'nearest' });
+      el.classList.add('highlighted');
+      setTimeout(() => el.classList.remove('highlighted'), 1000);
+    }
   }
 
   goToActivity(id) {
     this.router.navigate(['app', 'activity', id]);
+    this.newRelic.addPageAction('Navigate activity', id);
   }
 
   private _addActivitiesToEachMilestone(milestones, activities) {
