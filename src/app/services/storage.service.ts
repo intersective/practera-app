@@ -26,6 +26,7 @@ export interface User {
   activityCardImage?: string;
   hasReviewRating?: boolean;
   truncateDescription?: boolean;
+  enrolment?: any;
 }
 
 export interface Config {

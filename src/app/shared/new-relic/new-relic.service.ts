@@ -9,25 +9,34 @@ import { BrowserStorageService } from '@services/storage.service';
 // import { noticeError } from 'newrelic';
 // import * as newrelic from './../../../../assets/newrelic';
 // import 'newrelic';
-declare var newrelic: any;
+import {
+  interaction,
+  setErrorHandler,
+  setPageViewName,
+  addRelease,
+} from 'new-relic-browser';
+// import * as newrelic from 'newrelic';
 
 @Injectable({
   providedIn: 'root',
 })
 
 export class NewRelicService {
-  private newrelic = newrelic.interaction();
+  private newrelic;
 
   constructor(
     private http: HttpClient,
     private request: RequestService,
     private utils: UtilsService,
-    public storage: BrowserStorageService
+    private storage: BrowserStorageService
   ) {
-  }
-
-  actionText(name) {
-    return this.newrelic.actionText(name);
+    if (newrelic) {
+      this.newrelic = newrelic.interaction();
+      this.newrelic.onEnd(function() {
+        console.log(arguments);
+        console.log('interaction ended');
+      });
+    }
   }
 
   setPageViewName(name) {
@@ -39,6 +48,21 @@ export class NewRelicService {
   }
 
   noticeError(error, customAttr?) {
+    const { userHash, enrolment } = this.storage.getUser();
+    this.setCustomAttribute('enrolment ID', enrolment.id).save();
+    this.setCustomAttribute('user hash', userHash).save();
     return newrelic.noticeError(error);
+  }
+
+  getContext() {
+    return this.newrelic.getContext().save();
+  }
+
+  actionText(name) {
+    return this.newrelic.actionText(name).save();
+  }
+
+  setCustomAttribute(name, value) {
+    return this.newrelic.setCustomAttribute(name, value).save();
   }
 }
