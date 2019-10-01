@@ -137,7 +137,7 @@ export class AssessmentService {
       dueDate: thisAssessment.Assessment.deadline,
       isOverdue: thisAssessment.Assessment.deadline ? this.utils.timeComparer(thisAssessment.Assessment.deadline) < 0 : false,
       groups: [],
-      pulseCheck: thisAssessment.pulse_check
+      pulseCheck: thisAssessment.Assessment.pulse_check
     };
 
     thisAssessment.AssessmentGroup.forEach(group => {
