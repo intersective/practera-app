@@ -52,6 +52,7 @@ export class NewRelicService {
   }
 
   noticeError(error, customAttr?) {
+    console.log(this.storage.getUser());
     const { userHash, enrolment } = this.storage.getUser();
     this.setCustomAttribute('enrolment ID', enrolment.id);
     this.setCustomAttribute('user hash', userHash);
