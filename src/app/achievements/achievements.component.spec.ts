@@ -5,6 +5,10 @@ import { AchievementsService } from './achievements.service';
 import { Observable, of, pipe } from 'rxjs';
 import { Router } from '@angular/router';
 import { SharedModule } from '@shared/shared.module';
+import {
+  HttpTestingController,
+  HttpClientTestingModule
+} from '@angular/common/http/testing';
 
 class Page {
   get totalPoints() {
@@ -36,7 +40,7 @@ describe('AchievementsComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [SharedModule],
+      imports: [SharedModule, HttpClientTestingModule],
       declarations: [ AchievementsComponent ],
       schemas: [ CUSTOM_ELEMENTS_SCHEMA ],
       providers: [
@@ -88,7 +92,7 @@ describe('AchievementsComponent', () => {
   });
 
   it('should create', () => {
-    expect(component).toBeDefined();
+    expect(component).toBeTruthy();
   });
 
   describe('when testing onEnter()', () => {

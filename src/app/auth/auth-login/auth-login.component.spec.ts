@@ -8,6 +8,8 @@ import { Observable, of, pipe, throwError } from 'rxjs';
 import { SharedModule } from '@shared/shared.module';
 import { NotificationService } from '@shared/notification/notification.service';
 import { ReactiveFormsModule } from '@angular/forms';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+
 
 describe('AuthLoginComponent', () => {
   let component: AuthLoginComponent;
@@ -18,7 +20,7 @@ describe('AuthLoginComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [SharedModule, RouterTestingModule, ReactiveFormsModule],
+      imports: [SharedModule, RouterTestingModule, ReactiveFormsModule, HttpClientTestingModule],
       declarations: [ AuthLoginComponent ],
       schemas: [ CUSTOM_ELEMENTS_SCHEMA ],
       providers: [
