@@ -305,15 +305,20 @@ export class TopicComponent extends RouterEnter {
         {
           text: 'Yes',
           handler: () => {
-            return this.markAsDone().subscribe(() => {
-              return this.notificationService.customToast({
-                message: 'You\'ve completed the topic!'
-              }).then(() => this.navigate([
-                'app',
-                'activity',
-                this.activityId,
-              ]));
-            });
+            this.newRelic.addPageAction('Mark as read before back');
+            return this.markAsDone().subscribe(
+              () => {
+                return this.notificationService.customToast({
+                  message: 'You\'ve completed the topic!'
+                }).then(() => this.navigate([
+                  'app',
+                  'activity',
+                  this.activityId,
+                ]));
+              },
+              err => {
+                this.newRelic.noticeError(`${JSON.stringify(err)}`);
+              });
           }
         }
       ]
