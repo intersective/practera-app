@@ -21,7 +21,6 @@ const SAVE_PROGRESS_TIMEOUT = 10000;
   styleUrls: ['assessment.component.scss']
 })
 export class AssessmentComponent extends RouterEnter {
-
   routeUrl = '/assessment/';
   // assessment id
   id: number;
@@ -174,6 +173,7 @@ export class AssessmentComponent extends RouterEnter {
       .subscribe(
         assessment => {
           this.assessment = assessment;
+          this.newRelic.setPageViewName(`Assessment: ${this.assessment.name} ID: ${this.id}`);
           this.populateQuestionsForm();
           if (this.doAssessment && this.assessment.isForTeam && !this.storage.getUser().teamId) {
             return this.notificationService.alert({
@@ -290,6 +290,7 @@ export class AssessmentComponent extends RouterEnter {
   }
 
   back(): Promise<boolean | void> {
+    this.newRelic.actionText('Back to previous page.');
     if (this.action === 'assessment'
       && this.submission.status === 'published'
       && !this.feedbackReviewed) {
@@ -551,15 +552,18 @@ export class AssessmentComponent extends RouterEnter {
       (result: any) => {
         this.savingButtonDisabled = false;
         if (saveInProgress) {
+          this.newRelic.actionText('Saved progress.');
           this.submitting = false;
           // display message for successfull saved answers
           this.savingMessage = 'Last saved ' + this._getCurrentTime();
         } else {
+          this.newRelic.actionText('Submit answer.');
+
           return this.pullFeedbackAndShowNext();
         }
       },
       (err: {msg: string}) => {
-        this.newRelic.noticeError(err);
+        this.newRelic.noticeError(JSON.stringify(err));
 
         this.submitting = false;
         this.savingButtonDisabled = false;
@@ -600,8 +604,10 @@ export class AssessmentComponent extends RouterEnter {
 
       // step 1.1: Mark feedback as read
       try {
+        this.newRelic.actionText('Waiting for fast feedback data.');
         result = await this.assessmentService.saveFeedbackReviewed(this.submission.id).toPromise();
         this.loadingFeedbackReviewed = false;
+        this.newRelic.actionText('Fast feedback answered.');
       } catch (err) {
         const toasted = await this.notificationService.alert({
           header: 'Error marking feedback as completed',
@@ -632,7 +638,9 @@ export class AssessmentComponent extends RouterEnter {
           this.markingAsReview = 'Retrieving New Task...';
           this.isRedirectingToNextMilestoneTask = true;
 
+          this.newRelic.actionText('Evaluate & navigate to next task.');
           nextSequence = await this.redirectToNextMilestoneTask({routeOnly: true});
+          this.newRelic.actionText('Waiting for rating API response.');
           const popup = await this.assessmentService.popUpReviewRating(
             this.review.id,
             nextSequence
@@ -643,8 +651,10 @@ export class AssessmentComponent extends RouterEnter {
           return popup;
         }
       } catch (err) {
+        const msg = 'Error retrieving rating page';
+        this.newRelic.noticeError(msg);
         const toasted = await this.notificationService.alert({
-          header: 'Error retrieving rating page',
+          header: msg,
           message: err.msg || JSON.stringify(err)
         });
 
@@ -659,6 +669,7 @@ export class AssessmentComponent extends RouterEnter {
     // step 2.0: if feedback had been marked as read beforehand,
     //         straightaway redirect user to the next task instead.
     this.markingAsReview = 'Retrieving New Task...';
+    this.newRelic.actionText('Evaluate & navigate to next task.');
     nextSequence = await this.redirectToNextMilestoneTask({ continue: true });
     this.loadingFeedbackReviewed = false;
     this.markingAsReview = 'Continue';
@@ -666,6 +677,7 @@ export class AssessmentComponent extends RouterEnter {
   }
 
   showQuestionInfo(info) {
+    this.newRelic.actionText('Read question info.');
     this.notificationService.popUp('shortMessage', {message: info});
   }
 
