@@ -55,10 +55,13 @@ export class AuthLoginComponent implements OnInit {
       password: this.loginForm.value.password,
     }).subscribe(
       res => {
+        this.newRelic.actionText('login successful');
         this.isLoggingIn = false;
         return this.router.navigate(['switcher']);
       },
       err => {
+        this.newRelic.noticeError(`${JSON.stringify(err)}`);
+
         // notify user about weak password
         if (this.utils.has(err, 'data.type')) {
           if (err.data.type === 'password_compromised') {
