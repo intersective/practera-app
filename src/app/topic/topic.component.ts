@@ -316,7 +316,8 @@ export class TopicComponent extends RouterEnter {
             return this.markAsDone().subscribe(
               () => {
                 return this.notificationService.customToast({
-                  message: 'You\'ve completed the topic!'
+                  message: 'You\'ve completed the topic!',
+                  icon: 'checkmark'
                 }).then(() => this.navigate([
                   'app',
                   'activity',
