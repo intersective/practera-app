@@ -288,9 +288,12 @@ describe('AssessmentComponent', () => {
     tmpUser.teamId = null;
     storageSpy.getUser.and.returnValue(tmpUser);
     fixture.detectChanges();
-    expect(notificationSpy.alert.calls.count()).toBe(1);
-    // don't need to get submission anymore
-    expect(assessmentSpy.getSubmission.calls.count()).toBe(0);
+
+    fixture.whenStable().then(() => {
+      expect(notificationSpy.alert.calls.count()).toBe(1);
+      // don't need to get submission anymore
+      expect(assessmentSpy.getSubmission.calls.count()).toBe(0);
+    });
   });
 
   it('should get correct in progress submission', () => {
