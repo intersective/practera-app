@@ -1,10 +1,4 @@
-import { Injectable, Optional } from '@angular/core';
-import { HttpClient, HttpHeaders, HttpParams, HttpErrorResponse, HttpParameterCodec } from '@angular/common/http';
-import { Observable, of, Subject } from 'rxjs';
-import { catchError, map, debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
-import { RequestService } from '@shared/request/request.service';
-import { environment } from '@environments/environment';
-import { UtilsService } from '@services/utils.service';
+import { Injectable } from '@angular/core';
 import { BrowserStorageService } from '@services/storage.service';
 // import { noticeError } from 'newrelic';
 // import * as newrelic from './../../../../assets/newrelic';
@@ -25,9 +19,6 @@ export class NewRelicService {
   private newrelic;
 
   constructor(
-    private http: HttpClient,
-    private request: RequestService,
-    private utils: UtilsService,
     private storage: BrowserStorageService
   ) {
     if (newrelic) {
