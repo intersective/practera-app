@@ -158,6 +158,10 @@ export class AssessmentComponent extends RouterEnter {
           this.assessment = assessment;
           this.newRelic.setPageViewName(`Assessment: ${this.assessment.name} ID: ${this.id}`);
           this.populateQuestionsForm();
+
+          this.loadingAssessment = false;
+          this._getSubmission();
+
           if (this.doAssessment && this.assessment.isForTeam && !this.storage.getUser().teamId) {
             return this.notificationService.alert({
               message: 'To do this assessment, you have to be in a team.',
@@ -177,8 +181,6 @@ export class AssessmentComponent extends RouterEnter {
             });
           }
 
-          this.loadingAssessment = false;
-          this._getSubmission();
         },
         (error) => {
           this.newRelic.noticeError(error);
@@ -229,14 +231,19 @@ export class AssessmentComponent extends RouterEnter {
         // call todo item to check if the feedback has been reviewed or not
         if (this.submission.status === 'published') {
           this.assessmentService.getFeedbackReviewed(this.submission.id)
-            .subscribe(feedbackReviewed => {
-              this.feedbackReviewed = feedbackReviewed;
-              this.loadingFeedbackReviewed = false;
-            });
+            .subscribe(
+              (feedbackReviewed) => {
+                this.feedbackReviewed = feedbackReviewed;
+                this.loadingFeedbackReviewed = false;
+              },
+              (error: any) => {
+                this.newRelic.noticeError(`${JSON.stringify(error)}`);
+              }
+            );
         }
       },
       (error) => {
-        this.newRelic.noticeError(error);
+        this.newRelic.noticeError(`${JSON.stringify(error)}`);
       });
   }
 
