@@ -8,6 +8,7 @@ import { SharedModule } from '@shared/shared.module';
 import { UtilsService } from '@services/utils.service';
 import { NotificationService } from '@shared/notification/notification.service';
 import { BrowserStorageService } from '@services/storage.service';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 
 describe('AuthForgotPasswordComponent', () => {
   let component: AuthForgotPasswordComponent;
@@ -19,7 +20,7 @@ describe('AuthForgotPasswordComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [SharedModule, RouterTestingModule],
+      imports: [SharedModule, RouterTestingModule, HttpClientTestingModule],
       declarations: [ AuthForgotPasswordComponent ],
       schemas: [ CUSTOM_ELEMENTS_SCHEMA ],
       providers: [
