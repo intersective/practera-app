@@ -9,6 +9,7 @@ import { FilestackService } from '@shared/filestack/filestack.service';
 
 import { ChatService, ChatRoomObject, Message } from '../chat.service';
 import { ChatPreviewComponent } from '../chat-preview/chat-preview.component';
+import { NewRelicService } from '@shared/new-relic/new-relic.service';
 
 export interface ChatRouteParams {
   teamId: string;
@@ -44,10 +45,12 @@ export class ChatRoomComponent extends RouterEnter {
     public pusherService: PusherService,
     private filestackService: FilestackService,
     private modalController: ModalController,
+    private newrelic: NewRelicService,
     private ngZone: NgZone
   ) {
     super(router);
     const { role } = this.storage.getUser();
+    this.newrelic.setPageViewName(`Chat room: ${JSON.stringify(this.selectedChat)}`);
 
     // message by team
     this.utils.getEvent('team-message').subscribe(event => {
