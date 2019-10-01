@@ -1,6 +1,6 @@
 import { Component, Input, NgZone } from '@angular/core';
 import { Router, ActivatedRoute, ParamMap } from '@angular/router';
-import { AssessmentService, Assessment, Submission, Review } from './assessment.service';
+import { AssessmentService, Assessment, Submission, Review, AssessmentSubmission } from './assessment.service';
 import { UtilsService } from '../services/utils.service';
 import { NotificationService } from '@shared/notification/notification.service';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
@@ -10,7 +10,6 @@ import { SharedService } from '@services/shared.service';
 import { ActivityService, OverviewActivity, OverviewTask } from '../activity/activity.service';
 import { FastFeedbackService } from '../fast-feedback/fast-feedback.service';
 import { interval, timer } from 'rxjs';
-import { map, takeUntil } from 'rxjs/operators';
 
 const SAVE_PROGRESS_TIMEOUT = 10000;
 
@@ -40,8 +39,9 @@ export class AssessmentComponent extends RouterEnter {
     dueDate: '',
     isOverdue: false,
     groups: [],
-    pulseCheck: false
+    pulseCheck: false,
   };
+
   submission: Submission = {
     id: 0,
     status: '',
@@ -103,7 +103,7 @@ export class AssessmentComponent extends RouterEnter {
       dueDate: '',
       isOverdue: false,
       groups: [],
-      pulseCheck: false
+      pulseCheck: false,
     };
     this.submission = {
       id: 0,
@@ -138,6 +138,7 @@ export class AssessmentComponent extends RouterEnter {
 
   onEnter() {
     this._initialise();
+
     // @TODO only use for testing after complete need to remove, need to add this if assessment have pluscheck and remove from this place
     // commeted because unite test getting failed
     // this.notificationService.presentToast('Submission successful!', false, '', true);
@@ -215,7 +216,9 @@ export class AssessmentComponent extends RouterEnter {
           this.savingButtonDisabled = false;
         }
         // this page is for doing review if the submission status is 'pending review' and action is review
-        if (this.submission.status === 'pending review' && this.action === 'review') {
+        if ((
+          this.submission.status === 'pending approval' || this.submission.status === 'pending review'
+        ) && this.action === 'review') {
           this.doReview = true;
         }
         // call todo item to check if the feedback has been reviewed or not
@@ -261,7 +264,7 @@ export class AssessmentComponent extends RouterEnter {
     return this.navigate(['app', 'home']);
   }
 
-  back() {
+  back(): Promise<boolean | void> {
     if (this.action === 'assessment'
       && this.submission.status === 'published'
       && !this.feedbackReviewed) {
@@ -335,24 +338,8 @@ export class AssessmentComponent extends RouterEnter {
       this.isRedirectingToNextMilestoneTask = true;
     }
 
-    // redirection for reviewer (this.activityId is 0)
-    if (!this.activityId && this.activityId === 0) {
-      return this.notificationService.alert({
-        message: 'Submission Successful!',
-        buttons: [
-          {
-            text: 'OK',
-            role: 'cancel',
-            handler: () => {
-              return this.navigate(['app', 'home']);
-            }
-          }
-        ]
-      });
-    }
-
-    let route: any = ['app', 'project'];
-    let navigationParams;
+    let route: Array<string | number> = ['app', 'project'];
+    let navigationParams: any;
     const { activity, nextTask } = await this.getNextSequence();
 
     // to next incompleted task in current activity
@@ -390,9 +377,22 @@ export class AssessmentComponent extends RouterEnter {
       }
     }
 
-    await this.navigate(route, navigationParams);
-    this.isRedirectingToNextMilestoneTask = false;
-    return;
+    // submitting is true, when awaiting submission response
+    if (this.submitting) {
+      this.submitting = 'redirecting';
+      return setTimeout(
+        async () => {
+          await this.navigate(route, navigationParams);
+          this.isRedirectingToNextMilestoneTask = false;
+          return;
+        },
+        2000
+      );
+    } else {
+      await this.navigate(route, navigationParams);
+      this.isRedirectingToNextMilestoneTask = false;
+      return;
+    }
   }
 
   /**
@@ -401,10 +401,14 @@ export class AssessmentComponent extends RouterEnter {
    */
   private async pullFeedbackAndShowNext(): Promise<boolean> {
     this.submitting = 'Retrieving new task...';
+
     // check if this assessment have plus check turn on, if it's on show plus check and toast message
     if (this.assessment.pulseCheck) {
       try {
-        await this.fastFeedbackService.pullFastFeedback().toPromise();
+        const modal = await this.fastFeedbackService.pullFastFeedback({ modalOnly: true }).toPromise();
+        const presentedModal = await modal.present();
+        this.notificationService.presentToast('Submission successful!', false, '', true);
+        const test = await modal.onDidDismiss();
       } catch (err) {
         const toasted = await this.notificationService.alert({
           header: 'Error retrieving pulse check data',
@@ -413,18 +417,13 @@ export class AssessmentComponent extends RouterEnter {
         this.submitting = false;
         throw new Error(err);
       }
+    }
 
-      // only when activityId availabe (reviewer screen dont have it)
-      if (this.activityId) {
-        const fastFeedbackIsOpened = this.storage.get('fastFeedbackOpening');
-        if (fastFeedbackIsOpened) {
-          this.notificationService.presentToast('Submission successful!', false, '', true);
-        }
-      }
+    if (this.doReview) {
+      return this.navigationRoute();
     }
 
     const nextTask = await this.redirectToNextMilestoneTask();
-    this.submitting = false;
     return nextTask;
   }
 
@@ -433,7 +432,6 @@ export class AssessmentComponent extends RouterEnter {
    * @param {boolean} saveInProgress set true for autosaving or it treat the action as final submision
    */
   async submit(saveInProgress: boolean, goBack?: boolean): Promise<any> {
-
     if (saveInProgress) {
       this.savingMessage = 'Saving...';
       this.savingButtonDisabled = true;
@@ -444,14 +442,7 @@ export class AssessmentComponent extends RouterEnter {
 
     const answers = [];
     let questionId = 0;
-    let assessment: {
-      id: number;
-      in_progress: boolean;
-      context_id?: number;
-      review_id?: number;
-      submission_id?: number;
-      unlock?: boolean;
-    };
+    let assessment: AssessmentSubmission;
 
     assessment = {
       id: this.id,
@@ -524,8 +515,13 @@ export class AssessmentComponent extends RouterEnter {
     }
 
     // save the submission/feedback
-    this.assessmentService.saveAnswers(assessment, answers, this.action, this.submission.id).subscribe(
-      result => {
+    this.assessmentService.saveAnswers(
+      assessment,
+      answers,
+      this.action,
+      this.submission.id
+    ).subscribe(
+      (result: any) => {
         this.savingButtonDisabled = false;
         if (saveInProgress) {
           this.submitting = false;
@@ -535,7 +531,7 @@ export class AssessmentComponent extends RouterEnter {
           return this.pullFeedbackAndShowNext();
         }
       },
-      err => {
+      (err: {msg: string}) => {
         this.submitting = false;
         this.savingButtonDisabled = false;
         if (saveInProgress) {
