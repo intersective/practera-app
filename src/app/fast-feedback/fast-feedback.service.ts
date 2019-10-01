@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { ModalController } from '@ionic/angular';
 import { FastFeedbackComponent } from './fast-feedback.component';
 import { RequestService } from '@shared/request/request.service';
 import { NotificationService } from '@shared/notification/notification.service';
@@ -28,7 +27,6 @@ export interface Meta {
 
 const api = {
   fastFeedback: 'api/v2/observation/slider/list.json',
-  submit: 'api/v2/observation/slider/create.json',
 };
 
 @Injectable({
@@ -36,7 +34,6 @@ const api = {
 })
 export class FastFeedbackService {
   constructor(
-    private modalController: ModalController,
     private request: RequestService,
     private notificationService: NotificationService,
     private storage: BrowserStorageService,
@@ -47,22 +44,32 @@ export class FastFeedbackService {
     return this.request.get(api.fastFeedback);
   }
 
-  submit(data, params) {
-    return this.request.post(api.submit, data, {params: params});
-  }
-
   /**
    * Pop up the fast feedback modal window
    */
-  async popUpFastFeedback(props: { questions?: Array<Question>, meta?: Meta } = {}) {
-    const modal = await this.notificationService.modal(FastFeedbackComponent, props, {
+  fastFeedbackModal(
+    props: {
+      questions?: Array<Question>;
+      meta?: Meta;
+    },
+    modalOnly: boolean = false
+  ): Promise<HTMLIonModalElement | void> {
+    if (modalOnly) {
+      return this.notificationService.modalOnly(FastFeedbackComponent, props, {
+        backdropDismiss: false,
+        showBackdrop: false,
+      });
+    }
+
+    return this.notificationService.modal(FastFeedbackComponent, props, {
       backdropDismiss: false,
       showBackdrop: false,
     });
-    return modal;
   }
 
-  pullFastFeedback(): Observable<any> {
+  pullFastFeedback(options= {
+    modalOnly: false
+  }): Observable<any> {
     return this.getFastFeedback().pipe(
       switchMap(res => {
         // don't open it again if there's one opening
@@ -72,10 +79,13 @@ export class FastFeedbackService {
         if (!this.utils.isEmpty(res.data) && res.data.slider.length > 0 && !fastFeedbackIsOpened) {
           // add a flag to indicate that a fast feedback pop up is opening
           this.storage.set('fastFeedbackOpening', true);
-          return from(this.popUpFastFeedback({
-            questions: res.data.slider,
-            meta: res.data.meta
-          }));
+          return from(this.fastFeedbackModal(
+            {
+              questions: res.data.slider,
+              meta: res.data.meta
+            },
+            options.modalOnly,
+          ));
         }
         return of(res);
       }),
