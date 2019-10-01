@@ -4,7 +4,8 @@ import { RequestService } from '@shared/request/request.service';
 import { BrowserStorageService } from '@services/storage.service';
 import { UtilsService } from '@services/utils.service';
 import { NotificationService } from '@shared/notification/notification.service';
-import { AssessmentService } from './assessment.service';
+import { AssessmentService, AssessmentSubmission } from './assessment.service';
+import { SubmissionFixture } from '@testing/fixtures';
 
 describe('AssessmentService', () => {
   let service: AssessmentService;
@@ -54,6 +55,7 @@ describe('AssessmentService', () => {
         success: true,
         data: [
           {
+            pulse_check: false,
             Assessment: {
               name: 'test',
               description: 'des',
@@ -393,7 +395,9 @@ describe('AssessmentService', () => {
     it('should get correct assessment data', () => {
       requestSpy.get.and.returnValue(of(requestResponse));
       service.getAssessment(1, 'assessment').subscribe(
-        assessment => expect(assessment).toEqual(expected)
+        assessment => {
+          expect(assessment).toEqual(expected);
+        }
       );
       expect(requestSpy.get.calls.count()).toBe(1);
     });
@@ -408,6 +412,16 @@ describe('AssessmentService', () => {
       requestSpy.get.and.returnValue(of(tmpRes));
       service.getAssessment(1, 'assessment').subscribe(
         assessment => expect(assessment).toEqual(tmpExp)
+      );
+      expect(requestSpy.get).toHaveBeenCalledWith(
+        'api/assessments.json',
+        {
+          params: {
+            assessment_id: 1,
+            structured: true,
+            review: false
+          }
+        }
       );
       expect(requestSpy.get.calls.count()).toBe(1);
     });
@@ -702,7 +716,7 @@ describe('AssessmentService', () => {
   });
 
   describe('when testing saveAnswers()', () => {
-    const assessment = {assessment: true};
+    const assessment: AssessmentSubmission = SubmissionFixture;
     const answers = {answers: true};
     beforeEach(() => {
       requestSpy.post.and.returnValue(of(true));
