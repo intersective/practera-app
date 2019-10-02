@@ -12,6 +12,7 @@ import {
 
 import { AuthService } from '../auth.service';
 import { BrowserStorageService } from '@services/storage.service';
+import { NewRelicService } from '@shared/new-relic/new-relic.service';
 
 @Component({
   selector: 'app-auth-registration',
@@ -39,7 +40,8 @@ export class AuthRegistrationComponent implements OnInit {
     private authService: AuthService,
     private utils: UtilsService,
     private storage: BrowserStorageService,
-    private notificationService: NotificationService
+    private notificationService: NotificationService,
+    private newRelic: NewRelicService
   ) {
     this.initForm();
   }
@@ -51,6 +53,7 @@ export class AuthRegistrationComponent implements OnInit {
         ? 'appdev.practera.com'
         : this.domain;
     this.validateQueryParams();
+    this.newRelic.setPageViewName('Registration');
   }
 
   initForm() {
@@ -135,14 +138,14 @@ export class AuthRegistrationComponent implements OnInit {
   }
 
   openLink() {
-    window.open(
-      'https://images.practera.com/terms_and_conditions/practera_default_terms_conditions_july2018.pdf',
-      '_system'
-    );
+    const fileURL = 'https://images.practera.com/terms_and_conditions/practera_default_terms_conditions_july2018.pdf';
+    this.newRelic.actionText(`opened ${fileURL}`);
+    window.open(fileURL, '_system');
   }
 
   register() {
     if (this.validateRegistration()) {
+      this.newRelic.actionText('Validated registration');
       this.authService
         .saveRegistration({
           password: this.confirmPassword,
@@ -167,6 +170,8 @@ export class AuthRegistrationComponent implements OnInit {
               );
           },
           error => {
+            this.newRelic.noticeError(`${JSON.stringify(error)}`);
+
             if (this.utils.has(error, 'data.type')) {
               if (error.data.type === 'password_compromised') {
                 return this.notificationService.alert({

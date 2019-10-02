@@ -1,4 +1,4 @@
-import { CUSTOM_ELEMENTS_SCHEMA, ElementRef } from '@angular/core';
+import { CUSTOM_ELEMENTS_SCHEMA, ElementRef,  } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { ProjectComponent } from './project.component';
 import { ProjectService } from './project.service';
@@ -9,7 +9,8 @@ import { UtilsService } from '@services/utils.service';
 import { HomeService } from '../home/home.service';
 import { ActivatedRouteStub } from '@testing/activated-route-stub';
 import { TestUtils } from '@testing/utils';
-import { HttpClientModule } from '@angular/common/http';
+import { DOCUMENT } from '@angular/common';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { FastFeedbackService } from '../fast-feedback/fast-feedback.service';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
@@ -40,6 +41,8 @@ class Page {
   }
 }
 
+class MockDocument {}
+
 describe('ProjectComponent', () => {
   let component: ProjectComponent;
   let fixture: ComponentFixture<ProjectComponent>;
@@ -53,7 +56,7 @@ describe('ProjectComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [SharedModule, HttpClientModule, BrowserAnimationsModule],
+      imports: [SharedModule, HttpClientTestingModule, BrowserAnimationsModule],
       declarations: [ ProjectComponent ],
       schemas: [ CUSTOM_ELEMENTS_SCHEMA ],
       providers: [
@@ -84,6 +87,10 @@ describe('ProjectComponent', () => {
         {
           provide: ActivatedRoute,
           useValue: new ActivatedRouteStub({ activityId: 1 })
+        },
+        {
+          provide: Document,
+          useClass: MockDocument
         }
       ],
     })

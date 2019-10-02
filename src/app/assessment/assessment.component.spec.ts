@@ -1,7 +1,7 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { async, ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { QuestionsModule } from '@app/questions/questions.module';
 
 import { Router, ActivatedRoute, convertToParamMap } from '@angular/router';
@@ -222,7 +222,7 @@ describe('AssessmentComponent', () => {
     }).compileComponents();
   }));
 
-  beforeEach(() => {
+  beforeEach(async () => {
     fixture = TestBed.createComponent(AssessmentComponent);
     component = fixture.componentInstance;
     page = new Page(fixture);
@@ -243,56 +243,67 @@ describe('AssessmentComponent', () => {
     }));
     assessmentSpy.saveAnswers.and.returnValue(of({}));
     fastFeedbackSpy.pullFastFeedback.and.returnValue(of({}));
-    activitySpy.getTasksByActivityId.and.returnValue({currentActivity: {id: 1}, nextTask: {type: 'assessment'}});
+    activitySpy.getTasksByActivityId.and.returnValue({
+      currentActivity: {id: 1},
+      nextTask: {type: 'assessment'}
+    });
     storageSpy.getUser.and.returnValue(mockUser);
   });
 
-  it('should create', () => {
+  it('should be created', () => {
     expect(component).toBeTruthy();
   });
 
   it('should get correct parameters from routing', () => {
     fixture.detectChanges();
-    expect(component.id).toEqual(1);
-    expect(component.activityId).toEqual(2);
-    expect(component.contextId).toEqual(3);
-    expect(component.submissionId).toEqual(4);
-    expect(component.action).toEqual('assessment');
+    fixture.whenStable().then(() => {
+      expect(component.id).toEqual(1);
+      expect(component.activityId).toEqual(2);
+      expect(component.contextId).toEqual(3);
+      expect(component.submissionId).toEqual(4);
+      expect(component.action).toEqual('assessment');
+    });
   });
 
   it('should get correct assessment and display correct info in html', () => {
     fixture.detectChanges();
-    expect(component.assessment).toEqual(mockAssessment);
-    expect(component.loadingAssessment).toEqual(false);
-    expect(page.savingMessage).toBeTruthy();
-    expect(page.assessmentName.innerHTML).toEqual(mockAssessment.name);
-    expect(page.assessmentDescription).toBeTruthy();
-    expect(page.overDueMsg).toBeFalsy();
-    expect(page.dueMsg.innerHTML.trim()).toEqual(shared.dueDateFormatter(mockAssessment.dueDate));
-    mockAssessment.groups.forEach((group, groupIndex) => {
-      expect(page.groupNames[groupIndex].innerHTML).toEqual(group.name);
-      expect(page.groupDescriptions[groupIndex]).toBeTruthy();
-      group.questions.forEach((question, questionIndex) => {
-        expect(page.questionNames[questionIndex].innerHTML).toContain(question.name);
-        expect(page.questionDescriptions[questionIndex]).toBeTruthy();
+    fixture.whenStable().then(() => {
+      expect(component.assessment).toEqual(mockAssessment);
+      expect(component.loadingAssessment).toEqual(false);
+      expect(page.savingMessage).toBeTruthy();
+      expect(page.assessmentName.innerHTML).toEqual(mockAssessment.name);
+      expect(page.assessmentDescription).toBeTruthy();
+      expect(page.overDueMsg).toBeFalsy();
+      expect(page.dueMsg.innerHTML.trim()).toEqual(shared.dueDateFormatter(mockAssessment.dueDate));
+      mockAssessment.groups.forEach((group, groupIndex) => {
+        expect(page.groupNames[groupIndex].innerHTML).toEqual(group.name);
+        expect(page.groupDescriptions[groupIndex]).toBeTruthy();
+        group.questions.forEach((question, questionIndex) => {
+          expect(page.questionNames[questionIndex].innerHTML).toContain(question.name);
+          expect(page.questionDescriptions[questionIndex]).toBeTruthy();
+        });
       });
+      expect(notificationSpy.alert.calls.count()).toBe(0);
+      expect(assessmentSpy.getSubmission.calls.count()).toBe(1);
     });
-    expect(notificationSpy.alert.calls.count()).toBe(0);
-    expect(assessmentSpy.getSubmission.calls.count()).toBe(1);
   });
 
-  it('should pop up alert if it is team assessment and user is not in team', () => {
-    const tmpAssessment = JSON.parse(JSON.stringify(mockAssessment));
-    tmpAssessment.isForTeam = true;
-    assessmentSpy.getAssessment.and.returnValue(of(tmpAssessment));
-    const tmpUser = JSON.parse(JSON.stringify(mockUser));
-    tmpUser.teamId = null;
-    storageSpy.getUser.and.returnValue(tmpUser);
-    fixture.detectChanges();
-    expect(notificationSpy.alert.calls.count()).toBe(1);
-    // don't need to get submission anymore
-    expect(assessmentSpy.getSubmission.calls.count()).toBe(0);
-  });
+  it('should pop up alert if it is team assessment and user is not in team', fakeAsync(() => {
+      const tmpAssessment = JSON.parse(JSON.stringify(mockAssessment));
+      tmpAssessment.isForTeam = true;
+      assessmentSpy.getAssessment.and.returnValue(of(tmpAssessment));
+      const tmpUser = JSON.parse(JSON.stringify(mockUser));
+      tmpUser.teamId = null;
+      storageSpy.getUser.and.returnValue(tmpUser);
+      tick();
+      fixture.detectChanges();
+      fixture.whenStable().then(() => {
+        expect(notificationSpy.alert.calls.count()).toBe(1);
+        // we need to call getSubmission to determine the values for doReview/doAssessment
+        expect(assessmentSpy.getSubmission.calls.count()).toBe(1);
+      });
+    })
+  );
 
   it('should get correct in progress submission', () => {
     assessmentSpy.getSubmission.and.returnValue(of({
