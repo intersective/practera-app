@@ -13,6 +13,7 @@ import { BrowserStorageService } from '@services/storage.service';
 import { UtilsService } from '@services/utils.service';
 import { of } from 'rxjs';
 import { map, filter } from 'rxjs/operators';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 
 @Directive({
   selector: '[routerLink], [routerLinkActive]'
@@ -69,6 +70,7 @@ describe('HomeComponent', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       // imports: [RouterTestingModule],
+      imports: [HttpClientTestingModule],
       declarations: [HomeComponent, DummyRouterLinkDirective],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
       providers: [
