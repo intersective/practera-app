@@ -1,5 +1,5 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { async, ComponentFixture, TestBed, tick, fakeAsync } from '@angular/core/testing';
 import { EventsComponent } from './events.component';
 import { EventsService } from './events.service';
 import { Observable, of, pipe } from 'rxjs';
@@ -162,8 +162,9 @@ describe('EventsComponent', () => {
         attended: attended
       };
     });
-    afterEach(() => {
+    afterEach(fakeAsync(() => {
       eventsSpy.getEvents.and.returnValue(of(tmpEvents));
+      tick();
       fixture.detectChanges();
       fixture.whenStable().then(() => {
         expect(component.loadingEvents).toBe(false);
@@ -171,7 +172,7 @@ describe('EventsComponent', () => {
         expect(component.events).toEqual(expectedEvents);
         expect(component.eventsCategorised).toEqual(expectedCategorised);
       });
-    });
+    }));
 
     it(`should get correct full events grouped and activities`, () => {
       fixture.detectChanges();
