@@ -12,6 +12,7 @@ import { Achievement, AchievementsService } from '@app/achievements/achievements
 import { Event, EventsService } from '@app/events/events.service';
 import { Intercom } from 'ng-intercom';
 import { environment } from '@environments/environment';
+import { NewRelicService } from '@shared/new-relic/new-relic.service';
 
 @Component({
   selector: 'app-home',
@@ -41,7 +42,8 @@ export class HomeComponent extends RouterEnter implements OnDestroy {
     public utils: UtilsService,
     public storage: BrowserStorageService,
     public achievementService: AchievementsService,
-    public eventsService: EventsService
+    public eventsService: EventsService,
+    private newRelic: NewRelicService
   ) {
     super(router);
     const role = this.storage.getUser().role;
@@ -88,6 +90,8 @@ export class HomeComponent extends RouterEnter implements OnDestroy {
   }
 
   onEnter() {
+    this.newRelic.setPageViewName('home');
+
     this._initialise();
     this.subscriptions.push(
       this.homeService.getTodoItems().subscribe(todoItems => {
@@ -176,10 +180,12 @@ export class HomeComponent extends RouterEnter implements OnDestroy {
   }
 
   goToActivity(id) {
+    this.newRelic.actionText(`goToActivity ID: ${id}`);
     this.router.navigate(['app', 'activity', id]);
   }
 
   goToAssessment(activityId, contextId, assessmentId) {
+    this.newRelic.actionText('goToAssessment');
     this.router.navigate([
       'assessment',
       'assessment',
@@ -190,6 +196,7 @@ export class HomeComponent extends RouterEnter implements OnDestroy {
   }
 
   goToReview(contextId, assessmentId, submissionId) {
+    this.newRelic.actionText('goToReview');
     this.router.navigate([
       'assessment',
       'review',
@@ -200,6 +207,7 @@ export class HomeComponent extends RouterEnter implements OnDestroy {
   }
 
   goToChat(todoItem?: TodoItem) {
+    this.newRelic.actionText('goToChat');
     if (this.utils.isEmpty(todoItem.meta)) {
       return this.router.navigate(['app', 'chat']);
     }
@@ -230,6 +238,7 @@ export class HomeComponent extends RouterEnter implements OnDestroy {
   }
 
   showEventDetail(event) {
+    this.newRelic.actionText('showEventDetail');
     this.eventsService.eventDetailPopUp(event);
   }
 
