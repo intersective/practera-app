@@ -9,8 +9,9 @@ import { RouterEnter } from '@services/router-enter.service';
 import { SharedService } from '@services/shared.service';
 import { ActivityService, OverviewActivity, OverviewTask } from '../activity/activity.service';
 import { FastFeedbackService } from '../fast-feedback/fast-feedback.service';
-import { interval, timer } from 'rxjs';
+import { interval, timer, Subscription } from 'rxjs';
 import { map, takeUntil } from 'rxjs/operators';
+import { NewRelicService } from '@shared/new-relic/new-relic.service';
 
 const SAVE_PROGRESS_TIMEOUT = 10000;
 
@@ -20,7 +21,8 @@ const SAVE_PROGRESS_TIMEOUT = 10000;
   styleUrls: ['assessment.component.scss']
 })
 export class AssessmentComponent extends RouterEnter {
-
+  getAssessment: Subscription;
+  getSubmission: Subscription;
   routeUrl = '/assessment/';
   // assessment id
   id: number;
@@ -71,6 +73,7 @@ export class AssessmentComponent extends RouterEnter {
   fromPage = '';
   markingAsReview = 'Continue';
   isRedirectingToNextMilestoneTask: boolean;
+  // assessmentRelicWatcher;
 
   constructor (
     public router: Router,
@@ -82,7 +85,8 @@ export class AssessmentComponent extends RouterEnter {
     public sharedService: SharedService,
     private activityService: ActivityService,
     private fastFeedbackService: FastFeedbackService,
-    private ngZone: NgZone
+    private ngZone: NgZone,
+    private newRelic: NewRelicService,
   ) {
     super(router);
   }
@@ -136,6 +140,7 @@ export class AssessmentComponent extends RouterEnter {
 
   onEnter() {
     this._initialise();
+
     this.action = this.route.snapshot.data.action;
     this.fromPage = this.route.snapshot.paramMap.get('from');
     if (!this.fromPage) {
@@ -147,31 +152,40 @@ export class AssessmentComponent extends RouterEnter {
     this.submissionId = +this.route.snapshot.paramMap.get('submissionId');
 
     // get assessment structure and populate the question form
-    this.assessmentService.getAssessment(this.id, this.action)
-      .subscribe(assessment => {
-        this.assessment = assessment;
-        this.populateQuestionsForm();
-        if (this.assessment.isForTeam && !this.storage.getUser().teamId) {
-          return this.notificationService.alert({
-            message: 'To do this assessment, you have to be in a team.',
-            buttons: [
-              {
-                text: 'OK',
-                role: 'cancel',
-                handler: () => {
-                  if (this.activityId) {
-                    this.navigate(['app', 'activity', this.activityId ]);
-                  } else {
-                    this.navigate(['app', 'home']);
+    this.getAssessment = this.assessmentService.getAssessment(this.id, this.action)
+      .subscribe(
+        assessment => {
+          this.assessment = assessment;
+          this.newRelic.setPageViewName(`Assessment: ${this.assessment.name} ID: ${this.id}`);
+          this.populateQuestionsForm();
+
+          this.loadingAssessment = false;
+          this._getSubmission();
+
+          if (this.doAssessment && this.assessment.isForTeam && !this.storage.getUser().teamId) {
+            return this.notificationService.alert({
+              message: 'To do this assessment, you have to be in a team.',
+              buttons: [
+                {
+                  text: 'OK',
+                  role: 'cancel',
+                  handler: () => {
+                    if (this.activityId) {
+                      this.navigate(['app', 'activity', this.activityId ]);
+                    } else {
+                      this.navigate(['app', 'home']);
+                    }
                   }
                 }
-              }
-            ]
-          });
+              ]
+            });
+          }
+
+        },
+        (error) => {
+          this.newRelic.noticeError(error);
         }
-        this.loadingAssessment = false;
-        this._getSubmission();
-      });
+      );
   }
 
   ionViewWillLeave() {
@@ -180,8 +194,9 @@ export class AssessmentComponent extends RouterEnter {
 
   // get the submission answers &/| review answers
   private _getSubmission() {
-    this.assessmentService.getSubmission(this.id, this.contextId, this.action, this.submissionId)
-      .subscribe(result => {
+    this.getSubmission = this.assessmentService.getSubmission(this.id, this.contextId, this.action, this.submissionId)
+      .subscribe(
+      result => {
         this.submission = result.submission;
         this.loadingSubmission = false;
         // If team assessment locked set readonly view.
@@ -216,11 +231,19 @@ export class AssessmentComponent extends RouterEnter {
         // call todo item to check if the feedback has been reviewed or not
         if (this.submission.status === 'published') {
           this.assessmentService.getFeedbackReviewed(this.submission.id)
-            .subscribe(feedbackReviewed => {
-              this.feedbackReviewed = feedbackReviewed;
-              this.loadingFeedbackReviewed = false;
-            });
+            .subscribe(
+              (feedbackReviewed) => {
+                this.feedbackReviewed = feedbackReviewed;
+                this.loadingFeedbackReviewed = false;
+              },
+              (error: any) => {
+                this.newRelic.noticeError(`${JSON.stringify(error)}`);
+              }
+            );
         }
+      },
+      (error) => {
+        this.newRelic.noticeError(`${JSON.stringify(error)}`);
       });
   }
 
@@ -257,6 +280,7 @@ export class AssessmentComponent extends RouterEnter {
   }
 
   back() {
+    this.newRelic.actionText('Back to previous page.');
     if (this.action === 'assessment'
       && this.submission.status === 'published'
       && !this.feedbackReviewed) {
@@ -520,14 +544,19 @@ export class AssessmentComponent extends RouterEnter {
       result => {
         this.savingButtonDisabled = false;
         if (saveInProgress) {
+          this.newRelic.actionText('Saved progress.');
           this.submitting = false;
           // display message for successfull saved answers
           this.savingMessage = 'Last saved ' + this._getCurrentTime();
         } else {
+          this.newRelic.actionText('Submit answer.');
+
           return this.pullFeedbackAndShowNext();
         }
       },
-      err => {
+      (err: {msg: string}) => {
+        this.newRelic.noticeError(JSON.stringify(err));
+
         this.submitting = false;
         this.savingButtonDisabled = false;
         if (saveInProgress) {
@@ -567,8 +596,10 @@ export class AssessmentComponent extends RouterEnter {
 
       // step 1.1: Mark feedback as read
       try {
+        this.newRelic.actionText('Waiting for fast feedback data.');
         result = await this.assessmentService.saveFeedbackReviewed(this.submission.id).toPromise();
         this.loadingFeedbackReviewed = false;
+        this.newRelic.actionText('Fast feedback answered.');
       } catch (err) {
         const toasted = await this.notificationService.alert({
           header: 'Error marking feedback as completed',
@@ -598,7 +629,9 @@ export class AssessmentComponent extends RouterEnter {
           this.markingAsReview = 'Retrieving New Task...';
           this.isRedirectingToNextMilestoneTask = true;
 
+          this.newRelic.actionText('Evaluate & navigate to next task.');
           nextSequence = await this.redirectToNextMilestoneTask({routeOnly: true});
+          this.newRelic.actionText('Waiting for rating API response.');
           const popup = await this.assessmentService.popUpReviewRating(
             this.review.id,
             nextSequence
@@ -609,8 +642,10 @@ export class AssessmentComponent extends RouterEnter {
           return popup;
         }
       } catch (err) {
+        const msg = 'Error retrieving rating page';
+        this.newRelic.noticeError(msg);
         const toasted = await this.notificationService.alert({
-          header: 'Error retrieving rating page',
+          header: msg,
           message: err.msg || JSON.stringify(err)
         });
 
@@ -625,6 +660,7 @@ export class AssessmentComponent extends RouterEnter {
     // step 2.0: if feedback had been marked as read beforehand,
     //         straightaway redirect user to the next task instead.
     this.markingAsReview = 'Retrieving New Task...';
+    this.newRelic.actionText('Evaluate & navigate to next task.');
     nextSequence = await this.redirectToNextMilestoneTask({ continue: true });
     this.loadingFeedbackReviewed = false;
     this.markingAsReview = 'Continue';
@@ -632,6 +668,7 @@ export class AssessmentComponent extends RouterEnter {
   }
 
   showQuestionInfo(info) {
+    this.newRelic.actionText('Read question info.');
     this.notificationService.popUp('shortMessage', {message: info});
   }
 
