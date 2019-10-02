@@ -9,7 +9,7 @@ import { environment } from '../../environments/environment.prod';
 import { RouterEnter } from '@services/router-enter.service';
 import { FastFeedbackService } from '../fast-feedback/fast-feedback.service';
 import { FilestackService } from '@shared/filestack/filestack.service';
-
+import { NewRelicService } from '@shared/new-relic/new-relic.service';
 
 @Component({
   selector: 'app-settings',
@@ -43,12 +43,15 @@ export class SettingsComponent extends RouterEnter {
     public utils: UtilsService,
     private notificationService: NotificationService,
     private filestackService: FilestackService,
-    public fastFeedbackService: FastFeedbackService
+    public fastFeedbackService: FastFeedbackService,
+    private newRelic: NewRelicService
   ) {
     super(router);
   }
 
   onEnter() {
+    this.newRelic.setPageViewName('Setting');
+
     // get contact number and email from local storage
     this.profile.email = this.storage.getUser().email;
     this.profile.contactNumber = this.storage.getUser().contactNumber;
@@ -61,15 +64,18 @@ export class SettingsComponent extends RouterEnter {
   }
 
   openLink() {
-     window.open(this.termsUrl, '_system');
+    this.newRelic.actionText('Open T&C link');
+    window.open(this.termsUrl, '_system');
   }
 
   switchProgram() {
+    this.newRelic.actionText('browse to program switcher');
     this.router.navigate(['/switcher']);
   }
 
   // send email to Help request
   mailTo() {
+    this.newRelic.actionText('mail to helpline');
     const mailto = 'mailto:' + this.helpline + '?subject=' + this.currentProgramName;
     window.open(mailto, '_self');
   }
@@ -80,6 +86,7 @@ export class SettingsComponent extends RouterEnter {
 
   async uploadProfileImage(file, type = null) {
     if (file.success) {
+      this.newRelic.actionText('Upload profile image');
       this.imageUpdating = true;
       this.settingService.updateProfileImage({
         image: file.data.url
@@ -101,6 +108,7 @@ export class SettingsComponent extends RouterEnter {
           });
         },
         err => {
+          this.newRelic.noticeError(`Image upload failed: ${JSON.stringify(err)}`);
           this.imageUpdating = false;
           return this.notificationService.alert({
             message: 'File upload failed, please try again later.',
