@@ -1,5 +1,5 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { async, ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { AuthLoginComponent } from './auth-login.component';
 import { AuthService } from '../auth.service';
@@ -7,7 +7,10 @@ import { Router } from '@angular/router';
 import { Observable, of, pipe, throwError } from 'rxjs';
 import { SharedModule } from '@shared/shared.module';
 import { NotificationService } from '@shared/notification/notification.service';
+import { NewRelicService } from '@shared/new-relic/new-relic.service';
 import { ReactiveFormsModule } from '@angular/forms';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { MockNewRelicService } from '@testing/mocked.service';
 
 describe('AuthLoginComponent', () => {
   let component: AuthLoginComponent;
@@ -18,7 +21,7 @@ describe('AuthLoginComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [SharedModule, RouterTestingModule, ReactiveFormsModule],
+      imports: [SharedModule, RouterTestingModule, ReactiveFormsModule, HttpClientTestingModule],
       declarations: [ AuthLoginComponent ],
       schemas: [ CUSTOM_ELEMENTS_SCHEMA ],
       providers: [
@@ -37,6 +40,10 @@ describe('AuthLoginComponent', () => {
             events: of(),
             routerState: {root: {}}
           }
+        },
+        {
+          provide: NewRelicService,
+          useClass: MockNewRelicService
         }
       ],
     }).compileComponents();
@@ -73,27 +80,29 @@ describe('AuthLoginComponent', () => {
       expect(routerSpy.navigate.calls.first().args[0]).toEqual(['switcher']);
     });
 
-    it('should pop up password compromised alert if login failed', () => {
+    it('should pop up password compromised alert if login failed', fakeAsync(() => {
       component.loginForm.setValue({email: 'test@test.com', password: 'abc'});
       serviceSpy.login.and.returnValue(throwError({data: {type: 'password_compromised'}}));
       component.login();
+      tick();
       expect(serviceSpy.login.calls.count()).toBe(1);
       expect(component.isLoggingIn).toBe(false);
       expect(notificationSpy.alert.calls.count()).toBe(1);
       expect(notificationSpy.alert.calls.first().args[0].message).toContain('insecure passwords');
-    });
+    }));
 
-    it(`should pop up 'incorrect' alert if login failed`, () => {
+    it(`should pop up 'incorrect' alert if login failed`, fakeAsync(() => {
       component.loginForm.setValue({email: 'test@test.com', password: 'abc'});
       serviceSpy.login.and.returnValue(throwError({}));
       component.login();
+      tick();
       expect(serviceSpy.login.calls.count()).toBe(1);
       expect(component.isLoggingIn).toBe(true);
       expect(notificationSpy.alert.calls.count()).toBe(1);
       expect(notificationSpy.alert.calls.first().args[0].message).toContain('password is incorrect');
       notificationSpy.alert.calls.first().args[0].buttons[0].handler();
       expect(component.isLoggingIn).toBe(false);
-    });
+    }));
   });
 });
 

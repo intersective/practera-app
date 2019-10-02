@@ -8,6 +8,9 @@ import { SharedModule } from '@shared/shared.module';
 import { UtilsService } from '@services/utils.service';
 import { NotificationService } from '@shared/notification/notification.service';
 import { BrowserStorageService } from '@services/storage.service';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { NewRelicService } from '@shared/new-relic/new-relic.service';
+import { MockNewRelicService } from '@testing/mocked.service';
 
 describe('AuthForgotPasswordComponent', () => {
   let component: AuthForgotPasswordComponent;
@@ -19,7 +22,7 @@ describe('AuthForgotPasswordComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [SharedModule, RouterTestingModule],
+      imports: [SharedModule, RouterTestingModule, HttpClientTestingModule],
       declarations: [ AuthForgotPasswordComponent ],
       schemas: [ CUSTOM_ELEMENTS_SCHEMA ],
       providers: [
@@ -30,12 +33,16 @@ describe('AuthForgotPasswordComponent', () => {
         },
         {
           provide: BrowserStorageService,
-          useValue: jasmine.createSpyObj('BrowserStorageService', ['get', 'getConfig'])
+          useValue: jasmine.createSpyObj('BrowserStorageService', ['get', 'getConfig', 'getUser'])
         },
         {
           provide: NotificationService,
           useValue: jasmine.createSpyObj('NotificationService', ['alert', 'presentToast', 'popUp'])
         },
+        {
+          provide: NewRelicService,
+          useClass: MockNewRelicService
+        }
       ],
     })
     .compileComponents();
@@ -83,6 +90,7 @@ describe('AuthForgotPasswordComponent', () => {
         }
       }));
       component.send();
+      tick();
       expect(component.isSending).toBe(false);
       expect(notificationSpy.alert.calls.count()).toBe(1);
     }));
@@ -90,6 +98,7 @@ describe('AuthForgotPasswordComponent', () => {
     it('should pop up try again alert if forgot password failed', fakeAsync(() => {
       serviceSpy.forgotPassword.and.returnValue(throwError({}));
       component.send();
+      tick();
       expect(component.isSending).toBe(false);
       expect(notificationSpy.presentToast.calls.count()).toBe(1);
     }));
