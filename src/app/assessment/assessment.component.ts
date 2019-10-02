@@ -429,6 +429,7 @@ export class AssessmentComponent extends RouterEnter {
       try {
         const modal = await this.fastFeedbackService.pullFastFeedback({ modalOnly: true }).toPromise();
         const presentedModal = await modal.present();
+        this.notificationService.presentToast('Submission successful!', false, '', true);
         const test = await modal.onDidDismiss();
       } catch (err) {
         const toasted = await this.notificationService.alert({
@@ -437,14 +438,6 @@ export class AssessmentComponent extends RouterEnter {
         });
         this.submitting = false;
         throw new Error(err);
-      }
-
-      // only when activityId availabe (reviewer screen dont have it)
-      if (this.activityId) {
-        const fastFeedbackIsOpened = this.storage.get('fastFeedbackOpening');
-        if (fastFeedbackIsOpened) {
-          this.notificationService.presentToast('Submission successful!', false);
-        }
       }
     }
 
