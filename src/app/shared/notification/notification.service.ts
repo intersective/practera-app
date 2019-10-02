@@ -82,7 +82,7 @@ export class NotificationService {
   async presentToast(message, success = false, duration?, custom = false) {
     let toastOptions: ToastOptions = {
       message: message,
-      duration: duration || 200000,
+      duration: duration || 2000,
       position: 'top',
       color : success ? 'success' : 'danger'
     };
