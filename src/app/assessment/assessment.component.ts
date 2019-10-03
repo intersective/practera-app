@@ -128,7 +128,7 @@ export class AssessmentComponent extends RouterEnter {
     this.feedbackReviewed = false;
     this.questionsForm = new FormGroup({});
     this.submitting = false;
-    this.savingButtonDisabled = false;
+    this.savingButtonDisabled = true;
     this.savingMessage = '';
     this.markingAsReview = 'Continue';
     this.isRedirectingToNextMilestoneTask = false;

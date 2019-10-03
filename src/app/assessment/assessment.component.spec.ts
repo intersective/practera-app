@@ -459,7 +459,6 @@ describe('AssessmentComponent', () => {
     });
     afterEach(() => {
       expect(component.savingButtonDisabled).toBe(false);
-      expect(component.saving).toBe(true);
       expect(notificationSpy.popUp.calls.count()).toBe(0);
       expect(assessment.id).toBe(1);
       expect(assessment.context_id).toBe(2);
@@ -501,7 +500,7 @@ describe('AssessmentComponent', () => {
       assessment = assessmentSpy.saveAnswers.calls.first().args[0];
       answers = assessmentSpy.saveAnswers.calls.first().args[1];
       expect(component.submitting).toEqual('Retrieving new task...');
-      expect(component.saving).toBe(true);
+      expect(component.saving).toBe(false);
       expect(assessment.in_progress).toBe(false);
     });
   });
