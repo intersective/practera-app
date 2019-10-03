@@ -89,12 +89,10 @@ export class MultipleComponent implements ControlValueAccessor, OnInit {
     this.errors = [];
     // setting, resetting error messages into an array (to loop) and adding the validation messages to show below the answer area
     for (const key in this.control.errors) {
-      if (this.control.errors.hasOwnProperty(key)) {
-        if (key === 'required') {
-          this.errors.push('This question is required');
-        } else {
-          this.errors.push(this.control.errors[key]);
-        }
+      if (key === 'required') {
+        this.errors.push('This question is required');
+      } else {
+        this.errors.push(this.control.errors[key]);
       }
     }
     this.saveProgress.emit(true);
