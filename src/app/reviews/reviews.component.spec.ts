@@ -56,7 +56,7 @@ describe('ReviewsComponent', () => {
         date: utils.timeFormatter('2019-02-01'),
         teamName: '',
         contextId: i + 3
-      }
+      };
     });
     serviceSpy.getReviews.and.returnValue(of(reviews));
     fixture.detectChanges();
@@ -68,7 +68,7 @@ describe('ReviewsComponent', () => {
   it('should navigate to the correct page gotoReview()', () => {
     component.gotoReview(1, 2, 3);
     expect(routerSpy.navigate.calls.first().args[0]).toEqual(['assessment', 'review', 1, 2, 3, {from: 'reviews'}]);
-  })
+  });
 
   it('should return false if showing done, noReviewsToDo()', () => {
     serviceSpy.getReviews.and.returnValue(of(Array.from({length: 5}, (x, i) => {
@@ -81,7 +81,7 @@ describe('ReviewsComponent', () => {
         date: utils.timeFormatter('2019-02-01'),
         teamName: '',
         contextId: i + 3
-      }
+      };
     })));
     fixture.detectChanges();
     expect(component.noReviewsToDo()).toBe(true);
@@ -98,7 +98,7 @@ describe('ReviewsComponent', () => {
         date: utils.timeFormatter('2019-02-01'),
         teamName: '',
         contextId: i + 3
-      }
+      };
     })));
     fixture.detectChanges();
     component.showDone = true;
