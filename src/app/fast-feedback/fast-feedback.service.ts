@@ -79,6 +79,7 @@ export class FastFeedbackService {
         if (!this.utils.isEmpty(res.data) && res.data.slider.length > 0 && !fastFeedbackIsOpened) {
           // add a flag to indicate that a fast feedback pop up is opening
           this.storage.set('fastFeedbackOpening', true);
+
           return from(this.fastFeedbackModal(
             {
               questions: res.data.slider,
