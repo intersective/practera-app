@@ -1,4 +1,5 @@
 import { of, Observable } from 'rxjs';
+import { SpyObject } from './utils';
 
 export class MockNewRelicService {
   noticeError() {
@@ -16,9 +17,16 @@ export class FastFeedbackServiceMock {
         return new Promise<any>(resolve => resolve(true));
       },
       onDidDismiss: (data) => {
-        console.log(data);
-        return;
+        return new Promise<any>(resolve => resolve(data));
       }
     });
+  }
+
+  fastFeedbackModal() {
+    return true;
+  }
+
+  getFastFeedback() {
+    return;
   }
 }
