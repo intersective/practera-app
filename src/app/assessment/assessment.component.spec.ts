@@ -1,7 +1,7 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
-import { HttpClientModule } from '@angular/common/http';
-import { async, ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
+import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { async, ComponentFixture, TestBed, fakeAsync, tick, inject } from '@angular/core/testing';
 import { QuestionsModule } from '@app/questions/questions.module';
 
 import { Router, ActivatedRoute, convertToParamMap } from '@angular/router';
@@ -97,6 +97,8 @@ describe('AssessmentComponent', () => {
   let storageSpy: jasmine.SpyObj<BrowserStorageService>;
   let shared: SharedService;
   let utils: UtilsService;
+  let httpMock: HttpTestingController;
+
   const mockAssessment = {
     name: 'test',
     description: 'test',
@@ -168,7 +170,7 @@ describe('AssessmentComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [ReactiveFormsModule, QuestionsModule, HttpClientModule],
+      imports: [ReactiveFormsModule, QuestionsModule, HttpClientTestingModule],
       declarations: [AssessmentComponent],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
       providers: [
@@ -531,4 +533,43 @@ describe('AssessmentComponent', () => {
     expect(notificationSpy.popUp.calls.count()).toBe(1);
   });
 
+  describe('submitting assessment submit(false)', () => {
+    const activityId = 1;
+    const emptyAnswers = [];
+    const action = 'assessment';
+    const assessmentId = 0;
+
+    beforeEach(() => {
+      component.id = activityId;
+      component.action = action;
+      // component.doAssessment = true;
+    });
+
+    it('should be called with correct assessment answer/action/activity status', () => {
+      component.submit(false);
+      expect(assessmentSpy.saveAnswers).toHaveBeenCalled();
+      expect(assessmentSpy.saveAnswers).toHaveBeenCalledWith(
+        {
+          id: activityId,
+          in_progress: false, // default value
+        },
+        emptyAnswers,
+        action,
+        assessmentId
+      );
+    });
+
+    it('should perform a post to server', async(inject([HttpTestingController], _httpMock => {
+        component.submit(false);
+
+        const req = _httpMock.expectOne('api/assessment_submissions.json');
+        expect(req.request.method).toEqual('POST');
+        req.flush({ response: 'ok' });
+        // expect();
+        _httpMock.verify();
+      })));
+
+    it('should check fastfeedback availability', async() => {
+    });
+  });
 });
