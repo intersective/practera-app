@@ -537,10 +537,6 @@ export class AssessmentComponent extends RouterEnter {
     }
 
     // save the submission/feedback
-    console.log('TEST::');
-    console.log(assessment);
-    console.log(answers);
-    console.log(this.action, this.submission.id);
     this.assessmentService.saveAnswers(
       assessment,
       answers,
