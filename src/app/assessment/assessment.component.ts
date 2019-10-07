@@ -428,9 +428,12 @@ export class AssessmentComponent extends RouterEnter {
     if (this.assessment.pulseCheck) {
       try {
         const modal = await this.fastFeedbackService.pullFastFeedback({ modalOnly: true }).toPromise();
-        const presentedModal = await modal.present();
-        this.notificationService.presentToast('Submission successful!', false, '', true);
-        const test = await modal.onDidDismiss();
+
+        if (modal && modal.present) {
+          const presentedModal = await modal.present();
+          this.notificationService.presentToast('Submission successful!', false, '', true);
+          await modal.onDidDismiss();
+        }
       } catch (err) {
         const toasted = await this.notificationService.alert({
           header: 'Error retrieving pulse check data',
