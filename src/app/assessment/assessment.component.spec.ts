@@ -1,6 +1,6 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { async, ComponentFixture, TestBed, fakeAsync, tick, inject } from '@angular/core/testing';
 import { QuestionsModule } from '@app/questions/questions.module';
 
@@ -13,6 +13,7 @@ import { ActivityService } from '@app/activity/activity.service';
 import { FastFeedbackService } from '@app/fast-feedback/fast-feedback.service';
 import { BrowserStorageService } from '@services/storage.service';
 import { SharedService } from '@services/shared.service';
+import { FastFeedbackServiceMock } from '@testing/mocked.service';
 import { of } from 'rxjs';
 
 class Page {
@@ -97,7 +98,6 @@ describe('AssessmentComponent', () => {
   let storageSpy: jasmine.SpyObj<BrowserStorageService>;
   let shared: SharedService;
   let utils: UtilsService;
-  let httpMock: HttpTestingController;
 
   const mockAssessment = {
     name: 'test',
@@ -182,7 +182,7 @@ describe('AssessmentComponent', () => {
         },
         {
           provide: NotificationService,
-          useValue: jasmine.createSpyObj('NotificationService', ['alert', 'customToast', 'popUp'])
+          useValue: jasmine.createSpyObj('NotificationService', ['alert', 'customToast', 'popUp', 'presentToast', 'modalOnly'])
         },
         {
           provide: ActivityService,
@@ -190,7 +190,7 @@ describe('AssessmentComponent', () => {
         },
         {
           provide: FastFeedbackService,
-          useValue: jasmine.createSpyObj('FastFeedbackService', ['pullFastFeedback'])
+          useClass: FastFeedbackServiceMock
         },
         {
           provide: BrowserStorageService,
@@ -244,7 +244,6 @@ describe('AssessmentComponent', () => {
       review: {}
     }));
     assessmentSpy.saveAnswers.and.returnValue(of({}));
-    fastFeedbackSpy.pullFastFeedback.and.returnValue(of({}));
     activitySpy.getTasksByActivityId.and.returnValue({
       currentActivity: {id: 1},
       nextTask: {type: 'assessment'}
@@ -542,6 +541,15 @@ describe('AssessmentComponent', () => {
     beforeEach(() => {
       component.id = activityId;
       component.action = action;
+      component.assessment = {
+        name: 'Test Assessment',
+        description: 'Test Description',
+        isForTeam: false,
+        dueDate: '',
+        isOverdue: false,
+        groups: [],
+        pulseCheck: true,
+      };
       // component.doAssessment = true;
     });
 
@@ -559,17 +567,25 @@ describe('AssessmentComponent', () => {
       );
     });
 
-    it('should perform a post to server', async(inject([HttpTestingController], _httpMock => {
-        component.submit(false);
+    it('should check fastfeedback availability as pulseCheck is `true`', fakeAsync(() => {
+      component.submit(false);
+      const spy = spyOn(fastFeedbackSpy, 'pullFastFeedback').and.returnValue(of(fastFeedbackSpy.pullFastFeedback()));
+      spyOn(component, 'redirectToNextMilestoneTask');
+      spyOn(component, 'navigationRoute');
 
-        const req = _httpMock.expectOne('api/assessment_submissions.json');
-        expect(req.request.method).toEqual('POST');
-        req.flush({ response: 'ok' });
-        // expect();
-        _httpMock.verify();
-      })));
+      tick(12 * 1000); // simulate 12sec (submission 10s & fastfeedback 2s)
 
-    it('should check fastfeedback availability', async() => {
-    });
+      fixture.detectChanges();
+      fixture.whenStable().then(() => {
+        expect(fastFeedbackSpy.pullFastFeedback.calls.count()).toEqual(1);
+        expect(notificationSpy.presentToast.calls.count()).toEqual(1);
+
+        if (component.doReview === true) {
+          expect(component.navigationRoute).toHaveBeenCalled();
+        } else {
+          expect(component.redirectToNextMilestoneTask).toHaveBeenCalled();
+        }
+      });
+    }));
   });
 });
