@@ -587,5 +587,16 @@ describe('AssessmentComponent', () => {
         }
       });
     }));
+
+    it('should skip fastfeedback if pulsecheck = false', () => {
+      component.assessment.pulseCheck = false;
+      spyOn(fastFeedbackSpy, 'pullFastFeedback');
+      spyOn(component, 'redirectToNextMilestoneTask');
+
+      component.submit(false);
+      expect(fastFeedbackSpy.pullFastFeedback.calls.count()).toEqual(0);
+      expect(notificationSpy.presentToast.calls.count()).toEqual(0);
+      expect(component.redirectToNextMilestoneTask).toHaveBeenCalled();
+    });
   });
 });
