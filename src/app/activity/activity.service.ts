@@ -191,7 +191,6 @@ export class ActivityService {
 
   private _normaliseOverview(rawResponse: Overview): Overview {
     const milestones = rawResponse.Milestones;
-
     // make sure every activity is available
     const normalisedMilestones = milestones.filter(milestone => {
       if (milestone.Activities.length > 0) {
@@ -262,7 +261,7 @@ export class ActivityService {
         const nextUnconditionalMilestone = this.getNextMilestone(
           overview.Milestones,
           currentMilestone,
-          currentMilestoneIndex
+          currentMilestoneIndex,
         );
 
         return {
@@ -678,7 +677,7 @@ export class ActivityService {
   }
 
   // get overview of statuses for the entire project
-  public getOverview(projectId: number): Observable<Overview> {
+  getOverview(projectId: number): Observable<Overview> {
     return this.request.get(api.projectOverview, {
       params: { id: projectId }
     }).pipe(map(res => this._normaliseOverview(res.data)));
