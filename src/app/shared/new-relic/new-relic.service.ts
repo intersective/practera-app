@@ -24,7 +24,6 @@ export class NewRelicService {
     if (newrelic) {
       this.newrelic = newrelic.interaction();
       this.newrelic.onEnd(function() {
-        console.log(arguments);
         console.log('interaction ended');
       });
     }
@@ -43,10 +42,13 @@ export class NewRelicService {
   }
 
   noticeError(error, customAttr?) {
-    console.log(this.storage.getUser());
     const { userHash, enrolment } = this.storage.getUser();
-    this.setCustomAttribute('enrolment ID', enrolment.id);
-    this.setCustomAttribute('user hash', userHash);
+    if (userHash) {
+      this.setCustomAttribute('user hash', userHash);
+    }
+    if (enrolment && enrolment.id) {
+      this.setCustomAttribute('enrolment ID', enrolment.id);
+    }
     return newrelic.noticeError(error);
   }
 
