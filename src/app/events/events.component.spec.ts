@@ -1,5 +1,5 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { async, ComponentFixture, TestBed, tick, fakeAsync } from '@angular/core/testing';
 import { EventsComponent } from './events.component';
 import { EventsService } from './events.service';
 import { Observable, of, pipe } from 'rxjs';
@@ -162,22 +162,27 @@ describe('EventsComponent', () => {
         attended: attended
       };
     });
-    afterEach(() => {
-      eventsSpy.getEvents.and.returnValue(of(tmpEvents));
-      fixture.detectChanges();
-      expect(component.loadingEvents).toBe(false);
-      expect(eventsSpy.getEvents.calls.count()).toBe(1);
-      expect(component.events).toEqual(expectedEvents);
-      expect(component.eventsCategorised).toEqual(expectedCategorised);
-    });
 
-    it(`should get correct full events grouped and activities`, () => {
+    afterEach(fakeAsync(() => {
+      eventsSpy.getEvents.and.returnValue(of(tmpEvents));
+      tick();
+      fixture.detectChanges();
+      fixture.whenStable().then(() => {
+        expect(component.loadingEvents).toBe(false);
+        expect(eventsSpy.getEvents.calls.count()).toBe(1);
+        expect(component.events).toEqual(expectedEvents);
+        expect(component.eventsCategorised).toEqual(expectedCategorised);
+      });
+    }));
+
+    it(`should get correct full events grouped and activities`, fakeAsync(() => {
+      tick();
       fixture.detectChanges();
       fixture.whenStable().then(() => {
         expect(eventsSpy.getActivities.calls.count()).toBe(1);
         expect(component.activities).toEqual(mockActivities);
       });
-    });
+    }));
 
     it(`should get correct events grouped without browse`, () => {
       tmpEvents.splice(0, 4);
