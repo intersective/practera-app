@@ -37,6 +37,7 @@ export class TopicComponent extends RouterEnter {
   isLoadingPreview = false;
   isRedirectingToNextMilestoneTask: boolean;
   askForMarkAsDone: boolean;
+  redirecting = false;
 
   constructor(
     private topicService: TopicService,
@@ -133,7 +134,7 @@ export class TopicComponent extends RouterEnter {
 
   /**
    * continue (mark as read) button
-   * @description button action to trigger `nextStepPrompt`
+   * @description button action to trigger `redirectToNextMilestoneTask`
    */
   async continue(): Promise<any> {
     this.loadingTopic = true;
@@ -147,7 +148,7 @@ export class TopicComponent extends RouterEnter {
     try {
       await this.markAsDone().toPromise();
     } catch (err) {
-      const toasted = await this.notificationService.alert({
+      await this.notificationService.alert({
         header: 'Error marking topic as completed.',
         message: err.msg || JSON.stringify(err)
       });
@@ -155,9 +156,16 @@ export class TopicComponent extends RouterEnter {
       throw new Error(err);
     }
 
-    const navigation = await this.nextStepPrompt();
+    this.redirecting = true;
     this.loadingTopic = false;
-    return navigation;
+    return setTimeout(
+      async () => {
+        const navigation = await this.redirectToNextMilestoneTask();
+        this.redirecting = false;
+        return navigation;
+      },
+      2000
+    );
   }
 
   /**
@@ -264,7 +272,6 @@ export class TopicComponent extends RouterEnter {
     }
 
     await this.navigate(route);
-    this.isRedirectingToNextMilestoneTask = false;
     return;
   }
 
@@ -275,20 +282,13 @@ export class TopicComponent extends RouterEnter {
     });
   }
 
-  /**
-   * @name nextStepPrompt
-   * @description
-   */
-  async nextStepPrompt(): Promise<any> {
-    await this.notificationService.customToast({
-      message: 'Topic completed! Please proceed to the next learning task.'
-    });
-    return this.redirectToNextMilestoneTask();
-  }
-
   back() {
     if (this.btnToggleTopicIsDone || !this.askForMarkAsDone) {
-      return this.navigate(['app', 'activity', this.activityId]);
+      return this.navigate([
+        'app',
+        'activity',
+        this.activityId
+      ]);
     }
 
     const type = 'Topic';
@@ -308,7 +308,7 @@ export class TopicComponent extends RouterEnter {
             this.newRelic.addPageAction('Mark as read before back');
             return this.markAsDone().subscribe(
               () => {
-                return this.notificationService.customToast({
+                return this.notificationService.presentToast({
                   message: 'You\'ve completed the topic!'
                 }).then(() => this.navigate([
                   'app',

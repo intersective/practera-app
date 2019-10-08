@@ -1,7 +1,7 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
-import { HttpClientModule } from '@angular/common/http';
-import { async, ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { async, ComponentFixture, TestBed, fakeAsync, tick, inject } from '@angular/core/testing';
 import { QuestionsModule } from '@app/questions/questions.module';
 
 import { Router, ActivatedRoute, convertToParamMap } from '@angular/router';
@@ -13,6 +13,7 @@ import { ActivityService } from '@app/activity/activity.service';
 import { FastFeedbackService } from '@app/fast-feedback/fast-feedback.service';
 import { BrowserStorageService } from '@services/storage.service';
 import { SharedService } from '@services/shared.service';
+import { FastFeedbackServiceMock } from '@testing/mocked.service';
 import { of } from 'rxjs';
 
 class Page {
@@ -97,12 +98,14 @@ describe('AssessmentComponent', () => {
   let storageSpy: jasmine.SpyObj<BrowserStorageService>;
   let shared: SharedService;
   let utils: UtilsService;
+
   const mockAssessment = {
     name: 'test',
     description: 'test',
     isForTeam: false,
     dueDate: '2029-02-02',
     isOverdue: false,
+    pulseCheck: false,
     groups: [{
       name: 'test groups',
       description: 'test groups description',
@@ -167,7 +170,7 @@ describe('AssessmentComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [ReactiveFormsModule, QuestionsModule, HttpClientModule],
+      imports: [ReactiveFormsModule, QuestionsModule, HttpClientTestingModule],
       declarations: [AssessmentComponent],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
       providers: [
@@ -179,7 +182,7 @@ describe('AssessmentComponent', () => {
         },
         {
           provide: NotificationService,
-          useValue: jasmine.createSpyObj('NotificationService', ['alert', 'customToast', 'popUp'])
+          useValue: jasmine.createSpyObj('NotificationService', ['alert', 'customToast', 'popUp', 'presentToast', 'modalOnly'])
         },
         {
           provide: ActivityService,
@@ -187,7 +190,7 @@ describe('AssessmentComponent', () => {
         },
         {
           provide: FastFeedbackService,
-          useValue: jasmine.createSpyObj('FastFeedbackService', ['pullFastFeedback'])
+          useClass: FastFeedbackServiceMock
         },
         {
           provide: BrowserStorageService,
@@ -241,7 +244,6 @@ describe('AssessmentComponent', () => {
       review: {}
     }));
     assessmentSpy.saveAnswers.and.returnValue(of({}));
-    fastFeedbackSpy.pullFastFeedback.and.returnValue(of({}));
     activitySpy.getTasksByActivityId.and.returnValue({
       currentActivity: {id: 1},
       nextTask: {type: 'assessment'}
@@ -530,4 +532,71 @@ describe('AssessmentComponent', () => {
     expect(notificationSpy.popUp.calls.count()).toBe(1);
   });
 
+  describe('submitting assessment submit(false)', () => {
+    const activityId = 1;
+    const emptyAnswers = [];
+    const action = 'assessment';
+    const assessmentId = 0;
+
+    beforeEach(() => {
+      component.id = activityId;
+      component.action = action;
+      component.assessment = {
+        name: 'Test Assessment',
+        description: 'Test Description',
+        isForTeam: false,
+        dueDate: '',
+        isOverdue: false,
+        groups: [],
+        pulseCheck: true,
+      };
+      // component.doAssessment = true;
+    });
+
+    it('should be called with correct assessment answer/action/activity status', () => {
+      component.submit(false);
+      expect(assessmentSpy.saveAnswers).toHaveBeenCalled();
+      expect(assessmentSpy.saveAnswers).toHaveBeenCalledWith(
+        {
+          id: activityId,
+          in_progress: false, // default value
+        },
+        emptyAnswers,
+        action,
+        assessmentId
+      );
+    });
+
+    it('should check fastfeedback availability as pulseCheck is `true`', fakeAsync(() => {
+      component.submit(false);
+      const spy = spyOn(fastFeedbackSpy, 'pullFastFeedback').and.returnValue(of(fastFeedbackSpy.pullFastFeedback()));
+      spyOn(component, 'redirectToNextMilestoneTask');
+      spyOn(component, 'navigationRoute');
+
+      tick(12 * 1000); // simulate 12sec (submission 10s & fastfeedback 2s)
+
+      fixture.detectChanges();
+      fixture.whenStable().then(() => {
+        expect(fastFeedbackSpy.pullFastFeedback.calls.count()).toEqual(1);
+        expect(notificationSpy.presentToast.calls.count()).toEqual(1);
+
+        if (component.doReview === true) {
+          expect(component.navigationRoute).toHaveBeenCalled();
+        } else {
+          expect(component.redirectToNextMilestoneTask).toHaveBeenCalled();
+        }
+      });
+    }));
+
+    it('should skip fastfeedback if pulsecheck = false', () => {
+      component.assessment.pulseCheck = false;
+      spyOn(fastFeedbackSpy, 'pullFastFeedback');
+      spyOn(component, 'redirectToNextMilestoneTask');
+
+      component.submit(false);
+      expect(fastFeedbackSpy.pullFastFeedback.calls.count()).toEqual(0);
+      expect(notificationSpy.presentToast.calls.count()).toEqual(0);
+      expect(component.redirectToNextMilestoneTask).toHaveBeenCalled();
+    });
+  });
 });
