@@ -11,6 +11,7 @@ import { FilestackService } from '@shared/filestack/filestack.service';
 import { FastFeedbackService } from '../fast-feedback/fast-feedback.service';
 import { BrowserStorageService } from '@services/storage.service';
 import { AuthService } from '../auth/auth.service';
+import { NewRelicService } from '@shared/new-relic/new-relic.service';
 
 describe('SettingsComponent', () => {
   let component: SettingsComponent;
@@ -20,6 +21,7 @@ describe('SettingsComponent', () => {
   let fastFeedbackSpy: jasmine.SpyObj<FastFeedbackService>;
   let storageSpy: jasmine.SpyObj<BrowserStorageService>;
   let authSpy: jasmine.SpyObj<AuthService>;
+  let newRelicSpy: jasmine.SpyObj<NewRelicService>;
   let utils: UtilsService;
 
   beforeEach(async(() => {
@@ -47,6 +49,10 @@ describe('SettingsComponent', () => {
           useValue: jasmine.createSpyObj('AuthService', ['logout'])
         },
         {
+          provide: NewRelicService,
+          useValue: jasmine.createSpyObj('NewRelicService', ['setPageViewName', 'actionText', 'noticeError'])
+        },
+        {
           provide: Router,
           useValue: {
             navigate: jasmine.createSpy('navigate'),
@@ -67,6 +73,7 @@ describe('SettingsComponent', () => {
     fastFeedbackSpy = TestBed.get(FastFeedbackService);
     storageSpy = TestBed.get(BrowserStorageService);
     authSpy = TestBed.get(AuthService);
+    newRelicSpy = TestBed.get(NewRelicService);
 
     storageSpy.getUser.and.returnValue({
       email: 'test@test.com',
@@ -76,6 +83,9 @@ describe('SettingsComponent', () => {
       programName: 'program'
     });
     fastFeedbackSpy.pullFastFeedback.and.returnValue(of({}));
+    newRelicSpy.actionText.and.returnValue('');
+    newRelicSpy.setPageViewName.and.returnValue('');
+    newRelicSpy.noticeError.and.returnValue('');
   });
 
   it('should create', () => {
