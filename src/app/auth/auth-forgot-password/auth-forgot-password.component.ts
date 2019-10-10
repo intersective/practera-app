@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { NotificationService } from '@shared/notification/notification.service';
 import { UtilsService } from '@services/utils.service';
 import { AuthService } from '../auth.service';
@@ -9,7 +9,7 @@ import { NewRelicService } from '@shared/new-relic/new-relic.service';
   templateUrl: 'auth-forgot-password.component.html',
   styleUrls: ['auth-forgot-password.component.scss']
 })
-export class AuthForgotPasswordComponent implements OnInit {
+export class AuthForgotPasswordComponent {
   email = '';
   // variable to control the label of the button
   isSending = false;
@@ -21,19 +21,19 @@ export class AuthForgotPasswordComponent implements OnInit {
     private newRelic: NewRelicService
   ) {}
 
-  ngOnInit() {
-    this.newRelic.setPageViewName('forgotpassword');
-  }
-
   async send() {
     // basic validation
     if (this.email.length < 0 || !this.email) {
+      this.newRelic.actionText('email missing');
       return this.notificationService.presentToast('Please enter email', false);
     }
     this.isSending = true;
+
     // call API to do forgot password logic
+    const nrForgotpasswordTracer = this.newRelic.createTracer('API Request: forgot-password');
     this.authService.forgotPassword(this.email).subscribe(
       res => {
+        nrForgotpasswordTracer();
         this.newRelic.actionText('forgot password request sent');
         this.isSending = false;
         // show pop up message for confirmation
@@ -45,7 +45,8 @@ export class AuthForgotPasswordComponent implements OnInit {
         );
       },
       err => {
-        this.newRelic.noticeError(`Password Reset Error: ${JSON.stringify(err)}`);
+        nrForgotpasswordTracer();
+        this.newRelic.noticeError(`Password Reset Error`, JSON.stringify(err));
         this.isSending = false;
         if (this.utils.has(err, 'data.type')) {
           // pop up if trying to reset password too frequently
