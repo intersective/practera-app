@@ -63,4 +63,8 @@ export class NewRelicService {
   setAttribute(name, value) {
     return this.newrelic.setAttribute(name, value).save();
   }
+
+  createTracer(name, callback?) {
+    return this.newrelic.interaction().createTracker(name, callback);
+  }
 }
