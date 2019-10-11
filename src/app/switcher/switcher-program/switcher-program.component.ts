@@ -40,6 +40,7 @@ export class SwitcherProgramComponent implements OnInit {
   }
 
   async switch(index) {
+    const nrSwitchedProgramTracer = this.newRelic.createTracer('switching program');
     this.newRelic.actionText(`selected ${this.programs[index].program.name}`);
     const loading = await this.loadingController.create({
       message: 'loading...'
@@ -47,19 +48,25 @@ export class SwitcherProgramComponent implements OnInit {
 
     await loading.present();
 
-    return this.switcherService.switchProgram(this.programs[index]).subscribe(() => {
-      loading.dismiss().then(() => {
-        // reset pusher (upon new timelineId)
-        this.pusherService.initialise({ unsubscribe: true });
-
-        if ((typeof environment.goMobile !== 'undefined' && environment.goMobile === false)
-          || /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
-          return this.router.navigate(['app', 'home']);
-        } else {
-          return this.router.navigate(['go-mobile']);
-        }
-      });
-    });
+    return this.switcherService.switchProgram(this.programs[index]).subscribe(
+      () => {
+        loading.dismiss().then(() => {
+          // reset pusher (upon new timelineId)
+          this.pusherService.initialise({ unsubscribe: true });
+          nrSwitchedProgramTracer();
+          if ((typeof environment.goMobile !== 'undefined' && environment.goMobile === false)
+            || /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
+            return this.router.navigate(['app', 'home']);
+          } else {
+            return this.router.navigate(['go-mobile']);
+          }
+        });
+      },
+      err => {
+        nrSwitchedProgramTracer();
+        this.newRelic.noticeError('switch program failed', JSON.stringify(err));
+      }
+    );
   }
 
   logout() {
