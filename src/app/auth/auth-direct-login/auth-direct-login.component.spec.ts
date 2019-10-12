@@ -34,7 +34,8 @@ describe('AuthDirectLoginComponent', () => {
         NewRelicService,
         {
           provide: BrowserStorageService,
-          useValue: jasmine.createSpyObj('BrowserStorageService', ['get', 'getConfig', 'getUser'])
+          useClass: BrowserStorageServiceMock
+          // useValue: jasmine.createSpyObj('BrowserStorageService', ['get', 'getConfig', 'getUser'])
         },
         {
           provide: AuthService,
