@@ -1,6 +1,6 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { Location, LocationStrategy, PathLocationStrategy } from '@angular/common';
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { async, ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { AuthResetPasswordComponent } from './auth-reset-password.component';
 import { AuthService } from '../auth.service';
@@ -12,6 +12,7 @@ import { ActivatedRouteStub } from '@testing/activated-route-stub';
 import { NotificationService } from '@shared/notification/notification.service';
 import { BrowserStorageService } from '@services/storage.service';
 import { ReactiveFormsModule } from '@angular/forms';
+import { BrowserStorageServiceMock } from '@testing/mocked.service';
 
 describe('AuthResetPasswordComponent', () => {
   let component: AuthResetPasswordComponent;
@@ -41,11 +42,7 @@ describe('AuthResetPasswordComponent', () => {
         },
         {
           provide: BrowserStorageService,
-          useValue: {
-            getConfig: () => {
-              return {logo: ''};
-            }
-          }
+          useClass: BrowserStorageServiceMock
         },
         {
           provide: NotificationService,
@@ -101,10 +98,12 @@ describe('AuthResetPasswordComponent', () => {
     it('should pop up alert and redirect if verify resetpassword failed', () => {
       serviceSpy.verifyResetPassword.and.returnValue(throwError(''));
       fixture.detectChanges();
-      expect(notificationSpy.alert.calls.count()).toBe(1);
-      expect(notificationSpy.alert.calls.first().args[0].message).toContain('Invalid');
-      notificationSpy.alert.calls.first().args[0].buttons[0].handler();
-      expect(routerSpy.navigate.calls.first().args[0]).toEqual(['login']);
+      fixture.whenStable().then(() => {
+        expect(notificationSpy.alert.calls.count()).toBe(1);
+        expect(notificationSpy.alert.calls.first().args[0].message).toContain('Invalid');
+        notificationSpy.alert.calls.first().args[0].buttons[0].handler();
+        expect(routerSpy.navigate.calls.first().args[0]).toEqual(['login']);
+      });
     });
   });
 
@@ -121,14 +120,15 @@ describe('AuthResetPasswordComponent', () => {
       notificationSpy.alert.calls.first().args[0].buttons[0].handler();
       expect(routerSpy.navigate.calls.first().args[0]).toEqual(['login']);
     });
-    it('should pop up alert if password compromised', () => {
+    it('should pop up alert if password compromised', fakeAsync(() => {
       serviceSpy.resetPassword.and.returnValue(throwError({
         data: {type: 'password_compromised'}
       }));
       component.resetPassword();
+      tick();
       expect(notificationSpy.alert.calls.count()).toBe(1);
       expect(notificationSpy.alert.calls.first().args[0].message).toContain('insecure passwords');
-    });
+    }));
     it('should pop up alert if reset password failed', () => {
       serviceSpy.resetPassword.and.returnValue(throwError(''));
       component.resetPassword();

@@ -30,8 +30,6 @@ export class NewRelicService {
         console.log('interaction ended');
       });
     }
-
-    console.log(this.interaction);
   }
 
   setPageViewName(name) {
