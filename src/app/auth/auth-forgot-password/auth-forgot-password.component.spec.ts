@@ -78,6 +78,8 @@ describe('AuthForgotPasswordComponent', () => {
     it('should pop up forgot password confirmation if success', fakeAsync(() => {
       serviceSpy.forgotPassword.and.returnValue(of({}));
       component.send();
+      tick();
+
       expect(component.isSending).toBe(false);
       expect(notificationSpy.popUp.calls.count()).toBe(1);
       expect(notificationSpy.popUp.calls.first().args[1]).toEqual({email: component.email});
