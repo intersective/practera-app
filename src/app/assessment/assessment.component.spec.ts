@@ -15,6 +15,7 @@ import { BrowserStorageService } from '@services/storage.service';
 import { SharedService } from '@services/shared.service';
 import { FastFeedbackServiceMock } from '@testing/mocked.service';
 import { of } from 'rxjs';
+import { NewRelicService } from '@shared/new-relic/new-relic.service';
 
 class Page {
   get savingMessage() {
@@ -176,6 +177,7 @@ describe('AssessmentComponent', () => {
       providers: [
         UtilsService,
         SharedService,
+        NewRelicService,
         {
           provide: AssessmentService,
           useValue: jasmine.createSpyObj('AssessmentService', ['getAssessment', 'getSubmission', 'getFeedbackReviewed', 'saveAnswers', 'saveFeedbackReviewed', 'popUpReviewRating'])
