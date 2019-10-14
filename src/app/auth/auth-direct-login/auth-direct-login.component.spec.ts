@@ -10,6 +10,8 @@ import { UtilsService } from '@services/utils.service';
 import { NotificationService } from '@shared/notification/notification.service';
 import { SwitcherService } from '../../switcher/switcher.service';
 import { BrowserStorageService } from '@services/storage.service';
+import { NewRelicService } from '@shared/new-relic/new-relic.service';
+import { BrowserStorageServiceMock } from '@testing/mocked.service';
 
 describe('AuthDirectLoginComponent', () => {
   let component: AuthDirectLoginComponent;
@@ -29,6 +31,12 @@ describe('AuthDirectLoginComponent', () => {
       schemas: [ CUSTOM_ELEMENTS_SCHEMA ],
       providers: [
         UtilsService,
+        NewRelicService,
+        {
+          provide: BrowserStorageService,
+          useClass: BrowserStorageServiceMock
+          // useValue: jasmine.createSpyObj('BrowserStorageService', ['get', 'getConfig', 'getUser'])
+        },
         {
           provide: AuthService,
           useValue: jasmine.createSpyObj('AuthService', ['directLogin'])
@@ -44,17 +52,13 @@ describe('AuthDirectLoginComponent', () => {
           }
         },
         {
-          provide: BrowserStorageService,
-          useValue: jasmine.createSpyObj('BrowserStorageService', ['get', 'getConfig'])
-        },
-        {
           provide: NotificationService,
           useValue: jasmine.createSpyObj('NotificationService', ['alert'])
         },
         {
           provide: ActivatedRoute,
           useValue: new ActivatedRouteStub({ authToken: 'abc' })
-        }
+        },
       ],
     })
     .compileComponents();
@@ -80,11 +84,14 @@ describe('AuthDirectLoginComponent', () => {
   });
 
   describe('when testing ngOnInit()', () => {
-    it('should pop up alert if auth token is not provided', () => {
-      routeStub.setParamMap({authToken: null});
+    it('should pop up alert if auth token is not provided', fakeAsync(() => {
+      routeStub.setParamMap({ authToken: null });
+      tick();
       fixture.detectChanges();
-      expect(notificationSpy.alert.calls.count()).toBe(1);
-    });
+      fixture.whenStable().then(() => {
+        expect(notificationSpy.alert.calls.count()).toBe(1);
+      });
+    }));
 
     it('should pop up alert if direct login service throw error', fakeAsync(() => {
       routeStub.setParamMap({authToken: 'abc'});

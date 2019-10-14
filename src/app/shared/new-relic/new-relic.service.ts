@@ -3,13 +3,15 @@ import { BrowserStorageService } from '@services/storage.service';
 // import { noticeError } from 'newrelic';
 // import * as newrelic from './../../../../assets/newrelic';
 // import 'newrelic';
-import {
+/*import {
   interaction,
   setErrorHandler,
   setPageViewName,
   addRelease,
-} from 'new-relic-browser';
-// import * as newrelic from 'newrelic';
+} from 'new-relic-browser';*/
+
+import * as NewRelic from 'new-relic-browser';
+// import * as NewRelic from 'newrelic';
 
 @Injectable({
   providedIn: 'root',
@@ -17,6 +19,7 @@ import {
 
 export class NewRelicService {
   private newrelic;
+  private interaction;
 
   constructor(
     private storage: BrowserStorageService
@@ -44,12 +47,17 @@ export class NewRelicService {
   noticeError(error, customAttr?) {
     const { userHash, enrolment } = this.storage.getUser();
     if (userHash) {
-      this.setCustomAttribute('user hash', userHash);
+      this.setAttribute('user hash', userHash);
     }
     if (enrolment && enrolment.id) {
-      this.setCustomAttribute('enrolment ID', enrolment.id);
+      this.setAttribute('enrolment ID', enrolment.id);
     }
     return newrelic.noticeError(error);
+  }
+
+  createTracer(name, callback?) {
+    const newInteraction = newrelic.interaction();
+    return newInteraction.createTracer(name, callback);
   }
 
   getContext() {
