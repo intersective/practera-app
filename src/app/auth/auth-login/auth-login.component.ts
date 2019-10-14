@@ -50,16 +50,21 @@ export class AuthLoginComponent implements OnInit {
     }
     this.isLoggingIn = true;
 
+    const nrLoginTracer = this.newRelic.createTracer('login request started', (message) => {
+      this.newRelic.setCustomAttribute('login status', message);
+    });
     return this.authService.login({
       email: this.loginForm.value.email,
       password: this.loginForm.value.password,
     }).subscribe(
       res => {
+        nrLoginTracer('login successful');
         this.newRelic.actionText('login successful');
         this.isLoggingIn = false;
         return this.router.navigate(['switcher']);
       },
       err => {
+        nrLoginTracer(JSON.stringify(err));
         this.newRelic.noticeError(`${JSON.stringify(err)}`);
 
         // notify user about weak password
