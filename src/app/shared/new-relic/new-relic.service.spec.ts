@@ -61,7 +61,7 @@ describe('NewRelicService', () => {
     };
 
     beforeEach(() => {
-      spyOn(service, 'setCustomAttribute');
+      spyOn(service, 'setAttribute');
     });
 
     it('should get custom attributes from storage', () => {
@@ -69,8 +69,8 @@ describe('NewRelicService', () => {
       service.noticeError('dummyvalue');
 
       expect(storageSpy.getUser).toHaveBeenCalled();
-      expect(service.setCustomAttribute).toHaveBeenCalledWith('user hash', TEST1.userHash);
-      expect(service.setCustomAttribute).toHaveBeenCalledWith('enrolment ID', TEST1.enrolment.id);
+      expect(service.setAttribute).toHaveBeenCalledWith('user hash', TEST1.userHash);
+      expect(service.setAttribute).toHaveBeenCalledWith('enrolment ID', TEST1.enrolment.id);
     });
 
     it('should skip custom attribute if storage doesn\'t has specified value(s)', () => {
@@ -78,8 +78,8 @@ describe('NewRelicService', () => {
       service.noticeError('dummyvalue');
 
       expect(storageSpy.getUser).toHaveBeenCalled();
-      expect(service.setCustomAttribute).toHaveBeenCalledWith('user hash', TEST2.userHash);
-      expect(service.setCustomAttribute).not.toHaveBeenCalledWith('enrolment ID', TEST1.enrolment.id);
+      expect(service.setAttribute).toHaveBeenCalledWith('user hash', TEST2.userHash);
+      expect(service.setAttribute).not.toHaveBeenCalledWith('enrolment ID', TEST1.enrolment.id);
     });
   });
 });
