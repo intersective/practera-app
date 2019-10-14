@@ -26,6 +26,7 @@ export class AchievementsComponent extends RouterEnter {
   }
 
   onEnter() {
+    console.log('test - onEnter?!');
     this.loadingAchievements = true;
     this.achievementService.getAchievements().subscribe(
       achievements => {
