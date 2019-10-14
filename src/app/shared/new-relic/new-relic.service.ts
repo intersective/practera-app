@@ -47,10 +47,10 @@ export class NewRelicService {
   noticeError(error, customAttr?) {
     const { userHash, enrolment } = this.storage.getUser();
     if (userHash) {
-      this.setCustomAttribute('user hash', userHash);
+      this.setAttribute('user hash', userHash);
     }
     if (enrolment && enrolment.id) {
-      this.setCustomAttribute('enrolment ID', enrolment.id);
+      this.setAttribute('enrolment ID', enrolment.id);
     }
     return newrelic.noticeError(error);
   }
