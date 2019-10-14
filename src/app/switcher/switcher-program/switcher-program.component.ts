@@ -8,6 +8,7 @@ import { LoadingController } from '@ionic/angular';
 import { environment } from '@environments/environment';
 import { PusherService } from '@shared/pusher/pusher.service';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
+import { NotificationService } from '@shared/notification/notification.service';
 
 @Injectable({
   providedIn: 'root'
@@ -28,7 +29,8 @@ export class SwitcherProgramComponent implements OnInit {
     private authService: AuthService,
     private pusherService: PusherService,
     private switcherService: SwitcherService,
-    private newRelic: NewRelicService
+    private newRelic: NewRelicService,
+    private notificationService: NotificationService
   ) {}
 
   ngOnInit() {
@@ -63,8 +65,14 @@ export class SwitcherProgramComponent implements OnInit {
         });
       },
       err => {
+        const toasted = this.notificationService.alert({
+          header: 'Error switching program',
+          message: err.msg || JSON.stringify(err)
+        });
+
         nrSwitchedProgramTracer();
         this.newRelic.noticeError('switch program failed', JSON.stringify(err));
+        throw new Error(err);
       }
     );
   }

@@ -6,6 +6,12 @@ import { Observable, of, pipe } from 'rxjs';
 import { Router } from '@angular/router';
 import { SharedModule } from '@shared/shared.module';
 import { UtilsService } from '@services/utils.service';
+import { NewRelicService } from '@shared/new-relic/new-relic.service';
+import {
+  HttpTestingController,
+  HttpClientTestingModule
+} from '@angular/common/http/testing';
+import { NotificationService } from '@shared/notification/notification.service';
 
 describe('ReviewsComponent', () => {
   let component: ReviewsComponent;
@@ -16,11 +22,13 @@ describe('ReviewsComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [SharedModule],
+      imports: [SharedModule, HttpClientTestingModule],
       declarations: [ ReviewsComponent ],
       schemas: [ CUSTOM_ELEMENTS_SCHEMA ],
       providers: [
         UtilsService,
+        NewRelicService,
+        NotificationService,
         {
           provide: ReviewsService,
           useValue: jasmine.createSpyObj('ReviewsService', ['getReviews'])
@@ -60,9 +68,11 @@ describe('ReviewsComponent', () => {
     });
     serviceSpy.getReviews.and.returnValue(of(reviews));
     fixture.detectChanges();
-    expect(component.reviews).toEqual(reviews);
-    expect(component.showDone).toBe(false);
-    expect(component.loadingReviews).toBe(false);
+    fixture.whenStable().then(() => {
+      expect(component.reviews).toEqual(reviews);
+      expect(component.showDone).toBe(false);
+      expect(component.loadingReviews).toBe(false);
+    });
   });
 
   it('should navigate to the correct page gotoReview()', () => {
