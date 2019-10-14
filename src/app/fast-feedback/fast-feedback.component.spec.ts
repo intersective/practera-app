@@ -10,6 +10,8 @@ import { ModalController } from '@ionic/angular';
 import { FastFeedbackComponent } from './fast-feedback.component';
 import { QuestionComponent } from './question/question.component';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
+import { NewRelicService } from '@shared/new-relic/new-relic.service';
+import { MockNewRelicService } from '@testing/mocked.service';
 
 class Page {
   get questions() {
@@ -60,6 +62,10 @@ describe('FastFeedbackComponent', () => {
         {
           provide: BrowserStorageService,
           useValue: jasmine.createSpyObj('BrowserStorageService', ['set'])
+        },
+        {
+          provide: NewRelicService,
+          useClass: MockNewRelicService
         }
       ],
     })
@@ -87,6 +93,7 @@ describe('FastFeedbackComponent', () => {
     });
     component.ngOnInit();
     expect(Object.keys(component.fastFeedbackForm.controls).length).toBe(5);
+    expect(component.newRelicTracer).toBeTruthy();
   });
 
   it('when testing dismiss(), it should dismiss', () => {
@@ -122,32 +129,42 @@ describe('FastFeedbackComponent', () => {
       expect(fastfeedbackSpy.submit.calls.count()).toBe(1);
       expect(modalSpy.dismiss.calls.count()).toBe(1);
     });
-    it('should submit correct data when submission answer is provided in full', fakeAsync(() => {
-      component.submit();
-      tick(2500);
-      expect(fastfeedbackSpy.submit.calls.first().args[1]).toEqual({
-        context_id: 1,
-        team_id: 2
-      });
-    }));
-    it('should submit correct data when user isn\'t in a team', fakeAsync(() => {
-      component.meta.team_id = null;
-      component.submit();
-      tick(2500);
 
-      expect(fastfeedbackSpy.submit.calls.first().args[1]).toEqual({
-        context_id: 1,
-        target_user_id: 3
+    describe('should submit correct data', () => {
+      beforeEach(() => {
+        component.ngOnInit();
       });
-    }));
-    it('should submit correct data when team_id and target_user_id is null', fakeAsync(() => {
-      component.meta.team_id = null;
-      component.meta.target_user_id = null;
-      component.submit();
-      tick(2500);
-      expect(fastfeedbackSpy.submit.calls.first().args[1]).toEqual({
-        context_id: 1
-      });
-    }));
+
+      it('when submission answer is provided in full', fakeAsync(() => {
+        component.submit();
+        tick(2500);
+        expect(fastfeedbackSpy.submit.calls.first().args[1]).toEqual({
+          context_id: 1,
+          team_id: 2
+        });
+      }));
+
+      it('when user isn\'t in a team', fakeAsync(() => {
+        component.meta.team_id = null;
+        component.submit();
+        tick(2500);
+
+        expect(fastfeedbackSpy.submit.calls.first().args[1]).toEqual({
+          context_id: 1,
+          target_user_id: 3
+        });
+      }));
+
+      it('when team_id and target_user_id is null', fakeAsync(() => {
+        component.meta.team_id = null;
+        component.meta.target_user_id = null;
+        component.submit();
+        tick(2500);
+        expect(fastfeedbackSpy.submit.calls.first().args[1]).toEqual({
+          context_id: 1
+        });
+      }));
+
+    });
   });
 });

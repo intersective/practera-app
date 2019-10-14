@@ -90,8 +90,6 @@ export class HomeComponent extends RouterEnter implements OnDestroy {
   }
 
   onEnter() {
-    this.newRelic.setPageViewName('home');
-
     this._initialise();
     this.subscriptions.push(
       this.homeService.getTodoItems().subscribe(todoItems => {
