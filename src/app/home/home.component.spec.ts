@@ -14,6 +14,7 @@ import { UtilsService } from '@services/utils.service';
 import { of } from 'rxjs';
 import { map, filter } from 'rxjs/operators';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { NewRelicService } from '@shared/new-relic/new-relic.service';
 
 @Directive({
   selector: '[routerLink], [routerLinkActive]'
@@ -75,6 +76,7 @@ describe('HomeComponent', () => {
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
       providers: [
         UtilsService,
+        NewRelicService,
         {
           provide: Intercom
         },

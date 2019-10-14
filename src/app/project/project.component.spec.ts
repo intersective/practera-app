@@ -13,6 +13,7 @@ import { DOCUMENT } from '@angular/common';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { FastFeedbackService } from '../fast-feedback/fast-feedback.service';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { NewRelicService } from '@shared/new-relic/new-relic.service';
 
 export class MockElementRef extends ElementRef {
   constructor() { super(null); }
@@ -61,6 +62,7 @@ describe('ProjectComponent', () => {
       schemas: [ CUSTOM_ELEMENTS_SCHEMA ],
       providers: [
         UtilsService,
+        NewRelicService,
         {
           provide: ElementRef,
           useClass: MockElementRef
