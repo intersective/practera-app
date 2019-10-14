@@ -13,8 +13,6 @@ export class RouterEnter implements OnInit, OnDestroy {
   ngOnInit() {
     // this.onEnter();
     this.subscription = this.router.events.subscribe(event => {
-      // /app/
-      // /app/project
       if (event instanceof NavigationEnd && this.allowedRoute(event, this.routeUrl)) {
         this.onEnter();
       }
