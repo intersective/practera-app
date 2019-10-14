@@ -8,6 +8,7 @@ import { SharedModule } from '@shared/shared.module';
 import { UtilsService } from '@services/utils.service';
 import { ActivatedRouteStub } from '@testing/activated-route-stub';
 import { TestUtils } from '@testing/utils';
+import { NewRelicService } from '@shared/new-relic/new-relic.service';
 
 class Page {
   get eventItems() {
@@ -44,6 +45,7 @@ describe('EventsComponent', () => {
       schemas: [ CUSTOM_ELEMENTS_SCHEMA ],
       providers: [
         UtilsService,
+        NewRelicService,
         {
           provide: EventsService,
           useValue: jasmine.createSpyObj('EventsService', ['getEvents', 'getActivities'])
