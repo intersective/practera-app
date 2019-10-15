@@ -231,6 +231,7 @@ describe('ActivityComponent', () => {
       fixture.detectChanges();
       fixture.whenStable().then(() => {
         expect(eventSpy.getEvents.calls.count()).toBe(2);
+        expect(component.events.length).toBeGreaterThan(0);
       });
     });
   });
