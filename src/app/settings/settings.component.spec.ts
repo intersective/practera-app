@@ -12,6 +12,8 @@ import { FastFeedbackService } from '../fast-feedback/fast-feedback.service';
 import { BrowserStorageService } from '@services/storage.service';
 import { AuthService } from '../auth/auth.service';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
+import { MockRouter } from '@testing/mocked.service';
+
 
 describe('SettingsComponent', () => {
   let component: SettingsComponent;
@@ -54,10 +56,7 @@ describe('SettingsComponent', () => {
         },
         {
           provide: Router,
-          useValue: {
-            navigate: jasmine.createSpy('navigate'),
-            events: of()
-          }
+          useClass: MockRouter
         },
       ],
     })
@@ -86,13 +85,14 @@ describe('SettingsComponent', () => {
     newRelicSpy.actionText.and.returnValue('');
     newRelicSpy.setPageViewName.and.returnValue('');
     newRelicSpy.noticeError.and.returnValue('');
+    component.routeUrl = '/test';
   });
 
   it('should create', () => {
     expect(component).toBeDefined();
   });
 
-  it('when testing onEnter(), it should get correct data.', () => {
+  it('when testing onEnter(), it should get correct data', () => {
     fixture.detectChanges();
     expect(component.profile).toEqual({
       email: 'test@test.com',
@@ -106,10 +106,22 @@ describe('SettingsComponent', () => {
   });
 
   it('should navigate to switcher page', () => {
-    component.openLink();
     component.switchProgram();
-    component.mailTo();
     expect(routerSpy.navigate.calls.first().args[0]).toEqual(['/switcher']);
+  });
+
+  it('should allow access to T&C file', () => {
+    spyOn(window, 'open');
+    component.openLink();
+    expect(component.termsUrl).toEqual('https://images.practera.com/terms_and_conditions/practera_terms_conditions.pdf');
+    expect(window.open).toHaveBeenCalledWith(component.termsUrl, '_system');
+  });
+
+  it('should initiate support email event', () => {
+    spyOn(window, 'open');
+    component.mailTo();
+    expect(component.helpline).toEqual('help@practera.com');
+    expect(window.open).toHaveBeenCalledWith(`mailto:${component.helpline}?subject=${component.currentProgramName}`, '_self');
   });
 
   it('when testing logout(), it should call auth service logout', () => {

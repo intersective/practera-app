@@ -11,9 +11,9 @@ export class RouterEnter implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
-    this.onEnter();
+    // this.onEnter();
     this.subscription = this.router.events.subscribe(event => {
-      if (event instanceof NavigationEnd && event.url.includes(this.routeUrl)) {
+      if (event instanceof NavigationEnd && this.allowedRoute(event, this.routeUrl)) {
         this.onEnter();
       }
     });
@@ -23,6 +23,28 @@ export class RouterEnter implements OnInit, OnDestroy {
     if (this.subscription) {
       this.subscription.unsubscribe();
     }
+  }
+
+
+  /**
+   * manually filter route url so we can redirect user to specific page according to
+   * our design/workflow strategy
+   * @param  {Event}  event       rxjs Event stream
+   * @param  {string}  matchingUrl
+   * @return {boolean}             true: allow, false: prevent
+   */
+  private allowedRoute(event, matchingUrl): boolean {
+    // tab route can cause double trigger of "onEnter",
+    // going to tab needs exact '/app/' match
+    if (matchingUrl === '/app/' && event.url !== matchingUrl) {
+      return false;
+    }
+
+    if (event.url.includes(matchingUrl)) {
+      return true;
+    }
+
+    return false;
   }
 
   onEnter() {

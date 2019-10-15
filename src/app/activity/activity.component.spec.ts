@@ -12,6 +12,8 @@ import { FastFeedbackService } from '@app/fast-feedback/fast-feedback.service';
 import { EventsService } from '@app/events/events.service';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { BrowserStorageService } from '@services/storage.service';
+import { NewRelicService } from '@shared/new-relic/new-relic.service';
+import { MockRouter } from '@testing/mocked.service';
 
 class Page {
   get activityName() {
@@ -62,10 +64,15 @@ describe('ActivityComponent', () => {
       declarations: [ ActivityComponent ],
       schemas: [ CUSTOM_ELEMENTS_SCHEMA ],
       providers: [
+        NewRelicService,
         UtilsService,
         {
           provide: ActivityService,
-          useValue: jasmine.createSpyObj('ActivityService', ['getAssessmentStatus', 'getActivity', 'getTasksProgress'])
+          useValue: jasmine.createSpyObj('ActivityService', [
+            'getAssessmentStatus',
+            'getActivity',
+            'getTasksProgress'
+          ])
         },
         {
           provide: NotificationService,
@@ -77,10 +84,11 @@ describe('ActivityComponent', () => {
         },
         {
           provide: Router,
-          useValue: {
+          useClass: MockRouter,
+          /*useValue: {
             navigate: jasmine.createSpy('navigate'),
             events: of()
-          }
+          }*/
         },
         {
           provide: ActivatedRoute,
@@ -210,17 +218,20 @@ describe('ActivityComponent', () => {
     storageSpy.getUser.and.returnValue({
       teamId: 1
     });
+    component.routeUrl = '/test';
   });
 
   it('should create', () => {
-    expect(component).toBeDefined();
+    expect(component).toBeTruthy();
   });
 
   describe('when testing constructor()', () => {
     it(`should call getEvents once more if an 'update-event' event triggered`, () => {
-      fixture.detectChanges();
       utils.broadcastEvent('update-event', {});
-      expect(eventSpy.getEvents.calls.count()).toBe(2);
+      fixture.detectChanges();
+      fixture.whenStable().then(() => {
+        expect(eventSpy.getEvents.calls.count()).toBe(2);
+      });
     });
   });
 
