@@ -13,6 +13,8 @@ import { DOCUMENT } from '@angular/common';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { FastFeedbackService } from '../fast-feedback/fast-feedback.service';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { NewRelicService } from '@shared/new-relic/new-relic.service';
+import { MockRouter } from '@testing/mocked.service';
 
 export class MockElementRef extends ElementRef {
   constructor() { super(null); }
@@ -61,6 +63,7 @@ describe('ProjectComponent', () => {
       schemas: [ CUSTOM_ELEMENTS_SCHEMA ],
       providers: [
         UtilsService,
+        NewRelicService,
         {
           provide: ElementRef,
           useClass: MockElementRef
@@ -79,10 +82,7 @@ describe('ProjectComponent', () => {
         },
         {
           provide: Router,
-          useValue: {
-            navigate: jasmine.createSpy('navigate'),
-            events: of()
-          }
+          useClass: MockRouter
         },
         {
           provide: ActivatedRoute,
@@ -109,6 +109,7 @@ describe('ProjectComponent', () => {
     fastfeedbackSpy = TestBed.get(FastFeedbackService);
     homeSpy.getProgramName.and.returnValue(of('program name'));
     fastfeedbackSpy.pullFastFeedback.and.returnValue(of({}));
+    component.routeUrl = '/test';
   });
   let milestones, activities, progresses, expected;
   beforeEach(() => {

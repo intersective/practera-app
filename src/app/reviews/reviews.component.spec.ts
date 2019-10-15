@@ -12,6 +12,7 @@ import {
   HttpClientTestingModule
 } from '@angular/common/http/testing';
 import { NotificationService } from '@shared/notification/notification.service';
+import { MockRouter } from '@testing/mocked.service';
 
 describe('ReviewsComponent', () => {
   let component: ReviewsComponent;
@@ -35,10 +36,7 @@ describe('ReviewsComponent', () => {
         },
         {
           provide: Router,
-          useValue: {
-            navigate: jasmine.createSpy('navigate'),
-            events: of()
-          }
+          useClass: MockRouter
         },
       ],
     })
@@ -51,6 +49,7 @@ describe('ReviewsComponent', () => {
     serviceSpy = TestBed.get(ReviewsService);
     routerSpy = TestBed.get(Router);
     utils = TestBed.get(UtilsService);
+    component.routeUrl = '/test';
   });
 
   it('should get the correct data onEnter()', () => {

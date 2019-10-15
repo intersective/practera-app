@@ -2,6 +2,41 @@ import { of, Observable } from 'rxjs';
 import { SpyObject } from './utils';
 import { BrowserStorageService } from '@services/storage.service';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
+import { RouterEnter } from '@services/router-enter.service';
+import { Router, NavigationEnd } from '@angular/router';
+
+export class MockRouter extends SpyObject {
+  navigate;
+  events;
+  url;
+
+  constructor() {
+    super(Router);
+    const TEST_EVENT: NavigationEnd = {
+      id: 1,
+      url: '/test',
+      urlAfterRedirects: 'test/test',
+    };
+
+    this.navigate = this.spy('navigate');
+    this.events = of(new NavigationEnd(
+      TEST_EVENT.id,
+      TEST_EVENT.url,
+      TEST_EVENT.urlAfterRedirects,
+    ));
+    this.url = 'abc';
+  }
+}
+
+export class MockRouterEnterService extends SpyObject {
+  ngOnInit;
+  ngOnDestroy;
+  onEnter;
+  constructor() {
+    super(RouterEnter);
+    this.ngOnInit = this.spy('ngOnInit').and.returnValue();
+  }
+}
 
 export class MockNewRelicService extends SpyObject {
   noticeError;
