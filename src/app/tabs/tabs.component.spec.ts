@@ -12,6 +12,7 @@ import { Observable, of, pipe, throwError } from 'rxjs';
 import { HttpClientModule } from '@angular/common/http';
 import { TabsComponent } from './tabs.component';
 import { ModalController } from '@ionic/angular';
+import { MockRouter } from '@testing/mocked.service';
 
 describe('TabsComponent', () => {
   let component: TabsComponent;
@@ -68,11 +69,7 @@ describe('TabsComponent', () => {
         },
         {
           provide: Router,
-          useValue: {
-            navigate: jasmine.createSpy('navigate'),
-            events: of(),
-            url: 'abc'
-          }
+          useClass: MockRouter
         },
       ],
     })
@@ -93,6 +90,7 @@ describe('TabsComponent', () => {
     reviewsSpy.getReviews.and.returnValue(of(['', '']));
     tabsSpy.getNoOfChats.and.returnValue(of(4));
     tabsSpy.getNoOfTodoItems.and.returnValue(of(5));
+    component.routeUrl = '/test';
   });
 
   it('should create', () => {

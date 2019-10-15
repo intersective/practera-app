@@ -48,7 +48,6 @@ export class ActivityComponent extends RouterEnter {
   ) {
     super(router);
 
-console.log('constracutor');
     // update event list after book/cancel an event
     this.getEventPusher = this.utils.getEvent('update-event').subscribe(
       event => {
@@ -78,7 +77,6 @@ console.log('constracutor');
   }
 
   onEnter() {
-console.log('onEnter actcom');
     this.newRelic.setPageViewName('activity components');
     this._initialise();
     this.id = +this.route.snapshot.paramMap.get('id');
