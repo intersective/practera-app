@@ -8,6 +8,7 @@ import { Router, NavigationEnd } from '@angular/router';
 export class MockRouter extends SpyObject {
   navigate;
   events;
+  url;
 
   constructor() {
     super(Router);
@@ -23,6 +24,7 @@ export class MockRouter extends SpyObject {
       TEST_EVENT.url,
       TEST_EVENT.urlAfterRedirects,
     ));
+    this.url = 'abc';
   }
 }
 
