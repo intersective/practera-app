@@ -16,6 +16,7 @@ import { SharedService } from '@services/shared.service';
 import { FastFeedbackServiceMock } from '@testing/mocked.service';
 import { of } from 'rxjs';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
+import { MockRouter } from '@testing/mocked.service';
 
 class Page {
   get savingMessage() {
@@ -200,10 +201,7 @@ describe('AssessmentComponent', () => {
         },
         {
           provide: Router,
-          useValue: {
-            navigate: jasmine.createSpy('navigate'),
-            events: of()
-          }
+          useClass: MockRouter,
         },
         {
           provide: ActivatedRoute,
@@ -251,6 +249,7 @@ describe('AssessmentComponent', () => {
       nextTask: {type: 'assessment'}
     });
     storageSpy.getUser.and.returnValue(mockUser);
+    component.routeUrl = '/test';
   });
 
   it('should be created', () => {
