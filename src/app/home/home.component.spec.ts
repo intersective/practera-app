@@ -15,6 +15,7 @@ import { of } from 'rxjs';
 import { map, filter } from 'rxjs/operators';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
+import { MockRouter } from '@testing/mocked.service';
 
 @Directive({
   selector: '[routerLink], [routerLinkActive]'
@@ -111,11 +112,8 @@ describe('HomeComponent', () => {
         },
         {
           provide: Router,
-          useValue: {
-            navigate: jasmine.createSpy('navigate'),
-            events: of()
-          }
-        }
+          useClass: MockRouter
+        },
       ]
     }).compileComponents();
   }));
@@ -131,6 +129,7 @@ describe('HomeComponent', () => {
     storageServiceSpy = TestBed.get(BrowserStorageService);
     routerSpy = TestBed.get(Router);
     utils = TestBed.get(UtilsService);
+    component.routeUrl = '/test';
   });
 
   beforeEach(() => {

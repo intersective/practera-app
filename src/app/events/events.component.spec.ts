@@ -9,6 +9,7 @@ import { UtilsService } from '@services/utils.service';
 import { ActivatedRouteStub } from '@testing/activated-route-stub';
 import { TestUtils } from '@testing/utils';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
+import { MockRouter } from '@testing/mocked.service';
 
 class Page {
   get eventItems() {
@@ -52,10 +53,7 @@ describe('EventsComponent', () => {
         },
         {
           provide: Router,
-          useValue: {
-            navigate: jasmine.createSpy('navigate'),
-            events: of()
-          }
+          useClass: MockRouter
         },
         {
           provide: ActivatedRoute,
@@ -74,6 +72,7 @@ describe('EventsComponent', () => {
     routerSpy = TestBed.get(Router);
     routeStub = TestBed.get(ActivatedRoute);
     utils = TestBed.get(UtilsService);
+    component.routeUrl = '/test';
   });
 
   // data needed to create mock events
