@@ -97,6 +97,7 @@ export class BrowserStorageServiceMock extends SpyObject {
       teamId: 'test',
     };
     this.getUser = this.spy('getUser').and.returnValue(USER);
+    this.setUser = this.spy('setUser').and.returnValue(true);
     this.get = this.spy('get').and.returnValue(true);
     this.getConfig = this.spy('getConfig').and.returnValue({
       logo: '',

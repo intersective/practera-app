@@ -73,8 +73,10 @@ describe('RequestInterceptor', () => {
     expect(req.request.headers.get('appkey')).toBe(APPKEY);
   });
 
-  it('should return teamid when it\'s not in chat-related & team-list page view', () => {
+  it('should return teamid when it\'s not in chat-related & team-list page view', fakeAsync(() => {
     const req = httpMock.expectOne({ method: 'GET' });
+    req.flush({});
+
     expect(storageSpy.getUser).toHaveBeenCalled();
     expect(req.request.url).not.toContain('/message/chat/list.json');
     expect(req.request.url).not.toContain('/message/chat/create_message');
@@ -82,7 +84,7 @@ describe('RequestInterceptor', () => {
     expect(req.request.url).not.toContain('/message/chat/list_messages.json');
     expect(req.request.url).not.toContain('/teams.json');
     expect(req.request.headers.get('teamId')).toBe('test');
-  });
+  }));
 
   it('should not return teamId when url contains teams.json', fakeAsync(() => {
       service.get('/teams.json').subscribe(_res => {
