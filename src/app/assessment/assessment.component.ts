@@ -192,7 +192,7 @@ export class AssessmentComponent extends RouterEnter {
   }
 
   ionViewWillLeave() {
-    this.sharedService.stopPlayingViodes();
+    this.sharedService.stopPlayingVideos();
   }
 
   // get the submission answers &/| review answers

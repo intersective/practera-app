@@ -81,7 +81,7 @@ export class TopicComponent extends RouterEnter {
   }
 
   ionViewWillLeave() {
-    this.sharedService.stopPlayingViodes();
+    this.sharedService.stopPlayingVideos();
   }
 
   private _getTopic() {
@@ -153,7 +153,7 @@ export class TopicComponent extends RouterEnter {
         message: err.msg || JSON.stringify(err)
       });
       this.loadingTopic = false;
-      throw new Error(err);
+      this.newRelic.noticeError(`${JSON.stringify(err)}`);
     }
 
     this.redirecting = true;
@@ -187,7 +187,7 @@ export class TopicComponent extends RouterEnter {
           message: err.msg || JSON.stringify(err)
         });
         this.loadingTopic = false;
-        throw new Error(err);
+        this.newRelic.noticeError(`${JSON.stringify(err)}`);
       }
     }
   }
@@ -225,7 +225,7 @@ export class TopicComponent extends RouterEnter {
       if (this.loadingTopic) {
         this.loadingTopic = false;
       }
-      throw new Error(err);
+      this.newRelic.noticeError(`${JSON.stringify(err)}`);
     }
   }
 
