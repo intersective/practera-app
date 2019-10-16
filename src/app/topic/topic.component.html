@@ -19,7 +19,7 @@
     </ion-card>
   </ng-container>
 
-  <div *ngIf="topic.files.length > 0"  color="light" >
+  <div *ngIf="topic.files && topic.files.length > 0"  color="light" >
     <label padding>Supporting Downloads</label>
 
     <div *ngFor="let file of topic.files" padding class="topic-icons">
