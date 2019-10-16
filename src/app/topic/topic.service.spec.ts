@@ -109,7 +109,7 @@ describe('TopicService', () => {
         data: [{}]
       }));
       service.getTopic(1).subscribe();
-    })
+    });
   });
 
   it('when testing updateTopicProgress(), it should post data', () => {
