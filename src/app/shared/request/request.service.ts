@@ -102,11 +102,9 @@ export class RequestService {
    */
   get(endPoint: string = '', httpOptions?: any): Observable<any> {
     if (!httpOptions) {
-      httpOptions = {
-        headers: '',
-        params: ''
-      };
+      httpOptions = {};
     }
+
     if (!this.utils.has(httpOptions, 'headers')) {
       httpOptions.headers = '';
     }
@@ -129,11 +127,9 @@ export class RequestService {
 
   post(endPoint: string = '', data, httpOptions?: any): Observable<any> {
     if (!httpOptions) {
-      httpOptions = {
-        headers: '',
-        params: ''
-      };
+      httpOptions = {};
     }
+
     if (!this.utils.has(httpOptions, 'headers')) {
       httpOptions.headers = '';
     }
@@ -156,10 +152,7 @@ export class RequestService {
 
   delete(endPoint: string = '', httpOptions?: any): Observable<any> {
     if (!httpOptions) {
-      httpOptions = {
-        headers: '',
-        params: ''
-      };
+      httpOptions = {};
     }
     if (!this.utils.has(httpOptions, 'headers')) {
       httpOptions.headers = '';
@@ -225,8 +218,6 @@ export class RequestService {
 
     // if error.error is a html template error (when try to read remote version.txt)
     if (typeof error.error === 'string' && error.error.indexOf('<!DOCTYPE html>') !== -1) {
-      console.log('error.error', error.error);
-
       return throwError(error.message);
     }
 
