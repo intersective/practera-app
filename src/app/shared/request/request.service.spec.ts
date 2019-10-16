@@ -113,7 +113,7 @@ describe('RequestService', () => {
         con.mockRespond(new Response(response));
       });
 */
-      service.get(testURL).subscribe(_res => {
+      service.get(testURL, {param: {justFor: 'test'}}).subscribe(_res => {
         res = _res;
       });
       const req = mockBackend.expectOne({ method: 'GET' });
@@ -127,6 +127,17 @@ describe('RequestService', () => {
 
       mockBackend.verify();
     }));
+
+    it('should update apikey if new apikey exist', () => {
+      let res = { body: true, apikey: 'testapikey' };
+      service.get(testURL, {header: {some: 'keys'}}).subscribe(_res => {
+        res = _res;
+      });
+      const req = mockBackend.expectOne({ method: 'GET' });
+      req.flush(res);
+
+      expect(storageSpy.setUser).toHaveBeenCalledWith({apikey: res.apikey});
+    });
 
     it('should perform error handling when fail', fakeAsync(() => {
       spyOn(devModeServiceSpy, 'isDevMode').and.returnValue(false);
@@ -219,6 +230,7 @@ describe('RequestService', () => {
 
     it('should perform error handling when fail', fakeAsync(() => {
       spyOn(devModeServiceSpy, 'isDevMode').and.returnValue(false);
+      spyOn(console, 'error');
 
       const ERR_MESSAGE = 'Invalid DELETE Request';
       const err = { success: false, status: 400, statusText: 'Bad Request' };
@@ -235,6 +247,7 @@ describe('RequestService', () => {
       const req = mockBackend.expectOne({ url: testURL, method: 'DELETE'}).flush(ERR_MESSAGE, err);
 
       expect(res).toBeUndefined();
+      expect(console.error).not.toHaveBeenCalled();
       expect(errRes).toEqual(ERR_MESSAGE);
     }));
   });
@@ -265,6 +278,7 @@ describe('RequestService', () => {
       expect(result).toEqual(requestConfigSpy.appkey);
     });
   });
+
   describe('apiResponseFormatError()', () => {
     it('should trigger console.error with dynamic message', () => {
       spyOn(console, 'error');
@@ -273,6 +287,7 @@ describe('RequestService', () => {
       expect(console.error).toHaveBeenCalledWith('API response format error.\ntesting error');
     });
   });
+
   describe('handleError()', () => {
     const ERR_MESSAGE = 'Invalid request';
     const err = { success: false, status: 400, statusText: 'Bad Request' };
@@ -308,12 +323,8 @@ describe('RequestService', () => {
     }));
 
     it('should throw error if static file retrival fail', fakeAsync(() => {
-      const badFile = 'static file pull error';
-      mockBackend.expectOne({ method: 'GET'}).flush({
-        error: '<!DOCTYPE html>',
-        message: badFile
-      }, err);
-      expect(errRes).toBeTruthy();
+      mockBackend.expectOne({ method: 'GET'}).flush('<!DOCTYPE html>', err);
+      expect(errRes).toEqual('Http failure response for test.comtest.com: 400 Bad Request');
     }));
   });
 });
