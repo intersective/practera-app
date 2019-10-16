@@ -26,7 +26,7 @@ describe('TopicComponent', () => {
   const routerSpy = {
     navigate: jasmine.createSpy('navigate'),
     events: of()
-  }
+  };
   const routeStub = new ActivatedRouteStub({ activityId: 1, id: 2 });
   const notificationSpy = jasmine.createSpyObj('NotificationService', ['alert', 'presentToast']);
   const storageSpy = jasmine.createSpyObj('BrowserStorageService', ['getUser']);
