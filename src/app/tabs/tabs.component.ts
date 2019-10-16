@@ -120,7 +120,7 @@ export class TabsComponent extends RouterEnter {
   }
 
   private _stopPlayingVideos() {
-    this.sharedService.stopPlayingViodes();
+    this.sharedService.stopPlayingVideos();
   }
 
 }
