@@ -31,11 +31,35 @@ import {
   ResponseOptions
 } from '@angular/http';
 
-import { RequestService, RequestConfig, DevModeService } from './request.service';
+import { RequestService, RequestConfig, DevModeService, QueryEncoder } from './request.service';
 import { Router } from '@angular/router';
 import { BrowserStorageService } from '@services/storage.service';
 import { TestUtils } from '@testing/utils';
 import { BrowserStorageServiceMock } from '@testing/mocked.service';
+
+describe('QueryEncoder', () => {
+  const encodedTest = 'https://test.com?test=true';
+  const decodedTest = 'https%3A%2F%2Ftest.com%3Ftest%3Dtrue';
+  let encoder: QueryEncoder;
+
+  beforeEach(() => {
+    encoder = new QueryEncoder();
+  });
+
+  it('should encode string', () => {
+    expect(encoder.encodeKey).toBeTruthy();
+    expect(encoder.encodeValue).toBeTruthy();
+    expect(encoder.encodeKey(encodedTest)).toEqual(decodedTest);
+    expect(encoder.encodeValue(encodedTest)).toEqual(decodedTest);
+  });
+
+  it('should decode string', () => {
+    expect(encoder.decodeKey).toBeTruthy();
+    expect(encoder.decodeValue).toBeTruthy();
+    expect(encoder.decodeKey(decodedTest)).toEqual(encodedTest);
+    expect(encoder.decodeValue(decodedTest)).toEqual(encodedTest);
+  });
+});
 
 describe('DevModeService', () => {
   it('isDevMode() should return true', () => {
