@@ -228,9 +228,4 @@ export class RequestService {
       this.storage.setUser({apikey: response.apikey});
     }
   }
-
-  // further enhance this for error reporting (piwik)
-  private log(message: string) {
-    console.log(message);
-  }
 }
