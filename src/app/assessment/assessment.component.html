@@ -186,13 +186,14 @@
       (click)="redirectToNextMilestoneTask({ continue: true })"
       [disabled]="isRedirectingToNextMilestoneTask"
       shape="round"
-      expand="full">
+      expand="full"
+      class="continue">
       <ng-container *ngIf="isRedirectingToNextMilestoneTask; else continue">
         <ion-spinner style="width: 100%;" name="dots" class="vertical-middle text-center"></ion-spinner>
       </ng-container>
 
       <ng-template #continue>
-        <ion-item lines="none" no-paddings color="primary">
+        <ion-item lines="none" color="primary">
           <ion-icon slot="start" src="/assets/checkmark.svg"></ion-icon>
           <ion-text>Continue</ion-text>
         </ion-item>
