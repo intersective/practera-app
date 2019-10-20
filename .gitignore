@@ -3,11 +3,15 @@
 .sass-cache/
 .tmp/
 
+assets/newrelic.js
 coverage/
-platforms
-resources
-plugins
-node_modules
+tests/
+ios*
+platforms*
+electron*
+resources*
+plugins*
+node_modules*
 src/coverage
 *.DS_Store
 www
