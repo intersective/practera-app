@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ModalController } from '@ionic/angular';
-import { FastFeedbackService, Meta } from './fast-feedback.service';
+import { Meta } from './fast-feedback.service';
+import { FastFeedbackSubmitterService } from './fast-feedback-submitter.service';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { UtilsService } from '@services/utils.service';
 import { NotificationService } from '@shared/notification/notification.service';
@@ -19,7 +20,7 @@ export class FastFeedbackComponent implements OnInit {
 
   constructor(
     public modalController: ModalController,
-    private fastFeedbackService: FastFeedbackService,
+    private fastFeedbackSubmitterService: FastFeedbackSubmitterService,
     private utils: UtilsService,
     private notification: NotificationService,
     public storage: BrowserStorageService,
@@ -62,7 +63,7 @@ export class FastFeedbackComponent implements OnInit {
       params['target_user_id'] = this.meta.target_user_id;
     }
 
-    this.fastFeedbackService.submit(data, params).subscribe(res => {
+    this.fastFeedbackSubmitterService.submit(data, params).subscribe(res => {
       this.notification.alert({
         header: 'Submission Successful',
         message: 'Thanks for taking time to answer the feedback question.',

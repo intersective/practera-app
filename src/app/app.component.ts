@@ -44,7 +44,10 @@ export class AppComponent implements OnInit {
 
     // @TODO: need to build a new micro service to get the config and serve the custom branding config from a microservice
     // Get the custom branding info and update the theme color if needed
-    const domain = window.location.hostname;
+    let domain = window.location.hostname;
+    if (domain == undefined || !domain) {
+      domain = environment.nativeDomain;
+    }
     this.authService.getConfig({domain}).subscribe((response: any) => {
       if (response !== null) {
         const expConfig = response.data;

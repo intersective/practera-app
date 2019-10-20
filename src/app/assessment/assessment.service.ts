@@ -304,7 +304,6 @@ export class AssessmentService {
       submitterImage: thisSubmission.Submitter.image,
       reviewerName: this.checkReviewer(thisSubmission.Reviewer)
     };
-
     // -- normalise submission answers
     if (!this.utils.has(thisSubmission, 'AssessmentSubmissionAnswer') ||
         !Array.isArray(thisSubmission.AssessmentSubmissionAnswer)

@@ -151,7 +151,7 @@ export class AssessmentComponent extends RouterEnter {
       .subscribe(assessment => {
         this.assessment = assessment;
         this.populateQuestionsForm();
-        if (this.doAssessment && this.assessment.isForTeam && !this.storage.getUser().teamId) {
+        if (this.assessment.isForTeam && !this.storage.getUser().teamId) {
           return this.notificationService.alert({
             message: 'To do this assessment, you have to be in a team.',
             buttons: [

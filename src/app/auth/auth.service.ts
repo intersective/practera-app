@@ -7,6 +7,7 @@ import { Router } from '@angular/router';
 import { BrowserStorageService } from '@services/storage.service';
 import { UtilsService } from '@services/utils.service';
 import { PusherService } from '@shared/pusher/pusher.service';
+import { environment } from '@environments/environment';
 
 /**
  * @name api
@@ -32,7 +33,7 @@ interface VerifyParams {
 
 interface RegisterData {
   password: string;
-  user_id: string;
+  user_id: number;
   key: string;
 }
 
@@ -64,7 +65,6 @@ interface ExperienceConfig {
   providedIn: 'root'
 })
 export class AuthService {
-  private isLoggedIn = false;
 
   constructor(
     private request: RequestService,
@@ -115,12 +115,18 @@ export class AuthService {
 
   private _handleLoginResponse(response): Observable<any> {
     const norm = this._normaliseAuth(response);
+<<<<<<< HEAD
     if (response.data) {
       this.storage.setUser({ contactNumber: norm.contact_number});
       this.storage.setUser({apikey: norm.apikey});
       this.storage.set('programs', norm.programs);
       this.storage.set('isLoggedIn', true);
     }
+=======
+    this.storage.setUser({apikey: norm.apikey});
+    this.storage.set('programs', norm.programs);
+    this.storage.set('isLoggedIn', true);
+>>>>>>> origin/feature/native
     return response;
   }
 
@@ -151,7 +157,7 @@ export class AuthService {
   }
 
   isAuthenticated(): boolean {
-    return this.isLoggedIn || this.storage.get('isLoggedIn');
+    return this.storage.get('isLoggedIn');
   }
 
   logout(navigationParams = {}) {
@@ -186,6 +192,9 @@ export class AuthService {
       domain.indexOf('localhost') !== -1
         ? 'dev.app-v2.practera.com'
         : domain;
+    if (domain == undefined || !domain) {
+      domain = environment.nativeDomain;
+    }
     return domain;
   }
 

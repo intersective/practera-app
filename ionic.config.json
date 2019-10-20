@@ -1,5 +1,7 @@
 {
-  "name": "practera-app",
-  "integrations": {},
+  "name": "Practera App",
+  "integrations": {
+    "capacitor": {}
+  },
   "type": "angular"
 }

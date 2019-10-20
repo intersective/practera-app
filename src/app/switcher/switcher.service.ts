@@ -71,7 +71,7 @@ export class SwitcherService {
     const themeColor = this.utils.has(programObj, 'program.config.theme_color') ? programObj.program.config.theme_color : '#2bbfd4';
     let cardBackgroundImage = '';
     if (this.utils.has(programObj, 'program.config.card_style')) {
-      cardBackgroundImage = '/assets/' + programObj.program.config.card_style;
+      cardBackgroundImage = './assets/' + programObj.program.config.card_style;
     }
     this.storage.setUser({
       programId: programObj.program.id,

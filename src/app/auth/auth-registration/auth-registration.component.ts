@@ -3,6 +3,8 @@ import { Router, ActivatedRoute, ParamMap } from '@angular/router';
 import { UtilsService } from '@services/utils.service';
 import { NotificationService } from '@shared/notification/notification.service';
 import { Md5 } from 'ts-md5/dist/md5';
+import { environment } from '@environments/environment';
+
 import {
   Validators,
   FormControl,
@@ -31,6 +33,7 @@ export class AuthRegistrationComponent implements OnInit {
     id: null
   };
   domain = window.location.hostname;
+  
   // validation errors array
   errors: Array<any> = [];
 
@@ -50,11 +53,16 @@ export class AuthRegistrationComponent implements OnInit {
       this.domain.indexOf('localhost') !== -1
         ? 'appdev.practera.com'
         : this.domain;
+    if (this.domain == undefined || !this.domain) {
+      this.domain = environment.nativeDomain;
+
+    }
     this.validateQueryParams();
   }
 
   initForm() {
     this.registerationForm = new FormGroup({
+      email: new FormControl('', [Validators.email]),
       password: new FormControl('', [
         Validators.required,
         Validators.minLength(8)

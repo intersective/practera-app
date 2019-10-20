@@ -9,10 +9,15 @@
     <!-- <ion-list class="no-bg" *ngFor="let program of programs; let i = index">
   </ion-list> -->
   <ion-card class="practera-card">
-    <clickable-item>
-      <ion-item (click)="logout()" lines="none">
-          <ion-icon name="log-out" margin-end></ion-icon> Logout
-      </ion-item>
+    <ion-list *ngFor="let program of programs; let i = index">
+      <clickable-item (click)="switch(i)" color="light" [lines]="i == programs.length - 1 ? 'none' : ''" [backgroundColor]="program.program.config.theme_color">
+        <img src="./assets/thumbs/practera_icon.png" height="25" width="25" class="img-inline"> {{ program.program.name }}
+      </clickable-item>
+    </ion-list>
+  </ion-card>
+  <ion-card class="practera-card">
+    <clickable-item (click)="logout()" lines="none">
+      <ion-icon name="log-out" margin-end></ion-icon> Logout
     </clickable-item>
 
   </ion-card>
