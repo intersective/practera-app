@@ -1,10 +1,15 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { async, ComponentFixture, TestBed, tick, fakeAsync } from '@angular/core/testing';
 import { AchievementsComponent } from './achievements.component';
 import { AchievementsService } from './achievements.service';
 import { Observable, of, pipe } from 'rxjs';
-import { Router } from '@angular/router';
+import { Router, NavigationEnd } from '@angular/router';
 import { SharedModule } from '@shared/shared.module';
+import {
+  HttpTestingController,
+  HttpClientTestingModule
+} from '@angular/common/http/testing';
+import { NewRelicService } from '@shared/new-relic/new-relic.service';
 
 class Page {
   get totalPoints() {
@@ -33,23 +38,33 @@ describe('AchievementsComponent', () => {
   let page: Page;
   let achievementsSpy: jasmine.SpyObj<AchievementsService>;
   let routerSpy: jasmine.SpyObj<Router>;
+  const testEvent: NavigationEnd = {
+    id: 1,
+    url: '/achievements',
+    urlAfterRedirects: 'test/test',
+  };
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [SharedModule],
+      imports: [SharedModule, HttpClientTestingModule],
       declarations: [ AchievementsComponent ],
       schemas: [ CUSTOM_ELEMENTS_SCHEMA ],
       providers: [
+        NewRelicService,
         {
           provide: AchievementsService,
-          useValue: jasmine.createSpyObj('AchievementsService', ['getAchievements', 'getIsPointsConfigured', 'getEarnedPoints'])
+          useValue: jasmine.createSpyObj('AchievementsService', [
+            'getAchievements',
+            'getIsPointsConfigured',
+            'getEarnedPoints'
+          ])
         },
         {
           provide: Router,
           useValue: {
             navigate: jasmine.createSpy('navigate'),
-            events: of()
-          }
+            events: of(new NavigationEnd(testEvent.id, testEvent.url, testEvent.urlAfterRedirects)),
+          },
         }
       ],
     })
@@ -85,19 +100,28 @@ describe('AchievementsComponent', () => {
     achievementsSpy.getAchievements.and.returnValue(of(mockAchievements));
     achievementsSpy.getIsPointsConfigured.and.returnValue(true);
     achievementsSpy.getEarnedPoints.and.returnValue(100);
+    component.routeUrl = '/achievements';
   });
 
   it('should create', () => {
-    expect(component).toBeDefined();
+    expect(component).toBeTruthy();
   });
 
   describe('when testing onEnter()', () => {
-    it(`should get correct achievements`, () => {
-      fixture.detectChanges();
-      expect(component.loadingAchievements).toBe(false);
-      expect(achievementsSpy.getAchievements.calls.count()).toBe(1);
-      expect(component.achievements).toEqual(mockAchievements);
+    it(`should run AchievementComponent's onEnter() method`, () => {
+      spyOn(component, 'onEnter');
+      component.ngOnInit(); // inherited from RouterEnterService
+      expect(component.onEnter).toHaveBeenCalledTimes(1);
     });
+
+    it(`should get correct achievements`, fakeAsync(() => {
+      fixture.detectChanges();
+      fixture.whenStable().then(() => {
+        expect(component.loadingAchievements).toBe(false);
+        expect(achievementsSpy.getAchievements.calls.count()).toBe(1);
+        expect(component.achievements).toEqual(mockAchievements);
+      });
+    }));
   });
 
   describe('when testing back()', () => {

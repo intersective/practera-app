@@ -13,6 +13,9 @@ import { BrowserStorageService } from '@services/storage.service';
 import { UtilsService } from '@services/utils.service';
 import { of } from 'rxjs';
 import { map, filter } from 'rxjs/operators';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { NewRelicService } from '@shared/new-relic/new-relic.service';
+import { MockRouter } from '@testing/mocked.service';
 
 @Directive({
   selector: '[routerLink], [routerLinkActive]'
@@ -69,10 +72,12 @@ describe('HomeComponent', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       // imports: [RouterTestingModule],
+      imports: [HttpClientTestingModule],
       declarations: [HomeComponent, DummyRouterLinkDirective],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
       providers: [
         UtilsService,
+        NewRelicService,
         {
           provide: Intercom
         },
@@ -107,11 +112,8 @@ describe('HomeComponent', () => {
         },
         {
           provide: Router,
-          useValue: {
-            navigate: jasmine.createSpy('navigate'),
-            events: of()
-          }
-        }
+          useClass: MockRouter
+        },
       ]
     }).compileComponents();
   }));
@@ -127,6 +129,7 @@ describe('HomeComponent', () => {
     storageServiceSpy = TestBed.get(BrowserStorageService);
     routerSpy = TestBed.get(Router);
     utils = TestBed.get(UtilsService);
+    component.routeUrl = '/test';
   });
 
   beforeEach(() => {

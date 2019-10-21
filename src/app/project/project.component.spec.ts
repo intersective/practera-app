@@ -1,4 +1,4 @@
-import { CUSTOM_ELEMENTS_SCHEMA, ElementRef } from '@angular/core';
+import { CUSTOM_ELEMENTS_SCHEMA, ElementRef,  } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { ProjectComponent } from './project.component';
 import { ProjectService } from './project.service';
@@ -9,9 +9,12 @@ import { UtilsService } from '@services/utils.service';
 import { HomeService } from '../home/home.service';
 import { ActivatedRouteStub } from '@testing/activated-route-stub';
 import { TestUtils } from '@testing/utils';
-import { HttpClientModule } from '@angular/common/http';
+import { DOCUMENT } from '@angular/common';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { FastFeedbackService } from '../fast-feedback/fast-feedback.service';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { NewRelicService } from '@shared/new-relic/new-relic.service';
+import { MockRouter } from '@testing/mocked.service';
 
 export class MockElementRef extends ElementRef {
   constructor() { super(null); }
@@ -40,6 +43,8 @@ class Page {
   }
 }
 
+class MockDocument {}
+
 describe('ProjectComponent', () => {
   let component: ProjectComponent;
   let fixture: ComponentFixture<ProjectComponent>;
@@ -53,11 +58,12 @@ describe('ProjectComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [SharedModule, HttpClientModule, BrowserAnimationsModule],
+      imports: [SharedModule, HttpClientTestingModule, BrowserAnimationsModule],
       declarations: [ ProjectComponent ],
       schemas: [ CUSTOM_ELEMENTS_SCHEMA ],
       providers: [
         UtilsService,
+        NewRelicService,
         {
           provide: ElementRef,
           useClass: MockElementRef
@@ -76,14 +82,15 @@ describe('ProjectComponent', () => {
         },
         {
           provide: Router,
-          useValue: {
-            navigate: jasmine.createSpy('navigate'),
-            events: of()
-          }
+          useClass: MockRouter
         },
         {
           provide: ActivatedRoute,
           useValue: new ActivatedRouteStub({ activityId: 1 })
+        },
+        {
+          provide: Document,
+          useClass: MockDocument
         }
       ],
     })
@@ -102,6 +109,7 @@ describe('ProjectComponent', () => {
     fastfeedbackSpy = TestBed.get(FastFeedbackService);
     homeSpy.getProgramName.and.returnValue(of('program name'));
     fastfeedbackSpy.pullFastFeedback.and.returnValue(of({}));
+    component.routeUrl = '/test';
   });
   let milestones, activities, progresses, expected;
   beforeEach(() => {
