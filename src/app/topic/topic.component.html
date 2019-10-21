@@ -14,8 +14,8 @@
   </div>
 
   <ng-container *ngIf="topic.content">
-    <ion-card>
-      <ion-card-content color="primary-contrast" [innerHtml]="topic.content"></ion-card-content>
+    <ion-card  color="primary-contrast" class="topic-card">
+      <ion-card-content [innerHtml]="topic.content"></ion-card-content>
     </ion-card>
   </ng-container>
 
