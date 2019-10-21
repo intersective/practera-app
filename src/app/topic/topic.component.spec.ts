@@ -13,6 +13,7 @@ import { NewRelicService } from '@shared/new-relic/new-relic.service';
 import { SharedService } from '@services/shared.service';
 import { ActivityService } from '../activity/activity.service';
 import { of, throwError } from 'rxjs';
+import { MockRouter } from '@testing/mocked.service';
 
 describe('TopicComponent', () => {
   let component: TopicComponent;
@@ -20,13 +21,10 @@ describe('TopicComponent', () => {
   const topicSpy = jasmine.createSpyObj('TopicService', ['getTopic', 'getTopicProgress', 'updateTopicProgress']);
   const filestackSpy = jasmine.createSpyObj('FilestackService', ['previewFile']);
   const embedSpy = jasmine.createSpyObj('EmbedVideoService', ['embed']);
-  const newRelicSpy = jasmine.createSpyObj('NewRelicService', ['noticeError', 'addPageAction']);
+  const newRelicSpy = jasmine.createSpyObj('NewRelicService', ['noticeError', 'addPageAction', 'setPageViewName']);
   const sharedSpy = jasmine.createSpyObj('SharedService', ['stopPlayingVideos']);
   const activitySpy = jasmine.createSpyObj('ActivityService', ['getTasksByActivityId']);
-  const routerSpy = {
-    navigate: jasmine.createSpy('navigate'),
-    events: of()
-  };
+  let routerSpy: jasmine.SpyObj<Router>;
   const routeStub = new ActivatedRouteStub({ activityId: 1, id: 2 });
   const notificationSpy = jasmine.createSpyObj('NotificationService', ['alert', 'presentToast']);
   const storageSpy = jasmine.createSpyObj('BrowserStorageService', ['getUser']);
@@ -51,7 +49,7 @@ describe('TopicComponent', () => {
         },
         {
           provide: Router,
-          useValue: routerSpy
+          useClass: MockRouter,
         },
         {
           provide: ActivatedRoute,
@@ -81,6 +79,7 @@ describe('TopicComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(TopicComponent);
     component = fixture.componentInstance;
+    routerSpy = TestBed.get(Router);
     storageSpy.getUser.and.returnValue({
       teamId: 1,
       projectId: 2
@@ -103,6 +102,7 @@ describe('TopicComponent', () => {
       topicSpy.getTopic.and.returnValue(of(topic));
       topicSpy.getTopicProgress.and.returnValue(of(1));
       fixture.detectChanges();
+      component.onEnter();
       expect(component.loadingTopic).toBe(false);
       expect(component.topic).toEqual(topic);
       expect(component.topicProgress).toBe(1);
@@ -120,6 +120,7 @@ describe('TopicComponent', () => {
       topicSpy.getTopic.and.returnValue(of(topic));
       topicSpy.getTopicProgress.and.returnValue(of(null));
       fixture.detectChanges();
+      component.onEnter();
       expect(component.loadingTopic).toBe(false);
       expect(component.topic).toEqual(topic);
       expect(component.topicProgress).toBe(null);
@@ -137,6 +138,7 @@ describe('TopicComponent', () => {
       topicSpy.getTopic.and.returnValue(of(topic));
       topicSpy.getTopicProgress.and.returnValue(of(0));
       fixture.detectChanges();
+      component.onEnter();
       expect(component.loadingTopic).toBe(false);
       expect(component.topic).toEqual(topic);
       expect(component.topicProgress).toBe(0);
@@ -146,6 +148,7 @@ describe('TopicComponent', () => {
       topicSpy.getTopic.and.returnValue(throwError(''));
       topicSpy.getTopicProgress.and.returnValue(throwError(''));
       fixture.detectChanges();
+      component.onEnter();
       expect(newRelicSpy.noticeError.calls.count()).toBe(2);
     });
   });
