@@ -22,7 +22,13 @@ export class ChatRoomComponent extends RouterEnter {
   routeUrl = '/chat-room/';
   message: string;
   messageList: Array<Message> = new Array;
-  selectedChat: ChatRoomObject;
+  selectedChat: ChatRoomObject = {
+    name: '',
+    is_team: false,
+    team_id: null,
+    team_member_id: null,
+    participants_only: false
+  };
   messagePageNumber = 0;
   messagePagesize = 20;
   loadingChatMessages = true;
