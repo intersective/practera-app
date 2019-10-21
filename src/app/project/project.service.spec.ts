@@ -14,7 +14,6 @@ describe('ProjectService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
-        ProjectService,
         UtilsService,
         {
           provide: RequestService,
