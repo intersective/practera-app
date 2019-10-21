@@ -1,5 +1,5 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { async, ComponentFixture, TestBed, tick, fakeAsync } from '@angular/core/testing';
 import { EventsComponent } from './events.component';
 import { EventsService } from './events.service';
 import { Observable, of, pipe } from 'rxjs';
@@ -8,6 +8,8 @@ import { SharedModule } from '@shared/shared.module';
 import { UtilsService } from '@services/utils.service';
 import { ActivatedRouteStub } from '@testing/activated-route-stub';
 import { TestUtils } from '@testing/utils';
+import { NewRelicService } from '@shared/new-relic/new-relic.service';
+import { MockRouter } from '@testing/mocked.service';
 
 class Page {
   get eventItems() {
@@ -44,16 +46,14 @@ describe('EventsComponent', () => {
       schemas: [ CUSTOM_ELEMENTS_SCHEMA ],
       providers: [
         UtilsService,
+        NewRelicService,
         {
           provide: EventsService,
           useValue: jasmine.createSpyObj('EventsService', ['getEvents', 'getActivities'])
         },
         {
           provide: Router,
-          useValue: {
-            navigate: jasmine.createSpy('navigate'),
-            events: of()
-          }
+          useClass: MockRouter
         },
         {
           provide: ActivatedRoute,
@@ -72,6 +72,7 @@ describe('EventsComponent', () => {
     routerSpy = TestBed.get(Router);
     routeStub = TestBed.get(ActivatedRoute);
     utils = TestBed.get(UtilsService);
+    component.routeUrl = '/test';
   });
 
   // data needed to create mock events
@@ -162,20 +163,27 @@ describe('EventsComponent', () => {
         attended: attended
       };
     });
-    afterEach(() => {
-      eventsSpy.getEvents.and.returnValue(of(tmpEvents));
-      fixture.detectChanges();
-      expect(component.loadingEvents).toBe(false);
-      expect(eventsSpy.getEvents.calls.count()).toBe(1);
-      expect(component.events).toEqual(expectedEvents);
-      expect(component.eventsCategorised).toEqual(expectedCategorised);
-    });
 
-    it(`should get correct full events grouped and activities`, () => {
+    afterEach(fakeAsync(() => {
+      eventsSpy.getEvents.and.returnValue(of(tmpEvents));
+      tick();
       fixture.detectChanges();
-      expect(eventsSpy.getActivities.calls.count()).toBe(1);
-      expect(component.activities).toEqual(mockActivities);
-    });
+      fixture.whenStable().then(() => {
+        expect(component.loadingEvents).toBe(false);
+        expect(eventsSpy.getEvents.calls.count()).toBe(1);
+        expect(component.events).toEqual(expectedEvents);
+        expect(component.eventsCategorised).toEqual(expectedCategorised);
+      });
+    }));
+
+    it(`should get correct full events grouped and activities`, fakeAsync(() => {
+      tick();
+      fixture.detectChanges();
+      fixture.whenStable().then(() => {
+        expect(eventsSpy.getActivities.calls.count()).toBe(1);
+        expect(component.activities).toEqual(mockActivities);
+      });
+    }));
 
     it(`should get correct events grouped without browse`, () => {
       tmpEvents.splice(0, 4);

@@ -83,7 +83,8 @@ export class SwitcherService {
       timelineId: programObj.timeline.id,
       contactNumber: programObj.enrolment.contact_number,
       themeColor: themeColor,
-      activityCardImage: cardBackgroundImage
+      activityCardImage: cardBackgroundImage,
+      enrolment: programObj.enrolment,
     });
 
     this.sharedService.onPageLoad();

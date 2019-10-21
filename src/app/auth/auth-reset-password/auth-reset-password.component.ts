@@ -4,6 +4,7 @@ import { Validators, FormGroup, FormControl } from '@angular/forms';
 import { NotificationService } from '../../shared/notification/notification.service';
 import { AuthService } from '../auth.service';
 import { UtilsService } from '@services/utils.service';
+import { NewRelicService } from '@shared/new-relic/new-relic.service';
 
 @Component({
   selector: 'app-auth-reset-password',
@@ -11,7 +12,6 @@ import { UtilsService } from '@services/utils.service';
   styleUrls: ['./auth-reset-password.component.scss']
 })
 export class AuthResetPasswordComponent implements OnInit {
-
   email: string;
   key: string;
 
@@ -20,7 +20,13 @@ export class AuthResetPasswordComponent implements OnInit {
 
   resetPasswordForm = new FormGroup(
     {
-      email: new FormControl(''),
+      email: new FormControl(
+        {
+          value: this.email,
+          disabled: true,
+        },
+        [ Validators.email ]
+      ),
       password: new FormControl('', [Validators.required]),
       confirmPassword: new FormControl(''),
     },
@@ -32,7 +38,8 @@ export class AuthResetPasswordComponent implements OnInit {
     private router: Router,
     private notificationService: NotificationService,
     private authService: AuthService,
-    private utils: UtilsService
+    private utils: UtilsService,
+    private newRelic: NewRelicService
   ) { }
 
   ngOnInit() {
@@ -42,13 +49,19 @@ export class AuthResetPasswordComponent implements OnInit {
     if (!this.key || !this.email) {
       return this._notifyAndRedirect('Invalid reset password link');
     }
+
+    const nrVerifyResetTracer = this.newRelic.createTracer('verify reset password');
+
     // Call API to verify that key and email parameters from reset password URL are valid
-    this.authService.verifyResetPassword({key: this.key, email: this.email}).subscribe(
+    this.authService.verifyResetPassword({ key: this.key, email: this.email }).subscribe(
       res => {
+        nrVerifyResetTracer();
         // verification of key and email is successfuly.
         this.verifySuccess = true;
       },
       err => {
+        nrVerifyResetTracer();
+        this.newRelic.noticeError('verify reset', JSON.stringify(err));
         return this._notifyAndRedirect('Invalid reset password link');
       }
     );
@@ -62,11 +75,16 @@ export class AuthResetPasswordComponent implements OnInit {
       verify_password: this.resetPasswordForm.controls.confirmPassword.value
     };
 
+    const nrResetPasswordTracer = this.newRelic.createTracer('reset password');
+
     this.authService.resetPassword(data).subscribe(
       res => {
+        nrResetPasswordTracer();
         return this._notifyAndRedirect('Password successfully changed! Please login with the new password.');
       },
       err => {
+        nrResetPasswordTracer();
+        this.newRelic.noticeError('reset password failed', JSON.stringify(err));
         if (this.utils.has(err, 'data.type')) {
           if (err.data.type === 'password_compromised') {
             return this.notificationService.alert({
