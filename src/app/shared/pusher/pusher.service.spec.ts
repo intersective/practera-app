@@ -1,19 +1,73 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { async, ComponentFixture, TestBed, tick, fakeAsync } from '@angular/core/testing';
+import { async, ComponentFixture, inject, TestBed, tick, fakeAsync } from '@angular/core/testing';
 import { Observable, of, pipe } from 'rxjs';
 import { PusherService, PusherConfig } from '@shared/pusher/pusher.service';
 import { BrowserStorageService } from '@services/storage.service';
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { Router, ActivatedRoute, convertToParamMap } from '@angular/router';
 import { MockRouter } from '@testing/mocked.service';
-fdescribe('PusherService', () => {
-  let service: PusherService;
+import { UtilsService } from '@services/utils.service';
+import { RequestService } from '@shared/request/request.service';
+import { environment } from '@environments/environment';
+import { PusherStatic, Pusher, Config, Channel } from 'pusher-js';
+// import * as PusherLib from 'pusher-js';
 
-  beforeEach(async(() => {
+class PusherLib {
+  constructor(a, b) {
+    console.log(a, b);
+  }
+}
+
+describe('PusherConfig', () => {
+  const config = new PusherConfig();
+
+  it('should have pusherKey & apiurl', () => {
+    expect(config.pusherKey).toEqual('');
+    expect(config.apiurl).toEqual('');
+  });
+});
+
+describe('PusherService', async () => {
+  const PUSHERKEY = 'pusherKey';
+  const APIURL = 'api/v2/message/notify/channels.json';
+  const libConfig =  {
+    cluster: 'mt1',
+    forceTLS: true,
+    authEndpoint: `${'apiurl'}${APIURL}`,
+    auth: {
+      headers: {
+        'Authorization': `pusherKey=${PUSHERKEY}`,
+        'appkey': environment.appkey,
+        'apikey': 'apikey',
+        'timelineid': 1
+      },
+    },
+  };
+
+  let service: PusherService;
+  let requestSpy: jasmine.SpyObj<RequestService>;
+  let utilSpy: UtilsService;
+  let mockBackend: HttpTestingController;
+  let pusherLibSpy: any;
+
+  beforeEach(() => {
+    // pusherLibSpy = new PusherLib(this.pusherKey, libConfig);
+
     TestBed.configureTestingModule({
-      imports: [ HttpClientModule ],
+      imports: [ HttpClientTestingModule ],
       providers: [
         PusherService,
+        UtilsService,
+        /*{
+          provide: UtilsService,
+          useValue: jasmine.createSpyObj('UtilsService', [
+            'has',
+            'changeThemeColor',
+            'openUrl',
+            'isEmpty',
+            'each',
+          ]),
+        },*/
         {
           provide: Router,
           useClass: MockRouter
@@ -30,32 +84,125 @@ fdescribe('PusherService', () => {
         {
           provide: PusherConfig,
           useValue: {
-            pusherKey: 'pusherkey',
+            pusherKey: PUSHERKEY,
             apiurl: 'apiurl'
           }
+        },
+        {
+          provide: RequestService,
+          useValue: jasmine.createSpyObj('RequestService', {
+            get: of({ data: [] }),
+            apiResponseFormatError: 'ERROR'
+          }),
         }
       ],
     }).compileComponents();
-  }));
 
-  beforeEach(() => {
+    mockBackend = TestBed.get(HttpTestingController);
     service = TestBed.get(PusherService);
+    requestSpy = TestBed.get(RequestService);
+    utilSpy = TestBed.get(UtilsService);
   });
 
   it('should create', () => {
     expect(service).toBeDefined();
   });
 
-  describe('when testing initialise()', () => {
+  describe('getChannels()', () => {
+
+    it(`should make API request to ${APIURL}`, fakeAsync(() => {
+      service.getChannels().subscribe();
+      spyOn(service, 'initiateTypingEvent');
+      tick(300);
+      expect(requestSpy.get).toHaveBeenCalledWith(APIURL, {
+        params: { env: environment.env }
+      });
+    }));
+
+    it(`should return error if channel is empty`, fakeAsync(() => {
+      requestSpy.get.and.returnValue(of({ data: 'not array' }));
+      spyOn(service, 'initiateTypingEvent');
+
+      let res: any;
+      service.getChannels().subscribe(_res => {
+        res = _res;
+      });
+      tick(300);
+
+      // expect(utilSpy.isEmpty).toHaveBeenCalled();
+      expect(requestSpy.apiResponseFormatError).toHaveBeenCalledWith('Pusher channels must be an array');
+      expect(service.initiateTypingEvent).not.toHaveBeenCalled();
+    }));
+
+    // it('should ')
+  });
+
+  describe('unsubscribeChannels()', () => {
+    const TESTVALUE = {
+      presence: {
+        name: 'TEST_VALUE',
+        subscription: 'TEST_VALUE',
+      },
+      team: {
+        name: 'TEST_VALUE',
+        subscription: 'TEST_VALUE',
+      },
+      teamNoMentor: {
+        name: 'TEST_VALUE',
+        subscription: 'TEST_VALUE',
+      },
+      notification: {
+        name: 'TEST_VALUE',
+        subscription: 'TEST_VALUE',
+      }
+    };
+
+    const channels = {
+      presence: {
+        unbind_all: jasmine.createSpy('unbind_all'),
+      },
+      team: {
+        unbind_all: jasmine.createSpy('unbind_all'),
+      },
+      teamNoMentor: {
+        unbind_all: jasmine.createSpy('unbind_all'),
+      },
+      notification: {
+        unbind_all: jasmine.createSpy('unbind_all'),
+      },
+    };
+
+    it('should unsubscribe', () => {
+      service['channelNames'] = TESTVALUE;
+      service['channels'] = channels;
+      service.unsubscribeChannels();
+
+      expect(service['channels'].presence).toEqual(null);
+      expect(service['channels']).toEqual({
+        presence: null,
+        team: null,
+        teamNoMentor: null,
+        notification: null,
+      });
+    });
+  });
+
+  fdescribe('initialise()', () => {
     it('should initialise pusher', fakeAsync(() => {
-      service.appkey = 'appkey';
-      service.initialise();
+      expect(service['pusher']).not.toBeTruthy();
+      expect(service['apiurl']).toBe('apiurl');
+      service.initialise().then(res => {
+        tick();
+        expect(service['pusher']).toBeTruthy();
+        expect(service['pusher']).toEqual(res.pusher);
+      });
       tick();
     }));
   });
-  it('should disconnect()', () => {
+
+  /*it('should disconnect()', () => {
     service.disconnect();
-  });
+  });*/
 
 });
 
