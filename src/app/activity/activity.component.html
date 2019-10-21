@@ -88,7 +88,7 @@
   <ng-container *ngIf="loadingEvents">
     <ion-spinner></ion-spinner>
   </ng-container>
-  <ng-container *ngIf="events.length">
+  <ng-container *ngIf="events && events.length > 0">
     <div text-left margin-top>
       <ion-label color="medium" class="label">
         Events

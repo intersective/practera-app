@@ -34,13 +34,13 @@
 > 
     <ion-card-content>
       <h4 color="primary-contrast">Journey</h4>
-      <h2 color="primary-contrast" class="path-name">Leadership</h2>
+      <h2 color="primary-contrast" class="path-name">Project Management</h2>
     </ion-card-content>
 
     <ion-list class='path-list'>
-        <clickable-item (click)="go('https://www.udemy.com/course/tltw-self-leadership/')">
+        <clickable-item (click)="switch(0)">
             <app-circle-progress class="progress-icon" [data]="{percent: 60, radius: 4}"></app-circle-progress>
-            <div class="path-way">Self Leadership</div>
+            <div class="path-way">Communication</div>
             <ion-icon name="arrow-forward" slot="end" color="primary" class="icon-forward"></ion-icon>
         </clickable-item>
 
@@ -52,7 +52,7 @@
   
         <clickable-item  (click)="switch(0)">
             <app-circle-progress class="progress-icon" [data]="{percent: 0, radius: 4}"></app-circle-progress>
-            <div class="path-way">Interpersonal Leadership</div>
+            <div class="path-way">Mastering Agile</div>
         <ion-icon name="arrow-forward" slot="end" color="primary" class="icon-forward"></ion-icon>
       </clickable-item>
 
@@ -94,77 +94,6 @@
 
     </ion-list>
 
-</ion-card>
-
-<ion-card
-  color="primary"
-  class="card practera-card"
-  notNgClass="{
-     'locked-card': path.isLocked,
-     'default-image-card': !path.leadImage
-  }"
-  [ngStyle]="{'background-image': backgroundImageStyle1 }"
-> 
-    <ion-card-content>
-      <h4 color="primary-contrast">Journey</h4>
-      <h2 color="primary-contrast" class="path-name">Business</h2>
-    </ion-card-content>
-
-    <ion-list class='path-list'>
-        <clickable-item>
-            <ion-icon name="lock" color="medium" class="icon-lock"></ion-icon>
-            <div class="path-way">First Project - Delivering to Plan</div>
-        </clickable-item>
-      <clickable-item>
-          <ion-icon name="lock" color="medium" class="icon-lock"></ion-icon>
-          <div class="path-way">Skill Building - Effective Project Teams</div>
-        </clickable-item>
-      <clickable-item>
-          <ion-icon name="lock" color="medium" class="icon-lock"></ion-icon>
-          <div class="path-way">Second Project - Project Planning</div>
-      </clickable-item> 
-
-    </ion-list>
-</ion-card>
-
-<ion-card
-  color="primary"
-  class="card practera-card"
-  notNgClass="{
-     'locked-card': path.isLocked,
-     'default-image-card': !path.leadImage
-  }"
-  [ngStyle]="{'background-image': backgroundImageStyle1 }"
-> 
-    <ion-card-content>
-      <h4 color="primary-contrast">Journey</h4>
-      <h2 color="primary-contrast" class="path-name">Technical</h2>
-    </ion-card-content>
-
-    <ion-list class='path-list'>
-      <clickable-item>
-        <app-circle-progress class="progress-icon" [data]="{percent: 0, radius: 4}"></app-circle-progress>
-        <div class="path-way">Customer Service</div>
-        <ion-icon name="arrow-forward" slot="end" color="primary" class="icon-forward"></ion-icon>
-      </clickable-item>
-    
-      <clickable-item>
-        <app-circle-progress class="progress-icon" [data]="{percent: 0, radius: 4}"></app-circle-progress>
-        <div class="path-way">Digital Marketing</div>
-        <ion-icon name="arrow-forward" slot="end" color="primary" class="icon-forward"></ion-icon>
-      </clickable-item>
-  
-      <clickable-item>
-        <ion-icon name="lock" color="medium" class="icon-lock"></ion-icon>
-        <div class="path-way">Data-Driven Marketing</div>
-      </clickable-item>
-
-      <clickable-item>
-          <ion-icon name="lock" color="medium" class="icon-lock"></ion-icon>
-          <div class="path-way">Data Analytics</div>
-      </clickable-item>
-  
-    </ion-list>
 </ion-card>
 
 

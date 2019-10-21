@@ -14,6 +14,7 @@ import {
 
 import { AuthService } from '../auth.service';
 import { BrowserStorageService } from '@services/storage.service';
+import { NewRelicService } from '@shared/new-relic/new-relic.service';
 
 @Component({
   selector: 'app-auth-registration',
@@ -42,7 +43,8 @@ export class AuthRegistrationComponent implements OnInit {
     private authService: AuthService,
     private utils: UtilsService,
     private storage: BrowserStorageService,
-    private notificationService: NotificationService
+    private notificationService: NotificationService,
+    private newRelic: NewRelicService
   ) {
     this.initForm();
   }
@@ -58,6 +60,7 @@ export class AuthRegistrationComponent implements OnInit {
 
     }
     this.validateQueryParams();
+    this.newRelic.setPageViewName('registration');
   }
 
   initForm() {
@@ -74,6 +77,10 @@ export class AuthRegistrationComponent implements OnInit {
   validateQueryParams() {
     let redirect = [];
     redirect = ['login'];
+
+    const verifyRegistration = this.newRelic.createTracer('verify registration');
+    const getConfig = this.newRelic.createTracer('retrieve configurations');
+
     // access query params
     this.route.queryParamMap.subscribe(queryParams => {
       this.user.email = this.route.snapshot.paramMap.get('email');
@@ -85,6 +92,8 @@ export class AuthRegistrationComponent implements OnInit {
             key: this.user.key
           }).subscribe(
             response => {
+              verifyRegistration();
+
               if (response) {
                 const user = response.data.User;
                 // Setting user data after registration verified.
@@ -99,33 +108,37 @@ export class AuthRegistrationComponent implements OnInit {
 
                 // get app configaration
                 this.authService.checkDomain({
-                    domain: this.domain
-                  })
-                  .subscribe(
-                    res => {
-                      let data = (res.data || {}).data;
-                      data = this.utils.find(data, function(datum) {
-                        return (
-                          datum.config && datum.config.auth_via_contact_number
-                        );
-                      });
+                  domain: this.domain
+                }).subscribe(
+                  res => {
+                    getConfig();
 
-                      if (data && data.config) {
-                        if (data.config.auth_via_contact_number === true) {
-                          this.hide_password = true;
-                          this.user.password = this.autoGeneratePassword();
-                          this.confirmPassword = this.user.password;
-                        }
+                    let data = (res.data || {}).data;
+                    data = this.utils.find(data, function(datum) {
+                      return (
+                        datum.config && datum.config.auth_via_contact_number
+                      );
+                    });
+
+                    if (data && data.config) {
+                      if (data.config.auth_via_contact_number === true) {
+                        this.hide_password = true;
+                        this.user.password = this.autoGeneratePassword();
+                        this.confirmPassword = this.user.password;
                       }
-                    },
-                    err => {
-                      this.showPopupMessages('shortMessage', 'Registration link invalid!', redirect);
                     }
-                  );
+                  },
+                  err => {
+                    getConfig();
+                    this.newRelic.noticeError('Get configurations failed', JSON.stringify(err));
+                    this.showPopupMessages('shortMessage', 'Registration link invalid!', redirect);
+                  }
+                );
               }
             },
             error => {
-              console.log('error', error);
+              verifyRegistration();
+              this.newRelic.noticeError('verification failed', JSON.stringify(error));
               this.showPopupMessages('shortMessage', 'Registration link invalid!', redirect);
             }
           );
@@ -142,14 +155,15 @@ export class AuthRegistrationComponent implements OnInit {
   }
 
   openLink() {
-    window.open(
-      'https://images.practera.com/terms_and_conditions/practera_default_terms_conditions_july2018.pdf',
-      '_system'
-    );
+    const fileURL = 'https://images.practera.com/terms_and_conditions/practera_default_terms_conditions_july2018.pdf';
+    this.newRelic.actionText(`opened ${fileURL}`);
+    window.open(fileURL, '_system');
   }
 
   register() {
     if (this.validateRegistration()) {
+      const nrRegisterTracer = this.newRelic.createTracer('registering');
+      this.newRelic.actionText('Validated registration');
       this.authService
         .saveRegistration({
           password: this.confirmPassword,
@@ -158,6 +172,8 @@ export class AuthRegistrationComponent implements OnInit {
         })
         .subscribe(
           response => {
+            nrRegisterTracer();
+            const nrAutoLoginTracer = this.newRelic.createTracer('auto login');
             this.authService
               .login({
                 email: this.user.email,
@@ -165,15 +181,20 @@ export class AuthRegistrationComponent implements OnInit {
               })
               .subscribe(
                 res => {
+                  nrAutoLoginTracer();
                   const redirect = ['switcher'];
                   this.showPopupMessages('shortMessage', 'Registration success!', redirect);
                 },
                 err => {
+                  nrAutoLoginTracer();
+                  this.newRelic.noticeError('auto login failed', JSON.stringify(err));
                   this.showPopupMessages('shortMessage', 'Registration not complete!');
                 }
               );
           },
           error => {
+            this.newRelic.noticeError('registration failed', JSON.stringify(error));
+
             if (this.utils.has(error, 'data.type')) {
               if (error.data.type === 'password_compromised') {
                 return this.notificationService.alert({
