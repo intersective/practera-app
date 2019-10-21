@@ -115,18 +115,12 @@ export class AuthService {
 
   private _handleLoginResponse(response): Observable<any> {
     const norm = this._normaliseAuth(response);
-<<<<<<< HEAD
     if (response.data) {
       this.storage.setUser({ contactNumber: norm.contact_number});
       this.storage.setUser({apikey: norm.apikey});
       this.storage.set('programs', norm.programs);
       this.storage.set('isLoggedIn', true);
     }
-=======
-    this.storage.setUser({apikey: norm.apikey});
-    this.storage.set('programs', norm.programs);
-    this.storage.set('isLoggedIn', true);
->>>>>>> origin/feature/native
     return response;
   }
 
