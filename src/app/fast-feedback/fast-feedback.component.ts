@@ -6,6 +6,8 @@ import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { UtilsService } from '@services/utils.service';
 import { NotificationService } from '@shared/notification/notification.service';
 import { BrowserStorageService } from '@services/storage.service';
+import { Subscription } from 'rxjs';
+import { NewRelicService } from '@shared/new-relic/new-relic.service';
 
 @Component({
   selector: 'app-fast-feedback',
@@ -17,6 +19,8 @@ export class FastFeedbackComponent implements OnInit {
   questions = [];
   meta: Meta;
   loading = false;
+  submissionCompleted: Boolean;
+  newRelicTracer: any;
 
   constructor(
     public modalController: ModalController,
@@ -24,23 +28,27 @@ export class FastFeedbackComponent implements OnInit {
     private utils: UtilsService,
     private notification: NotificationService,
     public storage: BrowserStorageService,
+    private newRelic: NewRelicService
   ) {}
 
   ngOnInit() {
+    this.newRelicTracer = this.newRelic.createTracer('fastfeedback shown');
+    this.newRelic.setPageViewName('Fast feedback popup');
     const group: any = {};
     this.questions.forEach(question => {
       group[question.id] = new FormControl('', Validators.required);
     });
     this.fastFeedbackForm = new FormGroup(group);
+    this.submissionCompleted = false;
   }
 
-  dismiss() {
+  dismiss(data) {
     // change the flag to false
     this.storage.set('fastFeedbackOpening', false);
-    this.modalController.dismiss();
+    this.modalController.dismiss(data);
   }
 
-  submit() {
+  async submit(): Promise<any> {
     this.loading = true;
     const formData = this.fastFeedbackForm.value;
     const data = [];
@@ -63,18 +71,18 @@ export class FastFeedbackComponent implements OnInit {
       params['target_user_id'] = this.meta.target_user_id;
     }
 
-    this.fastFeedbackSubmitterService.submit(data, params).subscribe(res => {
-      this.notification.alert({
-        header: 'Submission Successful',
-        message: 'Thanks for taking time to answer the feedback question.',
-        buttons: [{
-          text: 'OK',
-          handler: () => {
-            this.loading = false;
-            return this.dismiss();
-          },
-        }],
-      });
-    });
+    const nrFastFeedbackSubmissionTracer = this.newRelic.createTracer('fastfeeback submission');
+
+    const submissionResult = await this.fastFeedbackSubmitterService.submit(data, params).toPromise();
+    nrFastFeedbackSubmissionTracer();
+
+    this.submissionCompleted = true;
+    return setTimeout(
+      () => {
+        this.newRelicTracer();
+        return this.dismiss(submissionResult);
+      },
+      2000
+    );
   }
 }

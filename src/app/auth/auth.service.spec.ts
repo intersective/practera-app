@@ -1,67 +1,231 @@
 import { AuthService } from './auth.service';
+import { TestBed } from '@angular/core/testing';
+import { of } from 'rxjs';
+import { RequestService } from '@shared/request/request.service';
+import { TestUtils } from '@testing/utils';
+import { Router } from '@angular/router';
+import { HttpClientModule } from '@angular/common/http';
+import { BrowserStorageService } from '@services/storage.service';
+import { PusherService } from '@shared/pusher/pusher.service';
+import { UtilsService } from '@services/utils.service';
 
 describe('AuthService', () => {
-  // let service: AuthService;
-  // const RequestService = {
-  //   appkey: '',
-  //   prefixUrl: '',
-  //   http: {},
-  //   utils: {},
-  //   storage: {},
-  // };
-  // const BrowserStorageService = {};
-  // const UtilsService = {};
+  let service: AuthService;
+  let requestSpy: jasmine.SpyObj<RequestService>;
+  let routerSpy: jasmine.SpyObj<Router>;
+  let storageSpy: jasmine.SpyObj<BrowserStorageService>;
+  let pusherSpy: jasmine.SpyObj<PusherService>;
+  let utilsSpy: jasmine.SpyObj<UtilsService>;
+  const testUtils = new TestUtils();
 
-  // beforeEach(() => {
-  //   // service = new AuthService(
-  //   //   RequestService,
-  //   //   BrowserStorageService,
-  //   //   UtilsService
-  //   // );
-  // });
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      imports: [HttpClientModule],
+      providers: [
+        AuthService,
+        {
+          provide: RequestService,
+          useValue: jasmine.createSpyObj('RequestService', ['delete', 'post', 'get'])
+        },
+        {
+          provide: Router,
+          useValue: {
+            navigate: jasmine.createSpy('navigate'),
+            events: of()
+          }
+        },
+        {
+          provide: BrowserStorageService,
+          useValue: jasmine.createSpyObj('BrowserStorageService', ['setUser', 'getUser', 'set', 'getConfig', 'setConfig', 'get', 'clear'])
+        },
+        {
+          provide: UtilsService,
+          useValue: jasmine.createSpyObj('UtilsService', ['has', 'changeThemeColor', 'openUrl'])
+        },
+        {
+          provide: PusherService,
+          useValue: jasmine.createSpyObj('PusherService', ['unsubscribeChannels', 'disconnect'])
+        },
+      ]
+    });
+    service = TestBed.get(AuthService);
+    requestSpy = TestBed.get(RequestService);
+    routerSpy = TestBed.get(Router);
+    storageSpy = TestBed.get(BrowserStorageService);
+    pusherSpy = TestBed.get(PusherService);
+    utilsSpy = TestBed.get(UtilsService);
+  });
 
-  // it('should be created', () => {
-  //   expect(service).toBeDefined();
-  // });
+  it('should be created', () => {
+    expect(service).toBeTruthy();
+  });
 
-  // it('private #isLoggedIn should be false by default', () => {
-  //   expect(service['isLoggedIn']).toBeDefined();
-  // });
+  it('when testing login(), it should pass the correct data to API', () => {
+    requestSpy.post.and.returnValue(of({
+      success: true,
+      data: {
+        tutorial: null,
+        apikey: '123456',
+        Timelines: [
+          {
+            Program: {
+              config: {
+                theme_color: 'abc'
+              }
+            },
+            Enrolment: {},
+            Project: {},
+            Timeline: {}
+          }
+        ]
+      }
+    }));
+    utilsSpy.has.and.returnValue(true);
+    service.login({ email: 'test@test.com', password: '123' }).subscribe();
+    expect(requestSpy.post.calls.count()).toBe(1);
+    expect(requestSpy.post.calls.first().args[1]).toContain('test%40test.com');
+    expect(requestSpy.post.calls.first().args[1]).toContain('123');
+    expect(storageSpy.setUser.calls.first().args[0]).toEqual({apikey: '123456'});
+  });
 
-  // it('RequestService');
-  // it('#isAuthenticated should', () => {
-  //   expect(service.isAuthenticated).toBeDefined();
-  // });
+  it('when testing directLogin(), it should pass the correct data to API', () => {
+    requestSpy.post.and.returnValue(of({
+      success: true,
+      data: {
+        tutorial: null,
+        apikey: '123456',
+        Timelines: [
+          {
+            Program: {
+              config: {
+                theme_color: 'abc'
+              }
+            },
+            Enrolment: {},
+            Project: {},
+            Timeline: {}
+          }
+        ]
+      }
+    }));
+    service.directLogin({ authToken: 'abcd' }).subscribe();
+    expect(requestSpy.post.calls.count()).toBe(1);
+    expect(requestSpy.post.calls.first().args[1]).toContain('abcd');
+    expect(storageSpy.setUser.calls.first().args[0]).toEqual({apikey: '123456'});
+  });
 
-  // it('#me should', () => {
-  //   // expect(service.me).toBeDefined();
-  // });
+  describe('when testing isAuthenticated()', () => {
+    it('should return true', () => {
+      storageSpy.get.and.returnValue(true);
+      expect(service.isAuthenticated()).toBe(true);
+    });
+    it('should return false', () => {
+      storageSpy.get.and.returnValue(false);
+      expect(service.isAuthenticated()).toBe(false);
+    });
+  });
 
-  // it('#logout should', () => {
-  //   expect(service.logout).toBeDefined();
-  // });
+  describe('when testing logout()', () => {
+    it('should navigate to login', () => {
+      storageSpy.getConfig.and.returnValue({color: ''});
+      service.logout();
+      expect(pusherSpy.unsubscribeChannels.calls.count()).toBe(1);
+      expect(pusherSpy.disconnect.calls.count()).toBe(1);
+      expect(storageSpy.clear.calls.count()).toBe(1);
+      expect(routerSpy.navigate.calls.first().args[0]).toEqual(['login']);
+    });
+    it('should pass navigation data', () => {
+      storageSpy.getConfig.and.returnValue({color: ''});
+      service.logout({data: 'data'});
+      expect(pusherSpy.unsubscribeChannels.calls.count()).toBe(1);
+      expect(pusherSpy.disconnect.calls.count()).toBe(1);
+      expect(storageSpy.clear.calls.count()).toBe(1);
+      expect(routerSpy.navigate.calls.first().args[0]).toEqual(['login']);
+      expect(routerSpy.navigate.calls.first().args[1]).toEqual({data: 'data'});
+    });
+  });
 
-  // it('#linkedinAuthenticated should', () => {
-  //   expect(service.linkedinAuthenticated).toBeDefined();
-  // });
+  it('when testing forgotPassword()', () => {
+    requestSpy.post.and.returnValue(of(''));
+    service.forgotPassword('test@test.com').subscribe();
+    expect(requestSpy.post.calls.count()).toBe(1);
+    expect(requestSpy.post.calls.first().args[1].email).toEqual('test@test.com');
+  });
 
-  // it('#connectToLinkedIn should', () => {
-  //   expect(service.connectToLinkedIn).toBeDefined();
-  // });
+  it('when testing resetPassword()', () => {
+    requestSpy.post.and.returnValue(of(''));
+    service.resetPassword({}).subscribe();
+    expect(requestSpy.post.calls.count()).toBe(1);
+  });
 
-  // it('#contactNumberLogin should', () => {
-  //   expect(service.contactNumberLogin).toBeDefined();
-  // });
+  describe('when testing linkedinAuthenticated()', () => {
+    it('should return true', () => {
+      storageSpy.getUser.and.returnValue({ linkedinConnected: true });
+      expect(service.linkedinAuthenticated()).toBe(true);
+    });
+    it('should return false', () => {
+      storageSpy.getUser.and.returnValue({});
+      expect(service.linkedinAuthenticated()).toBe(false);
+    });
+  });
 
-  // it('#getConfig should', () => {
-  //   expect(service.getConfig).toBeDefined();
-  // });
+  it('when testing connectToLinkedIn()', () => {
+    storageSpy.getUser.and.returnValue({ apikey: 'abc', timelineId: 1 });
+    storageSpy.get.and.returnValue('aaa');
+    service.connectToLinkedIn();
+    expect(utilsSpy.openUrl.calls.count()).toBe(1);
+  });
 
-  // it('#checkDomain should', () => {
-  //   expect(service.checkDomain).toBeDefined();
-  // });
+  describe('when testing contactNumberLogin()', () => {
+    it('should set correct data to local storage', () => {
+      requestSpy.post.and.returnValue(of({
+        data: {
+          apikey: 'aaa',
+          tutorial: false,
+          timelines: []
+        }
+      }));
+      service.contactNumberLogin({ contactNumber: '123' }).subscribe();
+      expect(requestSpy.post.calls.count()).toBe(1);
+      expect(storageSpy.setUser.calls.first().args[0].apikey).toEqual('aaa');
+      expect(storageSpy.set.calls.count()).toBe(2);
+    });
+    it('should not set data if response format incorrect', () => {
+      requestSpy.post.and.returnValue(of({}));
+      service.contactNumberLogin({ contactNumber: '123' }).subscribe();
+      expect(requestSpy.post.calls.count()).toBe(1);
+      expect(storageSpy.set.calls.count()).toBe(0);
+    });
+  });
 
-  // it('#updateProfile should', () => {
-  //   expect(service.updateProfile).toBeDefined();
-  // });
+  it('when testing checkDomain()', () => {
+    requestSpy.get.and.returnValue(of(''));
+    service.checkDomain({domain: 'localhost'}).subscribe();
+    expect(requestSpy.get.calls.count()).toBe(1);
+  });
+
+  it('when testing updateProfile()', () => {
+    requestSpy.post.and.returnValue(of(''));
+    service.updateProfile({ contactNumber: '124' }).subscribe();
+    expect(requestSpy.post.calls.count()).toBe(1);
+  });
+
+  it('when testing saveRegistration()', () => {
+    requestSpy.post.and.returnValue(of(''));
+    service.saveRegistration({ user_id: 1, password: '123', key: 'key' }).subscribe();
+    expect(requestSpy.post.calls.count()).toBe(1);
+  });
+
+  it('when testing verifyRegistration()', () => {
+    requestSpy.post.and.returnValue(of(''));
+    service.verifyRegistration({ email: 'test@test.com', key: 'key' }).subscribe();
+    expect(requestSpy.post.calls.count()).toBe(1);
+  });
+
+  it('when testing verifyResetPassword()', () => {
+    requestSpy.post.and.returnValue(of(''));
+    service.verifyResetPassword({ email: 'test@test.com', key: 'key' }).subscribe();
+    expect(requestSpy.post.calls.count()).toBe(1);
+  });
 });
+
