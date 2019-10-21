@@ -153,7 +153,6 @@ export class PusherService {
           },
         },
       };
-
       this.pusher = await new PusherLib(this.pusherKey, config);
     } catch (err) {
       throw new Error(err);
@@ -199,7 +198,9 @@ export class PusherService {
    * (use case: after switching program)
    */
   unsubscribeChannels(): void {
+    console.log(this.channelNames);
     this.utils.each(this.channelNames, (channel, key) => {
+      console.log(channel, key);
       if (channel) {
         this.channelNames[key] = { name: null, subscription: null };
         if (this.channels[key]) {
