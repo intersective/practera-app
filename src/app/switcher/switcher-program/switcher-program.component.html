@@ -7,7 +7,7 @@
 <ion-content padding color="light">
   <app-path-card class="path-card" [programs]=programs [loading]="true"></app-path-card>
     <!-- <ion-list class="no-bg" *ngFor="let program of programs; let i = index">
-  </ion-list> -->
+  </ion-list> 
   <ion-card class="practera-card">
     <ion-list *ngFor="let program of programs; let i = index">
       <clickable-item (click)="switch(i)" color="light" [lines]="i == programs.length - 1 ? 'none' : ''" [backgroundColor]="program.program.config.theme_color">
@@ -15,7 +15,8 @@
       </clickable-item>
     </ion-list>
   </ion-card>
-  <ion-card class="practera-card">
+-->
+<ion-card class="practera-card">
     <clickable-item (click)="logout()" lines="none">
       <ion-icon name="log-out" margin-end></ion-icon> Logout
     </clickable-item>
