@@ -71,18 +71,28 @@ export class FilestackService {
 
   // get s3 config
   getS3Config(fileType) {
-    let path = environment.filestack.s3Config.paths.any;
+    const {
+      location,
+      container,
+      region,
+      workflows,
+      paths,
+    } = environment.filestack.s3Config;
+
+    let path = paths.any;
     // get s3 path based on file type
-    if (environment.filestack.s3Config.paths[fileType]) {
-      path = environment.filestack.s3Config.paths[fileType];
+    if (paths[fileType]) {
+      path = paths[fileType];
     }
     // add user hash to the path
     path = path + this.storage.getUser().userHash + '/';
+
     return {
-      location: environment.filestack.s3Config.location,
-      container: environment.filestack.s3Config.container,
-      region: environment.filestack.s3Config.region,
-      path: path
+      location,
+      container,
+      region,
+      path: path,
+      workflows
     };
   }
 
