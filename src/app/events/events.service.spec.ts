@@ -4,12 +4,14 @@ import { of } from 'rxjs';
 import { RequestService } from '@shared/request/request.service';
 import { UtilsService } from '@services/utils.service';
 import { NotificationService } from '@shared/notification/notification.service';
+import { TestUtils } from '@testing/utils';
 
 describe('EventsService', () => {
   let service: EventsService;
   let requestSpy: jasmine.SpyObj<RequestService>;
   let notificationSpy: jasmine.SpyObj<NotificationService>;
   let utils: UtilsService;
+  const testUtils = new TestUtils();
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -42,30 +44,14 @@ describe('EventsService', () => {
     let formatted;
     let expected;
 
-    function _getDateString(day: number, hour: number) {
-      const date = new Date();
-      date.setDate(date.getDate() + day);
-      date.setHours(date.getHours() + hour);
-      return `${date.getFullYear()}-` +
-        `${_numberFormatter(date.getMonth() + 1)}-` +
-        `${_numberFormatter(date.getDate())} ` +
-        `${_numberFormatter(date.getHours())}:` +
-        `${_numberFormatter(date.getMinutes())}:` +
-        `${_numberFormatter(date.getSeconds())}`;
-    }
-
-    function _numberFormatter(number: number) {
-      return number < 10 ? '0' + number : number;
-    }
-
     beforeEach(() => {
       startTimes = [
-        _getDateString(-2, 0),
-        _getDateString(2, 1),
-        _getDateString(2, 0),
-        _getDateString(2, 1),
-        _getDateString(-2, 1),
-        _getDateString(-2, -1)
+        testUtils.getDateString(-2, 0),
+        testUtils.getDateString(2, 1),
+        testUtils.getDateString(2, 0),
+        testUtils.getDateString(2, 1),
+        testUtils.getDateString(-2, 1),
+        testUtils.getDateString(-2, -1)
       ];
       requestResponse = {
         success: true,

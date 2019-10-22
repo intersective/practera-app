@@ -26,6 +26,15 @@ const api = {
   }
 };
 
+export interface AssessmentSubmission {
+  id: number;
+  in_progress: boolean;
+  context_id?: number;
+  review_id?: number;
+  submission_id?: number;
+  unlock?: boolean;
+}
+
 export interface Assessment {
   name: string;
   description: string;
@@ -33,6 +42,7 @@ export interface Assessment {
   dueDate?: string;
   isOverdue?: boolean;
   groups: Array<Group>;
+  pulseCheck: boolean;
 }
 
 export interface Group {
@@ -135,7 +145,8 @@ export class AssessmentService {
       isForTeam: thisAssessment.Assessment.is_team,
       dueDate: thisAssessment.Assessment.deadline,
       isOverdue: thisAssessment.Assessment.deadline ? this.utils.timeComparer(thisAssessment.Assessment.deadline) < 0 : false,
-      groups: []
+      groups: [],
+      pulseCheck: thisAssessment.Assessment.pulse_check
     };
 
     thisAssessment.AssessmentGroup.forEach(group => {
@@ -436,7 +447,7 @@ export class AssessmentService {
     return answer;
   }
 
-  saveAnswers(assessment, answers, action, submissionId?) {
+  saveAnswers(assessment: AssessmentSubmission, answers: object, action: string, submissionId?: number) {
     let postData;
     switch (action) {
       case 'assessment':
