@@ -41,7 +41,7 @@ export class ProjectComponent extends RouterEnter {
     private homeService: HomeService,
     private sharedService: SharedService,
     public fastFeedbackService: FastFeedbackService,
-    private platform: Platform
+    private platform: Platform,
     private newRelic: NewRelicService,
     @Inject(DOCUMENT) private readonly document: Document
    ) {
