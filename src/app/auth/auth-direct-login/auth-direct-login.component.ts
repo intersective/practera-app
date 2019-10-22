@@ -6,6 +6,7 @@ import { NotificationService } from '@shared/notification/notification.service';
 import { SwitcherService } from '../../switcher/switcher.service';
 import { UtilsService } from '@services/utils.service';
 import { BrowserStorageService } from '@services/storage.service';
+import { NewRelicService } from '@shared/new-relic/new-relic.service';
 
 @Component({
   selector: 'app-auth-direct-login',
@@ -21,18 +22,22 @@ export class AuthDirectLoginComponent implements OnInit {
     public utils: UtilsService,
     private switcherService: SwitcherService,
     private storage: BrowserStorageService,
-    private ngZone: NgZone
+    private ngZone: NgZone,
+    private newRelic: NewRelicService
   ) {}
 
   async ngOnInit() {
+    this.newRelic.setPageViewName('direct-login');
     const authToken = this.route.snapshot.paramMap.get('authToken');
     if (!authToken) {
       return this._error();
     }
 
     try {
+      const nrDirectLoginTracer = this.newRelic.createTracer('Processing direct login');
       const loginStatus = await this.authService.directLogin({ authToken }).toPromise();
       const userInfo = await this.switcherService.getMyInfo().toPromise();
+      nrDirectLoginTracer();
       return this._redirect();
     } catch (err) {
       this._error();
@@ -42,6 +47,7 @@ export class AuthDirectLoginComponent implements OnInit {
   // force every navigation happen under radar of angular
   private navigate(direction): Promise<boolean> {
     return this.ngZone.run(() => {
+      this.newRelic.setCustomAttribute('redirection', direction);
       return this.router.navigate(direction);
     });
   }
@@ -102,7 +108,8 @@ export class AuthDirectLoginComponent implements OnInit {
     return this.navigate(['app', 'home']);
   }
 
-  private _error(): Promise<any> {
+  private _error(res?): Promise<any> {
+    this.newRelic.noticeError('failed direct login', res ? JSON.stringify(res) : undefined);
     return this.notificationService.alert({
       message: 'Your link is invalid or expired.',
       buttons: [
