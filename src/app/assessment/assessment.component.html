@@ -186,7 +186,8 @@
       (click)="redirectToNextMilestoneTask({ continue: true })"
       [disabled]="isRedirectingToNextMilestoneTask"
       shape="round"
-      expand="full">
+      expand="full"
+      class="continue">
       <ng-container *ngIf="isRedirectingToNextMilestoneTask; else continue">
         <ion-spinner style="width: 100%;" name="dots" class="vertical-middle text-center"></ion-spinner>
       </ng-container>
