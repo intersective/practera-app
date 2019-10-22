@@ -16,17 +16,17 @@ import { NotificationService } from './notification.service';
   declarations: [
     PopUpComponent,
     AchievementPopUpComponent,
-    LockTeamAssessmentPopUpComponent
+    LockTeamAssessmentPopUpComponent,
   ],
   exports: [
     PopUpComponent,
     AchievementPopUpComponent,
-    LockTeamAssessmentPopUpComponent
+    LockTeamAssessmentPopUpComponent,
   ],
   entryComponents: [
     PopUpComponent,
     AchievementPopUpComponent,
-    LockTeamAssessmentPopUpComponent
+    LockTeamAssessmentPopUpComponent,
   ]
 })
 
