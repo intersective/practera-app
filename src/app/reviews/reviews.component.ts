@@ -3,7 +3,9 @@ import { ReviewsService, Review } from './reviews.service';
 import { Router } from '@angular/router';
 import { RouterEnter } from '@services/router-enter.service';
 import { UtilsService } from '../services/utils.service';
+import { NotificationService } from '../shared/notification/notification.service';
 import { BrowserStorageService } from '@services/storage.service';
+import { NewRelicService } from '@shared/new-relic/new-relic.service';
 
 @Component({
   selector: 'app-reviews',
@@ -22,6 +24,8 @@ export class ReviewsComponent extends RouterEnter {
     public router: Router,
     public utils: UtilsService,
     public storage: BrowserStorageService,
+    private newRelic: NewRelicService,
+    private notificationService: NotificationService,
   ) {
     super(router);
   }
@@ -30,10 +34,20 @@ export class ReviewsComponent extends RouterEnter {
     this.loadingReviews = true;
     this.showDone = false;
     this.reviewsService.getReviews()
-      .subscribe(reviews => {
-        this.reviews = reviews;
-        this.loadingReviews = false;
-      });
+      .subscribe(
+        reviews => {
+          this.reviews = reviews;
+          this.loadingReviews = false;
+        },
+        err => {
+          this.newRelic.noticeError('get reviews fail', JSON.stringify(err));
+          const toasted = this.notificationService.alert({
+            header: 'Error retrieving latest reviews',
+            message: err.msg || JSON.stringify(err)
+          });
+          throw new Error(err);
+        }
+      );
   }
 
   gotoReview(contextId, assessmentId, submissionId) {

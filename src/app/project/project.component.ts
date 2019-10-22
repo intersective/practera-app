@@ -1,4 +1,5 @@
-import { Component, HostListener, ViewChild, ViewChildren, QueryList, ElementRef } from '@angular/core';
+import { Component, HostListener, ViewChild, ViewChildren, QueryList, ElementRef, Inject } from '@angular/core';
+import { DOCUMENT } from '@angular/common';
 import { Router, ActivatedRoute } from '@angular/router';
 import { ProjectService, Milestone, DummyMilestone } from './project.service';
 import { HomeService } from '../home/home.service';
@@ -9,6 +10,7 @@ import { SharedService } from '@services/shared.service';
 import { FastFeedbackService } from '../fast-feedback/fast-feedback.service';
 import { Subscription } from 'rxjs';
 import { Platform } from '@ionic/angular';
+import { NewRelicService } from '@shared/new-relic/new-relic.service';
 
 @Component({
   selector: 'app-project',
@@ -16,6 +18,8 @@ import { Platform } from '@ionic/angular';
   styleUrls: ['project.component.scss'],
 })
 export class ProjectComponent extends RouterEnter {
+  private activities: Subscription;
+  private projectProgresses: Subscription;
   public routeUrl = '/app/project';
   public programName: string;
   public milestones: Array<Milestone | DummyMilestone> = [];
@@ -25,7 +29,7 @@ export class ProjectComponent extends RouterEnter {
   @ViewChild('contentRef', {read: ElementRef}) contentRef: any;
   @ViewChildren('milestoneRef', {read: ElementRef}) milestoneRefs: QueryList<ElementRef>;
   public activeMilestone: Array<boolean> = [];
-  private milestonePositions: Array<number> = [];
+  public milestonePositions: Array<number> = [];
   private highlightedActivityId: number;
 
   constructor(
@@ -38,12 +42,14 @@ export class ProjectComponent extends RouterEnter {
     private sharedService: SharedService,
     public fastFeedbackService: FastFeedbackService,
     private platform: Platform
+    private newRelic: NewRelicService,
+    @Inject(DOCUMENT) private readonly document: Document
    ) {
     super(router);
   }
 
   private _initialise() {
-    this.milestones = [{ dummy: true }];
+    this.milestones = [{ dummy: true }]; // initial value
     this.loadingActivity = true;
     this.loadingMilestone = true;
     this.loadingProgress = true;
@@ -51,12 +57,18 @@ export class ProjectComponent extends RouterEnter {
 
   onEnter() {
     this._initialise();
+    this.newRelic.setPageViewName('Project View');
     this.route.queryParamMap.subscribe(params => {
       this.highlightedActivityId = +params.get('activityId') || undefined;
     });
-    this.homeService.getProgramName().subscribe(programName => {
-      this.programName = programName;
-    });
+    this.homeService.getProgramName().subscribe(
+      programName => {
+        this.programName = programName;
+      },
+      error => {
+        this.newRelic.noticeError(error);
+      }
+    );
 
     this.projectService.getMilestones()
       .subscribe(milestones => {
@@ -66,12 +78,13 @@ export class ProjectComponent extends RouterEnter {
         this.activeMilestone = new Array(milestones.length);
         this.activeMilestone.fill(false);
         this.activeMilestone[0] = true;
-        this.projectService.getActivities(milestones)
-          .subscribe(activities => {
+        this.activities = this.projectService.getActivities(milestones)
+          .subscribe(
+          activities => {
             // remove entire Activity object with dummy data for clean Activity injection
             if (this.milestones) {
               this.milestones.forEach((milestone, i) => {
-                if (this.utils.find(this.milestones[i].Activity, {dummy: true})) {
+                if (this.utils.find(this.milestones[i].Activity, { dummy: true })) {
                   this.milestones[i].Activity = [];
                 }
               });
@@ -80,18 +93,28 @@ export class ProjectComponent extends RouterEnter {
             this.milestones = this._addActivitiesToEachMilestone(this.milestones, activities);
             this.loadingActivity = false;
 
-            this.projectService.getProgress(this.milestones).subscribe(progresses => {
-              this.milestonePositions = this.milestoneRefs.map(milestoneRef => {
-                return milestoneRef.nativeElement.offsetTop;
-              });
+            this.projectProgresses = this.projectService.getProgress().subscribe(
+              progresses => {
+                if (this.milestoneRefs) {
+                  this.milestonePositions = this.milestoneRefs.map(milestoneRef => {
+                    return milestoneRef.nativeElement.offsetTop;
+                  });
+                }
+                this.milestones = this._populateMilestoneProgress(progresses, this.milestones);
 
-              this.milestones = this._populateMilestoneProgress(progresses, this.milestones);
-              this.loadingProgress = false;
+                this.loadingProgress = false;
 
-              if (this.highlightedActivityId) {
-                this.scrollTo(`activity-card-${this.highlightedActivityId}`);
+                if (this.highlightedActivityId) {
+                  this.scrollTo(`activity-card-${this.highlightedActivityId}`);
+                }
+              },
+              error => {
+                this.newRelic.noticeError(error);
               }
-            });
+            );
+          },
+          error => {
+            this.newRelic.noticeError(error);
           });
       });
 
@@ -121,25 +144,27 @@ export class ProjectComponent extends RouterEnter {
   }
 
   scrollTo(domId: string, index?: number): void {
-    if (index) {
+    // update active milestone status (mark whatever user select)
+    this.activeMilestone.fill(false);
+    if (index > -1) {
       this.activeMilestone[index] = true;
     }
 
-    // update active milestone status (mark whatever user select)
-    this.activeMilestone.fill(false);
-
-    const el = document.getElementById(domId);
-    el.scrollIntoView({ block: 'start', behavior: 'smooth', inline: 'nearest' });
-
-    el.classList.add('highlighted');
-    setTimeout(() => el.classList.remove('highlighted'), 1000);
+    const el = this.document.getElementById(domId);
+    if (el) {
+      el.scrollIntoView({ block: 'start', behavior: 'smooth', inline: 'nearest' });
+      el.classList.add('highlighted');
+      setTimeout(() => el.classList.remove('highlighted'), 1000);
+    }
   }
 
   goToActivity(id) {
     if (this.utils.isMobile()) {
       this.router.navigate(['app', 'activity', id]);
+      this.newRelic.addPageAction('Navigate activity', id);
     } else {
       this.router.navigate(['app', 'tasks', id]);
+      this.newRelic.addPageAction('Navigate tasks', id);
     }
   }
 
