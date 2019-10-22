@@ -15,7 +15,10 @@ export const environment = {
         any: '/appv2/local/uploads/',
         image: '/appv2/local/uploads/',
         video: '/appv2/local/uploads/'
-      }
+      },
+      workflows: [
+        '3c38ef53-a9d0-4aa4-9234-617d9f03c0de'
+      ],
     }
   },
   defaultCountryModel: 'AUS',
