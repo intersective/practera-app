@@ -87,7 +87,7 @@ export class SharedService {
   /**
    * This method get all iframe and videos from documents and stop playing videos.
    */
-  stopPlayingViodes() {
+  stopPlayingVideos() {
     const iframes = Array.from(document.querySelectorAll( 'iframe'));
     const videos = Array.from(document.querySelectorAll( 'video' ));
     if ( iframes ) {

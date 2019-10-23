@@ -9,7 +9,6 @@ import { Question, Meta} from '../fast-feedback/fast-feedback.service';
 import { NotificationService } from '@shared/notification/notification.service';
 import { Event, EventsService } from '@app/events/events.service';
 import { SharedService } from '@services/shared.service';
-import { TodoService } from '@services/todo.service';
 
 /**
  * @name api
@@ -44,7 +43,7 @@ export interface TodoItem {
     team_id?: number;
     team_member_id?: number;
     participants_only?: boolean;
-    due_date?: boolean;
+    due_date?: string;
   };
 }
 
@@ -62,21 +61,24 @@ export class HomeService {
     private utils: UtilsService,
     private notification: NotificationService,
     private eventsService: EventsService,
-    public sharedService: SharedService,
-    private todoService: TodoService
-  ) {
-  }
+    public sharedService: SharedService
+  ) {}
 
   getProgramName() {
     return of(this.storage.getUser().programName);
   }
 
   getTodoItems() {
-    return this.todoService.todo$.pipe(map(response => {
-      if (response.success && response.data) {
-        return this._normaliseTodoItems(response.data);
-      }
-    }));
+    return this.request.get(api.get.todoItem, {
+        params: {
+          project_id: this.storage.getUser().projectId
+        }
+      })
+      .pipe(map(response => {
+        if (response.success && response.data) {
+          return this._normaliseTodoItems(response.data);
+        }
+      }));
   }
 
   private _normaliseTodoItems(data): Array<TodoItem> {
@@ -427,6 +429,7 @@ export class HomeService {
             !this.utils.has(event, 'meta.AssessmentSubmissionReminder.reminded_date')
           ) {
           this.request.apiResponseFormatError('TodoItem meta format error');
+          return {};
         }
         return {
           type: 'assessment_submission_reminder',

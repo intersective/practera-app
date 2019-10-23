@@ -14,19 +14,19 @@
   <ion-list>
     <ion-item>
       <ion-icon class="leading-icon" name="calendar" color="primary"></ion-icon>
-      <div>{{ utils.utcToLocal(event.startTime, 'date') }}</div>
+      <div id="date">{{ utils.utcToLocal(event.startTime, 'date') }}</div>
     </ion-item>
     <ion-item>
       <ion-icon class="leading-icon" name="time" color="primary"></ion-icon>
-      <div>{{ utils.utcToLocal(event.startTime, 'time') }} - {{ utils.utcToLocal(event.endTime, 'time') }}</div>
+      <div id="time">{{ utils.utcToLocal(event.startTime, 'time') }} - {{ utils.utcToLocal(event.endTime, 'time') }}</div>
     </ion-item>
     <ion-item>
       <ion-icon class="leading-icon" name="pin" color="primary"></ion-icon>
-      <div>{{ event.location }}</div>
+      <div id="location">{{ event.location }}</div>
     </ion-item>
     <ion-item lines="none">
       <ion-icon class="leading-icon" name="contacts" color="primary"></ion-icon>
-      <div>{{ event.remainingCapacity }} Seats Available Out of {{ event.capacity }}</div>
+      <div id="capacity">{{ event.remainingCapacity }} Seats Available Out of {{ event.capacity }}</div>
     </ion-item>
   </ion-list>
 

@@ -25,6 +25,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { UnlockingComponent } from '@components/unlocking/unlocking.component';
 import { IconComponent } from '@shared/components/icon/icon.component';
 
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -55,8 +56,8 @@ import { IconComponent } from '@shared/components/icon/icon.component';
     }),
     IntercomModule.forRoot({
       appId: environment.intercomAppId,
-      updateOnRouterChange: true, // will automatically run `update` on router event changes. Default: `false`
-    }),
+      updateOnRouterChange: true // will automatically run `update` on router event changes. Default: `false`
+    })
   ],
   providers: [
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },

@@ -84,7 +84,7 @@ export class CircleProgressComponent implements OnChanges, OnInit {
     outerStrokeColor: 'var(--ion-color-primary)',
     innerStrokeColor: 'var(--ion-color-primary)',
     outerStrokeLinecap: 'butt',
-    outerStrokeWidth: 10,
+    outerStrokeWidth: 8,
     showInnerStroke: false,
     showSubtitle: false,
     showTitle: false,
@@ -98,7 +98,7 @@ export class CircleProgressComponent implements OnChanges, OnInit {
     toFixed: 0,
   };
 
-  @ViewChild('description', { static: false }) descriptionRef: ElementRef;
+  @ViewChild('description') descriptionRef: ElementRef;
 
   ngOnInit() {
     if (this.data) {
