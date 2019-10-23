@@ -189,6 +189,24 @@ export class ActivityService {
     return currentActivity;
   }
 
+  private _normaliseOverview(rawResponse: Overview): Overview {
+    const milestones = rawResponse.Milestones;
+    // make sure every activity is available
+    const normalisedMilestones = milestones.filter(milestone => {
+      if (milestone.Activities.length > 0) {
+        return true;
+      }
+
+      return false;
+    });
+
+    return {
+      id: rawResponse.id,
+      name: rawResponse.name,
+      Milestones: normalisedMilestones
+    };
+  }
+
   /**
    * Purpose: get next task (look for next incomplete milestone/activity/task),
    * this function will loop through entire status available in a project (from milestone to task-specific) to get the next incompleted task as next task to be redirected to
@@ -243,7 +261,7 @@ export class ActivityService {
         const nextUnconditionalMilestone = this.getNextMilestone(
           overview.Milestones,
           currentMilestone,
-          currentMilestoneIndex
+          currentMilestoneIndex,
         );
 
         return {
@@ -313,7 +331,8 @@ export class ActivityService {
 
       if (!this.utils.has(sequence, 'model') || !this.utils.has(sequence, sequence.model)) {
         this.request.apiResponseFormatError('Activity.ActivitySequence format error');
-        throw new Error('Activity.ActivitySequence format error');
+        return {};
+        // throw new Error('Activity.ActivitySequence format error');
       }
 
       switch (sequence.model) {
@@ -658,9 +677,9 @@ export class ActivityService {
   }
 
   // get overview of statuses for the entire project
-  public getOverview(projectId: number): Observable<Overview> {
+  getOverview(projectId: number): Observable<Overview> {
     return this.request.get(api.projectOverview, {
       params: { id: projectId }
-    }).pipe(map(res => res.data));
+    }).pipe(map(res => this._normaliseOverview(res.data)));
   }
 }

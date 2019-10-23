@@ -13,10 +13,10 @@
     padding-top: 3px;
     text-align: center;
     ion-icon {
-      padding-top: 3px;
+      padding-top: 5px;
     }
-    .icon-lock {
-      font-size: 31px;
+    .icon-lock, .icon-done {
+      font-size: 32px;
     }
   }
 
@@ -29,16 +29,40 @@
     margin-left: auto;
     margin-right: auto;
     line-height: 0.5em;
+    padding-top: 2px;
+    .icon-lock, .icon-done {
+      margin-top: -2px;
+    }
   }
 }
 
 .project-list {
+  .project-item {
+    --inner-padding-start:0px;
+    --ion-safe-area-right: 0px;
+    --inner-padding-end: 16px;
+  }
   .project-card {
     width: 100%;
+    .milestone {
+      padding-top: 16px;
+      .milestone-lock {
+        font-size: 32px;
+        margin-right: 12px;
+        margin-bottom: -5px;
+      }
+
+      &.lock {
+        padding-bottom: 16px;
+      }
+    }
     .milestone-description {
       color: var(--practera-label-color);
       line-height: 20px;
       font-size: 14px;
+      p {
+        background-color: black;
+      }
     }
     transition: border 0.5s, border-radius 0.5s;
     &.highlighted {
@@ -58,13 +82,30 @@
   margin-bottom: 10px;
   font-weight: 400;
   height: 39.67px;
+
+  &.no-desc {
+    margin-bottom: 14px;
+  }
 }
 .activity-list {
   background: transparent;
+  margin-bottom: 0px;
 
+  .icon-done {
+    margin-right: 18px;
+    font-size: 32px;
+  }
   .icon-lock {
     margin-right: 18px;
     font-size: 32px;
+    margin-left: -3px;
+  }
+  .progress-icon {
+    margin-left: -3px;
+  }
+  .row-cards {
+    margin-top: -18px;
+    min-width: 53px !important;
   }
 }
 .activity-item {
@@ -73,6 +114,9 @@
   --padding-start: 0px;
   --ion-safe-area-left: 0px;
   --padding-end:0px;
+  --inner-padding-start:0px;
+  --ion-safe-area-right: 0px;
+  --inner-padding-end: 0px;
 }
 .icon-done {
   font-size: 33px;
