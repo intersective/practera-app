@@ -16,7 +16,7 @@ const routes: Routes = [
         children: [
           {
             path: '',
-            loadChildren: () => import('../home/home.module').then(m => m.HomeModule),
+            loadChildren: '../home/home.module#HomeModule',
           }
         ]
       },
@@ -25,7 +25,7 @@ const routes: Routes = [
         children: [
           {
             path: '',
-            loadChildren: () => import('../project/project.module').then(m => m.ProjectModule)
+            loadChildren: '../project/project.module#ProjectModule'
           }
         ]
       },
@@ -34,7 +34,7 @@ const routes: Routes = [
         children: [
           {
             path: '',
-            loadChildren: () => import('../activity/activity.module').then(m => m.ActivityModule)
+            loadChildren: '../activity/activity.module#ActivityModule'
           }
         ]
       },
@@ -43,7 +43,7 @@ const routes: Routes = [
         children: [
           {
             path: '',
-            loadChildren: () => import('../reviews/reviews.module').then(m => m.ReviewsModule)
+            loadChildren: '../reviews/reviews.module#ReviewsModule'
           }
         ]
       },
@@ -52,7 +52,7 @@ const routes: Routes = [
         children: [
           {
             path: '',
-            loadChildren: () => import('../chat/chat.module').then(m => m.ChatModule),
+            loadChildren: '../chat/chat.module#ChatModule',
           }
         ]
       },
@@ -61,7 +61,7 @@ const routes: Routes = [
         children: [
           {
             path: '',
-            loadChildren: () => import('../settings/settings.module').then(m => m.SettingsModule)
+            loadChildren: '../settings/settings.module#SettingsModule'
           }
         ]
       },

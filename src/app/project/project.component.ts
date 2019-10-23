@@ -1,6 +1,6 @@
 import { Component, HostListener, ViewChild, ViewChildren, QueryList, ElementRef, Inject } from '@angular/core';
 import { DOCUMENT } from '@angular/common';
-import { Router, ActivatedRoute, NavigationEnd } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { ProjectService, Milestone, DummyMilestone } from './project.service';
 import { HomeService } from '../home/home.service';
 import { RouterEnter } from '@services/router-enter.service';
@@ -16,24 +16,20 @@ import { NewRelicService } from '@shared/new-relic/new-relic.service';
   templateUrl: 'project.component.html',
   styleUrls: ['project.component.scss'],
 })
-export class ProjectComponent {
-  public routeUrl = '/app/project'; // mandatory for RouterEnter parent class
-
+export class ProjectComponent extends RouterEnter {
+  private activities: Subscription;
+  private projectProgresses: Subscription;
+  public routeUrl = '/app/project';
   public programName: string;
   public milestones: Array<Milestone | DummyMilestone> = [];
   public loadingActivity = true;
   public loadingMilestone = true;
   public loadingProgress = true;
-  @ViewChild('contentRef', {read: ElementRef, static: false}) contentRef: any;
+  @ViewChild('contentRef', {read: ElementRef}) contentRef: any;
   @ViewChildren('milestoneRef', {read: ElementRef}) milestoneRefs: QueryList<ElementRef>;
   public activeMilestone: Array<boolean> = [];
-  private milestonePositions: Array<number> = [];
+  public milestonePositions: Array<number> = [];
   private highlightedActivityId: number;
-  private routeData: Subscription;
-  private routeQuery: Subscription;
-  private homeProgramName: Subscription;
-  private activities: Subscription;
-  private projectProgresses: Subscription;
 
   constructor(
     public router: Router,
@@ -46,76 +42,81 @@ export class ProjectComponent {
     public fastFeedbackService: FastFeedbackService,
     private newRelic: NewRelicService,
     @Inject(DOCUMENT) private readonly document: Document
-  ) {
-    this.routeData = this.route.data.subscribe(data => {
-      this._initialise();
-      this.newRelic.setPageViewName('Project View');
+   ) {
+    super(router);
+  }
 
-      this.routeQuery = this.route.queryParamMap.subscribe(params => {
-        this.highlightedActivityId = +params.get('activityId') || undefined;
-      });
+  private _initialise() {
+    this.milestones = [{ dummy: true }]; // initial value
+    this.loadingActivity = true;
+    this.loadingMilestone = true;
+    this.loadingProgress = true;
+  }
 
-      this.homeProgramName = this.homeService.getProgramName().subscribe(
-        programName => {
-          this.programName = programName;
-        },
-        error => {
-          this.newRelic.noticeError(error);
-        }
-      );
+  onEnter() {
+    this._initialise();
+    this.newRelic.setPageViewName('Project View');
+    this.route.queryParamMap.subscribe(params => {
+      this.highlightedActivityId = +params.get('activityId') || undefined;
+    });
+    this.homeService.getProgramName().subscribe(
+      programName => {
+        this.programName = programName;
+      },
+      error => {
+        this.newRelic.noticeError(error);
+      }
+    );
 
-      const milestones = data[0];
-      this.milestones = data[0];
+    this.projectService.getMilestones()
+      .subscribe(milestones => {
 
-      this.loadingMilestone = false;
-      this.activeMilestone = new Array(milestones.length);
-      this.activeMilestone.fill(false);
-      this.activeMilestone[0] = true;
-      this.activities = this.projectService.getActivities(milestones)
-        .subscribe(
-        activities => {
-          // remove entire Activity object with dummy data for clean Activity injection
-          if (this.milestones) {
-            this.milestones.forEach((milestone, i) => {
-              if (this.utils.find(this.milestones[i].Activity, { dummy: true })) {
-                this.milestones[i].Activity = [];
-              }
-            });
-          }
-
-          this.milestones = this._addActivitiesToEachMilestone(this.milestones, activities);
-          this.loadingActivity = false;
-
-          this.projectProgresses = this.projectService.getProgress(this.milestones).subscribe(
-          progresses => {
-            this.milestonePositions = this.milestoneRefs.map(milestoneRef => {
-              return milestoneRef.nativeElement.offsetTop;
-            });
-
-            this.milestones = this._populateMilestoneProgress(progresses, this.milestones);
-            this.loadingProgress = false;
-
-            if (this.highlightedActivityId) {
-              this.scrollTo(`activity-card-${this.highlightedActivityId}`);
+        this.milestones = milestones;
+        this.loadingMilestone = false;
+        this.activeMilestone = new Array(milestones.length);
+        this.activeMilestone.fill(false);
+        this.activeMilestone[0] = true;
+        this.activities = this.projectService.getActivities(milestones)
+          .subscribe(
+          activities => {
+            // remove entire Activity object with dummy data for clean Activity injection
+            if (this.milestones) {
+              this.milestones.forEach((milestone, i) => {
+                if (this.utils.find(this.milestones[i].Activity, { dummy: true })) {
+                  this.milestones[i].Activity = [];
+                }
+              });
             }
+
+            this.milestones = this._addActivitiesToEachMilestone(this.milestones, activities);
+            this.loadingActivity = false;
+
+            this.projectProgresses = this.projectService.getProgress().subscribe(
+              progresses => {
+                if (this.milestoneRefs) {
+                  this.milestonePositions = this.milestoneRefs.map(milestoneRef => {
+                    return milestoneRef.nativeElement.offsetTop;
+                  });
+                }
+                this.milestones = this._populateMilestoneProgress(progresses, this.milestones);
+
+                this.loadingProgress = false;
+
+                if (this.highlightedActivityId) {
+                  this.scrollTo(`activity-card-${this.highlightedActivityId}`);
+                }
+              },
+              error => {
+                this.newRelic.noticeError(error);
+              }
+            );
           },
           error => {
             this.newRelic.noticeError(error);
           });
-        },
-        error => {
-          this.newRelic.noticeError(error);
-        });
+      });
 
-      this.fastFeedbackService.pullFastFeedback().subscribe();
-    });
-  }
-
-  private _initialise() {
-    this.milestones = [{ dummy: true }];
-    this.loadingActivity = true;
-    this.loadingMilestone = true;
-    this.loadingProgress = true;
+    this.fastFeedbackService.pullFastFeedback().subscribe();
   }
 
   trackScrolling(event) {
@@ -141,20 +142,15 @@ export class ProjectComponent {
   }
 
   scrollTo(domId: string, index?: number): void {
-    if (index) {
+    // update active milestone status (mark whatever user select)
+    this.activeMilestone.fill(false);
+    if (index > -1) {
       this.activeMilestone[index] = true;
     }
 
-    // update active milestone status (mark whatever user select)
-    this.activeMilestone.fill(false);
-
     const el = this.document.getElementById(domId);
     if (el) {
-      el.scrollIntoView({
-        block: 'start',
-        behavior: 'smooth',
-        inline: 'nearest'
-      });
+      el.scrollIntoView({ block: 'start', behavior: 'smooth', inline: 'nearest' });
       el.classList.add('highlighted');
       setTimeout(() => el.classList.remove('highlighted'), 1000);
     }

@@ -32,7 +32,7 @@ interface VerifyParams {
 
 interface RegisterData {
   password: string;
-  user_id: string;
+  user_id: number;
   key: string;
 }
 
@@ -64,7 +64,6 @@ interface ExperienceConfig {
   providedIn: 'root'
 })
 export class AuthService {
-  private isLoggedIn = false;
 
   constructor(
     private request: RequestService,
@@ -115,11 +114,9 @@ export class AuthService {
 
   private _handleLoginResponse(response): Observable<any> {
     const norm = this._normaliseAuth(response);
-    if (response.data) {
-      this.storage.setUser({apikey: norm.apikey});
-      this.storage.set('programs', norm.programs);
-      this.storage.set('isLoggedIn', true);
-    }
+    this.storage.setUser({apikey: norm.apikey});
+    this.storage.set('programs', norm.programs);
+    this.storage.set('isLoggedIn', true);
     return response;
   }
 
@@ -150,7 +147,7 @@ export class AuthService {
   }
 
   isAuthenticated(): boolean {
-    return this.isLoggedIn || this.storage.get('isLoggedIn');
+    return this.storage.get('isLoggedIn');
   }
 
   logout(navigationParams = {}) {

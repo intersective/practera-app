@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
 import { HomeService, TodoItem } from './home.service';
 import { Router, NavigationEnd } from '@angular/router';
 import { FastFeedbackService } from '../fast-feedback/fast-feedback.service';
@@ -17,9 +17,9 @@ import { NewRelicService } from '@shared/new-relic/new-relic.service';
 @Component({
   selector: 'app-home',
   templateUrl: 'home.component.html',
-  styleUrls: ['home.component.scss'],
+  styleUrls: ['home.component.scss']
 })
-export class HomeComponent extends RouterEnter {
+export class HomeComponent extends RouterEnter implements OnDestroy {
   routeUrl = '/app/home';
   progress = 0;
   loadingProgress = true;
@@ -54,7 +54,6 @@ export class HomeComponent extends RouterEnter {
         this.todoItems.push(todoItem);
       }
     });
-
     this.utils.getEvent('team-message').subscribe(event => {
       this.homeService.getChatMessage().subscribe(chatMessage => {
         if (!this.utils.isEmpty(chatMessage)) {
@@ -62,7 +61,6 @@ export class HomeComponent extends RouterEnter {
         }
       });
     });
-
     this.utils.getEvent('event-reminder').subscribe(event => {
       this.homeService.getReminderEvent(event).subscribe(session => {
         if (!this.utils.isEmpty(session)) {
@@ -70,7 +68,6 @@ export class HomeComponent extends RouterEnter {
         }
       });
     });
-
     if (role !== 'mentor') {
       this.utils.getEvent('team-no-mentor-message').subscribe(event => {
         this.homeService.getChatMessage().subscribe(chatMessage => {
@@ -98,22 +95,19 @@ export class HomeComponent extends RouterEnter {
       this.homeService.getTodoItems().subscribe(todoItems => {
         this.todoItems = this.todoItems.concat(todoItems);
         this.loadingTodoItems = false;
-      }),
+      })
     );
-
-    const { teamId, name, email, id } = this.storage.getUser();
     // only get the number of chats if user is in team
-    if (teamId) {
+    if (this.storage.getUser().teamId) {
       this.subscriptions.push(
         this.homeService.getChatMessage().subscribe(chatMessage => {
           if (!this.utils.isEmpty(chatMessage)) {
             this._addChatTodoItem(chatMessage);
           }
           this.loadingTodoItems = false;
-        }),
+        })
       );
     }
-
     this.subscriptions.push(
       this.homeService.getProgress().subscribe(progress => {
         this.progress = progress;
@@ -125,12 +119,12 @@ export class HomeComponent extends RouterEnter {
             this.loadingActivity = false;
           }
         });
-      }),
+      })
     );
 
-    this.subscriptions.push(this.homeService.getProgramName().subscribe(programName => {
+    this.homeService.getProgramName().subscribe(programName => {
       this.programName = programName;
-    }));
+    });
 
     this.subscriptions.push(
       this.achievementService.getAchievements('desc').subscribe(achievements => {
@@ -158,30 +152,29 @@ export class HomeComponent extends RouterEnter {
           this.achievements[1] = earned[1];
           this.achievements[2] = unEarned[0];
         }
-      }),
+      })
     );
 
     this.subscriptions.push(
       this.eventsService.getEvents().subscribe(events => {
         this.haveEvents = !this.utils.isEmpty(events);
-      }),
+      })
     );
 
-    // intercom
     if (typeof environment.intercom !== 'undefined' && environment.intercom === true) {
       this.intercom.boot({
         app_id: environment.intercomAppId,
-        name, // Full name
-        email, // Email address
-        user_id: id, // current_user_id
+        name: this.storage.getUser().name, // Full name
+        email: this.storage.getUser().email, // Email address
+        user_id: this.storage.getUser().id, // current_user_id
         // Supports all optional configuration.
         widget: {
-          activator: '#intercom',
-        },
+          'activator': '#intercom'
+        }
       });
     }
 
-    this.subscriptions.push(this.fastFeedbackService.pullFastFeedback().subscribe());
+    this.fastFeedbackService.pullFastFeedback().subscribe();
   }
 
   goToActivity(id) {
@@ -191,23 +184,23 @@ export class HomeComponent extends RouterEnter {
 
   goToAssessment(activityId, contextId, assessmentId) {
     this.newRelic.actionText('goToAssessment');
-    return this.router.navigate([
+    this.router.navigate([
       'assessment',
       'assessment',
       activityId,
       contextId,
-      assessmentId,
+      assessmentId
     ]);
   }
 
   goToReview(contextId, assessmentId, submissionId) {
     this.newRelic.actionText('goToReview');
-    return this.router.navigate([
+    this.router.navigate([
       'assessment',
       'review',
       contextId,
       assessmentId,
-      submissionId,
+      submissionId
     ]);
   }
 
@@ -222,7 +215,9 @@ export class HomeComponent extends RouterEnter {
     return this.router.navigate(['chat', 'chat-room', 'team', todoItem.meta.team_id, todoItem.meta.participants_only]);
   }
 
-  unsubscribeAll(): void {
+  ngOnDestroy(): void {
+    // run ngOnDestroy from RouterEnter
+    super.ngOnDestroy();
     this.subscriptions.forEach(subscription => subscription.unsubscribe());
   }
 
