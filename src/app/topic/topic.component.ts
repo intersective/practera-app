@@ -27,7 +27,7 @@ export class TopicComponent extends RouterEnter {
     files: [],
     hasComments: false
   };
-  iframeHtml: string;
+  iframeHtml = '';
   btnToggleTopicIsDone = false;
   loadingMarkedDone = true;
   loadingTopic = true;
@@ -37,8 +37,6 @@ export class TopicComponent extends RouterEnter {
   isLoadingPreview = false;
   isRedirectingToNextMilestoneTask: boolean;
   askForMarkAsDone: boolean;
-  topicProgressSubscription: Subscription;
-  topicSubscription: Subscription;
   redirecting = false;
 
   constructor(
@@ -82,17 +80,12 @@ export class TopicComponent extends RouterEnter {
     setTimeout(() => this.askForMarkAsDone = true, 15000);
   }
 
-  unsubscribeAll() {
-    this.topicSubscription.unsubscribe();
-    this.topicProgressSubscription.unsubscribe();
-  }
-
   ionViewWillLeave() {
-    this.sharedService.stopPlayingViodes();
+    this.sharedService.stopPlayingVideos();
   }
 
   private _getTopic() {
-    this.topicSubscription = this.topicService.getTopic(this.id)
+    this.topicService.getTopic(this.id)
       .subscribe(
         topic => {
           this.topic = topic;
@@ -109,7 +102,7 @@ export class TopicComponent extends RouterEnter {
   }
 
   private _getTopicProgress() {
-    this.topicProgressSubscription = this.topicService.getTopicProgress(this.activityId, this.id)
+    this.topicService.getTopicProgress(this.activityId, this.id)
       .subscribe(
         result => {
           this.topicProgress = result;
@@ -160,7 +153,7 @@ export class TopicComponent extends RouterEnter {
         message: err.msg || JSON.stringify(err)
       });
       this.loadingTopic = false;
-      throw new Error(err);
+      this.newRelic.noticeError(`${JSON.stringify(err)}`);
     }
 
     this.redirecting = true;
@@ -194,7 +187,7 @@ export class TopicComponent extends RouterEnter {
           message: err.msg || JSON.stringify(err)
         });
         this.loadingTopic = false;
-        throw new Error(err);
+        this.newRelic.noticeError(`${JSON.stringify(err)}`);
       }
     }
   }
@@ -232,7 +225,7 @@ export class TopicComponent extends RouterEnter {
       if (this.loadingTopic) {
         this.loadingTopic = false;
       }
-      throw new Error(err);
+      this.newRelic.noticeError(`${JSON.stringify(err)}`);
     }
   }
 
@@ -315,9 +308,8 @@ export class TopicComponent extends RouterEnter {
             this.newRelic.addPageAction('Mark as read before back');
             return this.markAsDone().subscribe(
               () => {
-                return this.notificationService.customToast({
-                  message: 'You\'ve completed the topic!',
-                  icon: 'checkmark'
+                return this.notificationService.presentToast({
+                  message: 'You\'ve completed the topic!'
                 }).then(() => this.navigate([
                   'app',
                   'activity',
@@ -326,8 +318,7 @@ export class TopicComponent extends RouterEnter {
               },
               err => {
                 this.newRelic.noticeError(`${JSON.stringify(err)}`);
-              }
-            );
+              });
           }
         }
       ]

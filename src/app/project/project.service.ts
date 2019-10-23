@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Observable, Subject } from 'rxjs';
+import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { RequestService } from '@shared/request/request.service';
 import { UtilsService } from '@services/utils.service';
@@ -50,7 +50,7 @@ export interface Milestone {
 })
 
 export class ProjectService {
-  public activities$: Subject<Activity[]> = new Subject();
+  public activities: Array<Activity> = [];
 
   constructor(
     private request: RequestService,
@@ -100,9 +100,7 @@ export class ProjectService {
     })
     .pipe(map(response => {
       if (response.success && response.data) {
-        const activities = this._normaliseActivities(response.data);
-        this.activities$.next(activities);
-        return activities;
+        return this._normaliseActivities(response.data);
       }
     }));
   }
@@ -147,7 +145,7 @@ export class ProjectService {
     return activities;
   }
 
-  public getProgress(milestones) {
+  public getProgress() {
     return this.request.get(api.progress, {
       params: {
         model: 'Project',
@@ -157,7 +155,7 @@ export class ProjectService {
     })
     .pipe(map(response => {
       if (response.success && response.data) {
-        return this._normaliseProgress(response.data, milestones);
+        return this._normaliseProgress(response.data);
       }
     }));
   }
@@ -171,7 +169,7 @@ export class ProjectService {
     });
   }
 
-  private _normaliseProgress(data: any, milestones) {
+  private _normaliseProgress(data: any) {
     if (!this.utils.has(data, 'Project.Milestone')) {
       this.request.apiResponseFormatError('Progress format error');
       return {};

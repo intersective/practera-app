@@ -13,7 +13,10 @@
       <question [question]="question" [form]="fastFeedbackForm"></question>
     </ng-container>
 
-    <ion-button type="submit" [disabled]="fastFeedbackForm.invalid || loading" shape="round" expand="block">
+    <ion-button type="submit"
+      [disabled]="fastFeedbackForm.invalid || loading"
+      shape="round"
+      expand="block">
       <ng-container *ngIf="!loading">Submit</ng-container>
       <ng-container *ngIf="loading && !submissionCompleted">
         <ion-spinner name="dots"></ion-spinner>

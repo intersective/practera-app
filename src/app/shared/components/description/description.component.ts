@@ -29,7 +29,7 @@ export class DescriptionComponent implements AfterViewInit, OnChanges {
   heightExceeded = false;
   elementHeight: number;
   @Input() content;
-  @ViewChild('description', { static: false }) descriptionRef: ElementRef;
+  @ViewChild('description') descriptionRef: ElementRef;
 
   constructor(
     private storage: BrowserStorageService,
@@ -50,7 +50,8 @@ export class DescriptionComponent implements AfterViewInit, OnChanges {
         this.heightExceeded = this.elementHeight >= this.heightLimit;
         this.isTruncating = true;
       },
-      500);
+      500
+    );
   }
 }
 
