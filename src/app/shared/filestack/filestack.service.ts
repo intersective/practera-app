@@ -91,7 +91,7 @@ export class FilestackService {
       location,
       container,
       region,
-      path: path,
+      path,
       workflows
     };
   }
