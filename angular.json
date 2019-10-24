@@ -59,7 +59,7 @@
                 },
                 {
                   "replace": "src/assets/newrelic.js",
-                  "with": "src/assets/newrelic.js.prod"
+                  "with": "src/scripts/newrelic.js.prod"
                 }
               ],
               "optimization": true,
