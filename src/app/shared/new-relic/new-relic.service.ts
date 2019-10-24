@@ -1,10 +1,4 @@
-import { Injectable, Optional } from '@angular/core';
-import { HttpClient, HttpHeaders, HttpParams, HttpErrorResponse, HttpParameterCodec } from '@angular/common/http';
-import { Observable, of, Subject } from 'rxjs';
-import { catchError, map, debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
-import { RequestService } from '@shared/request/request.service';
-import { environment } from '@environments/environment';
-import { UtilsService } from '@services/utils.service';
+import { Injectable } from '@angular/core';
 import { BrowserStorageService } from '@services/storage.service';
 // import { noticeError } from 'newrelic';
 // import * as newrelic from './../../../../assets/newrelic';
@@ -28,20 +22,14 @@ export class NewRelicService {
   private interaction;
 
   constructor(
-    private http: HttpClient,
-    private request: RequestService,
-    private utils: UtilsService,
     private storage: BrowserStorageService
   ) {
     if (newrelic) {
       this.newrelic = newrelic.interaction();
       this.newrelic.onEnd(function() {
-        console.log(arguments);
         console.log('interaction ended');
       });
     }
-
-    console.log(this.interaction);
   }
 
   setPageViewName(name) {
@@ -58,8 +46,12 @@ export class NewRelicService {
 
   noticeError(error, customAttr?) {
     const { userHash, enrolment } = this.storage.getUser();
-    this.setCustomAttribute('enrolment ID', enrolment.id);
-    this.setCustomAttribute('user hash', userHash);
+    if (userHash) {
+      this.setAttribute('user hash', userHash);
+    }
+    if (enrolment && enrolment.id) {
+      this.setAttribute('enrolment ID', enrolment.id);
+    }
     return newrelic.noticeError(error);
   }
 

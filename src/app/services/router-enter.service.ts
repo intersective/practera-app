@@ -1,9 +1,8 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { Router, NavigationEnd, ActivatedRoute } from '@angular/router';
+import { Router, NavigationEnd } from '@angular/router';
 import { Subscription } from 'rxjs';
 
 export class RouterEnter implements OnInit, OnDestroy {
-  routerEvents: Subscription;
   subscription: Subscription;
   routeUrl: string;
 
@@ -12,13 +11,10 @@ export class RouterEnter implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
-    this.routerEvents = this.router.events.subscribe(res => {
-      if (res instanceof NavigationEnd) {
-        if (res.url.indexOf(this.routeUrl) === 0) {
-          this.onEnter();
-        } else {
-          this.unsubscribeAll();
-        }
+    this.subscription = this.router.events.subscribe(event => {
+      // invoke the onEnter() function of the component if the routing match
+      if (event instanceof NavigationEnd && event.url.includes(this.routeUrl)) {
+        this.onEnter();
       }
     });
   }
@@ -27,17 +23,9 @@ export class RouterEnter implements OnInit, OnDestroy {
     if (this.subscription) {
       this.subscription.unsubscribe();
     }
-
-    this.routerEvents.unsubscribe();
   }
 
   onEnter() {
-    console.log('onEnter placeholder');
+
   }
-
-  unsubscribeAll() {}
-
-  ionViewWillEnter() {}
-
-  ionViewWillLeave() {}
 }

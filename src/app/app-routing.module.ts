@@ -14,27 +14,27 @@ const routes: Routes = [
   },
   {
     path: 'switcher',
-    loadChildren: () => import('./switcher/switcher.module').then(m => m.SwitcherModule),
+    loadChildren: './switcher/switcher.module#SwitcherModule',
     canLoad: [AuthGuard]
   },
   {
     path: 'topic',
-    loadChildren: () => import('./topic/topic.module').then(m => m.TopicModule),
+    loadChildren: './topic/topic.module#TopicModule',
     canLoad: [AuthGuard]
   },
   {
     path: 'assessment',
-    loadChildren: () => import('./assessment/assessment.module').then(m => m.AssessmentModule),
+    loadChildren: './assessment/assessment.module#AssessmentModule',
     canLoad: [AuthGuard]
   },
   {
     path: 'achievements',
-    loadChildren: () => import('./achievements/achievements.module').then(m => m.AchievementsModule),
+    loadChildren: './achievements/achievements.module#AchievementsModule',
     canLoad: [AuthGuard]
   },
   {
     path: 'events',
-    loadChildren: () => import('./events/events.module').then(m => m.EventsModule),
+    loadChildren: './events/events.module#EventsModule',
     canLoad: [AuthGuard]
   },
   {
@@ -44,12 +44,12 @@ const routes: Routes = [
   },
   {
     path: 'chat',
-    loadChildren: () => import('./chat/chat.module').then(m => m.ChatModule),
+    loadChildren: './chat/chat.module#ChatModule',
     canLoad: [AuthGuard]
   },
   {
     path: '',
-    loadChildren: () => import('./tabs/tabs.module').then(m => m.TabsModule),
+    loadChildren: './tabs/tabs.module#TabsModule',
     canLoad: [AuthGuard],
     canActivate: [ProgramSelectedGuard],
   },

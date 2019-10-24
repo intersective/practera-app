@@ -47,11 +47,13 @@ export class AchievementsService {
     if (!order) {
       order = 'asc';
     }
-
-    return this.request.get(api.get.achievements, { params: { order }})
+    return this.request.get(api.get.achievements, {params: {
+        order: order
+      }})
       .pipe(map(response => {
         return this._normaliseAchievements(response.data);
-      }));
+      })
+    );
   }
 
   private _normaliseAchievements(data) {
