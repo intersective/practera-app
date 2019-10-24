@@ -455,11 +455,32 @@ export class AssessmentComponent extends RouterEnter {
   /**
    * handle submission and autosave
    * @param {boolean} saveInProgress set true for autosaving or it treat the action as final submision
+   * @param {boolean} goBack use to unlock team assessment when leave assessment by clicking back button
+   * @param {boolean} isManualSave use to detect manual progress save
    */
-  async submit(saveInProgress: boolean, goBack?: boolean): Promise<any> {
+  async submit(saveInProgress: boolean, goBack?: boolean, isManualSave?: boolean): Promise<any> {
+
+    /**
+     * checking is this a submission or progress save
+     * - if it's a submission
+     *    - assign false to saving variable to disable save
+     *    - changing submitting variable value to 'Submitting'
+     * - if it's a progress save
+     *    - if this is a manual save or there are no any auto save in progress
+     *      - change saving variable value to true to enable save
+     *      - make manual save button disable
+     *      - change savingMessage variable value to 'Saving...' to show save in progress
+     *    - if this not manual save or there is one save in progress
+     *      - do nothing
+     */
     if (saveInProgress) {
-      this.savingMessage = 'Saving...';
-      this.savingButtonDisabled = true;
+      if (isManualSave || !this.saving) {
+        this.savingMessage = 'Saving...';
+        this.saving = true;
+        this.savingButtonDisabled = true;
+      } else {
+        return;
+      }
     } else {
       this.submitting = 'Submitting...';
       this.saving = false;
@@ -473,11 +494,6 @@ export class AssessmentComponent extends RouterEnter {
       id: this.id,
       in_progress: false
     };
-
-    if (this.saving) {
-      return;
-    }
-    this.saving = true;
 
     // form submission answers
     if (this.doAssessment) {
@@ -583,7 +599,10 @@ export class AssessmentComponent extends RouterEnter {
         }
       }
     );
-
+    // if saveInProgress and isManualSave true renabling save without wait 10 second
+    if (saveInProgress && isManualSave) {
+      this.saving = false;
+    }
     // if timeout, reset this.saving flag to false, to enable saving again
     setTimeout(() => this.saving = false, SAVE_PROGRESS_TIMEOUT);
   }
