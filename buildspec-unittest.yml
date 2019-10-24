@@ -1,0 +1,18 @@
+version: 0.2
+phases:
+  install:
+    commands:
+      - npm install
+  pre_build:
+    commands:
+      - echo "Nothing to pre_build"
+  build:
+    commands:
+      - ./scripts/build.sh
+      - ng test --karmaConfig=src/karma.conf.aws.js --no-watch
+  post_build:
+    commands:
+      - export now=$(date -u +'%S-%M-%H-%d-%m-%Y')
+      - aws s3 sync coverage/ $REPORT_PATH/report_$now && aws s3 cp tests/result.html $REPORT_PATH/report_$now/
+      - aws sns publish --topic-arn $NOTIFIER_TOPIC --message "practea-app-v2 tests completed for $CODEBUILD_SOURCE_VERSION, the test report is $REPORT_URL/report_$now/result.html and coverage report is $REPORT_URL/report_$now/index.html"
+      - printenv

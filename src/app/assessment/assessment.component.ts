@@ -21,6 +21,8 @@ const SAVE_PROGRESS_TIMEOUT = 10000;
   styleUrls: ['assessment.component.scss']
 })
 export class AssessmentComponent extends RouterEnter {
+  getAssessment: Subscription;
+  getSubmission: Subscription;
   routeUrl = '/assessment/';
   // assessment id
   id: number;
@@ -39,7 +41,8 @@ export class AssessmentComponent extends RouterEnter {
     isForTeam: false,
     dueDate: '',
     isOverdue: false,
-    groups: []
+    groups: [],
+    pulseCheck: false,
   };
 
   submission: Submission = {
@@ -62,8 +65,8 @@ export class AssessmentComponent extends RouterEnter {
   doReview = false;
   feedbackReviewed = false;
   loadingFeedbackReviewed: boolean;
-  loadingAssessment: boolean;
-  loadingSubmission: boolean;
+  loadingAssessment = true;
+  loadingSubmission = true;
   questionsForm = new FormGroup({});
   submitting: boolean | string = false;
   savingButtonDisabled = true;
@@ -72,10 +75,7 @@ export class AssessmentComponent extends RouterEnter {
   fromPage = '';
   markingAsReview = 'Continue';
   isRedirectingToNextMilestoneTask: boolean;
-  getAssessment: Subscription;
-  getSubmission: Subscription;
-  getFeedbackReviewed: Subscription;
-  saveAnswers: Subscription;
+  // assessmentRelicWatcher;
 
   constructor (
     public router: Router,
@@ -107,7 +107,8 @@ export class AssessmentComponent extends RouterEnter {
       isForTeam: false,
       dueDate: '',
       isOverdue: false,
-      groups: []
+      groups: [],
+      pulseCheck: false,
     };
     this.submission = {
       id: 0,
@@ -140,21 +141,6 @@ export class AssessmentComponent extends RouterEnter {
     this.isRedirectingToNextMilestoneTask = false;
   }
 
-  unsubscribeAll() {
-    if (this.getAssessment) {
-      this.getAssessment.unsubscribe();
-    }
-    if (this.getSubmission) {
-      this.getSubmission.unsubscribe();
-    }
-    if (this.getFeedbackReviewed) {
-      this.getFeedbackReviewed.unsubscribe();
-    }
-    if (this.saveAnswers) {
-      this.saveAnswers.unsubscribe();
-    }
-  }
-
   onEnter() {
     this._initialise();
 
@@ -175,6 +161,10 @@ export class AssessmentComponent extends RouterEnter {
           this.assessment = assessment;
           this.newRelic.setPageViewName(`Assessment: ${this.assessment.name} ID: ${this.id}`);
           this.populateQuestionsForm();
+
+          this.loadingAssessment = false;
+          this._getSubmission();
+
           if (this.doAssessment && this.assessment.isForTeam && !this.storage.getUser().teamId) {
             return this.notificationService.alert({
               message: 'To do this assessment, you have to be in a team.',
@@ -194,8 +184,6 @@ export class AssessmentComponent extends RouterEnter {
             });
           }
 
-          this.loadingAssessment = false;
-          this._getSubmission();
         },
         (error) => {
           this.newRelic.noticeError(error);
@@ -204,7 +192,7 @@ export class AssessmentComponent extends RouterEnter {
   }
 
   ionViewWillLeave() {
-    this.sharedService.stopPlayingViodes();
+    this.sharedService.stopPlayingVideos();
   }
 
   // get the submission answers &/| review answers
@@ -240,20 +228,27 @@ export class AssessmentComponent extends RouterEnter {
           this.savingButtonDisabled = false;
         }
         // this page is for doing review if the submission status is 'pending review' and action is review
-        if (this.submission.status === 'pending review' && this.action === 'review') {
+        if ((
+          this.submission.status === 'pending approval' || this.submission.status === 'pending review'
+        ) && this.action === 'review') {
           this.doReview = true;
         }
         // call todo item to check if the feedback has been reviewed or not
         if (this.submission.status === 'published') {
-          this.getFeedbackReviewed = this.assessmentService.getFeedbackReviewed(this.submission.id)
-            .subscribe(feedbackReviewed => {
-              this.feedbackReviewed = feedbackReviewed;
-              this.loadingFeedbackReviewed = false;
-            });
+          this.assessmentService.getFeedbackReviewed(this.submission.id)
+            .subscribe(
+              (feedbackReviewed) => {
+                this.feedbackReviewed = feedbackReviewed;
+                this.loadingFeedbackReviewed = false;
+              },
+              (error: any) => {
+                this.newRelic.noticeError(`${JSON.stringify(error)}`);
+              }
+            );
         }
       },
       (error) => {
-        this.newRelic.noticeError(error);
+        this.newRelic.noticeError(`${JSON.stringify(error)}`);
       });
   }
 
@@ -291,6 +286,7 @@ export class AssessmentComponent extends RouterEnter {
 
   back(): Promise<boolean | void> {
     this.newRelic.actionText('Back to previous page.');
+
     if (this.action === 'assessment'
       && this.submission.status === 'published'
       && !this.feedbackReviewed) {
@@ -428,27 +424,28 @@ export class AssessmentComponent extends RouterEnter {
   private async pullFeedbackAndShowNext(): Promise<boolean> {
     this.submitting = 'Retrieving new task...';
 
-    // check if user has new fastFeedback request
-    try {
-      const modal = await this.fastFeedbackService.pullFastFeedback({ modalOnly: true }).toPromise();
+    // check if this assessment have plus check turn on, if it's on show plus check and toast message
+    if (this.assessment.pulseCheck) {
+      try {
+        const modal = await this.fastFeedbackService.pullFastFeedback({ modalOnly: true }).toPromise();
 
-      if (modal) {
-        await this.notificationService.customToast({
-          message: 'Submission successful!',
-          icon: 'checkmark',
-          duration: '2000',
+        if (modal && modal.present) {
+          const presentedModal = await modal.present();
+          this.notificationService.presentToast('Submission successful!', false, '', true);
+          await modal.onDidDismiss();
+        }
+      } catch (err) {
+        const toasted = await this.notificationService.alert({
+          header: 'Error retrieving pulse check data',
+          message: err.msg || JSON.stringify(err)
         });
-
-        const presentedModal = await modal.present();
-        const test = await modal.onDidDismiss();
+        this.submitting = false;
+        throw new Error(err);
       }
-    } catch (err) {
-      const toasted = await this.notificationService.alert({
-        header: 'Error retrieving pulse check data',
-        message: err.msg || JSON.stringify(err)
-      });
-      this.submitting = false;
-      throw new Error(err);
+    }
+
+    if (this.doReview) {
+      return this.navigationRoute();
     }
 
     const nextTask = await this.redirectToNextMilestoneTask();
@@ -543,7 +540,7 @@ export class AssessmentComponent extends RouterEnter {
     }
 
     // save the submission/feedback
-    this.saveAnswers = this.assessmentService.saveAnswers(
+    this.assessmentService.saveAnswers(
       assessment,
       answers,
       this.action,
@@ -623,10 +620,7 @@ export class AssessmentComponent extends RouterEnter {
       }
 
       // mark as read successful
-      await this.notificationService.customToast({
-        message: 'Assessment completed! Please proceed to the next learning task.',
-        icon: 'checkmark'
-      });
+      // @TODO need to show three dots and tick icon
 
       // step 1.2: after feedback marked as read, popup review rating screen
       try {

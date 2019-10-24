@@ -3,7 +3,6 @@ import { Observable, of } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { RequestService } from '@shared/request/request.service';
 import { UtilsService } from '@services/utils.service';
-import { TodoService } from '@services/todo.service';
 import { BrowserStorageService } from '@services/storage.service';
 
 /**
@@ -12,6 +11,7 @@ import { BrowserStorageService } from '@services/storage.service';
  * @type {Object}
  */
 const api = {
+  todoItem: 'api/v2/motivations/todo_item/list.json',
   unreadMessages: 'api/v2/message/chat/list_messages.json',
 };
 
@@ -20,19 +20,24 @@ const api = {
 })
 
 export class TabsService {
+
   constructor(
     private storage: BrowserStorageService,
     private request: RequestService,
     private utils: UtilsService,
-    private todoService: TodoService
   ) {}
 
   getNoOfTodoItems() {
-    return this.todoService.getItems().pipe(map(response => {
-      if (response.success && response.data) {
-        return this._normaliseNoOfTodoItems(response.data);
-      }
-    }));
+    return this.request.get(api.todoItem, {
+        params: {
+          project_id: this.storage.getUser().projectId
+        }
+      })
+      .pipe(map(response => {
+        if (response.success && response.data) {
+          return this._normaliseNoOfTodoItems(response.data);
+        }
+      }));
   }
 
   private _normaliseNoOfTodoItems(data) {
