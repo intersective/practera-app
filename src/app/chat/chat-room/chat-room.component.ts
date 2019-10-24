@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, NgZone } from '@angular/core';
+import { Component, OnInit, ViewChild, NgZone, AfterContentInit, AfterViewInit, ElementRef } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { IonContent, ModalController } from '@ionic/angular';
 import { BrowserStorageService } from '@services/storage.service';
@@ -11,24 +11,24 @@ import { ChatService, ChatRoomObject, Message } from '../chat.service';
 import { ChatPreviewComponent } from '../chat-preview/chat-preview.component';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
 
-export interface ChatRouteParams {
-  teamId: string;
-  teamMemberId: string;
-  participantsOnly ?: string;
-}
-
 @Component({
   selector: 'app-chat-room',
   templateUrl: './chat-room.component.html',
   styleUrls: ['./chat-room.component.scss']
 })
 export class ChatRoomComponent extends RouterEnter {
-  @ViewChild(IonContent, { static: false }) content: IonContent;
+  @ViewChild(IonContent) content: IonContent;
 
   routeUrl = '/chat-room/';
   message: string;
   messageList: Array<Message> = new Array;
-  selectedChat: ChatRoomObject;
+  selectedChat: ChatRoomObject = {
+    name: '',
+    is_team: false,
+    team_id: null,
+    team_member_id: null,
+    participants_only: false
+  };
   messagePageNumber = 0;
   messagePagesize = 20;
   loadingChatMessages = true;
@@ -45,12 +45,14 @@ export class ChatRoomComponent extends RouterEnter {
     public pusherService: PusherService,
     private filestackService: FilestackService,
     private modalController: ModalController,
-    private newrelic: NewRelicService,
-    private ngZone: NgZone
+    private ngZone: NgZone,
+    public element: ElementRef,
+    private newrelic: NewRelicService
   ) {
     super(router);
-    const { role } = this.storage.getUser();
     this.newrelic.setPageViewName(`Chat room: ${JSON.stringify(this.selectedChat)}`);
+
+    const role = this.storage.getUser().role;
 
     // message by team
     this.utils.getEvent('team-message').subscribe(event => {
@@ -100,15 +102,12 @@ export class ChatRoomComponent extends RouterEnter {
         this._showTyping(event);
       });
     }
-
-    this.route.params.subscribe((params: ChatRouteParams) => {
-      this._initialise();
-      this._validateRouteParams(params);
-      this._loadMessages();
-    });
   }
 
   onEnter() {
+    this._initialise();
+    this._validateRouteParams();
+    this._loadMessages();
     this._scrollToBottom();
   }
 
@@ -123,15 +122,14 @@ export class ChatRoomComponent extends RouterEnter {
     };
   }
 
-  private _validateRouteParams(params: ChatRouteParams): void {
-    const { teamId, teamMemberId, participantsOnly } = params;
-
-    this.selectedChat.team_id = +teamId;
-    if (teamMemberId) {
-      this.selectedChat.team_member_id = +teamMemberId;
+  private _validateRouteParams() {
+    const teamId = Number(this.route.snapshot.paramMap.get('teamId'));
+    this.selectedChat.team_id = teamId;
+    if (Number(this.route.snapshot.paramMap.get('teamMemberId'))) {
+      this.selectedChat.team_member_id = Number(this.route.snapshot.paramMap.get('teamMemberId'));
     } else {
       this.selectedChat.is_team = true;
-      this.selectedChat.participants_only = JSON.parse(participantsOnly);
+      this.selectedChat.participants_only = JSON.parse(this.route.snapshot.paramMap.get('participantsOnly'));
     }
   }
 
@@ -242,8 +240,9 @@ export class ChatRoomComponent extends RouterEnter {
     }
     this.loadingMesageSend = true;
     const message = this.message;
-    // remove typed message from text field.
+    // remove typed message from text area and shrink text area.
     this.message = '';
+    this.element.nativeElement.querySelector('textarea').style.height = 'auto';
     // createing prams need to send message
     let data: any;
     if (this.selectedChat.is_team) {

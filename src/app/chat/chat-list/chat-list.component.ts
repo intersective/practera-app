@@ -82,14 +82,14 @@ export class ChatListComponent extends RouterEnter {
     }
   }
 
-  navigateToChatRoom(chat): Promise<boolean> {
+  navigateToChatRoom(chat) {
     this.newrelic.addPageAction('selected chat room', {
       isTeam: chat.is_team,
       raw: chat,
     });
 
     if (chat.is_team) {
-      return this.router.navigate([
+      this.router.navigate([
         'chat',
         'chat-room',
         'team',
@@ -98,14 +98,14 @@ export class ChatListComponent extends RouterEnter {
       ]);
     } else {
       if (chat.last_message_created) {
-        return this.router.navigate([
+        this.router.navigate([
           'chat',
           'chat-room',
           chat.team_id,
           chat.team_member_id
         ]);
       } else {
-        return this.router.navigate([
+        this.router.navigate([
           'chat',
           'chat-room',
           chat.team_id,

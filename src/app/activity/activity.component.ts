@@ -18,7 +18,10 @@ import { NewRelicService } from '@shared/new-relic/new-relic.service';
   styleUrls: ['./activity.component.scss']
 })
 export class ActivityComponent extends RouterEnter {
-  routeUrl = '/app/activity'; // mandatory for RouterEnter parent class
+  getActivity: Subscription;
+  getEventPusher: Subscription;
+  getEvents: Subscription;
+  routeUrl = '/app/activity';
   id: number;
   activity: Activity = {
     id: 0,
@@ -27,13 +30,8 @@ export class ActivityComponent extends RouterEnter {
     tasks: []
   };
   loadingActivity = true;
-  events: Event[];
-  loadingEvents: boolean;
-  private feedbackPopup: Subscription;
-  private getEventPusher: Subscription;
-  private getActivity: Subscription;
-  // private getTasksProgresses: Subscription;
-  private getEvents: Subscription;
+  events: Array<Event>;
+  loadingEvents = true;
 
   constructor(
     public router: Router,
@@ -69,7 +67,6 @@ export class ActivityComponent extends RouterEnter {
   }
 
   private _initialise() {
-    this.events = []; // initiate events array
     this.activity = {
       id: 0,
       name: '',
@@ -85,17 +82,8 @@ export class ActivityComponent extends RouterEnter {
     this.id = +this.route.snapshot.paramMap.get('id');
     this._getActivity();
     this._getEvents();
-    this.feedbackPopup = this.fastFeedbackService.pullFastFeedback().subscribe();
-  }
 
-  unsubscribeAll() {
-    this.feedbackPopup.unsubscribe();
-    this.getEventPusher.unsubscribe();
-    this.getActivity.unsubscribe();
-    // this.getTasksProgresses.unsubscribe();
-    if (this.getEvents) {
-      this.getEvents.unsubscribe();
-    }
+    this.fastFeedbackService.pullFastFeedback().subscribe();
   }
 
   private _getActivity() {
@@ -204,16 +192,16 @@ export class ActivityComponent extends RouterEnter {
         } ,
         (data) => {
           if (data.data) {
-            return this.goto(task.type, task.id);
+            this.goto(task.type, task.id);
           }
         }
       );
       return ;
     }
-    return this.goto(task.type, task.id);
+    this.goto(task.type, task.id);
   }
 
-  goto(type, id): Promise<any> {
+  goto(type, id) {
     this.newRelic.actionText(`Selected Task (${type}): ID ${id}`);
 
     switch (type) {
@@ -227,21 +215,18 @@ export class ActivityComponent extends RouterEnter {
             isForTeam = task.isForTeam;
           }
         });
-
         if (isForTeam && !this.storage.getUser().teamId) {
-          return this.notificationService.popUp('shortMessage', {
-            message: 'To do this assessment, you have to be in a team.'
-          });
+          this.notificationService.popUp('shortMessage', {message: 'To do this assessment, you have to be in a team.'});
+          break;
         }
-        return this.navigate(['assessment', 'assessment', this.id , contextId, id]);
-
+        this.navigate(['assessment', 'assessment', this.id , contextId, id]);
+        break;
       case 'Topic':
-        return this.navigate(['topic', this.id, id]);
-
+        this.navigate(['topic', this.id, id]);
+        break;
       case 'Locked':
-        return this.notificationService.popUp('shortMessage', {
-          message: 'This part of the app is still locked. You can unlock the features by engaging with the app and completing all tasks.'
-        });
+        this.notificationService.popUp('shortMessage', {message: 'This part of the app is still locked. You can unlock the features by engaging with the app and completing all tasks.'});
+        break;
     }
   }
 
