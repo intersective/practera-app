@@ -26,7 +26,7 @@
   text-transform: capitalize;
 }
 
-ion-toolbar {
+ion-header ion-toolbar {
   min-height: 56px;
 }
 
@@ -51,4 +51,8 @@ ion-toolbar {
       color: var(--ion-color-medium-shade);
     }
   }
+}
+
+ion-footer ion-toolbar ion-button.continue {
+  margin: 0 16px;
 }
