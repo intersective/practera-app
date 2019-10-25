@@ -5,6 +5,20 @@
 </ion-header>
 
 <ion-content padding color="light">
+  <ion-grid>
+    <ion-row>
+      <ion-col>
+        <ng-container *ngFor="let program of programs; let i = index">
+          <ion-card class="practera-card" (click)="switch(i)">
+            <img style="max-height: 128px;" src="https://cdn.pixabay.com/photo/2018/10/30/16/06/water-lily-3784022__340.jpg" />
+            <ion-card-content style="max-height: 64px;">
+              {{ program.program.name }}
+            </ion-card-content>
+          </ion-card>
+        </ng-container>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
   <ion-card class="practera-card">
     <ion-list *ngFor="let program of programs; let i = index">
       <clickable-item (click)="switch(i)" color="light" [lines]="i == programs.length - 1 ? 'none' : ''" [backgroundColor]="program.program.config.theme_color">
