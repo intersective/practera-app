@@ -178,7 +178,8 @@
     <ion-button *ngIf="!loadingMarkedDone && !loadingFeedbackReviewed && submission.status == 'published' && !feedbackReviewed"
       (click)="markReviewFeedbackAsRead()"
       shape="round"
-      expand="full">
+      expand="full"
+      class="continue">
       {{markingAsReview}}
     </ion-button>
 
