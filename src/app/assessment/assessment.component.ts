@@ -61,8 +61,12 @@ export class AssessmentComponent extends RouterEnter {
     status: '',
     modified: ''
   };
+
+  // @TECHDEBT: we should be able to identify 2 following flags by `this.action` (review/assessment)
   doAssessment = false;
   doReview = false;
+
+  doReviewCompleted = false;
   feedbackReviewed = false;
   loadingFeedbackReviewed: boolean;
   loadingAssessment = true;
@@ -75,7 +79,9 @@ export class AssessmentComponent extends RouterEnter {
   fromPage = '';
   markingAsReview = 'Continue';
   isRedirectingToNextMilestoneTask: boolean;
-  // assessmentRelicWatcher;
+
+  // to avoid double invoke of onEnter()
+  enteredOnEnter = false;
 
   constructor (
     public router: Router,
@@ -91,6 +97,12 @@ export class AssessmentComponent extends RouterEnter {
     private newRelic: NewRelicService,
   ) {
     super(router);
+
+    this.route.params.subscribe(data => {
+      if (!this.enteredOnEnter) {
+        this.onEnter();
+      }
+    });
   }
 
   // force every navigation happen under radar of angular
@@ -132,6 +144,7 @@ export class AssessmentComponent extends RouterEnter {
     this.saving = false;
     this.doAssessment = false;
     this.doReview = false;
+    this.doReviewCompleted = false;
     this.feedbackReviewed = false;
     this.questionsForm = new FormGroup({});
     this.submitting = false;
@@ -142,6 +155,7 @@ export class AssessmentComponent extends RouterEnter {
   }
 
   onEnter() {
+    this.enteredOnEnter = true;
     this._initialise();
 
     this.action = this.route.snapshot.data.action;
@@ -197,11 +211,19 @@ export class AssessmentComponent extends RouterEnter {
 
   // get the submission answers &/| review answers
   private _getSubmission() {
-    this.getSubmission = this.assessmentService.getSubmission(this.id, this.contextId, this.action, this.submissionId)
-      .subscribe(
+    this.getSubmission = this.assessmentService.getSubmission(
+      this.id,
+      this.contextId,
+      this.action,
+      this.submissionId
+    ).subscribe(
       result => {
-        this.submission = result.submission;
+        const { submission, review } = result;
+        this.submission = submission;
+        this.review = review;
         this.loadingSubmission = false;
+        this.doReviewCompleted = false;
+
         // If team assessment locked set readonly view.
         // set doAssessment, doReview to false - because when assessment lock we can't do both.
         // set submission status to done - because we need to show readonly answers in question components.
@@ -210,9 +232,12 @@ export class AssessmentComponent extends RouterEnter {
           this.doReview = false;
           this.savingButtonDisabled = true;
           this.submission.status = 'done';
-          return ;
+          return;
         }
-        // this page is for doing assessment if submission is empty or submission is 'in progress'
+
+        // this page is for doing assessment if
+        // - submission is empty or
+        // - submission.status is 'in progress'
         if (this.utils.isEmpty(this.submission) || this.submission.status === 'in progress') {
           this.doAssessment = true;
           this.doReview = false;
@@ -220,19 +245,33 @@ export class AssessmentComponent extends RouterEnter {
             this.savingMessage = 'Last saved ' + this.utils.timeFormatter(this.submission.modified);
             this.savingButtonDisabled = false;
           }
-          return ;
+          return;
         }
-        this.review = result.review;
-        if (this.review.status === 'in progress') {
-          this.savingMessage = 'Last saved ' + this.utils.timeFormatter(this.review.modified);
+
+        if (review.status === 'in progress') {
+          this.savingMessage = 'Last saved ' + this.utils.timeFormatter(review.modified);
           this.savingButtonDisabled = false;
+        } else if (review.status === 'done') {
+          this.doReviewCompleted = true;
         }
-        // this page is for doing review if the submission status is 'pending review' and action is review
+
+        // this page is for doing review if
+        // - the submission status is 'pending review' and
+        // - this.action is review
+        //
+        // @TECHDEBT: why can't we just treat the entire assessment as "review" when
+        // `this.action` is equal to "review"?
         if ((
           this.submission.status === 'pending approval' || this.submission.status === 'pending review'
         ) && this.action === 'review') {
           this.doReview = true;
         }
+
+        // @TECHDEBT: inevitable 2nd check to make ensure review is done (even when submission.status is in "pending approval/review")
+        if (this.action === 'review' && review.status === 'done') {
+          this.doReviewCompleted = true;
+        }
+
         // call todo item to check if the feedback has been reviewed or not
         if (this.submission.status === 'published') {
           this.assessmentService.getFeedbackReviewed(this.submission.id)
