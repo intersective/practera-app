@@ -2,7 +2,7 @@
   <ion-toolbar color="light">
     <ion-icon name="arrow-back" (click)="back()" color="primary" slot="start" margin-start></ion-icon>
     <ion-title text-center>Assessment</ion-title>
-    <ng-container *ngIf="doAssessment || doReview">
+    <ng-container *ngIf="doAssessment || (action === 'review' && !doReviewCompleted)">
       <ion-title text-center class="subTitle">{{savingMessage}}</ion-title>
       <ion-button [disabled]="savingButtonDisabled" (click)="submit(true, false, true)" class="text-button" color="primary" slot="end" fill="clear" size="small">Save</ion-button>
     </ng-container>
@@ -66,7 +66,7 @@
               <p><i *ngIf="!doAssessment &&
                 (
                   (!question.reviewerOnly && !submission.answers[question.id]) ||
-                  (!doReview && question.reviewerOnly && !review.answers[question.id])
+                  (!(action === 'review' && !doReviewCompleted) && question.reviewerOnly && !review.answers[question.id])
                 )"
                 >No Answer Submitted</i></p>
 
@@ -74,7 +74,7 @@
                 *ngSwitchCase="'text'"
                 [question]="question"
                 [doAssessment]="doAssessment"
-                [doReview]="doReview"
+                [doReview]="(action === 'review' && !doReviewCompleted)"
                 [submission]="(submission.answers && submission.answers[question.id]) ? submission.answers[question.id] : {}"
                 [review]="(review.answers && review.answers[question.id]) ? review.answers[question.id] : {}"
                 [reviewStatus]="review.status"
@@ -88,7 +88,7 @@
                 *ngSwitchCase="'oneof'"
                 [question]="question"
                 [doAssessment]="doAssessment"
-                [doReview]="doReview"
+                [doReview]="(action === 'review' && !doReviewCompleted)"
                 [submission]="(submission.answers && submission.answers[question.id]) ? submission.answers[question.id] : {}"
                 [review]="(review.answers && review.answers[question.id]) ? review.answers[question.id] : {}"
                 [reviewStatus]="review.status"
@@ -102,7 +102,7 @@
                 *ngSwitchCase="'multiple'"
                 [question]="question"
                 [doAssessment]="doAssessment"
-                [doReview]="doReview"
+                [doReview]="(action === 'review' && !doReviewCompleted)"
                 [submission]="(submission.answers && submission.answers[question.id]) ? submission.answers[question.id] : {}"
                 [review]="(review.answers && review.answers[question.id]) ? review.answers[question.id] : {}"
                 [reviewStatus]="review.status"
@@ -116,7 +116,7 @@
                 *ngSwitchCase="'file'"
                 [question]="question"
                 [doAssessment]="doAssessment"
-                [doReview]="doReview"
+                [doReview]="(action === 'review' && !doReviewCompleted)"
                 [submission]="(submission.answers && submission.answers[question.id]) ? submission.answers[question.id] : {}"
                 [review]="(review.answers && review.answers[question.id]) ? review.answers[question.id] : {}"
                 [reviewStatus]="review.status"
@@ -130,7 +130,7 @@
                 *ngSwitchCase="'team member selector'"
                 [question]="question"
                 [doAssessment]="doAssessment"
-                [doReview]="doReview"
+                [doReview]="(action === 'review' && !doReviewCompleted)"
                 [submission]="(submission.answers && submission.answers[question.id]) ? submission.answers[question.id] : {}"
                 [review]="(review.answers && review.answers[question.id]) ? review.answers[question.id] : {}"
                 [reviewStatus]="review.status"
@@ -148,7 +148,7 @@
 
     <ion-button
       id="btn-submit"
-      *ngIf="doAssessment || doReview"
+      *ngIf="doAssessment || (action === 'review' && !doReviewCompleted)"
       [disabled]="submitting || questionsForm.invalid"
       (click)="submit(false)"
       shape="round"
