@@ -351,7 +351,7 @@ export class AssessmentComponent extends RouterEnter {
       });
     } else {
       // force saving progress
-      this.submit(true , true);
+      this.submit(true , true, true);
       return this.navigationRoute();
     }
   }
