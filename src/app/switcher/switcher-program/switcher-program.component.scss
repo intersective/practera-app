@@ -5,3 +5,22 @@ ion-header {
     padding-right: 20px;
   }
 }
+
+.experience-card {
+  ion-icon {
+    font-size: 24px !important;
+    color: var(--ion-color-medium);
+  }
+  ion-card-content {
+    font-size: 16px;	
+    letter-spacing: 0.15px;	
+    line-height: 24px;
+  }
+  clickable-item {
+    ion-item {
+      max-height: 64px; 
+      padding: 0; 
+      height: 64px;
+    }
+  }
+}

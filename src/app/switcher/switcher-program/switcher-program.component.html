@@ -7,15 +7,16 @@
 <ion-content padding color="light">
   <ion-grid>
     <ion-row>
-      <ion-col>
-        <ng-container *ngFor="let program of programs; let i = index">
-          <ion-card class="practera-card" (click)="switch(i)">
+      <ion-col size="12" size-sm="12" size-md="6" size-lg="4" size-xl="3" *ngFor="let program of programs; let i = index">
+          <ion-card class="practera-card experience-card" (click)="switch(i)">
             <img style="max-height: 128px;" src="https://cdn.pixabay.com/photo/2018/10/30/16/06/water-lily-3784022__340.jpg" />
-            <ion-card-content style="max-height: 64px;">
-              {{ program.program.name }}
+            <ion-card-content style="max-height: 64px; padding: 0; height: 64px;">
+              <clickable-item (click)="switch(i)" color="light" [lines]="'none'" [backgroundColor]="program.program.config.theme_color">
+                <ion-label>{{ program.program.name }}</ion-label>
+                <ion-icon name="arrow-forward" slot="end"></ion-icon>
+              </clickable-item>
             </ion-card-content>
           </ion-card>
-        </ng-container>
       </ion-col>
     </ion-row>
   </ion-grid>
