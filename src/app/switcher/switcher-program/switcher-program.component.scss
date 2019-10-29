@@ -5,8 +5,24 @@ ion-header {
     padding-right: 20px;
   }
 }
-
+ion-grid {
+  --ion-grid-padding: 8px;
+  --ion-grid-padding-lg: 8px;
+  --ion-grid-padding-md: 8px;
+  --ion-grid-padding-sm: 8px;
+  --ion-grid-padding-xl: 8px;
+  --ion-grid-padding-xs: 8px;
+}
+ion-col {
+  --ion-grid-column-padding: 0;
+  --ion-grid-column-padding-lg: 0;
+  --ion-grid-column-padding-md: 0;
+  --ion-grid-column-padding-sm: 0;
+  --ion-grid-column-padding-xl: 0;
+  --ion-grid-column-padding-xs: 0;
+}
 .experience-card {
+  margin: 12px 0;
   ion-icon {
     font-size: 24px !important;
     color: var(--ion-color-medium);
