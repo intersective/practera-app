@@ -98,6 +98,7 @@ export class AssessmentComponent extends RouterEnter {
   ) {
     super(router);
 
+    console.log('this.route.params.subscribe', this.route.params.subscribe);
     this.route.params.subscribe(data => {
       if (!this.enteredOnEnter) {
         this.onEnter();
@@ -108,6 +109,7 @@ export class AssessmentComponent extends RouterEnter {
   // force every navigation happen under radar of angular
   private navigate(direction, params?): Promise<boolean> {
     return this.ngZone.run(() => {
+      console.log(`testets: ${direction}`);
       return this.router.navigate(direction, params);
     });
   }
@@ -169,7 +171,7 @@ export class AssessmentComponent extends RouterEnter {
     this.submissionId = +this.route.snapshot.paramMap.get('submissionId');
 
     // get assessment structure and populate the question form
-    this.getAssessment = this.assessmentService.getAssessment(this.id, this.action)
+    this.assessmentService.getAssessment(this.id, this.action)
       .subscribe(
         assessment => {
           this.assessment = assessment;
@@ -200,6 +202,7 @@ export class AssessmentComponent extends RouterEnter {
 
         },
         (error) => {
+          console.log(error);
           this.newRelic.noticeError(error);
         }
       );
@@ -317,6 +320,7 @@ export class AssessmentComponent extends RouterEnter {
     if (this.fromPage && this.fromPage === 'events') {
       return this.navigate(['events']);
     }
+    console.log('this.activityId::', this.activityId);
     if (this.activityId) {
       return this.navigate(['app', 'activity', this.activityId ]);
     }
