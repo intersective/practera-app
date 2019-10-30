@@ -432,7 +432,6 @@ describe('AssessmentComponent', () => {
     component.activityId = 1;
     tick();
     const test = component.navigationRoute();
-    console.log('test::', test);
     tick();
     expect(component.activityId).toEqual(1);
     expect(routerSpy.navigate.calls.first().args[0]).toEqual(['app', 'activity', 1]);
