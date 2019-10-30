@@ -1,4 +1,4 @@
-import { CUSTOM_ELEMENTS_SCHEMA, EventEmitter, Injectable } from '@angular/core';
+import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { async, ComponentFixture, TestBed, fakeAsync, tick, inject } from '@angular/core/testing';
@@ -227,6 +227,9 @@ describe('AssessmentComponent', () => {
       ]
     }).compileComponents();
 
+  });
+
+  beforeEach(async () => {
     fixture = TestBed.createComponent(AssessmentComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
@@ -241,9 +244,7 @@ describe('AssessmentComponent', () => {
     storageSpy = TestBed.get(BrowserStorageService);
     shared = TestBed.get(SharedService);
     utils = TestBed.get(UtilsService);
-  });
 
-  beforeEach(() => {
     // initialise service calls
     assessmentSpy.getAssessment.and.returnValue(of(mockAssessment));
     assessmentSpy.getSubmission.and.returnValue(of({
