@@ -232,7 +232,6 @@ describe('AssessmentComponent', () => {
   beforeEach(async () => {
     fixture = TestBed.createComponent(AssessmentComponent);
     component = fixture.componentInstance;
-    fixture.detectChanges();
 
     page = new Page(fixture);
     assessmentSpy = TestBed.get(AssessmentService);
@@ -453,15 +452,11 @@ describe('AssessmentComponent', () => {
     expect(routerSpy.navigate.calls.count()).toBe(0);
   });
 
-  it('should save in progress and navigate to other page when going back', fakeAsync(() => {
+  it('should save in progress and navigate to other page when going back', () => {
     component.back();
-    tick();
-    console.log('component.savingMessage::', component.savingMessage);
     expect(component.savingMessage).toContain('Last saved');
-    console.log('routerSpy.navigate::', routerSpy.navigate);
-    expect(routerSpy.navigate).toHaveBeenCalled();
-    // expect(routerSpy.navigate).toHaveBeenCalled(['app', 'home']);
-  }));
+    expect(routerSpy.navigate.calls.first().args[0]).toEqual(['app', 'home']);
+  });
 
   it('should list unanswered required questions from compulsoryQuestionsAnswered()', () => {
     expect(component.compulsoryQuestionsAnswered).toBeDefined();
@@ -501,16 +496,14 @@ describe('AssessmentComponent', () => {
 
     beforeEach(() => {
       fixture.detectChanges();
-      fixture.whenStable().then(() => {
-        component.id = 1;
-        component.doAssessment = true;
-        component.contextId = 2;
-        component.assessment.isForTeam = true;
-        component.questionsForm.patchValue({
-          'q-123': 'abc',
-          'q-124': null,
-          'q-125': null
-        });
+      component.id = 1;
+      component.doAssessment = true;
+      component.contextId = 2;
+      component.assessment.isForTeam = true;
+      component.questionsForm.patchValue({
+        'q-123': 'abc',
+        'q-124': null,
+        'q-125': null
       });
     });
 
