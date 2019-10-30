@@ -83,11 +83,6 @@ export class AssessmentComponent extends RouterEnter {
   markingAsReview = 'Continue';
   isRedirectingToNextMilestoneTask: boolean;
 
-  // @name enteredOnEnter, purposes:
-  // - to avoid double invoke of onEnter()
-  // - make sure onEnter get invoked on clean directLinking
-  enteredOnEnter = false;
-
   constructor (
     public router: Router,
     private route: ActivatedRoute,
@@ -107,7 +102,6 @@ export class AssessmentComponent extends RouterEnter {
   // force every navigation happen under radar of angular
   private navigate(direction, params?): Promise<boolean> {
     return this.ngZone.run(() => {
-      console.log(`router.navigate: ${this.router.navigate}`);
       return this.router.navigate(direction, params);
     });
   }
@@ -154,7 +148,6 @@ export class AssessmentComponent extends RouterEnter {
   }
 
   onEnter() {
-    this.enteredOnEnter = true;
     this._initialise();
 
     this.action = this.route.snapshot.data.action;
@@ -199,7 +192,6 @@ export class AssessmentComponent extends RouterEnter {
 
         },
         (error) => {
-          console.log(error);
           this.newRelic.noticeError(error);
         }
       );
