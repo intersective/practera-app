@@ -305,7 +305,6 @@ export class AssessmentComponent extends RouterEnter {
     if (this.fromPage && this.fromPage === 'events') {
       return this.navigate(['events']);
     }
-    console.log('this.activityId::', this.activityId);
     if (this.activityId) {
       return this.navigate(['app', 'activity', this.activityId ]);
     }
