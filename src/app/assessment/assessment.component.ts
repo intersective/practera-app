@@ -83,7 +83,9 @@ export class AssessmentComponent extends RouterEnter {
   markingAsReview = 'Continue';
   isRedirectingToNextMilestoneTask: boolean;
 
-  // to avoid double invoke of onEnter()
+  // @name enteredOnEnter, purposes:
+  // - to avoid double invoke of onEnter()
+  // - make sure onEnter get invoked on clean directLinking
   enteredOnEnter = false;
 
   constructor (
