@@ -19,7 +19,7 @@ interface EventGroup {
 
 export class EventsComponent extends RouterEnter {
   routeUrl = '/events';
-  events: Array<EventGroup>;
+  events: Array<EventGroup> = [];
   eventsCategorised: {
     browse: Array<EventGroup>;
     booked: Array<EventGroup>;
