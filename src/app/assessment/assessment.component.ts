@@ -70,7 +70,6 @@ export class AssessmentComponent extends RouterEnter {
   doAssessment = false;
   doReview = false;
 
-  doReviewCompleted = false;
   feedbackReviewed = false;
   loadingFeedbackReviewed: boolean;
   loadingAssessment = true;
@@ -143,7 +142,6 @@ export class AssessmentComponent extends RouterEnter {
     this.saving = false;
     this.doAssessment = false;
     this.doReview = false;
-    this.doReviewCompleted = false;
     this.feedbackReviewed = false;
     this.questionsForm = new FormGroup({});
     this.submitting = false;
@@ -222,7 +220,6 @@ export class AssessmentComponent extends RouterEnter {
         this.submission = submission;
         this.review = review;
         this.loadingSubmission = false;
-        this.doReviewCompleted = false;
 
         // If team assessment locked set readonly view.
         // set doAssessment, doReview to false - because when assessment lock we can't do both.
@@ -251,8 +248,6 @@ export class AssessmentComponent extends RouterEnter {
         if (review.status === 'in progress') {
           this.savingMessage = 'Last saved ' + this.utils.timeFormatter(review.modified);
           this.savingButtonDisabled = false;
-        } else if (review.status === 'done') {
-          this.doReviewCompleted = true;
         }
 
         // this component become a page for doing review, if
@@ -263,11 +258,6 @@ export class AssessmentComponent extends RouterEnter {
         // `this.action` is equal to "review"?
         if (this.submission.status === 'pending review' && this.action === 'review') {
           this.doReview = true;
-        }
-
-        // @TECHDEBT: inevitable 2nd check to make ensure review is done (even when submission.status is in "pending approval/review")
-        if (this.action === 'review' && review.status === 'done') {
-          this.doReviewCompleted = true;
         }
 
         // call todo item to check if the feedback has been reviewed or not
