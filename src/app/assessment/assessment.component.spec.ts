@@ -18,23 +18,6 @@ import { of } from 'rxjs';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
 import { MockRouter } from '@testing/mocked.service';
 
-
-/**
- * A mock implementation of {@link NgZone}.
- */
-@Injectable()
-export class MockNgZone extends NgZone {
-  onStable: EventEmitter<any> = new EventEmitter(false);
-
-  constructor() { super({enableLongStackTrace: false}); }
-
-  run(fn: Function): any { return fn(); }
-
-  runOutsideAngular(fn: Function): any { return fn(); }
-
-  simulateZoneExit(): void { this.onStable.emit(null); }
-}
-
 class Page {
   get savingMessage() {
     return this.query<HTMLElement>('ion-title.subTitle');
@@ -117,7 +100,6 @@ describe('AssessmentComponent', () => {
   let storageSpy: jasmine.SpyObj<BrowserStorageService>;
   let shared: SharedService;
   let utils: UtilsService;
-  let ngZoneSpy: NgZone;
 
   const mockAssessment = {
     name: 'test',
@@ -237,17 +219,7 @@ describe('AssessmentComponent', () => {
         },
         {
           provide: Router,
-          useClass: MockRouter,
-        },
-        {
-          provide: NgZone,
-          /*useValue: jasmine.createSpyObj('NgZone', [
-            'run',
-          ]),*/
-          // useValue: {
-          //   run: jasmine.createSpy().and.callFake(function(cb) { return cb(); })
-          // }
-          useValue: MockNgZone,
+          useValue: MockRouter,
         },
       ]
     }).compileComponents();
@@ -463,6 +435,7 @@ describe('AssessmentComponent', () => {
     component.navigationRoute();
     tick();
     expect(component.activityId).toEqual(1);
+console.log('routerSpy.navigate.calls::', routerSpy.navigate.calls.first());
     expect(routerSpy.navigate.calls.first().args[0]).toEqual(['app', 'activity', 1]);
   }));
 
