@@ -62,7 +62,11 @@ export class AssessmentComponent extends RouterEnter {
     modified: ''
   };
 
-  // @TECHDEBT: we should be able to identify 2 following flags by `this.action` (review/assessment)
+  // @TECHDEBT: we should be able to identify 2 following flags by just using `this.action` (review/assessment)
+  // we'll need to manage assesmsent.status:
+  // - pending approval
+  // - pending review
+  // - pending approval + done (AssessmentReview)
   doAssessment = false;
   doReview = false;
 
@@ -231,7 +235,7 @@ export class AssessmentComponent extends RouterEnter {
           return;
         }
 
-        // this page is for doing assessment if
+        // this component become a page for doing assessment if
         // - submission is empty or
         // - submission.status is 'in progress'
         if (this.utils.isEmpty(this.submission) || this.submission.status === 'in progress') {
@@ -251,15 +255,13 @@ export class AssessmentComponent extends RouterEnter {
           this.doReviewCompleted = true;
         }
 
-        // this page is for doing review if
+        // this component become a page for doing review, if
         // - the submission status is 'pending review' and
         // - this.action is review
         //
         // @TECHDEBT: why can't we just treat the entire assessment as "review" when
         // `this.action` is equal to "review"?
-        if ((
-          this.submission.status === 'pending approval' || this.submission.status === 'pending review'
-        ) && this.action === 'review') {
+        if (this.submission.status === 'pending review' && this.action === 'review') {
           this.doReview = true;
         }
 
