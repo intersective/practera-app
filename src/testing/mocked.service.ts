@@ -30,7 +30,7 @@ export class MockRouter extends SpyObject {
       urlAfterRedirects: 'test/test',
     };
 
-    this.navigate = this.spy('navigate');
+    this.navigate = this.spy('navigate').and.returnValue(() => true);
     this.events = of(new NavigationEnd(
       TEST_EVENT.id,
       TEST_EVENT.url,
