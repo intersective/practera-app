@@ -97,19 +97,12 @@ export class AssessmentComponent extends RouterEnter {
     private newRelic: NewRelicService,
   ) {
     super(router);
-
-    console.log('this.route.params.subscribe', this.route.params.subscribe);
-    this.route.params.subscribe(data => {
-      if (!this.enteredOnEnter) {
-        this.onEnter();
-      }
-    });
   }
 
   // force every navigation happen under radar of angular
   private navigate(direction, params?): Promise<boolean> {
     return this.ngZone.run(() => {
-      console.log(`testets: ${direction}`);
+      console.log(`router.navigate: ${this.router.navigate}`);
       return this.router.navigate(direction, params);
     });
   }
