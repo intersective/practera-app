@@ -9,24 +9,17 @@
     <ion-row>
       <ion-col size="12" size-sm="12" size-md="6" size-lg="4" size-xl="3" *ngFor="let program of programs; let i = index">
           <ion-card class="practera-card experience-card" (click)="switch(i)">
-            <img style="max-height: 128px;" src="https://cdn.pixabay.com/photo/2018/10/30/16/06/water-lily-3784022__340.jpg" />
-            <ion-card-content style="max-height: 64px; padding: 0; height: 64px;">
-              <clickable-item (click)="switch(i)" color="light" [lines]="'none'" [backgroundColor]="program.program.config.theme_color">
+            <img [src]="program.project.lead_image" alt="{{ program.program.name }}"/>
+            <ion-card-content>
+              <clickable-item (click)="switch(i)" color="light" [lines]="'none'" [backgroundColor]="program.program.config.theme_color" [isSwitcherCard]="true">
                 <ion-label>{{ program.program.name }}</ion-label>
-                <ion-icon name="arrow-forward" slot="end"></ion-icon>
+                <ion-icon ios="ios-arrow-forward" md="ios-arrow-forward" name="arrow-forward" slot="end"></ion-icon>
               </clickable-item>
             </ion-card-content>
           </ion-card>
       </ion-col>
     </ion-row>
   </ion-grid>
-  <ion-card class="practera-card">
-    <ion-list *ngFor="let program of programs; let i = index">
-      <clickable-item (click)="switch(i)" color="light" [lines]="i == programs.length - 1 ? 'none' : ''" [backgroundColor]="program.program.config.theme_color">
-        <img src="/assets/thumbs/practera_icon.png" height="25" width="25" class="img-inline"> {{ program.program.name }}
-      </clickable-item>
-    </ion-list>
-  </ion-card>
   <ion-card class="practera-card">
     <clickable-item (click)="logout()" lines="none">
       <ion-icon name="log-out" margin-end></ion-icon> Logout
