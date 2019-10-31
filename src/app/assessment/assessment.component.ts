@@ -361,7 +361,6 @@ export class AssessmentComponent extends RouterEnter {
     // - fromPage = events (check AssessmentRoutingModule)
     if (
       this.action === 'review'
-      || this.doReview
       || (this.action === 'assessment' && this.fromPage === 'events')
     ) {
       return this.navigationRoute();
