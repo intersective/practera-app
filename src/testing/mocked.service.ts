@@ -4,6 +4,18 @@ import { BrowserStorageService } from '@services/storage.service';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
 import { RouterEnter } from '@services/router-enter.service';
 import { Router, NavigationEnd } from '@angular/router';
+import { NgZone } from '@angular/core';
+
+export class MockNgZone extends SpyObject {
+  run;
+
+  constructor() {
+    super(NgZone);
+    this.run = this.spy('run').and.returnValue(function(callback) {
+      return callback();
+    });
+  }
+}
 
 export class MockRouter extends SpyObject {
   navigate;
