@@ -11,7 +11,7 @@ const routes: Routes = [
     children: [
       {
         path: ':id',
-        component: ActivityComponent
+        component: ActivityComponent,
       }
     ]
   }
