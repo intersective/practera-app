@@ -5,25 +5,29 @@ export class AppPage {
     return browser.get('/');
   }
 
-  async getParagraphText() {
-    return await element(by.deepCss('app-root ion-content')).getText();
+  getParagraphText() {
+    return element(by.deepCss('app-root ion-content')).getText();
   }
 
-  async insertKeys(type, val) {
-    const el = element(by.deepCss(`form ion-input[type="${type}"] input`));
-    return await el.sendKeys(val);
+  containsClass(ref) {
+    return element(by.className(ref));
   }
 
-  async insertEmail() {
-    return await this.insertKeys('email', 'chaw@test.com');
+  insertKeys(type, val) {
+    const el = element(by.css(`input[name="${type}"]`));
+    return el.sendKeys(val);
   }
 
-  async insertPassword() {
-    return await this.insertKeys('password', '12341234');
+  insertEmail() {
+    return this.insertKeys('email', 'protractor@test.com');
   }
 
-  async getTitle() {
-    return await element(by.deepCss('ion-title')).getText();
+  insertPassword() {
+    return this.insertKeys('password', 'kW96dLJHrQDaaLM');
+  }
+
+  getTitle() {
+    return element(by.css('ion-title')).getText();
   }
 
   loginButton() {
