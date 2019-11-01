@@ -1,3 +1,4 @@
+import { browser, by, element } from 'protractor';
 import { AppPage } from './app.po';
 
 describe('Login Page', () => {
@@ -6,21 +7,38 @@ describe('Login Page', () => {
     page = new AppPage();
   });
 
-  it('login button should disabled', async () => {
-    await page.navigateTo();
-    expect(page.loginButton().getAttribute('disabled')).toBeTruthy();
+  it('should has logo', () => {
+    page.navigateTo();
+    browser.sleep(2000);
+    browser.ignoreSynchronization = true;
+    const test = page.containsClass('div-logo');
+    expect(test).toBeTruthy();
   });
 
-  it('should login', async () => {
-    await page.navigateTo();
-    expect(page.hasButton()).toEqual('LOGIN');
-    await page.insertEmail();
-    await page.insertPassword();
+  it('login button should disabled', () => {
+    page.navigateTo();
+    browser.sleep(2000);
+    browser.ignoreSynchronization = true;
     const loginButton = page.loginButton();
 
+    expect(loginButton.getText()).toEqual('LOGIN');
+    expect(loginButton.getAttribute('disabled')).toBeTruthy();
+  });
+
+  it('should login', () => {
+    page.navigateTo();
+    browser.sleep(2000);
+    browser.ignoreSynchronization = true;
+    page.insertEmail();
+    page.insertPassword();
+
+    browser.sleep(500);
+
+    const loginButton = page.loginButton();
     expect(loginButton.getAttribute('disabled')).toBeFalsy();
     loginButton.click();
 
-    expect(page.getTitle()).toEqual('Select an Experience');
+    browser.sleep(2000);
+    expect(page.getTitle()).toEqual('Select an experience');
   });
 });
