@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { AuthService } from '../../auth/auth.service';
 import { Injectable, Inject } from '@angular/core';
 import { SwitcherService, ProgramObj } from '../switcher.service';
 import { RouterEnter } from '@services/router-enter.service';
@@ -26,7 +25,6 @@ export class SwitcherProgramComponent implements OnInit {
   constructor(
     public loadingController: LoadingController,
     public router: Router,
-    private authService: AuthService,
     private pusherService: PusherService,
     private switcherService: SwitcherService,
     private newRelic: NewRelicService,
