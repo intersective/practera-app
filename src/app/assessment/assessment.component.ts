@@ -377,6 +377,16 @@ export class AssessmentComponent extends RouterEnter {
     continue?: boolean; // extra parameter to allow "options" appear as well-defined variable
     routeOnly?: boolean; // routeOnly: True, return route in string. False, return navigated route (promise<void>)
   } = {}): Promise<any> {
+    // skip "continue workflow" && instant redirect user, when:
+    // - review action (this.action == 'review')
+    // - fromPage = events (check AssessmentRoutingModule)
+    if (
+      this.action === 'review'
+      || (this.action === 'assessment' && this.fromPage === 'events')
+    ) {
+      return this.navigationRoute();
+    }
+
     if (options && options.continue) {
       this.isRedirectingToNextMilestoneTask = true;
     }
@@ -463,10 +473,6 @@ export class AssessmentComponent extends RouterEnter {
         this.submitting = false;
         throw new Error(err);
       }
-    }
-
-    if (this.doReview) {
-      return this.navigationRoute();
     }
 
     const nextTask = await this.redirectToNextMilestoneTask();
@@ -738,11 +744,12 @@ export class AssessmentComponent extends RouterEnter {
     };
 
     try {
+      const { projectId } = this.storage.getUser();
       const {
         currentActivity,
         nextTask
       } = await this.activityService.getTasksByActivityId(
-        this.storage.getUser().projectId,
+        projectId,
         this.activityId,
         options
       );
