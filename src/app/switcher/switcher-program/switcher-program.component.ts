@@ -77,8 +77,4 @@ export class SwitcherProgramComponent implements OnInit {
     );
   }
 
-  logout() {
-    return this.authService.logout();
-  }
-
 }
