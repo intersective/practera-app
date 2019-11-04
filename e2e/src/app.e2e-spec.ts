@@ -4,9 +4,16 @@ import { PROGRAM, USER } from '../config';
 
 describe('Login Page', () => {
   let page: AppPage;
+  let originalTimeout: number;
 
   beforeEach(() => {
     page = new AppPage();
+    originalTimeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
+    jasmine.DEFAULT_TIMEOUT_INTERVAL = 100000;
+  });
+
+  afterEach(function() {
+    jasmine.DEFAULT_TIMEOUT_INTERVAL = originalTimeout;
   });
 
   it('should display login if page is non-existence', () => {
@@ -119,7 +126,7 @@ describe('Login Page', () => {
       const [home, activities, chat, settings] = tabs;
 
       chat.click();
-      browser.sleep(5000);
+      browser.sleep(8000);
 
       const chatComponentHeaderBar = element(by.css('app-chat')).element(by.css('ion-header')).element(by.css('ion-toolbar'));
       expect(chatComponentHeaderBar.element(by.css('ion-title')).getText()).toEqual('Chat');
@@ -163,12 +170,54 @@ describe('Login Page', () => {
       switcher.click();
 
       browser.sleep(2000);
-      expect(page.getTitle()).toEqual('Select an experience');
+      expect(page.getTitle(element(by.css('app-switcher-program')))).toEqual('Select an experience');
     });
   });
 
   it('should able to browse between sub-pages inside project module', () => {
+    page.navigateTo('/app/project');
+    browser.sleep(10000);
 
+    element.all(by.css('app-activity-card')).then(activities => {
+      const [firstActivity] = activities;
+
+      firstActivity.click();
+      browser.sleep(5000);
+
+      const activityPage = element(by.css('app-activity'));
+      const activityPageHeader = activityPage.element(by.css('ion-header'));
+
+      activityPage.all(by.css('ion-item')).then(tasks => {
+        const [firstTask] = tasks;
+        firstTask.click();
+        browser.sleep(5000);
+
+        const assessmentPage = element(by.css('app-assessment'));
+        expect(assessmentPage.all(by.css('ion-title')).first().getText()).toEqual('Assessment');
+        assessmentPage.element(by.css('ion-toolbar')).element(by.css('ion-icon')).click(); // go back
+      });
+
+      browser.sleep(5000);
+      expect(activityPageHeader.element(by.css('ion-title')).getText()).toEqual('Activity');
+
+      activityPage.all(by.css('ion-item')).then(tasks => {
+        const [firstTask, secondTask] = tasks;
+        secondTask.click();
+        browser.sleep(5000);
+
+        const assessmentPage = element(by.css('app-assessment'));
+        expect(assessmentPage.all(by.css('ion-title')).first().getText()).toEqual('Assessment');
+        assessmentPage.element(by.css('ion-toolbar')).element(by.css('ion-icon')).click(); // go back
+      });
+
+      browser.sleep(5000);
+      expect(activityPageHeader.element(by.css('ion-title')).getText()).toEqual('Activity');
+
+      activityPageHeader.element(by.css('ion-toolbar')).element(by.css('ion-icon')).click();
+      browser.sleep(5000);
+
+      expect(element(by.css('app-project')).element(by.css('ion-title')).getText()).toEqual(PROGRAM.name);
+    });
   });
 
   it('should able to browse between sub-pages inside chat module', () => {
@@ -196,7 +245,7 @@ describe('Login Page', () => {
       browser.sleep(3000);
       const messages = element(by.css('app-chat-room')).element(by.css('ion-content')).element(by.css('ion-list')).all(by.css('ion-item'));
 
-      expect(messages.last().getText()).toEqual(dummyMessage);
+      expect(messages.last().getText()).toContain(dummyMessage);
 
     });
   });
@@ -208,8 +257,8 @@ describe('Login Page', () => {
     const logoutBtn = element(by.css('app-settings')).all(by.css('ion-card')).last();
     logoutBtn.click();
 
-    browser.sleep(2000);
-    expect(element(by.css('ion-button')).getText()).toEqual('LOGIN');
+    browser.sleep(3000);
+    expect(element(by.css('app-auth')).element(by.css('ion-button')).getText()).toEqual('LOGIN');
   });
 
   // future test-case, prerequisites: database-reset
