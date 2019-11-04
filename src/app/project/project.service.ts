@@ -77,9 +77,9 @@ export class ProjectService {
             progress: a.progress,
             isLocked: a.is_locked,
             leadImage: a.lead_image
-          }
+          };
         })
-      }
+      };
     });
   }
 
