@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, BehaviorSubject } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { RequestService } from '@shared/request/request.service';
 import { UtilsService } from '@services/utils.service';
@@ -14,7 +14,7 @@ const api = {
   milestone: 'api/milestone.json',
   activity: 'api/activities.json',
   progress: 'api/v2/motivations/progress/list.json',
-  overview: '/api/v2/plans/project/overview.json'
+  overview: 'api/v2/plans/project/overview.json'
 };
 
 // added for displaying empty placeholder (enhance UX)
@@ -55,14 +55,21 @@ export class ProjectService {
     private request: RequestService,
     private storage: BrowserStorageService,
     private utils: UtilsService
-  ) { }
+  ) {}
 
-  public getProject() {
+  // request for the latest data, and return the previously saved data at the same time
+  public getProject(): BehaviorSubject<any> {
+    this._getProjectData().subscribe(res => this.utils.projectSubject.next(res));
+    return this.utils.projectSubject;
+  }
+
+  // request for the latest project data
+  private _getProjectData() {
     return this.request.postGraphQL('"{milestones{id name progress description is_locked activities{id name progress is_locked lead_image }}}"')
       .pipe(map(res => this._normaliseProject(res.data)));
   }
 
-  private _normaliseProject(data): Array<Milestone> {
+  private _normaliseProject(data): Array<Milestone | DummyMilestone> {
     return data.milestones.map(m => {
       return {
         id: m.id,
