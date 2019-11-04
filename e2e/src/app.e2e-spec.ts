@@ -76,9 +76,9 @@ describe('Login Page', () => {
     expect(navBarTitle.getText()).toEqual(PROGRAM.name);
 
     element(by.css('ion-tab-bar')).all(by.css('ion-tab-button')).then(tabs => {
-      expect(tabs[0].getText()).toEqual('Home');
+      expect(tabs[0].getText()).toContain('Home');
       expect(tabs[1].getText()).toEqual('Activities');
-      expect(tabs[2].getText()).toEqual('Chat');
+      expect(tabs[2].getText()).toContain('Chat');
       expect(tabs[3].getText()).toEqual('Settings');
     });
   });
@@ -105,10 +105,10 @@ describe('Login Page', () => {
 
       expect(tabs.length).toBeGreaterThan(1);
 
-      expect(home.getText()).toEqual('Home');
-      expect(activities.getText()).toEqual('Activities');
-      expect(chat.getText()).toEqual('Chat');
-      expect(settings.getText()).toEqual('Settings');
+      expect(home.getText()).toContain('Home');
+      expect(activities.getText()).toContain('Activities');
+      expect(chat.getText()).toContain('Chat');
+      expect(settings.getText()).toContain('Settings');
 
       settings.click();
       browser.sleep(2000);
@@ -145,19 +145,36 @@ describe('Login Page', () => {
   });
 
   it('should display proper info in setting page', () => {
-    element(by.css('ion-content')).all(by.css('ion-card')).then(cards => {
+    element(by.css('app-settings')).element(by.css('ion-content')).all(by.css('ion-card')).then(cards => {
       const [ profile, contact, support, logout ] = cards;
       expect(cards.length).toBeGreaterThan(1);
       // expect(profile.element(by.css('ion-item')).all(by.css('div')).first().all(by.css('div')).first().$('slot ion-label').getText()).toEqual(USER.name);
     });
   });
 
-  it('should be able to reselect program from settings page', () => {});
-  it('should able to browse between sub-pages inside project module', () => {});
+  it('should be able to go select program screen from settings page', () => {
+    page.navigateTo('/app/settings');
+    browser.sleep(2000);
+
+    element(by.css('app-settings')).all(by.css('ion-card')).then(cards => {
+      const [profile, contactNum] = cards;
+
+      const switcher = contactNum.element(by.css('clickable-item')).element(by.css('ion-item'));
+      switcher.click();
+
+      browser.sleep(2000);
+      expect(page.getTitle()).toEqual('Select an experience');
+    });
+  });
+
+  it('should able to browse between sub-pages inside project module', () => {
+
+  });
 
   it('should able to browse between sub-pages inside chat module', () => {
     page.navigateTo('/app/chat');
     browser.sleep(5000);
+
     const chatList = element(by.css('ion-list'));
     chatList.all(by.css('ion-item')).then(chatroom => {
       const [firstRoom, secondRoom] = chatroom;
@@ -169,7 +186,7 @@ describe('Login Page', () => {
       const chatRoomUserName = element(by.css('app-chat-room')).element(by.css('ion-header')).element(by.css('ion-toolbar')).element(by.css('ion-title')).getText();
       expect(chatUserName).toEqual(chatRoomUserName);
 
-      const input = element(by.model('message'));
+      const input = element(by.css('textarea'));
       const dummyMessage = `Testing message from protractor: ${new Date()}`;
       input.sendKeys(dummyMessage);
 
@@ -177,17 +194,18 @@ describe('Login Page', () => {
       sendMessageButton.click();
 
       browser.sleep(3000);
-      element(by.css('ion-content')).element(by.css('ion-list')).all(by.css('ion-item')).then(messages => {
-        const messageNum = messages.length;
-        expect(messages[messageNum - 1].getText()).toEqual(dummyMessage);
-      });
+      const messages = element(by.css('app-chat-room')).element(by.css('ion-content')).element(by.css('ion-list')).all(by.css('ion-item'));
+
+      expect(messages.last().getText()).toEqual(dummyMessage);
+
     });
   });
 
   it('should be able to logout', () => {
     page.navigateTo('/app/settings');
     browser.sleep(2000);
-    const logoutBtn = element(by.css('ion-card')).last();
+
+    const logoutBtn = element(by.css('app-settings')).all(by.css('ion-card')).last();
     logoutBtn.click();
 
     browser.sleep(2000);
