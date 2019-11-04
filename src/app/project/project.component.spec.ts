@@ -1,4 +1,4 @@
-import { CUSTOM_ELEMENTS_SCHEMA, ElementRef,  } from '@angular/core';
+import { CUSTOM_ELEMENTS_SCHEMA, ElementRef, QueryList } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { ProjectComponent } from './project.component';
 import { ProjectService } from './project.service';
@@ -70,7 +70,7 @@ describe('ProjectComponent', () => {
         },
         {
           provide: ProjectService,
-          useValue: jasmine.createSpyObj('ProjectService', ['getMilestones', 'getActivities', 'getProgress'])
+          useValue: jasmine.createSpyObj('ProjectService', ['getProject'])
         },
         {
           provide: HomeService,
@@ -97,6 +97,25 @@ describe('ProjectComponent', () => {
     .compileComponents();
   }));
 
+  const milestones = Array.from({length: 5}, (x, i) => {
+    return {
+      id: i + 1,
+      name: 'm' + i,
+      description: 'des' + i,
+      isLocked: false,
+      progress: (i + 1) / 10,
+      Activity: Array.from({length: 3}, (y, j) => {
+        return {
+          id: i * 10 + j + 1,
+          name: 'activity name' + j,
+          isLocked: false,
+          leadImage: '',
+          progress: (i * 10 + j + 1) / 100,
+        };
+      })
+    };
+  });
+
   beforeEach(() => {
     fixture = TestBed.createComponent(ProjectComponent);
     component = fixture.componentInstance;
@@ -110,56 +129,7 @@ describe('ProjectComponent', () => {
     homeSpy.getProgramName.and.returnValue(of('program name'));
     fastfeedbackSpy.pullFastFeedback.and.returnValue(of({}));
     component.routeUrl = '/test';
-  });
-  let milestones, activities, progresses, expected;
-  beforeEach(() => {
-    milestones = Array.from({length: 5}, (x, i) => {
-      return {
-        id: i + 1,
-        name: 'm' + i,
-        description: 'des' + i,
-        isLocked: false,
-        progress: 0,
-        Activity: []
-      };
-    });
-    activities = Array.from({length: 5}, (x, i) => {
-      return Array.from({length: 3}, (y, j) => {
-        return {
-          id: i * 10 + j + 1,
-          name: 'activity name' + j,
-          milestoneId: i + 1,
-          isLocked: false,
-          leadImage: '',
-          progress: 0,
-        };
-      });
-    });
-    progresses = {
-      Milestone: Array.from({length: 5}, (x, i) => {
-        return {
-          id: i + 1,
-          progress: (i + 1) / 10,
-          Activity: Array.from({length: 3}, (y, j) => {
-            return {
-              id: i * 10 + j + 1,
-              progress: (i * 10 + j + 1) / 100
-            };
-          })
-        };
-      })
-    };
-    expected = milestones.map((milestone, i) => {
-      milestone.Activity = activities[i].map((activity, j) => {
-        activity.progress = (i * 10 + j + 1) / 100;
-        return activity;
-      });
-      milestone.progress = (i + 1) / 10;
-      return milestone;
-    });
-    projectSpy.getMilestones.and.returnValue(of(milestones));
-    projectSpy.getActivities.and.returnValue(of(utils.flatten(activities)));
-    projectSpy.getProgress.and.returnValue(of(progresses));
+    projectSpy.getProject.and.returnValue(of(milestones));
   });
 
   it('should create', () => {
@@ -169,45 +139,45 @@ describe('ProjectComponent', () => {
   it('when testing onEnter(), should get correct data', () => {
     fixture.detectChanges();
     expect(component.loadingMilestone).toBe(false);
-    expect(component.loadingActivity).toBe(false);
-    expect(component.loadingProgress).toBe(false);
-    expect(component.milestones).toEqual(expected);
+    expect(component.milestones).toEqual(milestones);
     expect(fastfeedbackSpy.pullFastFeedback.calls.count()).toBe(1);
   });
 
   describe('when testing trackScrolling()', () => {
-    it('should get correct activeMilestone array if active milestone is in middle', () => {
+    it('should get correct activeMilestoneIndex if active milestone is in middle', () => {
       fixture.detectChanges();
-      component.milestonePositions = [2, 5, 10, 20];
+      // This is development code, using to check the position of the milestones
+      // component.milestoneRefs.forEach(re => {
+      //   console.log(re.nativeElement.offsetTop);
+      // });
       component.trackScrolling({
         detail: {
-          currentY: 10
+          currentY: 1000
         },
         srcElement: {
-          offsetHeight: 10
+          offsetHeight: 1000
         }
       });
-      expect(component.activeMilestone).toEqual(Array(5).fill(false).map((x, i) => i === 2));
+      expect(component.activeMilestoneIndex).toEqual(2);
     });
-    it('should get correct activeMilestone array if active milestone is the last one', () => {
+    it('should get correct activeMilestoneIndex if active milestone is the last one', () => {
       fixture.detectChanges();
-      component.milestonePositions = [2, 5, 10, 12];
       component.trackScrolling({
         detail: {
-          currentY: 10
+          currentY: 3000
         },
         srcElement: {
-          offsetHeight: 10
+          offsetHeight: 3000
         }
       });
-      expect(component.activeMilestone).toEqual(Array(5).fill(false).map((x, i) => i === 3));
+      expect(component.activeMilestoneIndex).toEqual(4);
     });
   });
 
-  it('when testing scrollTo(), should get correct activeMilestone array', () => {
+  it('when testing scrollTo(), should get correct activeMilestoneIndex', () => {
     fixture.detectChanges();
     component.scrollTo('milestone-2', 1);
-    expect(component.activeMilestone).toEqual(Array(5).fill(false).map((x, i) => i === 1));
+    expect(component.activeMilestoneIndex).toEqual(1);
   });
 
   it('when testing goToActivity(), should navigate to the correct page', () => {
