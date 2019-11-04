@@ -151,4 +151,49 @@ describe('Login Page', () => {
       // expect(profile.element(by.css('ion-item')).all(by.css('div')).first().all(by.css('div')).first().$('slot ion-label').getText()).toEqual(USER.name);
     });
   });
+
+  it('should be able to reselect program from settings page', () => {});
+  it('should able to browse between sub-pages inside project module', () => {});
+
+  it('should able to browse between sub-pages inside chat module', () => {
+    page.navigateTo('/app/chat');
+    browser.sleep(5000);
+    const chatList = element(by.css('ion-list'));
+    chatList.all(by.css('ion-item')).then(chatroom => {
+      const [firstRoom, secondRoom] = chatroom;
+
+      const chatUserName = firstRoom.element(by.css('ion-label')).element(by.css('div')).element(by.css('h2')).getText();
+      firstRoom.click();
+      browser.sleep(5000);
+
+      const chatRoomUserName = element(by.css('app-chat-room')).element(by.css('ion-header')).element(by.css('ion-toolbar')).element(by.css('ion-title')).getText();
+      expect(chatUserName).toEqual(chatRoomUserName);
+
+      const input = element(by.model('message'));
+      const dummyMessage = `Testing message from protractor: ${new Date()}`;
+      input.sendKeys(dummyMessage);
+
+      const sendMessageButton = element(by.css('ion-button[type="submit"]'));
+      sendMessageButton.click();
+
+      browser.sleep(3000);
+      element(by.css('ion-content')).element(by.css('ion-list')).all(by.css('ion-item')).then(messages => {
+        const messageNum = messages.length;
+        expect(messages[messageNum - 1].getText()).toEqual(dummyMessage);
+      });
+    });
+  });
+
+  it('should be able to logout', () => {
+    page.navigateTo('/app/settings');
+    browser.sleep(2000);
+    const logoutBtn = element(by.css('ion-card')).last();
+    logoutBtn.click();
+
+    browser.sleep(2000);
+    expect(element(by.css('ion-button')).getText()).toEqual('LOGIN');
+  });
+
+  // future test-case, prerequisites: database-reset
+  // it('should be able to submit assessment', () => {});
 });
