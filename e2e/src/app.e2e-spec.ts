@@ -78,7 +78,8 @@ describe('Login Page', () => {
     element(by.css('ion-tab-bar')).all(by.css('ion-tab-button')).then(tabs => {
       expect(tabs[0].getText()).toEqual('Home');
       expect(tabs[1].getText()).toEqual('Activities');
-      expect(tabs[2].getText()).toEqual('Settings');
+      expect(tabs[2].getText()).toEqual('Chat');
+      expect(tabs[3].getText()).toEqual('Settings');
     });
   });
 
@@ -95,30 +96,59 @@ describe('Login Page', () => {
     });
   });
 
-  it('should be able to browse to different Home/Activities/Settings tab', () => {
+  it('should be able to browse to different Home/Activities/Chat/Settings tab', () => {
     page.navigateTo('/app/home');
-    browser.sleep(2000);
+    browser.sleep(8000);
 
     element(by.css('ion-tab-bar')).all(by.css('ion-tab-button')).then(tabs => {
-      const [home, activities, settings] = tabs;
+      const [home, activities, chat, settings] = tabs;
+
       expect(tabs.length).toBeGreaterThan(1);
 
       expect(home.getText()).toEqual('Home');
       expect(activities.getText()).toEqual('Activities');
+      expect(chat.getText()).toEqual('Chat');
       expect(settings.getText()).toEqual('Settings');
 
       settings.click();
       browser.sleep(2000);
-
       expect(element(by.css('ion-title')).getText()).toEqual('Settings');
+    });
 
-      element(by.css('ion-content')).all(by.css('ion-card')).then(cards => {
-        const [ profile, contact, support, logout ] = cards;
-        expect(cards.length).toBeGreaterThan(1);
+    element(by.css('ion-tab-bar')).all(by.css('ion-tab-button')).then(tabs => {
+      const [home, activities, chat, settings] = tabs;
 
-        // expect(profile.element(by.css('ion-item')).all(by.css('div')).first().all(by.css('div')).first().$('slot ion-label').getText()).toEqual(USER.name);
-      });
+      chat.click();
+      browser.sleep(5000);
 
+      const chatComponentHeaderBar = element(by.css('app-chat')).element(by.css('ion-header')).element(by.css('ion-toolbar'));
+      expect(chatComponentHeaderBar.element(by.css('ion-title')).getText()).toEqual('Chat');
+    });
+
+    element(by.css('ion-tab-bar')).all(by.css('ion-tab-button')).then(tabs => {
+      const [home, activities, chat, settings] = tabs;
+
+      activities.click();
+      browser.sleep(8000);
+      const projectComponentHeaderBar = element(by.css('app-project')).element(by.css('ion-header')).element(by.css('ion-toolbar'));
+      expect(projectComponentHeaderBar.element(by.css('ion-title')).getText()).toEqual(PROGRAM.name);
+    });
+
+    element(by.css('ion-tab-bar')).all(by.css('ion-tab-button')).then(tabs => {
+      const [home, activities, chat, settings] = tabs;
+
+      home.click();
+      browser.sleep(5000);
+      const homeComponentContent = element(by.css('app-home'));
+      expect(homeComponentContent.element(by.css('h1')).getText()).toEqual(PROGRAM.name);
+    });
+  });
+
+  it('should display proper info in setting page', () => {
+    element(by.css('ion-content')).all(by.css('ion-card')).then(cards => {
+      const [ profile, contact, support, logout ] = cards;
+      expect(cards.length).toBeGreaterThan(1);
+      // expect(profile.element(by.css('ion-item')).all(by.css('div')).first().all(by.css('div')).first().$('slot ion-label').getText()).toEqual(USER.name);
     });
   });
 });
