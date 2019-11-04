@@ -1,8 +1,9 @@
 import { browser, by, element } from 'protractor';
+import { USER } from '../config';
 
 export class AppPage {
-  navigateTo() {
-    return browser.get('/');
+  navigateTo(page?) {
+    return browser.get(page || '/');
   }
 
   getParagraphText() {
@@ -19,11 +20,11 @@ export class AppPage {
   }
 
   insertEmail() {
-    return this.insertKeys('email', 'protractor@test.com');
+    return this.insertKeys('email', USER.email);
   }
 
   insertPassword() {
-    return this.insertKeys('password', 'kW96dLJHrQDaaLM');
+    return this.insertKeys('password', USER.password);
   }
 
   getTitle() {
