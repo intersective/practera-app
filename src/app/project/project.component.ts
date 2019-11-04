@@ -44,7 +44,6 @@ export class ProjectComponent extends RouterEnter {
   }
 
   private _initialise() {
-    this.milestones = [{ dummy: true }]; // initial value
     this.loadingMilestone = true;
   }
 
@@ -63,8 +62,11 @@ export class ProjectComponent extends RouterEnter {
       }
     );
 
-    this.projectService.getProject().subscribe(
+    this.subscriptions.push(this.projectService.getProject().subscribe(
       milestones => {
+        if (!milestones) {
+          milestones = [{ dummy: true }];
+        }
         this.milestones = milestones;
         this.loadingMilestone = false;
         // scroll to highlighted activity if has one
@@ -75,7 +77,7 @@ export class ProjectComponent extends RouterEnter {
       error => {
         this.newRelic.noticeError(error);
       }
-    );
+    ));
 
     this.fastFeedbackService.pullFastFeedback().subscribe();
   }
