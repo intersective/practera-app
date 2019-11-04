@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { AuthService } from '../../auth/auth.service';
 import { Injectable, Inject } from '@angular/core';
 import { SwitcherService, ProgramObj } from '../switcher.service';
 import { RouterEnter } from '@services/router-enter.service';
@@ -9,6 +8,7 @@ import { environment } from '@environments/environment';
 import { PusherService } from '@shared/pusher/pusher.service';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
 import { NotificationService } from '@shared/notification/notification.service';
+import { UtilsService } from '@services/utils.service';
 
 @Injectable({
   providedIn: 'root'
@@ -26,11 +26,11 @@ export class SwitcherProgramComponent implements OnInit {
   constructor(
     public loadingController: LoadingController,
     public router: Router,
-    private authService: AuthService,
     private pusherService: PusherService,
     private switcherService: SwitcherService,
     private newRelic: NewRelicService,
-    private notificationService: NotificationService
+    private notificationService: NotificationService,
+    private utils: UtilsService
   ) {}
 
   ngOnInit() {
@@ -55,6 +55,8 @@ export class SwitcherProgramComponent implements OnInit {
         loading.dismiss().then(() => {
           // reset pusher (upon new timelineId)
           this.pusherService.initialise({ unsubscribe: true });
+          // clear the cached data
+          this.utils.clearCache();
           nrSwitchedProgramTracer();
           if ((typeof environment.goMobile !== 'undefined' && environment.goMobile === false)
             || /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
@@ -75,10 +77,6 @@ export class SwitcherProgramComponent implements OnInit {
         throw new Error(err);
       }
     );
-  }
-
-  logout() {
-    return this.authService.logout();
   }
 
 }
