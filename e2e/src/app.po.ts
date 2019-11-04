@@ -27,7 +27,10 @@ export class AppPage {
     return this.insertKeys('password', USER.password);
   }
 
-  getTitle() {
+  getTitle(parent?) {
+    if (parent) {
+      return parent.element(by.css('ion-title')).getText();
+    }
     return element(by.css('ion-title')).getText();
   }
 
