@@ -54,6 +54,5 @@ export class RouterEnter implements OnInit, OnDestroy {
   }
 
   onEnter() {
-
   }
 }
