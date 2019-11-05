@@ -13,6 +13,9 @@ import { BrowserStorageService } from '@services/storage.service';
 import { UtilsService } from '@services/utils.service';
 import { of } from 'rxjs';
 import { map, filter } from 'rxjs/operators';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { NewRelicService } from '@shared/new-relic/new-relic.service';
+import { MockRouter } from '@testing/mocked.service';
 
 @Directive({
   selector: '[routerLink], [routerLinkActive]'
@@ -69,10 +72,12 @@ describe('HomeComponent', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       // imports: [RouterTestingModule],
+      imports: [HttpClientTestingModule],
       declarations: [HomeComponent, DummyRouterLinkDirective],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
       providers: [
         UtilsService,
+        NewRelicService,
         {
           provide: Intercom
         },
@@ -107,11 +112,8 @@ describe('HomeComponent', () => {
         },
         {
           provide: Router,
-          useValue: {
-            navigate: jasmine.createSpy('navigate'),
-            events: of()
-          }
-        }
+          useClass: MockRouter
+        },
       ]
     }).compileComponents();
   }));
@@ -127,6 +129,7 @@ describe('HomeComponent', () => {
     storageServiceSpy = TestBed.get(BrowserStorageService);
     routerSpy = TestBed.get(Router);
     utils = TestBed.get(UtilsService);
+    component.routeUrl = '/test';
   });
 
   beforeEach(() => {
@@ -144,387 +147,399 @@ describe('HomeComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should display correct todo card with notification/team-message/event-reminder/team-no-mentor-message event(Pusher)', () => {
-    // mock getTodoItems()
-    homeServiceSpy.getTodoItems.and.returnValue(of([
-      {
+  describe('when testing constructor()', () => {
+    it('should display correct todo card with notification/team-message/event-reminder/team-no-mentor-message event(Pusher)', () => {
+      // mock getTodoItems()
+      homeServiceSpy.getTodoItems.and.returnValue(of([
+        {
+          type: 'feedback_available'
+        },
+        {
+          type: 'review_submission'
+        }
+      ]));
+      fixture.detectChanges();
+      // before any events
+      // 2 todo items
+      expect(component.todoItems.length).toEqual(2);
+      expect(page.todoCards.length).toBe(2);
+
+      // mock getTodoItemFromEvent()
+      homeServiceSpy.getTodoItemFromEvent.and.returnValue({
         type: 'feedback_available'
-      },
-      {
-        type: 'review_submission'
-      }
-    ]));
-    fixture.detectChanges();
-    // before any events
-    // 2 todo items
-    expect(component.todoItems.length).toEqual(2);
-    expect(page.todoCards.length).toBe(2);
+      });
+      // after 'notification' triggers
+      utils.broadcastEvent('notification', {});
+      fixture.detectChanges();
+      expect(homeServiceSpy.getTodoItemFromEvent.calls.count()).toBe(1, 'one service call');
+      expect(component.todoItems.length).toEqual(3);
+      expect(page.todoCards.length).toBe(3);
 
-    // mock getTodoItemFromEvent()
-    homeServiceSpy.getTodoItemFromEvent.and.returnValue({
-      type: 'feedback_available'
+      // mock getChatMessage()
+      homeServiceSpy.getChatMessage.and.returnValue(of({
+        type: 'chat'
+      }));
+      // after 'team-message' triggers
+      utils.broadcastEvent('team-message', {});
+      fixture.detectChanges();
+      // 2 calls, 1 from onEnter(), 1 from the event
+      expect(homeServiceSpy.getChatMessage.calls.count()).toBe(2, '2 service call');
+      // there're still 4 todo items instead of 5, because all chat messages are gathered to only 1 todo item
+      expect(component.todoItems.length).toEqual(4);
+      expect(page.todoCards.length).toBe(4);
+
+      // mock getReminderEvent()
+      homeServiceSpy.getReminderEvent.and.returnValue(of({
+        name: 'Test Event',
+      }));
+      // after 'event-reminder' triggers
+      utils.broadcastEvent('event-reminder', {});
+      fixture.detectChanges();
+      expect(homeServiceSpy.getReminderEvent.calls.count()).toBe(1, '1 service call');
+      expect(component.eventReminders.length).toEqual(1, '1 event reminder');
+      expect(page.todoCards.length).toBe(5);
+
+      // after 'team-no-mentor-message' triggers
+      utils.broadcastEvent('team-no-mentor-message', {});
+      fixture.detectChanges();
+      // 3 calls, 1 from onEnter(), 2 from the event
+      expect(homeServiceSpy.getChatMessage.calls.count()).toBe(3, 'one service call');
+      // todo items and todo card won't increase, because all chat messages are gathered to only 1 todo item
+      expect(component.todoItems.length).toEqual(4);
+      expect(page.todoCards.length).toBe(5);
     });
-    // after 'notification' triggers
-    utils.broadcastEvent('notification', {});
-    fixture.detectChanges();
-    expect(homeServiceSpy.getTodoItemFromEvent.calls.count()).toBe(1, 'one service call');
-    expect(component.todoItems.length).toEqual(3);
-    expect(page.todoCards.length).toBe(3);
-
-    // mock getChatMessage()
-    homeServiceSpy.getChatMessage.and.returnValue(of({
-      type: 'chat'
-    }));
-    // after 'team-message' triggers
-    utils.broadcastEvent('team-message', {});
-    fixture.detectChanges();
-    // 2 calls, 1 from onEnter(), 1 from the event
-    expect(homeServiceSpy.getChatMessage.calls.count()).toBe(2, '2 service call');
-    // there're still 4 todo items instead of 5, because all chat messages are gathered to only 1 todo item
-    expect(component.todoItems.length).toEqual(4);
-    expect(page.todoCards.length).toBe(4);
-
-    // mock getReminderEvent()
-    homeServiceSpy.getReminderEvent.and.returnValue(of({
-      name: 'Test Event',
-    }));
-    // after 'event-reminder' triggers
-    utils.broadcastEvent('event-reminder', {});
-    fixture.detectChanges();
-    expect(homeServiceSpy.getReminderEvent.calls.count()).toBe(1, '1 service call');
-    expect(component.eventReminders.length).toEqual(1, '1 event reminder');
-    expect(page.todoCards.length).toBe(5);
-
-    // after 'team-no-mentor-message' triggers
-    utils.broadcastEvent('team-no-mentor-message', {});
-    fixture.detectChanges();
-    // 3 calls, 1 from onEnter(), 2 from the event
-    expect(homeServiceSpy.getChatMessage.calls.count()).toBe(3, 'one service call');
-    // todo items and todo card won't increase, because all chat messages are gathered to only 1 todo item
-    expect(component.todoItems.length).toEqual(4);
-    expect(page.todoCards.length).toBe(5);
   });
 
-  it('should display no todo card if there\'s no todo item', () => {
-    fixture.detectChanges();
-    expect(component.todoItems).toEqual([], 'no todo item');
-    expect(component.loadingTodoItems).toBe(false, 'todo item loaded');
-    expect(homeServiceSpy.getTodoItems.calls.count()).toBe(1, 'one call');
-    expect(page.todoCards.length).toBe(1, 'one todo card');
-  });
-
-  it('should display 2 todo cards if there\'re 2 todo items', () => {
-    homeServiceSpy.getTodoItems.and.returnValue(of([
-      {
-        type: 'feedback_available',
-        name: 'Test todo item1',
-        description: 'Test description',
-        time: '2019-03-02'
-      },
-      {
-        type: 'review_submission',
-        name: 'Test todo item2',
-        description: 'Test description',
-        time: '2019-03-03'
-      }
-    ]));
-    fixture.detectChanges();
-    expect(component.todoItems.length).toEqual(2, '2 todo items');
-    expect(component.loadingTodoItems).toBe(false, 'todo item loaded');
-    expect(homeServiceSpy.getTodoItems.calls.count()).toBe(1, 'one call');
-    expect(page.todoCards.length).toBe(2, '2 todo cards');
-  });
-
-  it('should display 1 todo card if there\'s 1 chat message', () => {
-    homeServiceSpy.getChatMessage.and.returnValue(of(
-      {
-        type: 'chat',
-        name: 'Test chat 1',
-        description: 'Test description',
-        time: '2019-03-02'
-      }
-    ));
-    fixture.detectChanges();
-    expect(component.todoItems.length).toEqual(1, '1 todo item');
-    expect(component.loadingTodoItems).toBe(false, 'todo item loaded');
-    expect(homeServiceSpy.getChatMessage.calls.count()).toBe(1, 'one call');
-    expect(page.todoCards.length).toBe(1, '1 todo card');
-  });
-
-  it('should not call getChatMessage if no team id', () => {
-    storageServiceSpy.getUser.and.returnValue(
-      {
-        role: 'participant',
-        teamId: null,
-        name: 'Test User',
-        email: 'user@test.com',
-        id: 1
-      }
-    );
-    fixture.detectChanges();
-    expect(component.todoItems.length).toEqual(0, 'no todo item');
-    expect(homeServiceSpy.getChatMessage.calls.count()).toBe(0, 'no call');
-    expect(page.todoCards.length).toBe(1, '1 todo card');
-  });
-
-  it('should get the correct progress', () => {
-    fixture.detectChanges();
-    expect(component.progressConfig).toEqual({percent: 10});
-    expect(homeServiceSpy.getProgress.calls.count()).toBe(1, 'one call');
-    expect(component.loadingProgress).toBe(false, 'progress loaded');
-  });
-
-  it('should get the correct current activity', () => {
-    const mock = {
-      id: 1,
-      name: 'Test activity',
-      isLocked: false,
-      leadImage: ''
-    };
-    homeServiceSpy.getCurrentActivity.and.returnValue(of(mock));
-    fixture.detectChanges();
-    expect(component.activity).toEqual(mock, 'activity match');
-    expect(homeServiceSpy.getCurrentActivity.calls.count()).toBe(1, 'one call');
-    expect(component.loadingActivity).toBe(false, 'activity loaded');
-  });
-
-  it('should display the correct program name', () => {
-    fixture.detectChanges();
-    expect(component.programName).toEqual('Test Program');
-    expect(homeServiceSpy.getProgramName.calls.count()).toBe(1, 'one call');
-    expect(page.title.innerHTML).toEqual('Test Program', 'program name match');
-  });
-
-  it('should not display achievement if there\'s no achievement', () => {
-    fixture.detectChanges();
-    expect(component.achievements).toEqual([], 'no achievement');
-    expect(achieventsServiceSpy.getAchievements.calls.count()).toBe(1, 'one call');
-    expect(page.achievement).toBeFalsy();
-  });
-
-  it('should display all achievements if there\'re less than 4 achievements', () => {
-    const mock = [
-      {
-        id: 1,
-        name: 'Test achievement1',
-        description: '',
-        isEarned: false,
-      },
-      {
-        id: 2,
-        name: 'Test achievement1',
-        description: '',
-        isEarned: true,
-      }
-    ];
-    achieventsServiceSpy.getAchievements.and.returnValue(of(mock));
-    fixture.detectChanges();
-    expect(component.achievements).toEqual(mock, 'no achievement');
-    expect(achieventsServiceSpy.getAchievements.calls.count()).toBe(1, 'one call');
-    expect(page.achievement).toBeTruthy();
-    expect(page.achievement.textContent).toContain('My Badges');
-  });
-
-  it('should display first 3 achievements if all achievements are unearned', () => {
-    const expected = [
-      {
-        id: 1,
-        name: 'Test achievement1',
-        description: '',
-        isEarned: false,
-      },
-      {
-        id: 2,
-        name: 'Test achievement2',
-        description: '',
-        isEarned: false,
-      },
-      {
-        id: 3,
-        name: 'Test achievement3',
-        description: '',
-        isEarned: false,
-      }
-    ];
-    const mock = [
-      ...expected,
-      {
-        id: 4,
-        name: 'Test achievement4',
-        description: '',
-        isEarned: false,
-      }
-    ];
-    achieventsServiceSpy.getAchievements.and.returnValue(of(mock));
-    fixture.detectChanges();
-    expect(component.achievements).toEqual(expected, 'first 3 achievement');
-  });
-
-  it('should display first 3 achievements if all achievements are earned', () => {
-    const expected = [
-      {
-        id: 1,
-        name: 'Test achievement1',
-        description: '',
-        isEarned: true,
-      },
-      {
-        id: 2,
-        name: 'Test achievement2',
-        description: '',
-        isEarned: true,
-      },
-      {
-        id: 3,
-        name: 'Test achievement3',
-        description: '',
-        isEarned: true,
-      }
-    ];
-    const mock = [
-      ...expected,
-      {
-        id: 4,
-        name: 'Test achievement4',
-        description: '',
-        isEarned: true,
-      }
-    ];
-    achieventsServiceSpy.getAchievements.and.returnValue(of(mock));
-    fixture.detectChanges();
-    expect(component.achievements).toEqual(expected, 'first 3 achievement');
-  });
-
-  it('should display 1 earned and two unearned achievements if there\'s only one earned achievement', () => {
-    const expected = [
-      {
-        id: 1,
-        name: 'Test achievement1',
-        description: '',
-        isEarned: true,
-      },
-      {
-        id: 2,
-        name: 'Test achievement2',
-        description: '',
-        isEarned: false,
-      },
-      {
-        id: 3,
-        name: 'Test achievement3',
-        description: '',
-        isEarned: false,
-      }
-    ];
-    const mock = [
-      ...expected,
-      {
-        id: 4,
-        name: 'Test achievement4',
-        description: '',
-        isEarned: false,
-      }
-    ];
-    achieventsServiceSpy.getAchievements.and.returnValue(of(mock));
-    fixture.detectChanges();
-    expect(component.achievements).toEqual(expected);
-  });
-
-  it('should display 2 earned and 1 unearned achievements if there\'re more than one earned achievement', () => {
-    const expected = [
-      {
-        id: 1,
-        name: 'Test achievement1',
-        description: '',
-        isEarned: true,
-      },
-      {
-        id: 2,
-        name: 'Test achievement2',
-        description: '',
-        isEarned: true,
-      },
-      {
-        id: 3,
-        name: 'Test achievement3',
-        description: '',
-        isEarned: false,
-      }
-    ];
-    const mock = [
-      ...expected,
-      {
-        id: 4,
-        name: 'Test achievement4',
-        description: '',
-        isEarned: true,
-      },
-      {
-        id: 5,
-        name: 'Test achievement5',
-        description: '',
-        isEarned: false,
-      }
-    ];
-    achieventsServiceSpy.getAchievements.and.returnValue(of(mock));
-    fixture.detectChanges();
-    expect(component.achievements).toEqual(expected);
-  });
-
-  it('should not display event icon if there\'s no event', () => {
-    fixture.detectChanges();
-    expect(component.haveEvents).toBeFalsy();
-    expect(eventsServiceSpy.getEvents.calls.count()).toBe(1, 'one call');
-    expect(page.calendarIcon).toBeFalsy();
-  });
-
-  it('should display event icon if there\'s event', () => {
-    eventsServiceSpy.getEvents.and.returnValue(of([{id: 1}]));
-    fixture.detectChanges();
-    expect(component.haveEvents).toBe(true);
-    expect(eventsServiceSpy.getEvents.calls.count()).toBe(1, 'one call');
-    expect(page.calendarIcon).toBeTruthy();
-  });
-
-  it('should navigate to the correct activity page', () => {
-    component.goToActivity(1);
-    expect(routerSpy.navigate.calls.first().args[0]).toEqual(['app', 'activity', 1]);
-  });
-
-  it('should navigate to the correct assessment page', () => {
-    component.goToAssessment(1, 2, 3);
-    expect(routerSpy.navigate.calls.first().args[0]).toEqual(['assessment', 'assessment', 1, 2, 3]);
-  });
-
-  it('should navigate to the correct review page', () => {
-    component.goToReview(1, 2, 3);
-    expect(routerSpy.navigate.calls.first().args[0]).toEqual(['assessment', 'review', 1, 2, 3]);
-  });
-
-  it('should navigate to the correct chat page #1', () => {
-    component.goToChat({
-      meta: null
+  describe('when testing onEnter()', () => {
+    it('should display no todo card if there\'s no todo item', () => {
+      fixture.detectChanges();
+      expect(component.todoItems).toEqual([], 'no todo item');
+      expect(component.loadingTodoItems).toBe(false, 'todo item loaded');
+      expect(homeServiceSpy.getTodoItems.calls.count()).toBe(1, 'one call');
+      expect(page.todoCards.length).toBe(1, 'one todo card');
     });
-    expect(routerSpy.navigate.calls.first().args[0]).toEqual(['app', 'chat']);
+
+    it('should display 2 todo cards if there\'re 2 todo items', () => {
+      homeServiceSpy.getTodoItems.and.returnValue(of([
+        {
+          type: 'feedback_available',
+          name: 'Test todo item1',
+          description: 'Test description',
+          time: '2019-03-02'
+        },
+        {
+          type: 'review_submission',
+          name: 'Test todo item2',
+          description: 'Test description',
+          time: '2019-03-03'
+        }
+      ]));
+      fixture.detectChanges();
+      expect(component.todoItems.length).toEqual(2, '2 todo items');
+      expect(component.loadingTodoItems).toBe(false, 'todo item loaded');
+      expect(homeServiceSpy.getTodoItems.calls.count()).toBe(1, 'one call');
+      expect(page.todoCards.length).toBe(2, '2 todo cards');
+    });
+
+    it('should display 1 todo card if there\'s 1 chat message', () => {
+      homeServiceSpy.getChatMessage.and.returnValue(of(
+        {
+          type: 'chat',
+          name: 'Test chat 1',
+          description: 'Test description',
+          time: '2019-03-02'
+        }
+      ));
+      fixture.detectChanges();
+      expect(component.todoItems.length).toEqual(1, '1 todo item');
+      expect(component.loadingTodoItems).toBe(false, 'todo item loaded');
+      expect(homeServiceSpy.getChatMessage.calls.count()).toBe(1, 'one call');
+      expect(page.todoCards.length).toBe(1, '1 todo card');
+    });
+
+    it('should not call getChatMessage if no team id', () => {
+      storageServiceSpy.getUser.and.returnValue(
+        {
+          role: 'participant',
+          teamId: null,
+          name: 'Test User',
+          email: 'user@test.com',
+          id: 1
+        }
+      );
+      fixture.detectChanges();
+      expect(component.todoItems.length).toEqual(0, 'no todo item');
+      expect(homeServiceSpy.getChatMessage.calls.count()).toBe(0, 'no call');
+      expect(page.todoCards.length).toBe(1, '1 todo card');
+    });
+
+    it('should get the correct progress', () => {
+      fixture.detectChanges();
+      expect(component.progressConfig).toEqual({percent: 10});
+      expect(homeServiceSpy.getProgress.calls.count()).toBe(1, 'one call');
+      expect(component.loadingProgress).toBe(false, 'progress loaded');
+    });
+
+    it('should get the correct current activity', () => {
+      const mock = {
+        id: 1,
+        name: 'Test activity',
+        isLocked: false,
+        leadImage: ''
+      };
+      homeServiceSpy.getCurrentActivity.and.returnValue(of(mock));
+      fixture.detectChanges();
+      expect(component.activity).toEqual(mock, 'activity match');
+      expect(homeServiceSpy.getCurrentActivity.calls.count()).toBe(1, 'one call');
+      expect(component.loadingActivity).toBe(false, 'activity loaded');
+    });
+
+    it('should display the correct program name', () => {
+      fixture.detectChanges();
+      expect(component.programName).toEqual('Test Program');
+      expect(homeServiceSpy.getProgramName.calls.count()).toBe(1, 'one call');
+      expect(page.title.innerHTML).toEqual('Test Program', 'program name match');
+    });
+
+    it('should not display achievement if there\'s no achievement', () => {
+      fixture.detectChanges();
+      expect(component.achievements).toEqual([], 'no achievement');
+      expect(achieventsServiceSpy.getAchievements.calls.count()).toBe(1, 'one call');
+      expect(page.achievement).toBeFalsy();
+    });
+
+    it('should display all achievements if there\'re less than 4 achievements', () => {
+      const mock = [
+        {
+          id: 1,
+          name: 'Test achievement1',
+          description: '',
+          isEarned: false,
+        },
+        {
+          id: 2,
+          name: 'Test achievement1',
+          description: '',
+          isEarned: true,
+        }
+      ];
+      achieventsServiceSpy.getAchievements.and.returnValue(of(mock));
+      fixture.detectChanges();
+      expect(component.achievements).toEqual(mock, 'no achievement');
+      expect(achieventsServiceSpy.getAchievements.calls.count()).toBe(1, 'one call');
+      expect(page.achievement).toBeTruthy();
+      expect(page.achievement.textContent).toContain('My Badges');
+    });
+
+    it('should display first 3 achievements if all achievements are unearned', () => {
+      const expected = [
+        {
+          id: 1,
+          name: 'Test achievement1',
+          description: '',
+          isEarned: false,
+        },
+        {
+          id: 2,
+          name: 'Test achievement2',
+          description: '',
+          isEarned: false,
+        },
+        {
+          id: 3,
+          name: 'Test achievement3',
+          description: '',
+          isEarned: false,
+        }
+      ];
+      const mock = [
+        ...expected,
+        {
+          id: 4,
+          name: 'Test achievement4',
+          description: '',
+          isEarned: false,
+        }
+      ];
+      achieventsServiceSpy.getAchievements.and.returnValue(of(mock));
+      fixture.detectChanges();
+      expect(component.achievements).toEqual(expected, 'first 3 achievement');
+    });
+
+    it('should display first 3 achievements if all achievements are earned', () => {
+      const expected = [
+        {
+          id: 1,
+          name: 'Test achievement1',
+          description: '',
+          isEarned: true,
+        },
+        {
+          id: 2,
+          name: 'Test achievement2',
+          description: '',
+          isEarned: true,
+        },
+        {
+          id: 3,
+          name: 'Test achievement3',
+          description: '',
+          isEarned: true,
+        }
+      ];
+      const mock = [
+        ...expected,
+        {
+          id: 4,
+          name: 'Test achievement4',
+          description: '',
+          isEarned: true,
+        }
+      ];
+      achieventsServiceSpy.getAchievements.and.returnValue(of(mock));
+      fixture.detectChanges();
+      expect(component.achievements).toEqual(expected, 'first 3 achievement');
+    });
+
+    it('should display 1 earned and two unearned achievements if there\'s only one earned achievement', () => {
+      const expected = [
+        {
+          id: 1,
+          name: 'Test achievement1',
+          description: '',
+          isEarned: true,
+        },
+        {
+          id: 2,
+          name: 'Test achievement2',
+          description: '',
+          isEarned: false,
+        },
+        {
+          id: 3,
+          name: 'Test achievement3',
+          description: '',
+          isEarned: false,
+        }
+      ];
+      const mock = [
+        ...expected,
+        {
+          id: 4,
+          name: 'Test achievement4',
+          description: '',
+          isEarned: false,
+        }
+      ];
+      achieventsServiceSpy.getAchievements.and.returnValue(of(mock));
+      fixture.detectChanges();
+      expect(component.achievements).toEqual(expected);
+    });
+
+    it('should display 2 earned and 1 unearned achievements if there\'re more than one earned achievement', () => {
+      const expected = [
+        {
+          id: 1,
+          name: 'Test achievement1',
+          description: '',
+          isEarned: true,
+        },
+        {
+          id: 2,
+          name: 'Test achievement2',
+          description: '',
+          isEarned: true,
+        },
+        {
+          id: 3,
+          name: 'Test achievement3',
+          description: '',
+          isEarned: false,
+        }
+      ];
+      const mock = [
+        ...expected,
+        {
+          id: 4,
+          name: 'Test achievement4',
+          description: '',
+          isEarned: true,
+        },
+        {
+          id: 5,
+          name: 'Test achievement5',
+          description: '',
+          isEarned: false,
+        }
+      ];
+      achieventsServiceSpy.getAchievements.and.returnValue(of(mock));
+      fixture.detectChanges();
+      expect(component.achievements).toEqual(expected);
+    });
+
+    it('should not display event icon if there\'s no event', () => {
+      fixture.detectChanges();
+      expect(component.haveEvents).toBeFalsy();
+      expect(eventsServiceSpy.getEvents.calls.count()).toBe(1, 'one call');
+      expect(page.calendarIcon).toBeFalsy();
+    });
+
+    it('should display event icon if there\'s event', () => {
+      eventsServiceSpy.getEvents.and.returnValue(of([{id: 1}]));
+      fixture.detectChanges();
+      expect(component.haveEvents).toBe(true);
+      expect(eventsServiceSpy.getEvents.calls.count()).toBe(1, 'one call');
+      expect(page.calendarIcon).toBeTruthy();
+    });
   });
 
-  it('should navigate to the correct chat page #2', () => {
-    component.goToChat({
-      meta: {
-        team_id: 2,
-        team_member_id: 1
-      }
+  describe('when testing goToActivity()', () => {
+    it('should navigate to the correct activity page', () => {
+      component.goToActivity(1);
+      expect(routerSpy.navigate.calls.first().args[0]).toEqual(['app', 'activity', 1]);
     });
-    expect(routerSpy.navigate.calls.first().args[0]).toEqual(['chat', 'chat-room', 2, 1]);
   });
 
-  it('should navigate to the correct chat page #3', () => {
-    component.goToChat({
-      meta: {
-        team_id: 2,
-        participants_only: true
-      }
+  describe('when testing goToAssessment()', () => {
+    it('should navigate to the correct assessment page', () => {
+      component.goToAssessment(1, 2, 3);
+      expect(routerSpy.navigate.calls.first().args[0]).toEqual(['assessment', 'assessment', 1, 2, 3]);
     });
-    expect(routerSpy.navigate.calls.first().args[0]).toEqual(['chat', 'chat-room', 'team', 2, true]);
+  });
+
+  describe('when testing goToReview()', () => {
+    it('should navigate to the correct review page', () => {
+      component.goToReview(1, 2, 3);
+      expect(routerSpy.navigate.calls.first().args[0]).toEqual(['assessment', 'review', 1, 2, 3]);
+    });
+  });
+
+  describe('when testing goToChat()', () => {
+    it('should navigate to the correct chat page #1', () => {
+      component.goToChat({
+        meta: null
+      });
+      expect(routerSpy.navigate.calls.first().args[0]).toEqual(['app', 'chat']);
+    });
+
+    it('should navigate to the correct chat page #2', () => {
+      component.goToChat({
+        meta: {
+          team_id: 2,
+          team_member_id: 1
+        }
+      });
+      expect(routerSpy.navigate.calls.first().args[0]).toEqual(['chat', 'chat-room', 2, 1]);
+    });
+
+    it('should navigate to the correct chat page #3', () => {
+      component.goToChat({
+        meta: {
+          team_id: 2,
+          participants_only: true
+        }
+      });
+      expect(routerSpy.navigate.calls.first().args[0]).toEqual(['chat', 'chat-room', 'team', 2, true]);
+    });
   });
 });

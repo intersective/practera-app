@@ -19,7 +19,7 @@
     </ion-label>
   </div>
 
-  <ion-card class="practera-card">
+  <ion-card class="practera-card" id="tasks-card">
     <ion-list>
       <clickable-item
         *ngFor="let task of activity.tasks; let i = index"
@@ -86,13 +86,13 @@
   <ng-container *ngIf="loadingEvents">
     <ion-spinner></ion-spinner>
   </ng-container>
-  <ng-container *ngIf="events.length">
+  <ng-container *ngIf="events && events.length > 0">
     <div text-left margin-top>
       <ion-label color="medium" class="label">
         Events
       </ion-label>
     </div>
-    <ion-card class="practera-card">
+    <ion-card class="practera-card" id="events-card">
       <ion-list>
           <ng-container *ngFor="let event of events; let i = index">
               <clickable-item *ngIf="i < 2">

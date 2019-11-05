@@ -4,7 +4,7 @@
     <ion-title text-center>Assessment</ion-title>
     <ng-container *ngIf="doAssessment || doReview">
       <ion-title text-center class="subTitle">{{savingMessage}}</ion-title>
-      <ion-button [disabled]="savingButtonDisabled" (click)="submit(true)" class="text-button" color="primary" slot="end" fill="clear" size="small">Save</ion-button>
+      <ion-button [disabled]="savingButtonDisabled" (click)="submit(true, false, true)" class="text-button" color="primary" slot="end" fill="clear" size="small">Save</ion-button>
     </ng-container>
   </ion-toolbar>
 </ion-header>
@@ -46,16 +46,16 @@
     <ng-container *ngFor="let group of assessment.groups">
       <h3>{{ group.name }}</h3>
       <ion-text color="medium" text-left>
-        <app-description *ngIf="group.description" [content]="group.description"></app-description>
+        <app-description class="g-description" *ngIf="group.description" [content]="group.description"></app-description>
       </ion-text>
       <ng-container *ngFor="let question of group.questions">
         <ion-card class="practera-card" text-left>
           <ion-card-header class="q-title">
             {{ question.name }}
-            <ion-text color="danger" *ngIf="question.isRequired">*</ion-text>
+            <ion-text class="required-indicator" color="danger" *ngIf="question.isRequired">*</ion-text>
             <ion-icon *ngIf="question.info" color="primary" class="icon-info vertical-middle" (click)="showQuestionInfo(question.info)" name="information-circle-outline"></ion-icon>
             <ion-text color="medium" class="paragraph" text-left>
-              <app-description *ngIf="question.description" [content]="question.description"></app-description>
+              <app-description class="q-description" *ngIf="question.description" [content]="question.description"></app-description>
             </ion-text>
           </ion-card-header>
           <div text-center margin-bottom *ngIf="loadingSubmission; else submissionTpl">
@@ -147,13 +147,19 @@
     </ng-container>
 
     <ion-button
+      id="btn-submit"
       *ngIf="doAssessment || doReview"
       [disabled]="submitting || questionsForm.invalid"
       (click)="submit(false)"
       shape="round"
       expand="full">
       <ng-container *ngIf="!submitting">Submit</ng-container>
-      <ng-container *ngIf="submitting">{{ submitting }}</ng-container>
+      <ng-container *ngIf="submitting !== false && submitting === 'redirecting'">
+        <ion-icon src="/assets/checkmark.svg"></ion-icon>
+      </ng-container>
+      <ng-container *ngIf="submitting !== false && submitting !== 'redirecting'">
+        <ion-spinner style="width: 100%;" name="dots" class="vertical-middle text-center"></ion-spinner>
+      </ng-container>
     </ion-button>
 
   </form>
@@ -168,18 +174,32 @@
       name="dots"
       class="vertical-middle text-center"
     ></ion-spinner>
+
     <ion-button *ngIf="!loadingMarkedDone && !loadingFeedbackReviewed && submission.status == 'published' && !feedbackReviewed"
       (click)="markReviewFeedbackAsRead()"
       shape="round"
-      expand="full">
+      expand="full"
+      class="continue">
       {{markingAsReview}}
     </ion-button>
+
     <ion-button *ngIf="['pending review', 'done', 'pending approval'].indexOf(submission.status) !== -1 || (feedbackReviewed && submission.status == 'published')"
       (click)="redirectToNextMilestoneTask({ continue: true })"
       [disabled]="isRedirectingToNextMilestoneTask"
       shape="round"
-      expand="full">
-      {{ isRedirectingToNextMilestoneTask ? 'Loading next task...' : 'Continue' }}
+      expand="full"
+      class="continue">
+      <ng-container *ngIf="isRedirectingToNextMilestoneTask; else continue">
+        <ion-spinner style="width: 100%;" name="dots" class="vertical-middle text-center"></ion-spinner>
+      </ng-container>
+
+      <ng-template #continue>
+        <ion-item lines="none" no-paddings color="primary">
+          <ion-icon slot="start" src="/assets/checkmark.svg"></ion-icon>
+          <ion-text>Continue</ion-text>
+        </ion-item>
+      </ng-template>
     </ion-button>
+
   </ion-toolbar>
 </ion-footer>
