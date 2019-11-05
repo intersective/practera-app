@@ -1,8 +1,8 @@
 import { browser, by, element } from 'protractor';
 import { AppPage } from './app.po';
-import { PROGRAM, USER } from '../config';
+import { PROGRAM, MENTOR, USER, SINGLE_PROGRAM_USER } from '../config';
 
-describe('Login Page', () => {
+describe('AppV2', () => {
   let page: AppPage;
   let originalTimeout: number;
 
@@ -74,7 +74,7 @@ describe('Login Page', () => {
     const programs = element.all(by.css('ion-col'));
     expect(programs.count()).toBeGreaterThan(0);
     const firstProgram = programs.first();
-    expect(firstProgram.getText()).toEqual('Zaw Slider Test Program');
+    expect(firstProgram.getText()).toEqual(PROGRAM.name);
 
     firstProgram.click();
     browser.sleep(5000);
@@ -261,6 +261,61 @@ describe('Login Page', () => {
     expect(element(by.css('app-auth')).element(by.css('ion-button')).getText()).toEqual('LOGIN');
   });
 
+  it('should not display program switcher page for user enrolled to only one program', () => {
+    page.navigateTo('/');
+    browser.sleep(2000);
+
+    const loginPage = element(by.css('app-auth-login'));
+    page.insertKeys('email', SINGLE_PROGRAM_USER.email, loginPage);
+    page.insertKeys('password', SINGLE_PROGRAM_USER.password, loginPage);
+
+    const loginBtn = page.loginButton();
+    loginBtn.click();
+    browser.sleep(8000);
+
+    const homeComponent = element(by.css('app-home'));
+    const tabBar = element(by.css('ion-tab-bar'));
+    expect(homeComponent.isDisplayed()).toBeTruthy();
+    expect(tabBar.isDisplayed()).toBeTruthy();
+    const settingTab = tabBar.all(by.css('ion-tab-button')).last();
+    settingTab.click();
+    browser.sleep(2000);
+
+    const logoutBtn = page.logoutButton();
+    logoutBtn.click();
+    browser.sleep(2000);
+  });
+
+  it('should show mentor tab menu normally and has one assessment to review', () => {
+    page.navigateTo('/');
+    browser.sleep(2000);
+    browser.ignoreSynchronization = true;
+
+    page.loginAs(MENTOR);
+    browser.sleep(8000);
+
+    // select first program
+    const programs = element(by.css('app-switcher-program')).all(by.css('ion-col'));
+    expect(programs.count()).toBeGreaterThan(1);
+
+    const firstProgram = programs.first();
+    firstProgram.click();
+    browser.sleep(8000);
+
+    const tabBar = element(by.css('ion-tab-bar'));
+    expect(tabBar.isDisplayed()).toBeTruthy();
+
+    tabBar.all(by.css('ion-tab-button')).then(tabs => {
+      const [home, activities, review, chat, settings] = tabs;
+      expect(review.element(by.css('ion-label')).getText()).toContain('Review');
+      review.click();
+    });
+
+    browser.sleep(5000);
+    const reviewPage = element(by.css('app-reviews'));
+    expect(reviewPage.element(by.css('ion-header')).element(by.css('ion-title')).getText()).toEqual('Reviews');
+    expect(reviewPage.element(by.css('ion-content')).all(by.css('ion-card')).count()).toBeGreaterThan(0);
+  });
   // future test-case, prerequisites: database-reset
   // it('should be able to submit assessment', () => {});
 });
