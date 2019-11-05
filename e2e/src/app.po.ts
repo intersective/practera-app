@@ -14,8 +14,11 @@ export class AppPage {
     return element(by.className(ref));
   }
 
-  insertKeys(type, val) {
-    const el = element(by.css(`input[name="${type}"]`));
+  insertKeys(type, val, parent?) {
+    let el = element(by.css(`input[name="${type}"]`));
+    if (parent) {
+      el = parent.element(by.css(`input[name="${type}"]`));
+    }
     return el.sendKeys(val);
   }
 
@@ -35,7 +38,20 @@ export class AppPage {
   }
 
   loginButton() {
-    return element(by.deepCss('ion-button[type="submit"]'));
+    return element(by.css('app-auth-login')).element(by.deepCss('ion-button[type="submit"]'));
+  }
+
+  logoutButton() {
+    return element(by.css('app-settings')).element(by.css('ion-content')).all(by.css('ion-card')).last().element(by.css('ion-item'));
+  }
+
+  loginAs(user) {
+    const loginPage = element(by.css('app-auth-login'));
+    this.insertKeys('email', user.email, loginPage);
+    this.insertKeys('password', user.password, loginPage);
+
+    const loginBtn = this.loginButton();
+    loginBtn.click();
   }
 
   hasButton() {
