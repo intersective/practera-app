@@ -53,7 +53,8 @@
       [disabled]="redirecting"
       (click)="continue()"
       shape="round"
-      expand="full">
+      expand="full"
+      class="continue">
       <ng-container *ngIf="!btnToggleTopicIsDone; else showAsCompleted">CONTINUE</ng-container>
       <ng-template #showAsCompleted>
         <ng-container *ngIf="!redirecting; else showRedirecting">
