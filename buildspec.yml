@@ -5,7 +5,6 @@ phases:
     runtime-versions:
       nodejs: 10  
     commands:
-      - sudo apt-get update -y
       - sudo apt-get install -y apt-transport-https
       - sudo npm install forever -g
       - sudo npm install -g @angular/cli
