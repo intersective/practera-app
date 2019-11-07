@@ -5,7 +5,7 @@ phases:
     runtime-versions:
       nodejs: 10  
     commands:
-      - sudo npm install forever -g
+      - npm install forever -g
       - sudo npm install -g @angular/cli
       - sudo npm install
       - sudo node node_modules/node-sass/scripts/install.js
