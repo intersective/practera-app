@@ -2,10 +2,9 @@ version: 0.2
 
 phases:
   install:
+    runtime-versions:
+      nodejs: 10  
     commands:
-      - curl -sL https://deb.nodesource.com/setup_10.x | sudo -E bash -
-      - sudo apt-get install -y nodejs
-      - echo Installing source NPM dependencies...
       - sudo apt-get update -y
       - sudo apt-get install -y apt-transport-https
       - sudo npm install forever -g
