@@ -6,15 +6,15 @@ phases:
       nodejs: 10  
     commands:
       - npm install forever -g
-      - sudo npm install -g @angular/cli
-      - sudo npm install
-      - sudo node node_modules/node-sass/scripts/install.js
-      - sudo npm rebuild node-sass
+      - npm install -g @angular/cli
+      - npm install
+      - node node_modules/node-sass/scripts/install.js
+      - npm rebuild node-sass
   build:
     commands:
       - echo Build started on `date`
-      - sudo ng build --configuration=$BUILD_CONFIG
-      - sudo npm run generate-version
+      - ng build --configuration=$BUILD_CONFIG
+      - npm run generate-version
   post_build:
     commands:
       - aws s3 sync www/ s3://$S3_BUCKET/ --delete
