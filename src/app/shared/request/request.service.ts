@@ -6,6 +6,13 @@ import { catchError, tap, concatMap } from 'rxjs/operators';
 import { UtilsService } from '@services/utils.service';
 import { BrowserStorageService } from '@services/storage.service';
 
+@Injectable({ providedIn: 'root' })
+export class DevModeService {
+  isDevMode() {
+    return isDevMode();
+  }
+}
+
 export class RequestConfig {
   appkey = '';
   prefixUrl = '';
@@ -42,7 +49,8 @@ export class RequestService {
     private utils: UtilsService,
     private storage: BrowserStorageService,
     private router: Router,
-    @Optional() config: RequestConfig
+    @Optional() config: RequestConfig,
+    private devMode: DevModeService
   ) {
     if (config) {
       this.appkey = config.appkey;
@@ -94,11 +102,9 @@ export class RequestService {
    */
   get(endPoint: string = '', httpOptions?: any): Observable<any> {
     if (!httpOptions) {
-      httpOptions = {
-        headers: '',
-        params: ''
-      };
+      httpOptions = {};
     }
+
     if (!this.utils.has(httpOptions, 'headers')) {
       httpOptions.headers = '';
     }
@@ -121,11 +127,9 @@ export class RequestService {
 
   post(endPoint: string = '', data, httpOptions?: any): Observable<any> {
     if (!httpOptions) {
-      httpOptions = {
-        headers: '',
-        params: ''
-      };
+      httpOptions = {};
     }
+
     if (!this.utils.has(httpOptions, 'headers')) {
       httpOptions.headers = '';
     }
@@ -148,10 +152,7 @@ export class RequestService {
 
   delete(endPoint: string = '', httpOptions?: any): Observable<any> {
     if (!httpOptions) {
-      httpOptions = {
-        headers: '',
-        params: ''
-      };
+      httpOptions = {};
     }
     if (!this.utils.has(httpOptions, 'headers')) {
       httpOptions.headers = '';
@@ -194,12 +195,16 @@ export class RequestService {
   }
 
   private handleError(error: HttpErrorResponse) {
-    if (isDevMode()) {
+    if (this.devMode.isDevMode()) {
       console.error(error); // log to console instead
     }
 
     // log the user out if jwt expired
-    if (this.utils.has(error, 'error.message') && ['Request must contain an apikey', 'Expired apikey', 'Invalid apikey'].includes(error.error.message) && !this.loggedOut) {
+    if (this.utils.has(error, 'error.message') && [
+      'Request must contain an apikey',
+      'Expired apikey',
+      'Invalid apikey'
+    ].includes(error.error.message) && !this.loggedOut) {
       // in case lots of api returns the same apikey invalid at the same time
       this.loggedOut = true;
       setTimeout(
@@ -227,10 +232,5 @@ export class RequestService {
     if (this.utils.has(response, 'apikey')) {
       this.storage.setUser({apikey: response.apikey});
     }
-  }
-
-  // further enhance this for error reporting (piwik)
-  private log(message: string) {
-    console.log(message);
   }
 }
