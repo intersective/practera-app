@@ -4,6 +4,7 @@ import { Subscription } from 'rxjs';
 
 export class RouterEnter implements OnInit, OnDestroy {
   subscription: Subscription;
+  subscriptions: Subscription[] = [];
   routeUrl: string;
 
   constructor (
@@ -14,6 +15,11 @@ export class RouterEnter implements OnInit, OnDestroy {
     this.subscription = this.router.events.subscribe(event => {
       // invoke the onEnter() function of the component if the routing match
       if (event instanceof NavigationEnd && event.url.includes(this.routeUrl)) {
+        // always unsubscribe previously subscribed Observables to prevent duplication subscription
+        if (this.subscriptions) {
+          this.subscriptions.forEach(sub => sub.unsubscribe());
+          this.subscriptions = [];
+        }
         this.onEnter();
       }
     });
@@ -22,6 +28,9 @@ export class RouterEnter implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     if (this.subscription) {
       this.subscription.unsubscribe();
+    }
+    if (this.subscriptions) {
+      this.subscriptions.forEach(sub => sub.unsubscribe());
     }
   }
 

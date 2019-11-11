@@ -10,7 +10,7 @@
       <ion-col class="bubbles-top"
         (click)="scrollTo('milestone-' + milestone.id, i)"
         *ngFor="let milestone of milestones; let i = index">
-        <div [class.active]="activeMilestone[i]">
+        <div [class.active]="activeMilestoneIndex === i">
           <ng-container *ngIf="!milestone.isLocked; else milestoneLocked">
             <ion-icon *ngIf="milestone.progress >= 1; else circleProgress" name="checkmark-circle" class="icon-done" color="primary"></ion-icon>
           </ng-container>
