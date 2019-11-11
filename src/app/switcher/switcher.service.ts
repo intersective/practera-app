@@ -14,7 +14,8 @@ import { SharedService } from '@services/shared.service';
  */
 const api = {
   me: 'api/users.json',
-  teams: 'api/teams.json'
+  teams: 'api/teams.json',
+  jwt: 'api/v2/users/jwt/refresh.json'
 };
 
 export interface ProgramObj {
@@ -89,6 +90,7 @@ export class SwitcherService {
 
     this.sharedService.onPageLoad();
     return forkJoin(
+      this.getNewJwt(),
       this.getTeamInfo(),
       this.getMyInfo(),
     );
@@ -138,5 +140,9 @@ export class SwitcherService {
       }
       return response;
     }));
+  }
+
+  getNewJwt() {
+    return this.request.get(api.jwt);
   }
 }
