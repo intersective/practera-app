@@ -1,7 +1,7 @@
 import { Injectable, Inject } from '@angular/core';
 import * as _ from 'lodash';
 import { DOCUMENT } from '@angular/common';
-import { Observable, Subject } from 'rxjs';
+import { Observable, Subject, BehaviorSubject } from 'rxjs';
 import { map, filter } from 'rxjs/operators';
 import { Platform } from '@ionic/angular';
 
@@ -13,7 +13,10 @@ declare var window: any;
 })
 export class UtilsService {
   private lodash;
+  // this Subject is used to broadcast an event to the app
   protected _eventsSubject = new Subject<{key: string, value: any}>();
+  // this Subject is used in project.service to cache the project data
+  public projectSubject = new BehaviorSubject(null);
 
   constructor(
     @Inject(DOCUMENT) private document: Document,
@@ -111,10 +114,17 @@ export class UtilsService {
       );
   }
 
+  // need to clear all Subject for cache
+  clearCache() {
+    // initialise the Subject for caches
+    this.projectSubject.next(null);
+  }
+
   // transfer url query string to an object
   urlQueryToObject(query: string) {
     return JSON.parse('{"' + decodeURI(query).replace(/"/g, '\\"').replace(/&/g, '","').replace(/=/g, '":"') + '"}');
   }
+
 
   /**
    * This is a time formatter that transfer time/date string to a nice string

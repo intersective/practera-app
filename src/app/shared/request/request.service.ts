@@ -5,6 +5,7 @@ import { Observable, of, throwError } from 'rxjs';
 import { catchError, tap, concatMap } from 'rxjs/operators';
 import { UtilsService } from '@services/utils.service';
 import { BrowserStorageService } from '@services/storage.service';
+import { environment } from '@environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class DevModeService {
@@ -63,8 +64,8 @@ export class RequestService {
    * @param {'Content-Type': string } header
    * @returns {HttpHeaders}
    */
-  appendHeaders(header = {'Content-Type': 'application/json'}) {
-    const headers = new HttpHeaders(header);
+  appendHeaders(header = {}) {
+    const headers = new HttpHeaders(Object.assign({'Content-Type': 'application/json'}, header));
     return headers;
   }
 
@@ -140,6 +141,19 @@ export class RequestService {
     return this.http.post<any>(this.getEndpointUrl(endPoint), data, {
       headers: this.appendHeaders(httpOptions.headers),
       params: this.setParams(httpOptions.params)
+    })
+      .pipe(concatMap(response => {
+        this._refreshApikey(response);
+        return of(response);
+      }))
+      .pipe(
+        catchError((error) => this.handleError(error))
+      );
+  }
+
+  postGraphQL(data): Observable<any> {
+    return this.http.post<any>(environment.graphQL, data, {
+      headers: this.appendHeaders()
     })
       .pipe(concatMap(response => {
         this._refreshApikey(response);

@@ -6,6 +6,9 @@ import { Validators, FormGroup, FormControl } from '@angular/forms';
 import { NotificationService } from '@shared/notification/notification.service';
 import { UtilsService } from '@services/utils.service';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
+import { SwitcherService } from '../../switcher/switcher.service';
+import { PusherService } from '@shared/pusher/pusher.service';
+import { environment } from '@environments/environment';
 
 @Component({
   selector: 'app-auth-login',
@@ -24,7 +27,9 @@ export class AuthLoginComponent implements OnInit {
     private authService: AuthService,
     private notificationService: NotificationService,
     private utils: UtilsService,
-    private newRelic: NewRelicService
+    private newRelic: NewRelicService,
+    private switcherService: SwitcherService,
+    private pusherService: PusherService,
   ) {}
 
   ngOnInit() {
@@ -60,8 +65,7 @@ export class AuthLoginComponent implements OnInit {
       res => {
         nrLoginTracer('login successful');
         this.newRelic.actionText('login successful');
-        this.isLoggingIn = false;
-        return this.router.navigate(['switcher']);
+        return this.handleNavigation(res.programs);
       },
       err => {
         nrLoginTracer(JSON.stringify(err));
@@ -101,5 +105,24 @@ export class AuthLoginComponent implements OnInit {
         });
       }
     );
+  }
+  async handleNavigation(programs) {
+    // checking user programs.
+    // if user in more than one program navigate to switcher page.
+    // if user in one program, call switcher service to set program configaration and navigate to home page.
+    if (programs.length > 1) {
+      this.isLoggingIn = false;
+      return this.router.navigate(['switcher']);
+    } else {
+      await this.switcherService.switchProgram(programs[0]);
+      this.isLoggingIn = false;
+      this.pusherService.initialise({ unsubscribe: true });
+      if ((typeof environment.goMobile !== 'undefined' && environment.goMobile === false)
+        || /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
+        return this.router.navigate(['app', 'home']);
+      } else {
+        return this.router.navigate(['go-mobile']);
+      }
+    }
   }
 }
