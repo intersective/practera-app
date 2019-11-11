@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { Router, ActivatedRoute, ParamMap } from '@angular/router';
 
 @Component({
@@ -11,6 +11,9 @@ export class TasksComponent implements OnInit {
   topicId: number;
   assessmentId: number;
   contextId: number;
+  @ViewChild('activity') activity;
+  @ViewChild('topic') topic;
+  @ViewChild('assessment') assessment;
   constructor(
     public router: Router,
     private route: ActivatedRoute,
@@ -19,15 +22,28 @@ export class TasksComponent implements OnInit {
   ngOnInit() {
     this.activityId = +this.route.snapshot.paramMap.get('id');
   }
+  ngAfterViewInit() {
+    this.activity.onEnter();
+  }
 
-  goto(event) {console.log(event);
+  goto(event) {
     switch (event.type) {
       case 'topic':
         this.topicId = event.topicId;
+        this.assessmentId = null;
+        // trigger onEnter after the element get generated
+        setTimeout(() => {
+          this.topic.onEnter();
+        });
         break;
       case 'assessment':
         this.assessmentId = event.assessmentId;
         this.contextId = event.contextId;
+        this.topicId = null;
+        // trigger onEnter after the element get generated
+        setTimeout(() => {
+          this.assessment.onEnter();
+        });
         break;
     }
   }
