@@ -1,8 +1,8 @@
-<ion-split-pane contentId="main-content" when="md">
-  <app-activity [activityId]="activityId" (navigate)="goto($event)"></app-activity>
-  <ion-content padding color="light" id="main-content">
-    <app-topic *ngIf="topicId" [inputId]="topicId" [inputActivityId]="activityId"></app-topic>
-    <app-assessment *ngIf="assessmentId" [inputId]="assessmentId" [inputActivityId]="activityId" [inputContextId]="contentId"></app-assessment>
+<ion-split-pane contentId="main-content" when="xs">
+  <app-activity #activity [activityId]="activityId" (navigate)="goto($event)"></app-activity>
+  <ion-content color="light" id="main-content">
+    <app-topic #topic *ngIf="topicId" [inputId]="topicId" [inputActivityId]="activityId"></app-topic>
+    <app-assessment #assessment *ngIf="assessmentId" [inputId]="assessmentId" [inputActivityId]="activityId" [inputContextId]="contentId"></app-assessment>
   </ion-content>
 </ion-split-pane>
 
