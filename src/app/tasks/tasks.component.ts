@@ -1,5 +1,6 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { Router, ActivatedRoute, ParamMap } from '@angular/router';
+import { UtilsService } from '@services/utils.service';
 
 @Component({
   selector: 'app-tasks',
@@ -17,6 +18,7 @@ export class TasksComponent implements OnInit {
   constructor(
     public router: Router,
     private route: ActivatedRoute,
+    public utils: UtilsService
   ) { }
 
   ngOnInit() {
