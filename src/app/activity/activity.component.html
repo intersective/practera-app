@@ -1,11 +1,11 @@
 <ion-header mode="ios">
-  <ion-toolbar color="light" [ngClass]="{'ion-toolbar-absolute': !utils.isMobile()}">
+  <ion-toolbar color="light" class="ion-toolbar-absolute">
     <ion-icon name="arrow-back" (click)="back()" color="primary" slot="start" margin-start></ion-icon>
     <ion-title text-center>Activity</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content padding color="light" text-center [ngClass]="{'ion-content-absolute': !utils.isMobile()}">
+<ion-content padding color="light" text-center class="ion-content-absolute">
   <ng-container *ngIf="loadingActivity">
     <ion-spinner></ion-spinner>
   </ng-container>
