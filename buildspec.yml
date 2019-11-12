@@ -2,22 +2,19 @@ version: 0.2
 
 phases:
   install:
+    runtime-versions:
+      nodejs: 10  
     commands:
-      - curl -sL https://deb.nodesource.com/setup_10.x | sudo -E bash -
-      - sudo apt-get install -y nodejs
-      - echo Installing source NPM dependencies...
-      - sudo apt-get update -y
-      - sudo apt-get install -y apt-transport-https
-      - sudo npm install forever -g
-      - sudo npm install -g @angular/cli
-      - sudo npm install
-      - sudo node node_modules/node-sass/scripts/install.js
-      - sudo npm rebuild node-sass
+      - npm install forever -g
+      - npm install -g @angular/cli
+      - npm install
+      - node node_modules/node-sass/scripts/install.js
+      - npm rebuild node-sass
   build:
     commands:
       - echo Build started on `date`
-      - sudo ng build --configuration=$BUILD_CONFIG
-      - sudo npm run generate-version
+      - ng build --configuration=$BUILD_CONFIG
+      - npm run generate-version
   post_build:
     commands:
       - aws s3 sync www/ s3://$S3_BUCKET/ --delete
