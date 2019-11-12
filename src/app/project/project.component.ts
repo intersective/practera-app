@@ -119,13 +119,8 @@ export class ProjectComponent extends RouterEnter {
   }
 
   goToActivity(id) {
-    if (this.utils.isMobile()) {
-      this.router.navigate(['app', 'activity', id]);
-      this.newRelic.addPageAction('Navigate activity', id);
-    } else {
-      this.router.navigate(['app', 'tasks', id]);
-      this.newRelic.addPageAction('Navigate tasks', id);
-    }
+    this.router.navigate(['app', 'activity', id]);
+    this.newRelic.addPageAction('Navigate activity', id);
   }
 
 }
