@@ -9,8 +9,6 @@ import { MockRouter } from '@testing/mocked.service';
 import { UtilsService } from '@services/utils.service';
 import { RequestService } from '@shared/request/request.service';
 import { environment } from '@environments/environment';
-import { PusherStatic, Pusher, Config, Channel } from 'pusher-js';
-// import * as PusherLib from 'pusher-js';
 
 class PusherLib {
   connection;
@@ -54,8 +52,11 @@ describe('PusherService', async () => {
   const initialisingPusher = {
     connection: {
       state: 'connected',
+      key: '',
     },
     connect: () => true,
+    channel: [],
+    allChannels: () => [],
   };
 
   let service: PusherService;
@@ -65,12 +66,7 @@ describe('PusherService', async () => {
   // let pusherLibSpy: any;
 
   beforeEach(() => {
-    // spyOn(Window, 'pusher');
     // spyOn(Window, 'Pusher');
-
-    // '"initialisePusher"' is not assignable to parameter of type '"storage" | "disconnect" | "unsubscribeChannels" | "initialise" | "isInstantiated" | "isSubscribed" | "getChannels" | "getMyPresenceChannelId" | "triggerTyping" | "initiateTypingEvent"'
-    // window.Pusher = jasmine.createSpy('Pusher');
-
     // pusherLibSpy = new PusherLib(this.pusherKey, libConfig);
 
     TestBed.configureTestingModule({
@@ -122,11 +118,6 @@ describe('PusherService', async () => {
     service = TestBed.get(PusherService);
     requestSpy = TestBed.get(RequestService);
     utilSpy = TestBed.get(UtilsService);
-
-    Window.Pusher = jasmine.createSpy();
-    Window.pusher = jasmine.createSpy().and.returnValue({
-      connection: {}
-    });
   });
 
   it('should create', () => {
@@ -222,7 +213,6 @@ describe('PusherService', async () => {
       expect(service['apiurl']).toBe('apiurl');
 
       service.initialise().then(res => {
-        console.log('somethinghere?', res);
         tick();
         expect(res.pusher).toBeTruthy();
         expect(res.pusher.connection).toBeTruthy();
@@ -233,6 +223,7 @@ describe('PusherService', async () => {
   describe('disconnect()', () => {
     it('should disconnect pusher', () => {
       service['pusher'] = { ...initialisingPusher, disconnect: () => true };
+      spyOn(service['pusher'], 'disconnect');
 
       service.disconnect();
       expect(service['pusher'].disconnect).toHaveBeenCalled();
@@ -240,26 +231,80 @@ describe('PusherService', async () => {
   });
 
   describe('isInstantiated()', () => {
-    it('should check if pusher has been instantiated', () => {
+    it('should has been instantiated', () => {
+      service['pusher'] = {
+        connection: {
+          state: 'connected',
+          key: '',
+          options: '',
+          socket_id: '',
+        }
+      };
 
+      const result = service.isInstantiated();
+      expect(result).toBeTruthy();
+    });
+
+    it('should has been instantiated', () => {
+      service['pusher'] = undefined;
+
+      const result = service.isInstantiated();
+      expect(result).toBeFalsy();
     });
   });
 
   describe('isSubscribed()', () => {
+    beforeEach(() => {
+      service['pusher'] = {
+        allChannels: () => [
+          { name: 'test', subscribed: true, trigger: (eventName: string, data?: any) => true }
+        ]
+      };
+      /*spyOn(service['pusher'], 'allChannels').and.returnValue([
+        { name: 'test', subscribed: true, trigger: (eventName: string, data?: any) => true }
+      ]);*/
+    });
+
     it('should subscribe to channel', () => {
+      const result = service.isSubscribed('test');
+      expect(result).toBeTruthy();
+    });
 
+    it('should not subscribe to channel not existence', () => {
+      const result = service.isSubscribed('test-not-availble');
+      expect(result).toBeFalsy();
     });
   });
 
   describe('getMyPresenceChannelId()', () => {
     it('should get my channel id', () => {
+      const id = '7b6f112e7e55968fd8c34d5727e4996d';
+      const sampleData = {
+        'channel': 'presence-sandbox-team-1234-567-89',
+        'data': {
+          'presence': {
+            'count': 1,
+            'ids': [
+              id
+            ],
+            'hash': {
+              '7b6f112e7e55968fd8c34d5727e4996d': {
+                name: 'test',
+              },
+            },
+            'members': {
+              'test-data': { id: 'test-data' },
+              'not-actual-user': { id: 'not-actual-user' },
+              'me': { id },
+            },
+          },
+        }
+      };
 
-    });
-  });
-
-  describe('getMyPresenceChannelId()', () => {
-    it('should get my channel id', () => {
-
+      // in codebase, `this.channels.member`
+      service['channels']['presence'] = sampleData.data.presence;
+      const result = service.getMyPresenceChannelId();
+      expect(result).toEqual(id);
     });
   });
 
