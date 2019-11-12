@@ -1,12 +1,11 @@
 import { Component, Input, NgZone, Output, EventEmitter } from '@angular/core';
-import { Router, ActivatedRoute, ParamMap } from '@angular/router';
+import { Router } from '@angular/router';
 import { Observable, of, forkJoin, Subscription } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { ActivityService, Activity, OverviewActivity, Task } from './activity.service';
 import { UtilsService } from '../services/utils.service';
 import { NotificationService } from '@shared/notification/notification.service';
 import { BrowserStorageService } from '@services/storage.service';
-import { RouterEnter } from '@services/router-enter.service';
 import { Event, EventsService } from '@app/events/events.service';
 import { SharedService } from '@services/shared.service';
 import { FastFeedbackService } from '../fast-feedback/fast-feedback.service';
@@ -17,14 +16,12 @@ import { NewRelicService } from '@shared/new-relic/new-relic.service';
   templateUrl: './activity.component.html',
   styleUrls: ['./activity.component.scss']
 })
-export class ActivityComponent extends RouterEnter {
-  @Input() activityId: number;
+export class ActivityComponent {
+  @Input() id: number;
   @Output() navigate = new EventEmitter();
   getActivity: Subscription;
   getEventPusher: Subscription;
   getEvents: Subscription;
-  routeUrl = '/app/activity';
-  id: number;
   activity: Activity = {
     id: 0,
     name: '',
@@ -37,7 +34,6 @@ export class ActivityComponent extends RouterEnter {
 
   constructor(
     public router: Router,
-    private route: ActivatedRoute,
     private activityService: ActivityService,
     public utils: UtilsService,
     private notificationService: NotificationService,
@@ -48,7 +44,6 @@ export class ActivityComponent extends RouterEnter {
     private newRelic: NewRelicService,
     private ngZone: NgZone
   ) {
-    super(router);
 
     // update event list after book/cancel an event
     this.getEventPusher = this.utils.getEvent('update-event').subscribe(
@@ -64,10 +59,12 @@ export class ActivityComponent extends RouterEnter {
   // force every navigation happen under radar of angular
   private _navigate(direction) {
     if (this.utils.isMobile()) {
+      // redirect to topic/assessment page for mobile
       return this.ngZone.run(() => {
         return this.router.navigate(direction);
       });
     } else {
+      // emit event to parent component(task component)
       switch (direction[0]) {
         case 'topic':
           this.navigate.emit({
@@ -87,11 +84,11 @@ export class ActivityComponent extends RouterEnter {
             return this.router.navigate(direction);
           });
       }
-
     }
   }
 
-  private _initialise() {
+  onEnter() {
+    this.newRelic.setPageViewName('activity components');
     this.activity = {
       id: 0,
       name: '',
@@ -99,19 +96,8 @@ export class ActivityComponent extends RouterEnter {
       tasks: []
     };
     this.loadingActivity = true;
-  }
-
-  onEnter() {
-    this.newRelic.setPageViewName('activity components');
-    this._initialise();
-    if (this.activityId) {
-      this.id = this.activityId;
-    } else {
-      this.id = +this.route.snapshot.paramMap.get('id');
-    }
     this._getActivity();
     this._getEvents();
-
     this.fastFeedbackService.pullFastFeedback().subscribe();
   }
 
@@ -121,7 +107,6 @@ export class ActivityComponent extends RouterEnter {
         activity => {
           this.activity = activity;
           this.loadingActivity = false;
-
           this._getTasksProgress();
           this.newRelic.setPageViewName(`Activity ${this.activity.name}, ID: ${this.id}`);
         },
@@ -140,7 +125,6 @@ export class ActivityComponent extends RouterEnter {
           if (typeof tasks === 'string') {
             throw tasks;
           }
-
           tasks.forEach((res: Task) => {
             const taskIndex = this.activity.tasks.findIndex(task => {
               return task.id === res.id && task.type === 'Assessment';
@@ -191,7 +175,6 @@ export class ActivityComponent extends RouterEnter {
 
   private _getEvents(events?: Event[]) {
     this.events = events || [];
-
     if (events === undefined) {
       this.loadingEvents = true;
       this.getEvents = this.eventsService.getEvents(this.id).subscribe(
@@ -232,7 +215,6 @@ export class ActivityComponent extends RouterEnter {
 
   goto(type, id) {
     this.newRelic.actionText(`Selected Task (${type}): ID ${id}`);
-
     switch (type) {
       case 'Assessment':
         // get the context id of this assessment
