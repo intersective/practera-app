@@ -34,15 +34,6 @@ const routes: Routes = [
         children: [
           {
             path: '',
-            loadChildren: '../activity/activity.module#ActivityModule'
-          }
-        ]
-      },
-      {
-        path: 'tasks',
-        children: [
-          {
-            path: '',
             loadChildren: '../tasks/tasks.module#TasksModule'
           }
         ]
