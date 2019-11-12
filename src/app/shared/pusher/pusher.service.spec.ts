@@ -13,8 +13,16 @@ import { PusherStatic, Pusher, Config, Channel } from 'pusher-js';
 // import * as PusherLib from 'pusher-js';
 
 class PusherLib {
+  connection;
+
   constructor(a, b) {
     console.log(a, b);
+    this.connection = {
+      state: 'test',
+    };
+    /*jasmine.spy('connection').and.returnValue({
+
+    });*/
   }
 }
 
@@ -43,14 +51,26 @@ describe('PusherService', async () => {
       },
     },
   };
+  const initialisingPusher = {
+    connection: {
+      state: 'connected',
+    },
+    connect: () => true,
+  };
 
   let service: PusherService;
   let requestSpy: jasmine.SpyObj<RequestService>;
   let utilSpy: UtilsService;
   let mockBackend: HttpTestingController;
-  let pusherLibSpy: any;
+  // let pusherLibSpy: any;
 
   beforeEach(() => {
+    // spyOn(Window, 'pusher');
+    // spyOn(Window, 'Pusher');
+
+    // '"initialisePusher"' is not assignable to parameter of type '"storage" | "disconnect" | "unsubscribeChannels" | "initialise" | "isInstantiated" | "isSubscribed" | "getChannels" | "getMyPresenceChannelId" | "triggerTyping" | "initiateTypingEvent"'
+    // window.Pusher = jasmine.createSpy('Pusher');
+
     // pusherLibSpy = new PusherLib(this.pusherKey, libConfig);
 
     TestBed.configureTestingModule({
@@ -102,6 +122,11 @@ describe('PusherService', async () => {
     service = TestBed.get(PusherService);
     requestSpy = TestBed.get(RequestService);
     utilSpy = TestBed.get(UtilsService);
+
+    Window.Pusher = jasmine.createSpy();
+    Window.pusher = jasmine.createSpy().and.returnValue({
+      connection: {}
+    });
   });
 
   it('should create', () => {
@@ -187,17 +212,60 @@ describe('PusherService', async () => {
     });
   });
 
-  fdescribe('initialise()', () => {
+  describe('initialise()', () => {
     it('should initialise pusher', fakeAsync(() => {
+      spyOn(service, 'initialisePusher').and.returnValue(new Promise((resolve) => {
+        resolve(initialisingPusher);
+      }));
+
       expect(service['pusher']).not.toBeTruthy();
       expect(service['apiurl']).toBe('apiurl');
+
       service.initialise().then(res => {
+        console.log('somethinghere?', res);
         tick();
-        expect(service['pusher']).toBeTruthy();
-        expect(service['pusher']).toEqual(res.pusher);
+        expect(res.pusher).toBeTruthy();
+        expect(res.pusher.connection).toBeTruthy();
       });
-      tick();
     }));
+  });
+
+  describe('disconnect()', () => {
+    it('should disconnect pusher', () => {
+      service['pusher'] = { ...initialisingPusher, disconnect: () => true };
+
+      service.disconnect();
+      expect(service['pusher'].disconnect).toHaveBeenCalled();
+    });
+  });
+
+  describe('isInstantiated()', () => {
+    it('should check if pusher has been instantiated', () => {
+
+    });
+  });
+
+  describe('isSubscribed()', () => {
+    it('should subscribe to channel', () => {
+
+    });
+  });
+
+  describe('getMyPresenceChannelId()', () => {
+    it('should get my channel id', () => {
+
+    });
+  });
+
+  describe('getMyPresenceChannelId()', () => {
+    it('should get my channel id', () => {
+
+    });
+  });
+
+  describe('typing message', () => {
+    it('should trigger triggerTyping()', () => {});
+    it('should trigger initiateTypingEvent()', () => {});
   });
 
   /*it('should disconnect()', () => {
