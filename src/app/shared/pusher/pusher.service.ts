@@ -88,7 +88,7 @@ export class PusherService {
     }
 
     // handling condition at re-login without rebuilding pusher (where isInstantiated() is false)
-    if (this.pusher.connection.state !== 'connected') {
+    if ((pusher || this.pusher).connection.state !== 'connected') {
       // reconnect pusher
       this.pusher.connect();
       pusher = this.pusher;
