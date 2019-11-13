@@ -61,8 +61,15 @@ export class AssessmentComponent extends RouterEnter {
     status: '',
     modified: ''
   };
+
+  // @TECHDEBT: we should be able to identify 2 following flags by just using `this.action` (review/assessment)
+  // we'll need to manage assesmsent.status:
+  // - pending approval
+  // - pending review
+  // - pending approval + done (AssessmentReview)
   doAssessment = false;
   doReview = false;
+
   feedbackReviewed = false;
   loadingFeedbackReviewed: boolean;
   loadingAssessment = true;
@@ -75,7 +82,6 @@ export class AssessmentComponent extends RouterEnter {
   fromPage = '';
   markingAsReview = 'Continue';
   isRedirectingToNextMilestoneTask: boolean;
-  // assessmentRelicWatcher;
 
   constructor (
     public router: Router,
@@ -155,7 +161,7 @@ export class AssessmentComponent extends RouterEnter {
     this.submissionId = +this.route.snapshot.paramMap.get('submissionId');
 
     // get assessment structure and populate the question form
-    this.getAssessment = this.assessmentService.getAssessment(this.id, this.action)
+    this.assessmentService.getAssessment(this.id, this.action)
       .subscribe(
         assessment => {
           this.assessment = assessment;
@@ -197,11 +203,18 @@ export class AssessmentComponent extends RouterEnter {
 
   // get the submission answers &/| review answers
   private _getSubmission() {
-    this.getSubmission = this.assessmentService.getSubmission(this.id, this.contextId, this.action, this.submissionId)
-      .subscribe(
+    this.getSubmission = this.assessmentService.getSubmission(
+      this.id,
+      this.contextId,
+      this.action,
+      this.submissionId
+    ).subscribe(
       result => {
-        this.submission = result.submission;
+        const { submission, review } = result;
+        this.submission = submission;
+        this.review = review;
         this.loadingSubmission = false;
+
         // If team assessment locked set readonly view.
         // set doAssessment, doReview to false - because when assessment lock we can't do both.
         // set submission status to done - because we need to show readonly answers in question components.
@@ -210,9 +223,12 @@ export class AssessmentComponent extends RouterEnter {
           this.doReview = false;
           this.savingButtonDisabled = true;
           this.submission.status = 'done';
-          return ;
+          return;
         }
-        // this page is for doing assessment if submission is empty or submission is 'in progress'
+
+        // this component become a page for doing assessment if
+        // - submission is empty or
+        // - submission.status is 'in progress'
         if (this.utils.isEmpty(this.submission) || this.submission.status === 'in progress') {
           this.doAssessment = true;
           this.doReview = false;
@@ -220,19 +236,24 @@ export class AssessmentComponent extends RouterEnter {
             this.savingMessage = 'Last saved ' + this.utils.timeFormatter(this.submission.modified);
             this.savingButtonDisabled = false;
           }
-          return ;
+          return;
         }
-        this.review = result.review;
-        if (this.review.status === 'in progress') {
-          this.savingMessage = 'Last saved ' + this.utils.timeFormatter(this.review.modified);
+
+        if (review.status === 'in progress') {
+          this.savingMessage = 'Last saved ' + this.utils.timeFormatter(review.modified);
           this.savingButtonDisabled = false;
         }
-        // this page is for doing review if the submission status is 'pending review' and action is review
-        if ((
-          this.submission.status === 'pending approval' || this.submission.status === 'pending review'
-        ) && this.action === 'review') {
+
+        // this component become a page for doing review, if
+        // - the submission status is 'pending review' and
+        // - this.action is review
+        //
+        // @TECHDEBT: why can't we just treat the entire assessment as "review" when
+        // `this.action` is equal to "review"?
+        if (this.submission.status === 'pending review' && this.action === 'review') {
           this.doReview = true;
         }
+
         // call todo item to check if the feedback has been reviewed or not
         if (this.submission.status === 'published') {
           this.assessmentService.getFeedbackReviewed(this.submission.id)
@@ -312,7 +333,7 @@ export class AssessmentComponent extends RouterEnter {
       });
     } else {
       // force saving progress
-      this.submit(true , true);
+      this.submit(true , true, true);
       return this.navigationRoute();
     }
   }
@@ -356,6 +377,16 @@ export class AssessmentComponent extends RouterEnter {
     continue?: boolean; // extra parameter to allow "options" appear as well-defined variable
     routeOnly?: boolean; // routeOnly: True, return route in string. False, return navigated route (promise<void>)
   } = {}): Promise<any> {
+    // skip "continue workflow" && instant redirect user, when:
+    // - review action (this.action == 'review')
+    // - fromPage = events (check AssessmentRoutingModule)
+    if (
+      this.action === 'review'
+      || (this.action === 'assessment' && this.fromPage === 'events')
+    ) {
+      return this.navigationRoute();
+    }
+
     if (options && options.continue) {
       this.isRedirectingToNextMilestoneTask = true;
     }
@@ -444,10 +475,6 @@ export class AssessmentComponent extends RouterEnter {
       }
     }
 
-    if (this.doReview) {
-      return this.navigationRoute();
-    }
-
     const nextTask = await this.redirectToNextMilestoneTask();
     return nextTask;
   }
@@ -455,11 +482,32 @@ export class AssessmentComponent extends RouterEnter {
   /**
    * handle submission and autosave
    * @param {boolean} saveInProgress set true for autosaving or it treat the action as final submision
+   * @param {boolean} goBack use to unlock team assessment when leave assessment by clicking back button
+   * @param {boolean} isManualSave use to detect manual progress save
    */
-  async submit(saveInProgress: boolean, goBack?: boolean): Promise<any> {
+  async submit(saveInProgress: boolean, goBack?: boolean, isManualSave?: boolean): Promise<any> {
+
+    /**
+     * checking is this a submission or progress save
+     * - if it's a submission
+     *    - assign false to saving variable to disable save
+     *    - changing submitting variable value to 'Submitting'
+     * - if it's a progress save
+     *    - if this is a manual save or there are no any auto save in progress
+     *      - change saving variable value to true to enable save
+     *      - make manual save button disable
+     *      - change savingMessage variable value to 'Saving...' to show save in progress
+     *    - if this not manual save or there is one save in progress
+     *      - do nothing
+     */
     if (saveInProgress) {
-      this.savingMessage = 'Saving...';
-      this.savingButtonDisabled = true;
+      if (isManualSave || !this.saving) {
+        this.savingMessage = 'Saving...';
+        this.saving = true;
+        this.savingButtonDisabled = true;
+      } else {
+        return;
+      }
     } else {
       this.submitting = 'Submitting...';
       this.saving = false;
@@ -473,11 +521,6 @@ export class AssessmentComponent extends RouterEnter {
       id: this.id,
       in_progress: false
     };
-
-    if (this.saving) {
-      return;
-    }
-    this.saving = true;
 
     // form submission answers
     if (this.doAssessment) {
@@ -583,7 +626,10 @@ export class AssessmentComponent extends RouterEnter {
         }
       }
     );
-
+    // if saveInProgress and isManualSave true renabling save without wait 10 second
+    if (saveInProgress && isManualSave) {
+      this.saving = false;
+    }
     // if timeout, reset this.saving flag to false, to enable saving again
     setTimeout(() => this.saving = false, SAVE_PROGRESS_TIMEOUT);
   }
@@ -698,11 +744,12 @@ export class AssessmentComponent extends RouterEnter {
     };
 
     try {
+      const { projectId } = this.storage.getUser();
       const {
         currentActivity,
         nextTask
       } = await this.activityService.getTasksByActivityId(
-        this.storage.getUser().projectId,
+        projectId,
         this.activityId,
         options
       );
