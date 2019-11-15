@@ -16,6 +16,9 @@ export class UtilsService {
   protected _eventsSubject = new Subject<{key: string, value: any}>();
   // this Subject is used in project.service to cache the project data
   public projectSubject = new BehaviorSubject(null);
+  // this Subject is used in activity.service to cache the activity data
+  // it stores key => Subject pairs of all activities
+  public activitySubjects = {};
 
   constructor(
     @Inject(DOCUMENT) private document: Document,
@@ -108,10 +111,27 @@ export class UtilsService {
       );
   }
 
+  getActivityCache(key): BehaviorSubject<any> {
+    if (!(key in this.activitySubjects)) {
+      this.activitySubjects[key] = new BehaviorSubject(null);
+    }
+    return this.activitySubjects[key];
+  }
+
+  updateActivityCache(key, value) {
+    if (!(key in this.activitySubjects)) {
+      this.activitySubjects[key] = new BehaviorSubject(null);
+    }
+    this.activitySubjects[key].next(value);
+  }
+
   // need to clear all Subject for cache
   clearCache() {
     // initialise the Subject for caches
     this.projectSubject.next(null);
+    this.each(this.activitySubjects, (subject, key) => {
+      this.activitySubjects[key].next(null);
+    });
   }
 
   // transfer url query string to an object
