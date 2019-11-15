@@ -98,7 +98,7 @@ export class ActivityService {
 
   // request for the latest project data
   private _getActivityData(id) {
-    return this.request.postGraphQL('"{activity(id:' + id + '){id name description tasks{id name type is_locked is_team deadline context_id status{status is_locked submitter_name submitter_image} }}}"')
+    return this.request.postGraphQL(`"{activity(id:${id}){id name description tasks{id name type is_locked is_team deadline context_id status{status is_locked submitter_name submitter_image} }}}"`)
       .pipe(map(res => this._normaliseActivity(res.data)));
   }
 
