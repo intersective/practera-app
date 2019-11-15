@@ -31,24 +31,6 @@ describe('ActivityService', () => {
     expect(service).toBeTruthy();
   });
 
-  /*describe('getCurrentActivityStatus()', () => {
-    const projectId = 1;
-    const activityId = 1;
-
-    const expectedResult = {
-      currentMilestoneIndex: null,
-      currentMilestone: null,
-      currentActivity: null,
-    };
-
-    it('getOverview should be triggered', fakeAsync(() => {
-      service.getOverview = jasmine.createSpy('getOverview').and.returnValue(of(true));
-      service.getCurrentActivityStatus(projectId, activityId).subscribe();
-      tick();
-      expect(service.getOverview).toHaveBeenCalled();
-    }));
-  });*/
-
   /*describe('getTasksByActivityId()', () => {
     const projectId = 1;
     const activityId = 1;

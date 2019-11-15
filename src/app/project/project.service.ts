@@ -13,8 +13,7 @@ import { BrowserStorageService } from '@services/storage.service';
 const api = {
   milestone: 'api/milestone.json',
   activity: 'api/activities.json',
-  progress: 'api/v2/motivations/progress/list.json',
-  overview: 'api/v2/plans/project/overview.json'
+  progress: 'api/v2/motivations/progress/list.json'
 };
 
 // added for displaying empty placeholder (enhance UX)
@@ -87,14 +86,6 @@ export class ProjectService {
           };
         })
       };
-    });
-  }
-
-  // get overview of statuses for the entire project
-  public getOverview(): Observable<any> {
-    const { projectId } = this.storage.getUser();
-    return this.request.get(api.overview, {
-      params: { id: projectId }
     });
   }
 
