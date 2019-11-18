@@ -180,8 +180,7 @@ export class AuthRegistrationComponent implements OnInit {
               .subscribe(
                 res => {
                   nrAutoLoginTracer();
-                  const redirect = this.getRedirect(res.programs);
-                  this.showPopupMessages('shortMessage', 'Registration success!', redirect);
+                  this.checkprogramCount(res.programs);
                 },
                 err => {
                   nrAutoLoginTracer();
@@ -285,22 +284,14 @@ export class AuthRegistrationComponent implements OnInit {
       );
   }
 
-  async getRedirect(programs) {
-    // checking user programs.
-    // if user in more than one program navigate to switcher page.
-    // if user in one program, call switcher service to set program configaration and navigate to home page.
-    if (programs.length > 1) {
-      return ['switcher'];
-    } else {
-      await this.switcherService.switchProgram(programs[0]);
-      this.pusherService.initialise({ unsubscribe: true });
-      if ((typeof environment.goMobile !== 'undefined' && environment.goMobile === false)
-        || /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
-        return ['app', 'home'];
-      } else {
-        return ['go-mobile'];
-      }
-    }
+  async checkprogramCount(programs) {
+    this.switcherService.switchProgramAndNavigate(programs[0]).then(
+      (route) => {
+        this.showPopupMessages('shortMessage', 'Registration success!', route);
+      },
+      err => {
+        throw new Error(err);
+      });
   }
 
 }
