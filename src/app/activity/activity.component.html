@@ -24,6 +24,7 @@
       <clickable-item
         *ngFor="let task of activity.tasks; let i = index"
         (click)="goto(task)"
+        [active]="currentTask && currentTask.type == task.type && currentTask.id == task.id"
         [lines]="i == activity.tasks.length - 1 ? 'none' : ''">
 
         <ng-container [ngSwitch]="task.type">

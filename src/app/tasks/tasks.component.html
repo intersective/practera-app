@@ -1,5 +1,5 @@
 <ion-split-pane *ngIf="!utils.isMobile()" contentId="main-content" when="xs">
-  <app-activity #activity [id]="activityId" (navigate)="goto($event)"></app-activity>
+  <app-activity #activity [id]="activityId" [currentTask]="currentTask()" (navigate)="goto($event)"></app-activity>
   <ion-content color="light" id="main-content">
     <app-topic #topic *ngIf="topicId" [inputId]="topicId" [inputActivityId]="activityId"></app-topic>
     <app-assessment #assessment *ngIf="assessmentId" [inputId]="assessmentId" [inputActivityId]="activityId" [inputContextId]="contentId"></app-assessment>
