@@ -63,13 +63,13 @@ export class TasksComponent extends RouterEnter {
       return {
         id: this.topicId,
         type: 'Topic'
-      }
+      };
     }
     if (this.assessmentId) {
       return {
         id: this.assessmentId,
         type: 'Assessment'
-      }
+      };
     }
     return null;
   }
