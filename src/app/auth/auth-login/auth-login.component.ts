@@ -65,7 +65,7 @@ export class AuthLoginComponent implements OnInit {
       res => {
         nrLoginTracer('login successful');
         this.newRelic.actionText('login successful');
-        this.handleNavigation(res.programs);
+        return this.handleNavigation(res.programs);
       },
       err => {
         nrLoginTracer(JSON.stringify(err));
@@ -107,6 +107,8 @@ export class AuthLoginComponent implements OnInit {
     );
   }
   handleNavigation(programs) {
+    // this.isLoggingIn = false;
+    // return this.router.navigate(await this.switcherService.switchProgramAndNavigate(programs));
     return this.switcherService.switchProgramAndNavigate(programs).then(
       (route) => {
         this.isLoggingIn = false;
