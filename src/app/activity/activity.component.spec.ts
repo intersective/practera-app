@@ -68,11 +68,7 @@ describe('ActivityComponent', () => {
         UtilsService,
         {
           provide: ActivityService,
-          useValue: jasmine.createSpyObj('ActivityService', [
-            'getAssessmentStatus',
-            'getActivity',
-            'getTasksProgress'
-          ])
+          useValue: jasmine.createSpyObj('ActivityService', ['getActivity'])
         },
         {
           provide: NotificationService,
@@ -134,28 +130,22 @@ describe('ActivityComponent', () => {
         id: 1,
         name: 'topic 1',
         type: 'Topic',
-        loadingStatus: true
+        status: 'done'
       },
       {
         id: 2,
         name: 'asmt 1',
         type: 'Assessment',
         contextId: 21,
-        loadingStatus: true,
         isForTeam: false,
         dueDate: '2019-02-02',
         isOverdue: true,
-        isDueToday: false
+        isDueToday: false,
+        status: 'in progress',
+        isLocked: false
       },
     ]
   };
-  const mockProgress = mockActivity.tasks.map(t => {
-    t['progress'] = 0;
-    return t;
-  });
-  const mockAssessmentStatus = mockActivity.tasks[1];
-  mockAssessmentStatus['status'] = 'in progress';
-  mockAssessmentStatus.loadingStatus = false;
   const mockEvents = [
     {
       id: 1,
@@ -211,8 +201,6 @@ describe('ActivityComponent', () => {
   ];
   beforeEach(() => {
     activitySpy.getActivity.and.returnValue(of(mockActivity));
-    activitySpy.getTasksProgress.and.returnValue(of(mockProgress));
-    activitySpy.getAssessmentStatus.and.returnValue(of(mockAssessmentStatus));
     eventSpy.getEvents.and.returnValue(of(mockEvents));
     fastFeedbackSpy.pullFastFeedback.and.returnValue(of({}));
     storageSpy.getUser.and.returnValue({
@@ -241,8 +229,6 @@ describe('ActivityComponent', () => {
       fixture.detectChanges();
       expect(component.activity).toEqual(mockActivity);
       expect(activitySpy.getActivity.calls.count()).toBe(1);
-      expect(activitySpy.getTasksProgress.calls.count()).toBe(1);
-      expect(activitySpy.getAssessmentStatus.calls.count()).toBe(1);
       expect(component.loadingActivity).toBe(false);
       expect(page.activityName.innerHTML).toEqual(mockActivity.name);
       expect(page.activityDescription).toBeTruthy();
@@ -264,23 +250,25 @@ describe('ActivityComponent', () => {
     });
   });
 
-  describe('when testing checkAssessment()', () => {
+  describe('when testing goto()', () => {
     it('should navigate to the assessment page correctly', () => {
-      fixture.detectChanges();
-      component.checkAssessment({
+      component.id = 1;
+      component.goto({
         id: 2,
         type: 'Assessment',
-        isLocked: false
+        isLocked: false,
+        contextId: 21
       });
       expect(routerSpy.navigate.calls.first().args[0]).toEqual(['assessment', 'assessment', 1, 21, 2]);
     });
 
     it('should pop up locked message', () => {
-      fixture.detectChanges();
-      component.checkAssessment({
+      component.id = 1;
+      component.goto({
         id: 2,
         type: 'Assessment',
         isLocked: true,
+        contextId: 21,
         submitter: {
           name: 'sub',
           image: 'image'
@@ -294,16 +282,17 @@ describe('ActivityComponent', () => {
       notificationSpy.lockTeamAssessmentPopUp.calls.first().args[1]({data: true});
       expect(routerSpy.navigate.calls.first().args[0]).toEqual(['assessment', 'assessment', 1, 21, 2]);
     });
-  });
-  describe('when testing goto()', () => {
+
     it('should pop up not in team message', () => {
       storageSpy.getUser.and.returnValue({
         teamId: null
       });
-      fixture.detectChanges();
-      component.activity = JSON.parse(JSON.stringify(mockActivity));
-      component.activity.tasks[1].isForTeam = true;
-      component.goto('Assessment', 2);
+      component.goto({
+        id: 2,
+        type: 'Assessment',
+        isForTeam: true,
+        isLocked: false
+      });
       expect(notificationSpy.popUp.calls.count()).toBe(1);
       expect(notificationSpy.popUp.calls.first().args[1]).toEqual({message: 'To do this assessment, you have to be in a team.'});
       expect(routerSpy.navigate.calls.count()).toBe(0);
@@ -311,12 +300,18 @@ describe('ActivityComponent', () => {
 
     it('should navigate to correct topic page', () => {
       component.id = 1;
-      component.goto('Topic', 2);
+      component.goto({
+        id: 2,
+        type: 'Topic'
+      });
       expect(routerSpy.navigate.calls.first().args[0]).toEqual(['topic', 1, 2]);
     });
 
     it('should pop up locked message', () => {
-      component.goto('Locked', 2);
+      component.goto({
+        id: 2,
+        type: 'Locked'
+      });
       expect(routerSpy.navigate.calls.count()).toBe(0);
       expect(notificationSpy.popUp.calls.count()).toBe(1);
       expect(notificationSpy.popUp.calls.first().args[1]).toEqual({message: 'This part of the app is still locked. You can unlock the features by engaging with the app and completing all tasks.'});
