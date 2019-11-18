@@ -153,19 +153,19 @@ export class ActivityComponent {
             {
               name: task.submitter.name,
               image: task.submitter.image
-            } ,
-            (data) => {
+            },
+            data => {
               if (data.data) {
-                this.navigate(['assessment', 'assessment', this.id , task.contextId, task.id]);
+                this._navigate(['assessment', 'assessment', this.id , task.contextId, task.id]);
               }
             }
           );
           return ;
         }
-        this.navigate(['assessment', 'assessment', this.id , task.contextId, task.id]);
+        this._navigate(['assessment', 'assessment', this.id , task.contextId, task.id]);
         break;
       case 'Topic':
-        this.navigate(['topic', this.id, task.id]);
+        this._navigate(['topic', this.id, task.id]);
         break;
       case 'Locked':
         this.notificationService.popUp('shortMessage', {message: 'This part of the app is still locked. You can unlock the features by engaging with the app and completing all tasks.'});
