@@ -123,7 +123,7 @@ export class ActivityComponent extends RouterEnter {
     this.newRelic.actionText('Back button pressed on Activities Page.');
   }
 
-  goto(task) {console.log(task);
+  goto(task) {
     this.newRelic.actionText(`Selected Task (${task.type}): ID ${task.id}`);
 
     switch (task.type) {

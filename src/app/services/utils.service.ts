@@ -111,6 +111,7 @@ export class UtilsService {
       );
   }
 
+  // get the activity Subject for cache
   getActivityCache(key): BehaviorSubject<any> {
     if (!(key in this.activitySubjects)) {
       this.activitySubjects[key] = new BehaviorSubject(null);
@@ -118,6 +119,7 @@ export class UtilsService {
     return this.activitySubjects[key];
   }
 
+  // update the activity cache for given key(activity id)
   updateActivityCache(key, value) {
     if (!(key in this.activitySubjects)) {
       this.activitySubjects[key] = new BehaviorSubject(null);
