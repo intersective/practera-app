@@ -74,7 +74,7 @@ describe('AppV2 - Continue workflow', () => {
         activity.element(by.css('ion-content')).element(by.css('ion-card')).all(by.css('ion-item')).then(tasks => {
           const [firstTask] = tasks;
           firstTask.click();
-          browser.sleep(5000);
+          browser.sleep(8000);
         });
 
         // task screen
