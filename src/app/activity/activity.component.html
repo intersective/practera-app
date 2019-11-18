@@ -23,7 +23,7 @@
     <ion-list>
       <clickable-item
         *ngFor="let task of activity.tasks; let i = index"
-        (click)="checkAssessment(task)"
+        (click)="goto(task)"
         [lines]="i == activity.tasks.length - 1 ? 'none' : ''">
 
         <ng-container [ngSwitch]="task.type">
@@ -39,7 +39,7 @@
           </ng-container>
           <div class="icon-item">
             <h4>{{ task.name }}</h4>
-            <p *ngIf="task.type === 'Assessment' && (task.status === '' || task.status === 'in progress')" [class]="task.isOverdue ? 'due-date over' : 'due-date'">
+            <p *ngIf="task.type === 'Assessment' && (!task.status || task.status === '' || task.status === 'in progress')" [class]="task.isOverdue ? 'due-date over' : 'due-date'">
               {{ this.sharedService.dueDateFormatter(task.dueDate) }}
             </p>
             <p>
