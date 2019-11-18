@@ -1,12 +1,18 @@
 const PASSWORD = 'kW96dLJHrQDaaLM';
 
 export const REGISTRATION = [
-  {
+  /*{
     email: 'protractor_continue_complete@test.com',
     key: 'vyhe3AVU',
     password: PASSWORD,
-  },
+  },*/
 ];
+
+export const CONTINUE_WORKFLOW_USER = {
+  email: 'protractor_continue_complete@test.com',
+  password: PASSWORD,
+  name: 'protractor_continue_complete',
+};
 
 // added to test single program workflow (shouldn't stop user at program switcher page)
 export const SINGLE_PROGRAM_USER = {
