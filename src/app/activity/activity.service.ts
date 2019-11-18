@@ -133,8 +133,8 @@ export class ActivityService {
             status: task.status.status === 'pending approval' ? 'pending review' : task.status.status,
             isLocked: task.status.is_locked,
             submitter: {
-              name: task.status.name,
-              image: task.status.image
+              name: task.status.submitter_name,
+              image: task.status.submitter_image
             }
           };
         default:
