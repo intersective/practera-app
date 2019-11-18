@@ -18,6 +18,7 @@ import { NewRelicService } from '@shared/new-relic/new-relic.service';
 })
 export class ActivityComponent {
   @Input() id: number;
+  @Input() currentTask;
   @Output() navigate = new EventEmitter();
   getActivity: Subscription;
   getEventPusher: Subscription;
