@@ -22,12 +22,12 @@ export class AppPage {
     return el.sendKeys(val);
   }
 
-  insertEmail() {
-    return this.insertKeys('email', USER.email);
+  insertEmail(email?, parent?) {
+    return this.insertKeys('email', email || USER.email, parent);
   }
 
-  insertPassword() {
-    return this.insertKeys('password', USER.password);
+  insertPassword(password?, parent?) {
+    return this.insertKeys('password', password || USER.password, parent);
   }
 
   getTitle(parent?) {
@@ -56,5 +56,22 @@ export class AppPage {
 
   hasButton() {
     return this.loginButton().getText();
+  }
+
+  registerButton() {
+    return element(by.css('app-auth-registration')).element(by.deepCss('ion-button'));
+  }
+
+  getTabs() {
+    return element(by.css('ion-tab-bar')).all(by.css('ion-tab-button'));
+  }
+
+  projectPageTitle() {
+    return element(by.css('app-project')).element(by.css('ion-title'));
+  }
+
+  getHomeScreen() {
+    const homeComponentContent = element(by.css('app-home'));
+    return homeComponentContent;
   }
 }
