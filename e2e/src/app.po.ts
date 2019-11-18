@@ -74,4 +74,14 @@ export class AppPage {
     const homeComponentContent = element(by.css('app-home'));
     return homeComponentContent;
   }
+
+  submitTopic(topic = element(by.css('app-topic'))) {
+    const continueBtn = topic.element(by.tagName('ion-footer')).element(by.css('ion-button'));
+    continueBtn.click();
+  }
+
+  submitAssessment(assessment = element(by.css('app-assessment'))) {
+    const continueBtn = assessment.element(by.tagName('ion-content')).element(by.css('ion-button'));
+    continueBtn.click();
+  }
 }
