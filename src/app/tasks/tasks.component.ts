@@ -57,4 +57,21 @@ export class TasksComponent extends RouterEnter {
     }
   }
 
+  // get the currently selected task
+  currentTask() {
+    if (this.topicId) {
+      return {
+        id: this.topicId,
+        type: 'Topic'
+      }
+    }
+    if (this.assessmentId) {
+      return {
+        id: this.assessmentId,
+        type: 'Assessment'
+      }
+    }
+    return null;
+  }
+
 }
