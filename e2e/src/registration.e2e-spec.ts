@@ -2,7 +2,7 @@ import { browser, by, element } from 'protractor';
 import { AppPage } from './app.po';
 import { REGISTRATION } from '../config';
 
-describe('AppV2', () => {
+xdescribe('AppV2-Registration', () => {
   let page: AppPage;
   let originalTimeout: number;
 
