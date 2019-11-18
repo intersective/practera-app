@@ -123,47 +123,34 @@ export class ActivityComponent extends RouterEnter {
     this.newRelic.actionText('Back button pressed on Activities Page.');
   }
 
-  // check assessment lock or not before go to assessment.
-  checkAssessment(task) {
-    if (task.isLocked) {
-      this.notificationService.lockTeamAssessmentPopUp(
-        {
-          name: task.submitter.name,
-          image: task.submitter.image
-        } ,
-        (data) => {
-          if (data.data) {
-            this.goto(task.type, task.id);
-          }
-        }
-      );
-      return ;
-    }
-    this.goto(task.type, task.id);
-  }
+  goto(task) {console.log(task);
+    this.newRelic.actionText(`Selected Task (${task.type}): ID ${task.id}`);
 
-  goto(type, id) {
-    this.newRelic.actionText(`Selected Task (${type}): ID ${id}`);
-
-    switch (type) {
+    switch (task.type) {
       case 'Assessment':
-        // get the context id of this assessment
-        let contextId = 0;
-        let isForTeam = false;
-        this.utils.each(this.activity.tasks, task => {
-          if (task.type === 'Assessment' && task.id === id) {
-            contextId = task.contextId;
-            isForTeam = task.isForTeam;
-          }
-        });
-        if (isForTeam && !this.storage.getUser().teamId) {
+        if (task.isForTeam && !this.storage.getUser().teamId) {
           this.notificationService.popUp('shortMessage', {message: 'To do this assessment, you have to be in a team.'});
           break;
         }
-        this.navigate(['assessment', 'assessment', this.id , contextId, id]);
+        // check if assessment is locked by other team members
+        if (task.isLocked) {
+          this.notificationService.lockTeamAssessmentPopUp(
+            {
+              name: task.submitter.name,
+              image: task.submitter.image
+            } ,
+            (data) => {
+              if (data.data) {
+                this.navigate(['assessment', 'assessment', this.id , task.contextId, task.id]);
+              }
+            }
+          );
+          return ;
+        }
+        this.navigate(['assessment', 'assessment', this.id , task.contextId, task.id]);
         break;
       case 'Topic':
-        this.navigate(['topic', this.id, id]);
+        this.navigate(['topic', this.id, task.id]);
         break;
       case 'Locked':
         this.notificationService.popUp('shortMessage', {message: 'This part of the app is still locked. You can unlock the features by engaging with the app and completing all tasks.'});
