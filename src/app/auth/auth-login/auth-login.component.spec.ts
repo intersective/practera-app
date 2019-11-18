@@ -85,14 +85,16 @@ describe('AuthLoginComponent', () => {
       serviceSpy.login.and.returnValue(of({}));
       component.login();
       expect(serviceSpy.login.calls.count()).toBe(1);
-      tick();
+      spyOn(component, 'handleNavigation');
+      // component.handleNavigation([{}]);
       fixture.detectChanges();
+      // tick(1000);
       fixture.whenStable().then(() => {
-        expect(newRelicSpy.actionText).toBeDefined();
-        expect(newRelicSpy.actionText).toHaveBeenCalledTimes(1);
-        component.handleNavigation([{}]);
-        expect(switcherServiceSpy.switchProgramAndNavigate.calls.count()).toBe(1);
+        switcherServiceSpy.switchProgramAndNavigate.and.returnValue(['app', 'home']);
+        // fixture.detectChanges();
+        // switcherServiceSpy.switchProgramAndNavigate([{}]);
         expect(routerSpy.navigate).toHaveBeenCalled();
+        expect(switcherServiceSpy.switchProgramAndNavigate.calls.count()).toBe(3);
         expect(routerSpy.navigate.calls.first().args[0]).toEqual(['app', 'home']);
       });
     }));
@@ -101,15 +103,12 @@ describe('AuthLoginComponent', () => {
       component.loginForm.setValue({email: 'test@test.com', password: 'abc'});
       serviceSpy.login.and.returnValue(of({}));
       component.login();
+      expect(serviceSpy.login.calls.count()).toBe(1);
+      component.handleNavigation([{}, {}, {}]);
       tick();
-      fixture.detectChanges();
-      fixture.whenStable().then(() => {
-        expect(serviceSpy.login.calls.count()).toBe(1);
-        component.handleNavigation([{}, {}, {}]);
-        expect(switcherServiceSpy.switchProgramAndNavigate.calls.count()).toBe(1);
-        expect(routerSpy.navigate).toHaveBeenCalled();
-        expect(routerSpy.navigate.calls.first().args[0]).toEqual(['switcher']);
-      });
+      expect(switcherServiceSpy.switchProgramAndNavigate.calls.count()).toBe(2);
+      expect(routerSpy.navigate).toHaveBeenCalled();
+      expect(routerSpy.navigate.calls.first().args[0]).toEqual(['switcher']);
     }));
 
     it('should pop up password compromised alert if login failed', fakeAsync(() => {
