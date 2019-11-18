@@ -64,7 +64,14 @@ export class ProjectService {
 
   // request for the latest project data
   private _getProjectData() {
-    return this.request.postGraphQL('"{milestones{id name progress description is_locked activities{id name progress is_locked lead_image }}}"')
+    return this.request.postGraphQL(
+      `"{` +
+        `milestones{` +
+          `id name progress description is_locked activities{` +
+            `id name progress is_locked lead_image ` +
+          `}` +
+        `}` +
+      `}"`)
       .pipe(map(res => this._normaliseProject(res.data)));
   }
 
