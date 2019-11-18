@@ -125,7 +125,7 @@ export class ActivityService {
             id: task.id,
             name: task.name,
             type: 'Assessment',
-            contextId: task.context_Id,
+            contextId: task.context_id,
             isForTeam: task.is_team,
             dueDate: task.deadline,
             isOverdue: task.deadline ? this.utils.timeComparer(task.deadline) < 0 : false,
