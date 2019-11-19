@@ -83,12 +83,4 @@ describe('ProjectService', () => {
     requestSpy.postGraphQL.and.returnValue(of(response));
     service.getProject().subscribe(milestones => expect(milestones).toEqual(expected));
   });
-
-  it('when testing getOverview(), it should return correct data', () => {
-    const response = {
-      id: 2
-    };
-    requestSpy.get.and.returnValue(of(response));
-    service.getOverview().subscribe(res => expect(res).toEqual(response));
-  });
 });
