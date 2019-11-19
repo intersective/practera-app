@@ -109,7 +109,6 @@ export class AuthLoginComponent implements OnInit {
 
   private async _handleNavigation(programs) {
     const route = await this.switcherService.switchProgramAndNavigate(programs);
-    console.log('here');
     this.isLoggingIn = false;
     return this.router.navigate(route);
   }
