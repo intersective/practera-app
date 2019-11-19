@@ -4,10 +4,16 @@ import { RouterModule } from '@angular/router';
 import { OverviewRoutingComponent } from './overview-routing.component';
 import { OverviewComponent } from './overview/overview.component';
 import { OverviewService } from './overview.service';
+import { ProjectModule } from '../project/project.module';
+import { HomeModule } from '../home/home.module';
+import { HomeComponent } from '../home/home.component';
+import { ProjectComponent } from '../project/project.component';
 
 @NgModule({
   imports: [
+    HomeModule,
     SharedModule,
+    ProjectModule,
     RouterModule.forChild([
       {
         path: '',
@@ -15,7 +21,13 @@ import { OverviewService } from './overview.service';
         children: [
           {
             path: '',
-            component: OverviewComponent,
+            component: HomeComponent,
+            outlet: 'home',
+          },
+          {
+            path: '',
+            component: ProjectComponent,
+            outlet: 'project',
           }
         ]
       },
