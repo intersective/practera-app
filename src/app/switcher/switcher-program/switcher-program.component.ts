@@ -8,6 +8,7 @@ import { environment } from '@environments/environment';
 import { PusherService } from '@shared/pusher/pusher.service';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
 import { NotificationService } from '@shared/notification/notification.service';
+import { UtilsService } from '@services/utils.service';
 
 @Injectable({
   providedIn: 'root'
@@ -28,8 +29,9 @@ export class SwitcherProgramComponent implements OnInit {
     private pusherService: PusherService,
     private switcherService: SwitcherService,
     private newRelic: NewRelicService,
-    private notificationService: NotificationService
-  ) { }
+    private notificationService: NotificationService,
+    private utils: UtilsService
+  ) {}
 
   ngOnInit() {
     this.newRelic.setPageViewName('program switcher');
