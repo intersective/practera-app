@@ -1,5 +1,5 @@
 <ion-header mode="ios">
-  <ion-toolbar color="light" [ngClass]="{'ion-toolbar-absolute': !utils.isMobile()}">
+  <ion-toolbar [ngClass]="{'ion-toolbar-absolute': !utils.isMobile()}">
     <ion-icon *ngIf="utils.isMobile()" name="arrow-back" (click)="back()" color="primary" slot="start" margin-start></ion-icon>
     <ion-title text-center>Assessment</ion-title>
     <ng-container *ngIf="doAssessment || doReview">
