@@ -285,14 +285,8 @@ export class AuthRegistrationComponent implements OnInit {
   }
 
   async checkprogramCount(programs) {
-    // this.showPopupMessages('shortMessage', 'Registration success!', await this.switcherService.switchProgramAndNavigate(programs));
-    this.switcherService.switchProgramAndNavigate(programs[0]).then(
-      (route) => {
-        this.showPopupMessages('shortMessage', 'Registration success!', route);
-      },
-      err => {
-        throw new Error(err);
-      });
+    const route = await this.switcherService.switchProgramAndNavigate(programs);
+    this.showPopupMessages('shortMessage', 'Registration success!', route);
   }
 
 }
