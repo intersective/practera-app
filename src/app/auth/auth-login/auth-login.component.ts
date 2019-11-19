@@ -65,7 +65,7 @@ export class AuthLoginComponent implements OnInit {
       res => {
         nrLoginTracer('login successful');
         this.newRelic.actionText('login successful');
-        return this.handleNavigation(res.programs);
+        return this._handleNavigation(res.programs);
       },
       err => {
         nrLoginTracer(JSON.stringify(err));
@@ -106,17 +106,11 @@ export class AuthLoginComponent implements OnInit {
       }
     );
   }
-  handleNavigation(programs) {
-    // this.isLoggingIn = false;
-    // return this.router.navigate(await this.switcherService.switchProgramAndNavigate(programs));
-    return this.switcherService.switchProgramAndNavigate(programs).then(
-      (route) => {
-        this.isLoggingIn = false;
-        return this.router.navigate(route);
-      },
-      err => {
-        this.isLoggingIn = false;
-        throw new Error(err);
-      });
+
+  private async _handleNavigation(programs) {
+    const route = await this.switcherService.switchProgramAndNavigate(programs);
+    console.log('here');
+    this.isLoggingIn = false;
+    return this.router.navigate(route);
   }
 }
