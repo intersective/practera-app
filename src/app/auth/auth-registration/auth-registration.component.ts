@@ -178,9 +178,10 @@ export class AuthRegistrationComponent implements OnInit {
                 password: this.confirmPassword
               })
               .subscribe(
-                res => {
+                async res => {
                   nrAutoLoginTracer();
-                  this._checkprogramCount(res.programs);
+                  const route = await this.switcherService.switchProgramAndNavigate(res.programs);
+                  this.showPopupMessages('shortMessage', 'Registration success!', route);
                 },
                 err => {
                   nrAutoLoginTracer();
@@ -282,11 +283,6 @@ export class AuthRegistrationComponent implements OnInit {
         },
         redirect ? redirect : false
       );
-  }
-
-  private async _checkprogramCount(programs) {
-    const route = await this.switcherService.switchProgramAndNavigate(programs);
-    this.showPopupMessages('shortMessage', 'Registration success!', route);
   }
 
 }
