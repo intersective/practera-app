@@ -91,6 +91,10 @@ export class TabsComponent extends RouterEnter {
   private _checkRoute() {
     this.newRelic.actionText(`selected ${this.router.url}`);
     switch (this.router.url) {
+      case '/app/overview':
+        this.selectedTab = 'overview';
+        break;
+
       case '/app/home':
         this.selectedTab = 'home';
         break;
