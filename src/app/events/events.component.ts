@@ -120,6 +120,7 @@ export class EventsComponent extends RouterEnter {
 
   /**
    * This function is used to put events into the proper group
+   *
    * @param {Event} event          The event data
    * @param {Array} events         The events array to push group data to
    * @param {Array} eventGroup     The event group array
@@ -136,6 +137,15 @@ export class EventsComponent extends RouterEnter {
         events: []
       };
     }
+
+    /**
+     * Frontend Expiry status is recalculated from event.start date
+     * (API doesn't return explicit conditions to FE to evaluate booking timeframe)
+     * - we are checking against the event start time to check if it is expired
+     * - if event started and user haven't booked, it is expired
+     * - if event started and user has booked, it is in attended
+     * - if event haven't started, it's bookable
+     */
     if (isBrowse && this.utils.timeComparer(event.startTime) < 0) {
       // group all past events as one group named "Expired"
       if (compareDate !== 'Expired') {

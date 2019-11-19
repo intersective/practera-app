@@ -1,7 +1,7 @@
 import { Injectable, Inject } from '@angular/core';
 import * as _ from 'lodash';
 import { DOCUMENT } from '@angular/common';
-import { Observable, Subject } from 'rxjs';
+import { Observable, Subject, BehaviorSubject } from 'rxjs';
 import { map, filter } from 'rxjs/operators';
 
 // @TODO: enhance Window reference later, we shouldn't refer directly to browser's window object like this
@@ -12,7 +12,13 @@ declare var window: any;
 })
 export class UtilsService {
   private lodash;
+  // this Subject is used to broadcast an event to the app
   protected _eventsSubject = new Subject<{key: string, value: any}>();
+  // this Subject is used in project.service to cache the project data
+  public projectSubject = new BehaviorSubject(null);
+  // this Subject is used in activity.service to cache the activity data
+  // it stores key => Subject pairs of all activities
+  public activitySubjects = {};
 
   constructor(
     @Inject(DOCUMENT) private document: Document,
@@ -105,10 +111,36 @@ export class UtilsService {
       );
   }
 
+  // get the activity Subject for cache
+  getActivityCache(key): BehaviorSubject<any> {
+    if (!(key in this.activitySubjects)) {
+      this.activitySubjects[key] = new BehaviorSubject(null);
+    }
+    return this.activitySubjects[key];
+  }
+
+  // update the activity cache for given key(activity id)
+  updateActivityCache(key, value) {
+    if (!(key in this.activitySubjects)) {
+      this.activitySubjects[key] = new BehaviorSubject(null);
+    }
+    this.activitySubjects[key].next(value);
+  }
+
+  // need to clear all Subject for cache
+  clearCache() {
+    // initialise the Subject for caches
+    this.projectSubject.next(null);
+    this.each(this.activitySubjects, (subject, key) => {
+      this.activitySubjects[key].next(null);
+    });
+  }
+
   // transfer url query string to an object
   urlQueryToObject(query: string) {
     return JSON.parse('{"' + decodeURI(query).replace(/"/g, '\\"').replace(/&/g, '","').replace(/=/g, '":"') + '"}');
   }
+
 
   /**
    * This is a time formatter that transfer time/date string to a nice string
