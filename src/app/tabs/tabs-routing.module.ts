@@ -16,7 +16,7 @@ const routes: Routes = [
         children: [
           {
             path: '',
-            loadChildren: '../home/home.module#HomeModule',
+            loadChildren: '../overview/overview.module#OverviewModule',
           }
         ]
       },
