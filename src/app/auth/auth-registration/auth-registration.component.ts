@@ -180,7 +180,7 @@ export class AuthRegistrationComponent implements OnInit {
               .subscribe(
                 res => {
                   nrAutoLoginTracer();
-                  this.checkprogramCount(res.programs);
+                  this._checkprogramCount(res.programs);
                 },
                 err => {
                   nrAutoLoginTracer();
@@ -284,7 +284,7 @@ export class AuthRegistrationComponent implements OnInit {
       );
   }
 
-  async checkprogramCount(programs) {
+  private async _checkprogramCount(programs) {
     const route = await this.switcherService.switchProgramAndNavigate(programs);
     this.showPopupMessages('shortMessage', 'Registration success!', route);
   }
