@@ -81,34 +81,14 @@ describe('AuthLoginComponent', () => {
     });
 
     it('should navigate to dashboard if have one program after successfully login', fakeAsync(() => {
+      switcherServiceSpy.switchProgramAndNavigate.and.returnValue(['app', 'home']);
       component.loginForm.setValue({email: 'test@test.com', password: 'abc'});
       serviceSpy.login.and.returnValue(of({}));
       component.login();
-      expect(serviceSpy.login.calls.count()).toBe(1);
-      spyOn(component, 'handleNavigation');
-      // component.handleNavigation([{}]);
-      fixture.detectChanges();
-      // tick(1000);
-      fixture.whenStable().then(() => {
-        switcherServiceSpy.switchProgramAndNavigate.and.returnValue(['app', 'home']);
-        // fixture.detectChanges();
-        // switcherServiceSpy.switchProgramAndNavigate([{}]);
-        expect(routerSpy.navigate).toHaveBeenCalled();
-        expect(switcherServiceSpy.switchProgramAndNavigate.calls.count()).toBe(3);
-        expect(routerSpy.navigate.calls.first().args[0]).toEqual(['app', 'home']);
-      });
-    }));
-
-    it('should navigate to switcher page if have more than one program after successfully login', fakeAsync(() => {
-      component.loginForm.setValue({email: 'test@test.com', password: 'abc'});
-      serviceSpy.login.and.returnValue(of({}));
-      component.login();
-      expect(serviceSpy.login.calls.count()).toBe(1);
-      component.handleNavigation([{}, {}, {}]);
       tick();
-      expect(switcherServiceSpy.switchProgramAndNavigate.calls.count()).toBe(2);
-      expect(routerSpy.navigate).toHaveBeenCalled();
-      expect(routerSpy.navigate.calls.first().args[0]).toEqual(['switcher']);
+      expect(serviceSpy.login.calls.count()).toBe(1);
+      expect(switcherServiceSpy.switchProgramAndNavigate.calls.count()).toBe(1);
+      expect(routerSpy.navigate.calls.first().args[0]).toEqual(['app', 'home']);
     }));
 
     it('should pop up password compromised alert if login failed', fakeAsync(() => {
