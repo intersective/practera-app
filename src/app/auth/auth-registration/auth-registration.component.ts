@@ -13,9 +13,7 @@ import {
 import { AuthService } from '../auth.service';
 import { BrowserStorageService } from '@services/storage.service';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
-import { environment } from '@environments/environment';
 import { SwitcherService } from '../../switcher/switcher.service';
-import { PusherService } from '@shared/pusher/pusher.service';
 
 @Component({
   selector: 'app-auth-registration',
@@ -45,8 +43,7 @@ export class AuthRegistrationComponent implements OnInit {
     private storage: BrowserStorageService,
     private notificationService: NotificationService,
     private newRelic: NewRelicService,
-    private switcherService: SwitcherService,
-    private pusherService: PusherService
+    private switcherService: SwitcherService
   ) {
     this.initForm();
   }
