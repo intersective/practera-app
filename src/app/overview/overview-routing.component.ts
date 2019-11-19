@@ -2,6 +2,6 @@ import { Component } from '@angular/core';
 
 @Component({
   selector: 'app-overview-routing',
-  template: '<ion-router-outlet></ion-router-outlet>'
+  templateUrl: './overview-routing.component.html'
 })
 export class OverviewRoutingComponent {}
