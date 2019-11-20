@@ -43,20 +43,21 @@ describe('AppV2', () => {
   });
 
   it('should login and select a program', () => {
+    browser.executeScript('window.localStorage.clear();');
     page.navigateTo();
     browser.sleep(2000);
     browser.ignoreSynchronization = true;
     page.insertEmail();
     page.insertPassword();
 
-    browser.sleep(1000);
+    browser.sleep(3000);
 
     const loginButton = page.loginButton();
     expect(loginButton.getAttribute('disabled')).toBeFalsy();
     loginButton.click();
 
     // wait for experiences API request
-    browser.sleep(3000);
+    browser.sleep(5000);
     expect(page.getTitle()).toEqual('Select an experience');
 
     // available program should be more than 0
@@ -69,17 +70,18 @@ describe('AppV2', () => {
 
   it('should able to select first program', () => {
     page.navigateTo('/switcher/switcher-program');
+    browser.sleep(3000);
 
     // available program should be more than 0
-    const programs = element.all(by.css('ion-col'));
+    const programs = element(by.css('app-switcher-program')).element(by.css('ion-content')).all(by.css('ion-col'));
     expect(programs.count()).toBeGreaterThan(0);
     const firstProgram = programs.first();
     expect(firstProgram.getText()).toEqual(PROGRAM.name);
 
     firstProgram.click();
-    browser.sleep(5000);
+    browser.sleep(8000);
 
-    const navBarTitle = element(by.css('app-home')).element(by.css('ion-content')).element(by.css('h1'));
+    const navBarTitle = element(by.tagName('app-home')).element(by.css('ion-content')).element(by.css('h1'));
     expect(navBarTitle.getText()).toEqual(PROGRAM.name);
 
     element(by.css('ion-tab-bar')).all(by.css('ion-tab-button')).then(tabs => {
@@ -118,7 +120,7 @@ describe('AppV2', () => {
       expect(settings.getText()).toContain('Settings');
 
       settings.click();
-      browser.sleep(2000);
+      browser.sleep(5000);
       expect(element(by.css('ion-title')).getText()).toEqual('Settings');
     });
 
@@ -128,8 +130,8 @@ describe('AppV2', () => {
       chat.click();
       browser.sleep(8000);
 
-      const chatComponentHeaderBar = element(by.css('app-chat')).element(by.css('ion-header')).element(by.css('ion-toolbar'));
-      expect(chatComponentHeaderBar.element(by.css('ion-title')).getText()).toEqual('Chat');
+      const chatComponentHeaderBar = element(by.tagName('app-chat')).element(by.tagName('ion-header')).element(by.css('ion-toolbar'));
+      expect(chatComponentHeaderBar.element(by.tagName('ion-title')).getText()).toEqual('Chat');
     });
 
     element(by.css('ion-tab-bar')).all(by.css('ion-tab-button')).then(tabs => {
@@ -262,10 +264,11 @@ describe('AppV2', () => {
   });
 
   it('should not display program switcher page for user enrolled to only one program', () => {
+    browser.executeScript('window.localStorage.clear();');
     page.navigateTo('/');
-    browser.sleep(2000);
+    browser.sleep(3000);
 
-    const loginPage = element(by.css('app-auth-login'));
+    const loginPage = element(by.tagName('app-auth-login'));
     page.insertKeys('email', SINGLE_PROGRAM_USER.email, loginPage);
     page.insertKeys('password', SINGLE_PROGRAM_USER.password, loginPage);
 
@@ -279,16 +282,17 @@ describe('AppV2', () => {
     expect(tabBar.isDisplayed()).toBeTruthy();
     const settingTab = tabBar.all(by.css('ion-tab-button')).last();
     settingTab.click();
-    browser.sleep(2000);
+    browser.sleep(5000);
 
     const logoutBtn = page.logoutButton();
     logoutBtn.click();
-    browser.sleep(2000);
+    browser.sleep(3000);
   });
 
   it('should show mentor tab menu normally and has one assessment to review', () => {
+    browser.executeScript('window.localStorage.clear();');
     page.navigateTo('/');
-    browser.sleep(2000);
+    browser.sleep(3000);
     browser.ignoreSynchronization = true;
 
     page.loginAs(MENTOR);
