@@ -11,7 +11,7 @@ import { FastFeedbackModule } from '../fast-feedback/fast-feedback.module';
 @NgModule({
   imports: [
     SharedModule,
-    ProjectRoutingModule,
+    // ProjectRoutingModule,
     NgCircleProgressModule.forRoot({
       'outerStrokeLinecap': 'butt',
       'toFixed': 0,
@@ -33,7 +33,7 @@ import { FastFeedbackModule } from '../fast-feedback/fast-feedback.module';
   ],
   declarations: [
     ProjectComponent,
-    ProjectRoutingComponent
+    // ProjectRoutingComponent
   ],
   providers: [
     ProjectService,
