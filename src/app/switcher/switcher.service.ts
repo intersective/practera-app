@@ -181,6 +181,8 @@ export class SwitcherService {
         await this.switchProgram(programs);
       }
       this.pusherService.initialise({ unsubscribe: true });
+      // clear the cached data
+      this.utils.clearCache();
       if ((typeof environment.goMobile !== 'undefined' && environment.goMobile === false)
         || /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
         return ['app', 'home'];
