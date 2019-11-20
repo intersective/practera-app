@@ -1,9 +1,16 @@
-<ion-grid>
-  <ion-row>
-    <ion-router-outlet name="home"></ion-router-outlet>
-  </ion-row>
-  <ion-row>
-    <ion-router-outlet name="project"></ion-router-outlet>
-  </ion-row>
-</ion-grid>
-
+<ion-content>
+  <ion-grid>
+    <ion-row>
+      <ion-col>
+        home
+        <ion-router-outlet name="home"></ion-router-outlet>
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col>
+        project
+        <ion-router-outlet name="project"></ion-router-outlet>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+</ion-content>

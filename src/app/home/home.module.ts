@@ -8,11 +8,11 @@ import { TodoCardComponent } from './todo-card/todo-card.component';
 @NgModule({
   imports: [
     SharedModule,
-    HomeRoutingModule,
+    // HomeRoutingModule,
   ],
   declarations: [
     HomeComponent,
-    HomeRoutingComponent,
+    // HomeRoutingComponent,
     TodoCardComponent
   ],
 })
