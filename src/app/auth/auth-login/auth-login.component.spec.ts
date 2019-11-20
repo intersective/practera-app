@@ -20,6 +20,7 @@ describe('AuthLoginComponent', () => {
   let notificationSpy: jasmine.SpyObj<NotificationService>;
   let routerSpy: jasmine.SpyObj<Router>;
   let switcherServiceSpy: jasmine.SpyObj<SwitcherService>;
+  let newRelicSpy: jasmine.SpyObj<MockNewRelicService>;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -49,7 +50,7 @@ describe('AuthLoginComponent', () => {
         },
         {
           provide: SwitcherService,
-          useValue: jasmine.createSpyObj('SwitcherService', ['switchProgram'])
+          useValue: jasmine.createSpyObj('SwitcherService', ['switchProgramAndNavigate'])
         }
       ],
     }).compileComponents();
@@ -62,6 +63,7 @@ describe('AuthLoginComponent', () => {
     notificationSpy = TestBed.get(NotificationService);
     routerSpy = TestBed.get(Router);
     switcherServiceSpy = TestBed.get(SwitcherService);
+    newRelicSpy = TestBed.get(NewRelicService);
   });
 
   it('should create', () => {
@@ -78,26 +80,16 @@ describe('AuthLoginComponent', () => {
       expect(component.isLoggingIn).toBe(false);
     });
 
-    it('should navigate to dashboard if have one program after successfully login', async () => {
+    it('should navigate to dashboard if have one program after successfully login', fakeAsync(() => {
+      switcherServiceSpy.switchProgramAndNavigate.and.returnValue(['app', 'home']);
       component.loginForm.setValue({email: 'test@test.com', password: 'abc'});
       serviceSpy.login.and.returnValue(of({}));
       component.login();
+      tick();
       expect(serviceSpy.login.calls.count()).toBe(1);
-      await component.handleNavigation([{}]);
-      expect(switcherServiceSpy.switchProgram.calls.count()).toBe(1);
-      expect(routerSpy.navigate).toHaveBeenCalled();
+      expect(switcherServiceSpy.switchProgramAndNavigate.calls.count()).toBe(1);
       expect(routerSpy.navigate.calls.first().args[0]).toEqual(['app', 'home']);
-    });
-
-    it('should navigate to switcher page if have more than one program after successfully login', () => {
-      component.loginForm.setValue({email: 'test@test.com', password: 'abc'});
-      serviceSpy.login.and.returnValue(of({}));
-      component.login();
-      expect(serviceSpy.login.calls.count()).toBe(1);
-      component.handleNavigation([{}, {}, {}]);
-      expect(routerSpy.navigate).toHaveBeenCalled();
-      expect(routerSpy.navigate.calls.first().args[0]).toEqual(['switcher']);
-    });
+    }));
 
     it('should pop up password compromised alert if login failed', fakeAsync(() => {
       component.loginForm.setValue({email: 'test@test.com', password: 'abc'});
