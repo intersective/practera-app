@@ -116,6 +116,8 @@ export class ChatRoomComponent extends RouterEnter {
   }
 
   private _initialise() {
+    this.message = '';
+    this.messageList = new Array;
     this.loadingChatMessages = true;
     this.selectedChat = {
       name: '',
@@ -124,6 +126,11 @@ export class ChatRoomComponent extends RouterEnter {
       team_member_id: null,
       participants_only: false
     };
+    this.messagePageNumber = 0;
+    this.messagePagesize = 20;
+    this.loadingMesageSend = false;
+    this.isTyping = false;
+    this.typingMessage = '';
   }
 
   private _validateRouteParams() {
@@ -166,6 +173,8 @@ export class ChatRoomComponent extends RouterEnter {
         team_member_id: this.selectedChat.team_member_id
       };
     }
+    console.log('getMessage - data', data);
+    console.log('getMessage - this.selectedChat.is_team', this.selectedChat.is_team);
     this.chatService
       .getMessageList(data, this.selectedChat.is_team)
       .subscribe(
