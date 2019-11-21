@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, NgZone, AfterContentInit, AfterViewInit, ElementRef } from '@angular/core';
+import { Component, Input, ViewChild, NgZone, AfterContentInit, AfterViewInit, ElementRef } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { IonContent, ModalController } from '@ionic/angular';
 import { BrowserStorageService } from '@services/storage.service';
@@ -18,6 +18,10 @@ import { NewRelicService } from '@shared/new-relic/new-relic.service';
 })
 export class ChatRoomComponent extends RouterEnter {
   @ViewChild(IonContent) content: IonContent;
+  @Input() teamId: number;
+  @Input() teamMemberId: number;
+  @Input() participantsOnly: boolean;
+  @Input() chatName: string;
 
   routeUrl = '/chat-room/';
   message: string;
@@ -123,10 +127,19 @@ export class ChatRoomComponent extends RouterEnter {
   }
 
   private _validateRouteParams() {
-    const teamId = Number(this.route.snapshot.paramMap.get('teamId'));
-    this.selectedChat.team_id = teamId;
-    if (Number(this.route.snapshot.paramMap.get('teamMemberId'))) {
+    if (this.teamId) {
+      this.selectedChat.team_id = this.teamId;
+    } else {
+      const teamId = Number(this.route.snapshot.paramMap.get('teamId'));
+      this.selectedChat.team_id = teamId;
+    }
+    if (this.teamMemberId) {
+      this.selectedChat.team_member_id = this.teamMemberId;
+    } else if (Number(this.route.snapshot.paramMap.get('teamMemberId'))) {
       this.selectedChat.team_member_id = Number(this.route.snapshot.paramMap.get('teamMemberId'));
+    } else if (this.participantsOnly) {
+      this.selectedChat.is_team = true;
+      this.selectedChat.participants_only = this.participantsOnly;
     } else {
       this.selectedChat.is_team = true;
       this.selectedChat.participants_only = JSON.parse(this.route.snapshot.paramMap.get('participantsOnly'));
@@ -196,9 +209,12 @@ export class ChatRoomComponent extends RouterEnter {
 
   private _getChatName() {
     // if the chat name is passed in as parameter, use it
-    const name = this.route.snapshot.paramMap.get('name');
-    if (name) {
-      this.selectedChat.name = name;
+    if (this.chatName) {
+      this.selectedChat.name = this.chatName;
+      this.loadingChatMessages = false;
+      return;
+    } else if (this.route.snapshot.paramMap.get('name')) {
+      this.selectedChat.name = this.route.snapshot.paramMap.get('name');
       this.loadingChatMessages = false;
       return;
     }

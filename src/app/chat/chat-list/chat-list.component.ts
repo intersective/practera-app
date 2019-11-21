@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Output, EventEmitter, NgZone } from '@angular/core';
 import { Router, NavigationExtras } from '@angular/router';
 import { BrowserStorageService } from '@services/storage.service';
 import { RouterEnter } from '@services/router-enter.service';
@@ -13,6 +13,7 @@ import { NewRelicService } from '@shared/new-relic/new-relic.service';
   styleUrls: ['chat-list.component.scss']
 })
 export class ChatListComponent extends RouterEnter {
+  @Output() navigate = new EventEmitter();
   routeUrl = '/app/chat';
   chatList: Array<ChatListObject>;
   haveMoreTeam: boolean;
@@ -24,7 +25,8 @@ export class ChatListComponent extends RouterEnter {
     public storage: BrowserStorageService,
     public utils: UtilsService,
     public fastFeedbackService: FastFeedbackService,
-    private newrelic: NewRelicService
+    private newrelic: NewRelicService,
+    private ngZone: NgZone
   ) {
     super(router);
     this.newrelic.setPageViewName('Chat list');
@@ -82,6 +84,32 @@ export class ChatListComponent extends RouterEnter {
     }
   }
 
+  // force every navigation happen under radar of angular
+  private _navigate(direction) {
+    if (this.utils.isMobile()) {
+      // redirect to chat room page for mobile
+      return this.ngZone.run(() => {
+        return this.router.navigate(direction);
+      });
+    } else {
+      // emit event to parent component(chat view component)
+      if (direction[2] === 'team') {
+        this.navigate.emit({
+          teamId: direction[3],
+          participantsOnly: direction[4]
+        });
+        return;
+      } else {
+        this.navigate.emit({
+          teamId: direction[2],
+          teamMemberId: direction[3],
+          chatName: direction[4]
+        });
+        return;
+      }
+    }
+  }
+
   navigateToChatRoom(chat) {
     this.newrelic.addPageAction('selected chat room', {
       isTeam: chat.is_team,
@@ -89,7 +117,7 @@ export class ChatListComponent extends RouterEnter {
     });
 
     if (chat.is_team) {
-      this.router.navigate([
+      this._navigate([
         'chat',
         'chat-room',
         'team',
@@ -98,14 +126,14 @@ export class ChatListComponent extends RouterEnter {
       ]);
     } else {
       if (chat.last_message_created) {
-        this.router.navigate([
+        this._navigate([
           'chat',
           'chat-room',
           chat.team_id,
           chat.team_member_id
         ]);
       } else {
-        this.router.navigate([
+        this._navigate([
           'chat',
           'chat-room',
           chat.team_id,

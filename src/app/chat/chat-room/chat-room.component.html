@@ -4,7 +4,7 @@
     <ion-title text-center>{{selectedChat.is_team ? selectedChat.team_name : selectedChat.name}}</ion-title>
   </ion-toolbar>
 </ion-header>
-<ion-content color="light" [scrollEvents]="true" (ionScroll)="loadMoreMessages($event)">
+<ion-content [ngClass]="{'ion-content-absolute-with-footer': !utils.isMobile()}" color="light" [scrollEvents]="true" (ionScroll)="loadMoreMessages($event)">
   <ng-container *ngIf="loadingChatMessages">
     <div text-center>
       <ion-spinner></ion-spinner>
@@ -107,7 +107,7 @@
     </ng-container>
   </ion-list>
 </ion-content>
-<ion-footer class="footer">
+<ion-footer class="footer"  [ngClass]="{'ion-footer-absolute': !utils.isMobile()}">
   <ion-grid class="white-bg">
     <ion-row nowrap no-padding align-items-end>
       <ion-col size="1" no-padding text-center>
