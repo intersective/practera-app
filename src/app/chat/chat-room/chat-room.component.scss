@@ -163,18 +163,7 @@ $message-body-size: 224px;
 .footer {
 
   &.ion-footer-absolute {
-    height: 48px;
-    // ion-grid {
-    //   ion-row {
-    //     ion-col {
-    //       ion-button {
-    //         min-height: 48px;
-    //         max-height: 100px;
-    //         height: auto;
-    //       }
-    //     }
-    //   }
-    // }
+    height: auto;
   }
 
   ion-grid {
