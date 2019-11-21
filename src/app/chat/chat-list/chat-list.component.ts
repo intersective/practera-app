@@ -103,7 +103,7 @@ export class ChatListComponent extends RouterEnter {
         this.navigate.emit({
           teamId: direction[2],
           teamMemberId: direction[3],
-          chatName: direction[4]
+          chatName: direction[4] ? direction[4].name : undefined
         });
         return;
       }
