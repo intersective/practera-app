@@ -29,6 +29,8 @@ export class TasksComponent extends RouterEnter {
 
   onEnter() {
     this.activityId = +this.route.snapshot.paramMap.get('id');
+    this.topicId = null;
+    this.assessmentId = null;
     // trigger onEnter after the element get generated
     setTimeout(() => {
       this.activity.onEnter();
