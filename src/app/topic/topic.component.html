@@ -58,7 +58,7 @@
       <ng-container *ngIf="!btnToggleTopicIsDone; else showAsCompleted">CONTINUE</ng-container>
       <ng-template #showAsCompleted>
         <ng-container *ngIf="!redirecting; else showRedirecting">
-          <ion-item lines="none" no-paddings color="primary">
+          <ion-item lines="full" no-paddings color="primary">
             <ion-icon slot="start" src="/assets/checkmark.svg"></ion-icon>
             <ion-text>Continue</ion-text>
           </ion-item>
