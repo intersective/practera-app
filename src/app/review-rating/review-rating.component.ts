@@ -74,7 +74,16 @@ export class ReviewRatingComponent implements OnInit {
     this.modalController.dismiss();
     // if this.redirect == false, don't redirect to another page
     if (this.redirect) {
-      this.router.navigate(this.redirect);
+      // go to the desktop view assessment page
+      if (!this.utils.isMobile() && this.redirect.includes('assessment')) {
+        this.router.navigate(['app', 'activity', this.redirect[2], {
+          task: 'assessment',
+          task_id: this.redirect[4],
+          context_id: this.redirect[3]
+        }]);
+      } else {
+        this.router.navigate(this.redirect);
+      }
     }
   }
 
