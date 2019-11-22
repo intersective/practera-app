@@ -1,5 +1,5 @@
 import { TopicService, Topic } from './topic.service';
-import { Component, OnInit, NgZone, Input } from '@angular/core';
+import { Component, OnInit, NgZone, Input, Output, EventEmitter } from '@angular/core';
 import { EmbedVideoService } from 'ngx-embed-video';
 import { Router, ActivatedRoute } from '@angular/router';
 import { FilestackService } from '@shared/filestack/filestack.service';
@@ -20,6 +20,7 @@ import { NewRelicService } from '@shared/new-relic/new-relic.service';
 export class TopicComponent extends RouterEnter {
   @Input() inputActivityId: number;
   @Input() inputId: number;
+  @Output() navigate = new EventEmitter();
   routeUrl = '/topic/';
   topic: Topic = {
     id: 0,
@@ -248,7 +249,7 @@ export class TopicComponent extends RouterEnter {
     }
 
     const { activity, nextTask } = await this.getNextSequence();
-    let route: any = ['app', 'project'];
+    let route: any = ['app', 'home'];
 
     if (this.activityId === activity.id && nextTask) {
       switch (nextTask.type) {
@@ -281,20 +282,44 @@ export class TopicComponent extends RouterEnter {
       });
     }
 
-    await this.navigate(route);
+    await this._navigate(route);
     return;
   }
 
   // force every navigation happen under radar of angular
-  private navigate(direction): Promise<boolean> {
-    return this.ngZone.run(() => {
-      return this.router.navigate(direction);
-    });
+  private _navigate(direction): Promise<boolean> {
+    if (this.utils.isMobile()) {
+      // redirect to topic/assessment page for mobile
+      return this.ngZone.run(() => {
+        return this.router.navigate(direction);
+      });
+    } else {
+      // emit event to parent component(task component)
+      switch (direction[0]) {
+        case 'topic':
+          this.navigate.emit({
+            type: 'topic',
+            topicId: direction[2]
+          });
+          break;
+        case 'assessment':
+          this.navigate.emit({
+            type: 'assessment',
+            contextId: direction[3],
+            assessmentId: direction[4]
+          });
+          break;
+        default:
+          return this.ngZone.run(() => {
+            return this.router.navigate(direction);
+          });
+      }
+    }
   }
 
   back() {
     if (this.btnToggleTopicIsDone || !this.askForMarkAsDone) {
-      return this.navigate([
+      return this._navigate([
         'app',
         'activity',
         this.activityId
@@ -309,7 +334,7 @@ export class TopicComponent extends RouterEnter {
         {
           text: 'No',
           handler: () => {
-            return this.navigate(['app', 'activity', this.activityId]);
+            return this._navigate(['app', 'activity', this.activityId]);
           },
         },
         {
@@ -320,7 +345,7 @@ export class TopicComponent extends RouterEnter {
               () => {
                 return this.notificationService.presentToast({
                   message: 'You\'ve completed the topic!'
-                }).then(() => this.navigate([
+                }).then(() => this._navigate([
                   'app',
                   'activity',
                   this.activityId,

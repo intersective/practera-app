@@ -184,13 +184,26 @@ export class HomeComponent extends RouterEnter implements OnDestroy {
 
   goToAssessment(activityId, contextId, assessmentId) {
     this.newRelic.actionText('goToAssessment');
-    this.router.navigate([
-      'assessment',
-      'assessment',
-      activityId,
-      contextId,
-      assessmentId
-    ]);
+    if (this.utils.isMobile()) {
+      this.router.navigate([
+        'assessment',
+        'assessment',
+        activityId,
+        contextId,
+        assessmentId
+      ]);
+    } else {
+      this.router.navigate([
+        'app',
+        'activity',
+        activityId,
+        {
+          task: 'assessment',
+          task_id: assessmentId,
+          context_id: contextId
+        }
+      ]);
+    }
   }
 
   goToReview(contextId, assessmentId, submissionId) {
