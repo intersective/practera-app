@@ -88,7 +88,7 @@ export class TasksComponent extends RouterEnter {
     if (!task) {
       return false;
     }
-    const taskId = this.route.snapshot.paramMap.get('task_id');
+    const taskId = +this.route.snapshot.paramMap.get('task_id');
     if (!taskId) {
       return false;
     }
@@ -100,7 +100,7 @@ export class TasksComponent extends RouterEnter {
         });
         break;
       case 'assessment':
-        const contextId = this.route.snapshot.paramMap.get('context_id');
+        const contextId = +this.route.snapshot.paramMap.get('context_id');
         if (!contextId) {
           return false;
         }
