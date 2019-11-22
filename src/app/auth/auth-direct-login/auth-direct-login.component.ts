@@ -95,7 +95,7 @@ export class AuthDirectLoginComponent implements OnInit {
         if (this.utils.isMobile()) {
           return this.navigate(['assessment', 'assessment', activityId, contextId, assessmentId]);
         } else {
-          this.router.navigate([
+          return this.router.navigate([
             'app',
             'activity',
             activityId,

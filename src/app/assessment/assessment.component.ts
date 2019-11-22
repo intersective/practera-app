@@ -818,6 +818,6 @@ export class AssessmentComponent extends RouterEnter {
 
   // whether this page has the footer continue button
   hasFooter() {
-    return this.action === 'assessment' && (this.loadingSubmission || ['pending review', 'done', 'pending approval', 'published'].indexOf(this.submission.status) !== -1)
+    return this.action === 'assessment' && (this.loadingSubmission || ['pending review', 'done', 'pending approval', 'published'].indexOf(this.submission.status) !== -1);
   }
 }
