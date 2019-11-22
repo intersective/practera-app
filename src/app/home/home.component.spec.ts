@@ -503,7 +503,17 @@ describe('HomeComponent', () => {
   describe('when testing goToAssessment()', () => {
     it('should navigate to the correct assessment page', () => {
       component.goToAssessment(1, 2, 3);
-      expect(routerSpy.navigate.calls.first().args[0]).toEqual(['assessment', 'assessment', 1, 2, 3]);
+      // expect(routerSpy.navigate.calls.first().args[0]).toEqual(['assessment', 'assessment', 1, 2, 3]);
+      expect(routerSpy.navigate.calls.first().args[0]).toEqual([
+        'app',
+        'activity',
+        1,
+        {
+          task: 'assessment',
+          task_id: 3,
+          context_id: 2
+        }
+      ]);
     });
   });
 
