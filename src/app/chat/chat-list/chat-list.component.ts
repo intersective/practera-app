@@ -1,4 +1,4 @@
-import { Component, Output, EventEmitter, NgZone } from '@angular/core';
+import { Component, Output, EventEmitter, NgZone, Input } from '@angular/core';
 import { Router, NavigationExtras } from '@angular/router';
 import { BrowserStorageService } from '@services/storage.service';
 import { RouterEnter } from '@services/router-enter.service';
@@ -14,6 +14,7 @@ import { NewRelicService } from '@shared/new-relic/new-relic.service';
 })
 export class ChatListComponent extends RouterEnter {
   @Output() navigate = new EventEmitter();
+  @Input() currentChat;
   routeUrl = '/app/chat';
   chatList: Array<ChatListObject>;
   haveMoreTeam: boolean;
@@ -88,6 +89,9 @@ export class ChatListComponent extends RouterEnter {
   private _navigate(direction) {
     if (this.utils.isMobile()) {
       // redirect to chat room page for mobile
+      if (direction[2] === 'team') {
+        direction.splice(5, 1);
+      }
       return this.ngZone.run(() => {
         return this.router.navigate(direction);
       });
@@ -96,7 +100,8 @@ export class ChatListComponent extends RouterEnter {
       if (direction[2] === 'team') {
         this.navigate.emit({
           teamId: direction[3],
-          participantsOnly: direction[4]
+          participantsOnly: direction[4],
+          chatName: direction[5] ? direction[5].name : undefined
         });
         return;
       } else {
@@ -122,7 +127,10 @@ export class ChatListComponent extends RouterEnter {
         'chat-room',
         'team',
         chat.team_id,
-        chat.participants_only
+        chat.participants_only,
+        {
+          name: chat.name
+        }
       ]);
     } else {
       if (chat.last_message_created) {
@@ -130,7 +138,10 @@ export class ChatListComponent extends RouterEnter {
           'chat',
           'chat-room',
           chat.team_id,
-          chat.team_member_id
+          chat.team_member_id,
+          {
+            name: chat.name
+          }
         ]);
       } else {
         this._navigate([
@@ -148,5 +159,23 @@ export class ChatListComponent extends RouterEnter {
 
   getChatDate(date) {
     return this.utils.timeFormatter(date);
+  }
+
+  activeChatChannel(index) {
+    if (this.currentChat) {
+      if (this.currentChat.teamId === this.chatList[index].team_id) {
+        if (this.chatList[index].is_team && (this.currentChat.participantsOnly === this.chatList[index].participants_only)) {
+          return true;
+        } else if (this.chatList[index].is_team && (this.chatList[index].name === this.currentChat.name)) {
+          return true;
+        } else if (this.currentChat.teamMemberId === this.chatList[index].team_member_id) {
+          return true;
+        } else {
+          return false;
+        }
+      } else {
+        return false;
+      }
+    }
   }
 }

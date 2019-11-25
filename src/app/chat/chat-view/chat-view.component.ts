@@ -27,8 +27,6 @@ export class ChatViewComponent extends RouterEnter {
   }
 
   onEnter() {
-    // this.activityId = +this.route.snapshot.paramMap.get('id');
-    // trigger onEnter after the element get generated
     setTimeout(() => {
       this.chatList.onEnter();
     });
@@ -42,6 +40,15 @@ export class ChatViewComponent extends RouterEnter {
     setTimeout(() => {
       this.chatRoom.onEnter();
     });
+  }
+
+  getCurrentChat() {
+    return {
+      teamId: this.teamId,
+      chatName: this.chatName,
+      teamMemberId: this.teamMemberId,
+      participantsOnly: this.participantsOnly
+    };
   }
 
 }
