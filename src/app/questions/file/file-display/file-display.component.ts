@@ -1,21 +1,59 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, Changes, SimpleChanges } from '@angular/core';
 import { FilestackService } from '@shared/filestack/filestack.service';
+import { UtilsService } from '@services/utils.service';
 
 @Component({
   selector: 'app-file-display',
   templateUrl: 'file-display.component.html',
   styleUrls: ['file-display.component.scss']
 })
-export class FileDisplayComponent implements OnInit {
+export class FileDisplayComponent implements OnInit, OnChanges {
+  private virusDetection: any;
+  private quarantine: any;
 
   @Input() fileType = 'any';
   @Input() file: any;
 
-  constructor( private filestackService: FilestackService ) {}
+  constructor( private filestackService: FilestackService, private utils: UtilsService) {}
 
   ngOnInit() {
-    console.log('this.file::', this.file);
-    // this.filestackService.getWorkflowStatus(this.file.)
+    if (this.file.workflows) {
+      this.updateWorkflowStatus();
+    }
+  }
+
+  private resetUILogic() {
+    this.virusDetection = {};
+    this.quarantine = {};
+  }
+
+  private updateWorkflowStatus(file?) {
+    this.resetUILogic();
+
+    const currentFile = file || this.file;
+    this.filestackService.getWorkflowStatus(currentFile.workflows).then(responds => {
+      (responds || []).forEach(res => {
+        const { results, status } = res;
+
+        if (status.toLowerCase() === 'finished') { // status: Finished / InProgress
+          const { virus_detection, quarantine } = results;
+
+          if (this.utils.isEmpty(this.virusDetection) && virus_detection && virus_detection.data) {
+            this.virusDetection = virus_detection.data;
+          }
+
+          if (this.utils.isEmpty(this.quarantine) && quarantine && quarantine.data) {
+            this.quarantine = quarantine.data;
+          }
+        }
+      });
+    });
+  }
+
+  ngOnChanges(change: SimpleChanges) {
+    if (change.file.currentValue && change.file.currentValue.workflows) {
+      this.updateWorkflowStatus(change.file.currentValue);
+    }
   }
 
   async previewFile(file) {
