@@ -1,6 +1,6 @@
 import { Component, OnDestroy } from '@angular/core';
 import { HomeService, TodoItem } from './home.service';
-import { Router, NavigationEnd } from '@angular/router';
+import { Router, NavigationEnd, ActivatedRoute } from '@angular/router';
 import { FastFeedbackService } from '../fast-feedback/fast-feedback.service';
 import { Activity } from '../project/project.service';
 import { UtilsService } from '@services/utils.service';
@@ -19,7 +19,7 @@ import { NewRelicService } from '@shared/new-relic/new-relic.service';
   templateUrl: 'home.component.html',
   styleUrls: ['home.component.scss']
 })
-export class HomeComponent extends RouterEnter implements OnDestroy {
+export class HomeComponent implements OnDestroy {
   routeUrl = '/app/home';
   progress = 0;
   loadingProgress = true;
@@ -43,9 +43,9 @@ export class HomeComponent extends RouterEnter implements OnDestroy {
     public storage: BrowserStorageService,
     public achievementService: AchievementsService,
     public eventsService: EventsService,
+    private route: ActivatedRoute,
     private newRelic: NewRelicService
   ) {
-    super(router);
     const role = this.storage.getUser().role;
     this.utils.getEvent('notification').subscribe(event => {
       const todoItem = this.homeService.getTodoItemFromEvent(event);
@@ -77,6 +77,10 @@ export class HomeComponent extends RouterEnter implements OnDestroy {
         });
       });
     }
+
+    this.route.params.subscribe(params => {
+      this.onEnter();
+    });
   }
 
   private _initialise() {
