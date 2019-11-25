@@ -173,8 +173,6 @@ export class ChatRoomComponent extends RouterEnter {
         team_member_id: this.selectedChat.team_member_id
       };
     }
-    console.log('getMessage - data', data);
-    console.log('getMessage - this.selectedChat.is_team', this.selectedChat.is_team);
     this.chatService
       .getMessageList(data, this.selectedChat.is_team)
       .subscribe(
