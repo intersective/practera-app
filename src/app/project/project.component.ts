@@ -16,7 +16,7 @@ import { NewRelicService } from '@shared/new-relic/new-relic.service';
   templateUrl: 'project.component.html',
   styleUrls: ['project.component.scss'],
 })
-export class ProjectComponent extends RouterEnter {
+export class ProjectComponent {
   private activities: Subscription;
   private projectProgresses: Subscription;
   public routeUrl = '/app/project';
@@ -43,7 +43,9 @@ export class ProjectComponent extends RouterEnter {
     private newRelic: NewRelicService,
     @Inject(DOCUMENT) private readonly document: Document
    ) {
-    super(router);
+    this.route.params.subscribe(params => {
+    this.onEnter();
+    });
   }
 
   private _initialise() {
