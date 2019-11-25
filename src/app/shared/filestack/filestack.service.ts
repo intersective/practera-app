@@ -44,7 +44,11 @@ export class FilestackService {
     private notificationService: NotificationService,
     private utils: UtilsService
   ) {
-    this.filestack = filestack.init(this.getFilestackConfig());
+    const { policy, signature } = environment.filestack;
+    this.filestack = filestack.init(this.getFilestackConfig(), {
+      policy,
+      signature,
+    });
 
     if (!this.filestack) {
       throw new Error('Filestack module not found.');
@@ -172,7 +176,11 @@ export class FilestackService {
         return data;
       },
       onFileUploadFailed: onError,
-      onFileUploadFinished: onSuccess,
+      onFileUploadFinished: function(res) {
+        console.log('onSuccess::', arguments);
+        return onSuccess(res);
+      },
+      onUploadDone: (res) => { console.log('res::', res); }
     };
 
     return await this.filestack.picker(Object.assign(pickerOptions, options)).open();
@@ -187,5 +195,14 @@ export class FilestackService {
       }
     });
     return await modal.present();
+  }
+
+  async getWorkflowStatus(job?) {
+    const { policy, signature } = environment.filestack;
+    job = job || '583dc3df-6fef-41cd-a6ef-62746cc41b0d';
+
+    const URL = `https://cdn.filestackcontent.com/${environment.filestack.key}/security=p:${policy},s:${sign}/workflow_status=id:${job}`;
+    console.log(URL);
+    return this.httpClient.get(URL).toPromise();
   }
 }
