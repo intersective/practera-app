@@ -34,6 +34,12 @@ export class HomeComponent implements OnDestroy {
   haveEvents = false;
   progressConfig: any;
 
+  // Optional parameters to pass to the swiper instance. See http://idangero.us/swiper/api/ for valid options.
+  slideOpts = {
+    initialSlide: 1,
+    speed: 400
+  };
+
   constructor(
     private intercom: Intercom,
     public router: Router,
