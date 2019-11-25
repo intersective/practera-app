@@ -4,7 +4,8 @@
 // The list of which env maps to which file can be found in configurations section of `angular.json`.
 const FILESTACK = {
   VIRUS_DETECTION: '3c38ef53-a9d0-4aa4-9234-617d9f03c0de',
-}
+};
+
 export const environment = {
   production: false,
   appkey: 'b11e7c189b',
