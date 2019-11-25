@@ -15,6 +15,7 @@
       *ngFor="let chat of chatList; let i = index"
       [lines]="i == chatList.length - 1 ? 'none' : ''"
       (click)="navigateToChatRoom(chat)"
+      [active]="activeChatChannel(i)"
       [ngClass]="{'unread': chat.unread_messages > 0}">
       <ion-avatar [ngClass]="{'color-team': chat.is_team}" slot="start" text-center>
         <ng-container *ngIf="chat.is_team; else avatarElseBlock"><ion-icon name="people"></ion-icon></ng-container>
