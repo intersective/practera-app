@@ -4,17 +4,8 @@
     <ion-icon name="calendar" class="calendar" float-right></ion-icon>
   </a>
 
-  <ion-slides pager="true" [options]="slideOpts">
-    <ion-slide>
-      <h1>Slide 1</h1>
-    </ion-slide>
-    <ion-slide>
-      <h1>Slide 2</h1>
-    </ion-slide>
-    <ion-slide>
-      <h1>Slide 3</h1>
-    </ion-slide>
-  </ion-slides>
+  <app-slidable [notifications]="eventReminders"></app-slidable>
+  <app-slidable [notifications]="todoItems"></app-slidable>
 
   <div text-center padding>
     <app-circle-progress [data]="progressConfig" [type]="'large'"></app-circle-progress>
