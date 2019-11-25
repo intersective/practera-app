@@ -24,10 +24,10 @@
         </a>
         <ion-icon *ngIf="file.url.length > 0" name="search" (click)="previewFile(file)" color="primary" padding-left float-right></ion-icon>
       </div>
-      <ion-item lines="none" color="transparent" >
+      <ion-item lines="none" color="transparent" *ngIf="virusDetection && virusDetection.infected">
         <ion-icon name="alert" color="danger" slot="start"></ion-icon>
         <ion-label>
-          <strong>File Infected</strong>
+          <strong>Previous upload has virus detected</strong>
         </ion-label>
       </ion-item>
     </ng-container>
