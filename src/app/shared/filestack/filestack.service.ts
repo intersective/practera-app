@@ -6,6 +6,7 @@ import { environment } from '@environments/environment';
 import { BrowserStorageService } from '@services/storage.service';
 import { HttpClient } from '@angular/common/http'; // added to make one and only API call to filestack server
 import { Observable } from 'rxjs/Observable';
+import { forkJoin } from 'rxjs';
 import { NotificationService } from '@shared/notification/notification.service';
 import { UtilsService } from '@services/utils.service';
 
@@ -197,12 +198,22 @@ export class FilestackService {
     return await modal.present();
   }
 
-  async getWorkflowStatus(job?) {
-    const { policy, signature } = environment.filestack;
-    job = job || '583dc3df-6fef-41cd-a6ef-62746cc41b0d';
+  async getWorkflowStatus(processedJobs = {}) {
+    const { policy, signature, workflows } = environment.filestack;
+    let jobs = {};
+    if (processedJobs && processedJobs[workflows.virusDetection]) {
+      jobs = processedJobs[workflows.virusDetection];
+    }
 
-    const URL = `https://cdn.filestackcontent.com/${environment.filestack.key}/security=p:${policy},s:${sign}/workflow_status=id:${job}`;
-    console.log(URL);
-    return this.httpClient.get(URL).toPromise();
+    const request = [];
+    this.utils.each(jobs, job => {
+      request.push(this.httpClient.get(`https://cdn.filestackcontent.com/${environment.filestack.key}/security=p:${policy},s:${signature}/workflow_status=job_id:${job}`));
+    });
+
+    if (request.length > 0) {
+      return forkJoin(request).toPromise();
+    }
+
+    return [];
   }
 }
