@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { FilestackService } from '@shared/filestack/filestack.service';
 
 @Component({
@@ -6,13 +6,23 @@ import { FilestackService } from '@shared/filestack/filestack.service';
   templateUrl: 'file-display.component.html',
   styleUrls: ['file-display.component.scss']
 })
-export class FileDisplayComponent {
+export class FileDisplayComponent implements OnInit {
 
   @Input() fileType = 'any';
   @Input() file: any;
 
   constructor( private filestackService: FilestackService ) {}
+
+  ngOnInit() {
+    console.log('this.file::', this.file);
+    // this.filestackService.getWorkflowStatus(this.file.)
+  }
+
   async previewFile(file) {
-    return await this.filestackService.previewFile(file);
+    try {
+      return await this.filestackService.previewFile(file);
+    } catch (err) {
+      console.log(err);
+    }
   }
 }
