@@ -307,11 +307,38 @@ export class ChatRoomComponent extends RouterEnter {
         id: JSON.stringify(messageIdList),
         team_id: this.selectedChat.team_id
       })
-      .subscribe();
+      .subscribe(
+      response => {
+        if (!this.utils.isMobile()) {
+          this.utils.broadcastEvent('chat-bubble-update', {
+            teamID : this.selectedChat.team_id,
+            teamMemberId: this.selectedChat.team_member_id,
+            chatName: this.selectedChat.name,
+            readcount: messageIdList.length
+          });
+        }
+      },
+      err => {
+
+      }
+    );
   }
 
   getMessageDate(date) {
     return this.utils.timeFormatter(date);
+  }
+
+  getAvatarClass(message) {
+    if (!this.checkToShowMessageTime(message) && this.selectedChat.is_team) {
+      return 'no-time-team';
+    }
+    if (!this.checkToShowMessageTime(message) && !this.selectedChat.is_team) {
+      return 'no-time';
+    }
+    if (!this.utils.isMobile() && (this.checkToShowMessageTime(message) && this.selectedChat.is_team)) {
+      return 'with-time-team';
+    }
+    return '';
   }
 
   /**

@@ -12,11 +12,10 @@ import { NewRelicService } from '@shared/new-relic/new-relic.service';
   templateUrl: 'chat-list.component.html',
   styleUrls: ['chat-list.component.scss']
 })
-export class ChatListComponent extends RouterEnter {
+export class ChatListComponent {
   @Output() navigate = new EventEmitter();
   @Output() chatListReady = new EventEmitter();
   @Input() currentChat;
-  routeUrl = '/app/chat';
   chatList: Array<ChatListObject>;
   haveMoreTeam: boolean;
   loadingChatList = true;
@@ -30,7 +29,6 @@ export class ChatListComponent extends RouterEnter {
     private newrelic: NewRelicService,
     private ngZone: NgZone
   ) {
-    super(router);
     this.newrelic.setPageViewName('Chat list');
 
     const role = this.storage.getUser().role;
@@ -40,6 +38,23 @@ export class ChatListComponent extends RouterEnter {
     if (role !== 'mentor') {
       this.utils.getEvent('team-no-mentor-message').subscribe(event => {
         this._loadChatData();
+      });
+    }
+    if (!this.utils.isMobile()) {
+      this.utils.getEvent('chat-bubble-update').subscribe(event => {
+        let chatIndex;
+        if (event.teamID && event.teamMemberId) {
+          chatIndex = this.chatList.findIndex((data, index) => {
+            return event.teamID === data.team_id && event.teamMemberId === data.team_member_id;
+          });
+        } else {
+          chatIndex = this.chatList.findIndex((data, index) => {
+            return event.teamID === data.team_id && event.chatName === data.name;
+          });
+        }
+        if (chatIndex > -1) {
+          this.chatList[chatIndex].unread_messages = this.chatList[chatIndex].unread_messages - event.readcount;
+        }
       });
     }
   }
@@ -53,6 +68,8 @@ export class ChatListComponent extends RouterEnter {
   private _initialise() {
     this.haveMoreTeam = false;
     this.loadingChatList = true;
+    this.chatList = new Array();
+    this.currentChat = {};
   }
 
   private _loadChatData(): void {
@@ -166,18 +183,20 @@ export class ChatListComponent extends RouterEnter {
   activeChatChannel(index) {
     if (this.currentChat) {
       if (this.currentChat.teamId === this.chatList[index].team_id) {
-        if (this.chatList[index].is_team && (this.currentChat.participantsOnly === this.chatList[index].participants_only)) {
-          return true;
-        } else if (this.chatList[index].is_team && (this.chatList[index].name === this.currentChat.name)) {
-          return true;
-        } else if (this.currentChat.teamMemberId === this.chatList[index].team_member_id) {
-          return true;
-        } else {
-          return false;
+        if (this.currentChat.teamMemberId) {
+          if ((this.currentChat.teamMemberId === this.chatList[index].team_member_id) && (this.chatList[index].name === this.currentChat.chatName)) {
+            return true;
+          }
         }
-      } else {
-        return false;
+        if (this.chatList[index].is_team) {
+          if ((this.currentChat.participantsOnly === this.chatList[index].participants_only) && (this.chatList[index].name === this.currentChat.chatName)) {
+            return true;
+          } else if ((this.chatList[index].name === this.currentChat.chatName)) {
+            return true;
+          }
+        }
       }
     }
+    return false;
   }
 }
