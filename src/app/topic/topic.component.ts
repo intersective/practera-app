@@ -70,6 +70,7 @@ export class TopicComponent extends RouterEnter {
     };
     this.loadingMarkedDone = true;
     this.loadingTopic = true;
+    this.btnToggleTopicIsDone = false;
     this.isRedirectingToNextMilestoneTask = false;
     this.askForMarkAsDone = false;
   }
