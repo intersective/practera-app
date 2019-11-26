@@ -1,4 +1,4 @@
-import { Component, Input, NgZone } from '@angular/core';
+import { Component, Input, NgZone, Output, EventEmitter } from '@angular/core';
 import { Router, ActivatedRoute, ParamMap } from '@angular/router';
 import { AssessmentService, Assessment, Submission, Review, AssessmentSubmission } from './assessment.service';
 import { UtilsService } from '../services/utils.service';
@@ -24,6 +24,8 @@ export class AssessmentComponent extends RouterEnter {
   @Input() inputId: number;
   @Input() inputActivityId: number;
   @Input() inputContextId: number;
+  @Input() inputAction: string;
+  @Output() navigate = new EventEmitter();
   getAssessment: Subscription;
   getSubmission: Subscription;
   routeUrl = '/assessment/';
@@ -103,10 +105,34 @@ export class AssessmentComponent extends RouterEnter {
   }
 
   // force every navigation happen under radar of angular
-  private navigate(direction, params?): Promise<boolean> {
-    return this.ngZone.run(() => {
-      return this.router.navigate(direction, params);
-    });
+  private _navigate(direction, params?): Promise<boolean> {
+    if (this.utils.isMobile()) {
+      // redirect to topic/assessment page for mobile
+      return this.ngZone.run(() => {
+        return this.router.navigate(direction, params);
+      });
+    } else {
+      // emit event to parent component(task component)
+      switch (direction[0]) {
+        case 'topic':
+          this.navigate.emit({
+            type: 'topic',
+            topicId: direction[2]
+          });
+          break;
+        case 'assessment':
+          this.navigate.emit({
+            type: 'assessment',
+            contextId: direction[3],
+            assessmentId: direction[4]
+          });
+          break;
+        default:
+          return this.ngZone.run(() => {
+            return this.router.navigate(direction, params);
+          });
+      }
+    }
   }
 
   private _initialise() {
@@ -153,7 +179,11 @@ export class AssessmentComponent extends RouterEnter {
   onEnter() {
     this._initialise();
 
-    this.action = this.route.snapshot.data.action;
+    if (this.inputAction) {
+      this.action = this.inputAction;
+    } else {
+      this.action = this.route.snapshot.data.action;
+    }
     this.fromPage = this.route.snapshot.paramMap.get('from');
     if (!this.fromPage) {
       this.fromPage = this.route.snapshot.data.from;
@@ -195,9 +225,9 @@ export class AssessmentComponent extends RouterEnter {
                   role: 'cancel',
                   handler: () => {
                     if (this.activityId) {
-                      this.navigate(['app', 'activity', this.activityId ]);
+                      this._navigate(['app', 'activity', this.activityId ]);
                     } else {
-                      this.navigate(['app', 'home']);
+                      this._navigate(['app', 'home']);
                     }
                   }
                 }
@@ -309,15 +339,15 @@ export class AssessmentComponent extends RouterEnter {
 
   navigationRoute(): Promise<boolean> {
     if (this.fromPage && this.fromPage === 'reviews') {
-      return this.navigate(['app', 'reviews']);
+      return this._navigate(['app', 'reviews']);
     }
     if (this.fromPage && this.fromPage === 'events') {
-      return this.navigate(['events']);
+      return this._navigate(['events']);
     }
     if (this.activityId) {
-      return this.navigate(['app', 'activity', this.activityId ]);
+      return this._navigate(['app', 'activity', this.activityId ]);
     }
-    return this.navigate(['app', 'home']);
+    return this._navigate(['app', 'home']);
   }
 
   back(): Promise<boolean | void> {
@@ -406,7 +436,7 @@ export class AssessmentComponent extends RouterEnter {
       this.isRedirectingToNextMilestoneTask = true;
     }
 
-    let route: Array<string | number> = ['app', 'project'];
+    let route: Array<string | number> = ['app', 'home'];
     let navigationParams: any;
     const { activity, nextTask } = await this.getNextSequence();
 
@@ -427,7 +457,7 @@ export class AssessmentComponent extends RouterEnter {
       return route;
     }
 
-    // if found new activity, force back to milestone page
+    // if found new activity, force back to home page
     if (activity.id !== this.activityId) {
       navigationParams = { queryParams: { activityId: activity.id } };
 
@@ -450,14 +480,14 @@ export class AssessmentComponent extends RouterEnter {
       this.submitting = 'redirecting';
       return setTimeout(
         async () => {
-          await this.navigate(route, navigationParams);
+          await this._navigate(route, navigationParams);
           this.isRedirectingToNextMilestoneTask = false;
           return;
         },
         2000
       );
     } else {
-      await this.navigate(route, navigationParams);
+      await this._navigate(route, navigationParams);
       this.isRedirectingToNextMilestoneTask = false;
       return;
     }
@@ -784,5 +814,10 @@ export class AssessmentComponent extends RouterEnter {
       }
       throw new Error(err);
     }
+  }
+
+  // whether this page has the footer continue button
+  hasFooter() {
+    return this.action === 'assessment' && (this.loadingSubmission || ['pending review', 'done', 'pending approval', 'published'].indexOf(this.submission.status) !== -1);
   }
 }

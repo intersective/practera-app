@@ -1,7 +1,14 @@
 <ion-split-pane *ngIf="!utils.isMobile()" contentId="main-content" when="xs">
-  <app-chat #chatList [currentChat]="getCurrentChat()" (navigate)="goto($event)"></app-chat>
+  <app-chat #chatList 
+    [currentChat]="getCurrentChat()" 
+    (navigate)="goto($event)"
+    (chatListReady)="selectFirstChat($event)"></app-chat>
   <ion-content color="light" id="main-content">
-    <app-chat-room #chatRoom *ngIf="teamId" [teamId]="teamId" [teamMemberId]="teamMemberId" [participantsOnly]="participantsOnly" [chatName]="chatName"></app-chat-room>
+    <app-chat-room #chatRoom *ngIf="teamId" 
+      [teamId]="teamId" 
+      [teamMemberId]="teamMemberId"
+      [participantsOnly]="participantsOnly" 
+      [chatName]="chatName"></app-chat-room>
   </ion-content>
 </ion-split-pane>
 

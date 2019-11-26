@@ -50,33 +50,23 @@ export class SwitcherProgramComponent implements OnInit {
 
     await loading.present();
 
-    return this.switcherService.switchProgram(this.programs[index]).subscribe(
-      () => {
-        loading.dismiss().then(() => {
-          // reset pusher (upon new timelineId)
-          this.pusherService.initialise({ unsubscribe: true });
-          // clear the cached data
-          this.utils.clearCache();
-          nrSwitchedProgramTracer();
-          if ((typeof environment.goMobile !== 'undefined' && environment.goMobile === false)
-            || /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
-            return this.router.navigate(['app', 'home']);
-          } else {
-            return this.router.navigate(['go-mobile']);
-          }
-        });
-      },
-      err => {
-        const toasted = this.notificationService.alert({
-          header: 'Error switching program',
-          message: err.msg || JSON.stringify(err)
-        });
-
+    this.switcherService.switchProgramAndNavigate(this.programs[index]).then(
+    (route) => {
+      loading.dismiss().then(() => {
         nrSwitchedProgramTracer();
-        this.newRelic.noticeError('switch program failed', JSON.stringify(err));
-        throw new Error(err);
-      }
-    );
+        this.router.navigate(route);
+      });
+    },
+    err => {
+      const toasted = this.notificationService.alert({
+        header: 'Error switching program',
+        message: err.msg || JSON.stringify(err)
+      });
+
+      nrSwitchedProgramTracer();
+      this.newRelic.noticeError('switch program failed', JSON.stringify(err));
+      throw new Error(err);
+    });
   }
 
 }

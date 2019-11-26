@@ -65,7 +65,7 @@ export class AuthLoginComponent implements OnInit {
       res => {
         nrLoginTracer('login successful');
         this.newRelic.actionText('login successful');
-        return this.handleNavigation(res.programs);
+        return this._handleNavigation(res.programs);
       },
       err => {
         nrLoginTracer(JSON.stringify(err));
@@ -106,23 +106,10 @@ export class AuthLoginComponent implements OnInit {
       }
     );
   }
-  async handleNavigation(programs) {
-    // checking user programs.
-    // if user in more than one program navigate to switcher page.
-    // if user in one program, call switcher service to set program configaration and navigate to home page.
-    if (programs.length > 1) {
-      this.isLoggingIn = false;
-      return this.router.navigate(['switcher']);
-    } else {
-      await this.switcherService.switchProgram(programs[0]);
-      this.isLoggingIn = false;
-      this.pusherService.initialise({ unsubscribe: true });
-      if ((typeof environment.goMobile !== 'undefined' && environment.goMobile === false)
-        || /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
-        return this.router.navigate(['app', 'home']);
-      } else {
-        return this.router.navigate(['go-mobile']);
-      }
-    }
+
+  private async _handleNavigation(programs) {
+    const route = await this.switcherService.switchProgramAndNavigate(programs);
+    this.isLoggingIn = false;
+    return this.router.navigate(route);
   }
 }

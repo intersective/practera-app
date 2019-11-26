@@ -51,4 +51,17 @@ export class ChatViewComponent extends RouterEnter {
     };
   }
 
+  selectFirstChat(chats) {
+    if (this.teamId) {
+      return;
+    }
+    // navigate to the first chat
+    this.goto({
+      teamId: chats[0].team_id,
+      teamMemberId: chats[0].team_member_id,
+      participantsOnly: chats[0].participants_only,
+      chatName: chats[0].name
+    });
+  }
+
 }
