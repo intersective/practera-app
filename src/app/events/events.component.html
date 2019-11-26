@@ -4,14 +4,13 @@
     [activityId]="activityId"
     [eventId]="eventId"
     (navigate)="goto($event)"
-    (eventsReady)="goToFirstEvent($event)"
   ></app-event-list>
   <ion-content color="light" id="main-content">
     <app-event-detail
       #eventDetail
-      *ngIf="!assessmentId"
+      *ngIf="!assessmentId && currentEvent"
       [event]="currentEvent"
-      (navigate)="goto($event);eventList.onEnter()"
+      (checkin)="checkin($event)"
     ></app-event-detail>
     <app-assessment
       #assessment
