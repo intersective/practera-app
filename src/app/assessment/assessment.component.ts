@@ -342,7 +342,7 @@ export class AssessmentComponent extends RouterEnter {
       return this._navigate(['app', 'reviews']);
     }
     if (this.fromPage && this.fromPage === 'events') {
-      return this._navigate(['events']);
+      return this._navigate(['app', 'events']);
     }
     if (this.activityId) {
       return this._navigate(['app', 'activity', this.activityId ]);

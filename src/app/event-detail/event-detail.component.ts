@@ -8,7 +8,7 @@ import { NotificationService } from '@shared/notification/notification.service';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
 
 @Component({
-  selector: 'event-detail',
+  selector: 'app-event-detail',
   templateUrl: 'event-detail.component.html',
   styleUrls: ['event-detail.component.scss']
 })

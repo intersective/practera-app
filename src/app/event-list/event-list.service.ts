@@ -42,6 +42,11 @@ export interface Event {
   };
 }
 
+export interface EventGroup {
+  date: string;
+  events: Array<Event>;
+}
+
 export interface Activity {
   id: number;
   name: string;
