@@ -1,8 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { ModalController } from '@ionic/angular';
 import { Router } from '@angular/router';
 import { UtilsService } from '@services/utils.service';
-import { Event } from '@app/events/events.service';
+import { Event } from '@app/event-list/event-list.service';
 import { EventDetailService } from './event-detail.service';
 import { NotificationService } from '@shared/notification/notification.service';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
@@ -13,7 +13,7 @@ import { NewRelicService } from '@shared/new-relic/new-relic.service';
   styleUrls: ['event-detail.component.scss']
 })
 export class EventDetailComponent implements OnInit {
-  event: Event;
+  @Input() event: Event;
   constructor(
     private router: Router,
     public modalController: ModalController,
