@@ -10,6 +10,7 @@ import { RouterEnter } from '@services/router-enter.service';
 })
 export class ChatViewComponent extends RouterEnter {
 
+  routeUrl = '/app/chat';
   teamMemberId?: Number;
   participantsOnly?: boolean;
   teamId: Number;
@@ -27,9 +28,17 @@ export class ChatViewComponent extends RouterEnter {
   }
 
   onEnter() {
+    this._initialise();
     setTimeout(() => {
       this.chatList.onEnter();
     });
+  }
+
+  private _initialise() {
+    this.teamMemberId = undefined;
+    this.participantsOnly = undefined;
+    this.teamId = undefined;
+    this.chatName = undefined;
   }
 
   goto(event) {
@@ -55,6 +64,9 @@ export class ChatViewComponent extends RouterEnter {
     if (this.teamId) {
       return;
     }
+    if (this._gotoChat()) {
+      return;
+    }
     // navigate to the first chat
     this.goto({
       teamId: chats[0].team_id,
@@ -62,6 +74,21 @@ export class ChatViewComponent extends RouterEnter {
       participantsOnly: chats[0].participants_only,
       chatName: chats[0].name
     });
+  }
+
+  private _gotoChat() {
+    const teamId = +this.route.snapshot.paramMap.get('teamId');
+    const teamMemberId = +this.route.snapshot.paramMap.get('teamMemberId');
+    const participantsOnly = JSON.parse(this.route.snapshot.paramMap.get('participantsOnly'));
+    if (!teamId || !teamMemberId || !participantsOnly) {
+      return false;
+    }
+    this.goto({
+      teamId: teamId,
+      teamMemberId: teamMemberId,
+      participantsOnly: participantsOnly
+    });
+    return true;
   }
 
 }
