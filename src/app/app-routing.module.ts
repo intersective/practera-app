@@ -33,11 +33,6 @@ const routes: Routes = [
     canLoad: [AuthGuard]
   },
   {
-    path: 'events',
-    loadChildren: './events/events.module#EventsModule',
-    canLoad: [AuthGuard]
-  },
-  {
     path: 'fast-feedback',
     component: FastFeedbackComponent,
     canLoad: [AuthGuard]
