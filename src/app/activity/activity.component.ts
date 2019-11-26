@@ -20,6 +20,8 @@ export class ActivityComponent {
   @Input() id: number;
   @Input() currentTask;
   @Output() navigate = new EventEmitter();
+  // when tasks are ready, emit tasks to the parent component so that the parent component can decide which task to display
+  @Output() tasksReady = new EventEmitter();
   getActivity: Subscription;
   getEventPusher: Subscription;
   getEvents: Subscription;
@@ -106,11 +108,14 @@ export class ActivityComponent {
     this.getActivity = this.activityService.getActivity(this.id)
       .subscribe(
         activity => {
-          if (activity) {
-            this.activity = activity;
-            this.loadingActivity = false;
-            this.newRelic.setPageViewName(`Activity ${this.activity.name}, ID: ${this.id}`);
+          if (!activity) {
+            // activity is null by default
+            return ;
           }
+          this.activity = activity;
+          this.loadingActivity = false;
+          this.newRelic.setPageViewName(`Activity ${this.activity.name}, ID: ${this.id}`);
+          this.tasksReady.emit(activity.tasks);
         },
         (error) => {
           this.newRelic.noticeError(error);

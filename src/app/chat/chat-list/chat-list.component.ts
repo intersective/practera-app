@@ -14,6 +14,7 @@ import { NewRelicService } from '@shared/new-relic/new-relic.service';
 })
 export class ChatListComponent extends RouterEnter {
   @Output() navigate = new EventEmitter();
+  @Output() chatListReady = new EventEmitter();
   @Input() currentChat;
   routeUrl = '/app/chat';
   chatList: Array<ChatListObject>;
@@ -58,6 +59,7 @@ export class ChatListComponent extends RouterEnter {
     this.chatService.getchatList().subscribe(chats => {
       this.chatList = chats;
       this._checkHaveMoreTeam();
+      this.chatListReady.emit(this.chatList);
     });
   }
 

@@ -62,6 +62,8 @@ export class AuthDirectLoginComponent implements OnInit {
     const contextId = +this.route.snapshot.paramMap.get('ctxt');
     const assessmentId = +this.route.snapshot.paramMap.get('asmt');
     const submissionId = +this.route.snapshot.paramMap.get('sm');
+    // clear the cached data
+    this.utils.clearCache();
     if (!redirect || !timelineId) {
       // if there's no redirection or timeline id
       return this.navigate(['switcher']);
@@ -90,7 +92,20 @@ export class AuthDirectLoginComponent implements OnInit {
         if (!activityId || !contextId || !assessmentId) {
           return this.navigate(['app', 'home']);
         }
-        return this.navigate(['assessment', 'assessment', activityId, contextId, assessmentId]);
+        if (this.utils.isMobile()) {
+          return this.navigate(['assessment', 'assessment', activityId, contextId, assessmentId]);
+        } else {
+          return this.router.navigate([
+            'app',
+            'activity',
+            activityId,
+            {
+              task: 'assessment',
+              task_id: assessmentId,
+              context_id: contextId
+            }
+          ]);
+        }
       case 'reviews':
         return this.navigate(['app', 'reviews']);
       case 'review':
