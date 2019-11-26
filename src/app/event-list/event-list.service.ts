@@ -51,7 +51,7 @@ export interface Activity {
   providedIn: 'root'
 })
 
-export class EventsService {
+export class EventListService {
   constructor(
     private request: RequestService,
     private utils: UtilsService,
