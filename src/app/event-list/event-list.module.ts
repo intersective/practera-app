@@ -13,6 +13,9 @@ import { EventListService } from './event-list.service';
   ],
   providers: [
     EventListService
+  ],
+  exports: [
+    EventListComponent
   ]
 })
 

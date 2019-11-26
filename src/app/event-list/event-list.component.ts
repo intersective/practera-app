@@ -1,13 +1,8 @@
 import { Component, Input, NgZone, Output, EventEmitter } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
-import { EventListService, Event, Activity } from './event-list.service';
+import { EventListService, Event, EventGroup, Activity } from './event-list.service';
 import { UtilsService } from '@services/utils.service';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
-
-interface EventGroup {
-  date: string;
-  events: Array<Event>;
-}
 
 @Component({
   selector: 'app-event-list',
@@ -17,8 +12,6 @@ interface EventGroup {
 
 export class EventListComponent {
   @Output() navigate = new EventEmitter();
-  // when events are ready, emit categorised tasks to the parent component so that the parent component can decide which event to display
-  @Output() eventsReady = new EventEmitter();
   // activity id that is filtered by default
   @Input() activityId;
   // if eventId has value, hightlight this event
@@ -122,8 +115,6 @@ export class EventListComponent {
         this.eventsCategorised.attended.push(eventGroupAttended);
       }
       this.events = this.eventsCategorised[this.activated];
-      // emit eventsReady to parent component to get which event to highlight
-      this.eventsReady.emit(this.eventsCategorised);
       // if activity id is passed in, filter by that activity
       let activityId = this.activityId;
       if (!activityId) {
@@ -131,6 +122,8 @@ export class EventListComponent {
       }
       if (activityId) {
         this.onSelect([activityId]);
+      } else {
+        this._rearrangeEvents();
       }
       this.loadingEvents = false;
     });
@@ -139,14 +132,12 @@ export class EventListComponent {
     });
   }
 
-  // if eventId is passed in, go to the tab that contains this event and highlight it
-  private _checkEventId() {
-      if (!this.eventId) {
-        return ;
-      }
-  }
-
+  // tell parent component that user is going to an event
   goto(event) {
+    // only goto an event for desktop view
+    if (this.utils.isMobile()) {
+      return ;
+    }
     this.navigate.emit(event);
   }
 
@@ -221,31 +212,51 @@ export class EventListComponent {
     return this.utils.utcToLocal(event.startTime, 'time') + ' - ' + this.utils.utcToLocal(event.endTime, 'time');
   }
 
-  back() {
-    return this.ngZone.run(() => this.router.navigate(['app', 'home']));
-  }
-
   showBrowse() {
     this.newRelic.addPageAction('show browse');
     this.activated = 'browse';
-    this._filterByActivities();
+    this._rearrangeEvents();
   }
   showBooked() {
     this.newRelic.addPageAction('show booked');
     this.activated = 'booked';
-    this._filterByActivities();
+    this._rearrangeEvents();
   }
   showAttended() {
     this.newRelic.addPageAction('show attended');
     this.activated = 'attended';
-    this._filterByActivities();
+    this._rearrangeEvents();
   }
 
   onSelect(value) {
     this.selectedActivities = value;
-    this._filterByActivities();
+    this._rearrangeEvents();
   }
 
+  /**
+   * Rearrange current events.
+   * Including:
+   * 1. filter the events by selected activities
+   * 2. go to the first event after filter
+   */
+  private _rearrangeEvents() {
+    this._filterByActivities();
+    // don't need to go to first event if it is the inital loading and event id is passed in
+    if (this.loadingEvents && this.eventId) {
+      return ;
+    }
+    // Go to the first event.
+    // Highlight the event in event list and display the content in event detail
+    if (this.events.length) {
+      this.goto(this.events[0].events[0]);
+    } else {
+      this.goto(null);
+    }
+  }
+
+  /**
+   * Filter the current events with selected activities
+   */
   private _filterByActivities() {
     // initialise events
     this.events = this.eventsCategorised[this.activated];
