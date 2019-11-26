@@ -206,7 +206,6 @@ describe('ActivityComponent', () => {
     storageSpy.getUser.and.returnValue({
       teamId: 1
     });
-    component.routeUrl = '/test';
   });
 
   it('should create', () => {
@@ -216,16 +215,15 @@ describe('ActivityComponent', () => {
   describe('when testing constructor()', () => {
     it(`should call getEvents once more if an 'update-event' event triggered`, () => {
       utils.broadcastEvent('update-event', {});
-      fixture.detectChanges();
-      fixture.whenStable().then(() => {
-        expect(eventSpy.getEvents.calls.count()).toBe(2);
-        expect(component.events.length).toBeGreaterThan(0);
-      });
+      component.onEnter();
+      expect(eventSpy.getEvents.calls.count()).toBe(2);
+      expect(component.events.length).toBeGreaterThan(0);
     });
   });
 
   describe('when testing onEnter()', () => {
     it('should get correct activity info and events', () => {
+      component.onEnter();
       fixture.detectChanges();
       expect(component.activity).toEqual(mockActivity);
       expect(activitySpy.getActivity.calls.count()).toBe(1);
@@ -253,13 +251,19 @@ describe('ActivityComponent', () => {
   describe('when testing goto()', () => {
     it('should navigate to the assessment page correctly', () => {
       component.id = 1;
+      component.navigate.subscribe(event =>
+        expect(event).toEqual({
+          type: 'assessment',
+          contextId: 21,
+          assessmentId: 2
+        })
+      );
       component.goto({
         id: 2,
         type: 'Assessment',
         isLocked: false,
         contextId: 21
       });
-      expect(routerSpy.navigate.calls.first().args[0]).toEqual(['assessment', 'assessment', 1, 21, 2]);
     });
 
     it('should pop up locked message', () => {
@@ -279,8 +283,14 @@ describe('ActivityComponent', () => {
         name: 'sub',
         image: 'image'
       });
+      component.navigate.subscribe(event =>
+        expect(event).toEqual({
+          type: 'assessment',
+          contextId: 21,
+          assessmentId: 2
+        })
+      );
       notificationSpy.lockTeamAssessmentPopUp.calls.first().args[1]({data: true});
-      expect(routerSpy.navigate.calls.first().args[0]).toEqual(['assessment', 'assessment', 1, 21, 2]);
     });
 
     it('should pop up not in team message', () => {
@@ -300,11 +310,16 @@ describe('ActivityComponent', () => {
 
     it('should navigate to correct topic page', () => {
       component.id = 1;
+      component.navigate.subscribe(event =>
+        expect(event).toEqual({
+          type: 'topic',
+          topicId: 2
+        })
+      );
       component.goto({
         id: 2,
         type: 'Topic'
       });
-      expect(routerSpy.navigate.calls.first().args[0]).toEqual(['topic', 1, 2]);
     });
 
     it('should pop up locked message', () => {

@@ -178,7 +178,17 @@ describe('AuthDirectLoginComponent', () => {
       });
       it('assessment page', () => {
         tmpParams.redirect = 'assessment';
-        redirect = ['assessment', 'assessment', tmpParams.act, tmpParams.ctxt, tmpParams.asmt];
+        redirect = [
+          'app',
+          'activity',
+          tmpParams.act,
+          {
+            task: 'assessment',
+            task_id: tmpParams.asmt,
+            context_id: tmpParams.ctxt
+          }
+        ];
+        // redirect = ['assessment', 'assessment', tmpParams.act, tmpParams.ctxt, tmpParams.asmt];
       });
       it('reviews page', () => {
         tmpParams.redirect = 'reviews';
