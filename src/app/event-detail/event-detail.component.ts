@@ -14,6 +14,10 @@ import { NewRelicService } from '@shared/new-relic/new-relic.service';
 })
 export class EventDetailComponent implements OnInit {
   @Input() event: Event;
+  // indicate that user wanna go to the checkin assessment
+  @Output() checkin = new EventEmitter();
+  // CTA button is acting or not
+  acting = false;
   constructor(
     private router: Router,
     public modalController: ModalController,
@@ -24,12 +28,13 @@ export class EventDetailComponent implements OnInit {
   ) {}
 
   ngOnInit() {
+    this.acting = false;
     this.newRelic.setPageViewName('event-detail');
   }
 
   confirmed() {
     this.newRelic.addPageAction(`Action: ${this.buttonText()}`);
-
+    this.acting = true;
     switch (this.buttonText()) {
       case 'Book':
         if (this.event.singleBooking) {
@@ -67,16 +72,29 @@ export class EventDetailComponent implements OnInit {
             });
             // update the event list & activity detail page
             this.utils.broadcastEvent('update-event', null);
+            this.event.isBooked = false;
           }
+          this.acting = false;
         });
         break;
 
       case 'Check In':
       case 'View Check In':
-        this.router.navigate(['assessment', 'event', this.event.assessment.contextId, this.event.assessment.id]);
+        if (this.utils.isMobile()) {
+          this.router.navigate(['assessment', 'event', this.event.assessment.contextId, this.event.assessment.id]);
+        } else {
+          // tell parent component to go to check in assessment
+          this.checkin.emit({
+            assessmentId: this.event.assessment.id,
+            contextId: this.event.assessment.contextId
+          });
+        }
+        this.acting = false;
         break;
     }
-    this.modalController.dismiss();
+    if (this.utils.isMobile()) {
+      this.modalController.dismiss();
+    }
   }
 
   private _bookEvent() {
@@ -93,6 +111,8 @@ export class EventDetailComponent implements OnInit {
         });
         // update the event list & activity detail page
         this.utils.broadcastEvent('update-event', null);
+        this.event.isBooked = true;
+        this.acting = false;
       },
       error => {
         this.notificationService.alert({
@@ -104,6 +124,7 @@ export class EventDetailComponent implements OnInit {
             }
           ]
         });
+        this.acting = false;
       }
     );
   }

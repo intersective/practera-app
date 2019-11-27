@@ -42,6 +42,7 @@ export class EventsComponent extends RouterEnter {
     this.eventId = +this.route.snapshot.paramMap.get('event_id');
     // don't display assessment component by default
     this.assessmentId = null;
+    this.currentEvent = null;
     // trigger eventList onEnter() after the element gets generated
     setTimeout(() => {
       this.eventList.onEnter();
@@ -51,7 +52,7 @@ export class EventsComponent extends RouterEnter {
   // display the event content in the right pane, and highlight it on the left pane
   goto(event) {
     this.currentEvent = event;
-    this.eventId = event ? event.id : null;
+    this.eventId = event ? event.id : 0;
     // not displaying the check-in assessment
     this.assessmentId = null;
     this.contextId = null;
@@ -63,5 +64,9 @@ export class EventsComponent extends RouterEnter {
     }
     this.assessmentId = params.assessmentId;
     this.contextId = params.contextId;
+    // trigger assessment onEnter() after the element gets generated
+    setTimeout(() => {
+      this.assessment.onEnter();
+    });
   }
 }

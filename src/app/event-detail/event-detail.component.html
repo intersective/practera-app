@@ -32,7 +32,7 @@
   </ion-list>
 
   <div class="div-btn" *ngIf="buttonText()">
-    <ion-button (click)="confirmed()" [disabled]="event.isPast && !event.isBooked" shape="round" [color]="event.isPast && !event.isBooked ? 'medium' : 'primary'" expand="full">
+    <ion-button (click)="confirmed()" [disabled]="(event.isPast && !event.isBooked) || acting" shape="round" [color]="event.isPast && !event.isBooked ? 'medium' : 'primary'" expand="full">
       {{ buttonText() }}
     </ion-button>
   </div>
