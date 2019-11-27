@@ -37,7 +37,18 @@
     </clickable-item>
   </ion-card>
 
-  <ion-card class="practera-card">
+  <div>
+    <ion-label>Support</ion-label>
+    <clickable-item (click)="mailTo()">
+      <ion-icon padding name="mail"></ion-icon>
+        Email Help
+    </clickable-item>
+    <clickable-item (click)="openLink()" lines="none">
+      <ion-icon padding name="clipboard"></ion-icon>
+        Terms of Use
+    </clickable-item>
+  </div>
+  <!-- <ion-card class="practera-card">
     <ion-item>Support</ion-item>
     <clickable-item (click)="mailTo()">
       <ion-icon padding name="mail"></ion-icon>
@@ -47,7 +58,7 @@
       <ion-icon padding name="clipboard"></ion-icon>
       Terms of Use
     </clickable-item>
-  </ion-card>
+  </ion-card> -->
 
   <ion-card class="practera-card">
     <clickable-item (click)="logout()" lines="none">
