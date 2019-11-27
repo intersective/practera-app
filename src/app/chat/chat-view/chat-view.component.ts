@@ -11,10 +11,10 @@ import { RouterEnter } from '@services/router-enter.service';
 export class ChatViewComponent extends RouterEnter {
 
   routeUrl = '/app/chat';
-  teamMemberId?: Number;
-  participantsOnly?: boolean;
+  teamMemberId: Number;
+  participantsOnly: boolean;
   teamId: Number;
-  chatName?: string;
+  chatName: string;
 
   @ViewChild('chatList') chatList;
   @ViewChild('chatRoom') chatRoom;
@@ -35,10 +35,10 @@ export class ChatViewComponent extends RouterEnter {
   }
 
   private _initialise() {
-    this.teamMemberId = undefined;
-    this.participantsOnly = undefined;
-    this.teamId = undefined;
-    this.chatName = undefined;
+    this.teamMemberId = null;
+    this.participantsOnly = null;
+    this.teamId = null;
+    this.chatName = null;
   }
 
   goto(event) {

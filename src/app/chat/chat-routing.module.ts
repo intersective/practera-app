@@ -4,7 +4,6 @@ import { RouterModule, Routes } from '@angular/router';
 import { ChatComponent } from './chat.component';
 import { ChatViewComponent } from './chat-view/chat-view.component';
 import { ChatRoomComponent } from './chat-room/chat-room.component';
-import { ChatListComponent } from './chat-list/chat-list.component';
 
 const routes: Routes = [
   {
