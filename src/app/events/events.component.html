@@ -18,7 +18,8 @@
       [inputId]="assessmentId"
       [inputContextId]="contextId"
       [inputAction]="'assessment'"
-      (navigate)="goto($event);eventList.onEnter()"
+      [fromPage]="'events'"
+      (navigate)="assessmentId = null;eventList.onEnter()"
     ></app-assessment>
   </ion-content>
 </ion-split-pane>
