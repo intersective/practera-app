@@ -55,7 +55,7 @@ export class TabsComponent extends RouterEnter {
       });
     }
     if (!this.utils.isMobile()) {
-      this.utils.getEvent('chat-bubble-update').subscribe(event => {
+      this.utils.getEvent('chat-badge-update').subscribe(event => {
         this.tabsService.getNoOfChats().subscribe(noOfChats => {
           this.noOfChats = noOfChats;
         });
