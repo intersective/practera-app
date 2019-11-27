@@ -7,8 +7,14 @@
 }
 .no-event {
   color: var(--ion-color-medium);
-  font-size: medium;
-  padding: 10px 0;
+  font-size: small;
+  padding: 10px 5px;
+  border: 1px solid var(--ion-color-medium-shade);
+  p {
+    font-size: medium;
+    color: var(--ion-color-dark);
+    margin: 3px 0;
+  }
 }
 .activity-filter-wrap {
   margin-top: 10px;
