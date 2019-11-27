@@ -4,9 +4,6 @@
   </ion-toolbar>
 </ion-header>
 <ion-content padding color="light" text-center [ngClass]="{ 'ion-content-absolute': !utils.isMobile() }">
-  <ng-container *ngIf="loadingEvents">
-    <ion-spinner></ion-spinner>
-  </ng-container>
 
   <div class="btn-filter">
     <ion-button
@@ -48,6 +45,10 @@
     </clickable-item>
   </ion-card>
 
+  <ng-container *ngIf="loadingEvents">
+    <ion-spinner></ion-spinner>
+  </ng-container>
+
   <ng-container *ngFor="let eventObj of events">
     <h4 class="date-group" text-left>{{ eventObj.date }}</h4>
     <ion-card class="practera-card">
@@ -68,9 +69,22 @@
     </ion-card>
   </ng-container>
 
-  <div *ngIf="!events.length">
-    <ion-card class="practera-card background-white no-event">
-      <i>There's no event yet.</i>
+  <div *ngIf="!events.length && !loadingEvents">
+    <ion-card class="practera-card no-event">
+      <ng-container [ngSwitch]="activated">
+        <ng-container *ngSwitchCase="'browse'">
+          <p>There's no new events.</p>
+          <span>Go to the booked tab to see the events you've booked.</span>
+        </ng-container>
+        <ng-container *ngSwitchCase="'booked'">
+          <p>You have no booked events.</p>
+          <span>Go to the browse tab and book an event to see it here.</span>
+        </ng-container>
+        <ng-container *ngSwitchCase="'attended'">
+          <p>You have not attended any events.</p>
+          <span>You can see all your past events in this tab.</span>
+        </ng-container>
+      </ng-container>
     </ion-card>
   </div>
 
