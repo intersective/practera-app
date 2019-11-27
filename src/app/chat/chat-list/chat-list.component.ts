@@ -8,7 +8,7 @@ import { ChatService, ChatListObject } from '../chat.service';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
 
 @Component({
-  selector: 'app-chat',
+  selector: 'app-chat-list',
   templateUrl: 'chat-list.component.html',
   styleUrls: ['chat-list.component.scss']
 })
@@ -41,19 +41,15 @@ export class ChatListComponent {
       });
     }
     if (!this.utils.isMobile()) {
-      this.utils.getEvent('chat-bubble-update').subscribe(event => {
-        let chatIndex;
-        if (event.teamID && event.teamMemberId) {
-          chatIndex = this.chatList.findIndex((data, index) => {
-            return event.teamID === data.team_id && event.teamMemberId === data.team_member_id;
-          });
-        } else {
-          chatIndex = this.chatList.findIndex((data, index) => {
-            return event.teamID === data.team_id && event.chatName === data.name;
-          });
-        }
+      this.utils.getEvent('chat-badge-update').subscribe(event => {
+        const chatIndex = this.chatList.findIndex((data, index) => {
+          return (event.teamID === data.team_id) &&
+          (event.teamMemberId === data.team_member_id) &&
+          (event.chatName === data.name) &&
+          (event.participantsOnly === data.participants_only);
+        });
         if (chatIndex > -1) {
-          this.chatList[chatIndex].unread_messages = this.chatList[chatIndex].unread_messages - event.readcount;
+          this.chatList[chatIndex].unread_messages -= event.readcount;
         }
       });
     }
@@ -69,7 +65,6 @@ export class ChatListComponent {
     this.haveMoreTeam = false;
     this.loadingChatList = true;
     this.chatList = new Array();
-    this.currentChat = {};
   }
 
   private _loadChatData(): void {
@@ -107,10 +102,14 @@ export class ChatListComponent {
   // force every navigation happen under radar of angular
   private _navigate(direction) {
     if (this.utils.isMobile()) {
-      // redirect to chat room page for mobile
+      // remove name from passing values
+      // this name is receiver name, we pass this to set to header in char room.
+      // but for team chats we set team name in header, if we pass name to a team chat it will not show team name on header.
+      // in team chat have more than one receiver, so in chat room will show empty space if we pass name for team chat.
       if (direction[2] === 'team') {
         direction.splice(5, 1);
       }
+      // redirect to chat room page for mobile
       return this.ngZone.run(() => {
         return this.router.navigate(direction);
       });
@@ -152,27 +151,15 @@ export class ChatListComponent {
         }
       ]);
     } else {
-      if (chat.last_message_created) {
-        this._navigate([
-          'chat',
-          'chat-room',
-          chat.team_id,
-          chat.team_member_id,
-          {
-            name: chat.name
-          }
-        ]);
-      } else {
-        this._navigate([
-          'chat',
-          'chat-room',
-          chat.team_id,
-          chat.team_member_id,
-          {
-            name: chat.name
-          }
-        ]);
-      }
+      this._navigate([
+        'chat',
+        'chat-room',
+        chat.team_id,
+        chat.team_member_id,
+        {
+          name: chat.name
+        }
+      ]);
     }
   }
 

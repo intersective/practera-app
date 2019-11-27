@@ -117,7 +117,7 @@ export class ChatRoomComponent extends RouterEnter {
 
   private _initialise() {
     this.message = '';
-    this.messageList = new Array;
+    this.messageList = [];
     this.loadingChatMessages = true;
     this.selectedChat = {
       name: '',
@@ -137,14 +137,14 @@ export class ChatRoomComponent extends RouterEnter {
     if (this.teamId) {
       this.selectedChat.team_id = this.teamId;
     } else {
-      const teamId = Number(this.route.snapshot.paramMap.get('teamId'));
-      this.selectedChat.team_id = teamId;
+      this.selectedChat.team_id = Number(this.route.snapshot.paramMap.get('teamId'));
     }
     if (this.teamMemberId) {
       this.selectedChat.team_member_id = this.teamMemberId;
-    } else if (Number(this.route.snapshot.paramMap.get('teamMemberId'))) {
+    } else {
       this.selectedChat.team_member_id = Number(this.route.snapshot.paramMap.get('teamMemberId'));
-    } else if (this.participantsOnly) {
+    }
+    if (this.participantsOnly) {
       this.selectedChat.is_team = true;
       this.selectedChat.participants_only = this.participantsOnly;
     } else {
@@ -220,7 +220,7 @@ export class ChatRoomComponent extends RouterEnter {
       this.selectedChat.name = this.chatName;
       this.loadingChatMessages = false;
       return;
-    } else if (this.route.snapshot.paramMap.get('name')) {
+    } else {
       this.selectedChat.name = this.route.snapshot.paramMap.get('name');
       this.loadingChatMessages = false;
       return;
@@ -307,13 +307,14 @@ export class ChatRoomComponent extends RouterEnter {
         id: JSON.stringify(messageIdList),
         team_id: this.selectedChat.team_id
       })
-      .subscribe(
+      .subscribe (
       response => {
         if (!this.utils.isMobile()) {
-          this.utils.broadcastEvent('chat-bubble-update', {
+          this.utils.broadcastEvent('chat-badge-update', {
             teamID : this.selectedChat.team_id,
             teamMemberId: this.selectedChat.team_member_id,
             chatName: this.selectedChat.name,
+            participantsOnly : this.selectedChat.participants_only,
             readcount: messageIdList.length
           });
         }
@@ -328,6 +329,18 @@ export class ChatRoomComponent extends RouterEnter {
     return this.utils.timeFormatter(date);
   }
 
+  /**
+   * this method will return correct css class for chat avatar to adjust view
+   * @param message message object
+   * - if selected chat is a team chat and we are not showing time with this message.
+   *  - return 'no-time-team' css class. it will add 'margin-top: -8%' to avatar.
+   * - if selected chat is not a team and we are not showing time with this message.
+   *  - return 'no-time' css class. it will add 'margin-top: 8%' to avatar.
+   * - if user not in mobile platform and selected chat is a team and we are showing time with this message.
+   *  - return 'with-time-team' css class. it will add 'margin-top: 0' to avatar.
+   * - if these conditions not complete
+   *  - return empty srting.
+   */
   getAvatarClass(message) {
     if (!this.checkToShowMessageTime(message) && this.selectedChat.is_team) {
       return 'no-time-team';
