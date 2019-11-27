@@ -25,6 +25,7 @@ export class AssessmentComponent extends RouterEnter {
   @Input() inputActivityId: number;
   @Input() inputContextId: number;
   @Input() inputAction: string;
+  @Input() fromPage = '';
   @Output() navigate = new EventEmitter();
   getAssessment: Subscription;
   getSubmission: Subscription;
@@ -84,7 +85,6 @@ export class AssessmentComponent extends RouterEnter {
   savingButtonDisabled = true;
   savingMessage: string;
   saving: boolean;
-  fromPage = '';
   markingAsReview = 'Continue';
   isRedirectingToNextMilestoneTask: boolean;
 
@@ -112,6 +112,11 @@ export class AssessmentComponent extends RouterEnter {
         return this.router.navigate(direction, params);
       });
     } else {
+      // emit to parent component(events component)
+      if (direction[1] === 'events') {
+        this.navigate.emit();
+        return ;
+      }
       // emit event to parent component(task component)
       switch (direction[0]) {
         case 'topic':
@@ -184,7 +189,9 @@ export class AssessmentComponent extends RouterEnter {
     } else {
       this.action = this.route.snapshot.data.action;
     }
-    this.fromPage = this.route.snapshot.paramMap.get('from');
+    if (!this.fromPage) {
+      this.fromPage = this.route.snapshot.paramMap.get('from');
+    }
     if (!this.fromPage) {
       this.fromPage = this.route.snapshot.data.from;
     }
