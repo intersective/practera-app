@@ -1,7 +1,10 @@
 <ion-header mode="ios">
   <ion-toolbar [ngClass]="{'ion-toolbar-absolute': !utils.isMobile()}">
     <ion-icon *ngIf="utils.isMobile()" name="arrow-back" (click)="back()" color="primary" slot="start" margin-start></ion-icon>
-    <ion-title text-center>Topic</ion-title>
+    <ion-title text-center [ngClass]="{
+      'title-large': utils.isMobile(),
+      'title-small': !utils.isMobile()
+    }">Topic</ion-title>
   </ion-toolbar>
 </ion-header>
 <ion-content color="light" [ngClass]="{'ion-content-absolute-with-footer': !utils.isMobile()}">

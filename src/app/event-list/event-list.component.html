@@ -1,6 +1,6 @@
 <ion-header mode="ios">
   <ion-toolbar [ngClass]="{'ion-toolbar-absolute': !utils.isMobile()}">
-    <ion-title text-center>Events</ion-title>
+    <ion-title text-center class="title-large">Events</ion-title>
   </ion-toolbar>
 </ion-header>
 <ion-content padding color="light" text-center [ngClass]="{ 'ion-content-absolute': !utils.isMobile() }">
@@ -31,19 +31,17 @@
     </ion-button>
   </div>
 
-  <ion-card class="activity-filter-wrap practera-card">
-    <clickable-item lines="none">
-      <ion-label id="activity-filter" color="medium"><i>Filter by Activity</i></ion-label>
-      <ion-select
-        multiple="true"
-        aria-labelledby="activity-filter"
-        [value]="selectedActivities"
-        (ionChange)="onSelect(filterEle.value)"
-        #filterEle>
-        <ion-select-option *ngFor="let activity of activities" [value]="activity.id" selected>{{ activity.name }}</ion-select-option>
-      </ion-select>
-    </clickable-item>
-  </ion-card>
+  <ion-item lines="none" color="light" margin-top>
+    <ion-label id="activity-filter" color="medium">Filter by Activity</ion-label>
+    <ion-select
+      multiple="true"
+      aria-labelledby="activity-filter"
+      [value]="selectedActivities"
+      (ionChange)="onSelect(filterEle.value)"
+      #filterEle>
+      <ion-select-option *ngFor="let activity of activities" [value]="activity.id" selected>{{ activity.name }}</ion-select-option>
+    </ion-select>
+  </ion-item>
 
   <ng-container *ngIf="loadingEvents">
     <ion-spinner></ion-spinner>
