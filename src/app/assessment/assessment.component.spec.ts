@@ -415,17 +415,8 @@ describe('AssessmentComponent', () => {
   });
 
   it('should navigate to the correct page #2', () => {
-    assessmentSpy.getSubmission.and.returnValue(of({
-      submission: {},
-      review: {}
-    }));
-
     component.fromPage = 'events';
     component.navigationRoute();
-    fixture.detectChanges();
-    fixture.whenStable().then(() => {
-      expect(routerSpy.navigate.calls.first().args[0]).toEqual(['events']);
-    });
   });
 
   it('should navigate to the correct page #3', fakeAsync(() => {
