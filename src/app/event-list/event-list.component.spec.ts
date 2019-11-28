@@ -1,7 +1,7 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed, tick, fakeAsync } from '@angular/core/testing';
-import { EventsComponent } from './events.component';
-import { EventsService } from './events.service';
+import { EventListComponent } from './event-list.component';
+import { EventListService } from './event-list.service';
 import { Observable, of, pipe } from 'rxjs';
 import { Router, ActivatedRoute } from '@angular/router';
 import { SharedModule } from '@shared/shared.module';
@@ -15,9 +15,9 @@ class Page {
   get eventItems() {
     return this.queryAll<HTMLElement>('event-card');
   }
-  fixture: ComponentFixture<EventsComponent>;
+  fixture: ComponentFixture<EventListComponent>;
 
-  constructor(fixture: ComponentFixture<EventsComponent>) {
+  constructor(fixture: ComponentFixture<EventListComponent>) {
     this.fixture = fixture;
   }
   //// query helpers ////
@@ -29,27 +29,25 @@ class Page {
   }
 }
 
-describe('EventsComponent', () => {
-  let component: EventsComponent;
-  let fixture: ComponentFixture<EventsComponent>;
+describe('EventListComponent', () => {
+  let component: EventListComponent;
+  let fixture: ComponentFixture<EventListComponent>;
   let page: Page;
-  let eventsSpy: jasmine.SpyObj<EventsService>;
-  let routerSpy: jasmine.SpyObj<Router>;
-  let routeStub: ActivatedRouteStub;
+  let eventsSpy: jasmine.SpyObj<EventListService>;
   let utils: UtilsService;
   const testUtils = new TestUtils();
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       imports: [SharedModule],
-      declarations: [ EventsComponent ],
+      declarations: [ EventListComponent ],
       schemas: [ CUSTOM_ELEMENTS_SCHEMA ],
       providers: [
         UtilsService,
         NewRelicService,
         {
-          provide: EventsService,
-          useValue: jasmine.createSpyObj('EventsService', ['getEvents', 'getActivities'])
+          provide: EventListService,
+          useValue: jasmine.createSpyObj('EventListService', ['getEvents', 'getActivities'])
         },
         {
           provide: Router,
@@ -65,14 +63,11 @@ describe('EventsComponent', () => {
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(EventsComponent);
+    fixture = TestBed.createComponent(EventListComponent);
     component = fixture.componentInstance;
     page = new Page(fixture);
-    eventsSpy = TestBed.get(EventsService);
-    routerSpy = TestBed.get(Router);
-    routeStub = TestBed.get(ActivatedRoute);
+    eventsSpy = TestBed.get(EventListService);
     utils = TestBed.get(UtilsService);
-    component.routeUrl = '/test';
   });
 
   // data needed to create mock events
@@ -154,8 +149,12 @@ describe('EventsComponent', () => {
     let tmpEvents;
     let expectedEvents;
     let expectedCategorised;
+    // call this function after onEnter
+    let functionAfterOnEnter;
     beforeEach(() => {
       tmpEvents = JSON.parse(JSON.stringify(mockEvents));
+      component.eventId = null;
+      functionAfterOnEnter = () => {};
       expectedEvents = browse;
       expectedCategorised = {
         browse: browse,
@@ -167,23 +166,19 @@ describe('EventsComponent', () => {
     afterEach(fakeAsync(() => {
       eventsSpy.getEvents.and.returnValue(of(tmpEvents));
       tick();
-      fixture.detectChanges();
-      fixture.whenStable().then(() => {
-        expect(component.loadingEvents).toBe(false);
-        expect(eventsSpy.getEvents.calls.count()).toBe(1);
-        expect(component.events).toEqual(expectedEvents);
-        expect(component.eventsCategorised).toEqual(expectedCategorised);
-      });
+      component.onEnter();
+      if (functionAfterOnEnter) {
+        functionAfterOnEnter();
+      }
+      expect(component.loadingEvents).toBe(false);
+      expect(eventsSpy.getEvents.calls.count()).toBe(1);
+      expect(component.events).toEqual(expectedEvents);
+      expect(component.eventsCategorised).toEqual(expectedCategorised);
+      expect(eventsSpy.getActivities.calls.count()).toBe(1);
+      expect(component.activities).toEqual(mockActivities);
     }));
 
-    it(`should get correct full events grouped and activities`, fakeAsync(() => {
-      tick();
-      fixture.detectChanges();
-      fixture.whenStable().then(() => {
-        expect(eventsSpy.getActivities.calls.count()).toBe(1);
-        expect(component.activities).toEqual(mockActivities);
-      });
-    }));
+    it(`should get correct full events grouped and activities`, () => {});
 
     it(`should get correct events grouped without browse`, () => {
       tmpEvents.splice(0, 4);
@@ -202,7 +197,7 @@ describe('EventsComponent', () => {
     });
 
     it(`should get correct events grouped and filtered by activity`, () => {
-      routeStub.setParamMap({ activityId: 1 });
+      component.activityId = 1;
       expectedEvents = [
         { // group 1
           date: utils.utcToLocal(startTimes[0], 'date'),
@@ -215,36 +210,48 @@ describe('EventsComponent', () => {
       ];
     });
 
-    it(`should get correct events grouped (browse) and filtered by activity`, () => {
-      routeStub.setParamMap({ activityId: 2 });
+    it(`should get correct events grouped (browse) and filtered by activity if eventId passed in`, () => {
+      component.eventId = 1;
+      component.activityId = 2;
       expectedEvents = [
         { // group 1
           date: utils.utcToLocal(startTimes[0], 'date'),
           events: [mockEvents[1]]
         }
       ];
-      fixture.detectChanges();
-      component.showBrowse();
+    });
+    it(`should get correct events grouped (browse) and filtered by activity`, () => {
+      component.activityId = 2;
+      expectedEvents = [
+        { // group 1
+          date: utils.utcToLocal(startTimes[0], 'date'),
+          events: [mockEvents[1]]
+        }
+      ];
+      functionAfterOnEnter = () => component.showBrowse();
     });
 
-    it(`should get correct events grouped (booked) and filtered by activity`, () => {
-      routeStub.setParamMap({ activityId: 2 });
+    it(`should get correct events grouped (booked) and filtered by activity if eventId passed in`, () => {
+      component.eventId = 5;
+      component.activityId = 2;
       expectedEvents = booked;
-      fixture.detectChanges();
-      component.showBooked();
+    });
+    it(`should get correct events grouped (booked) and filtered by activity if eventId passed in`, () => {
+      component.activityId = 2;
+      expectedEvents = booked;
+      functionAfterOnEnter = () => component.showBooked();
     });
 
-    it(`should get correct events grouped (attended) and filtered by activity`, () => {
-      routeStub.setParamMap({ activityId: 2 });
+    it(`should get correct events grouped (attended) and filtered by activity if eventId passed in`, () => {
+      component.eventId = 6;
+      component.activityId = 2;
       expectedEvents = attended;
-      fixture.detectChanges();
-      component.showAttended();
     });
-  });
-
-  it('when testing back(), it should navigate to the correct page', () => {
-    component.back();
-    expect(routerSpy.navigate.calls.first().args[0]).toEqual(['app', 'home']);
+    it(`should get correct events grouped (attended) and filtered by activity if eventId passed in`, () => {
+      component.activityId = 2;
+      expectedEvents = attended;
+      functionAfterOnEnter = () => component.showAttended();
+    });
   });
 
 });

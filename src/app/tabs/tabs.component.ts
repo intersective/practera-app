@@ -92,7 +92,7 @@ export class TabsComponent extends RouterEnter {
     });
     this.eventsService.getEvents().subscribe(events => {
       this.showEvents = !this.utils.isEmpty(events);
-    })
+    });
   }
 
   private _checkRoute() {
