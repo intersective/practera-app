@@ -1,65 +1,38 @@
-import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { async, ComponentFixture, TestBed, tick, fakeAsync } from '@angular/core/testing';
+import { async, ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { EventsComponent } from './events.component';
-import { EventsService } from './events.service';
+import { ActivityModule } from '../activity/activity.module';
+import { TopicModule } from '../topic/topic.module';
+import { AssessmentModule } from '../assessment/assessment.module';
 import { Observable, of, pipe } from 'rxjs';
 import { Router, ActivatedRoute } from '@angular/router';
-import { SharedModule } from '@shared/shared.module';
-import { UtilsService } from '@services/utils.service';
 import { ActivatedRouteStub } from '@testing/activated-route-stub';
-import { TestUtils } from '@testing/utils';
-import { NewRelicService } from '@shared/new-relic/new-relic.service';
 import { MockRouter } from '@testing/mocked.service';
-
-class Page {
-  get eventItems() {
-    return this.queryAll<HTMLElement>('event-card');
-  }
-  fixture: ComponentFixture<EventsComponent>;
-
-  constructor(fixture: ComponentFixture<EventsComponent>) {
-    this.fixture = fixture;
-  }
-  //// query helpers ////
-  private query<T>(selector: string): T {
-    return this.fixture.nativeElement.querySelector(selector);
-  }
-  private queryAll<T>(selector: string): T[] {
-    return this.fixture.nativeElement.querySelectorAll(selector);
-  }
-}
+import { BrowserStorageService } from '@services/storage.service';
 
 describe('EventsComponent', () => {
   let component: EventsComponent;
   let fixture: ComponentFixture<EventsComponent>;
-  let page: Page;
-  let eventsSpy: jasmine.SpyObj<EventsService>;
-  let routerSpy: jasmine.SpyObj<Router>;
   let routeStub: ActivatedRouteStub;
-  let utils: UtilsService;
-  const testUtils = new TestUtils();
+  let storageSpy: jasmine.SpyObj<BrowserStorageService>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [SharedModule],
+      imports: [ ActivityModule, TopicModule, AssessmentModule ],
       declarations: [ EventsComponent ],
-      schemas: [ CUSTOM_ELEMENTS_SCHEMA ],
       providers: [
-        UtilsService,
-        NewRelicService,
-        {
-          provide: EventsService,
-          useValue: jasmine.createSpyObj('EventsService', ['getEvents', 'getActivities'])
-        },
         {
           provide: Router,
           useClass: MockRouter
         },
         {
           provide: ActivatedRoute,
-          useValue: new ActivatedRouteStub({ activityId: null })
-        }
-      ],
+          useValue: new ActivatedRouteStub({ id: 1 })
+        },
+        {
+          provide: BrowserStorageService,
+          useValue: jasmine.createSpyObj('BrowserStorageService', ['getUser'])
+        },
+      ]
     })
     .compileComponents();
   }));
@@ -67,185 +40,204 @@ describe('EventsComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(EventsComponent);
     component = fixture.componentInstance;
-    page = new Page(fixture);
-    eventsSpy = TestBed.get(EventsService);
-    routerSpy = TestBed.get(Router);
     routeStub = TestBed.get(ActivatedRoute);
-    utils = TestBed.get(UtilsService);
-    component.routeUrl = '/test';
-  });
-
-  // data needed to create mock events
-  const activityIds = [1, 2, 1, 3, 2, 2];
-  const startTimes = [
-    testUtils.getDateString(2, 0), // browse group 1
-    testUtils.getDateString(2, 1), // browse group 1
-    testUtils.getDateString(3, 0), // browse group 2
-    testUtils.getDateString(-2, 0), // browse expired
-    testUtils.getDateString(2, 0), // booked
-    testUtils.getDateString(-2, 0) // attended
-  ];
-  const isBookeds = [false, false, false, false, true, true];
-  const mockEvents = Array.from({length: 6}, (x, i) => {
-    return {
-      id: i + 1,
-      name: 'event' + i,
-      description: 'des' + i,
-      location: 'location' + i,
-      activityId: activityIds[i],
-      activityName: 'activity' + activityIds[i],
-      startTime: startTimes[i],
-      endTime: startTimes[i],
-      capacity: 10,
-      remainingCapacity: 1,
-      isBooked: isBookeds[i],
-      singleBooking: true,
-      canBook: true,
-      isPast: false,
-      assessment: null
-    };
-  });
-  const mockActivities = [1, 2, 3].map(i => {
-    return {
-      id: i,
-      name: 'activity' + 1
-    };
-  });
-  let browse;
-  let booked;
-  let attended;
-
-  beforeEach(() => {
-    eventsSpy.getEvents.and.returnValue(of(mockEvents));
-    eventsSpy.getActivities.and.returnValue(of(mockActivities));
-    browse = [
-      { // group 1
-        date: utils.utcToLocal(startTimes[0], 'date'),
-        events: [mockEvents[0], mockEvents[1]]
-      },
-      { // group 2
-        date: utils.utcToLocal(startTimes[2], 'date'),
-        events: [mockEvents[2]]
-      },
-      { // expired
-        date: 'Expired',
-        events: [mockEvents[3]]
-      }
-    ];
-    booked = [
-      {
-        date: utils.utcToLocal(startTimes[4], 'date'),
-        events: [mockEvents[4]]
-      }
-    ];
-    attended = [
-      {
-        date: utils.utcToLocal(startTimes[5], 'date'),
-        events: [mockEvents[5]]
-      }
-    ];
+    storageSpy = TestBed.get(BrowserStorageService);
+    // mock the activity object
+    component.activity = { onEnter() {} };
+    // mock the topic object
+    component.topic = { onEnter() {} };
+    // mock the assessment object
+    component.assessment = { onEnter() {} };
   });
 
   it('should create', () => {
-    expect(component).toBeDefined();
+    expect(component).toBeTruthy();
   });
 
-  describe('when testing onEnter()', () => {
-    let tmpEvents;
-    let expectedEvents;
-    let expectedCategorised;
+  it('should get correct activity id', fakeAsync(() => {
+    // spy on the onEnter function
+    spyOn(component.activity, 'onEnter');
+    component.onEnter();
+    expect(component.activityId).toEqual(1);
+    expect(component.topicId).toBeNull();
+    expect(component.assessmentId).toBeNull();
+    tick();
+    expect(component.activity.onEnter).toHaveBeenCalled();
+  }));
+
+  describe('when testing goToFirstTask()', () => {
+    let events;
+    let expectedTopicId;
+    let expectedAssessmentId;
+    let expectedContextId;
     beforeEach(() => {
-      tmpEvents = JSON.parse(JSON.stringify(mockEvents));
-      expectedEvents = browse;
-      expectedCategorised = {
-        browse: browse,
-        booked: booked,
-        attended: attended
-      };
+      // initialise the ids
+      component.topicId = null;
+      component.assessmentId = null;
+      component.contextId = null;
+      events = [{
+        type: 'Topic',
+        id: 2,
+        status: ''
+      }];
+      expectedTopicId = null;
+      expectedAssessmentId = null;
+      expectedContextId = null;
     });
-
-    afterEach(fakeAsync(() => {
-      eventsSpy.getEvents.and.returnValue(of(tmpEvents));
-      tick();
-      fixture.detectChanges();
-      fixture.whenStable().then(() => {
-        expect(component.loadingEvents).toBe(false);
-        expect(eventsSpy.getEvents.calls.count()).toBe(1);
-        expect(component.events).toEqual(expectedEvents);
-        expect(component.eventsCategorised).toEqual(expectedCategorised);
+    afterEach(() => {
+      // do the test
+      component.goToFirstTask(events);
+      expect(component.topicId).toEqual(expectedTopicId);
+      expect(component.assessmentId).toEqual(expectedAssessmentId);
+      expect(component.contextId).toEqual(expectedContextId);
+    });
+    it('should not do anything if topicId exist already', () => {
+      component.topicId = 1;
+      expectedTopicId = 1;
+    });
+    it('should not do anything if assessmentId exist already', () => {
+      component.assessmentId = 1;
+      expectedAssessmentId = 1;
+    });
+    it('should go to the topic if passed in as the parameter', () => {
+      routeStub.setParamMap({
+        id: 1,
+        task: 'topic',
+        task_id: 11
       });
-    }));
-
-    it(`should get correct full events grouped and activities`, fakeAsync(() => {
-      tick();
-      fixture.detectChanges();
-      fixture.whenStable().then(() => {
-        expect(eventsSpy.getActivities.calls.count()).toBe(1);
-        expect(component.activities).toEqual(mockActivities);
+      expectedTopicId = 11;
+    });
+    it('should go to the assessment if passed in as the parameter', () => {
+      routeStub.setParamMap({
+        id: 1,
+        task: 'assessment',
+        task_id: 11,
+        context_id: 111
       });
-    }));
-
-    it(`should get correct events grouped without browse`, () => {
-      tmpEvents.splice(0, 4);
-      expectedEvents = [];
-      expectedCategorised.browse = [];
+      expectedAssessmentId = 11;
+      expectedContextId = 111;
     });
-
-    it(`should get correct events grouped without booked`, () => {
-      tmpEvents.splice(4, 1);
-      expectedCategorised.booked = [];
+    it('should go to the topic in the events if parameters passed in are not correct #1', () => {
+      routeStub.setParamMap({
+        id: 1,
+        task: 'assessment'
+      });
+      expectedTopicId = 2;
     });
-
-    it(`should get correct events grouped without attended`, () => {
-      tmpEvents.splice(5, 1);
-      expectedCategorised.attended = [];
+    it('should go to the topic in the events if parameters passed in are not correct #2', () => {
+      routeStub.setParamMap({
+        id: 1,
+        task: 'assessment',
+        task_id: 11
+      });
+      expectedTopicId = 2;
     });
-
-    it(`should get correct events grouped and filtered by activity`, () => {
-      routeStub.setParamMap({ activityId: 1 });
-      expectedEvents = [
-        { // group 1
-          date: utils.utcToLocal(startTimes[0], 'date'),
-          events: [mockEvents[0]]
+    it('should go to the topic in the events if parameters passed in are not correct #3', () => {
+      routeStub.setParamMap({
+        id: 1,
+        task: 'other',
+        task_id: 11
+      });
+      expectedTopicId = 2;
+    });
+    it('should go to the second task(first unfinished) in the events', () => {
+      events = [
+        {
+          type: 'Topic',
+          id: 2,
+          status: 'done'
         },
-        { // group 2
-          date: utils.utcToLocal(startTimes[2], 'date'),
-          events: [mockEvents[2]]
+        {
+          type: 'Topic',
+          id: 3,
+          status: ''
+        },
+        {
+          type: 'Topic',
+          id: 4,
+          status: ''
         }
       ];
+      expectedTopicId = 3;
     });
-
-    it(`should get correct events grouped (browse) and filtered by activity`, () => {
-      routeStub.setParamMap({ activityId: 2 });
-      expectedEvents = [
-        { // group 1
-          date: utils.utcToLocal(startTimes[0], 'date'),
-          events: [mockEvents[1]]
+    it('should go to the first task(all finished or locked) in the events', () => {
+      events = [
+        {
+          type: 'Assessment',
+          id: 2,
+          status: 'done',
+          contextId: 22
+        },
+        {
+          type: 'Locked',
+          id: 3,
+          status: ''
+        },
+        {
+          type: 'Assessment',
+          id: 4,
+          isForTeam: true,
+          status: ''
         }
       ];
-      fixture.detectChanges();
-      component.showBrowse();
+      storageSpy.getUser.and.returnValue({ teamId: null });
+      expectedAssessmentId = 2;
+      expectedContextId = 22;
     });
-
-    it(`should get correct events grouped (booked) and filtered by activity`, () => {
-      routeStub.setParamMap({ activityId: 2 });
-      expectedEvents = booked;
-      fixture.detectChanges();
-      component.showBooked();
-    });
-
-    it(`should get correct events grouped (attended) and filtered by activity`, () => {
-      routeStub.setParamMap({ activityId: 2 });
-      expectedEvents = attended;
-      fixture.detectChanges();
-      component.showAttended();
+    it('should go to the team assessment(not finished) in the events', () => {
+      events = [
+        {
+          type: 'Assessment',
+          id: 1,
+          status: '',
+          isLocked: true
+        },
+        {
+          type: 'Assessment',
+          id: 2,
+          status: 'done',
+          contextId: 22
+        },
+        {
+          type: 'Locked',
+          id: 3,
+          status: ''
+        },
+        {
+          type: 'Assessment',
+          id: 4,
+          isForTeam: true,
+          status: '',
+          contextId: 44
+        }
+      ];
+      storageSpy.getUser.and.returnValue({ teamId: 1 });
+      expectedAssessmentId = 4;
+      expectedContextId = 44;
     });
   });
 
-  it('when testing back(), it should navigate to the correct page', () => {
-    component.back();
-    expect(routerSpy.navigate.calls.first().args[0]).toEqual(['app', 'home']);
+  describe('when testing currentTask()', () => {
+    it('should return topic', () => {
+      component.topicId = 1;
+      component.assessmentId = 2;
+      expect(component.currentTask()).toEqual({
+        id: 1,
+        type: 'Topic'
+      });
+    });
+    it('should return assessment', () => {
+      component.topicId = null;
+      component.assessmentId = 2;
+      expect(component.currentTask()).toEqual({
+        id: 2,
+        type: 'Assessment'
+      });
+    });
+    it('should return null', () => {
+      component.topicId = null;
+      component.assessmentId = null;
+      expect(component.currentTask()).toBeNull();
+    });
   });
-
 });
-
