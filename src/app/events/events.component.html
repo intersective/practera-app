@@ -21,7 +21,7 @@
       [fromPage]="'events'"
       (navigate)="assessmentId = null;eventList.onEnter()"
     ></app-assessment>
-    <ng-container *ngIf="!eventId">
+    <ng-container *ngIf="!currentEvent">
       <ion-header mode="ios">
         <ion-toolbar class="ion-toolbar-absolute">
           <ion-title text-center class="title-small">Event</ion-title>

@@ -88,6 +88,7 @@ export class EventListComponent {
           // if eventId is passed in, go to the tab that contains this event and highlight it
           if (this.eventId === event.id) {
             this.activated = 'browse';
+            this.goto(event);
           }
         } else if (this.utils.timeComparer(event.startTime) >= 0) {
           // group event for 'booked' type
@@ -95,6 +96,7 @@ export class EventListComponent {
           // if eventId is passed in, go to the tab that contains this event and highlight it
           if (this.eventId === event.id) {
             this.activated = 'booked';
+            this.goto(event);
           }
         } else {
           // group event for 'attended' type
@@ -102,6 +104,7 @@ export class EventListComponent {
           // if eventId is passed in, go to the tab that contains this event and highlight it
           if (this.eventId === event.id) {
             this.activated = 'attended';
+            this.goto(event);
           }
         }
       });
@@ -118,7 +121,7 @@ export class EventListComponent {
       // if activity id is passed in, filter by that activity
       let activityId = this.activityId;
       if (!activityId) {
-        activityId = +this.route.snapshot.paramMap.get('activityId');
+        activityId = +this.route.snapshot.paramMap.get('activity_id');
       }
       if (activityId) {
         this.onSelect([activityId]);
