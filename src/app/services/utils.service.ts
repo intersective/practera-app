@@ -1,8 +1,9 @@
 import { Injectable, Inject } from '@angular/core';
 import * as _ from 'lodash';
 import { DOCUMENT } from '@angular/common';
-import { Observable, Subject } from 'rxjs';
+import { Observable, Subject, BehaviorSubject } from 'rxjs';
 import { map, filter } from 'rxjs/operators';
+import { Platform } from '@ionic/angular';
 
 // @TODO: enhance Window reference later, we shouldn't refer directly to browser's window object like this
 declare var window: any;
@@ -12,16 +13,27 @@ declare var window: any;
 })
 export class UtilsService {
   private lodash;
+  // this Subject is used to broadcast an event to the app
   protected _eventsSubject = new Subject<{key: string, value: any}>();
+  // this Subject is used in project.service to cache the project data
+  public projectSubject = new BehaviorSubject(null);
+  // this Subject is used in activity.service to cache the activity data
+  // it stores key => Subject pairs of all activities
+  public activitySubjects = {};
 
   constructor(
     @Inject(DOCUMENT) private document: Document,
+    private platform: Platform
   ) {
     if (_) {
       this.lodash = _;
     } else {
       throw new Error('Lodash not available');
     }
+  }
+
+  isMobile() {
+    return this.platform.is('mobile') && !this.platform.is('tablet');
   }
 
   isEmpty(value: any): boolean {
@@ -77,7 +89,8 @@ export class UtilsService {
   changeThemeColor(color) {
     this.document.documentElement.style.setProperty('--ion-color-primary', color);
     this.document.documentElement.style.setProperty('--ion-color-primary-shade', color);
-    this.document.documentElement.style.setProperty('--ion-color-primary-tint', color);
+    // get the tint version of the color(20% opacity)
+    this.document.documentElement.style.setProperty('--ion-color-primary-tint', color + '33');
     // convert hex color to rgb and update css variable
     const hex = color.replace('#', '');
     const red = parseInt(hex.substring(0, 2), 16);
@@ -105,10 +118,36 @@ export class UtilsService {
       );
   }
 
+  // get the activity Subject for cache
+  getActivityCache(key): BehaviorSubject<any> {
+    if (!(key in this.activitySubjects)) {
+      this.activitySubjects[key] = new BehaviorSubject(null);
+    }
+    return this.activitySubjects[key];
+  }
+
+  // update the activity cache for given key(activity id)
+  updateActivityCache(key, value) {
+    if (!(key in this.activitySubjects)) {
+      this.activitySubjects[key] = new BehaviorSubject(null);
+    }
+    this.activitySubjects[key].next(value);
+  }
+
+  // need to clear all Subject for cache
+  clearCache() {
+    // initialise the Subject for caches
+    this.projectSubject.next(null);
+    this.each(this.activitySubjects, (subject, key) => {
+      this.activitySubjects[key].next(null);
+    });
+  }
+
   // transfer url query string to an object
   urlQueryToObject(query: string) {
     return JSON.parse('{"' + decodeURI(query).replace(/"/g, '\\"').replace(/&/g, '","').replace(/=/g, '":"') + '"}');
   }
+
 
   /**
    * This is a time formatter that transfer time/date string to a nice string

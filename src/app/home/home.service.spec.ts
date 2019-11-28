@@ -6,13 +6,13 @@ import { UtilsService } from '@services/utils.service';
 
 import { HomeService } from './home.service';
 import { NotificationService } from '@shared/notification/notification.service';
-import { EventsService } from '@app/events/events.service';
+import { EventListService } from '@app/event-list/event-list.service';
 
 describe('HomeService', () => {
   let service: HomeService;
   let requestSpy: jasmine.SpyObj<RequestService>;
   let notificationSpy: jasmine.SpyObj<NotificationService>;
-  let eventsSpy: jasmine.SpyObj<EventsService>;
+  let eventsSpy: jasmine.SpyObj<EventListService>;
   let utils: UtilsService;
 
   beforeEach(() => {
@@ -38,15 +38,15 @@ describe('HomeService', () => {
           })
         },
         {
-          provide: EventsService,
-          useValue: jasmine.createSpyObj('EventsService', ['normaliseEvents'])
+          provide: EventListService,
+          useValue: jasmine.createSpyObj('EventListService', ['normaliseEvents'])
         },
       ]
     });
     service = TestBed.get(HomeService);
     requestSpy = TestBed.get(RequestService);
     notificationSpy = TestBed.get(NotificationService);
-    eventsSpy = TestBed.get(EventsService);
+    eventsSpy = TestBed.get(EventListService);
     utils = TestBed.get(UtilsService);
   });
 
