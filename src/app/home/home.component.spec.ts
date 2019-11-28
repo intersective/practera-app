@@ -8,7 +8,7 @@ import { Intercom } from 'ng-intercom';
 import { HomeService } from './home.service';
 import { FastFeedbackService } from '@app/fast-feedback/fast-feedback.service';
 import { AchievementsService } from '@app/achievements/achievements.service';
-import { EventsService } from '@app/events/events.service';
+import { EventListService } from '@app/event-list/event-list.service';
 import { BrowserStorageService } from '@services/storage.service';
 import { UtilsService } from '@services/utils.service';
 import { of } from 'rxjs';
@@ -62,7 +62,7 @@ describe('HomeComponent', () => {
   let fixture: ComponentFixture<HomeComponent>;
   let page: Page;
   let homeServiceSpy: jasmine.SpyObj<HomeService>;
-  let eventsServiceSpy: jasmine.SpyObj<EventsService>;
+  let eventsServiceSpy: jasmine.SpyObj<EventListService>;
   let achieventsServiceSpy: jasmine.SpyObj<AchievementsService>;
   let fastFeedbackServiceSpy: jasmine.SpyObj<FastFeedbackService>;
   let storageServiceSpy: jasmine.SpyObj<BrowserStorageService>;
@@ -86,8 +86,8 @@ describe('HomeComponent', () => {
           useValue: jasmine.createSpyObj('HomeService', ['getTodoItemFromEvent', 'getReminderEvent', 'getTodoItems', 'getChatMessage', 'getProgress', 'getCurrentActivity', 'getProgramName'])
         },
         {
-          provide: EventsService,
-          useValue: jasmine.createSpyObj('EventsService', ['getEvents', 'eventDetailPopUp'])
+          provide: EventListService,
+          useValue: jasmine.createSpyObj('EventListService', ['getEvents', 'eventDetailPopUp'])
         },
         {
           provide: AchievementsService,
@@ -123,7 +123,7 @@ describe('HomeComponent', () => {
     component = fixture.componentInstance;
     page = new Page(fixture);
     homeServiceSpy = TestBed.get(HomeService);
-    eventsServiceSpy = TestBed.get(EventsService);
+    eventsServiceSpy = TestBed.get(EventListService);
     achieventsServiceSpy = TestBed.get(AchievementsService);
     fastFeedbackServiceSpy = TestBed.get(FastFeedbackService);
     storageServiceSpy = TestBed.get(BrowserStorageService);
@@ -477,20 +477,6 @@ describe('HomeComponent', () => {
       expect(component.achievements).toEqual(expected);
     });
 
-    it('should not display event icon if there\'s no event', () => {
-      fixture.detectChanges();
-      expect(component.haveEvents).toBeFalsy();
-      expect(eventsServiceSpy.getEvents.calls.count()).toBe(1, 'one call');
-      expect(page.calendarIcon).toBeFalsy();
-    });
-
-    it('should display event icon if there\'s event', () => {
-      eventsServiceSpy.getEvents.and.returnValue(of([{id: 1}]));
-      fixture.detectChanges();
-      expect(component.haveEvents).toBe(true);
-      expect(eventsServiceSpy.getEvents.calls.count()).toBe(1, 'one call');
-      expect(page.calendarIcon).toBeTruthy();
-    });
   });
 
   describe('when testing goToActivity()', () => {
