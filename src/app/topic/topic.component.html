@@ -1,10 +1,13 @@
 <ion-header mode="ios">
-  <ion-toolbar color="light">
-    <ion-icon name="arrow-back" (click)="back()" color="primary" slot="start" margin-start></ion-icon>
-    <ion-title text-center>Topic</ion-title>
+  <ion-toolbar [ngClass]="{'ion-toolbar-absolute': !utils.isMobile()}">
+    <ion-icon *ngIf="utils.isMobile()" name="arrow-back" (click)="back()" color="primary" slot="start" margin-start></ion-icon>
+    <ion-title text-center [ngClass]="{
+      'title-large': utils.isMobile(),
+      'title-small': !utils.isMobile()
+    }">Topic</ion-title>
   </ion-toolbar>
 </ion-header>
-<ion-content color="light">
+<ion-content color="light" [ngClass]="{'ion-content-absolute-with-footer': !utils.isMobile()}">
   <div text-center margin-top *ngIf="loadingTopic">
     <ion-spinner></ion-spinner>
   </div>
@@ -41,7 +44,7 @@
   </div>
 </ion-content>
 
-<ion-footer color="light">
+<ion-footer color="light" [ngClass]="{'ion-footer-absolute': !utils.isMobile()}">
   <ion-toolbar>
     <ion-spinner *ngIf="loadingMarkedDone || loadingTopic"
       style="width: 100%;"
@@ -58,7 +61,7 @@
       <ng-container *ngIf="!btnToggleTopicIsDone; else showAsCompleted">CONTINUE</ng-container>
       <ng-template #showAsCompleted>
         <ng-container *ngIf="!redirecting; else showRedirecting">
-          <ion-item lines="none" no-paddings color="primary">
+          <ion-item lines="full" no-paddings color="primary">
             <ion-icon slot="start" src="/assets/checkmark.svg"></ion-icon>
             <ion-text>Continue</ion-text>
           </ion-item>
