@@ -1,13 +1,13 @@
 import { TestBed } from '@angular/core/testing';
-import { EventsService } from './events.service';
+import { EventListService } from './event-list.service';
 import { of } from 'rxjs';
 import { RequestService } from '@shared/request/request.service';
 import { UtilsService } from '@services/utils.service';
 import { NotificationService } from '@shared/notification/notification.service';
 import { TestUtils } from '@testing/utils';
 
-describe('EventsService', () => {
-  let service: EventsService;
+describe('EventListService', () => {
+  let service: EventListService;
   let requestSpy: jasmine.SpyObj<RequestService>;
   let notificationSpy: jasmine.SpyObj<NotificationService>;
   let utils: UtilsService;
@@ -16,7 +16,7 @@ describe('EventsService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
-        EventsService,
+        EventListService,
         UtilsService,
         {
           provide: RequestService,
@@ -28,7 +28,7 @@ describe('EventsService', () => {
         },
       ]
     });
-    service = TestBed.get(EventsService);
+    service = TestBed.get(EventListService);
     requestSpy = TestBed.get(RequestService);
     utils = TestBed.get(UtilsService);
     notificationSpy = TestBed.get(NotificationService);
