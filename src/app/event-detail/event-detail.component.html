@@ -1,9 +1,13 @@
 <ion-header mode="ios">
-  <ion-toolbar color="light">
-    <ion-icon name="close-circle-outline" class="close-icon" (click)="close()" color="primary" slot="end"></ion-icon>
+  <ion-toolbar [ngClass]="{'ion-toolbar-absolute': !utils.isMobile()}">
+    <ion-icon *ngIf="utils.isMobile()" name="close-circle-outline" class="close-icon" (click)="close()" color="primary" slot="end"></ion-icon>
+    <ion-title text-center [ngClass]="{
+      'title-large': utils.isMobile(),
+      'title-small': !utils.isMobile()
+    }">Event</ion-title>
   </ion-toolbar>
 </ion-header>
-<ion-content color="light" text-center>
+<ion-content color="light" text-center [ngClass]="{ 'ion-content-absolute': !utils.isMobile() }">
   <div class="div-btn">
     <h1>{{ event.name }}</h1>
     <div class="div-activity-name">{{ event.activityName }}</div>
@@ -31,7 +35,7 @@
   </ion-list>
 
   <div class="div-btn" *ngIf="buttonText()">
-    <ion-button (click)="confirmed()" [disabled]="event.isPast && !event.isBooked" shape="round" [color]="event.isPast && !event.isBooked ? 'medium' : 'primary'" expand="full">
+    <ion-button (click)="confirmed()" [disabled]="(event.isPast && !event.isBooked) || ctaIsActing" shape="round" [color]="event.isPast && !event.isBooked ? 'medium' : 'primary'" expand="full">
       {{ buttonText() }}
     </ion-button>
   </div>

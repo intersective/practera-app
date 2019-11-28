@@ -30,6 +30,15 @@ const routes: Routes = [
         ]
       },
       {
+        path: 'events',
+        children: [
+          {
+            path: '',
+            loadChildren: '../events/events.module#EventsModule',
+          }
+        ]
+      },
+      {
         path: 'project',
         children: [
           {
@@ -43,7 +52,7 @@ const routes: Routes = [
         children: [
           {
             path: '',
-            loadChildren: '../activity/activity.module#ActivityModule'
+            loadChildren: '../tasks/tasks.module#TasksModule'
           }
         ]
       },

@@ -7,7 +7,7 @@ import { BrowserStorageService } from '@services/storage.service';
 import { Activity } from '../project/project.service';
 import { Question, Meta} from '../fast-feedback/fast-feedback.service';
 import { NotificationService } from '@shared/notification/notification.service';
-import { Event, EventsService } from '@app/events/events.service';
+import { Event, EventListService } from '@app/event-list/event-list.service';
 import { SharedService } from '@services/shared.service';
 
 /**
@@ -60,7 +60,7 @@ export class HomeService {
     private request: RequestService,
     private utils: UtilsService,
     private notification: NotificationService,
-    private eventsService: EventsService,
+    private eventsService: EventListService,
     public sharedService: SharedService
   ) {}
 

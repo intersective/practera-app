@@ -9,7 +9,7 @@ import { BrowserStorageService } from '@services/storage.service';
 import { RouterEnter } from '@services/router-enter.service';
 import { PusherService } from '@shared/pusher/pusher.service';
 import { Achievement, AchievementsService } from '@app/achievements/achievements.service';
-import { Event, EventsService } from '@app/events/events.service';
+import { Event, EventListService } from '@app/event-list/event-list.service';
 import { Intercom } from 'ng-intercom';
 import { environment } from '@environments/environment';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
@@ -31,7 +31,6 @@ export class HomeComponent implements OnDestroy {
   loadingActivity = true;
   subscriptions: Subscription[] = [];
   achievements: Array<Achievement>;
-  haveEvents = false;
   progressConfig: any;
 
   constructor(
@@ -42,8 +41,8 @@ export class HomeComponent implements OnDestroy {
     public utils: UtilsService,
     public storage: BrowserStorageService,
     public achievementService: AchievementsService,
-    public eventsService: EventsService,
     private route: ActivatedRoute,
+    private eventsService: EventListService,
     private newRelic: NewRelicService
   ) {
     const role = this.storage.getUser().role;
@@ -90,7 +89,6 @@ export class HomeComponent implements OnDestroy {
     this.loadingProgress = true;
     this.loadingActivity = true;
     this.achievements = [];
-    this.haveEvents = false;
   }
 
   onEnter() {
@@ -159,12 +157,6 @@ export class HomeComponent implements OnDestroy {
       })
     );
 
-    this.subscriptions.push(
-      this.eventsService.getEvents().subscribe(events => {
-        this.haveEvents = !this.utils.isEmpty(events);
-      })
-    );
-
     if (typeof environment.intercom !== 'undefined' && environment.intercom === true) {
       this.intercom.boot({
         app_id: environment.intercomAppId,
@@ -188,13 +180,26 @@ export class HomeComponent implements OnDestroy {
 
   goToAssessment(activityId, contextId, assessmentId) {
     this.newRelic.actionText('goToAssessment');
-    this.router.navigate([
-      'assessment',
-      'assessment',
-      activityId,
-      contextId,
-      assessmentId
-    ]);
+    if (this.utils.isMobile()) {
+      this.router.navigate([
+        'assessment',
+        'assessment',
+        activityId,
+        contextId,
+        assessmentId
+      ]);
+    } else {
+      this.router.navigate([
+        'app',
+        'activity',
+        activityId,
+        {
+          task: 'assessment',
+          task_id: assessmentId,
+          context_id: contextId
+        }
+      ]);
+    }
   }
 
   goToReview(contextId, assessmentId, submissionId) {

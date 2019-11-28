@@ -1,14 +1,20 @@
 <ion-header mode="ios">
-  <ion-toolbar color="light">
-    <ion-icon name="arrow-back" (click)="back()" color="primary" slot="start" margin-start></ion-icon>
-    <ion-title text-center>Assessment</ion-title>
+  <ion-toolbar [ngClass]="{'ion-toolbar-absolute': !utils.isMobile()}">
+    <ion-icon *ngIf="utils.isMobile()" name="arrow-back" (click)="back()" color="primary" slot="start" margin-start></ion-icon>
+    <ion-title text-center [ngClass]="{
+      'title-large': utils.isMobile(),
+      'title-small': !utils.isMobile()
+    }">Assessment</ion-title>
     <ng-container *ngIf="doAssessment || doReview">
       <ion-title text-center class="subTitle">{{savingMessage}}</ion-title>
       <ion-button [disabled]="savingButtonDisabled" (click)="submit(true, false, true)" class="text-button" color="primary" slot="end" fill="clear" size="small">Save</ion-button>
     </ng-container>
   </ion-toolbar>
 </ion-header>
-<ion-content padding color="light" text-center>
+<ion-content padding color="light" text-center [ngClass]="{
+  'ion-content-absolute-with-footer': !utils.isMobile() && hasFooter(),
+  'ion-content-absolute': !utils.isMobile() && !hasFooter()
+}">
   <h1>{{ assessment.name }}</h1>
   <ion-text color="medium" text-left>
     <app-description *ngIf="assessment.description" [content]="assessment.description"></app-description>
@@ -165,9 +171,10 @@
   </form>
 </ion-content>
 
-<ion-footer color="light"
-  *ngIf="action === 'assessment' && (loadingSubmission ||
-  ['pending review', 'done', 'pending approval', 'published'].indexOf(submission.status) !== -1)">
+<ion-footer
+  color="light"
+  [ngClass]="{'ion-footer-absolute': !utils.isMobile()}"
+  *ngIf="hasFooter()">
   <ion-toolbar>
     <ion-spinner style="width: 100%;"
       *ngIf="loadingSubmission || (loadingFeedbackReviewed && submission.status == 'published')"
@@ -194,7 +201,7 @@
       </ng-container>
 
       <ng-template #continue>
-        <ion-item lines="none" no-paddings color="primary">
+        <ion-item lines="full" no-paddings color="primary">
           <ion-icon slot="start" src="/assets/checkmark.svg"></ion-icon>
           <ion-text>Continue</ion-text>
         </ion-item>

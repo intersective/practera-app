@@ -1,4 +1,7 @@
-<ion-item class="ion-activatable" [lines]="lines">
+<ion-item class="ion-activatable" [lines]="lines" [ngClass]="{
+  'switcher-card-item': isSwitcherCard,
+  'active': active
+}">
   <ion-text color="primary" [ngStyle]="{'color': backgroundColor}">
     <ion-ripple-effect></ion-ripple-effect>
   </ion-text>
