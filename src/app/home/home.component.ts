@@ -219,25 +219,18 @@ export class HomeComponent extends RouterEnter implements OnDestroy {
 
   goToChat(todoItem?: TodoItem) {
     this.newRelic.actionText('goToChat');
+    if (!this.utils.isMobile()) {
+      return this.router.navigate(['app', 'chat']);
+    }
+
     if (this.utils.isEmpty(todoItem.meta)) {
       return this.router.navigate(['app', 'chat']);
     }
-    if (this.utils.isMobile()) {
-      if (todoItem.meta.team_member_id) {
-        return this.router.navigate(['chat', 'chat-room', todoItem.meta.team_id, todoItem.meta.team_member_id]);
-      }
-      return this.router.navigate(['chat', 'chat-room', 'team', todoItem.meta.team_id, todoItem.meta.participants_only]);
-    } else {
-      return this.router.navigate([
-        'app',
-        'chat',
-        {
-          teamId: todoItem.meta.team_id,
-          teamMemberId: todoItem.meta.team_member_id,
-          participantsOnly: todoItem.meta.participants_only
-        }
-      ]);
+
+    if (todoItem.meta.team_member_id) {
+      return this.router.navigate(['chat', 'chat-room', todoItem.meta.team_id, todoItem.meta.team_member_id]);
     }
+    return this.router.navigate(['chat', 'chat-room', 'team', todoItem.meta.team_id, todoItem.meta.participants_only]);
   }
 
   ngOnDestroy(): void {

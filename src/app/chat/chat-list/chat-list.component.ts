@@ -119,14 +119,14 @@ export class ChatListComponent {
         this.navigate.emit({
           teamId: direction[3],
           participantsOnly: direction[4],
-          chatName: direction[5] ? direction[5].name : undefined
+          chatName: direction[5] ? direction[5].name : null
         });
         return;
       } else {
         this.navigate.emit({
           teamId: direction[2],
           teamMemberId: direction[3],
-          chatName: direction[4] ? direction[4].name : undefined
+          chatName: direction[4] ? direction[4].name : null
         });
         return;
       }
@@ -167,23 +167,4 @@ export class ChatListComponent {
     return this.utils.timeFormatter(date);
   }
 
-  activeChatChannel(index) {
-    if (this.currentChat) {
-      if (this.currentChat.teamId === this.chatList[index].team_id) {
-        if (this.currentChat.teamMemberId) {
-          if ((this.currentChat.teamMemberId === this.chatList[index].team_member_id) && (this.chatList[index].name === this.currentChat.chatName)) {
-            return true;
-          }
-        }
-        if (this.chatList[index].is_team) {
-          if ((this.currentChat.participantsOnly === this.chatList[index].participants_only) && (this.chatList[index].name === this.currentChat.chatName)) {
-            return true;
-          } else if ((this.chatList[index].name === this.currentChat.chatName)) {
-            return true;
-          }
-        }
-      }
-    }
-    return false;
-  }
 }

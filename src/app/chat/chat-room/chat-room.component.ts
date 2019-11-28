@@ -141,10 +141,9 @@ export class ChatRoomComponent extends RouterEnter {
     }
     if (this.teamMemberId) {
       this.selectedChat.team_member_id = this.teamMemberId;
-    } else {
+    } else if (Number(this.route.snapshot.paramMap.get('teamMemberId'))) {
       this.selectedChat.team_member_id = Number(this.route.snapshot.paramMap.get('teamMemberId'));
-    }
-    if (this.participantsOnly) {
+    } else if (this.participantsOnly) {
       this.selectedChat.is_team = true;
       this.selectedChat.participants_only = this.participantsOnly;
     } else {
@@ -216,11 +215,12 @@ export class ChatRoomComponent extends RouterEnter {
 
   private _getChatName() {
     // if the chat name is passed in as parameter, use it
-    if (this.chatName) {
+    if (this.chatName && !this.selectedChat.is_team) {
       this.selectedChat.name = this.chatName;
       this.loadingChatMessages = false;
       return;
-    } else {
+    }
+    if (this.route.snapshot.paramMap.get('name')) {
       this.selectedChat.name = this.route.snapshot.paramMap.get('name');
       this.loadingChatMessages = false;
       return;
@@ -236,7 +236,8 @@ export class ChatRoomComponent extends RouterEnter {
             this.selectedChat.team_name = teamName + ' + Mentor';
           }
           this.loadingChatMessages = false;
-        });
+        }
+      );
     } else {
       // get the chat title from messge list
       const message = this.messageList[0];

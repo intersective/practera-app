@@ -43,8 +43,8 @@ export class ChatViewComponent extends RouterEnter {
 
   goto(event) {
     this.teamId = event.teamId;
-    this.teamMemberId = event.teamMemberId;
-    this.participantsOnly = event.participantsOnly;
+    this.teamMemberId = event.teamMemberId ? event.teamMemberId : null;
+    this.participantsOnly = event.participantsOnly ? event.participantsOnly : false;
     this.chatName = event.chatName;
     setTimeout(() => {
       this.chatRoom.onEnter();
@@ -64,9 +64,6 @@ export class ChatViewComponent extends RouterEnter {
     if (this.teamId) {
       return;
     }
-    if (this._gotoChat()) {
-      return;
-    }
     // navigate to the first chat
     this.goto({
       teamId: chats[0].team_id,
@@ -74,21 +71,6 @@ export class ChatViewComponent extends RouterEnter {
       participantsOnly: chats[0].participants_only,
       chatName: chats[0].name
     });
-  }
-
-  private _gotoChat() {
-    const teamId = +this.route.snapshot.paramMap.get('teamId');
-    const teamMemberId = +this.route.snapshot.paramMap.get('teamMemberId');
-    const participantsOnly = JSON.parse(this.route.snapshot.paramMap.get('participantsOnly'));
-    if (!teamId || !teamMemberId || !participantsOnly) {
-      return false;
-    }
-    this.goto({
-      teamId: teamId,
-      teamMemberId: teamMemberId,
-      participantsOnly: participantsOnly
-    });
-    return true;
   }
 
 }
