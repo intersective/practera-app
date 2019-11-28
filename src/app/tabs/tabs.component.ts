@@ -7,6 +7,7 @@ import { SwitcherService } from '../switcher/switcher.service';
 import { ReviewsService } from '../reviews/reviews.service';
 import { Router } from '@angular/router';
 import { SharedService } from '@services/shared.service';
+import { EventListService } from '@app/event-list/event-list.service';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
 
 @Component({
@@ -18,6 +19,7 @@ export class TabsComponent extends RouterEnter {
   routeUrl = '/app/';
   showReview = false;
   showChat = false;
+  showEvents = false;
   noOfTodoItems = 0;
   noOfChats = 0;
   selectedTab = '';
@@ -30,6 +32,7 @@ export class TabsComponent extends RouterEnter {
     private switcherService: SwitcherService,
     private reviewsService: ReviewsService,
     private sharedService: SharedService,
+    private eventsService: EventListService,
     private newRelic: NewRelicService,
   ) {
     super(router);
@@ -59,6 +62,7 @@ export class TabsComponent extends RouterEnter {
   private _initialise() {
     this.showChat = false;
     this.showReview = false;
+    this.showEvents = false;
   }
 
   onEnter() {
@@ -86,6 +90,9 @@ export class TabsComponent extends RouterEnter {
         this.showReview = true;
       }
     });
+    this.eventsService.getEvents().subscribe(events => {
+      this.showEvents = !this.utils.isEmpty(events);
+    });
   }
 
   private _checkRoute() {
@@ -97,6 +104,10 @@ export class TabsComponent extends RouterEnter {
 
       case '/app/home':
         this.selectedTab = 'home';
+        break;
+
+      case '/app/events':
+        this.selectedTab = 'events';
         break;
 
       case '/app/project':

@@ -73,9 +73,36 @@ export class ReviewRatingComponent implements OnInit {
   private _closeReviewRating() {
     this.modalController.dismiss();
     // if this.redirect == false, don't redirect to another page
-    if (this.redirect) {
-      this.router.navigate(this.redirect);
+    if (!this.redirect) {
+      return ;
     }
+    if (!this.utils.isMobile()) {
+      // go to the desktop view pages
+      if (this.redirect.includes('assessment')) {
+        return this.router.navigate([
+          'app',
+          'activity',
+          this.redirect[2],
+          {
+            task: 'assessment',
+            task_id: this.redirect[4],
+            context_id: this.redirect[3]
+          }
+        ]);
+      }
+      if (this.redirect.includes('topic')) {
+        return this.router.navigate([
+          'app',
+          'activity',
+          this.redirect[1],
+          {
+            task: 'topic',
+            task_id: this.redirect[2]
+          }
+        ]);
+      }
+    }
+    this.router.navigate(this.redirect);
   }
 
   addOrRemoveTags(tag) {
