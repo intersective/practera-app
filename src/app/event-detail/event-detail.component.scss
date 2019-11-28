@@ -1,3 +1,6 @@
+ion-title {
+  font-size: 14px;
+}
 ion-icon {
   margin-right: 10px;
 }
@@ -16,7 +19,4 @@ h1 {
 .expired-text {
   color: var(--ion-color-medium);
   font-size: 14px;
-}
-.header-ios ion-toolbar {
-  --border-width: 0;
 }

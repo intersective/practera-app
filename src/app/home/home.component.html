@@ -1,8 +1,5 @@
 <ion-content padding color="light">
   <h1 text-center>{{ programName }}</h1><br>
-  <a color="primary" routerLink="/events" *ngIf="haveEvents">
-    <ion-icon name="calendar" class="calendar" float-right></ion-icon>
-  </a>
   <div text-center padding>
     <app-circle-progress [data]="progressConfig" [type]="'large'"></app-circle-progress>
   </div>
