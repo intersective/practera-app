@@ -242,7 +242,12 @@ export class HomeComponent extends RouterEnter implements OnDestroy {
 
   showEventDetail(event) {
     this.newRelic.actionText('showEventDetail');
-    this.eventsService.eventDetailPopUp(event);
+    if (this.utils.isMobile()) {
+      this.eventsService.eventDetailPopUp(event);
+    } else {
+      // go to the events page with the event selected
+      this.router.navigate(['app', 'events', {event_id: event.id}]);
+    }
   }
 
 }
