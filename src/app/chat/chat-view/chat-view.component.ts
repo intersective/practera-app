@@ -21,7 +21,6 @@ export class ChatViewComponent extends RouterEnter {
 
   constructor(
     public router: Router,
-    private route: ActivatedRoute,
     public utils: UtilsService
   ) {
     super(router);
