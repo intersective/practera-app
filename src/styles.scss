@@ -223,6 +223,18 @@
 }
 
 /******************
+  ion-title
+******************/
+ion-title.title-large {
+  font-size: 20px;
+  font-weight: 500;
+}
+ion-title.title-small {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+/******************
   Filter buttons
   Currently used on reviews & events page
 ******************/
@@ -231,20 +243,23 @@
     margin: 0;
     color: var(--ion-color-primary);
     --background: white;
+    --box-shadow: none;
+    font-size: 14px;
+    height: 32px;
   }
   .btn-activated{
     color: white;
     --background: var(--ion-color-primary);
   }
   .btn-left-half {
-    --border-radius: 50px 0 0 50px;
+    --border-radius: 24px 0 0 24px;
   }
   .btn-middle {
     --border-radius: 0;
     margin: 0 2px;
   }
   .btn-right-half {
-    --border-radius: 0 50px 50px 0;
+    --border-radius: 0 24px 24px 0;
   }
 }
 
