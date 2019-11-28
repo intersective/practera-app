@@ -17,7 +17,7 @@ export class EventDetailComponent implements OnInit {
   // indicate that user wanna go to the checkin assessment
   @Output() checkin = new EventEmitter();
   // CTA button is acting or not
-  acting = false;
+  ctaIsActing = false;
   constructor(
     private router: Router,
     public modalController: ModalController,
@@ -28,13 +28,13 @@ export class EventDetailComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.acting = false;
+    this.ctaIsActing = false;
     this.newRelic.setPageViewName('event-detail');
   }
 
   confirmed() {
     this.newRelic.addPageAction(`Action: ${this.buttonText()}`);
-    this.acting = true;
+    this.ctaIsActing = true;
     switch (this.buttonText()) {
       case 'Book':
         if (this.event.singleBooking) {
@@ -74,7 +74,7 @@ export class EventDetailComponent implements OnInit {
             this.utils.broadcastEvent('update-event', null);
             this.event.isBooked = false;
           }
-          this.acting = false;
+          this.ctaIsActing = false;
         });
         break;
 
@@ -89,7 +89,7 @@ export class EventDetailComponent implements OnInit {
             contextId: this.event.assessment.contextId
           });
         }
-        this.acting = false;
+        this.ctaIsActing = false;
         break;
     }
     if (this.utils.isMobile()) {
@@ -112,7 +112,7 @@ export class EventDetailComponent implements OnInit {
         // update the event list & activity detail page
         this.utils.broadcastEvent('update-event', null);
         this.event.isBooked = true;
-        this.acting = false;
+        this.ctaIsActing = false;
       },
       error => {
         this.notificationService.alert({
@@ -124,7 +124,7 @@ export class EventDetailComponent implements OnInit {
             }
           ]
         });
-        this.acting = false;
+        this.ctaIsActing = false;
       }
     );
   }
