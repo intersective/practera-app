@@ -525,7 +525,19 @@ describe('HomeComponent', () => {
   });
 
   describe('when testing goToChat()', () => {
+    it('should navigate to the correct chat page if not mobile', () => {
+      spyOn(utils, 'isMobile').and.returnValue(false);
+      component.goToChat({
+        meta: {
+          team_id: 2,
+          team_member_id: 1
+        }
+      });
+      expect(routerSpy.navigate.calls.first().args[0]).toEqual(['app', 'chat']);
+    });
+
     it('should navigate to the correct chat page #1', () => {
+      spyOn(utils, 'isMobile').and.returnValue(true);
       component.goToChat({
         meta: null
       });
@@ -533,6 +545,7 @@ describe('HomeComponent', () => {
     });
 
     it('should navigate to the correct chat page #2', () => {
+      spyOn(utils, 'isMobile').and.returnValue(true);
       component.goToChat({
         meta: {
           team_id: 2,
@@ -543,6 +556,7 @@ describe('HomeComponent', () => {
     });
 
     it('should navigate to the correct chat page #3', () => {
+      spyOn(utils, 'isMobile').and.returnValue(true);
       component.goToChat({
         meta: {
           team_id: 2,
