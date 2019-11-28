@@ -9,7 +9,7 @@ import { UtilsService } from '@services/utils.service';
 import { NotificationService } from '@shared/notification/notification.service';
 import { SharedModule } from '@shared/shared.module';
 import { FastFeedbackService } from '@app/fast-feedback/fast-feedback.service';
-import { EventsService } from '@app/events/events.service';
+import { EventListService } from '@app/event-list/event-list.service';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { BrowserStorageService } from '@services/storage.service';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
@@ -54,7 +54,7 @@ describe('ActivityComponent', () => {
   let routerSpy: jasmine.SpyObj<Router>;
   let routeStub: Partial<ActivatedRoute>;
   let notificationSpy: jasmine.SpyObj<NotificationService>;
-  let eventSpy: jasmine.SpyObj<EventsService>;
+  let eventSpy: jasmine.SpyObj<EventListService>;
   let utils: UtilsService;
   let storageSpy: jasmine.SpyObj<BrowserStorageService>;
 
@@ -99,8 +99,8 @@ describe('ActivityComponent', () => {
           useValue: jasmine.createSpyObj('FastFeedbackService', ['pullFastFeedback'])
         },
         {
-          provide: EventsService,
-          useValue: jasmine.createSpyObj('EventsService', ['getEvents'])
+          provide: EventListService,
+          useValue: jasmine.createSpyObj('EventListService', ['getEvents'])
         },
       ],
     })
@@ -117,7 +117,7 @@ describe('ActivityComponent', () => {
     notificationSpy = TestBed.get(NotificationService);
     utils = TestBed.get(UtilsService);
     fastFeedbackSpy = TestBed.get(FastFeedbackService);
-    eventSpy = TestBed.get(EventsService);
+    eventSpy = TestBed.get(EventListService);
     storageSpy = TestBed.get(BrowserStorageService);
   });
 
