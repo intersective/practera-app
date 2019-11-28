@@ -179,6 +179,19 @@ export class ActivityComponent {
     }
   }
 
+  gotoEvent(event?) {
+    // go to the event page without choosing any event
+    if (!event) {
+      return this.router.navigate(['app', 'events', {activity_id: this.id}]);
+    }
+    // don't need to navigate for mobile
+    if (this.utils.isMobile()) {
+      return ;
+    }
+    // go to the event page with an event selected
+    return this.router.navigate(['app', 'events', {activity_id: this.id, event_id: event.id}]);
+  }
+
   displayEventTime(event) {
     return this.utils.utcToLocal(event.startTime) + ' - ' + this.utils.utcToLocal(event.endTime, 'time');
   }
