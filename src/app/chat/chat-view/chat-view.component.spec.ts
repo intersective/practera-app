@@ -107,4 +107,18 @@ describe('ChatViewComponent', () => {
       expectedChatName = 'team 1';
     });
   });
+  describe('when testing getCurrentChat()', () => {
+    it('should return correct chat object', () => {
+      component.teamId = 120;
+      component.teamMemberId = 12;
+      component.participantsOnly = null;
+      component.chatName = 'abc';
+      expect(component.getCurrentChat()).toEqual({
+        teamId: 120,
+        teamMemberId: 12,
+        participantsOnly: null,
+        chatName: 'abc'
+      });
+    });
+  });
 });
