@@ -134,20 +134,29 @@ export class ChatRoomComponent extends RouterEnter {
   }
 
   private _validateRouteParams() {
+    // if teamId pass as @Input parameter get team id from it
+    // if not get it from route params.
     if (this.teamId) {
       this.selectedChat.team_id = this.teamId;
     } else {
       this.selectedChat.team_id = Number(this.route.snapshot.paramMap.get('teamId'));
     }
+    // if teamMemberId pass as @Input parameter get team id from it
+    // if not get it from route params.
     if (this.teamMemberId) {
       this.selectedChat.team_member_id = this.teamMemberId;
-    } else if (Number(this.route.snapshot.paramMap.get('teamMemberId'))) {
+    } else {
       this.selectedChat.team_member_id = Number(this.route.snapshot.paramMap.get('teamMemberId'));
-    } else if (this.participantsOnly) {
+    }
+    // if we didn't have team member id in selected chat object mark this chat as a team chat.
+    if (!this.selectedChat.team_member_id) {
       this.selectedChat.is_team = true;
+    }
+    // if participantsOnly pass as @Input parameter get team id from it
+    // if not get it from route params.
+    if (this.participantsOnly) {
       this.selectedChat.participants_only = this.participantsOnly;
     } else {
-      this.selectedChat.is_team = true;
       this.selectedChat.participants_only = JSON.parse(this.route.snapshot.paramMap.get('participantsOnly'));
     }
   }
@@ -214,17 +223,6 @@ export class ChatRoomComponent extends RouterEnter {
   }
 
   private _getChatName() {
-    // if the chat name is passed in as parameter, use it
-    if (this.chatName && !this.selectedChat.is_team) {
-      this.selectedChat.name = this.chatName;
-      this.loadingChatMessages = false;
-      return;
-    }
-    if (this.route.snapshot.paramMap.get('name')) {
-      this.selectedChat.name = this.route.snapshot.paramMap.get('name');
-      this.loadingChatMessages = false;
-      return;
-    }
     // if it is a team chat, use the team name as the chat title
     if (this.selectedChat.is_team) {
       this.chatService.getTeamName(this.selectedChat.team_id)
@@ -238,17 +236,28 @@ export class ChatRoomComponent extends RouterEnter {
           this.loadingChatMessages = false;
         }
       );
-    } else {
-      // get the chat title from messge list
-      const message = this.messageList[0];
-      if (message) {
-        if (message.is_sender) {
-          // if the current user is sender, the chat name will be the receiver name
-          this.selectedChat.name = message.receiver_name;
-        } else {
-          // if the current user is not the sender, the chat name will be the sender name
-          this.selectedChat.name = message.sender_name;
-        }
+      return;
+    }
+    // if the chat name is passed in as parameter, use it
+    if (this.chatName) {
+      this.selectedChat.name = this.chatName;
+      this.loadingChatMessages = false;
+      return;
+    }
+    if (this.route.snapshot.paramMap.get('name')) {
+      this.selectedChat.name = this.route.snapshot.paramMap.get('name');
+      this.loadingChatMessages = false;
+      return;
+    }
+    // get the chat title from messge list
+    const message = this.messageList[0];
+    if (message) {
+      if (message.is_sender) {
+        // if the current user is sender, the chat name will be the receiver name
+        this.selectedChat.name = message.receiver_name;
+      } else {
+        // if the current user is not the sender, the chat name will be the sender name
+        this.selectedChat.name = message.sender_name;
       }
     }
     this.loadingChatMessages = false;
