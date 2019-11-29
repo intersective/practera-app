@@ -58,11 +58,31 @@
 .support-section {
   .title {
     font-size: 14px;
-    letter-spacing: 0.25px;
+    letter-spacing: 0.1px;
     line-height: 20px;
+    font-weight: 500;	
     color: var(--ion-color-dark-tint);
   }
   .content {
     margin-top: 14px !important;
+  }
+}
+
+.exp-switch {
+  --background: transparent;
+  --padding-start: 0;
+  --padding-end: 0;
+  --inner-padding-end: 0;
+  ion-label {
+    font-size: 14px;	
+    font-weight: 500;	
+    letter-spacing: 0.1px;	
+    line-height: 24px;
+    color: var(--ion-color-dark-tint);
+  }
+  ion-button {
+    height: 32px;
+    width: 90px;
+    margin: 0px;
   }
 }
