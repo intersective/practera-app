@@ -13,6 +13,8 @@
   margin-top: 25px;
 }
 .profile-info {
+  --background: transparent;
+  --padding-start: 0;
   .profile-image {
     width: 90px;
     height: 90px;
@@ -34,16 +36,33 @@
     }
     file-stack {
       position: absolute; 
-      top: 50px;
-      left: 70px;
+      top: 52px;
+      left: 52px;
     }
   }
   .profile-name {
     font-size: 20px;
+    font-weight: 500;
+    letter-spacing: 0.15px;
+    line-height: 24px;
     color: black;
   }
   .profile-email {
     font-size: 12px;
+    letter-spacing: 0.4px;
+    line-height: 16px;
     color: var(--practera-label-color);
+  }
+}
+
+.support-section {
+  .title {
+    font-size: 14px;
+    letter-spacing: 0.25px;
+    line-height: 20px;
+    color: var(--ion-color-dark-tint);
+  }
+  .content {
+    margin-top: 14px !important;
   }
 }
