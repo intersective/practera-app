@@ -102,13 +102,6 @@ export class ChatListComponent {
   // force every navigation happen under radar of angular
   private _navigate(direction) {
     if (this.utils.isMobile()) {
-      // remove name from passing values
-      // this name is receiver name, we pass this to set to header in char room.
-      // but for team chats we set team name in header, if we pass name to a team chat it will not show team name on header.
-      // in team chat have more than one receiver, so in chat room will show empty space if we pass name for team chat.
-      if (direction[2] === 'team') {
-        direction.splice(5, 1);
-      }
       // redirect to chat room page for mobile
       return this.ngZone.run(() => {
         return this.router.navigate(direction);

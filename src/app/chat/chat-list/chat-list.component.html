@@ -4,7 +4,7 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content color="light" class="ion-content-absolute">
+<ion-content color="light" [ngClass]="{'ion-content-absolute': !utils.isMobile()}">
   <ng-container *ngIf="loadingChatList">
     <div text-center>
         <ion-spinner></ion-spinner>
