@@ -59,6 +59,13 @@ export class ChatViewComponent extends RouterEnter {
     };
   }
 
+  /**
+   * this method call when chat-list component finished loading chat objects.
+   * from this method we loading first chat to chat room component.
+   * @param chats chat list Array
+   * if we have teamId we are not doing any thing, that means we have already load first chat.
+   * if we didn't have teamId we will goto() method by passing first chat channel data. to load chat.
+   */
   selectFirstChat(chats) {
     if (this.teamId) {
       return;
