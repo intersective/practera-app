@@ -309,21 +309,19 @@ export class ChatRoomComponent extends RouterEnter {
         team_id: this.selectedChat.team_id
       })
       .subscribe (
-      response => {
-        if (!this.utils.isMobile()) {
-          this.utils.broadcastEvent('chat-badge-update', {
-            teamID : this.selectedChat.team_id,
-            teamMemberId: this.selectedChat.team_member_id,
-            chatName: this.selectedChat.name,
-            participantsOnly : this.selectedChat.participants_only,
-            readcount: messageIdList.length
-          });
-        }
-      },
-      err => {
-
-      }
-    );
+        response => {
+          if (!this.utils.isMobile()) {
+            this.utils.broadcastEvent('chat-badge-update', {
+              teamID : this.selectedChat.team_id,
+              teamMemberId: this.selectedChat.team_member_id,
+              chatName: this.selectedChat.name,
+              participantsOnly : this.selectedChat.participants_only,
+              readcount: messageIdList.length
+            });
+          }
+        },
+        err => {}
+      );
   }
 
   getMessageDate(date) {
