@@ -4,29 +4,28 @@
   </ion-toolbar>
 </ion-header>
 <ion-content padding color="light">
-  <ion-card class="practera-card">
-      <ion-item class="profile-info" lines="none">
-          <ion-avatar class="profile-image" slot="start">
-            <img *ngIf="!imageUpdating" [src]="profile.image">
-            <p *ngIf="imageUpdating" class="loading-icon"><ion-spinner name="bubbles"></ion-spinner></p>
-            <file-stack
-              [accept]="acceptFileTypes"
-              [fileType]="'image'"
-              [type]="'profileImage'"
-              (complete)="uploadProfileImage($event)"
-            >
-            </file-stack>
-          </ion-avatar>
-          <ion-label>
-            <ion-label class="profile-name" *ngIf="profile.name">
-                {{profile.name}}
-            </ion-label>
-            <ion-label class="profile-email" *ngIf="profile.email">
-                {{profile.email}}
-            </ion-label>
-          </ion-label>
-        </ion-item>
-  </ion-card>
+  <ng-container>
+    <ion-item class="profile-info no-bg" lines="none">
+      <ion-avatar class="profile-image" slot="start">
+        <img *ngIf="!imageUpdating" [src]="profile.image">
+        <p *ngIf="imageUpdating" class="loading-icon"><ion-spinner name="bubbles"></ion-spinner></p>
+        <file-stack
+          [accept]="acceptFileTypes"
+          [fileType]="'image'"
+          [type]="'profileImage'"
+          (complete)="uploadProfileImage($event)"
+        ></file-stack>
+      </ion-avatar>
+      <ion-label>
+        <ion-label class="profile-name">
+          <!-- {{profile.name}}  *ngIf="profile.name" --> Sasanga Chathumal
+        </ion-label>
+        <ion-label class="profile-email">
+          <!-- {{profile.email}}  *ngIf="profile.email" --> chathumal.sasanga02@gmail.com
+        </ion-label>
+      </ion-label>
+    </ion-item>
+  </ng-container>
   <ion-card class="practera-card">
 
     <app-contact-number-form [page]="'settings'"></app-contact-number-form>
@@ -36,8 +35,32 @@
       Switch to another experience
     </clickable-item>
   </ion-card>
+  <ng-container>
+    <ion-item lines="none">
+      <ion-label>
+          Switch to another experience
+      </ion-label>
+      <ion-button slot="end">
+          SWITCH
+        </ion-button>
+    </ion-item>
+  </ng-container>
 
-  <ion-card class="practera-card">
+  <div class="support-section">
+    <ion-label class="title">Support</ion-label>
+    <div class="content">
+      <clickable-item (click)="mailTo()">
+        <ion-icon padding name="mail"></ion-icon>
+        Email Help
+      </clickable-item>
+      <clickable-item (click)="openLink()" lines="none">
+        <ion-icon padding name="clipboard"></ion-icon>
+        Terms of Use
+      </clickable-item>
+    </div>
+  </div>
+
+  <!-- <ion-card class="practera-card">
     <ion-item>Support</ion-item>
     <clickable-item (click)="mailTo()">
       <ion-icon padding name="mail"></ion-icon>
@@ -47,7 +70,7 @@
       <ion-icon padding name="clipboard"></ion-icon>
       Terms of Use
     </clickable-item>
-  </ion-card>
+  </ion-card> -->
 
   <ion-card class="practera-card">
     <clickable-item (click)="logout()" lines="none">
