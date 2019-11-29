@@ -15,7 +15,7 @@ import { NewRelicService } from '@shared/new-relic/new-relic.service';
 export class ChatListComponent {
   @Output() navigate = new EventEmitter();
   @Output() chatListReady = new EventEmitter();
-  @Input() currentChat;
+  @Input() currentChat = {};
   chatList: Array<ChatListObject>;
   haveMoreTeam: boolean;
   loadingChatList = true;
