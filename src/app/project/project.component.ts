@@ -2,7 +2,6 @@ import { Component, HostListener, ViewChild, ViewChildren, QueryList, ElementRef
 import { DOCUMENT } from '@angular/common';
 import { Router, ActivatedRoute } from '@angular/router';
 import { ProjectService, Milestone, DummyMilestone } from './project.service';
-import { HomeService } from '../home/home.service';
 import { RouterEnter } from '@services/router-enter.service';
 import { BrowserStorageService } from '@services/storage.service';
 import { UtilsService } from '@services/utils.service';
@@ -36,7 +35,6 @@ export class ProjectComponent {
     public utils: UtilsService,
     public storage: BrowserStorageService,
     private projectService: ProjectService,
-    private homeService: HomeService,
     private sharedService: SharedService,
     public fastFeedbackService: FastFeedbackService,
     private platform: Platform,
@@ -58,14 +56,6 @@ export class ProjectComponent {
     this.route.queryParamMap.subscribe(params => {
       this.highlightedActivityId = +params.get('activityId') || undefined;
     });
-    this.homeService.getProgramName().subscribe(
-      programName => {
-        this.programName = programName;
-      },
-      error => {
-        this.newRelic.noticeError(error);
-      }
-    );
 
     this.subscriptions.push(this.projectService.getProject().subscribe(
       milestones => {
