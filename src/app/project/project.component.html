@@ -21,8 +21,8 @@
 <!-- <ion-content color="light" [scrollEvents]="true" (ionScroll)="trackScrolling($event)" #contentRef> -->
 <ion-content color="light" #contentRef>
   <ion-list class="project-list">
-    <ion-item *ngIf="loadingMilestone" color="light">
-    </ion-item>
+    <ion-item *ngIf="loadingMilestone" color="light"></ion-item>
+
     <ion-grid>
       <ion-item class="project-item" lines="none" *ngFor="let milestone of milestones" color="light" #milestoneRef>
         <div color="light" class="project-card" id="milestone-{{milestone.id}}">
@@ -56,10 +56,10 @@
                 </ion-card-content>
               </ion-card>
 
-              <div *ngIf="showingMilestone.id == milestone.id && milestone.Activity && !milestone.isLocked" class="milestone-activities">
+              <div *ngIf="milestone.Activity && !milestone.isLocked" class="milestone-activities">
                 <ion-list class="activity-list" color="light">
 
-                  <ion-row>
+                  <ion-row *ngIf="showingMilestone && showingMilestone.id == milestone.id">
                     <ion-col *ngFor="let activity of milestone.Activity" size="12" size-md="6" size-lg="4" size-xl="3">
                       <ion-item class="activity-item" color="light">
                         <ng-container *ngIf="activity && activity.dummy; else actualTpl">

@@ -53,7 +53,7 @@ export class ProjectComponent {
 
   toggleGroup(milestone) {
     if (this.showingMilestone && milestone.id === this.showingMilestone.id) {
-      this.showingMilestone = {};
+      this.showingMilestone = { id: undefined };
     } else {
       this.showingMilestone = milestone;
     }
