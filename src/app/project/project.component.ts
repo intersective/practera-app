@@ -28,6 +28,7 @@ export class ProjectComponent {
   // used to indicate the milestone progress bar at top
   public activeMilestoneIndex = 0;
   private highlightedActivityId: number;
+  private subscriptions: Subscription[] = [];
 
   constructor(
     public router: Router,
