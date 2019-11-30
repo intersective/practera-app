@@ -23,7 +23,6 @@ export class HomeComponent implements OnDestroy {
   routeUrl = '/app/home';
   progress = 0;
   loadingProgress = true;
-  programName: string;
   todoItems: Array<TodoItem> = [];
   eventReminders: Array<Event> = [];
   loadingTodoItems = true;
@@ -123,10 +122,6 @@ export class HomeComponent implements OnDestroy {
         });
       })
     );
-
-    this.homeService.getProgramName().subscribe(programName => {
-      this.programName = programName;
-    });
 
     this.subscriptions.push(
       this.achievementService.getAchievements('desc').subscribe(achievements => {

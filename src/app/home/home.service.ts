@@ -64,10 +64,6 @@ export class HomeService {
     public sharedService: SharedService
   ) {}
 
-  getProgramName() {
-    return of(this.storage.getUser().programName);
-  }
-
   getTodoItems() {
     return this.request.get(api.get.todoItem, {
         params: {
