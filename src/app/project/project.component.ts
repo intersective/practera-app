@@ -17,6 +17,7 @@ import { NewRelicService } from '@shared/new-relic/new-relic.service';
   styleUrls: ['project.component.scss'],
 })
 export class ProjectComponent {
+  private showingMilestone: Milestone | object;
   public routeUrl = '/app/project';
   public programName: string;
   public milestones: Array<Milestone | DummyMilestone> = [];
@@ -48,6 +49,14 @@ export class ProjectComponent {
 
   private _initialise() {
     this.loadingMilestone = true;
+  }
+
+  toggleGroup(milestone) {
+    if (this.showingMilestone && milestone.id === this.showingMilestone.id) {
+      this.showingMilestone = {};
+    } else {
+      this.showingMilestone = milestone;
+    }
   }
 
   onEnter() {
