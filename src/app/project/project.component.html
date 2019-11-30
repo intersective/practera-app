@@ -1,26 +1,25 @@
-<div>
-  <ion-grid class="milestone-bar">
-    <ion-row>
-      <ion-col class="bubbles-top"
-        (click)="scrollTo('milestone-' + milestone.id, i)"
-        *ngFor="let milestone of milestones; let i = index">
-        <div [class.active]="activeMilestoneIndex === i">
-          <ng-container *ngIf="!milestone.isLocked; else milestoneLocked">
-            <ion-icon *ngIf="milestone.progress >= 1; else circleProgress" name="checkmark-circle" class="icon-done" color="primary"></ion-icon>
-          </ng-container>
-          <ng-template #circleProgress>
-            <app-circle-progress [data]="{percent: milestone.progress * 100, radius: 4}"></app-circle-progress>
-          </ng-template>
-          <ng-template #milestoneLocked>
-            <ion-icon name="lock" color="medium" class="icon-lock"></ion-icon>
-          </ng-template>
-        </div>
-      </ion-col>
-    </ion-row>
-  </ion-grid>
-</div>
+<ion-grid class="milestone-bar" *ngIf="false">
+  <ion-row>
+    <ion-col class="bubbles-top"
+      (click)="scrollTo('milestone-' + milestone.id, i)"
+      *ngFor="let milestone of milestones; let i = index">
+      <div [class.active]="activeMilestoneIndex === i">
+        <ng-container *ngIf="!milestone.isLocked; else milestoneLocked">
+          <ion-icon *ngIf="milestone.progress >= 1; else circleProgress" name="checkmark-circle" class="icon-done" color="primary"></ion-icon>
+        </ng-container>
+        <ng-template #circleProgress>
+          <app-circle-progress [data]="{percent: milestone.progress * 100, radius: 4}"></app-circle-progress>
+        </ng-template>
+        <ng-template #milestoneLocked>
+          <ion-icon name="lock" color="medium" class="icon-lock"></ion-icon>
+        </ng-template>
+      </div>
+    </ion-col>
+  </ion-row>
+</ion-grid>
 
-<ion-content color="light" [scrollEvents]="true" (ionScroll)="trackScrolling($event)" #contentRef>
+<!-- <ion-content color="light" [scrollEvents]="true" (ionScroll)="trackScrolling($event)" #contentRef> -->
+<ion-content color="light" #contentRef>
   <ion-list class="project-list">
     <ion-item *ngIf="loadingMilestone" color="light">
     </ion-item>
@@ -33,13 +32,31 @@
 
           <ng-template #actualMilestoneTpl>
             <div class="milestone" [ngClass]="{'lock': milestone.isLocked}">
-              <div>
-                  <ion-icon *ngIf="milestone.isLocked" name="lock" color="medium" class="icon-lock milestone-lock"></ion-icon>
-                  <ion-text class="project-title" [ngClass]="{'no-desc': milestone.description}">{{ milestone.name }}</ion-text>
-                  <app-description class="milestone-description" *ngIf="milestone.description" [content]="milestone.description"></app-description>
-              </div>
+              <ion-card>
+                <ion-item>
+                  <ion-icon
+                    *ngIf="milestone.isLocked"
+                    name="lock"
+                    color="medium"
+                    class="icon-lock milestone-lock"
+                    slot="start"></ion-icon>
 
-              <div *ngIf="milestone.Activity && !milestone.isLocked" class="milestone-activities">
+                  <ion-label
+                    class="project-title"
+                    [ngClass]="{'no-desc': milestone.description}">
+                    {{ milestone.name }}
+                  </ion-label>
+
+                  <ion-button (click)="toggleGroup(milestone)">Expand</ion-button>
+                </ion-item>
+                <ion-card-content *ngIf="milestone.description">
+                  <app-description
+                    class="milestone-description"
+                    [content]="milestone.description"></app-description>
+                </ion-card-content>
+              </ion-card>
+
+              <div *ngIf="showingMilestone.id == milestone.id && milestone.Activity && !milestone.isLocked" class="milestone-activities">
                 <ion-list class="activity-list" color="light">
 
                   <ion-row>
