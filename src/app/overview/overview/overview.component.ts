@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { BrowserStorageService } from '@services/storage.service';
 
 @Component({
   selector: 'app-overview',
@@ -6,10 +7,11 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./overview.component.scss']
 })
 export class OverviewComponent implements OnInit {
-
-  constructor() { }
+  programName: string;
+  constructor(private storage: BrowserStorageService) { }
 
   ngOnInit() {
+    this.programName = this.storage.getUser().programName;
   }
 
 }
