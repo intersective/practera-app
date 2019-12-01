@@ -6,7 +6,7 @@ import { RouterEnter } from '@services/router-enter.service';
 import { BrowserStorageService } from '@services/storage.service';
 import { UtilsService } from '@services/utils.service';
 import { SharedService } from '@services/shared.service';
-import { FastFeedbackService } from '../fast-feedback/fast-feedback.service';
+import { FastFeedbackService } from '../../fast-feedback/fast-feedback.service';
 import { Subscription } from 'rxjs';
 import { Platform } from '@ionic/angular';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
@@ -20,10 +20,10 @@ import { trigger, state, transition, style, animate } from '@angular/animations'
     trigger('slide', [
       transition(':enter', [
         style({transform: 'translateY(-100%)'}),
-        animate('200ms ease-in', style({transform: 'translateY(0%)'}))
+        animate('200ms ease-in-out', style({transform: 'translateY(0%)'}))
       ]),
       transition(':leave', [
-        animate('200ms ease-in', style({transform: 'translateY(-100%)'}))
+        animate('200ms ease-in-out', style({transform: 'translateY(-100%)'}))
       ])
     ]),
   ]

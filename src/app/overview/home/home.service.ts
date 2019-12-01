@@ -5,7 +5,7 @@ import { RequestService } from '@shared/request/request.service';
 import { UtilsService } from '@services/utils.service';
 import { BrowserStorageService } from '@services/storage.service';
 import { Activity } from '../project/project.service';
-import { Question, Meta} from '../fast-feedback/fast-feedback.service';
+import { Question, Meta} from '../../fast-feedback/fast-feedback.service';
 import { NotificationService } from '@shared/notification/notification.service';
 import { Event, EventListService } from '@app/event-list/event-list.service';
 import { SharedService } from '@services/shared.service';

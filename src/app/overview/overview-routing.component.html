@@ -5,14 +5,21 @@
 </ion-header>
 
 <ion-content>
-  <ion-grid [ngStyle]="{'height': '100%'}">
-    <ion-row [ngStyle]="{'height': '100%'}">
-      <ion-col>
-        <ion-router-outlet name="home"></ion-router-outlet>
-      </ion-col>
-      <ion-col>
-        <ion-router-outlet name="project"></ion-router-outlet>
-      </ion-col>
-    </ion-row>
-  </ion-grid>
+  <ng-container  *ngIf="!utils.isMobile(); else singlePage">
+    <ion-grid [ngStyle]="{'height': '100%'}">
+      <ion-row [ngStyle]="{'height': '100%'}">
+        <ion-col [ngStyle]="{padding: '1em'}">
+          <ion-router-outlet name="home"></ion-router-outlet>
+        </ion-col>
+        <ion-col>
+          <ion-router-outlet name="project"></ion-router-outlet>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </ng-container>
+
+  <ng-template #singlePage>
+    <app-home></app-home>
+    <app-project></app-project>
+  </ng-template>
 </ion-content>
