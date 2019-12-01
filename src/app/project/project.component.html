@@ -32,8 +32,8 @@
 
           <ng-template #actualMilestoneTpl>
             <div class="milestone" [ngClass]="{'lock': milestone.isLocked}">
-              <ion-card>
-                <ion-item>
+              <ion-card class="expandable">
+                <ion-item lines="none">
                   <ion-icon
                     *ngIf="milestone.isLocked"
                     name="lock"
@@ -49,6 +49,7 @@
 
                   <ion-button (click)="toggleGroup(milestone)">Expand</ion-button>
                 </ion-item>
+
                 <ion-card-content *ngIf="milestone.description">
                   <app-description
                     class="milestone-description"
@@ -60,7 +61,7 @@
                 <ion-list class="activity-list" color="light">
 
                   <ion-row *ngIf="showingMilestone && showingMilestone.id == milestone.id">
-                    <ion-col *ngFor="let activity of milestone.Activity" size="12" size-md="6" size-lg="4" size-xl="3">
+                    <ion-col *ngFor="let activity of milestone.Activity" size="8">
                       <ion-item class="activity-item" color="light">
                         <ng-container *ngIf="activity && activity.dummy; else actualTpl">
                           <div class='row-cards'>
