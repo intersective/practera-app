@@ -1,6 +1,6 @@
 <ion-item *ngIf="loadingMilestone" color="light"></ion-item>
 
-<ion-grid class="project-list">
+<ion-grid class="project-list" [ngStyle]="!utils.isMobile() ? {'overflow': 'scroll'} : {}">
   <ion-item class="project-item" lines="none" *ngFor="let milestone of milestones" color="light" #milestoneRef>
     <div color="light" class="project-card" id="milestone-{{milestone.id}}">
       <ng-container *ngIf="milestone.dummy; else actualMilestoneTpl">
@@ -38,7 +38,7 @@
             <ion-list class="activity-list" color="light">
 
               <ion-row *ngIf="showingMilestone && showingMilestone.id == milestone.id" [@slide]>
-                <ion-col *ngFor="let activity of milestone.Activity" size="8">
+                <ion-col *ngFor="let activity of milestone.Activity" size-sm="8" size-xs="12">
                   <ion-item class="activity-item" color="light">
                     <ng-container *ngIf="activity && activity.dummy; else actualTpl">
                       <div class='row-cards'>

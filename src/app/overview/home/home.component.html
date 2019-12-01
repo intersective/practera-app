@@ -1,4 +1,4 @@
-<div [ngStyle]="{padding: '1em'}">
+<div [ngStyle]="utils.isMobile() ? {padding: '1em'} : {padding: '1em', overflow: 'scroll'}">
   <a color="primary" routerLink="/events" *ngIf="haveEvents">
     <ion-icon name="calendar" class="calendar" float-right></ion-icon>
   </a>
@@ -12,7 +12,7 @@
   <ng-container *ngIf="achievements && achievements.length > 0">
     <div class="achievement">
       <ion-label color="medium">My Badges</ion-label>
-      <ion-label >
+      <ion-label>
         <a color="primary" (click)='goTo(["achievements"])'>View all</a>
       </ion-label>
     </div>
