@@ -1,7 +1,7 @@
 <ion-item *ngIf="loadingMilestone" color="light"></ion-item>
 
 <ion-grid class="project-list" [ngStyle]="!utils.isMobile() ? {'overflow': 'scroll'} : {}">
-  <ion-item class="project-item" lines="none" *ngFor="let milestone of milestones" color="light" #milestoneRef>
+  <ion-item class="project-item" lines="none" *ngFor="let milestone of milestones" color="light" #milestoneRef @newLoad>
     <div color="light" class="project-card" id="milestone-{{milestone.id}}">
       <ng-container *ngIf="milestone.dummy; else actualMilestoneTpl">
         <ng-container *ngTemplateOutlet="loadingMilestoneTpl"></ng-container>
