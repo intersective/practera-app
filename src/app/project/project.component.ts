@@ -17,7 +17,7 @@ import { NewRelicService } from '@shared/new-relic/new-relic.service';
   styleUrls: ['project.component.scss'],
 })
 export class ProjectComponent {
-  private showingMilestone: Milestone | object;
+  private showingMilestone: Milestone | { id: number; };
   public routeUrl = '/app/project';
   public programName: string;
   public milestones: Array<Milestone | DummyMilestone> = [];
