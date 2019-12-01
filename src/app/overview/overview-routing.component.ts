@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { BrowserStorageService } from '@services/storage.service';
+import { UtilsService } from '@services/utils.service';
 
 @Component({
   selector: 'app-overview-routing',
@@ -8,7 +9,10 @@ import { BrowserStorageService } from '@services/storage.service';
 export class OverviewRoutingComponent implements OnInit {
 
   programName: string;
-  constructor(private storage: BrowserStorageService) { }
+  constructor(
+    private storage: BrowserStorageService,
+    private utils: UtilsService,
+  ) { }
 
   ngOnInit() {
     this.programName = this.storage.getUser().programName;

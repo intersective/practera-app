@@ -1,5 +1,3 @@
-:root {
-}
 ion-card.expandable {
   --color: inherit;
   --background: transparent;
@@ -69,6 +67,9 @@ ion-card.expandable {
 }
 
 .project-list {
+  height: 100%;
+  margin: 0;
+
   .project-item {
     --inner-padding-start:0px;
     --ion-safe-area-right: 0px;
