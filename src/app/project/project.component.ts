@@ -10,11 +10,23 @@ import { FastFeedbackService } from '../fast-feedback/fast-feedback.service';
 import { Subscription } from 'rxjs';
 import { Platform } from '@ionic/angular';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
+import { trigger, state, transition, style, animate } from '@angular/animations';
 
 @Component({
   selector: 'app-project',
   templateUrl: 'project.component.html',
   styleUrls: ['project.component.scss'],
+  animations: [
+    trigger('slide', [
+      transition(':enter', [
+        style({transform: 'translateY(-100%)'}),
+        animate('200ms ease-in', style({transform: 'translateY(0%)'}))
+      ]),
+      transition(':leave', [
+        animate('200ms ease-in', style({transform: 'translateY(-100%)'}))
+      ])
+    ]),
+  ]
 })
 export class ProjectComponent {
   private showingMilestone: Milestone | { id: number; };
