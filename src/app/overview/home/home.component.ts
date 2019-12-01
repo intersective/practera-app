@@ -13,11 +13,22 @@ import { Event, EventListService } from '@app/event-list/event-list.service';
 import { Intercom } from 'ng-intercom';
 import { environment } from '@environments/environment';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
+import { trigger, state, transition, style, animate, useAnimation } from '@angular/animations';
+import { fadeIn } from '../../animations';
 
 @Component({
   selector: 'app-home',
   templateUrl: 'home.component.html',
-  styleUrls: ['home.component.scss']
+  styleUrls: ['home.component.scss'],
+  animations: [
+    trigger('newLoaded', [
+      transition(':enter, * => 0, * => -1', [
+        useAnimation(fadeIn, {
+          params: { time: '250ms' }
+        })
+      ]),
+    ]),
+  ]
 })
 export class HomeComponent implements OnDestroy {
   routeUrl = '/app/home';
