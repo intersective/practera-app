@@ -1,7 +1,7 @@
 import { Component, OnDestroy } from '@angular/core';
 import { HomeService, TodoItem } from './home.service';
 import { Router, NavigationEnd, ActivatedRoute } from '@angular/router';
-import { FastFeedbackService } from '../fast-feedback/fast-feedback.service';
+import { FastFeedbackService } from '../../fast-feedback/fast-feedback.service';
 import { Activity } from '../project/project.service';
 import { UtilsService } from '@services/utils.service';
 import { Subscription } from 'rxjs';

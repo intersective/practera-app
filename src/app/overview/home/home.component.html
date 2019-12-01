@@ -1,4 +1,4 @@
-<ion-content padding color="light">
+<div [ngStyle]="{padding: '1em'}">
   <a color="primary" routerLink="/events" *ngIf="haveEvents">
     <ion-icon name="calendar" class="calendar" float-right></ion-icon>
   </a>
@@ -16,17 +16,16 @@
         <a color="primary" (click)='goTo(["achievements"])'>View all</a>
       </ion-label>
     </div>
-    <ion-grid>
+    <ion-grid [ngStyle]="{width: '100%'}">
       <ion-row text-center margin-bottom>
         <ion-col
           *ngFor="let achievement of achievements; let i = index;"
           size-xs="4"
           size-sm="3"
           size-md="2"
+          [ngStyle]="{'min-width': '6em'}"
         >
-        <achievement-badge
-          [achievement]="achievement"
-        ></achievement-badge>
+          <achievement-badge [achievement]="achievement"></achievement-badge>
         </ion-col>
       </ion-row>
     </ion-grid>
@@ -83,6 +82,7 @@
       </ng-template>
     </ng-template>
   </ion-list>
+</div>
 
   <ng-template *ngIf="false">
     <ion-label color="medium">Things to do</ion-label>
@@ -148,4 +148,3 @@
       <app-activity-card [activity]="activity" (click)="!activity.isLocked && goToActivity(activity.id)"></app-activity-card>
     </ng-template>
   </ng-template>
-</ion-content>
