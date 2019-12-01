@@ -60,7 +60,7 @@
               <div *ngIf="milestone.Activity && !milestone.isLocked" class="milestone-activities">
                 <ion-list class="activity-list" color="light">
 
-                  <ion-row *ngIf="showingMilestone && showingMilestone.id == milestone.id">
+                  <ion-row *ngIf="showingMilestone && showingMilestone.id == milestone.id" [@slide]>
                     <ion-col *ngFor="let activity of milestone.Activity" size="8">
                       <ion-item class="activity-item" color="light">
                         <ng-container *ngIf="activity && activity.dummy; else actualTpl">
