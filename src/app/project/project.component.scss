@@ -1,6 +1,37 @@
+:root {
+}
+ion-card.expandable {
+  --color: inherit;
+  --background: transparent;
+
+  box-shadow: none;
+  border: none;
+  ion-item {
+    --padding-start: 0px;
+    --background: transparent;
+    --background-color: transparent;
+    border: none;
+
+    ion-label.project-title {
+      font-weight: bold;
+      color: inherit;
+    }
+
+  }
+
+  ion-card-content {
+    --padding-start: 0px;
+    --practera-label-color: #000;
+    color: inherit;
+    padding-top: 0;
+    padding-left: var(--padding-start);
+  }
+}
+
 .project-toolbar {
   --border-width: 0px !important;
 }
+
 .milestone-bar {
   list-style: none;
   margin: 0px;
