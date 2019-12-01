@@ -152,8 +152,8 @@ describe('TabsComponent', () => {
   });
 
   describe('when testing _checkRoute()', () => {
-    it('should select home tab', () => {
-      // spyOnProperty(routerSpy, 'url', 'get').and.returnValue('/app/home');
+    it('should select overview tab', () => {
+      // spyOnProperty(routerSpy, 'url', 'get').and.returnValue('/app/overview');
       // expect(component.selectedTab).toEqual('home');
     });
   });
