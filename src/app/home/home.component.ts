@@ -168,6 +168,10 @@ export class HomeComponent implements OnDestroy {
     this.fastFeedbackService.pullFastFeedback().subscribe();
   }
 
+  goTo(destination) {
+    this.router.navigate(destination);
+  }
+
   goToActivity(id) {
     this.newRelic.actionText(`goToActivity ID: ${id}`);
     this.router.navigate(['app', 'activity', id]);
