@@ -10,7 +10,8 @@ import { FastFeedbackService } from '../../fast-feedback/fast-feedback.service';
 import { Subscription } from 'rxjs';
 import { Platform } from '@ionic/angular';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
-import { trigger, state, transition, style, animate } from '@angular/animations';
+import { trigger, state, transition, style, animate, useAnimation } from '@angular/animations';
+import { fadeIn } from '../../animations';
 
 @Component({
   selector: 'app-project',
@@ -26,6 +27,13 @@ import { trigger, state, transition, style, animate } from '@angular/animations'
         animate('200ms ease-in-out', style({transform: 'translateY(-100%)'}))
       ])
     ]),
+    trigger('newLoad', [
+      transition(':enter, * => 0, * => -1', [
+        useAnimation(fadeIn, {
+          params: { time: '250ms' }
+        })
+      ]),
+    ])
   ]
 })
 export class ProjectComponent {
