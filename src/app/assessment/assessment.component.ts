@@ -234,7 +234,7 @@ export class AssessmentComponent extends RouterEnter {
                     if (this.activityId) {
                       this._navigate(['app', 'activity', this.activityId ]);
                     } else {
-                      this._navigate(['app', 'home']);
+                      this._navigate(['app', 'overview']);
                     }
                   }
                 }
@@ -354,7 +354,7 @@ export class AssessmentComponent extends RouterEnter {
     if (this.activityId) {
       return this._navigate(['app', 'activity', this.activityId ]);
     }
-    return this._navigate(['app', 'home']);
+    return this._navigate(['app', 'overview']);
   }
 
   back(): Promise<boolean | void> {
@@ -443,7 +443,7 @@ export class AssessmentComponent extends RouterEnter {
       this.isRedirectingToNextMilestoneTask = true;
     }
 
-    let route: Array<string | number> = ['app', 'home'];
+    let route: Array<string | number> = ['app', 'overview'];
     let navigationParams: any;
     const { activity, nextTask } = await this.getNextSequence();
 

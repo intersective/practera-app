@@ -102,10 +102,6 @@ export class TabsComponent extends RouterEnter {
         this.selectedTab = 'overview';
         break;
 
-      case '/app/home':
-        this.selectedTab = 'home';
-        break;
-
       case '/app/events':
         this.selectedTab = 'events';
         break;

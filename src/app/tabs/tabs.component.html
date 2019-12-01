@@ -4,13 +4,8 @@
 
     <ion-tab-button layout="icon-top" tab="overview" [class.selected]="selectedTab == 'overview'">
       <ion-icon name="podium"></ion-icon>
-      <ion-label>Overview</ion-label>
-    </ion-tab-button>
-
-    <ion-tab-button layout="icon-top" tab="home" [class.selected]="selectedTab == 'home'">
-      <ion-icon name="home"></ion-icon>
       <ion-badge color="danger" *ngIf="noOfTodoItems > 0">{{ noOfTodoItems }}</ion-badge>
-      <ion-label>Home</ion-label>
+      <ion-label>Overview</ion-label>
     </ion-tab-button>
 
     <ion-tab-button layout="icon-top" *ngIf="showEvents" tab="events" [class.selected]="selectedTab == 'events'">
@@ -46,12 +41,6 @@
     <ion-tab-button layout="icon-top" tab="overview" [class.selected]="selectedTab == 'overview'">
       <ion-icon name="podium"></ion-icon>
       <ion-label>Overview</ion-label>
-    </ion-tab-button>
-
-    <ion-tab-button layout="icon-top" tab="home" [class.selected]="selectedTab == 'home'">
-      <ion-icon name="home"></ion-icon>
-      <ion-badge color="danger" *ngIf="noOfTodoItems > 0">{{ noOfTodoItems }}</ion-badge>
-      <ion-label>Home</ion-label>
     </ion-tab-button>
 
     <ion-tab-button layout="icon-top" *ngIf="showEvents" tab="events" [class.selected]="selectedTab == 'events'">
