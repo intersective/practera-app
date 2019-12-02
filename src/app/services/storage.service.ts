@@ -16,6 +16,7 @@ export interface User {
   linkedinUrl?: string;
   programId?: number;
   programName?: string;
+  programImage?: string;
   experienceId?: number;
   timelineId?: number;
   projectId?: number;
