@@ -95,7 +95,7 @@ export class SwitcherService {
       this.getNewJwt(),
       this.getTeamInfo(),
       this.getMyInfo(),
-    );
+    ).subscribe();
   }
 
   getTeamInfo(): Observable<any> {

@@ -9,7 +9,7 @@ import { BrowserStorageService } from '@services/storage.service';
 import { RouterEnter } from '@services/router-enter.service';
 import { PusherService } from '@shared/pusher/pusher.service';
 import { Achievement, AchievementsService } from '@app/achievements/achievements.service';
-import { Event, EventsService } from '@app/events/events.service';
+import { Event, EventListService } from '@app/event-list/event-list.service';
 import { Intercom } from 'ng-intercom';
 import { environment } from '@environments/environment';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
@@ -31,7 +31,6 @@ export class HomeComponent extends RouterEnter implements OnDestroy {
   loadingActivity = true;
   subscriptions: Subscription[] = [];
   achievements: Array<Achievement>;
-  haveEvents = false;
   progressConfig: any;
 
   constructor(
@@ -42,7 +41,7 @@ export class HomeComponent extends RouterEnter implements OnDestroy {
     public utils: UtilsService,
     public storage: BrowserStorageService,
     public achievementService: AchievementsService,
-    public eventsService: EventsService,
+    private eventsService: EventListService,
     private newRelic: NewRelicService
   ) {
     super(router);
@@ -86,7 +85,6 @@ export class HomeComponent extends RouterEnter implements OnDestroy {
     this.loadingProgress = true;
     this.loadingActivity = true;
     this.achievements = [];
-    this.haveEvents = false;
   }
 
   onEnter() {
@@ -152,12 +150,6 @@ export class HomeComponent extends RouterEnter implements OnDestroy {
           this.achievements[1] = earned[1];
           this.achievements[2] = unEarned[0];
         }
-      })
-    );
-
-    this.subscriptions.push(
-      this.eventsService.getEvents().subscribe(events => {
-        this.haveEvents = !this.utils.isEmpty(events);
       })
     );
 
@@ -250,7 +242,12 @@ export class HomeComponent extends RouterEnter implements OnDestroy {
 
   showEventDetail(event) {
     this.newRelic.actionText('showEventDetail');
-    this.eventsService.eventDetailPopUp(event);
+    if (this.utils.isMobile()) {
+      this.eventsService.eventDetailPopUp(event);
+    } else {
+      // go to the events page with the event selected
+      this.router.navigate(['app', 'events', {event_id: event.id}]);
+    }
   }
 
 }

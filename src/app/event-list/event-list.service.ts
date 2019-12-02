@@ -42,6 +42,11 @@ export interface Event {
   };
 }
 
+export interface EventGroup {
+  date: string;
+  events: Array<Event>;
+}
+
 export interface Activity {
   id: number;
   name: string;
@@ -51,7 +56,7 @@ export interface Activity {
   providedIn: 'root'
 })
 
-export class EventsService {
+export class EventListService {
   constructor(
     private request: RequestService,
     private utils: UtilsService,
