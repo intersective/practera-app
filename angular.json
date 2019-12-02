@@ -250,6 +250,9 @@
           "configurations": {
             "ci": {
               "devServerTarget": "app:serve:ci"
+            },
+            "mobile": {
+              "protractorConfig": "e2e/protractor-mobile.conf.js"
             }
           }
         },

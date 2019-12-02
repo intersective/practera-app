@@ -1,13 +1,50 @@
 $message-body-size: 224px;
 
+.not-started-empty-status {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%,-50%);
+  .headText {
+    font-size: 24px;
+    margin-bottom: 0px;
+    color: var(--ion-color-dark-tint);
+    margin-top: 0px;
+    &.desktop {
+      margin-top: 24px;
+    }
+  }
+  .subText {
+    font-size: 16px;
+    margin-top: 5px;
+    color: var(--ion-color-medium);
+  }
+  .image {
+    min-width: 96px;
+    min-height: 96px;
+    max-width: 96px;
+    max-height: 96px;
+    &.desktop {
+      min-width: 120px;
+      min-height: 120px;
+      max-width: 120px;
+      max-height: 120px;
+    }
+  }
+}
+
 .chat-list {
+
   background-color: transparent !important;
 
   ion-item {
     ion-avatar {
-      margin: 2px 6px 2px 0 !important;
+      margin: 0 12px 2px 0 !important;
       margin-left: -8px !important;
       &.no-time {
+        margin-top: 8% !important;
+      }
+      &.no-time-team {
         margin-top: -8% !important;
       }
     }
@@ -115,12 +152,12 @@ $message-body-size: 224px;
         }
 
         .time {
-          margin-left: -10% !important;
+          margin-left: -14% !important;
           width: -webkit-fill-available !important;
         }
 
         &.no-avatar {
-          margin-left: 10%;
+          margin-left: 12%;
         }
       }
 
@@ -148,6 +185,37 @@ $message-body-size: 224px;
       }
     }
   }
+
+  &.desktop-view {
+    ion-item {
+      ion-avatar {
+        margin-left: 0 !important;
+        margin-top: 3% !important;
+        &.no-time {
+          margin-top: 0 !important;
+        }
+        &.no-time-team {
+          margin-top: -3% !important;
+        }
+        &.with-time-team {
+          margin-top: 0 !important;
+        }
+      }
+      ion-label {
+        .time {
+          margin-left: 2.5% !important;
+        }
+        &.received-messages {
+          .time {
+            margin-left: 0 !important;
+          }
+          &.no-avatar {
+            margin-left: 5% !important;
+          }
+        }
+      }
+    }
+  }
 }
 
 .message-sending-loading {
@@ -161,6 +229,11 @@ $message-body-size: 224px;
 }
 
 .footer {
+
+  &.ion-footer-absolute {
+    height: auto;
+  }
+
   ion-grid {
     background-color: white;
     border-top: 0.1px solid var(--practera-chat-footer-border-color) !important;
