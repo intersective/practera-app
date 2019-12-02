@@ -69,6 +69,7 @@ ion-card.expandable {
 .project-list {
   height: 100%;
   margin: 0;
+  overflow: hidden;
 
   .project-item {
     --inner-padding-start:0px;

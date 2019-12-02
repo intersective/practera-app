@@ -4,7 +4,8 @@ import { UtilsService } from '@services/utils.service';
 
 @Component({
   selector: 'app-overview-routing',
-  templateUrl: './overview-routing.component.html'
+  templateUrl: './overview-routing.component.html',
+  styleUrls: ['./overview-routing.component.scss']
 })
 export class OverviewRoutingComponent implements OnInit {
 

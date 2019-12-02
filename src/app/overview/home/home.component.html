@@ -1,4 +1,4 @@
-<div [ngStyle]="utils.isMobile() ? {padding: '1em'} : {padding: '1em', overflow: 'scroll'}">
+<div class="app-home" [ngStyle]="utils.isMobile() ? {padding: '1em'} : {padding: '1em', 'overflow-y': 'scroll'}">
   <a color="primary" (click)="goTo(['events'])" *ngIf="haveEvents">
     <ion-icon name="calendar" class="calendar" float-right></ion-icon>
   </a>
