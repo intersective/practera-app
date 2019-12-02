@@ -80,17 +80,17 @@ export class AuthDirectLoginComponent implements OnInit {
 
     switch (redirect) {
       case 'home':
-        return this.navigate(['app', 'overview']);
+        return this.navigate(['app', 'home']);
       case 'project':
         return this.navigate(['app', 'project']);
       case 'activity':
         if (!activityId) {
-          return this.navigate(['app', 'overview']);
+          return this.navigate(['app', 'home']);
         }
         return this.navigate(['app', 'activity', activityId]);
       case 'assessment':
         if (!activityId || !contextId || !assessmentId) {
-          return this.navigate(['app', 'overview']);
+          return this.navigate(['app', 'home']);
         }
         if (this.utils.isMobile()) {
           return this.navigate(['assessment', 'assessment', activityId, contextId, assessmentId]);
@@ -110,7 +110,7 @@ export class AuthDirectLoginComponent implements OnInit {
         return this.navigate(['app', 'reviews']);
       case 'review':
         if (!contextId || !assessmentId || !submissionId) {
-          return this.navigate(['app', 'overview']);
+          return this.navigate(['app', 'home']);
         }
         return this.navigate(['assessment', 'review', contextId, assessmentId, submissionId]);
       case 'chat':
@@ -118,9 +118,9 @@ export class AuthDirectLoginComponent implements OnInit {
       case 'settings':
         return this.navigate(['app', 'settings']);
       default:
-        return this.navigate(['app', 'overview']);
+        return this.navigate(['app', 'home']);
     }
-    return this.navigate(['app', 'overview']);
+    return this.navigate(['app', 'home']);
   }
 
   private _error(res?): Promise<any> {
