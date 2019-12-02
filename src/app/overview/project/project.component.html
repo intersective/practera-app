@@ -1,6 +1,6 @@
 <ion-item *ngIf="loadingMilestone" color="light"></ion-item>
 
-<ion-grid class="project-list" [ngStyle]="!utils.isMobile() ? {'overflow': 'scroll'} : {}">
+<ion-grid class="project-list" [ngStyle]="!utils.isMobile() ? {'overflow': 'auto'} : {}">
   <ion-item class="project-item" lines="none" *ngFor="let milestone of milestones" color="light" #milestoneRef @newLoad>
     <div color="light" class="project-card" id="milestone-{{milestone.id}}">
       <ng-container *ngIf="milestone.dummy; else actualMilestoneTpl">
@@ -27,6 +27,7 @@
               <ion-icon slot="end"
                 [name]="showingMilestone && showingMilestone.id == milestone.id ? 'ios-arrow-up' : 'ios-arrow-down'"
                 [ngStyle]="{'margin-top': '0px'}"
+                *ngIf="milestone.progress == 1"
               ></ion-icon>
             </ion-item>
 
@@ -40,8 +41,8 @@
           <div *ngIf="milestone.Activity && !milestone.isLocked" class="milestone-activities">
             <ion-list class="activity-list" color="light">
 
-              <ion-row *ngIf="showingMilestone && showingMilestone.id == milestone.id" [@slide]>
-                <ion-col *ngFor="let activity of milestone.Activity" size-sm="8" size-xs="12">
+              <ion-row *ngIf="(showingMilestone && showingMilestone.id == milestone.id) || milestone.progress != 1" [@slide]>
+                <ion-col *ngFor="let activity of milestone.Activity" size-sm="9" size-xs="12">
                   <ion-item class="activity-item" color="light">
                     <ng-container *ngIf="activity && activity.dummy; else actualTpl">
                       <div class='row-cards'>
