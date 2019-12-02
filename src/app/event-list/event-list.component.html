@@ -1,0 +1,87 @@
+<ion-header mode="ios">
+  <ion-toolbar [ngClass]="{'ion-toolbar-absolute': !utils.isMobile()}">
+    <ion-title text-center class="title-large">Events</ion-title>
+  </ion-toolbar>
+</ion-header>
+<ion-content padding color="light" text-center [ngClass]="{ 'ion-content-absolute': !utils.isMobile() }">
+
+  <div class="btn-filter">
+    <ion-button
+      class="btn-left-half"
+      [ngClass]="{'btn-activated': activated == 'browse'}"
+      (click)="showBrowse()">
+      <ion-ripple-effect type="unbounded"></ion-ripple-effect>
+      Browse
+    </ion-button>
+    <ion-button
+      class="btn-middle"
+      [ngClass]="{'btn-activated': activated == 'booked'}"
+      (click)="showBooked()">
+      <ion-ripple-effect type="unbounded"></ion-ripple-effect>
+      Booked
+    </ion-button>
+    <ion-button
+      class="btn-right-half"
+      [ngClass]="{'btn-activated': activated == 'attended'}"
+      (click)="showAttended()">
+      <ion-ripple-effect type="unbounded"></ion-ripple-effect>
+      Attended
+    </ion-button>
+  </div>
+
+  <ion-item lines="none" color="light" margin-top>
+    <ion-label id="activity-filter" color="medium">Filter by Activity</ion-label>
+    <ion-select
+      multiple="true"
+      aria-labelledby="activity-filter"
+      [value]="selectedActivities"
+      (ionChange)="onSelect(filterEle.value)"
+      #filterEle>
+      <ion-select-option *ngFor="let activity of activities" [value]="activity.id" selected>{{ activity.name }}</ion-select-option>
+    </ion-select>
+  </ion-item>
+
+  <ng-container *ngIf="loadingEvents">
+    <ion-spinner></ion-spinner>
+  </ng-container>
+
+  <ng-container *ngFor="let eventObj of events">
+    <h4 class="date-group" text-left>{{ eventObj.date }}</h4>
+    <ion-card class="practera-card">
+      <ion-list>
+        <clickable-item
+          *ngFor="let event of eventObj.events; let i = index"
+          [active]="eventId === event.id"
+          [lines]="i == eventObj.events.length - 1 ? 'none' : ''"
+          (click)="goto(event)"
+        >
+          <event-card
+            [event]="event"
+            [time]="timeDisplayed(event)"
+            class="width-100"
+            ></event-card>
+        </clickable-item>
+      </ion-list>
+    </ion-card>
+  </ng-container>
+
+  <div *ngIf="!events.length && !loadingEvents">
+    <ion-card class="practera-card no-event">
+      <ng-container [ngSwitch]="activated">
+        <ng-container *ngSwitchCase="'browse'">
+          <p>There's no new events.</p>
+          <span>Go to the booked tab to see the events you've booked.</span>
+        </ng-container>
+        <ng-container *ngSwitchCase="'booked'">
+          <p>You have no booked events.</p>
+          <span>Go to the browse tab and book an event to see it here.</span>
+        </ng-container>
+        <ng-container *ngSwitchCase="'attended'">
+          <p>You have not attended any events.</p>
+          <span>You can see all your past events in this tab.</span>
+        </ng-container>
+      </ng-container>
+    </ion-card>
+  </div>
+
+</ion-content>
