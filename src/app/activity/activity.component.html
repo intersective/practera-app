@@ -1,11 +1,11 @@
 <ion-header mode="ios">
-  <ion-toolbar class="ion-toolbar-absolute">
+  <ion-toolbar [ngClass]="{'ion-toolbar-absolute': !utils.isMobile()}">
     <ion-icon name="arrow-back" (click)="back()" color="primary" slot="start" margin-start></ion-icon>
-    <ion-title text-center>Activity</ion-title>
+    <ion-title text-center class="title-large">Activity</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content padding color="light" text-center class="ion-content-absolute">
+<ion-content padding color="light" text-center [ngClass]="{ 'ion-content-absolute': !utils.isMobile() }">
   <ng-container *ngIf="loadingActivity">
     <ion-spinner></ion-spinner>
   </ng-container>
@@ -85,19 +85,20 @@
     </div>
     <ion-card class="practera-card" id="events-card">
       <ion-list>
-          <ng-container *ngFor="let event of events; let i = index">
-              <clickable-item *ngIf="i < 2">
-                  <event-card
-                    [event]="event"
-                    [time]="displayEventTime(event)"
-                    class="width-100"
-                  ></event-card>
-                </clickable-item>
-          </ng-container>
+        <ng-container *ngFor="let event of events; let i = index">
+          <clickable-item *ngIf="i < 2"
+            (click)="gotoEvent(event)">
+            <event-card
+              [event]="event"
+              [time]="displayEventTime(event)"
+              class="width-100"
+            ></event-card>
+          </clickable-item>
+        </ng-container>
         <clickable-item
           *ngIf="events.length > 2"
           lines="none"
-          (click)="router.navigate(['events', {activityId: id}])">
+          (click)="gotoEvent()">
           <ion-icon name="more" color="primary" margin-end></ion-icon>
           <p>Show More</p>
         </clickable-item>
