@@ -1,19 +1,7 @@
-.btn-right {
-  position: absolute;
-  right: 10px;
-}
-.contact-grid {
-  margin-left: 0px;
-}
-.contact-input {
-  background-color: var(--practera-input-number-color);
-  margin-top: 8px;
-}
-.update-btn {
-  margin-top: 25px;
+ion-item.no-bg {
+  --padding-start: 0;
 }
 .profile-info {
-  --background: transparent;
   --padding-start: 0;
   .profile-image {
     width: 90px;
@@ -35,7 +23,7 @@
       }
     }
     file-stack {
-      position: absolute; 
+      position: absolute;
       top: 52px;
       left: 52px;
     }
@@ -51,20 +39,17 @@
     font-size: 12px;
     letter-spacing: 0.4px;
     line-height: 16px;
-    color: var(--practera-label-color);
+    color: var(--practera-color-subtitle);
   }
-}
-
-.support-section {
-  .title {
-    font-size: 14px;
-    letter-spacing: 0.1px;
-    line-height: 20px;
-    font-weight: 500;	
-    color: var(--ion-color-dark-tint);
+  p.profile-name {
+    line-height: 28px;
+    margin: 10px 0 5px;
   }
-  .content {
-    margin-top: 14px !important;
+  p.profile-email {
+    font-size: 16px;
+    line-height: 24px;
+    letter-spacing: 0.15px;
+    margin-top: 0;
   }
 }
 
@@ -74,15 +59,23 @@
   --padding-end: 0;
   --inner-padding-end: 0;
   ion-label {
-    font-size: 14px;	
-    font-weight: 500;	
-    letter-spacing: 0.1px;	
+    letter-spacing: 0.1px;
     line-height: 24px;
-    color: var(--ion-color-dark-tint);
   }
   ion-button {
     height: 32px;
     width: 90px;
     margin: 0px;
+  }
+}
+
+.div-icon-swap {
+  background-color: white;
+  height: calc(100% - 67px);
+  margin-bottom: 3px;
+  text-align: center;
+  ion-icon {
+    font-size: 50px !important;
+    margin-top: 40px;
   }
 }
