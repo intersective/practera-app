@@ -17,7 +17,7 @@ clickable-item {
   &.unread {
     ion-label {
       h2 {
-        color: var(--ion-color-primary);
+        font-weight: bold;
       }
     }
 
