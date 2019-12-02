@@ -185,7 +185,7 @@ export class SwitcherService {
       this.utils.clearCache();
       if ((typeof environment.goMobile !== 'undefined' && environment.goMobile === false)
         || /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
-        return ['app', 'overview'];
+        return ['app', 'home'];
       } else {
         return ['go-mobile'];
       }

@@ -10,7 +10,7 @@ const routes: Routes = [
     canActivate: [AuthGuard],
     children: [
       {
-        path: 'overview',
+        path: 'home',
         children: [
           {
             path: '',
@@ -65,14 +65,14 @@ const routes: Routes = [
       },
       {
         path: '',
-        redirectTo: '/app/overview',
+        redirectTo: '/app/home',
         pathMatch: 'full'
       }
     ]
   },
   {
     path: '',
-    redirectTo: '/app/overview',
+    redirectTo: '/app/home',
     pathMatch: 'full'
   },
 ];
