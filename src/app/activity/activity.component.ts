@@ -6,7 +6,7 @@ import { ActivityService, Activity, OverviewActivity, Task } from './activity.se
 import { UtilsService } from '../services/utils.service';
 import { NotificationService } from '@shared/notification/notification.service';
 import { BrowserStorageService } from '@services/storage.service';
-import { Event, EventsService } from '@app/events/events.service';
+import { Event, EventListService } from '@app/event-list/event-list.service';
 import { SharedService } from '@services/shared.service';
 import { FastFeedbackService } from '../fast-feedback/fast-feedback.service';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
@@ -41,7 +41,7 @@ export class ActivityComponent {
     public utils: UtilsService,
     private notificationService: NotificationService,
     public storage: BrowserStorageService,
-    private eventsService: EventsService,
+    private eventsService: EventListService,
     public sharedService: SharedService,
     public fastFeedbackService: FastFeedbackService,
     private newRelic: NewRelicService,
@@ -177,6 +177,19 @@ export class ActivityComponent {
         this.notificationService.popUp('shortMessage', {message: 'This part of the app is still locked. You can unlock the features by engaging with the app and completing all tasks.'});
         break;
     }
+  }
+
+  gotoEvent(event?) {
+    // go to the event page without choosing any event
+    if (!event) {
+      return this.router.navigate(['app', 'events', {activity_id: this.id}]);
+    }
+    // don't need to navigate for mobile
+    if (this.utils.isMobile()) {
+      return ;
+    }
+    // go to the event page with an event selected
+    return this.router.navigate(['app', 'events', {activity_id: this.id, event_id: event.id}]);
   }
 
   displayEventTime(event) {
