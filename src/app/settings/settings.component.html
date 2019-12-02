@@ -17,30 +17,25 @@
         ></file-stack>
       </ion-avatar>
       <ion-label>
-        <ion-label class="profile-name">
-          <!-- {{profile.name}}  *ngIf="profile.name" --> Sasanga Chathumal
+        <ion-label class="profile-name" *ngIf="profile.name">
+          {{profile.name}}
         </ion-label>
-        <ion-label class="profile-email">
-          <!-- {{profile.email}}  *ngIf="profile.email" --> chathumal.sasanga02@gmail.com
+        <ion-label class="profile-email" *ngIf="profile.email">
+          {{profile.email}}
         </ion-label>
       </ion-label>
     </ion-item>
   </ng-container>
-  <ion-card class="practera-card">
-
+  <ng-container>
     <app-contact-number-form [page]="'settings'"></app-contact-number-form>
-
-    <clickable-item (click)="switchProgram()" lines="none">
-      <ion-icon padding name="radio-button-on"></ion-icon>
-      Switch to another experience
-    </clickable-item>
-  </ion-card>
+  </ng-container>
+  
   <ng-container>
     <ion-item lines="none" class="exp-switch">
       <ion-label>
           Switch to another experience
       </ion-label>
-      <ion-button slot="end">
+      <ion-button slot="end" (click)="switchProgram()">
           SWITCH
         </ion-button>
     </ion-item>
