@@ -1,10 +1,10 @@
 <ion-header mode="ios">
-  <ion-toolbar>
+  <ion-toolbar [ngClass]="{'ion-toolbar-absolute': !utils.isMobile()}">
     <ion-title>Chat</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content color="light">
+<ion-content color="light" [ngClass]="{'ion-content-absolute': !utils.isMobile()}">
   <ng-container *ngIf="loadingChatList">
     <div text-center>
         <ion-spinner></ion-spinner>
@@ -15,6 +15,11 @@
       *ngFor="let chat of chatList; let i = index"
       [lines]="i == chatList.length - 1 ? 'none' : ''"
       (click)="navigateToChatRoom(chat)"
+      [active]="currentChat &&
+      (currentChat.teamId == chat.team_id) &&
+      (currentChat.teamMemberId == chat.team_member_id) &&
+      (currentChat.participantsOnly == chat.participants_only) &&
+      (currentChat.chatName == chat.name)"
       [ngClass]="{'unread': chat.unread_messages > 0}">
       <ion-avatar [ngClass]="{'color-team': chat.is_team}" slot="start" text-center>
         <ng-container *ngIf="chat.is_team; else avatarElseBlock"><ion-icon name="people"></ion-icon></ng-container>

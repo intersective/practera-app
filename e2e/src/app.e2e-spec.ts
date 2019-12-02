@@ -130,7 +130,7 @@ describe('AppV2', () => {
       chat.click();
       browser.sleep(8000);
 
-      const chatComponentHeaderBar = element(by.tagName('app-chat')).element(by.tagName('ion-header')).element(by.css('ion-toolbar'));
+      const chatComponentHeaderBar = element(by.tagName('app-chat-list')).element(by.tagName('ion-header')).element(by.css('ion-toolbar'));
       expect(chatComponentHeaderBar.element(by.tagName('ion-title')).getText()).toEqual('Chat');
     });
 
