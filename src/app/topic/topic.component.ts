@@ -250,7 +250,7 @@ export class TopicComponent extends RouterEnter {
     }
 
     const { activity, nextTask } = await this.getNextSequence();
-    let route: any = ['app', 'overview'];
+    let route: any = ['app', 'home'];
 
     if (this.activityId === activity.id && nextTask) {
       switch (nextTask.type) {
