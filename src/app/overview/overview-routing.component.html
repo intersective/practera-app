@@ -5,7 +5,7 @@
 </ion-header>
 
 <ion-content>
-  <ng-container *ngIf="!utils.isMobile(); else singlePage">
+  <ng-container *ngIf="!isMobile; else singlePage">
     <ion-grid [ngStyle]="{'height': '100%'}">
       <ion-row [ngStyle]="{'height': '100%'}">
         <ion-col [ngStyle]="{padding: '1em'}">
