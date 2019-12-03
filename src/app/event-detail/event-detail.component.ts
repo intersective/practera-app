@@ -62,7 +62,7 @@ export class EventDetailComponent implements OnInit {
         this.eventDetailService.cancelEvent(this.event).subscribe(response => {
           if (response.success) {
             this.notificationService.alert({
-              message: 'Booking canceled Successfully!',
+              message: 'Booking cancelled Successfully!',
               buttons: [
                 {
                   text: 'OK',
