@@ -33,8 +33,12 @@
   <ion-input *ngIf="ratingData.rating !== 0.5" placeholder="Add a personal thank you" class="comment-box" padding-horizontal [(ngModel)]="ratingData.comment"></ion-input>
 
   <br>
-  <div class="div-after-logo">
-    <ion-button [disabled]="ratingData.rating === 0.5 || isSubmitting" (click)="submitReviewRating()" shape="round" expand="full">
+  <div class="div-after-logo ion-text-center">
+    <ion-button
+      [disabled]="ratingData.rating === 0.5 || isSubmitting"
+      (click)="submitReviewRating()"
+      shape="round"
+      class="btn-cta">
       <ng-container *ngIf="!isSubmitting">Submit</ng-container>
       <ng-container *ngIf="isSubmitting">Submitting...</ng-container>
     </ion-button>
