@@ -27,6 +27,7 @@ export class SettingsComponent extends RouterEnter {
     name: ''
   };
   currentProgramName = '';
+  currentProgramImage = '';
 
   helpline = 'help@practera.com';
 
@@ -60,6 +61,7 @@ export class SettingsComponent extends RouterEnter {
     this.acceptFileTypes = this.filestackService.getFileTypes('image');
     // also get program name
     this.currentProgramName = this.storage.getUser().programName;
+    this.currentProgramImage = this.storage.getUser().programImage;
     this.fastFeedbackService.pullFastFeedback().subscribe();
   }
 
