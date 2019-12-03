@@ -9,9 +9,12 @@
 
   <ng-container *ngTemplateOutlet="badges"></ng-container>
 
-  <app-slidable *ngIf="utils.isMobile()"
-    [notifications]="(eventReminders || []).concat(todoItems)"
-  ></app-slidable>
+  <ng-container *ngIf="utils.isMobile()">
+    <ion-label color="medium">Notifications</ion-label>
+    <app-slidable
+      [notifications]="(eventReminders || []).concat(todoItems)"
+    ></app-slidable>
+  </ng-container>
 
   <ng-container *ngTemplateOutlet="notificationsDesktop"></ng-container>
 </div>
