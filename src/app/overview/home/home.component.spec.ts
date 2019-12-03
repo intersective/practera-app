@@ -83,7 +83,7 @@ xdescribe('HomeComponent', () => {
         },
         {
           provide: HomeService,
-          useValue: jasmine.createSpyObj('HomeService', ['getTodoItemFromEvent', 'getReminderEvent', 'getTodoItems', 'getChatMessage', 'getProgress', 'getCurrentActivity', 'getProgramName'])
+          useValue: jasmine.createSpyObj('HomeService', ['getTodoItemFromEvent', 'getReminderEvent', 'getTodoItems', 'getChatMessage', 'getProgress', 'getProgramName'])
         },
         {
           provide: EventListService,
@@ -135,7 +135,6 @@ xdescribe('HomeComponent', () => {
   beforeEach(() => {
     homeServiceSpy.getTodoItems.and.returnValue(of([]));
     homeServiceSpy.getChatMessage.and.returnValue(of([]));
-    homeServiceSpy.getCurrentActivity.and.returnValue(of({}));
     // homeServiceSpy.getProgramName.and.returnValue(of('Test Program'));
     homeServiceSpy.getProgress.and.returnValue(of(10));
     achieventsServiceSpy.getAchievements.and.returnValue(of([]));
@@ -287,10 +286,8 @@ xdescribe('HomeComponent', () => {
         isLocked: false,
         leadImage: ''
       };
-      homeServiceSpy.getCurrentActivity.and.returnValue(of(mock));
       fixture.detectChanges();
       expect(component.activity).toEqual(mock, 'activity match');
-      expect(homeServiceSpy.getCurrentActivity.calls.count()).toBe(1, 'one call');
       expect(component.loadingActivity).toBe(false, 'activity loaded');
     });
 
