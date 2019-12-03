@@ -54,12 +54,6 @@ describe('HomeService', () => {
     expect(service).toBeTruthy();
   });
 
-  describe('when testing getProgramName()', () => {
-    it('should get correct program name', () => {
-      service.getProgramName().subscribe(name => expect(name).toEqual('Test Program'), fail);
-    });
-  });
-
   describe('when testing getTodoItems()', () => {
     it('should get correct todoItems', async() => {
       const requestResponse = {
@@ -326,7 +320,8 @@ describe('HomeService', () => {
     });
   });
 
-  describe('when testing getCurrentActivity()', () => {
+  // getCurrentActivity no longer available
+  xdescribe('when testing getCurrentActivity()', () => {
     it('should get correct activity', async() => {
       service.currentActivityId = 1;
       const requestResponse = {
@@ -348,9 +343,6 @@ describe('HomeService', () => {
         leadImage: requestResponse.data[0].Activity.lead_image
       };
       requestSpy.get.and.returnValue(of(requestResponse));
-      service.getCurrentActivity().subscribe(
-        res => expect(res).toEqual(expected)
-      );
       expect(requestSpy.get.calls.count()).toBe(1);
     });
   });

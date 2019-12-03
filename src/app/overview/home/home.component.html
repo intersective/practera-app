@@ -1,0 +1,142 @@
+<div class="app-home" [ngStyle]="utils.isMobile() ? {padding: '1em'} : {padding: '1em', 'overflow-y': 'scroll'}">
+  <div text-center padding>
+    <app-circle-progress [data]="progressConfig" [type]="'large'"></app-circle-progress>
+  </div>
+
+  <ng-container *ngTemplateOutlet="badges"></ng-container>
+
+  <ng-container *ngIf="utils.isMobile()">
+    <ion-label color="medium">Notifications</ion-label>
+    <app-slidable
+      [notifications]="(eventReminders || []).concat(todoItems)"
+    ></app-slidable>
+  </ng-container>
+
+  <ng-container *ngTemplateOutlet="notificationsDesktop"></ng-container>
+</div>
+
+<ng-template #thingsToDo>
+  <ion-label color="medium">Things to do</ion-label>
+  <ion-list class="todo-list" lines="none">
+    <ng-container *ngIf="loadingTodoItems; else todoItemsTpl">
+      <app-todo-card [loading]="true" [todoItem]="false"></app-todo-card>
+    </ng-container>
+  </ion-list>
+</ng-template>
+
+<ng-template #todoItemsTpl>
+  <ng-container *ngFor="let event of eventReminders">
+    <app-todo-card
+      [todoItem]="{
+        name: event.name,
+        description: '',
+        type: 'event',
+        time: utils.timeFormatter(event.startTime)
+      }"
+      (click)="showEventDetail(event)"
+    ></app-todo-card>
+  </ng-container>
+
+  <ng-container *ngIf="todoItems.length; else noItemsTpl">
+    <div *ngFor="let todoItem of todoItems">
+      <ng-container [ngSwitch]="todoItem.type">
+        <app-todo-card
+          *ngSwitchCase="'feedback_available'"
+          [todoItem]="todoItem"
+          (click)="goToAssessment(todoItem.meta.activity_id, todoItem.meta.context_id, todoItem.meta.assessment_id)"
+        ></app-todo-card>
+        <app-todo-card
+          *ngSwitchCase="'review_submission'"
+          [todoItem]="todoItem"
+          (click)="goToReview(todoItem.meta.context_id, todoItem.meta.assessment_id, todoItem.meta.assessment_submission_id)"
+        ></app-todo-card>
+        <app-todo-card
+          *ngSwitchCase="'chat'"
+          [todoItem]="todoItem"
+          (click)="goToChat(todoItem)"
+        ></app-todo-card>
+        <app-todo-card
+          *ngSwitchCase="'assessment_submission_reminder'"
+          [todoItem]="todoItem"
+          (click)="goToAssessment(todoItem.meta.activity_id, todoItem.meta.context_id, todoItem.meta.assessment_id)"
+        ></app-todo-card>
+      </ng-container>
+    </div>
+  </ng-container>
+</ng-template>
+
+<ng-template #badges>
+  <ng-container @newLoaded *ngIf="achievements && achievements.length > 0">
+    <div class="achievement">
+      <ion-label color="medium" slot="start">My Badges</ion-label>
+      <ion-label slot="end">
+        <a color="primary" (click)='goTo(["achievements"])'>View all</a>
+      </ion-label>
+    </div>
+
+    <ion-grid [ngStyle]="{width: '100%'}">
+      <ion-row text-center margin-bottom>
+        <ion-col *ngFor="let achievement of achievements; let i = index;" size="4" @newLoaded>
+          <achievement-badge [achievement]="achievement"></achievement-badge>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </ng-container>
+</ng-template>
+
+<ng-template #notificationsDesktop>
+  <ng-container *ngIf="!utils.isMobile()">
+    <ion-label color="medium">Notifications</ion-label>
+    <ion-list class="todo-list" lines="none">
+      <ng-container *ngIf="loadingTodoItems; else deskTopTodoItemsTpl">
+        <app-todo-card [loading]="true" [todoItem]="false"></app-todo-card>
+      </ng-container>
+    </ion-list>
+  </ng-container>
+</ng-template>
+
+<ng-template #deskTopTodoItemsTpl>
+  <ng-container *ngFor="let event of eventReminders" @newLoaded>
+    <app-todo-card
+      [todoItem]="{
+        name: event.name,
+        description: '',
+        type: 'event',
+        time: utils.timeFormatter(event.startTime)
+      }"
+      (click)="showEventDetail(event)"
+    ></app-todo-card>
+  </ng-container>
+
+  <ng-container *ngIf="todoItems.length; else noItemsTpl">
+    <div *ngFor="let todoItem of todoItems" @newLoaded>
+      <ng-container [ngSwitch]="todoItem.type">
+        <app-todo-card
+          *ngSwitchCase="'feedback_available'"
+          [todoItem]="todoItem"
+          (click)="goToAssessment(todoItem.meta.activity_id, todoItem.meta.context_id, todoItem.meta.assessment_id)"
+        ></app-todo-card>
+        <app-todo-card
+          *ngSwitchCase="'review_submission'"
+          [todoItem]="todoItem"
+          (click)="goToReview(todoItem.meta.context_id, todoItem.meta.assessment_id, todoItem.meta.assessment_submission_id)"
+        ></app-todo-card>
+        <app-todo-card
+          *ngSwitchCase="'chat'"
+          [todoItem]="todoItem"
+          (click)="goToChat(todoItem)"
+        ></app-todo-card>
+        <app-todo-card
+          *ngSwitchCase="'assessment_submission_reminder'"
+          [todoItem]="todoItem"
+          (click)="goToAssessment(todoItem.meta.activity_id, todoItem.meta.context_id, todoItem.meta.assessment_id)"
+        ></app-todo-card>
+      </ng-container>
+    </div>
+  </ng-container>
+
+</ng-template>
+
+<ng-template #noItemsTpl>
+  <app-todo-card *ngIf="!eventReminders.length" [todoItem]="false"></app-todo-card>
+</ng-template>

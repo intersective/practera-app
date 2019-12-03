@@ -2,7 +2,7 @@
 
   <ion-tab-bar *ngIf="utils.isMobile()" slot="bottom">
 
-    <ion-tab-button layout="icon-top" tab="home" [class.selected]="selectedTab == 'home'">
+    <ion-tab-button layout="icon-top" tab="home" [class.selected]="selectedTab == 'overview'">
       <ion-icon name="home"></ion-icon>
       <ion-badge color="danger" *ngIf="noOfTodoItems > 0">{{ noOfTodoItems }}</ion-badge>
       <ion-label>Home</ion-label>
@@ -11,11 +11,6 @@
     <ion-tab-button layout="icon-top" *ngIf="showEvents" tab="events" [class.selected]="selectedTab == 'events'">
       <ion-icon name="calendar"></ion-icon>
       <ion-label>Events</ion-label>
-    </ion-tab-button>
-
-    <ion-tab-button layout="icon-top" tab="project" [class.selected]="selectedTab == 'project'">
-      <ion-icon name="list-box"></ion-icon>
-      <ion-label>Activities</ion-label>
     </ion-tab-button>
 
     <ion-tab-button layout="icon-top" *ngIf="showReview" tab="reviews" [class.selected]="selectedTab == 'reviews'">
@@ -38,7 +33,7 @@
 
   <ion-tab-bar *ngIf="!utils.isMobile()" slot="top">
 
-    <ion-tab-button layout="icon-top" tab="home" [class.selected]="selectedTab == 'home'">
+    <ion-tab-button layout="icon-top" tab="home" [class.selected]="selectedTab == 'overview'">
       <ion-icon name="home"></ion-icon>
       <ion-badge color="danger" *ngIf="noOfTodoItems > 0">{{ noOfTodoItems }}</ion-badge>
       <ion-label>Home</ion-label>
@@ -47,11 +42,6 @@
     <ion-tab-button layout="icon-top" *ngIf="showEvents" tab="events" [class.selected]="selectedTab == 'events'">
       <ion-icon name="calendar"></ion-icon>
       <ion-label>Events</ion-label>
-    </ion-tab-button>
-
-    <ion-tab-button layout="icon-top" tab="project" [class.selected]="selectedTab == 'project'">
-      <ion-icon name="list-box"></ion-icon>
-      <ion-label>Activities</ion-label>
     </ion-tab-button>
 
     <ion-tab-button layout="icon-top" *ngIf="showReview" tab="reviews" [class.selected]="selectedTab == 'reviews'">

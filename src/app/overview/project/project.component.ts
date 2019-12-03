@@ -2,23 +2,41 @@ import { Component, HostListener, ViewChild, ViewChildren, QueryList, ElementRef
 import { DOCUMENT } from '@angular/common';
 import { Router, ActivatedRoute } from '@angular/router';
 import { ProjectService, Milestone, DummyMilestone } from './project.service';
-import { HomeService } from '../home/home.service';
-import { RouterEnter } from '@services/router-enter.service';
 import { BrowserStorageService } from '@services/storage.service';
 import { UtilsService } from '@services/utils.service';
 import { SharedService } from '@services/shared.service';
-import { FastFeedbackService } from '../fast-feedback/fast-feedback.service';
+import { FastFeedbackService } from '../../fast-feedback/fast-feedback.service';
 import { Subscription } from 'rxjs';
 import { Platform } from '@ionic/angular';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
+import { trigger, state, transition, style, animate, useAnimation } from '@angular/animations';
+import { fadeIn } from '../../animations';
 
 @Component({
   selector: 'app-project',
   templateUrl: 'project.component.html',
   styleUrls: ['project.component.scss'],
+  animations: [
+    trigger('slide', [
+      transition(':enter', [
+        style({transform: 'translateY(-100%)'}),
+        animate('200ms ease-in-out', style({transform: 'translateY(0%)'}))
+      ]),
+      transition(':leave', [
+        animate('200ms ease-in-out', style({transform: 'translateY(-100%)'}))
+      ])
+    ]),
+    trigger('newLoad', [
+      transition(':enter, * => 0, * => -1', [
+        useAnimation(fadeIn, {
+          params: { time: '250ms' }
+        })
+      ]),
+    ])
+  ]
 })
-export class ProjectComponent extends RouterEnter {
-  public routeUrl = '/app/project';
+export class ProjectComponent {
+  private showingMilestone: Milestone | { id: number; };
   public programName: string;
   public milestones: Array<Milestone | DummyMilestone> = [];
   public loadingMilestone = true;
@@ -28,6 +46,7 @@ export class ProjectComponent extends RouterEnter {
   // used to indicate the milestone progress bar at top
   public activeMilestoneIndex = 0;
   private highlightedActivityId: number;
+  private subscriptions: Subscription[] = [];
 
   constructor(
     public router: Router,
@@ -35,18 +54,27 @@ export class ProjectComponent extends RouterEnter {
     public utils: UtilsService,
     public storage: BrowserStorageService,
     private projectService: ProjectService,
-    private homeService: HomeService,
     private sharedService: SharedService,
     public fastFeedbackService: FastFeedbackService,
     private platform: Platform,
     private newRelic: NewRelicService,
     @Inject(DOCUMENT) private readonly document: Document
    ) {
-    super(router);
+    this.route.params.subscribe(params => {
+      this.onEnter();
+    });
   }
 
   private _initialise() {
     this.loadingMilestone = true;
+  }
+
+  toggleGroup(milestone) {
+    if (this.showingMilestone && milestone.id === this.showingMilestone.id) {
+      this.showingMilestone = { id: undefined };
+    } else {
+      this.showingMilestone = milestone;
+    }
   }
 
   onEnter() {
@@ -55,14 +83,6 @@ export class ProjectComponent extends RouterEnter {
     this.route.queryParamMap.subscribe(params => {
       this.highlightedActivityId = +params.get('activityId') || undefined;
     });
-    this.homeService.getProgramName().subscribe(
-      programName => {
-        this.programName = programName;
-      },
-      error => {
-        this.newRelic.noticeError(error);
-      }
-    );
 
     this.subscriptions.push(this.projectService.getProject().subscribe(
       milestones => {

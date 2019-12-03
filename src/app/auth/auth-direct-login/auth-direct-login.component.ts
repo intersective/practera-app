@@ -82,7 +82,7 @@ export class AuthDirectLoginComponent implements OnInit {
       case 'home':
         return this.navigate(['app', 'home']);
       case 'project':
-        return this.navigate(['app', 'project']);
+        return this.navigate(['app', 'home']);
       case 'activity':
         if (!activityId) {
           return this.navigate(['app', 'home']);
