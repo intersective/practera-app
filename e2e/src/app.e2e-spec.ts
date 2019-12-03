@@ -18,54 +18,60 @@ describe('AppV2', () => {
 
   it('should display login if page is non-existence', () => {
     page.navigateTo('/non-existence');
-    browser.ignoreSynchronization = true;
-    browser.sleep(5000);
-    const poweredBy = element(by.css('ion-content')).all(by.css('div')).last();
-    expect(poweredBy.$('img').getAttribute('src')).toContain('/assets/logo.svg');
+    browser.waitForAngularEnabled().then(res => {
+      browser.sleep(5000);
+      const poweredBy = element(by.css('ion-content')).all(by.css('div')).last();
+      expect(poweredBy.$('img').getAttribute('src')).toContain('/assets/logo.svg');
+    });
   });
 
   it('should has logo', () => {
     page.navigateTo();
     browser.sleep(2000);
-    browser.ignoreSynchronization = true;
-    const test = page.containsClass('div-logo');
-    expect(test).toBeTruthy();
+    browser.waitForAngularEnabled().then(res => {
+      const test = page.containsClass('div-logo');
+      expect(test).toBeTruthy();
+    });
   });
 
   it('login button should disabled', () => {
     page.navigateTo();
     browser.sleep(2000);
-    browser.ignoreSynchronization = true;
-    const loginButton = page.loginButton();
 
-    expect(loginButton.getText()).toEqual('LOGIN');
-    expect(loginButton.getAttribute('disabled')).toBeTruthy();
+    browser.waitForAngularEnabled().then(res => {
+      const loginButton = page.loginButton();
+
+      expect(loginButton.getText()).toEqual('LOGIN');
+      expect(loginButton.getAttribute('disabled')).toBeTruthy();
+    });
   });
 
   it('should login and select a program', () => {
     browser.executeScript('window.localStorage.clear();');
     page.navigateTo();
     browser.sleep(2000);
-    browser.ignoreSynchronization = true;
-    page.insertEmail();
-    page.insertPassword();
+    browser.waitForAngularEnabled().then(res => {
 
-    browser.sleep(3000);
+      page.insertEmail();
+      page.insertPassword();
 
-    const loginButton = page.loginButton();
-    expect(loginButton.getAttribute('disabled')).toBeFalsy();
-    loginButton.click();
+      browser.sleep(3000);
 
-    // wait for experiences API request
-    browser.sleep(5000);
-    expect(page.getTitle()).toEqual('Select an experience');
+      const loginButton = page.loginButton();
+      expect(loginButton.getAttribute('disabled')).toBeFalsy();
+      loginButton.click();
 
-    // available program should be more than 0
-    const programs = element.all(by.css('ion-col'));
-    expect(programs.count()).toBeGreaterThan(0);
+      // wait for experiences API request
+      browser.sleep(5000);
+      expect(page.getTitle()).toEqual('Select an experience');
 
-    const firstProgram = programs.first();
-    expect(firstProgram.getText()).toEqual(PROGRAM.name);
+      // available program should be more than 0
+      const programs = element.all(by.css('ion-col'));
+      expect(programs.count()).toBeGreaterThan(0);
+
+      const firstProgram = programs.first();
+      expect(firstProgram.getText()).toEqual(PROGRAM.name);
+    });
   });
 
   it('should able to select first program', () => {
@@ -293,32 +299,32 @@ describe('AppV2', () => {
     browser.executeScript('window.localStorage.clear();');
     page.navigateTo('/');
     browser.sleep(3000);
-    browser.ignoreSynchronization = true;
+    browser.waitForAngularEnabled().then(res => {
+      page.loginAs(MENTOR);
+      browser.sleep(8000);
 
-    page.loginAs(MENTOR);
-    browser.sleep(8000);
+      // select first program
+      const programs = element(by.css('app-switcher-program')).all(by.css('ion-col'));
+      expect(programs.count()).toBeGreaterThan(1);
 
-    // select first program
-    const programs = element(by.css('app-switcher-program')).all(by.css('ion-col'));
-    expect(programs.count()).toBeGreaterThan(1);
+      const firstProgram = programs.first();
+      firstProgram.click();
+      browser.sleep(8000);
 
-    const firstProgram = programs.first();
-    firstProgram.click();
-    browser.sleep(8000);
+      const tabBar = element(by.css('ion-tab-bar'));
+      expect(tabBar.isDisplayed()).toBeTruthy();
 
-    const tabBar = element(by.css('ion-tab-bar'));
-    expect(tabBar.isDisplayed()).toBeTruthy();
+      tabBar.all(by.css('ion-tab-button')).then(tabs => {
+        const [home, activities, review, chat, settings] = tabs;
+        expect(review.element(by.css('ion-label')).getText()).toContain('Review');
+        review.click();
+      });
 
-    tabBar.all(by.css('ion-tab-button')).then(tabs => {
-      const [home, activities, review, chat, settings] = tabs;
-      expect(review.element(by.css('ion-label')).getText()).toContain('Review');
-      review.click();
+      browser.sleep(5000);
+      const reviewPage = element(by.css('app-reviews'));
+      expect(reviewPage.element(by.css('ion-header')).element(by.css('ion-title')).getText()).toEqual('Reviews');
+      expect(reviewPage.element(by.css('ion-content')).all(by.css('ion-card')).count()).toBeGreaterThan(0);
     });
-
-    browser.sleep(5000);
-    const reviewPage = element(by.css('app-reviews'));
-    expect(reviewPage.element(by.css('ion-header')).element(by.css('ion-title')).getText()).toEqual('Reviews');
-    expect(reviewPage.element(by.css('ion-content')).all(by.css('ion-card')).count()).toBeGreaterThan(0);
   });
   // future test-case, prerequisites: database-reset
   // it('should be able to submit assessment', () => {});
