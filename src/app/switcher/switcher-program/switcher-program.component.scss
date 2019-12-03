@@ -21,28 +21,4 @@ ion-col {
   --ion-grid-column-padding-xl: 8px;
   --ion-grid-column-padding-xs: 8px;
 }
-.experience-card {
-  margin: 12px 0;
-  max-height: 192px;
-  min-height: 192px;
-  height: 192px;;
-  ion-icon {
-    font-size: 24px !important;
-    color: var(--ion-color-medium);
-  }
-  ion-card-content {
-    font-size: 16px;	
-    letter-spacing: 0.15px;	
-    line-height: 24px;
-    max-height: 64px;
-    min-height: 64px;
-    height: 64px;
-    padding: 0;
-  }
-  img {
-    object-fit: cover;
-    min-height: 128px;
-    max-height: 128px;
-    height: 128px;
-  }
-}
+
