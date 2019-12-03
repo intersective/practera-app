@@ -234,9 +234,9 @@ export class ChatRoomComponent extends RouterEnter {
             this.selectedChat.team_name = teamName + ' + Mentor';
           }
           this.loadingChatMessages = false;
+          return;
         }
       );
-      return;
     }
     // if the chat name is passed in as parameter, use it
     if (this.chatName) {
@@ -322,9 +322,9 @@ export class ChatRoomComponent extends RouterEnter {
           if (!this.utils.isMobile()) {
             this.utils.broadcastEvent('chat-badge-update', {
               teamID : this.selectedChat.team_id,
-              teamMemberId: this.selectedChat.team_member_id,
-              chatName: this.selectedChat.name,
-              participantsOnly : this.selectedChat.participants_only,
+              teamMemberId: this.selectedChat.team_member_id ? this.selectedChat.team_member_id : null,
+              chatName: this.chatName,
+              participantsOnly : this.selectedChat.participants_only ? this.selectedChat.participants_only : false,
               readcount: messageIdList.length
             });
           }
@@ -420,26 +420,22 @@ export class ChatRoomComponent extends RouterEnter {
    */
   checkToShowMessageTime(message) {
     const index = this.messageList.indexOf(message);
-    if (index > -1) {
-      if (this.messageList[index - 1]) {
-        const currentMessageTime = new Date(this.messageList[index].sent_time);
-        const oldMessageTime = new Date(this.messageList[index - 1].sent_time);
-        if (oldMessageTime) {
-          const dateDiff =
-            currentMessageTime.getDate() - oldMessageTime.getDate();
-          if (dateDiff === 0) {
-            return this._checkmessageOldThan5Min(
-              currentMessageTime,
-              oldMessageTime
-            );
-          } else {
-            return true;
-          }
-        } else {
-          return true;
-        }
-      }
+    if (index <= -1) {
+      return;
     }
+    // show message time for the first message
+    if (!this.messageList[index - 1]) {
+      return true;
+    }
+    const currentMessageTime = new Date(this.messageList[index].sent_time);
+    const oldMessageTime = new Date(this.messageList[index - 1].sent_time);
+    if ((currentMessageTime.getDate() - oldMessageTime.getDate()) === 0) {
+      return this._checkmessageOldThan5Min(
+        currentMessageTime,
+        oldMessageTime
+      );
+    }
+    return true;
   }
 
   /**
