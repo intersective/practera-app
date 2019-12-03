@@ -44,7 +44,7 @@ describe('SettingsComponent', () => {
         },
         {
           provide: BrowserStorageService,
-          useValue: jasmine.createSpyObj('BrowserStorageService', ['getUser', 'setUser'])
+          useValue: jasmine.createSpyObj('BrowserStorageService', ['getUser', 'setUser', 'get'])
         },
         {
           provide: AuthService,
@@ -81,6 +81,9 @@ describe('SettingsComponent', () => {
       name: 'student',
       programName: 'program'
     });
+
+    storageSpy.get.and.returnValue([]);
+
     fastFeedbackSpy.pullFastFeedback.and.returnValue(of({}));
     newRelicSpy.actionText.and.returnValue('');
     newRelicSpy.setPageViewName.and.returnValue('');
