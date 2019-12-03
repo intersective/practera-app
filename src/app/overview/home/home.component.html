@@ -1,8 +1,4 @@
 <div class="app-home" [ngStyle]="utils.isMobile() ? {padding: '1em'} : {padding: '1em', 'overflow-y': 'scroll'}">
-  <a color="primary" (click)="goTo(['events'])" *ngIf="haveEvents">
-    <ion-icon name="calendar" class="calendar" float-right></ion-icon>
-  </a>
-
   <div text-center padding>
     <app-circle-progress [data]="progressConfig" [type]="'large'"></app-circle-progress>
   </div>
@@ -67,16 +63,6 @@
       </ng-container>
     </div>
   </ng-container>
-</ng-template>
-
-<ng-template #currentActivities>
-  <ion-label color="medium">Current Activity</ion-label>
-  <ng-container *ngIf="loadingActivity; else activityTpl">
-    <app-activity-card [loading]="true" [activity]="false" class="activity-card" ></app-activity-card>
-  </ng-container>
-  <ng-template #activityTpl>
-    <app-activity-card [activity]="activity" (click)="!activity.isLocked && goToActivity(activity.id)"></app-activity-card>
-  </ng-template>
 </ng-template>
 
 <ng-template #badges>
