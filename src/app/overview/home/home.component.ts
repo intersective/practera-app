@@ -226,9 +226,14 @@ export class HomeComponent implements OnDestroy {
 
   goToChat(todoItem?: TodoItem) {
     this.newRelic.actionText('goToChat');
+    if (!this.utils.isMobile()) {
+      return this.router.navigate(['app', 'chat']);
+    }
+
     if (this.utils.isEmpty(todoItem.meta)) {
       return this.router.navigate(['app', 'chat']);
     }
+
     if (todoItem.meta.team_member_id) {
       return this.router.navigate(['chat', 'chat-room', todoItem.meta.team_id, todoItem.meta.team_member_id]);
     }
