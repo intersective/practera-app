@@ -5,7 +5,7 @@ import { RequestService } from '@shared/request/request.service';
 import { UtilsService } from '@services/utils.service';
 import { BrowserStorageService } from '@services/storage.service';
 import { Activity } from '../project/project.service';
-import { Question, Meta} from '../fast-feedback/fast-feedback.service';
+import { Question, Meta} from '../../fast-feedback/fast-feedback.service';
 import { NotificationService } from '@shared/notification/notification.service';
 import { Event, EventListService } from '@app/event-list/event-list.service';
 import { SharedService } from '@services/shared.service';
@@ -63,10 +63,6 @@ export class HomeService {
     private eventsService: EventListService,
     public sharedService: SharedService
   ) {}
-
-  getProgramName() {
-    return of(this.storage.getUser().programName);
-  }
 
   getTodoItems() {
     return this.request.get(api.get.todoItem, {
@@ -323,19 +319,6 @@ export class HomeService {
     if (activity.progress < 1) {
       this.currentActivityId = activity.id;
     }
-  }
-
-  getCurrentActivity() {
-    return this.request.get(api.get.activity, {
-        params: {
-          id: this.currentActivityId
-        }
-      })
-      .pipe(map(response => {
-        if (response.success && response.data) {
-          return this._normaliseActivity(response.data);
-        }
-      }));
   }
 
   private _normaliseActivity(data): Activity {

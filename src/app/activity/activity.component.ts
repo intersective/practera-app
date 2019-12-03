@@ -140,7 +140,7 @@ export class ActivityComponent {
   }
 
   back() {
-    this._navigate([ 'app', 'project' ]);
+    this._navigate([ 'app', 'home' ]);
     this.newRelic.actionText('Back button pressed on Activities Page.');
   }
 

@@ -150,7 +150,7 @@ describe('AuthDirectLoginComponent', () => {
       });
       it('project page', () => {
         tmpParams.redirect = 'project';
-        redirect = ['app', 'project'];
+        redirect = ['app', 'home'];
       });
       it('home page if activity id miss', () => {
         tmpParams.redirect = 'activity';
