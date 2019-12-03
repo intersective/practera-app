@@ -469,13 +469,6 @@ xdescribe('HomeComponent', () => {
 
   });
 
-  describe('when testing goToActivity()', () => {
-    it('should navigate to the correct activity page', () => {
-      component.goToActivity(1);
-      expect(routerSpy.navigate.calls.first().args[0]).toEqual(['app', 'activity', 1]);
-    });
-  });
-
   describe('when testing goToAssessment()', () => {
     it('should navigate to the correct assessment page', () => {
       component.goToAssessment(1, 2, 3);
