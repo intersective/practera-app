@@ -82,6 +82,22 @@
   margin: 30px 0;
 }
 
+ion-label.practera-label {
+  color: var(--practera-color-subtitle) !important;
+  font-weight: 500 !important;
+  font-size: 14px !important;
+}
+
+ion-button.practera-btn {
+  --border-radius: 8px;
+  --box-shadow: none;
+}
+
+.no-box-shadow {
+  --box-shadow: none;
+  box-shadow: none;
+}
+
 // used for todo-card & tasks list
 .icon-item {
   width: 100%;
@@ -130,6 +146,7 @@
 
 .background-white {
   background: white;
+  --background: white;
 }
 
 .width-100 {
@@ -174,6 +191,7 @@
 // remove background
 .no-bg {
   background-color: transparent !important;
+  --background: transparent !important;
 }
 
 .achievement-popup {
@@ -320,3 +338,37 @@ ion-title.title-small {
   --box-shadow: 0 4px 16px rgba(0,0,0,.12);
   font-size: 18px !important;
 }
+
+/******************
+  experience card
+  used in switcher-program.html and settings.html
+******************/
+.experience-card {
+  margin: 12px 0;
+  max-height: 192px;
+  min-height: 192px;
+  height: 192px;;
+  ion-icon {
+    font-size: 24px !important;
+    color: var(--ion-color-medium);
+  }
+  ion-card-content {
+    font-size: 16px;
+    letter-spacing: 0.15px;
+    line-height: 24px;
+    max-height: 64px;
+    min-height: 64px;
+    height: 64px;
+    padding: 0;
+  }
+  img {
+    object-fit: cover;
+    min-height: 128px;
+    max-height: 128px;
+    height: 128px;
+  }
+}
+.switcher-card-item {
+  --min-height: 64px;
+}
+
