@@ -2,8 +2,6 @@ import { NgModule } from '@angular/core';
 import { SharedModule } from '@shared/shared.module';
 import { RouterModule } from '@angular/router';
 import { OverviewRoutingComponent } from './overview-routing.component';
-import { OverviewComponent } from './overview/overview.component';
-import { OverviewService } from './overview.service';
 import { HomeComponent } from './home/home.component';
 import { HomeService } from './home/home.service';
 import { TodoCardComponent } from './home/todo-card/todo-card.component';
@@ -30,11 +28,6 @@ import { ProjectService } from './project/project.service';
             component: ProjectComponent,
             outlet: 'project',
           },
-          {
-            path: '',
-            component: OverviewComponent,
-            outlet: 'mobile-overview',
-          }
         ]
       },
     ]),
@@ -46,12 +39,10 @@ import { ProjectService } from './project/project.service';
     // HomeRoutingComponent,
     TodoCardComponent,
     SlidableComponent,
-    OverviewComponent,
     OverviewRoutingComponent,
     ProjectComponent,
   ],
   providers: [
-    OverviewService,
     ProjectService,
     HomeService,
   ],
