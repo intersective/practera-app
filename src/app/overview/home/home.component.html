@@ -9,7 +9,9 @@
 
   <ng-container *ngTemplateOutlet="badges"></ng-container>
 
-  <app-slidable *ngIf="utils.isMobile()" [notifications]="(eventReminders || []).concat(todoItems)"></app-slidable>
+  <app-slidable *ngIf="utils.isMobile()"
+    [notifications]="(eventReminders || []).concat(todoItems)"
+  ></app-slidable>
 
   <ng-container *ngTemplateOutlet="notificationsDesktop"></ng-container>
 </div>

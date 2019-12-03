@@ -83,6 +83,7 @@ export class CircleProgressComponent implements OnChanges, OnInit {
     innerStrokeWidth: 2,
     outerStrokeColor: 'var(--ion-color-primary)',
     percent: 0,
+    space: -12,
     radius: 4,
     startFromZero: true,
   };
