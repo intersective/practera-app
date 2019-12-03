@@ -114,10 +114,6 @@ export class TabsComponent extends RouterEnter {
         this.selectedTab = 'events';
         break;
 
-      case '/app/project':
-        this.selectedTab = 'project';
-        break;
-
       case '/app/settings':
         this.selectedTab = 'settings';
         break;
@@ -127,8 +123,8 @@ export class TabsComponent extends RouterEnter {
         break;
 
       default:
-        if (this.router.url.includes('/app/activity')) {
-          this.selectedTab = 'project';
+        if (this.router.url.includes('/app/home')) {
+          this.selectedTab = 'overview';
         } else if (this.router.url.includes('/app/reviews')) {
           this.selectedTab = 'reviews';
         } else {

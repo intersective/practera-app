@@ -244,7 +244,7 @@ describe('ActivityComponent', () => {
   describe('when testing back()', () => {
     it('should navigate to the project page', () => {
       component.back();
-      expect(routerSpy.navigate.calls.first().args[0]).toEqual(['app', 'project']);
+      expect(routerSpy.navigate.calls.first().args[0]).toEqual(['app', 'home']);
     });
   });
 
