@@ -2,7 +2,7 @@
 
   <ion-tab-bar *ngIf="utils.isMobile()" slot="bottom">
 
-    <ion-tab-button layout="icon-top" tab="overview" [class.selected]="selectedTab == 'overview'">
+    <ion-tab-button layout="icon-top" tab="home" [class.selected]="selectedTab == 'overview'">
       <ion-icon name="home"></ion-icon>
       <ion-badge color="danger" *ngIf="noOfTodoItems > 0">{{ noOfTodoItems }}</ion-badge>
       <ion-label>Home</ion-label>
@@ -38,7 +38,7 @@
 
   <ion-tab-bar *ngIf="!utils.isMobile()" slot="top">
 
-    <ion-tab-button layout="icon-top" tab="overview" [class.selected]="selectedTab == 'overview'">
+    <ion-tab-button layout="icon-top" tab="home" [class.selected]="selectedTab == 'overview'">
       <ion-icon name="home"></ion-icon>
       <ion-label>Home</ion-label>
     </ion-tab-button>

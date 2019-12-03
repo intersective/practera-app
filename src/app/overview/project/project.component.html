@@ -56,7 +56,7 @@
                         <div class="row-cards">
                           <ion-icon *ngIf="activity.progress >= 1; else activityCircleProgress" name="checkmark-circle" class="icon-done" color="primary"></ion-icon>
                           <ng-template #activityCircleProgress>
-                            <app-circle-progress class="progress-icon" [data]='{ percent: activity.progress * 100, radius: 4 }'></app-circle-progress>
+                            <app-circle-progress class="progress-icon" [data]='{ percent: activity.progress * 100 }'></app-circle-progress>
                           </ng-template>
                         </div>
                       </ng-container>
@@ -87,9 +87,13 @@
       <ion-text class="project-title"></ion-text>
       <div class="milestone-description"></div>
       <ion-list class="activity-list" color="light">
-        <ion-item class="activity-item" color="light">
-          <ng-container *ngTemplateOutlet="activityList"></ng-container>
-        </ion-item>
+        <ion-row>
+          <ion-col size-sm="9" size-xs="12">
+            <ion-item class="activity-item" color="light">
+              <ng-container *ngTemplateOutlet="activityList"></ng-container>
+            </ion-item>
+          </ion-col>
+        </ion-row>
       </ion-list>
     </div>
   </div>
