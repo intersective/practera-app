@@ -13,18 +13,20 @@
       <question [question]="question" [form]="fastFeedbackForm"></question>
     </ng-container>
 
-    <ion-button type="submit"
-      [disabled]="fastFeedbackForm.invalid || loading"
-      shape="round"
-      expand="block">
-      <ng-container *ngIf="!loading">Submit</ng-container>
-      <ng-container *ngIf="loading && !submissionCompleted">
-        <ion-spinner name="dots"></ion-spinner>
-      </ng-container>
-      <ng-container *ngIf="loading && submissionCompleted">
-        <ion-icon src="/assets/checkmark.svg"></ion-icon>
-      </ng-container>
-    </ion-button>
+    <div class="ion-text-center">
+      <ion-button type="submit"
+        [disabled]="fastFeedbackForm.invalid || loading"
+        shape="round"
+        class="btn-cta">
+        <ng-container *ngIf="!loading">Submit</ng-container>
+        <ng-container *ngIf="loading && !submissionCompleted">
+          <ion-spinner name="dots"></ion-spinner>
+        </ng-container>
+        <ng-container *ngIf="loading && submissionCompleted">
+          <ion-icon src="/assets/checkmark.svg"></ion-icon>
+        </ng-container>
+      </ion-button>
+    </div>
   </form>
 
 </ion-content>

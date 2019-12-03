@@ -152,21 +152,23 @@
       </ng-container>
     </ng-container>
 
-    <ion-button
-      id="btn-submit"
-      *ngIf="doAssessment || doReview"
-      [disabled]="submitting || questionsForm.invalid"
-      (click)="submit(false)"
-      shape="round"
-      expand="full">
-      <ng-container *ngIf="!submitting">Submit</ng-container>
-      <ng-container *ngIf="submitting !== false && submitting === 'redirecting'">
-        <ion-icon src="/assets/checkmark.svg"></ion-icon>
-      </ng-container>
-      <ng-container *ngIf="submitting !== false && submitting !== 'redirecting'">
-        <ion-spinner style="width: 100%;" name="dots" class="vertical-middle text-center"></ion-spinner>
-      </ng-container>
-    </ion-button>
+    <div class="ion-text-center">
+      <ion-button
+        id="btn-submit"
+        *ngIf="doAssessment || doReview"
+        [disabled]="submitting || questionsForm.invalid"
+        (click)="submit(false)"
+        shape="round"
+        class="btn-cta">
+        <ng-container *ngIf="!submitting">Submit</ng-container>
+        <ng-container *ngIf="submitting !== false && submitting === 'redirecting'">
+          <ion-icon src="/assets/checkmark.svg"></ion-icon>
+        </ng-container>
+        <ng-container *ngIf="submitting !== false && submitting !== 'redirecting'">
+          <ion-spinner style="width: 100%;" name="dots" class="vertical-middle text-center"></ion-spinner>
+        </ng-container>
+      </ion-button>
+    </div>
 
   </form>
 </ion-content>
@@ -175,7 +177,7 @@
   color="light"
   [ngClass]="{'ion-footer-absolute': !utils.isMobile()}"
   *ngIf="hasFooter()">
-  <ion-toolbar>
+  <ion-toolbar class="ion-text-center">
     <ion-spinner style="width: 100%;"
       *ngIf="loadingSubmission || (loadingFeedbackReviewed && submission.status == 'published')"
       name="dots"
@@ -185,8 +187,7 @@
     <ion-button *ngIf="!loadingMarkedDone && !loadingFeedbackReviewed && submission.status == 'published' && !feedbackReviewed"
       (click)="markReviewFeedbackAsRead()"
       shape="round"
-      expand="full"
-      class="continue">
+      class="continue btn-cta">
       {{markingAsReview}}
     </ion-button>
 
@@ -194,8 +195,7 @@
       (click)="redirectToNextMilestoneTask({ continue: true })"
       [disabled]="isRedirectingToNextMilestoneTask"
       shape="round"
-      expand="full"
-      class="continue">
+      class="continue btn-cta">
       <ng-container *ngIf="isRedirectingToNextMilestoneTask; else continue">
         <ion-spinner style="width: 100%;" name="dots" class="vertical-middle text-center"></ion-spinner>
       </ng-container>

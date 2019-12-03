@@ -5,7 +5,10 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content padding color="light" text-center [ngClass]="{ 'ion-content-absolute': !utils.isMobile() }">
+<ion-content padding color="light" text-center [ngClass]="{
+  'ion-content-absolute': !utils.isMobile(),
+  'ion-content-mobile': utils.isMobile()
+}">
   <ng-container *ngIf="loadingActivity">
     <ion-spinner></ion-spinner>
   </ng-container>

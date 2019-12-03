@@ -26,6 +26,11 @@
   z-index: 30;
 }
 
+// used for mobile view
+.ion-content-mobile {
+  --padding-bottom: 60px;
+}
+
 #mainContainer {
   // position: absolute;
   // top: 0;
@@ -88,9 +93,22 @@ ion-label.practera-label {
   font-size: 14px !important;
 }
 
+/******************
+  ion-button
+******************/
 ion-button.practera-btn {
   --border-radius: 8px;
   --box-shadow: none;
+}
+@media (max-width: 768px) {
+  ion-button.btn-cta {
+    width: 311px;
+  }
+}
+@media (min-width: 768px) {
+  ion-button.btn-cta {
+    width: 420px;
+  }
 }
 
 .no-box-shadow {
