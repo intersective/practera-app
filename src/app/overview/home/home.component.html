@@ -84,6 +84,7 @@
         <a color="primary" (click)='goTo(["achievements"])'>View all</a>
       </ion-label>
     </div>
+
     <ion-grid [ngStyle]="{width: '100%'}">
       <ion-row text-center margin-bottom>
         <ion-col *ngFor="let achievement of achievements; let i = index;" size="4" @newLoaded>
