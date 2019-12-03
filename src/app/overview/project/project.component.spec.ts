@@ -128,7 +128,6 @@ xdescribe('ProjectComponent', () => {
     fastfeedbackSpy = TestBed.get(FastFeedbackService);
     // homeSpy.getProgramName.and.returnValue(of('program name'));
     fastfeedbackSpy.pullFastFeedback.and.returnValue(of({}));
-    component.routeUrl = '/test';
     projectSpy.getProject.and.returnValue(of(milestones));
   });
 

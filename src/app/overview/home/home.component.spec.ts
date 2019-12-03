@@ -469,7 +469,7 @@ xdescribe('HomeComponent', () => {
 
   });
 
-  describe('when testing goToActivity()', () => {
+  xdescribe('when testing goToActivity()', () => {
     it('should navigate to the correct activity page', () => {
       component.goToActivity(1);
       expect(routerSpy.navigate.calls.first().args[0]).toEqual(['app', 'activity', 1]);
