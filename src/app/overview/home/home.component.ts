@@ -125,12 +125,6 @@ export class HomeComponent implements OnDestroy {
         this.progress = progress;
         this.progressConfig = {percent: progress};
         this.loadingProgress = false;
-        this.homeService.getCurrentActivity().subscribe(activity => {
-          if (activity.id) {
-            this.activity = activity;
-            this.loadingActivity = false;
-          }
-        });
       })
     );
 
@@ -182,11 +176,6 @@ export class HomeComponent implements OnDestroy {
 
   goTo(destination) {
     this.router.navigate(destination);
-  }
-
-  goToActivity(id) {
-    this.newRelic.actionText(`goToActivity ID: ${id}`);
-    this.router.navigate(['app', 'activity', id]);
   }
 
   goToAssessment(activityId, contextId, assessmentId) {

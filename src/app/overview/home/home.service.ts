@@ -321,19 +321,6 @@ export class HomeService {
     }
   }
 
-  getCurrentActivity() {
-    return this.request.get(api.get.activity, {
-        params: {
-          id: this.currentActivityId
-        }
-      })
-      .pipe(map(response => {
-        if (response.success && response.data) {
-          return this._normaliseActivity(response.data);
-        }
-      }));
-  }
-
   private _normaliseActivity(data): Activity {
     if (!Array.isArray(data) ||
         !this.utils.has(data[0], 'Activity.name') ||
