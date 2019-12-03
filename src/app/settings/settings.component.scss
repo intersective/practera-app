@@ -79,3 +79,36 @@ ion-item.no-bg {
     margin-top: 40px;
   }
 }
+
+.support {
+  max-width: 320px !important;
+  margin-left: 47px;
+  margin-right: 16px;
+}
+
+@media screen and (max-width: 1020px) {
+  .empat-col {
+    display: none !important;
+  }
+}
+.content {
+  max-width: 520px !important;
+  margin-right: 83px;
+  margin-left: 16px;
+  .experience-content {
+    .experience-card-container{
+      max-width: 280px !important;
+      ion-card {
+        max-width: 280px !important;
+        margin-right: 15px;
+      }
+    }
+    .switch-card-container {
+      max-width: 210px !important;
+      ion-card {
+        max-width: 210px !important;
+        margin-left: 15px;
+      }
+    }
+  }
+}
