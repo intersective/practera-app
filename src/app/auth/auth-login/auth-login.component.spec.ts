@@ -3,6 +3,7 @@ import { async, ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core
 import { RouterTestingModule } from '@angular/router/testing';
 import { AuthLoginComponent } from './auth-login.component';
 import { AuthService } from '../auth.service';
+import { SwitcherService } from '../../switcher/switcher.service';
 import { Router } from '@angular/router';
 import { Observable, of, pipe, throwError } from 'rxjs';
 import { SharedModule } from '@shared/shared.module';
@@ -18,6 +19,8 @@ describe('AuthLoginComponent', () => {
   let serviceSpy: jasmine.SpyObj<AuthService>;
   let notificationSpy: jasmine.SpyObj<NotificationService>;
   let routerSpy: jasmine.SpyObj<Router>;
+  let switcherServiceSpy: jasmine.SpyObj<SwitcherService>;
+  let newRelicSpy: jasmine.SpyObj<MockNewRelicService>;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -44,6 +47,10 @@ describe('AuthLoginComponent', () => {
         {
           provide: NewRelicService,
           useClass: MockNewRelicService
+        },
+        {
+          provide: SwitcherService,
+          useValue: jasmine.createSpyObj('SwitcherService', ['switchProgramAndNavigate'])
         }
       ],
     }).compileComponents();
@@ -55,6 +62,8 @@ describe('AuthLoginComponent', () => {
     serviceSpy = TestBed.get(AuthService);
     notificationSpy = TestBed.get(NotificationService);
     routerSpy = TestBed.get(Router);
+    switcherServiceSpy = TestBed.get(SwitcherService);
+    newRelicSpy = TestBed.get(NewRelicService);
   });
 
   it('should create', () => {
@@ -71,14 +80,16 @@ describe('AuthLoginComponent', () => {
       expect(component.isLoggingIn).toBe(false);
     });
 
-    it('should navigate to program switcher page if login successfully', () => {
+    it('should navigate to dashboard if have one program after successfully login', fakeAsync(() => {
+      switcherServiceSpy.switchProgramAndNavigate.and.returnValue(['app', 'home']);
       component.loginForm.setValue({email: 'test@test.com', password: 'abc'});
       serviceSpy.login.and.returnValue(of({}));
       component.login();
+      tick();
       expect(serviceSpy.login.calls.count()).toBe(1);
-      expect(component.isLoggingIn).toBe(false);
-      expect(routerSpy.navigate.calls.first().args[0]).toEqual(['switcher']);
-    });
+      expect(switcherServiceSpy.switchProgramAndNavigate.calls.count()).toBe(1);
+      expect(routerSpy.navigate.calls.first().args[0]).toEqual(['app', 'home']);
+    }));
 
     it('should pop up password compromised alert if login failed', fakeAsync(() => {
       component.loginForm.setValue({email: 'test@test.com', password: 'abc'});
