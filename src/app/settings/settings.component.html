@@ -27,7 +27,7 @@
     </ion-item>
     <app-contact-number-form [page]="'settings'"></app-contact-number-form>
 
-    <ion-item lines="none" class="exp-switch">
+    <ion-item *ngIf="isInMultiplePrograms()" lines="none" class="exp-switch">
       <ion-label class="practera-label">Switch to another experience</ion-label>
       <ion-button class="practera-btn" slot="end" (click)="switchProgram()">SWITCH</ion-button>
     </ion-item>
@@ -88,7 +88,7 @@
         </ion-col>
         <ion-col>
           <app-contact-number-form [page]="'settings'"></app-contact-number-form>
-          <ion-item lines="none" class="no-bg">
+          <ion-item *ngIf="isInMultiplePrograms()" lines="none" class="no-bg">
             <ion-label class="practera-label">Switch to another experience</ion-label>
           </ion-item>
           <ion-row>
@@ -102,7 +102,7 @@
                 </ion-card-content>
               </ion-card>
             </ion-col>
-            <ion-col>
+            <ion-col *ngIf="isInMultiplePrograms()">
               <ion-card class="practera-card experience-card" (click)="switchProgram()">
                 <div class="div-icon-swap">
                   <ion-icon name="swap" color="primary"></ion-icon>
