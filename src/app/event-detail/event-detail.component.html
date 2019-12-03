@@ -34,8 +34,13 @@
     </ion-item>
   </ion-list>
 
-  <div class="div-btn" *ngIf="buttonText()">
-    <ion-button (click)="confirmed()" [disabled]="(event.isPast && !event.isBooked) || ctaIsActing" shape="round" [color]="event.isPast && !event.isBooked ? 'medium' : 'primary'" expand="full">
+  <div class="div-btn ion-text-center" *ngIf="buttonText()">
+    <ion-button
+      class="btn-cta"
+      (click)="confirmed()"
+      [disabled]="(event.isPast && !event.isBooked) || ctaIsActing"
+      shape="round"
+      [color]="event.isPast && !event.isBooked ? 'medium' : 'primary'">
       {{ buttonText() }}
     </ion-button>
   </div>
