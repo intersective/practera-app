@@ -75,6 +75,10 @@ export class SettingsComponent extends RouterEnter {
     this.router.navigate(['/switcher']);
   }
 
+  isInMultiplePrograms() {
+    return this.storage.get('programs').length > 1;
+  }
+
   // send email to Help request
   mailTo() {
     this.newRelic.actionText('mail to helpline');
