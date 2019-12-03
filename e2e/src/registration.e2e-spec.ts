@@ -20,28 +20,29 @@ xdescribe('AppV2-Registration', () => {
     const { email, key, password } = reg;
     it(`should be able to register ${email}`, () => {
       page.navigateTo(`/?do=registration&key=${key}&email=${email}`);
-      browser.ignoreSynchronization = true;
-      browser.sleep(8000);
+      browser.waitForAngularEnabled().then(res => {
+        browser.sleep(8000);
 
-      const regPage = element(by.css('app-auth-registration'));
-      const formContent = regPage.element(by.css('.div-after-logo'));
-      expect(formContent.element(by.css('p')).getText()).toEqual(email);
+        const regPage = element(by.css('app-auth-registration'));
+        const formContent = regPage.element(by.css('.div-after-logo'));
+        expect(formContent.element(by.css('p')).getText()).toEqual(email);
 
-      page.insertKeys('password', password, regPage);
-      page.insertKeys('confirmPassword', password, regPage);
-      regPage.element(by.css('ion-checkbox')).click();
-      expect(regPage.element(by.css('form')).element(by.css('ion-button')).isEnabled()).toBeTruthy();
+        page.insertKeys('password', password, regPage);
+        page.insertKeys('confirmPassword', password, regPage);
+        regPage.element(by.css('ion-checkbox')).click();
+        expect(regPage.element(by.css('form')).element(by.css('ion-button')).isEnabled()).toBeTruthy();
 
-      regPage.element(by.css('form')).element(by.buttonText('REGISTER')).click();
+        regPage.element(by.css('form')).element(by.buttonText('REGISTER')).click();
 
-      browser.sleep(5000);
-      const popup = element(by.css('ion-modal')).element(by.css('app-pop-up'));
-      expect(popup.element(by.css('.div-after-logo')).element(by.css('p')).getText()).toEqual('Registration success!');
+        browser.sleep(5000);
+        const popup = element(by.css('ion-modal')).element(by.css('app-pop-up'));
+        expect(popup.element(by.css('.div-after-logo')).element(by.css('p')).getText()).toEqual('Registration success!');
 
-      popup.element(by.buttonText('OK')).click();
-      browser.sleep(5000);
+        popup.element(by.buttonText('OK')).click();
+        browser.sleep(5000);
 
-      expect(element(by.css('app-switcher-program')).element(by.css('ion-header')).element(by.css('ion-title')).getText()).toEqual('Select an experience');
+        expect(element(by.css('app-switcher-program')).element(by.css('ion-header')).element(by.css('ion-title')).getText()).toEqual('Select an experience');
+      });
     });
   });
 
