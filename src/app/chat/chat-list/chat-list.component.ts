@@ -49,7 +49,10 @@ export class ChatListComponent {
           (event.participantsOnly === data.participants_only);
         });
         if (chatIndex > -1) {
-          this.chatList[chatIndex].unread_messages -= event.readcount;
+          // set time out because when this calling from pusher events it need a time out.
+          setTimeout(() => {
+            this.chatList[chatIndex].unread_messages -= event.readcount;
+          });
         }
       });
     }
