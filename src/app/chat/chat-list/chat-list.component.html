@@ -10,17 +10,17 @@
         <ion-spinner></ion-spinner>
     </div>
   </ng-container>
-  <ion-list>
+  <ion-list [ngClass]="{'desktop-view': !utils.isMobile()}">
     <clickable-item
       *ngFor="let chat of chatList; let i = index"
-      [lines]="i == chatList.length - 1 ? 'none' : ''"
       (click)="navigateToChatRoom(chat)"
       [active]="currentChat &&
       (currentChat.teamId == chat.team_id) &&
       (currentChat.teamMemberId == chat.team_member_id) &&
       (currentChat.participantsOnly == chat.participants_only) &&
       (currentChat.chatName == chat.name)"
-      [ngClass]="{'unread': chat.unread_messages > 0}">
+      [ngClass]="{'unread': chat.unread_messages > 0}"
+      [lines]="'none'">
       <ion-avatar [ngClass]="{'color-team': chat.is_team}" slot="start" text-center>
         <ng-container *ngIf="chat.is_team; else avatarElseBlock"><ion-icon name="people"></ion-icon></ng-container>
         <ng-template #avatarElseBlock><img [src]="chat.team_member_image"></ng-template>
@@ -33,10 +33,12 @@
           <ng-container *ngIf="(chat.role !== 'mentor') && (!chat.is_team) && (haveMoreTeam)"><span>{{chat.team_name}}</span></ng-container>
         </div>
         <ng-container *ngIf="chat.last_message; else messgeElseBlock"><p>{{chat.last_message}}</p></ng-container>
-        <ng-template #messgeElseBlock><p>No messages.</p></ng-template>
+        <ng-template #messgeElseBlock><p class="chat-not-start">No messages.</p></ng-template>
       </ion-label>
       <div slot="end" class="time-container">
-        <span>{{getChatDate(chat.last_message_created)}}</span>
+        <div class="time">
+            <span>{{getChatDate(chat.last_message_created)}}</span>
+        </div>
         <ng-container *ngIf="chat.unread_messages > 0">
             <ion-badge>{{chat.unread_messages}}</ion-badge>
         </ng-container>
