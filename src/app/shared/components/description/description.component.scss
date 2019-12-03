@@ -12,6 +12,11 @@
   animation-duration: 0.5s;
 }
 
+ion-button {
+  opacity: 0.3;
+  float: right;
+}
+
 @keyframes collapse {
   from { max-height: 1000px;}
   to { max-height: 90px;}
