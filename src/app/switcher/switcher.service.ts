@@ -42,6 +42,7 @@ export interface ProgramConfig {
 
 export interface Project {
   id: number;
+  lead_image?: string;
 }
 
 export interface Timeline {
@@ -79,6 +80,7 @@ export class SwitcherService {
     this.storage.setUser({
       programId: programObj.program.id,
       programName: programObj.program.name,
+      programImage: programObj.project.lead_image,
       hasReviewRating: this.utils.has(programObj, 'program.config.review_rating') ? programObj.program.config.review_rating : false,
       truncateDescription: this.utils.has(programObj, 'program.config.truncate_description') ? programObj.program.config.truncate_description : true,
       experienceId: programObj.program.experience_id,
@@ -95,7 +97,7 @@ export class SwitcherService {
       this.getNewJwt(),
       this.getTeamInfo(),
       this.getMyInfo(),
-    );
+    ).subscribe();
   }
 
   getTeamInfo(): Observable<any> {
