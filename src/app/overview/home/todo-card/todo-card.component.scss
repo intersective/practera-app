@@ -1,6 +1,7 @@
 .todo-card {
   border: .5px solid #d8dbeb;
   overflow: hidden;
+  white-space: nowrap;
   text-overflow: ellipsis;
   background: #fff;
   min-height: 58px;
