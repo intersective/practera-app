@@ -31,10 +31,9 @@
               ></ion-icon>
             </ion-item>
 
-            <ion-card-content *ngIf="milestone.description">
-              <app-description
-                class="milestone-description"
-                [content]="milestone.description"></app-description>
+            <ion-card-content class="milestone-description"
+              *ngIf="milestone.description">
+              <app-description [content]="milestone.description"></app-description>
             </ion-card-content>
           </ion-card>
 

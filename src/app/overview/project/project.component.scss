@@ -92,7 +92,10 @@ ion-card.expandable {
       color: var(--practera-label-color);
       line-height: 20px;
       font-size: 14px;
+      padding: 0px;
+
       p {
+        overflow: hidden;
         background-color: black;
       }
     }
