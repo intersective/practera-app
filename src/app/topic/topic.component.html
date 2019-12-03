@@ -45,7 +45,7 @@
 </ion-content>
 
 <ion-footer color="light" [ngClass]="{'ion-footer-absolute': !utils.isMobile()}">
-  <ion-toolbar>
+  <ion-toolbar class="ion-text-center">
     <ion-spinner *ngIf="loadingMarkedDone || loadingTopic"
       style="width: 100%;"
       name="dots"
@@ -56,8 +56,7 @@
       [disabled]="redirecting"
       (click)="continue()"
       shape="round"
-      expand="full"
-      class="continue">
+      class="continue btn-cta">
       <ng-container *ngIf="!btnToggleTopicIsDone; else showAsCompleted">CONTINUE</ng-container>
       <ng-template #showAsCompleted>
         <ng-container *ngIf="!redirecting; else showRedirecting">
