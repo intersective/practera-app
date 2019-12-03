@@ -146,6 +146,7 @@ export class HomeComponent implements OnDestroy {
           }
         });
 
+        // retrict quantity of achievements to max 3
         if (achievements.length <= 3) {
           this.achievements = achievements;
         } else if (!earned.length || earned.length === achievements.length) {
