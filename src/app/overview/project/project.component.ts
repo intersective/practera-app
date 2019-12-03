@@ -2,7 +2,6 @@ import { Component, HostListener, ViewChild, ViewChildren, QueryList, ElementRef
 import { DOCUMENT } from '@angular/common';
 import { Router, ActivatedRoute } from '@angular/router';
 import { ProjectService, Milestone, DummyMilestone } from './project.service';
-import { RouterEnter } from '@services/router-enter.service';
 import { BrowserStorageService } from '@services/storage.service';
 import { UtilsService } from '@services/utils.service';
 import { SharedService } from '@services/shared.service';
@@ -38,7 +37,6 @@ import { fadeIn } from '../../animations';
 })
 export class ProjectComponent {
   private showingMilestone: Milestone | { id: number; };
-  public routeUrl = '/app/project';
   public programName: string;
   public milestones: Array<Milestone | DummyMilestone> = [];
   public loadingMilestone = true;
@@ -63,7 +61,7 @@ export class ProjectComponent {
     @Inject(DOCUMENT) private readonly document: Document
    ) {
     this.route.params.subscribe(params => {
-    this.onEnter();
+      this.onEnter();
     });
   }
 
