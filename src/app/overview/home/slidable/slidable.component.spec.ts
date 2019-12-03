@@ -1,3 +1,4 @@
+import { CUSTOM_ELEMENTS_SCHEMA, Directive } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { SlidableComponent } from './slidable.component';
@@ -8,7 +9,8 @@ describe('SlidableComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ SlidableComponent ]
+      declarations: [ SlidableComponent ],
+      schemas: [CUSTOM_ELEMENTS_SCHEMA],
     })
     .compileComponents();
   }));
