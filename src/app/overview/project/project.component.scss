@@ -115,9 +115,9 @@ ion-card.expandable {
   font-weight: 400;
   height: 39.67px;
 
-  &.no-desc {
+  /*&.no-desc {
     margin-bottom: 14px;
-  }
+  }*/
 }
 .activity-list {
   background: transparent;
@@ -135,9 +135,13 @@ ion-card.expandable {
   .progress-icon {
     margin-left: -3px;
   }
-  .row-cards {
-    margin-top: -18px;
-    min-width: 53px !important;
+  ion-col {
+    padding-top: 0px;
+    padding-bottom: 0px;
+    .row-cards {
+      margin-top: -18px;
+      min-width: 53px !important;
+    }
   }
 }
 .activity-item {
