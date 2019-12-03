@@ -3,7 +3,10 @@
     <ion-title text-center class="title-large">Events</ion-title>
   </ion-toolbar>
 </ion-header>
-<ion-content padding color="light" text-center [ngClass]="{ 'ion-content-absolute': !utils.isMobile() }">
+<ion-content padding color="light" text-center [ngClass]="{
+  'ion-content-absolute': !utils.isMobile(),
+  'ion-content-mobile': utils.isMobile()
+}">
 
   <div class="btn-filter">
     <ion-button
