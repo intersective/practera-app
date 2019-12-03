@@ -42,7 +42,8 @@
             <ion-list class="activity-list" color="light">
 
               <ion-row *ngIf="(showingMilestone && showingMilestone.id == milestone.id) || milestone.progress != 1" [@slide]>
-                <ion-col *ngFor="let activity of milestone.Activity" size-sm="9" size-xs="12">
+                <ion-col size-sm="9" size-xs="12"
+                  *ngFor="let activity of milestone.Activity">
                   <ion-item class="activity-item" color="light">
                     <ng-container *ngIf="activity && activity.dummy; else actualTpl">
                       <div class='row-cards'>
