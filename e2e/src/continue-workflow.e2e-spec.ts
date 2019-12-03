@@ -21,20 +21,21 @@ describe('AppV2 - Continue workflow', () => {
     browser.executeScript('window.localStorage.clear();');
     page.navigateTo('/');
     browser.sleep(2000);
-    browser.ignoreSynchronization = true;
-    page.insertEmail(CONTINUE_WORKFLOW_USER.email);
-    page.insertPassword(CONTINUE_WORKFLOW_USER.password);
+    browser.waitForAngularEnabled().then(res => {
+      page.insertEmail(CONTINUE_WORKFLOW_USER.email);
+      page.insertPassword(CONTINUE_WORKFLOW_USER.password);
 
-    browser.sleep(1000);
+      browser.sleep(1000);
 
-    const loginButton = page.loginButton();
-    expect(loginButton.getAttribute('disabled')).toBeFalsy();
-    loginButton.click();
+      const loginButton = page.loginButton();
+      expect(loginButton.getAttribute('disabled')).toBeFalsy();
+      loginButton.click();
 
-    // wait for experiences API request
-    browser.sleep(8000);
-    const homeComponentContent = page.getHomeScreen();
-    expect(homeComponentContent.element(by.css('h1')).getText()).toEqual(PROGRAM.name);
+      // wait for experiences API request
+      browser.sleep(8000);
+      const homeComponentContent = page.getHomeScreen();
+      expect(homeComponentContent.element(by.css('h1')).getText()).toEqual(PROGRAM.name);
+    });
   });
 
   it('should browse into project tab', () => {
