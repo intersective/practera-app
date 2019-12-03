@@ -14,7 +14,6 @@ ion-card.expandable {
       font-weight: bold;
       color: inherit;
     }
-
   }
 
   ion-card-content {
@@ -75,10 +74,10 @@ ion-card.expandable {
     --ion-safe-area-right: 0px;
     --inner-padding-end: 16px;
   }
+
   .project-card {
     width: 100%;
     .milestone {
-      padding-top: 16px;
       .milestone-lock {
         font-size: 32px;
         margin-right: 12px;
@@ -111,8 +110,8 @@ ion-card.expandable {
 .project-title {
   color: var(--practera-label-color);
   text-transform: capitalize;
-  margin-top: 5px;
-  margin-bottom: 10px;
+  margin-top: 0px;
+  margin-bottom: 0px;
   font-weight: 400;
   height: 39.67px;
 
