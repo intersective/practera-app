@@ -1,11 +1,19 @@
+.app-home {
+  height: 100%;
+  margin: 0;
+
+  background: var(--ion-color-light) !important;
+}
+
+
 .todo-list {
   background: transparent !important;
 }
 .achievement {
   margin-bottom: 10px;
   a {
-    position: absolute;
-    right: 26px;
+    float: right;
+    padding-right: 10px;
   }
 }
 .calendar {

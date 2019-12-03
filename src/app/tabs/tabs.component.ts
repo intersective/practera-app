@@ -57,6 +57,7 @@ export class TabsComponent extends RouterEnter {
         });
       });
     }
+
     if (!this.utils.isMobile()) {
       this.utils.getEvent('chat-badge-update').subscribe(event => {
         this.tabsService.getNoOfChats().subscribe(noOfChats => {
@@ -106,15 +107,11 @@ export class TabsComponent extends RouterEnter {
     this.newRelic.actionText(`selected ${this.router.url}`);
     switch (this.router.url) {
       case '/app/home':
-        this.selectedTab = 'home';
+        this.selectedTab = 'overview';
         break;
 
       case '/app/events':
         this.selectedTab = 'events';
-        break;
-
-      case '/app/project':
-        this.selectedTab = 'project';
         break;
 
       case '/app/settings':
@@ -126,8 +123,8 @@ export class TabsComponent extends RouterEnter {
         break;
 
       default:
-        if (this.router.url.includes('/app/activity')) {
-          this.selectedTab = 'project';
+        if (this.router.url.includes('/app/home')) {
+          this.selectedTab = 'overview';
         } else if (this.router.url.includes('/app/reviews')) {
           this.selectedTab = 'reviews';
         } else {

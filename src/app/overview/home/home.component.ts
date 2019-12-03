@@ -1,7 +1,7 @@
 import { Component, OnDestroy } from '@angular/core';
 import { HomeService, TodoItem } from './home.service';
-import { Router, NavigationEnd } from '@angular/router';
-import { FastFeedbackService } from '../fast-feedback/fast-feedback.service';
+import { Router, NavigationEnd, ActivatedRoute } from '@angular/router';
+import { FastFeedbackService } from '../../fast-feedback/fast-feedback.service';
 import { Activity } from '../project/project.service';
 import { UtilsService } from '@services/utils.service';
 import { Subscription } from 'rxjs';
@@ -13,17 +13,27 @@ import { Event, EventListService } from '@app/event-list/event-list.service';
 import { Intercom } from 'ng-intercom';
 import { environment } from '@environments/environment';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
+import { trigger, state, transition, style, animate, useAnimation } from '@angular/animations';
+import { fadeIn } from '../../animations';
 
 @Component({
   selector: 'app-home',
   templateUrl: 'home.component.html',
-  styleUrls: ['home.component.scss']
+  styleUrls: ['home.component.scss'],
+  animations: [
+    trigger('newLoaded', [
+      transition(':enter, * => 0, * => -1', [
+        useAnimation(fadeIn, {
+          params: { time: '250ms' }
+        })
+      ]),
+    ]),
+  ]
 })
-export class HomeComponent extends RouterEnter implements OnDestroy {
+export class HomeComponent implements OnDestroy {
   routeUrl = '/app/home';
   progress = 0;
   loadingProgress = true;
-  programName: string;
   todoItems: Array<TodoItem> = [];
   eventReminders: Array<Event> = [];
   loadingTodoItems = true;
@@ -41,10 +51,10 @@ export class HomeComponent extends RouterEnter implements OnDestroy {
     public utils: UtilsService,
     public storage: BrowserStorageService,
     public achievementService: AchievementsService,
+    private route: ActivatedRoute,
     private eventsService: EventListService,
     private newRelic: NewRelicService
   ) {
-    super(router);
     const role = this.storage.getUser().role;
     this.utils.getEvent('notification').subscribe(event => {
       const todoItem = this.homeService.getTodoItemFromEvent(event);
@@ -76,6 +86,10 @@ export class HomeComponent extends RouterEnter implements OnDestroy {
         });
       });
     }
+
+    this.route.params.subscribe(params => {
+      this.onEnter();
+    });
   }
 
   private _initialise() {
@@ -111,18 +125,8 @@ export class HomeComponent extends RouterEnter implements OnDestroy {
         this.progress = progress;
         this.progressConfig = {percent: progress};
         this.loadingProgress = false;
-        this.homeService.getCurrentActivity().subscribe(activity => {
-          if (activity.id) {
-            this.activity = activity;
-            this.loadingActivity = false;
-          }
-        });
       })
     );
-
-    this.homeService.getProgramName().subscribe(programName => {
-      this.programName = programName;
-    });
 
     this.subscriptions.push(
       this.achievementService.getAchievements('desc').subscribe(achievements => {
@@ -136,6 +140,7 @@ export class HomeComponent extends RouterEnter implements OnDestroy {
           }
         });
 
+        // retrict quantity of achievements to max 3
         if (achievements.length <= 3) {
           this.achievements = achievements;
         } else if (!earned.length || earned.length === achievements.length) {
@@ -169,9 +174,8 @@ export class HomeComponent extends RouterEnter implements OnDestroy {
     this.fastFeedbackService.pullFastFeedback().subscribe();
   }
 
-  goToActivity(id) {
-    this.newRelic.actionText(`goToActivity ID: ${id}`);
-    this.router.navigate(['app', 'activity', id]);
+  goTo(destination) {
+    this.router.navigate(destination);
   }
 
   goToAssessment(activityId, contextId, assessmentId) {
@@ -227,7 +231,6 @@ export class HomeComponent extends RouterEnter implements OnDestroy {
 
   ngOnDestroy(): void {
     // run ngOnDestroy from RouterEnter
-    super.ngOnDestroy();
     this.subscriptions.forEach(subscription => subscription.unsubscribe());
   }
 

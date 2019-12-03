@@ -37,6 +37,7 @@ export class CircleProgressComponent implements OnChanges, OnInit {
     outerStrokeLinecap: 'round',
     backgroundColor: 'var(--ion-color-light)',
     outerStrokeColor: 'var(--ion-color-primary)',
+    innerStrokeWidth: 4,
     showInnerStroke: true,
     showSubtitle: true,
     showTitle: true,
@@ -56,46 +57,35 @@ export class CircleProgressComponent implements OnChanges, OnInit {
   smallPlaceholderCircle = {
     animateTitle: false,
     animation: false,
-    backgroundColor: '#e6e6e6',
-    backgroundPadding: 0,
-    backgroundStrokeWidth: 0,
-    maxPercent: 100,
+    outerStrokeWidth: 8,
     outerStrokeColor: '#f0f0f0',
+    backgroundColor: '#e6e6e6',
+    backgroundStrokeWidth: 1,
+    backgroundPadding: 8,
+    maxPercent: 100,
     outerStrokeLinecap: 'butt',
-    outerStrokeWidth: 3,
     percent: 100,
-    radius: 19,
-    showInnerStroke: false,
+    radius: 15,
+    showInnerStroke: true,
     showSubtitle: false,
     showTitle: false,
     showUnits: false,
-    space: -20,
+    space: -15,
     startFromZero: false,
     toFixed: 0,
+    subtitle: false,
   };
 
   smallCircleWithData = {
-    animateTitle: false,
     animation: true,
     backgroundColor: 'var(--ion-color-light)',
-    backgroundPadding: 5,
-    backgroundStrokeWidth: 2,
     maxPercent: 100,
+    innerStrokeWidth: 2,
     outerStrokeColor: 'var(--ion-color-primary)',
-    innerStrokeColor: 'var(--ion-color-primary)',
-    outerStrokeLinecap: 'butt',
-    outerStrokeWidth: 8,
-    showInnerStroke: false,
-    showSubtitle: false,
-    showTitle: false,
-    subtitleColor: 'var(--ion-color-dark-tint)',
-    showUnits: false,
-    space: -20,
     percent: 0,
-    radius: 5,
-    subtitle: false,
+    space: -12,
+    radius: 4,
     startFromZero: true,
-    toFixed: 0,
   };
 
   @ViewChild('description') descriptionRef: ElementRef;
@@ -117,9 +107,9 @@ export class CircleProgressComponent implements OnChanges, OnInit {
 
   setCircleProgress(data: CircleProgressOptionsInterface) {
     if (this.type === 'large') {
-      return Object.assign(this.largeCircleWithData, data);
+      return {...this.largePlaceholderCircle, ...this.largeCircleWithData, ...data};
     }
-    return Object.assign(this.smallCircleWithData, data);
+    return {...this.smallPlaceholderCircle, ...this.smallCircleWithData, ...data};
   }
 
 }
