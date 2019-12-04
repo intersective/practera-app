@@ -1,13 +1,17 @@
-.date-group {
-  color: var(--practera-label-color);
-  font-size: medium;
+.item-filter {
+  --padding-start: 0;
+  --inner-padding-end: 0;
 }
-.practera-card {
-  margin: 10px 0;
+.date-group {
+  color: var(--practera-color-subtitle);
+  font-size: medium;
 }
 .btn-filter {
   ion-button {
     width: 32%;
+  }
+  .btn-middle {
+    width: calc(36% - 4px);
   }
 }
 .no-event {
