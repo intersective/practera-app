@@ -1,6 +1,10 @@
 <ion-header mode="ios">
   <ion-toolbar [ngClass]="{'ion-toolbar-absolute': !utils.isMobile()}">
-    <ion-icon name="arrow-back" (click)="back()" color="primary" slot="start" margin-start></ion-icon>
+    <ion-buttons slot="start">
+      <ion-button (click)="back()">
+        <ion-icon class="icon-backward" name="arrow-back" color="primary" slot="icon-only" margin-start></ion-icon>
+      </ion-button>
+    </ion-buttons>
     <ion-title text-center class="title-large">Activity</ion-title>
   </ion-toolbar>
 </ion-header>
