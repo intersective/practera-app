@@ -91,6 +91,15 @@ ion-label.practera-label {
 ion-button.practera-btn {
   --border-radius: 8px;
   --box-shadow: none;
+  text-transform: uppercase;
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.75px;
+
+  &.mobile-btn {
+    height: 32px;	
+    width: 94px;
+  }
 }
 
 .no-box-shadow {
