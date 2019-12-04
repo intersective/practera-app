@@ -10,7 +10,7 @@
       <ng-template #actualMilestoneTpl>
         <div class="milestone" [ngClass]="{'lock': milestone.isLocked}">
           <ion-card class="expandable">
-            <ion-item lines="none"  (click)="toggleGroup(milestone)">
+            <ion-item lines="none" (click)="toggleGroup(milestone)">
               <ion-icon
                 *ngIf="milestone.isLocked"
                 name="lock"
@@ -27,12 +27,12 @@
               <ion-icon slot="end"
                 [name]="showingMilestone && showingMilestone.id == milestone.id ? 'ios-arrow-up' : 'ios-arrow-down'"
                 [ngStyle]="{'margin-top': '0px'}"
-                *ngIf="milestone.progress == 1"
               ></ion-icon>
             </ion-item>
 
-            <ion-card-content class="milestone-description"
-              *ngIf="milestone.description">
+            <ion-card-content
+              class="milestone-description"
+              *ngIf="milestone.description && (showingMilestone && showingMilestone.id == milestone.id)">
               <app-description [content]="milestone.description"></app-description>
             </ion-card-content>
           </ion-card>
