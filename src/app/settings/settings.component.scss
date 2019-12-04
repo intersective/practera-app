@@ -86,6 +86,15 @@ ion-item.no-bg {
   margin-right: 16px;
 }
 
+.support-mobile {
+  ion-item {
+    --inner-padding-end: 0;
+    ion-icon{
+      margin-right: 0;
+    }
+  }
+}
+
 @media screen and (max-width: 1020px) {
   .empat-col {
     display: none !important;
