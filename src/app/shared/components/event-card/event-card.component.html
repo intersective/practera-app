@@ -1,6 +1,6 @@
 <div (click)="showEventDetail()">
   <ion-icon class="leading-icon" name="calendar" [color]="isPast() ? 'medium' : 'primary'"></ion-icon>
-  <div class="content">
+  <div class="content" [ngClass]="{'content-expired': event.isPast && !event.isBooked}">
     <h4 [ngClass]="{'past': isPast()}">{{ event.name }}</h4>
     <p color="medium">{{ event.activityName }}</p>
     <p color="medium">{{ time }}</p>
