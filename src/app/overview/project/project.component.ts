@@ -36,7 +36,7 @@ import { fadeIn } from '../../animations';
   ]
 })
 export class ProjectComponent {
-  private showingMilestones: Milestone[] | { id: number; }[];
+  private showingMilestones: Array<Milestone | { id: number; }>;
   public programName: string;
   public milestones: Array<Milestone | DummyMilestone> = [];
   public loadingMilestone = true;
