@@ -4,8 +4,8 @@
 .icon-check {
   font-size: 30px;
 }
-.icon-forward {
-  font-size: 20px;
+.icon-backward, .icon-forward {
+  font-size: 20px !important;
 }
 div {
   &.icon-item {
