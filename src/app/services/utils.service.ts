@@ -52,6 +52,10 @@ export class UtilsService {
     return this.lodash.find(collections, callback);
   }
 
+  findIndex(collections: any[], callback: any) {
+    return this.lodash.findIndex(collections, callback);
+  }
+
   has(object, path) {
     return this.lodash.has(object, path);
   }
