@@ -28,6 +28,8 @@ export interface User {
   hasReviewRating?: boolean;
   truncateDescription?: boolean;
   enrolment?: any;
+  hasEvents?: boolean;
+  hasReviews?: boolean;
 }
 
 export interface Config {
