@@ -13,7 +13,10 @@ ion-card {
     height: 80%;
     top: 10%;
   }
-  margin: 20px 0 10px;
+  margin: 16px 0 10px;
+  &.desktop-view {
+    max-width: 342px !important;
+  }
 }
 
 .contact-input {
