@@ -3,7 +3,6 @@
   left: 0;
   width: 100%;
   min-height: 20%;
-  max-height: 90%;
   overflow: hidden;
   .text-content {
     overflow: hidden;
@@ -20,7 +19,7 @@
 }
 
 .full-height {
-  max-height: 1000px;
+  max-height: 100%;
   overflow: visible;
   animation-name: expand;
   animation-duration: 0.5s;
