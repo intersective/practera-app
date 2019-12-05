@@ -16,6 +16,7 @@ export class OverviewRoutingComponent implements OnInit {
     private utils: UtilsService,
   ) {
     this.isMobile = this.utils.isMobile();
+    console.log('this.isMobile::', this.isMobile);
   }
 
   ngOnInit() {
