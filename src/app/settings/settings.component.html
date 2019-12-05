@@ -29,18 +29,20 @@
 
     <ion-item *ngIf="isInMultiplePrograms()" lines="none" class="exp-switch">
       <ion-label class="practera-label">Switch to another experience</ion-label>
-      <ion-button class="practera-btn" slot="end" (click)="switchProgram()">SWITCH</ion-button>
+      <ion-button class="practera-btn mobile-btn" slot="end" (click)="switchProgram()">SWITCH</ion-button>
     </ion-item>
 
-    <div class="ion-margin-top">
+    <div class="ion-margin-top support-mobile">
       <ion-label class="practera-label">Support</ion-label>
       <ion-item class="no-bg" (click)="mailTo()" lines="none">
         <ion-icon class="ion-padding-end" color="primary" name="mail"></ion-icon>
         Email Help
+        <ion-icon ios="ios-arrow-forward" md="ios-arrow-forward" color="medium" slot="end"></ion-icon>
       </ion-item>
       <ion-item class="no-bg" (click)="openLink()" lines="none">
         <ion-icon class="ion-padding-end" color="primary" name="clipboard"></ion-icon>
         Terms of Use
+        <ion-icon ios="ios-arrow-forward" md="ios-arrow-forward" color="medium" slot="end"></ion-icon>
       </ion-item>
       <ion-item class="no-bg" (click)="logout()" lines="none">
         <ion-icon class="ion-padding-end" color="primary" name="log-out"></ion-icon>
@@ -52,7 +54,7 @@
   <ng-container *ngIf="!utils.isMobile()">
     <ion-grid>
       <ion-row>
-        <ion-col size="4" offset="1">
+        <ion-col size="3" class="support">
           <div class="profile-info">
             <ion-avatar class="profile-image" slot="start">
               <img *ngIf="!imageUpdating" [src]="profile.image">
@@ -86,14 +88,14 @@
             </ion-item>
           </div>
         </ion-col>
-        <ion-col>
+        <ion-col class="content">
           <app-contact-number-form [page]="'settings'"></app-contact-number-form>
           <ion-item lines="none" class="no-bg">
             <ion-label *ngIf="isInMultiplePrograms()" class="practera-label">Switch to another experience</ion-label>
             <ion-label *ngIf="!isInMultiplePrograms()" class="practera-label">Your experience</ion-label>
           </ion-item>
-          <ion-row>
-            <ion-col size="7">
+          <ion-row class="experience-content">
+            <ion-col size="7" no-padding class="experience-card-container">
               <ion-card class="practera-card experience-card no-box-shadow">
                 <img [src]="currentProgramImage ? currentProgramImage : '/assets/default-experience-image.svg'" [alt]="currentProgramName"/>
                 <ion-card-content>
@@ -103,7 +105,7 @@
                 </ion-card-content>
               </ion-card>
             </ion-col>
-            <ion-col *ngIf="isInMultiplePrograms()">
+            <ion-col size="5" *ngIf="isInMultiplePrograms()" no-padding class="switch-card-container">
               <ion-card class="practera-card experience-card" (click)="switchProgram()">
                 <div class="div-icon-swap">
                   <ion-icon name="swap" color="primary"></ion-icon>
