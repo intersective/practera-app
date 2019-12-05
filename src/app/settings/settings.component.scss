@@ -82,7 +82,7 @@ ion-item.no-bg {
 
 .support {
   max-width: 320px !important;
-  margin-left: 47px;
+  margin-left: calc(calc(2 / var(--ion-grid-columns, 12)) * 100%);
   margin-right: 16px;
 }
 
@@ -96,8 +96,8 @@ ion-item.no-bg {
 }
 
 @media screen and (max-width: 1020px) {
-  .empat-col {
-    display: none !important;
+  .support {
+    margin-left: 47px !important;
   }
 }
 .content {
