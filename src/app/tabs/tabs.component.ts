@@ -86,21 +86,35 @@ export class TabsComponent extends RouterEnter {
         this.noOfChats = noOfChats;
       });
     }
-    this.switcherService.getTeamInfo().subscribe(data => {
-      if (this.storage.getUser().teamId) {
-        this.showChat = true;
-      } else {
-        this.showChat = false;
-      }
-    });
-    this.reviewsService.getReviews().subscribe(data => {
-      if (data.length) {
-        this.showReview = true;
-      }
-    });
-    this.eventsService.getEvents().subscribe(events => {
-      this.showEvents = !this.utils.isEmpty(events);
-    });
+    // display the chat tab if the user is in team
+    if (this.storage.getUser().teamId) {
+      this.showChat = true;
+    } else {
+      this.showChat = false;
+      this.switcherService.getTeamInfo().subscribe(data => {
+        if (this.storage.getUser().teamId) {
+          this.showChat = true;
+        }
+      });
+    }
+    if (this.storage.getUser().hasReviews) {
+      this.showReview = true;
+    } else {
+      this.showReview = false;
+      this.reviewsService.getReviews().subscribe(data => {
+        if (data.length) {
+          this.showReview = true;
+        }
+      });
+    }
+    if (this.storage.getUser().hasEvents) {
+      this.showEvents = true;
+    } else {
+      this.showEvents = false;
+      this.eventsService.getEvents().subscribe(events => {
+        this.showEvents = !this.utils.isEmpty(events);
+      });
+    }
   }
 
   private _checkRoute() {
