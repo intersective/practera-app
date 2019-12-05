@@ -6,6 +6,8 @@ import { UtilsService } from '@services/utils.service';
 import { BrowserStorageService } from '@services/storage.service';
 import { PusherService } from '@shared/pusher/pusher.service';
 import { SharedService } from '@services/shared.service';
+import { ReviewsService } from '@app/reviews/reviews.service';
+import { EventListService } from '@app/event-list/event-list.service';
 import { environment } from '@environments/environment';
 
 /**
@@ -65,6 +67,8 @@ export class SwitcherService {
     private storage: BrowserStorageService,
     private sharedService: SharedService,
     private pusherService: PusherService,
+    private reviewsService: ReviewsService,
+    private eventsService: EventListService,
   ) {}
 
   getPrograms() {
@@ -90,6 +94,9 @@ export class SwitcherService {
       themeColor: themeColor,
       activityCardImage: cardBackgroundImage,
       enrolment: programObj.enrolment,
+      teamId: null,
+      hasEvents: false,
+      hasReviews: false
     });
 
     this.sharedService.onPageLoad();
@@ -97,6 +104,8 @@ export class SwitcherService {
       this.getNewJwt(),
       this.getTeamInfo(),
       this.getMyInfo(),
+      this.getReviews(),
+      this.getEvents()
     ).subscribe();
   }
 
@@ -143,6 +152,22 @@ export class SwitcherService {
         });
       }
       return response;
+    }));
+  }
+
+  getReviews() {
+    return this.reviewsService.getReviews().pipe(map(data => {
+      this.storage.setUser({
+        hasReviews: (data && data.length > 0)
+      });
+    }));
+  }
+
+  getEvents() {
+    return this.eventsService.getEvents().pipe(map(events => {
+      this.storage.setUser({
+        hasEvents: !this.utils.isEmpty(events)
+      });
     }));
   }
 
