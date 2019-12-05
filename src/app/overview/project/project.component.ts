@@ -36,7 +36,7 @@ import { fadeIn } from '../../animations';
   ]
 })
 export class ProjectComponent {
-  private showingMilestone: Milestone | { id: number; };
+  private showingMilestones: Array<Milestone | { id: number; }>;
   public programName: string;
   public milestones: Array<Milestone | DummyMilestone> = [];
   public loadingMilestone = true;
@@ -60,6 +60,7 @@ export class ProjectComponent {
     private newRelic: NewRelicService,
     @Inject(DOCUMENT) private readonly document: Document
    ) {
+    this.showingMilestones = [];
     this.route.params.subscribe(params => {
       this.onEnter();
     });
@@ -70,11 +71,20 @@ export class ProjectComponent {
   }
 
   toggleGroup(milestone) {
-    if (this.showingMilestone && milestone.id === this.showingMilestone.id) {
-      this.showingMilestone = { id: undefined };
+    const indexFound = this.utils.findIndex(this.showingMilestones, ['id', milestone.id]);
+    if (indexFound !== -1) {
+      this.showingMilestones.splice(indexFound, 1);
     } else {
-      this.showingMilestone = milestone;
+      this.showingMilestones.push(milestone);
     }
+  }
+
+  isCollapsed(milestone) {
+    if (this.showingMilestones.length > 0) {
+      const finding = this.showingMilestones.find(m => m.id === milestone.id);
+      return finding === undefined;
+    }
+    return true;
   }
 
   onEnter() {
@@ -90,6 +100,11 @@ export class ProjectComponent {
           milestones = [{ dummy: true }];
         }
         this.milestones = milestones;
+        milestones.forEach(m => {
+          if (m.progress !== 1) {
+            this.showingMilestones.push(m);
+          }
+        });
         this.loadingMilestone = false;
         // scroll to highlighted activity if has one
         if (this.highlightedActivityId) {
