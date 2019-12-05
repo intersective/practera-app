@@ -1,3 +1,17 @@
+.container {
+  top: 0;
+  left: 0;
+  width: 100%;
+  min-height: 20%;
+  max-height: 90%;
+  overflow: hidden;
+  .text-content {
+    overflow: hidden;
+    min-height: 64px;
+    max-height: 100%;
+  }
+}
+  
 .limit-height {
   max-height: 90px;
   text-overflow: ellipsis;
@@ -10,11 +24,6 @@
   overflow: visible;
   animation-name: expand;
   animation-duration: 0.5s;
-}
-
-ion-button {
-  opacity: 0.3;
-  float: right;
 }
 
 @keyframes collapse {

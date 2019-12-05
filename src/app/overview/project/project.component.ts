@@ -79,6 +79,11 @@ export class ProjectComponent {
     }
   }
 
+  /**
+   * @name isCollapsed
+   * @description show and hide milestone in project view pane
+   * @param {Milestone}
+   */
   isCollapsed(milestone) {
     if (this.showingMilestones.length > 0) {
       const finding = this.showingMilestones.find(m => m.id === milestone.id);
