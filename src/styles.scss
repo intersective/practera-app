@@ -390,3 +390,9 @@ ion-title.title-small {
   --min-height: 64px;
 }
 
+/********************
+  use in tpoic.component.html
+*********************/
+.tpoic-content-card {
+  --background: white;
+}
