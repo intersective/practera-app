@@ -76,7 +76,7 @@ export class AuthDirectLoginComponent implements OnInit {
       return this.navigate(['switcher']);
     }
     // switch to the program
-    await this.switcherService.switchProgram(program);
+    await this.switcherService.switchProgram(program).toPromise();
 
     switch (redirect) {
       case 'home':
