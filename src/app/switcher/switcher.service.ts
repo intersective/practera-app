@@ -75,12 +75,13 @@ export class SwitcherService {
     return of(this.storage.get('programs'));
   }
 
-  switchProgram(programObj: ProgramObj) {
+  switchProgram(programObj: ProgramObj): Observable<any> {
     const themeColor = this.utils.has(programObj, 'program.config.theme_color') ? programObj.program.config.theme_color : '#2bbfd4';
     let cardBackgroundImage = '';
     if (this.utils.has(programObj, 'program.config.card_style')) {
       cardBackgroundImage = '/assets/' + programObj.program.config.card_style;
     }
+
     this.storage.setUser({
       programId: programObj.program.id,
       programName: programObj.program.name,
@@ -106,7 +107,7 @@ export class SwitcherService {
       this.getMyInfo(),
       this.getReviews(),
       this.getEvents()
-    ).subscribe();
+    );
   }
 
   getTeamInfo(): Observable<any> {
@@ -160,6 +161,7 @@ export class SwitcherService {
       this.storage.setUser({
         hasReviews: (data && data.length > 0)
       });
+      return data;
     }));
   }
 
@@ -168,6 +170,7 @@ export class SwitcherService {
       this.storage.setUser({
         hasEvents: !this.utils.isEmpty(events)
       });
+      return events;
     }));
   }
 
@@ -202,11 +205,12 @@ export class SwitcherService {
         return ['switcher'];
       // Array with one program object -> [{}]
       } else if (Array.isArray(programs) && this.checkIsOneProgram(programs)) {
-        await this.switchProgram(programs[0]);
+        await this.switchProgram(programs[0]).toPromise();
       } else {
       // one program object -> {}
-        await this.switchProgram(programs);
+        await this.switchProgram(programs).toPromise();
       }
+
       this.pusherService.initialise({ unsubscribe: true });
       // clear the cached data
       this.utils.clearCache();
