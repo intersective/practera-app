@@ -23,6 +23,10 @@ ion-card.expandable {
     padding-top: 0;
     padding-left: var(--padding-start);
   }
+
+  .collapsible-icon {
+    font-size: 18px;
+  }
 }
 
 .project-toolbar {
@@ -78,10 +82,22 @@ ion-card.expandable {
   .project-card {
     width: 100%;
     .milestone {
+      .project-title {
+        width: 308px;
+        color: #000000;
+        font-size: 20px;
+        font-weight: 500;
+        letter-spacing: 0.15px;
+        line-height: 24px;
+
+        &.locked {
+          height: inherit;
+        }
+      }
+
       .milestone-lock {
         font-size: 32px;
         margin-right: 12px;
-        margin-bottom: -5px;
       }
 
       &.lock {
@@ -110,18 +126,7 @@ ion-card.expandable {
   }
   background: var(--ion-color-light) !important;
 }
-.project-title {
-  color: var(--practera-label-color);
-  text-transform: capitalize;
-  margin-top: 0px;
-  margin-bottom: 0px;
-  font-weight: 400;
-  height: 39.67px;
 
-  /*&.no-desc {
-    margin-bottom: 14px;
-  }*/
-}
 .activity-list {
   background: transparent;
   margin-bottom: 0px;
@@ -133,7 +138,6 @@ ion-card.expandable {
   .icon-lock {
     margin-right: 18px;
     font-size: 32px;
-    margin-left: -3px;
   }
   .progress-icon {
     margin-left: -3px;
