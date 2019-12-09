@@ -70,7 +70,11 @@ export class ProjectComponent {
     this.loadingMilestone = true;
   }
 
-  toggleGroup(milestone) {
+  toggleGroup(milestone: Milestone) {
+    if (milestone.isLocked || (milestone.Activity && milestone.Activity.length === 0)) {
+      return;
+    }
+
     const indexFound = this.utils.findIndex(this.showingMilestones, ['id', milestone.id]);
     if (indexFound !== -1) {
       this.showingMilestones.splice(indexFound, 1);
