@@ -15,19 +15,19 @@
                 *ngIf="milestone.isLocked"
                 name="lock"
                 color="medium"
-                class="icon-lock milestone-lock"
+                class="milestone-lock"
                 slot="start"></ion-icon>
 
               <ion-label
                 class="project-title"
-                [ngClass]="{'no-desc': milestone.description}">
+                [ngClass]="{'locked': milestone.isLocked}">
                 {{ milestone.name }}
               </ion-label>
 
-              <ion-icon *ngIf="milestone.Activity && milestone.Activity.length > 0"
+              <ion-icon *ngIf="!milestone.isLocked && (milestone.Activity && milestone.Activity.length > 0)"
                 slot="end"
                 [name]="isCollapsed(milestone) ? 'ios-arrow-up' : 'ios-arrow-down'"
-                [ngStyle]="{'margin-top': '0px'}"
+                class="collapsible-icon"
               ></ion-icon>
             </ion-item>
 
