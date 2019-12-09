@@ -24,7 +24,8 @@
                 {{ milestone.name }}
               </ion-label>
 
-              <ion-icon slot="end"
+              <ion-icon *ngIf="milestone.Activity && milestone.Activity.length > 0"
+                slot="end"
                 [name]="isCollapsed(milestone) ? 'ios-arrow-up' : 'ios-arrow-down'"
                 [ngStyle]="{'margin-top': '0px'}"
               ></ion-icon>
@@ -32,7 +33,7 @@
 
             <ion-card-content
               class="milestone-description"
-              *ngIf="!isCollapsed(milestone)">
+              *ngIf="milestone.description && !isCollapsed(milestone)">
               <app-description [content]="milestone.description"></app-description>
             </ion-card-content>
           </ion-card>
