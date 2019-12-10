@@ -1,31 +1,40 @@
-import { browser, by, element, ExpectedConditions } from 'protractor';
-import { USER } from '../../config';
+import { browser, $, $$, Key } from 'protractor';
 import { AppPage } from './app.po';
 
 export class LoginPage extends AppPage {
-  inputEmail = element(by.css(`input[name="email"]`));
-  inputPassword = element(by.css(`input[name="password"]`));
-  btnLogin = element(by.css('app-auth-login')).element(by.deepCss('ion-button[type="submit"]'));
-  alertMsg = element(by.css('ion-alert')).element(by.deepCss('.alert-message'));
-
-  insertEmail(email) {
-    return this.inputEmail.sendKeys(email);
-  }
-
-  insertPassword(password) {
-    return this.inputPassword.sendKeys(password);
-  }
+  inputEmail = $(`input[name="email"]`);
+  inputPassword = $(`input[name="password"]`);
+  btnLogin = $('app-auth-login').$('ion-button[type="submit"]');
+  alertMsg = $('ion-alert').$('.alert-message');
+  btnAlert = $('ion-alert').$('.alert-button');
 
   hasButton() {
     return this.btnLogin.getText();
   }
 
+  insertEmail(email) {
+    return this.inputEmail.sendKeys(email);
+  }
+
   fillInAccount(user) {
-    this.insertEmail(user.email);
-    return this.insertPassword(user.password);
+    this.inputEmail.sendKeys(user.email);
+    return this.inputPassword.sendKeys(user.password);
+  }
+
+  removeEmailnPassword() {
+    this.inputEmail.clear();
+    return this.inputPassword.clear();
+  }
+
+  deleteEmail() {
+    return this.inputEmail.sendKeys(Key.BACK_SPACE);
   }
 
   clickLogin() {
     return this.btnLogin.click();
+  }
+
+  dismissAlert() {
+    return this.btnAlert.click();
   }
 }

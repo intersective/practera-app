@@ -1,6 +1,9 @@
-import { browser } from 'protractor';
+import { browser, $, $$, Key, ExpectedConditions } from 'protractor';
 
 export class AppPage {
+  tabs = $('ion-tabs');
+  tabSettings = this.tabs.$(`ion-tab-button[tab="settings"]`);
+
   navigateTo(page?) {
     return browser.get(page || '/');
   }
@@ -18,5 +21,15 @@ export class AppPage {
   }
   waitForAngularDisabled() {
     return browser.waitForAngularEnabled(false);
+  }
+  waitUntilTabPresent() {
+    return this.wait(ExpectedConditions.presenceOf(this.tabs));
+  }
+
+  clickTab(tab) {
+    switch (tab) {
+      case 'settings':
+        return this.tabSettings.click();
+    }
   }
 }
