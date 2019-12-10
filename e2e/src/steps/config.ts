@@ -1,3 +1,3 @@
-// set default timeout to 60 seconds
+// set default timeout to 10 minutes
 import { setDefaultTimeout } from 'cucumber';
-setDefaultTimeout(60 * 1000);
+setDefaultTimeout(10 * 60 * 1000);

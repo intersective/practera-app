@@ -1,40 +1,40 @@
-const PASSWORD = 'kW96dLJHrQDaaLM';
+const PASSWORD = '';
 
 export const CORRECT_ACCOUNT = {
-  email: 'student1@practera.com',
-  password: '12341234'
+  email: '',
+  password: ''
 }
 
 export const REGISTRATION = [
   /*{
-    email: 'protractor_continue_complete@test.com',
+    email: '',
     key: 'vyhe3AVU',
-    password: PASSWORD,
+    password: '',
   },*/
 ];
 
 export const CONTINUE_WORKFLOW_USER = {
-  email: 'protractor_continue_complete@test.com',
-  password: PASSWORD,
+  email: '',
+  password: '',
   name: 'protractor_continue_complete',
 };
 
 // added to test single program workflow (shouldn't stop user at program switcher page)
 export const SINGLE_PROGRAM_USER = {
-  email: 'protractor_single_program@test.com',
-  password: PASSWORD,
+  email: '',
+  password: '',
   name: 'protractor_single_program',
 };
 
 export const USER = {
-  email: 'protractor@test.com',
-  password: PASSWORD,
+  email: '',
+  password: '',
   name: 'protractor',
 };
 
 export const MENTOR = {
-  email: 'protractor_mentor@test.com',
-  password: PASSWORD,
+  email: '',
+  password: '',
   name: 'protractor_mentor',
 };
 
