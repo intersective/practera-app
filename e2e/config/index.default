@@ -1,5 +1,10 @@
 const PASSWORD = 'kW96dLJHrQDaaLM';
 
+export const CORRECT_ACCOUNT = {
+  email: 'student1@practera.com',
+  password: '12341234'
+}
+
 export const REGISTRATION = [
   /*{
     email: 'protractor_continue_complete@test.com',
