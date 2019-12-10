@@ -15,3 +15,10 @@ Feature: Login/Logout the app
     When I click login button
     Then I should not be able to click login button
     Then I should see alert message
+
+  Scenario: Login with correct account
+    When I fill in correct account
+    Then I should be able to click login button
+    When I click login button
+    Then I should not be able to click login button
+    Then I should be on the program switcher page
