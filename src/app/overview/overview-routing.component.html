@@ -9,17 +9,17 @@
     <ion-grid class="desktop-view">
       <ion-row>
         <ion-col no-padding>
-          <app-home></app-home>
+          <app-home [refresh]="initiator$"></app-home>
         </ion-col>
         <ion-col no-padding>
-          <app-project></app-project>
+          <app-project [refresh]="initiator$"></app-project>
         </ion-col>
       </ion-row>
     </ion-grid>
   </ng-container>
 
   <ng-template #singlePage>
-    <app-home></app-home>
-    <app-project></app-project>
+    <app-home [refresh]="initiator$"></app-home>
+    <app-project [refresh]="initiator$"></app-project>
   </ng-template>
 </ion-content>
