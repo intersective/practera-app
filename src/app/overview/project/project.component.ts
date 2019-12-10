@@ -1,4 +1,4 @@
-import { Component, HostListener, ViewChild, ViewChildren, QueryList, ElementRef, Inject } from '@angular/core';
+import { Component, HostListener, ViewChild, ViewChildren, QueryList, ElementRef, Inject, Input, OnInit } from '@angular/core';
 import { DOCUMENT } from '@angular/common';
 import { Router, ActivatedRoute } from '@angular/router';
 import { ProjectService, Milestone, DummyMilestone } from './project.service';
@@ -8,6 +8,7 @@ import { Platform } from '@ionic/angular';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
 import { trigger, state, transition, style, animate, useAnimation } from '@angular/animations';
 import { fadeIn } from '../../animations';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-project',
@@ -32,7 +33,9 @@ import { fadeIn } from '../../animations';
     ])
   ]
 })
-export class ProjectComponent {
+export class ProjectComponent implements OnInit {
+  @Input() refresh: Observable<any>;
+
   private showingMilestones: Array<Milestone | { id: number; }>;
   public programName: string;
   public milestones: Array<Milestone | DummyMilestone> = [];
@@ -55,7 +58,10 @@ export class ProjectComponent {
     @Inject(DOCUMENT) private readonly document: Document
    ) {
     this.showingMilestones = [];
-    this.route.params.subscribe(params => {
+  }
+
+  ngOnInit() {
+    this.refresh.subscribe(params => {
       this.onEnter();
     });
   }
