@@ -6,12 +6,12 @@
 
 <ion-content>
   <ng-container *ngIf="!isMobile; else singlePage">
-    <ion-grid [ngStyle]="{'height': '100%'}">
-      <ion-row [ngStyle]="{'height': '100%'}">
-        <ion-col [ngStyle]="{'overflow-y': 'scroll', height: '100%'}" no-padding>
+    <ion-grid class="desktop-view">
+      <ion-row>
+        <ion-col no-padding>
           <app-home></app-home>
         </ion-col>
-        <ion-col [ngStyle]="{'overflow-y': 'scroll', height: '100%' }" no-padding>
+        <ion-col no-padding>
           <app-project></app-project>
         </ion-col>
       </ion-row>
