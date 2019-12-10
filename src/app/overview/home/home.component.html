@@ -74,7 +74,7 @@
       </ion-label>
     </div>
 
-    <ion-grid [ngStyle]="{width: '100%'}">
+    <ion-grid no-padding>
       <ion-row text-center margin-bottom>
         <ion-col *ngFor="let achievement of achievements; let i = index;" size="4" @newLoaded>
           <achievement-badge [achievement]="achievement"></achievement-badge>
