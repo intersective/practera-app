@@ -5,7 +5,7 @@ exports.config = {
   baseUrl: 'http://localhost:4200/',
   framework: 'custom',
   frameworkPath: require.resolve('protractor-cucumber-framework'),
-  allScriptsTimeout: 11000,
+  allScriptsTimeout: 10 * 60 * 1000,
   specs: [
     './src/features/*.feature',
     './src/features/desktop/*.feature'
