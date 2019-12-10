@@ -1,18 +1,8 @@
-import { Before, Given, When, Then } from 'cucumber';
+import { Given, When, Then } from 'cucumber';
 const expect = global['chai'].expect;
 import { LoginPage } from '../page-objects/login.po';
 
 const loginPage = new LoginPage();
-
-Given(/^I go to the (.+) page$/, page => {
-  let route = '/';
-  switch (page) {
-    case 'home':
-      route = '/home';
-      break;
-  }
-  return loginPage.navigateTo(route);
-});
 
 When(/^I fill in (.+) account$/, account => {
   let email, password;
