@@ -1,7 +1,6 @@
 import { Component, OnDestroy } from '@angular/core';
 import { HomeService, TodoItem } from './home.service';
 import { Router, NavigationEnd, ActivatedRoute } from '@angular/router';
-import { FastFeedbackService } from '../../fast-feedback/fast-feedback.service';
 import { Activity } from '../project/project.service';
 import { UtilsService } from '@services/utils.service';
 import { Subscription } from 'rxjs';
@@ -47,7 +46,6 @@ export class HomeComponent implements OnDestroy {
     private intercom: Intercom,
     public router: Router,
     private homeService: HomeService,
-    private fastFeedbackService: FastFeedbackService,
     public utils: UtilsService,
     public storage: BrowserStorageService,
     public achievementService: AchievementsService,
@@ -170,8 +168,6 @@ export class HomeComponent implements OnDestroy {
         }
       });
     }
-
-    this.fastFeedbackService.pullFastFeedback().subscribe();
   }
 
   goTo(destination) {
