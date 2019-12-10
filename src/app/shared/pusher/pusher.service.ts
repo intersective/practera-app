@@ -1,4 +1,4 @@
-import { Injectable, Optional } from '@angular/core';
+import { Injectable, Optional, NgZone } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams, HttpErrorResponse, HttpParameterCodec } from '@angular/common/http';
 import { Observable, of, Subject } from 'rxjs';
 import { catchError, map, debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
@@ -59,7 +59,8 @@ export class PusherService {
     @Optional() config: PusherConfig,
     private request: RequestService,
     private utils: UtilsService,
-    public storage: BrowserStorageService
+    public storage: BrowserStorageService,
+    private ngZone: NgZone
   ) {
     if (config) {
       this.pusherKey = config.pusherKey;
@@ -68,38 +69,36 @@ export class PusherService {
   }
 
   // initialise + subscribe to channels at one go
-  async initialise(options?: {
+  initialise(options?: {
     unsubscribe?: boolean;
   }) {
-    let pusher = this.pusher;
+    // run outside of Angular so that Protractor can work properly
+    this.ngZone.runOutsideAngular(async() => {
+      let pusher = this.pusher;
 
-    // make sure pusher is connected
-    if (!this.pusher) {
-      pusher = await this.initialisePusher();
-    }
+      // make sure pusher is connected
+      if (!this.pusher) {
+        pusher = await this.initialisePusher();
+      }
 
-    if (!pusher) {
-      return {};
-    }
+      if (!pusher) {
+        return {};
+      }
 
-    if (options && options.unsubscribe) {
-      this.unsubscribeChannels();
-      this.typingAction = new Subject<any>();
-    }
+      if (options && options.unsubscribe) {
+        this.unsubscribeChannels();
+        this.typingAction = new Subject<any>();
+      }
 
-    // handling condition at re-login without rebuilding pusher (where isInstantiated() is false)
-    if (this.pusher.connection.state !== 'connected') {
-      // reconnect pusher
-      this.pusher.connect();
-      pusher = this.pusher;
-    }
+      // handling condition at re-login without rebuilding pusher (where isInstantiated() is false)
+      if (this.pusher.connection.state !== 'connected') {
+        // reconnect pusher
+        this.pusher.connect();
+      }
 
-    // subscribe to event only when pusher is available
-    const channels = await this.getChannels().toPromise();
-    return {
-      pusher,
-      channels
-    };
+      // subscribe to event only when pusher is available
+      const channels = await this.getChannels().toPromise();
+    });
   }
 
   disconnect(): void {
@@ -218,128 +217,130 @@ export class PusherService {
   }
 
   private _subscribeChannels(channels) {
-    // channels format verification
-    if (this.utils.isEmpty(channels)) {
-      return this.request.apiResponseFormatError('Pusher channels cannot be empty');
-    }
+    this.ngZone.run(() => {
+      // channels format verification
+      if (this.utils.isEmpty(channels)) {
+        return this.request.apiResponseFormatError('Pusher channels cannot be empty');
+      }
 
-    if (!Array.isArray(channels)) {
-      return this.request.apiResponseFormatError('Pusher channels must be an array');
-    }
+      if (!Array.isArray(channels)) {
+        return this.request.apiResponseFormatError('Pusher channels must be an array');
+      }
 
-    const incorrectChannelName = channels.find(channel => !this.utils.has(channel, 'channel'));
-    if (incorrectChannelName) {
-      return this.request.apiResponseFormatError('Pusher channel format error');
-    }
+      const incorrectChannelName = channels.find(channel => !this.utils.has(channel, 'channel'));
+      if (incorrectChannelName) {
+        return this.request.apiResponseFormatError('Pusher channel format error');
+      }
 
-    channels.forEach(channel => {
-      // subscribe channels and bind events
-      // team
-      if (channel.channel.includes('private-' + environment.env + '-team-') &&
-          !channel.channel.includes('nomentor')) {
-        if (this.isSubscribed(channel.channel)) {
+      channels.forEach(channel => {
+        // subscribe channels and bind events
+        // team
+        if (channel.channel.includes('private-' + environment.env + '-team-') &&
+            !channel.channel.includes('nomentor')) {
+          if (this.isSubscribed(channel.channel)) {
+            return;
+          }
+
+          this.channelNames.team.name = channel.channel;
+          this.channels.team = this.pusher.subscribe(channel.channel);
+
+          this.channels.team
+            .bind('send-event', data => {
+              this.utils.broadcastEvent('team-message', data);
+            })
+            .bind('typing-event', data => {
+              this.utils.broadcastEvent('team-typing', data);
+            })
+            .bind('client-typing-event', data => {
+              this.utils.broadcastEvent('team-typing', data);
+            })
+            .bind('pusher:subscription_succeeded', data => {
+              this.channelNames.team.subscription = true;
+            })
+            .bind('pusher:subscription_error', () => {
+              this.channelNames.team.subscription = `${channel.channel} channel subscription failed.`;
+            });
+
           return;
         }
 
-        this.channelNames.team.name = channel.channel;
-        this.channels.team = this.pusher.subscribe(channel.channel);
+        // team without mentor
+        if (channel.channel.includes('private-' + environment.env + '-team-nomentor-')) {
+          if (this.isSubscribed(channel.channel)) {
+            return;
+          }
 
-        this.channels.team
-          .bind('send-event', data => {
-            this.utils.broadcastEvent('team-message', data);
-          })
-          .bind('typing-event', data => {
-            this.utils.broadcastEvent('team-typing', data);
-          })
-          .bind('client-typing-event', data => {
-            this.utils.broadcastEvent('team-typing', data);
-          })
-          .bind('pusher:subscription_succeeded', data => {
-            this.channelNames.team.subscription = true;
-          })
-          .bind('pusher:subscription_error', () => {
-            this.channelNames.team.subscription = `${channel.channel} channel subscription failed.`;
-          });
+          this.channelNames.teamNoMentor.name = channel.channel;
+          this.channels.teamNoMentor = this.pusher.subscribe(channel.channel);
 
-        return;
-      }
-
-      // team without mentor
-      if (channel.channel.includes('private-' + environment.env + '-team-nomentor-')) {
-        if (this.isSubscribed(channel.channel)) {
+          this.channels.teamNoMentor
+            .bind('send-event', data => {
+              this.utils.broadcastEvent('team-no-mentor-message', data);
+            })
+            .bind('typing-event', data => {
+              this.utils.broadcastEvent('team-no-mentor-typing', data);
+            })
+            .bind('client-typing-event', data => {
+              this.utils.broadcastEvent('team-no-mentor-typing', data);
+            })
+            .bind('pusher:subscription_succeeded', data => {
+              this.channelNames.teamNoMentor.subscription = true;
+            })
+            .bind('pusher:subscription_error', data => {
+              this.channelNames.teamNoMentor.subscription = `${channel.channel} channel subscription failed.`;
+            });
           return;
         }
 
-        this.channelNames.teamNoMentor.name = channel.channel;
-        this.channels.teamNoMentor = this.pusher.subscribe(channel.channel);
+        // notification
+        if (channel.channel.includes('private-' + environment.env + '-notification-')) {
+          if (this.isSubscribed(channel.channel)) {
+            return;
+          }
 
-        this.channels.teamNoMentor
-          .bind('send-event', data => {
-            this.utils.broadcastEvent('team-no-mentor-message', data);
-          })
-          .bind('typing-event', data => {
-            this.utils.broadcastEvent('team-no-mentor-typing', data);
-          })
-          .bind('client-typing-event', data => {
-            this.utils.broadcastEvent('team-no-mentor-typing', data);
-          })
-          .bind('pusher:subscription_succeeded', data => {
-            this.channelNames.teamNoMentor.subscription = true;
-          })
-          .bind('pusher:subscription_error', data => {
-            this.channelNames.teamNoMentor.subscription = `${channel.channel} channel subscription failed.`;
-          });
-        return;
-      }
+          this.channelNames.notification.name = channel.channel;
+          this.channels.notification = this.pusher.subscribe(channel.channel);
 
-      // notification
-      if (channel.channel.includes('private-' + environment.env + '-notification-')) {
-        if (this.isSubscribed(channel.channel)) {
+          this.channels.notification
+            .bind('notification', data => {
+              this.utils.broadcastEvent('notification', data);
+            })
+            .bind('achievement', data => {
+              this.utils.broadcastEvent('achievement', data);
+            })
+            .bind('event-reminder', data => {
+              this.utils.broadcastEvent('event-reminder', data);
+            })
+            .bind('pusher:subscription_succeeded', data => {
+              this.channelNames.notification.subscription = true;
+            })
+            .bind('pusher:subscription_error', data => {
+              this.channelNames.notification.subscription = `${channel.channel} channel subscription failed.`;
+            });
           return;
         }
 
-        this.channelNames.notification.name = channel.channel;
-        this.channels.notification = this.pusher.subscribe(channel.channel);
+        // team member presence
+        if (channel.channel.includes('presence-' + environment.env + '-team-')) {
+          if (this.isSubscribed(channel.channel)) {
+            return;
+          }
 
-        this.channels.notification
-          .bind('notification', data => {
-            this.utils.broadcastEvent('notification', data);
-          })
-          .bind('achievement', data => {
-            this.utils.broadcastEvent('achievement', data);
-          })
-          .bind('event-reminder', data => {
-            this.utils.broadcastEvent('event-reminder', data);
-          })
-          .bind('pusher:subscription_succeeded', data => {
-            this.channelNames.notification.subscription = true;
-          })
-          .bind('pusher:subscription_error', data => {
-            this.channelNames.notification.subscription = `${channel.channel} channel subscription failed.`;
-          });
-        return;
-      }
+          this.channelNames.presence.name = channel.channel;
+          this.channels.presence = this.pusher.subscribe(channel.channel);
 
-      // team member presence
-      if (channel.channel.includes('presence-' + environment.env + '-team-')) {
-        if (this.isSubscribed(channel.channel)) {
+          this.channels.presence
+            .bind('pusher:subscription_succeeded', data => {
+              this.channelNames.presence.subscription = true;
+            })
+            .bind('pusher:subscription_error', data => {
+              this.channelNames.presence.subscription = `${channel.channel} channel subscription failed.`;
+            });
           return;
         }
+      });
 
-        this.channelNames.presence.name = channel.channel;
-        this.channels.presence = this.pusher.subscribe(channel.channel);
-
-        this.channels.presence
-          .bind('pusher:subscription_succeeded', data => {
-            this.channelNames.presence.subscription = true;
-          })
-          .bind('pusher:subscription_error', data => {
-            this.channelNames.presence.subscription = `${channel.channel} channel subscription failed.`;
-          });
-        return;
-      }
     });
-
     // subscribe to typing event
     return this.initiateTypingEvent().subscribe(data => {
       return this.pusher.channels;
