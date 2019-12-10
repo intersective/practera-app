@@ -8,11 +8,11 @@
   <ng-container *ngIf="!isMobile; else singlePage">
     <ion-grid [ngStyle]="{'height': '100%'}">
       <ion-row [ngStyle]="{'height': '100%'}">
-        <ion-col [ngStyle]="{padding: '1em'}">
-          <ion-router-outlet name="home"></ion-router-outlet>
+        <ion-col [ngStyle]="{'overflow-y': 'scroll', height: '100%'}" no-padding>
+          <app-home></app-home>
         </ion-col>
-        <ion-col>
-          <ion-router-outlet name="project"></ion-router-outlet>
+        <ion-col [ngStyle]="{'overflow-y': 'scroll', height: '100%' }" no-padding>
+          <app-project></app-project>
         </ion-col>
       </ion-row>
     </ion-grid>
