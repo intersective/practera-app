@@ -1,4 +1,4 @@
-<div class="app-home" [ngStyle]="utils.isMobile() ? {padding: '1em'} : {padding: '1em', 'overflow-y': 'scroll'}">
+<div class="app-home" [ngStyle]="utils.isMobile() ? {padding: '1em'} : {padding: '1em'}">
   <div text-center padding>
     <app-circle-progress [data]="progressConfig" [type]="'large'"></app-circle-progress>
   </div>
@@ -74,7 +74,7 @@
       </ion-label>
     </div>
 
-    <ion-grid [ngStyle]="{width: '100%'}">
+    <ion-grid no-padding>
       <ion-row text-center margin-bottom>
         <ion-col *ngFor="let achievement of achievements; let i = index;" size="4" @newLoaded>
           <achievement-badge [achievement]="achievement"></achievement-badge>

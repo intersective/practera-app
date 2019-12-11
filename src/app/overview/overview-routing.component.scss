@@ -1,4 +1,12 @@
-ion-grid {
+ion-grid.desktop-view {
   padding: 0px;
   overflow: hidden;
+  height: 100%;
+  ion-row {
+    height: 100%;
+    ion-col {
+      overflow-y: scroll;
+      height: 100%;
+    }
+  }
 }
