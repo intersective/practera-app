@@ -14,13 +14,16 @@ Given(/^I go to the (.+) page$/, pageType => {
   return page.navigateTo(route);
 });
 
-When(/^I click the (.+) tab/, tabType => {
+When(/^I click the (.+) tab$/, tabType => {
   return page.clickTab(tabType);
 });
 
 Then(/^I should be on the (.+) page$/, pageType => {
   let route = '/';
   switch (pageType) {
+    case 'login':
+      route = '/login';
+      break;
     case 'home':
       route = '/app/home';
       break;
