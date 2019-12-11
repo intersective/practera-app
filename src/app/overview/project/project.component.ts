@@ -1,16 +1,14 @@
-import { Component, HostListener, ViewChild, ViewChildren, QueryList, ElementRef, Inject } from '@angular/core';
+import { Component, HostListener, ViewChild, ViewChildren, QueryList, ElementRef, Inject, Input, OnInit } from '@angular/core';
 import { DOCUMENT } from '@angular/common';
 import { Router, ActivatedRoute } from '@angular/router';
 import { ProjectService, Milestone, DummyMilestone } from './project.service';
-import { BrowserStorageService } from '@services/storage.service';
 import { UtilsService } from '@services/utils.service';
-import { SharedService } from '@services/shared.service';
-import { FastFeedbackService } from '../../fast-feedback/fast-feedback.service';
 import { Subscription } from 'rxjs';
 import { Platform } from '@ionic/angular';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
 import { trigger, state, transition, style, animate, useAnimation } from '@angular/animations';
 import { fadeIn } from '../../animations';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-project',
@@ -35,7 +33,9 @@ import { fadeIn } from '../../animations';
     ])
   ]
 })
-export class ProjectComponent {
+export class ProjectComponent implements OnInit {
+  @Input() refresh: Observable<any>;
+
   private showingMilestones: Array<Milestone | { id: number; }>;
   public programName: string;
   public milestones: Array<Milestone | DummyMilestone> = [];
@@ -52,16 +52,16 @@ export class ProjectComponent {
     public router: Router,
     private route: ActivatedRoute,
     public utils: UtilsService,
-    public storage: BrowserStorageService,
     private projectService: ProjectService,
-    private sharedService: SharedService,
-    public fastFeedbackService: FastFeedbackService,
     private platform: Platform,
     private newRelic: NewRelicService,
     @Inject(DOCUMENT) private readonly document: Document
    ) {
     this.showingMilestones = [];
-    this.route.params.subscribe(params => {
+  }
+
+  ngOnInit() {
+    this.refresh.subscribe(params => {
       this.onEnter();
     });
   }
@@ -125,7 +125,6 @@ export class ProjectComponent {
       }
     ));
 
-    this.fastFeedbackService.pullFastFeedback().subscribe();
   }
 
   trackScrolling(event) {

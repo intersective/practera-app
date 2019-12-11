@@ -33,7 +33,16 @@ export class UtilsService {
   }
 
   isMobile() {
-    return this.platform.is('mobile') && !this.platform.is('tablet');
+    if (
+      this.platform.is('mobile') ||
+      this.platform.is('iphone') ||
+      this.platform.is('mobileweb')
+    ) {
+      return true;
+    }
+
+    return false;
+    // return this.platform.is('mobile') && !this.platform.is('tablet');
   }
 
   isEmpty(value: any): boolean {
