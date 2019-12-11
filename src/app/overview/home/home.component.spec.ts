@@ -129,7 +129,6 @@ xdescribe('HomeComponent', () => {
     storageServiceSpy = TestBed.get(BrowserStorageService);
     routerSpy = TestBed.get(Router);
     utils = TestBed.get(UtilsService);
-    component.routeUrl = '/test';
   });
 
   beforeEach(() => {

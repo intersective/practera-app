@@ -83,6 +83,7 @@ ion-card.expandable {
     width: 100%;
     .milestone {
       .project-title {
+        text-transform: capitalize;
         width: 308px;
         color: #000000;
         font-size: 20px;

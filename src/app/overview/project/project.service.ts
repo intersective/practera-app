@@ -83,7 +83,7 @@ export class ProjectService {
         description: m.description,
         progress: m.progress,
         isLocked: m.is_locked,
-        Activity: m.activities.map(a => {
+        Activity: (m.activities === null ? [] : m.activities).map(a => {
           return {
             id: a.id,
             name: a.name,
