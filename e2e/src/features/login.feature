@@ -38,3 +38,7 @@ Feature: Login/Logout the app
   Scenario: Go to settings page
     When I click the settings tab
     Then I should be on the settings page
+
+  Scenario: Logout
+    When I click logout button
+    Then I should be on the login page
