@@ -1,13 +1,9 @@
-import { Component, OnDestroy } from '@angular/core';
+import { Component, OnDestroy, OnInit, Input } from '@angular/core';
 import { HomeService, TodoItem } from './home.service';
 import { Router, NavigationEnd, ActivatedRoute } from '@angular/router';
-import { FastFeedbackService } from '../../fast-feedback/fast-feedback.service';
 import { Activity } from '../project/project.service';
 import { UtilsService } from '@services/utils.service';
-import { Subscription } from 'rxjs';
 import { BrowserStorageService } from '@services/storage.service';
-import { RouterEnter } from '@services/router-enter.service';
-import { PusherService } from '@shared/pusher/pusher.service';
 import { Achievement, AchievementsService } from '@app/achievements/achievements.service';
 import { Event, EventListService } from '@app/event-list/event-list.service';
 import { Intercom } from 'ng-intercom';
@@ -15,6 +11,7 @@ import { environment } from '@environments/environment';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
 import { trigger, state, transition, style, animate, useAnimation } from '@angular/animations';
 import { fadeIn } from '../../animations';
+import { Observable, Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-home',
@@ -30,8 +27,9 @@ import { fadeIn } from '../../animations';
     ]),
   ]
 })
-export class HomeComponent implements OnDestroy {
-  routeUrl = '/app/home';
+export class HomeComponent implements OnDestroy, OnInit {
+  @Input() refresh: Observable<any>;
+
   progress = 0;
   loadingProgress = true;
   todoItems: Array<TodoItem> = [];
@@ -47,7 +45,6 @@ export class HomeComponent implements OnDestroy {
     private intercom: Intercom,
     public router: Router,
     private homeService: HomeService,
-    private fastFeedbackService: FastFeedbackService,
     public utils: UtilsService,
     public storage: BrowserStorageService,
     public achievementService: AchievementsService,
@@ -86,8 +83,10 @@ export class HomeComponent implements OnDestroy {
         });
       });
     }
+  }
 
-    this.route.params.subscribe(params => {
+  ngOnInit() {
+    this.refresh.subscribe(params => {
       this.onEnter();
     });
   }
@@ -170,8 +169,6 @@ export class HomeComponent implements OnDestroy {
         }
       });
     }
-
-    this.fastFeedbackService.pullFastFeedback().subscribe();
   }
 
   goTo(destination) {
@@ -230,7 +227,6 @@ export class HomeComponent implements OnDestroy {
   }
 
   ngOnDestroy(): void {
-    // run ngOnDestroy from RouterEnter
     this.subscriptions.forEach(subscription => subscription.unsubscribe());
   }
 
