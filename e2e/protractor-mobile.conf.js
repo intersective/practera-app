@@ -8,8 +8,8 @@ exports.config = Object.assign(config, {
   cucumberOpts: {
     require: [
       './src/steps/config.ts',
-      './src/steps/*.steps.js',
-      './src/steps/mobile/*.steps.js'
+      './src/steps/*.steps.ts',
+      './src/steps/mobile/*.steps.ts'
     ]
   },
   capabilities: null,
