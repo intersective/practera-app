@@ -2,7 +2,7 @@ import { browser, $, $$, Key, ExpectedConditions } from 'protractor';
 
 export class AppPage {
   tabs = $('ion-tabs');
-  tabSettings = this.tabs.$(`ion-tab-button[tab="settings"]`);
+  tab = name => this.tabs.$(`ion-tab-button[tab="${name}"]`);
 
   navigateTo(page?) {
     return browser.get(page || '/');
@@ -27,9 +27,6 @@ export class AppPage {
   }
 
   clickTab(tab) {
-    switch (tab) {
-      case 'settings':
-        return this.tabSettings.click();
-    }
+    return this.tab(tab).click();
   }
 }
