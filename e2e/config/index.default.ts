@@ -3,7 +3,7 @@ const PASSWORD = '';
 export const CORRECT_ACCOUNT = {
   email: '',
   password: ''
-}
+};
 
 export const REGISTRATION = [
   /*{
