@@ -18,9 +18,9 @@
     "postdeploy": "npm run generate-version",
     "test": "ng test --no-watch",
     "lint": "ng lint",
-    "e2e": "ng e2e",
-    "e2e-dev": "ng e2e -c dev",
-    "e2e-sandbox": "ng e2e -c sandbox",
+    "e2e": "ng e2e", // test all features for desktop & Android & Iphone
+    "e2e-dev": "ng e2e -c dev", // used for devs to develop tests
+    "e2e-sandbox": "ng e2e -c sandbox", // used to run automation test on sandbox
     "generate-version": "node ./hooks/post-build.js"
   },
   "dependencies": {
