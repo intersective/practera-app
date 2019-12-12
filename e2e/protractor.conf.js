@@ -7,22 +7,55 @@ exports.config = {
   frameworkPath: require.resolve('protractor-cucumber-framework'),
   allScriptsTimeout: 10 * 60 * 1000,
   specs: [
-    './src/features/*.feature',
-    './src/features/desktop/*.feature'
+    './src/features/*.feature'
   ],
   cucumberOpts: {
     require: [
       './src/steps/config.ts',
-      './src/steps/*.steps.ts',
-      './src/steps/desktop/*.steps.ts'
+      './src/steps/*.steps.ts'
     ]
   },
-  capabilities: {
-    browserName: 'chrome',
-    chromeOptions: {
-      args: ['disable-dev-shm-usage', 'no-sandbox']
+  multiCapabilities: [
+    {
+      browserName: 'chrome',
+      shardTestFiles: true,
+      maxInstances: 5,
+      specs: [
+        './src/features/desktop/*.feature'
+      ],
+      chromeOptions: {
+        args: ['--headless']
+      }
+    },
+    {
+      browserName: 'chrome',
+      shardTestFiles: true,
+      maxInstances: 5,
+      specs: [
+        './src/features/mobile/*.feature'
+      ],
+      chromeOptions: {
+        args: ['--headless'],
+        mobileEmulation : {
+          deviceName: 'Galaxy S5'
+        }
+      }
+    },
+    {
+      browserName: 'chrome',
+      shardTestFiles: true,
+      maxInstances: 5,
+      specs: [
+        './src/features/mobile/*.feature'
+      ],
+      chromeOptions: {
+        args: ['--headless'],
+        mobileEmulation : {
+          deviceName: 'iPhone 6'
+        }
+      }
     }
-  },
+  ],
   directConnect: true,
   jasmineNodeOpts: {
     showColors: true,
