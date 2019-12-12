@@ -22,14 +22,18 @@ Run `npm run local` to start a development server on your local, and calling 127
   - `master` is always + 0.01 version ahead of `live`
   - `develop` is always + 0.1 version ahead of `live`
 
-## Deployment Notes
-
 ### New Relics Setup
 
 1. Before we deploy app to live server, we'll need to create a `newrelic.js` file from project root directory's `/assets` folder
 1. Please select either `newrelic.js.dev` or `newrelic.js.prod` based on the deployment environment
 1. Live environment, use `newrelic.js.prod`. Development environment, use `newrelic.js.dev`
 1. With the step above, new relic can collect and group collected information based on different environment.
+
+### Useful links
+
+1. [Ionic Components](https://ionicframework.com/docs/api/)
+1. [Protractor API](https://www.protractortest.org/#/api)
+1. [Chai API](https://www.chaijs.com/api/bdd/)
 
 ## External link format
 
