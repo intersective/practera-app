@@ -47,6 +47,7 @@ export class ProjectComponent implements OnInit {
   public activeMilestoneIndex = 0;
   private highlightedActivityId: number;
   private subscriptions: Subscription[] = [];
+  public isMobile: boolean;
 
   constructor(
     public router: Router,
@@ -58,6 +59,7 @@ export class ProjectComponent implements OnInit {
     @Inject(DOCUMENT) private readonly document: Document
    ) {
     this.showingMilestones = [];
+    this.isMobile = this.utils.isMobile();
   }
 
   ngOnInit() {
