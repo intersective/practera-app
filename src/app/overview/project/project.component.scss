@@ -73,10 +73,11 @@ ion-card.expandable {
   height: 100%;
   margin: 0;
 
-  .project-item {
+  .project-item.mobile {
+    --padding-start: 0px;
+    --padding-end: 0px;
     --inner-padding-start:0px;
-    --ion-safe-area-right: 0px;
-    --inner-padding-end: 16px;
+    --inner-padding-end: 0px;
   }
 
   .project-card {
@@ -161,6 +162,11 @@ ion-card.expandable {
   --inner-padding-start:0px;
   --ion-safe-area-right: 0px;
   --inner-padding-end: 0px;
+
+  &.mobile {
+    --inner-padding-start: 12px;
+    --inner-padding-end: 23px;
+  }
 }
 .icon-done {
   font-size: 33px;

@@ -1,7 +1,7 @@
 <ion-item *ngIf="loadingMilestone" color="light"></ion-item>
 
 <ion-grid class="project-list" no-padding>
-  <ion-item class="project-item" lines="none" *ngFor="let milestone of milestones" color="light" #milestoneRef @newLoad>
+  <ion-item class="project-item" [ngClass]="{'mobile': isMobile}" lines="none" *ngFor="let milestone of milestones" color="light" #milestoneRef @newLoad>
     <div color="light" class="project-card" id="milestone-{{milestone.id}}">
       <ng-container *ngIf="milestone.dummy; else actualMilestoneTpl">
         <ng-container *ngTemplateOutlet="loadingMilestoneTpl"></ng-container>
@@ -44,7 +44,7 @@
               <ion-row *ngIf="!isCollapsed(milestone)" [@slide]>
                 <ion-col size-sm="9" size-xs="12"
                   *ngFor="let activity of milestone.Activity">
-                  <ion-item class="activity-item" color="light">
+                  <ion-item class="activity-item" [ngClass]="{'mobile': isMobile}" color="light">
                     <ng-container *ngIf="activity && activity.dummy; else actualTpl">
                       <div class='row-cards'>
                         <app-circle-progress></app-circle-progress>
@@ -90,7 +90,7 @@
       <ion-list class="activity-list" color="light">
         <ion-row>
           <ion-col size-sm="9" size-xs="12">
-            <ion-item class="activity-item" color="light">
+            <ion-item class="activity-item" [ngClass]="{'mobile': isMobile}" color="light">
               <ng-container *ngTemplateOutlet="activityList"></ng-container>
             </ion-item>
           </ion-col>
