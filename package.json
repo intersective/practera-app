@@ -20,6 +20,7 @@
     "lint": "ng lint",
     "e2e": "ng e2e",
     "e2e-dev": "ng e2e -c dev",
+    "e2e-sandbox": "ng e2e -c sandbox",
     "generate-version": "node ./hooks/post-build.js"
   },
   "dependencies": {
