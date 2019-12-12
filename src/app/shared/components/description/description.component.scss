@@ -2,15 +2,18 @@
   top: 0;
   left: 0;
   width: 100%;
+  height: 140px;
   min-height: 20%;
   overflow: hidden;
   .text-content {
     overflow: hidden;
     min-height: 64px;
     max-height: 100%;
+    line-height: 20px;
+    letter-spacing: 0.25px;
   }
 }
-  
+
 .limit-height {
   max-height: 90px;
   text-overflow: ellipsis;
