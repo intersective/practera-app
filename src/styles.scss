@@ -221,28 +221,109 @@ ion-button.practera-btn {
   --background: transparent !important;
 }
 
-.achievement-popup {
-  .modal-wrapper {
-    --height: 80%;
-    --width: 70%;
-    --border-radius: 12%;
-    --background: transparent;
-    --box-shadow: none;
-  }
-}
+/*******************
+  Practera popup styles
+*******************/
 
-.lock-assessment-popup {
+.practera-popup {
   .modal-wrapper {
-    --height: 260px;
-    --width: 260px;
+    --max-width: 280px;
+    --min-width: 280px;
+    --min-height: 280px;
+    --max-height: 480px;
+    --width: 280px;
+    --border-radius: 12px;
     --background: transparent;
     --box-shadow: none;
-    --border-radius: 12px;
+    margin-top: 20px;
+    margin-bottom: 20px;
     .inner-scroll, .scroll-y, .overscroll {
       --overflow: hidden;
     }
+    .pop-up-content {
+      border-radius: 12px !important;
+
+      .imgage-content {
+        text-align: -webkit-center;
+    
+        .image {
+          background-color: #ffffff !important;
+          width: -webkit-fit-content;
+          border-radius: 50%;
+    
+          img {
+            border-radius: 50%;
+            width: 56px;
+            height: 56px;
+          }
+        }
+      }
+
+      .details-container {
+        background-color: #ffffff !important;
+        padding: 20px;
+      }
+
+      .div-after-img {
+        text-align: -webkit-center;
+        margin: 0 15px 30px;
+        ion-button {
+          max-width: 312px;
+        }
+        &.button-container {
+          margin: 0 15px 4px;
+        }
+        .title {
+          font-size: 20px;
+          font-weight: 500;
+          text-align: center;
+          margin-bottom: 0px;
+          color: black;
+        }
+        .subtitle {
+          color: var(--ion-color-dark);
+          font-size: 16px;
+          line-height: 24px;
+          text-align: center;
+          margin-top: 0px;
+        }
+        .description {
+          color: var(--ion-color-medium);
+          font-size: 16px;
+          line-height: 17px;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          display: -webkit-box;
+          max-height: 50px;
+          -webkit-line-clamp: 3;
+          -webkit-box-orient: vertical !important;
+          text-align: -webkit-center;
+        }
+        .text-highlight {
+          font-weight: bold !important;
+        }
+      }
+
+    }
+  }
+  &.desktop-view {
+    .modal-wrapper {
+      --width: inherit;
+      --height: inherit;
+      --max-width: inherit;
+      --max-height: inherit;
+      margin-top: 0;
+      margin-bottom: 0;
+    }
+  }
+
+  &.lock-assessment-popup{
+    .modal-wrapper {
+      --height: 280px;
+    }
   }
 }
+
 
 @media only screen and (max-device-width: 667px), screen and (max-width: 450px) {
   .intercom-namespace .intercom-launcher-badge-frame {
