@@ -22,6 +22,8 @@ export class AppPage {
   waitForAngularDisabled() {
     return browser.waitForAngularEnabled(false);
   }
+
+
   waitUntilTabPresent() {
     return this.wait(ExpectedConditions.presenceOf(this.tabs));
   }

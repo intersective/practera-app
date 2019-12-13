@@ -1,6 +1,7 @@
 const config = require('./protractor.conf').config;
 
 exports.config = Object.assign(config, {
+  baseUrl: 'http://localhost:4300/',
   specs: [
     './src/features/login.feature'
   ],
