@@ -35,6 +35,21 @@ Run `npm run local` to start a development server on your local, and calling 127
 1. [Protractor API](https://www.protractortest.org/#/api)
 1. [Chai API](https://www.chaijs.com/api/bdd/)
 
+## Automation Test
+
+### NPM commands
+
+1. `npm run e2e` test all features for desktop & Android & Iphone
+1. `npm run e2e-dev` used for devs to develop tests
+1. `npm run e2e-sandbox` used to run automation test on sandbox
+
+### Development
+
+- Copy & paste `e2e/config/index.default.ts` and replace the name with `index.ts` and fill in correct accounts
+- Change the feature file path in `e2e/protractor-dev.conf.js` to the feature that you are developing
+- If you need to develop automation test for mobile, uncomment the `chromeOptions->mobileEmulation` part inside `e2e/protractor-dev.conf.js`
+- run `npm run e2e-dev` to see the result
+
 ## External link format
 
 ### 1. Direct link login 
