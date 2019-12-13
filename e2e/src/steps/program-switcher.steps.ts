@@ -6,13 +6,14 @@ import { CORRECT_ACCOUNT } from '../../config';
 
 const page = new ProgramSwitcherPage();
 
-When(/^I choose (.+) program$/, program => {
+When(/^I choose (.+) program$/, async program => {
   switch (program) {
     case 'first':
-      page.clickFirstCard();
+      await page.waitUntilFirstCardClickable();
+      await page.clickFirstCard();
       break;
   }
-  return page.sleep(1000);
+  return page.waitUntilTabPresent();
 });
 
 
