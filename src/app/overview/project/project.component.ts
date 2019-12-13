@@ -47,6 +47,7 @@ export class ProjectComponent implements OnInit {
   public activeMilestoneIndex = 0;
   private highlightedActivityId: number;
   private subscriptions: Subscription[] = [];
+  public isMobile: boolean;
 
   constructor(
     public router: Router,
@@ -58,6 +59,7 @@ export class ProjectComponent implements OnInit {
     @Inject(DOCUMENT) private readonly document: Document
    ) {
     this.showingMilestones = [];
+    this.isMobile = this.utils.isMobile();
   }
 
   ngOnInit() {
@@ -70,7 +72,11 @@ export class ProjectComponent implements OnInit {
     this.loadingMilestone = true;
   }
 
-  toggleGroup(milestone) {
+  toggleGroup(milestone: Milestone) {
+    if (milestone.isLocked || (milestone.Activity && milestone.Activity.length === 0)) {
+      return;
+    }
+
     const indexFound = this.utils.findIndex(this.showingMilestones, ['id', milestone.id]);
     if (indexFound !== -1) {
       this.showingMilestones.splice(indexFound, 1);
