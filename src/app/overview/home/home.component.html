@@ -5,14 +5,21 @@
 
   <ng-container *ngTemplateOutlet="badges"></ng-container>
 
-  <ng-container *ngIf="utils.isMobile()">
+  <ng-container *ngIf="utils.isMobile(); else notificationsDesktop">
     <ion-label color="medium">Notifications</ion-label>
-    <app-slidable
-      [notifications]="(eventReminders || []).concat(todoItems)"
-    ></app-slidable>
-  </ng-container>
+    <ng-container *ngIf="loadingTodoItems; else doneLoading">
+      <app-todo-card [loading]="true" [todoItem]="false"></app-todo-card>
+    </ng-container>
 
-  <ng-container *ngTemplateOutlet="notificationsDesktop"></ng-container>
+    <ng-template #doneLoading>
+      <ng-container *ngIf="(eventReminders || []).concat(todoItems) as notices">
+        <app-slidable
+          *ngIf="notices.length > 0; else noItemsTpl"
+          [notifications]="notices"
+        ></app-slidable>
+      </ng-container>
+    </ng-template>
+  </ng-container>
 </div>
 
 <ng-template #thingsToDo>
@@ -85,14 +92,12 @@
 </ng-template>
 
 <ng-template #notificationsDesktop>
-  <ng-container *ngIf="!utils.isMobile()">
-    <ion-label color="medium">Notifications</ion-label>
-    <ion-list class="todo-list" lines="none">
-      <ng-container *ngIf="loadingTodoItems; else deskTopTodoItemsTpl">
-        <app-todo-card [loading]="true" [todoItem]="false"></app-todo-card>
-      </ng-container>
-    </ion-list>
-  </ng-container>
+  <ion-label color="medium">Notifications</ion-label>
+  <ion-list class="todo-list" lines="none">
+    <ng-container *ngIf="loadingTodoItems; else deskTopTodoItemsTpl">
+      <app-todo-card [loading]="true" [todoItem]="false"></app-todo-card>
+    </ng-container>
+  </ion-list>
 </ng-template>
 
 <ng-template #deskTopTodoItemsTpl>
