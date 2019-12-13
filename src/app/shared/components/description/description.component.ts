@@ -28,6 +28,7 @@ export class DescriptionComponent implements AfterViewInit, OnChanges {
   elementHeight: number;
 
   @Input() content;
+  @Input() isInPopup;
   @ViewChild('description') descriptionRef: ElementRef;
 
   constructor(
