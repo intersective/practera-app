@@ -1,4 +1,4 @@
-import { browser, $, $$, Key } from 'protractor';
+import { browser, $, $$, Key, ExpectedConditions } from 'protractor';
 import { AppPage } from './app.po';
 
 export class ProgramSwitcherPage extends AppPage {
@@ -8,6 +8,9 @@ export class ProgramSwitcherPage extends AppPage {
 
   clickFirstCard() {
     return this.firstCard.click();
+  }
+  waitUntilFirstCardClickable() {
+    return this.wait(ExpectedConditions.elementToBeClickable(this.firstCard));
   }
 
 }
