@@ -25,8 +25,8 @@ export class OverviewRoutingComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.programName = this.storage.getUser().programName;
     this.initiator$.subscribe(() => {
+      this.programName = this.storage.getUser().programName;
       this.fastFeedbackService.pullFastFeedback().subscribe();
     });
   }
