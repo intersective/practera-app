@@ -11,6 +11,10 @@ Then(/^I should see registration (.+) pop up$/, text => {
 
 When(/^I click OK button of registration (.+) pop up/, async type => {
   await page.dismissPopup();
+  if (type === 'success') {
+    // wait until tab present if it is a success pop up
+    return page.waitUntilTabPresent();
+  }
   return page.sleep(500);
 });
 
