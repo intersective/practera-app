@@ -29,7 +29,7 @@ export class SlidableComponent implements OnInit, OnChanges {
   }
 
   reorder(raw) {
-    const ordered = raw.sort((a, b) => {
+    const ordered = (raw || []).sort((a, b) => {
       if (a.meta && a.meta.published_date && b.meta && b.meta.published_date) {
         return moment(a.meta.published_date).isAfter(b.meta.published_date);
       }
