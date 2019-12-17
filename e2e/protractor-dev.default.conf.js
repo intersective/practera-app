@@ -7,7 +7,6 @@ exports.config = Object.assign(config, {
   ],
   multiCapabilities: [],
   capabilities: {
-    name: 'desktop',
     browserName: 'chrome',
     // chromeOptions: {
     //   mobileEmulation : {
