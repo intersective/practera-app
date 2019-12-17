@@ -11,7 +11,7 @@ export class RegistrationPage extends AppPage {
   textError = this.parent.$('.text-error');
   btnRegister = this.parent.$('#btn-register');
 
-  getLinkInvalidPopupText() {
+  getPopupText() {
     return this.textPopup.getText();
   }
 
@@ -19,7 +19,7 @@ export class RegistrationPage extends AppPage {
     return this.textError.getText();
   }
 
-  dismissLinkInvalidPopup() {
+  dismissPopup() {
     return this.btnPopup.click();
   }
 
