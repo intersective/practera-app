@@ -46,6 +46,7 @@ Run `npm run local` to start a development server on your local, and calling 127
 ### Development
 
 - Copy & paste `e2e/config/index.default.ts` and replace the name with `index.ts` and fill in correct accounts
+- Copy & paste `e2e/protractor-dev.default.conf.js` and replace the name with `e2e/protractor-dev.conf.js`
 - Change the feature file path in `e2e/protractor-dev.conf.js` to the feature that you are developing
 - If you need to develop automation test for mobile, uncomment the `chromeOptions->mobileEmulation` part inside `e2e/protractor-dev.conf.js`
 - run `npm run e2e-dev` to see the result
