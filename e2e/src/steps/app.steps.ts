@@ -25,7 +25,7 @@ Given(/^I go to the (.*)correct (.+) link$/, (incorrect, linkType) => {
       if (incorrect) {
         route = `/?do=registration&key=incorrect&email=incorrect@practera.com`;
       } else {
-        route = `/?do=registration&key=${REGISTRATION.key}&email=${REGISTRATION.email}`;
+        route = `/?do=registration&key=${REGISTRATION[global['device']].key}&email=${REGISTRATION[global['device']].email}`;
       }
       break;
   }

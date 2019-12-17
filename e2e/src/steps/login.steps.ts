@@ -13,8 +13,8 @@ When(/^I fill in (.+) account$/, account => {
       password = 'abc';
       break;
     case 'correct':
-      email = CORRECT_ACCOUNT.email;
-      password = CORRECT_ACCOUNT.password;
+      email = CORRECT_ACCOUNT[global['device']].email;
+      password = CORRECT_ACCOUNT[global['device']].password;
       break;
   }
   return page.fillInAccount({
