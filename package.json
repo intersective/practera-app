@@ -18,7 +18,7 @@
     "postdeploy": "npm run generate-version",
     "test": "ng test --no-watch",
     "lint": "ng lint",
-    "e2e": "ng e2e",
+    "e2e": "ng e2e --port 4300",
     "e2e-dev": "ng e2e -c dev --port 4300",
     "e2e-sandbox": "ng e2e -c sandbox",
     "generate-version": "node ./hooks/post-build.js"
