@@ -54,11 +54,11 @@ exports.config = {
     chai.use(chaiAsPromised); // add promise candy to the candy of chai
     global.chai = chai;
     browser.getCapabilities().then(cap => {
-      if (cap.mobileEmulationEnabled) {
+      if (cap.get('mobileEmulationEnabled')) {
         global.device = 'mobile';
-        return ;
+      } else {
+        global.device = 'desktop';
       }
-      global.device = 'desktop';
     });
     require('ts-node').register({
       project: require('path').join(__dirname, 'tsconfig.e2e.json')
