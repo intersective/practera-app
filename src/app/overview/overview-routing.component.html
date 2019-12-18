@@ -8,10 +8,10 @@
   <ng-container *ngIf="!isMobile; else singlePage">
     <ion-grid class="desktop-view">
       <ion-row>
-        <ion-col no-padding>
+        <ion-col class="ion-no-padding">
           <app-home [refresh]="initiator$"></app-home>
         </ion-col>
-        <ion-col no-padding>
+        <ion-col class="ion-no-padding">
           <app-project [refresh]="initiator$"></app-project>
         </ion-col>
       </ion-row>
