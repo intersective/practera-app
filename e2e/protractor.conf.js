@@ -40,20 +40,6 @@ exports.config = {
           deviceName: 'Galaxy S5'
         }
       }
-    },
-    {
-      browserName: 'chrome',
-      shardTestFiles: true,
-      maxInstances: 5,
-      specs: [
-        './src/features/mobile/*.feature'
-      ],
-      chromeOptions: {
-        args: ['--headless'],
-        mobileEmulation : {
-          deviceName: 'iPhone 6'
-        }
-      }
     }
   ],
   directConnect: true,
@@ -67,6 +53,13 @@ exports.config = {
     const chaiAsPromised = require("chai-as-promised"); // deal with promises from protractor
     chai.use(chaiAsPromised); // add promise candy to the candy of chai
     global.chai = chai;
+    browser.getCapabilities().then(cap => {
+      if (cap.get('mobileEmulationEnabled')) {
+        global.device = 'mobile';
+      } else {
+        global.device = 'desktop';
+      }
+    });
     require('ts-node').register({
       project: require('path').join(__dirname, 'tsconfig.e2e.json')
     });
