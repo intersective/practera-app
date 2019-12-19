@@ -4,7 +4,8 @@ Feature: Login/Logout the app
   I should be able to logout
 
   Scenario: Before fill in email and password
-    Given I go to the login page
+    Given I go to the root page
+    Then I should be on the login page
     Then I should not be able to click login button
 
   Scenario: Fill in incorrect email and password
