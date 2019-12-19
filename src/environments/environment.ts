@@ -28,8 +28,8 @@ export const environment = {
         FILESTACK.VIRUS_DETECTION,
       ],
     },
-    policy: 'eyJleHBpcnkiOjE1NzUwNDMyMDB9',
-    signature: 'f3b27915256fd97ecc78529287bb2b6087de1b5f03d9cbdb8e830022944fbee3',
+    policy: 'eyJleHBpcnkiOjE5MjQ5NjMxNDB9',
+    signature: 'a33b354ff60fb7709b0b87975974eb3bf96081aed45237a6436cdce565ad9be5',
     workflows: {
       virusDetection: FILESTACK.VIRUS_DETECTION,
     },
