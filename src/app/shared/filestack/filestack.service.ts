@@ -110,7 +110,15 @@ export class FilestackService {
       fileUrl = 'https://cdn.filestackcontent.com/preview/' + file.handle;
     }
 
-    const metadata = await this.metadata(file);
+    let metadata;
+    try {
+      metadata = await this.metadata(file);
+    } catch (e) {
+      return this.notificationService.alert({
+        subHeader: 'Inaccessible file',
+        message: 'The uploaded file is suspicious and being scanned for potential risk. Please try again later.',
+      });
+    }
 
     if (metadata.mimetype && metadata.mimetype.includes('application/')) {
       const megabyte = (metadata && metadata.size) ? metadata.size / 1000 / 1000 : 0;
@@ -143,13 +151,8 @@ export class FilestackService {
   }
 
   async metadata(file): Promise<Metadata> {
-    try {
-      const handle = file.url.match(/([A-Za-z0-9]){20,}/);
-      return this.httpClient.get(api.metadata.replace('HANDLE', handle[0])).toPromise();
-    } catch (e) {
-      console.log(`File url missing: ${JSON.stringify(e)}`);
-      throw e;
-    }
+    const handle = file.url.match(/([A-Za-z0-9]){20,}/);
+    return this.httpClient.get(api.metadata.replace('HANDLE', handle[0])).toPromise();
   }
 
   async open(options = {}, onSuccess = res => res, onError = err => err) {
