@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, Changes, SimpleChanges } from '@angular/core';
+import { Component, Input, OnInit, OnChanges, SimpleChanges } from '@angular/core';
 import { FilestackService } from '@shared/filestack/filestack.service';
 import { UtilsService } from '@services/utils.service';
 
@@ -32,7 +32,7 @@ export class FileDisplayComponent implements OnInit, OnChanges {
 
     const currentFile = file || this.file;
     this.filestackService.getWorkflowStatus(currentFile.workflows).then(responds => {
-      (responds || []).forEach(res => {
+      this.utils.each((responds || []), res => {
         const { results, status } = res;
 
         if (status.toLowerCase() === 'finished') { // status: Finished / InProgress
