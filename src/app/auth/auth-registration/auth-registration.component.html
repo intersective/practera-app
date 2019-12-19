@@ -29,9 +29,9 @@
       </ion-list>
       <p><a (click)="openLink()">Terms & Conditions</a></p>
       <ion-text *ngFor="let error of errors" color="danger">
-        <p>{{error}}</p>
+        <p class="text-error">{{error}}</p>
       </ion-text>
-      <ion-button shape="round" expand="block" (click)="register()" color="primary">REGISTER</ion-button>
+      <ion-button id="btn-register" shape="round" expand="block" (click)="register()" color="primary">REGISTER</ion-button>
     </form>
 
   </div>
