@@ -2,23 +2,23 @@ export const environment = {
     production: true,
     appkey: 'b11e7c189b',
     pusherKey: '255f010d210933ca7675',
-    env: 'stage',
+    env: '<CUSTOM_ENVIRONMENT>',
     APIEndpoint: '<CUSTOM_API_ENDPOINT>',
     intercomAppId: 'pef1lmo8',
     filestack: {
       key: 'AO6F4C72uTPGRywaEijdLz',
       s3Config: {
         location: 's3',
-        container: 'practera-aus',
+        container: '<CUSTOM_S3_BUCKET>',
         region: '<CUSTOM_AWS_REGION>',
         paths: {
-          any: '/appv2/stage/uploads/',
-          image: '/appv2/stage/uploads/',
-          video: '/appv2/stage/video/upload/'
+          any: '/appv2/<CUSTOM_APP>/uploads/',
+          image: '/appv2/<CUSTOM_APP>/uploads/',
+          video: '/appv2/<CUSTOM_APP>/video/upload/'
         }
       }
     },
-    defaultCountryModel: 'AUS',
+    defaultCountryModel: '<CUSTOM_COUNTRY>',
     intercom: false,
     goMobile: false,
   };
