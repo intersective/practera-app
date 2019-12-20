@@ -22,56 +22,6 @@
   </ng-container>
 </div>
 
-<ng-template #thingsToDo>
-  <ion-label color="medium">Things to do</ion-label>
-  <ion-list class="todo-list" lines="none">
-    <ng-container *ngIf="loadingTodoItems; else todoItemsTpl">
-      <app-todo-card [loading]="true" [todoItem]="false"></app-todo-card>
-    </ng-container>
-  </ion-list>
-</ng-template>
-
-<ng-template #todoItemsTpl>
-  <ng-container *ngFor="let event of eventReminders">
-    <app-todo-card
-      [todoItem]="{
-        name: event.name,
-        description: '',
-        type: 'event',
-        time: utils.timeFormatter(event.startTime)
-      }"
-      (click)="showEventDetail(event)"
-    ></app-todo-card>
-  </ng-container>
-
-  <ng-container *ngIf="todoItems.length; else noItemsTpl">
-    <div *ngFor="let todoItem of todoItems">
-      <ng-container [ngSwitch]="todoItem.type">
-        <app-todo-card
-          *ngSwitchCase="'feedback_available'"
-          [todoItem]="todoItem"
-          (click)="goToAssessment(todoItem.meta.activity_id, todoItem.meta.context_id, todoItem.meta.assessment_id)"
-        ></app-todo-card>
-        <app-todo-card
-          *ngSwitchCase="'review_submission'"
-          [todoItem]="todoItem"
-          (click)="goToReview(todoItem.meta.context_id, todoItem.meta.assessment_id, todoItem.meta.assessment_submission_id)"
-        ></app-todo-card>
-        <app-todo-card
-          *ngSwitchCase="'chat'"
-          [todoItem]="todoItem"
-          (click)="goToChat(todoItem)"
-        ></app-todo-card>
-        <app-todo-card
-          *ngSwitchCase="'assessment_submission_reminder'"
-          [todoItem]="todoItem"
-          (click)="goToAssessment(todoItem.meta.activity_id, todoItem.meta.context_id, todoItem.meta.assessment_id)"
-        ></app-todo-card>
-      </ng-container>
-    </div>
-  </ng-container>
-</ng-template>
-
 <ng-template #badges>
   <ng-container @newLoaded *ngIf="achievements && achievements.length > 0">
     <div class="achievement">
@@ -94,13 +44,13 @@
 <ng-template #notificationsDesktop>
   <ion-label color="medium">Notifications</ion-label>
   <ion-list class="todo-list" lines="none">
-    <ng-container *ngIf="loadingTodoItems; else deskTopTodoItemsTpl">
+    <ng-container *ngIf="loadingTodoItems; else todoItemsTpl">
       <app-todo-card [loading]="true" [todoItem]="false"></app-todo-card>
     </ng-container>
   </ion-list>
 </ng-template>
 
-<ng-template #deskTopTodoItemsTpl>
+<ng-template #todoItemsTpl>
   <ng-container *ngFor="let event of eventReminders" @newLoaded>
     <app-todo-card
       [todoItem]="{
