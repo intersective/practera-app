@@ -2,9 +2,7 @@
 // The build system defaults to the dev environment which uses `environment.ts`, but if you do
 // `ng build --configuration=production` then `environment.prod.ts` will be used instead.
 // The list of which env maps to which file can be found in configurations section of `angular.json`.
-const FILESTACK = {
-  VIRUS_DETECTION: '3c38ef53-a9d0-4aa4-9234-617d9f03c0de',
-};
+import { FILESTACK } from './filestack';
 
 export const environment = {
   production: false,
@@ -28,8 +26,8 @@ export const environment = {
         FILESTACK.VIRUS_DETECTION,
       ],
     },
-    policy: 'eyJleHBpcnkiOjE5MjQ5NjMxNDB9',
-    signature: 'a33b354ff60fb7709b0b87975974eb3bf96081aed45237a6436cdce565ad9be5',
+    policy: FILESTACK.POLICY,
+    signature: FILESTACK.SIGNATURE,
     workflows: {
       virusDetection: FILESTACK.VIRUS_DETECTION,
     },
