@@ -1,6 +1,6 @@
 <ion-item *ngIf="loadingMilestone" color="light"></ion-item>
 
-<ion-grid class="project-list" no-padding>
+<ion-grid class="project-list ion-no-padding">
   <ion-item class="project-item" [ngClass]="{'mobile': isMobile}" lines="none" *ngFor="let milestone of milestones" color="light" #milestoneRef @newLoad>
     <div color="light" class="project-card" id="milestone-{{milestone.id}}">
       <ng-container *ngIf="milestone.dummy; else actualMilestoneTpl">
