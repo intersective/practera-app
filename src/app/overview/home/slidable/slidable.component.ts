@@ -16,6 +16,13 @@ export class SlidableComponent implements OnInit, OnChanges {
     spaceBetween: 10,
     // width: 300,
     centeredSlides: true,
+    pagination: {
+      el: '.swiper-pagination',
+      clickable: true,
+      /*renderBullet: function (index, className) {
+        return '<span class="' + className + '">' + (index + 1) + '</span>';
+      },*/
+    }
   };
 
   constructor() { }
