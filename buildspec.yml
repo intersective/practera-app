@@ -20,6 +20,7 @@ phases:
       - while IFS='=' read -r name value ; do  if [[ $name == 'FILESTACK_'* ]]; then sed -i "s#<$name>#${!name}#g" src/environments/filestack.ts; fi; done < <(env)
       - sudo ng build --configuration=custom
       - cat src/environment/environment.ts
+      - cat src/environment/filestack.ts
       - sudo npm run generate-version
   post_build:
     commands:
