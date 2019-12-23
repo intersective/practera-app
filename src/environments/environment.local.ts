@@ -1,3 +1,5 @@
+import { FILESTACK } from './filestack';
+
 export const environment = {
   production: false,
   appkey: 'b11e7c189b',
@@ -15,8 +17,16 @@ export const environment = {
         any: '/appv2/local/uploads/',
         image: '/appv2/local/uploads/',
         video: '/appv2/local/uploads/'
-      }
-    }
+      },
+      workflows: [
+        FILESTACK.VIRUS_DETECTION,
+      ],
+    },
+    policy: FILESTACK.POLICY,
+    signature: FILESTACK.SIGNATURE,
+    workflows: {
+      virusDetection: FILESTACK.VIRUS_DETECTION,
+    },
   },
   defaultCountryModel: 'AUS',
   intercom: false,
