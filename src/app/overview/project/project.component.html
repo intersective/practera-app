@@ -19,10 +19,8 @@
                 slot="start"></ion-icon>
 
               <ion-label
-                class="project-title"
-                [ngClass]="{'locked': milestone.isLocked}">
-                {{ milestone.name }}
-              </ion-label>
+                class="milestone-title"
+                [ngClass]="{'locked': milestone.isLocked}">{{ milestone.name }}</ion-label>
 
               <ion-icon *ngIf="!milestone.isLocked && (milestone.Activity && milestone.Activity.length > 0)"
                 slot="end"
@@ -85,7 +83,7 @@
 <ng-template #loadingMilestoneTpl>
   <div color="light" class="project-card">
     <div class="milestone">
-      <ion-text class="project-title"></ion-text>
+      <ion-text class="milestone-title"></ion-text>
       <div class="milestone-description"></div>
       <ion-list class="activity-list" color="light">
         <ion-row>
