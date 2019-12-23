@@ -10,7 +10,7 @@ ion-card.expandable {
     --background-color: transparent;
     border: none;
 
-    ion-label.project-title {
+    ion-label.milestone-title {
       font-weight: bold;
       color: inherit;
     }
@@ -83,7 +83,7 @@ ion-card.expandable {
   .project-card {
     width: 100%;
     .milestone {
-      .project-title {
+      .milestone-title {
         text-transform: capitalize;
         width: 308px;
         color: #000000;
