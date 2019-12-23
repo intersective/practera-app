@@ -16,7 +16,10 @@ phases:
   build:
     commands:
       - echo Build started on `date`
-      - sudo ng build --configuration=$BUILD_CONFIG
+      - while IFS='=' read -r name value ; do  if [[ $name == 'CUSTOM_'* ]]; then sed -i "s#<$name>#${!name}#g" src/environments/environment.custom.ts; fi; done < <(env)
+      - while IFS='=' read -r name value ; do  if [[ $name == 'FILESTACK_'* ]]; then sed -i "s#<$name>#${!name}#g" src/environments/filestack.ts; fi; done < <(env)
+      - sudo ng build --configuration=custom
+      - cat src/environment/environment.ts
       - sudo npm run generate-version
   post_build:
     commands:
