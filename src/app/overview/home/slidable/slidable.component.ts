@@ -1,5 +1,4 @@
 import { Component, OnInit, Input, OnChanges, SimpleChanges } from '@angular/core';
-import { UtilsService } from '@services/utils.service';
 import * as moment from 'moment';
 
 @Component({
@@ -11,7 +10,7 @@ export class SlidableComponent implements OnInit, OnChanges {
   @Input() notifications;
   slideOpts: any;
 
-  constructor(private utils: UtilsService) { }
+  constructor() { }
 
   ngOnInit() {
     // Optional parameters to pass to the swiper instance.
