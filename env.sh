@@ -9,4 +9,6 @@ while IFS='=' read -r name value ; do
   fi
 done < <(env)
 
-
+cat src/environments/environment.custom.ts
+cat angular.json
+cat src/environments/filestack.ts
