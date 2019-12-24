@@ -16,12 +16,14 @@ export class SlidableComponent implements OnInit, OnChanges {
 
   ngOnInit() {
     this.slideOpts = {
-      initialSlide: 0,
-      speed: 400,
-      slidesPerView: 1,
-      spaceBetween: 0,
       // width: 300,
       centeredSlides: true,
+      initialSlide: 0,
+      loop: true,
+      slidesPerView: 1,
+      spaceBetween: 0,
+      speed: 400,
+      // setTranslate:
       pagination: {
         el: '.swiper-pagination',
         clickable: true,
@@ -29,8 +31,6 @@ export class SlidableComponent implements OnInit, OnChanges {
           return '<span class="' + className + '">' + (index + 1) + '</span>';
         },*/
       },
-      loop: true,
-      // setTranslate:
       on: {
         beforeInit: function() {
           console.log('on slider:init');
