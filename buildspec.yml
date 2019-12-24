@@ -16,12 +16,12 @@ phases:
   build:
     commands:
       - echo Build started on `date`
-      - while IFS='=' read -r name value ; do  if [[ $name == 'CUSTOM_'* ]]; then sed -i "s#<$name>#${!name}#g" src/environments/environment.custom.ts; fi; done < <(env)
-      - while IFS='=' read -r name value ; do  if [[ $name == 'FILESTACK_'* ]]; then sed -i "s#<$name>#${!name}#g" src/environments/filestack.ts; fi; done < <(env)
-      - sudo ng build --configuration=custom
+      # - while IFS='=' read -r name value ; do  if [[ $name == 'CUSTOM_'* ]]; then sed -i "s#<$name>#${!name}#g" src/environments/environment.custom.ts; fi; done < <(env)
+      # - while IFS='=' read -r name value ; do  if [[ $name == 'FILESTACK_'* ]]; then sed -i "s#<$name>#${!name}#g" src/environments/filestack.ts; fi; done < <(env)
+      - ng build --configuration=custom
       - cat src/environment/environment.ts
       - cat src/environment/filestack.ts
-      - sudo npm run generate-version
+      - npm run generate-version
   post_build:
     commands:
       - aws s3 sync www/ s3://$S3_BUCKET/ --delete
