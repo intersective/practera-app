@@ -6,6 +6,7 @@ import { UtilsService } from '@services/utils.service';
 import { BrowserStorageService } from '@services/storage.service';
 import { PusherService } from '@shared/pusher/pusher.service';
 import { SharedService } from '@services/shared.service';
+import { environment } from '@environments/environment';
 
 /**
  * @name api
@@ -14,7 +15,8 @@ import { SharedService } from '@services/shared.service';
  */
 const api = {
   me: 'api/users.json',
-  teams: 'api/teams.json'
+  teams: 'api/teams.json',
+  jwt: 'api/v2/users/jwt/refresh.json'
 };
 
 export interface ProgramObj {
@@ -61,6 +63,7 @@ export class SwitcherService {
     private utils: UtilsService,
     private storage: BrowserStorageService,
     private sharedService: SharedService,
+    private pusherService: PusherService,
   ) {}
 
   getPrograms() {
@@ -89,9 +92,10 @@ export class SwitcherService {
 
     this.sharedService.onPageLoad();
     return forkJoin(
+      this.getNewJwt(),
       this.getTeamInfo(),
       this.getMyInfo(),
-    );
+    ).subscribe();
   }
 
   getTeamInfo(): Observable<any> {
@@ -138,5 +142,57 @@ export class SwitcherService {
       }
       return response;
     }));
+  }
+
+  checkIsOneProgram(programs?) {
+    let programList = programs;
+    if (this.utils.isEmpty(programs)) {
+      programList = this.storage.get('programs');
+    }
+    if (programList.length === 1) {
+      return true;
+    }
+    return false;
+  }
+
+  /**
+   * this method will check program data and navigate to switcher or dashboard/go-mobile
+   * @param programs
+   * there are 4 types of values can come to programs variable.
+   * - Array with multiple program objects -> [{},{},{},{}]
+   * - Array with one program object -> [{}]
+   * - one program object -> {}
+   * - empty value
+   * if method got 'Array with multiple program objects', redirect to switcher page.
+   * if method got 'Array with one program object', switch to that program object and navigate to dashboard.
+   * if method got 'one program object', switch to that program object and navigate to dashboard.
+   * if method got 'empty value', do nothing.
+   */
+  async switchProgramAndNavigate(programs) {
+    if (!this.utils.isEmpty(programs)) {
+      // Array with multiple program objects -> [{},{},{},{}]
+      if (Array.isArray(programs) && !this.checkIsOneProgram(programs)) {
+        return ['switcher'];
+      // Array with one program object -> [{}]
+      } else if (Array.isArray(programs) && this.checkIsOneProgram(programs)) {
+        await this.switchProgram(programs[0]);
+      } else {
+      // one program object -> {}
+        await this.switchProgram(programs);
+      }
+      this.pusherService.initialise({ unsubscribe: true });
+      // clear the cached data
+      this.utils.clearCache();
+      if ((typeof environment.goMobile !== 'undefined' && environment.goMobile === false)
+        || /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
+        return ['app', 'home'];
+      } else {
+        return ['go-mobile'];
+      }
+    }
+  }
+
+  getNewJwt() {
+    return this.request.get(api.jwt);
   }
 }
