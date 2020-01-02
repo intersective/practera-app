@@ -31,6 +31,10 @@ export class UtilsService {
   }
 
   isEmpty(value: any): boolean {
+    if (typeof value === "number") {
+      return true;
+    }
+
     return this.lodash.isEmpty(value);
   }
 
