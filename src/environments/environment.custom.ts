@@ -1,3 +1,5 @@
+import { FILESTACK } from './filestack';
+
 export const environment = {
   production: true,
   appkey: 'b11e7c189b',
