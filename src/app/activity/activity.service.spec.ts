@@ -13,12 +13,13 @@ describe('ActivityService', () => {
     TestBed.configureTestingModule({
       providers: [
         ActivityService,
+        UtilsService,
         {
           provide: RequestService,
           useValue: jasmine.createSpyObj('RequestService', [
             'get',
             'post',
-            'apiResponseFormatError'
+            'postGraphQL'
           ])
         },
       ]
@@ -30,24 +31,6 @@ describe('ActivityService', () => {
   it('should be created', () => {
     expect(service).toBeTruthy();
   });
-
-  /*describe('getCurrentActivityStatus()', () => {
-    const projectId = 1;
-    const activityId = 1;
-
-    const expectedResult = {
-      currentMilestoneIndex: null,
-      currentMilestone: null,
-      currentActivity: null,
-    };
-
-    it('getOverview should be triggered', fakeAsync(() => {
-      service.getOverview = jasmine.createSpy('getOverview').and.returnValue(of(true));
-      service.getCurrentActivityStatus(projectId, activityId).subscribe();
-      tick();
-      expect(service.getOverview).toHaveBeenCalled();
-    }));
-  });*/
 
   /*describe('getTasksByActivityId()', () => {
     const projectId = 1;
@@ -64,335 +47,120 @@ describe('ActivityService', () => {
     }));
   });*/
 
-  describe('when testing getActivity()', () => {
+  it('when testing getActivity(), should get the correct data', () => {
     const requestResponse = {
-      success: true,
-      data: [
-        {
-          Activity: {
-            id: 1,
-            name: 'activity',
-            description: 'des'
-          },
-          ActivitySequence: [
+      data: {
+        activity: {
+          id: 1,
+          name: 'activity',
+          description: 'des',
+          tasks: [
             {
+              id: 1,
+              type: 'topic',
+              name: 'topic 1',
               is_locked: true
             },
             {
-              model: 'Story.Topic',
-              'Story.Topic': {
-                id: 11,
-                title: 'topic 11'
+              id: 11,
+              type: 'topic',
+              name: 'topic 2',
+              is_locked: false,
+              status: {
+                status: 'done'
               }
             },
             {
-              model: 'Assess.Assessment',
-              'Assess.Assessment': {
-                id: 21,
-                name: 'asmt 21',
-                is_team: false,
-                deadline: '2019-02-02'
+              id: 21,
+              type: 'assessment',
+              name: 'asmt 21',
+              is_team: false,
+              is_locked: false,
+              deadline: '2019-02-02',
+              context_id: 211,
+              status: {
+                status: 'in progress',
+                is_locked: false,
+                submitter_name: 'sub name',
+                submitter_image: 'sub image'
               }
-            }
-          ],
-          References: [
+            },
             {
-              Assessment: {
-                id: 21
-              },
-              context_id: 211
+              id: 22,
+              type: 'assessment',
+              name: 'asmt 22',
+              is_team: false,
+              is_locked: false,
+              deadline: '2039-02-02',
+              context_id: 211,
+              status: {
+                status: 'pending approval',
+                is_locked: false,
+                submitter_name: 'sub name',
+                submitter_image: 'sub image'
+              }
             }
           ]
         }
-      ]
+      }
     };
-    const activity = requestResponse.data[0];
+    const activity = requestResponse.data.activity;
+    const topic1 = JSON.parse(JSON.stringify(activity.tasks[0]));
+    const topic2 = JSON.parse(JSON.stringify(activity.tasks[1]));
+    const assessment1 = JSON.parse(JSON.stringify(activity.tasks[2]));
+    const assessment2 = JSON.parse(JSON.stringify(activity.tasks[3]));
     const expected = {
-      id: activity.Activity.id,
-      name: activity.Activity.name,
-      description: activity.Activity.description,
+      id: activity.id,
+      name: activity.name,
+      description: activity.description,
       tasks: [
         {
           id: 0,
           type: 'Locked',
-          name: 'Locked',
-          loadingStatus: false
+          name: 'Locked'
         },
         {
-          id: 11,
+          id: topic2.id,
           type: 'Topic',
-          name: requestResponse.data[0].ActivitySequence[1]['Story.Topic'].title,
-          loadingStatus: true
+          name: topic2.name,
+          status: topic2.status.status
         },
         {
-          id: 21,
+          id: assessment1.id,
           type: 'Assessment',
-          name: requestResponse.data[0].ActivitySequence[2]['Assess.Assessment'].name,
+          name: assessment1.name,
           contextId: 211,
-          isForTeam: requestResponse.data[0].ActivitySequence[2]['Assess.Assessment'].is_team,
-          dueDate: requestResponse.data[0].ActivitySequence[2]['Assess.Assessment'].deadline,
+          isForTeam: assessment1.is_team,
+          dueDate: assessment1.deadline,
           isOverdue: true,
           isDueToday: false,
-          loadingStatus: true
-        }
-      ]
-    };
-
-    it('should throw format error #1', () => {
-      const tmpRes = JSON.parse(JSON.stringify(requestResponse));
-      tmpRes.data = {};
-      requestSpy.get.and.returnValue(of(tmpRes));
-      service.getActivity(1).subscribe();
-      expect(requestSpy.apiResponseFormatError.calls.count()).toBe(1);
-      expect(requestSpy.apiResponseFormatError.calls.first().args[0]).toEqual('Activity format error');
-    });
-
-    it('should throw format error #2', () => {
-      const tmpRes = JSON.parse(JSON.stringify(requestResponse));
-      tmpRes.data[0].ActivitySequence[1] = {};
-      requestSpy.get.and.returnValue(of(tmpRes));
-      service.getActivity(1).subscribe();
-      expect(requestSpy.apiResponseFormatError.calls.count()).toBe(1);
-      expect(requestSpy.apiResponseFormatError.calls.first().args[0]).toEqual('Activity.ActivitySequence format error');
-    });
-
-    it('should get the correct data', () => {
-      requestSpy.get.and.returnValue(of(requestResponse));
-      service.getActivity(1).subscribe(res => expect(res).toEqual(expected));
-    });
-  });
-
-  describe('when testing getAssessmentStatus()', () => {
-    const requestResponse = {
-      success: true,
-      data: [
+          status: assessment1.status.status,
+          isLocked: assessment1.status.is_locked,
+          submitter: {
+            name: assessment1.status.submitter_name,
+            image: assessment1.status.submitter_image
+          }
+        },
         {
-          AssessmentSubmission: {
-            is_locked: false,
-            status: 'in progress'
-          },
-          Submitter: {
-            name: 'submitter',
-            image: 'image'
+          id: assessment2.id,
+          type: 'Assessment',
+          name: assessment2.name,
+          contextId: assessment2.context_id,
+          isForTeam: assessment2.is_team,
+          dueDate: assessment2.deadline,
+          isOverdue: false,
+          isDueToday: false,
+          status: 'pending review',
+          isLocked: assessment2.status.is_locked,
+          submitter: {
+            name: assessment2.status.submitter_name,
+            image: assessment2.status.submitter_image
           }
         }
       ]
     };
-    const task = {
-      id: 1,
-      name: 'name',
-      type: 'Assessment',
-      progress: 0
-    };
-    const expected = {
-      id: task.id,
-      name: task.name,
-      type: task.type,
-      progress: 0,
-      isLocked: requestResponse.data[0].AssessmentSubmission.is_locked,
-      submitter: {
-        name: requestResponse.data[0].Submitter.name,
-        image: requestResponse.data[0].Submitter.image
-      },
-      status: 'in progress',
-      loadingStatus: false
-    };
-
-    it('should return empty status', () => {
-      const tmpRes = JSON.parse(JSON.stringify(requestResponse));
-      tmpRes.data = [];
-      requestSpy.get.and.returnValue(of(tmpRes));
-      service.getAssessmentStatus(task).subscribe(res => expect(res).toEqual({
-        id: task.id,
-        name: task.name,
-        type: task.type,
-        status: '',
-        progress: 0,
-        loadingStatus: false
-      }));
-    });
-
-    it('should throw format error', () => {
-      const tmpRes = JSON.parse(JSON.stringify(requestResponse));
-      tmpRes.data[0] = {};
-      requestSpy.get.and.returnValue(of(tmpRes));
-      service.getAssessmentStatus(task).subscribe();
-      expect(requestSpy.apiResponseFormatError.calls.count()).toBe(1);
-    });
-
-    describe('should return correct data', () => {
-      let tmpRes;
-      let tmpExpected;
-      let tmpTask;
-      beforeEach(() => {
-        tmpRes = JSON.parse(JSON.stringify(requestResponse));
-        tmpTask = JSON.parse(JSON.stringify(task));
-        tmpExpected = JSON.parse(JSON.stringify(expected));
-      });
-      afterEach(() => {
-        requestSpy.get.and.returnValue(of(tmpRes));
-        service.getAssessmentStatus(tmpTask).subscribe(res => expect(res).toEqual(tmpExpected));
-      });
-
-      it('#1', () => {
-        // don't need to change anything
-      });
-      it('#2', () => {
-        tmpRes.data[0].AssessmentSubmission.status = 'pending approval';
-        tmpExpected.status = 'pending review';
-      });
-      it('#3', () => {
-        tmpRes.data[0].AssessmentSubmission.status = 'pending review';
-        tmpExpected.status = 'pending review';
-      });
-      it('#4', () => {
-        tmpRes.data[0].AssessmentSubmission.status = 'published';
-        tmpExpected.status = 'feedback available';
-        tmpExpected.feedbackReviewed = false;
-      });
-      it('#5', () => {
-        tmpRes.data[0].AssessmentSubmission.status = 'published';
-        tmpExpected.status = 'done';
-        tmpTask.progress = 1;
-        tmpExpected.progress = 1;
-        tmpExpected.feedbackReviewed = true;
-      });
-      it('#6', () => {
-        tmpRes.data[0].AssessmentSubmission.status = 'done';
-        tmpExpected.status = 'done';
-      });
-    });
-  });
-
-  describe('when testing getTasksProgress()', () => {
-    const options = {
-      model_id: 1,
-      tasks: [
-        {
-          id: 11,
-          type: 'Topic',
-          name: 'topic 11'
-        },
-        {
-          id: 12,
-          type: 'Topic',
-          name: 'topic 12'
-        },
-        {
-          id: 13,
-          type: 'Topic',
-          name: 'topic 13'
-        },
-        {
-          id: 21,
-          type: 'Assessment',
-          name: 'asmt 21'
-        },
-        {
-          id: 22,
-          type: 'Assessment',
-          name: 'asmt 21'
-        }
-      ]
-    };
-    const requestResponse = {
-      success: true,
-      data: {
-        Activity: {
-          Topic: [
-            {
-              id: 11,
-              progress: 0
-            },
-            {
-              id: 12,
-              progress: 1
-            }
-          ],
-          Assessment: [
-            {
-              id: 21,
-              progress: 1
-            }
-          ]
-        }
-      }
-    };
-    const expected = [
-      {
-        id: options.tasks[0].id,
-        type: options.tasks[0].type,
-        name: options.tasks[0].name,
-        progress: requestResponse.data.Activity.Topic[0].progress,
-        status: '',
-        loadingStatus: false
-      },
-      {
-        id: options.tasks[1].id,
-        type: options.tasks[1].type,
-        name: options.tasks[1].name,
-        progress: requestResponse.data.Activity.Topic[1].progress,
-        status: 'done',
-        loadingStatus: false
-      },
-      {
-        id: options.tasks[2].id,
-        type: options.tasks[2].type,
-        name: options.tasks[2].name,
-        progress: 0,
-        status: '',
-        loadingStatus: false
-      },
-      {
-        id: options.tasks[3].id,
-        type: options.tasks[3].type,
-        name: options.tasks[3].name,
-        progress: requestResponse.data.Activity.Assessment[0].progress
-      },
-      {
-        id: options.tasks[4].id,
-        type: options.tasks[4].type,
-        name: options.tasks[4].name,
-        progress: 0
-      }
-    ];
-
-    describe('should throw format error', () => {
-      let tmpRes;
-      let tmpExpected;
-      let tmpOptions;
-      let errMsg;
-      beforeEach(() => {
-        tmpRes = JSON.parse(JSON.stringify(requestResponse));
-        tmpOptions = JSON.parse(JSON.stringify(options));
-        tmpExpected = JSON.parse(JSON.stringify(expected));
-      });
-      afterEach(() => {
-        requestSpy.get.and.returnValue(of(tmpRes));
-        service.getTasksProgress(tmpOptions).subscribe();
-        expect(requestSpy.apiResponseFormatError.calls.count()).toBe(1);
-        expect(requestSpy.apiResponseFormatError.calls.first().args[0]).toEqual(errMsg);
-      });
-
-      it('Progress.Activity format error', () => {
-        tmpRes.data = {};
-        errMsg = 'Progress.Activity format error';
-      });
-      it('Progress.Activity.Topic format error', () => {
-        tmpRes.data.Activity.Topic[0] = {id: 11};
-        errMsg = 'Progress.Activity.Topic format error';
-      });
-      it('Progress.Activity.Assessment format error', () => {
-        tmpRes.data.Activity.Assessment[0] = {id: 21};
-        errMsg = 'Progress.Activity.Assessment format error';
-      });
-    });
-
-    it('should get correct data', () => {
-      requestSpy.get.and.returnValue(of(requestResponse));
-      service.getTasksProgress(options).subscribe(res => expect(res).toEqual(expected));
-    });
-
+    requestSpy.postGraphQL.and.returnValue(of(requestResponse));
+    service.getActivity(1).subscribe(res => expect(res).toEqual(expected));
   });
 
   describe('getOverview()', function() {
