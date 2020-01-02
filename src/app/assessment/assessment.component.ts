@@ -344,27 +344,29 @@ export class AssessmentComponent extends RouterEnter {
    * @param {Object[]} answers a list of answer object (in submission-based format)
    */
   compulsoryQuestionsAnswered(answers): object[] {
-    const result = [];
     const missing = [];
-    if (answers && answers.length > 0) {
-      this.assessment.groups.forEach(group => {
-        group.questions.forEach(question => {
-          if (question.isRequired && missing.length === 0) {
+    const required = {};
+    this.assessment.groups.forEach(group => {
+      group.questions.forEach(question => {
+        if (question.isRequired) {
+          required[question.id] = question;
+        }
+      });
+    });
 
-            // check every answers value has all the compulsory questions covered
-            const compulsoryQuestions = answers.filter(answer => {
-              return answer.assessment_question_id === +question.id;
-            });
+    if (!this.utils.isEmpty(required)) {
+      const answered = {}
+      answers.map(answer => {
+        answered[answer.assessment_question_id] = answer;
+      });
 
-            this.utils.each(compulsoryQuestions, answer => {
-              if (typeof answer.answer !== 'number' && this.utils.isEmpty(answer.answer)) {
-                missing.push(answer);
-              }
-            });
-          }
-        });
+      this.utils.each(required, question => {
+        if (this.utils.isEmpty(answered[question.id]) || this.utils.isEmpty(answered[question.id].answer)) {
+          missing.push(question);
+        }
       });
     }
+
     return missing;
   }
 
@@ -554,16 +556,6 @@ export class AssessmentComponent extends RouterEnter {
           answer: answer
         });
       });
-
-      // check if all required questions have answer when assessment done
-      const requiredQuestions = this.compulsoryQuestionsAnswered(answers);
-      if (!saveInProgress && requiredQuestions.length > 0) {
-        this.submitting = false;
-        // display a pop up if required question not answered
-        return this.notificationService.popUp('shortMessage', {
-          message: 'Required question answer missing!'
-        });
-      }
     }
 
     // form feedback answers
@@ -575,15 +567,25 @@ export class AssessmentComponent extends RouterEnter {
       });
 
       this.utils.each(this.questionsForm.value, (answer, key) => {
-        if (answer) {
+        if (!this.utils.isEmpty(answer)) {
           answer.assessment_question_id = +key.replace('q-', '');
           answers.push(answer);
         }
       });
     }
 
+    // check if all required questions have answer when assessment done
+    const requiredQuestions = this.compulsoryQuestionsAnswered(answers);
+    if (!saveInProgress && requiredQuestions.length > 0) {
+      this.submitting = false;
+      // display a pop up if required question not answered
+      return this.notificationService.popUp('shortMessage', {
+        message: 'Required question answer missing!'
+      });
+    }
+
     // save the submission/feedback
-    this.assessmentService.saveAnswers(
+    /*this.assessmentService.saveAnswers(
       assessment,
       answers,
       this.action,
@@ -632,6 +634,7 @@ export class AssessmentComponent extends RouterEnter {
     }
     // if timeout, reset this.saving flag to false, to enable saving again
     setTimeout(() => this.saving = false, SAVE_PROGRESS_TIMEOUT);
+    */
   }
 
   // mark review as read
