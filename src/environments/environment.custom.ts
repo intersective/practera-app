@@ -15,8 +15,16 @@ export const environment = {
         any: '/appv2/<CUSTOM_APP>/uploads/',
         image: '/appv2/<CUSTOM_APP>/uploads/',
         video: '/appv2/<CUSTOM_APP>/video/upload/'
-      }
-    }
+      },
+      workflows: [
+        FILESTACK.VIRUS_DETECTION,
+      ],      
+    },
+    policy: FILESTACK.POLICY,
+    signature: FILESTACK.SIGNATURE,
+    workflows: {
+      virusDetection: FILESTACK.VIRUS_DETECTION,
+    },    
   },
   defaultCountryModel: '<CUSTOM_COUNTRY>',
   intercom: false,
