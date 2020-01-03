@@ -18,9 +18,8 @@ export class SlidableComponent implements OnInit, OnChanges {
     this.slideOpts = {
       centeredSlides: true,
       initialSlide: 0,
-      loop: true,
-      slidesPerView: 1,
-      spaceBetween: 0,
+      slidesPerView: 1.18,
+      spaceBetween: 10,
       speed: 400,
     };
     this.notifications = this.reorder(this.notifications);
@@ -28,13 +27,6 @@ export class SlidableComponent implements OnInit, OnChanges {
 
   ngOnChanges(changes: SimpleChanges) {
     this.notifications = this.reorder(changes.notifications.currentValue);
-
-    if (this.slideOpts) {
-      this.slideOpts.loop = false;
-      if ((this.notifications || []).length > 1) {
-         this.slideOpts.loop = true;
-      }
-    }
   }
 
   reorder(raw) {
