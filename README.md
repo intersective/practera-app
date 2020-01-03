@@ -9,6 +9,8 @@
 
 Run `npm install` to install necessary packages
 
+Make a copy of the src/environments/filestack.ts.example to src/environments/filestack.ts and fill in the missing details.
+
 Run `npm run start` to start a development server on your local, and calling stage-test.practera.com for API
 
 Run `npm run local` to start a development server on your local, and calling 127.0.0.1:8080 for API
@@ -82,7 +84,7 @@ See buildspec.yml for the steps needed for the CodeBuild.
 
 ### Environmental variables
 
-Any variables that will be passed with the prefix CUSTOM_ will be merged into the the [src/environments/environment.custom.ts](./src/environments/environment.custom.ts) file and in the [angular.json](./angular.json), any variables prefixed with FILESTACK_ will be merged into the [src/environments/filestack.ts](./src/environments/filestack.ts) file. See the [env.sh](./env.sh) file for details.
+Any variables that will be passed with the prefix CUSTOM_ will be merged into the the [src/environments/environment.custom.ts](./src/environments/environment.custom.ts) file and in the [angular.json](./angular.json). See the [env.sh](./env.sh) file for details.
 
 Other variables that need to be passed to the codebuild project are:
 
@@ -99,5 +101,7 @@ Other variables that need to be passed to the codebuild project are:
 * CUSTOM_INTERCOM - intercom details
 * CUSTOM_APPKEY - Appkey used to talk to the API
 * CUSTOM_PUSHERKEY - pusherKey used
-* FILESTACK_SIGNATURE - the signature used by filestack
-* FILESTACK_POLICY - the policy used by filestack
+* CUSTOM_FILESTACK_SIGNATURE - the filestack signature
+* CUSTOM_FILESTACK_POLICY - the filestack policy
+* CUSTOM_FILESTACK_VIRUS_DETECTION - the filestack virus detection policy
+* CUSTOM_FILESTACK_KEY - the filestack key

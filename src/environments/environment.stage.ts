@@ -9,7 +9,7 @@ export const environment = {
   graphQL: 'https://96uoyi6x8h.execute-api.ap-southeast-2.amazonaws.com/stage/',
   intercomAppId: 'pef1lmo8',
   filestack: {
-    key: 'AO6F4C72uTPGRywaEijdLz',
+    key: FILESTACK.KEY,
     s3Config: {
       location: 's3',
       container: 'practera-aus',
