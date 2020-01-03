@@ -6,6 +6,7 @@ export const environment = {
   pusherKey: '255f010d210933ca7675',
   env: '<CUSTOM_ENVIRONMENT>',
   APIEndpoint: '<CUSTOM_API_ENDPOINT>',
+  graphQL: '<CUSTOM_GRAPH_QL>',  
   intercomAppId: 'pef1lmo8',
   filestack: {
     key: 'AO6F4C72uTPGRywaEijdLz',
