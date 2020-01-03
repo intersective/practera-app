@@ -96,6 +96,8 @@ Other variables that need to be passed to the codebuild project are:
 * CUSTOM_APP - the name of the app, used to prefix the file uploads, needed for multi tenancy
 * CUSTOM_AWS_REGION - the region the app will work in
 * CUSTOM_GRAPH_QL - the graph QL endpoint
-* CUSTOM_INTERCOM - intercom details.
+* CUSTOM_INTERCOM - intercom details
+* CUSTOM_APPKEY - Appkey used to talk to the API
+* CUSTOM_PUSHERKEY - pusherKey used
 * FILESTACK_SIGNATURE - the signature used by filestack
 * FILESTACK_POLICY - the policy used by filestack

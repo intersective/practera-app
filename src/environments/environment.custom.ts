@@ -2,8 +2,8 @@ import { FILESTACK } from './filestack';
 
 export const environment = {
   production: true,
-  appkey: 'b11e7c189b',
-  pusherKey: '255f010d210933ca7675',
+  appkey: '<CUSTOM_APPKEY>',
+  pusherKey: '<CUSTOM_PUSHERKEY>',
   env: '<CUSTOM_ENVIRONMENT>',
   APIEndpoint: '<CUSTOM_API_ENDPOINT>',
   graphQL: '<CUSTOM_GRAPH_QL>',  
