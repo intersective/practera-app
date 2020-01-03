@@ -5,3 +5,5 @@ while IFS='=' read -r name value ; do
         sed -i "s#<$name>#${!name}#g" angular.json
     fi
 done < <(env)
+
+cat src/environments/environment.custom.ts
