@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { AuthService } from '../../auth/auth.service';
 import { Injectable, Inject } from '@angular/core';
 import { SwitcherService, ProgramObj } from '../switcher.service';
 import { RouterEnter } from '@services/router-enter.service';
@@ -9,6 +8,7 @@ import { environment } from '@environments/environment';
 import { PusherService } from '@shared/pusher/pusher.service';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
 import { NotificationService } from '@shared/notification/notification.service';
+import { UtilsService } from '@services/utils.service';
 
 @Injectable({
   providedIn: 'root'
@@ -26,11 +26,11 @@ export class SwitcherProgramComponent implements OnInit {
   constructor(
     public loadingController: LoadingController,
     public router: Router,
-    private authService: AuthService,
     private pusherService: PusherService,
     private switcherService: SwitcherService,
     private newRelic: NewRelicService,
-    private notificationService: NotificationService
+    private notificationService: NotificationService,
+    private utils: UtilsService
   ) {}
 
   ngOnInit() {
@@ -50,35 +50,23 @@ export class SwitcherProgramComponent implements OnInit {
 
     await loading.present();
 
-    return this.switcherService.switchProgram(this.programs[index]).subscribe(
-      () => {
-        loading.dismiss().then(() => {
-          // reset pusher (upon new timelineId)
-          this.pusherService.initialise({ unsubscribe: true });
-          nrSwitchedProgramTracer();
-          if ((typeof environment.goMobile !== 'undefined' && environment.goMobile === false)
-            || /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
-            return this.router.navigate(['app', 'home']);
-          } else {
-            return this.router.navigate(['go-mobile']);
-          }
-        });
-      },
-      err => {
-        const toasted = this.notificationService.alert({
-          header: 'Error switching program',
-          message: err.msg || JSON.stringify(err)
-        });
-
+    this.switcherService.switchProgramAndNavigate(this.programs[index]).then(
+    (route) => {
+      loading.dismiss().then(() => {
         nrSwitchedProgramTracer();
-        this.newRelic.noticeError('switch program failed', JSON.stringify(err));
-        throw new Error(err);
-      }
-    );
-  }
+        this.router.navigate(route);
+      });
+    },
+    err => {
+      const toasted = this.notificationService.alert({
+        header: 'Error switching program',
+        message: err.msg || JSON.stringify(err)
+      });
 
-  logout() {
-    return this.authService.logout();
+      nrSwitchedProgramTracer();
+      this.newRelic.noticeError('switch program failed', JSON.stringify(err));
+      throw new Error(err);
+    });
   }
 
 }
