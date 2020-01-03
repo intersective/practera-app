@@ -15,7 +15,7 @@ export const environment = {
   // graphQL: 'http://127.0.0.1:8000/',
   intercomAppId: '',
   filestack: {
-    key: 'AO6F4C72uTPGRywaEijdLz',
+    key: FILESTACK.KEY,
     s3Config: {
       location: 's3',
       container: 'practera-aus',
