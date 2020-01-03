@@ -9,9 +9,12 @@
 
 Run `npm install` to install necessary packages
 
-Make a copy of the src/environments/filestack.ts.example to src/environments/filestack.ts and fill in the missing details.
+### Starting a development server calling the stage environment
+
 
 Run `npm run start` to start a development server on your local, and calling stage-test.practera.com for API
+
+### Starting a development server on the local environment
 
 Run `npm run local` to start a development server on your local, and calling 127.0.0.1:8080 for API
 
