@@ -8,19 +8,20 @@ import * as moment from 'moment';
 })
 export class SlidableComponent implements OnInit, OnChanges {
   @Input() notifications;
-  // Optional parameters to pass to the swiper instance. See http://idangero.us/swiper/api/ for valid options.
-  slideOpts = {
-    initialSlide: 0,
-    speed: 400,
-    slidesPerView: 1,
-    spaceBetween: 10,
-    // width: 300,
-    centeredSlides: true,
-  };
+  slideOpts: any;
 
   constructor() { }
 
   ngOnInit() {
+    // Optional parameters to pass to the swiper instance.
+    // See http://idangero.us/swiper/api/ for valid options.
+    this.slideOpts = {
+      centeredSlides: true,
+      initialSlide: 0,
+      slidesPerView: 1.18,
+      spaceBetween: 10,
+      speed: 400,
+    };
     this.notifications = this.reorder(this.notifications);
   }
 
