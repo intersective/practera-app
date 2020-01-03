@@ -1,5 +1,3 @@
-import { FILESTACK } from './filestack';
-
 export const environment = {
   production: true,
   appkey: 'b11e7c189b',
@@ -9,7 +7,7 @@ export const environment = {
   graphQL: 'https://kixs5acl6j.execute-api.ap-southeast-2.amazonaws.com/sandbox/',
   intercomAppId: 'pef1lmo8',
   filestack: {
-    key: FILESTACK.KEY,
+    key: 'AO6F4C72uTPGRywaEijdLz',
     s3Config: {
       location: 's3',
       container: 'practera-aus',
@@ -20,13 +18,13 @@ export const environment = {
         video: '/appv2/stage/video/upload/'
       },
       workflows: [
-        FILESTACK.VIRUS_DETECTION,
+        '3c38ef53-a9d0-4aa4-9234-617d9f03c0de',
       ],
     },
-    policy: FILESTACK.POLICY,
-    signature: FILESTACK.SIGNATURE,
+    policy: '<CUSTOM_FILESTACK_POLICY>',
+    signature: '<CUSTOM_FILESTACK_SIGNATURE>',
     workflows: {
-      virusDetection: FILESTACK.VIRUS_DETECTION,
+      virusDetection: '3c38ef53-a9d0-4aa4-9234-617d9f03c0de',
     },
   },
   defaultCountryModel: 'AUS',
