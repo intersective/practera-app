@@ -7,7 +7,7 @@ export const environment = {
   env: '<CUSTOM_ENVIRONMENT>',
   APIEndpoint: '<CUSTOM_API_ENDPOINT>',
   graphQL: '<CUSTOM_GRAPH_QL>',  
-  intercomAppId: 'pef1lmo8',
+  intercomAppId: '<CUSTOM_INTERCOM>',
   filestack: {
     key: 'AO6F4C72uTPGRywaEijdLz',
     s3Config: {
