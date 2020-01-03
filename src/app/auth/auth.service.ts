@@ -117,7 +117,7 @@ export class AuthService {
     this.storage.setUser({apikey: norm.apikey});
     this.storage.set('programs', norm.programs);
     this.storage.set('isLoggedIn', true);
-    return response;
+    return norm;
   }
 
   private _normaliseAuth(rawData): any {
