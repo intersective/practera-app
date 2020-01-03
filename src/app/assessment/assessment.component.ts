@@ -355,7 +355,7 @@ export class AssessmentComponent extends RouterEnter {
     });
 
     if (!this.utils.isEmpty(required)) {
-      const answered = {}
+      const answered = {};
       answers.map(answer => {
         answered[answer.assessment_question_id] = answer;
       });
@@ -585,7 +585,7 @@ export class AssessmentComponent extends RouterEnter {
     }
 
     // save the submission/feedback
-    /*this.assessmentService.saveAnswers(
+    this.assessmentService.saveAnswers(
       assessment,
       answers,
       this.action,
@@ -634,7 +634,6 @@ export class AssessmentComponent extends RouterEnter {
     }
     // if timeout, reset this.saving flag to false, to enable saving again
     setTimeout(() => this.saving = false, SAVE_PROGRESS_TIMEOUT);
-    */
   }
 
   // mark review as read
