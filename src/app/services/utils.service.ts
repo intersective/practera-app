@@ -30,9 +30,14 @@ export class UtilsService {
     }
   }
 
+  /**
+   * check if a value is empty
+   * @param  {any}     value
+   * @return {boolean}       true: when empty string/object/array, otherwise false
+   */
   isEmpty(value: any): boolean {
-    if (typeof value === "number") {
-      return true;
+    if (typeof value === 'number') {
+      return false;
     }
 
     return this.lodash.isEmpty(value);
