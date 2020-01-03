@@ -6,6 +6,9 @@ import { Validators, FormGroup, FormControl } from '@angular/forms';
 import { NotificationService } from '@shared/notification/notification.service';
 import { UtilsService } from '@services/utils.service';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
+import { SwitcherService } from '../../switcher/switcher.service';
+import { PusherService } from '@shared/pusher/pusher.service';
+import { environment } from '@environments/environment';
 
 @Component({
   selector: 'app-auth-login',
@@ -24,7 +27,9 @@ export class AuthLoginComponent implements OnInit {
     private authService: AuthService,
     private notificationService: NotificationService,
     private utils: UtilsService,
-    private newRelic: NewRelicService
+    private newRelic: NewRelicService,
+    private switcherService: SwitcherService,
+    private pusherService: PusherService,
   ) {}
 
   ngOnInit() {
@@ -60,8 +65,7 @@ export class AuthLoginComponent implements OnInit {
       res => {
         nrLoginTracer('login successful');
         this.newRelic.actionText('login successful');
-        this.isLoggingIn = false;
-        return this.router.navigate(['switcher']);
+        return this._handleNavigation(res.programs);
       },
       err => {
         nrLoginTracer(JSON.stringify(err));
@@ -101,5 +105,11 @@ export class AuthLoginComponent implements OnInit {
         });
       }
     );
+  }
+
+  private async _handleNavigation(programs) {
+    const route = await this.switcherService.switchProgramAndNavigate(programs);
+    this.isLoggingIn = false;
+    return this.router.navigate(route);
   }
 }
