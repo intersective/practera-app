@@ -16,15 +16,19 @@ const api = {
   projectOverview: 'api/v2/plans/project/overview',
 };
 
+export interface Activity {
+  id: number;
+  name: string;
+  description?: string;
+  tasks: Array<Task>;
+}
+
 export interface Task {
   id: number;
   type: string;
   name: string;
   status?: string;
-  progress?: number;
   contextId?: number;
-  feedbackReviewed?: boolean;
-  loadingStatus?: boolean;
   isForTeam?: boolean;
   dueDate?: string;
   isOverdue?: boolean;
@@ -34,13 +38,6 @@ export interface Task {
     name: string;
     image: string;
   };
-}
-
-export interface Activity {
-  id: number;
-  name: string;
-  description?: string;
-  tasks: Array<Task>;
 }
 
 export interface OverviewTask {
@@ -92,6 +89,74 @@ export class ActivityService {
     private request: RequestService,
     private utils: UtilsService,
   ) {}
+
+  // request for the latest data, and return the previously saved data at the same time
+  public getActivity(id) {
+    this._getActivityData(id).subscribe(res => this.utils.updateActivityCache(id, res));
+    return this.utils.getActivityCache(id);
+  }
+
+  // request for the latest project data
+  private _getActivityData(id) {
+    return this.request.postGraphQL(
+      `"{` +
+        `activity(id:${id}){` +
+          `id name description tasks{` +
+            `id name type is_locked is_team deadline context_id status{` +
+              `status is_locked submitter_name submitter_image` +
+            `}` +
+          `}` +
+        `}` +
+      `}"`)
+      .pipe(map(res => this._normaliseActivity(res.data)));
+  }
+
+  private _normaliseActivity(data): Activity {
+    data.activity.tasks = data.activity.tasks.map(task => {
+      if (task.is_locked) {
+        return {
+          id: 0,
+          type: 'Locked',
+          name: 'Locked'
+        };
+      }
+      switch (task.type) {
+        case 'topic':
+          return {
+            id: task.id,
+            name: task.name,
+            type: 'Topic',
+            status: task.status.status
+          };
+
+        case 'assessment':
+          return {
+            id: task.id,
+            name: task.name,
+            type: 'Assessment',
+            contextId: task.context_id,
+            isForTeam: task.is_team,
+            dueDate: task.deadline,
+            isOverdue: task.deadline ? this.utils.timeComparer(task.deadline) < 0 : false,
+            isDueToday: task.deadline ? this.utils.timeComparer(task.deadline, undefined, true) === 0 : false,
+            status: task.status.status === 'pending approval' ? 'pending review' : task.status.status,
+            isLocked: task.status.is_locked,
+            submitter: {
+              name: task.status.submitter_name,
+              image: task.status.submitter_image
+            }
+          };
+        default:
+          console.warn(`Unsupported model type ${task.type}`);
+          return {
+            id: task.id,
+            name: task.name,
+            type: task.type
+          };
+      }
+    });
+    return data.activity;
+  }
 
   /**
    * loop through all milestone in current project
@@ -173,20 +238,6 @@ export class ActivityService {
     }
 
     return nextMilestone;
-  }
-
-  /**
-   * this function has a little similarity to `getTasksByActivityId`.
-   * The objective of getTaskStatusesForActivity, step by order:
-   * 1) pull latest project overview API response
-   * 2) evaluate by tasks completion status of current activity
-   * 3) determine next incompleted task or indicate
-   */
-  async getCurrentActivityStatus(projectId: number, activityId: number) {
-    const overview = await this.getOverview(projectId).toPromise();
-    const { currentActivity } = this.getCurrentActivity(overview.Milestones, activityId);
-
-    return currentActivity;
   }
 
   private _normaliseOverview(rawResponse: Overview): Overview {
@@ -301,75 +352,6 @@ export class ActivityService {
     };
   }
 
-  /**
-   * get actuvity from API response, and inject proper statuses to each of the activity.
-   * @param  {number}          id activityId
-   * @return {Observable<any>}
-   */
-  getActivity(id: number): Observable<any> {
-    return this.request.get(api.activity, {params: {id: id}})
-      .pipe(map(response => {
-        if (response.success && response.data) {
-          return this._normaliseActivity(response.data);
-        }
-      })
-    );
-  }
-
-  private _extractTasks(thisActivity) {
-    const contextIds = this.getContextAssessment(thisActivity);
-
-    const tasks = thisActivity.ActivitySequence.map(sequence => {
-      if (this.utils.has(sequence, 'is_locked') && sequence.is_locked) {
-        return {
-          id: 0,
-          type: 'Locked',
-          name: 'Locked',
-          loadingStatus: false
-        };
-      }
-
-      if (!this.utils.has(sequence, 'model') || !this.utils.has(sequence, sequence.model)) {
-        this.request.apiResponseFormatError('Activity.ActivitySequence format error');
-        return {};
-        // throw new Error('Activity.ActivitySequence format error');
-      }
-
-      switch (sequence.model) {
-        case 'Story.Comm':
-        case 'Story.Topic':
-          return {
-            id: sequence[sequence.model].id,
-            name: sequence[sequence.model].title,
-            type: 'Topic',
-            loadingStatus: true
-          };
-
-        case 'Assess.Assessment':
-          return {
-            id: sequence[sequence.model].id,
-            name: sequence[sequence.model].name,
-            type: 'Assessment',
-            contextId: contextIds[sequence[sequence.model].id] || 0,
-            loadingStatus: true,
-            isForTeam: sequence[sequence.model].is_team,
-            dueDate: sequence[sequence.model].deadline,
-            isOverdue: sequence[sequence.model].deadline ? this.utils.timeComparer(sequence[sequence.model].deadline) < 0 : false,
-            isDueToday: sequence[sequence.model].deadline ? this.utils.timeComparer(sequence[sequence.model].deadline, undefined, true) === 0 : false,
-          };
-        default:
-          console.warn(`Unsupported model type ${sequence.model}`);
-          return {
-            id: sequence[sequence.model].id,
-            name: sequence[sequence.model].title,
-            type: sequence.model,
-            loadingStatus: true
-          };
-      }
-    });
-    return tasks;
-  }
-
   public _normaliseOverviewTasks(tasks: OverviewTask[]) {
     const result = tasks.map(task => {
       if (task.is_locked) {
@@ -405,130 +387,6 @@ export class ActivityService {
       }
     });
     return result;
-  }
-
-  private getContextAssessment(thisActivity) {
-    const contextIds = {};
-    thisActivity.References.forEach(element => {
-      if (!this.utils.has(element, 'Assessment.id') || !this.utils.has(element, 'context_id')) {
-        return this.request.apiResponseFormatError('Activity.References format error');
-      }
-      contextIds[element.Assessment.id] = element.context_id;
-    });
-    return contextIds;
-  }
-
-  private _normaliseActivity(data: any) {
-    // In API response, 'data' is an array of activities
-    // (since we passed activity id, it will return only one activity, but still in array format).
-    // That's why we use data[0]
-    const thisActivity = data[0];
-
-    if (!Array.isArray(data) || !this.utils.has(thisActivity, 'Activity') || !this.utils.has(thisActivity, 'ActivitySequence') || !this.utils.has(thisActivity, 'References')) {
-      return this.request.apiResponseFormatError('Activity format error');
-    }
-
-    const activity: Activity = {
-      id: 0,
-      name: '',
-      description: '',
-      tasks: []
-    };
-    activity.id = thisActivity.Activity.id;
-    activity.name = thisActivity.Activity.name;
-    activity.description = thisActivity.Activity.description;
-
-    activity.tasks = this._extractTasks(thisActivity);
-    return activity;
-  }
-
-  /**
-   * get and inject progress value (from 0 to 1) for each task
-   * @param  {Activity}        activity object
-   * @param  {object}          options model & model_id & scope
-   * @return {Observable<any>}
-   */
-  getTasksProgress(options: {
-    model_id: number; // model id
-    model?: string;
-    scope?: string;
-    tasks?: Task[];
-  }): Observable<any> {
-    const params = {
-      model_id: options.model_id,
-      model: options.model || 'Activity',
-      scope: options.scope || 'Task',
-    };
-
-    return this.request.get(api.progress, { params })
-      .pipe(map(response => {
-        if (response.success && response.data) {
-          if (options.tasks) {
-            return this._normaliseTasksProgress(response.data, options.tasks);
-          }
-
-          return response;
-        }
-      })
-    );
-  }
-
-  private _normaliseTasksProgress(data: any, tasks: Array<Task>): Task[] | void {
-    if (!this.utils.has(data, 'Activity.Topic') && !this.utils.has(data, 'Activity.Assessment')) {
-      return this.request.apiResponseFormatError('Progress.Activity format error');
-    }
-
-    const topicProgresses = {};
-    const assessmentProgresses = {};
-    if (this.utils.has(data, 'Activity.Topic')) {
-      data.Activity.Topic.forEach(topic => {
-        if (!this.utils.has(topic, 'id') || !this.utils.has(topic, 'progress')) {
-          return this.request.apiResponseFormatError('Progress.Activity.Topic format error');
-        }
-        topicProgresses[topic.id] = topic.progress;
-      });
-    }
-
-    if (this.utils.has(data, 'Activity.Assessment')) {
-      data.Activity.Assessment.forEach(assessment => {
-        if (!this.utils.has(assessment, 'id') || !this.utils.has(assessment, 'progress')) {
-          return this.request.apiResponseFormatError('Progress.Activity.Assessment format error');
-        }
-        assessmentProgresses[assessment.id] = assessment.progress;
-      });
-    }
-
-    tasks.forEach((task, index) => {
-      switch (task.type) {
-        case 'Topic':
-          tasks[index].progress = topicProgresses[task.id] || 0;
-          tasks[index].status = '';
-          tasks[index].loadingStatus = false;
-
-          if (tasks[index].progress === 1) {
-            tasks[index].status = 'done';
-          }
-          break;
-        case 'Assessment':
-          tasks[index].progress = assessmentProgresses[task.id] || 0;
-          break;
-      }
-    });
-    return tasks;
-  }
-
-  getAssessmentStatus(task: Task): Observable<any> {
-    return this.request.get(api.submissions, {
-        params: {
-          assessment_id: task.id,
-          context_id: task.contextId
-        }
-      })
-      .pipe(map(response => {
-        if (response.success && response.data) {
-          return this._normaliseAssessmentStatus(response.data, task);
-        }
-      }));
   }
 
   // when not done (empty status/feedback available/)
@@ -584,63 +442,6 @@ export class ActivityService {
       return !this.isTaskCompleted(task);
     });
     return prioritisedTasks[0];
-  }
-
-  private _normaliseAssessmentStatus(data: any, task: Task) {
-    if (this.utils.isEmpty(data)) {
-      task.status = '';
-      task.loadingStatus = false;
-      return task;
-    }
-    // In API response, 'data' is an array of submissions,
-    // but we only support one submission per assessment now.
-    // That's why we use data[0] - the first submission
-    const thisSubmission = data[0];
-    if (!Array.isArray(data) || !this.utils.has(thisSubmission, 'AssessmentSubmission') || !this.utils.has(thisSubmission, 'Submitter')) {
-      return this.request.apiResponseFormatError('Submission format error');
-    }
-
-    // getting submitter name, image and lock or unlock for team assessment.
-    task.isLocked = thisSubmission.AssessmentSubmission.is_locked;
-    task.submitter = {
-      name : thisSubmission.Submitter.name,
-      image : thisSubmission.Submitter.image
-    };
-
-    // standardize and restrict statuses into 3 main categorises
-    // eg. (pending review / feedback available / done)
-    switch (thisSubmission.AssessmentSubmission.status) {
-      case 'pending approval':
-      case 'pending review':
-        task.status = 'pending review';
-        break;
-
-      case 'published':
-        // default
-        task.status = 'feedback available';
-        task.feedbackReviewed = false;
-
-        if (task.progress === 1) {
-          task.status = 'done';
-          task.feedbackReviewed = true;
-        }
-        break;
-
-      case 'done':
-        task.status = 'done';
-        break;
-
-      default:
-        // Potential status: '' (empty string) / 'in progress'
-        task.status = thisSubmission.AssessmentSubmission.status;
-
-        if (['', 'in progress'].indexOf(task.status) === -1) {
-          console.warn(`Potential incompatible assessment status: ${thisSubmission.AssessmentSubmission.status}`);
-        }
-        break;
-    }
-    task.loadingStatus = false;
-    return task;
   }
 
   /**
