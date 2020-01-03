@@ -308,13 +308,11 @@ export class TopicComponent extends RouterEnter {
             this.newRelic.addPageAction('Mark as read before back');
             return this.markAsDone().subscribe(
               () => {
-                return this.notificationService.presentToast({
-                  message: 'You\'ve completed the topic!'
-                }).then(() => this.navigate([
+                return this.navigate([
                   'app',
                   'activity',
                   this.activityId,
-                ]));
+                ]);
               },
               err => {
                 this.newRelic.noticeError(`${JSON.stringify(err)}`);
