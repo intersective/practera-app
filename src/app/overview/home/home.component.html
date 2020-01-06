@@ -9,12 +9,15 @@
     <ion-item lines="none" color="transparent">
       <ion-label color="medium">Notifications</ion-label>
     </ion-item>
-    <ng-container *ngIf="loadingTodoItems; else doneLoading">
-      <app-todo-card [loading]="true" [todoItem]="false"></app-todo-card>
+
+    <ng-container @newLoaded *ngIf="loadingTodoItems; else doneLoading">
+      <div style="margin: 0 2em;">
+        <app-todo-card [loading]="true" [todoItem]="false"></app-todo-card>
+      </div>
     </ng-container>
 
     <ng-template #doneLoading>
-      <ng-container *ngIf="(eventReminders || []).concat(todoItems) as notices">
+      <ng-container @newLoaded *ngIf="(eventReminders || []).concat(todoItems) as notices">
         <app-slidable
           *ngIf="notices.length > 0; else noItemsTpl"
           [notifications]="notices"
