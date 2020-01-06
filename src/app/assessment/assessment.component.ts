@@ -345,27 +345,20 @@ export class AssessmentComponent extends RouterEnter {
    */
   compulsoryQuestionsAnswered(answers): object[] {
     const missing = [];
-    const required = {};
+    const answered = {};
+    this.utils.each(answers, answer => {
+      answered[answer.assessment_question_id] = answer;
+    });
+
     this.assessment.groups.forEach(group => {
       group.questions.forEach(question => {
         if (question.isRequired) {
-          required[question.id] = question;
+          if (this.utils.isEmpty(answered[question.id]) || this.utils.isEmpty(answered[question.id].answer)) {
+            missing.push(question);
+          }
         }
       });
     });
-
-    if (!this.utils.isEmpty(required)) {
-      const answered = {};
-      answers.map(answer => {
-        answered[answer.assessment_question_id] = answer;
-      });
-
-      this.utils.each(required, question => {
-        if (this.utils.isEmpty(answered[question.id]) || this.utils.isEmpty(answered[question.id].answer)) {
-          missing.push(question);
-        }
-      });
-    }
 
     return missing;
   }
