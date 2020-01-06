@@ -10,8 +10,8 @@
       <ion-label color="medium">Notifications</ion-label>
     </ion-item>
 
-    <ng-container @newLoaded *ngIf="loadingTodoItems; else doneLoading">
-      <div style="margin: 0 2em;">
+    <ng-container *ngIf="loadingTodoItems; else doneLoading">
+      <div class="margin-left-right">
         <app-todo-card [loading]="true" [todoItem]="false"></app-todo-card>
       </div>
     </ng-container>
@@ -19,9 +19,16 @@
     <ng-template #doneLoading>
       <ng-container @newLoaded *ngIf="(eventReminders || []).concat(todoItems) as notices">
         <app-slidable
-          *ngIf="notices.length > 0; else noItemsTpl"
+          *ngIf="notices.length > 0; else noNotices"
           [notifications]="notices"
+          (goto)="goToAssessments($event)"
         ></app-slidable>
+
+        <ng-template #noNotices>
+          <div class="margin-left-right">
+            <ng-container *ngTemplateOutlet="noItemsTpl"></ng-container>
+          </div>
+        </ng-template>
       </ng-container>
     </ng-template>
   </ng-container>
@@ -70,28 +77,10 @@
 
   <ng-container *ngIf="todoItems.length; else noItemsTpl">
     <div *ngFor="let todoItem of todoItems" @newLoaded>
-      <ng-container [ngSwitch]="todoItem.type">
-        <app-todo-card
-          *ngSwitchCase="'feedback_available'"
-          [todoItem]="todoItem"
-          (click)="goToAssessment(todoItem.meta.activity_id, todoItem.meta.context_id, todoItem.meta.assessment_id)"
-        ></app-todo-card>
-        <app-todo-card
-          *ngSwitchCase="'review_submission'"
-          [todoItem]="todoItem"
-          (click)="goToReview(todoItem.meta.context_id, todoItem.meta.assessment_id, todoItem.meta.assessment_submission_id)"
-        ></app-todo-card>
-        <app-todo-card
-          *ngSwitchCase="'chat'"
-          [todoItem]="todoItem"
-          (click)="goToChat(todoItem)"
-        ></app-todo-card>
-        <app-todo-card
-          *ngSwitchCase="'assessment_submission_reminder'"
-          [todoItem]="todoItem"
-          (click)="goToAssessment(todoItem.meta.activity_id, todoItem.meta.context_id, todoItem.meta.assessment_id)"
-        ></app-todo-card>
-      </ng-container>
+      <app-todo-card
+        [todoItem]="todoItem"
+        (click)="goToAssessments(todoItem)"
+      ></app-todo-card>
     </div>
   </ng-container>
 
