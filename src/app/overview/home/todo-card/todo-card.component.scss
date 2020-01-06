@@ -1,10 +1,14 @@
-.icon-item {
-  .todo-card-title, .todo-card-subtitle {
-    font-weight: normal;
-  }
-}
-
 .todo-card {
+  ion-icon {
+    margin-right: 16px;
+  }
+
+  .icon-item {
+    .todo-card-title, .todo-card-subtitle {
+      font-weight: normal;
+    }
+  }
+
   border: .5px solid #d8dbeb;
   overflow: hidden;
   white-space: nowrap;
