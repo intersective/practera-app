@@ -1,5 +1,5 @@
 <ion-slides pager="true" [options]="slideOpts">
   <ion-slide *ngFor="let notice of notifications">
-    <app-todo-card [todoItem]="notice"></app-todo-card>
+    <app-todo-card [todoItem]="notice" [ngStyle]="{width: '100%'}"></app-todo-card>
   </ion-slide>
 </ion-slides>
