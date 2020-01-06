@@ -50,12 +50,12 @@
               slot="start" ></ion-icon>
           </ng-container>
           <div class="icon-item">
-            <h4>{{ task.name }}</h4>
+            <h4 class="task-name">{{ task.name }}</h4>
             <p *ngIf="task.type === 'Assessment' && (!task.status || task.status === '' || task.status === 'in progress')" [class]="task.isOverdue ? 'due-date over' : 'due-date'">
               {{ this.sharedService.dueDateFormatter(task.dueDate) }}
             </p>
             <p>
-              <ion-text *ngIf="task.type != 'Locked'" [color]="task.status == 'feedback available' ? 'primary' : 'medium'">
+              <ion-text *ngIf="task.type != 'Locked'" [color]="task.status == 'feedback available' ? 'primary' : 'medium'" class="task-type-status">
                 {{ task.type }}
                 <ng-container *ngIf="task.isLocked; else status"> - Locked by {{task.submitter.name}}</ng-container>
                 <ng-template #status>{{ task.status }}</ng-template>
