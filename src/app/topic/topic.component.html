@@ -1,7 +1,7 @@
 <ion-header mode="ios">
   <ion-toolbar [ngClass]="{'ion-toolbar-absolute': !utils.isMobile()}">
     <ion-buttons slot="start" *ngIf="utils.isMobile()">
-      <ion-button (click)="back()">
+      <ion-button (click)="back()" id="btn-back">
         <ion-icon class="icon-backward" name="arrow-back" (click)="back()" color="primary" slot="icon-only" margin-start></ion-icon>
       </ion-button>
     </ion-buttons>
