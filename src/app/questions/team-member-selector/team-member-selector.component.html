@@ -33,7 +33,7 @@
 <ng-container *ngIf="doAssessment">
   <ion-list class="no-bg">
     <ion-radio-group [value]="submission.answer" #answerEle (ionChange)="onChange(answerEle.value)">
-      <ion-item *ngFor="let teamMember of question.teamMembers;let i = index" [lines]="i == question.teamMembers.length - 1 ? 'none' : ''">
+      <ion-item class="choice-item" *ngFor="let teamMember of question.teamMembers;let i = index" [lines]="i == question.teamMembers.length - 1 ? 'none' : ''">
         <ion-label class="white-space-normal">{{ teamMember.userName }}</ion-label>
         <ion-radio [value]="teamMember.key" mode="md"></ion-radio>
       </ion-item>
@@ -47,7 +47,7 @@
       <ion-list-header>
         <ion-label>Your Answer is</ion-label>
       </ion-list-header>
-      <ion-item *ngFor="let teamMember of question.teamMembers;let i = index" [lines]="i == question.teamMembers.length - 1 ? 'none' : ''">
+      <ion-item class="choice-item" *ngFor="let teamMember of question.teamMembers;let i = index" [lines]="i == question.teamMembers.length - 1 ? 'none' : ''">
         <ion-label class="white-space-normal">{{ teamMember.userName }}</ion-label>
         <ion-radio [value]="teamMember.key" mode="md"></ion-radio>
       </ion-item>
