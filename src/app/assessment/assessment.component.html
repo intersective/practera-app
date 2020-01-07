@@ -1,7 +1,7 @@
 <ion-header mode="ios">
   <ion-toolbar [ngClass]="{'ion-toolbar-absolute': !utils.isMobile()}">
     <ion-buttons slot="start" *ngIf="utils.isMobile()">
-      <ion-button (click)="back()">
+      <ion-button (click)="back()" id="btn-back">
         <ion-icon class="icon-backward" name="arrow-back" color="primary" slot="icon-only" margin-start></ion-icon>
       </ion-button>
     </ion-buttons>
@@ -22,7 +22,7 @@
 }">
   <h1>{{ assessment.name }}</h1>
   <ion-text color="medium" text-left>
-    <app-description *ngIf="assessment.description" [content]="assessment.description"></app-description>
+    <app-description *ngIf="assessment.description" [content]="assessment.description" id="asmt-des"></app-description>
   </ion-text>
   <p [class]="assessment.isOverdue ? 'due-date assessment over' : 'due-date assessment'" *ngIf="doAssessment" text-center>
     {{ this.sharedService.dueDateFormatter(assessment.dueDate) }}
@@ -60,7 +60,7 @@
         <app-description class="g-description" *ngIf="group.description" [content]="group.description"></app-description>
       </ion-text>
       <ng-container *ngFor="let question of group.questions">
-        <ion-card class="practera-card" text-left>
+        <ion-card class="practera-card question-card" text-left>
           <ion-card-header class="q-title">
             {{ question.name }}
             <ion-text class="required-indicator" color="danger" *ngIf="question.isRequired">*</ion-text>
