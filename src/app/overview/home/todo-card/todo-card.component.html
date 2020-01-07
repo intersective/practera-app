@@ -16,8 +16,7 @@
           <p class="todo-card-subtitle">{{todoItem.description}}</p>
         </ion-text>
       </div>
-      <ion-text color="medium" class="time-stamp">{{todoItem.time}}</ion-text>
-      <ion-icon class="ending-arrow" name="arrow-forward" color="primary" slot="end"></ion-icon>
+      <ion-text color="medium" class="time-stamp" slot="end">{{todoItem.time}}</ion-text>
     </ng-container>
 
     <ng-template #noOrLoading>

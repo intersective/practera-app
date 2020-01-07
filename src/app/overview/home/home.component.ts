@@ -175,6 +175,23 @@ export class HomeComponent implements OnDestroy, OnInit {
     this.router.navigate(destination);
   }
 
+  clickTodoItem(eventOrTodoItem) {
+    switch (eventOrTodoItem.type) {
+      case 'feedback_available':
+        return this.goToAssessment(eventOrTodoItem.meta.activity_id, eventOrTodoItem.meta.context_id, eventOrTodoItem.meta.assessment_id);
+      case 'review_submission':
+        return this.goToReview(eventOrTodoItem.meta.context_id, eventOrTodoItem.meta.assessment_id, eventOrTodoItem.meta.assessment_submission_id);
+      case 'chat':
+        return this.goToChat(eventOrTodoItem);
+      case 'assessment_submission_reminder':
+        return this.goToAssessment(eventOrTodoItem.meta.activity_id, eventOrTodoItem.meta.context_id, eventOrTodoItem.meta.assessment_id);
+
+      default: // event doesnt has type
+        this.showEventDetail(eventOrTodoItem);
+        break;
+    }
+  }
+
   goToAssessment(activityId, contextId, assessmentId) {
     this.newRelic.actionText('goToAssessment');
     if (this.utils.isMobile()) {
