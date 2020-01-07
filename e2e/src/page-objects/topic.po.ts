@@ -5,7 +5,7 @@ export class TopicPage extends AppPage {
   parent = $('app-topic');
   title = this.parent.$('h3');
   content = this.parent.$('ion-card-content');
-  btnBack = this.parent.$('ion-button.btn-back');
+  btnBack = this.parent.$('ion-button#btn-back');
   btnContinue = this.parent.$('ion-button.btn-cta');
 
   getTopicName() {
