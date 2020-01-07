@@ -21,7 +21,7 @@
         <app-slidable
           *ngIf="notices.length > 0; else noNotices"
           [notifications]="notices"
-          (goto)="goToAssessments($event)"
+          (goto)="clickTodoItem($event)"
         ></app-slidable>
 
         <ng-template #noNotices>
@@ -79,7 +79,7 @@
     <div *ngFor="let todoItem of todoItems" @newLoaded>
       <app-todo-card
         [todoItem]="todoItem"
-        (click)="goToAssessments(todoItem)"
+        (click)="clickTodoItem(todoItem)"
       ></app-todo-card>
     </div>
   </ng-container>
