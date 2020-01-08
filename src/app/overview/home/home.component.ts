@@ -1,7 +1,6 @@
 import { Component, OnDestroy, OnInit, Input } from '@angular/core';
 import { HomeService, TodoItem } from './home.service';
-import { Router, NavigationEnd, ActivatedRoute } from '@angular/router';
-import { Activity } from '../project/project.service';
+import { Router, NavigationEnd } from '@angular/router';
 import { UtilsService } from '@services/utils.service';
 import { BrowserStorageService } from '@services/storage.service';
 import { Achievement, AchievementsService } from '@app/achievements/achievements.service';
@@ -35,8 +34,6 @@ export class HomeComponent implements OnDestroy, OnInit {
   todoItems: Array<TodoItem> = [];
   eventReminders: Array<Event> = [];
   loadingTodoItems = true;
-  activity: Activity;
-  loadingActivity = true;
   subscriptions: Subscription[] = [];
   achievements: Array<Achievement>;
   progressConfig: any;
@@ -48,7 +45,6 @@ export class HomeComponent implements OnDestroy, OnInit {
     public utils: UtilsService,
     public storage: BrowserStorageService,
     public achievementService: AchievementsService,
-    private route: ActivatedRoute,
     private eventsService: EventListService,
     private newRelic: NewRelicService
   ) {
@@ -75,13 +71,16 @@ export class HomeComponent implements OnDestroy, OnInit {
       });
     });
     if (role !== 'mentor') {
-      this.utils.getEvent('team-no-mentor-message').subscribe(event => {
-        this.homeService.getChatMessage().subscribe(chatMessage => {
-          if (!this.utils.isEmpty(chatMessage)) {
-            this._addChatTodoItem(chatMessage);
-          }
+      const noMentorMsgEvent = this.utils.getEvent('team-no-mentor-message');
+      if (noMentorMsgEvent) {
+        noMentorMsgEvent.subscribe(event => {
+          this.homeService.getChatMessage().subscribe(chatMessage => {
+            if (!this.utils.isEmpty(chatMessage)) {
+              this._addChatTodoItem(chatMessage);
+            }
+          });
         });
-      });
+      }
     }
   }
 
@@ -96,7 +95,6 @@ export class HomeComponent implements OnDestroy, OnInit {
     this.eventReminders = [];
     this.loadingTodoItems = true;
     this.loadingProgress = true;
-    this.loadingActivity = true;
     this.achievements = [];
   }
 
