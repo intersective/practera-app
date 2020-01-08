@@ -6,14 +6,15 @@ import { UtilsService } from '@services/utils.service';
 import { ActivatedRouteStub } from '@testing/activated-route-stub';
 import { TestUtils } from '@testing/utils';
 import { MockRouter } from '@testing/mocked.service';
-import { Router, ActivatedRoute } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { Observable, of, pipe } from 'rxjs';
+import { BrowserStorageService } from '@services/storage.service';
 
 describe('OverviewRoutingComponent', () => {
+  const PROGRAM_NAME = 'Dummy Program name';
 
   let component: OverviewRoutingComponent;
   let fixture: ComponentFixture<OverviewRoutingComponent>;
-  let routerSpy: jasmine.SpyObj<Router>;
   let routeStub: ActivatedRouteStub;
   let utils: UtilsService;
   let fastfeedbackSpy: jasmine.SpyObj<FastFeedbackService>;
@@ -26,12 +27,22 @@ describe('OverviewRoutingComponent', () => {
       providers: [
         UtilsService,
         {
+          provide: BrowserStorageService,
+          useValue: jasmine.createSpyObj('BrowserStorageService', {
+            getUser: {
+              programName: PROGRAM_NAME,
+            }
+          })
+        },
+        {
           provide: ActivatedRoute,
           useValue: new ActivatedRouteStub({ activityId: 1 })
         },
         {
           provide: FastFeedbackService,
-          useValue: jasmine.createSpyObj('FastFeedbackService', ['pullFastFeedback'])
+          useValue: jasmine.createSpyObj('FastFeedbackService', {
+            pullFastFeedback: of(true)
+          })
         },
       ]
     });
@@ -40,8 +51,21 @@ describe('OverviewRoutingComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(OverviewRoutingComponent);
     component = fixture.componentInstance;
-    routerSpy = TestBed.get(Router);
     routeStub = TestBed.get(ActivatedRoute);
     utils = TestBed.get(UtilsService);
+    fastfeedbackSpy = TestBed.get(FastFeedbackService);
+  });
+
+  it('should be created', () => {
+    expect(component).toBeTruthy();
+  });
+
+  describe('ngOnInit', () => {
+    it('should get program name and pull fastfeedback', () => {
+      component.ngOnInit();
+
+      expect(component.programName).toEqual(PROGRAM_NAME);
+      expect(fastfeedbackSpy.pullFastFeedback).toHaveBeenCalled();
+    });
   });
 });
