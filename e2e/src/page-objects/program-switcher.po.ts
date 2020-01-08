@@ -4,7 +4,7 @@ import { AppPage } from './app.po';
 export class ProgramSwitcherPage extends AppPage {
   parent = $('app-switcher-program');
   row = this.parent.$(`ion-row`);
-  programCards = this.row.$$('ion-col')
+  programCards = this.row.$$('ion-col');
   firstCard = this.row.$$('ion-col').get(0).$('ion-card');
 
   clickFirstCard() {
