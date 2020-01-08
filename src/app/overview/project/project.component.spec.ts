@@ -12,7 +12,7 @@ import { TestUtils } from '@testing/utils';
 import { DOCUMENT } from '@angular/common';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { FastFeedbackService } from '../../fast-feedback/fast-feedback.service';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
 import { MockRouter } from '@testing/mocked.service';
 
@@ -45,7 +45,7 @@ class Page {
 
 class MockDocument {}
 
-xdescribe('ProjectComponent', () => {
+describe('ProjectComponent', () => {
   let component: ProjectComponent;
   let fixture: ComponentFixture<ProjectComponent>;
   let page: Page;
@@ -54,11 +54,14 @@ xdescribe('ProjectComponent', () => {
   let routeStub: ActivatedRouteStub;
   let utils: UtilsService;
   let homeSpy: jasmine.SpyObj<HomeService>;
-  let fastfeedbackSpy: jasmine.SpyObj<FastFeedbackService>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [SharedModule, HttpClientTestingModule, BrowserAnimationsModule],
+      imports: [
+        SharedModule,
+        HttpClientTestingModule,
+        NoopAnimationsModule
+      ],
       declarations: [ ProjectComponent ],
       schemas: [ CUSTOM_ELEMENTS_SCHEMA ],
       providers: [
@@ -75,10 +78,6 @@ xdescribe('ProjectComponent', () => {
         {
           provide: HomeService,
           useValue: jasmine.createSpyObj('HomeService', ['getProgramName'])
-        },
-        {
-          provide: FastFeedbackService,
-          useValue: jasmine.createSpyObj('FastFeedbackService', ['pullFastFeedback'])
         },
         {
           provide: Router,
@@ -125,10 +124,9 @@ xdescribe('ProjectComponent', () => {
     routeStub = TestBed.get(ActivatedRoute);
     utils = TestBed.get(UtilsService);
     homeSpy = TestBed.get(HomeService);
-    fastfeedbackSpy = TestBed.get(FastFeedbackService);
     // homeSpy.getProgramName.and.returnValue(of('program name'));
-    fastfeedbackSpy.pullFastFeedback.and.returnValue(of({}));
     projectSpy.getProject.and.returnValue(of(milestones));
+    component.refresh = of(true);
   });
 
   it('should create', () => {
@@ -139,7 +137,6 @@ xdescribe('ProjectComponent', () => {
     fixture.detectChanges();
     expect(component.loadingMilestone).toBe(false);
     expect(component.milestones).toEqual(milestones);
-    expect(fastfeedbackSpy.pullFastFeedback.calls.count()).toBe(1);
   });
 
   describe('when testing trackScrolling()', () => {
