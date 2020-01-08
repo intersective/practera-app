@@ -49,10 +49,10 @@ export class AssessmentPage extends AppPage {
   /**
    * Click a choice of a question
    * @param questionCard The question card element
-   * @param choice       The text of the choice
+   * @param choiceIndex       The index of the choice
    */
-  clickChoice(questionCard, choice: string) {
-    return questionCard.element(by.cssContainingText('ion-item.choice-item ion-label', choice)).getWebElement().getDriver().click();
+  clickChoice(questionCard, choiceIndex: number) {
+    return questionCard.$$('ion-item.choice-item').get(choiceIndex).click();
   }
 
   /**
