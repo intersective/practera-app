@@ -6,11 +6,11 @@ import { combineLatest, Observable, of } from 'rxjs';
 import { FastFeedbackService } from '../fast-feedback/fast-feedback.service';
 
 @Component({
-  selector: 'app-overview-routing',
-  templateUrl: './overview-routing.component.html',
-  styleUrls: ['./overview-routing.component.scss']
+  selector: 'app-overview',
+  templateUrl: './overview.component.html',
+  styleUrls: ['./overview.component.scss']
 })
-export class OverviewRoutingComponent implements OnInit {
+export class OverviewComponent implements OnInit {
   isMobile: boolean;
   programName: string;
   initiator$ = this.route.params;
