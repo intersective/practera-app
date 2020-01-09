@@ -1,6 +1,6 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { OverviewRoutingComponent } from './overview-routing.component';
+import { OverviewComponent } from './overview.component';
 import { FastFeedbackService } from '../fast-feedback/fast-feedback.service';
 import { UtilsService } from '@services/utils.service';
 import { ActivatedRouteStub } from '@testing/activated-route-stub';
@@ -10,11 +10,11 @@ import { ActivatedRoute } from '@angular/router';
 import { Observable, of, pipe } from 'rxjs';
 import { BrowserStorageService } from '@services/storage.service';
 
-describe('OverviewRoutingComponent', () => {
+describe('OverviewComponent', () => {
   const PROGRAM_NAME = 'Dummy Program name';
 
-  let component: OverviewRoutingComponent;
-  let fixture: ComponentFixture<OverviewRoutingComponent>;
+  let component: OverviewComponent;
+  let fixture: ComponentFixture<OverviewComponent>;
   let routeStub: ActivatedRouteStub;
   let utils: UtilsService;
   let fastfeedbackSpy: jasmine.SpyObj<FastFeedbackService>;
@@ -22,7 +22,7 @@ describe('OverviewRoutingComponent', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       // imports: [],
-      declarations: [ OverviewRoutingComponent ],
+      declarations: [ OverviewComponent ],
       schemas: [ CUSTOM_ELEMENTS_SCHEMA ],
       providers: [
         UtilsService,
@@ -49,7 +49,7 @@ describe('OverviewRoutingComponent', () => {
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(OverviewRoutingComponent);
+    fixture = TestBed.createComponent(OverviewComponent);
     component = fixture.componentInstance;
     routeStub = TestBed.get(ActivatedRoute);
     utils = TestBed.get(UtilsService);
