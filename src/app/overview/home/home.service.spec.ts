@@ -320,33 +320,6 @@ describe('HomeService', () => {
     });
   });
 
-  // getCurrentActivity no longer available
-  xdescribe('when testing getCurrentActivity()', () => {
-    it('should get correct activity', async() => {
-      service.currentActivityId = 1;
-      const requestResponse = {
-        success: true,
-        data: [
-          {
-            Activity: {
-              name: 'activity',
-              is_locked: false,
-              lead_image: ''
-            }
-          }
-        ]
-      };
-      const expected = {
-        id: 1,
-        name: requestResponse.data[0].Activity.name,
-        isLocked: requestResponse.data[0].Activity.is_locked,
-        leadImage: requestResponse.data[0].Activity.lead_image
-      };
-      requestSpy.get.and.returnValue(of(requestResponse));
-      expect(requestSpy.get.calls.count()).toBe(1);
-    });
-  });
-
   describe('when testing getTodoItemFromEvent()', () => {
     it('should get correct todo item from event #1', async() => {
       const event = {};
