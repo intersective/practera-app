@@ -45,7 +45,9 @@
 .list-md {
   padding: 0;
 }
-
+.float-right {
+  float: right;
+}
 // used in login, forgot password, regestration page
 .div-logo {
   margin-top: 10vh;
@@ -105,7 +107,7 @@ ion-button.practera-btn {
   letter-spacing: 0.75px;
 
   &.mobile-btn {
-    height: 32px;	
+    height: 32px;
     width: 94px;
   }
 }
@@ -245,12 +247,12 @@ ion-button.practera-btn {
 
       .imgage-content {
         text-align: -webkit-center;
-    
+
         .image {
           background-color: #ffffff !important;
           width: -webkit-fit-content;
           border-radius: 50%;
-    
+
           img {
             border-radius: 50%;
             width: 56px;

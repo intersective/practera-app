@@ -2,13 +2,6 @@
   ion-icon {
     margin-right: 16px;
   }
-
-  .icon-item {
-    .todo-card-title, .todo-card-subtitle {
-      font-weight: normal;
-    }
-  }
-
   border: .5px solid #d8dbeb;
   overflow: hidden;
   white-space: nowrap;
@@ -17,6 +10,3 @@
   min-height: 58px;
 }
 
-.time-stamp {
-  font-size: 12px;
-}

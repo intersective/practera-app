@@ -19,7 +19,7 @@
                 slot="start"></ion-icon>
 
               <ion-label
-                class="milestone-title"
+                class="milestone-title headline-6"
                 [ngClass]="{'locked': milestone.isLocked}">{{ milestone.name }}</ion-label>
 
               <ion-icon *ngIf="!milestone.isLocked && (milestone.Activity && milestone.Activity.length > 0)"
