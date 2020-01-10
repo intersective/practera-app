@@ -178,10 +178,9 @@ export class FilestackService {
       },
       onFileUploadFailed: onError,
       onFileUploadFinished: function(res) {
-        console.log('onSuccess::', arguments);
         return onSuccess(res);
       },
-      onUploadDone: (res) => { console.log('res::', res); }
+      onUploadDone: (res) => res
     };
 
     return await this.filestack.picker(Object.assign(pickerOptions, options)).open();
