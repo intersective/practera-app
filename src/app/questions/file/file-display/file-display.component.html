@@ -19,7 +19,7 @@
 
     <ng-container *ngSwitchCase="'any'">
       <div>
-        <a [href]="file.url" target="_blank">
+        <a [href]="file.url" target="_blank" class="subtitle-1">
           <ion-icon name="document"></ion-icon>&nbsp;{{ file.filename }}
         </a>
         <ion-icon *ngIf="file.url.length > 0" name="search" (click)="previewFile(file)" color="primary" padding-left float-right></ion-icon>

@@ -7,8 +7,7 @@
     </ion-buttons>
 
     <ion-title text-center [ngClass]="{
-      'title-large': utils.isMobile(),
-      'title-small': !utils.isMobile()
+      'subtitle-2': !utils.isMobile()
     }">Topic</ion-title>
   </ion-toolbar>
 </ion-header>
@@ -16,19 +15,19 @@
   <div text-center margin-top *ngIf="loadingTopic">
     <ion-spinner></ion-spinner>
   </div>
-  <h3 padding text-center>{{topic.title}}</h3>
+  <h3 class="headline-4" padding text-center>{{topic.title}}</h3>
   <div *ngIf="topic.videolink && topic.videolink !=='magiclink'" class="text-center" padding-bottom>
     <div text-center padding [innerHtml]="iframeHtml"></div>
   </div>
 
   <ng-container *ngIf="topic.content">
     <ion-card class="background-white">
-      <ion-card-content [innerHtml]="topic.content"></ion-card-content>
+      <ion-card-content class="body-1" [innerHtml]="topic.content"></ion-card-content>
     </ion-card>
   </ng-container>
 
   <div *ngIf="topic.files && topic.files.length > 0"  color="light" >
-    <label padding>Supporting Downloads</label>
+    <label padding class="subtitle-2 gray-2">Supporting Downloads</label>
 
     <div *ngFor="let file of topic.files" padding class="topic-icons">
       <ion-grid >
