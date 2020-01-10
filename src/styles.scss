@@ -184,8 +184,6 @@ ion-button.practera-btn {
 
 // question name
 .q-title {
-  font-size: 16px;
-  font-weight: bold;
   display: block;
   padding-bottom: 0;
 }
@@ -351,18 +349,6 @@ ion-button.practera-btn {
 }
 
 /******************
-  ion-title
-******************/
-ion-title.title-large {
-  font-size: 20px;
-  font-weight: 500;
-}
-ion-title.title-small {
-  font-size: 14px;
-  font-weight: 500;
-}
-
-/******************
   Filter buttons
   Currently used on reviews & events page
 ******************/
@@ -406,7 +392,7 @@ ion-title.title-small {
   }
   // use to show overdue dates
   &.over {
-    color: var(--practera-ovderdue-color);
+    color: var(--practera-ovderdue-color) !important;
   }
 }
 
