@@ -7,11 +7,10 @@
     </ion-buttons>
 
     <ion-title text-center [ngClass]="{
-      'title-large': utils.isMobile(),
-      'title-small': !utils.isMobile()
+      'subtitle-2': !utils.isMobile()
     }">Assessment</ion-title>
     <ng-container *ngIf="doAssessment || doReview">
-      <ion-title text-center class="subTitle">{{savingMessage}}</ion-title>
+      <ion-title text-center class="sub-title subtitle-2 gray-1">{{savingMessage}}</ion-title>
       <ion-button [disabled]="savingButtonDisabled" (click)="submit(true, false, true)" class="text-button" color="primary" slot="end" fill="clear" size="small">Save</ion-button>
     </ng-container>
   </ion-toolbar>
@@ -20,11 +19,11 @@
   'ion-content-absolute-with-footer': !utils.isMobile() && hasFooter(),
   'ion-content-absolute': !utils.isMobile() && !hasFooter()
 }">
-  <h1>{{ assessment.name }}</h1>
+  <h1 class="headline-4">{{ assessment.name }}</h1>
   <ion-text color="medium" text-left>
-    <app-description *ngIf="assessment.description" [content]="assessment.description" id="asmt-des"></app-description>
+    <app-description *ngIf="assessment.description" [content]="assessment.description" id="asmt-des" class="body-1"></app-description>
   </ion-text>
-  <p [class]="assessment.isOverdue ? 'due-date assessment over' : 'due-date assessment'" *ngIf="doAssessment" text-center>
+  <p class="due-date assessment subtitle-1 gray-2" [ngClass]="{'over': assessment.isOverdue}" *ngIf="doAssessment" text-center>
     {{ this.sharedService.dueDateFormatter(assessment.dueDate) }}
   </p>
   <div *ngIf="!doAssessment && submission.submitterName && !submission.isLocked" class="review-submitter" text-left>
@@ -61,7 +60,7 @@
       </ion-text>
       <ng-container *ngFor="let question of group.questions">
         <ion-card class="practera-card question-card" text-left>
-          <ion-card-header class="q-title">
+          <ion-card-header class="q-title body-2">
             {{ question.name }}
             <ion-text class="required-indicator" color="danger" *ngIf="question.isRequired">*</ion-text>
             <ion-icon *ngIf="question.info" color="primary" class="icon-info vertical-middle" (click)="showQuestionInfo(question.info)" name="information-circle-outline"></ion-icon>
