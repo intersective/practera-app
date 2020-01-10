@@ -7,3 +7,6 @@ ion-button {
 ion-header ion-toolbar ion-title {
   @extend .headline-6;
 }
+ion-textarea {
+  @extend .subtitle-1, .gray-1;
+}
