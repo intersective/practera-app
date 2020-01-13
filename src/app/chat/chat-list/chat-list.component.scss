@@ -17,23 +17,9 @@ ion-avatar {
 }
 
 clickable-item {
-  &.unread {
-    ion-label {
-      h2 {
-        font-weight: bold;
-      }
-    }
-
-    .time-container {
-      .time{
-        span {
-          color: black;
-        }
-      }
-    }
-
+  .bold {
+    font-weight: bold;
   }
-
   .item-inner {
     border: none !important;
   }
@@ -41,9 +27,6 @@ clickable-item {
   ion-label {
     margin: 10px 0 10px 0 !important;
 
-    .chat-not-start {
-      color: var(--ion-color-medium);
-    }
     .chat-name-container {
       display: inline-flex !important;
       flex-wrap: wrap;
@@ -53,17 +36,15 @@ clickable-item {
 
       span {
         border: 1px solid var(--ion-color-primary);
-        color: var(--ion-color-primary);
         padding: 1px 5px 0 5px;
         border-radius: 10px;
         vertical-align: baseline;
         text-align: center;
         white-space: nowrap;
-        font-size: 12px;
-        line-height: 16px;
         max-width: 70% !important;
         text-overflow: inherit;
         overflow: inherit;
+        color: var(--ion-color-primary);
       }
 
       .chat-name {
@@ -71,11 +52,9 @@ clickable-item {
         overflow: inherit;
         max-width: 90%;
         width: fit-content;
-        font-size: 16px !important;
         margin-right: 3px;
 
         &.team-channel {
-          font-size: 16px !important;
           margin-right: 3px;
           max-width: -webkit-fill-available !important;
           width: auto !important;
@@ -93,13 +72,6 @@ clickable-item {
     display: grid;
     justify-items: end;
     margin-left: 4px !important;
-
-    .time {
-      span {
-        font-size: 14px;
-        color: var(--practera-chat-color-time-text-color);
-      }
-    }
 
     ion-badge {
       margin-top: 2px;
