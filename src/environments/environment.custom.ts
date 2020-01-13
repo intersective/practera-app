@@ -13,9 +13,9 @@ export const environment = {
       container: '<CUSTOM_S3_BUCKET>',
       region: '<CUSTOM_AWS_REGION>',
       paths: {
-        any: '/appv2/<CUSTOM_APP>/uploads/',
-        image: '/appv2/<CUSTOM_APP>/uploads/',
-        video: '/appv2/<CUSTOM_APP>/video/upload/'
+        any: '<CUSTOM_PATH_ANY>',
+        image: '<CUSTOM_PATH_IMAGE>',
+        video: '<CUSTOM_PATH_VIDEO>'
       },
       workflows: [
         '<CUSTOM_FILESTACK_VIRUS_DETECTION>',
