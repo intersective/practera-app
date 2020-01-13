@@ -16,6 +16,7 @@ import { map, filter } from 'rxjs/operators';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
 import { MockRouter } from '@testing/mocked.service';
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 
 @Directive({
   selector: '[routerLink], [routerLinkActive]'
@@ -57,7 +58,7 @@ class Page {
   }
 }
 
-xdescribe('HomeComponent', () => {
+describe('HomeComponent', () => {
   let component: HomeComponent;
   let fixture: ComponentFixture<HomeComponent>;
   let page: Page;
@@ -72,7 +73,10 @@ xdescribe('HomeComponent', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       // imports: [RouterTestingModule],
-      imports: [HttpClientTestingModule],
+      imports: [
+        HttpClientTestingModule,
+        NoopAnimationsModule,
+      ],
       declarations: [HomeComponent, DummyRouterLinkDirective],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
       providers: [
@@ -132,6 +136,7 @@ xdescribe('HomeComponent', () => {
   });
 
   beforeEach(() => {
+    component.refresh = of(true);
     homeServiceSpy.getTodoItems.and.returnValue(of([]));
     homeServiceSpy.getChatMessage.and.returnValue(of([]));
     // homeServiceSpy.getProgramName.and.returnValue(of('Test Program'));
@@ -276,18 +281,6 @@ xdescribe('HomeComponent', () => {
       expect(component.progressConfig).toEqual({percent: 10});
       expect(homeServiceSpy.getProgress.calls.count()).toBe(1, 'one call');
       expect(component.loadingProgress).toBe(false, 'progress loaded');
-    });
-
-    it('should get the correct current activity', () => {
-      const mock = {
-        id: 1,
-        name: 'Test activity',
-        isLocked: false,
-        leadImage: ''
-      };
-      fixture.detectChanges();
-      expect(component.activity).toEqual(mock, 'activity match');
-      expect(component.loadingActivity).toBe(false, 'activity loaded');
     });
 
     it('should not display achievement if there\'s no achievement', () => {
