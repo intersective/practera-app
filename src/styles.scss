@@ -1,8 +1,3 @@
-// no need for this anymore when we have desktop view, but still keep this here in case we need the color code later
-// body {
-//   background-color: #c7cbe1;
-// }
-
 // used for desktop view
 .ion-toolbar-absolute {
   height: 60px;
@@ -31,17 +26,6 @@
   --padding-bottom: 60px;
 }
 
-#mainContainer {
-  // position: absolute;
-  // top: 0;
-  // left: 0;
-  // right: 0;
-  // bottom: 0;
-  // max-width: 800px;
-  // margin-left: auto;
-  // margin-right: auto;
-}
-
 .list-md {
   padding: 0;
 }
@@ -56,7 +40,6 @@
   &.registration {
     margin-top: 7vh;
   }
-
 }
 
 .div-after-logo {
@@ -344,10 +327,10 @@ ion-button.practera-btn {
     -webkit-box-shadow: 0 0 0 0 rgba(var(--ion-color-primary-rgb), 0.5);
   }
   70% {
-      -webkit-box-shadow: 0 0 0 15px rgba(var(--ion-color-primary-rgb), 0);
+    -webkit-box-shadow: 0 0 0 15px rgba(var(--ion-color-primary-rgb), 0);
   }
   100% {
-      -webkit-box-shadow: 0 0 0 0 rgba(var(--ion-color-primary-rgb), 0);
+    -webkit-box-shadow: 0 0 0 0 rgba(var(--ion-color-primary-rgb), 0);
   }
 }
 @keyframes pulse {
@@ -356,12 +339,12 @@ ion-button.practera-btn {
     box-shadow: 0 0 0 0 rgba(var(--ion-color-primary-rgb), 0.5);
   }
   70% {
-      -moz-box-shadow: 0 0 0 15px rgba(var(--ion-color-primary-rgb), 0);
-      box-shadow: 0 0 0 15px rgba(var(--ion-color-primary-rgb), 0);
+    -moz-box-shadow: 0 0 0 15px rgba(var(--ion-color-primary-rgb), 0);
+    box-shadow: 0 0 0 15px rgba(var(--ion-color-primary-rgb), 0);
   }
   100% {
-      -moz-box-shadow: 0 0 0 0 rgba(var(--ion-color-primary-rgb), 0);
-      box-shadow: 0 0 0 0 rgba(var(--ion-color-primary-rgb), 0);
+    -moz-box-shadow: 0 0 0 0 rgba(var(--ion-color-primary-rgb), 0);
+    box-shadow: 0 0 0 0 rgba(var(--ion-color-primary-rgb), 0);
   }
 }
 // styles for custom toast
