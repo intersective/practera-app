@@ -6,5 +6,3 @@ while IFS='=' read -r name value ; do
         echo "replacing <$name> to ${!name}"
     fi
 done < <(env)
-
-cat src/environments/environment.custom.ts

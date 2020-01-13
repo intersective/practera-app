@@ -17,7 +17,7 @@ export class FileDisplayComponent implements OnInit, OnChanges {
   constructor( private filestackService: FilestackService, private utils: UtilsService) {}
 
   ngOnInit() {
-    if (this.file.workflows) {
+    if (this.file && this.file.workflows) {
       this.updateWorkflowStatus();
     }
   }
