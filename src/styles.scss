@@ -380,11 +380,8 @@ ion-button.practera-btn {
 .due-date {
   margin-bottom: 0;
   color: var(--ion-color-primary);
-  font-size: 12px !important;
-  font-weight: bold !important;
   // use in assessment page to show due dates
   &.assessment {
-    font-size: 16px !important;
     ion-icon {
       vertical-align: bottom;
     }
@@ -431,7 +428,6 @@ ion-button.practera-btn {
   --color:white;
   --border-radius: 12px;
   --box-shadow: 0 4px 16px rgba(0,0,0,.12);
-  font-size: 18px !important;
 }
 
 /******************
@@ -448,7 +444,6 @@ ion-button.practera-btn {
     color: var(--ion-color-medium);
   }
   ion-card-content {
-    font-size: 16px;
     letter-spacing: 0.15px;
     line-height: 24px;
     max-height: 64px;
