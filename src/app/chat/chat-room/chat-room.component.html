@@ -1,7 +1,9 @@
 <ion-header mode="ios">
   <ion-toolbar [ngClass]="{'ion-toolbar-absolute': !utils.isMobile()}">
     <ion-icon *ngIf="utils.isMobile()" name="arrow-back" (click)="back()" color="primary" slot="start" margin-start></ion-icon>
-    <ion-title text-center>{{selectedChat.is_team ? selectedChat.team_name : selectedChat.name}}</ion-title>
+    <ion-title text-center [ngClass]="{
+      'subtitle-2': !utils.isMobile()
+    }">{{selectedChat.is_team ? selectedChat.team_name : selectedChat.name}}</ion-title>
   </ion-toolbar>
 </ion-header>
 <ion-content [ngClass]="{'ion-content-absolute-with-footer': !utils.isMobile()}" color="light" [scrollEvents]="true" (ionScroll)="loadMoreMessages($event)">
@@ -21,14 +23,14 @@
 
         <ng-container *ngIf="!message.file; else attachment">
           <ion-label [ngClass]="getClassForMessageBubble(message)">
-            <div *ngIf="checkToShowMessageTime(message)" class="time">
+            <div *ngIf="checkToShowMessageTime(message)" class="time caption gray-2">
               <p>{{getMessageDate(message.sent_time)}}</p>
             </div>
             <div class="message-body">
-              <p class="message-text" [innerHTML]="message.message"></p>
+              <p class="message-text subtitle-1" [innerHTML]="message.message"></p>
             </div>
             <ng-container *ngIf="!message.noAvatar && selectedChat.is_team">
-              <div class="seen-text">
+              <div class="seen-text caption gray-2">
                 <p>{{message.sender_name}}</p>
               </div>
             </ng-container>
@@ -62,7 +64,6 @@
               </div>
             </ng-container>
 
-
             <ng-container *ngIf="message.file && (
               !message.file.mimetype.includes('image') && !message.file.mimetype.includes('video')
             )">
@@ -79,7 +80,7 @@
             </ng-container>
 
             <ng-container *ngIf="!message.noAvatar && selectedChat.is_team">
-              <div class="seen-text">
+              <div class="seen-text caption gray-2">
                 <p>{{message.sender_name}}</p>
               </div>
             </ng-container>
@@ -109,12 +110,12 @@
   <ng-container *ngIf="!messageList.length && !loadingChatMessages">
     <div text-center class="not-started-empty-status">
       <img class="image" [ngClass]="{'desktop': !utils.isMobile()}" src="/assets/icon-epmty-chat.svg">
-      <p class="headText">Type your first message!</p>
-      <p class="subText">It's time to start a chat</p>
+      <p class="head-text headline-5 gray-3">Type your first message!</p>
+      <p class="sub-text subtitle-1 gray-1">It's time to start a chat</p>
     </div>
   </ng-container>
 </ion-content>
-<ion-footer class="footer"  [ngClass]="{'ion-footer-absolute': !utils.isMobile()}">
+<ion-footer class="footer" [ngClass]="{'ion-footer-absolute': !utils.isMobile()}">
   <ion-grid class="white-bg">
     <ion-row nowrap no-padding align-items-end>
       <ion-col size="1" no-padding text-center>
