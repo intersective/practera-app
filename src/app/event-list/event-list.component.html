@@ -32,7 +32,7 @@
     </ion-button>
   </div>
 
-  <ion-item lines="none" color="light" class="ion-margin-top item-filter">
+  <ion-item lines="none" color="light" class="ion-margin-top item-filter subtitle-1 gray-2">
     <ion-label id="activity-filter" color="medium">Filter by Activity</ion-label>
     <ion-select
       multiple="true"
@@ -49,7 +49,7 @@
   </ng-container>
 
   <ng-container *ngFor="let eventObj of events">
-    <h4 class="date-group" text-left>{{ eventObj.date }}</h4>
+    <p class="sutitle-2 gray-2" text-left>{{ eventObj.date }}</p>
     <ion-card class="practera-card">
       <ion-list>
         <clickable-item
@@ -72,16 +72,16 @@
     <ion-card class="practera-card no-event">
       <ng-container [ngSwitch]="activated">
         <ng-container *ngSwitchCase="'browse'">
-          <p>There's no new events.</p>
-          <span>Go to the booked tab to see the events you've booked.</span>
+          <p class="subtitle-1 gray-3">There's no new events.</p>
+          <span class="body-2 gray-1">Go to the booked tab to see the events you've booked.</span>
         </ng-container>
         <ng-container *ngSwitchCase="'booked'">
-          <p>You have no booked events.</p>
-          <span>Go to the browse tab and book an event to see it here.</span>
+          <p class="subtitle-1 gray-3">You have no booked events.</p>
+          <span class="body-2 gray-1">Go to the browse tab and book an event to see it here.</span>
         </ng-container>
         <ng-container *ngSwitchCase="'attended'">
-          <p>You have not attended any events.</p>
-          <span>You can see all your past events in this tab.</span>
+          <p class="subtitle-1 gray-3">You have not attended any events.</p>
+          <span class="body-2 gray-1">You can see all your past events in this tab.</span>
         </ng-container>
       </ng-container>
     </ion-card>
