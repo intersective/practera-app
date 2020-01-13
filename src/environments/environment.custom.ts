@@ -19,13 +19,13 @@ export const environment = {
       },
       workflows: [
         '<CUSTOM_FILESTACK_VIRUS_DETECTION>',
-      ],      
+      ],
     },
     policy: '<CUSTOM_FILESTACK_POLICY>',
     signature: '<CUSTOM_FILESTACK_SIGNATURE>',
     workflows: {
       virusDetection: '<CUSTOM_FILESTACK_VIRUS_DETECTION>',
-    },    
+    },
   },
   defaultCountryModel: '<CUSTOM_COUNTRY>',
   intercom: false,

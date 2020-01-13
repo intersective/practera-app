@@ -4,7 +4,7 @@ export const environment = {
   pusherKey: '255f010d210933ca7675',
   env: 'live',
   APIEndpoint: 'https://api.practera.com/',
-  graphQL: '',
+  graphQL: 'https://dl3tyzguge.execute-api.ap-southeast-2.amazonaws.com/prd/',
   intercomAppId: 'pef1lmo8',
   filestack: {
     key: 'AO6F4C72uTPGRywaEijdLz',

@@ -31,10 +31,7 @@ export class FilestackComponent implements OnInit {
   @Output() complete: EventEmitter<any> = new EventEmitter();
   @Input() type?: string;
 
-  constructor(
-    private filestackService: FilestackService
-  ) {
-  }
+  constructor(private filestackService: FilestackService) {}
 
   ngOnInit() {}
 
@@ -53,7 +50,7 @@ export class FilestackComponent implements OnInit {
           success: true,
           data: data
         });
-      }
+      },
     };
 
     if (this.accept) {
