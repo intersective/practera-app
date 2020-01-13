@@ -18,18 +18,20 @@
     </ng-container>
 
     <ng-container *ngSwitchCase="'any'">
-      <div>
+      <div *ngIf="!(virusDetection && virusDetection.infected); else virusDetected">
         <a [href]="file.url" target="_blank">
           <ion-icon name="document"></ion-icon>&nbsp;{{ file.filename }}
         </a>
         <ion-icon *ngIf="file.url.length > 0" name="search" (click)="previewFile(file)" color="primary" padding-left float-right></ion-icon>
       </div>
-      <ion-item lines="none" color="transparent" *ngIf="virusDetection && virusDetection.infected">
-        <ion-icon name="alert" color="danger" slot="start"></ion-icon>
-        <ion-label>
-          <strong>Previous upload has virus detected</strong>
-        </ion-label>
-      </ion-item>
+      <ng-template #virusDetected>
+        <ion-item lines="none" color="transparent">
+          <ion-icon name="alert" color="danger" slot="start"></ion-icon>
+          <ion-label class="warning">
+            The file uploaded had a virus and has been quarantined
+          </ion-label>
+        </ion-item>
+      </ng-template>
     </ng-container>
 
   </ng-container>
