@@ -2,7 +2,7 @@
   background-color: transparent !important;
   --ion-color-base: transparent !important;
 
-  .imgage-content {
+  .image-content {
     margin-top: 5px;
     margin-bottom: -45px;
 
@@ -25,22 +25,6 @@
   .div-after-img {
     margin: 0;
     margin-bottom: 15px;
-
-    .title {
-      &.notify {
-        font-size: 24px;
-        font-weight: normal;
-      }
-    }
-
-    .points {
-      color: var(--ion-color-primary);
-      font-size: 20px;
-      font-weight: 500;
-      line-height: 28px;
-      text-align: center;
-      margin: 0;
-    }
   }
 
 }
