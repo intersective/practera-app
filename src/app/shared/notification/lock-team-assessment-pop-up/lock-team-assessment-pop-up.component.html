@@ -1,6 +1,6 @@
 <ion-content color="light" class="pop-up-content" [ngClass]="{'desktop-view': !utils.isMobile()}" text-center>
 
-  <div class="imgage-content">
+  <div class="image-content">
     <div class="image">
         <img alt="{{ name }}" [src]="image ? image : 'https://my.practera.com/img/user-512.png'">
     </div>
@@ -8,8 +8,8 @@
 
   <div class="details-container">
     <div class="div-after-img">
-      <div class="description" *ngIf="name">
-        <b>{{ name }}</b> is currently edting this team submission. Click on <b>'View Read Only'</b> to open in read only mode.
+      <div class="description body-1" *ngIf="name">
+        <b>{{ name }}</b> <span class="gray-2">is currently edting this team submission. Click on</span> <b>'View Read Only'</b> <span class="gray-2">to open in read only mode</span>.
       </div>
     </div>
 
