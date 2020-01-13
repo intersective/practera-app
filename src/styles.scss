@@ -89,12 +89,6 @@
   margin: 16px 0;
 }
 
-ion-label.practera-label {
-  color: var(--practera-color-subtitle) !important;
-  font-weight: 500 !important;
-  font-size: 14px !important;
-}
-
 /******************
   ion-button
 ******************/
@@ -102,10 +96,6 @@ ion-button.practera-btn {
   --border-radius: 8px;
   --box-shadow: none;
   text-transform: uppercase;
-  font-size: 14px;
-  font-weight: 500;
-  letter-spacing: 0.75px;
-
   &.mobile-btn {
     height: 32px;
     width: 94px;
@@ -132,44 +122,16 @@ ion-button.practera-btn {
   width: 100%;
 
   h4 {
-    font-size: 14px;
     text-overflow: ellipsis;
     margin-bottom: 0px;
     max-width: 80%;
   }
 
   p {
-    font-size: 12px;
-    font-weight: 500;
     text-overflow: ellipsis;
     margin-top: 0px;
     overflow: hidden;
     -webkit-line-clamp: 1;
-    line-height: 16px;
-  }
-}
-
-.feedback-card {
-  position: relative;
-
-  .feedback-label {
-    padding: 3px 16px 3px 16px;
-    background-color: #fff;
-    position: absolute;
-    right: 0;
-    border-bottom-left-radius: 12px;
-    border-top-left-radius: 12px;
-    box-shadow: 0 4px 24px 4px rgba(18, 23, 81, 0.1);
-    bottom: -28px;
-
-    p {
-      font-size: 14px;
-      font-weight: normal;
-      color: var(--ion-color-primary);
-      text-shadow: none;
-      height: 20px;
-      margin-top: 0px;
-    }
   }
 }
 
@@ -243,7 +205,7 @@ ion-button.practera-btn {
     .pop-up-content {
       border-radius: 12px !important;
 
-      .imgage-content {
+      .image-content {
         text-align: -webkit-center;
 
         .image {
@@ -273,24 +235,7 @@ ion-button.practera-btn {
         &.button-container {
           margin: 0 15px 4px;
         }
-        .title {
-          font-size: 20px;
-          font-weight: 500;
-          text-align: center;
-          margin-bottom: 0px;
-          color: black;
-        }
-        .subtitle {
-          color: var(--ion-color-dark);
-          font-size: 16px;
-          line-height: 24px;
-          text-align: center;
-          margin-top: 0px;
-        }
         .description {
-          color: var(--ion-color-medium);
-          font-size: 16px;
-          line-height: 17px;
           overflow: hidden;
           text-overflow: ellipsis;
           display: -webkit-box;
@@ -298,9 +243,6 @@ ion-button.practera-btn {
           -webkit-line-clamp: 3;
           -webkit-box-orient: vertical !important;
           text-align: -webkit-center;
-        }
-        .text-highlight {
-          font-weight: bold !important;
         }
       }
 
@@ -444,8 +386,6 @@ ion-button.practera-btn {
     color: var(--ion-color-medium);
   }
   ion-card-content {
-    letter-spacing: 0.15px;
-    line-height: 24px;
     max-height: 64px;
     min-height: 64px;
     height: 64px;
