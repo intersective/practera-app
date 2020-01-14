@@ -110,7 +110,7 @@ describe('AssessmentComponent', () => {
       canComment: false,
       type: 'text',
       isRequired: true,
-      audience: ['participant', 'mentor']
+      audience: ['participant', 'mentor', 'submitter', 'reviewer']
     },
     {
       id: 124,
@@ -120,7 +120,7 @@ describe('AssessmentComponent', () => {
       canComment: false,
       type: 'text',
       isRequired: false,
-      audience: ['participant', 'mentor']
+      audience: ['participant', 'mentor', 'submitter', 'reviewer']
     },
     {
       id: 125,
@@ -130,7 +130,7 @@ describe('AssessmentComponent', () => {
       canComment: false,
       type: 'multiple',
       isRequired: false,
-      audience: ['participant', 'mentor']
+      audience: ['participant', 'mentor', 'submitter', 'reviewer']
     }
   ];
 
