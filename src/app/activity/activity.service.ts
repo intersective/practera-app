@@ -405,7 +405,7 @@ export class ActivityService {
     }
 
     // Assessment: 'done' and 'progress=0' can be coexistent
-    if (task.type === 'assessment' && ['pending review', 'done', 'pending approval'].indexOf(task.status) !== -1 && task.progress !== 1) {
+    if (task.type === 'assessment' && ['pending review', 'done', 'pending approval'].indexOf(task.status) !== -1) {
       return true;
     }
 
