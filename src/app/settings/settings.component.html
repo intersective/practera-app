@@ -17,10 +17,10 @@
         ></file-stack>
       </ion-avatar>
       <ion-label>
-        <ion-label class="profile-name" *ngIf="profile.name">
+        <ion-label class="headline-6" *ngIf="profile.name">
           {{profile.name}}
         </ion-label>
-        <ion-label class="profile-email" *ngIf="profile.email">
+        <ion-label class="subtitle-1 gray-2" *ngIf="profile.email">
           {{profile.email}}
         </ion-label>
       </ion-label>
@@ -28,12 +28,12 @@
     <app-contact-number-form [page]="'settings'"></app-contact-number-form>
 
     <ion-item *ngIf="isInMultiplePrograms()" lines="none" class="exp-switch">
-      <ion-label class="practera-label">Switch to another experience</ion-label>
+      <ion-label class="subtitle-2 gray-2">Switch to another experience</ion-label>
       <ion-button class="practera-btn mobile-btn" slot="end" (click)="switchProgram()">SWITCH</ion-button>
     </ion-item>
 
-    <div class="ion-margin-top support-mobile">
-      <ion-label class="practera-label">Support</ion-label>
+    <div class="ion-margin-top support-mobile subtitle-1">
+      <ion-label class="subtitle-2 gray-2">Support</ion-label>
       <ion-item class="no-bg" (click)="mailTo()" lines="none">
         <ion-icon class="ion-padding-end" color="primary" name="mail"></ion-icon>
         Email Help
@@ -66,14 +66,14 @@
                 (complete)="uploadProfileImage($event)"
               ></file-stack>
             </ion-avatar>
-            <p class="profile-name" *ngIf="profile.name">
+            <ion-label class="headline-6" *ngIf="profile.name">
               {{profile.name}}
-            </p>
-            <p class="profile-email" *ngIf="profile.email">
+            </ion-label>
+            <ion-label class="subtitle-1 gray-2" *ngIf="profile.email">
               {{profile.email}}
-            </p>
+            </ion-label>
           </div>
-          <div class="ion-margin-top">
+          <div class="ion-margin-top subtitle-1">
             <ion-item class="no-bg" (click)="mailTo()" lines="none">
               <ion-icon class="ion-padding-end" color="primary" name="mail"></ion-icon>
               Email Help
@@ -91,15 +91,15 @@
         <ion-col class="content">
           <app-contact-number-form [page]="'settings'"></app-contact-number-form>
           <ion-item lines="none" class="no-bg">
-            <ion-label *ngIf="isInMultiplePrograms()" class="practera-label">Switch to another experience</ion-label>
-            <ion-label *ngIf="!isInMultiplePrograms()" class="practera-label">Your experience</ion-label>
+            <ion-label *ngIf="isInMultiplePrograms()" class="subtitle-2 gray-2">Switch to another experience</ion-label>
+            <ion-label *ngIf="!isInMultiplePrograms()" class="subtitle-2 gray-2">Your experience</ion-label>
           </ion-item>
           <ion-row class="experience-content">
             <ion-col size="7" no-padding class="experience-card-container">
               <ion-card class="practera-card experience-card no-box-shadow">
                 <img [src]="currentProgramImage ? currentProgramImage : '/assets/default-experience-image.svg'" [alt]="currentProgramName"/>
                 <ion-card-content>
-                  <ion-item lines="none" class="switcher-card-item">
+                  <ion-item lines="none" class="switcher-card-item subtitle-1">
                     <ion-label>{{ currentProgramName }}</ion-label>
                   </ion-item>
                 </ion-card-content>
@@ -112,7 +112,7 @@
                 </div>
                 <ion-card-content>
                   <clickable-item color="light" [lines]="'none'" [isSwitcherCard]="true">
-                    <ion-label>Switch Experience</ion-label>
+                    <ion-label class="subtitle-1">Switch Experience</ion-label>
                   </clickable-item>
                 </ion-card-content>
               </ion-card>

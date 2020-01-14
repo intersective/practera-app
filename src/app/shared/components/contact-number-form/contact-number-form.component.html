@@ -1,11 +1,11 @@
 <ng-container *ngIf="page === 'settings'">
-  <ion-label class="practera-label">Contact Number</ion-label>
+  <ion-label class="subtitle-2 gray-2">Contact Number</ion-label>
   <ion-card class="practera-card" [ngClass]="{'desktop-view': !utils.isMobile()}">
     <ion-item lines="none">
       <ion-grid>
         <ion-row>
           <ion-col size="5">
-            <ion-select [(ngModel)]="countryModel" (ionChange)="updateCountry()">
+            <ion-select class="subtitle-1" [(ngModel)]="countryModel" (ionChange)="updateCountry()">
               <ion-select-option *ngFor="let countryCode of contactNumberFormat.countryCodes" [value]="countryCode.code">{{countryCode.code}} {{contactNumberFormat.masks[countryCode.code].format}}</ion-select-option>
             </ion-select>
           </ion-col>
@@ -15,7 +15,7 @@
               pattern="{{activeCountryModelInfo.pattern}}"
               placeholder="{{activeCountryModelInfo.placeholder}}"
               [(ngModel)]="contactNumber"
-              class="contact-input"
+              class="contact-input subtitle-1 gray-1"
               (keydown)="disableArrowKeys($event)"
               (keyup)="formatContactNumber()" />
           </ion-col>
