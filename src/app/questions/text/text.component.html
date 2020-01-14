@@ -3,12 +3,12 @@
 </ng-container>
 
 <div *ngIf="reviewStatus !== 'in progress' && (review.answer || review.comment)" class="q-reviews">
-  <ion-label class="q-title body-2">Feedback</ion-label>
+  <ion-label class="q-title subtitle-2">Feedback</ion-label>
   <ng-container *ngIf="review.answer">
-    <p class="paragraph body-1">{{ review.answer }}</p>
+    <p class="paragraph body-2 gray-2">{{ review.answer }}</p>
   </ng-container>
   <ng-container *ngIf="review.comment">
-    <p class="paragraph body-1">{{ review.comment }}</p>
+    <p class="paragraph body-2 gray-2">{{ review.comment }}</p>
   </ng-container>
 </div>
 
