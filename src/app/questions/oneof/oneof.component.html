@@ -2,7 +2,7 @@
   <ion-list class="no-bg">
     <ion-radio-group [value]="submission.answer">
       <ion-item *ngFor="let choice of question.choices; let i = index" color="light" [lines]="i == question.choices.length - 1 ? 'none' : ''">
-        <ion-label class="white-space-normal">{{ choice.name }}</ion-label>
+        <ion-label class="white-space-normal subtitle-1">{{ choice.name }}</ion-label>
         <ion-radio [value]="choice.id" disabled mode="md"></ion-radio>
       </ion-item>
     </ion-radio-group>
@@ -21,7 +21,7 @@
         <ng-container *ngFor="let choice of question.choices; let i = index">
           <ng-container *ngIf="choice.id === review.answer">
             <ion-item color="light" [lines]="i == question.choices.length - 1 ? 'none' : ''">
-              <ion-label class="white-space-normal">{{ choice.name }}</ion-label>
+              <ion-label class="white-space-normal subtitle-1">{{ choice.name }}</ion-label>
               <ion-radio [value]="choice.id" disabled mode="md"></ion-radio>
             </ion-item>
           </ng-container>
@@ -38,7 +38,7 @@
   <ion-list class="no-bg">
     <ion-radio-group [value]="submission.answer" #answerEle (ionChange)="onChange(answerEle.value)">
       <ion-item class="choice-item" *ngFor="let choice of question.choices; let i = index" [lines]="i == question.choices.length - 1 ? 'none' : ''">
-        <ion-label class="white-space-normal">{{ choice.name }}</ion-label>
+        <ion-label class="white-space-normal subtitle-1">{{ choice.name }}</ion-label>
         <ion-radio [value]="choice.id" mode="md"></ion-radio>
       </ion-item>
     </ion-radio-group>
@@ -52,7 +52,7 @@
         <ion-label class="body-2">Your Answer is</ion-label>
       </ion-list-header>
       <ion-item class="choice-item" *ngFor="let choice of question.choices; let i = index" [lines]="i == question.choices.length - 1 ? 'none' : ''">
-        <ion-label class="white-space-normal">{{ choice.name }}</ion-label>
+        <ion-label class="white-space-normal subtitle-1">{{ choice.name }}</ion-label>
         <ion-radio [value]="choice.id" mode="md"></ion-radio>
       </ion-item>
     </ion-radio-group>
