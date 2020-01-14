@@ -10,8 +10,8 @@
       'subtitle-2': !utils.isMobile()
     }">Assessment</ion-title>
     <ng-container *ngIf="doAssessment || doReview">
-      <ion-title text-center class="sub-title subtitle-2 gray-1">{{savingMessage}}</ion-title>
-      <ion-button [disabled]="savingButtonDisabled" (click)="submit(true, false, true)" class="text-button" color="primary" slot="end" fill="clear" size="small">Save</ion-button>
+      <ion-title text-center class="sub-title caption gray-2">{{savingMessage}}</ion-title>
+      <ion-button [disabled]="savingButtonDisabled" (click)="submit(true, false, true)" class="text-button subtitle-1" color="primary" slot="end" fill="clear" size="small">Save</ion-button>
     </ng-container>
   </ion-toolbar>
 </ion-header>
@@ -27,12 +27,12 @@
     {{ this.sharedService.dueDateFormatter(assessment.dueDate) }}
   </p>
   <div *ngIf="!doAssessment && submission.submitterName && !submission.isLocked" class="review-submitter" text-left>
-    <p class="title">
+    <p class="subtitle-1">
       Submitted by {{ submission.submitterName }}
     </p>
   </div>
   <div *ngIf="submission.reviewerName" class="review-submitter" text-left>
-    <p class="title">
+    <p class="subtitle-1 gray-3">
       Reviewed by {{ submission.reviewerName }} {{review.status}}
     </p>
   </div>
@@ -43,8 +43,8 @@
         <img [src]="submission.submitterImage ? submission.submitterImage : 'https://my.practera.com/img/user-512.png'">
       </ion-avatar>
       <ion-label>
-        <h4>Locked by {{ submission.submitterName }}</h4>
-        <p>Please wait until the user finishes editing</p>
+        <p class="subtitle-1">Locked by {{ submission.submitterName }}</p>
+        <p class="caption gray-2">Please wait until the user finishes editing</p>
       </ion-label>
     </ion-item>
   </ion-list>
@@ -54,7 +54,7 @@
       <ion-spinner></ion-spinner>
     </ng-container>
     <ng-container *ngFor="let group of assessment.groups">
-      <h3>{{ group.name }}</h3>
+      <h3 class="headline-6">{{ group.name }}</h3>
       <ion-text color="medium" text-left>
         <app-description class="g-description" *ngIf="group.description" [content]="group.description"></app-description>
       </ion-text>
