@@ -7,11 +7,11 @@
 
 	<ng-container *ngIf="heightExceeded">
 	  <ng-container *ngIf="isTruncating">
-	    <ion-text color="primary" (click)="isTruncating = !isTruncating">show more</ion-text>
+	    <ion-text color="primary" class="button" (click)="isTruncating = !isTruncating">SHOW MORE</ion-text>
 	  </ng-container>
 
 	  <ng-container *ngIf="!isTruncating">
-	    <ion-text color="primary" (click)="isTruncating = !isTruncating">show less</ion-text>
+	    <ion-text color="primary" class="button" (click)="isTruncating = !isTruncating">SHOW LESS</ion-text>
 	  </ng-container>
 	</ng-container>
 

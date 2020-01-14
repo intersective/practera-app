@@ -5,19 +5,15 @@ $message-body-size: 224px;
   top: 50%;
   left: 50%;
   transform: translate(-50%,-50%);
-  .headText {
-    font-size: 24px;
+  .head-text {
     margin-bottom: 0px;
-    color: var(--ion-color-dark-tint);
     margin-top: 0px;
     &.desktop {
       margin-top: 24px;
     }
   }
-  .subText {
-    font-size: 16px;
+  .sub-text {
     margin-top: 5px;
-    color: var(--ion-color-medium);
   }
   .image {
     min-width: 96px;
@@ -34,9 +30,7 @@ $message-body-size: 224px;
 }
 
 .chat-list {
-
   background-color: transparent !important;
-
   ion-item {
     ion-avatar {
       width: 32px;
@@ -55,7 +49,6 @@ $message-body-size: 224px;
       .time {
         width: 100%;
         text-align: center;
-        color: var(--practera-chat-color-time-text-color);
         margin-bottom: 8px;
       }
 
@@ -75,20 +68,10 @@ $message-body-size: 224px;
 
         p, .message-text {
           color: black;
-          font-size: 16px;
-          line-height: 24px;
           margin: 0;
           text-align: left;
           user-select: all !important;
           white-space: pre-wrap !important;
-
-          a.linkified {
-            color: black;
-            font-size: 16px;
-            line-height: 24px;
-            margin: 0;
-            text-align: left;
-          }
         }
 
         &.video-attachment-container {
@@ -143,7 +126,6 @@ $message-body-size: 224px;
 
       .seen-text {
         padding: 8px 16px;
-        color: var(--practera-chat-color-time-text-color);
       }
 
       &.received-messages {
@@ -180,9 +162,6 @@ $message-body-size: 224px;
 
           .message-text {
             color: white !important;
-            a.linkified {
-              color: white;
-            }
           }
         }
       }
