@@ -11,12 +11,12 @@
       </ng-container>
 
       <div class="icon-item">
-        <h4 class="todo-card-title">{{todoItem.name}}</h4>
+        <h4 class="todo-card-title subtitle-1">{{todoItem.name}}</h4>
         <ion-text color="medium">
-          <p class="todo-card-subtitle">{{todoItem.description}}</p>
+          <p class="todo-card-subtitle caption gray-2">{{todoItem.description}}</p>
         </ion-text>
       </div>
-      <ion-text color="medium" class="time-stamp" slot="end">{{todoItem.time}}</ion-text>
+      <ion-text color="medium" class="caption gray-2" slot="end">{{todoItem.time}}</ion-text>
     </ng-container>
 
     <ng-template #noOrLoading>

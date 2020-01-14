@@ -2,10 +2,6 @@
   --padding-start: 0;
   --inner-padding-end: 0;
 }
-.date-group {
-  color: var(--practera-color-subtitle);
-  font-size: medium;
-}
 .btn-filter {
   ion-button {
     width: 32%;
@@ -15,14 +11,10 @@
   }
 }
 .no-event {
-  color: var(--practera-color-card-text-light);
-  font-size: 14px;
   padding: 0 12px 18px;
   border: 1px solid var(--practera-color-card-border);
   box-shadow: none;
   p {
-    font-size: 16px;
-    color: var(--practera-color-card-text-dark);
     margin: 20px 0 8px;
   }
 }
