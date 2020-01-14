@@ -278,12 +278,9 @@ export class AssessmentComponent extends RouterEnter {
    * @param {question} question
    */
   private isRequired(question) {
-    let role = this.storage.getUser().role;
+    let role = 'submitter';
 
-    // cover all different roles below, and treat them as submitter
-    if (['submitter', 'participant', 'student'].includes(role)) {
-      role = 'submitter';
-    } else if (['reviewer', 'mentor'].includes(role)) {
+    if (this.action === 'review') {
       role = 'reviewer';
     }
 
