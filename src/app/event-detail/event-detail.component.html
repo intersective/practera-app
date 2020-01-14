@@ -6,13 +6,13 @@
     }">Event</ion-title>
   </ion-toolbar>
 </ion-header>
-<ion-content color="light" text-center [ngClass]="{ 'ion-content-absolute': !utils.isMobile() }">
-  <div class="div-btn">
+<ion-content color="light" [ngClass]="{ 'ion-content-absolute': !utils.isMobile() }">
+  <div class="ion-text-center ion-margin">
     <h1 class="headline-4">{{ event.name }}</h1>
-    <div class="div-activity-name">{{ event.activityName }}</div>
-    <app-description *ngIf="event.description" [content]="event.description"></app-description>
+    <div class="div-activity-name subtitle-1 gray-2">{{ event.activityName }}</div>
+    <app-description *ngIf="event.description" class="body-1" [content]="event.description"></app-description>
   </div>
-  <p *ngIf="event.isPast && !event.isBooked" class="">Event Expired</p>
+  <p *ngIf="event.isPast && !event.isBooked" class="ion-margin-horizontal subtitle-2 gray-2">Event Expired</p>
 
   <ion-list>
     <ion-item>
