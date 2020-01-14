@@ -4,12 +4,12 @@
   </div>
   <div class="div-after-logo">
     <ng-container *ngIf="!hide_password">
-      <h4>Your Login Email Address</h4>
-      <p>{{user.email}}</p>
+      <p class="headline-6">Your Login Email Address</p>
+      <p class="body-1">{{user.email}}</p>
     </ng-container>
     <ng-container *ngIf="hide_password">
-      <h4>Your Mobile Number</h4>
-      <p>{{user.contact}}</p>
+      <p class="headline-6">Your Mobile Number</p>
+      <p class="body-1">{{user.contact}}</p>
     </ng-container>
     <form [formGroup]="registerationForm">
         <ion-input name="email" formControlName="email" type="hidden" value="{{user.email}}" aria-hidden="true"></ion-input>
@@ -24,10 +24,10 @@
         </ion-item>
         <ion-item lines="none">
           <ion-checkbox color="primary" slot="start" [(ngModel)]="isAgreed" [ngModelOptions]="{standalone: true}" name="isAgreed"></ion-checkbox>
-          <ion-label class="terms-and-conditions">I agree to the Terms & Conditions</ion-label>
+          <ion-label class="body-2">I agree to the Terms & Conditions</ion-label>
         </ion-item>
       </ion-list>
-      <p><a (click)="openLink()">Terms & Conditions</a></p>
+      <p><a class="subtitle-2" (click)="openLink()">Terms & Conditions</a></p>
       <ion-text *ngFor="let error of errors" color="danger">
         <p class="text-error">{{error}}</p>
       </ion-text>

@@ -2,35 +2,34 @@
   <ion-toolbar [ngClass]="{'ion-toolbar-absolute': !utils.isMobile()}">
     <ion-icon *ngIf="utils.isMobile()" name="close-circle-outline" class="close-icon" (click)="close()" color="primary" slot="end"></ion-icon>
     <ion-title text-center [ngClass]="{
-      'title-large': utils.isMobile(),
-      'title-small': !utils.isMobile()
+      'subtitle-2': !utils.isMobile()
     }">Event</ion-title>
   </ion-toolbar>
 </ion-header>
-<ion-content color="light" text-center [ngClass]="{ 'ion-content-absolute': !utils.isMobile() }">
-  <div class="div-btn">
-    <h1>{{ event.name }}</h1>
-    <div class="div-activity-name">{{ event.activityName }}</div>
-    <app-description *ngIf="event.description" [content]="event.description"></app-description>
+<ion-content color="light" [ngClass]="{ 'ion-content-absolute': !utils.isMobile() }">
+  <div class="ion-text-center ion-margin">
+    <h1 class="headline-4">{{ event.name }}</h1>
+    <div class="div-activity-name subtitle-1 gray-2">{{ event.activityName }}</div>
+    <app-description *ngIf="event.description" class="body-1" [content]="event.description"></app-description>
   </div>
-  <h3 *ngIf="event.isPast && !event.isBooked" class="expired-text">Event Expired</h3>
+  <p *ngIf="event.isPast && !event.isBooked" class="ion-margin-horizontal subtitle-2 gray-2">Event Expired</p>
 
   <ion-list>
     <ion-item>
       <ion-icon class="leading-icon" name="calendar" color="primary"></ion-icon>
-      <div id="date">{{ utils.utcToLocal(event.startTime, 'date') }}</div>
+      <div id="date" class="subtitle-1">{{ utils.utcToLocal(event.startTime, 'date') }}</div>
     </ion-item>
     <ion-item>
       <ion-icon class="leading-icon" name="time" color="primary"></ion-icon>
-      <div id="time">{{ utils.utcToLocal(event.startTime, 'time') }} - {{ utils.utcToLocal(event.endTime, 'time') }}</div>
+      <div id="time" class="subtitle-1">{{ utils.utcToLocal(event.startTime, 'time') }} - {{ utils.utcToLocal(event.endTime, 'time') }}</div>
     </ion-item>
     <ion-item>
       <ion-icon class="leading-icon" name="pin" color="primary"></ion-icon>
-      <div id="location">{{ event.location }}</div>
+      <div id="location" class="subtitle-1">{{ event.location }}</div>
     </ion-item>
     <ion-item lines="none">
       <ion-icon class="leading-icon" name="contacts" color="primary"></ion-icon>
-      <div id="capacity">{{ event.remainingCapacity }} Seats Available Out of {{ event.capacity }}</div>
+      <div id="capacity" class="subtitle-1">{{ event.remainingCapacity }} Seats Available Out of {{ event.capacity }}</div>
     </ion-item>
   </ion-list>
 

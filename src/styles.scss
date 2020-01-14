@@ -1,8 +1,3 @@
-// no need for this anymore when we have desktop view, but still keep this here in case we need the color code later
-// body {
-//   background-color: #c7cbe1;
-// }
-
 // used for desktop view
 .ion-toolbar-absolute {
   height: 60px;
@@ -31,21 +26,12 @@
   --padding-bottom: 60px;
 }
 
-#mainContainer {
-  // position: absolute;
-  // top: 0;
-  // left: 0;
-  // right: 0;
-  // bottom: 0;
-  // max-width: 800px;
-  // margin-left: auto;
-  // margin-right: auto;
-}
-
 .list-md {
   padding: 0;
 }
-
+.float-right {
+  float: right;
+}
 // used in login, forgot password, regestration page
 .div-logo {
   margin-top: 10vh;
@@ -54,7 +40,6 @@
   &.registration {
     margin-top: 7vh;
   }
-
 }
 
 .div-after-logo {
@@ -87,12 +72,6 @@
   margin: 16px 0;
 }
 
-ion-label.practera-label {
-  color: var(--practera-color-subtitle) !important;
-  font-weight: 500 !important;
-  font-size: 14px !important;
-}
-
 /******************
   ion-button
 ******************/
@@ -100,12 +79,8 @@ ion-button.practera-btn {
   --border-radius: 8px;
   --box-shadow: none;
   text-transform: uppercase;
-  font-size: 14px;
-  font-weight: 500;
-  letter-spacing: 0.75px;
-
   &.mobile-btn {
-    height: 32px;	
+    height: 32px;
     width: 94px;
   }
 }
@@ -130,44 +105,16 @@ ion-button.practera-btn {
   width: 100%;
 
   h4 {
-    font-size: 14px;
     text-overflow: ellipsis;
     margin-bottom: 0px;
     max-width: 80%;
   }
 
   p {
-    font-size: 12px;
-    font-weight: 500;
     text-overflow: ellipsis;
     margin-top: 0px;
     overflow: hidden;
     -webkit-line-clamp: 1;
-    line-height: 16px;
-  }
-}
-
-.feedback-card {
-  position: relative;
-
-  .feedback-label {
-    padding: 3px 16px 3px 16px;
-    background-color: #fff;
-    position: absolute;
-    right: 0;
-    border-bottom-left-radius: 12px;
-    border-top-left-radius: 12px;
-    box-shadow: 0 4px 24px 4px rgba(18, 23, 81, 0.1);
-    bottom: -28px;
-
-    p {
-      font-size: 14px;
-      font-weight: normal;
-      color: var(--ion-color-primary);
-      text-shadow: none;
-      height: 20px;
-      margin-top: 0px;
-    }
   }
 }
 
@@ -182,8 +129,6 @@ ion-button.practera-btn {
 
 // question name
 .q-title {
-  font-size: 16px;
-  font-weight: bold;
   display: block;
   padding-bottom: 0;
 }
@@ -243,14 +188,14 @@ ion-button.practera-btn {
     .pop-up-content {
       border-radius: 12px !important;
 
-      .imgage-content {
+      .image-content {
         text-align: -webkit-center;
-    
+
         .image {
           background-color: #ffffff !important;
           width: -webkit-fit-content;
           border-radius: 50%;
-    
+
           img {
             border-radius: 50%;
             width: 56px;
@@ -273,24 +218,7 @@ ion-button.practera-btn {
         &.button-container {
           margin: 0 15px 4px;
         }
-        .title {
-          font-size: 20px;
-          font-weight: 500;
-          text-align: center;
-          margin-bottom: 0px;
-          color: black;
-        }
-        .subtitle {
-          color: var(--ion-color-dark);
-          font-size: 16px;
-          line-height: 24px;
-          text-align: center;
-          margin-top: 0px;
-        }
         .description {
-          color: var(--ion-color-medium);
-          font-size: 16px;
-          line-height: 17px;
           overflow: hidden;
           text-overflow: ellipsis;
           display: -webkit-box;
@@ -298,9 +226,6 @@ ion-button.practera-btn {
           -webkit-line-clamp: 3;
           -webkit-box-orient: vertical !important;
           text-align: -webkit-center;
-        }
-        .text-highlight {
-          font-weight: bold !important;
         }
       }
 
@@ -349,18 +274,6 @@ ion-button.practera-btn {
 }
 
 /******************
-  ion-title
-******************/
-ion-title.title-large {
-  font-size: 20px;
-  font-weight: 500;
-}
-ion-title.title-small {
-  font-size: 14px;
-  font-weight: 500;
-}
-
-/******************
   Filter buttons
   Currently used on reviews & events page
 ******************/
@@ -370,7 +283,6 @@ ion-title.title-small {
     color: var(--ion-color-primary);
     --background: white;
     --box-shadow: none;
-    font-size: 14px;
     height: 32px;
   }
   .btn-activated{
@@ -393,18 +305,15 @@ ion-title.title-small {
 .due-date {
   margin-bottom: 0;
   color: var(--ion-color-primary);
-  font-size: 12px !important;
-  font-weight: bold !important;
   // use in assessment page to show due dates
   &.assessment {
-    font-size: 16px !important;
     ion-icon {
       vertical-align: bottom;
     }
   }
   // use to show overdue dates
   &.over {
-    color: var(--practera-ovderdue-color);
+    color: var(--practera-ovderdue-color) !important;
   }
 }
 
@@ -418,10 +327,10 @@ ion-title.title-small {
     -webkit-box-shadow: 0 0 0 0 rgba(var(--ion-color-primary-rgb), 0.5);
   }
   70% {
-      -webkit-box-shadow: 0 0 0 15px rgba(var(--ion-color-primary-rgb), 0);
+    -webkit-box-shadow: 0 0 0 15px rgba(var(--ion-color-primary-rgb), 0);
   }
   100% {
-      -webkit-box-shadow: 0 0 0 0 rgba(var(--ion-color-primary-rgb), 0);
+    -webkit-box-shadow: 0 0 0 0 rgba(var(--ion-color-primary-rgb), 0);
   }
 }
 @keyframes pulse {
@@ -430,12 +339,12 @@ ion-title.title-small {
     box-shadow: 0 0 0 0 rgba(var(--ion-color-primary-rgb), 0.5);
   }
   70% {
-      -moz-box-shadow: 0 0 0 15px rgba(var(--ion-color-primary-rgb), 0);
-      box-shadow: 0 0 0 15px rgba(var(--ion-color-primary-rgb), 0);
+    -moz-box-shadow: 0 0 0 15px rgba(var(--ion-color-primary-rgb), 0);
+    box-shadow: 0 0 0 15px rgba(var(--ion-color-primary-rgb), 0);
   }
   100% {
-      -moz-box-shadow: 0 0 0 0 rgba(var(--ion-color-primary-rgb), 0);
-      box-shadow: 0 0 0 0 rgba(var(--ion-color-primary-rgb), 0);
+    -moz-box-shadow: 0 0 0 0 rgba(var(--ion-color-primary-rgb), 0);
+    box-shadow: 0 0 0 0 rgba(var(--ion-color-primary-rgb), 0);
   }
 }
 // styles for custom toast
@@ -444,7 +353,6 @@ ion-title.title-small {
   --color:white;
   --border-radius: 12px;
   --box-shadow: 0 4px 16px rgba(0,0,0,.12);
-  font-size: 18px !important;
 }
 
 /******************
@@ -461,9 +369,6 @@ ion-title.title-small {
     color: var(--ion-color-medium);
   }
   ion-card-content {
-    font-size: 16px;
-    letter-spacing: 0.15px;
-    line-height: 24px;
     max-height: 64px;
     min-height: 64px;
     height: 64px;

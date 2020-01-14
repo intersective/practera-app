@@ -5,7 +5,7 @@
         <ion-icon class="icon-backward" name="arrow-back" color="primary" slot="icon-only" margin-start></ion-icon>
       </ion-button>
     </ion-buttons>
-    <ion-title text-center class="title-large">Activity</ion-title>
+    <ion-title text-center>Activity</ion-title>
   </ion-toolbar>
 </ion-header>
 
@@ -16,12 +16,12 @@
   <ng-container *ngIf="loadingActivity">
     <ion-spinner></ion-spinner>
   </ng-container>
-  <h1>{{ activity.name }}</h1>
+  <h1 class="headline-4">{{ activity.name }}</h1>
   <div text-left>
-    <app-description *ngIf="activity.description" [content]="activity.description"></app-description>
+    <app-description *ngIf="activity.description" [content]="activity.description" class="body-1"></app-description>
   </div>
   <div text-left margin-top>
-    <ion-label color="medium" class="label">
+    <ion-label color="medium" class="subtitle-2 gray-2">
       Tasks
     </ion-label>
   </div>
@@ -50,12 +50,12 @@
               slot="start" ></ion-icon>
           </ng-container>
           <div class="icon-item">
-            <h4 class="task-name">{{ task.name }}</h4>
-            <p *ngIf="task.type === 'Assessment' && (!task.status || task.status === '' || task.status === 'in progress')" [class]="task.isOverdue ? 'due-date over' : 'due-date'">
+            <h4 class="task-name subtitle-1">{{ task.name }}</h4>
+            <p *ngIf="task.type === 'Assessment' && (!task.status || task.status === '' || task.status === 'in progress')" class="due-date caption" [ngClass]="{'over': task.isOverdue}">
               {{ this.sharedService.dueDateFormatter(task.dueDate) }}
             </p>
             <p>
-              <ion-text *ngIf="task.type != 'Locked'" [color]="task.status == 'feedback available' ? 'primary' : 'medium'" class="task-type-status">
+              <ion-text *ngIf="task.type != 'Locked'" [color]="task.status == 'feedback available' ? 'primary' : 'medium'" class="task-type-status caption gray-2">
                 {{ task.type }}
                 <ng-container *ngIf="task.isLocked; else status"> - Locked by {{task.submitter.name}}</ng-container>
                 <ng-template #status>{{ task.status }}</ng-template>
@@ -90,7 +90,7 @@
   </ng-container>
   <ng-container *ngIf="events && events.length > 0">
     <div text-left margin-top>
-      <ion-label color="medium" class="label">
+      <ion-label color="medium" class="subtitle-2 gray-2">
         Events
       </ion-label>
     </div>

@@ -1,14 +1,14 @@
 <ng-container *ngIf="submissionStatus !== 'in progress' && submission.answer">
-  <p class="paragraph">{{ submission.answer }}</p>
+  <p class="paragraph body-1">{{ submission.answer }}</p>
 </ng-container>
 
 <div *ngIf="reviewStatus !== 'in progress' && (review.answer || review.comment)" class="q-reviews">
-  <ion-label class="q-title">Feedback</ion-label>
+  <ion-label class="q-title subtitle-2">Feedback</ion-label>
   <ng-container *ngIf="review.answer">
-    <p class="paragraph">{{ review.answer }}</p>
+    <p class="paragraph body-2 gray-2">{{ review.answer }}</p>
   </ng-container>
   <ng-container *ngIf="review.comment">
-    <p class="paragraph">{{ review.comment }}</p>
+    <p class="paragraph body-2 gray-2">{{ review.comment }}</p>
   </ng-container>
 </div>
 

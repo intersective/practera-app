@@ -36,12 +36,11 @@
 
 <ng-template #badges>
   <ng-container @newLoaded *ngIf="achievements && achievements.length > 0">
-    <ion-item class="achievement" lines="none" color="transparent">
-      <ion-label color="medium" slot="start">My Badges</ion-label>
-      <ion-label slot="end">
-        <a color="primary" (click)='goTo(["achievements"])'>View all</a>
-      </ion-label>
-    </ion-item>
+
+    <ion-label color="medium" class="subtitle-2">My Badges</ion-label>
+    <ion-label class="float-right">
+      <a color="primary" class="button" (click)='goTo(["achievements"])'>VIEW ALL</a>
+    </ion-label>
 
     <ion-grid class="ion-no-padding">
       <ion-row class="ion-text-center ion-margin-bottom">
@@ -54,7 +53,7 @@
 </ng-template>
 
 <ng-template #notificationsDesktop>
-  <ion-label color="medium">Notifications</ion-label>
+  <ion-label color="medium" class="subtitle-2">Notifications</ion-label>
   <ion-list class="todo-list" lines="none">
     <ng-container *ngIf="loadingTodoItems; else todoItemsTpl">
       <app-todo-card [loading]="true" [todoItem]="false"></app-todo-card>
