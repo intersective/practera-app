@@ -3,6 +3,7 @@ import { Observable, of, forkJoin } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { RequestService } from '@shared/request/request.service';
 import { UtilsService } from '@services/utils.service';
+import { BrowserStorageService } from '@services/storage.service';
 
 /**
  * @name api
@@ -88,6 +89,7 @@ export class ActivityService {
   constructor(
     private request: RequestService,
     private utils: UtilsService,
+    public storage: BrowserStorageService,
   ) {}
 
   // request for the latest data, and return the previously saved data at the same time
@@ -391,19 +393,19 @@ export class ActivityService {
 
   // when not done (empty status/feedback available/)
   private isTaskCompleted(task: OverviewTask): boolean {
-    // Topic/Assessment: when it's 'not started', we dont care progress value
-    if (task.type === 'assessment' && task.status === 'not started') {
-      return false;
-    }
-
     // is_locked: take is_locked story as "completed" for now (so we skip to the next one)
     // progress: 0 = not done, 1 = marked as read (done)
     if (task.is_locked || task.progress === 1) {
       return true;
     }
 
+    // if assessment is a team assessment and participent is not in a team, we skip to next one.
+    if (task.is_team && !this.storage.getUser().teamId) {
+      return true;
+    }
+
     // Assessment: 'done' and 'progress=0' can be coexistent
-    if (task.type === 'assessment' && ['pending review', 'done', 'pending approval'].indexOf(task.status) !== -1 && task.progress !== 1) {
+    if (task.type === 'assessment' && ['pending review', 'done', 'pending approval'].indexOf(task.status) !== -1) {
       return true;
     }
 
