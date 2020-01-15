@@ -101,6 +101,39 @@ describe('AssessmentComponent', () => {
   let shared: SharedService;
   let utils: UtilsService;
 
+  const mockQuestions = [
+    {
+      id: 123,
+      name: 'test',
+      description: 'test',
+      canAnswer: true,
+      canComment: false,
+      type: 'text',
+      isRequired: true,
+      audience: ['participant', 'mentor']
+    },
+    {
+      id: 124,
+      name: 'test',
+      description: 'test',
+      canAnswer: true,
+      canComment: false,
+      type: 'text',
+      isRequired: false,
+      audience: ['participant', 'mentor']
+    },
+    {
+      id: 125,
+      name: 'test',
+      description: 'test',
+      canAnswer: true,
+      canComment: false,
+      type: 'multiple',
+      isRequired: false,
+      audience: ['participant', 'mentor']
+    }
+  ];
+
   const mockAssessment = {
     name: 'test',
     description: 'test',
@@ -111,38 +144,7 @@ describe('AssessmentComponent', () => {
     groups: [{
       name: 'test groups',
       description: 'test groups description',
-      questions: [
-        {
-          id: 123,
-          name: 'test',
-          description: 'test',
-          canAnswer: true,
-          canComment: false,
-          type: 'text',
-          isRequired: true,
-          audience: ['participant', 'mentor']
-        },
-        {
-          id: 124,
-          name: 'test',
-          description: 'test',
-          canAnswer: true,
-          canComment: false,
-          type: 'text',
-          isRequired: false,
-          audience: ['participant', 'mentor']
-        },
-        {
-          id: 125,
-          name: 'test',
-          description: 'test',
-          canAnswer: true,
-          canComment: false,
-          type: 'multiple',
-          isRequired: false,
-          audience: ['participant', 'mentor']
-        }
-      ],
+      questions: mockQuestions,
     }],
   };
   const mockSubmission = {
@@ -470,7 +472,9 @@ describe('AssessmentComponent', () => {
         'answer': null
       }
     ];
-    expect(component.compulsoryQuestionsAnswered(answers)).toEqual([answers[0]]);
+
+    const unansweredQuestions = component.compulsoryQuestionsAnswered(answers);
+    expect(unansweredQuestions).toEqual([mockQuestions[0]]);
   });
 
   it('should return empty from compulsoryQuestionsAnswered() if all required question has been answered', () => {
