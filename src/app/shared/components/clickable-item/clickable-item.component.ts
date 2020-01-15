@@ -8,5 +8,6 @@ import { Component, Input } from '@angular/core';
 export class ClickableItemComponent {
   @Input() lines;
   @Input() backgroundColor;
+  @Input() isSwitcherCard?;
   constructor() {}
 }

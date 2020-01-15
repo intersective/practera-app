@@ -17,18 +17,15 @@ import { NewRelicService } from '@shared/new-relic/new-relic.service';
   styleUrls: ['project.component.scss'],
 })
 export class ProjectComponent extends RouterEnter {
-  private activities: Subscription;
-  private projectProgresses: Subscription;
   public routeUrl = '/app/project';
   public programName: string;
   public milestones: Array<Milestone | DummyMilestone> = [];
-  public loadingActivity = true;
   public loadingMilestone = true;
-  public loadingProgress = true;
   @ViewChild('contentRef', {read: ElementRef}) contentRef: any;
   @ViewChildren('milestoneRef', {read: ElementRef}) milestoneRefs: QueryList<ElementRef>;
-  public activeMilestone: Array<boolean> = [];
-  public milestonePositions: Array<number> = [];
+  // the milestone index that is currently on.
+  // used to indicate the milestone progress bar at top
+  public activeMilestoneIndex = 0;
   private highlightedActivityId: number;
 
   constructor(
@@ -47,10 +44,7 @@ export class ProjectComponent extends RouterEnter {
   }
 
   private _initialise() {
-    this.milestones = [{ dummy: true }]; // initial value
-    this.loadingActivity = true;
     this.loadingMilestone = true;
-    this.loadingProgress = true;
   }
 
   onEnter() {
@@ -68,84 +62,50 @@ export class ProjectComponent extends RouterEnter {
       }
     );
 
-    this.projectService.getMilestones()
-      .subscribe(milestones => {
-
+    this.subscriptions.push(this.projectService.getProject().subscribe(
+      milestones => {
+        if (!milestones) {
+          milestones = [{ dummy: true }];
+        }
         this.milestones = milestones;
         this.loadingMilestone = false;
-        this.activeMilestone = new Array(milestones.length);
-        this.activeMilestone.fill(false);
-        this.activeMilestone[0] = true;
-        this.activities = this.projectService.getActivities(milestones)
-          .subscribe(
-          activities => {
-            // remove entire Activity object with dummy data for clean Activity injection
-            if (this.milestones) {
-              this.milestones.forEach((milestone, i) => {
-                if (this.utils.find(this.milestones[i].Activity, { dummy: true })) {
-                  this.milestones[i].Activity = [];
-                }
-              });
-            }
-
-            this.milestones = this._addActivitiesToEachMilestone(this.milestones, activities);
-            this.loadingActivity = false;
-
-            this.projectProgresses = this.projectService.getProgress().subscribe(
-              progresses => {
-                if (this.milestoneRefs) {
-                  this.milestonePositions = this.milestoneRefs.map(milestoneRef => {
-                    return milestoneRef.nativeElement.offsetTop;
-                  });
-                }
-                this.milestones = this._populateMilestoneProgress(progresses, this.milestones);
-
-                this.loadingProgress = false;
-
-                if (this.highlightedActivityId) {
-                  this.scrollTo(`activity-card-${this.highlightedActivityId}`);
-                }
-              },
-              error => {
-                this.newRelic.noticeError(error);
-              }
-            );
-          },
-          error => {
-            this.newRelic.noticeError(error);
-          });
-      });
+        // scroll to highlighted activity if has one
+        if (this.highlightedActivityId) {
+          this.scrollTo(`activity-card-${this.highlightedActivityId}`);
+        }
+      },
+      error => {
+        this.newRelic.noticeError(error);
+      }
+    ));
 
     this.fastFeedbackService.pullFastFeedback().subscribe();
   }
 
   trackScrolling(event) {
-    const activeMilestoneIndex = this.milestonePositions.findIndex((element, i) => {
+    // get the position of each milestone
+    const milestonePositions = this.milestoneRefs.map(milestoneRef => {
+      return milestoneRef.nativeElement.offsetTop;
+    });
+    this.activeMilestoneIndex = milestonePositions.findIndex((element, i) => {
       const {
         detail, // current scrolling event
         srcElement // ion-content's height
       } = event;
       const screenMidPoint = detail.currentY + (srcElement.offsetHeight / 2);
 
-      if (i === this.milestonePositions.length - 1) {
+      if (i === milestonePositions.length - 1) {
         return screenMidPoint >= element;
       }
 
-      return screenMidPoint >= element && screenMidPoint < this.milestonePositions[i + 1];
+      return screenMidPoint >= element && screenMidPoint < milestonePositions[i + 1];
     });
-
-    // activeMilestoneIndex starts from -1
-    if (this.activeMilestone[activeMilestoneIndex] !== true && activeMilestoneIndex !== -1) {
-      this.activeMilestone.fill(false);
-      this.activeMilestone[activeMilestoneIndex] = true;
-    }
   }
 
   scrollTo(domId: string, index?: number): void {
     // update active milestone status (mark whatever user select)
-    this.activeMilestone.fill(false);
     if (index > -1) {
-      this.activeMilestone[index] = true;
+      this.activeMilestoneIndex = index;
     }
 
     const el = this.document.getElementById(domId);
@@ -161,38 +121,4 @@ export class ProjectComponent extends RouterEnter {
     this.newRelic.addPageAction('Navigate activity', id);
   }
 
-  private _addActivitiesToEachMilestone(milestones, activities) {
-    activities.forEach(activity => {
-      const milestoneIndex = milestones.findIndex(milestone => {
-        return milestone.id === activity.milestoneId;
-      });
-      milestones[milestoneIndex].Activity.push(activity);
-    });
-    return milestones;
-  }
-
-  private _populateMilestoneProgress(progresses, milestones) {
-    progresses.Milestone.forEach(milestoneProgress => {
-      const milestoneIndex = milestones.findIndex(milestone => {
-        return milestone.id === milestoneProgress.id;
-      });
-
-      milestones[milestoneIndex].progress = milestoneProgress.progress;
-      milestones[milestoneIndex].Activity.forEach((activity, activityIndex) => {
-        const thisActivity = milestoneProgress.Activity.find(item => {
-          return item.id === activity.id;
-        });
-        if (this.utils.has(thisActivity, 'progress')) {
-          milestones[milestoneIndex].Activity[activityIndex].progress = thisActivity.progress;
-        } else {
-          milestones[milestoneIndex].Activity[activityIndex].progress = 0;
-        }
-
-        if (this.highlightedActivityId && activity.id === this.highlightedActivityId) {
-          milestones[milestoneIndex].Activity[activityIndex].highlighted = true;
-        }
-      });
-    });
-    return milestones;
-  }
 }
