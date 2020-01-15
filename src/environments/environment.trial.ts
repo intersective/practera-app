@@ -4,6 +4,7 @@ export const environment = {
   pusherKey: '255f010d210933ca7675',
   env: 'live',
   APIEndpoint: 'https://trial.practera.com/',
+  graphQL: '',
   intercomAppId: '',
   filestack: {
     key: 'AO6F4C72uTPGRywaEijdLz',
@@ -15,8 +16,16 @@ export const environment = {
         any: '/appv2/live/uploads/',
         image: '/appv2/live/uploads/',
         video: '/media/fpvideo/upload/'
-      }
-    }
+      },
+      workflows: [
+        '3c38ef53-a9d0-4aa4-9234-617d9f03c0de',
+      ],
+    },
+    policy: '<CUSTOM_FILESTACK_POLICY>',
+    signature: '<CUSTOM_FILESTACK_SIGNATURE>',
+    workflows: {
+      virusDetection: '3c38ef53-a9d0-4aa4-9234-617d9f03c0de',
+    },
   },
   defaultCountryModel: 'AUS',
   intercom: true,
