@@ -5,10 +5,10 @@ import { RequestService } from '@shared/request/request.service';
 import { UtilsService } from '@services/utils.service';
 import { BrowserStorageService } from '@services/storage.service';
 import { Activity } from '../project/project.service';
-import { FastFeedbackComponent } from '../fast-feedback/fast-feedback.component';
 import { Question, Meta} from '../fast-feedback/fast-feedback.service';
 import { NotificationService } from '@shared/notification/notification.service';
 import { Event, EventsService } from '@app/events/events.service';
+import { SharedService } from '@services/shared.service';
 
 /**
  * @name api
@@ -43,6 +43,7 @@ export interface TodoItem {
     team_id?: number;
     team_member_id?: number;
     participants_only?: boolean;
+    due_date?: string;
   };
 }
 
@@ -59,7 +60,8 @@ export class HomeService {
     private request: RequestService,
     private utils: UtilsService,
     private notification: NotificationService,
-    private eventsService: EventsService
+    private eventsService: EventsService,
+    public sharedService: SharedService
   ) {}
 
   getProgramName() {
@@ -123,6 +125,11 @@ export class HomeService {
           meta: todoItem.meta
         });
       }
+
+      // todo item for user to submit the assessment
+      if (todoItem.identifier.includes('AssessmentSubmissionReminder-')) {
+        todoItems = this._addTodoItemSubmissionReminder(todoItem, todoItems);
+      }
     });
     return todoItems;
   }
@@ -166,6 +173,31 @@ export class HomeService {
     }
     item.name = todoItem.meta.assessment_name;
     item.description = 'Please review the assessment';
+    item.time = this.utils.timeFormatter(todoItem.created);
+    item.meta = todoItem.meta;
+    todoItems.push(item);
+    return todoItems;
+  }
+
+  private _addTodoItemSubmissionReminder(todoItem, todoItems) {
+    const item: TodoItem = {
+      type: '',
+      name: '',
+      description: '',
+      time: '',
+      meta: {}
+    };
+    item.type = 'assessment_submission_reminder';
+    if (!this.utils.has(todoItem, 'meta.assessment_name') ||
+        !this.utils.has(todoItem, 'meta.context_id') ||
+        !this.utils.has(todoItem, 'meta.activity_id') ||
+        !this.utils.has(todoItem, 'meta.assessment_id') ||
+        !this.utils.has(todoItem, 'meta.due_date')) {
+      this.request.apiResponseFormatError('TodoItem meta format error');
+      return todoItems;
+    }
+    item.name = todoItem.meta.assessment_name;
+    item.description = this.sharedService.dueDateFormatter(todoItem.meta.due_date);
     item.time = this.utils.timeFormatter(todoItem.created);
     item.meta = todoItem.meta;
     todoItems.push(item);
@@ -388,6 +420,30 @@ export class HomeService {
           }
         };
 
+      case 'assessment_submission_reminder':
+        if (!this.utils.has(event, 'meta.AssessmentSubmissionReminder.assessment_name') ||
+            !this.utils.has(event, 'meta.AssessmentSubmissionReminder.context_id') ||
+            !this.utils.has(event, 'meta.AssessmentSubmissionReminder.activity_id') ||
+            !this.utils.has(event, 'meta.AssessmentSubmissionReminder.assessment_id') ||
+            !this.utils.has(event, 'meta.AssessmentSubmissionReminder.due_date') ||
+            !this.utils.has(event, 'meta.AssessmentSubmissionReminder.reminded_date')
+          ) {
+          this.request.apiResponseFormatError('TodoItem meta format error');
+          return {};
+        }
+        return {
+          type: 'assessment_submission_reminder',
+          name: event.meta.AssessmentSubmissionReminder.assessment_name,
+          description: this.sharedService.dueDateFormatter(event.meta.AssessmentSubmissionReminder.due_date),
+          time: this.utils.timeFormatter(event.meta.AssessmentSubmissionReminder.reminded_date),
+          meta: {
+            context_id: event.meta.AssessmentSubmissionReminder.context_id,
+            assessment_id: event.meta.AssessmentSubmissionReminder.assessment_id,
+            assessment_name: event.meta.AssessmentSubmissionReminder.assessment_name,
+            activity_id: event.meta.AssessmentSubmissionReminder.activity_id,
+            due_date: event.meta.AssessmentSubmissionReminder.due_date
+          }
+        };
     }
   }
 
@@ -426,16 +482,6 @@ export class HomeService {
       identifier: 'EventReminder-' + event.id,
       is_done: true
     }).subscribe();
-  }
-
-  /**
-   * Pop up the fast feedback modal window
-   */
-  async popUpFastFeedback(props: { questions?: Array<Question>, meta?: Meta } = {}) {
-    const modal = await this.notification.modal(FastFeedbackComponent, props, {
-      backdropDismiss: false,
-      showBackdrop: false,
-    });
   }
 
 }

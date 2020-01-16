@@ -1,9 +1,18 @@
 import { Injectable, Optional, isDevMode } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams, HttpErrorResponse, HttpParameterCodec } from '@angular/common/http';
-import { Observable, of } from 'rxjs';
-import { catchError, tap } from 'rxjs/operators';
+import { Router } from '@angular/router';
+import { Observable, of, throwError } from 'rxjs';
+import { catchError, tap, concatMap } from 'rxjs/operators';
 import { UtilsService } from '@services/utils.service';
 import { BrowserStorageService } from '@services/storage.service';
+import { environment } from '@environments/environment';
+
+@Injectable({ providedIn: 'root' })
+export class DevModeService {
+  isDevMode() {
+    return isDevMode();
+  }
+}
 
 export class RequestConfig {
   appkey = '';
@@ -34,12 +43,15 @@ export class QueryEncoder implements HttpParameterCodec {
 export class RequestService {
   private appkey: string;
   private prefixUrl: string;
+  private loggedOut: boolean;
 
   constructor(
     private http: HttpClient,
     private utils: UtilsService,
     private storage: BrowserStorageService,
-    @Optional() config: RequestConfig
+    private router: Router,
+    @Optional() config: RequestConfig,
+    private devMode: DevModeService
   ) {
     if (config) {
       this.appkey = config.appkey;
@@ -52,8 +64,8 @@ export class RequestService {
    * @param {'Content-Type': string } header
    * @returns {HttpHeaders}
    */
-  appendHeaders(header = {'Content-Type': 'application/json'}) {
-    const headers = new HttpHeaders(header);
+  appendHeaders(header = {}) {
+    const headers = new HttpHeaders(Object.assign({'Content-Type': 'application/json'}, header));
     return headers;
   }
 
@@ -73,6 +85,15 @@ export class RequestService {
     return params;
   }
 
+  private getEndpointUrl(endpoint) {
+    let endpointUrl = this.prefixUrl + endpoint;
+    if (endpoint.includes('https://') || endpoint.includes('http://')) {
+      endpointUrl = endpoint;
+    }
+
+    return endpointUrl;
+  }
+
   /**
    *
    * @param {string} endPoint
@@ -82,52 +103,70 @@ export class RequestService {
    */
   get(endPoint: string = '', httpOptions?: any): Observable<any> {
     if (!httpOptions) {
-      httpOptions = {
-        headers: '',
-        params: ''
-      };
+      httpOptions = {};
     }
+
     if (!this.utils.has(httpOptions, 'headers')) {
       httpOptions.headers = '';
     }
     if (!this.utils.has(httpOptions, 'params')) {
       httpOptions.params = '';
     }
-    return this.http.get<any>(this.prefixUrl + endPoint, {
+
+    return this.http.get<any>(this.getEndpointUrl(endPoint), {
       headers: this.appendHeaders(httpOptions.headers),
       params: this.setParams(httpOptions.params)
-    }).pipe(
-      catchError(this.handleError<any>('API Request'))
-    );
+    })
+      .pipe(concatMap(response => {
+        this._refreshApikey(response);
+        return of(response);
+      }))
+      .pipe(
+        catchError((error) => this.handleError(error))
+      );
   }
 
   post(endPoint: string = '', data, httpOptions?: any): Observable<any> {
     if (!httpOptions) {
-      httpOptions = {
-        headers: '',
-        params: ''
-      };
+      httpOptions = {};
     }
+
     if (!this.utils.has(httpOptions, 'headers')) {
       httpOptions.headers = '';
     }
     if (!this.utils.has(httpOptions, 'params')) {
       httpOptions.params = '';
     }
-    return this.http.post<any>(this.prefixUrl + endPoint, data, {
+
+    return this.http.post<any>(this.getEndpointUrl(endPoint), data, {
       headers: this.appendHeaders(httpOptions.headers),
       params: this.setParams(httpOptions.params)
-    }).pipe(
-      catchError(this.handleError<any>('API Request'))
-    );
+    })
+      .pipe(concatMap(response => {
+        this._refreshApikey(response);
+        return of(response);
+      }))
+      .pipe(
+        catchError((error) => this.handleError(error))
+      );
+  }
+
+  postGraphQL(data): Observable<any> {
+    return this.http.post<any>(environment.graphQL, data, {
+      headers: this.appendHeaders()
+    })
+      .pipe(concatMap(response => {
+        this._refreshApikey(response);
+        return of(response);
+      }))
+      .pipe(
+        catchError((error) => this.handleError(error))
+      );
   }
 
   delete(endPoint: string = '', httpOptions?: any): Observable<any> {
     if (!httpOptions) {
-      httpOptions = {
-        headers: '',
-        params: ''
-      };
+      httpOptions = {};
     }
     if (!this.utils.has(httpOptions, 'headers')) {
       httpOptions.headers = '';
@@ -135,12 +174,17 @@ export class RequestService {
     if (!this.utils.has(httpOptions, 'params')) {
       httpOptions.params = '';
     }
-    return this.http.delete<any>(this.prefixUrl + endPoint, {
+    return this.http.delete<any>(this.getEndpointUrl(endPoint), {
       headers: this.appendHeaders(httpOptions.headers),
       params: this.setParams(httpOptions.params)
-    }).pipe(
-      catchError(this.handleError<any>('API Request'))
-    );
+    })
+      .pipe(concatMap(response => {
+        this._refreshApikey(response);
+        return of(response);
+      }))
+      .pipe(
+        catchError((error) => this.handleError(error))
+      );
   }
 
   /**
@@ -164,28 +208,43 @@ export class RequestService {
     return;
   }
 
-  private handleError<T> (operation = 'operation', result?: T) {
-    // when API response error is blank
-    if (!result) {
-      return (result as T);
+  private handleError(error: HttpErrorResponse) {
+    if (this.devMode.isDevMode()) {
+      console.error(error); // log to console instead
     }
 
-    return (error: any): Observable<T> => {
-      if (isDevMode()) {
-        console.error(error); // log to console instead
-        this.storage.append('errors', error);
-      }
+    // log the user out if jwt expired
+    if (this.utils.has(error, 'error.message') && [
+      'Request must contain an apikey',
+      'Expired apikey',
+      'Invalid apikey'
+    ].includes(error.error.message) && !this.loggedOut) {
+      // in case lots of api returns the same apikey invalid at the same time
+      this.loggedOut = true;
+      setTimeout(
+        () => {
+          this.loggedOut = false;
+        },
+        2000
+      );
+      this.router.navigate(['logout']);
+    }
 
-      // TODO: better job of transforming error for user consumption
-      this.log(`${operation} failed: ${error.message}`);
+    // if error.error is a html template error (when try to read remote version.txt)
+    if (typeof error.error === 'string' && error.error.indexOf('<!DOCTYPE html>') !== -1) {
+      return throwError(error.message);
+    }
 
-      // Let the app keep running by returning an empty result.
-      return of(result as T);
-    };
+    return throwError(error.error);
   }
 
-  // further enhance this for error reporting (piwik)
-  private log(message: string) {
-    console.log(message);
+  /**
+   * Refresh the apikey (JWT token) if API returns it
+   *
+   */
+  private _refreshApikey(response) {
+    if (this.utils.has(response, 'apikey')) {
+      this.storage.setUser({apikey: response.apikey});
+    }
   }
 }

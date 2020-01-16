@@ -1,10 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { GoMobileService } from './go-mobile.service';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
-import { UtilsService, ContactNumberFormat } from '@services/utils.service';
+import { UtilsService } from '@services/utils.service';
 import { NotificationService } from '@shared/notification/notification.service';
 import { BrowserStorageService } from '@services/storage.service';
 import { environment } from '../../environments/environment';
+import { NewRelicService } from '@shared/new-relic/new-relic.service';
 
 @Component({
   selector: 'go-mobile',
@@ -22,18 +23,17 @@ export class GoMobileComponent implements OnInit {
   invalidNumber = true;
   // default country model
   countryModel = 'AUS';
-  // default mask
-  mask: Array<string|RegExp>;
 
   constructor(
     private goMobileService: GoMobileService,
     private utils: UtilsService,
     private notification: NotificationService,
     public storage: BrowserStorageService,
-    public contact: ContactNumberFormat,
+    private newRelic: NewRelicService
   ) {}
 
   ngOnInit() {
+    this.newRelic.setPageViewName('go-mobile');
     this.profile.contactNumber = this.storage.getUser().contactNumber;
     if (this.profile.contactNumber) {
       this.saved = true;
@@ -48,11 +48,11 @@ export class GoMobileComponent implements OnInit {
     if (environment.APIEndpoint.indexOf('us') !== -1) {
       this.countryModel = 'US';
     }
-
-    this.mask = this.contact.masks[this.countryModel];
   }
 
   submit() {
+    const nrSubmitContactTracer = this.newRelic.createTracer('submit contact');
+    this.newRelic.addPageAction('submit contact info');
     this.sendingSMS = true;
     this.profile.contactNumber = this.profile.contactNumber.replace(/[^0-9+]+/ig, '');
     // check if newly input number is valid or not.
@@ -63,20 +63,32 @@ export class GoMobileComponent implements OnInit {
     this.goMobileService.submit({
       contact_number: this.profile.contactNumber,
       sendsms: true,
-    }).subscribe(res => {
-      this.saved = true;
-      const alertBox = this.notification.alert({
-        header: 'Going Mobile!',
-        message: 'You should get an SMS shortly... if not, contact our help team',
-        buttons: [{
-          text: 'OK',
-          handler: () => {
-            this.sendingSMS = false;
-            return this.notification.dismiss();
-          },
-        }],
-      });
-    });
+    }).subscribe(
+      res => {
+        nrSubmitContactTracer();
+        this.saved = true;
+        const alertBox = this.notification.alert({
+          header: 'Going Mobile!',
+          message: 'You should get an SMS shortly... if not, contact our help team',
+          buttons: [{
+            text: 'OK',
+            handler: () => {
+              this.sendingSMS = false;
+              return this.notification.dismiss();
+            },
+          }],
+        });
+      },
+      err => {
+        const toasted = this.notification.alert({
+          header: 'Error submitting contact info',
+          message: err.msg || JSON.stringify(err)
+        });
+        nrSubmitContactTracer();
+        this.newRelic.noticeError('submitting contact error', JSON.stringify(err));
+        throw new Error(err);
+      }
+    );
   }
 
   validateContactNumber() {
@@ -105,15 +117,8 @@ export class GoMobileComponent implements OnInit {
     return false;
   }
 
-  updateCountry() {
-    const selectedCountry = this.countryModel;
-    const country = this.utils.find(this.contact.countryCodes, function(c) {
-      return c.code === selectedCountry;
-    });
-    // set currentContactNumber to it's format.
-    this.profile.contactNumber = country.format;
-    // update the mask as per the newly selected country
-    this.mask = this.contact.masks[country.code];
+  updateCountry(contactNumber: string) {
+    this.profile.contactNumber = contactNumber;
   }
 
 }

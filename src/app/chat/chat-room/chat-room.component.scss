@@ -7,106 +7,9 @@ $message-body-size: 224px;
     ion-avatar {
       margin: 2px 6px 2px 0 !important;
       margin-left: -8px !important;
-
       &.no-time {
         margin-top: -8% !important;
       }
-
-      ion-icon {
-        width: 36px;
-        height: 36px;
-        color: white;
-      }
-
-      .chat-avatar {
-        color: white;
-        margin: auto;
-        text-align: center;
-        font-weight: bold;
-        line-height: 36px;
-      }
-
-      // chat avatar colors
-      &.color-team {
-        background-color: var(--practera-chat-color-colorteam);
-      }
-
-      &.color-1 {
-        background-color: var(--practera-chat-color-color1);
-      }
-
-      &.color-2 {
-        background-color: var(--practera-chat-color-color2);
-      }
-
-      &.color-3 {
-        background-color: var(--practera-chat-color-color3);
-      }
-
-      &.color-4 {
-        background-color: var(--practera-chat-color-color4);
-      }
-
-      &.color-5 {
-        background-color: var(--practera-chat-color-color5);
-      }
-
-      &.color-6 {
-        background-color: var(--practera-chat-color-color6);
-      }
-
-      &.color-7 {
-        background-color: var(--practera-chat-color-color7);
-      }
-
-      &.color-8 {
-        background-color: var(--practera-chat-color-color8);
-      }
-
-      &.color-9 {
-        background-color: var(--practera-chat-color-color9);
-      }
-
-      &.color-10 {
-        background-color: var(--practera-chat-color-color10);
-      }
-
-      &.color-11 {
-        background-color: var(--practera-chat-color-color11);
-      }
-
-      &.color-12 {
-        background-color: var(--practera-chat-color-color12);
-      }
-
-      &.color-13 {
-        background-color: var(--practera-chat-color-color13);
-      }
-
-      &.color-14 {
-        background-color: var(--practera-chat-color-color14);
-      }
-
-      &.color-15 {
-        background-color: var(--practera-chat-color-color15);
-      }
-
-      &.color-16 {
-        background-color: var(--practera-chat-color-color16);
-      }
-
-      &.color-17 {
-        background-color: var(--practera-chat-color-color17);
-      }
-
-      &.color-18 {
-        background-color: var(--practera-chat-color-color18);
-      }
-
-      &.color-19 {
-        background-color: var(--practera-chat-color-color19);
-      }
-
     }
 
     ion-label {
@@ -260,20 +163,27 @@ $message-body-size: 224px;
 .footer {
   ion-grid {
     background-color: white;
+    border-top: 0.1px solid var(--practera-chat-footer-border-color) !important;
   }
 
-  ion-item, ion-grid {
-    border-top: 0.1px solid var(--practera-chat-footer-border-color) !important;
-
-    ion-button {
-      ion-icon {
-        color: var(--practera-chat-footer-text-color) !important;
+  ion-grid {
+    ion-row {
+      ion-col {
+        ion-button {
+          min-height: 28px;
+          max-height: 100px;
+          height: auto;
+          ion-icon {
+            font-size: 24px;
+          }
+        }
+        ion-textarea {
+          --padding-top: 0;
+          --padding-end: 0;
+          --padding-bottom: 0;
+          --padding-start: 0;
+        }
       }
-    }
-
-    ion-input {
-      color: var(--practera-chat-footer-text-color) !important;
-      font-size: small;
     }
   }
 }

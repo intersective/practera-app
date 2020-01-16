@@ -1,4 +1,4 @@
-<ion-header>
+<ion-header mode="ios">
   <ion-toolbar color="light">
     <ion-icon name="arrow-back" (click)="back()" color="primary" slot="start" margin-start></ion-icon>
     <ion-title text-center>{{selectedChat.is_team ? selectedChat.team_name : selectedChat.name}}</ion-title>
@@ -14,8 +14,8 @@
     <ng-container *ngFor="let message of messageList">
       <ion-item color="light">
         <ng-container *ngIf="checkIsLastMessage(message)">
-          <ion-avatar [ngClass]="message.chat_color" slot="start">
-            <p class="chat-avatar">{{getChatAvatarText(message.sender_name)}}</p>
+          <ion-avatar [ngClass]="!checkToShowMessageTime(message) && checkIsLastMessage(message) ? 'no-time': ''" slot="start">
+            <img [src]="message.sender_image">
           </ion-avatar>
         </ng-container>
 
@@ -107,9 +107,9 @@
     </ng-container>
   </ion-list>
 </ion-content>
-<ion-footer>
+<ion-footer class="footer">
   <ion-grid class="white-bg">
-    <ion-row nowrap no-padding align-items-center>
+    <ion-row nowrap no-padding align-items-end>
       <ion-col size="1" no-padding text-center>
         <ion-button (click)="attach('image')" fill="clear" no-padding>
           <ion-icon name="photos" slot="icon-only"></ion-icon>
@@ -120,13 +120,15 @@
           <ion-icon name="attach" slot="icon-only"></ion-icon>
         </ion-button>
       </ion-col>
-      <ion-col size="9">
+      <ion-col size="9" align-self-center>
         <ion-textarea
           placeholder="Enter your message"
           required="true"
           name="message"
           [(ngModel)]="message"
           (ngModelChange)="typing()"
+          appAutoresize="100"
+          rows="1"
         ></ion-textarea>
       </ion-col>
       <ion-col size="1" no-padding text-center>

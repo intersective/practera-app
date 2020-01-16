@@ -5,6 +5,7 @@ import { IonicModule, IonicRouteStrategy } from '@ionic/angular';
 
 import { AppRoutingModule } from './app-routing.module';
 import { RequestModule } from '@shared/request/request.module';
+import { NewRelicModule } from '@shared/new-relic/new-relic.module';
 import { NotificationModule } from '@shared/notification/notification.module';
 import { AuthModule } from './auth/auth.module';
 import { FastFeedbackModule } from './fast-feedback/fast-feedback.module';
@@ -13,18 +14,24 @@ import { EventDetailModule } from './event-detail/event-detail.module';
 import { GoMobileModule } from './go-mobile/go-mobile.module';
 
 import { AppComponent } from './app.component';
-import { UtilsService, ContactNumberFormat } from './services/utils.service';
+import { UtilsService } from './services/utils.service';
+import { VersionCheckService } from './services/version-check.service';
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
 import { EmbedVideo } from 'ngx-embed-video';
 import { environment } from '@environments/environment';
 import { IntercomModule } from 'ng-intercom';
 import { PusherModule } from '@shared/pusher/pusher.module';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { UnlockingComponent } from '@components/unlocking/unlocking.component';
+import { IconComponent } from '@shared/components/icon/icon.component';
+
 
 @NgModule({
   declarations: [
     AppComponent,
-    PageNotFoundComponent
+    PageNotFoundComponent,
+    UnlockingComponent,
+    IconComponent,
   ],
   imports: [
     BrowserModule,
@@ -37,6 +44,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
     }),
     AppRoutingModule,
     EmbedVideo.forRoot(),
+    NewRelicModule.forRoot(),
     NotificationModule,
     FastFeedbackModule,
     GoMobileModule,
@@ -55,7 +63,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
     // Custom
     UtilsService,
-    ContactNumberFormat,
+    VersionCheckService,
   ],
   bootstrap: [AppComponent],
 })

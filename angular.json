@@ -56,6 +56,10 @@
                 {
                   "replace": "src/index.html",
                   "with": "src/index.prod.html"
+                },
+                {
+                  "replace": "src/assets/newrelic.js",
+                  "with": "src/scripts/newrelic.js.prod"
                 }
               ],
               "optimization": true,
@@ -115,6 +119,10 @@
                 {
                   "replace": "src/environments/environment.ts",
                   "with": "src/environments/environment.stage.ts"
+                },
+                {
+                  "replace": "src/assets/newrelic.js",
+                  "with": "src/scripts/newrelic.js.dev"
                 }
               ],
               "optimization": true,
@@ -132,6 +140,31 @@
                 {
                   "replace": "src/environments/environment.ts",
                   "with": "src/environments/environment.dev.ts"
+                },
+                {
+                  "replace": "src/assets/newrelic.js",
+                  "with": "src/scripts/newrelic.js.dev"
+                }
+              ],
+              "optimization": true,
+              "outputHashing": "all",
+              "sourceMap": false,
+              "extractCss": true,
+              "namedChunks": false,
+              "aot": true,
+              "extractLicenses": true,
+              "vendorChunk": false,
+              "buildOptimizer": true
+            },
+            "custom": {
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.custom.ts"
+                },
+                {
+                  "replace": "src/assets/newrelic.js",
+                  "with": "src/scripts/newrelic.js.<CUSTOM_JS_ENVIRONEMENT>"
                 }
               ],
               "optimization": true,
@@ -149,6 +182,10 @@
                 {
                   "replace": "src/environments/environment.ts",
                   "with": "src/environments/environment.local.ts"
+                },
+                {
+                  "replace": "src/assets/newrelic.js",
+                  "with": "src/scripts/newrelic.js.dev"
                 }
               ],
               "optimization": false,

@@ -1,8 +1,7 @@
-import { IonicModule } from '@ionic/angular';
 import { RouterModule } from '@angular/router';
 import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { SharedModule } from '@shared/shared.module';
+import { ReactiveFormsModule } from '@angular/forms';
 
 import { AuthRoutingModule } from './auth-routing.module';
 
@@ -12,6 +11,7 @@ import { UnauthorizedGuard } from './unauthorized.guard';
 import { ProgramSelectedGuard } from './program-selected.guard';
 import { AuthComponent } from './auth.component';
 import { AuthLoginComponent } from './auth-login/auth-login.component';
+import { AuthLogoutComponent } from './auth-logout/auth-logout.component';
 import { AuthForgotPasswordComponent } from './auth-forgot-password/auth-forgot-password.component';
 import { AuthRegistrationComponent } from './auth-registration/auth-registration.component';
 import { AuthResetPasswordComponent } from './auth-reset-password/auth-reset-password.component';
@@ -19,15 +19,14 @@ import { AuthDirectLoginComponent } from './auth-direct-login/auth-direct-login.
 
 @NgModule({
   imports: [
-    IonicModule,
-    CommonModule,
-    FormsModule,
+    SharedModule,
     ReactiveFormsModule,
-    AuthRoutingModule
+    AuthRoutingModule,
   ],
   declarations: [
     AuthComponent,
     AuthLoginComponent,
+    AuthLogoutComponent,
     AuthForgotPasswordComponent,
     AuthRegistrationComponent,
     AuthResetPasswordComponent,
@@ -41,5 +40,6 @@ import { AuthDirectLoginComponent } from './auth-direct-login/auth-direct-login.
     UnauthorizedGuard,
     ProgramSelectedGuard,
   ],
+  exports: [SharedModule]
 })
 export class AuthModule {}

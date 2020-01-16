@@ -3,8 +3,9 @@ import { Router, NavigationExtras } from '@angular/router';
 import { BrowserStorageService } from '@services/storage.service';
 import { RouterEnter } from '@services/router-enter.service';
 import { UtilsService } from '@services/utils.service';
-
+import { FastFeedbackService } from '../../fast-feedback/fast-feedback.service';
 import { ChatService, ChatListObject } from '../chat.service';
+import { NewRelicService } from '@shared/new-relic/new-relic.service';
 
 @Component({
   selector: 'app-chat',
@@ -22,8 +23,12 @@ export class ChatListComponent extends RouterEnter {
     public router: Router,
     public storage: BrowserStorageService,
     public utils: UtilsService,
+    public fastFeedbackService: FastFeedbackService,
+    private newrelic: NewRelicService
   ) {
     super(router);
+    this.newrelic.setPageViewName('Chat list');
+
     const role = this.storage.getUser().role;
     this.utils.getEvent('team-message').subscribe(event => {
       this._loadChatData();
@@ -38,6 +43,7 @@ export class ChatListComponent extends RouterEnter {
   onEnter() {
     this._initialise();
     this._loadChatData();
+    this.fastFeedbackService.pullFastFeedback().subscribe();
   }
 
   private _initialise() {
@@ -76,10 +82,12 @@ export class ChatListComponent extends RouterEnter {
     }
   }
 
-  getChatAvatarText(chatName) {
-    return this.chatService.generateChatAvatarText(chatName);
-  }
   navigateToChatRoom(chat) {
+    this.newrelic.addPageAction('selected chat room', {
+      isTeam: chat.is_team,
+      raw: chat,
+    });
+
     if (chat.is_team) {
       this.router.navigate([
         'chat',
