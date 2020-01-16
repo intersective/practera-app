@@ -1,4 +1,4 @@
-<ion-header>
+<ion-header mode="ios">
   <ion-toolbar color="light">
     <ion-title center>Pulse Check</ion-title>
   </ion-toolbar>
@@ -13,9 +13,18 @@
       <question [question]="question" [form]="fastFeedbackForm"></question>
     </ng-container>
 
-    <div text-center>
-      <ion-button type="submit" [disabled]="fastFeedbackForm.invalid || loading">Submit</ion-button>
-    </div>
+    <ion-button type="submit"
+      [disabled]="fastFeedbackForm.invalid || loading"
+      shape="round"
+      expand="block">
+      <ng-container *ngIf="!loading">Submit</ng-container>
+      <ng-container *ngIf="loading && !submissionCompleted">
+        <ion-spinner name="dots"></ion-spinner>
+      </ng-container>
+      <ng-container *ngIf="loading && submissionCompleted">
+        <ion-icon src="/assets/checkmark.svg"></ion-icon>
+      </ng-container>
+    </ion-button>
   </form>
 
 </ion-content>

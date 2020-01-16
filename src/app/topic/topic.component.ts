@@ -1,11 +1,16 @@
 import { TopicService, Topic } from './topic.service';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, NgZone } from '@angular/core';
 import { EmbedVideoService } from 'ngx-embed-video';
 import { Router, ActivatedRoute } from '@angular/router';
 import { FilestackService } from '@shared/filestack/filestack.service';
 import { RouterEnter } from '@services/router-enter.service';
 import { UtilsService } from '@services/utils.service';
 import { BrowserStorageService } from '@services/storage.service';
+import { NotificationService } from '@shared/notification/notification.service';
+import { ActivityService, Task, OverviewActivity, OverviewTask } from '../activity/activity.service';
+import { SharedService } from '@services/shared.service';
+import { Subscription, Observable } from 'rxjs';
+import { NewRelicService } from '@shared/new-relic/new-relic.service';
 
 @Component({
   selector: 'app-topic',
@@ -29,6 +34,10 @@ export class TopicComponent extends RouterEnter {
   id = 0;
   activityId = 0;
   topicProgress: number;
+  isLoadingPreview = false;
+  isRedirectingToNextMilestoneTask: boolean;
+  askForMarkAsDone: boolean;
+  redirecting = false;
 
   constructor(
     private topicService: TopicService,
@@ -38,6 +47,11 @@ export class TopicComponent extends RouterEnter {
     private filestackService: FilestackService,
     public storage: BrowserStorageService,
     public utils: UtilsService,
+    public notificationService: NotificationService,
+    private activityService: ActivityService,
+    private sharedService: SharedService,
+    private ngZone: NgZone,
+    private newRelic: NewRelicService
   ) {
     super(router);
   }
@@ -53,6 +67,8 @@ export class TopicComponent extends RouterEnter {
     };
     this.loadingMarkedDone = true;
     this.loadingTopic = true;
+    this.isRedirectingToNextMilestoneTask = false;
+    this.askForMarkAsDone = false;
   }
 
   onEnter() {
@@ -61,43 +77,250 @@ export class TopicComponent extends RouterEnter {
     this.activityId = +this.route.snapshot.paramMap.get('activityId');
     this._getTopic();
     this._getTopicProgress();
+    setTimeout(() => this.askForMarkAsDone = true, 15000);
+  }
+
+  ionViewWillLeave() {
+    this.sharedService.stopPlayingVideos();
   }
 
   private _getTopic() {
     this.topicService.getTopic(this.id)
-      .subscribe(topic => {
-        this.topic = topic;
-        this.loadingTopic = false;
-        if ( topic.videolink ) {
-          this.iframeHtml = this.embedService.embed(this.topic.videolink);
+      .subscribe(
+        topic => {
+          this.topic = topic;
+          this.loadingTopic = false;
+          if ( topic.videolink ) {
+            this.iframeHtml = this.embedService.embed(this.topic.videolink);
+          }
+          this.newRelic.setPageViewName(`Topic ${this.topic.title} ID: ${this.topic.id}`);
+        },
+        err => {
+          this.newRelic.noticeError(`${JSON.stringify(err)}`);
         }
-      });
+      );
   }
 
   private _getTopicProgress() {
     this.topicService.getTopicProgress(this.activityId, this.id)
-      .subscribe(result => {
-        this.topicProgress = result;
-        if (this.topicProgress !== null && this.topicProgress !== undefined) {
-          if (this.topicProgress === 1) {
-            this.btnToggleTopicIsDone = true;
+      .subscribe(
+        result => {
+          this.topicProgress = result;
+          if (this.topicProgress !== null && this.topicProgress !== undefined) {
+            if (this.topicProgress === 1) {
+              this.btnToggleTopicIsDone = true;
+            }
           }
+          this.loadingMarkedDone = false;
+        },
+        err => {
+          this.newRelic.noticeError(`${JSON.stringify(err)}`);
         }
-        this.loadingMarkedDone = false;
-      });
-   }
-
-  markAsDone() {
-    this.btnToggleTopicIsDone = true;
-    this.topicService.updateTopicProgress(this.id).subscribe();
+      );
   }
 
-  previewFile(file) {
-    this.filestackService.previewFile(file);
+  /**
+   * @name markAsDone
+   * @description set a topic as read by providing current id
+   * @param {Function} callback optional callback function for further action after subcription is completed
+   */
+  markAsDone(callback?): Observable<any> {
+    return this.topicService.updateTopicProgress(this.id).pipe(response => {
+      // toggle event change should happen after subscription is completed
+      this.btnToggleTopicIsDone = true;
+      return response;
+    });
+  }
+
+  /**
+   * continue (mark as read) button
+   * @description button action to trigger `redirectToNextMilestoneTask`
+   */
+  async continue(): Promise<any> {
+    this.loadingTopic = true;
+
+    // if topic has been marked as read
+    if (this.btnToggleTopicIsDone) {
+      return this.redirectToNextMilestoneTask({ continue: true });
+    }
+
+    // mark topic as done
+    try {
+      await this.markAsDone().toPromise();
+    } catch (err) {
+      await this.notificationService.alert({
+        header: 'Error marking topic as completed.',
+        message: err.msg || JSON.stringify(err)
+      });
+      this.loadingTopic = false;
+      this.newRelic.noticeError(`${JSON.stringify(err)}`);
+    }
+
+    this.redirecting = true;
+    this.loadingTopic = false;
+    return setTimeout(
+      async () => {
+        const navigation = await this.redirectToNextMilestoneTask();
+        this.redirecting = false;
+        return navigation;
+      },
+      2000
+    );
+  }
+
+  /**
+   * @name previewFile
+   * @description open and preview file in a modal
+   * @param {object} file filestack object
+   */
+  async previewFile(file) {
+    if (this.isLoadingPreview === false) {
+      this.isLoadingPreview = true;
+
+      try {
+        const filestack = await this.filestackService.previewFile(file);
+        this.isLoadingPreview = false;
+        return filestack;
+      } catch (err) {
+        const toasted = await this.notificationService.alert({
+          header: 'Error Previewing file',
+          message: err.msg || JSON.stringify(err)
+        });
+        this.loadingTopic = false;
+        this.newRelic.noticeError(`${JSON.stringify(err)}`);
+      }
+    }
+  }
+
+  private async getNextSequence(): Promise<{
+    activity: OverviewActivity;
+    nextTask: OverviewTask;
+  }> {
+    const options = {
+      currentTaskId: this.id,
+      teamId: this.storage.getUser().teamId
+    };
+
+    try {
+      const {
+        currentActivity,
+        nextTask
+      } = await this.activityService.getTasksByActivityId(
+        this.storage.getUser().projectId,
+        this.activityId,
+        options
+      );
+
+      this.loadingTopic = false;
+      return {
+        activity: currentActivity,
+        nextTask
+      };
+    } catch (err) {
+      const toasted = await this.notificationService.alert({
+        header: 'Project overview API Error',
+        message: err.msg || JSON.stringify(err)
+      });
+
+      if (this.loadingTopic) {
+        this.loadingTopic = false;
+      }
+      this.newRelic.noticeError(`${JSON.stringify(err)}`);
+    }
+  }
+
+  // allow progression if milestone isnt completed yet
+  async redirectToNextMilestoneTask(options: {
+    continue?: boolean;
+  } = {}): Promise<any> {
+    if (options.continue === true) {
+      this.isRedirectingToNextMilestoneTask = true;
+    }
+
+    const { activity, nextTask } = await this.getNextSequence();
+    let route: any = ['app', 'project'];
+
+    if (this.activityId === activity.id && nextTask) {
+      switch (nextTask.type) {
+        case 'assessment':
+          route = [
+            'assessment',
+            'assessment',
+            activity.id,
+            nextTask.context_id,
+            nextTask.id
+          ];
+          break;
+
+        case 'topic':
+          route = ['topic', activity.id, nextTask.id];
+          break;
+      }
+    }
+
+    if (options.continue !== true && this.activityId !== activity.id) {
+      await this.notificationService.alert({
+        header: 'Congratulations!',
+        message: 'You have successfully completed this activity.<br>Let\'s take you to the next one.',
+        buttons: [
+          {
+            text: 'Ok',
+            role: 'cancel',
+          }
+        ]
+      });
+    }
+
+    await this.navigate(route);
+    return;
+  }
+
+  // force every navigation happen under radar of angular
+  private navigate(direction): Promise<boolean> {
+    return this.ngZone.run(() => {
+      return this.router.navigate(direction);
+    });
   }
 
   back() {
-    this.router.navigate(['app', 'activity', this.activityId]);
+    if (this.btnToggleTopicIsDone || !this.askForMarkAsDone) {
+      return this.navigate([
+        'app',
+        'activity',
+        this.activityId
+      ]);
+    }
+
+    const type = 'Topic';
+    return this.notificationService.alert({
+      header: `Complete ${type}?`,
+      message: 'Would you like to mark this task as done?',
+      buttons: [
+        {
+          text: 'No',
+          handler: () => {
+            return this.navigate(['app', 'activity', this.activityId]);
+          },
+        },
+        {
+          text: 'Yes',
+          handler: () => {
+            this.newRelic.addPageAction('Mark as read before back');
+            return this.markAsDone().subscribe(
+              () => {
+                return this.navigate([
+                  'app',
+                  'activity',
+                  this.activityId,
+                ]);
+              },
+              err => {
+                this.newRelic.noticeError(`${JSON.stringify(err)}`);
+              });
+          }
+        }
+      ]
+    });
   }
 
 }

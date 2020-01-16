@@ -9,22 +9,31 @@ import { ChatRoutingModule } from './chat-routing.module';
 import { ChatService } from './chat.service';
 import { LinkifyPipe } from '../shared/pipes/linkify/linkify.pipe';
 import { FilestackModule } from '../shared/filestack/filestack.module';
+import { FastFeedbackModule } from '../fast-feedback/fast-feedback.module';
+import { AutoresizeDirective } from '../shared/directives/autoresize/autoresize.directive';
 
 @NgModule({
   imports: [
     SharedModule,
     ChatRoutingModule,
     FilestackModule,
+    FastFeedbackModule,
   ],
   declarations: [
     ChatComponent,
     ChatListComponent,
     ChatPreviewComponent,
     ChatRoomComponent,
-    LinkifyPipe
+    LinkifyPipe,
+    AutoresizeDirective
   ],
   entryComponents: [ChatPreviewComponent],
   providers: [ChatService],
-  exports: [ChatRoomComponent]
+  exports: [
+    SharedModule,
+    FilestackModule,
+    ChatRoomComponent,
+    FastFeedbackModule
+  ]
 })
 export class ChatModule {}

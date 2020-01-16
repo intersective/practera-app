@@ -3,7 +3,12 @@
 .sass-cache/
 .tmp/
 
+assets/newrelic.js
 coverage/
+tests/
+platforms
+resources
+plugins
 node_modules
 src/coverage
 *.DS_Store

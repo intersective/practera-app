@@ -7,7 +7,7 @@
     <app-circle-progress [data]="progressConfig" [type]="'large'"></app-circle-progress>
   </div>
 
-  <ng-container *ngIf="achievements[0]">
+  <ng-container *ngIf="achievements && achievements.length > 0">
     <div class="achievement">
       <ion-label color="medium">My Badges</ion-label>
       <ion-label >
@@ -68,6 +68,11 @@
               *ngSwitchCase="'chat'"
               [todoItem]="todoItem"
               (click)="goToChat(todoItem)"
+            ></app-todo-card>
+            <app-todo-card
+              *ngSwitchCase="'assessment_submission_reminder'"
+              [todoItem]="todoItem"
+              (click)="goToAssessment(todoItem.meta.activity_id, todoItem.meta.context_id, todoItem.meta.assessment_id)"
             ></app-todo-card>
           </ng-container>
         </div>

@@ -3,10 +3,13 @@ import { Router } from '@angular/router';
 import { AuthService } from '../auth/auth.service';
 import { SettingService } from './setting.service';
 import { BrowserStorageService } from '@services/storage.service';
-import { UtilsService, ContactNumberFormat } from '@services/utils.service';
+import { UtilsService } from '@services/utils.service';
 import { NotificationService } from '@shared/notification/notification.service';
 import { environment } from '../../environments/environment.prod';
 import { RouterEnter } from '@services/router-enter.service';
+import { FastFeedbackService } from '../fast-feedback/fast-feedback.service';
+import { FilestackService } from '@shared/filestack/filestack.service';
+import { NewRelicService } from '@shared/new-relic/new-relic.service';
 
 @Component({
   selector: 'app-settings',
@@ -19,18 +22,18 @@ export class SettingsComponent extends RouterEnter {
   routeUrl = '/app/settings';
   profile = {
     contactNumber: '',
-    email: ''
+    email: '',
+    image: '',
+    name: ''
   };
   currentProgramName = '';
-  // default country model
-  countryModel = 'AUS';
-  // default mask
-  mask: Array<string|RegExp>;
-  // variable to control the update button
-  updating = false;
+
   helpline = 'help@practera.com';
 
   termsUrl = 'https://images.practera.com/terms_and_conditions/practera_terms_conditions.pdf';
+  // controll profile image updating
+  imageUpdating = false;
+  acceptFileTypes;
 
   constructor (
     public router: Router,
@@ -39,174 +42,40 @@ export class SettingsComponent extends RouterEnter {
     public storage: BrowserStorageService,
     public utils: UtilsService,
     private notificationService: NotificationService,
-    public contact: ContactNumberFormat,
+    private filestackService: FilestackService,
+    public fastFeedbackService: FastFeedbackService,
+    private newRelic: NewRelicService
   ) {
     super(router);
   }
 
   onEnter() {
+    this.newRelic.setPageViewName('Setting');
+
     // get contact number and email from local storage
     this.profile.email = this.storage.getUser().email;
     this.profile.contactNumber = this.storage.getUser().contactNumber;
+    this.profile.image = this.storage.getUser().image ? this.storage.getUser().image : 'https://my.practera.com/img/user-512.png';
+    this.profile.name = this.storage.getUser().name;
+    this.acceptFileTypes = this.filestackService.getFileTypes('image');
     // also get program name
     this.currentProgramName = this.storage.getUser().programName;
-    // if user has the contact number
-    if (this.profile.contactNumber && this.profile.contactNumber != null) {
-      this.checkCurrentContactNumberOrigin();
-    } else {
-      // by default, set Mask in Australian format.
-      this.mask = this.contact.masks[this.countryModel];
-
-      // user has no contact number, set the default mask
-      // also check which the server which the APP talks to, i.e if the APP is consuming APIs from 'us.practera.com' then, it is APP V2 in US.
-      // But if APP consumes APIs from 'api.practera.com' then it is APP V2 in AUS.
-      if (environment.APIEndpoint.indexOf('us') !== -1) {
-        this.countryModel = 'US';
-        this.mask = this.contact.masks[this.countryModel];
-      }
-    }
+    this.fastFeedbackService.pullFastFeedback().subscribe();
   }
-
-  private checkCurrentContactNumberOrigin() {
-    const contactNum = this.profile.contactNumber;
-    let prefix = contactNum.substring(0, 3);
-
-    if (prefix === '+61') {
-        this.countryModel = 'AUS';
-        this.mask = this.contact.masks['AUS'];
-        return;
-    }
-
-    prefix = contactNum.substring(0, 2);
-    if (prefix === '61') {
-        this.countryModel = 'AUS';
-        this.mask = this.contact.masks['AUS'];
-        return;
-    }
-
-    if (prefix === '04') {
-        this.countryModel = 'AUS';
-        this.mask = this.contact.masks['AUS'];
-        return;
-     }
-
-    if (prefix === '+1') {
-        this.countryModel = 'US';
-        this.mask = this.contact.masks['US'];
-        return;
-    }
-
-    prefix = contactNum.substring(0, 1);
-    if (prefix === '1') {
-        this.countryModel = 'US';
-        this.mask = this.contact.masks['US'];
-        return;
-    }
-
-    if (prefix === '0') {
-        this.countryModel = 'AUS';
-        this.mask = this.contact.masks['AUS'];
-        return;
-    }
-  }
-
-  updateContactNumber() {
-    // strip out white spaces and underscores
-    this.profile.contactNumber = this.profile.contactNumber.replace(/[^0-9+]+/ig, '');
-    // check if newly input number is valid or not.
-    if (!this.validateContactNumber(this.profile.contactNumber)) {
-      return this.notificationService.presentToast('Invalid contact number', false);
-    }
-    this.updating = true;
-    this.notificationService.alert({
-      header: 'Update Profile',
-      message: 'Are you sure to update your profile?',
-      buttons: [
-        {
-          text: 'Cancel',
-          role: 'cancel',
-          handler: () => {
-            this.updating = false;
-            return;
-          }
-        },
-        {
-          text: 'Okay',
-          handler: () => {
-            this.settingService.updateProfile({
-              contact_number: this.profile.contactNumber,
-            }).subscribe(result => {
-              this.updating = false;
-              if (result.success) {
-                // update contact number in user local storage data array.
-                this.storage.setUser({ contactNumber: this.profile.contactNumber });
-                const newContactNumber = this.profile.contactNumber;
-                // also update contact number in program object in local storage
-                const timelineId = this.storage.getUser().timelineId;  // get current timeline Id
-                const programsObj = this.utils.each(this.storage.get('programs'), function(program) {
-                    if (program.timeline.id === timelineId) {
-                      program.enrolment.contact_number = newContactNumber;
-                    }
-                });
-                this.storage.set('programs', programsObj);
-                return this.notificationService.popUp('shortMessage', { message: 'Profile successfully updated!'});
-
-              } else {
-                return this.notificationService.popUp('shortMessage', { message: 'Profile updating failed!'});
-              }
-           });
-          }
-        }
-      ]
-    });
-
-  }
-
-  private validateContactNumber(contactNumber) {
-    switch (this.countryModel) {
-      case 'AUS':
-        if (contactNumber.length === 12) {
-          return true;
-        } else if (contactNumber.length === 3) {
-          this.profile.contactNumber = null;
-          return true;
-        }
-        break;
-
-      case 'US' :
-        if (contactNumber.length === 12) {
-          return true;
-        } else if (contactNumber.length === 2) {
-          this.profile.contactNumber = null;
-          return true;
-        }
-        break;
-    }
-    return false;
-  }
-
-  updateCountry() {
-    const selectedCountry = this.countryModel;
-    const country = this.utils.find(this.contact.countryCodes, eachCountry => {
-      return eachCountry.code === selectedCountry;
-    });
-    // set currentContactNumber to it's format.
-    this.profile.contactNumber = country.format;
-    // update the mask as per the newly selected country
-    this.mask = this.contact.masks[country.code];
-  }
-
 
   openLink() {
-     window.open(this.termsUrl, '_system');
+    this.newRelic.actionText('Open T&C link');
+    window.open(this.termsUrl, '_system');
   }
 
   switchProgram() {
+    this.newRelic.actionText('browse to program switcher');
     this.router.navigate(['/switcher']);
   }
 
   // send email to Help request
   mailTo() {
+    this.newRelic.actionText('mail to helpline');
     const mailto = 'mailto:' + this.helpline + '?subject=' + this.currentProgramName;
     window.open(mailto, '_self');
   }
@@ -215,28 +84,53 @@ export class SettingsComponent extends RouterEnter {
     return this.authService.logout();
   }
 
-  disableArrowKeys(event) {
-    event = (event) ? event : window.event;
-
-    // charCode is the code of each Key
-    const charCode = (event.which) ? event.which : event.keyCode;
-
-    // just allow number keys to enter
-    if (charCode > 31 && (charCode < 48 || charCode > 57)) {
-        return false;
+  async uploadProfileImage(file, type = null) {
+    if (file.success) {
+      this.newRelic.actionText('Upload profile image');
+      this.imageUpdating = true;
+      this.settingService.updateProfileImage({
+        image: file.data.url
+      }).subscribe(
+        success => {
+          this.imageUpdating = false;
+          this.profile.image = file.data.url;
+          this.storage.setUser({
+            image: file.data.url
+          });
+          return this.notificationService.alert({
+            message: 'Profile picture successfully updated!',
+            buttons: [
+              {
+                text: 'OK',
+                role: 'cancel'
+              }
+            ]
+          });
+        },
+        err => {
+          this.newRelic.noticeError(`Image upload failed: ${JSON.stringify(err)}`);
+          this.imageUpdating = false;
+          return this.notificationService.alert({
+            message: 'File upload failed, please try again later.',
+            buttons: [
+              {
+                text: 'OK',
+                role: 'cancel'
+              }
+            ]
+          });
+        });
+    } else {
+      return this.notificationService.alert({
+        message: 'File upload failed, please try again later.',
+        buttons: [
+          {
+            text: 'OK',
+            role: 'cancel'
+          }
+        ]
+      });
     }
-    return true;
-  }
-
-  disableMiddleClicking(event) {
-    event = (event) ? event : window.event;
-
-    const cursorPosition = event.clientX;
-    if ( cursorPosition > 75 && cursorPosition < 146) {
-
-      return false;
-    }
-    return true;
   }
 
 }

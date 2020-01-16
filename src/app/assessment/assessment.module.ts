@@ -6,16 +6,22 @@ import { ReactiveFormsModule } from '@angular/forms';
 
 import { AssessmentComponent } from './assessment.component';
 import { QuestionsModule } from '../questions/questions.module';
+import { ActivityModule } from '../activity/activity.module';
 
 @NgModule({
   imports: [
     SharedModule,
     AssessmentRoutingModule,
     ReactiveFormsModule,
-    QuestionsModule
+    QuestionsModule,
+    ActivityModule,
   ],
   declarations: [
     AssessmentComponent
+  ],
+  exports: [
+    SharedModule,
+    ActivityModule,
   ]
 })
 

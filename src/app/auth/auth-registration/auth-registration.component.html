@@ -1,6 +1,6 @@
 <ion-content color="light" text-center>
   <div class="div-logo registration">
-    <img src="/assets/logo.svg" width="60%">
+    <app-branding-logo></app-branding-logo>
   </div>
   <div class="div-after-logo">
     <ng-container *ngIf="!hide_password">
@@ -12,14 +12,15 @@
       <p>{{user.contact}}</p>
     </ng-container>
     <form [formGroup]="registerationForm">
-      <ion-list margin>
+        <ion-input name="email" formControlName="email" type="hidden" value="{{user.email}}" aria-hidden="true"></ion-input>
+        <ion-list margin>
         <ion-item *ngIf="!hide_password">
-          <ion-input name="passowrd" [(ngModel)]="password" formControlName="password"
+          <ion-input name="password" [(ngModel)]="password" inputmode="password" formControlName="password" autocomplete="on"
             required type="password" placeholder="Set up Practera password*"></ion-input>
         </ion-item>
         <ion-item *ngIf="!hide_password">
-          <ion-input name="confirmPassword" [(ngModel)]="confirmPassword" formControlName="confirmPassword"
-            required type="password" placeholder="Confirm password*"></ion-input>
+          <ion-input name="confirmPassword" [(ngModel)]="confirmPassword" inputmode="password" formControlName="confirmPassword"
+            required type="password" autocomplete="on" placeholder="Confirm password*"></ion-input>
         </ion-item>
         <ion-item lines="none">
           <ion-checkbox color="primary" slot="start" [(ngModel)]="isAgreed" [ngModelOptions]="{standalone: true}" name="isAgreed"></ion-checkbox>

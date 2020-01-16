@@ -6,6 +6,7 @@ import { UtilsService } from '@services/utils.service';
 import { BrowserStorageService } from '@services/storage.service';
 import { NotificationService } from '@shared/notification/notification.service';
 import { ReviewRatingComponent } from '../review-rating/review-rating.component';
+import { DomSanitizer } from '@angular/platform-browser';
 
 /**
  * @name api
@@ -25,11 +26,23 @@ const api = {
   }
 };
 
+export interface AssessmentSubmission {
+  id: number;
+  in_progress: boolean;
+  context_id?: number;
+  review_id?: number;
+  submission_id?: number;
+  unlock?: boolean;
+}
+
 export interface Assessment {
   name: string;
   description: string;
   isForTeam: boolean;
+  dueDate?: string;
+  isOverdue?: boolean;
   groups: Array<Group>;
+  pulseCheck: boolean;
 }
 
 export interface Group {
@@ -50,7 +63,7 @@ export interface Question {
   canAnswer: boolean;
   choices?: Array<Choice>;
   teamMembers?: Array<TeamMember>;
-  audience: Array<string>;
+  audience: string[];
   submitterOnly?: boolean;
   reviewerOnly?: boolean;
 }
@@ -72,6 +85,9 @@ export interface Submission {
   answers: any;
   submitterName: string;
   modified: string;
+  isLocked: boolean;
+  submitterImage: string;
+  reviewerName: string | void;
 }
 
 export interface Review {
@@ -93,6 +109,7 @@ export class AssessmentService {
     private utils: UtilsService,
     private storage: BrowserStorageService,
     private notification: NotificationService,
+    public sanitizer: DomSanitizer,
   ) {}
 
   getAssessment(id, action): Observable<any> {
@@ -126,7 +143,10 @@ export class AssessmentService {
       name: thisAssessment.Assessment.name,
       description: thisAssessment.Assessment.description,
       isForTeam: thisAssessment.Assessment.is_team,
-      groups: []
+      dueDate: thisAssessment.Assessment.deadline,
+      isOverdue: thisAssessment.Assessment.deadline ? this.utils.timeComparer(thisAssessment.Assessment.deadline) < 0 : false,
+      groups: [],
+      pulseCheck: thisAssessment.Assessment.pulse_check
     };
 
     thisAssessment.AssessmentGroup.forEach(group => {
@@ -290,9 +310,11 @@ export class AssessmentService {
       status: thisSubmission.AssessmentSubmission.status,
       answers: {},
       submitterName: thisSubmission.Submitter.name,
-      modified: thisSubmission.AssessmentSubmission.modified
+      modified: thisSubmission.AssessmentSubmission.modified,
+      isLocked: thisSubmission.AssessmentSubmission.is_locked,
+      submitterImage: thisSubmission.Submitter.image,
+      reviewerName: this.checkReviewer(thisSubmission.Reviewer)
     };
-
     // -- normalise submission answers
     if (!this.utils.has(thisSubmission, 'AssessmentSubmissionAnswer') ||
         !Array.isArray(thisSubmission.AssessmentSubmissionAnswer)
@@ -389,7 +411,8 @@ export class AssessmentService {
       });
     }
     // put the explanation in the submission
-    submission.answers[questionId].explanation = explanation;
+    const thisExplanation = explanation.replace(/text-align: center;/gi, 'text-align: center; text-align: -webkit-center;');
+    submission.answers[questionId].explanation = this.sanitizer.bypassSecurityTrustHtml(thisExplanation);
 
     return submission;
   }
@@ -399,7 +422,12 @@ export class AssessmentService {
       switch (this.questions[questionId].question_type) {
         case 'oneof':
           // re-format answer from string to number
-          answer = +answer;
+          if (typeof answer === 'string' && answer.length === 0) {
+            // Caution: let answer be null if question wasn't answered previously, 0 could be a possible answer ID
+            answer = null;
+          } else {
+            answer = +answer;
+          }
           break;
         case 'multiple':
           if (this.utils.isEmpty(answer)) {
@@ -419,7 +447,7 @@ export class AssessmentService {
     return answer;
   }
 
-  saveAnswers(assessment, answers, action, submissionId?) {
+  saveAnswers(assessment: AssessmentSubmission, answers: object, action: string, submissionId?: number) {
     let postData;
     switch (action) {
       case 'assessment':
@@ -480,12 +508,20 @@ export class AssessmentService {
     return this.request.post(api.post.todoitem, postData);
   }
 
-  popUpReviewRating(reviewId, redirect) {
+  popUpReviewRating(reviewId, redirect): Promise<void> {
     return this.notification.modal(ReviewRatingComponent, {
       reviewId,
       redirect
     });
   }
+
+  checkReviewer(reviewer): string | void {
+    if (!reviewer) {
+      return undefined;
+    }
+    return reviewer.name !== this.storage.getUser().name ? reviewer.name : undefined;
+  }
+
 }
 
 
