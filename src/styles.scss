@@ -34,8 +34,8 @@
 }
 // used in login, forgot password, regestration page
 .div-logo {
-  margin-top: 10vh;
-  margin-bottom: 7vh;
+  margin: 10vh auto 7vh;
+  max-width: 320px;
 
   &.registration {
     margin-top: 7vh;
@@ -44,6 +44,20 @@
 
 .div-after-logo {
   margin: 0 30px 50px;
+  ion-list {
+    max-width: 480px;
+    margin: auto;
+    ion-button {
+      margin: auto;
+      ion-icon {
+        margin: 0;
+      }
+    }
+  }
+  ion-button {
+    max-width: 256px;
+    margin: 16px auto;
+  }
 }
 
 .img-inline {
@@ -60,6 +74,9 @@
 .text-split {
   margin-top: 40px;
   margin-bottom: 40px;
+  a {
+    text-decoration: none;
+  }
 }
 
 .clearfix {
