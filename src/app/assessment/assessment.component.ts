@@ -273,6 +273,20 @@ export class AssessmentComponent extends RouterEnter {
       });
   }
 
+  /**
+   * a consistent comparison logic to ensure mandatory status
+   * @param {question} question
+   */
+  private isRequired(question) {
+    let role = 'submitter';
+
+    if (this.action === 'review') {
+      role = 'reviewer';
+    }
+
+    return (question.isRequired && question.audience.includes(role));
+  }
+
   // Populate the question form with FormControls.
   // The name of form control is like 'q-2' (2 is an example of question id)
   populateQuestionsForm() {
@@ -280,7 +294,7 @@ export class AssessmentComponent extends RouterEnter {
     this.assessment.groups.forEach(group => {
       group.questions.forEach(question => {
         // check if the compulsory is mean for current user's role
-        if (question.isRequired && question.audience.includes(this.storage.getUser().role)) {
+        if (this.isRequired(question)) {
           // put 'required' validator in FormControl
           validator = [Validators.required];
         } else {
@@ -352,7 +366,7 @@ export class AssessmentComponent extends RouterEnter {
 
     this.assessment.groups.forEach(group => {
       group.questions.forEach(question => {
-        if (question.isRequired) {
+        if (this.isRequired(question)) {
           if (this.utils.isEmpty(answered[question.id]) || this.utils.isEmpty(answered[question.id].answer)) {
             missing.push(question);
           }
