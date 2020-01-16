@@ -7,6 +7,7 @@ export const BROWSER_STORAGE = new InjectionToken<Storage>('Browser Storage', {
 
 export interface User {
   name?: string;
+  apikey?: string;
   contactNumber?: string;
   email?: string;
   role?: string;
@@ -24,6 +25,13 @@ export interface User {
   themeColor?: string;
   activityCardImage?: string;
   hasReviewRating?: boolean;
+  truncateDescription?: boolean;
+  enrolment?: any;
+}
+
+export interface Config {
+  logo?: string;
+  color?: string;
 }
 
 @Injectable({
@@ -31,6 +39,8 @@ export interface User {
 })
 
 export class BrowserStorageService {
+  public memoryCache: any;
+
   constructor(@Inject(BROWSER_STORAGE) public storage: Storage) {}
 
   get(key: string) {
@@ -68,6 +78,15 @@ export class BrowserStorageService {
 
   setUser(user: User) {
     this.set('me', Object.assign(this.getUser(), user));
+    return true;
+  }
+
+  getConfig() {
+    return this.get('config') || {};
+  }
+
+  setConfig(config: Config) {
+    this.set('config', Object.assign(this.getConfig(), config));
     return true;
   }
 }

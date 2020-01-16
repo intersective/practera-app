@@ -1,44 +1,39 @@
-<ion-header>
+<ion-header mode="ios">
   <ion-toolbar color="light">
     <ion-title>Settings</ion-title>
   </ion-toolbar>
 </ion-header>
 <ion-content padding color="light">
   <ion-card class="practera-card">
-    <ion-item >
-      <ion-label>My Account
-        <div *ngIf="profile.email" >
-          <ion-label color="medium">Email: {{profile.email}}</ion-label>
-        </div>
-      </ion-label>
-    </ion-item>
-
-    <ion-item>
-      <ion-label>Select Country</ion-label>
-      <ion-select [(ngModel)]="countryModel" (ionChange)="updateCountry()">
-        <ion-select-option *ngFor="let countryCode of contact.countryCodes" [value]="countryCode.code">{{countryCode.name}}</ion-select-option>
-      </ion-select>
-    </ion-item>
-    <ion-item>
-      <ion-grid class="contact-grid">
-        <ion-row>
+      <ion-item class="profile-info" lines="none">
+          <ion-avatar class="profile-image" slot="start">
+            <img *ngIf="!imageUpdating" [src]="profile.image">
+            <p *ngIf="imageUpdating" class="loading-icon"><ion-spinner name="bubbles"></ion-spinner></p>
+            <file-stack
+              [accept]="acceptFileTypes"
+              [fileType]="'image'"
+              [type]="'profileImage'"
+              (complete)="uploadProfileImage($event)"
+            >
+            </file-stack>
+          </ion-avatar>
           <ion-label>
-            Contact No.
-            <ion-button class="btn-right update-btn" [disabled]="updating" (click)="updateContactNumber()">
-               <ng-container *ngIf="!updating">Update</ng-container>
-               <ng-container *ngIf="updating">Updating..</ng-container>
-            </ion-button>
+            <ion-label class="profile-name" *ngIf="profile.name">
+                {{profile.name}}
+            </ion-label>
+            <ion-label class="profile-email" *ngIf="profile.email">
+                {{profile.email}}
+            </ion-label>
           </ion-label>
-        </ion-row>
-        <ion-row>
-          <input [textMask]="{mask: mask, showMask: true, guide: true}" [(ngModel)]="profile.contactNumber" type="text" class="contact-input" (keydown)="disableArrowKeys($event)" (mousedown)="disableMiddleClicking($event)"/>
-        </ion-row>
-      </ion-grid>
-    </ion-item>
+        </ion-item>
+  </ion-card>
+  <ion-card class="practera-card">
+
+    <app-contact-number-form [page]="'settings'"></app-contact-number-form>
 
     <clickable-item (click)="switchProgram()" lines="none">
       <ion-icon padding name="radio-button-on"></ion-icon>
-      Switch to another program
+      Switch to another experience
     </clickable-item>
   </ion-card>
 

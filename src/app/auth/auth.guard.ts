@@ -32,12 +32,7 @@ export class AuthGuard implements CanActivate, CanActivateChild, CanLoad {
       return true;
     }
 
-    const navigationExtras: NavigationExtras = {
-      queryParams: { 'sample-data': true },
-      fragment: 'activity-card-1'
-    };
-
-    this.router.navigate(['/login'], navigationExtras);
+    this.router.navigate(['/login']);
     return false;
   }
 }

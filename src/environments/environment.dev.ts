@@ -3,7 +3,8 @@ export const environment = {
   appkey: 'b11e7c189b',
   pusherKey: '255f010d210933ca7675',
   env: 'sandbox',
-  APIEndpoint: 'https://stage-test.practera.com/',
+  APIEndpoint: 'https://sandbox.practera.com/',
+  graphQL: 'https://kixs5acl6j.execute-api.ap-southeast-2.amazonaws.com/sandbox/',
   intercomAppId: 'pef1lmo8',
   filestack: {
     key: 'AO6F4C72uTPGRywaEijdLz',
@@ -15,9 +16,18 @@ export const environment = {
         any: '/appv2/stage/uploads/',
         image: '/appv2/stage/uploads/',
         video: '/appv2/stage/video/upload/'
-      }
-    }
+      },
+      workflows: [
+        '3c38ef53-a9d0-4aa4-9234-617d9f03c0de',
+      ],
+    },
+    policy: '<CUSTOM_FILESTACK_POLICY>',
+    signature: '<CUSTOM_FILESTACK_SIGNATURE>',
+    workflows: {
+      virusDetection: '3c38ef53-a9d0-4aa4-9234-617d9f03c0de',
+    },
   },
+  defaultCountryModel: 'AUS',
   intercom: false,
   goMobile: false,
 };

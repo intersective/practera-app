@@ -36,6 +36,9 @@ export class EventCardComponent implements OnInit {
     if (!this.event.isPast) {
       return false;
     }
+    if (!this.event.isBooked) {
+      return true;
+    }
     if (!this.utils.has(this.event, 'assessment.id')) {
       return true;
     }

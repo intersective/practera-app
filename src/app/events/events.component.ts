@@ -1,8 +1,10 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, NgZone } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { EventsService, Event, Activity } from './events.service';
 import { UtilsService } from '@services/utils.service';
 import { RouterEnter } from '@services/router-enter.service';
+import { NewRelicService } from '@shared/new-relic/new-relic.service';
+
 
 interface EventGroup {
   date: string;
@@ -17,7 +19,7 @@ interface EventGroup {
 
 export class EventsComponent extends RouterEnter {
   routeUrl = '/events';
-  events: Array<EventGroup>;
+  events: Array<EventGroup> = [];
   eventsCategorised: {
     browse: Array<EventGroup>;
     booked: Array<EventGroup>;
@@ -32,7 +34,9 @@ export class EventsComponent extends RouterEnter {
     public router: Router,
     private route: ActivatedRoute,
     private eventService: EventsService,
-    public utils: UtilsService
+    public utils: UtilsService,
+    private ngZone: NgZone,
+    private newRelic: NewRelicService
   ) {
     super(router);
     // update event list after book/cancel an event
@@ -55,6 +59,8 @@ export class EventsComponent extends RouterEnter {
   }
 
   onEnter() {
+    this.newRelic.setPageViewName('event-list');
+
     this._initialise();
     this.eventService.getEvents().subscribe(events => {
       if (this.utils.isEmpty(events)) {
@@ -114,6 +120,7 @@ export class EventsComponent extends RouterEnter {
 
   /**
    * This function is used to put events into the proper group
+   *
    * @param {Event} event          The event data
    * @param {Array} events         The events array to push group data to
    * @param {Array} eventGroup     The event group array
@@ -130,6 +137,15 @@ export class EventsComponent extends RouterEnter {
         events: []
       };
     }
+
+    /**
+     * Frontend Expiry status is recalculated from event.start date
+     * (API doesn't return explicit conditions to FE to evaluate booking timeframe)
+     * - we are checking against the event start time to check if it is expired
+     * - if event started and user haven't booked, it is expired
+     * - if event started and user has booked, it is in attended
+     * - if event haven't started, it's bookable
+     */
     if (isBrowse && this.utils.timeComparer(event.startTime) < 0) {
       // group all past events as one group named "Expired"
       if (compareDate !== 'Expired') {
@@ -174,18 +190,21 @@ export class EventsComponent extends RouterEnter {
   }
 
   back() {
-    this.router.navigate(['app', 'home']);
+    return this.ngZone.run(() => this.router.navigate(['app', 'home']));
   }
 
   showBrowse() {
+    this.newRelic.addPageAction('show browse');
     this.activated = 'browse';
     this._filterByActivities();
   }
   showBooked() {
+    this.newRelic.addPageAction('show booked');
     this.activated = 'booked';
     this._filterByActivities();
   }
   showAttended() {
+    this.newRelic.addPageAction('show attended');
     this.activated = 'attended';
     this._filterByActivities();
   }

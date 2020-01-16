@@ -3,6 +3,7 @@ import { RouterModule, Routes } from '@angular/router';
 
 import { AuthComponent } from './auth.component';
 import { AuthLoginComponent } from './auth-login/auth-login.component';
+import { AuthLogoutComponent } from './auth-logout/auth-logout.component';
 import { AuthForgotPasswordComponent } from './auth-forgot-password/auth-forgot-password.component';
 import { AuthRegistrationComponent } from './auth-registration/auth-registration.component';
 import { AuthResetPasswordComponent } from './auth-reset-password/auth-reset-password.component';
@@ -25,6 +26,10 @@ const routes: Routes = [
         canActivate: [UnauthorizedGuard],
       },
       {
+        path: 'logout',
+        component: AuthLogoutComponent,
+      },
+      {
         path: 'forgot_password',
         component: AuthForgotPasswordComponent,
         canActivate: [UnauthorizedGuard],
@@ -41,7 +46,7 @@ const routes: Routes = [
       },
       {
         path: 'secure/:authToken',
-        component: AuthDirectLoginComponent
+        component: AuthDirectLoginComponent,
       }
     ]
   }

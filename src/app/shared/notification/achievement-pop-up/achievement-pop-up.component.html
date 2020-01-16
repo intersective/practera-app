@@ -11,6 +11,9 @@
       <p class="title notify">Congratulations</p>
       <p class="subtitle">You have earned a new badge</p>
       <div class="description" *ngIf="achievement.name">{{achievement.name}}</div>
+      <ion-text color="medium" *ngIf="achievement.description" text-left>
+        <app-description *ngIf="achievement.description" [content]="achievement.description"></app-description>
+      </ion-text>
     </div>
 
     <div class="div-after-img" *ngIf="type !== 'notification'">

@@ -53,7 +53,7 @@ export class TextComponent implements ControlValueAccessor, OnInit {
 
   // event fired when input/textarea value is changed. propagate the change up to the form control using the custom value accessor interface
   // if 'type' is set, it means it comes from reviewer doing review, otherwise it comes from submitter doing assessment
-  onChange(type) {
+  onChange(type = null) {
     // set changed value (answer or comment)
     if (type) {
       // initialise innerValue if not set
@@ -78,17 +78,15 @@ export class TextComponent implements ControlValueAccessor, OnInit {
     // Since we are checking required answer when submit, it's OK to just return here.
     return ;
     // reset errors
-    this.errors = [];
+    // this.errors = [];
     // setting, resetting error messages into an array (to loop) and adding the validation messages to show below the answer area
-    for (const key in this.control.errors) {
-      if (this.control.errors.hasOwnProperty(key)) {
-        if (key === 'required') {
-          this.errors.push('This question is required');
-        } else {
-          this.errors.push(this.control.errors[key]);
-        }
-      }
-    }
+    // for (const key in this.control.errors) {
+    //   if (key === 'required') {
+    //     this.errors.push('This question is required');
+    //   } else {
+    //     this.errors.push(this.control.errors[key]);
+    //   }
+    // }
   }
 
   // From ControlValueAccessor interface

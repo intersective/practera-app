@@ -1,64 +1,151 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { RouterTestingModule } from '@angular/router/testing';
-import { AuthService } from '../auth/auth.service';
 import { SettingsComponent } from './settings.component';
-import { of } from 'rxjs';
+import { SettingService } from './setting.service';
+import { Observable, of, pipe, throwError } from 'rxjs';
+import { Router, ActivatedRoute } from '@angular/router';
+import { HttpClientModule } from '@angular/common/http';
+import { SharedModule } from '@shared/shared.module';
+import { UtilsService } from '@services/utils.service';
+import { FilestackService } from '@shared/filestack/filestack.service';
+import { FastFeedbackService } from '../fast-feedback/fast-feedback.service';
+import { BrowserStorageService } from '@services/storage.service';
+import { AuthService } from '../auth/auth.service';
+import { NewRelicService } from '@shared/new-relic/new-relic.service';
+import { MockRouter } from '@testing/mocked.service';
+
 
 describe('SettingsComponent', () => {
   let component: SettingsComponent;
   let fixture: ComponentFixture<SettingsComponent>;
+  let settingsSpy: jasmine.SpyObj<SettingService>;
+  let routerSpy: jasmine.SpyObj<Router>;
+  let fastFeedbackSpy: jasmine.SpyObj<FastFeedbackService>;
+  let storageSpy: jasmine.SpyObj<BrowserStorageService>;
+  let authSpy: jasmine.SpyObj<AuthService>;
+  let newRelicSpy: jasmine.SpyObj<NewRelicService>;
+  let utils: UtilsService;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [RouterTestingModule],
-      declarations: [SettingsComponent],
-      schemas: [CUSTOM_ELEMENTS_SCHEMA],
+      imports: [ SharedModule, HttpClientModule ],
+      declarations: [ SettingsComponent ],
+      schemas: [ CUSTOM_ELEMENTS_SCHEMA ],
       providers: [
+        UtilsService,
+        FilestackService,
         {
-          provide: AuthService, useValue: {
-            logout: () => of(true),
-          }
-        }
-      ]
-    }).compileComponents();
+          provide: SettingService,
+          useValue: jasmine.createSpyObj('SettingService', ['updateProfileImage'])
+        },
+        {
+          provide: FastFeedbackService,
+          useValue: jasmine.createSpyObj('FastFeedbackService', ['pullFastFeedback'])
+        },
+        {
+          provide: BrowserStorageService,
+          useValue: jasmine.createSpyObj('BrowserStorageService', ['getUser', 'setUser'])
+        },
+        {
+          provide: AuthService,
+          useValue: jasmine.createSpyObj('AuthService', ['logout'])
+        },
+        {
+          provide: NewRelicService,
+          useValue: jasmine.createSpyObj('NewRelicService', ['setPageViewName', 'actionText', 'noticeError'])
+        },
+        {
+          provide: Router,
+          useClass: MockRouter
+        },
+      ],
+    })
+    .compileComponents();
   }));
 
   beforeEach(() => {
     fixture = TestBed.createComponent(SettingsComponent);
     component = fixture.componentInstance;
-    fixture.detectChanges();
+    settingsSpy = TestBed.get(SettingService);
+    routerSpy = TestBed.get(Router);
+    utils = TestBed.get(UtilsService);
+    fastFeedbackSpy = TestBed.get(FastFeedbackService);
+    storageSpy = TestBed.get(BrowserStorageService);
+    authSpy = TestBed.get(AuthService);
+    newRelicSpy = TestBed.get(NewRelicService);
+
+    storageSpy.getUser.and.returnValue({
+      email: 'test@test.com',
+      contactNumber: '1234455',
+      image: 'abc',
+      name: 'student',
+      programName: 'program'
+    });
+    fastFeedbackSpy.pullFastFeedback.and.returnValue(of({}));
+    newRelicSpy.actionText.and.returnValue('');
+    newRelicSpy.setPageViewName.and.returnValue('');
+    newRelicSpy.noticeError.and.returnValue('');
+    component.routeUrl = '/test';
   });
 
   it('should create', () => {
-    expect(component).toBeTruthy();
+    expect(component).toBeDefined();
   });
 
-  /*it('should initiated with default values', () => {
-    component.ngOnInit();
-    expect(component.email.length).toBeGreaterThan(0);
-    expect(component.contact_number.length).toBeGreaterThan(0);
-  });*/
+  it('when testing onEnter(), it should get correct data', () => {
+    fixture.detectChanges();
+    expect(component.profile).toEqual({
+      email: 'test@test.com',
+      contactNumber: '1234455',
+      image: 'abc',
+      name: 'student'
+    });
+    expect(component.acceptFileTypes).toEqual('image/*');
+    expect(component.currentProgramName).toEqual('program');
+    expect(fastFeedbackSpy.pullFastFeedback.calls.count()).toBe(1);
+  });
 
-  it('should navigate to switcher', () => {
-    expect(component.switchProgram).toBeDefined();
+  it('should navigate to switcher page', () => {
     component.switchProgram();
-    // @TODO: check routing
+    expect(routerSpy.navigate.calls.first().args[0]).toEqual(['/switcher']);
   });
 
-  /*it('should logout', () => {
-    expect(component.logout).toBeDefined();
+  it('should allow access to T&C file', () => {
+    spyOn(window, 'open');
+    component.openLink();
+    expect(component.termsUrl).toEqual('https://images.practera.com/terms_and_conditions/practera_terms_conditions.pdf');
+    expect(window.open).toHaveBeenCalledWith(component.termsUrl, '_system');
+  });
+
+  it('should initiate support email event', () => {
+    spyOn(window, 'open');
+    component.mailTo();
+    expect(component.helpline).toEqual('help@practera.com');
+    expect(window.open).toHaveBeenCalledWith(`mailto:${component.helpline}?subject=${component.currentProgramName}`, '_self');
+  });
+
+  it('when testing logout(), it should call auth service logout', () => {
     component.logout();
-    expect(AuthService.logout.subscribe).toHaveBeenCalled();
-  });*/
+    authSpy.logout.and.returnValue({});
+    expect(authSpy.logout.calls.count()).toBe(1);
+  });
 
-  /*it('should validate contact_number with verifyContactNumber', () => {
-    expect(component.verifyContactNumber).toBeDefined();
-  });*/
+  describe('when testing uploadProfileImage()', () => {
+    it('should upload image successfully', () => {
+      settingsSpy.updateProfileImage.and.returnValue(of({}));
+      component.uploadProfileImage({success: true, data: {url: 'abc'}});
+      expect(settingsSpy.updateProfileImage.calls.count()).toBe(1);
+    });
 
-  it('should update profile', () => {
-    expect(component.updateProfile).toBeDefined();
-    const testContactNumber = '0123456789';
-    expect(component.updateProfile(testContactNumber)).toBeTruthy();
+    it('should return error pop up #1', () => {
+      settingsSpy.updateProfileImage.and.returnValue(of({}));
+      component.uploadProfileImage({success: false, data: {url: 'abc'}});
+    });
+
+    it('should return error pop up #2', () => {
+      settingsSpy.updateProfileImage.and.returnValue(throwError(''));
+      component.uploadProfileImage({success: true, data: {url: 'abc'}});
+    });
   });
 });
+

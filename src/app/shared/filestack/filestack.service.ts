@@ -4,9 +4,30 @@ import { ModalController } from '@ionic/angular';
 import { PreviewComponent } from './preview/preview.component';
 import { environment } from '@environments/environment';
 import { BrowserStorageService } from '@services/storage.service';
+import { HttpClient } from '@angular/common/http'; // added to make one and only API call to filestack server
+import { Observable } from 'rxjs/Observable';
+import { forkJoin } from 'rxjs';
+import { NotificationService } from '@shared/notification/notification.service';
+import { UtilsService } from '@services/utils.service';
+
+export interface Metadata {
+  mimetype?: string;
+  uploaded?: number;
+  container?: string;
+  writeable?: boolean;
+  filename?: string;
+  location?: string;
+  key?: string;
+  path?: string;
+  size?: number;
+}
+
+// https://www.filestack.com/docs/api/file/#md-request
+const api = {
+  metadata: `https://www.filestackapi.com/api/file/HANDLE/metadata`
+};
 
 @Injectable()
-
 export class FilestackService {
   private filestack: any;
 
@@ -19,9 +40,16 @@ export class FilestackService {
 
   constructor(
     private modalController: ModalController,
-    private storage: BrowserStorageService
+    private storage: BrowserStorageService,
+    private httpClient: HttpClient,
+    private notificationService: NotificationService,
+    private utils: UtilsService
   ) {
-    this.filestack = filestack.init(this.getFilestackConfig());
+    const { policy, signature } = environment.filestack;
+    this.filestack = filestack.init(this.getFilestackConfig(), {
+      policy,
+      signature,
+    });
 
     if (!this.filestack) {
       throw new Error('Filestack module not found.');
@@ -48,22 +76,32 @@ export class FilestackService {
 
   // get s3 config
   getS3Config(fileType) {
-    let path = environment.filestack.s3Config.paths.any;
+    const {
+      location,
+      container,
+      region,
+      workflows,
+      paths,
+    } = environment.filestack.s3Config;
+
+    let path = paths.any;
     // get s3 path based on file type
-    if (environment.filestack.s3Config.paths[fileType]) {
-      path = environment.filestack.s3Config.paths[fileType];
+    if (paths[fileType]) {
+      path = paths[fileType];
     }
     // add user hash to the path
     path = path + this.storage.getUser().userHash + '/';
+
     return {
-      location: environment.filestack.s3Config.location,
-      container: environment.filestack.s3Config.container,
-      region: environment.filestack.s3Config.region,
-      path: path
+      location,
+      container,
+      region,
+      path,
+      workflows
     };
   }
 
-  previewFile(file) {
+  async previewFile(file) {
     let fileUrl = file.url;
     if (fileUrl) {
       if (fileUrl.indexOf('www.filepicker.io/api/file') !== -1) {
@@ -76,7 +114,50 @@ export class FilestackService {
     } else if (file.handle) {
       fileUrl = 'https://cdn.filestackcontent.com/preview/' + file.handle;
     }
-    this.previewModal(fileUrl, file);
+
+    let metadata;
+    try {
+      metadata = await this.metadata(file);
+    } catch (e) {
+      return this.notificationService.alert({
+        subHeader: 'Inaccessible file',
+        message: 'The uploaded file is suspicious and being scanned for potential risk. Please try again later.',
+      });
+    }
+
+    if (metadata.mimetype && metadata.mimetype.includes('application/')) {
+      const megabyte = (metadata && metadata.size) ? metadata.size / 1000 / 1000 : 0;
+      if (megabyte > 10) {
+        return this.notificationService.alert({
+          subHeader: 'File size too large',
+          message: `Attachment size has exceeded the size of ${Math.floor(megabyte)}mb please consider downloading the file for better reading experience.`,
+          buttons: [
+            {
+              text: 'Download',
+              handler: () => {
+                return this.utils.openUrl(file.url, {
+                  target: '_blank',
+                });
+              }
+            },
+            {
+              text: 'Cancel',
+              role: 'cancel',
+              handler: () => {
+                return;
+              }
+            },
+          ]
+        });
+      }
+    }
+
+    return new Promise(resolve => resolve(this.previewModal(fileUrl, file)));
+  }
+
+  async metadata(file): Promise<Metadata> {
+    const handle = file.url.match(/([A-Za-z0-9]){20,}/);
+    return this.httpClient.get(api.metadata.replace('HANDLE', handle[0])).toPromise();
   }
 
   async open(options = {}, onSuccess = res => res, onError = err => err) {
@@ -96,7 +177,10 @@ export class FilestackService {
         return data;
       },
       onFileUploadFailed: onError,
-      onFileUploadFinished: onSuccess,
+      onFileUploadFinished: function(res) {
+        return onSuccess(res);
+      },
+      onUploadDone: (res) => res
     };
 
     return await this.filestack.picker(Object.assign(pickerOptions, options)).open();
@@ -111,5 +195,24 @@ export class FilestackService {
       }
     });
     return await modal.present();
+  }
+
+  async getWorkflowStatus(processedJobs = {}) {
+    const { policy, signature, workflows } = environment.filestack;
+    let jobs = {};
+    if (processedJobs && processedJobs[workflows.virusDetection]) {
+      jobs = processedJobs[workflows.virusDetection];
+    }
+
+    const request = [];
+    this.utils.each(jobs, job => {
+      request.push(this.httpClient.get(`https://cdn.filestackcontent.com/${environment.filestack.key}/security=p:${policy},s:${signature}/workflow_status=job_id:${job}`));
+    });
+
+    if (request.length > 0) {
+      return forkJoin(request).toPromise();
+    }
+
+    return [];
   }
 }

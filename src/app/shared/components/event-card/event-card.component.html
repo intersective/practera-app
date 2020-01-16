@@ -5,5 +5,8 @@
     <p color="medium">{{ event.activityName }}</p>
     <p color="medium">{{ time }}</p>
   </div>
-  <ion-icon class="ending-arrow" name="arrow-forward" [color]="event.isPast ? 'medium' : 'primary'"></ion-icon>
+  <div *ngIf="event.isPast && !event.isBooked" class="expired-batch past">
+    Expired
+  </div>
+  <ion-icon *ngIf="!isPast()" class="ending-arrow" name="arrow-forward" color="primary"></ion-icon>
 </div>

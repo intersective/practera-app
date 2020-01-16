@@ -6,6 +6,8 @@ import { RouterEnter } from '@services/router-enter.service';
 import { SwitcherService } from '../switcher/switcher.service';
 import { ReviewsService } from '../reviews/reviews.service';
 import { Router } from '@angular/router';
+import { SharedService } from '@services/shared.service';
+import { NewRelicService } from '@shared/new-relic/new-relic.service';
 
 @Component({
   selector: 'app-tabs',
@@ -27,8 +29,11 @@ export class TabsComponent extends RouterEnter {
     public utils: UtilsService,
     private switcherService: SwitcherService,
     private reviewsService: ReviewsService,
+    private sharedService: SharedService,
+    private newRelic: NewRelicService,
   ) {
     super(router);
+    this.newRelic.setPageViewName('tab');
 
     const role = this.storage.getUser().role;
     this.utils.getEvent('notification').subscribe(event => {
@@ -59,6 +64,7 @@ export class TabsComponent extends RouterEnter {
   onEnter() {
     this._initialise();
     this._checkRoute();
+    this._stopPlayingVideos();
     this.tabsService.getNoOfTodoItems().subscribe(noOfTodoItems => {
       this.noOfTodoItems = noOfTodoItems;
     });
@@ -83,6 +89,7 @@ export class TabsComponent extends RouterEnter {
   }
 
   private _checkRoute() {
+    this.newRelic.actionText(`selected ${this.router.url}`);
     switch (this.router.url) {
       case '/app/home':
         this.selectedTab = 'home';
@@ -111,4 +118,9 @@ export class TabsComponent extends RouterEnter {
         break;
     }
   }
+
+  private _stopPlayingVideos() {
+    this.sharedService.stopPlayingVideos();
+  }
+
 }

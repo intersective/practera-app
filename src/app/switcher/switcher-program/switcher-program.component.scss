@@ -1,4 +1,48 @@
-.selected {
-    color: var(--ion-color-primary);
+ion-header {
+  // program switcher title no menu buttons required
+  ion-toolbar > ion-title {
+    padding-left: 20px;
+    padding-right: 20px;
   }
-  
+}
+ion-grid {
+  --ion-grid-padding: 0;
+  --ion-grid-padding-lg: 0;
+  --ion-grid-padding-md: 0;
+  --ion-grid-padding-sm: 0;
+  --ion-grid-padding-xl: 0;
+  --ion-grid-padding-xs: 0;
+}
+ion-col {
+  --ion-grid-column-padding: 8px;
+  --ion-grid-column-padding-lg: 8px;
+  --ion-grid-column-padding-md: 8px;
+  --ion-grid-column-padding-sm: 8px;
+  --ion-grid-column-padding-xl: 8px;
+  --ion-grid-column-padding-xs: 8px;
+}
+.experience-card {
+  margin: 12px 0;
+  max-height: 192px;
+  min-height: 192px;
+  height: 192px;;
+  ion-icon {
+    font-size: 24px !important;
+    color: var(--ion-color-medium);
+  }
+  ion-card-content {
+    font-size: 16px;	
+    letter-spacing: 0.15px;	
+    line-height: 24px;
+    max-height: 64px;
+    min-height: 64px;
+    height: 64px;
+    padding: 0;
+  }
+  img {
+    object-fit: cover;
+    min-height: 128px;
+    max-height: 128px;
+    height: 128px;
+  }
+}
