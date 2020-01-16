@@ -26,7 +26,7 @@
   </ion-grid>
 </div>
 
-<ion-content color="light" [scrollEvents]="true" #contentRef>
+<ion-content color="light" [scrollEvents]="true" (ionScroll)="trackScrolling($event)" #contentRef>
   <ion-list class="project-list">
     <ion-item *ngIf="loadingMilestone" color="light">
     </ion-item>
