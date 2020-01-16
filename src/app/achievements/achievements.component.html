@@ -1,4 +1,4 @@
-<ion-header>
+<ion-header mode="ios">
   <ion-toolbar color="light">
     <ion-icon name="arrow-back" (click)="back()" color="primary" slot="start" margin-start></ion-icon>
     <ion-title text-center>Badges</ion-title>
@@ -8,7 +8,25 @@
   <ng-container *ngIf="loadingAchievements">
     <ion-spinner></ion-spinner>
   </ng-container>
+  <ion-grid *ngIf="this.achievementService.getIsPointsConfigured() && !loadingAchievements">
+    <ion-row class="total-points">
+      <ion-col class="trophy" size="3">
+        <div class="circle-background">
+            <ion-icon ios="md-trophy" md="md-trophy"></ion-icon>
+        </div>
+      </ion-col>
+      <ion-col class="points" align-items-start>
+        <h4>Total Points Earned : {{ this.achievementService.getEarnedPoints() }}</h4>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+  <hr *ngIf="this.achievementService.getIsPointsConfigured()">
   <ion-grid>
+    <ion-row>
+      <ion-col class="title-container">
+        <p>My Badges</p>
+      </ion-col>
+    </ion-row>
     <ion-row>
       <ion-col
         *ngFor="let achievement of achievements; let i = index;"

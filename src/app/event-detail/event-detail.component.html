@@ -1,34 +1,37 @@
-<ion-header>
+<ion-header mode="ios">
   <ion-toolbar color="light">
     <ion-icon name="close-circle-outline" class="close-icon" (click)="close()" color="primary" slot="end"></ion-icon>
   </ion-toolbar>
 </ion-header>
 <ion-content color="light" text-center>
-  <h1>{{ event.name }}</h1>
-  <div class="div-activity-name">{{ event.activityName }}</div>
-  <app-description *ngIf="event.description" [content]="event.description"></app-description>
+  <div class="div-btn">
+    <h1>{{ event.name }}</h1>
+    <div class="div-activity-name">{{ event.activityName }}</div>
+    <app-description *ngIf="event.description" [content]="event.description"></app-description>
+  </div>
+  <h3 *ngIf="event.isPast && !event.isBooked" class="expired-text">Event Expired</h3>
 
   <ion-list>
     <ion-item>
       <ion-icon class="leading-icon" name="calendar" color="primary"></ion-icon>
-      <div>{{ utils.utcToLocal(event.startTime, 'date') }}</div>
+      <div id="date">{{ utils.utcToLocal(event.startTime, 'date') }}</div>
     </ion-item>
     <ion-item>
       <ion-icon class="leading-icon" name="time" color="primary"></ion-icon>
-      <div>{{ utils.utcToLocal(event.startTime, 'time') }} - {{ utils.utcToLocal(event.endTime, 'time') }}</div>
+      <div id="time">{{ utils.utcToLocal(event.startTime, 'time') }} - {{ utils.utcToLocal(event.endTime, 'time') }}</div>
     </ion-item>
     <ion-item>
       <ion-icon class="leading-icon" name="pin" color="primary"></ion-icon>
-      <div>{{ event.location }}</div>
+      <div id="location">{{ event.location }}</div>
     </ion-item>
     <ion-item lines="none">
       <ion-icon class="leading-icon" name="contacts" color="primary"></ion-icon>
-      <div>{{ event.remainingCapacity }} Seats Available Out of {{ event.capacity }}</div>
+      <div id="capacity">{{ event.remainingCapacity }} Seats Available Out of {{ event.capacity }}</div>
     </ion-item>
   </ion-list>
 
   <div class="div-btn" *ngIf="buttonText()">
-    <ion-button (click)="confirmed()" shape="round" color="primary" expand="full">
+    <ion-button (click)="confirmed()" [disabled]="event.isPast && !event.isBooked" shape="round" [color]="event.isPast && !event.isBooked ? 'medium' : 'primary'" expand="full">
       {{ buttonText() }}
     </ion-button>
   </div>

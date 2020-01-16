@@ -1,4 +1,4 @@
-<ion-header>
+<ion-header mode="ios">
   <ion-toolbar color="light">
     <ion-title text-center>It's 10x better on mobile!</ion-title>
   </ion-toolbar>
@@ -21,28 +21,7 @@
           <P>Add your mobile number to get the most out of Practera. We will never send you spam!</P>
         </ion-col>
       </ion-row>
-      <ion-item lines="none">
-        <ion-col size="6" text-right>
-          <input [textMask]="{mask: mask, showMask: true, guide: true}"
-            [(ngModel)]="profile.contactNumber"
-            (keyup)="validateContactNumber()"
-            (blur)="validateContactNumber()"
-            name="contactNumber"
-            type="text"
-            class="contact-input"
-          />
-        </ion-col>
-        <ion-col size="6" text-left>
-            <ion-select placeholder="Select Country"
-              name="countryModel"
-              [(ngModel)]="countryModel"
-              (ionChange)="updateCountry()">
-                <ion-select-option *ngFor="let countryCode of contact.countryCodes" [value]="countryCode.code">
-                  {{countryCode.name}}
-                </ion-select-option>
-            </ion-select>
-        </ion-col>
-      </ion-item>
+      <app-contact-number-form [page]="'go-mobile'" (updateNumber)="updateCountry()"></app-contact-number-form>
     </div>
     <div text-center>
         <ion-button expand="block" type="submit" [disabled]="invalidNumber || sendingSMS">

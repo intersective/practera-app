@@ -17,6 +17,9 @@ import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
       multi: true,
     },
   ],
+  exports: [
+    HttpClientModule,
+  ],
 })
 export class RequestModule {
   constructor(@Optional() @SkipSelf() parentModule: RequestModule) {

@@ -1,16 +1,17 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { ModalController } from '@ionic/angular';
 import { ReviewRatingService, ReviewRating } from './review-rating.service';
 import { UtilsService } from '@services/utils.service';
 import { NotificationService } from '../shared/notification/notification.service';
+import { NewRelicService } from '@shared/new-relic/new-relic.service';
 
 @Component({
   selector: 'app-review-rating',
   templateUrl: './review-rating.component.html',
   styleUrls: ['./review-rating.component.scss']
 })
-export class ReviewRatingComponent {
+export class ReviewRatingComponent implements OnInit {
 
   // Default redirect i.e home page.
   redirect = ['/'];
@@ -29,7 +30,8 @@ export class ReviewRatingComponent {
     private modalController: ModalController,
     private router: Router,
     private utils: UtilsService,
-    private notificationService: NotificationService
+    private notificationService: NotificationService,
+    private newRelic: NewRelicService
   ) {}
 
   // Review ID is required if this component is to be used.upon detecting incoming/changes of value, set passed reviewId into local var
@@ -38,20 +40,34 @@ export class ReviewRatingComponent {
     this.ratingData.assessment_review_id = reviewId;
   }
 
+  ngOnInit() {
+    this.newRelic.setPageViewName('review-rating');
+  }
+
   submitReviewRating() {
+    const nrSubmitRatingTracer = this.newRelic.createTracer('submit rating');
+    this.newRelic.addPageAction(`Submit rating: ${this.ratingData.rating}`);
     this.isSubmitting = true;
     // round to 2 decimal place
     this.ratingData.rating = +(this.ratingData.rating.toFixed(2));
 
-    this.reviewRatingService.submitRating(this.ratingData).subscribe(result => {
-      this.isSubmitting = false;
-      if (result) {
-          this.notificationService.presentToast('Successfully submitted.');
-      } else {
-          this.notificationService.presentToast('Error submtting review rating.', false);
+    this.reviewRatingService.submitRating(this.ratingData).subscribe(
+      result => {
+        nrSubmitRatingTracer();
+        this.isSubmitting = false;
+        this._closeReviewRating();
+      },
+      err => {
+        nrSubmitRatingTracer();
+        this.newRelic.noticeError('Submit review fail', JSON.stringify(err));
+        const toasted = this.notificationService.alert({
+          header: 'Error submitting rating',
+          message: err.msg || JSON.stringify(err)
+        });
+
+        throw new Error(err);
       }
-      this._closeReviewRating();
-    });
+    );
   }
 
   private _closeReviewRating() {
@@ -63,6 +79,7 @@ export class ReviewRatingComponent {
   }
 
   addOrRemoveTags(tag) {
+    this.newRelic.addPageAction(`added/removed: ${tag}`);
     this.ratingData.tags = this.utils.addOrRemove(this.ratingData.tags, tag);
   }
 

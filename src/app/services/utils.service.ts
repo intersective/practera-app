@@ -1,40 +1,24 @@
 import { Injectable, Inject } from '@angular/core';
 import * as _ from 'lodash';
 import { DOCUMENT } from '@angular/common';
-import { Observable, Subject } from 'rxjs';
+import { Observable, Subject, BehaviorSubject } from 'rxjs';
 import { map, filter } from 'rxjs/operators';
 
 // @TODO: enhance Window reference later, we shouldn't refer directly to browser's window object like this
 declare var window: any;
-
-// contact number format should be consistent throughout the app (GoMobile & Setting)
-export class ContactNumberFormat {
-  masks = {
-    AUS: ['+', '6', '1', ' ', /[1-9]/, /\d/, /\d/, ' ', /\d/, /\d/, /\d/, ' ', /\d/, /\d/, /\d/],
-    US: ['+', '1', ' ', /[1-9]/, /\d/, /\d/, ' ', /\d/, /\d/, /\d/, ' ', /\d/, /\d/, /\d/, /\d/],
-  };
-
-  // supported countries
-  countryCodes = [
-    {
-      name: 'Australia',
-      code: 'AUS',
-      format: '+61 ___ ___ ___'
-    },
-    {
-      name: 'US/Canada',
-      code: 'US',
-      format: '+1 ___ ___ ____'
-    },
-  ];
-}
 
 @Injectable({
   providedIn: 'root'
 })
 export class UtilsService {
   private lodash;
+  // this Subject is used to broadcast an event to the app
   protected _eventsSubject = new Subject<{key: string, value: any}>();
+  // this Subject is used in project.service to cache the project data
+  public projectSubject = new BehaviorSubject(null);
+  // this Subject is used in activity.service to cache the activity data
+  // it stores key => Subject pairs of all activities
+  public activitySubjects = {};
 
   constructor(
     @Inject(DOCUMENT) private document: Document,
@@ -46,7 +30,21 @@ export class UtilsService {
     }
   }
 
+  /**
+   * check if a value is empty
+   * precautions:
+   *   Lodash's isEmpty, by default, sees "number" type value as empty,
+   *   but in our case, we just treat null/undefined/""/[]/{} as empty.
+   *
+   * @param  {any}     value
+   * @return {boolean}       true: when empty string/object/array, otherwise false
+   */
   isEmpty(value: any): boolean {
+    // number type value shouldn't be treat as empty
+    if (typeof value === 'number') {
+      return false;
+    }
+
     return this.lodash.isEmpty(value);
   }
 
@@ -66,6 +64,10 @@ export class UtilsService {
     return this.lodash.has(object, path);
   }
 
+  flatten(array) {
+    return this.lodash.flatten(array);
+  }
+
   indexOf(array, value, fromIndex= 0) {
     return this.lodash.indexOf(array, value, fromIndex);
   }
@@ -74,7 +76,8 @@ export class UtilsService {
     return this.lodash.remove(collections, callback);
   }
 
-  openUrl(url, options?: {target: '_self'}) {
+  openUrl(url, options?: { target: String }) {
+    options = options || {target: '_self' };
     return window.open(url, options.target);
   }
 
@@ -94,6 +97,14 @@ export class UtilsService {
   changeThemeColor(color) {
     this.document.documentElement.style.setProperty('--ion-color-primary', color);
     this.document.documentElement.style.setProperty('--ion-color-primary-shade', color);
+    this.document.documentElement.style.setProperty('--ion-color-primary-tint', color);
+    // convert hex color to rgb and update css variable
+    const hex = color.replace('#', '');
+    const red = parseInt(hex.substring(0, 2), 16);
+    const green = parseInt(hex.substring(2, 4), 16);
+    const blue = parseInt(hex.substring(4, 6), 16);
+
+    this.document.documentElement.style.setProperty('--ion-color-primary-rgb', red + ',' + green + ',' + blue);
   }
 
   changeCardBackgroundImage(image) {
@@ -114,10 +125,36 @@ export class UtilsService {
       );
   }
 
+  // get the activity Subject for cache
+  getActivityCache(key): BehaviorSubject<any> {
+    if (!(key in this.activitySubjects)) {
+      this.activitySubjects[key] = new BehaviorSubject(null);
+    }
+    return this.activitySubjects[key];
+  }
+
+  // update the activity cache for given key(activity id)
+  updateActivityCache(key, value) {
+    if (!(key in this.activitySubjects)) {
+      this.activitySubjects[key] = new BehaviorSubject(null);
+    }
+    this.activitySubjects[key].next(value);
+  }
+
+  // need to clear all Subject for cache
+  clearCache() {
+    // initialise the Subject for caches
+    this.projectSubject.next(null);
+    this.each(this.activitySubjects, (subject, key) => {
+      this.activitySubjects[key].next(null);
+    });
+  }
+
   // transfer url query string to an object
   urlQueryToObject(query: string) {
     return JSON.parse('{"' + decodeURI(query).replace(/"/g, '\\"').replace(/&/g, '","').replace(/=/g, '":"') + '"}');
   }
+
 
   /**
    * This is a time formatter that transfer time/date string to a nice string
@@ -135,13 +172,9 @@ export class UtilsService {
     // if no compareWith provided, compare with today
     let compareDate = new Date();
     if (compareWith) {
-      compareWith = compareWith.replace(' ', 'T');
-      compareDate = new Date(compareWith + 'Z');
+      compareDate = new Date(this.timeStringFormatter(compareWith));
     }
-    // add "T" between date and time, so that it works on Safari
-    time = time.replace(' ', 'T');
-    // add "Z" to declare that it is UTC time, it will automatically convert to local time
-    const date = new Date(time + 'Z');
+    const date = new Date(this.timeStringFormatter(time));
     if (date.getFullYear() === compareDate.getFullYear() && date.getMonth() === compareDate.getMonth()) {
       if (date.getDate() === compareDate.getDate() - 1) {
         return 'Yesterday';
@@ -167,54 +200,57 @@ export class UtilsService {
     if (!time) {
       return '';
     }
-    // add "T" between date and time, so that it works on Safari
-    time = time.replace(' ', 'T');
-    // add "Z" to declare that it is UTC time, it will automatically convert to local time
-    const date = new Date(time + 'Z');
+    const date = new Date(this.timeStringFormatter(time));
+    const formattedTime = new Intl.DateTimeFormat('en-GB', {
+      hour12: true,
+      hour: 'numeric',
+      minute: 'numeric'
+    }).format(date);
+
     switch (display) {
       case 'date':
-        const today = new Date();
-        if (date.getFullYear() === today.getFullYear() && date.getMonth() === today.getMonth()) {
-          if (date.getDate() === today.getDate() - 1) {
-            return 'Yesterday';
-          }
-          if (date.getDate() === today.getDate()) {
-            return 'Today';
-          }
-          if (date.getDate() === today.getDate() + 1) {
-            return 'Tomorrow';
-          }
-        }
-        return new Intl.DateTimeFormat('en-GB', {
-          month: 'short',
-          day: 'numeric',
-          year: 'numeric'
-        }).format(date);
+        return this.dateFormatter(date);
 
       case 'time':
-        return new Intl.DateTimeFormat('en-GB', {
-          hour12: true,
-          hour: 'numeric',
-          minute: 'numeric'
-        }).format(date);
+        return formattedTime;
 
       default:
-        return new Intl.DateTimeFormat('en-GB', {
-          hour12: true,
-          hour: 'numeric',
-          minute: 'numeric',
-          month: 'short',
-          day: 'numeric',
-          year: 'numeric'
-        }).format(date);
+      return this.dateFormatter(date) + ' ' + formattedTime;
     }
   }
 
-  timeComparer(timeString: string, comparedString?: string) {
-    const time = new Date(timeString + 'Z');
+  dateFormatter(date: Date) {
+    const today = new Date();
+    let formattedDate = new Intl.DateTimeFormat('en-GB', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric'
+    }).format(date);
+
+    if (date.getFullYear() === today.getFullYear() && date.getMonth() === today.getMonth()) {
+      if (date.getDate() === today.getDate() - 1) {
+        formattedDate = 'Yesterday';
+      }
+      if (date.getDate() === today.getDate()) {
+        formattedDate = 'Today';
+      }
+      if (date.getDate() === today.getDate() + 1) {
+        formattedDate = 'Tomorrow';
+      }
+    }
+    return formattedDate;
+  }
+
+  timeComparer(timeString: string, comparedString?: string, compareDate?: boolean) {
+    const time = new Date(this.timeStringFormatter(timeString));
     let compared = new Date();
     if (comparedString) {
-      compared = new Date(comparedString + 'Z');
+      compared = new Date(this.timeStringFormatter(comparedString));
+    }
+    if (compareDate && (time.getDate() === compared.getDate() &&
+    time.getMonth() === compared.getMonth() &&
+    time.getFullYear() === compared.getFullYear())) {
+      return 0;
     }
     if (time.getTime() < compared.getTime()) {
       return -1;
@@ -225,5 +261,48 @@ export class UtilsService {
     if (time.getTime() > compared.getTime()) {
       return 1;
     }
+  }
+
+  /**
+   * get next element in an array,
+   * return undefined if the next value is not available
+   */
+  getNextArrayElement(target: any[], currentId: number): any {
+    const length = target.length;
+    const index = target.findIndex(datum => {
+      return datum.id === currentId;
+    });
+
+    const nextElement = target[index + 1];
+
+    return target[index + 1];
+  }
+
+  /**
+   * check if the targeted element in an array is located at the last in the last index
+   */
+  checkOrderById(target: any[], currentId, options: {
+    isLast: boolean;
+  }): boolean {
+    const length = target.length;
+    const index = target.findIndex(datum => {
+      return datum.id === currentId;
+    });
+
+    return (length - 1) === index;
+  }
+  /**
+   * Format the time string
+   * 1. Add 'T' between date and time, for compatibility with Safari
+   * 2. Add 'Z' at last to indicate that it is UTC time, browser will automatically convert the time to local time
+   *
+   * Example time string: '2019-08-06 15:03:00'
+   * After formatter: '2019-08-06T15:03:00Z'
+   */
+  timeStringFormatter(time: string) {
+    // add "T" between date and time, so that it works on Safari
+    time = time.replace(' ', 'T');
+    // add "Z" to indicate that it is UTC time, it will automatically convert to local time
+    return time + 'Z';
   }
 }

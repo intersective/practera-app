@@ -1,15 +1,15 @@
 <ion-content color="light" text-center>
   <div class="div-logo">
-    <img src="/assets/logo.svg" width="60%">
+    <app-branding-logo></app-branding-logo>
   </div>
   <div class="div-after-logo">
     <form (ngSubmit)="login()" [formGroup]="loginForm" (keyup.enter)="login()">
       <ion-list margin>
         <ion-item>
-          <ion-input name="email" formControlName="email" required type="email" placeholder="Email" ></ion-input>
+          <ion-input name="email" formControlName="email" required autocomplete="on" inputmode="email" type="email" placeholder="Email" ></ion-input>
         </ion-item>
         <ion-item lines="none">
-          <ion-input name="password" formControlName="password" required type="password" placeholder="Password" ></ion-input>
+          <ion-input name="password" formControlName="password" autocomplete="on" inputmode="password" required type="password" placeholder="Password" ></ion-input>
         </ion-item>
       </ion-list>
       <ion-button shape="round" color="primary" [disabled]="!loginForm.valid || isLoggingIn" type="submit">

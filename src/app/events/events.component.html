@@ -1,4 +1,4 @@
-<ion-header>
+<ion-header mode="ios">
   <ion-toolbar color="light">
     <ion-icon name="arrow-back" (click)="back()" color="primary" slot="start" margin-start></ion-icon>
     <ion-title text-center>Events</ion-title>
@@ -65,6 +65,7 @@
       </ion-list>
     </ion-card>
   </ng-container>
+
   <div *ngIf="!events.length">
     <ion-card class="practera-card background-white no-event">
       <i>There's no event yet.</i>

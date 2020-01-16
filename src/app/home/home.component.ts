@@ -12,6 +12,7 @@ import { Achievement, AchievementsService } from '@app/achievements/achievements
 import { Event, EventsService } from '@app/events/events.service';
 import { Intercom } from 'ng-intercom';
 import { environment } from '@environments/environment';
+import { NewRelicService } from '@shared/new-relic/new-relic.service';
 
 @Component({
   selector: 'app-home',
@@ -41,7 +42,8 @@ export class HomeComponent extends RouterEnter implements OnDestroy {
     public utils: UtilsService,
     public storage: BrowserStorageService,
     public achievementService: AchievementsService,
-    public eventsService: EventsService
+    public eventsService: EventsService,
+    private newRelic: NewRelicService
   ) {
     super(router);
     const role = this.storage.getUser().role;
@@ -85,8 +87,6 @@ export class HomeComponent extends RouterEnter implements OnDestroy {
     this.loadingActivity = true;
     this.achievements = [];
     this.haveEvents = false;
-    // add a flag in local storage to indicate that is there any fast feedback open
-    this.storage.set('fastFeedbackOpening', false);
   }
 
   onEnter() {
@@ -121,26 +121,10 @@ export class HomeComponent extends RouterEnter implements OnDestroy {
         });
       })
     );
+
     this.homeService.getProgramName().subscribe(programName => {
       this.programName = programName;
     });
-    this.subscriptions.push(
-      this.fastFeedbackService.getFastFeedback().subscribe(res => {
-        // popup instant feedback view if question quantity found > 0
-        if (!this.utils.isEmpty(res.data) && res.data.slider.length > 0) {
-          if (this.storage.get('fastFeedbackOpening')) {
-            // don't open it again if there's one opening
-            return ;
-          }
-          // add a flag to indicate that a fast feedback pop up is opening
-          this.storage.set('fastFeedbackOpening', true);
-          return this.homeService.popUpFastFeedback({
-            questions: res.data.slider,
-            meta: res.data.meta
-          });
-        }
-      })
-    );
 
     this.subscriptions.push(
       this.achievementService.getAchievements('desc').subscribe(achievements => {
@@ -189,13 +173,17 @@ export class HomeComponent extends RouterEnter implements OnDestroy {
         }
       });
     }
+
+    this.fastFeedbackService.pullFastFeedback().subscribe();
   }
 
   goToActivity(id) {
-    this.router.navigateByUrl('app/activity/' + id);
+    this.newRelic.actionText(`goToActivity ID: ${id}`);
+    this.router.navigate(['app', 'activity', id]);
   }
 
   goToAssessment(activityId, contextId, assessmentId) {
+    this.newRelic.actionText('goToAssessment');
     this.router.navigate([
       'assessment',
       'assessment',
@@ -206,6 +194,7 @@ export class HomeComponent extends RouterEnter implements OnDestroy {
   }
 
   goToReview(contextId, assessmentId, submissionId) {
+    this.newRelic.actionText('goToReview');
     this.router.navigate([
       'assessment',
       'review',
@@ -216,6 +205,7 @@ export class HomeComponent extends RouterEnter implements OnDestroy {
   }
 
   goToChat(todoItem?: TodoItem) {
+    this.newRelic.actionText('goToChat');
     if (this.utils.isEmpty(todoItem.meta)) {
       return this.router.navigate(['app', 'chat']);
     }
@@ -226,6 +216,8 @@ export class HomeComponent extends RouterEnter implements OnDestroy {
   }
 
   ngOnDestroy(): void {
+    // run ngOnDestroy from RouterEnter
+    super.ngOnDestroy();
     this.subscriptions.forEach(subscription => subscription.unsubscribe());
   }
 
@@ -244,6 +236,7 @@ export class HomeComponent extends RouterEnter implements OnDestroy {
   }
 
   showEventDetail(event) {
+    this.newRelic.actionText('showEventDetail');
     this.eventsService.eventDetailPopUp(event);
   }
 
