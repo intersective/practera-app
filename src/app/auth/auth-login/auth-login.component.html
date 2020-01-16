@@ -23,9 +23,10 @@
             autocomplete="on"
             inputmode="password"
             required
-            type="password"
+            [type]="showPassword ? 'text' : 'password'"
             placeholder="Password"
             ></ion-input>
+            <ion-button (click)="showPassword = !showPassword" fill="clear"><ion-icon slot="end" name="eye-off"></ion-icon></ion-button>
         </ion-item>
       </ion-list>
       <ion-button
@@ -33,6 +34,7 @@
         color="primary"
         [disabled]="!loginForm.valid || isLoggingIn"
         type="submit"
+        expand="full"
         >
         <ng-container *ngIf="!isLoggingIn">LOGIN</ng-container>
         <ng-container *ngIf="isLoggingIn">LOGGING IN...</ng-container>
