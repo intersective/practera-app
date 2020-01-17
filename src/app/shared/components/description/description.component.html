@@ -7,17 +7,17 @@
 
   <ng-container *ngIf="heightExceeded">
     <ng-container *ngIf="isTruncating">
-      <div class="button button-container" (click)="isTruncating = !isTruncating">
-        <ion-text color="primary">SHOW MORE</ion-text>
-        <ion-icon class="forward" name="arrow-forward" color="primary" slot="start" margin-start></ion-icon>
-      </div>
+      <ion-button color="primary" fill="clear" (click)="isTruncating = !isTruncating">
+        SHOW MORE
+        <ion-icon slot="end" name="arrow-forward"></ion-icon>
+      </ion-button>
     </ng-container>
 
     <ng-container *ngIf="!isTruncating">
-      <div class="button button-container" (click)="isTruncating = !isTruncating">
-        <ion-icon class="back" name="arrow-back" color="primary" slot="start" margin-start></ion-icon>
-        <ion-text color="primary">SHOW LESS</ion-text>
-      </div>
+      <ion-button color="primary" fill="clear" (click)="isTruncating = !isTruncating">
+        <ion-icon slot="start" name="arrow-back"></ion-icon>
+        SHOW LESS
+      </ion-button>
     </ng-container>
   </ng-container>
 
