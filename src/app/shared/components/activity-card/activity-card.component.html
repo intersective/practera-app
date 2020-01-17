@@ -1,13 +1,16 @@
 <ion-card
   color="primary"
-  class="card practera-card"
+  class="card practera-card ion-activatable"
   [ngClass]="{
+    'loading-card': loading,
     'locked-card': activity.isLocked,
     'default-image-card': !activity.leadImage
   }"
   [ngStyle]="{'background-image': backgroundImageStyle }"
 >
-  <ion-card-content [ngClass]="{'feedback-card': activity.hasFeedback }">
+  <ion-ripple-effect></ion-ripple-effect>
+
+  <ion-card-content *ngIf="activity" [ngClass]="{'feedback-card': activity.hasFeedback }">
     <h4 color="primary-contrast">Activity</h4>
     <h2 color="primary-contrast" class="activity-name">{{activity.name}}</h2>
   </ion-card-content>
