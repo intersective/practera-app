@@ -28,6 +28,7 @@ export class EventListComponent {
   // events will be filtered by these activities
   selectedActivities: Array<number>;
   loadingEvents = true;
+  goToFirstEvent = true;
 
   constructor (
     public router: Router,
@@ -122,6 +123,10 @@ export class EventListComponent {
       let activityId = this.activityId;
       if (!activityId) {
         activityId = +this.route.snapshot.paramMap.get('activity_id');
+      }
+      // don't need to go to first event if event id passed in
+      if (this.eventId) {
+        this.goToFirstEvent = false;
       }
       if (activityId) {
         this.onSelect([activityId]);
@@ -218,16 +223,19 @@ export class EventListComponent {
   showBrowse() {
     this.newRelic.addPageAction('show browse');
     this.activated = 'browse';
+    this.goToFirstEvent = true;
     this._rearrangeEvents();
   }
   showBooked() {
     this.newRelic.addPageAction('show booked');
     this.activated = 'booked';
+    this.goToFirstEvent = true;
     this._rearrangeEvents();
   }
   showAttended() {
     this.newRelic.addPageAction('show attended');
     this.activated = 'attended';
+    this.goToFirstEvent = true;
     this._rearrangeEvents();
   }
 
@@ -245,7 +253,7 @@ export class EventListComponent {
   private _rearrangeEvents() {
     this._filterByActivities();
     // don't need to go to first event if it is the inital loading and event id is passed in
-    if (this.loadingEvents && this.eventId) {
+    if (!this.goToFirstEvent) {
       return ;
     }
     // Go to the first event.
