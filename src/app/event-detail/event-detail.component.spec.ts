@@ -19,7 +19,7 @@ class Page {
     return this.query<HTMLElement>('.div-activity-name');
   }
   get expired() {
-    return this.query<HTMLElement>('h3.expired-text');
+    return this.query<HTMLElement>('.expired-text');
   }
   get date() {
     return this.query<HTMLElement>('#date');
