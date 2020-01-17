@@ -24,7 +24,9 @@
             required
             [type]="showPassword ? 'text' : 'password'"
             placeholder="Set up Practera password*"></ion-input>
-          <ion-button (click)="showPassword = !showPassword" fill="clear"><ion-icon slot="end" name="eye-off"></ion-icon></ion-button>
+          <ion-button (click)="showPassword = !showPassword" fill="clear">
+            <ion-icon slot="end" [name]="showPassword ? 'eye' : 'eye-off'"></ion-icon>
+          </ion-button>
         </ion-item>
         <ion-item *ngIf="!hide_password" lines="none">
           <ion-input
