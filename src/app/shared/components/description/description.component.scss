@@ -42,3 +42,26 @@
   from { max-height: 90px;}
   to { max-height: 1000px;}
 }
+
+.button-container {
+  width: fit-content;
+  justify-content: center !important;
+  margin-top: 6px;
+  cursor: pointer;
+
+  ion-icon {
+    font-size: 24px;
+    vertical-align: middle;
+    margin: 0 !important;
+    &.forward {
+      margin-left: 8px !important;
+    }
+    &.back {
+      margin-right: 8px !important;
+    }
+  }
+
+  ion-text {
+    vertical-align: middle;
+  }
+}
