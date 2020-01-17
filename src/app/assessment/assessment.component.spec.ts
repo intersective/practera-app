@@ -20,7 +20,7 @@ import { MockRouter, MockNewRelicService } from '@testing/mocked.service';
 
 class Page {
   get savingMessage() {
-    return this.query<HTMLElement>('ion-title.subTitle');
+    return this.query<HTMLElement>('ion-title.sub-title');
   }
   get assessmentName() {
     return this.query<HTMLElement>('h1');
