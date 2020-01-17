@@ -42,3 +42,7 @@
   from { max-height: 90px;}
   to { max-height: 1000px;}
 }
+
+ion-button {
+  --background-hover: transparent !important;
+}
