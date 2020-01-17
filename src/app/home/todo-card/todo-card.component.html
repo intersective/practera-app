@@ -1,6 +1,5 @@
 <ion-card color="primary-contrast" class="todo-card practera-card">
   <clickable-item>
-
     <ng-container *ngIf="todoItem.type; else noOrLoading">
       <ng-container [ngSwitch]="todoItem.type">
         <ion-icon *ngSwitchCase="'feedback_available'" name="information-circle-outline" slot="start" color="primary"></ion-icon>

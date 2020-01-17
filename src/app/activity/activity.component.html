@@ -1,6 +1,8 @@
 <ion-header mode="ios">
   <ion-toolbar color="light">
-    <ion-icon name="arrow-back" (click)="back()" color="primary" slot="start" margin-start></ion-icon>
+    <ion-icon class="ion-activatable" name="arrow-back" (click)="back()" color="primary" slot="start" margin-start>
+      <ion-ripple-effect></ion-ripple-effect>
+    </ion-icon>
     <ion-title text-center>Activity</ion-title>
   </ion-toolbar>
 </ion-header>
@@ -27,7 +29,6 @@
         [lines]="i == activity.tasks.length - 1 ? 'none' : ''">
 
         <ng-container [ngSwitch]="task.type">
-
           <ng-container *ngSwitchCase="'Locked'">
             <ion-icon name="lock" slot="start" color="primary"></ion-icon>
           </ng-container>
