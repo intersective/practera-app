@@ -1,10 +1,10 @@
-<ion-content color="light" text-center>
+<ion-content color="light" class="ion-text-center">
   <div class="div-logo">
     <app-branding-logo></app-branding-logo>
   </div>
   <div class="div-after-logo">
     <form (ngSubmit)="login()" [formGroup]="loginForm" (keyup.enter)="login()">
-      <ion-list margin>
+      <ion-list class="ion-margin">
         <ion-item>
           <ion-input
             name="email"
