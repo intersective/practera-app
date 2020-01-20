@@ -9,11 +9,13 @@ import { MockRouter } from '@testing/mocked.service';
 import { UtilsService } from '@services/utils.service';
 import { RequestService } from '@shared/request/request.service';
 import { environment } from '@environments/environment';
+import * as Pusher from 'pusher-js';
 
-class PusherLib {
+class PusherLib extends Pusher {
   connection;
 
   constructor(a, b) {
+    super('TESTAPIKEY');
     console.log(a, b);
     this.connection = {
       state: 'test',
@@ -23,6 +25,15 @@ class PusherLib {
     });*/
   }
 }
+const initialisingPusher = {
+  connection: {
+    state: 'connected',
+    key: '',
+  },
+  connect: () => true,
+  channel: [],
+  allChannels: () => [],
+};
 
 describe('PusherConfig', () => {
   const config = new PusherConfig();
@@ -48,15 +59,6 @@ describe('PusherService', async () => {
         'timelineid': 1
       },
     },
-  };
-  const initialisingPusher = {
-    connection: {
-      state: 'connected',
-      key: '',
-    },
-    connect: () => true,
-    channel: [],
-    allChannels: () => [],
   };
 
   let service: PusherService;
