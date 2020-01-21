@@ -144,10 +144,13 @@ export class EventListComponent {
 
   // render more events from remainingEvents
   loadMoreEvents(event) {
-    setTimeout(() => {
-      this.renderEvents();
-      event.target.complete();
-    }, 500);
+    setTimeout(
+      () => {
+        this.renderEvents();
+        event.target.complete();
+      },
+      500
+    );
   }
 
   // render at least one event group, no less than 5 events at one time
@@ -164,9 +167,9 @@ export class EventListComponent {
     if (!this.remainingEvents) {
       return ;
     }
-    let eventsCount = 0;
+    let eventsCount = 0, eventGroup;
     while (eventsCount <= 5) {
-      let eventGroup = this.remainingEvents.shift();
+      eventGroup = this.remainingEvents.shift();
       if (!eventGroup) {
         break;
       }
