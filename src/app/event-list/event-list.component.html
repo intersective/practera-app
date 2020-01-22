@@ -68,6 +68,13 @@
     </ion-card>
   </ng-container>
 
+  <ion-infinite-scroll threshold="50px" (ionInfinite)="loadMoreEvents($event)">
+    <ion-infinite-scroll-content
+      loadingSpinner="bubbles"
+      loadingText="Loading more events...">
+    </ion-infinite-scroll-content>
+  </ion-infinite-scroll>
+
   <div *ngIf="!events.length && !loadingEvents">
     <ion-card class="practera-card no-event">
       <ng-container [ngSwitch]="activated">

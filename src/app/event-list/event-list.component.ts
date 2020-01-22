@@ -19,6 +19,7 @@ export class EventListComponent {
   // the current active tab
   activated = 'browse';
   events: Array<EventGroup> = [];
+  remainingEvents: Array<EventGroup> = [];
   eventsCategorised: {
     browse: Array<EventGroup>;
     booked: Array<EventGroup>;
@@ -46,6 +47,7 @@ export class EventListComponent {
 
   private _initialise() {
     this.events = [];
+    this.remainingEvents = [];
     this.eventsCategorised = {
       browse: [],
       booked: [],
@@ -118,7 +120,7 @@ export class EventListComponent {
       if (eventGroupAttended.events.length) {
         this.eventsCategorised.attended.push(eventGroupAttended);
       }
-      this.events = this.eventsCategorised[this.activated];
+      this.renderEvents(this.eventsCategorised[this.activated]);
       // if activity id is passed in, filter by that activity
       let activityId = this.activityId;
       if (!activityId) {
@@ -138,6 +140,42 @@ export class EventListComponent {
     this.eventService.getActivities().subscribe(activities => {
       this.activities = activities;
     });
+  }
+
+  // render more events from remainingEvents
+  loadMoreEvents(event) {
+    setTimeout(
+      () => {
+        this.renderEvents();
+        event.target.complete();
+      },
+      500
+    );
+  }
+
+  // render at least one event group, no less than 5 events at one time
+  renderEvents(remainingEvents?) {
+    if (!this.events) {
+      this.events = [];
+    }
+    // re-assign remainingEvents if passed in
+    if (remainingEvents) {
+      this.remainingEvents = JSON.parse(JSON.stringify(remainingEvents));
+      this.events = [];
+    }
+    // don't need to do anything if no remaining events
+    if (!this.remainingEvents) {
+      return ;
+    }
+    let eventsCount = 0, eventGroup;
+    while (eventsCount <= 5) {
+      eventGroup = this.remainingEvents.shift();
+      if (!eventGroup) {
+        break;
+      }
+      eventsCount += eventGroup.events.length;
+      this.events.push(eventGroup);
+    }
   }
 
   // tell parent component that user is going to an event
@@ -269,13 +307,13 @@ export class EventListComponent {
    * Filter the current events with selected activities
    */
   private _filterByActivities() {
-    // initialise events
-    this.events = this.eventsCategorised[this.activated];
+    // no need to filter any activity if not selected
     if (this.utils.isEmpty(this.selectedActivities)) {
+      this.renderEvents(this.eventsCategorised[this.activated]);
       return ;
     }
     const events = [];
-    this.events.forEach(eventGroup => {
+    this.eventsCategorised[this.activated].forEach(eventGroup => {
       const group: EventGroup = {
         date: eventGroup.date,
         events: []
@@ -289,6 +327,6 @@ export class EventListComponent {
         events.push(group);
       }
     });
-    this.events = events;
+    this.renderEvents(events);
   }
 }
