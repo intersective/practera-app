@@ -36,7 +36,7 @@ export class DeviceInfoComponent implements OnInit {
         width,
       } = this.platform;
 
-      const navigator = (this.platform.win || {}).navigator || {};
+      const navigator = window.navigator;
       this.navigator = {
         userAgent: navigator.userAgent,
         vendor: navigator.vendor,
