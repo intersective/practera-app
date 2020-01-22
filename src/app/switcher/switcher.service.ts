@@ -185,10 +185,10 @@ export class SwitcherService {
       this.utils.clearCache();
       if ((typeof environment.goMobile !== 'undefined' && environment.goMobile === false)
         || /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
-          if (this.storage.get('directLinkData')) {
-            const route = this.storage.get('directLinkData');
-            this.storage.remove('directLinkData');
-            return route;
+          if (this.storage.get('directLinkRoute')) {
+            const route = this.storage.get('directLinkRoute');
+            this.storage.remove('directLinkRoute');
+            return JSON.parse(route);
           }
           return ['app', 'home'];
       } else {
