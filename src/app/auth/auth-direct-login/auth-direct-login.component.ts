@@ -55,7 +55,7 @@ export class AuthDirectLoginComponent implements OnInit {
   /**
    * Redirect user to a specific page if data is passed in, otherwise redirect to program switcher page
    */
-  private async _redirect(notRegister?: boolean) {
+  private async _redirect(redirectLater?: boolean): Promise<boolean | void> {
     const redirect = this.route.snapshot.paramMap.get('redirect');
     const timelineId = +this.route.snapshot.paramMap.get('tl');
     const activityId = +this.route.snapshot.paramMap.get('act');
@@ -66,16 +66,16 @@ export class AuthDirectLoginComponent implements OnInit {
     this.utils.clearCache();
     if (!redirect || !timelineId) {
       // if there's no redirection or timeline id
-      return notRegister ? ['switcher'] : this.navigate(['switcher']);
+      return this._saveOrRedirect(['switcher'], redirectLater);
     }
     // switch parogram if user already registered
-    if (!notRegister) {
+    if (!redirectLater) {
       const program = this.utils.find(this.storage.get('programs'), value => {
         return value.timeline.id === timelineId;
       });
       if (this.utils.isEmpty(program)) {
         // if the timeline id is not found
-        return this.navigate(['switcher']);
+        return this._saveOrRedirect(['switcher']);
       }
       // switch to the program
       await this.switcherService.switchProgram(program);
@@ -83,38 +83,51 @@ export class AuthDirectLoginComponent implements OnInit {
 
     switch (redirect) {
       case 'home':
-        return notRegister ? ['app', 'home'] : this.navigate(['app', 'home']);
+        return this._saveOrRedirect(['app', 'home'], redirectLater);
       case 'project':
-        return notRegister ? ['app', 'project'] : this.navigate(['app', 'project']);
+        return this._saveOrRedirect(['app', 'project'], redirectLater);
       case 'activity':
         if (!activityId) {
-          return notRegister ? ['app', 'home'] : this.navigate(['app', 'home']);
+          return this._saveOrRedirect(['app', 'home'], redirectLater);
         }
-        return notRegister ? ['app', 'activity', activityId] : this.navigate(['app', 'activity', activityId]);
+        return this._saveOrRedirect(['app', 'activity', activityId], redirectLater);
       case 'assessment':
         if (!activityId || !contextId || !assessmentId) {
-          return notRegister ? ['app', 'home'] : this.navigate(['app', 'home']);
+          return this._saveOrRedirect(['app', 'home'], redirectLater);
         }
-        return notRegister ? ['assessment', 'assessment', activityId, contextId, assessmentId] : this.navigate(['assessment', 'assessment', activityId, contextId, assessmentId]);
+        return this._saveOrRedirect(['assessment', 'assessment', activityId, contextId, assessmentId], redirectLater);
       case 'reviews':
-        return notRegister ? ['app', 'reviews'] : this.navigate(['app', 'reviews']);
+        return this._saveOrRedirect(['app', 'reviews'], redirectLater);
       case 'review':
         if (!contextId || !assessmentId || !submissionId) {
-          return notRegister ? ['app', 'home'] : this.navigate(['app', 'home']);
+          return this._saveOrRedirect(['app', 'home'], redirectLater);
         }
-        return notRegister ? ['assessment', 'review', contextId, assessmentId, submissionId] :  this.navigate(['assessment', 'review', contextId, assessmentId, submissionId]);
+        return this._saveOrRedirect(['assessment', 'review', contextId, assessmentId, submissionId], redirectLater);
       case 'chat':
-        return notRegister ? ['app', 'chat'] : this.navigate(['app', 'chat']);
+        return this._saveOrRedirect(['app', 'chat'], redirectLater);
       case 'settings':
-        return notRegister ? ['app', 'settings'] : this.navigate(['app', 'settings']);
+        return this._saveOrRedirect(['app', 'settings'], redirectLater);
       default:
-      return notRegister ? ['app', 'home'] : this.navigate(['app', 'home']);
+      return this._saveOrRedirect(['app', 'home'], redirectLater);
     }
-    return notRegister ? ['app', 'home'] : this.navigate(['app', 'home']);
+    return this._saveOrRedirect(['app', 'home'], redirectLater);
+  }
+
+  private _saveOrRedirect(route: Array<String | number>, save = false) {
+    if (save) {
+      return this.storage.set('directLinkRoute', JSON.stringify(route));
+    }
+    return this.navigate(route);
   }
 
   private _error(res?): Promise<any> {
     this.newRelic.noticeError('failed direct login', res ? JSON.stringify(res) : undefined);
+    if (!this.utils.isEmpty(res) && res.status === 'forbidden' && [
+      'User is not registered'
+    ].includes(res.data.message)) {
+      this._redirect(true);
+      return this.navigate(['registration', res.data.user.email, res.data.user.key]);
+    }
     return this.notificationService.alert({
       message: 'Your link is invalid or expired.',
       buttons: [
@@ -122,14 +135,7 @@ export class AuthDirectLoginComponent implements OnInit {
           text: 'OK',
           role: 'cancel',
           handler: () => {
-            if (!this.utils.isEmpty(res) && res.status === 'forbidden' && [
-              'User is not registered'
-            ].includes(res.data.message)) {
-              this.storage.set('directLinkData', this._redirect(true));
-              this.navigate(['registration', res.data.user.email, res.data.user.key]);
-            } else {
-              this.navigate(['login']);
-            }
+            this.navigate(['login']);
           }
         }
       ]
