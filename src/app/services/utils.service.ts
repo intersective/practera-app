@@ -32,7 +32,17 @@ export class UtilsService {
     }
   }
 
+  /**
+   * @name isMobile
+   * @description grouping device type into 2 group (mobile/desktop) and return true if mobile, otherwise return false
+   * @example https://github.com/ionic-team/ionic/blob/master/angular/src/providers/platform.ts#L71-L115
+   */
   isMobile() {
+    // Priority: always treat "tablet" mode as "desktop"
+    if (this.platform.is('tablet')) {
+      return false;
+    }
+
     if (
       this.platform.is('mobile') ||
       this.platform.is('iphone') ||
@@ -42,7 +52,6 @@ export class UtilsService {
     }
 
     return false;
-    // return this.platform.is('mobile') && !this.platform.is('tablet');
   }
 
   isEmpty(value: any): boolean {
