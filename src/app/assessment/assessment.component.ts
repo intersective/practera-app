@@ -325,6 +325,20 @@ export class AssessmentComponent extends RouterEnter {
       });
   }
 
+  /**
+   * a consistent comparison logic to ensure mandatory status
+   * @param {question} question
+   */
+  private isRequired(question) {
+    let role = 'submitter';
+
+    if (this.action === 'review') {
+      role = 'reviewer';
+    }
+
+    return (question.isRequired && question.audience.includes(role));
+  }
+
   // Populate the question form with FormControls.
   // The name of form control is like 'q-2' (2 is an example of question id)
   populateQuestionsForm() {
@@ -332,7 +346,7 @@ export class AssessmentComponent extends RouterEnter {
     this.assessment.groups.forEach(group => {
       group.questions.forEach(question => {
         // check if the compulsory is mean for current user's role
-        if (question.isRequired && question.audience.includes(this.storage.getUser().role)) {
+        if (this.isRequired(question)) {
           // put 'required' validator in FormControl
           validator = [Validators.required];
         } else {
@@ -396,27 +410,22 @@ export class AssessmentComponent extends RouterEnter {
    * @param {Object[]} answers a list of answer object (in submission-based format)
    */
   compulsoryQuestionsAnswered(answers): object[] {
-    const result = [];
     const missing = [];
-    if (answers && answers.length > 0) {
-      this.assessment.groups.forEach(group => {
-        group.questions.forEach(question => {
-          if (question.isRequired && missing.length === 0) {
+    const answered = {};
+    this.utils.each(answers, answer => {
+      answered[answer.assessment_question_id] = answer;
+    });
 
-            // check every answers value has all the compulsory questions covered
-            const compulsoryQuestions = answers.filter(answer => {
-              return answer.assessment_question_id === +question.id;
-            });
-
-            this.utils.each(compulsoryQuestions, answer => {
-              if (typeof answer.answer !== 'number' && this.utils.isEmpty(answer.answer)) {
-                missing.push(answer);
-              }
-            });
+    this.assessment.groups.forEach(group => {
+      group.questions.forEach(question => {
+        if (this.isRequired(question)) {
+          if (this.utils.isEmpty(answered[question.id]) || this.utils.isEmpty(answered[question.id].answer)) {
+            missing.push(question);
           }
-        });
+        }
       });
-    }
+    });
+
     return missing;
   }
 
@@ -606,16 +615,6 @@ export class AssessmentComponent extends RouterEnter {
           answer: answer
         });
       });
-
-      // check if all required questions have answer when assessment done
-      const requiredQuestions = this.compulsoryQuestionsAnswered(answers);
-      if (!saveInProgress && requiredQuestions.length > 0) {
-        this.submitting = false;
-        // display a pop up if required question not answered
-        return this.notificationService.popUp('shortMessage', {
-          message: 'Required question answer missing!'
-        });
-      }
     }
 
     // form feedback answers
@@ -627,10 +626,20 @@ export class AssessmentComponent extends RouterEnter {
       });
 
       this.utils.each(this.questionsForm.value, (answer, key) => {
-        if (answer) {
+        if (!this.utils.isEmpty(answer)) {
           answer.assessment_question_id = +key.replace('q-', '');
           answers.push(answer);
         }
+      });
+    }
+
+    // check if all required questions have answer when assessment done
+    const requiredQuestions = this.compulsoryQuestionsAnswered(answers);
+    if (!saveInProgress && requiredQuestions.length > 0) {
+      this.submitting = false;
+      // display a pop up if required question not answered
+      return this.notificationService.popUp('shortMessage', {
+        message: 'Required question answer missing!'
       });
     }
 
