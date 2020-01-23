@@ -172,7 +172,8 @@ export class EventListComponent {
     if (!this.remainingEvents) {
       return ;
     }
-    let eventsCount = 0, eventGroup, maxEvents = 7;
+    let eventsCount = 0, eventGroup;
+    const maxEvents = 7;
     while (eventsCount < maxEvents) {
       // stop if there's no remaining events
       if (!this.remainingEvents.length) {
