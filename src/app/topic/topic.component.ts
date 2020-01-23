@@ -350,7 +350,7 @@ export class TopicComponent extends RouterEnter {
                   'app',
                   'activity',
                   this.activityId,
-                ]));
+                ]);
               },
               err => {
                 this.newRelic.noticeError(`${JSON.stringify(err)}`);

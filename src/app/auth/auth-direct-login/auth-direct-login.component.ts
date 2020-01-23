@@ -40,7 +40,7 @@ export class AuthDirectLoginComponent implements OnInit {
       nrDirectLoginTracer();
       return this._redirect();
     } catch (err) {
-      this._error();
+      this._error(err);
     }
   }
 
@@ -132,7 +132,13 @@ export class AuthDirectLoginComponent implements OnInit {
           text: 'OK',
           role: 'cancel',
           handler: () => {
-            this.navigate(['login']);
+            if (!this.utils.isEmpty(res) && res.status === 'forbidden' && [
+              'User is not registered'
+            ].includes(res.data.message)) {
+              this.navigate(['registration', res.data.user.email, res.data.user.key]);
+            } else {
+              this.navigate(['login']);
+            }
           }
         }
       ]

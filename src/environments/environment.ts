@@ -22,8 +22,16 @@ export const environment = {
         any: '/appv2/stage/uploads/',
         image: '/appv2/stage/uploads/',
         video: '/appv2/stage/video/upload/'
-      }
-    }
+      },
+      workflows: [
+        '3c38ef53-a9d0-4aa4-9234-617d9f03c0de',
+      ],
+    },
+    policy: '<CUSTOM_FILESTACK_POLICY>',
+    signature: '<CUSTOM_FILESTACK_SIGNATURE>',
+    workflows: {
+      virusDetection: '3c38ef53-a9d0-4aa4-9234-617d9f03c0de',
+    },
   },
   defaultCountryModel: 'AUS',
   intercom: false,
