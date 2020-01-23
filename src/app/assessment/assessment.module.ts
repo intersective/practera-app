@@ -22,6 +22,7 @@ import { ActivityModule } from '../activity/activity.module';
   exports: [
     SharedModule,
     ActivityModule,
+    AssessmentComponent
   ]
 })
 

@@ -78,14 +78,14 @@ export class AuthDirectLoginComponent implements OnInit {
         return this._saveOrRedirect(['switcher']);
       }
       // switch to the program
-      await this.switcherService.switchProgram(program);
+      await this.switcherService.switchProgram(program).toPromise();
     }
 
     switch (redirect) {
       case 'home':
         return this._saveOrRedirect(['app', 'home'], redirectLater);
       case 'project':
-        return this._saveOrRedirect(['app', 'project'], redirectLater);
+        return this._saveOrRedirect(['app', 'home'], redirectLater);
       case 'activity':
         if (!activityId) {
           return this._saveOrRedirect(['app', 'home'], redirectLater);
@@ -95,7 +95,11 @@ export class AuthDirectLoginComponent implements OnInit {
         if (!activityId || !contextId || !assessmentId) {
           return this._saveOrRedirect(['app', 'home'], redirectLater);
         }
-        return this._saveOrRedirect(['assessment', 'assessment', activityId, contextId, assessmentId], redirectLater);
+        if (this.utils.isMobile()) {
+          return this._saveOrRedirect(['assessment', 'assessment', activityId, contextId, assessmentId], redirectLater);
+        } else {
+          return this._saveOrRedirect(['app', 'activity', activityId, { task: 'assessment', task_id: assessmentId, context_id: contextId}], redirectLater);
+        }
       case 'reviews':
         return this._saveOrRedirect(['app', 'reviews'], redirectLater);
       case 'review':
@@ -113,7 +117,7 @@ export class AuthDirectLoginComponent implements OnInit {
     return this._saveOrRedirect(['app', 'home'], redirectLater);
   }
 
-  private _saveOrRedirect(route: Array<String | number>, save = false) {
+  private _saveOrRedirect(route: Array<String | number | object>, save = false) {
     if (save) {
       return this.storage.set('directLinkRoute', route);
     }
