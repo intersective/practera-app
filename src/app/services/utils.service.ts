@@ -53,7 +53,7 @@ export class UtilsService {
 
     return false;
   }
-  
+
   /** check if a value is empty
    * precautions:
    *   Lodash's isEmpty, by default, sees "number" type value as empty,
