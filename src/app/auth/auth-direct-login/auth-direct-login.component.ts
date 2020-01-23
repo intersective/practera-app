@@ -115,7 +115,7 @@ export class AuthDirectLoginComponent implements OnInit {
 
   private _saveOrRedirect(route: Array<String | number>, save = false) {
     if (save) {
-      return this.storage.set('directLinkRoute', JSON.stringify(route));
+      return this.storage.set('directLinkRoute', route);
     }
     return this.navigate(route);
   }
