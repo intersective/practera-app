@@ -1,0 +1,31 @@
+<ion-split-pane *ngIf="!utils.isMobile()" contentId="main-content" when="xs">
+  <app-activity
+    #activity
+    [id]="activityId"
+    [currentTask]="currentTask()"
+    (navigate)="goto($event)"
+    (tasksReady)="goToFirstTask($event)"
+  ></app-activity>
+  <ion-content color="light" id="main-content">
+    <app-topic
+      #topic
+      *ngIf="topicId"
+      [inputId]="topicId"
+      [inputActivityId]="activityId"
+      (navigate)="goto($event);activity.onEnter()"
+    ></app-topic>
+    <app-assessment
+      #assessment
+      *ngIf="assessmentId"
+      [inputId]="assessmentId"
+      [inputActivityId]="activityId"
+      [inputContextId]="contextId"
+      [inputAction]="'assessment'"
+      (navigate)="goto($event);activity.onEnter()"
+      ></app-assessment>
+  </ion-content>
+</ion-split-pane>
+
+<ion-content *ngIf="utils.isMobile()">
+  <app-activity #activity [id]="activityId"></app-activity>
+</ion-content>

@@ -7,14 +7,14 @@
   }"
   [ngStyle]="{'background-image': backgroundImageStyle }"
 >
-  <ion-card-content [ngClass]="{'feedback-card': activity.hasFeedback }">
-    <h4 color="primary-contrast">Activity</h4>
-    <h2 color="primary-contrast" class="activity-name">{{activity.name}}</h2>
+  <ion-card-content>
+    <p color="primary-contrast" class="caption">Activity</p>
+    <p color="primary-contrast" class="activity-name headline-6">{{activity.name}}</p>
   </ion-card-content>
   <ion-card-content *ngIf="loading">
-    <h4 color="primary-contrast"></h4>
-    <h2 color="primary-contrast" class="activity-name">
+    <p color="primary-contrast" class="caption"></p>
+    <p color="primary-contrast" class="activity-name headline-6">
       <ion-spinner name="dots" class="vertical-middle"></ion-spinner>
-    </h2>
+    </p>
   </ion-card-content>
 </ion-card>

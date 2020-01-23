@@ -271,6 +271,12 @@
           "configurations": {
             "ci": {
               "devServerTarget": "app:serve:ci"
+            },
+            "dev": {
+              "protractorConfig": "e2e/protractor-dev.conf.js"
+            },
+            "sandbox": {
+              "devServerTarget": "app:serve:dev"
             }
           }
         },

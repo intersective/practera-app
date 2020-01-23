@@ -1,0 +1,25 @@
+<ion-header>
+  <ion-toolbar class="center">
+    <ion-title text-center padding-horizontal>{{programName}}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ng-container *ngIf="!isMobile; else singlePage">
+    <ion-grid class="desktop-view">
+      <ion-row>
+        <ion-col class="ion-no-padding">
+          <app-home [refresh]="initiator$"></app-home>
+        </ion-col>
+        <ion-col class="ion-no-padding">
+          <app-project [refresh]="initiator$"></app-project>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </ng-container>
+
+  <ng-template #singlePage>
+    <app-home [refresh]="initiator$"></app-home>
+    <app-project [refresh]="initiator$"></app-project>
+  </ng-template>
+</ion-content>
