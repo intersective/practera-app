@@ -5,9 +5,11 @@
   <ion-icon *ngIf="achievement.isEarned" name="checkmark-circle" color="primary" ></ion-icon>
   <ion-icon *ngIf="!achievement.isEarned" name="lock" color="medium"></ion-icon>
 </div>
-<div *ngIf="showName" class="badge-name">
+
+<div *ngIf="showName" class="badge-name subtitle-2">
   {{achievement.name}}
 </div>
-<ion-text *ngIf="achievement.points" class="badge-point" [ngClass]="{'badge-point-unearned': !achievement.isEarned }">
+
+<ion-text *ngIf="achievement.points" class="badge-point subtitle-2" [ngClass]="{'badge-point-unearned': !achievement.isEarned }">
   {{achievement.points}} Points
 </ion-text>

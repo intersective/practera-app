@@ -79,6 +79,7 @@ describe('AuthDirectLoginComponent', () => {
   beforeEach(() => {
     serviceSpy.directLogin.and.returnValue(of({}));
     switcherSpy.getMyInfo.and.returnValue(of({}));
+    switcherSpy.switchProgram.and.returnValue(of({}));
     storageSpy.get.and.returnValue([{timeline: {id: 1}}]);
     storageSpy.getConfig.and.returnValue({logo: null});
   });
@@ -150,7 +151,7 @@ describe('AuthDirectLoginComponent', () => {
       });
       it('project page', () => {
         tmpParams.redirect = 'project';
-        redirect = ['app', 'project'];
+        redirect = ['app', 'home'];
       });
       it('home page if activity id miss', () => {
         tmpParams.redirect = 'activity';
@@ -178,7 +179,17 @@ describe('AuthDirectLoginComponent', () => {
       });
       it('assessment page', () => {
         tmpParams.redirect = 'assessment';
-        redirect = ['assessment', 'assessment', tmpParams.act, tmpParams.ctxt, tmpParams.asmt];
+        redirect = [
+          'app',
+          'activity',
+          tmpParams.act,
+          {
+            task: 'assessment',
+            task_id: tmpParams.asmt,
+            context_id: tmpParams.ctxt
+          }
+        ];
+        // redirect = ['assessment', 'assessment', tmpParams.act, tmpParams.ctxt, tmpParams.asmt];
       });
       it('reviews page', () => {
         tmpParams.redirect = 'reviews';
