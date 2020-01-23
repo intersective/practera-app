@@ -153,7 +153,12 @@ export class EventListComponent {
     );
   }
 
-  // render at least one event group, no less than 5 events at one time
+  /**
+   * Render 7 events at one time.
+   * If one event group doesn't have 7 events, will render the next event group until 7 events or all rendered
+   *
+   * @param remainingEvents Pass the remaining event groups if we need to reset the event list
+   */
   renderEvents(remainingEvents?) {
     if (!this.events) {
       this.events = [];
@@ -167,14 +172,32 @@ export class EventListComponent {
     if (!this.remainingEvents) {
       return ;
     }
-    let eventsCount = 0, eventGroup;
-    while (eventsCount <= 5) {
-      eventGroup = this.remainingEvents.shift();
-      if (!eventGroup) {
+    let eventsCount = 0, eventGroup, maxEvents = 7;
+    while (eventsCount < maxEvents) {
+      // stop if there's no remaining events
+      if (!this.remainingEvents.length) {
         break;
       }
-      eventsCount += eventGroup.events.length;
-      this.events.push(eventGroup);
+      eventGroup = this.remainingEvents[0];
+      if (eventsCount + eventGroup.events.length <= maxEvents) {
+        // render the whole event group if no more than max events yet
+        this.remainingEvents.shift();
+        eventsCount += eventGroup.events.length;
+      } else {
+        eventGroup = {
+          date: this.remainingEvents[0].date,
+          events: this.remainingEvents[0].events.splice(0, maxEvents - eventsCount)
+        };
+        eventsCount = maxEvents;
+      }
+
+      if (this.events.length && this.events[this.events.length - 1].date === eventGroup.date) {
+        // concat the new event group to the last one
+        this.events[this.events.length - 1].events = this.events[this.events.length - 1].events.concat(eventGroup.events);
+      } else {
+        // push the new event group
+        this.events.push(eventGroup);
+      }
     }
   }
 
