@@ -1,7 +1,4 @@
-import { IonicModule } from '@ionic/angular';
 import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
 import { TopicComponent} from './topic.component';
 import { TopicService } from './topic.service';
 import { TopicRoutingModule } from './topic-routing.module';
@@ -11,12 +8,9 @@ import { ActivityModule } from '../activity/activity.module';
 
 @NgModule({
   imports: [
-    IonicModule,
-    CommonModule,
-    FormsModule,
+    SharedModule,
     TopicRoutingModule,
     FilestackModule,
-    SharedModule,
     ActivityModule
   ],
   declarations: [
@@ -26,12 +20,10 @@ import { ActivityModule } from '../activity/activity.module';
     TopicService
   ],
   exports: [
-    IonicModule,
-    CommonModule,
-    FormsModule,
-    FilestackModule,
     SharedModule,
-    ActivityModule
+    FilestackModule,
+    ActivityModule,
+    TopicComponent,
   ]
 })
 export class TopicModule {}

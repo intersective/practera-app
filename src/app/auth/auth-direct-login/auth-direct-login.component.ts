@@ -76,13 +76,13 @@ export class AuthDirectLoginComponent implements OnInit {
       return this.navigate(['switcher']);
     }
     // switch to the program
-    await this.switcherService.switchProgram(program);
+    await this.switcherService.switchProgram(program).toPromise();
 
     switch (redirect) {
       case 'home':
         return this.navigate(['app', 'home']);
       case 'project':
-        return this.navigate(['app', 'project']);
+        return this.navigate(['app', 'home']);
       case 'activity':
         if (!activityId) {
           return this.navigate(['app', 'home']);
@@ -92,7 +92,20 @@ export class AuthDirectLoginComponent implements OnInit {
         if (!activityId || !contextId || !assessmentId) {
           return this.navigate(['app', 'home']);
         }
-        return this.navigate(['assessment', 'assessment', activityId, contextId, assessmentId]);
+        if (this.utils.isMobile()) {
+          return this.navigate(['assessment', 'assessment', activityId, contextId, assessmentId]);
+        } else {
+          return this.router.navigate([
+            'app',
+            'activity',
+            activityId,
+            {
+              task: 'assessment',
+              task_id: assessmentId,
+              context_id: contextId
+            }
+          ]);
+        }
       case 'reviews':
         return this.navigate(['app', 'reviews']);
       case 'review':
