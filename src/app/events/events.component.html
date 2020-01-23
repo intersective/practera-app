@@ -1,75 +1,39 @@
-<ion-header mode="ios">
-  <ion-toolbar color="light">
-    <ion-icon name="arrow-back" (click)="back()" color="primary" slot="start" margin-start></ion-icon>
-    <ion-title text-center>Events</ion-title>
-  </ion-toolbar>
-</ion-header>
-<ion-content padding color="light" text-center>
-  <ng-container *ngIf="loadingEvents">
-    <ion-spinner></ion-spinner>
-  </ng-container>
+<ion-split-pane *ngIf="!utils.isMobile()" contentId="main-content" when="xs">
+  <app-event-list
+    #eventList
+    [activityId]="activityId"
+    [eventId]="eventId"
+    (navigate)="goto($event)"
+  ></app-event-list>
+  <ion-content color="light" id="main-content">
+    <app-event-detail
+      #eventDetail
+      *ngIf="!assessmentId && currentEvent"
+      [event]="currentEvent"
+      (checkin)="checkin($event)"
+    ></app-event-detail>
+    <app-assessment
+      #assessment
+      *ngIf="assessmentId"
+      [inputId]="assessmentId"
+      [inputContextId]="contextId"
+      [inputAction]="'assessment'"
+      [fromPage]="'events'"
+      (navigate)="assessmentId = null;eventList.onEnter()"
+    ></app-assessment>
+    <ng-container *ngIf="!currentEvent">
+      <ion-header mode="ios">
+        <ion-toolbar class="ion-toolbar-absolute">
+          <ion-title class="ion-text-center title-small">Event</ion-title>
+        </ion-toolbar>
+      </ion-header>
+      <ion-content color="light" class="ion-text-center ion-content-absolute">
+        <ion-icon id="calendar-icon" name="calendar" color="medium"></ion-icon>
+      </ion-content>
+    </ng-container>
+  </ion-content>
+</ion-split-pane>
 
-  <div class="btn-filter">
-    <ion-button
-      class="btn-left-half"
-      [ngClass]="{'btn-activated': activated == 'browse'}"
-      (click)="showBrowse()"
-      >
-      <ion-ripple-effect type="unbounded"></ion-ripple-effect>
-      Browse
-    </ion-button>
-    <ion-button
-      class="btn-middle"
-      [ngClass]="{'btn-activated': activated == 'booked'}"
-      (click)="showBooked()"
-      >
-      <ion-ripple-effect type="unbounded"></ion-ripple-effect>
-      Booked
-    </ion-button>
-    <ion-button
-      class="btn-right-half"
-      [ngClass]="{'btn-activated': activated == 'attended'}"
-      (click)="showAttended()">
-      <ion-ripple-effect type="unbounded"></ion-ripple-effect>
-      Attended
-    </ion-button>
-  </div>
-
-  <ion-card class="activity-filter-wrap practera-card">
-    <clickable-item lines="none">
-      <ion-label id="activity-filter" color="medium"><i>Filter by Activity</i></ion-label>
-      <ion-select
-        multiple="true"
-        aria-labelledby="activity-filter"
-        [value]="selectedActivities"
-        (ionChange)="onSelect(filterEle.value)"
-        #filterEle>
-        <ion-select-option *ngFor="let activity of activities" [value]="activity.id" selected>{{ activity.name }}</ion-select-option>
-      </ion-select>
-    </clickable-item>
-  </ion-card>
-
-  <ng-container *ngFor="let eventObj of events">
-    <h4 class="date-group" text-left>{{ eventObj.date }}</h4>
-    <ion-card class="practera-card">
-      <ion-list>
-        <clickable-item
-          *ngFor="let event of eventObj.events; let i = index"
-          [lines]="i == eventObj.events.length - 1 ? 'none' : ''">
-          <event-card
-            [event]="event"
-            [time]="timeDisplayed(event)"
-            class="width-100"
-            ></event-card>
-        </clickable-item>
-      </ion-list>
-    </ion-card>
-  </ng-container>
-
-  <div *ngIf="!events.length">
-    <ion-card class="practera-card background-white no-event">
-      <i>There's no event yet.</i>
-    </ion-card>
-  </div>
-
+<ion-content *ngIf="utils.isMobile()">
+  <app-event-list #eventList [activityId]="activityId"></app-event-list>
 </ion-content>

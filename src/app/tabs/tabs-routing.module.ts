@@ -1,8 +1,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-
 import { AuthGuard } from '../auth/auth.guard';
-
 import { TabsComponent } from './tabs.component';
 
 const routes: Routes = [
@@ -16,16 +14,16 @@ const routes: Routes = [
         children: [
           {
             path: '',
-            loadChildren: '../home/home.module#HomeModule',
+            loadChildren: '../overview/overview.module#OverviewModule',
           }
         ]
       },
       {
-        path: 'project',
+        path: 'events',
         children: [
           {
             path: '',
-            loadChildren: '../project/project.module#ProjectModule'
+            loadChildren: '../events/events.module#EventsModule',
           }
         ]
       },
@@ -34,7 +32,7 @@ const routes: Routes = [
         children: [
           {
             path: '',
-            loadChildren: '../activity/activity.module#ActivityModule'
+            loadChildren: '../tasks/tasks.module#TasksModule'
           }
         ]
       },

@@ -35,6 +35,7 @@ export class AuthRegistrationComponent implements OnInit {
   domain = window.location.hostname;
   // validation errors array
   errors: Array<any> = [];
+  showPassword = false;
 
   constructor(
     private route: ActivatedRoute,
