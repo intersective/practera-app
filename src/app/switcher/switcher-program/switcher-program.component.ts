@@ -43,10 +43,10 @@ export class SwitcherProgramComponent implements OnInit {
 
   async switch(index) {
     const nrSwitchedProgramTracer = this.newRelic.createTracer('switching program');
-    this.newRelic.actionText(`selected ${this.programs[index].program.name}`);
     const loading = await this.loadingController.create({
       message: 'loading...'
     });
+    this.newRelic.actionText(`selected ${this.programs[index].program.name}`);
 
     await loading.present();
 
