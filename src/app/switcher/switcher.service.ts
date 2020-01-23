@@ -188,7 +188,7 @@ export class SwitcherService {
           if (this.storage.get('directLinkRoute')) {
             const route = this.storage.get('directLinkRoute');
             this.storage.remove('directLinkRoute');
-            return JSON.parse(route);
+            return route;
           }
           return ['app', 'home'];
       } else {
