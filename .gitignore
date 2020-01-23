@@ -13,3 +13,5 @@ node_modules
 src/coverage
 *.DS_Store
 www
+e2e/config/index.ts
+e2e/protractor-dev.conf.js

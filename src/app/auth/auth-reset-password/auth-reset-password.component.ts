@@ -17,6 +17,7 @@ export class AuthResetPasswordComponent implements OnInit {
 
   verifySuccess = false;
   isResetting = false;
+  showPassword = false;
 
   resetPasswordForm = new FormGroup(
     {

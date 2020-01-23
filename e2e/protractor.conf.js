@@ -1,34 +1,67 @@
 // Protractor configuration file, see link for more information
 // https://github.com/angular/protractor/blob/master/lib/config.ts
 
-const { SpecReporter } = require('jasmine-spec-reporter');
-
 exports.config = {
-  allScriptsTimeout: 11000,
-  specs: [
-    './src/**/*.e2e-spec.ts'
-  ],
-  capabilities: {
-    browserName: 'chrome',
-    chromeOptions: {
-      args: ['disable-dev-shm-usage', 'no-sandbox']
-    }
-  },
-  directConnect: true,
   baseUrl: 'http://localhost:4200/',
-  framework: 'jasmine',
+  framework: 'custom',
+  frameworkPath: require.resolve('protractor-cucumber-framework'),
+  allScriptsTimeout: 10 * 60 * 1000,
+  specs: [
+    './src/features/*.feature'
+  ],
+  cucumberOpts: {
+    require: [
+      './src/steps/config.ts',
+      './src/steps/*.steps.ts'
+    ]
+  },
+  multiCapabilities: [
+    {
+      browserName: 'chrome',
+      shardTestFiles: true,
+      maxInstances: 5,
+      specs: [
+        './src/features/desktop/*.feature'
+      ],
+      chromeOptions: {
+        args: ['--headless']
+      }
+    },
+    {
+      browserName: 'chrome',
+      shardTestFiles: true,
+      maxInstances: 5,
+      specs: [
+        './src/features/mobile/*.feature'
+      ],
+      chromeOptions: {
+        args: ['--headless'],
+        mobileEmulation : {
+          deviceName: 'Galaxy S5'
+        }
+      }
+    }
+  ],
+  directConnect: true,
   jasmineNodeOpts: {
     showColors: true,
     defaultTimeoutInterval: 30000,
     print: function() {}
   },
   onPrepare() {
+    const chai = require('chai'); // chai
+    const chaiAsPromised = require("chai-as-promised"); // deal with promises from protractor
+    chai.use(chaiAsPromised); // add promise candy to the candy of chai
+    global.chai = chai;
+    browser.getCapabilities().then(cap => {
+      if (cap.get('mobileEmulationEnabled')) {
+        global.device = 'mobile';
+      } else {
+        global.device = 'desktop';
+      }
+    });
     require('ts-node').register({
-      // project: 'e2e/tsconfig.e2e.json'
       project: require('path').join(__dirname, 'tsconfig.e2e.json')
     });
-    jasmine
-      .getEnv()
-      .addReporter(new SpecReporter({ spec: { displayStacktrace: true } }));
   }
 };

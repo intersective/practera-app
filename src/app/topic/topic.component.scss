@@ -6,6 +6,9 @@
     font-size: 0.7em;
   }
 }
+.icon-backward {
+  font-size: 20px !important;
+}
 
 .margin-right {
   margin-right: 10px;
@@ -14,8 +17,4 @@
   ion-icon {
     font-size: 20px;
   }
-}
-
-ion-footer ion-toolbar ion-button.continue {
-  margin: 0 16px;
 }
