@@ -169,7 +169,7 @@
           <ion-icon src="/assets/checkmark.svg"></ion-icon>
         </ng-container>
         <ng-container *ngIf="submitting !== false && submitting !== 'redirecting'">
-          <ion-spinner style="width: 100%;" name="dots" class="vertical-middle text-center"></ion-spinner>
+          <ion-spinner style="width: 100%;" name="dots" class="vertical-middle ion-text-center"></ion-spinner>
         </ng-container>
       </ion-button>
     </div>
@@ -185,7 +185,7 @@
     <ion-spinner style="width: 100%;"
       *ngIf="loadingSubmission || (loadingFeedbackReviewed && submission.status == 'published')"
       name="dots"
-      class="vertical-middle text-center"
+      class="vertical-middle ion-text-center"
     ></ion-spinner>
 
     <ion-button *ngIf="!loadingMarkedDone && !loadingFeedbackReviewed && submission.status == 'published' && !feedbackReviewed"
@@ -201,7 +201,7 @@
       shape="round"
       class="continue btn-cta">
       <ng-container *ngIf="isRedirectingToNextMilestoneTask; else continue">
-        <ion-spinner style="width: 100%;" name="dots" class="vertical-middle text-center"></ion-spinner>
+        <ion-spinner style="width: 100%;" name="dots" class="vertical-middle ion-text-center"></ion-spinner>
       </ng-container>
 
       <ng-template #continue>

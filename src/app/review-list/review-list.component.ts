@@ -63,6 +63,9 @@ export class ReviewListComponent {
       // go to the first review if submission id is not passed in
       review = this.reviews.find(re => re.isDone === this.showDone);
     }
+    if (!review) {
+      return this.navigate.emit();
+    }
     this.gotoReview(review.contextId, review.assessmentId, review.submissionId);
   }
 
