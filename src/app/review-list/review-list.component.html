@@ -25,38 +25,41 @@
       Done
     </ion-button>
   </div>
-  <div class="ion-text-center" *ngIf="loadingReviews; else reviewsTmpl">
-    <ion-spinner></ion-spinner>
-  </div>
+  <ion-card *ngIf="loadingReviews; else reviewsTmpl" class="practera-card">
+    <ion-list>
+      <app-list-item loading="true"></app-list-item>
+      <app-list-item loading="true" lines="none"></app-list-item>
+    </ion-list>
+  </ion-card>
   <ng-template #reviewsTmpl>
 
-    <div *ngIf="noReviewsToDo()" class="no-review-show ion-padding ion-text-center">
-      <div class="ion-text-center empty-status background-white">
-        <h2>You have no new submissions to review</h2>
-      </div>
-    </div>
-    <div *ngIf="noReviewsDone()" class="no-review-show ion-padding ion-text-center">
-      <div class="ion-text-center empty-status background-white">
-        <h2>You have not reviewed any submissions</h2>
-      </div>
-    </div>
+    <ion-card *ngIf="noReviewsToDo()" class="practera-card list-empty-message">
+      <p class="subtitle-1 gray-3">You have no new submissions to review.</p>
+      <span class="body-2 gray-1">To do reviews show up here, so you can easily view them here later.</span>
+    </ion-card>
+    <ion-card *ngIf="noReviewsDone()" class="practera-card list-empty-message">
+      <p class="subtitle-1 gray-3">You have not reviewed any submissions.</p>
+      <span class="body-2 gray-1">Done reviews show up here, so you can easily view them here later.</span>
+    </ion-card>
+
     <ng-container *ngIf="!noReviewsToDo() && !noReviewsDone()">
-      <ng-container *ngFor="let review of reviews">
-        <ion-card
-          color="primary"
-          class="card practera-card"
-          *ngIf="review.isDone == showDone"
-          (click)="gotoReview(review.contextId, review.assessmentId, review.submissionId)"
-        >
-          <ion-card-content class="review">
-            <h2>{{review.name}}</h2>
-            <ion-icon *ngIf="review.isDone" name="checkmark-circle" class="check-mark"></ion-icon>
-            <h4 class="ion-padding-top">{{review.submitterName}}</h4>
-            <h4 *ngIf="review.teamName">{{review.teamName}}</h4>
-            <ion-text>{{review.date}}</ion-text>
-          </ion-card-content>
-        </ion-card>
-      </ng-container>
+      <ion-card class="practera-card">
+        <ion-list>
+          <ng-container *ngFor="let review of reviews; let i = index">
+            <app-list-item
+              *ngIf="review.isDone == showDone"
+              leadingIcon="clipboard"
+              [title]="review.name"
+              [subtitle1]="'submitted by ' + review.submitterName"
+              [subtitle2]="review.teamName"
+              [endingText]="review.date"
+              [active]="submissionId === review.submissionId"
+              [lines]="i == reviews.length - 1 ? 'none' : ''"
+              (click)="gotoReview(review.contextId, review.assessmentId, review.submissionId)"
+            ></app-list-item>
+          </ng-container>
+        </ion-list>
+      </ion-card>
     </ng-container>
 
   </ng-template>

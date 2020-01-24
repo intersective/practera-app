@@ -7,13 +7,24 @@
   <ion-content color="light" id="main-content">
     <app-assessment
       #assessment
-      *ngIf="assessmentId"
+      *ngIf="submissionId"
       [inputId]="assessmentId"
       [inputSubmissionId]="submissionId"
       [inputContextId]="contextId"
       inputAction="review"
-      (navigate)="goto($event);reviewList.onEnter()"
+      fromPage="reviews"
+      (navigate)="submissionId = null; reviewList.onEnter()"
       ></app-assessment>
+      <ng-container *ngIf="!submissionId">
+        <ion-header mode="ios">
+          <ion-toolbar class="ion-toolbar-absolute">
+            <ion-title class="ion-text-center title-small"></ion-title>
+          </ion-toolbar>
+        </ion-header>
+        <ion-content color="light" class="ion-text-center ion-content-absolute">
+          <ion-icon class="empty-icon" name="clipboard" color="medium"></ion-icon>
+        </ion-content>
+      </ng-container>
   </ion-content>
 </ion-split-pane>
 
