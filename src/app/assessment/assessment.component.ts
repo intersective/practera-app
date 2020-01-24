@@ -114,7 +114,7 @@ export class AssessmentComponent extends RouterEnter {
       });
     } else {
       // emit to parent component(events component)
-      if (direction[1] === 'events') {
+      if (['events', 'reviews'].includes(direction[1])) {
         this.navigate.emit();
         return ;
       }
