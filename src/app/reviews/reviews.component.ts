@@ -35,6 +35,10 @@ export class ReviewsComponent extends RouterEnter {
 
   // display the review content in the right pane, and highlight on the left pane
   goto(event) {
+    if (!event) {
+      this.submissionId = null;
+      return ;
+    }
     this.assessmentId = +event.assessmentId;
     this.submissionId = +event.submissionId;
     this.contextId = +event.contextId;
