@@ -103,7 +103,7 @@ export class TopicComponent extends RouterEnter {
           this.topic = topic;
           this.loadingTopic = false;
           if ( topic.videolink ) {
-            this.iframeHtml = this.embedService.embed(this.topic.videolink);
+            this.iframeHtml = this.embedService.embed(this.topic.videolink, { attr: { class: !this.utils.isMobile() ? 'topic-video desktop-view' : 'topic-video' }});
           }
           this.newRelic.setPageViewName(`Topic ${this.topic.title} ID: ${this.topic.id}`);
         },
