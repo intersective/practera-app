@@ -65,6 +65,8 @@ describe('ReviewListComponent', () => {
       };
     });
     serviceSpy.getReviews.and.returnValue(of(reviews));
+    component.onEnter();
+
     fixture.detectChanges();
     fixture.whenStable().then(() => {
       expect(component.reviews).toEqual(reviews);
@@ -73,9 +75,27 @@ describe('ReviewListComponent', () => {
     });
   });
 
-  it('should navigate to the correct page gotoReview()', () => {
+  it ('should emit navigate event (desktop)', () => {
+    const contextId = 1;
+    const assessmentId = 2;
+    const submissionId = 3;
+
+    spyOn(utils, 'isMobile').and.returnValue(false);
+    spyOn(component.navigate, 'emit');
+    component.gotoReview(contextId, assessmentId, submissionId);
+
+    expect(component.navigate.emit).toHaveBeenCalledWith({
+      assessmentId,
+      submissionId,
+      contextId,
+    });
+      // ['assessment', 'review', 1, 2, 3, {from: 'reviews'}]);
+  });
+
+  it('should navigate to the correct page gotoReview() (mobile)', () => {
+    spyOn(utils, 'isMobile').and.returnValue(true);
     component.gotoReview(1, 2, 3);
-    expect(routerSpy.navigate.calls.first().args[0]).toEqual(['assessment', 'review', 1, 2, 3, {from: 'reviews'}]);
+    expect(routerSpy.navigate).toHaveBeenCalledWith(['assessment', 'review', 1, 2, 3, {from: 'reviews'}]);
   });
 
   it('should return false if showing done, noReviewsToDo()', () => {
