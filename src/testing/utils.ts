@@ -18,14 +18,14 @@ export class TestUtils {
    */
   getDateString(day: number, minute: number) {
     const date = new Date();
-    date.setDate(date.getDate() + day);
-    date.setHours(date.getMinutes() + minute);
-    return `${date.getFullYear()}-` +
-      `${this.numberFormatter(date.getMonth() + 1)}-` +
-      `${this.numberFormatter(date.getDate())} ` +
-      `${this.numberFormatter(date.getHours())}:` +
-      `${this.numberFormatter(date.getMinutes())}:` +
-      `${this.numberFormatter(date.getSeconds())}`;
+    date.setDate(date.getUTCDate() + day);
+    date.setHours(date.getUTCMinutes() + minute);
+    return `${date.getUTCFullYear()}-` +
+      `${this.numberFormatter(date.getUTCMonth() + 1)}-` +
+      `${this.numberFormatter(date.getUTCDate())} ` +
+      `${this.numberFormatter(date.getUTCHours())}:` +
+      `${this.numberFormatter(date.getUTCMinutes())}:` +
+      `${this.numberFormatter(date.getUTCSeconds())}`;
   }
 
   /**
