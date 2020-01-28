@@ -1,4 +1,5 @@
 <ion-card
+  *ngIf="!loading"
   color="primary"
   class="card practera-card ion-activatable"
   [ngClass]="{
@@ -12,10 +13,19 @@
     <p color="primary-contrast" class="caption">Activity</p>
     <p color="primary-contrast" class="activity-name headline-6">{{activity.name}}</p>
   </ion-card-content>
-  <ion-card-content *ngIf="loading">
-    <p color="primary-contrast" class="caption"></p>
-    <p color="primary-contrast" class="activity-name headline-6">
-      <ion-spinner name="dots" class="vertical-middle"></ion-spinner>
+</ion-card>
+
+<ion-card
+  *ngIf="loading"
+  class="card practera-card skeleton-card"
+>
+  <ion-card-content>
+    <p class="caption">
+      <ion-skeleton-text animated style="width: 20%"></ion-skeleton-text>
+    </p>
+    <p class="activity-name headline-6">
+      <ion-skeleton-text animated style="width: 80%"></ion-skeleton-text>
     </p>
   </ion-card-content>
 </ion-card>
+

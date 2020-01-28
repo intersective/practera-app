@@ -1,7 +1,7 @@
 import { Component, HostListener, ViewChild, ViewChildren, QueryList, ElementRef, Inject, Input, OnInit } from '@angular/core';
 import { DOCUMENT } from '@angular/common';
 import { Router, ActivatedRoute } from '@angular/router';
-import { ProjectService, Milestone, DummyMilestone } from './project.service';
+import { ProjectService, Milestone } from './project.service';
 import { UtilsService } from '@services/utils.service';
 import { Subscription } from 'rxjs';
 import { Platform } from '@ionic/angular';
@@ -38,7 +38,7 @@ export class ProjectComponent implements OnInit {
 
   private showingMilestones: Array<Milestone | { id: number; }>;
   public programName: string;
-  public milestones: Array<Milestone | DummyMilestone> = [];
+  public milestones: Array<Milestone> = [];
   public loadingMilestone = true;
   @ViewChild('contentRef', {read: ElementRef}) contentRef: any;
   @ViewChildren('milestoneRef', {read: ElementRef}) milestoneRefs: QueryList<ElementRef>;
@@ -108,7 +108,7 @@ export class ProjectComponent implements OnInit {
     this.subscriptions.push(this.projectService.getProject().subscribe(
       milestones => {
         if (!milestones) {
-          milestones = [{ dummy: true }];
+          return;
         }
         this.milestones = milestones;
         milestones.forEach(m => {
