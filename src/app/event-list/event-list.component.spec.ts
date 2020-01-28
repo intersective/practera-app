@@ -157,9 +157,9 @@ describe('EventListComponent', () => {
       functionAfterOnEnter = () => {};
       expectedEvents = browse;
       expectedCategorised = {
-        browse: browse,
-        booked: booked,
-        attended: attended
+        browse,
+        booked,
+        attended,
       };
     });
 
