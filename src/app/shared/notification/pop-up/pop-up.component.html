@@ -12,13 +12,13 @@
     <ng-container *ngSwitchCase="'shortMessage'">
       <div class="div-logo"></div>
       <div class="div-after-logo" text-left>
-        <p [innerHtml]="data.message"></p>
+        <p id="popup-message" [innerHtml]="data.message"></p>
       </div>
     </ng-container>
 
   </ng-container>
   <div class="div-after-logo">
-    <ion-button (click)="confirmed()" shape="round" color="primary" expand="full">OK</ion-button>
+    <ion-button id="btn-popup-confirm" (click)="confirmed()" shape="round" color="primary" expand="full">OK</ion-button>
   </div>
 
 </ion-content>

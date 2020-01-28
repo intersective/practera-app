@@ -3,6 +3,7 @@ import { Routes, RouterModule } from '@angular/router';
 import { GoMobileComponent } from './go-mobile/go-mobile.component';
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
 import { FastFeedbackComponent } from './fast-feedback/fast-feedback.component';
+import { DeviceInfoComponent } from './device-info/device-info.component';
 import { AuthGuard } from './auth/auth.guard';
 import { ProgramSelectedGuard } from './auth/program-selected.guard';
 
@@ -33,11 +34,6 @@ const routes: Routes = [
     canLoad: [AuthGuard]
   },
   {
-    path: 'events',
-    loadChildren: './events/events.module#EventsModule',
-    canLoad: [AuthGuard]
-  },
-  {
     path: 'fast-feedback',
     component: FastFeedbackComponent,
     canLoad: [AuthGuard]
@@ -46,6 +42,10 @@ const routes: Routes = [
     path: 'chat',
     loadChildren: './chat/chat.module#ChatModule',
     canLoad: [AuthGuard]
+  },
+  {
+    path: 'device-info',
+    component: DeviceInfoComponent,
   },
   {
     path: '',

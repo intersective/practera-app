@@ -1,30 +1,4 @@
-
-.empty-status {
-  border-radius: 12px;
-  border: .5px solid var(--practera-card-border-color);
-  min-height: 58px !important;
-  h2 {
-    color: var(--practera-review-title);
-    font-size: 14px;
-  }
-}
-
-.review {
-  h2 {
-    font-weight: bold;
-  }
-  ion-text {
-    float: right;
-    top: 61px;
-    font-size: 12px;
-    position: absolute;
-    right: 22px;
-  }
-  .check-mark {
-    float: right;
-    font-size: 20px;
-    padding-right: 6px;
-    position: relative;
-    top: -16px;
-  }
+.empty-icon {
+  font-size: 200px;
+  margin-top: 20%;
 }
