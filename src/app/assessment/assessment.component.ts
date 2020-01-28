@@ -23,6 +23,7 @@ const SAVE_PROGRESS_TIMEOUT = 10000;
 export class AssessmentComponent extends RouterEnter {
   @Input() inputId: number;
   @Input() inputActivityId: number;
+  @Input() inputSubmissionId: number;
   @Input() inputContextId: number;
   @Input() inputAction: string;
   @Input() fromPage = '';
@@ -113,7 +114,7 @@ export class AssessmentComponent extends RouterEnter {
       });
     } else {
       // emit to parent component(events component)
-      if (direction[1] === 'events') {
+      if (['events', 'reviews'].includes(direction[1])) {
         this.navigate.emit();
         return ;
       }
@@ -210,7 +211,11 @@ export class AssessmentComponent extends RouterEnter {
     } else {
       this.contextId = +this.route.snapshot.paramMap.get('contextId');
     }
-    this.submissionId = +this.route.snapshot.paramMap.get('submissionId');
+    if (this.inputSubmissionId) {
+      this.submissionId = this.inputSubmissionId;
+    } else {
+      this.submissionId = +this.route.snapshot.paramMap.get('submissionId');
+    }
 
     // get assessment structure and populate the question form
     this.assessmentService.getAssessment(this.id, this.action)
