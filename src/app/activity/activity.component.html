@@ -35,7 +35,6 @@
         [lines]="i == activity.tasks.length - 1 ? 'none' : ''">
 
         <ng-container [ngSwitch]="task.type">
-
           <ng-container *ngSwitchCase="'Locked'">
             <ion-icon class="task-leading-icon" name="lock" slot="start" color="primary"></ion-icon>
           </ng-container>
