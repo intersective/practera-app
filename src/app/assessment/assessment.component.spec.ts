@@ -411,9 +411,12 @@ describe('AssessmentComponent', () => {
   });
 
   it('should navigate to the correct page #1', () => {
+    spyOn(component.navigate, 'emit');
     component.fromPage = 'reviews';
     component.navigationRoute();
-    expect(routerSpy.navigate.calls.first().args[0]).toEqual(['app', 'reviews']);
+
+    // let's assume test is run under desktop environment
+    expect(component.navigate.emit).toHaveBeenCalled();
   });
 
   it('should navigate to the correct page #2', () => {
