@@ -1,19 +1,23 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { ModalController } from '@ionic/angular';
 import { Router } from '@angular/router';
 import { UtilsService } from '@services/utils.service';
-import { Event } from '@app/events/events.service';
+import { Event } from '@app/event-list/event-list.service';
 import { EventDetailService } from './event-detail.service';
 import { NotificationService } from '@shared/notification/notification.service';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
 
 @Component({
-  selector: 'event-detail',
+  selector: 'app-event-detail',
   templateUrl: 'event-detail.component.html',
   styleUrls: ['event-detail.component.scss']
 })
 export class EventDetailComponent implements OnInit {
-  event: Event;
+  @Input() event: Event;
+  // indicate that user wanna go to the checkin assessment
+  @Output() checkin = new EventEmitter();
+  // CTA button is acting or not
+  ctaIsActing = false;
   constructor(
     private router: Router,
     public modalController: ModalController,
@@ -24,12 +28,13 @@ export class EventDetailComponent implements OnInit {
   ) {}
 
   ngOnInit() {
+    this.ctaIsActing = false;
     this.newRelic.setPageViewName('event-detail');
   }
 
   confirmed() {
     this.newRelic.addPageAction(`Action: ${this.buttonText()}`);
-
+    this.ctaIsActing = true;
     switch (this.buttonText()) {
       case 'Book':
         if (this.event.singleBooking) {
@@ -57,7 +62,7 @@ export class EventDetailComponent implements OnInit {
         this.eventDetailService.cancelEvent(this.event).subscribe(response => {
           if (response.success) {
             this.notificationService.alert({
-              message: 'Booking canceled Successfully!',
+              message: 'Booking cancelled Successfully!',
               buttons: [
                 {
                   text: 'OK',
@@ -67,16 +72,29 @@ export class EventDetailComponent implements OnInit {
             });
             // update the event list & activity detail page
             this.utils.broadcastEvent('update-event', null);
+            this.event.isBooked = false;
           }
+          this.ctaIsActing = false;
         });
         break;
 
       case 'Check In':
       case 'View Check In':
-        this.router.navigate(['assessment', 'event', this.event.assessment.contextId, this.event.assessment.id]);
+        if (this.utils.isMobile()) {
+          this.router.navigate(['assessment', 'event', this.event.assessment.contextId, this.event.assessment.id]);
+        } else {
+          // tell parent component to go to check in assessment
+          this.checkin.emit({
+            assessmentId: this.event.assessment.id,
+            contextId: this.event.assessment.contextId
+          });
+        }
+        this.ctaIsActing = false;
         break;
     }
-    this.modalController.dismiss();
+    if (this.utils.isMobile()) {
+      this.modalController.dismiss();
+    }
   }
 
   private _bookEvent() {
@@ -93,6 +111,8 @@ export class EventDetailComponent implements OnInit {
         });
         // update the event list & activity detail page
         this.utils.broadcastEvent('update-event', null);
+        this.event.isBooked = true;
+        this.ctaIsActing = false;
       },
       error => {
         this.notificationService.alert({
@@ -104,6 +124,7 @@ export class EventDetailComponent implements OnInit {
             }
           ]
         });
+        this.ctaIsActing = false;
       }
     );
   }

@@ -1,9 +1,9 @@
 <div (click)="showEventDetail()">
   <ion-icon class="leading-icon" name="calendar" [color]="isPast() ? 'medium' : 'primary'"></ion-icon>
-  <div class="content">
-    <h4 [ngClass]="{'past': isPast()}">{{ event.name }}</h4>
-    <p color="medium">{{ event.activityName }}</p>
-    <p color="medium">{{ time }}</p>
+  <div class="content" [ngClass]="{'content-expired': event.isPast && !event.isBooked}">
+    <h4 [ngClass]="{'past': isPast()}" class="event-name subtitle-1">{{ event.name }}</h4>
+    <p color="medium" class="event-activity-name caption gray-2">{{ event.activityName }}</p>
+    <p color="medium" class="event-time caption gray-2">{{ time }}</p>
   </div>
   <div *ngIf="event.isPast && !event.isBooked" class="expired-batch past">
     Expired
