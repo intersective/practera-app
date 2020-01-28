@@ -216,7 +216,12 @@ export class SwitcherService {
       this.utils.clearCache();
       if ((typeof environment.goMobile !== 'undefined' && environment.goMobile === false)
         || /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
-        return ['app', 'home'];
+          if (this.storage.get('directLinkRoute')) {
+            const route = this.storage.get('directLinkRoute');
+            this.storage.remove('directLinkRoute');
+            return route;
+          }
+          return ['app', 'home'];
       } else {
         return ['go-mobile'];
       }

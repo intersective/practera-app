@@ -88,10 +88,11 @@
   clear: both;
 }
 
-// used for todo-card, activity-card, tasks list, program switcher page, setting page
+// used for todo-card, activity-card, tasks list, program switcher page, setting page, topic page
 .practera-card {
   border-radius: 12px;
   margin: 16px 0;
+  box-shadow: 0 4px 16px rgba(0,0,0,.12);
 }
 
 /******************
@@ -385,7 +386,8 @@ ion-button.practera-btn {
   margin: 12px 0;
   max-height: 192px;
   min-height: 192px;
-  height: 192px;;
+  height: 192px;
+  box-shadow: 0 4px 16px rgba(0,0,0,.12);
   ion-icon {
     font-size: 24px !important;
     color: var(--ion-color-medium);
@@ -405,4 +407,25 @@ ion-button.practera-btn {
 }
 .switcher-card-item {
   --min-height: 64px;
+  box-shadow: 0 4px 16px rgba(0,0,0,.12);
+}
+/******************
+for videos in topics
+*******************/
+.topic-video {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  &.desktop-view {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 100%;
+    height: 100%;
+    max-width: 710px;
+    max-height: 400px;
+    transform: translate(-50%, -50%);
+  }
 }
