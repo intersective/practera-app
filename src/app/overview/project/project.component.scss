@@ -150,6 +150,10 @@ ion-card.expandable {
     .row-cards {
       margin-top: -18px;
       min-width: 53px !important;
+      .skeleton-progress {
+        width: 30px;
+        height: 30px;
+      }
     }
   }
 }
