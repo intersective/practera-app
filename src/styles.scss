@@ -132,6 +132,10 @@ ion-button.practera-btn {
   }
 }
 
+ion-skeleton-text {
+  border-radius: 16px;
+}
+
 .no-box-shadow {
   --box-shadow: none;
   box-shadow: none;
