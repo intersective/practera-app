@@ -216,13 +216,21 @@ export class HomeComponent implements OnDestroy, OnInit {
 
   goToReview(contextId, assessmentId, submissionId) {
     this.newRelic.actionText('goToReview');
-    this.router.navigate([
-      'assessment',
-      'review',
-      contextId,
-      assessmentId,
-      submissionId
-    ]);
+    if (this.utils.isMobile()) {
+      this.router.navigate([
+        'assessment',
+        'review',
+        contextId,
+        assessmentId,
+        submissionId
+      ]);
+    } else {
+      this.router.navigate([
+        'app',
+        'reviews',
+        submissionId
+      ]);
+    }
   }
 
   goToChat(todoItem?: TodoItem) {

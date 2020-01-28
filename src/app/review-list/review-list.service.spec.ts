@@ -1,18 +1,18 @@
 import { TestBed } from '@angular/core/testing';
-import { ReviewsService } from './reviews.service';
+import { ReviewListService } from './review-list.service';
 import { of } from 'rxjs';
 import { RequestService } from '@shared/request/request.service';
 import { UtilsService } from '@services/utils.service';
 
-describe('ReviewsService', () => {
-  let service: ReviewsService;
+describe('ReviewListService', () => {
+  let service: ReviewListService;
   let requestSpy: jasmine.SpyObj<RequestService>;
   let utils: UtilsService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
-        ReviewsService,
+        ReviewListService,
         UtilsService,
         {
           provide: RequestService,
@@ -20,7 +20,7 @@ describe('ReviewsService', () => {
         },
       ]
     });
-    service = TestBed.get(ReviewsService);
+    service = TestBed.get(ReviewListService);
     requestSpy = TestBed.get(RequestService);
     utils = TestBed.get(UtilsService);
   });

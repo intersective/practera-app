@@ -6,7 +6,7 @@ import { UtilsService } from '@services/utils.service';
 import { BrowserStorageService } from '@services/storage.service';
 import { PusherService } from '@shared/pusher/pusher.service';
 import { SharedService } from '@services/shared.service';
-import { ReviewsService } from '@app/reviews/reviews.service';
+import { ReviewListService } from '@app/review-list/review-list.service';
 import { EventListService } from '@app/event-list/event-list.service';
 import { environment } from '@environments/environment';
 
@@ -67,7 +67,7 @@ export class SwitcherService {
     private storage: BrowserStorageService,
     private sharedService: SharedService,
     private pusherService: PusherService,
-    private reviewsService: ReviewsService,
+    private reviewsService: ReviewListService,
     private eventsService: EventListService,
   ) {}
 
