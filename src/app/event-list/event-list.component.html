@@ -76,7 +76,7 @@
   </ion-infinite-scroll>
 
   <div *ngIf="!events.length && !loadingEvents">
-    <ion-card class="practera-card no-event">
+    <ion-card class="practera-card list-empty-message">
       <ng-container [ngSwitch]="activated">
         <ng-container *ngSwitchCase="'browse'">
           <p class="subtitle-1 gray-3">There's no new events.</p>

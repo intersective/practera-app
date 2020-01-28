@@ -478,10 +478,17 @@ describe('HomeComponent', () => {
     });
   });
 
-  describe('when testing goToReview()', () => {
-    it('should navigate to the correct review page', () => {
+  describe('goToReview()', () => {
+    it('should navigate to the correct review page (desktop)', () => {
+      spyOn(utils, 'isMobile').and.returnValue(false);
       component.goToReview(1, 2, 3);
-      expect(routerSpy.navigate.calls.first().args[0]).toEqual(['assessment', 'review', 1, 2, 3]);
+      expect(routerSpy.navigate).toHaveBeenCalledWith(['app', 'reviews', 3]);
+    });
+
+    it('should navigate to the correct review page (mobile)', () => {
+      spyOn(utils, 'isMobile').and.returnValue(true);
+      component.goToReview(1, 2, 3);
+      expect(routerSpy.navigate).toHaveBeenCalledWith(['assessment', 'review', 1, 2, 3]);
     });
   });
 
