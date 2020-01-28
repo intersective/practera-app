@@ -1,0 +1,12 @@
+ion-input {
+  @extend .subtitle-1, .gray-2;
+}
+ion-button {
+  @extend .button;
+}
+ion-header ion-toolbar ion-title {
+  @extend .headline-6;
+}
+ion-textarea {
+  @extend .subtitle-1, .gray-1;
+}

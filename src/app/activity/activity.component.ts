@@ -1,13 +1,12 @@
-import { Component, Input, NgZone } from '@angular/core';
-import { Router, ActivatedRoute, ParamMap } from '@angular/router';
+import { Component, Input, NgZone, Output, EventEmitter } from '@angular/core';
+import { Router } from '@angular/router';
 import { Observable, of, forkJoin, Subscription } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { ActivityService, Activity, OverviewActivity, Task } from './activity.service';
 import { UtilsService } from '../services/utils.service';
 import { NotificationService } from '@shared/notification/notification.service';
 import { BrowserStorageService } from '@services/storage.service';
-import { RouterEnter } from '@services/router-enter.service';
-import { Event, EventsService } from '@app/events/events.service';
+import { Event, EventListService } from '@app/event-list/event-list.service';
 import { SharedService } from '@services/shared.service';
 import { FastFeedbackService } from '../fast-feedback/fast-feedback.service';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
@@ -17,12 +16,15 @@ import { NewRelicService } from '@shared/new-relic/new-relic.service';
   templateUrl: './activity.component.html',
   styleUrls: ['./activity.component.scss']
 })
-export class ActivityComponent extends RouterEnter {
+export class ActivityComponent {
+  @Input() id: number;
+  @Input() currentTask;
+  @Output() navigate = new EventEmitter();
+  // when tasks are ready, emit tasks to the parent component so that the parent component can decide which task to display
+  @Output() tasksReady = new EventEmitter();
   getActivity: Subscription;
   getEventPusher: Subscription;
   getEvents: Subscription;
-  routeUrl = '/app/activity';
-  id: number;
   activity: Activity = {
     id: 0,
     name: '',
@@ -35,18 +37,16 @@ export class ActivityComponent extends RouterEnter {
 
   constructor(
     public router: Router,
-    private route: ActivatedRoute,
     private activityService: ActivityService,
     public utils: UtilsService,
     private notificationService: NotificationService,
     public storage: BrowserStorageService,
-    private eventsService: EventsService,
+    private eventsService: EventListService,
     public sharedService: SharedService,
     public fastFeedbackService: FastFeedbackService,
     private newRelic: NewRelicService,
     private ngZone: NgZone
   ) {
-    super(router);
 
     // update event list after book/cancel an event
     this.getEventPusher = this.utils.getEvent('update-event').subscribe(
@@ -60,13 +60,38 @@ export class ActivityComponent extends RouterEnter {
   }
 
   // force every navigation happen under radar of angular
-  private navigate(direction): Promise<boolean> {
-    return this.ngZone.run(() => {
-      return this.router.navigate(direction);
-    });
+  private _navigate(direction) {
+    if (this.utils.isMobile()) {
+      // redirect to topic/assessment page for mobile
+      return this.ngZone.run(() => {
+        return this.router.navigate(direction);
+      });
+    } else {
+      // emit event to parent component(task component)
+      switch (direction[0]) {
+        case 'topic':
+          this.navigate.emit({
+            type: 'topic',
+            topicId: direction[2]
+          });
+          break;
+        case 'assessment':
+          this.navigate.emit({
+            type: 'assessment',
+            contextId: direction[3],
+            assessmentId: direction[4]
+          });
+          break;
+        default:
+          return this.ngZone.run(() => {
+            return this.router.navigate(direction);
+          });
+      }
+    }
   }
 
-  private _initialise() {
+  onEnter() {
+    this.newRelic.setPageViewName('activity components');
     this.activity = {
       id: 0,
       name: '',
@@ -74,15 +99,8 @@ export class ActivityComponent extends RouterEnter {
       tasks: []
     };
     this.loadingActivity = true;
-  }
-
-  onEnter() {
-    this.newRelic.setPageViewName('activity components');
-    this._initialise();
-    this.id = +this.route.snapshot.paramMap.get('id');
     this._getActivity();
     this._getEvents();
-
     this.fastFeedbackService.pullFastFeedback().subscribe();
   }
 
@@ -90,11 +108,14 @@ export class ActivityComponent extends RouterEnter {
     this.getActivity = this.activityService.getActivity(this.id)
       .subscribe(
         activity => {
-          if (activity) {
-            this.activity = activity;
-            this.loadingActivity = false;
-            this.newRelic.setPageViewName(`Activity ${this.activity.name}, ID: ${this.id}`);
+          if (!activity) {
+            // activity is null by default
+            return ;
           }
+          this.activity = activity;
+          this.loadingActivity = false;
+          this.newRelic.setPageViewName(`Activity ${this.activity.name}, ID: ${this.id}`);
+          this.tasksReady.emit(activity.tasks);
         },
         (error) => {
           this.newRelic.noticeError(error);
@@ -119,7 +140,7 @@ export class ActivityComponent extends RouterEnter {
   }
 
   back() {
-    this.navigate([ 'app', 'project' ]);
+    this._navigate([ 'app', 'home' ]);
     this.newRelic.actionText('Back button pressed on Activities Page.');
   }
 
@@ -138,24 +159,37 @@ export class ActivityComponent extends RouterEnter {
             {
               name: task.submitter.name,
               image: task.submitter.image
-            } ,
-            (data) => {
+            },
+            data => {
               if (data.data) {
-                this.navigate(['assessment', 'assessment', this.id , task.contextId, task.id]);
+                this._navigate(['assessment', 'assessment', this.id , task.contextId, task.id]);
               }
             }
           );
           return ;
         }
-        this.navigate(['assessment', 'assessment', this.id , task.contextId, task.id]);
+        this._navigate(['assessment', 'assessment', this.id , task.contextId, task.id]);
         break;
       case 'Topic':
-        this.navigate(['topic', this.id, task.id]);
+        this._navigate(['topic', this.id, task.id]);
         break;
       case 'Locked':
         this.notificationService.popUp('shortMessage', {message: 'This part of the app is still locked. You can unlock the features by engaging with the app and completing all tasks.'});
         break;
     }
+  }
+
+  gotoEvent(event?) {
+    // go to the event page without choosing any event
+    if (!event) {
+      return this.router.navigate(['app', 'events', {activity_id: this.id}]);
+    }
+    // don't need to navigate for mobile
+    if (this.utils.isMobile()) {
+      return ;
+    }
+    // go to the event page with an event selected
+    return this.router.navigate(['app', 'events', {activity_id: this.id, event_id: event.id}]);
   }
 
   displayEventTime(event) {
