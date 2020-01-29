@@ -1,20 +1,31 @@
 <ion-card
+  *ngIf="!loading"
   color="primary"
-  class="card practera-card"
+  class="card practera-card ion-activatable"
   [ngClass]="{
+    'loading-card': loading,
     'locked-card': activity.isLocked,
     'default-image-card': !activity.leadImage
   }"
   [ngStyle]="{'background-image': backgroundImageStyle }"
 >
-  <ion-card-content [ngClass]="{'feedback-card': activity.hasFeedback }">
-    <h4 color="primary-contrast">Activity</h4>
-    <h2 color="primary-contrast" class="activity-name">{{activity.name}}</h2>
-  </ion-card-content>
-  <ion-card-content *ngIf="loading">
-    <h4 color="primary-contrast"></h4>
-    <h2 color="primary-contrast" class="activity-name">
-      <ion-spinner name="dots" class="vertical-middle"></ion-spinner>
-    </h2>
+  <ion-card-content>
+    <p color="primary-contrast" class="caption">Activity</p>
+    <p color="primary-contrast" class="activity-name headline-6">{{activity.name}}</p>
   </ion-card-content>
 </ion-card>
+
+<ion-card
+  *ngIf="loading"
+  class="card practera-card skeleton-card"
+>
+  <ion-card-content>
+    <p class="caption">
+      <ion-skeleton-text animated style="width: 20%"></ion-skeleton-text>
+    </p>
+    <p class="activity-name headline-6">
+      <ion-skeleton-text animated style="width: 80%"></ion-skeleton-text>
+    </p>
+  </ion-card-content>
+</ion-card>
+

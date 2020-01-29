@@ -1,11 +1,11 @@
-<ion-card class="practera-card" text-left [formGroup]="form">
+<ion-card class="practera-card ion-text-left" [formGroup]="form">
   <ion-card-header class="q-title">
     {{ question.title }}
     <ion-text color="danger" *ngIf="question.isRequired">*</ion-text>
     <ion-text color="medium"><p><i>{{ question.description }}</i></p></ion-text>
   </ion-card-header>
 
-  <ion-card-content padding-horizontal class="q-content">
+  <ion-card-content class="q-content ion-padding-horizontal">
   <ion-list>
     <ion-radio-group [formControlName]="question.id">
       <ion-item *ngFor="let choice of question.choices" color="light">
