@@ -478,14 +478,14 @@ export class AssessmentComponent extends RouterEnter {
       return route;
     }
 
-    // if found new activity, force back to home page
+    // if found new activity (different activityid), force redirect user back to home screen
     if (activity.id !== this.activityId) {
       navigationParams = { queryParams: { activityId: activity.id } };
 
       if (options.continue !== true) {
         await this.notificationService.alert({
           header: 'Congratulations!',
-          message: 'You have successfully completed this activity.<br>Let\'s take you to the next one.',
+          message: 'You have successfully completed this activity.',
           buttons: [
             {
               text: 'Ok',
