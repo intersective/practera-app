@@ -20,7 +20,7 @@
   'ion-content-absolute': !utils.isMobile() && !hasFooter()
 }">
   <h1 class="headline-4">{{ assessment.name }}</h1>
-  <ion-text color="medium" color="ion-text-left">
+  <ion-text color="medium" class="ion-text-left">
     <app-description *ngIf="assessment.description" [content]="assessment.description" id="asmt-des" class="body-1"></app-description>
   </ion-text>
   <p class="due-date assessment subtitle-1 gray-2 ion-text-center" [ngClass]="{'over': assessment.isOverdue}" *ngIf="doAssessment">
