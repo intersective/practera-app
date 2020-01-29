@@ -6,6 +6,8 @@ import { UtilsService } from '@services/utils.service';
 import { BrowserStorageService } from '@services/storage.service';
 import { PusherService } from '@shared/pusher/pusher.service';
 import { SharedService } from '@services/shared.service';
+import { ReviewListService } from '@app/review-list/review-list.service';
+import { EventListService } from '@app/event-list/event-list.service';
 import { environment } from '@environments/environment';
 
 /**
@@ -42,6 +44,7 @@ export interface ProgramConfig {
 
 export interface Project {
   id: number;
+  lead_image?: string;
 }
 
 export interface Timeline {
@@ -64,21 +67,25 @@ export class SwitcherService {
     private storage: BrowserStorageService,
     private sharedService: SharedService,
     private pusherService: PusherService,
+    private reviewsService: ReviewListService,
+    private eventsService: EventListService,
   ) {}
 
   getPrograms() {
     return of(this.storage.get('programs'));
   }
 
-  switchProgram(programObj: ProgramObj) {
+  switchProgram(programObj: ProgramObj): Observable<any> {
     const themeColor = this.utils.has(programObj, 'program.config.theme_color') ? programObj.program.config.theme_color : '#2bbfd4';
     let cardBackgroundImage = '';
     if (this.utils.has(programObj, 'program.config.card_style')) {
       cardBackgroundImage = '/assets/' + programObj.program.config.card_style;
     }
+
     this.storage.setUser({
       programId: programObj.program.id,
       programName: programObj.program.name,
+      programImage: programObj.project.lead_image,
       hasReviewRating: this.utils.has(programObj, 'program.config.review_rating') ? programObj.program.config.review_rating : false,
       truncateDescription: this.utils.has(programObj, 'program.config.truncate_description') ? programObj.program.config.truncate_description : true,
       experienceId: programObj.program.experience_id,
@@ -88,6 +95,9 @@ export class SwitcherService {
       themeColor: themeColor,
       activityCardImage: cardBackgroundImage,
       enrolment: programObj.enrolment,
+      teamId: null,
+      hasEvents: false,
+      hasReviews: false
     });
 
     this.sharedService.onPageLoad();
@@ -95,7 +105,9 @@ export class SwitcherService {
       this.getNewJwt(),
       this.getTeamInfo(),
       this.getMyInfo(),
-    ).subscribe();
+      this.getReviews(),
+      this.getEvents()
+    );
   }
 
   getTeamInfo(): Observable<any> {
@@ -144,6 +156,24 @@ export class SwitcherService {
     }));
   }
 
+  getReviews() {
+    return this.reviewsService.getReviews().pipe(map(data => {
+      this.storage.setUser({
+        hasReviews: (data && data.length > 0)
+      });
+      return data;
+    }));
+  }
+
+  getEvents() {
+    return this.eventsService.getEvents().pipe(map(events => {
+      this.storage.setUser({
+        hasEvents: !this.utils.isEmpty(events)
+      });
+      return events;
+    }));
+  }
+
   checkIsOneProgram(programs?) {
     let programList = programs;
     if (this.utils.isEmpty(programs)) {
@@ -175,17 +205,23 @@ export class SwitcherService {
         return ['switcher'];
       // Array with one program object -> [{}]
       } else if (Array.isArray(programs) && this.checkIsOneProgram(programs)) {
-        await this.switchProgram(programs[0]);
+        await this.switchProgram(programs[0]).toPromise();
       } else {
       // one program object -> {}
-        await this.switchProgram(programs);
+        await this.switchProgram(programs).toPromise();
       }
+
       this.pusherService.initialise({ unsubscribe: true });
       // clear the cached data
       this.utils.clearCache();
       if ((typeof environment.goMobile !== 'undefined' && environment.goMobile === false)
         || /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
-        return ['app', 'home'];
+          if (this.storage.get('directLinkRoute')) {
+            const route = this.storage.get('directLinkRoute');
+            this.storage.remove('directLinkRoute');
+            return route;
+          }
+          return ['app', 'home'];
       } else {
         return ['go-mobile'];
       }
