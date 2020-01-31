@@ -211,7 +211,7 @@ export class SwitcherService {
         await this.switchProgram(programs).toPromise();
       }
 
-      this.pusherService.initialise({ unsubscribe: true });
+      await this.pusherService.initialise({ unsubscribe: true });
       // clear the cached data
       this.utils.clearCache();
       if ((typeof environment.goMobile !== 'undefined' && environment.goMobile === false)
