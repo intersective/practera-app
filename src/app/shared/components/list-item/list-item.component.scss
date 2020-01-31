@@ -1,0 +1,16 @@
+.leading-icon {
+  margin-right: 20px;
+}
+.item-content {
+  width: 100%;
+  p {
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    margin: 0;
+  }
+}
+.skeleton-icon {
+  width: 30px;
+  height: 30px;
+}
