@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { ModalController } from '@ionic/angular';
+import { UtilsService } from '@services/utils.service';
 
 @Component({
   selector: 'app-lock-team-assessment-pop-up',
@@ -11,7 +12,8 @@ export class LockTeamAssessmentPopUpComponent {
   image = '';
 
   constructor(
-    public modalController: ModalController
+    public modalController: ModalController,
+    public utils: UtilsService
   ) {
   }
 

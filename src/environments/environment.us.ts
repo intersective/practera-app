@@ -28,5 +28,5 @@ export const environment = {
   },
   defaultCountryModel: 'US',
   intercom: false,
-  goMobile: false,
+  goMobile: true,
 };

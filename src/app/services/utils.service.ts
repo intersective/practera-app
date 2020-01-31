@@ -3,6 +3,7 @@ import * as _ from 'lodash';
 import { DOCUMENT } from '@angular/common';
 import { Observable, Subject, BehaviorSubject } from 'rxjs';
 import { map, filter } from 'rxjs/operators';
+import { Platform } from '@ionic/angular';
 
 // @TODO: enhance Window reference later, we shouldn't refer directly to browser's window object like this
 declare var window: any;
@@ -22,6 +23,7 @@ export class UtilsService {
 
   constructor(
     @Inject(DOCUMENT) private document: Document,
+    private platform: Platform
   ) {
     if (_) {
       this.lodash = _;
@@ -31,7 +33,28 @@ export class UtilsService {
   }
 
   /**
-   * check if a value is empty
+   * @name isMobile
+   * @description grouping device type into 2 group (mobile/desktop) and return true if mobile, otherwise return false
+   * @example https://github.com/ionic-team/ionic/blob/master/angular/src/providers/platform.ts#L71-L115
+   */
+  isMobile() {
+    // Priority: always treat "tablet" mode as "desktop"
+    if (this.platform.is('tablet')) {
+      return false;
+    }
+
+    if (
+      this.platform.is('mobile') ||
+      this.platform.is('iphone') ||
+      this.platform.is('mobileweb')
+    ) {
+      return true;
+    }
+
+    return false;
+  }
+
+  /** check if a value is empty
    * precautions:
    *   Lodash's isEmpty, by default, sees "number" type value as empty,
    *   but in our case, we just treat null/undefined/""/[]/{} as empty.
@@ -58,6 +81,10 @@ export class UtilsService {
 
   find(collections, callback) {
     return this.lodash.find(collections, callback);
+  }
+
+  findIndex(collections: any[], callback: any) {
+    return this.lodash.findIndex(collections, callback);
   }
 
   has(object, path) {
@@ -97,7 +124,8 @@ export class UtilsService {
   changeThemeColor(color) {
     this.document.documentElement.style.setProperty('--ion-color-primary', color);
     this.document.documentElement.style.setProperty('--ion-color-primary-shade', color);
-    this.document.documentElement.style.setProperty('--ion-color-primary-tint', color);
+    // get the tint version of the color(20% opacity)
+    this.document.documentElement.style.setProperty('--ion-color-primary-tint', color + '33');
     // convert hex color to rgb and update css variable
     const hex = color.replace('#', '');
     const red = parseInt(hex.substring(0, 2), 16);

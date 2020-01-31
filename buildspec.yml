@@ -3,7 +3,7 @@ version: 0.2
 phases:
   install:
     runtime-versions:
-        nodejs: 10
+      nodejs: 10
     commands:
       - echo Installing source NPM dependencies...
       - apt-get update -y
@@ -19,7 +19,7 @@ phases:
       - chmod +x ./env.sh
       - ./env.sh
       # - while IFS='=' read -r name value ; do  if [[ $name == 'FILESTACK_'* ]]; then sed -i "s#<$name>#${!name}#g" src/environments/filestack.ts; fi; done < <(env)
-      - ng build --configuration=custom
+      - ng build --configuration=$BUILD_CONFIG
       - npm run generate-version
   post_build:
     commands:
