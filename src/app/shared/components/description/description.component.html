@@ -1,15 +1,24 @@
-<p [@truncation]="isTruncating ? 'hide' : 'show'" #description [innerHtml]="content" [ngClass]="{'limit-height': isTruncating}"></p>
+<div class="container">
+  <div class="text-content">
+    <p #description [innerHtml]="content"
+      [ngClass]="{ 'limit-height': isTruncating || heightExceeded, 'full-height': !isTruncating && !isInPopup, 'full-height-popup': !isTruncating && isInPopup }">
+    </p>
+  </div>
 
-<ng-container *ngIf="heightExceeded">
-  <ng-container *ngIf="isTruncating">
-    <div text-left>
-      <a href="javascript:void(0)" color="primary" (click)="isTruncating = false">show more</a>
-    </div>
+  <ng-container *ngIf="heightExceeded">
+    <ng-container *ngIf="isTruncating">
+      <ion-button color="primary" fill="clear" (click)="isTruncating = !isTruncating">
+        SHOW MORE
+        <ion-icon slot="end" name="arrow-forward"></ion-icon>
+      </ion-button>
+    </ng-container>
+
+    <ng-container *ngIf="!isTruncating">
+      <ion-button color="primary" fill="clear" (click)="isTruncating = !isTruncating">
+        <ion-icon slot="start" name="arrow-back"></ion-icon>
+        SHOW LESS
+      </ion-button>
+    </ng-container>
   </ng-container>
 
-  <ng-container *ngIf="!isTruncating">
-    <div text-left>
-      <a href="javascript:void(0)" color="primary" (click)="isTruncating = true">show less</a>
-    </div>
-  </ng-container>
-</ng-container>
+</div>

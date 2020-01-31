@@ -4,19 +4,18 @@
 .icon-info {
   font-size: 20px;
 }
+.icon-backward {
+  font-size: 20px !important;
+}
+
 .review-submitter {
   p {
-    color: var( --practera-review-title);
-    font-size: 14px;
-    font-weight: 500;
     margin-top: 16px;
     margin-bottom: 16px;
   }
 }
 
-.subTitle {
-  font-size: small;
-  color: var(--ion-color-medium-shade);
+.sub-title {
   &.title-ios {
     margin-top: 30px;
     height: 16px;
@@ -53,6 +52,3 @@ ion-header ion-toolbar {
   }
 }
 
-ion-footer ion-toolbar ion-button.continue {
-  margin: 0 16px;
-}

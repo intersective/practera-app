@@ -1,48 +1,57 @@
 <ion-header mode="ios">
-  <ion-toolbar color="light">
-    <ion-icon name="arrow-back" (click)="back()" color="primary" slot="start" margin-start></ion-icon>
-    <ion-title text-center>Topic</ion-title>
+  <ion-toolbar [ngClass]="{'ion-toolbar-absolute': !utils.isMobile()}">
+    <ion-buttons slot="start" *ngIf="utils.isMobile()">
+      <ion-button (click)="back()" id="btn-back">
+        <ion-icon class="icon-backward" name="arrow-back" (click)="back()" color="primary" slot="icon-only" margin-start></ion-icon>
+      </ion-button>
+    </ion-buttons>
+
+    <ion-title text-center [ngClass]="{
+      'subtitle-2': !utils.isMobile()
+    }">Topic</ion-title>
   </ion-toolbar>
 </ion-header>
-<ion-content color="light">
+<ion-content padding color="light" [ngClass]="{'ion-content-absolute-with-footer': !utils.isMobile()}">
   <div text-center margin-top *ngIf="loadingTopic">
     <ion-spinner></ion-spinner>
   </div>
-  <h3 padding text-center>{{topic.title}}</h3>
-  <div *ngIf="topic.videolink && topic.videolink !=='magiclink'" class="text-center" padding-bottom>
-    <div text-center padding [innerHtml]="iframeHtml"></div>
+  <h3 class="headline-4" text-center>{{topic.title}}</h3>
+  <div *ngIf="topic.videolink && topic.videolink !=='magiclink'" class="text-center">
+    <label class="subtitle-2 gray-2">Video</label>
+    <div text-center [innerHtml]="iframeHtml" class="video-container" [ngClass]="{'desktop-view': !utils.isMobile()}"></div>
   </div>
 
   <ng-container *ngIf="topic.content">
-    <ion-card>
-      <ion-card-content [innerHtml]="topic.content"></ion-card-content>
+    <ion-card class="background-white practera-card">
+      <ion-card-content class="body-1" [innerHtml]="topic.content"></ion-card-content>
     </ion-card>
   </ng-container>
 
   <div *ngIf="topic.files && topic.files.length > 0"  color="light" >
-    <label padding>Supporting Downloads</label>
+    <label class="subtitle-2 gray-2">Supporting Downloads</label>
 
-    <div *ngFor="let file of topic.files" padding class="topic-icons">
-      <ion-grid >
-        <ion-row>
-          <ion-col size="10" class="file-name-view" >
-            <ion-icon name="document" class="vertical-middle" color="primary"></ion-icon>
-            <span class="vertical-middle" color="primary">&nbsp;{{file.name}} </span>
-          </ion-col>
-          <ion-col size="2">
-            <ion-icon *ngIf="file.url.length > 0" name="search" (click)="previewFile(file)" color="primary"></ion-icon>
-            <a *ngIf="file.url.length > 0" [href]="file.url" download class="text-right" target="_blank">
-             <ion-icon name="download" float-right></ion-icon>
-            </a>
-          </ion-col>
-        </ion-row>
-      </ion-grid>
+    <div *ngFor="let file of topic.files" class="supporting-files">
+      <ion-card class="background-white practera-card">
+        <ion-grid >
+          <ion-row>
+            <ion-col size="10" class="file-name-view">
+              <p class="vertical-middle"><ion-icon name="document" class="vertical-middle" color="primary"></ion-icon>&nbsp;{{file.name}} </p>
+            </ion-col>
+            <ion-col size="2">
+              <ion-icon class="vertical-middle" *ngIf="file.url.length > 0" name="search" (click)="previewFile(file)" color="primary"></ion-icon>
+              <a *ngIf="file.url.length > 0" [href]="file.url" download class="text-right" target="_blank">
+                <ion-icon name="download" float-right></ion-icon>
+              </a>
+            </ion-col>
+          </ion-row>
+        </ion-grid>    
+      </ion-card>
     </div>
   </div>
 </ion-content>
 
-<ion-footer color="light">
-  <ion-toolbar>
+<ion-footer color="light" [ngClass]="{'ion-footer-absolute': !utils.isMobile()}">
+  <ion-toolbar class="ion-text-center">
     <ion-spinner *ngIf="loadingMarkedDone || loadingTopic"
       style="width: 100%;"
       name="dots"
@@ -53,15 +62,12 @@
       [disabled]="redirecting"
       (click)="continue()"
       shape="round"
-      expand="full"
-      class="continue">
+      class="continue btn-cta">
       <ng-container *ngIf="!btnToggleTopicIsDone; else showAsCompleted">CONTINUE</ng-container>
       <ng-template #showAsCompleted>
         <ng-container *ngIf="!redirecting; else showRedirecting">
-          <ion-item lines="none" no-paddings color="primary">
-            <ion-icon slot="start" src="/assets/checkmark.svg"></ion-icon>
-            <ion-text>Continue</ion-text>
-          </ion-item>
+          <ion-icon slot="start" src="/assets/checkmark.svg"></ion-icon>
+          <ion-text>CONTINUE</ion-text>
         </ng-container>
 
         <ng-template #showRedirecting>
