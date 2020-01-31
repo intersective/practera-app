@@ -71,14 +71,12 @@ export class PusherService {
   async initialise(options?: {
     unsubscribe?: boolean;
   }) {
-    let pusher = this.pusher;
-
     // make sure pusher is connected
     if (!this.pusher) {
-      pusher = await this.initialisePusher();
+      this.pusher = await this.initialisePusher();
     }
 
-    if (!pusher) {
+    if (!this.pusher) {
       return {};
     }
 
@@ -88,16 +86,15 @@ export class PusherService {
     }
 
     // handling condition at re-login without rebuilding pusher (where isInstantiated() is false)
-    if ((pusher || this.pusher).connection.state !== 'connected') {
+    if (this.pusher.connection.state !== 'connected') {
       // reconnect pusher
       this.pusher.connect();
-      pusher = this.pusher;
     }
 
     // subscribe to event only when pusher is available
     const channels = await this.getChannels().toPromise();
     return {
-      pusher,
+      pusher: this.pusher,
       channels
     };
   }
@@ -153,12 +150,11 @@ export class PusherService {
           },
         },
       };
-      this.pusher = await new PusherLib(this.pusherKey, config);
+      const newPusherInstance = await new PusherLib(this.pusherKey, config);
+      return newPusherInstance;
     } catch (err) {
       throw new Error(err);
     }
-
-    return this.pusher;
   }
 
   /**
@@ -175,13 +171,12 @@ export class PusherService {
         subscribedChannel = true;
       }
     });
-
     return subscribedChannel;
   }
 
   /**
    * get a list of channels from API request and subscribe every of them into
-   * connected + authorizded pusher
+   * connected + authorised pusher
    */
   getChannels(): Observable<any> {
     return this.request.get(api.channels, {

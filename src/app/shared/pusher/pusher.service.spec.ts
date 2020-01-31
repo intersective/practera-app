@@ -14,16 +14,30 @@ import * as Pusher from 'pusher-js';
 class PusherLib extends Pusher {
   connection;
 
-  constructor(a, b) {
+  constructor() {
     super('TESTAPIKEY');
-    console.log(a, b);
+
     this.connection = {
       state: 'test',
     };
-    /*jasmine.spy('connection').and.returnValue({
-
-    });*/
   }
+
+  disconnect() {
+    return true;
+  }
+
+  connect() {
+    return true;
+  }
+
+/*  allChannels(): Pusher.Channel {
+    return [{
+      name: 'test',
+      subscribed: true,
+      trigger: (eventName: string, data?: any) => true,
+      authorize: () => true,
+    }]
+  }*/
 }
 const initialisingPusher = {
   connection: {
@@ -45,6 +59,7 @@ describe('PusherConfig', () => {
 });
 
 describe('PusherService', async () => {
+  const PUSHER_APIURL = 'APIURL';
   const PUSHERKEY = 'pusherKey';
   const APIURL = 'api/v2/message/notify/channels.json';
   const libConfig =  {
@@ -103,7 +118,7 @@ describe('PusherService', async () => {
           provide: PusherConfig,
           useValue: {
             pusherKey: PUSHERKEY,
-            apiurl: 'apiurl'
+            apiurl: PUSHER_APIURL
           }
         },
         {
@@ -205,17 +220,22 @@ describe('PusherService', async () => {
     });
   });
 
-  /*xdescribe('initialise()', () => {
-    it('should initialise pusher', fakeAsync(() => {
-      service['initialisePusher'] = () => new Promise((resolve) => {
-        resolve(initialisingPusher);
-      });
-      spyOn(service, 'initialisePusher').and.returnValue(new Promise((resolve) => {
-        resolve(initialisingPusher);
-      }));
+  describe('initialise()', () => {
+    beforeEach(() => {
+      service['initialisePusher'] = jasmine.createSpy('initialisePusher').and.returnValue(new Promise(res => {
 
+          const thisPusher = new PusherLib();
+          service['pusher'] = thisPusher;
+          // spyOn(service['pusher'], 'connect').and.returnValue(true);
+          res(thisPusher);
+        }));
+
+      service['pusher'] = undefined;
+    });
+
+    it('should initialise pusher', fakeAsync(() => {
       expect(service['pusher']).not.toBeTruthy();
-      expect(service['apiurl']).toBe('apiurl');
+      expect(service['apiurl']).toBe(PUSHER_APIURL);
 
       service.initialise().then(res => {
         tick();
@@ -223,51 +243,45 @@ describe('PusherService', async () => {
         expect(res.pusher.connection).toBeTruthy();
       });
     }));
-  });*/
+  });
 
   describe('disconnect()', () => {
-    it('should disconnect pusher', () => {
-      service['pusher'] = { ...initialisingPusher, disconnect: () => true };
-      spyOn(service['pusher'], 'disconnect');
+    beforeEach(() => {
+      service['pusher'] = new PusherLib();
+    });
 
+    it('should disconnect pusher', () => {
+      spyOn(service['pusher'], 'disconnect');
       service.disconnect();
+
       expect(service['pusher'].disconnect).toHaveBeenCalled();
     });
   });
 
   describe('isInstantiated()', () => {
     it('should has been instantiated', () => {
-      service['pusher'] = {
-        connection: {
-          state: 'connected',
-          key: '',
-          options: '',
-          socket_id: '',
-        }
-      };
-
+      service['pusher'] = new PusherLib();
       const result = service.isInstantiated();
       expect(result).toBeTruthy();
     });
 
     it('should has been instantiated', () => {
       service['pusher'] = undefined;
-
       const result = service.isInstantiated();
       expect(result).toBeFalsy();
     });
   });
 
   describe('isSubscribed()', () => {
+    let channels, testChannel;
     beforeEach(() => {
-      service['pusher'] = {
-        allChannels: () => [
-          { name: 'test', subscribed: true, trigger: (eventName: string, data?: any) => true }
-        ]
-      };
-      /*spyOn(service['pusher'], 'allChannels').and.returnValue([
-        { name: 'test', subscribed: true, trigger: (eventName: string, data?: any) => true }
-      ]);*/
+      service['pusher'] = new PusherLib();
+      service['pusher'].subscribe('test');
+
+      // mock successfully subsribed channel
+      channels = service['pusher'].channels;
+      testChannel = service['pusher'].allChannels()[0];
+      spyOn(testChannel, 'subscribed').and.returnValue(true);
     });
 
     it('should subscribe to channel', () => {
@@ -317,10 +331,6 @@ describe('PusherService', async () => {
     it('should trigger triggerTyping()', () => {});
     it('should trigger initiateTypingEvent()', () => {});
   });
-
-  /*it('should disconnect()', () => {
-    service.disconnect();
-  });*/
 
 });
 
