@@ -141,7 +141,7 @@ describe('PusherService', async () => {
     expect(service).toBeDefined();
   });
 
-  describe('getChannels()', () => {
+  describe('getChannels()', async () => {
 
     it(`should make API request to ${APIURL}`, fakeAsync(() => {
       service.getChannels().subscribe();
@@ -155,6 +155,7 @@ describe('PusherService', async () => {
     it(`should return error if channel is empty`, fakeAsync(() => {
       requestSpy.get.and.returnValue(of({ data: 'not array' }));
       spyOn(service, 'initiateTypingEvent');
+      // service['_subscribeChannels'] = jasmine.createSpy('_subscribeChannels');
 
       let res: any;
       service.getChannels().subscribe(_res => {
@@ -233,15 +234,13 @@ describe('PusherService', async () => {
       service['pusher'] = undefined;
     });
 
-    it('should initialise pusher', fakeAsync(() => {
+    it('should initialise pusher', fakeAsync(async () => {
       expect(service['pusher']).not.toBeTruthy();
       expect(service['apiurl']).toBe(PUSHER_APIURL);
 
-      service.initialise().then(res => {
-        tick();
-        expect(res.pusher).toBeTruthy();
-        expect(res.pusher.connection).toBeTruthy();
-      });
+      const res = await service.initialise();
+      tick();
+      expect(service['pusher']).toBeTruthy();
     }));
   });
 
