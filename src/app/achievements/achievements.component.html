@@ -1,10 +1,10 @@
 <ion-header mode="ios">
   <ion-toolbar>
     <ion-icon name="arrow-back" (click)="back()" color="primary" slot="start" margin-start></ion-icon>
-    <ion-title class="ion-text-center">Badges</ion-title>
+    <ion-title class="ion-text-center headline-6">Badges</ion-title>
   </ion-toolbar>
 </ion-header>
-<ion-content color="light" class="ion-text-center ion-padding">
+<ion-content color="light" class="ion-text-center">
   <ng-container *ngIf="loadingAchievements">
     <ion-spinner></ion-spinner>
   </ng-container>
@@ -12,11 +12,14 @@
     <ion-row class="total-points">
       <ion-col class="trophy" size="3">
         <div class="circle-background">
-            <ion-icon ios="md-trophy" md="md-trophy"></ion-icon>
+          <ion-avatar>
+            <img [src]="userInfo.image">
+          </ion-avatar>
         </div>
       </ion-col>
       <ion-col class="points ion-align-items-start">
-        <h4>Total Points Earned : {{ this.achievementService.getEarnedPoints() }}</h4>
+        <h4 class="headline-5">Total Points : {{ this.achievementService.getEarnedPoints() }}</h4>
+        <h5 class="subtitle-2 gray-3">{{userInfo.name}}</h5>
       </ion-col>
     </ion-row>
   </ion-grid>
@@ -24,7 +27,7 @@
   <ion-grid>
     <ion-row>
       <ion-col class="title-container">
-        <p>My Badges</p>
+        <p class="subtitle-2 gray-2">My Badges</p>
       </ion-col>
     </ion-row>
     <ion-row>
