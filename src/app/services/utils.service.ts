@@ -38,20 +38,7 @@ export class UtilsService {
    * @example https://github.com/ionic-team/ionic/blob/master/angular/src/providers/platform.ts#L71-L115
    */
   isMobile() {
-    // Priority: always treat "tablet" mode as "desktop"
-    if (this.platform.is('tablet')) {
-      return false;
-    }
-
-    if (
-      this.platform.is('mobile') ||
-      this.platform.is('iphone') ||
-      this.platform.is('mobileweb')
-    ) {
-      return true;
-    }
-
-    return false;
+    return window.innerWidth <= 576;
   }
 
   /** check if a value is empty
