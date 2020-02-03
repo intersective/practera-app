@@ -6,6 +6,7 @@ import { Event } from '@app/event-list/event-list.service';
 import { EventDetailService } from './event-detail.service';
 import { NotificationService } from '@shared/notification/notification.service';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
+import { BrowserStorageService } from '@services/storage.service';
 
 @Component({
   selector: 'app-event-detail',
@@ -24,7 +25,8 @@ export class EventDetailComponent implements OnInit {
     public eventDetailService: EventDetailService,
     private notificationService: NotificationService,
     public utils: UtilsService,
-    private newRelic: NewRelicService
+    private newRelic: NewRelicService,
+    private storage: BrowserStorageService,
   ) {}
 
   ngOnInit() {
@@ -37,7 +39,7 @@ export class EventDetailComponent implements OnInit {
     this.ctaIsActing = true;
     switch (this.buttonText()) {
       case 'Book':
-        if (this.event.singleBooking) {
+        if (this.event.singleBooking && this.storage.getBookedEventActivityIds().includes(this.event.activityId)) {
           this.notificationService.alert({
             message: 'Booking this event will cancel your booking for other events within the same activity, do you still wanna book?',
             buttons: [
@@ -49,7 +51,10 @@ export class EventDetailComponent implements OnInit {
               },
               {
                 text: 'Cancel',
-                role: 'cancel'
+                role: 'cancel',
+                handler: () => {
+                  this.ctaIsActing = false;
+                }
               }
             ]
           });
@@ -73,6 +78,10 @@ export class EventDetailComponent implements OnInit {
             // update the event list & activity detail page
             this.utils.broadcastEvent('update-event', null);
             this.event.isBooked = false;
+            // remove the activity id from storage if it is single booking
+            if (this.event.singleBooking) {
+              this.storage.removeBookedEventActivityIds(this.event.activityId);
+            }
           }
           this.ctaIsActing = false;
         });
@@ -112,6 +121,10 @@ export class EventDetailComponent implements OnInit {
         // update the event list & activity detail page
         this.utils.broadcastEvent('update-event', null);
         this.event.isBooked = true;
+        // save the activity id if it is single booking
+        if (this.event.singleBooking) {
+          this.storage.setBookedEventActivityIds(this.event.activityId);
+        }
         this.ctaIsActing = false;
       },
       error => {
