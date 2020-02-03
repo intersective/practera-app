@@ -7,18 +7,6 @@
                 width: 72px;
                 height: 72px;
             }
-            
-            // background-color: white;
-            // border-radius: 50%;
-            // -webkit-box-shadow: 10px 10px 98px -7px rgba(0,0,0,0.35);
-            // -moz-box-shadow: 10px 10px 98px -7px rgba(0,0,0,0.35);
-            // box-shadow: 10px 10px 98px -7px rgba(0,0,0,0.35);
-
-            // ion-icon {
-            //     margin-top: 7.5px;
-            //     font-size: 45px;
-            //     color: var(--ion-color-primary);
-            // }
         }
     }
     .points {
@@ -31,6 +19,21 @@
             margin: 0 !important;
         }
     }
+
+    &.desktop {
+        justify-content: center !important;
+        .trophy {
+            .circle-background {
+                margin: auto;
+            }
+        }
+        .points {
+            text-align: center;
+        }
+    }
+}
+.badge-container {
+    justify-content: center !important;
 }
 hr {
     border: 0;
