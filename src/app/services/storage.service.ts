@@ -92,4 +92,33 @@ export class BrowserStorageService {
     this.set('config', Object.assign(this.getConfig(), config));
     return true;
   }
+
+  /**
+   * This records the single booking activity ids that event has been booked for current user
+   */
+  getBookedEventActivityIds() {
+    return this.get('bookedEventActivityIds') || [];
+  }
+
+  setBookedEventActivityIds(id) {
+    const ids = this.getBookedEventActivityIds();
+    ids.push(id);
+    this.set('bookedEventActivityIds', ids);
+    return true;
+  }
+
+  removeBookedEventActivityIds(id) {
+    const ids = this.getBookedEventActivityIds();
+    const index = ids.indexOf(id);
+    if (index < 0) {
+      return ;
+    }
+    ids.splice(index, 1);
+    this.set('bookedEventActivityIds', ids);
+    return true;
+  }
+
+  initBookedEventActivityIds() {
+    this.remove('bookedEventActivityIds');
+  }
 }
