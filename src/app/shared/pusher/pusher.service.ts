@@ -72,33 +72,32 @@ export class PusherService {
   async initialise(options?: {
     unsubscribe?: boolean;
   }) {
-    // run outside of Angular so that Protractor can work properly
-      // make sure pusher is connected
-      if (!this.pusher) {
-        this.pusher = await this.initialisePusher();
-      }
+    // make sure pusher is connected
+    if (!this.pusher) {
+      this.pusher = await this.initialisePusher();
+    }
 
-      if (!this.pusher) {
-        return {};
-      }
+    if (!this.pusher) {
+      return {};
+    }
 
-      if (options && options.unsubscribe) {
-        this.unsubscribeChannels();
-        this.typingAction = new Subject<any>();
-      }
+    if (options && options.unsubscribe) {
+      this.unsubscribeChannels();
+      this.typingAction = new Subject<any>();
+    }
 
-      // handling condition at re-login without rebuilding pusher (where isInstantiated() is false)
-      if (this.pusher.connection.state !== 'connected') {
-        // reconnect pusher
-        this.pusher.connect();
-      }
+    // handling condition at re-login without rebuilding pusher (where isInstantiated() is false)
+    if (this.pusher.connection.state !== 'connected') {
+      // reconnect pusher
+      this.pusher.connect();
+    }
 
-      // subscribe to event only when pusher is available
-      const channels = await this.getChannels().toPromise();
-      return {
-        pusher: this.pusher,
-        channels
-      };
+    // subscribe to event only when pusher is available
+    const channels = await this.getChannels().toPromise();
+    return {
+      pusher: this.pusher,
+      channels
+    };
   }
 
   disconnect(): void {
