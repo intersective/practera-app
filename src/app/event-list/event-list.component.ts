@@ -84,7 +84,12 @@ export class EventListComponent {
         date: compareDateAttended,
         events: []
       };
+      const activityIdsWithEvent = [];
       events.forEach(event => {
+        // record the id of activity that has event, so that we can filter the activity list later
+        if (!activityIdsWithEvent.includes(event.activityId)) {
+          activityIdsWithEvent.push(event.activityId);
+        }
         if (!event.isBooked) {
           // group event for 'browse' type
           [this.eventsCategorised.browse, eventGroupBrowse, compareDateBrowse] = this._groupEvents(event, this.eventsCategorised.browse, eventGroupBrowse, compareDateBrowse, true);
@@ -136,9 +141,11 @@ export class EventListComponent {
         this._rearrangeEvents();
       }
       this.loadingEvents = false;
-    });
-    this.eventService.getActivities().subscribe(activities => {
-      this.activities = activities;
+      // get activity list
+      this.eventService.getActivities().subscribe(activities => {
+        // only display activity that has event
+        this.activities = activities.filter(activity => activityIdsWithEvent.includes(activity.id));
+      });
     });
   }
 
