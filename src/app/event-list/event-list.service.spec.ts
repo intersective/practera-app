@@ -175,10 +175,6 @@ describe('EventListService', () => {
         tmpRes.data = {};
         errMsg = 'Activity array format error';
       });
-      it('Activity format error', () => {
-        tmpRes.data[0] = {id: 11};
-        errMsg = 'Activity format error';
-      });
     });
 
     it(`should return correct data`, () => {
