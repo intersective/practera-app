@@ -38,7 +38,7 @@ export interface Event {
   assessment?: {
     id: number;
     contextId: number;
-    isDone?: boolean;
+    isDone: boolean;
   };
 }
 
@@ -123,7 +123,8 @@ export class EventListService {
         isPast: this.utils.timeComparer(event.start) < 0,
         assessment: this.utils.has(event, 'assessment.id') ? {
           id: event.assessment.id,
-          contextId: event.assessment.context_id
+          contextId: event.assessment.context_id,
+          isDone: event.assessment.is_done || false
         } : null
       });
       // set the booked event activity id if it is single booking activity and booked
