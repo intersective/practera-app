@@ -12,6 +12,7 @@ import { NgCircleProgressModule } from 'ng-circle-progress';
 import { BrandingLogoComponent } from '@shared/components/branding-logo/branding-logo.component';
 import { ContactNumberFormComponent } from '@shared/components/contact-number-form/contact-number-form.component';
 import { ListItemComponent } from '@shared/components/list-item/list-item.component';
+import { FloatDirective } from './directives/float/float.directive';
 
 const largeCircleDefaultConfig = {
   backgroundColor: 'var(--ion-color-light)',
@@ -46,6 +47,7 @@ const largeCircleDefaultConfig = {
     BrandingLogoComponent,
     ContactNumberFormComponent,
     ListItemComponent,
+    FloatDirective,
   ],
   exports: [
     ActivityCardComponent,
@@ -60,6 +62,7 @@ const largeCircleDefaultConfig = {
     BrandingLogoComponent,
     ContactNumberFormComponent,
     ListItemComponent,
+    FloatDirective,
   ],
 })
 export class SharedModule {}
