@@ -10,6 +10,6 @@
   {{achievement.name}}
 </div>
 
-<ion-text *ngIf="achievement.points" class="badge-point subtitle-2" [ngClass]="{'badge-point-unearned': !achievement.isEarned }">
+<div *ngIf="achievement.points" class="badge-point subtitle-2" [ngClass]="{'badge-point-unearned': !achievement.isEarned, 'desktop' : !utils.isMobile()}">
   {{achievement.points}} Points
-</ion-text>
+</div>
