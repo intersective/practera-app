@@ -67,12 +67,12 @@
     </ion-grid>
     <ion-grid>
         <ion-row class="badge-container">
-          <ion-col class="title-container" size-xs="4" size-sm="3" size-md="2">
+          <ion-col class="title-container" size-xs="12" size-sm="10" size-md="8">
             <p class="subtitle-2 gray-2">My Badges</p>
           </ion-col>
         </ion-row>
         <ion-row class="badge-container">
-          <ion-col *ngFor="let achievement of achievements; let i = index;" size-xs="4" size-sm="3" size-md="2" margin-bottom>
+          <ion-col *ngFor="let achievement of achievements; let i = index;" size-xs="1" size-sm="1" size-md="3" size-lg="3" size-xl="3" margin-bottom>
             <achievement-badge
               [achievement]="achievement"
               [showName]=true
