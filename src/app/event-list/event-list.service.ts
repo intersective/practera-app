@@ -89,6 +89,7 @@ export class EventListService {
       return [];
     }
     const events: Array<Event> = [];
+    this.storage.initBookedEventActivityIds();
     data.forEach(event => {
       if (!this.utils.has(event, 'id') ||
           !this.utils.has(event, 'title') ||
@@ -125,6 +126,10 @@ export class EventListService {
           contextId: event.assessment.context_id
         } : null
       });
+      // set the booked event activity id if it is single booking activity and booked
+      if (event.single_booking && event.is_booked) {
+        this.storage.setBookedEventActivityIds(event.activity_id);
+      }
     });
     return this._sortEvent(events);
   }
