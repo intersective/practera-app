@@ -26,14 +26,7 @@ export class EventCardComponent implements OnInit {
   }
 
   ngOnInit() {
-    // get submission status if start time passed and booked and it has assessment
-    if (this.utils.has(this.event, 'assessment.id') &&
-      this.event.isPast &&
-      this.event.isBooked) {
-      this.eventsService.getSubmission(this.event.assessment.id, this.event.assessment.contextId).subscribe(isDone => {
-        this.event.assessment.isDone = isDone;
-      });
-    }
+
   }
 
   isPast() {
