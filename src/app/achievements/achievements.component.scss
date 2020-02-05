@@ -34,6 +34,12 @@
 }
 .badge-container {
     justify-content: center !important;
+    .badge-col {
+        max-width: 224px !important;
+        margin-left: 12px;
+        margin-right: 12px;
+        padding: 0;
+    }
 }
 hr {
     border: 0;
@@ -42,4 +48,5 @@ hr {
 }
 .title-container {
     text-align: left;
+    max-width: 955px !important;
 }
