@@ -14,8 +14,11 @@
   width: 30px;
   height: 30px;
 }
-.medium {
-  color: var(--ion-color-medium);
+.color-medium {
+  color: var(--ion-color-medium) !important;
+}
+.color-danger {
+  color: var(--ion-color-danger) !important;
 }
 
 /******************
