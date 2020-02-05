@@ -205,4 +205,41 @@ export class EventListService {
       { cssClass: 'event-detail-popup' }
     );
   }
+
+  /******************
+    Function used for the event card
+  ******************/
+
+  /**
+   * This is used to get the proper time information need to be displayed on card
+   * @param event Event Object
+   */
+  timeDisplayed(event: Event): string {
+    // display date only if it is a past event and is not booked
+    if (this.utils.timeComparer(event.startTime) < 0 && !event.isBooked) {
+      return this.utils.utcToLocal(event.startTime, 'date');
+    }
+    // otherwise display time only
+    return this.utils.utcToLocal(event.startTime, 'time') + ' - ' + this.utils.utcToLocal(event.endTime, 'time');
+  }
+
+  /**
+   * If the event is not actionable
+   * @param event Event Object
+   */
+  isNotActionable(event: Event): boolean {
+    if (!event.isPast) {
+      return false;
+    }
+    if (!event.isBooked) {
+      return true;
+    }
+    if (!this.utils.has(event, 'assessment.id')) {
+      return true;
+    }
+    if (event.assessment.isDone) {
+      return true;
+    }
+    return false;
+  }
 }
