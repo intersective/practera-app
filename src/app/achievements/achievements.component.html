@@ -50,7 +50,7 @@
   <ng-template #achievementDesktop>
     <ion-grid *ngIf="this.achievementService.getIsPointsConfigured() && !loadingAchievements">
       <ion-row class="total-points desktop">
-        <ion-col class="trophy" size="3">
+        <ion-col class="trophy" size-xs="9" size-sm="9" size-md="9" size-lg="12" size-xl="12">
           <div>
             <div class="circle-background">
               <ion-avatar>
@@ -67,12 +67,12 @@
     </ion-grid>
     <ion-grid>
         <ion-row class="badge-container">
-          <ion-col class="title-container" size-xs="12" size-sm="10" size-md="8">
+          <ion-col class="title-container" size-xs="9" size-sm="9" size-md="9" size-lg="12" size-xl="12">
             <p class="subtitle-2 gray-2">My Badges</p>
           </ion-col>
         </ion-row>
         <ion-row class="badge-container">
-          <ion-col *ngFor="let achievement of achievements; let i = index;" size-xs="1" size-sm="1" size-md="3" size-lg="3" size-xl="3" margin-bottom>
+          <ion-col class="badge-col" *ngFor="let achievement of achievements; let i = index;" size-xs="2" size-sm="2" size-md="2" size-lg="3" size-xl="3" margin-bottom>
             <achievement-badge
               [achievement]="achievement"
               [showName]=true
