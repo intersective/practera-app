@@ -14,3 +14,24 @@
   width: 30px;
   height: 30px;
 }
+.medium {
+  color: var(--ion-color-medium);
+}
+
+/******************
+  Event Card
+******************/
+.content-expired {
+  padding-right: 63px;
+}
+.expired-batch {
+  font-size: 12px;
+  position: absolute;
+  top: 15%;
+  right: 15px;
+  color: var(--ion-color-medium);
+  border-radius: 12px;
+  border: 1px var(--ion-color-medium);
+  border-style: solid;
+  padding: 1px 10px 1px 10px;
+}
