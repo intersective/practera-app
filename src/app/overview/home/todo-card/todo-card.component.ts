@@ -15,7 +15,7 @@ export class TodoCardComponent {
     chat: 'checkboxes',
     event: 'calendar',
     assessment_submission_reminder: 'clipboard'
-  }
+  };
 
   constructor() {}
 
