@@ -192,4 +192,47 @@ export class ActivityComponent {
     return this.router.navigate(['app', 'events', {activity_id: this.id, event_id: event.id}]);
   }
 
+  /******************
+    Used for task layout
+  ******************/
+  taskLeadingIcon(task) {
+    switch (task.type) {
+      case 'Locked':
+        return 'lock';
+      case 'Topic':
+        return 'list-box';
+      case 'Assessment':
+        return 'clipboard';
+    }
+  }
+
+  assessmentNotSubmitted(task) {
+    return task.type === 'Assessment' && (!task.status || task.status === '' || task.status === 'in progress');
+  }
+
+  taskSubtitle2(task) {
+    if (task.type === 'Locked') {
+      return '';
+    }
+    let title = task.type + ' ';
+    title += task.isLocked ? '- Locked by ' + task.submitter.name : task.status;
+    return title;
+  }
+
+  taskEndingIcon(task) {
+    if (task.isLocked) {
+      return 'md-lock';
+    }
+    switch (task.status) {
+      case 'done':
+        return 'checkmark';
+      case 'pending review':
+        return 'hourglass';
+      case 'feedback available':
+      case 'in progress':
+      default:
+        return 'arrow-forward';
+    }
+  }
+
 }
