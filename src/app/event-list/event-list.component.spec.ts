@@ -103,7 +103,7 @@ describe('EventListComponent', () => {
   const mockActivities = [1, 2, 3].map(i => {
     return {
       id: i,
-      name: 'activity' + 1
+      name: 'activity' + i
     };
   });
   let browse;
@@ -147,12 +147,14 @@ describe('EventListComponent', () => {
 
   describe('when testing onEnter()', () => {
     let tmpEvents;
+    let tmpActivities;
     let expectedEvents;
     let expectedCategorised;
     // call this function after onEnter
     let functionAfterOnEnter;
     beforeEach(() => {
       tmpEvents = JSON.parse(JSON.stringify(mockEvents));
+      tmpActivities = JSON.parse(JSON.stringify(mockActivities));
       component.eventId = null;
       functionAfterOnEnter = () => {};
       expectedEvents = browse;
@@ -175,7 +177,7 @@ describe('EventListComponent', () => {
       expect(component.events).toEqual(expectedEvents);
       expect(component.eventsCategorised).toEqual(expectedCategorised);
       expect(eventsSpy.getActivities.calls.count()).toBe(1);
-      expect(component.activities).toEqual(mockActivities);
+      expect(component.activities).toEqual(tmpActivities);
     }));
 
     it(`should get correct full events grouped and activities`, () => {});
@@ -184,6 +186,8 @@ describe('EventListComponent', () => {
       tmpEvents.splice(0, 4);
       expectedEvents = [];
       expectedCategorised.browse = [];
+      // activity list only include activity that has event
+      tmpActivities = [{ id: 2, name: 'activity2' }];
     });
 
     it(`should get correct events grouped without booked`, () => {
