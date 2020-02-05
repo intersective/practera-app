@@ -9,7 +9,9 @@ export class ListItemComponent {
   @Input() loading: boolean;
   @Input() lines = '';
   @Input() leadingIcon: string;
+  @Input() leadingIconColor: string;
   @Input() title: string;
+  @Input() titleColor: string;
   @Input() subtitle1: string;
   @Input() subtitle2: string;
   @Input() endingText: string;
@@ -17,4 +19,5 @@ export class ListItemComponent {
   @Input() endingIconColor: string;
   // whether hightlight the background or not
   @Input() active: boolean;
+  @Input() eventExpired: boolean;
 }

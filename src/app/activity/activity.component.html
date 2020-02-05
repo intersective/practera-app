@@ -96,14 +96,19 @@
     <ion-card class="practera-card" id="events-card">
       <ion-list>
         <ng-container *ngFor="let event of events; let i = index">
-          <clickable-item *ngIf="i < 2"
-            (click)="gotoEvent(event)">
-            <event-card
-              [event]="event"
-              [time]="displayEventTime(event)"
-              class="width-100"
-            ></event-card>
-          </clickable-item>
+          <app-list-item
+            *ngIf="i < 2"
+            leadingIcon="calendar"
+            [leadingIconColor]="eventListService.isNotActionable(event) ? 'medium' : 'primary'"
+            [title]="event.name"
+            [titleColor]="eventListService.isNotActionable(event) ? 'medium' : ''"
+            [subtitle1]="event.activityName"
+            [subtitle2]="eventListService.timeDisplayed(event)"
+            [endingIcon]="!eventListService.isNotActionable(event) ? 'arrow-forward' : ''"
+            [eventExpired]="event.isPast && !event.isBooked"
+            [lines]="i == events.length - 1 ? 'none' : ''"
+            (click)="gotoEvent(event)"
+          ></app-list-item>
         </ng-container>
         <clickable-item
           *ngIf="events.length > 2"

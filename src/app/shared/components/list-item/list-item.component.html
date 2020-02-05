@@ -1,16 +1,18 @@
 <clickable-item *ngIf="!loading" [active]="active" [lines]="lines">
 
-  <ion-icon [name]="leadingIcon" slot="start" color="primary" class="leading-icon"></ion-icon>
+  <ion-icon [name]="leadingIcon" slot="start" [color]="leadingIconColor || 'primary'" class="leading-icon"></ion-icon>
 
-  <div class="item-content ion-padding-vertical">
-    <p class="item-title subtitle-1">{{ title }}</p>
+  <div class="item-content ion-padding-vertical" [ngClass]="{'content-expired': eventExpired}">
+    <p class="item-title subtitle-1" [ngClass]="{'medium': titleColor === 'medium'}">{{ title }}</p>
     <p *ngIf="subtitle1" class="item-subtitle-1 caption gray-2">{{ subtitle1 }}</p>
     <p *ngIf="subtitle2" class="item-subtitle-2 caption gray-2">{{ subtitle2 }}</p>
   </div>
 
   <ion-text *ngIf="endingText" class="item-ending-text caption gray-2" slot="end">{{ endingText }}</ion-text>
 
-  <ion-icon *ngIf="endingIcon" [name]="endingIcon" [color]="endingIconColor ? endingIconColor : 'primary'"></ion-icon>
+  <ion-icon *ngIf="endingIcon" [name]="endingIcon" [color]="endingIconColor || 'primary'"></ion-icon>
+
+  <div *ngIf="eventExpired" class="expired-batch">Expired</div>
 
 </clickable-item>
 

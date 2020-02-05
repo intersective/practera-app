@@ -34,7 +34,7 @@ export class EventListComponent {
   constructor (
     public router: Router,
     private route: ActivatedRoute,
-    private eventService: EventListService,
+    public eventListService: EventListService,
     public utils: UtilsService,
     private ngZone: NgZone,
     private newRelic: NewRelicService
@@ -62,7 +62,7 @@ export class EventListComponent {
   onEnter() {
     this.newRelic.setPageViewName('event-list');
     this._initialise();
-    this.eventService.getEvents().subscribe(events => {
+    this.eventListService.getEvents().subscribe(events => {
       if (this.utils.isEmpty(events)) {
         this.loadingEvents = false;
         return;
@@ -137,7 +137,7 @@ export class EventListComponent {
       }
       this.loadingEvents = false;
     });
-    this.eventService.getActivities().subscribe(activities => {
+    this.eventListService.getActivities().subscribe(activities => {
       this.activities = activities;
     });
   }
@@ -204,11 +204,12 @@ export class EventListComponent {
 
   // tell parent component that user is going to an event
   goto(event) {
-    // only goto an event for desktop view
+    // pop up event detail for mobile
     if (this.utils.isMobile()) {
-      return ;
+      return this.eventListService.eventDetailPopUp(event);
     }
-    this.navigate.emit(event);
+    // goto an event for desktop view
+    return this.navigate.emit(event);
   }
 
   /**
@@ -269,18 +270,6 @@ export class EventListComponent {
     return [events, eventGroup, compareDate];
   }
 
-  /**
-   * This is used to get the proper time information need to be displayed on card
-   * @param {Event} event [event data]
-   */
-  timeDisplayed(event) {
-    // display date only if it is a past event and is not booked
-    if (this.utils.timeComparer(event.startTime) < 0 && !event.isBooked) {
-      return this.utils.utcToLocal(event.startTime, 'date');
-    }
-    // otherwise display time only
-    return this.utils.utcToLocal(event.startTime, 'time') + ' - ' + this.utils.utcToLocal(event.endTime, 'time');
-  }
 
   showBrowse() {
     this.newRelic.addPageAction('show browse');
