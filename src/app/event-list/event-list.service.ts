@@ -195,7 +195,8 @@ export class EventListService {
         id: activity.id,
         name: activity.name
       };
-    });
+      // sort activity by name alphabetically
+    }).sort((a, b) => a.name.localeCompare(b.name));
   }
 
   eventDetailPopUp(event: Event) {
