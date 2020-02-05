@@ -16,7 +16,7 @@
   <ng-container *ngIf="loadingActivity">
     <ion-spinner></ion-spinner>
   </ng-container>
-  <h1 class="headline-4" appFloat>{{ activity.name }}</h1>
+  <h1 class="headline-4">{{ activity.name }}</h1>
   <div class="ion-text-left">
     <app-description *ngIf="activity.description" [content]="activity.description" class="body-1"></app-description>
   </div>
