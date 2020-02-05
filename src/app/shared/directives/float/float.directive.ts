@@ -15,32 +15,39 @@ export class FloatDirective {
     this.float('yellow');
   }
 
-  @HostListener('mousewheel') onMouseScroll() {
-    console.log('~mousewheel~');
-  }
-
   private float(color: string) {
     this.el.nativeElement.style.backgroundColor = color;
     this.isDisplaying(this.el.nativeElement);
   }
 
+  renderStyle(element): void {
+    element.style = {
+      border: '1px solid',
+      boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+    };
+  }
+
   getBoundaryRect(element) {
     const child = element.getBoundingClientRect();
     const el = this.el.nativeElement.getBoundingClientRect();
+    element.style.transition = 'all 0.1s ease';
 
-    // const parent = element.parentElement.getBoundingClientRect();
-    console.log(el, child);
-    if (el.top < parent.top) {
-      element.style.border = '1px solid';
+    if (el.top < (child.top - 10)) { // top
+      this.renderStyle(element);
     } else {
       element.style.border = 'none';
+      element.style.boxShadow = 'none';
+    }
+
+    if (el.bottom < (child.bottom + 10)) { // bottom
+      element.style.border = 'none';
+      element.style.boxShadow = 'none';
     }
   }
 
   // preliminary test to calculate appearance in screen
   private isDisplaying(element) {
     const cards = element.getElementsByTagName('ion-card');
-    console.log(cards);
 
     if (cards.length > 0) {
       this.utils.each(cards, card => {
