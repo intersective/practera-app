@@ -38,7 +38,7 @@
   <ng-container @newLoaded *ngIf="achievements && achievements.length > 0">
 
     <ion-label color="medium" class="subtitle-2 achievement ion-padding-start">My Badges</ion-label>
-    <ion-label class="float-right">
+    <ion-label class="float-right" *ngIf="achievements.length > 1">
       <a color="primary" class="button ion-padding-end" (click)='goTo(["achievements"])'>VIEW ALL</a>
     </ion-label>
 
