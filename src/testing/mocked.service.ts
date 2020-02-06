@@ -6,18 +6,13 @@ import { NewRelicService } from '@shared/new-relic/new-relic.service';
 import { RouterEnter } from '@services/router-enter.service';
 import { Router, NavigationEnd } from '@angular/router';
 import { NgZone } from '@angular/core';
+import { ProgramFixture } from '@testing/fixtures/programs';
 
 export class MockSwitcherService extends SpyObject {
-  testPrograms = [
-    {
-      name: 'test-program'
-    }
-  ];
-
   getPrograms;
   constructor() {
     super(SwitcherService);
-    this.getPrograms = this.spy('getPrograms').and.returnValue(this.testPrograms);
+    this.getPrograms = this.spy('getPrograms').and.returnValue(of(ProgramFixture));
   }
 }
 
