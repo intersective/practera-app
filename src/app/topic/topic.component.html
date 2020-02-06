@@ -11,7 +11,7 @@
     }">Topic</ion-title>
   </ion-toolbar>
 </ion-header>
-<ion-content padding color="light" [ngClass]="{'ion-content-absolute-with-footer': !utils.isMobile()}">
+<ion-content class="ion-padding" color="light" [ngClass]="{'ion-content-absolute-with-footer': !utils.isMobile()}">
   <div text-center margin-top *ngIf="loadingTopic">
     <ion-spinner></ion-spinner>
   </div>
@@ -44,7 +44,7 @@
               </a>
             </ion-col>
           </ion-row>
-        </ion-grid>    
+        </ion-grid>
       </ion-card>
     </div>
   </div>

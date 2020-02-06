@@ -5,6 +5,9 @@ export const ProgramFixture: ProgramObj[] = [
       id: 1,
       experience_id: 1,
       name: 'test program',
+      config: {
+        theme_color: 'sample'
+      }
     },
     project: {
       id: 1,
