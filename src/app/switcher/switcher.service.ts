@@ -32,11 +32,11 @@ export interface Program {
   id: number;
   name: string;
   experience_id: number;
-  config?: ProgramConfig;
+  config: ProgramConfig;
 }
 
 export interface ProgramConfig {
-  theme_color?: string;
+  theme_color: string;
   card_style?: string;
   review_rating?: boolean;
   truncate_description?: boolean;
