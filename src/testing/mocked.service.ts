@@ -10,9 +10,12 @@ import { ProgramFixture } from '@testing/fixtures/programs';
 
 export class MockSwitcherService extends SpyObject {
   getPrograms;
+  switchProgramAndNavigate;
+
   constructor() {
     super(SwitcherService);
     this.getPrograms = this.spy('getPrograms').and.returnValue(of(ProgramFixture));
+    this.switchProgramAndNavigate = this.spy('switchProgramAndNavigate');
   }
 }
 
@@ -64,12 +67,14 @@ export class MockNewRelicService extends SpyObject {
   noticeError;
   actionText;
   createTracer;
+  setPageViewName;
 
   constructor() {
     super(NewRelicService);
     this.createTracer = this.spy('createTracer').and.returnValue(() => true);
     this.noticeError = this.spy('noticeError').and.returnValue(true);
     this.actionText = this.spy('actionText').and.returnValue(true);
+    this.setPageViewName = this.spy('setPageViewName').and.returnValue(true);
   }
 }
 
