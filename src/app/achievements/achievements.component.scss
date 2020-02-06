@@ -12,10 +12,10 @@
     .points {
         text-align: left;
         padding-left: 0 !important;
-        h4 {
+        p:nth-child(1) {
             margin-bottom: 0 !important;
         }
-        h5 {
+        p:nth-child(2) {
             margin: 0 !important;
         }
     }
