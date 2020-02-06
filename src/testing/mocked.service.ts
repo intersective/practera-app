@@ -1,10 +1,25 @@
 import { of, Observable } from 'rxjs';
 import { SpyObject } from './utils';
+import { SwitcherService } from '../app/switcher/switcher.service';
 import { BrowserStorageService } from '@services/storage.service';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
 import { RouterEnter } from '@services/router-enter.service';
 import { Router, NavigationEnd } from '@angular/router';
 import { NgZone } from '@angular/core';
+
+export class MockSwitcherService extends SpyObject {
+  testPrograms = [
+    {
+      name: 'test-program'
+    }
+  ];
+
+  getPrograms;
+  constructor() {
+    super(SwitcherService);
+    this.getPrograms = this.spy('getPrograms').and.returnValue(this.testPrograms);
+  }
+}
 
 export class MockNgZone extends SpyObject {
   run;
