@@ -36,11 +36,11 @@ export class AchievementsComponent extends RouterEnter {
       image: '',
       name: ''
     };
+    this.getUser();
     this.loadingAchievements = true;
     this.achievementService.getAchievements().subscribe(
       achievements => {
         this.achievements = achievements;
-        this.getUser();
         this.loadingAchievements = false;
       },
       err => {
