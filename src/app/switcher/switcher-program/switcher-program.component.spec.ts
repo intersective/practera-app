@@ -4,6 +4,7 @@ import { NewRelicService } from '@shared/new-relic/new-relic.service';
 import { SwitcherProgramComponent } from './switcher-program.component';
 import { SwitcherService } from '../switcher.service';
 import { MockSwitcherService } from '@testing/mocked.service';
+import { ProgramFixture } from '@testing/fixtures/programs';
 
 describe('SwitcherProgramComponent', () => {
   let component: SwitcherProgramComponent;
@@ -44,8 +45,8 @@ describe('SwitcherProgramComponent', () => {
     it('should instantiate with API program list', () => {
       component.ngOnInit();
       expect(newrelicSpy.setPageViewName).toHaveBeenCalled();
-      expect(swicherSpy.getPrograms).toHaveBeenCalled();
-      expect(component.programs).toEqual(MockSwitcherService.testPrograms);
+      expect(swicherSpy.getPrograms().subscribe).toHaveBeenCalled();
+      expect(component.programs).toEqual(ProgramFixture);
     });
   });
 
