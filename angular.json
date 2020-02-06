@@ -318,6 +318,7 @@
               "protractorConfig": "e2e/protractor-dev.conf.js"
             },
             "sandbox": {
+              "protractorConfig": "e2e/protractor-ci.conf.js",
               "devServerTarget": "app:serve:dev"
             }
           }
