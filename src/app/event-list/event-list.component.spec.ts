@@ -13,7 +13,7 @@ import { MockRouter } from '@testing/mocked.service';
 
 class Page {
   get eventItems() {
-    return this.queryAll<HTMLElement>('event-card');
+    return this.queryAll<HTMLElement>('app-list-item');
   }
   fixture: ComponentFixture<EventListComponent>;
 
