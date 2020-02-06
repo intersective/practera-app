@@ -6,10 +6,10 @@
   <ion-icon *ngIf="!achievement.isEarned" name="lock" color="medium"></ion-icon>
 </div>
 
-<div *ngIf="showName" class="badge-name subtitle-2">
+<div *ngIf="showName" class="badge-name body-2" [ngClass]="achievement.isEarned ? 'gray-3' : 'gray-0'">
   {{achievement.name}}
 </div>
 
-<ion-text *ngIf="achievement.points" class="badge-point subtitle-2" [ngClass]="{'badge-point-unearned': !achievement.isEarned }">
+<div *ngIf="achievement.points" class="badge-point subtitle-2" [ngClass]="{'badge-point-unearned': !achievement.isEarned, 'desktop' : !utils.isMobile()}">
   {{achievement.points}} Points
-</ion-text>
+</div>
