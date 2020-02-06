@@ -38,7 +38,7 @@ export interface Event {
   assessment?: {
     id: number;
     contextId: number;
-    isDone?: boolean;
+    isDone: boolean;
   };
 }
 
@@ -123,7 +123,8 @@ export class EventListService {
         isPast: this.utils.timeComparer(event.start) < 0,
         assessment: this.utils.has(event, 'assessment.id') ? {
           id: event.assessment.id,
-          contextId: event.assessment.context_id
+          contextId: event.assessment.context_id,
+          isDone: event.assessment.is_done || false
         } : null
       });
       // set the booked event activity id if it is single booking activity and booked
@@ -204,5 +205,42 @@ export class EventListService {
       { event },
       { cssClass: 'event-detail-popup' }
     );
+  }
+
+  /******************
+    Function used for the event card
+  ******************/
+
+  /**
+   * This is used to get the proper time information need to be displayed on card
+   * @param event Event Object
+   */
+  timeDisplayed(event: Event): string {
+    // display date only if it is a past event and is not booked
+    if (this.utils.timeComparer(event.startTime) < 0 && !event.isBooked) {
+      return this.utils.utcToLocal(event.startTime, 'date');
+    }
+    // otherwise display time only
+    return this.utils.utcToLocal(event.startTime, 'time') + ' - ' + this.utils.utcToLocal(event.endTime, 'time');
+  }
+
+  /**
+   * If the event is not actionable
+   * @param event Event Object
+   */
+  isNotActionable(event: Event): boolean {
+    if (!event.isPast) {
+      return false;
+    }
+    if (!event.isBooked) {
+      return true;
+    }
+    if (!this.utils.has(event, 'assessment.id')) {
+      return true;
+    }
+    if (event.assessment.isDone) {
+      return true;
+    }
+    return false;
   }
 }
