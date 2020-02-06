@@ -33,10 +33,9 @@ export class AchievementsComponent extends RouterEnter {
 
   onEnter() {
     this.userInfo = {
-      image: '',
-      name: ''
+      image: this.storage.get('me').image,
+      name: this.storage.get('me').name
     };
-    this.getUser();
     this.loadingAchievements = true;
     this.achievementService.getAchievements().subscribe(
       achievements => {
@@ -47,11 +46,6 @@ export class AchievementsComponent extends RouterEnter {
         this.newRelic.noticeError(`${JSON.stringify(err)}`);
       }
     );
-  }
-
-  getUser() {
-    this.userInfo.image = this.storage.get('me').image;
-    this.userInfo.name = this.storage.get('me').name;
   }
 
   back() {

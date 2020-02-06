@@ -115,7 +115,7 @@ describe('AchievementsComponent', () => {
     });
 
     it(`should get correct achievements`, fakeAsync(() => {
-      spyOn(component, 'getUser');
+      spyOn(component.storage, 'get').and.returnValue('');
       fixture.detectChanges();
       fixture.whenStable().then(() => {
         expect(component.loadingAchievements).toBe(false);
