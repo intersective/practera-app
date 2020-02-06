@@ -8,49 +8,9 @@
   <ng-container *ngIf="loadingAchievements">
     <ion-spinner></ion-spinner>
   </ng-container>
-  <ng-container *ngIf="utils.isMobile(); else achievementDesktop">
     <ion-grid *ngIf="this.achievementService.getIsPointsConfigured() && !loadingAchievements">
-      <ion-row class="total-points">
-        <ion-col class="trophy" size="3">
-          <div class="circle-background">
-            <ion-avatar>
-              <img [src]="userInfo.image">
-            </ion-avatar>
-          </div>
-        </ion-col>
-        <ion-col class="points ion-align-items-start">
-          <h4 class="headline-5">Total Points : {{ this.achievementService.getEarnedPoints() }}</h4>
-          <h5 class="subtitle-2 gray-3">{{userInfo.name}}</h5>
-        </ion-col>
-      </ion-row>
-    </ion-grid>
-    <hr *ngIf="this.achievementService.getIsPointsConfigured()">
-    <ion-grid>
-      <ion-row>
-        <ion-col class="title-container">
-          <p class="subtitle-2 gray-2">My Badges</p>
-        </ion-col>
-      </ion-row>
-      <ion-row>
-        <ion-col
-          *ngFor="let achievement of achievements; let i = index;"
-          size-xs="4"
-          size-sm="3"
-          size-md="2"
-          margin-bottom
-        >
-          <achievement-badge
-            [achievement]="achievement"
-            [showName]=true
-          ></achievement-badge>
-        </ion-col>
-      </ion-row>
-    </ion-grid>
-  </ng-container>
-  <ng-template #achievementDesktop>
-    <ion-grid *ngIf="this.achievementService.getIsPointsConfigured() && !loadingAchievements">
-      <ion-row class="total-points desktop">
-        <ion-col class="trophy" size-xs="9" size-sm="9" size-md="9" size-lg="12" size-xl="12">
+      <ion-row class="total-points" [ngClass]="{'desktop' : !utils.isMobile()}">
+        <ion-col class="trophy" size-xs="4" size-sm="4" size-md="4" size-lg="12" size-xl="12">
           <div>
             <div class="circle-background">
               <ion-avatar>
@@ -58,28 +18,32 @@
               </ion-avatar>
             </div>
           </div>
-          <div class="points">
-            <h4 class="headline-5">Total Points : {{ this.achievementService.getEarnedPoints() }}</h4>
-            <h5 class="subtitle-2 gray-3">{{userInfo.name}}</h5>
-          </div>
+          <div *ngIf="!utils.isMobile()" class="points">
+              <p class="headline-5">Total Points : {{ this.achievementService.getEarnedPoints() }}</p>
+              <p class="subtitle-2 gray-3">{{userInfo.name}}</p>
+            </div>
+        </ion-col>
+        <ion-col *ngIf="utils.isMobile()" class="points ion-align-items-start">
+            <p class="headline-5">Total Points : {{ this.achievementService.getEarnedPoints() }}</p>
+            <p class="subtitle-2 gray-3">{{userInfo.name}}</p>
         </ion-col>
       </ion-row>
     </ion-grid>
+    <hr *ngIf="utils.isMobile() && this.achievementService.getIsPointsConfigured()">
     <ion-grid>
-        <ion-row class="badge-container">
-          <ion-col class="title-container" size-xs="9" size-sm="9" size-md="9" size-lg="12" size-xl="12">
-            <p class="subtitle-2 gray-2">My Badges</p>
-          </ion-col>
-        </ion-row>
-        <ion-row class="badge-container">
-          <ion-col class="badge-col" *ngFor="let achievement of achievements; let i = index;" size-xs="2" size-sm="2" size-md="2" size-lg="3" size-xl="3" margin-bottom>
-            <achievement-badge
-              [achievement]="achievement"
-              [showName]=true
-            ></achievement-badge>
-          </ion-col>
-        </ion-row>
-      </ion-grid>
-  </ng-template>
-  
+      <ion-row [ngClass]="{'badge-container' : !utils.isMobile()}">
+        <ion-col class="title-container" size-xs="9" size-sm="9" size-md="9" size-lg="12" size-xl="12">
+          <p class="subtitle-2 gray-2">My Badges</p>
+        </ion-col>
+      </ion-row>
+      <ion-row [ngClass]="{'badge-container' : !utils.isMobile()}">
+        <ion-col [ngClass]="{'badge-col' : !utils.isMobile()}" *ngFor="let achievement of achievements; let i = index;" 
+        size-xs="4" size-sm="2" size-md="2" size-lg="3" size-xl="3" margin-bottom >
+          <achievement-badge
+            [achievement]="achievement"
+            [showName]=true
+          ></achievement-badge>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
 </ion-content>
