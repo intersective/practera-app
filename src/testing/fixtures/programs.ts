@@ -1,22 +1,22 @@
 import { ProgramObj } from '@app/switcher/switcher.service';
-export const ProgramFixture: ProgramObj[] = [
-  {
+export const ProgramFixture: ProgramObj[] = [1,2,3].map(num => {
+  return {
     program: {
-      id: 1,
-      experience_id: 1,
-      name: 'test program',
+      id: num,
+      experience_id: num,
+      name: `test program ${num}`,
       config: {
-        theme_color: 'sample'
+        theme_color: `sample ${num}`
       }
     },
     project: {
-      id: 1,
+      id: num,
     },
     timeline: {
-      id: 1,
+      id: num,
     },
     enrolment: {
-      contact_number: '0123456789'
+      contact_number: `0${123456789 + num}`
     },
-  }
-];
+  };
+});

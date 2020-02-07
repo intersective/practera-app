@@ -76,6 +76,7 @@ export class SwitcherService {
   }
 
   switchProgram(programObj: ProgramObj): Observable<any> {
+    console.log('test?');
     const themeColor = this.utils.has(programObj, 'program.config.theme_color') ? programObj.program.config.theme_color : '#2bbfd4';
     let cardBackgroundImage = '';
     if (this.utils.has(programObj, 'program.config.card_style')) {
@@ -198,7 +199,7 @@ export class SwitcherService {
    * if method got 'one program object', switch to that program object and navigate to dashboard.
    * if method got 'empty value', do nothing.
    */
-  async switchProgramAndNavigate(programs) {
+  async switchProgramAndNavigate(programs): Promise<any> {
     if (!this.utils.isEmpty(programs)) {
       // Array with multiple program objects -> [{},{},{},{}]
       if (Array.isArray(programs) && !this.checkIsOneProgram(programs)) {
@@ -226,6 +227,7 @@ export class SwitcherService {
         return ['go-mobile'];
       }
     }
+    return;
   }
 
   getNewJwt() {
