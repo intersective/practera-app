@@ -1,4 +1,4 @@
-const config = require('./protractor.conf').config;
+const config = require('./protractor-base.conf').config;
 
 exports.config = Object.assign(config, {
   baseUrl: 'http://localhost:4300/',
