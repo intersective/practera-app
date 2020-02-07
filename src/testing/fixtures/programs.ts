@@ -1,5 +1,5 @@
 import { ProgramObj } from '@app/switcher/switcher.service';
-export const ProgramFixture: ProgramObj[] = [1,2,3].map(num => {
+export const ProgramFixture: ProgramObj[] = [1, 2, 3].map(num => {
   return {
     program: {
       id: num,
