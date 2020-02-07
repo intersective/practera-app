@@ -114,19 +114,19 @@ describe('SwitcherService', () => {
 
       it('should return [app, home] if programs is Array with multiple program objects ', fakeAsync(() => {
         const [firstProgram] = ProgramFixture;
-          spyOn(service, 'checkIsOneProgram').and.returnValue(true);
-          spyOn(Array, 'isArray').and.returnValue(true);
-          spyOn(service, 'switchProgram').and.returnValue({
+        spyOn(service, 'checkIsOneProgram').and.returnValue(true);
+        spyOn(Array, 'isArray').and.returnValue(true);
+        spyOn(service, 'switchProgram').and.returnValue({
             toPromise: () => new Promise(res => res(true))
           });
 
-          let result;
-          service.switchProgramAndNavigate([firstProgram]).then(data => {
+        let result;
+        service.switchProgramAndNavigate([firstProgram]).then(data => {
             result = data;
           });
-          flushMicrotasks();
-          expect(result).toEqual(['app', 'home']);
-          expect(pusherSpy.initialise).toHaveBeenCalled();
+        flushMicrotasks();
+        expect(result).toEqual(['app', 'home']);
+        expect(pusherSpy.initialise).toHaveBeenCalled();
       }));
 
       it('should return [app, home] if programs is not an Array and got one program object (direct link)', fakeAsync(() => {
@@ -210,5 +210,5 @@ describe('SwitcherService', () => {
           expect(requestSpy.get).toHaveBeenCalledWith('api/v2/users/jwt/refresh.json');
         });
       });
-    })
+    });
 });
