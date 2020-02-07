@@ -43,8 +43,10 @@ export class UtilsService {
 
   /** check if a value is empty
    * precautions:
-   *   Lodash's isEmpty, by default, sees "number" type value as empty,
-   *   but in our case, we just treat null/undefined/""/[]/{} as empty.
+   *  - Lodash's isEmpty, by default, sees "number" type value as empty,
+   *    but in our case, we just treat null/undefined/""/[]/{} as empty.
+   *  - [{}] = true
+   *  - [{}, {}, {}] = false
    *
    * @param  {any}     value
    * @return {boolean}       true: when empty string/object/array, otherwise false

@@ -11,6 +11,8 @@ import { BrowserStorageService } from '@services/storage.service';
 import { EventListService } from '@app/event-list/event-list.service';
 import { ReviewListService } from '@app/review-list/review-list.service';
 import { environment } from '@environments/environment';
+import { ProgramFixture } from '@testing/fixtures/programs';
+import { PusherService } from '@shared/pusher/pusher.service';
 
 describe('SwitcherService', () => {
     let service: SwitcherService;
@@ -19,6 +21,7 @@ describe('SwitcherService', () => {
     let storageSpy: jasmine.SpyObj<BrowserStorageService>;
     let eventSpy: jasmine.SpyObj<EventListService>;
     let reviewSpy: jasmine.SpyObj<ReviewListService>;
+    let pusherSpy: jasmine.SpyObj<PusherService>;
     let utils: UtilsService;
     const testUtils = new TestUtils();
 
@@ -30,17 +33,18 @@ describe('SwitcherService', () => {
             UtilsService,
             EventListService,
             ReviewListService,
+            PusherService,
             {
               provide: BrowserStorageService,
               useClass: BrowserStorageServiceMock
             },
             {
-                provide: RequestService,
-                useValue: jasmine.createSpyObj('RequestService', ['post', 'apiResponseFormatError'])
+              provide: RequestService,
+              useValue: jasmine.createSpyObj('RequestService', ['post', 'apiResponseFormatError'])
             },
             {
-                provide: NotificationService,
-                useValue: jasmine.createSpyObj('NotificationService', ['modal'])
+              provide: NotificationService,
+              useValue: jasmine.createSpyObj('NotificationService', ['modal'])
             },
           ]
       });
@@ -51,6 +55,7 @@ describe('SwitcherService', () => {
       storageSpy = TestBed.get(BrowserStorageService);
       eventSpy = TestBed.get(EventListService);
       reviewSpy = TestBed.get(ReviewListService);
+      pusherSpy = TestBed.get(PusherService);
 
       requestSpy.get = jasmine.createSpy('get').and.returnValue(new Observable());
     });
@@ -67,7 +72,6 @@ describe('SwitcherService', () => {
       }));
     });
 
-
     describe('when testing checkIsOneProgram()', () => {
       it('should return true if got Array with one program object ', () => {
           spyOn(utils, 'isEmpty').and.returnValue(false);
@@ -80,50 +84,88 @@ describe('SwitcherService', () => {
     });
 
     describe('when testing switchProgramAndNavigate()', () => {
-        it('should return undefined if got empty ojbect ', fakeAsync(() => {
+      beforeEach(() => {
+        spyOn(pusherSpy, 'initialise');
+        spyOn(utils, 'clearCache');
+        // by default test normal flow (non-direct link)
+        storageSpy.get = jasmine.createSpy('get').and.returnValue(false);
+      });
+
+      it('should return undefined if got empty object ', fakeAsync(() => {
+        let result;
+        spyOn(utils, 'isEmpty').and.returnValue(true);
+        service.switchProgramAndNavigate({}).then(data => {
+          result = data;
+        });
+        flushMicrotasks();
+        expect(result).toBeUndefined();
+      }));
+
+      it('should return [switcher] if programs is Array with multiple program objects ', fakeAsync(() => {
           let result;
-          spyOn(utils, 'isEmpty').and.returnValue(true);
+          spyOn(service, 'checkIsOneProgram').and.returnValue(false);
+          spyOn(Array, 'isArray').and.returnValue(true);
+          service.switchProgramAndNavigate(ProgramFixture).then(data => {
+            result = data;
+          });
+          flushMicrotasks();
+          expect(result).toEqual(['switcher']);
+      }));
+
+      it('should return [app, home] if programs is Array with multiple program objects ', fakeAsync(() => {
+        const [firstProgram] = ProgramFixture;
+          spyOn(service, 'checkIsOneProgram').and.returnValue(true);
+          spyOn(Array, 'isArray').and.returnValue(true);
+          spyOn(service, 'switchProgram').and.returnValue({
+            toPromise: () => new Promise(res => res(true))
+          });
+
+          let result;
+          service.switchProgramAndNavigate([firstProgram]).then(data => {
+            result = data;
+          });
+          flushMicrotasks();
+          expect(result).toEqual(['app', 'home']);
+          expect(pusherSpy.initialise).toHaveBeenCalled();
+      }));
+
+      it('should return [app, home] if programs is not an Array and got one program object (direct link)', fakeAsync(() => {
+          spyOn(utils, 'isEmpty').and.returnValue(false);
+          spyOn(Array, 'isArray').and.returnValue(false);
+          spyOn(service, 'switchProgram').and.returnValue(of({}));
+
+          // simulate direct-link
+          storageSpy.get = jasmine.createSpy('get').and.returnValue(true);
+          environment.goMobile = false;
+
+          let result;
+          service.switchProgramAndNavigate(ProgramFixture[0]).then(data => {
+            result = data;
+          });
+          flushMicrotasks();
+          expect(storageSpy.get).toHaveBeenCalledWith('directLinkRoute');
+          expect(storageSpy.remove).toHaveBeenCalledWith('directLinkRoute');
+          expect(result).toEqual(true);
+      }));
+
+      it('should return [app, home] if programs is not an Array and got one program object (not direct link)', fakeAsync(() => {
+          spyOn(utils, 'isEmpty').and.returnValue(false);
+          spyOn(Array, 'isArray').and.returnValue(false);
+          spyOn(service, 'switchProgram').and.returnValue(of({}));
+
+          // disable direct-link
+          storageSpy.get = jasmine.createSpy('get').and.returnValue(false);
+          environment.goMobile = false;
+
+          let result;
           service.switchProgramAndNavigate({}).then(data => {
             result = data;
           });
           flushMicrotasks();
-          expect(result).toBeUndefined();
-        }));
-
-        it('should return [switcher] if programs is Array with multiple program objects ', fakeAsync(() => {
-            let result;
-            spyOn(service, 'checkIsOneProgram').and.returnValue(false);
-            spyOn(Array, 'isArray').and.returnValue(true);
-            service.switchProgramAndNavigate([{}, {}, {}]).then(data => {
-              result = data;
-            });
-            flushMicrotasks();
-            expect(result).toEqual(['switcher']);
-        }));
-
-        xit('should return [app, home] if programs is Array with multiple program objects ', fakeAsync(() => {
-            spyOn(service, 'checkIsOneProgram').and.returnValue(true);
-            spyOn(Array, 'isArray').and.returnValue(true);
-            spyOn(service, 'switchProgram').and.returnValue(of({}));
-            let result;
-            service.switchProgramAndNavigate([{}]).then(data => {
-              result = data;
-            });
-            flushMicrotasks();
-            expect(result).toEqual(['app', 'home']);
-        }));
-
-        it('should return [app, home] if programs is not an Array and got one program object ', fakeAsync(() => {
-            spyOn(utils, 'isEmpty').and.returnValue(false);
-            spyOn(Array, 'isArray').and.returnValue(false);
-            spyOn(service, 'switchProgram').and.returnValue(of({}));
-            let result;
-            service.switchProgramAndNavigate({}).then(data => {
-              result = data;
-            });
-            flushMicrotasks();
-            expect(result).toEqual(['app', 'home']);
-        }));
+          expect(storageSpy.get).toHaveBeenCalledWith('directLinkRoute');
+          expect(storageSpy.remove).not.toHaveBeenCalledWith('directLinkRoute');
+          expect(result).toEqual(['app', 'home']);
+      }));
     });
 
     describe('getTeamInfo()', () => {
