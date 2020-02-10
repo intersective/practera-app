@@ -101,7 +101,7 @@ export class FilestackService {
     };
   }
 
-  async previewFile(file) {
+  async previewFile(file): Promise<any> {
     let fileUrl = file.url;
     if (fileUrl) {
       if (fileUrl.indexOf('www.filepicker.io/api/file') !== -1) {
@@ -160,7 +160,7 @@ export class FilestackService {
     return this.httpClient.get(api.metadata.replace('HANDLE', handle[0])).toPromise();
   }
 
-  async open(options = {}, onSuccess = res => res, onError = err => err) {
+  async open(options = {}, onSuccess = res => res, onError = err => err): Promise<any> {
     const pickerOptions: any = {
       dropPane: {},
       fromSources: [
@@ -186,7 +186,7 @@ export class FilestackService {
     return await this.filestack.picker(Object.assign(pickerOptions, options)).open();
   }
 
-  async previewModal(url, filestackUploadedResponse?) {
+  async previewModal(url, filestackUploadedResponse?): Promise<void> {
     const modal = await this.modalController.create({
       component: PreviewComponent,
       componentProps: {
@@ -197,9 +197,11 @@ export class FilestackService {
     return await modal.present();
   }
 
-  async getWorkflowStatus(processedJobs = {}) {
+  async getWorkflowStatus(processedJobs = {}): Promise<any[]> {
     const { policy, signature, workflows } = environment.filestack;
     let jobs = {};
+
+    // currently we only accept virusDetection workflow
     if (processedJobs && processedJobs[workflows.virusDetection]) {
       jobs = processedJobs[workflows.virusDetection];
     }
@@ -208,7 +210,6 @@ export class FilestackService {
     this.utils.each(jobs, job => {
       request.push(this.httpClient.get(`https://cdn.filestackcontent.com/${environment.filestack.key}/security=p:${policy},s:${signature}/workflow_status=job_id:${job}`));
     });
-
     if (request.length > 0) {
       return forkJoin(request).toPromise();
     }

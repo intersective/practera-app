@@ -39,7 +39,6 @@ describe('FilestackComponent', () => {
       });
       flushMicrotasks();
 
-      console.log(result);
       expect(filestackSpy.getS3Config).toHaveBeenCalled();
       expect(filestackSpy.open).toHaveBeenCalled();
     }));
