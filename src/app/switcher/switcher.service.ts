@@ -32,11 +32,11 @@ export interface Program {
   id: number;
   name: string;
   experience_id: number;
-  config?: ProgramConfig;
+  config: ProgramConfig;
 }
 
 export interface ProgramConfig {
-  theme_color?: string;
+  theme_color: string;
   card_style?: string;
   review_rating?: boolean;
   truncate_description?: boolean;
@@ -198,7 +198,7 @@ export class SwitcherService {
    * if method got 'one program object', switch to that program object and navigate to dashboard.
    * if method got 'empty value', do nothing.
    */
-  async switchProgramAndNavigate(programs) {
+  async switchProgramAndNavigate(programs): Promise<any> {
     if (!this.utils.isEmpty(programs)) {
       // Array with multiple program objects -> [{},{},{},{}]
       if (Array.isArray(programs) && !this.checkIsOneProgram(programs)) {
@@ -226,6 +226,7 @@ export class SwitcherService {
         return ['go-mobile'];
       }
     }
+    return;
   }
 
   getNewJwt() {
