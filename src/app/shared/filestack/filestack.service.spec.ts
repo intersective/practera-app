@@ -1,11 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 
 import { MockBackend } from '@angular/http/testing';
-import {
-  HttpClient,
-  HttpRequest,
-  HttpHeaders
-} from '@angular/common/http';
 
 import {
   HttpTestingController,
@@ -16,8 +11,8 @@ import { NotificationService } from '@shared/notification/notification.service';
 import { BrowserStorageService } from '@services/storage.service';
 import { UtilsService } from '@services/utils.service';
 import { BrowserStorageServiceMock } from '@testing/mocked.service';
-
-
+import { environment } from '@environments/environment';
+import { ModalController, IonicModule } from '@ionic/angular';
 
 describe('FilestackService', () => {
   let service: FilestackService;
@@ -27,10 +22,11 @@ describe('FilestackService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-        imports: [ HttpClientTestingModule ],
+        imports: [ HttpClientTestingModule, IonicModule ],
         providers: [
           FilestackService,
           UtilsService,
+          ModalController,
           {
             provide: BrowserStorageService,
             useClass: BrowserStorageServiceMock
@@ -53,7 +49,40 @@ describe('FilestackService', () => {
 
   describe('getS3Config()', () => {
     it('should get config value from environment variable', () => {
+      const userHash = 'testUserHash';
+      storageSpy.getUser.and.returnValue({
+        userHash
+      });
 
+      const location = 'test';
+      const container = 'test';
+      const region = 'test';
+      const workflows = ['test', 'test2'];
+      const paths = {
+        test: 'test-type',
+        any: 'test'
+      };
+
+      const testConfig = {
+        location,
+        container,
+        region,
+        workflows,
+        paths,
+      };
+
+      environment.filestack.s3Config = Object.assign(environment.filestack.s3Config, testConfig);
+
+      const result = service.getS3Config('test');
+
+      expect(storageSpy.getUser).toHaveBeenCalled();
+      expect(result).toEqual({
+        location,
+        container,
+        region,
+        path: `${paths.test}${userHash}/`,
+        workflows,
+      });
     });
   });
 

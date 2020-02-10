@@ -1,5 +1,5 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { TestBed, async, ComponentFixture } from '@angular/core/testing';
+import { TestBed, async, ComponentFixture, fakeAsync, flushMicrotasks } from '@angular/core/testing';
 import { FilestackComponent } from './filestack.component';
 import { FilestackService } from './filestack.service';
 
@@ -26,15 +26,22 @@ describe('FilestackComponent', () => {
     expect(app).toBeTruthy();
   });
 
-  describe('ngOnInit()', () => {
-    it('should initiate variables', () => {
-      const testFileType = 'test type';
+  describe('uploadFile()', () => {
+    it('should open filestack fileupload window', fakeAsync(() => {
+      const respond = { fileupload: true };
+      let result;
 
-      spyOn(filestackSpy, 'getFileTypes').and.returnValue(testFileType);
-      component.ngOnInit();
+      spyOn(filestackSpy, 'open').and.returnValue(Promise.resolve(respond));
+      spyOn(filestackSpy, 'getS3Config');
 
-      expect(component.fileTypes).toEqual(testFileType);
-      expect(component['_showSavedAnswers']).toHaveBeenCalled();
-    });
+      component.uploadFile().then(data => {
+        result = data;
+      });
+      flushMicrotasks();
+
+      console.log(result);
+      expect(filestackSpy.getS3Config).toHaveBeenCalled();
+      expect(filestackSpy.open).toHaveBeenCalled();
+    }));
   });
 });
