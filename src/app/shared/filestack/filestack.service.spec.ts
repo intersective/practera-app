@@ -89,15 +89,56 @@ describe('FilestackService', () => {
   });
 
   describe('previewFile()', () => {
-    it('should popup file preview', () => {
-
+    beforeEach(() => {
+      spyOn(service, 'metadata').and.returnValue({ mimetype: 'testing/format' });
+      spyOn(service, 'previewModal').and.returnValue(Promise.resolve(true));
     });
+
+    afterEach(() => {
+      expect(service.metadata).toHaveBeenCalled();
+      expect(service.previewModal).toHaveBeenCalled();
+    });
+
+    it('should popup file preview', fakeAsync(() => {
+      service.previewFile({
+        handle: 'testingHandleValue'
+      }).then();
+      flushMicrotasks();
+    }));
+
+    it('should popup file preview (support older URL format)', fakeAsync(() => {
+      service.previewFile({
+        url: 'www.filepicker.io/api/file',
+        handle: 'testingHandleValue'
+      }).then();
+      flushMicrotasks();
+    }));
+
+    it('should popup file preview (support older URL format 2)', fakeAsync(() => {
+      service.previewFile({
+        url: 'filestackcontent.com',
+        handle: 'testingHandleValue'
+      }).then();
+      flushMicrotasks();
+    }));
   });
 
   describe('metadata()', () => {
-    it('should get metadata from filestack', () => {
+    it('should get metadata from filestack', fakeAsync(() => {
+      const handle = 'testingFilestackHandle';
+      let result;
+      service.metadata({
+        url: `http://testing.com/${handle}`,
+      }).then(res => result = res);
 
-    });
+      const req = mockBackend.expectOne({
+        url: `https://www.filestackapi.com/api/file/${handle}/metadata`,
+        method: 'GET',
+      });
+      req.flush({body: true});
+
+      mockBackend.verify();
+    }));
   });
 
   describe('open()', () => {
@@ -133,13 +174,24 @@ describe('FilestackService', () => {
         test_workflow_id: [workflows.virusDetection]
       }).then(res => {
         result = res;
-        console.log(res);
       });
 
       const req = mockBackend.expectOne({method: 'GET'});
       req.flush(result);
 
       expect(req.request.url).toEqual(`https://cdn.filestackcontent.com/${environment.filestack.key}/security=p:${policy},s:${signature}/workflow_status=job_id:${workflowId}`);
+
+      mockBackend.verify();
+    }));
+
+    it('should return empty if processedJobs is 0', fakeAsync(() => {
+      let result;
+      service.getWorkflowStatus().then(res => {
+        result = res;
+      });
+
+      flushMicrotasks();
+      expect(result).toEqual([]);
     }));
   });
 });
