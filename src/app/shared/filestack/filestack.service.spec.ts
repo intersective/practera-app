@@ -1,49 +1,89 @@
+import { TestBed } from '@angular/core/testing';
+
+import { MockBackend } from '@angular/http/testing';
+import {
+  HttpClient,
+  HttpRequest,
+  HttpHeaders
+} from '@angular/common/http';
+
+import {
+  HttpTestingController,
+  HttpClientTestingModule
+} from '@angular/common/http/testing';
 import { FilestackService } from './filestack.service';
+import { NotificationService } from '@shared/notification/notification.service';
+import { BrowserStorageService } from '@services/storage.service';
+import { UtilsService } from '@services/utils.service';
+import { BrowserStorageServiceMock } from '@testing/mocked.service';
+
+
 
 describe('FilestackService', () => {
-    let service: FilestackService;
-    let notificationSpy: jasmine.SpyObj<NotificationService>;
-    let storageSpy: jasmine.SpyObj<BrowserStorageService>;
-    let eventSpy: jasmine.SpyObj<EventListService>;
-    let reviewSpy: jasmine.SpyObj<ReviewListService>;
-    let pusherSpy: jasmine.SpyObj<PusherService>;
-    let sharedSpy: jasmine.SpyObj<SharedService>;
-    let utils: UtilsService;
-    const testUtils = new TestUtils();
+  let service: FilestackService;
+  let notificationSpy: jasmine.SpyObj<NotificationService>;
+  let storageSpy: jasmine.SpyObj<BrowserStorageService>;
+  let utils: UtilsService;
 
-    beforeEach(() => {
-      TestBed.configureTestingModule({
-          imports: [ HttpClientTestingModule ],
-          providers: [
-            FilestackService,
-            UtilsService,
-            EventListService,
-            ReviewListService,
-            PusherService,
-            SharedService,
-            {
-              provide: BrowserStorageService,
-              useClass: BrowserStorageServiceMock
-            },
-            {
-              provide: RequestService,
-              useValue: jasmine.createSpyObj('RequestService', ['post', 'apiResponseFormatError'])
-            },
-            {
-              provide: NotificationService,
-              useValue: jasmine.createSpyObj('NotificationService', ['modal'])
-            },
-          ]
-      });
-      service = TestBed.get(FilestackService);
-      requestSpy = TestBed.get(RequestService);
-      utils = TestBed.get(UtilsService);
-      notificationSpy = TestBed.get(NotificationService);
-      storageSpy = TestBed.get(BrowserStorageService);
-      eventSpy = TestBed.get(EventListService);
-      reviewSpy = TestBed.get(ReviewListService);
-      pusherSpy = TestBed.get(PusherService);
-      sharedSpy = TestBed.get(SharedService);
-
-      requestSpy.get = jasmine.createSpy('get').and.returnValue(new Observable());
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+        imports: [ HttpClientTestingModule ],
+        providers: [
+          FilestackService,
+          UtilsService,
+          {
+            provide: BrowserStorageService,
+            useClass: BrowserStorageServiceMock
+          },
+          {
+            provide: NotificationService,
+            useValue: jasmine.createSpyObj('NotificationService', ['modal'])
+          },
+        ]
     });
+    service = TestBed.get(FilestackService);
+    utils = TestBed.get(UtilsService);
+    notificationSpy = TestBed.get(NotificationService);
+    storageSpy = TestBed.get(BrowserStorageService);
+  });
+
+  it('should be created', () => {
+    expect(service).toBeTruthy();
+  });
+
+  describe('getS3Config()', () => {
+    it('should get config value from environment variable', () => {
+
+    });
+  });
+
+  describe('previewFile()', () => {
+    it('should popup file preview', () => {
+
+    });
+  });
+
+  describe('metadata()', () => {
+    it('should get metadata from filestack', () => {
+
+    });
+  });
+
+  describe('open()', () => {
+    it('should instantiate filestack and trigger open fileupload popup', () => {
+
+    });
+  });
+
+  describe('previewModal()', () => {
+    it('should pop up modal for provided filestack link', () => {
+
+    });
+  });
+
+  describe('getWorkflowStatus()', () => {
+    it('should get status of provided workflow info', () => {
+
+    });
+  });
+});
