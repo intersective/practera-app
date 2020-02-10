@@ -1,4 +1,4 @@
-import { TestBed } from '@angular/core/testing';
+import { TestBed, fakeAsync, flushMicrotasks } from '@angular/core/testing';
 
 import { MockBackend } from '@angular/http/testing';
 
@@ -19,6 +19,7 @@ describe('FilestackService', () => {
   let notificationSpy: jasmine.SpyObj<NotificationService>;
   let storageSpy: jasmine.SpyObj<BrowserStorageService>;
   let utils: UtilsService;
+  let mockBackend: HttpTestingController;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -41,6 +42,7 @@ describe('FilestackService', () => {
     utils = TestBed.get(UtilsService);
     notificationSpy = TestBed.get(NotificationService);
     storageSpy = TestBed.get(BrowserStorageService);
+    mockBackend = TestBed.get(HttpTestingController);
   });
 
   it('should be created', () => {
@@ -111,8 +113,33 @@ describe('FilestackService', () => {
   });
 
   describe('getWorkflowStatus()', () => {
-    it('should get status of provided workflow info', () => {
+    const workflowId = 'test_workflow_id';
+    const policy = 'test_policy';
+    const signature = 'test_signature';
+    const workflows = { virusDetection : workflowId };
 
+    beforeEach(() => {
+      environment.filestack = Object.assign(environment.filestack, {
+        policy,
+        signature,
+        workflows
+      });
     });
+
+    it('should get status of provided workflow info', fakeAsync(() => {
+      // spyOn(utils, 'each');
+      let result = [{body: true}];
+      service.getWorkflowStatus({
+        test_workflow_id: [workflows.virusDetection]
+      }).then(res => {
+        result = res;
+        console.log(res);
+      });
+
+      const req = mockBackend.expectOne({method: 'GET'});
+      req.flush(result);
+
+      expect(req.request.url).toEqual(`https://cdn.filestackcontent.com/${environment.filestack.key}/security=p:${policy},s:${signature}/workflow_status=job_id:${workflowId}`);
+    }));
   });
 });
