@@ -36,23 +36,21 @@ export class HomePage extends AppPage {
    * Return a card element from given card title
    */
   getTodoCardByTitle(title: string) {
-    return this.todoCards.find(card => card.$('.todo-card-title').getText() === title);
+    return this.todoCards.find(card => card.$('.item-title').getText() === title);
   }
 
   /**
    * Click a todo card
-   * @param card Card element, which can be returned from getTodoCardByTitle()
    */
-  clickTodoCard(card) {
-    return card.click();
+  clickTodoCard(title: string) {
+    return this.getTodoCardByTitle(title).click();
   }
 
   /**
    * Get the sub-title of a todo card to verify the text
-   * @param card Card element, which can be returned from getTodoCardByTitle()
    */
-  getTodoCardSubtitle(card) {
-    return card.$('.todo-card-subtitle').getText();
+  getTodoCardSubtitle(title: string) {
+    return this.getTodoCardByTitle(title).$('.item-subtitle-1').getText();
   }
 
   /**
@@ -90,18 +88,16 @@ export class HomePage extends AppPage {
 
   /**
    * Get the name of an activity card
-   * @param card Card element, can be returned from getActivityCard()
    */
-  getActivityName(card) {
-    return card.$('.activity-name').getText();
+  getActivityName(milestoneIndex: number, activityIndex: number) {
+    return this.getActivityCard(milestoneIndex, activityIndex).$('.activity-name').getText();
   }
 
   /**
    * Click the activity card
-   * @param card Card element, can be returned from getActivityCard()
    */
-  clickActivityCard(card) {
-    return card.click();
+  clickActivityCard(milestoneIndex: number, activityIndex: number) {
+    return this.getActivityCard(milestoneIndex, activityIndex).click();
   }
 
   /**
