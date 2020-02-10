@@ -163,6 +163,7 @@ export class FilestackService {
   async open(options = {}, onSuccess = res => res, onError = err => err) {
     const pickerOptions: any = {
       dropPane: {},
+      intelligent: true,
       fromSources: [
         'local_file_system',
         'googledrive',
