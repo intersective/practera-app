@@ -1,5 +1,5 @@
 import { Subscription } from 'rxjs/Subscription';
-import { Component, HostListener, EventEmitter, Output, Input, OnInit } from '@angular/core';
+import { Component, HostListener, EventEmitter, Output, Input } from '@angular/core';
 import { FilestackService } from './filestack.service';
 
 export interface FilestackUploaded {
@@ -25,15 +25,13 @@ export interface FilestackUploaded {
   templateUrl: 'filestack.component.html',
   styleUrls: ['filestack.component.scss']
 })
-export class FilestackComponent implements OnInit {
+export class FilestackComponent {
   @Input() accept: any;
   @Input() fileType: string;
   @Output() complete: EventEmitter<any> = new EventEmitter();
   @Input() type?: string;
 
   constructor(private filestackService: FilestackService) {}
-
-  ngOnInit() {}
 
   async uploadFile() {
     const s3Config = this.filestackService.getS3Config(this.fileType);
