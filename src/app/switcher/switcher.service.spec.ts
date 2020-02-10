@@ -2,6 +2,7 @@ import { async, ComponentFixture, TestBed, fakeAsync, tick, flushMicrotasks } fr
 import { SwitcherService } from './switcher.service';
 import { of, Observable, pipe } from 'rxjs';
 import { RequestService } from '@shared/request/request.service';
+import { SharedService } from '@services/shared.service';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { UtilsService } from '@services/utils.service';
 import { NotificationService } from '@shared/notification/notification.service';
@@ -22,6 +23,7 @@ describe('SwitcherService', () => {
     let eventSpy: jasmine.SpyObj<EventListService>;
     let reviewSpy: jasmine.SpyObj<ReviewListService>;
     let pusherSpy: jasmine.SpyObj<PusherService>;
+    let sharedSpy: jasmine.SpyObj<SharedService>;
     let utils: UtilsService;
     const testUtils = new TestUtils();
 
@@ -34,6 +36,7 @@ describe('SwitcherService', () => {
             EventListService,
             ReviewListService,
             PusherService,
+            SharedService,
             {
               provide: BrowserStorageService,
               useClass: BrowserStorageServiceMock
@@ -56,6 +59,7 @@ describe('SwitcherService', () => {
       eventSpy = TestBed.get(EventListService);
       reviewSpy = TestBed.get(ReviewListService);
       pusherSpy = TestBed.get(PusherService);
+      sharedSpy = TestBed.get(SharedService);
 
       requestSpy.get = jasmine.createSpy('get').and.returnValue(new Observable());
     });
@@ -168,11 +172,33 @@ describe('SwitcherService', () => {
       }));
     });
 
+    describe('switchProgram()', () => {
+      it('should collect related data based on selected program', () => {
+        service.switchProgram(ProgramFixture[0]).subscribe(() => {
+
+          spyOn(utils, 'has');
+          spyOn(service, 'getNewJwt');
+          spyOn(service, 'getTeamInfo');
+          spyOn(service, 'getMyInfo');
+          spyOn(service, 'getReviews');
+          spyOn(service, 'getEvents');
+
+          expect(utils.has).toHaveBeenCalled();
+          expect(storageSpy.setUser).toHaveBeenCalled();
+          expect(sharedSpy.onPageLoad).toHaveBeenCalled();
+          expect(service.getNewJwt).toHaveBeenCalled();
+          expect(service.getTeamInfo).toHaveBeenCalled();
+          expect(service.getMyInfo).toHaveBeenCalled();
+          expect(service.getReviews).toHaveBeenCalled();
+          expect(service.getEvents).toHaveBeenCalled();
+        });
+      });
+    });
+
     describe('getTeamInfo()', () => {
       it('should make API request to `api/teams.json`', () => {
-        service.getTeamInfo().subscribe(res => {
-          expect(requestSpy.get).toHaveBeenCalledWith('api/teams.json');
-        });
+        service.getTeamInfo().subscribe();
+        expect(requestSpy.get).toHaveBeenCalledWith('api/teams.json');
       });
     });
 
