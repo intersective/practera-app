@@ -49,5 +49,5 @@ Then(/^The activity number "([0-9]+)" under milestone number "([0-9]+)" should b
 });
 
 When(/^I click the activity number "([0-9]+)" under milestone number "([0-9]+)"$/, (milestoneIndex, activityIndex) => {
-  return page.clickActivityCard(milestoneIndex, activityIndex);;
+  return page.clickActivityCard(milestoneIndex, activityIndex);
 });
