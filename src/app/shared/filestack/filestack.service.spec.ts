@@ -203,19 +203,19 @@ describe('FilestackService', () => {
       let onSuccessRes;
       let onErrorRes;
 
-      let onSuccess = res => {
+      const onSuccess = res => {
         onSuccessRes = res;
       };
 
-      let onError = res => {
+      const onError = res => {
         onErrorRes = res;
       };
 
       service.open({
         testOnly: true,
       },
-      res => res,
-      res => res
+                   res => res,
+                   res => res
       ).then(res => {
         result = res;
       });
@@ -227,10 +227,10 @@ describe('FilestackService', () => {
 
   describe('previewModal()', () => {
     it('should pop up modal for provided filestack link', fakeAsync(() => {
-      const res = { passed: true };
+      const apiRes = { passed: true };
       let result;
       spyOn(modalctrlSpy, 'create').and.returnValue({
-        present: () => Promise.resolve(res),
+        present: () => Promise.resolve(apiRes),
       });
 
       service.previewModal('test.com').then(res => {
@@ -239,7 +239,7 @@ describe('FilestackService', () => {
       flushMicrotasks();
 
       expect(modalctrlSpy.create).toHaveBeenCalled();
-      expect(result).toEqual(res);
+      expect(result).toEqual(apiRes);
     }));
   });
 
