@@ -13,6 +13,7 @@ import { UtilsService } from '@services/utils.service';
 import { BrowserStorageServiceMock } from '@testing/mocked.service';
 import { environment } from '@environments/environment';
 import { ModalController, IonicModule } from '@ionic/angular';
+import * as filestack from 'filestack-js';
 
 describe('FilestackService', () => {
   let service: FilestackService;
@@ -20,6 +21,7 @@ describe('FilestackService', () => {
   let storageSpy: jasmine.SpyObj<BrowserStorageService>;
   let utils: UtilsService;
   let mockBackend: HttpTestingController;
+  let modalctrlSpy: jasmine.SpyObj<ModalController>;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -43,10 +45,23 @@ describe('FilestackService', () => {
     notificationSpy = TestBed.get(NotificationService);
     storageSpy = TestBed.get(BrowserStorageService);
     mockBackend = TestBed.get(HttpTestingController);
+    modalctrlSpy = TestBed.get(ModalController);
   });
 
   it('should be created', () => {
     expect(service).toBeTruthy();
+  });
+
+  describe('getFileTypes', () => {
+    it('should return mimetype wildcard based on provided type', () => {
+      const anyType = service.getFileTypes();
+      const imageType = service.getFileTypes('image');
+      const videoType = service.getFileTypes('video');
+
+      expect(anyType).toEqual('');
+      expect(imageType).toEqual('image/*');
+      expect(videoType).toEqual('video/*');
+    });
   });
 
   describe('getS3Config()', () => {
@@ -142,15 +157,42 @@ describe('FilestackService', () => {
   });
 
   describe('open()', () => {
-    it('should instantiate filestack and trigger open fileupload popup', () => {
+    it('should instantiate filestack and trigger open fileupload popup', fakeAsync(() => {
+      let result;
 
-    });
+      spyOn(service['filestack'], 'picker').and.returnValue({
+        open: () => Promise.resolve(true)
+      });
+      spyOn(service, 'getFileTypes');
+      spyOn(service, 'getS3Config');
+
+      service.open().then(res => {
+        result = res;
+      });
+      flushMicrotasks();
+
+      expect(service.getFileTypes).toHaveBeenCalled();
+      expect(service.getS3Config).toHaveBeenCalled();
+      expect(result).toBeTruthy();
+    }));
   });
 
   describe('previewModal()', () => {
-    it('should pop up modal for provided filestack link', () => {
+    it('should pop up modal for provided filestack link', fakeAsync(() => {
+      const res = { passed: true };
+      let result;
+      spyOn(modalctrlSpy, 'create').and.returnValue({
+        present: () => Promise.resolve(res),
+      });
 
-    });
+      service.previewModal('test.com').then(res => {
+        result = res;
+      });
+      flushMicrotasks();
+
+      expect(modalctrlSpy.create).toHaveBeenCalled();
+      expect(result).toEqual(res);
+    }));
   });
 
   describe('getWorkflowStatus()', () => {
