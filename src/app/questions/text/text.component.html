@@ -13,7 +13,7 @@
 </div>
 
 <ng-container *ngIf="doAssessment">
-  <ion-textarea class="background-white" margin-top [(ngModel)]="answer" #answerEle rows="4" (ionFocus)="onFocus()" (ionChange)="onChange()"></ion-textarea>
+  <ion-textarea class="background-white textarea" margin-top [(ngModel)]="answer" #answerEle rows="4" (ionFocus)="onFocus()" (ionChange)="onChange()"></ion-textarea>
   <ion-text *ngFor="let error of errors" color="danger">
     <p>{{error}}</p>
   </ion-text>
