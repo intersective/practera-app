@@ -36,7 +36,7 @@ describe('FilestackService', () => {
           },
           {
             provide: NotificationService,
-            useValue: jasmine.createSpyObj('NotificationService', ['modal'])
+            useValue: jasmine.createSpyObj('NotificationService', ['modal', 'alert'])
           },
         ]
     });
@@ -105,36 +105,57 @@ describe('FilestackService', () => {
 
   describe('previewFile()', () => {
     beforeEach(() => {
-      spyOn(service, 'metadata').and.returnValue({ mimetype: 'testing/format' });
       spyOn(service, 'previewModal').and.returnValue(Promise.resolve(true));
     });
 
     afterEach(() => {
       expect(service.metadata).toHaveBeenCalled();
-      expect(service.previewModal).toHaveBeenCalled();
     });
 
     it('should popup file preview', fakeAsync(() => {
+      spyOn(service, 'metadata').and.returnValue({ mimetype: 'testing/format' });
       service.previewFile({
         handle: 'testingHandleValue'
       }).then();
       flushMicrotasks();
+      expect(service.previewModal).toHaveBeenCalled();
     }));
 
     it('should popup file preview (support older URL format)', fakeAsync(() => {
+      spyOn(service, 'metadata').and.returnValue({ mimetype: 'testing/format' });
       service.previewFile({
         url: 'www.filepicker.io/api/file',
         handle: 'testingHandleValue'
       }).then();
       flushMicrotasks();
+      expect(service.previewModal).toHaveBeenCalled();
     }));
 
     it('should popup file preview (support older URL format 2)', fakeAsync(() => {
+      spyOn(service, 'metadata').and.returnValue({ mimetype: 'testing/format' });
       service.previewFile({
         url: 'filestackcontent.com',
         handle: 'testingHandleValue'
       }).then();
       flushMicrotasks();
+      expect(service.previewModal).toHaveBeenCalled();
+    }));
+
+    it('should alert instead of popup preview when file size too large', fakeAsync(() => {
+      spyOn(service, 'metadata').and.returnValue({
+        mimetype: 'application/testType',
+        size: 11 * 1000 * 1000 // 11mb
+      });
+      // spyOn(notificationSpy, 'alert');
+
+      service.previewFile({
+        url: 'filestackcontent.com',
+        handle: 'testingHandleValue'
+      }).then();
+      flushMicrotasks();
+
+      expect(notificationSpy.alert).toHaveBeenCalled();
+      expect(service.previewModal).not.toHaveBeenCalled();
     }));
   });
 
@@ -157,14 +178,16 @@ describe('FilestackService', () => {
   });
 
   describe('open()', () => {
-    it('should instantiate filestack and trigger open fileupload popup', fakeAsync(() => {
-      let result;
-
+    beforeEach(() => {
       spyOn(service['filestack'], 'picker').and.returnValue({
         open: () => Promise.resolve(true)
       });
       spyOn(service, 'getFileTypes');
-      spyOn(service, 'getS3Config');
+      spyOn(service, 'getS3Config').and.returnValue(true);
+    });
+
+    it('should instantiate filestack and trigger open fileupload popup', fakeAsync(() => {
+      let result;
 
       service.open().then(res => {
         result = res;
@@ -174,6 +197,32 @@ describe('FilestackService', () => {
       expect(service.getFileTypes).toHaveBeenCalled();
       expect(service.getS3Config).toHaveBeenCalled();
       expect(result).toBeTruthy();
+    }));
+
+    it('should initiate picker with correct settings', fakeAsync(() => {
+      let result;
+      let onSuccessRes;
+      let onErrorRes;
+
+      let onSuccess = res => {
+        onSuccessRes = res;
+      };
+
+      let onError = res => {
+        onErrorRes = res;
+      };
+
+      service.open({
+        testOnly: true,
+      },
+      res => res,
+      res => res
+      ).then(res => {
+        result = res;
+      });
+      flushMicrotasks();
+
+      expect(service['filestack'].picker).toHaveBeenCalledWith(jasmine.objectContaining({ testOnly: true }));
     }));
   });
 
