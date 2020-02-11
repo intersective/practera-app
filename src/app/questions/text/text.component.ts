@@ -51,6 +51,25 @@ export class TextComponent implements ControlValueAccessor, OnInit {
   // propagate changes into the form control
   propagateChange = (_: any) => {};
 
+  // fix IE/Edge text reversal issue
+  onFocus(event) {
+    const isIEOrEdge = /msie\s|trident\/|edge\//i.test(window.navigator.userAgent);
+    if (isIEOrEdge) {
+      const textarea: HTMLTextAreaElement = event.target.firstChild;
+      const existingText = textarea.value;
+      if (textarea.value.length === 0) {
+        textarea.value = 'a';
+        textarea.setSelectionRange(textarea.value.length, textarea.value.length);
+        textarea.value = '';
+      } else {
+        textarea.setSelectionRange(textarea.value.length, textarea.value.length);
+        textarea.value = '';
+        textarea.value = existingText;
+      }
+    }
+  }
+
+
   // event fired when input/textarea value is changed. propagate the change up to the form control using the custom value accessor interface
   // if 'type' is set, it means it comes from reviewer doing review, otherwise it comes from submitter doing assessment
   onChange(type = null) {
@@ -125,5 +144,7 @@ export class TextComponent implements ControlValueAccessor, OnInit {
     this.propagateChange(this.innerValue);
     this.control.setValue(this.innerValue);
   }
+
+
 
 }
