@@ -1,4 +1,6 @@
-import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { CUSTOM_ELEMENTS_SCHEMA, DebugElement } from '@angular/core';
+import { By } from '@angular/platform-browser';
+import { IonicModule } from '@ionic/angular';
 import { TestBed, async, ComponentFixture, fakeAsync, flushMicrotasks } from '@angular/core/testing';
 import { FilestackComponent } from './filestack.component';
 import { FilestackService } from './filestack.service';
@@ -10,10 +12,14 @@ describe('FilestackComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
+      imports: [ IonicModule ],
       declarations: [FilestackComponent],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
       providers: [
-        FilestackService,
+        {
+          provide: FilestackService,
+          useValue: jasmine.createSpyObj(['open', 'getS3Config'])
+        }
       ],
     }).compileComponents();
     fixture = TestBed.createComponent(FilestackComponent);
@@ -22,17 +28,32 @@ describe('FilestackComponent', () => {
   }));
 
   it('should create the filestack component', () => {
-    const app = fixture.debugElement.componentInstance;
-    expect(app).toBeTruthy();
+    expect(component).toBeTruthy();
   });
 
   describe('uploadFile()', () => {
+    it('should display "Upload File" by default (and not "profileImage")', () => {
+      component.type = 'anything';
+      fixture.detectChanges();
+      const button = fixture.nativeElement.querySelector('ion-button');
+
+      expect(button.textContent).toEqual('Upload File');
+    });
+
+    it('should allow upload profile picture', () => {
+      component.type = 'profileImage';
+      fixture.detectChanges();
+
+      const button: HTMLElement = fixture.nativeElement.querySelector('p');
+
+      expect(button.classList).toContain('upload-icon');
+    });
+
     it('should open filestack fileupload window', fakeAsync(() => {
       const respond = { fileupload: true };
       let result;
 
-      spyOn(filestackSpy, 'open').and.returnValue(Promise.resolve(respond));
-      spyOn(filestackSpy, 'getS3Config');
+      filestackSpy.open = jasmine.createSpy('open').and.returnValue(Promise.resolve(respond));
 
       component.uploadFile().then(data => {
         result = data;

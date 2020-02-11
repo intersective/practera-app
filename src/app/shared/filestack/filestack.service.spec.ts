@@ -146,7 +146,6 @@ describe('FilestackService', () => {
         mimetype: 'application/testType',
         size: 11 * 1000 * 1000 // 11mb
       });
-      // spyOn(notificationSpy, 'alert');
 
       service.previewFile({
         url: 'filestackcontent.com',
