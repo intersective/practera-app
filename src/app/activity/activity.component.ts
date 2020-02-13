@@ -41,7 +41,7 @@ export class ActivityComponent {
     public utils: UtilsService,
     private notificationService: NotificationService,
     public storage: BrowserStorageService,
-    private eventsService: EventListService,
+    public eventListService: EventListService,
     public sharedService: SharedService,
     public fastFeedbackService: FastFeedbackService,
     private newRelic: NewRelicService,
@@ -127,7 +127,7 @@ export class ActivityComponent {
     this.events = events || [];
     if (events === undefined) {
       this.loadingEvents = true;
-      this.getEvents = this.eventsService.getEvents(this.id).subscribe(
+      this.getEvents = this.eventListService.getEvents(this.id).subscribe(
         res => {
           this.events = res;
           this.loadingEvents = false;
@@ -184,15 +184,55 @@ export class ActivityComponent {
     if (!event) {
       return this.router.navigate(['app', 'events', {activity_id: this.id}]);
     }
-    // don't need to navigate for mobile
+    // display the event pop up for mobile
     if (this.utils.isMobile()) {
-      return ;
+      return this.eventListService.eventDetailPopUp(event);
     }
     // go to the event page with an event selected
     return this.router.navigate(['app', 'events', {activity_id: this.id, event_id: event.id}]);
   }
 
-  displayEventTime(event) {
-    return this.utils.utcToLocal(event.startTime) + ' - ' + this.utils.utcToLocal(event.endTime, 'time');
+  /******************
+    Used for task layout
+  ******************/
+  taskLeadingIcon(task) {
+    switch (task.type) {
+      case 'Locked':
+        return 'lock';
+      case 'Topic':
+        return 'list-box';
+      case 'Assessment':
+        return 'clipboard';
+    }
   }
+
+  assessmentNotSubmitted(task) {
+    return task.type === 'Assessment' && (!task.status || task.status === '' || task.status === 'in progress');
+  }
+
+  taskSubtitle2(task) {
+    if (task.type === 'Locked') {
+      return '';
+    }
+    let title = task.type + ' ';
+    title += task.isLocked ? '- Locked by ' + task.submitter.name : task.status;
+    return title;
+  }
+
+  taskEndingIcon(task) {
+    if (task.isLocked) {
+      return 'md-lock';
+    }
+    switch (task.status) {
+      case 'done':
+        return 'checkmark';
+      case 'pending review':
+        return 'hourglass';
+      case 'feedback available':
+      case 'in progress':
+      default:
+        return 'arrow-forward';
+    }
+  }
+
 }
