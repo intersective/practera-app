@@ -19,3 +19,47 @@
     padding-right: 10px;
   }
 }
+.skeleton-label-view-all {
+  min-width: 80px;
+  max-width: 80px;
+  height: 18px;
+  min-height: 18px;
+  max-height: 18px;
+}
+.skeleton{
+  display: inline-flex;
+  .progress-circle {
+    margin: 0;
+    border-radius: 50%;
+    max-width: 132px;
+    max-height: 132px;
+    width: 132px;
+    height: 132px;
+    &.desktop {
+      max-width: 166px;
+      max-height: 166px;
+      width: 166px;
+      height: 166px;
+    }
+  }
+  .progress-content {
+    background: white !important;
+    border-radius: 50%;
+    position: absolute;
+    margin-top: 12px;
+    margin-left: 12px;
+    max-width: 108px;
+    max-height: 108px;
+    width: 108px;
+    height: 108px;
+    &.desktop {
+      max-width: 142px;
+      max-height: 142px;
+      width: 142px;
+      height: 142px;
+    }
+    ion-label {
+      vertical-align: -webkit-baseline-middle;
+    }
+  }
+}
