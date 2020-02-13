@@ -20,7 +20,7 @@
   'ion-content-absolute': !utils.isMobile() && !hasFooter()
 }">
   <h1 class="headline-4">{{ assessment.name }}</h1>
-  <ion-text color="medium" class="ion-text-left">
+  <ion-text color="dark" class="ion-text-left">
     <app-description *ngIf="assessment.description" [content]="assessment.description" id="asmt-des" class="body-1"></app-description>
   </ion-text>
   <p class="due-date assessment subtitle-1 gray-2 ion-text-center" [ngClass]="{'over': assessment.isOverdue}" *ngIf="doAssessment">
@@ -55,7 +55,7 @@
     </ng-container>
     <ng-container *ngFor="let group of assessment.groups">
       <h3 class="headline-6">{{ group.name }}</h3>
-      <ion-text color="medium" class="ion-text-left">
+      <ion-text color="dark" class="ion-text-left">
         <app-description class="g-description" *ngIf="group.description" [content]="group.description"></app-description>
       </ion-text>
       <ng-container *ngFor="let question of group.questions">
@@ -64,7 +64,7 @@
             {{ question.name }}
             <ion-text class="required-indicator" color="danger" *ngIf="question.isRequired">*</ion-text>
             <ion-icon *ngIf="question.info" color="primary" class="icon-info vertical-middle" (click)="showQuestionInfo(question.info)" name="information-circle-outline"></ion-icon>
-            <ion-text color="medium" class="paragraph ion-text-left">
+            <ion-text color="dark" class="paragraph ion-text-left">
               <app-description class="q-description" *ngIf="question.description" [content]="question.description"></app-description>
             </ion-text>
           </ion-card-header>
