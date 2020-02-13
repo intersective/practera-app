@@ -12,6 +12,7 @@ export class AchievementBadgeComponent {
 
   @Input() achievement: Achievement;
   @Input() showName: Boolean = false;
+  @Input() loading: Boolean;
 
   constructor(
     private notificationService: NotificationService,
