@@ -39,9 +39,11 @@
         <ion-row [ngClass]="{'badge-container' : !utils.isMobile()}">
           <ion-col class="badge-col" *ngFor="let achievement of achievements; let i = index;" 
           size-xs="4" size-sm="3" size-md="3" size-lg="3" size-xl="3" margin-bottom >
+          <!-- need to add loading -->
             <achievement-badge
               [achievement]="achievement"
               [showName]=true
+              [loading]=true
             ></achievement-badge>
           </ion-col>
         </ion-row>
