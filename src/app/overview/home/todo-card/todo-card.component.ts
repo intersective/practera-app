@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { TodoItem } from '../home.service';
 
 @Component({
@@ -6,13 +6,17 @@ import { TodoItem } from '../home.service';
   templateUrl: './todo-card.component.html',
   styleUrls: ['./todo-card.component.scss']
 })
-export class TodoCardComponent implements OnInit {
+export class TodoCardComponent {
   @Input() loading: boolean;
   @Input() todoItem: TodoItem;
+  icons = {
+    feedback_available: 'information-circle-outline',
+    review_submission: 'information-circle-outline',
+    chat: 'checkboxes',
+    event: 'calendar',
+    assessment_submission_reminder: 'clipboard'
+  };
 
   constructor() {}
-
-  ngOnInit() {
-  }
 
 }
