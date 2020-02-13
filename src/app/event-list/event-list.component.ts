@@ -310,8 +310,8 @@ export class EventListComponent {
    */
   private _rearrangeEvents() {
     this._filterByActivities();
-    // don't need to go to first event if it is the inital loading and event id is passed in
-    if (!this.goToFirstEvent) {
+    // don't need to go to first event if it is the inital loading and event id is passed in or it is on mobile mode
+    if (!this.goToFirstEvent || this.utils.isMobile()) {
       return ;
     }
     // Go to the first event.
