@@ -3,8 +3,8 @@
     <ion-item class="project-item" [ngClass]="{'mobile': isMobile}" lines="none" *ngFor="let milestone of milestones" color="light" #milestoneRef @newLoad>
       <div color="light" class="project-card" id="milestone-{{milestone.id}}">
         <div class="milestone" [ngClass]="{'lock': milestone.isLocked}">
-          <ion-card class="expandable">
-            <ion-item lines="none" (click)="toggleGroup(milestone)">
+          <div class="expandable">
+            <ion-item lines="none" color="light" (click)="toggleGroup(milestone)">
               <ion-icon
                 *ngIf="milestone.isLocked"
                 name="lock"
@@ -28,7 +28,7 @@
               *ngIf="milestone.description && !isCollapsed(milestone)">
               <app-description [content]="milestone.description" class="body-2"></app-description>
             </ion-card-content>
-          </ion-card>
+          </div>
 
           <div *ngIf="milestone.Activity && !milestone.isLocked" class="milestone-activities">
             <ion-list class="activity-list" color="light">
@@ -68,13 +68,13 @@
     <ion-item *ngFor="let milestone of [1, 1]" class="project-item" [ngClass]="{'mobile': isMobile}" lines="none" color="light">
       <div color="light" class="project-card">
         <div class="milestone">
-          <ion-card class="expandable">
+          <div class="expandable">
             <ion-item>
               <ion-label class="milestone-title headline-6">
                 <ion-skeleton-text animated style="width: 40%;"></ion-skeleton-text>
               </ion-label>
             </ion-item>
-          </ion-card>
+          </div>
           <div class="milestone-activities">
             <ion-list class="activity-list" color="light">
               <ion-row>
