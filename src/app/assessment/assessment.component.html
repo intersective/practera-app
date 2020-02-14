@@ -18,7 +18,7 @@
 <ion-content class="ion-padding ion-text-center" color="light" [ngClass]="{
   'ion-content-absolute-with-footer': !utils.isMobile() && hasFooter(),
   'ion-content-absolute': !utils.isMobile() && !hasFooter()
-}" appFloat>
+}">
   <h1 class="headline-4">{{ assessment.name }}</h1>
   <ion-text color="medium" class="ion-text-left">
     <app-description *ngIf="assessment.description" [content]="assessment.description" id="asmt-des" class="body-1"></app-description>
