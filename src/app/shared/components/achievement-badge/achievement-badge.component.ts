@@ -1,6 +1,7 @@
 import { Component, Input } from '@angular/core';
 import { AchievementsService, Achievement } from '@app/achievements/achievements.service';
 import { NotificationService } from '@shared/notification/notification.service';
+import { UtilsService } from '@services/utils.service';
 
 @Component({
   selector: 'achievement-badge',
@@ -13,7 +14,8 @@ export class AchievementBadgeComponent {
   @Input() showName: Boolean = false;
 
   constructor(
-    private notificationService: NotificationService
+    private notificationService: NotificationService,
+    public utils: UtilsService,
   ) {}
 
   showAchievementDetails() {

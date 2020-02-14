@@ -1,5 +1,4 @@
 import { SharedModule } from '@shared/shared.module';
-import { RouterModule } from '@angular/router';
 import { NgModule } from '@angular/core';
 
 import { SwitcherRoutingModule } from './switcher-routing.module';
