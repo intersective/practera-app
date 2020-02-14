@@ -38,26 +38,15 @@ export class UtilsService {
    * @example https://github.com/ionic-team/ionic/blob/master/angular/src/providers/platform.ts#L71-L115
    */
   isMobile() {
-    // Priority: always treat "tablet" mode as "desktop"
-    if (this.platform.is('tablet')) {
-      return false;
-    }
-
-    if (
-      this.platform.is('mobile') ||
-      this.platform.is('iphone') ||
-      this.platform.is('mobileweb')
-    ) {
-      return true;
-    }
-
-    return false;
+    return window.innerWidth <= 576;
   }
 
   /** check if a value is empty
    * precautions:
-   *   Lodash's isEmpty, by default, sees "number" type value as empty,
-   *   but in our case, we just treat null/undefined/""/[]/{} as empty.
+   *  - Lodash's isEmpty, by default, sees "number" type value as empty,
+   *    but in our case, we just treat null/undefined/""/[]/{} as empty.
+   *  - [{}] = true
+   *  - [{}, {}, {}] = false
    *
    * @param  {any}     value
    * @return {boolean}       true: when empty string/object/array, otherwise false

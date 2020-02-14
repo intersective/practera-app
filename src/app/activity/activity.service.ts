@@ -302,7 +302,7 @@ export class ActivityService {
       // find next task
       nextTask = this.utils.getNextArrayElement(currentActivity.Tasks, options.currentTaskId);
 
-      // find next activity
+      // find next activity (if next one is not available, then stick back first one)
       if (nextTask === undefined) {
         nextActivity = this.utils.getNextArrayElement(currentMilestone.Activities, currentActivity.id);
       } else {
