@@ -2,7 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Injectable, Inject } from '@angular/core';
 import { SwitcherService, ProgramObj } from '../switcher.service';
-import { RouterEnter } from '@services/router-enter.service';
 import { LoadingController } from '@ionic/angular';
 import { environment } from '@environments/environment';
 import { PusherService } from '@shared/pusher/pusher.service';
@@ -41,7 +40,7 @@ export class SwitcherProgramComponent implements OnInit {
       });
   }
 
-  async switch(index) {
+  async switch(index): Promise<void> {
     const nrSwitchedProgramTracer = this.newRelic.createTracer('switching program');
     const loading = await this.loadingController.create({
       message: 'loading...'
@@ -50,23 +49,22 @@ export class SwitcherProgramComponent implements OnInit {
 
     await loading.present();
 
-    this.switcherService.switchProgramAndNavigate(this.programs[index]).then(
-    (route) => {
+    try {
+      const route = await this.switcherService.switchProgramAndNavigate(this.programs[index]);
       loading.dismiss().then(() => {
         nrSwitchedProgramTracer();
         this.router.navigate(route);
       });
-    },
-    err => {
-      const toasted = this.notificationService.alert({
+    } catch (err) {
+      await this.notificationService.alert({
         header: 'Error switching program',
         message: err.msg || JSON.stringify(err)
       });
 
       nrSwitchedProgramTracer();
       this.newRelic.noticeError('switch program failed', JSON.stringify(err));
-      throw new Error(err);
-    });
+    }
+    return;
   }
 
 }

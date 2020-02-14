@@ -126,12 +126,12 @@ export class AppComponent implements OnInit {
   }
 
   initializeApp() {
-    this.platform.ready().then(() => {
+    this.platform.ready().then(async () => {
       // watch version update
       this.versionCheckService.initiateVersionCheck();
 
       // initialise Pusher
-      this.pusherService.initialise();
+      await this.pusherService.initialise();
     });
   }
 

@@ -6,12 +6,12 @@
   <ng-container *ngTemplateOutlet="badges"></ng-container>
 
   <ng-container *ngIf="utils.isMobile(); else notificationsDesktop">
-    <ion-item lines="none" color="transparent">
-      <ion-label color="medium">Notifications</ion-label>
+    <ion-item lines="none" color="transparent" class="ion-no-padding">
+      <ion-label class="ion-padding-start ion-padding-end" color="medium">Notifications</ion-label>
     </ion-item>
 
     <ng-container *ngIf="loadingTodoItems; else doneLoading">
-      <div class="margin-left-right">
+      <div class="margin-left-right ion-padding-bottom">
         <app-todo-card [loading]="true" [todoItem]="false"></app-todo-card>
       </div>
     </ng-container>
@@ -25,7 +25,7 @@
         ></app-slidable>
 
         <ng-template #noNotices>
-          <div class="margin-left-right">
+          <div class="margin-left-right ion-padding-bottom">
             <ng-container *ngTemplateOutlet="noItemsTpl"></ng-container>
           </div>
         </ng-template>
@@ -37,9 +37,9 @@
 <ng-template #badges>
   <ng-container @newLoaded *ngIf="achievements && achievements.length > 0">
 
-    <ion-label color="medium" class="subtitle-2 achievement">My Badges</ion-label>
-    <ion-label class="float-right">
-      <a color="primary" class="button" (click)='goTo(["achievements"])'>VIEW ALL</a>
+    <ion-label color="medium" class="subtitle-2 achievement ion-padding-start">My Badges</ion-label>
+    <ion-label class="float-right" *ngIf="achievements.length > 1">
+      <a color="primary" class="button ion-padding-end" (click)='goTo(["achievements"])'>VIEW ALL</a>
     </ion-label>
 
     <ion-grid class="ion-no-padding">
@@ -53,10 +53,10 @@
 </ng-template>
 
 <ng-template #notificationsDesktop>
-  <ion-label color="medium" class="subtitle-2">Notifications</ion-label>
+  <ion-label color="medium" class="subtitle-2 ion-padding-start ion-padding-end">Notifications</ion-label>
   <ion-list class="todo-list" lines="none">
     <ng-container *ngIf="loadingTodoItems; else todoItemsTpl">
-      <app-todo-card [loading]="true" [todoItem]="false"></app-todo-card>
+      <app-todo-card class="ion-padding-bottom" [loading]="true" [todoItem]="false"></app-todo-card>
     </ng-container>
   </ion-list>
 </ng-template>
