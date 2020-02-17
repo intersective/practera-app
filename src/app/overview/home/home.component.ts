@@ -37,6 +37,7 @@ export class HomeComponent implements OnDestroy, OnInit {
   subscriptions: Subscription[] = [];
   achievements: Array<Achievement>;
   progressConfig: any;
+  loadingAchievements = true;
 
   constructor(
     private intercom: Intercom,
@@ -96,6 +97,7 @@ export class HomeComponent implements OnDestroy, OnInit {
     this.loadingTodoItems = true;
     this.loadingProgress = true;
     this.achievements = [];
+    this.loadingAchievements = true;
   }
 
   onEnter() {
@@ -152,6 +154,7 @@ export class HomeComponent implements OnDestroy, OnInit {
           this.achievements[1] = earned[1];
           this.achievements[2] = unEarned[0];
         }
+        this.loadingAchievements = false;
       })
     );
 
