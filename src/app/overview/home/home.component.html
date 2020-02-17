@@ -1,22 +1,6 @@
 <div class="app-home" [ngStyle]="utils.isMobile() ? {} : {padding: '1em', height: '100%'}">
   <div class="ion-text-center ion-padding">
-    <!--  *ngIf="!loadingProgress" -->
-    <!-- <ng-container>
-        <app-circle-progress [data]="progressConfig" [type]="'large'"></app-circle-progress>
-    </ng-container> -->
-    <ng-container>
-      <div class="skeleton">
-        <ion-skeleton-text animated class="progress-circle" [ngClass]="{'desktop' : !utils.isMobile()}"></ion-skeleton-text>
-        <div class="progress-content" [ngClass]="{'desktop' : !utils.isMobile()}">
-          <ion-label>
-            <ion-skeleton-text animated></ion-skeleton-text>
-          </ion-label>
-          <ion-label>
-            <ion-skeleton-text animated></ion-skeleton-text>
-          </ion-label>
-        </div>
-      </div>
-    </ng-container>
+    <app-circle-progress [data]="progressConfig" [type]="'large'" [loading]="loadingProgress"></app-circle-progress>
   </div>
 
   <ng-container *ngTemplateOutlet="badges"></ng-container>
@@ -54,17 +38,14 @@
   <ng-container @newLoaded *ngIf="achievements && achievements.length > 0">
 
     <ion-label color="medium" class="subtitle-2 achievement ion-padding-start">My Badges</ion-label>
-    <ion-label class="float-right" *ngIf="achievements.length > 1 && !loadingAchievements">
+    <ion-label class="float-right" *ngIf="achievements.length > 1">
       <a color="primary" class="button ion-padding-end" (click)='goTo(["achievements"])'>VIEW ALL</a>
-    </ion-label>
-    <ion-label class="float-right skeleton-label-view-all" *ngIf="loadingAchievements">
-        <ion-skeleton-text animated></ion-skeleton-text>
     </ion-label>
 
     <ion-grid class="ion-no-padding">
       <ion-row class="ion-text-center ion-margin-bottom">
         <ion-col *ngFor="let achievement of achievements; let i = index;" size="4" @newLoaded>
-          <achievement-badge [achievement]="achievement" [loading]=loadingAchievements></achievement-badge>
+          <achievement-badge [achievement]="achievement"></achievement-badge>
         </ion-col>
       </ion-row>
     </ion-grid>
