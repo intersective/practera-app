@@ -72,7 +72,18 @@ export class SwitcherService {
   ) {}
 
   getPrograms() {
-    return of(this.storage.get('programs'));
+    return of(this._normaliseAchievements());
+  }
+
+  private _normaliseAchievements() {
+    const programs = this.storage.get('programs');
+    programs.forEach((program) => {
+      if (program.project.lead_image) {
+        const imageId = program.project.lead_image.split('/').pop();
+        program.project.lead_image = 'https://cdn.filestackcontent.com/resize=width:800,fit:crop/' + imageId;
+      }
+    });
+    return programs;
   }
 
   switchProgram(programObj: ProgramObj): Observable<any> {
