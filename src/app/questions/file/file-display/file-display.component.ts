@@ -51,6 +51,7 @@ export class FileDisplayComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(change: SimpleChanges) {
+    console.log(change.file.currentValue);
     if (change.file.currentValue && change.file.currentValue.workflows) {
       this.updateWorkflowStatus(change.file.currentValue);
     }
@@ -61,6 +62,7 @@ export class FileDisplayComponent implements OnInit, OnChanges {
       return await this.filestackService.previewFile(file);
     } catch (err) {
       console.log(err);
+      return err;
     }
   }
 }
