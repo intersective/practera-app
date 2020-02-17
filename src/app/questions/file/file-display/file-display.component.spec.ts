@@ -7,7 +7,7 @@ import { SharedModule } from '@shared/shared.module';
 import { ReactiveFormsModule, FormControl } from '@angular/forms';
 import { UtilsService } from '@services/utils.service';
 
-class onChangedValues extends SimpleChange {
+class OnChangedValues extends SimpleChange {
   constructor(older, latest) {
     super(older, latest, false);
   }
@@ -17,7 +17,6 @@ describe('FileDisplayComponent', () => {
   let component: FileDisplayComponent;
   let fixture: ComponentFixture<FileDisplayComponent>;
   let filestackSpy: jasmine.SpyObj<FilestackService>;
-  let utilSpy: jasmine.SpyObj<UtilsService>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
@@ -138,7 +137,7 @@ describe('FileDisplayComponent', () => {
       }};
 
       component.ngOnChanges({
-        file: new onChangedValues(jsonData, newJsonData),
+        file: new OnChangedValues(jsonData, newJsonData),
       });
 
       expect(component['updateWorkflowStatus']).not.toHaveBeenCalled();
@@ -153,7 +152,7 @@ describe('FileDisplayComponent', () => {
       }};
 
       component.ngOnChanges({
-        file: new onChangedValues(jsonData, newJsonData),
+        file: new OnChangedValues(jsonData, newJsonData),
       });
 
       expect(component['updateWorkflowStatus']).not.toHaveBeenCalled();
@@ -184,7 +183,7 @@ describe('FileDisplayComponent', () => {
       }};
 
       component.ngOnChanges({
-        file: new onChangedValues(jsonData, newJsonData),
+        file: new OnChangedValues(jsonData, newJsonData),
       });
       flushMicrotasks();
 
