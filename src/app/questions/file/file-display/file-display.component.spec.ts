@@ -1,5 +1,5 @@
 import { CUSTOM_ELEMENTS_SCHEMA, SimpleChange } from '@angular/core';
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { async, ComponentFixture, TestBed, fakeAsync, flushMicrotasks } from '@angular/core/testing';
 import { FileDisplayComponent } from './file-display.component';
 import { FilestackService } from '@shared/filestack/filestack.service';
 import { Observable, of, pipe } from 'rxjs';
@@ -53,12 +53,16 @@ describe('FileDisplayComponent', () => {
     expect(filestackSpy.previewFile.calls.count()).toBe(1);
   });
 
-  it('should fail, if preview file api is faulty', () => {
+  it('should fail, if preview file api is faulty', fakeAsync(() => {
     const error = 'error';
     filestackSpy.previewFile.and.returnValue(Promise.reject(error));
-    const result = component.previewFile('file');
-    expect(result).toEqual(error);
-  });
+    let result;
+    const test = component.previewFile('file').catch(res => {
+      result = res;
+    });
+    flushMicrotasks();
+    expect(component.previewFile('file').then().catch).toThrowError();
+  }));
 
   describe('ngOnInit()', () => {
     beforeEach(() => {
@@ -111,9 +115,7 @@ describe('FileDisplayComponent', () => {
       expect(component['updateWorkflowStatus']).not.toHaveBeenCalled();
     });
 
-    it('should track fileupload changes if workflow is available', () => {
-      component['resetUILogic'] = jasmine.createSpy('resetUILogic');
-
+    it('should track fileupload changes if workflow is available', fakeAsync(() => {
       const virus_detection = {
         data: 'virus_detection_test_data',
       };
@@ -131,7 +133,7 @@ describe('FileDisplayComponent', () => {
         },
       ]));
 
-      const jsonData = {just: 'first test'};
+      const jsonData = { just: 'first test' };
       const newJsonData = {...jsonData, ...{
         and: 'second test',
         workflows: true,
@@ -140,12 +142,12 @@ describe('FileDisplayComponent', () => {
       component.ngOnChanges({
         file: new onChangedValues(jsonData, newJsonData),
       });
+      flushMicrotasks();
 
       expect(filestackSpy.getWorkflowStatus).toHaveBeenCalledWith(newJsonData.workflows);
-      expect(component['resetUILogic']).toHaveBeenCalled();
-      expect(component['virusDetection']).toEqual(virus_detection);
-      expect(component['quarantine']).toEqual(quarantine);
-    });
+      expect(component['virusDetection']).toEqual(virus_detection.data);
+      expect(component['quarantine']).toEqual(quarantine.data);
+    }));
   });
 });
 
