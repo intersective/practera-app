@@ -1,4 +1,4 @@
-import { CUSTOM_ELEMENTS_SCHEMA, SimpleChange } from '@angular/core';
+import { CUSTOM_ELEMENTS_SCHEMA, SimpleChange, DebugElement } from '@angular/core';
 import { async, ComponentFixture, TestBed, fakeAsync, flushMicrotasks } from '@angular/core/testing';
 import { FileDisplayComponent } from './file-display.component';
 import { FilestackService } from '@shared/filestack/filestack.service';
@@ -40,7 +40,7 @@ describe('FileDisplayComponent', () => {
 
   beforeEach(() => {
     fixture = TestBed.createComponent(FileDisplayComponent);
-    component = fixture.componentInstance;
+    component = fixture.debugElement.componentInstance;
     filestackSpy = TestBed.get(FilestackService);
   });
 
@@ -63,6 +63,50 @@ describe('FileDisplayComponent', () => {
     flushMicrotasks();
     expect(component.previewFile('file').then().catch).toThrowError();
   }));
+
+  describe('UI logic', () => {
+    const url = 'test.com/uilogic';
+    beforeEach(() => {
+      component.file = {
+        url
+      };
+    });
+    it('should display proper element based on filetype', () => {
+      component.fileType = 'image';
+      fixture.detectChanges();
+
+      const imageEle: HTMLElement = fixture.nativeElement.querySelector('ion-img');
+      const videoEle: HTMLElement = fixture.nativeElement.querySelector('video');
+      const anyEle: HTMLElement = fixture.nativeElement.querySelector('div');
+      expect(imageEle).toBeTruthy();
+      expect(videoEle).toBeFalsy();
+      expect(anyEle).toBeFalsy();
+    });
+
+    it('should display proper element based on filetype', () => {
+      component.fileType = 'video';
+      fixture.detectChanges();
+
+      const imageEle: HTMLElement = fixture.nativeElement.querySelector('ion-img');
+      const videoEle: HTMLElement = fixture.nativeElement.querySelector('video');
+      const anyEle: HTMLElement = fixture.nativeElement.querySelector('div');
+      expect(imageEle).toBeFalsy();
+      expect(videoEle).toBeTruthy();
+      expect(anyEle).toBeFalsy();
+    });
+
+    it('should display proper element based on filetype', () => {
+      component.fileType = 'any';
+      fixture.detectChanges();
+
+      const imageEle: HTMLElement = fixture.nativeElement.querySelector('ion-img');
+      const videoEle: HTMLElement = fixture.nativeElement.querySelector('video');
+      const anyEle: HTMLElement = fixture.nativeElement.querySelector('div');
+      expect(imageEle).toBeFalsy();
+      expect(videoEle).toBeFalsy();
+      expect(anyEle).toBeTruthy();
+    });
+  });
 
   describe('ngOnInit()', () => {
     beforeEach(() => {
