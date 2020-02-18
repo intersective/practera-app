@@ -97,7 +97,9 @@
           <ion-row class="experience-content">
             <ion-col size="7" no-padding class="experience-card-container">
               <ion-card class="practera-card experience-card no-box-shadow">
-                <img [src]="currentProgramImage ? currentProgramImage : '/assets/default-experience-image.svg'" [alt]="currentProgramName"/>
+                <div class="image-container">
+                  <img [src]="currentProgramImage ? currentProgramImage : '/assets/default-experience-image.svg'" [alt]="currentProgramName"/>
+                </div>
                 <ion-card-content>
                   <ion-item lines="none" class="switcher-card-item subtitle-1">
                     <ion-label>{{ currentProgramName }}</ion-label>
