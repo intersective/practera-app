@@ -72,19 +72,19 @@ export class SwitcherService {
   ) {}
 
   getPrograms() {
-    return of(this._normaliseAchievements());
+    return of(this.storage.get('programs'));
   }
 
-  private _normaliseAchievements() {
-    const programs = this.storage.get('programs');
-    programs.forEach((program) => {
-      if (program.project.lead_image) {
-        const imageId = program.project.lead_image.split('/').pop();
-        program.project.lead_image = 'https://cdn.filestackcontent.com/resize=width:800,fit:crop/' + imageId;
-      }
-    });
-    return programs;
-  }
+  // private _normaliseAchievements() {
+  //   const programs = this.storage.get('programs');
+  //   programs.forEach((program) => {
+  //     if (program.project.lead_image) {
+  //       const imageId = program.project.lead_image.split('/').pop();
+  //       program.project.lead_image = 'https://cdn.filestackcontent.com/resize=width:800,fit:crop/' + imageId;
+  //     }
+  //   });
+  //   return programs;
+  // }
 
   switchProgram(programObj: ProgramObj): Observable<any> {
     const themeColor = this.utils.has(programObj, 'program.config.theme_color') ? programObj.program.config.theme_color : '#2bbfd4';

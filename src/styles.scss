@@ -413,10 +413,10 @@ ion-skeleton-text {
     height: 64px;
     padding: 0;
   }
-  .image-container, .div-icon-swap {
+  .image-container {
     position: relative; 
     padding-bottom: 56.2%;
-    img, ion-icon {
+    img {
       position: absolute; 
       object-fit: cover; 
       width: 100%; 
