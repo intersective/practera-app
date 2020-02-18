@@ -5,8 +5,8 @@ export class ActivityPage extends AppPage {
   parent = $('app-activity');
   title = this.parent.$('h1');
   description = this.parent.$('app-description p');
-  tasks = this.parent.$$('#tasks-card clickable-item');
-  events = this.parent.$$('#events-card clickable-item');
+  tasks = this.parent.$$('#tasks-card app-list-item');
+  events = this.parent.$$('#events-card app-list-item');
 
   getActivityName() {
     return this.title.getText();
@@ -21,7 +21,7 @@ export class ActivityPage extends AppPage {
    * @param i The index of the task
    */
   getTaskName(i: number) {
-    return this.tasks.get(i).$('.task-name').getText();
+    return this.tasks.get(i).$('.item-title').getText();
   }
 
   /**
@@ -29,7 +29,7 @@ export class ActivityPage extends AppPage {
    * @param i The index of the task
    */
   getTaskDueDate(i: number) {
-    return this.tasks.get(i).$('.due-date').getText();
+    return this.tasks.get(i).$('.item-subtitle-1').getText();
   }
 
   /**
@@ -37,7 +37,7 @@ export class ActivityPage extends AppPage {
    * @param i The index of the task
    */
   getTaskTypeStatus(i: number) {
-    return this.tasks.get(i).$('.task-type-status').getText();
+    return this.tasks.get(i).$('.item-subtitle-2').getText();
   }
 
   /**
@@ -53,7 +53,7 @@ export class ActivityPage extends AppPage {
    * @param i The index of the event
    */
   getEventName(i: number) {
-    return this.events.get(i).$('.event-name').getText();
+    return this.events.get(i).$('.item-title').getText();
   }
 
   /**
