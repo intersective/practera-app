@@ -1,12 +1,14 @@
-import { Directive, ElementRef, HostListener } from '@angular/core';
+import { Directive, ElementRef, HostListener, Input } from '@angular/core';
 import { UtilsService } from '@services/utils.service';
 
 const PRACTERA_CARD_SHADOW = '0 4px 16px rgba(0,0,0,.12)';
+const ACTIVITY_CARD_SHADOW = '-3px 3px 4px rgba(0, 0, 0, 0.21)';
 
 @Directive({
   selector: '[appFloat]'
 })
 export class FloatDirective {
+  @Input() isActivityCard = false;
   constructor(private el: ElementRef, private utils: UtilsService) { }
 
   @HostListener('mouseleave') onMouseLeave() {
@@ -48,7 +50,7 @@ export class FloatDirective {
       return;
     }
     if (!hideShadow && element.style.boxShadow === 'none') {
-      element.style.boxShadow = PRACTERA_CARD_SHADOW;
+      element.style.boxShadow = this.isActivityCard ? ACTIVITY_CARD_SHADOW : PRACTERA_CARD_SHADOW;
       return;
     }
   }

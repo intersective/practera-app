@@ -4,14 +4,14 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content appFloat>
+<ion-content>
   <ng-container *ngIf="!isMobile; else singlePage">
     <ion-grid class="desktop-view">
       <ion-row>
-        <ion-col class="ion-no-padding">
+        <ion-col class="ion-no-padding" appFloat>
           <app-home [refresh]="initiator$"></app-home>
         </ion-col>
-        <ion-col class="ion-no-padding">
+        <ion-col class="ion-no-padding" appFloat isActivityCard="true">
           <app-project [refresh]="initiator$"></app-project>
         </ion-col>
       </ion-row>
