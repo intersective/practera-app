@@ -99,6 +99,9 @@ ion-item.no-bg {
         height: 100%;
         margin: 0;
         margin-left: 15px;
+        ion-label {
+          text-align: center !important;
+        }
       }
     }
   }
