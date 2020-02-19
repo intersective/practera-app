@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { GoMobileService } from './go-mobile.service';
-import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { UtilsService } from '@services/utils.service';
 import { NotificationService } from '@shared/notification/notification.service';
 import { BrowserStorageService } from '@services/storage.service';
