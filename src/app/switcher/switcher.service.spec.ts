@@ -70,8 +70,12 @@ describe('SwitcherService', () => {
 
     describe('getPrograms()', () => {
       it('should get program list from storage/cache', fakeAsync(() => {
-        service.getPrograms().subscribe();
-        flushMicrotasks();
+        storageSpy.get.and.returnValue([
+          {program: {}, timeline: {}, project: {lead_image: 'https://www.filepicker.io/api/file/DAsMaIUcQcSM3IFqalPN'}, enrolment: {}}
+        ]);
+        service.getPrograms().subscribe(programs => {
+          expect(programs[0].project.lead_image).toContain('https://cdn.filestackcontent.com/resize=fit:crop,width:');
+        });
         expect(storageSpy.get).toHaveBeenCalledWith('programs');
       }));
     });
