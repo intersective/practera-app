@@ -150,14 +150,22 @@ export class ContactNumberFormComponent implements OnInit {
     }
   }
 
+  /**
+   * Accept only certain keys
+   * @description accepted keys limited to:
+   *              - 'ArrowLeft', 'ArrowRight', 'Backspace', 'Delete'
+   *              - numeric key input
+   * @param  {KeyboardEvent} event code (function keypress) & key (for non-numeric input)
+   * @return {boolean}             true: key accepted, false: key skipped
+   */
   disableArrowKeys(event: KeyboardEvent): boolean {
     if (['ArrowLeft', 'ArrowRight', 'Backspace', 'Delete'].indexOf(event.code) !== -1) {
       return true;
     }
 
-    // just allow number keys to enter
+    // skip all non-numeric input
     if (['1', '2', '3', '4', '5', '6', '7', '8', '9', '0'].indexOf(event.key) === -1) {
-        return false;
+      return false;
     }
     return true;
   }
