@@ -63,7 +63,7 @@ export class SettingsComponent extends RouterEnter {
     this.acceptFileTypes = this.filestackService.getFileTypes('image');
     // also get program name
     this.currentProgramName = this.storage.getUser().programName;
-    this._getCurrentProgramImage();
+    this.currentProgramImage = this._getCurrentProgramImage();
     this.fastFeedbackService.pullFastFeedback().subscribe();
   }
 
@@ -76,7 +76,7 @@ export class SettingsComponent extends RouterEnter {
     if (!this.utils.isMobile()) {
       imagewidth = 1024;
     }
-    this.currentProgramImage = `${this.cdn}${imagewidth}/${imageId}`;
+    return `${this.cdn}${imagewidth}/${imageId}`;
   }
 
   openLink() {
