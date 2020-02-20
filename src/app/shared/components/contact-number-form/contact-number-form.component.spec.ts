@@ -103,7 +103,31 @@ describe('ContactNumberFormComponent', () => {
     });
   });
 
-  describe('updateCountry()', () => {});
+  describe('updateCountry()', () => {
+    beforeEach(() => {
+      component.countryModel = 'AUS';
+    });
+
+    it('should update form model criteria based on selected locale', () => {
+      component.updateCountry();
+
+      expect(component.activeCountryModelInfo.countryCode).toEqual(component.contactNumberFormat.masks[component.countryModel].format);
+      expect(component.activeCountryModelInfo.placeholder).toEqual(component.contactNumberFormat.masks[component.countryModel].placeholder);
+      expect(component.activeCountryModelInfo.pattern).toEqual(component.contactNumberFormat.masks[component.countryModel].pattern);
+      expect(component.activeCountryModelInfo.length).toEqual(component.contactNumberFormat.masks[component.countryModel].numberLength);
+
+      // will clear input fill once locale get changed to other
+      expect(component.contactNumber).toEqual('');
+    });
+
+    it('should emit event when user is in "go-mobile" page', () => {
+      spyOn(component.updateNumber, 'emit');
+      component.page = 'go-mobile';
+
+      component.updateCountry();
+      expect(component.updateNumber.emit).toHaveBeenCalledWith(component.activeCountryModelInfo.countryCode + component.contactNumber);
+    });
+  });
   describe('updateContactNumber()', () => {});
   describe('disableArrowKeys()', () => {});
 });
