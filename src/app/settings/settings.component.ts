@@ -35,6 +35,8 @@ export class SettingsComponent extends RouterEnter {
   // controll profile image updating
   imageUpdating = false;
   acceptFileTypes;
+  // card image CDN
+  cdn = 'https://cdn.filestackcontent.com/resize=fit:crop,width:';
 
   constructor (
     public router: Router,
@@ -61,8 +63,20 @@ export class SettingsComponent extends RouterEnter {
     this.acceptFileTypes = this.filestackService.getFileTypes('image');
     // also get program name
     this.currentProgramName = this.storage.getUser().programName;
-    this.currentProgramImage = this.storage.getUser().programImage;
+    this._getCurrentProgramImage();
     this.fastFeedbackService.pullFastFeedback().subscribe();
+  }
+
+  // loading pragram image to settings page by resizing it depend on device.
+  // in mobile we are not showing card with image but in some mobile phones on landscape mode desktop view is loading.
+  // because of that we load image also in mobile view.
+  private _getCurrentProgramImage () {
+    let imagewidth = 600;
+    const imageId = this.storage.getUser().programImage.split('/').pop();
+    if (!this.utils.isMobile()) {
+      imagewidth = 1024;
+    }
+    this.currentProgramImage = `${this.cdn}${imagewidth}/${imageId}`;
   }
 
   openLink() {
