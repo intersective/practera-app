@@ -11,7 +11,7 @@
           </ion-col>
           <ion-col>
             <input type="text"
-              maxlength="{{activeCountryModelInfo.length}}"
+              [attr.maxlength]="activeCountryModelInfo.length"
               pattern="{{activeCountryModelInfo.pattern}}"
               placeholder="{{activeCountryModelInfo.placeholder}}"
               [(ngModel)]="contactNumber"
@@ -37,7 +37,7 @@
         </ion-col>
         <ion-col>
           <input type="text"
-            maxlength="{{activeCountryModelInfo.length}}"
+            [attr.maxlength]="activeCountryModelInfo.length"
             pattern="{{activeCountryModelInfo.pattern}}"
             placeholder="{{activeCountryModelInfo.placeholder}}"
             [(ngModel)]="contactNumber"
