@@ -71,12 +71,15 @@ export class SettingsComponent extends RouterEnter {
   // in mobile we are not showing card with image but in some mobile phones on landscape mode desktop view is loading.
   // because of that we load image also in mobile view.
   private _getCurrentProgramImage () {
-    let imagewidth = 600;
-    const imageId = this.storage.getUser().programImage.split('/').pop();
-    if (!this.utils.isMobile()) {
-      imagewidth = 1024;
+    if (!this.utils.isEmpty(this.storage.getUser().programImage)) {
+      let imagewidth = 600;
+      const imageId = this.storage.getUser().programImage.split('/').pop();
+      if (!this.utils.isMobile()) {
+        imagewidth = 1024;
+      }
+      return `${this.cdn}${imagewidth}/${imageId}`;
     }
-    return `${this.cdn}${imagewidth}/${imageId}`;
+    return '';
   }
 
   openLink() {
