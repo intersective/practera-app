@@ -1,3 +1,4 @@
+import { By } from '@angular/platform-browser';
 import { IonicModule } from '@ionic/angular';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { FormsModule } from '@angular/forms';
@@ -217,5 +218,70 @@ describe('ContactNumberFormComponent', () => {
     });
   });
 
-  describe('disableArrowKeys()', () => {});
+  describe('disableArrowKeys()', () => {
+    it('should check input when user enter value', () => {
+      spyOn(component, 'disableArrowKeys');
+
+      component.page = 'settings';
+      component.countryModel = 'AUS';
+      storageSpy.getUser = jasmine.createSpy('getUser').and.returnValue({
+        contactNumber: '012345678912',
+      });
+      component.ngOnInit();
+      fixture.detectChanges();
+      const inputField: HTMLElement = fixture.nativeElement.querySelector('input.contact-input');
+
+      expect(inputField).toBeTruthy();
+      // inputField.dispatchEvent(new KeyboardEvent('ArrowRight'));
+      const keyPress = new KeyboardEvent('keydown', {
+        code: 'ArrowRight'
+      });
+      inputField.dispatchEvent(keyPress);
+      expect(component.disableArrowKeys).toHaveBeenCalledWith(keyPress);
+    });
+
+    it('should be truthy if Arrow right/left, Backspace or Delete key is pressed', () => {
+      component.page = 'settings';
+      fixture.detectChanges();
+      const inputField: HTMLElement = fixture.nativeElement.querySelector('input.contact-input');
+
+      expect(inputField).toBeTruthy();
+      const arrowLeft = new KeyboardEvent('keydown', {
+        code: 'ArrowLeft'
+      });
+      expect(component.disableArrowKeys(arrowLeft)).toEqual(true);
+
+      const arrowRight = new KeyboardEvent('keydown', {
+        code: 'ArrowRight'
+      });
+      expect(component.disableArrowKeys(arrowRight)).toEqual(true);
+
+      const arrowKeyUp = new KeyboardEvent('keydown', {
+        code: 'Backspace'
+      });
+      expect(component.disableArrowKeys(arrowKeyUp)).toEqual(true);
+
+      const deleteKey = new KeyboardEvent('keydown', {
+        code: 'Delete'
+      });
+      expect(component.disableArrowKeys(deleteKey)).toEqual(true);
+    });
+
+    it('should be truthy if numeric key is pressed', () => {
+      const keys = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0'];
+
+      keys.forEach(key => {
+        const keypress = new KeyboardEvent('keydown', { key });
+        expect(component.disableArrowKeys(keypress)).toEqual(true);
+      });
+    });
+
+    it('should be falsy if non-numeric key is pressed', () => {
+      const keys = ['a', 'c', 'e', 'g', 'i', 'k', 'm', 'o', 'q', 's', 'u', 'w', 'y'];
+      keys.forEach(key => {
+        const keypress = new KeyboardEvent('keydown', { key });
+        expect(component.disableArrowKeys(keypress)).toEqual(false);
+      });
+    });
+  });
 });
