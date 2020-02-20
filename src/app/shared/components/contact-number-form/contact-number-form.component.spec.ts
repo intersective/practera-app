@@ -14,12 +14,14 @@ import { BrowserStorageService } from '@services/storage.service';
 import { SettingService } from '@app/settings/setting.service';
 import { RouterModule, Router } from '@angular/router';
 import { MockRouter, BrowserStorageServiceMock } from '@testing/mocked.service';
-// import { } from '@anuglar';
+import { of } from 'rxjs';
 
 describe('ContactNumberFormComponent', () => {
   let component: ContactNumberFormComponent;
   let fixture: ComponentFixture<ContactNumberFormComponent>;
   let storageSpy: BrowserStorageService;
+  let notificationSpy: NotificationService;
+  let settingSpy: SettingService;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
@@ -33,7 +35,10 @@ describe('ContactNumberFormComponent', () => {
         },
         UtilsService,
         SettingService,
-        NotificationService,
+        {
+          provide: NotificationService,
+          useValue: jasmine.createSpyObj(['alert', 'presentToast', 'popUp'])
+        },
         {
           provide: Router,
           useClass: MockRouter
@@ -47,6 +52,9 @@ describe('ContactNumberFormComponent', () => {
     fixture = TestBed.createComponent(ContactNumberFormComponent);
     component = fixture.componentInstance;
     storageSpy = TestBed.get(BrowserStorageService);
+    notificationSpy = TestBed.get(NotificationService);
+    settingSpy = TestBed.get(SettingService);
+    fixture.detectChanges();
   });
 
   it('should create', () => {
@@ -128,6 +136,57 @@ describe('ContactNumberFormComponent', () => {
       expect(component.updateNumber.emit).toHaveBeenCalledWith(component.activeCountryModelInfo.countryCode + component.contactNumber);
     });
   });
-  describe('updateContactNumber()', () => {});
+
+  describe('updateContactNumber()', () => {
+    it('should prevent wrong formated contactNumber', () => {
+      component.countryModel = 'AUS';
+      component.contactNumber = '1234567';
+      component.activeCountryModelInfo.countryCode = '10';
+
+      component.updateContactNumber();
+      expect(notificationSpy.presentToast).toHaveBeenCalledWith('Invalid contact number', false);
+    });
+
+    it('should update contact number', () => {
+      let submitBtn, cancelBtn;
+      spyOn(settingSpy, 'updateProfile').and.returnValue(of({
+        success: true
+      }));
+      notificationSpy.alert = jasmine.createSpy('alert').and.callFake(res => {
+        [cancelBtn, submitBtn] = res.buttons;
+
+        submitBtn.handler();
+        expect(submitBtn.text).toEqual('Okay');
+        expect(notificationSpy.popUp).toHaveBeenCalledWith('shortMessage', { message: 'Profile successfully updated!'});
+      });
+
+      component.countryModel = 'AUS';
+      component.contactNumber = '1234567890';
+      component.activeCountryModelInfo.countryCode = '10';
+
+      component.updateContactNumber();
+    });
+
+    it('should fail update contact number gracefully (notify user)', () => {
+      let submitBtn, cancelBtn;
+      spyOn(settingSpy, 'updateProfile').and.returnValue(of({
+        success: false
+      }));
+      notificationSpy.alert = jasmine.createSpy('alert').and.callFake(res => {
+        [cancelBtn, submitBtn] = res.buttons;
+
+        submitBtn.handler();
+        expect(submitBtn.text).toEqual('Okay');
+        expect(notificationSpy.popUp).toHaveBeenCalledWith('shortMessage', { message: 'Profile updating failed!'});
+      });
+
+      component.countryModel = 'AUS';
+      component.contactNumber = '1234567890';
+      component.activeCountryModelInfo.countryCode = '10';
+
+      component.updateContactNumber();
+    });
+  });
+
   describe('disableArrowKeys()', () => {});
 });
