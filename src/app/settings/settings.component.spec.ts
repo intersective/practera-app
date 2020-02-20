@@ -96,6 +96,7 @@ describe('SettingsComponent', () => {
   });
 
   it('when testing onEnter(), it should get correct data', () => {
+    spyOn<any>(component, '_getCurrentProgramImage').and.returnValue('');
     fixture.detectChanges();
     expect(component.profile).toEqual({
       email: 'test@test.com',
