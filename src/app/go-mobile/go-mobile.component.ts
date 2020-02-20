@@ -49,7 +49,7 @@ export class GoMobileComponent implements OnInit {
     }
   }
 
-  submit() {
+  submit(): Promise<void> {
     const nrSubmitContactTracer = this.newRelic.createTracer('submit contact');
     this.newRelic.addPageAction('submit contact info');
     this.sendingSMS = true;
@@ -77,6 +77,7 @@ export class GoMobileComponent implements OnInit {
             },
           }],
         });
+        return alertBox;
       },
       err => {
         const toasted = this.notification.alert({
@@ -85,7 +86,7 @@ export class GoMobileComponent implements OnInit {
         });
         nrSubmitContactTracer();
         this.newRelic.noticeError('submitting contact error', JSON.stringify(err));
-        throw new Error(err);
+        return toasted;
       }
     );
   }
