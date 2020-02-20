@@ -11,7 +11,7 @@ import { NewRelicService } from '@shared/new-relic/new-relic.service';
 import { UtilsService } from '@services/utils.service';
 import { NotificationService } from '@shared/notification/notification.service';
 import { BrowserStorageService } from '@services/storage.service';
-import { BrowserStorageServiceMock, MockNewRelicService, MockRouter } from '@testing/mocked.service'; 
+import { BrowserStorageServiceMock, MockNewRelicService, MockRouter } from '@testing/mocked.service';
 import { SharedModule } from '@shared/shared.module';
 import { GoMobileService } from './go-mobile.service';
 import { ReactiveFormsModule } from '@angular/forms';
