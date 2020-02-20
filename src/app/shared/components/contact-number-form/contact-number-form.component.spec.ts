@@ -109,6 +109,15 @@ describe('ContactNumberFormComponent', () => {
       component.formatContactNumber();
       expect(component.contactNumber).toEqual('012 345 678 912');
     });
+
+    it('should emit event in go-mobile page', () => {
+      spyOn(component.updateNumber, 'emit');
+      component.page = 'go-mobile';
+      component.contactNumber = '012345678912';
+      component.formatContactNumber();
+      expect(component.contactNumber).toEqual('012 345 678 912');
+      expect(component.updateNumber.emit).toHaveBeenCalledWith(component.activeCountryModelInfo.countryCode + component.contactNumber);
+    });
   });
 
   describe('updateCountry()', () => {
@@ -147,7 +156,27 @@ describe('ContactNumberFormComponent', () => {
       expect(notificationSpy.presentToast).toHaveBeenCalledWith('Invalid contact number', false);
     });
 
-    it('should update contact number', () => {
+    it('should update contact number (US)', () => {
+      let submitBtn, cancelBtn;
+      spyOn(settingSpy, 'updateProfile').and.returnValue(of({
+        success: true
+      }));
+      notificationSpy.alert = jasmine.createSpy('alert').and.callFake(res => {
+        [cancelBtn, submitBtn] = res.buttons;
+
+        submitBtn.handler();
+        expect(submitBtn.text).toEqual('Okay');
+        expect(notificationSpy.popUp).toHaveBeenCalledWith('shortMessage', { message: 'Profile successfully updated!'});
+      });
+
+      component.countryModel = 'US';
+      component.contactNumber = '12345678901';
+      component.activeCountryModelInfo.countryCode = '1';
+
+      component.updateContactNumber();
+    });
+
+    it('should update contact number (AUS)', () => {
       let submitBtn, cancelBtn;
       spyOn(settingSpy, 'updateProfile').and.returnValue(of({
         success: true
