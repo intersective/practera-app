@@ -1,12 +1,22 @@
-ion-input {
-  @extend .subtitle-1, .gray-2;
-}
 ion-button {
   @extend .button;
 }
 ion-header ion-toolbar ion-title {
-  @extend .headline-6;
+  @extend .headline-6, .black;
 }
-ion-textarea {
-  @extend .subtitle-1, .gray-1;
+ion-textarea, ion-input, input, textarea {
+  @extend .subtitle-1;
+  &::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
+    @extend .gray-1;
+    opacity: 1; /* Firefox */
+  }
+    
+  &:-ms-input-placeholder { /* Internet Explorer 10-11 */
+    @extend .gray-1;
+  }
+    
+  &::-ms-input-placeholder { /* Microsoft Edge */
+    @extend .gray-1;
+  }
+  @extend .black;
 }
