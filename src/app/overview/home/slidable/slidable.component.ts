@@ -46,6 +46,7 @@ export class SlidableComponent implements OnInit, OnChanges {
   // restructure eventReminder data to adopt todoItem object format
   findAndNormaliseEvent(items) {
     return items.map(item => {
+      console.log(this.utils.timeFormatter(item.startTime));
       if (!item.type) {
         return {
           name: item.name,
