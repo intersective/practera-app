@@ -95,7 +95,7 @@
             <ion-label *ngIf="!isInMultiplePrograms()" class="subtitle-2 gray-2">Your experience</ion-label>
           </ion-item>
           <ion-row class="experience-content">
-            <ion-col size="7" no-padding class="experience-card-container">
+            <ion-col size="7" class="ion-no-padding experience-card-container">
               <ion-card class="practera-card experience-card no-box-shadow">
                 <div class="image-container">
                   <img [src]="currentProgramImage ? currentProgramImage : '/assets/default-experience-image.svg'" [alt]="currentProgramName"/>
@@ -107,7 +107,7 @@
                 </ion-card-content>
               </ion-card>
             </ion-col>
-            <ion-col size="5" *ngIf="isInMultiplePrograms()" no-padding class="switch-card-container">
+            <ion-col size="5" *ngIf="isInMultiplePrograms()" class="ion-no-padding switch-card-container">
               <ion-card class="practera-card experience-card" (click)="switchProgram()">
                 <div class="div-icon-swap">
                   <ion-icon name="swap" color="primary"></ion-icon>
