@@ -28,25 +28,31 @@ describe('SlidableComponent', () => {
 
   describe('reorder()', () => {
     it('should reorder notification based on published_date from meta object', () => {
+
       const data = [
         {
           meta: {
-            published_date: '',
+            published_date: '2010-01-01',
           }
         },
         {
           meta: {
-            published_date: '',
+            published_date: '2010-01-02',
           }
         },
         {
           meta: {
-            published_date: '',
+            published_date: '2010-01-03',
           }
         },
         {
           meta: {
-            published_date: '',
+            published_date: '2010-01-04',
+          }
+        },
+        {
+          meta: {
+            published_date: null,
           }
         },
       ];
@@ -56,7 +62,7 @@ describe('SlidableComponent', () => {
 
   describe('ngOnChanges()', () => {
     it('should reorder notifications', () => {
-      const dummy = [1,2,3,4];
+      const dummy = [1, 2, 3, 4];
       spyOn(component, 'reorder').and.callFake(() => dummy);
 
       component.ngOnChanges({
@@ -92,12 +98,12 @@ describe('SlidableComponent', () => {
         ...realEvents
       ];
       const result = component.findAndNormaliseEvent(eventItems);
-      expect(result[1]).toEqual([{
+      expect(result[1]).toEqual(jasmine.objectContaining({
         name: 'event 1',
         description: '',
         type: 'event',
         time: '',
-      }]);
+      }));
     });
   });
 
