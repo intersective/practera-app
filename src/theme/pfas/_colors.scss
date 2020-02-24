@@ -16,21 +16,13 @@
 .gray-3 {
   color: rgba(0, 0, 0, 0.8) !important;
 }
-
-.textField {
-  &::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
-    color: rgba(0, 0, 0, 0.4);
-    opacity: 1; /* Firefox */
-  }
-    
-  &:-ms-input-placeholder { /* Internet Explorer 10-11 */
-    color: rgba(0, 0, 0, 0.4);
-  }
-    
-  &::-ms-input-placeholder { /* Microsoft Edge */
-    color: rgba(0, 0, 0, 0.4);
-  }
+.black {
   color: black !important;
+}
+// use in activity, event components
+// for list item shared component for expired event title
+.color-gray-2 {
+  color: rgba(0, 0, 0, 0.6) !important;
 }
 
 .textarea {
