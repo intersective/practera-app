@@ -10,7 +10,7 @@ function cardListingHelper(debugElement) {
   console.log(`parent::`, debugElement.nativeElement.getBoundingClientRect().top);
   const cards: DebugElement[] = debugElement.queryAll(By.css('ion-card'));
   cards.forEach((debugCard, index) => {
-    const card : HTMLElement = debugCard.nativeElement;
+    const card: HTMLElement = debugCard.nativeElement;
     card.style.top = `${100 * index}`;
     const boundary = card.getBoundingClientRect();
     console.log(`${index}`, boundary.top);
@@ -142,7 +142,7 @@ describe('FloatDirective', () => {
 
     it('should have different shadow if "isActivityCard" is false', () => {
       const cards: DebugElement[] = debugElement.queryAll(By.css('ion-card'));
-      const lastCard : HTMLElement = cards[cards.length - 1].nativeElement;
+      const lastCard: HTMLElement = cards[cards.length - 1].nativeElement;
       lastCard.style.boxShadow = 'none';
 
       debugElement.triggerEventHandler('wheel', null);
@@ -173,7 +173,7 @@ describe('FloatDirective', () => {
 
     it('should have shadow if "isActivityCard" is true', () => {
       const cards: DebugElement[] = debugElement.queryAll(By.css('ion-card'));
-      const lastCard : HTMLElement = cards[cards.length - 1].nativeElement;
+      const lastCard: HTMLElement = cards[cards.length - 1].nativeElement;
       lastCard.style.boxShadow = 'none';
 
       debugElement.triggerEventHandler('wheel', null);
