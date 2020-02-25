@@ -15,6 +15,7 @@ const api = {
   submissions: 'api/submissions.json',
   progress: 'api/v2/motivations/progress/list.json',
   projectOverview: 'api/v2/plans/project/overview',
+  nextTask: 'api/v2/plans/activity/next_task'
 };
 
 export interface Activity {
@@ -484,5 +485,32 @@ export class ActivityService {
     return this.request.get(api.projectOverview, {
       params: { id: projectId }
     }).pipe(map(res => this._normaliseOverview(res.data)));
+  }
+
+  /**
+   * Get the next task
+   * @param activityId      The id of current activity
+   * @param currentTaskType The type of current task
+   * @param currentTaskId   The id of current task
+   */
+  getNextTask(activityId: number, currentTaskType: string, currentTaskId: number): Observable <{ noMoreTask: boolean; task: Task; }> {
+    return this.request.get(api.nextTask, {
+        params: {
+          activity_id: activityId,
+          task_type: currentTaskType.toLowerCase(),
+          task_id: currentTaskId
+        }
+      }).pipe(map(res => {
+        return {
+          noMoreTask: res.data.no_more_task,
+          task: res.data.task ? {
+            id: res.data.task.id,
+            name: res.data.task.name,
+            type: res.data.task.type,
+            contextId: res.data.task.context_id || null
+          } : null
+        };
+      })
+    );
   }
 }
