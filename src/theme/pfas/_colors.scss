@@ -5,17 +5,21 @@
   color: #F5F6FA !important;
 }
 .gray-0 {
-  color: #ABAEBB !important;
+  color: rgba(0, 0, 0, 0.3) !important;
 }
 .gray-1 {
-  color: #A4A8B7 !important;
+  color: rgba(0, 0, 0, 0.4) !important;
 }
 .gray-2 {
-  color: #818496 !important;
+  color: rgba(0, 0, 0, 0.6) !important;
 }
 .gray-3 {
-  color: #565B70 !important;
+  color: rgba(0, 0, 0, 0.8) !important;
 }
+.black {
+  color: black !important;
+}
+
 
 .textarea {
   border-color: #ccc;

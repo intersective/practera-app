@@ -39,3 +39,7 @@
   border-style: solid;
   padding: 1px 10px 1px 10px;
 }
+// use for expired event title @extend .gray-2 not working because this is a component scss file.
+.color-gray-2 {
+  color: rgba(0, 0, 0, 0.6) !important;
+}
