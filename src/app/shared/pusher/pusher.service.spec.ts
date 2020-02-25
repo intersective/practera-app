@@ -1,5 +1,5 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { async, ComponentFixture, inject, TestBed, tick, fakeAsync } from '@angular/core/testing';
+import { async, ComponentFixture, inject, TestBed, tick, fakeAsync, flushMicrotasks } from '@angular/core/testing';
 import { Observable, of, pipe } from 'rxjs';
 import { PusherService, PusherConfig } from '@shared/pusher/pusher.service';
 import { BrowserStorageService } from '@services/storage.service';
@@ -243,6 +243,19 @@ describe('PusherService', async () => {
       expect(service['pusher']).toBeTruthy();
     }));
   });
+  describe('initialisePusher()', () => {
+    it('should return instantiated pusher is there is existing one', fakeAsync(() => {
+      const instantiatedpusher = new PusherLib();
+      service['pusher'] = instantiatedpusher;
+      let result;
+      service['initialisePusher']().then(res => {
+        result = res;
+      });
+      flushMicrotasks();
+
+      expect(typeof result).toEqual(typeof instantiatedpusher);
+    }));
+  });
 
   describe('disconnect()', () => {
     beforeEach(() => {
@@ -327,8 +340,17 @@ describe('PusherService', async () => {
   });
 
   describe('typing message', () => {
-    it('should trigger triggerTyping()', () => {});
-    it('should trigger initiateTypingEvent()', () => {});
+    it('should trigger triggerTyping()', () => {
+      spyOn(service['typingAction'], 'next').and.returnValue(true);
+      service.triggerTyping('test', true);
+      expect(service['typingAction'].next).toHaveBeenCalledTimes(1);
+    });
+
+    it('should trigger initiateTypingEvent()', () => {
+      spyOn(service['typingAction'], 'pipe').and.returnValue(true);
+      service.initiateTypingEvent();
+      expect(service['typingAction'].pipe).toHaveBeenCalledTimes(1);
+    });
   });
 
 });
