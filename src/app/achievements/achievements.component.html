@@ -1,7 +1,7 @@
 <ion-header mode="ios">
   <ion-toolbar>
     <ion-icon name="arrow-back" (click)="back()" color="primary" slot="start" class="ion-margin-start"></ion-icon>
-    <ion-title class="ion-text-center headline-6">Badges</ion-title>
+    <ion-title class="ion-text-center">Badges</ion-title>
   </ion-toolbar>
 </ion-header>
 <ion-content color="light" class="ion-text-center">
@@ -37,8 +37,8 @@
           </ion-col>
         </ion-row>
         <ion-row [ngClass]="{'badge-container' : !utils.isMobile()}">
-          <ion-col class="badge-col" *ngFor="let achievement of achievements; let i = index;" 
-          size-xs="4" size-sm="3" size-md="3" size-lg="3" size-xl="3" margin-bottom >
+          <ion-col class="badge-col ion-margin-bottom" *ngFor="let achievement of achievements; let i = index;"
+          size-xs="4" size-sm="3" size-md="3" size-lg="3" size-xl="3">
           <!-- need to add loading -->
             <achievement-badge
               [achievement]="achievement"
