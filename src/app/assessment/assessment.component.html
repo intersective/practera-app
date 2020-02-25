@@ -20,8 +20,8 @@
   'ion-content-absolute': !utils.isMobile() && !hasFooter()
 }" appFloat>
   <h1 class="headline-4">{{ assessment.name }}</h1>
-  <ion-text color="dark" class="ion-text-left">
-    <app-description *ngIf="assessment.description" [content]="assessment.description" id="asmt-des" class="body-1"></app-description>
+  <ion-text class="ion-text-left">
+    <app-description *ngIf="assessment.description" [content]="assessment.description" id="asmt-des" class="body-1 black"></app-description>
   </ion-text>
   <p class="due-date assessment subtitle-1 gray-2 ion-text-center" [ngClass]="{'over': assessment.isOverdue}" *ngIf="doAssessment">
     {{ this.sharedService.dueDateFormatter(assessment.dueDate) }}
@@ -60,7 +60,7 @@
       </ion-text>
       <ng-container *ngFor="let question of group.questions">
         <ion-card class="practera-card question-card ion-text-left">
-          <ion-card-header class="q-title body-2">
+          <ion-card-header class="q-title body-2 black">
             {{ question.name }}
             <ion-text class="required-indicator" color="danger" *ngIf="question.isRequired">*</ion-text>
             <ion-icon *ngIf="question.info" color="primary" class="icon-info vertical-middle" (click)="showQuestionInfo(question.info)" name="information-circle-outline"></ion-icon>
