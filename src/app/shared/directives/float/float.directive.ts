@@ -16,7 +16,7 @@ export class FloatDirective {
   }
 
   @HostListener('wheel') onScroll() {
-    this.float('yellow');
+    this.float(null);
   }
 
   private float(color: string): void {
