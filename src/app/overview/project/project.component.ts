@@ -110,6 +110,10 @@ export class ProjectComponent implements OnInit {
         if (!milestones) {
           return;
         }
+        // don't need to do anything if data not changed
+        if (JSON.parse(JSON.stringify(milestones)) === JSON.parse(JSON.stringify(this.milestones))) {
+          return;
+        }
         this.milestones = milestones;
         milestones.forEach(m => {
           if (m.progress !== 1) {
@@ -119,7 +123,7 @@ export class ProjectComponent implements OnInit {
         this.loadingMilestone = false;
         // scroll to highlighted activity if has one
         if (this.highlightedActivityId) {
-          this.scrollTo(`activity-card-${this.highlightedActivityId}`);
+          setTimeout(() => this.scrollTo(`activity-card-${this.highlightedActivityId}`), 1000);
         }
       },
       error => {
@@ -127,26 +131,6 @@ export class ProjectComponent implements OnInit {
       }
     ));
 
-  }
-
-  trackScrolling(event) {
-    // get the position of each milestone
-    const milestonePositions = this.milestoneRefs.map(milestoneRef => {
-      return milestoneRef.nativeElement.offsetTop;
-    });
-    this.activeMilestoneIndex = milestonePositions.findIndex((element, i) => {
-      const {
-        detail, // current scrolling event
-        srcElement // ion-content's height
-      } = event;
-      const screenMidPoint = detail.currentY + (srcElement.offsetHeight / 2);
-
-      if (i === milestonePositions.length - 1) {
-        return screenMidPoint >= element;
-      }
-
-      return screenMidPoint >= element && screenMidPoint < milestonePositions[i + 1];
-    });
   }
 
   scrollTo(domId: string, index?: number): void {

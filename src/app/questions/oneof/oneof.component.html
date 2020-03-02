@@ -57,5 +57,5 @@
       </ion-item>
     </ion-radio-group>
   </ion-list>
-  <ion-textarea *ngIf="question.canComment && submission.answer" class="background-white" #commentEle [(ngModel)]="comment" margin-top rows="4" (ngModelChange)="onChange(comment, 'comment')" placeholder="Please put your feedback here"></ion-textarea>
+  <ion-textarea *ngIf="question.canComment && submission.answer" class="background-white ion-margin-top" #commentEle [(ngModel)]="comment" rows="4" (ngModelChange)="onChange(comment, 'comment')" placeholder="Please put your feedback here"></ion-textarea>
 </ng-container>
