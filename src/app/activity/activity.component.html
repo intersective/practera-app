@@ -62,7 +62,7 @@
   </ng-container>
   <ng-container *ngIf="events && events.length > 0">
     <div class="ion-text-left ion-margin-top">
-      <ion-label color="medium" class="subtitle-2 gray-2">Events</ion-label>
+      <ion-label class="subtitle-2 gray-2">Events</ion-label>
     </div>
     <ion-card class="practera-card" id="events-card">
       <ion-list>
@@ -72,7 +72,7 @@
             leadingIcon="calendar"
             [leadingIconColor]="eventListService.isNotActionable(event) ? 'medium' : 'primary'"
             [title]="event.name"
-            [titleColor]="eventListService.isNotActionable(event) ? 'medium' : ''"
+            [titleColor]="eventListService.isNotActionable(event) ? 'gray-2' : ''"
             [subtitle1]="event.activityName"
             [subtitle2]="eventListService.timeDisplayed(event)"
             [endingIcon]="!eventListService.isNotActionable(event) ? 'arrow-forward' : ''"
