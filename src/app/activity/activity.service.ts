@@ -4,6 +4,8 @@ import { map } from 'rxjs/operators';
 import { RequestService } from '@shared/request/request.service';
 import { UtilsService } from '@services/utils.service';
 import { BrowserStorageService } from '@services/storage.service';
+import { NotificationService } from '@shared/notification/notification.service';
+import { Router } from '@angular/router';
 
 /**
  * @name api
@@ -91,6 +93,8 @@ export class ActivityService {
     private request: RequestService,
     private utils: UtilsService,
     public storage: BrowserStorageService,
+    private router: Router,
+    private notification: NotificationService
   ) {}
 
   // request for the latest data, and return the previously saved data at the same time
@@ -488,7 +492,43 @@ export class ActivityService {
   }
 
   /**
-   * Get the next task
+   * Go to the next task within the same activity, or go back to former layer
+   * Logic:
+   *  - If there's an unfinished task after the current task, go to that task
+   *  - If all tasks after the current task are done, if there's no unfinished task before the current task, go to the home page
+   *  - If all tasks after the current task are done, if there is unfinished task before the current task, show a pop up for user to choose whether go to the activity page or home page
+   *
+   * @param activityId Activity id
+   * @param taskType   Current task type ('assessment'/'topic')
+   * @param taskId     Current task id
+   */
+  gotoNextTask(activityId: number, taskType: string, taskId: number) {
+    this.getNextTask(activityId, taskType, taskId).subscribe(res => {
+      if (res.noMoreTask) {
+        if (!res.task) {
+          // go back to home page, and highlight the next activity
+          return this.router.navigate(['app', 'home'], { queryParams: { activityId: activityId } });
+        } else {
+          return this.notification.activityCompletePopUp(activityId);
+        }
+      }
+      // go to the next task
+      let route = ['app', 'home'];
+      switch (res.task.type) {
+        case 'assessment':
+          route = ['assessment', 'assessment', activityId.toString(), res.task.contextId.toString(), res.task.id.toString()];
+          break;
+
+        case 'topic':
+          route = ['topic', activityId.toString(), res.task.id.toString()];
+          break;
+      }
+      return this.router.navigate(route);
+    });
+  }
+
+  /**
+   * Get the data needed to find next task
    * @param activityId      The id of current activity
    * @param currentTaskType The type of current task
    * @param currentTaskId   The id of current task
@@ -503,7 +543,7 @@ export class ActivityService {
       }).pipe(map(res => {
         return {
           noMoreTask: res.data.no_more_task,
-          task: res.data.task ? {
+          task: !this.utils.isEmpty(res.data.task) ? {
             id: res.data.task.id,
             name: res.data.task.name,
             type: res.data.task.type,
