@@ -22,7 +22,7 @@
         <a [href]="file.url" target="_blank" class="subtitle-1 black">
           <ion-icon name="document"></ion-icon>&nbsp;{{ file.filename }}
         </a>
-        <ion-icon *ngIf="file.url.length > 0" name="search" (click)="previewFile(file)" color="primary" padding-left float-right></ion-icon>
+        <ion-icon *ngIf="file.url.length > 0" name="search" (click)="previewFile(file)" color="primary" class="ion-padding-left ion-float-right"></ion-icon>
       </div>
       <ng-template #virusDetected>
         <ion-item lines="none" color="transparent">
