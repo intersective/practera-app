@@ -4,6 +4,7 @@ import { AlertOptions, ToastOptions, ModalOptions, LoadingOptions } from '@ionic
 import { PopUpComponent } from './pop-up/pop-up.component';
 import { AchievementPopUpComponent } from './achievement-pop-up/achievement-pop-up.component';
 import { LockTeamAssessmentPopUpComponent } from './lock-team-assessment-pop-up/lock-team-assessment-pop-up.component';
+import { ActivityCompletePopUpComponent } from './activity-complete-pop-up/activity-complete-pop-up.component';
 import { Achievement, AchievementsService } from '@app/achievements/achievements.service';
 import { UtilsService } from '@services/utils.service';
 
@@ -151,6 +152,24 @@ export class NotificationService {
       event
     );
     return modal;
+  }
+
+  /**
+   * pop up activity complete notification and detail
+   *
+   * sample call for activity complete popup
+   * NotificationService.activityCompletePopUp(3);
+   */
+  async activityCompletePopUp(activityId: number) {
+    return await this.modal(
+      ActivityCompletePopUpComponent,
+      { activityId },
+      {
+        cssClass: this.utils.isMobile() ? 'practera-popup' : 'practera-popup desktop-view',
+        keyboardClose: false,
+        backdropDismiss: false
+      }
+    );
   }
 
   async loading(opts?: LoadingOptions): Promise<void> {
