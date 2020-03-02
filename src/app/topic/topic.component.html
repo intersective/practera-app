@@ -23,7 +23,7 @@
 
   <ng-container *ngIf="topic.content">
     <ion-card class="background-white practera-card">
-      <ion-card-content class="body-1" [innerHtml]="topic.content"></ion-card-content>
+      <ion-card-content class="body-1 black" [innerHtml]="topic.content"></ion-card-content>
     </ion-card>
   </ng-container>
 
@@ -35,10 +35,10 @@
         <ion-grid >
           <ion-row>
             <ion-col size="10" class="file-name-view">
-              <p class="vertical-middle"><ion-icon name="document" class="vertical-middle" color="primary"></ion-icon>&nbsp;{{file.name}} </p>
+              <p class="vertical-middle black"><ion-icon name="document" class="vertical-middle" color="primary"></ion-icon>&nbsp;{{file.name}} </p>
             </ion-col>
             <ion-col size="2">
-              <ion-icon class="vertical-middle" *ngIf="file.url.length > 0" name="search" (click)="previewFile(file)" color="primary"></ion-icon>
+              <ion-icon class="vertical-middle hover-pointer" *ngIf="file.url.length > 0" name="search" (click)="previewFile(file)" color="primary"></ion-icon>
               <a *ngIf="file.url.length > 0" [href]="file.url" download class="text-right" target="_blank">
                 <ion-icon name="download" class="float-right"></ion-icon>
               </a>
