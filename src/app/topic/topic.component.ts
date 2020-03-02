@@ -38,7 +38,6 @@ export class TopicComponent extends RouterEnter {
   activityId = 0;
   topicProgress: number;
   isLoadingPreview = false;
-  isRedirectingToNextMilestoneTask: boolean;
   askForMarkAsDone: boolean;
   redirecting = false;
 
@@ -70,8 +69,9 @@ export class TopicComponent extends RouterEnter {
     };
     this.loadingMarkedDone = true;
     this.loadingTopic = true;
+    this.redirecting = false;
+    this.isLoadingPreview = false;
     this.btnToggleTopicIsDone = false;
-    this.isRedirectingToNextMilestoneTask = false;
     this.askForMarkAsDone = false;
   }
 
@@ -146,14 +146,14 @@ export class TopicComponent extends RouterEnter {
 
   /**
    * continue (mark as read) button
-   * @description button action to trigger `redirectToNextMilestoneTask`
+   * @description button action to trigger `gotoNextTask()`
    */
-  async continue(): Promise<any> {
+  async continue() {
     this.loadingTopic = true;
 
     // if topic has been marked as read
     if (this.btnToggleTopicIsDone) {
-      return this.redirectToNextMilestoneTask({ continue: true });
+      return this.activityService.gotoNextTask(this.activityId, 'topic', this.topic.id);
     }
 
     // mark topic as done
@@ -164,20 +164,11 @@ export class TopicComponent extends RouterEnter {
         header: 'Error marking topic as completed.',
         message: err.msg || JSON.stringify(err)
       });
-      this.loadingTopic = false;
       this.newRelic.noticeError(`${JSON.stringify(err)}`);
     }
-
-    this.redirecting = true;
     this.loadingTopic = false;
-    return setTimeout(
-      async () => {
-        const navigation = await this.redirectToNextMilestoneTask();
-        this.redirecting = false;
-        return navigation;
-      },
-      2000
-    );
+    this.redirecting = true;
+    this.activityService.gotoNextTask(this.activityId, 'topic', this.topic.id);
   }
 
   /**
@@ -202,89 +193,6 @@ export class TopicComponent extends RouterEnter {
         this.newRelic.noticeError(`${JSON.stringify(err)}`);
       }
     }
-  }
-
-  private async getNextSequence(): Promise<{
-    activity: OverviewActivity;
-    nextTask: OverviewTask;
-  }> {
-    const options = {
-      currentTaskId: this.id,
-      teamId: this.storage.getUser().teamId
-    };
-
-    try {
-      const {
-        currentActivity,
-        nextTask
-      } = await this.activityService.getTasksByActivityId(
-        this.storage.getUser().projectId,
-        this.activityId,
-        options
-      );
-
-      this.loadingTopic = false;
-      return {
-        activity: currentActivity,
-        nextTask
-      };
-    } catch (err) {
-      const toasted = await this.notificationService.alert({
-        header: 'Project overview API Error',
-        message: err.msg || JSON.stringify(err)
-      });
-
-      if (this.loadingTopic) {
-        this.loadingTopic = false;
-      }
-      this.newRelic.noticeError(`${JSON.stringify(err)}`);
-    }
-  }
-
-  // allow progression if milestone isnt completed yet
-  async redirectToNextMilestoneTask(options: {
-    continue?: boolean;
-  } = {}): Promise<any> {
-    if (options.continue === true) {
-      this.isRedirectingToNextMilestoneTask = true;
-    }
-
-    const { activity, nextTask } = await this.getNextSequence();
-    let route: any = ['app', 'home'];
-
-    if (this.activityId === activity.id && nextTask) {
-      switch (nextTask.type) {
-        case 'assessment':
-          route = [
-            'assessment',
-            'assessment',
-            activity.id,
-            nextTask.context_id,
-            nextTask.id
-          ];
-          break;
-
-        case 'topic':
-          route = ['topic', activity.id, nextTask.id];
-          break;
-      }
-    }
-
-    if (options.continue !== true && this.activityId !== activity.id) {
-      await this.notificationService.alert({
-        header: 'Congratulations!',
-        message: 'You have successfully completed this activity.',
-        buttons: [
-          {
-            text: 'Ok',
-            role: 'cancel',
-          }
-        ]
-      });
-    }
-
-    await this._navigate(route);
-    return;
   }
 
   // force every navigation happen under radar of angular
