@@ -17,7 +17,7 @@
         <ng-container *ngFor="let teamMember of question.teamMembers;let i = index">
           <ng-container *ngIf="teamMember.key === review.answer">
             <ion-item [lines]="i == question.teamMembers.length - 1 ? 'none' : ''">
-              <ion-label class="white-space-normal subtitle-1">{{ teamMember.userName }}</ion-label>
+              <ion-label class="white-space-normal subtitle-1 gray-2">{{ teamMember.userName }}</ion-label>
               <ion-radio [value]="teamMember.key" disabled mode="md"></ion-radio>
             </ion-item>
           </ng-container>
