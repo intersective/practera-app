@@ -122,6 +122,7 @@ export class BrowserStorageServiceMock extends SpyObject {
       apikey: 'test',
       timelineId: 'test',
       teamId: 'test',
+      contactNumber: '0123456789',
     };
     this.getUser = this.spy('getUser').and.returnValue(USER);
     this.setUser = this.spy('setUser').and.returnValue(true);
