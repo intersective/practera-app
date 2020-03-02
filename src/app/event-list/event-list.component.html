@@ -32,8 +32,8 @@
     </ion-button>
   </div>
 
-  <ion-item lines="none" color="light" class="ion-margin-top item-filter subtitle-1 gray-2">
-    <ion-label id="activity-filter" color="medium">Filter by Activity</ion-label>
+  <ion-item lines="none" color="light" class="ion-margin-top item-filter">
+    <ion-label id="activity-filter" class="subtitle-1" [ngClass]="!events.length ? 'gray-0' : 'gray-2'">Filter by Activity</ion-label>
     <ion-select
       multiple="true"
       aria-labelledby="activity-filter"
@@ -63,7 +63,7 @@
           leadingIcon="calendar"
           [leadingIconColor]="eventListService.isNotActionable(event) ? 'medium' : 'primary'"
           [title]="event.name"
-          [titleColor]="eventListService.isNotActionable(event) ? 'medium' : ''"
+          [titleColor]="eventListService.isNotActionable(event) ? 'gray-2' : ''"
           [subtitle1]="event.activityName"
           [subtitle2]="eventListService.timeDisplayed(event)"
           [endingIcon]="!eventListService.isNotActionable(event) ? 'arrow-forward' : ''"
