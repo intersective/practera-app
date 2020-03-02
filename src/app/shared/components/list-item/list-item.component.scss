@@ -41,8 +41,5 @@
 }
 // use for expired event title @extend .gray-2 not working because this is a component scss file.
 .color-gray-2 {
-  color: rgba(0, 0, 0, 0.6) !important;
-}
-.ion-color-gray-2 {
-  color: rgba(0, 0, 0, 0.6) !important;
+  color: var(--practera-60-Percent-gray) !important;
 }
