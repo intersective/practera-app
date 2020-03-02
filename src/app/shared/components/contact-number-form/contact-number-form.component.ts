@@ -150,14 +150,22 @@ export class ContactNumberFormComponent implements OnInit {
     }
   }
 
+  /**
+   * Accept only certain keys
+   * @description accepted keys limited to:
+   *              - 'ArrowLeft', 'ArrowRight', 'Backspace', 'Delete'
+   *              - numeric key input
+   * @param  {KeyboardEvent} event code (function keypress) & key (for non-numeric input)
+   * @return {boolean}             true: key accepted, false: key skipped
+   */
   disableArrowKeys(event: KeyboardEvent): boolean {
     if (['ArrowLeft', 'ArrowRight', 'Backspace', 'Delete'].indexOf(event.code) !== -1) {
       return true;
     }
 
-    // just allow number keys to enter
+    // skip all non-numeric input
     if (['1', '2', '3', '4', '5', '6', '7', '8', '9', '0'].indexOf(event.key) === -1) {
-        return false;
+      return false;
     }
     return true;
   }
@@ -198,7 +206,7 @@ export class ContactNumberFormComponent implements OnInit {
     }
   }
 
-  updateContactNumber() {
+  updateContactNumber(): Promise<void> {
     this.profile.contactNumber = this.activeCountryModelInfo.countryCode + this.contactNumber;
     // strip out white spaces and underscores
     this.profile.contactNumber = this.profile.contactNumber.replace(/[^0-9+]+/ig, '');
@@ -207,7 +215,7 @@ export class ContactNumberFormComponent implements OnInit {
       return this.notificationService.presentToast('Invalid contact number', false);
     }
     this.updating = true;
-    this.notificationService.alert({
+    return this.notificationService.alert({
       header: 'Update Profile',
       message: 'Are you sure to update your profile?',
       buttons: [
@@ -243,7 +251,7 @@ export class ContactNumberFormComponent implements OnInit {
               } else {
                 return this.notificationService.popUp('shortMessage', { message: 'Profile updating failed!'});
               }
-           });
+            });
           }
         }
       ]

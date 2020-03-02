@@ -1,9 +1,9 @@
-import { TestBed, fakeAsync, tick } from '@angular/core/testing';
+import { TestBed, fakeAsync, tick, flushMicrotasks } from '@angular/core/testing';
 import { ActivityService, Overview } from './activity.service';
 import { of } from 'rxjs';
 import { RequestService } from '@shared/request/request.service';
 import { UtilsService } from '@services/utils.service';
-import { OverviewFixture, RawOverviewRes } from '@testing/fixtures/overview';
+import { OverviewFixture, RawOverviewRes, Task1, Activity1 } from '@testing/fixtures/overview';
 
 describe('ActivityService', () => {
   let service: ActivityService;
@@ -32,20 +32,39 @@ describe('ActivityService', () => {
     expect(service).toBeTruthy();
   });
 
-  /*describe('getTasksByActivityId()', () => {
+  describe('getTasksByActivityId()', () => {
     const projectId = 1;
     const activityId = 1;
+    beforeEach(async() => {
+      requestSpy.get.and.returnValue(of({data: OverviewFixture}));
+    });
 
     it('getOverview should be triggered', fakeAsync (() => {
-      const getOverviewSpy = jasmine.createSpy('getOverview').and.returnValue(of(true));
-      const test = service.getTasksByActivityId(projectId, activityId, {
+      /*const getOverviewSpy = jasmine.createSpy('getOverview').and.returnValue(of([
+          {
+            id: 1,
+            name: '1',
+          },
+          {
+            id: 2,
+            name: '2',
+          },
+        ]));*/
+      let result;
+
+      service.getTasksByActivityId(projectId, activityId, {
         currentTaskId: 1,
         teamId: 1,
+      }).then(res => {
+        result = res;
       });
-      tick();
-      expect(service.getOverview).toHaveBeenCalled();
+      flushMicrotasks();
+
+      // expect(service.getOverview).toHaveBeenCalled();
+      expect(result.currentActivity).toEqual(jasmine.objectContaining(Activity1));
+      expect(result.nextTask).toEqual(jasmine.objectContaining(Task1));
     }));
-  });*/
+  });
 
   it('when testing getActivity(), should get the correct data', () => {
     const requestResponse = {
@@ -176,6 +195,116 @@ describe('ActivityService', () => {
     it('should return project overview', () => {
       expect(requestSpy.get).toHaveBeenCalled();
       expect(response).toEqual(OverviewFixture);
+    });
+  });
+
+  describe('findNext()', function() {
+    const currentTask = {
+      id: 1,
+      type: '',
+      name: '',
+      progress: 0.5,
+      deadline: '',
+      is_locked: false,
+      is_team: false,
+    };
+
+    const nextTask = {
+      id: 2,
+      type: '',
+      name: '',
+      progress: 0.5,
+      deadline: '',
+      is_locked: false,
+      is_team: false,
+    };
+
+    const prioritisedTask = {
+      id: 3,
+      type: 'assessment',
+      name: 'prioritisedTask',
+      progress: 0.5,
+      deadline: '',
+      is_locked: false,
+      is_team: false,
+      status: 'incomplete'
+    };
+
+    it('should find next task', () => {
+      const result = service.findNext(
+        [
+          currentTask,
+          nextTask,
+        ],
+        {
+          currentTaskId: 1,
+          teamId: 1
+        }
+      );
+
+      expect(result).toEqual(jasmine.objectContaining(nextTask));
+    });
+
+    it('should find prioritised task', () => {
+      const result = service.findNext(
+        [
+          prioritisedTask,
+          Object.assign(currentTask, {progress: 1}),
+          Object.assign(nextTask, {progress: 1}),
+        ],
+        {
+          currentTaskId: 3,
+          teamId: 3
+        }
+      );
+
+      expect(result).toEqual(jasmine.objectContaining(prioritisedTask));
+    });
+  });
+
+  describe('isMilestoneIncomplete()', function() {
+    it('should check availability of incomplete milestone', () => {
+      const incompletedMilestone = {
+        Activities: [
+          {
+            Tasks: [
+              {
+                type: 'assessment',
+                status: 'not started',
+              },
+              {
+                progress: 0.5,
+                type: 'assessment',
+                status: 'published',
+              },
+              {
+                progress: 0.5,
+                type: 'assessment',
+                status: 'in progress',
+              },
+              {
+                progress: 0.5,
+                type: 'assessment',
+                status: 'feedback available',
+              },
+              {
+                progress: 0.5,
+                type: 'assessment',
+                status: '',
+              },
+              {
+                progress: 0.5,
+                type: 'not assessment',
+                status: '',
+              }
+            ]
+          }
+        ]
+      };
+
+      const result = service.isMilestoneIncomplete(incompletedMilestone);
+
+      expect(result).toBeTruthy();
     });
   });
 

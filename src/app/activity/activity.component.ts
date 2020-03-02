@@ -235,4 +235,10 @@ export class ActivityComponent {
     }
   }
 
+  getNextTask() {
+    this.activityService.getNextTask(this.id, this.currentTask.type, this.currentTask.id).subscribe(res => {
+      console.log(res);
+    });
+  }
+
 }
