@@ -110,7 +110,7 @@ export class UtilsService {
     return array;
   }
 
-  changeThemeColor(color) {
+  changeThemeColor(color): void {
     this.document.documentElement.style.setProperty('--ion-color-primary', color);
     this.document.documentElement.style.setProperty('--ion-color-primary-shade', color);
     // get the tint version of the color(20% opacity)
@@ -179,10 +179,10 @@ export class UtilsService {
    * Any time before yesterday(one day before 'compareWith') will return 'Yesterday'
    * Any time today(the same day as 'compareWith') will return the time
    * Any other time will just return the date in "3 May" format
-   * @param {string} time        [The time string going to be formatted (In UTC timezone)]
-   * @param {string} compareWith [The time string used to compare with]
+   * @param {Date} time        [The time string going to be formatted (In UTC timezone)]
+   * @param {Date} compareWith [The time string used to compare with]
    */
-  timeFormatter(time: string, compareWith?: string) {
+  timeFormatter(time: Date | string, compareWith?: Date | string): string {
     if (!time) {
       return '';
     }
@@ -258,7 +258,15 @@ export class UtilsService {
     return formattedDate;
   }
 
-  timeComparer(timeString: string, comparedString?: string, compareDate?: boolean) {
+  timeComparer(
+    timeString: Date | string,
+    options: {
+      comparedString?: Date | string,
+      compareDate?: boolean
+    } = {}
+  ) {
+    const { comparedString, compareDate } = options;
+
     const time = new Date(this.timeStringFormatter(timeString));
     let compared = new Date();
     if (comparedString) {
@@ -315,11 +323,20 @@ export class UtilsService {
    *
    * Example time string: '2019-08-06 15:03:00'
    * After formatter: '2019-08-06T15:03:00Z'
+   *
+   * SAFARI enforce ISO 8601 (no space as time delimiter allowed)
+   * T for time delimiter
+   * Z for timezone (UTC) delimiter (+0000)
    */
-  timeStringFormatter(time: string) {
+  timeStringFormatter(time: Date | string) {
     // add "T" between date and time, so that it works on Safari
-    time = time.replace(' ', 'T');
+    // time = time.replace(' ', 'T');
+    if (typeof time === 'string') {
+      return (new Date()).toISOString();
+    }
+
+    return time.toISOString();
     // add "Z" to indicate that it is UTC time, it will automatically convert to local time
-    return time + 'Z';
+    // return time + 'Z';
   }
 }
