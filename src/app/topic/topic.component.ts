@@ -149,26 +149,29 @@ export class TopicComponent extends RouterEnter {
    * @description button action to trigger `gotoNextTask()`
    */
   async continue() {
-    this.loadingTopic = true;
-
     // if topic has been marked as read
-    if (this.btnToggleTopicIsDone) {
-      return this.activityService.gotoNextTask(this.activityId, 'topic', this.topic.id);
+    if (!this.btnToggleTopicIsDone) {
+      this.loadingMarkedDone = true;
+      // mark topic as done
+      try {
+        await this.markAsDone().toPromise();
+      } catch (err) {
+        await this.notificationService.alert({
+          header: 'Error marking topic as completed.',
+          message: err.msg || JSON.stringify(err)
+        });
+        this.newRelic.noticeError(`${JSON.stringify(err)}`);
+      }
+      this.loadingMarkedDone = false;
     }
 
-    // mark topic as done
-    try {
-      await this.markAsDone().toPromise();
-    } catch (err) {
-      await this.notificationService.alert({
-        header: 'Error marking topic as completed.',
-        message: err.msg || JSON.stringify(err)
-      });
-      this.newRelic.noticeError(`${JSON.stringify(err)}`);
-    }
-    this.loadingTopic = false;
     this.redirecting = true;
-    this.activityService.gotoNextTask(this.activityId, 'topic', this.topic.id);
+    this.activityService.gotoNextTask(this.activityId, 'topic', this.topic.id).then(redirect => {
+      this.redirecting = false;
+      if (redirect) {
+        this._navigate(redirect);
+      }
+    });
   }
 
   /**
@@ -197,6 +200,9 @@ export class TopicComponent extends RouterEnter {
 
   // force every navigation happen under radar of angular
   private _navigate(direction): Promise<boolean> {
+    if (!direction) {
+      return;
+    }
     if (this.utils.isMobile()) {
       // redirect to topic/assessment page for mobile
       return this.ngZone.run(() => {
