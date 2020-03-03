@@ -1,4 +1,4 @@
-import { TestBed,  } from '@angular/core/testing';
+import { TestBed, flushMicrotasks } from '@angular/core/testing';
 import { UtilsService } from './utils.service';
 import * as _ from 'lodash';
 
@@ -69,6 +69,75 @@ describe('UtilsService', () => {
     });
   });
 
+  describe('openUrl()', () => {
+    it('should execute open link with Window.open()', () => {
+      const url = 'test.com';
+
+      spyOn(window, 'open')
+      service.openUrl(url);
+
+      expect(window.open).toHaveBeenCalledWith(url, '_self');
+    });
+  });
+
+  describe('addOrRemove()', () => {
+    it('should add value if not element isn\'t available in the provided array', () => {
+      const result = service.addOrRemove([], 'new value');
+      expect(result.toString()).toEqual('new value');
+      expect(result[0]).toEqual('new value');
+    });
+
+    it('should remove value if not element is available in the provided array', () => {
+      const result = service.addOrRemove(['new value'], 'new value');
+      expect(result).toEqual([]);
+      expect(result.length).toEqual(0);
+      expect(result.length).not.toEqual(1);
+    });
+  });
+
+  describe('changeThemeColor()', () => {
+    it('should access to window.document style properties and update value', () => {
+      spyOn(service['document'].documentElement.style, 'setProperty');
+      const COLOR = '#000000';
+      service.changeThemeColor(COLOR);
+
+      expect(service['document'].documentElement.style.setProperty).toHaveBeenCalledWith('--ion-color-primary', COLOR);
+      expect(service['document'].documentElement.style.setProperty).toHaveBeenCalledWith('--ion-color-primary-shade', COLOR);
+      expect(service['document'].documentElement.style.setProperty).toHaveBeenCalledWith('--ion-color-primary-tint', COLOR + '33');
+      expect(service['document'].documentElement.style.setProperty).toHaveBeenCalledWith('--ion-color-primary-rgb', '0,0,0');
+    });
+  });
+
+  describe('changeCardBackgroundImage()', () => {
+    it('should change background image by accessing to document style property', () => {
+      spyOn(service['document'].documentElement.style, 'setProperty');
+      const TEST_IMAGE = 'test-image.png';
+      service.changeCardBackgroundImage(TEST_IMAGE);
+      expect(service['document'].documentElement.style.setProperty).toHaveBeenCalledWith('--practera-card-background-image', `url('${TEST_IMAGE}')`);
+    });
+  });
+
+  describe('getEvent()', () => {
+    it('should listen event rxjs subject', () => {
+      // service['_eventsSubject']
+      const TEST_RES = 'test-event';
+      const TEST_RES2 = 'test-event2';
+      let result;
+      service.getEvent('test').subscribe(res => {
+        result = res;
+      });
+
+      service.broadcastEvent('test', TEST_RES);
+      expect(result).toEqual(TEST_RES);
+
+      service.broadcastEvent('test', TEST_RES2);
+      expect(result).toEqual(TEST_RES2);
+
+      service.broadcastEvent('test2', 'nothing happen');
+      expect(result).not.toEqual('nothing happen');
+    });
+  });
+
   describe('isMobile()', () => {
     it('should return false when screensize > 576', () => {
       spyOnProperty(window, 'innerWidth').and.returnValue(577);
@@ -95,9 +164,24 @@ describe('UtilsService', () => {
   });
 
   describe('timeComparer()', () => {
-    it('should compare 2 timestamp strings', () => {
-      const date = service.timeComparer('2019-08-06 15:03:00');
-      console.log(date);
+    const earlier = new Date(Date.UTC(2020));
+
+    /*it('should return -1 when compare earlier than now date', () => {
+      const result = service.timeComparer(earlier, {});
+      expect(result).toEqual(-1);
+    });
+*/
+    it('should return 0 when compare with 1 same dates', () => {
+      const date = new Date();
+      const result = service.timeComparer(date, { comparedString: date});
+      expect(result).toEqual(0);
+    });
+
+    it('should return 1 when compare with later with earlier date', () => {
+      const now = new Date();
+      const later = new Date(now.setFullYear(now.getFullYear() + 1));
+      const result = service.timeComparer(later, { comparedString: earlier});
+      expect(result).toEqual(1);
     });
   });
 
@@ -117,9 +201,10 @@ describe('UtilsService', () => {
   });
 
   describe('timeStringFormatter()', () => {
-    it('should format time to accommodate safari\'s timestamp standard', () => {
-      const result = service.timeStringFormatter('2019-08-06 15:03:00');
-      expect(result).toEqual('2019-08-06T15:03:00Z');
+    it('should format time to accommodate safari\'s timestamp standard (ISO 8601)', () => {
+      const result = service.timeStringFormatter(new Date('2019-08-06 15:03:00 GMT+0000'));
+      expect(result).toEqual('2019-08-06T15:03:00.000Z'); // ISO 8601
+      expect(result).not.toEqual('2019-08-06T15:03:00Z');
     });
   });
 });
