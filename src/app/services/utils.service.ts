@@ -187,11 +187,9 @@ export class UtilsService {
       return '';
     }
     // if no compareWith provided, compare with today
-    let compareDate = new Date();
-    if (compareWith) {
-      compareDate = new Date(this.timeStringFormatter(compareWith));
-    }
-    const date = new Date(this.timeStringFormatter(time));
+    const compareDate = (compareWith) ? new Date(this.iso8601Formatter(compareWith)) : new Date();
+
+    const date = new Date(this.iso8601Formatter(time));
     if (date.getFullYear() === compareDate.getFullYear() && date.getMonth() === compareDate.getMonth()) {
       if (date.getDate() === compareDate.getDate() - 1) {
         return 'Yesterday';
@@ -213,11 +211,16 @@ export class UtilsService {
     }).format(date);
   }
 
-  utcToLocal(time: string, display: string = 'all') {
+  /**
+   * turn date into customised & human-readable language (non RFC2822/ISO standard)
+   * @param {Date | string}    time Date
+   * @param {string}       display date: display date, time: display time, all: date + time
+   */
+  utcToLocal(time: Date | string, display: string = 'all') {
     if (!time) {
       return '';
     }
-    const date = new Date(this.timeStringFormatter(time));
+    const date = new Date(this.iso8601Formatter(time));
     const formattedTime = new Intl.DateTimeFormat('en-GB', {
       hour12: true,
       hour: 'numeric',
@@ -236,7 +239,11 @@ export class UtilsService {
     }
   }
 
-  dateFormatter(date: Date) {
+  /**
+   * @description turn date into string formatted date
+   * @param {Date} date targetted date
+   */
+  dateFormatter(date: Date): string {
     const today = new Date();
     let formattedDate = new Intl.DateTimeFormat('en-GB', {
       month: 'short',
@@ -258,19 +265,25 @@ export class UtilsService {
     return formattedDate;
   }
 
+  /**
+   * @description dates comparison (between today/provided date)
+   * @param {Date    | string} timeString [description]
+   * @param {boolean}            = {}} options [description]
+   * @return {number} -1: before, 0: same date, 1: after
+   */
   timeComparer(
     timeString: Date | string,
     options: {
       comparedString?: Date | string,
       compareDate?: boolean
     } = {}
-  ) {
+  ): number {
     const { comparedString, compareDate } = options;
 
-    const time = new Date(this.timeStringFormatter(timeString));
+    const time = new Date(this.iso8601Formatter(timeString));
     let compared = new Date();
     if (comparedString) {
-      compared = new Date(this.timeStringFormatter(comparedString));
+      compared = new Date(this.iso8601Formatter(comparedString));
     }
     if (compareDate && (time.getDate() === compared.getDate() &&
     time.getMonth() === compared.getMonth() &&
@@ -328,11 +341,11 @@ export class UtilsService {
    * T for time delimiter
    * Z for timezone (UTC) delimiter (+0000)
    */
-  timeStringFormatter(time: Date | string) {
+  iso8601Formatter(time: Date | string) {
     // add "T" between date and time, so that it works on Safari
     // time = time.replace(' ', 'T');
     if (typeof time === 'string') {
-      return (new Date()).toISOString();
+      return (new Date(time)).toISOString();
     }
 
     return time.toISOString();
