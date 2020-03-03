@@ -164,13 +164,13 @@ describe('UtilsService', () => {
   });
 
   describe('timeComparer()', () => {
-    const earlier = new Date(Date.UTC(2020));
+    const earlier = new Date(Date.UTC(2020, 0));
 
-    /*it('should return -1 when compare earlier than now date', () => {
-      const result = service.timeComparer(earlier, {});
+    it('should return -1 when compare earlier than now date', () => {
+      const result = service.timeComparer(earlier);
       expect(result).toEqual(-1);
     });
-*/
+
     it('should return 0 when compare with 1 same dates', () => {
       const date = new Date();
       const result = service.timeComparer(date, { comparedString: date});
