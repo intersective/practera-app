@@ -1,5 +1,6 @@
-import { TestBed, flushMicrotasks } from '@angular/core/testing';
+import { TestBed, flushMicrotasks, fakeAsync } from '@angular/core/testing';
 import { UtilsService } from './utils.service';
+import { Observable, Subject, BehaviorSubject } from 'rxjs';
 import * as _ from 'lodash';
 import * as moment from 'moment';
 
@@ -164,6 +165,49 @@ describe('UtilsService', () => {
       expect(service.isEmpty(undefined)).toBeTruthy();
       expect(service.isEmpty(0)).toBeFalsy();
       expect(service.isEmpty(1)).toBeFalsy();
+    });
+  });
+
+  describe('updateActivityCache()', () => {
+    it('should update cache for activitySubjects', () => {
+      service.activitySubjects = {};
+      service.updateActivityCache('test', 'activity');
+
+      expect(service.activitySubjects['test']).toBeTruthy();
+      expect(service.activitySubjects['test'] instanceof BehaviorSubject).toBeTruthy();
+
+      let result;
+      service.activitySubjects['test'].subscribe(res => {
+        result = res;
+      });
+
+      expect(result).toEqual('activity');
+
+    });
+  });
+
+  describe('clearCache()', () => {
+    it('should trigger cache clearing through observables', () => {
+      service.activitySubjects = [
+        { next: jasmine.createSpy('next') },
+        { next: jasmine.createSpy('next') },
+        { next: jasmine.createSpy('next') },
+      ];
+
+      spyOn(service.projectSubject, 'next');
+      service.clearCache();
+
+      expect(service.projectSubject.next).toHaveBeenCalledWith(null);
+      expect(service.activitySubjects[0].next).toHaveBeenCalledWith(null);
+      expect(service.activitySubjects[1].next).toHaveBeenCalledWith(null);
+      expect(service.activitySubjects[2].next).toHaveBeenCalledWith(null);
+    });
+  });
+
+  describe('urlQueryToObject()', () => {
+    it('should turn url query into programmatically useable object', () => {
+      const result = service.urlQueryToObject('this=is&a=test&object=value');
+      expect(result).toEqual(jasmine.objectContaining({this: 'is', a: 'test', object: 'value'}));
     });
   });
 
