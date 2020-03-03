@@ -1,8 +1,12 @@
 import { TestBed, flushMicrotasks } from '@angular/core/testing';
 import { UtilsService } from './utils.service';
 import * as _ from 'lodash';
+import * as moment from 'moment';
 
 describe('UtilsService', () => {
+  const NOW = new Date();
+  const YESTERDAY = new Date(moment(NOW).subtract(1, 'day').toString());
+  const TOMORROW = new Date(moment(NOW).add(1, 'day').toString());
   let service: UtilsService;
 
   beforeEach(() => {
@@ -163,8 +167,104 @@ describe('UtilsService', () => {
     });
   });
 
+  describe('timeFormatter()', () => {
+    it('should return empty string if no time provided', () => {
+      const result = service.timeFormatter('');
+      expect(result).toEqual('');
+    });
+
+    it('should standardize date format', () => {
+      const result = service.timeFormatter(NOW);
+      expect(result).toEqual(moment(NOW).format('h:mm a'));
+    });
+
+    it('should see NOW as TOMORROW\'s yesterday', () => {
+      const result = service.timeFormatter(NOW, TOMORROW);
+      expect(result).toEqual('Yesterday'); // "NOW" is "TOMORROW"'s yesterday
+    });
+
+    it('should ignore date/month other than today', () => {
+      const NEXT_MONTH = moment().add(1, 'month').toString();
+      const result = service.timeFormatter(NOW, new Date(NEXT_MONTH));
+      expect(result).toEqual(moment(NOW).format('D MMM'));
+    });
+
+    it('should standardize today date into "Tomorrow"', () => {
+      const result = service.timeFormatter(TOMORROW);
+      expect(result).toEqual('Tomorrow');
+    });
+
+    it('should standardize today date into "Yesterday"', () => {
+      const result = service.timeFormatter(YESTERDAY);
+      expect(result).toEqual('Yesterday');
+    });
+
+    it('should standardize today date into formatted date', () => {
+      const future30days = new Date(moment('2020-01-01').add(30, 'days').toString());
+      const result = service.timeFormatter(future30days);
+      expect(result).toEqual('31 Jan');
+    });
+  });
+
+  describe('utcToLocal()', () => {
+    const DATE_STRING = '2020-01-01 00:00:00 GMT+0000'; // UTC 2020-01-01 00:00:00
+    const DATE_WITH_CURRENT_TIMEZONE = new Date(DATE_STRING); // Date with current timezone (non UTC)
+
+    it('should return empty string if no time provided', () => {
+      const result = service.utcToLocal('');
+      expect(result).toEqual('');
+    });
+
+    it('should turn UTC date into locale time', () => {
+      const result = service.utcToLocal(DATE_STRING);
+      const timezone_removed_date = service.utcToLocal(DATE_WITH_CURRENT_TIMEZONE);
+      expect(result).toEqual(timezone_removed_date);
+    });
+
+    it('should display date only', () => {
+      const result = service.utcToLocal(DATE_STRING, 'date');
+      expect(result).toEqual('1 Jan 2020');
+    });
+
+    it('should display time only', () => {
+      const result = service.utcToLocal(DATE_STRING, 'time');
+      const timezone_removed_time = service.utcToLocal(DATE_WITH_CURRENT_TIMEZONE, 'time');
+      expect(result).toEqual(timezone_removed_time);
+    });
+  });
+
+  describe('dateFormatter()', () => {
+    it('should standardize date format', () => {
+      const result = service.dateFormatter(NOW);
+      expect(result).toEqual('Today');
+    });
+
+    it('should standardize today date into "Tomorrow"', () => {
+      const result = service.dateFormatter(TOMORROW);
+      expect(result).toEqual('Tomorrow');
+    });
+
+    it('should standardize today date into "Yesterday"', () => {
+      const result = service.dateFormatter(YESTERDAY);
+      expect(result).toEqual('Yesterday');
+    });
+
+    it('should standardize today date into formatted date', () => {
+      const future30days = new Date(moment('2020-01-01').add(30, 'days').toString());
+      const result = service.dateFormatter(future30days);
+      expect(result).toEqual('31 Jan 2020');
+    });
+  });
+
   describe('timeComparer()', () => {
     const earlier = new Date(Date.UTC(2020, 0));
+
+    it('should return 0 when compared dates are on same date as today (now)', () => {
+      const result = service.timeComparer(new Date(), {
+        compareDate: true
+      });
+      expect(result).toEqual(0);
+    });
 
     it('should return -1 when compare earlier than now date', () => {
       const result = service.timeComparer(earlier);
@@ -200,11 +300,17 @@ describe('UtilsService', () => {
     });
   });
 
-  describe('timeStringFormatter()', () => {
-    it('should format time to accommodate safari\'s timestamp standard (ISO 8601)', () => {
-      const result = service.timeStringFormatter(new Date('2019-08-06 15:03:00 GMT+0000'));
+  describe('iso8601Formatter()', () => {
+    const DATE_STRING = '2019-08-06 15:03:00 GMT+0000';
+    it('should turn time into ISO 8601 standard', () => {
+      const result = service.iso8601Formatter(new Date(DATE_STRING));
       expect(result).toEqual('2019-08-06T15:03:00.000Z'); // ISO 8601
       expect(result).not.toEqual('2019-08-06T15:03:00Z');
+    });
+
+    it('should format time string to ISO 8601 standard', () => {
+      const result = service.iso8601Formatter(DATE_STRING);
+      expect(result).toEqual('2019-08-06T15:03:00.000Z'); // ISO 8601
     });
   });
 });
