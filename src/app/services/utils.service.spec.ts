@@ -168,6 +168,17 @@ describe('UtilsService', () => {
     });
   });
 
+  describe('getActivityCache()', () => {
+    it('should update cache for activitySubjects', () => {
+      service.activitySubjects = {};
+      service.getActivityCache('newCache');
+
+      expect(service.activitySubjects['newCache']).toBeTruthy();
+      expect(service.activitySubjects['newCache'] instanceof BehaviorSubject).toBeTruthy();
+      expect(service.activitySubjects['notexist']).toBeFalsy();
+    });
+  });
+
   describe('updateActivityCache()', () => {
     it('should update cache for activitySubjects', () => {
       service.activitySubjects = {};
