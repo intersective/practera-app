@@ -502,29 +502,29 @@ export class ActivityService {
    * @param taskType   Current task type ('assessment'/'topic')
    * @param taskId     Current task id
    */
-  gotoNextTask(activityId: number, taskType: string, taskId: number) {
-    this.getNextTask(activityId, taskType, taskId).subscribe(res => {
-      if (res.noMoreTask) {
-        if (!res.task) {
-          // go back to home page, and highlight the next activity
-          return this.router.navigate(['app', 'home'], { queryParams: { activityId: activityId } });
-        } else {
-          return this.notification.activityCompletePopUp(activityId);
-        }
+  async gotoNextTask(activityId: number, taskType: string, taskId: number): Promise<string[]> {
+    const res = await this.getNextTask(activityId, taskType, taskId).toPromise();
+    if (res.noMoreTask) {
+      if (!res.task) {
+        // go back to home page, and highlight the next activity
+        this.router.navigate(['app', 'home'], { queryParams: { activityId: activityId } });
+      } else {
+        this.notification.activityCompletePopUp(activityId);
       }
-      // go to the next task
-      let route = ['app', 'home'];
-      switch (res.task.type) {
-        case 'assessment':
-          route = ['assessment', 'assessment', activityId.toString(), res.task.contextId.toString(), res.task.id.toString()];
-          break;
+      return null;
+    }
+    // go to the next task
+    let route = ['app', 'home'];
+    switch (res.task.type) {
+      case 'assessment':
+        route = ['assessment', 'assessment', activityId.toString(), res.task.contextId.toString(), res.task.id.toString()];
+        break;
 
-        case 'topic':
-          route = ['topic', activityId.toString(), res.task.id.toString()];
-          break;
-      }
-      return this.router.navigate(route);
-    });
+      case 'topic':
+        route = ['topic', activityId.toString(), res.task.id.toString()];
+        break;
+    }
+    return route;
   }
 
   /**

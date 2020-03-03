@@ -147,7 +147,7 @@ export class NotificationService {
     const modal = await this.modal(
       component, componentProps,
       {
-      cssClass: this.utils.isMobile() ? 'practera-popup lock-assessment-popup' : 'practera-popup lock-assessment-popup desktop-view',
+        cssClass: this.utils.isMobile() ? 'practera-popup lock-assessment-popup' : 'practera-popup lock-assessment-popup desktop-view',
       },
       event
     );
@@ -161,11 +161,15 @@ export class NotificationService {
    * NotificationService.activityCompletePopUp(3);
    */
   async activityCompletePopUp(activityId: number) {
+    let cssClass = 'practera-popup activity-complete-popup';
+    if (this.utils.isMobile()) {
+      cssClass += ' mobile-view';
+    }
     return await this.modal(
       ActivityCompletePopUpComponent,
       { activityId },
       {
-        cssClass: this.utils.isMobile() ? 'practera-popup' : 'practera-popup desktop-view',
+        cssClass: cssClass,
         keyboardClose: false,
         backdropDismiss: false
       }
