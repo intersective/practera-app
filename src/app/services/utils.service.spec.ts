@@ -223,6 +223,33 @@ describe('UtilsService', () => {
   });
 
   describe('timeFormatter()', () => {
+    const LOCAL_TIME_TODAY = [
+      `${moment().format('YYYY-MM-DD')} 00:00:00`,
+      `${moment().format('YYYY-MM-DD')} 01:00:00`,
+      `${moment().format('YYYY-MM-DD')} 02:00:00`,
+      `${moment().format('YYYY-MM-DD')} 03:00:00`,
+      `${moment().format('YYYY-MM-DD')} 04:00:00`,
+      `${moment().format('YYYY-MM-DD')} 05:00:00`,
+      `${moment().format('YYYY-MM-DD')} 06:00:00`,
+      `${moment().format('YYYY-MM-DD')} 07:00:00`,
+      `${moment().format('YYYY-MM-DD')} 08:00:00`,
+      `${moment().format('YYYY-MM-DD')} 09:00:00`,
+      `${moment().format('YYYY-MM-DD')} 10:00:00`,
+      `${moment().format('YYYY-MM-DD')} 11:00:00`,
+      `${moment().format('YYYY-MM-DD')} 12:00:00`,
+      `${moment().format('YYYY-MM-DD')} 13:00:00`,
+      `${moment().format('YYYY-MM-DD')} 14:00:00`,
+      `${moment().format('YYYY-MM-DD')} 15:00:00`,
+      `${moment().format('YYYY-MM-DD')} 16:00:00`,
+      `${moment().format('YYYY-MM-DD')} 17:00:00`,
+      `${moment().format('YYYY-MM-DD')} 18:00:00`,
+      `${moment().format('YYYY-MM-DD')} 19:00:00`,
+      `${moment().format('YYYY-MM-DD')} 20:00:00`,
+      `${moment().format('YYYY-MM-DD')} 21:00:00`,
+      `${moment().format('YYYY-MM-DD')} 22:00:00`,
+      `${moment().format('YYYY-MM-DD')} 23:00:00`,
+    ];
+
     it('should return empty string if no time provided', () => {
       const result = service.timeFormatter('');
       expect(result).toEqual('');
@@ -240,13 +267,25 @@ describe('UtilsService', () => {
 
     it('should standardize date format international format', () => {
       const onePMUTC = `${moment().format('YYYY-MM-DD')} 13:00:00.000Z`;
-      const result = service.timeFormatter(onePMUTC);
+      const result = service.timeFormatter(onePMUTC); // follows local GMT
       const formatted = new Intl.DateTimeFormat('en-GB', {
         hour12: true,
         hour: 'numeric',
         minute: 'numeric'
       }).format(new Date(onePMUTC));
       expect(result).toEqual(formatted);
+    });
+
+    it('should ensure all numeric time format is return in expected time format (h:mm a)', () => {
+      LOCAL_TIME_TODAY.forEach(timeString => {
+        const result = service.timeFormatter(timeString);
+        const formatted = new Intl.DateTimeFormat('en-GB', {
+          hour12: true,
+          hour: 'numeric',
+          minute: 'numeric'
+        }).format(new Date(timeString));
+        expect(result).toEqual(formatted);
+      });
     });
 
     it('should see NOW as TOMORROW\'s yesterday', () => {
