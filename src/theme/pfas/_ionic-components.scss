@@ -6,17 +6,18 @@ ion-header ion-toolbar ion-title {
 }
 ion-textarea, ion-input, input, textarea {
   @extend .subtitle-1;
+  --placeholder-color: var(--practera-40-Percent-gray);
   &::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
-    @extend .gray-1;
+    color: var(--practera-40-Percent-gray) !important;
     opacity: 1; /* Firefox */
   }
     
   &:-ms-input-placeholder { /* Internet Explorer 10-11 */
-    @extend .gray-1;
+    color: var(--practera-40-Percent-gray) !important;
   }
     
   &::-ms-input-placeholder { /* Microsoft Edge */
-    @extend .gray-1;
+    color: var(--practera-40-Percent-gray) !important;
   }
   @extend .black;
 }
