@@ -1,5 +1,6 @@
 import { Component, Input, ViewChild, ElementRef, OnChanges, OnInit, SimpleChanges } from '@angular/core';
 import { CircleProgressOptionsInterface } from 'ng-circle-progress';
+import { UtilsService } from '@services/utils.service';
 
 @Component({
   selector: 'app-circle-progress',
@@ -9,6 +10,7 @@ import { CircleProgressOptionsInterface } from 'ng-circle-progress';
 export class CircleProgressComponent implements OnChanges, OnInit {
   @Input() data = {};
   @Input() type: string;
+  @Input() loading = false;
   config: any;
 
   largePlaceholderCircle = {
@@ -90,6 +92,10 @@ export class CircleProgressComponent implements OnChanges, OnInit {
 
   @ViewChild('description') descriptionRef: ElementRef;
 
+  constructor (
+    public utils: UtilsService
+  ) {}
+
   ngOnInit() {
     if (this.data) {
       this.config = this.setCircleProgress(this.data);
@@ -102,7 +108,9 @@ export class CircleProgressComponent implements OnChanges, OnInit {
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    this.config = this.setCircleProgress(changes.data.currentValue);
+    if (changes.data) {
+      this.config = this.setCircleProgress(changes.data.currentValue);
+    }
   }
 
   setCircleProgress(data: CircleProgressOptionsInterface) {
