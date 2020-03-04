@@ -86,8 +86,8 @@ export class AssessmentComponent extends RouterEnter {
   savingButtonDisabled = true;
   savingMessage: string;
   saving: boolean;
-  markingAsReview = 'Continue';
-  isRedirectingToNextMilestoneTask: boolean;
+  btnContinueText = 'Continue';
+  btnContinueDisabled: boolean;
 
   constructor (
     public router: Router,
@@ -169,7 +169,7 @@ export class AssessmentComponent extends RouterEnter {
     };
     this.loadingAssessment = true;
     this.loadingSubmission = true;
-    this.loadingFeedbackReviewed = true;
+    this.loadingFeedbackReviewed = false;
     this.saving = false;
     this.doAssessment = false;
     this.doReview = false;
@@ -178,8 +178,8 @@ export class AssessmentComponent extends RouterEnter {
     this.submitting = false;
     this.savingButtonDisabled = true;
     this.savingMessage = '';
-    this.markingAsReview = 'Continue';
-    this.isRedirectingToNextMilestoneTask = false;
+    this.btnContinueText = 'Continue';
+    this.btnContinueDisabled = false;
   }
 
   onEnter() {
@@ -313,13 +313,14 @@ export class AssessmentComponent extends RouterEnter {
 
         // call todo item to check if the feedback has been reviewed or not
         if (this.submission.status === 'published') {
+          this.loadingFeedbackReviewed = true;
           this.assessmentService.getFeedbackReviewed(this.submission.id)
             .subscribe(
-              (feedbackReviewed) => {
+              feedbackReviewed => {
                 this.feedbackReviewed = feedbackReviewed;
                 this.loadingFeedbackReviewed = false;
               },
-              (error: any) => {
+              error => {
                 this.newRelic.noticeError(`${JSON.stringify(error)}`);
               }
             );
@@ -363,7 +364,10 @@ export class AssessmentComponent extends RouterEnter {
     });
   }
 
-  navigationRoute(): Promise<boolean> {
+  /**
+   * Navigate back to the previous page
+   */
+  navigateBack(): Promise<boolean> {
     if (this.fromPage && this.fromPage === 'reviews') {
       return this._navigate(['app', 'reviews']);
     }
@@ -376,6 +380,9 @@ export class AssessmentComponent extends RouterEnter {
     return this._navigate(['app', 'home']);
   }
 
+  /**
+   * When user click on the back button
+   */
   back(): Promise<boolean | void> {
     this.newRelic.actionText('Back to previous page.');
 
@@ -388,24 +395,20 @@ export class AssessmentComponent extends RouterEnter {
         buttons: [
           {
             text: 'No',
-            handler: () => {
-              return this.navigationRoute();
-            },
+            handler: () => this.navigateBack(),
           },
           {
             text: 'Yes',
-            handler: () => {
-              return this.markReviewFeedbackAsRead().then(() => {
-                return this.navigationRoute();
-              });
-            }
+            handler: () => this.markReviewFeedbackAsRead().then(() => {
+              return this.navigateBack();
+            })
           }
         ]
       });
     } else {
       // force saving progress
       this.submit(true , true, true);
-      return this.navigationRoute();
+      return this.navigateBack();
     }
   }
 
@@ -435,91 +438,44 @@ export class AssessmentComponent extends RouterEnter {
   }
 
   /**
-   * allow progression if milestone isnt completed yet
-   * @param  {boolean;   }}          options
-   * @return {Promise<any>}
+   * When user click the continue button
    */
-  async redirectToNextMilestoneTask(options: {
-    continue?: boolean; // extra parameter to allow "options" appear as well-defined variable
-    routeOnly?: boolean; // routeOnly: True, return route in string. False, return navigated route (promise<void>)
-  } = {}): Promise<any> {
+  async clickBtnContinue() {
+    if (this.submission.status === 'published' && !this.feedbackReviewed) {
+      await this.markReviewFeedbackAsRead();
+    }
+    this.goToNextTask();
+  }
+
+  /**
+   * Go to the next task
+   */
+  goToNextTask() {
     // skip "continue workflow" && instant redirect user, when:
     // - review action (this.action == 'review')
     // - fromPage = events (check AssessmentRoutingModule)
-    if (
-      this.action === 'review'
-      || (this.action === 'assessment' && this.fromPage === 'events')
+    if (this.action === 'review' ||
+      (this.action === 'assessment' && this.fromPage === 'events')
     ) {
-      return this.navigationRoute();
+      return this.navigateBack();
     }
 
-    if (options && options.continue) {
-      this.isRedirectingToNextMilestoneTask = true;
-    }
-
-    let route: Array<string | number> = ['app', 'home'];
-    let navigationParams: any;
-    const { activity, nextTask } = await this.getNextSequence();
-
-    // to next incompleted task in current activity
-    if (activity.id === this.activityId && nextTask) {
-      switch (nextTask.type) {
-        case 'assessment':
-          route = ['assessment', 'assessment', activity.id, nextTask.context_id, nextTask.id];
-          break;
-
-        case 'topic':
-          route = ['topic', activity.id, nextTask.id];
-          break;
+    this.newRelic.actionText('Evaluate & navigate to next task.');
+    this.btnContinueDisabled = true;
+    this.activityService.gotoNextTask(this.activityId, 'assessment', this.id).then(redirect => {
+      this.btnContinueDisabled = false;
+      if (redirect) {
+        this._navigate(redirect);
       }
-    }
-
-    if (options.routeOnly === true) {
-      return route;
-    }
-
-    // if found new activity (different activityid), force redirect user back to home screen
-    if (activity.id !== this.activityId) {
-      navigationParams = { queryParams: { activityId: activity.id } };
-
-      if (options.continue !== true) {
-        await this.notificationService.alert({
-          header: 'Congratulations!',
-          message: 'You have successfully completed this activity.',
-          buttons: [
-            {
-              text: 'Ok',
-              role: 'cancel',
-            }
-          ]
-        });
-      }
-    }
-
-    // submitting is true, when awaiting submission response
-    if (this.submitting) {
-      this.submitting = 'redirecting';
-      return setTimeout(
-        async () => {
-          await this._navigate(route, navigationParams);
-          this.isRedirectingToNextMilestoneTask = false;
-          return;
-        },
-        2000
-      );
-    } else {
-      await this._navigate(route, navigationParams);
-      this.isRedirectingToNextMilestoneTask = false;
-      return;
-    }
+    });
   }
 
   /**
    * - check if fastfeedback is available
    * - show next sequence if submission successful
    */
-  private async pullFeedbackAndShowNext(): Promise<boolean> {
-    this.submitting = 'Retrieving new task...';
+  private async pullFastFeedbackAndShowNext() {
+    this.submitting = 'Retrieving next task...';
 
     // check if this assessment have plus check turn on, if it's on show plus check and toast message
     if (this.assessment.pulseCheck) {
@@ -527,8 +483,7 @@ export class AssessmentComponent extends RouterEnter {
         const modal = await this.fastFeedbackService.pullFastFeedback({ modalOnly: true }).toPromise();
 
         if (modal && modal.present) {
-          const presentedModal = await modal.present();
-          this.notificationService.presentToast('Submission successful!', false, '', true);
+          await modal.present();
           await modal.onDidDismiss();
         }
       } catch (err) {
@@ -540,9 +495,7 @@ export class AssessmentComponent extends RouterEnter {
         throw new Error(err);
       }
     }
-
-    const nextTask = await this.redirectToNextMilestoneTask();
-    return nextTask;
+    this.goToNextTask();
   }
 
   /**
@@ -665,7 +618,7 @@ export class AssessmentComponent extends RouterEnter {
         } else {
           this.newRelic.actionText('Submit answer.');
 
-          return this.pullFeedbackAndShowNext();
+          return this.pullFastFeedbackAndShowNext();
         }
       },
       (err: {msg: string}) => {
@@ -700,86 +653,60 @@ export class AssessmentComponent extends RouterEnter {
     setTimeout(() => this.saving = false, SAVE_PROGRESS_TIMEOUT);
   }
 
-  // mark review as read
-  async markReviewFeedbackAsRead(): Promise<void | boolean> {
-    let nextSequence;
-
-    // step 1.0: allow only if it hasnt reviewed
-    if (!this.feedbackReviewed) {
-      let result: { success: boolean; };
-      this.markingAsReview = 'Marking as read...';
+  /**
+   * Mark review feedback as read
+   */
+  async markReviewFeedbackAsRead(): Promise<void> {
+    // do nothing if feedback is already mark as read
+    if (this.feedbackReviewed) {
+      return;
+    }
+    this.btnContinueText = 'Marking as read...';
+    this.btnContinueDisabled = true;
+    let result;
+    // Mark feedback as read
+    try {
+      this.newRelic.actionText('Waiting for review feedback read.');
+      result = await this.assessmentService.saveFeedbackReviewed(this.submission.id).toPromise();
       this.feedbackReviewed = true;
-      this.isRedirectingToNextMilestoneTask = true;
-
-      // step 1.1: Mark feedback as read
-      try {
-        this.newRelic.actionText('Waiting for fast feedback data.');
-        result = await this.assessmentService.saveFeedbackReviewed(this.submission.id).toPromise();
-        this.loadingFeedbackReviewed = false;
-        this.newRelic.actionText('Fast feedback answered.');
-      } catch (err) {
-        const toasted = await this.notificationService.alert({
-          header: 'Error marking feedback as completed',
-          message: err.msg || JSON.stringify(err)
-        });
-
-        // deactivate loading indicator on fail
-        this.feedbackReviewed = false;
-        this.isRedirectingToNextMilestoneTask = false;
-        this.loadingFeedbackReviewed = false;
-        this.markingAsReview = 'Continue';
-        throw new Error(err);
-      }
-
-      // mark as read successful
-      // @TODO need to show three dots and tick icon
-
-      // step 1.2: after feedback marked as read, popup review rating screen
-      try {
-        // display review rating modal and then redirect to task screen under proper activity.
-        // Conditions:
-        // 1. if review is successfully mark as read (from above) and
-        // 2. hasReviewRating (activation): program configuration is set enabled presenting review rating screen
-        if (result.success && this.storage.getUser().hasReviewRating === true) {
-          this.markingAsReview = 'Retrieving New Task...';
-          this.isRedirectingToNextMilestoneTask = true;
-
-          this.newRelic.actionText('Evaluate & navigate to next task.');
-          nextSequence = await this.redirectToNextMilestoneTask({routeOnly: true});
-          this.newRelic.actionText('Waiting for rating API response.');
-          const popup = await this.assessmentService.popUpReviewRating(
-            this.review.id,
-            nextSequence
-          );
-
-          this.loadingFeedbackReviewed = false;
-          this.markingAsReview = 'Continue';
-          return popup;
-        }
-      } catch (err) {
-        const msg = 'Error retrieving rating page';
-        this.newRelic.noticeError(msg);
-        const toasted = await this.notificationService.alert({
-          header: msg,
-          message: err.msg || JSON.stringify(err)
-        });
-
-        // deactivate loading indicator on fail
-        this.loadingFeedbackReviewed = false;
-        this.isRedirectingToNextMilestoneTask = false;
-        this.markingAsReview = 'Continue';
-        throw new Error(err);
-      }
+      this.newRelic.actionText('Review feedback read.');
+      this.btnContinueDisabled = false;
+      this.btnContinueText = 'Continue';
+    } catch (err) {
+      const toasted = await this.notificationService.alert({
+        header: 'Marking feedback as read failed',
+        message: err.msg || JSON.stringify(err)
+      });
+      this.btnContinueDisabled = false;
+      this.btnContinueText = 'Continue';
+      throw new Error(err);
     }
 
-    // step 2.0: if feedback had been marked as read beforehand,
-    //         straightaway redirect user to the next task instead.
-    this.markingAsReview = 'Retrieving New Task...';
-    this.newRelic.actionText('Evaluate & navigate to next task.');
-    nextSequence = await this.redirectToNextMilestoneTask({ continue: true });
-    this.loadingFeedbackReviewed = false;
-    this.markingAsReview = 'Continue';
-    return nextSequence;
+    // After marking feedback as read, popup review rating modal if
+    // 1. review is successfully marked as read (from above)
+    // 2. hasReviewRating (activation): program configuration is set to enable review rating
+    if (!result.success || !this.storage.getUser().hasReviewRating) {
+      return;
+    }
+    try {
+      // display review rating modal
+      this.btnContinueText = 'Retrieving review rating...';
+      this.btnContinueDisabled = true;
+      this.newRelic.actionText('Waiting for review rating API response.');
+      await this.assessmentService.popUpReviewRating(this.review.id, false);
+      this.btnContinueDisabled = false;
+      this.btnContinueText = 'Continue';
+    } catch (err) {
+      const msg = 'Can not get review rating information';
+      this.newRelic.noticeError(msg);
+      const toasted = await this.notificationService.alert({
+        header: msg,
+        message: err.msg || JSON.stringify(err)
+      });
+      this.btnContinueDisabled = false;
+      this.btnContinueText = 'Continue';
+      throw new Error(err);
+    }
   }
 
   showQuestionInfo(info) {
@@ -795,50 +722,15 @@ export class AssessmentComponent extends RouterEnter {
     }).format(new Date());
   }
 
-  /**
-   * when all task in an activity is completed, activity & nextTask are empty
-   * when has incompleted task, activity would be available
-   * @return {Promise} [description]
-   */
-  private async getNextSequence(): Promise<{
-    activity: OverviewActivity;
-    nextTask: OverviewTask;
-  }> {
-    const options = {
-      currentTaskId: this.id,
-      teamId: this.storage.getUser().teamId
-    };
-
-    try {
-      const { projectId } = this.storage.getUser();
-      const {
-        currentActivity,
-        nextTask
-      } = await this.activityService.getTasksByActivityId(
-        projectId,
-        this.activityId,
-        options
-      );
-
-      return {
-        activity: currentActivity,
-        nextTask
-      };
-    } catch (err) {
-      const toasted = await this.notificationService.alert({
-        header: 'Project overview API Error',
-        message: err.msg || JSON.stringify(err)
-      });
-
-      if (this.submitting) {
-        this.submitting = false;
-      }
-      throw new Error(err);
-    }
+  // whether this page has the footer continue button
+  hasFooter(): boolean {
+    return this.action === 'assessment' && (this.loadingSubmission || ['pending review', 'done', 'pending approval', 'published'].indexOf(this.submission.status) !== -1);
   }
 
-  // whether this page has the footer continue button
-  hasFooter() {
-    return this.action === 'assessment' && (this.loadingSubmission || ['pending review', 'done', 'pending approval', 'published'].indexOf(this.submission.status) !== -1);
+  /**
+   * Whether display a check mark before the continue button
+   */
+  btnContinueHasCheck(): boolean {
+    return ['pending review', 'done', 'pending approval'].includes(this.submission.status) || (this.feedbackReviewed && this.submission.status == 'published')
   }
 }
