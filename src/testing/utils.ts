@@ -21,7 +21,6 @@ export class TestUtils {
    */
   getDateString(day: number, minute: number): string {
     const momentDate = `${moment.utc().add(day, 'days').add(minute, 'minute').format('YYYY-MM-DD hh:mm:ss')}`;
-    console.log(momentDate);
     return momentDate;
   }
 
