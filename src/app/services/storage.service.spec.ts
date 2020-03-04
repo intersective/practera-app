@@ -3,7 +3,7 @@ import { BrowserStorageService, BROWSER_STORAGE } from './storage.service';
 
 describe('StorageService', function() {
   let service: BrowserStorageService;
-  let storage;//: BROWSER_STORAGE;
+  let storage; // : BROWSER_STORAGE;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
