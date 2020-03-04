@@ -27,7 +27,7 @@ describe('UtilsService', () => {
   describe('lodash extensions', () => {
     it('should extend each()', () => {
       spyOn(_, 'each');
-      service.each([1,2,3], () => true);
+      service.each([1, 2, 3], () => true);
       expect(_.each).toHaveBeenCalled();
     });
 
@@ -78,7 +78,7 @@ describe('UtilsService', () => {
     it('should execute open link with Window.open()', () => {
       const url = 'test.com';
 
-      spyOn(window, 'open')
+      spyOn(window, 'open');
       service.openUrl(url);
 
       expect(window.open).toHaveBeenCalledWith(url, '_self');
@@ -230,7 +230,23 @@ describe('UtilsService', () => {
 
     it('should standardize date format', () => {
       const result = service.timeFormatter(NOW);
-      expect(result).toEqual(moment(NOW).format('h:mm a'));
+      const formatted = new Intl.DateTimeFormat('en-GB', {
+        hour12: true,
+        hour: 'numeric',
+        minute: 'numeric'
+      }).format(NOW);
+      expect(result).toEqual(formatted);
+    });
+
+    it('should standardize date format international format', () => {
+      const onePMUTC = `${moment().format('YYYY-MM-DD')} 13:00:00.000Z`;
+      const result = service.timeFormatter(onePMUTC);
+      const formatted = new Intl.DateTimeFormat('en-GB', {
+        hour12: true,
+        hour: 'numeric',
+        minute: 'numeric'
+      }).format(new Date(onePMUTC));
+      expect(result).toEqual(formatted);
     });
 
     it('should see NOW as TOMORROW\'s yesterday', () => {
