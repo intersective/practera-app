@@ -12,7 +12,6 @@ function cardListingHelper(debugElement) {
     const card: HTMLElement = debugCard.nativeElement;
     card.style.top = `${100 * index}`;
     const boundary = card.getBoundingClientRect();
-    console.log(`${index}`, boundary.top);
   });
 }
 
