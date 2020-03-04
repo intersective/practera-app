@@ -182,32 +182,25 @@
   [ngClass]="{'ion-footer-absolute': !utils.isMobile()}"
   *ngIf="hasFooter()">
   <ion-toolbar class="ion-text-center">
-    <ion-spinner style="width: 100%;"
-      *ngIf="loadingSubmission || (loadingFeedbackReviewed && submission.status == 'published')"
+
+    <ion-spinner
+      *ngIf="loadingSubmission || loadingFeedbackReviewed"
       name="dots"
       class="vertical-middle ion-text-center"
+      style="width: 100%;"
     ></ion-spinner>
 
-    <ion-button *ngIf="!loadingMarkedDone && !loadingFeedbackReviewed && submission.status == 'published' && !feedbackReviewed"
-      (click)="markReviewFeedbackAsRead()"
+    <ion-button
+      *ngIf="!loadingSubmission && !loadingFeedbackReviewed"
+      (click)="clickBtnContinue()"
       shape="round"
+      [disabled]="btnContinueDisabled"
       class="continue btn-cta">
-      {{markingAsReview}}
-    </ion-button>
-
-    <ion-button *ngIf="['pending review', 'done', 'pending approval'].indexOf(submission.status) !== -1 || (feedbackReviewed && submission.status == 'published')"
-      (click)="redirectToNextMilestoneTask({ continue: true })"
-      [disabled]="isRedirectingToNextMilestoneTask"
-      shape="round"
-      class="continue btn-cta">
-      <ng-container *ngIf="isRedirectingToNextMilestoneTask; else continue">
-        <ion-spinner style="width: 100%;" name="dots" class="vertical-middle ion-text-center"></ion-spinner>
+      <ion-spinner *ngIf="btnContinueDisabled" style="width: 100%;" name="dots" class="vertical-middle ion-text-center"></ion-spinner>
+      <ng-container *ngIf="!btnContinueDisabled">
+        <ion-icon *ngIf="btnContinueHasCheck()" slot="start" src="/assets/checkmark.svg"></ion-icon>
+        <ion-text>{{ btnContinueText }}</ion-text>
       </ng-container>
-
-      <ng-template #continue>
-        <ion-icon slot="start" src="/assets/checkmark.svg"></ion-icon>
-        <ion-text>CONTINUE</ion-text>
-      </ng-template>
     </ion-button>
 
   </ion-toolbar>
