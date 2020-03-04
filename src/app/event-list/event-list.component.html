@@ -88,15 +88,15 @@
       <ng-container [ngSwitch]="activated">
         <ng-container *ngSwitchCase="'browse'">
           <p class="subtitle-1 gray-3">There's no new events.</p>
-          <span class="body-2 gray-1">Go to the booked tab to see the events you've booked.</span>
+          <span class="gray-1 body-2">Go to the booked tab to see the events you've booked.</span>
         </ng-container>
         <ng-container *ngSwitchCase="'booked'">
           <p class="subtitle-1 gray-3">You have no booked events.</p>
-          <span class="body-2 gray-1">Go to the browse tab and book an event to see it here.</span>
+          <span class="gray-1 body-2">Go to the browse tab and book an event to see it here.</span>
         </ng-container>
         <ng-container *ngSwitchCase="'attended'">
           <p class="subtitle-1 gray-3">You have not attended any events.</p>
-          <span class="body-2 gray-1">You can see all your past events in this tab.</span>
+          <span class="gray-1 body-2">You can see all your past events in this tab.</span>
         </ng-container>
       </ng-container>
     </ion-card>
