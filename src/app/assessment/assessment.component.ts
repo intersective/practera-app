@@ -609,14 +609,15 @@ export class AssessmentComponent extends RouterEnter {
       this.submission.id
     ).subscribe(
       result => {
-        this.submitting = false;
-        this.submitted = true;
         if (saveInProgress) {
           this.newRelic.actionText('Saved progress.');
           // display message for successfull saved answers
           this.savingMessage = 'Last saved ' + this._getCurrentTime();
+          this.savingButtonDisabled = false;
         } else {
           this.newRelic.actionText('Assessment Submitted.');
+          this.submitting = false;
+          this.submitted = true;
           return this.pullFastFeedback();
         }
       },
