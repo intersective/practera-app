@@ -609,7 +609,6 @@ export class AssessmentComponent extends RouterEnter {
       this.submission.id
     ).subscribe(
       result => {
-        this.savingButtonDisabled = false;
         this.submitting = false;
         this.submitted = true;
         if (saveInProgress) {

@@ -22,7 +22,7 @@ export class ActivityCompletePopUpComponent {
     if (!continueToActivity) {
       this.router.navigate(['app', 'activity', this.activityId]);
     } else {
-      this.router.navigate(['app', 'home'], { queryParams: { activityId: this.activityId } });
+      this.router.navigate(['app', 'home'], { queryParams: { activityId: this.activityId, activityCompleted: true } });
     }
   }
 }
