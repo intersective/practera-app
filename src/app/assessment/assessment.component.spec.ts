@@ -87,7 +87,7 @@ class Page {
   }
 }
 
-fdescribe('AssessmentComponent', () => {
+describe('AssessmentComponent', () => {
   let component: AssessmentComponent;
   let fixture: ComponentFixture<AssessmentComponent>;
   let page: Page;
@@ -212,7 +212,7 @@ fdescribe('AssessmentComponent', () => {
         },
         {
           provide: ActivityService,
-          useValue: jasmine.createSpyObj('ActivityService', ['getTasksByActivityId'])
+          useValue: jasmine.createSpyObj('ActivityService', ['getTasksByActivityId', 'gotoNextTask'])
         },
         {
           provide: FastFeedbackService,
@@ -258,6 +258,7 @@ fdescribe('AssessmentComponent', () => {
       currentActivity: {id: 1},
       nextTask: {type: 'assessment'}
     });
+    activitySpy.gotoNextTask.and.returnValue(new Promise(() => {}));
     storageSpy.getUser.and.returnValue(mockUser);
     component.routeUrl = '/test';
   });
@@ -490,6 +491,7 @@ fdescribe('AssessmentComponent', () => {
   describe('should get correct assessment answers when', () => {
     let assessment;
     let answers;
+    let savingButtonDisabled = false;
 
     beforeEach(() => {
       fixture.detectChanges();
@@ -505,7 +507,7 @@ fdescribe('AssessmentComponent', () => {
     });
 
     afterEach(() => {
-      expect(component.savingButtonDisabled).toBe(false);
+      expect(component.savingButtonDisabled).toBe(savingButtonDisabled);
       expect(notificationSpy.popUp.calls.count()).toBe(0);
       expect(assessment.id).toBe(1);
       expect(assessment.context_id).toBe(2);
@@ -543,11 +545,12 @@ fdescribe('AssessmentComponent', () => {
     });
 
     it('submitting', () => {
+      savingButtonDisabled = true;
       component.submit(false);
       assessment = assessmentSpy.saveAnswers.calls.first().args[0];
       answers = assessmentSpy.saveAnswers.calls.first().args[1];
-      expect(component.submitting).toEqual(true);
-      expect(component.saving).toBe(false);
+      expect(component.submitting).toEqual(false);
+      expect(component.saving).toBe(true);
       expect(assessment.in_progress).toBe(false);
     });
   });
@@ -613,7 +616,7 @@ fdescribe('AssessmentComponent', () => {
       tick(10 * 1000); // 10 secs
     }));
 
-    it('should check fastfeedback availability as pulseCheck is `true`', fakeAsync(() => {
+    it(`should check fastfeedback availability as pulseCheck is 'true'`, fakeAsync(() => {
       component.submit(false);
       const spy = spyOn(fastFeedbackSpy, 'pullFastFeedback').and.returnValue(of(fastFeedbackSpy.pullFastFeedback()));
       spyOn(component, 'goToNextTask');
@@ -624,12 +627,8 @@ fdescribe('AssessmentComponent', () => {
       fixture.detectChanges();
       fixture.whenStable().then(() => {
         expect(fastFeedbackSpy.pullFastFeedback.calls.count()).toEqual(1);
-        expect(notificationSpy.presentToast.calls.count()).toEqual(1);
-
         if (component.doReview === true) {
           expect(component.navigateBack).toHaveBeenCalled();
-        } else {
-          expect(component.goToNextTask).toHaveBeenCalled();
         }
       });
     }));
@@ -638,11 +637,16 @@ fdescribe('AssessmentComponent', () => {
       component.assessment.pulseCheck = false;
       spyOn(fastFeedbackSpy, 'pullFastFeedback');
       spyOn(component, 'goToNextTask');
-
       component.submit(false);
       expect(fastFeedbackSpy.pullFastFeedback.calls.count()).toEqual(0);
-      expect(notificationSpy.presentToast.calls.count()).toEqual(0);
-      expect(component.goToNextTask).toHaveBeenCalled();
     });
+  });
+
+  describe('click continue button', () => {
+    it('should go to next task', fakeAsync(() => {
+      component.clickBtnContinue();
+      expect(activitySpy.gotoNextTask.calls.count()).toEqual(1);
+      expect(component.continueBtnLoading).toBe(true);
+    }));
   });
 });
