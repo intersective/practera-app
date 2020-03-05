@@ -51,4 +51,14 @@ ion-header ion-toolbar {
     }
   }
 }
+ion-footer {
+  .footer-text {
+    margin: 20px;
+    text-transform: capitalize;
+  }
+  .footer-action {
+    height: 40px;
+    margin: 10px 20px;
+  }
+}
 
