@@ -37,10 +37,7 @@ export class AssessmentComponent extends RouterEnter {
   activityId: number;
   // context id
   contextId: number;
-  // action = 'assessment' is for user to do assessment
-  // action = 'reivew' is for user to do review for this assessment
   submissionId: number;
-  action: string;
   // the structure of assessment
   assessment: Assessment = {
     name: '',
@@ -69,12 +66,15 @@ export class AssessmentComponent extends RouterEnter {
     modified: ''
   };
 
-  // @TECHDEBT: we should be able to identify 2 following flags by just using `this.action` (review/assessment)
-  // we'll need to manage assesmsent.status:
-  // - pending approval
-  // - pending review
-  // - pending approval + done (AssessmentReview)
+  // action == 'assessment' is for user to do assessment, including seeing the submission or seeing the feedback. This actually means the current user is the user who should "do" this assessment
+  // action == 'reivew' is for user to do review for this assessment. This means the current user is the user who should "review" this assessment
+  action: string;
+
+  // if doAssessment is true, it means this user is actually doing assessment, meaning it is not started or in progress
+  // if action == 'assessment' and doAssessment is false, it means this user is reading the submission or feedback
   doAssessment = false;
+  // if doReview is true, it means this user is actually doing review, meaning this assessment is pending review
+  // if action == 'review' and doReview is false, it means the review is done and this user is reading the submission and review
   doReview = false;
 
   feedbackReviewed = false;
@@ -82,12 +82,13 @@ export class AssessmentComponent extends RouterEnter {
   loadingAssessment = true;
   loadingSubmission = true;
   questionsForm = new FormGroup({});
-  submitting: boolean | string = false;
+  submitting: boolean;
+  submitted: boolean;
   savingButtonDisabled = true;
   savingMessage: string;
+  // used to prevent manual & automate saving happen at the same time
   saving: boolean;
-  btnContinueText = 'Continue';
-  btnContinueDisabled: boolean;
+  continueBtnLoading: boolean;
 
   constructor (
     public router: Router,
@@ -176,10 +177,10 @@ export class AssessmentComponent extends RouterEnter {
     this.feedbackReviewed = false;
     this.questionsForm = new FormGroup({});
     this.submitting = false;
+    this.submitted = false;
     this.savingButtonDisabled = true;
     this.savingMessage = '';
-    this.btnContinueText = 'Continue';
-    this.btnContinueDisabled = false;
+    this.continueBtnLoading = false;
   }
 
   onEnter() {
@@ -460,10 +461,10 @@ export class AssessmentComponent extends RouterEnter {
       return this.navigateBack();
     }
 
-    this.newRelic.actionText('Evaluate & navigate to next task.');
-    this.btnContinueDisabled = true;
+    this.newRelic.actionText('Navigate to next task.');
+    this.continueBtnLoading = true;
     this.activityService.gotoNextTask(this.activityId, 'assessment', this.id).then(redirect => {
-      this.btnContinueDisabled = false;
+      this.continueBtnLoading = false;
       if (redirect) {
         this._navigate(redirect);
       }
@@ -474,62 +475,61 @@ export class AssessmentComponent extends RouterEnter {
    * - check if fastfeedback is available
    * - show next sequence if submission successful
    */
-  private async pullFastFeedbackAndShowNext() {
-    this.submitting = 'Retrieving next task...';
-
+  private async pullFastFeedback() {
+    this.continueBtnLoading = true;
     // check if this assessment have plus check turn on, if it's on show plus check and toast message
-    if (this.assessment.pulseCheck) {
-      try {
-        const modal = await this.fastFeedbackService.pullFastFeedback({ modalOnly: true }).toPromise();
-
-        if (modal && modal.present) {
-          await modal.present();
-          await modal.onDidDismiss();
-        }
-      } catch (err) {
-        const toasted = await this.notificationService.alert({
-          header: 'Error retrieving pulse check data',
-          message: err.msg || JSON.stringify(err)
-        });
-        this.submitting = false;
-        throw new Error(err);
-      }
+    if (!this.assessment.pulseCheck) {
+      this.continueBtnLoading = false;
+      return;
     }
-    this.goToNextTask();
+    try {
+      const modal = await this.fastFeedbackService.pullFastFeedback({ modalOnly: true }).toPromise();
+      if (modal && modal.present) {
+        await modal.present();
+        await modal.onDidDismiss();
+      }
+      this.continueBtnLoading = false;
+    } catch (err) {
+      const toasted = await this.notificationService.alert({
+        header: 'Error retrieving pulse check data',
+        message: err.msg || JSON.stringify(err)
+      });
+      this.continueBtnLoading = false;
+      throw new Error(err);
+    }
   }
 
   /**
    * handle submission and autosave
-   * @param {boolean} saveInProgress set true for autosaving or it treat the action as final submision
-   * @param {boolean} goBack use to unlock team assessment when leave assessment by clicking back button
-   * @param {boolean} isManualSave use to detect manual progress save
+   * @param saveInProgress set true for autosaving or it treat the action as final submision
+   * @param goBack use to unlock team assessment when leave assessment by clicking back button
+   * @param isManualSave use to detect manual progress save
    */
   async submit(saveInProgress: boolean, goBack?: boolean, isManualSave?: boolean): Promise<any> {
 
     /**
-     * checking is this a submission or progress save
+     * checking if this is a submission or progress save
      * - if it's a submission
-     *    - assign false to saving variable to disable save
-     *    - changing submitting variable value to 'Submitting'
+     *    - assign true to saving variable to disable duplicate saving
+     *    - change submitting variable value to true
      * - if it's a progress save
-     *    - if this is a manual save or there are no any auto save in progress
-     *      - change saving variable value to true to enable save
+     *    - if this is a manual save or there is no other auto save in progress
+     *      - change saving variable value to true to disable duplicate saving
      *      - make manual save button disable
      *      - change savingMessage variable value to 'Saving...' to show save in progress
-     *    - if this not manual save or there is one save in progress
+     *    - if this is not manual save or there is one save in progress
      *      - do nothing
      */
+    this.saving = true;
     if (saveInProgress) {
       if (isManualSave || !this.saving) {
         this.savingMessage = 'Saving...';
-        this.saving = true;
         this.savingButtonDisabled = true;
       } else {
         return;
       }
     } else {
-      this.submitting = 'Submitting...';
-      this.saving = false;
+      this.submitting = true;
     }
 
     const answers = [];
@@ -608,17 +608,17 @@ export class AssessmentComponent extends RouterEnter {
       this.action,
       this.submission.id
     ).subscribe(
-      (result: any) => {
+      result => {
         this.savingButtonDisabled = false;
+        this.submitting = false;
+        this.submitted = true;
         if (saveInProgress) {
           this.newRelic.actionText('Saved progress.');
-          this.submitting = false;
           // display message for successfull saved answers
           this.savingMessage = 'Last saved ' + this._getCurrentTime();
         } else {
-          this.newRelic.actionText('Submit answer.');
-
-          return this.pullFastFeedbackAndShowNext();
+          this.newRelic.actionText('Assessment Submitted.');
+          return this.pullFastFeedback();
         }
       },
       (err: {msg: string}) => {
@@ -661,24 +661,21 @@ export class AssessmentComponent extends RouterEnter {
     if (this.feedbackReviewed) {
       return;
     }
-    this.btnContinueText = 'Marking as read...';
-    this.btnContinueDisabled = true;
+    this.continueBtnLoading = true;
     let result;
+    this.newRelic.actionText('Waiting for review feedback read.');
     // Mark feedback as read
     try {
-      this.newRelic.actionText('Waiting for review feedback read.');
       result = await this.assessmentService.saveFeedbackReviewed(this.submission.id).toPromise();
       this.feedbackReviewed = true;
       this.newRelic.actionText('Review feedback read.');
-      this.btnContinueDisabled = false;
-      this.btnContinueText = 'Continue';
+      this.continueBtnLoading = false;
     } catch (err) {
       const toasted = await this.notificationService.alert({
         header: 'Marking feedback as read failed',
         message: err.msg || JSON.stringify(err)
       });
-      this.btnContinueDisabled = false;
-      this.btnContinueText = 'Continue';
+      this.continueBtnLoading = false;
       throw new Error(err);
     }
 
@@ -688,14 +685,12 @@ export class AssessmentComponent extends RouterEnter {
     if (!result.success || !this.storage.getUser().hasReviewRating) {
       return;
     }
+    this.continueBtnLoading = true;
+    this.newRelic.actionText('Waiting for review rating API response.');
     try {
       // display review rating modal
-      this.btnContinueText = 'Retrieving review rating...';
-      this.btnContinueDisabled = true;
-      this.newRelic.actionText('Waiting for review rating API response.');
       await this.assessmentService.popUpReviewRating(this.review.id, false);
-      this.btnContinueDisabled = false;
-      this.btnContinueText = 'Continue';
+      this.continueBtnLoading = false;
     } catch (err) {
       const msg = 'Can not get review rating information';
       this.newRelic.noticeError(msg);
@@ -703,8 +698,7 @@ export class AssessmentComponent extends RouterEnter {
         header: msg,
         message: err.msg || JSON.stringify(err)
       });
-      this.btnContinueDisabled = false;
-      this.btnContinueText = 'Continue';
+      this.continueBtnLoading = false;
       throw new Error(err);
     }
   }
@@ -722,15 +716,33 @@ export class AssessmentComponent extends RouterEnter {
     }).format(new Date());
   }
 
-  // whether this page has the footer continue button
-  hasFooter(): boolean {
-    return this.action === 'assessment' && (this.loadingSubmission || ['pending review', 'done', 'pending approval', 'published'].indexOf(this.submission.status) !== -1);
+  /**
+   * Get the text on the left of the footer.
+   * Return false if it shouldn't be displayed
+   */
+  footerText(): string | boolean {
+    // if it is to do assessment or do review
+    if (this.doAssessment || this.doReview) {
+      if (this.submitting) {
+        return 'submitting';
+      }
+      if (this.submitted) {
+        return 'submitted';
+      }
+      // display the submit button, don't need the text in the footer
+      return false;
+    }
+    switch (this.submission.status) {
+      case 'published':
+        if (this.feedbackReviewed) {
+          return 'done';
+        }
+        return 'feedback available';
+      case 'pending approval':
+        return 'pending review';
+      default:
+        return this.submission.status;
+    }
   }
 
-  /**
-   * Whether display a check mark before the continue button
-   */
-  btnContinueHasCheck(): boolean {
-    return ['pending review', 'done', 'pending approval'].includes(this.submission.status) || (this.feedbackReviewed && this.submission.status == 'published')
-  }
 }
