@@ -1,17 +1,17 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { AchievementPopUpComponent } from './achievement-pop-up.component';
+import { ActivityCompletePopUpComponent } from './activity-complete-pop-up.component';
 import { Observable, of, pipe } from 'rxjs';
 import { ModalController } from '@ionic/angular';
 
-describe('AchievementPopUpComponent', () => {
-  let component: AchievementPopUpComponent;
-  let fixture: ComponentFixture<AchievementPopUpComponent>;
+describe('ActivityCompletePopUpComponent', () => {
+  let component: ActivityCompletePopUpComponent;
+  let fixture: ComponentFixture<ActivityCompletePopUpComponent>;
   const modalCtrlSpy = jasmine.createSpyObj('ModalController', ['dismiss', 'create']);
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ AchievementPopUpComponent ],
+      declarations: [ ActivityCompletePopUpComponent ],
       schemas: [ CUSTOM_ELEMENTS_SCHEMA ],
       providers: [
         {
@@ -24,7 +24,7 @@ describe('AchievementPopUpComponent', () => {
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(AchievementPopUpComponent);
+    fixture = TestBed.createComponent(ActivityCompletePopUpComponent);
     component = fixture.componentInstance;
   });
 
@@ -33,13 +33,8 @@ describe('AchievementPopUpComponent', () => {
   });
 
   it('should dismiss modal', () => {
-    component.achievement = {
-      id: 1,
-      name: 'achieve',
-      description: ''
-    };
     fixture.detectChanges();
-    component.confirmed();
+    component.confirmed(true);
     expect(modalCtrlSpy.dismiss.calls.count()).toBe(1);
   });
 });

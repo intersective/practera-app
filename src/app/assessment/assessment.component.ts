@@ -520,7 +520,6 @@ export class AssessmentComponent extends RouterEnter {
      *    - if this is not manual save or there is one save in progress
      *      - do nothing
      */
-    this.saving = true;
     if (saveInProgress) {
       if (isManualSave || !this.saving) {
         this.savingMessage = 'Saving...';
@@ -531,6 +530,7 @@ export class AssessmentComponent extends RouterEnter {
     } else {
       this.submitting = true;
     }
+    this.saving = true;
 
     const answers = [];
     let questionId = 0;

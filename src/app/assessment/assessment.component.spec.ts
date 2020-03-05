@@ -87,7 +87,7 @@ class Page {
   }
 }
 
-describe('AssessmentComponent', () => {
+fdescribe('AssessmentComponent', () => {
   let component: AssessmentComponent;
   let fixture: ComponentFixture<AssessmentComponent>;
   let page: Page;
@@ -413,7 +413,7 @@ describe('AssessmentComponent', () => {
   it('should navigate to the correct page #1', () => {
     spyOn(component.navigate, 'emit');
     component.fromPage = 'reviews';
-    component.navigationRoute();
+    component.navigateBack();
 
     // let's assume test is run under desktop environment
     expect(component.navigate.emit).toHaveBeenCalled();
@@ -421,13 +421,13 @@ describe('AssessmentComponent', () => {
 
   it('should navigate to the correct page #2', () => {
     component.fromPage = 'events';
-    component.navigationRoute();
+    component.navigateBack();
   });
 
   it('should navigate to the correct page #3', fakeAsync(() => {
     component.activityId = 1;
     tick();
-    const test = component.navigationRoute();
+    const test = component.navigateBack();
     tick();
     expect(component.activityId).toEqual(1);
     expect(routerSpy.navigate.calls.first().args[0]).toEqual(['app', 'activity', 1]);
@@ -435,7 +435,7 @@ describe('AssessmentComponent', () => {
 
   it('should navigate to the correct page #4', () => {
     component.activityId = null;
-    component.navigationRoute();
+    component.navigateBack();
     expect(routerSpy.navigate.calls.first().args[0]).toEqual(['app', 'home']);
   });
 
@@ -546,7 +546,7 @@ describe('AssessmentComponent', () => {
       component.submit(false);
       assessment = assessmentSpy.saveAnswers.calls.first().args[0];
       answers = assessmentSpy.saveAnswers.calls.first().args[1];
-      expect(component.submitting).toEqual('Retrieving new task...');
+      expect(component.submitting).toEqual(true);
       expect(component.saving).toBe(false);
       expect(assessment.in_progress).toBe(false);
     });
@@ -616,8 +616,8 @@ describe('AssessmentComponent', () => {
     it('should check fastfeedback availability as pulseCheck is `true`', fakeAsync(() => {
       component.submit(false);
       const spy = spyOn(fastFeedbackSpy, 'pullFastFeedback').and.returnValue(of(fastFeedbackSpy.pullFastFeedback()));
-      spyOn(component, 'redirectToNextMilestoneTask');
-      spyOn(component, 'navigationRoute');
+      spyOn(component, 'goToNextTask');
+      spyOn(component, 'navigateBack');
 
       tick(12 * 1000); // simulate 12sec (submission 10s & fastfeedback 2s)
 
@@ -627,9 +627,9 @@ describe('AssessmentComponent', () => {
         expect(notificationSpy.presentToast.calls.count()).toEqual(1);
 
         if (component.doReview === true) {
-          expect(component.navigationRoute).toHaveBeenCalled();
+          expect(component.navigateBack).toHaveBeenCalled();
         } else {
-          expect(component.redirectToNextMilestoneTask).toHaveBeenCalled();
+          expect(component.goToNextTask).toHaveBeenCalled();
         }
       });
     }));
@@ -637,12 +637,12 @@ describe('AssessmentComponent', () => {
     it('should skip fastfeedback if pulsecheck = false', () => {
       component.assessment.pulseCheck = false;
       spyOn(fastFeedbackSpy, 'pullFastFeedback');
-      spyOn(component, 'redirectToNextMilestoneTask');
+      spyOn(component, 'goToNextTask');
 
       component.submit(false);
       expect(fastFeedbackSpy.pullFastFeedback.calls.count()).toEqual(0);
       expect(notificationSpy.presentToast.calls.count()).toEqual(0);
-      expect(component.redirectToNextMilestoneTask).toHaveBeenCalled();
+      expect(component.goToNextTask).toHaveBeenCalled();
     });
   });
 });
