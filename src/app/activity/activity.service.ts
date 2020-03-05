@@ -507,7 +507,7 @@ export class ActivityService {
     if (res.noMoreTask) {
       if (!res.task) {
         // go back to home page, and highlight the next activity
-        this.router.navigate(['app', 'home'], { queryParams: { activityId: activityId } });
+        this.router.navigate(['app', 'home'], { queryParams: { activityId: activityId, activityCompleted: true } });
       } else {
         this.notification.activityCompletePopUp(activityId);
       }
