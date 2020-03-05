@@ -190,13 +190,13 @@ describe('TopicComponent', () => {
       expect(component.isLoadingPreview).toBe(true);
     });
   });
-  describe('when testing redirectToNextMilestoneTask()', () => {
+  describe('when testing continue()', () => {
     it('should go to next task', () => {
       activitySpy.getTasksByActivityId.and.returnValue({
         currentActivity: {},
         nextTask: {}
       });
-      component.redirectToNextMilestoneTask();
+      component.continue();
     });
   });
   describe('when testing back()', () => {
