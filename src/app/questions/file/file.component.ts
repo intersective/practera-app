@@ -34,6 +34,7 @@ export class FileComponent implements ControlValueAccessor, OnInit {
   @Input() doReview: Boolean;
   // FormControl that is passed in from parent component
   @Input() control: FormControl;
+  @Input() disabled;
   // answer field for submitter & reviewer
   @ViewChild('answer') answerRef: ElementRef;
   // comment field for reviewer

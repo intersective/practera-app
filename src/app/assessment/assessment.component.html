@@ -90,6 +90,7 @@
                 [submissionStatus]= "submission.status"
                 [formControlName]="'q-' + question.id"
                 [control]="questionsForm.controls['q-' + question.id]"
+                [disabled]="submitted"
                 (saveProgress)="submit(true)"
               ></app-text>
 
@@ -104,6 +105,7 @@
                 [submissionStatus]= "submission.status"
                 [formControlName]="'q-' + question.id"
                 [control]="questionsForm.controls['q-' + question.id]"
+                [disabled]="submitted"
                 (saveProgress)="submit(true)"
               ></app-oneof>
 
@@ -118,6 +120,7 @@
                 [submissionStatus]= "submission.status"
                 [formControlName]="'q-' + question.id"
                 [control]="questionsForm.controls['q-' + question.id]"
+                [disabled]="submitted"
                 (saveProgress)="submit(true)"
               ></app-multiple>
 
@@ -132,6 +135,7 @@
                 [submissionStatus]= "submission.status"
                 [formControlName]="'q-' + question.id"
                 [control]="questionsForm.controls['q-' + question.id]"
+                [disabled]="submitted"
                 (saveProgress)="submit(true)"
               ></app-file>
 
@@ -146,6 +150,7 @@
                 [submissionStatus]= "submission.status"
                 [formControlName]="'q-' + question.id"
                 [control]="questionsForm.controls['q-' + question.id]"
+                [disabled]="submitted"
                 (saveProgress)="submit(true)"
               ></app-team-member-selector>
 
