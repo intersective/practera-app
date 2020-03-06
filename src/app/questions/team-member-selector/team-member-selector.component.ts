@@ -28,7 +28,6 @@ export class TeamMemberSelectorComponent implements ControlValueAccessor, OnInit
   @Input() doReview: Boolean;
   // FormControl that is passed in from parent component
   @Input() control: FormControl;
-  @Input() disabled;
   // answer field for submitter & reviewer
   @ViewChild('answerEle') answerRef: ElementRef;
   // comment field for reviewer
