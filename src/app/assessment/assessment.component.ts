@@ -618,6 +618,8 @@ export class AssessmentComponent extends RouterEnter {
           this.newRelic.actionText('Assessment Submitted.');
           this.submitting = false;
           this.submitted = true;
+          // disabled all forms controls
+          Object.keys(this.questionsForm.controls).forEach(key => this.questionsForm.controls[key].disable());
           return this.pullFastFeedback();
         }
       },

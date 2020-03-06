@@ -39,7 +39,7 @@
         [value]="choice.id"
         mode="md"
         (ionChange)="onChange(choice.id)"
-        [disabled]="disabled"></ion-checkbox>
+        [disabled]="control.disabled"></ion-checkbox>
     </ion-item>
   </ion-list>
   <ion-text *ngFor="let error of errors" color="danger">
@@ -59,7 +59,7 @@
         [value]="choice.id"
         mode="md"
         (ionChange)="onChange(choice.id, 'answer')"
-        [disabled]="disabled"></ion-checkbox>
+        [disabled]="control.disabled"></ion-checkbox>
     </ion-item>
   </ion-list>
   <ion-textarea
@@ -71,5 +71,5 @@
     [(ngModel)]="comment"
     (ngModelChange)="onChange(comment, 'comment')"
     placeholder="Please put your feedback here"
-    [disabled]="disabled"></ion-textarea>
+    [disabled]="control.disabled"></ion-textarea>
 </ng-container>
