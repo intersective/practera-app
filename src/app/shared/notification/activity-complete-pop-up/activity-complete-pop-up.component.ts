@@ -10,6 +10,7 @@ import { Router } from '@angular/router';
 })
 export class ActivityCompletePopUpComponent {
   activityId: number;
+  activityCompleted: boolean;
 
   constructor(
     public modalController: ModalController,
@@ -22,7 +23,7 @@ export class ActivityCompletePopUpComponent {
     if (!continueToActivity) {
       this.router.navigate(['app', 'activity', this.activityId]);
     } else {
-      this.router.navigate(['app', 'home'], { queryParams: { activityId: this.activityId, activityCompleted: true } });
+      this.router.navigate(['app', 'home'], { queryParams: { activityId: this.activityId, activityCompleted: this.activityCompleted } });
     }
   }
 }

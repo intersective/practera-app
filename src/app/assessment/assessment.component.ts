@@ -463,7 +463,7 @@ export class AssessmentComponent extends RouterEnter {
 
     this.newRelic.actionText('Navigate to next task.');
     this.continueBtnLoading = true;
-    this.activityService.gotoNextTask(this.activityId, 'assessment', this.id).then(redirect => {
+    this.activityService.gotoNextTask(this.activityId, 'assessment', this.id, this.submitted).then(redirect => {
       this.continueBtnLoading = false;
       if (redirect) {
         this._navigate(redirect);
