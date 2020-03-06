@@ -20,7 +20,7 @@
     rows="4"
     (ionFocus)="onFocus()"
     (ionChange)="onChange()"
-    [disabled]="disabled"></ion-textarea>
+    [disabled]="control.disabled"></ion-textarea>
   <ion-text *ngFor="let error of errors" color="danger">
     <p>{{error}}</p>
   </ion-text>
@@ -36,7 +36,7 @@
     (ionFocus)="onFocus()"
     (ionChange)="onChange('answer')"
     placeholder="Please put your answer here"
-    [disabled]="disabled"></ion-textarea>
+    [disabled]="control.disabled"></ion-textarea>
   <ion-textarea
     *ngIf="question.canComment && submission.answer"
     class="background-white ion-margin-top"
@@ -46,6 +46,6 @@
     (ionFocus)="onFocus()"
     (ionChange)="onChange('comment')"
     placeholder="Please put your feedback here"
-    [disabled]="disabled"></ion-textarea>
+    [disabled]="control.disabled"></ion-textarea>
 </ng-container>
 

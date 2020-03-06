@@ -23,7 +23,7 @@
     [accept]="fileTypes"
     [fileType]="question.fileType"
     (complete)="onFileUploadCompleted($event)"
-    [disabled]="disabled"
+    [disabled]="control.disabled"
   >
   </file-stack>
   <ion-text *ngFor="let error of errors" color="danger">
@@ -41,7 +41,7 @@
       [accept]="fileTypes"
       [fileType]="question.fileType"
       (complete)="onFileUploadCompleted($event, 'answer')"
-      [disabled]="disabled"
+      [disabled]="control.disabled"
     >
     </file-stack>
     <app-file-display
@@ -57,5 +57,5 @@
     [(ngModel)]="comment"
     (ngModelChange)="onChange(comment, 'comment')"
     placeholder="Please put your feedback here"
-    [disabled]="disabled"></ion-textarea>
+    [disabled]="control.disabled"></ion-textarea>
 </ng-container>
