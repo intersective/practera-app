@@ -166,7 +166,7 @@ export class TopicComponent extends RouterEnter {
     }
 
     this.redirecting = true;
-    this.activityService.gotoNextTask(this.activityId, 'topic', this.topic.id).then(redirect => {
+    this.activityService.gotoNextTask(this.activityId, 'topic', this.topic.id, !this.btnToggleTopicIsDone).then(redirect => {
       this.redirecting = false;
       if (redirect) {
         this._navigate(redirect);
