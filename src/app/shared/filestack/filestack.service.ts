@@ -170,6 +170,9 @@ export class FilestackService {
         'gmail',
         'video'
       ],
+      uploadConfig: {
+        intelligent: true
+      },
       storeTo: this.getS3Config(this.getFileTypes()),
       onFileSelected: data => {
         // replace space with underscore '_' in file name
