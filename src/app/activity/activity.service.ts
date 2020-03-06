@@ -501,15 +501,16 @@ export class ActivityService {
    * @param activityId Activity id
    * @param taskType   Current task type ('assessment'/'topic')
    * @param taskId     Current task id
+   * @param activityCompleted Whether display activity completed toast message
    */
-  async gotoNextTask(activityId: number, taskType: string, taskId: number): Promise<string[]> {
+  async gotoNextTask(activityId: number, taskType: string, taskId: number, activityCompleted = true): Promise<string[]> {
     const res = await this.getNextTask(activityId, taskType, taskId).toPromise();
     if (res.noMoreTask) {
       if (!res.task) {
         // go back to home page, and highlight the next activity
-        this.router.navigate(['app', 'home'], { queryParams: { activityId: activityId, activityCompleted: true } });
+        this.router.navigate(['app', 'home'], { queryParams: { activityId: activityId, activityCompleted: activityCompleted } });
       } else {
-        this.notification.activityCompletePopUp(activityId);
+        this.notification.activityCompletePopUp(activityId, activityCompleted);
       }
       return null;
     }
