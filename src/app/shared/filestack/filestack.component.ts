@@ -30,6 +30,7 @@ export class FilestackComponent {
   @Input() fileType: string;
   @Output() complete: EventEmitter<any> = new EventEmitter();
   @Input() type?: string;
+  @Input() disabled: boolean;
 
   constructor(private filestackService: FilestackService) {}
 
