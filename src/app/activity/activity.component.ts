@@ -198,11 +198,11 @@ export class ActivityComponent {
   taskLeadingIcon(task) {
     switch (task.type) {
       case 'Locked':
-        return 'lock';
+        return 'lock-closed-outline';
       case 'Topic':
-        return 'list-box';
+        return 'reader-outline';
       case 'Assessment':
-        return 'clipboard';
+        return 'clipboard-outline';
     }
   }
 
