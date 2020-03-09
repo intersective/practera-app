@@ -154,7 +154,7 @@ describe('ContactNumberFormComponent', () => {
       component.activeCountryModelInfo.countryCode = '10';
 
       component.updateContactNumber();
-      expect(notificationSpy.presentToast).toHaveBeenCalledWith('Invalid contact number', false);
+      expect(notificationSpy.presentToast).toHaveBeenCalledWith('Invalid contact number');
     });
 
     it('should update contact number (US)', () => {
