@@ -10,7 +10,7 @@ describe('ActivityCompletePopUpComponent', () => {
   let component: ActivityCompletePopUpComponent;
   let fixture: ComponentFixture<ActivityCompletePopUpComponent>;
   const modalCtrlSpy = jasmine.createSpyObj('ModalController', ['dismiss', 'create']);
-  const routerSpy: jasmine.SpyObj<Router>;
+  // const routerSpy: jasmine.SpyObj<Router>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
