@@ -17,7 +17,6 @@
   </div>
   <h3 class="headline-4" text-center>{{topic.title}}</h3>
   <div *ngIf="topic.videolink && topic.videolink !=='magiclink'" class="text-center">
-    <label class="subtitle-2 gray-2">Video</label>
     <div text-center [innerHtml]="iframeHtml" class="video-container" [ngClass]="{'desktop-view': !utils.isMobile()}"></div>
   </div>
 
