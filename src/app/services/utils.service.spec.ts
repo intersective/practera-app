@@ -283,8 +283,17 @@ describe('UtilsService', () => {
           hour12: true,
           hour: 'numeric',
           minute: 'numeric'
-        }).format(new Date(timeString));
-        expect(result).toEqual(formatted);
+        }).format(new Date(`${timeString} GMT+0000`));
+
+        if (result === 'Tomorrow') {
+          expect(moment().utcOffset()).toBeGreaterThan(0);
+          expect(moment.utc(new Date(`${timeString} GMT+0000`)).isAfter(moment().format('YYYY-MM-DD'))).toBeTruthy();
+        } else if (result === 'Yesterday') {
+          expect(moment().utcOffset()).toBeLessThan(0);
+          expect(moment.utc(new Date(`${timeString} GMT+0000`)).isBefore(moment().format('YYYY-MM-DD'))).toBeTruthy();
+        } else {
+          expect(result).toEqual(formatted);
+        }
       });
     });
 
@@ -421,6 +430,11 @@ describe('UtilsService', () => {
     it('should format time string to ISO 8601 standard', () => {
       const result = service.iso8601Formatter(DATE_STRING);
       expect(result).toEqual('2019-08-06T15:03:00.000Z'); // ISO 8601
+    });
+
+    it('should turn "2010-01-01 00:00:00" into ISO8601', () => {
+      const result = service.iso8601Formatter('2010-01-01 00:00:00');
+      expect(result).toEqual('2010-01-01T00:00:00.000Z');
     });
   });
 });
