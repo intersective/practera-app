@@ -650,7 +650,7 @@ export class ChatRoomComponent extends RouterEnter {
     } else if (mimetype.includes('image')) {
       result = 'photos';
     } else if (mimetype.includes('text')) {
-      result = 'clipboard';
+      result = 'clipboard-outline';
     } else if (mimetype.includes('video')) {
       result = 'videocam';
     } else {
