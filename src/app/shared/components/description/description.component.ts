@@ -42,13 +42,13 @@ export class DescriptionComponent implements AfterViewInit, OnChanges {
   }
 
   ngAfterViewInit() {
-    if (!this.storage.getUser().truncateDescription) {
-      return;
-    }
     this.calculateHeight();
   }
 
   calculateHeight(): void {
+    if (!this.storage.getUser().truncateDescription) {
+      return;
+    }
     setTimeout(
       () => {
         this.elementHeight = this.descriptionRef.nativeElement.clientHeight;
@@ -57,7 +57,7 @@ export class DescriptionComponent implements AfterViewInit, OnChanges {
           this.isTruncating = true;
         }
       },
-      750
+      1000
     );
   }
 }
