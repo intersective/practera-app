@@ -139,37 +139,6 @@ describe('ProjectComponent', () => {
     expect(component.milestones).toEqual(milestones);
   });
 
-  describe('when testing trackScrolling()', () => {
-    it('should get correct activeMilestoneIndex if active milestone is in middle', () => {
-      fixture.detectChanges();
-      // This is development code, using to check the position of the milestones
-      // component.milestoneRefs.forEach(re => {
-      //   console.log(re.nativeElement.offsetTop);
-      // });
-      component.trackScrolling({
-        detail: {
-          currentY: 1000
-        },
-        srcElement: {
-          offsetHeight: 1000
-        }
-      });
-      expect(component.activeMilestoneIndex).toEqual(2);
-    });
-    it('should get correct activeMilestoneIndex if active milestone is the last one', () => {
-      fixture.detectChanges();
-      component.trackScrolling({
-        detail: {
-          currentY: 3000
-        },
-        srcElement: {
-          offsetHeight: 3000
-        }
-      });
-      expect(component.activeMilestoneIndex).toEqual(4);
-    });
-  });
-
   it('when testing scrollTo(), should get correct activeMilestoneIndex', () => {
     fixture.detectChanges();
     component.scrollTo('milestone-2', 1);

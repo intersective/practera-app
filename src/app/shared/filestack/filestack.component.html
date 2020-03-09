@@ -4,7 +4,7 @@
   </ng-container>
 
   <ng-container *ngSwitchDefault>
-    <ion-button size="small" shape="round" (click)="uploadFile()">
+    <ion-button size="small" shape="round" (click)="uploadFile()" [disabled]="disabled">
       <i>Upload File</i>
     </ion-button>
   </ng-container>
