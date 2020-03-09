@@ -1,29 +1,29 @@
 // used for desktop view
 .ion-toolbar-absolute {
-  height: 60px;
+  height: 44px;
 }
 .ion-content-absolute {
   position: absolute;
-  top: 60px;
+  top: 44px;
   z-index: 20;
-  height: calc(100% - 60px);
+  height: calc(100% - 44px);
 }
 .ion-content-absolute-with-footer {
   position: absolute;
-  top: 60px;
+  top: 44px;
   z-index: 20;
   height: calc(100% - 120px);
 }
 .ion-footer-absolute {
   position: absolute;
-  height: 60px;
+  height: 44px;
   bottom: 0;
   z-index: 30;
 }
 
 // used for mobile view
 .ion-content-mobile {
-  --padding-bottom: 60px;
+  --padding-bottom: 44px;
 }
 
 .list-md {
