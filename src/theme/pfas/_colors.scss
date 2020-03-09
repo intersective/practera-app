@@ -1,20 +1,20 @@
 .surface-light {
-  color: #FAFAFC !important;
+  color: var(--practera-surface-light) !important;
 }
 .surface {
-  color: #F5F6FA !important;
+  color: var(--practera-surface) !important;
 }
 .gray-0 {
-  color: rgba(0, 0, 0, 0.3) !important;
+  color: var(--practera-30-Percent-gray) !important;
 }
 .gray-1 {
-  color: rgba(0, 0, 0, 0.4) !important;
+  color: var(--practera-40-Percent-gray) !important;
 }
 .gray-2 {
-  color: rgba(0, 0, 0, 0.6) !important;
+  color: var(--practera-60-Percent-gray) !important;
 }
 .gray-3 {
-  color: rgba(0, 0, 0, 0.8) !important;
+  color: var(--practera-80-Percent-gray) !important;
 }
 .black {
   color: black !important;
@@ -26,5 +26,4 @@
     border-width: 1px;
     border-style: dashed;
     border-radius: 5px;
-    color: #333 !important;
 }
