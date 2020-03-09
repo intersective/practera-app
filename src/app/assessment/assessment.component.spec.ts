@@ -212,7 +212,7 @@ describe('AssessmentComponent', () => {
         },
         {
           provide: ActivityService,
-          useValue: jasmine.createSpyObj('ActivityService', ['getTasksByActivityId', 'gotoNextTask'])
+          useValue: jasmine.createSpyObj('ActivityService', ['gotoNextTask'])
         },
         {
           provide: FastFeedbackService,
@@ -254,10 +254,7 @@ describe('AssessmentComponent', () => {
     }));
     assessmentSpy.saveAnswers.and.returnValue(of({}));
     assessmentSpy.getFeedbackReviewed.and.returnValue(of(true));
-    activitySpy.getTasksByActivityId.and.returnValue({
-      currentActivity: {id: 1},
-      nextTask: {type: 'assessment'}
-    });
+    assessmentSpy.saveFeedbackReviewed.and.returnValue(of({success: true}));
     activitySpy.gotoNextTask.and.returnValue(new Promise(() => {}));
     storageSpy.getUser.and.returnValue(mockUser);
     component.routeUrl = '/test';
@@ -643,10 +640,70 @@ describe('AssessmentComponent', () => {
   });
 
   describe('click continue button', () => {
-    it('should go to next task', fakeAsync(() => {
+    it('should go to next task', () => {
       component.clickBtnContinue();
       expect(activitySpy.gotoNextTask.calls.count()).toEqual(1);
       expect(component.continueBtnLoading).toBe(true);
+    });
+    it('should mark feedback as read and go to next task', fakeAsync(() => {
+      component.submission.status = 'published';
+      component.feedbackReviewed = false;
+      component.clickBtnContinue();
+      tick();
+      expect(assessmentSpy.saveFeedbackReviewed.calls.count()).toEqual(1);
+      expect(activitySpy.gotoNextTask.calls.count()).toEqual(1);
+      expect(component.continueBtnLoading).toBe(true);
     }));
+    it('should go to events page', () => {
+      spyOn(component.navigate, 'emit');
+      component.fromPage = 'events';
+      component.action = 'assessment';
+      component.clickBtnContinue();
+      expect(component.navigate.emit).toHaveBeenCalled();
+    });
+  });
+
+  describe('when testing footerText()', () => {
+    it('should return submitting', () => {
+      component.doAssessment = true;
+      component.submitting = true;
+      expect(component.footerText()).toEqual('submitting');
+    });
+    it('should return submitted', () => {
+      component.doReview = true;
+      component.submitted = true;
+      expect(component.footerText()).toEqual('submitted');
+    });
+    it('should return feedback available', () => {
+      component.submission.status = 'published';
+      expect(component.footerText()).toEqual('feedback available');
+    });
+    it('should return done', () => {
+      component.submission.status = 'published';
+      component.feedbackReviewed = true;
+      expect(component.footerText()).toEqual('done');
+    });
+    it('should return pending review', () => {
+      component.submission.status = 'pending approval';
+      expect(component.footerText()).toEqual('pending review');
+    });
+    it('should return pending review', () => {
+      component.submission.status = 'pending review';
+      expect(component.footerText()).toEqual('pending review');
+    });
+  });
+
+  describe('when testing markReviewFeedbackAsRead()', () => {
+    it('should pop up review rating modal', fakeAsync(() => {
+      storageSpy.getUser.and.returnValue({ hasReviewRating: true });
+      component.markReviewFeedbackAsRead();
+      tick();
+      expect(assessmentSpy.popUpReviewRating.calls.count()).toBe(1);
+    }));
+  });
+
+  it('showQuestionInfo() should popup info modal', () => {
+    component.showQuestionInfo('abc');
+    expect(notificationSpy.popUp.calls.count()).toBe(1);
   });
 });
