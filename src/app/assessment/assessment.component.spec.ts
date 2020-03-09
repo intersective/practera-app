@@ -212,7 +212,7 @@ describe('AssessmentComponent', () => {
         },
         {
           provide: ActivityService,
-          useValue: jasmine.createSpyObj('ActivityService', ['getTasksByActivityId'])
+          useValue: jasmine.createSpyObj('ActivityService', ['gotoNextTask'])
         },
         {
           provide: FastFeedbackService,
@@ -254,10 +254,8 @@ describe('AssessmentComponent', () => {
     }));
     assessmentSpy.saveAnswers.and.returnValue(of({}));
     assessmentSpy.getFeedbackReviewed.and.returnValue(of(true));
-    activitySpy.getTasksByActivityId.and.returnValue({
-      currentActivity: {id: 1},
-      nextTask: {type: 'assessment'}
-    });
+    assessmentSpy.saveFeedbackReviewed.and.returnValue(of({success: true}));
+    activitySpy.gotoNextTask.and.returnValue(new Promise(() => {}));
     storageSpy.getUser.and.returnValue(mockUser);
     component.routeUrl = '/test';
   });
@@ -413,7 +411,7 @@ describe('AssessmentComponent', () => {
   it('should navigate to the correct page #1', () => {
     spyOn(component.navigate, 'emit');
     component.fromPage = 'reviews';
-    component.navigationRoute();
+    component.navigateBack();
 
     // let's assume test is run under desktop environment
     expect(component.navigate.emit).toHaveBeenCalled();
@@ -421,13 +419,13 @@ describe('AssessmentComponent', () => {
 
   it('should navigate to the correct page #2', () => {
     component.fromPage = 'events';
-    component.navigationRoute();
+    component.navigateBack();
   });
 
   it('should navigate to the correct page #3', fakeAsync(() => {
     component.activityId = 1;
     tick();
-    const test = component.navigationRoute();
+    const test = component.navigateBack();
     tick();
     expect(component.activityId).toEqual(1);
     expect(routerSpy.navigate.calls.first().args[0]).toEqual(['app', 'activity', 1]);
@@ -435,7 +433,7 @@ describe('AssessmentComponent', () => {
 
   it('should navigate to the correct page #4', () => {
     component.activityId = null;
-    component.navigationRoute();
+    component.navigateBack();
     expect(routerSpy.navigate.calls.first().args[0]).toEqual(['app', 'home']);
   });
 
@@ -490,6 +488,7 @@ describe('AssessmentComponent', () => {
   describe('should get correct assessment answers when', () => {
     let assessment;
     let answers;
+    let savingButtonDisabled = false;
 
     beforeEach(() => {
       fixture.detectChanges();
@@ -505,7 +504,7 @@ describe('AssessmentComponent', () => {
     });
 
     afterEach(() => {
-      expect(component.savingButtonDisabled).toBe(false);
+      expect(component.savingButtonDisabled).toBe(savingButtonDisabled);
       expect(notificationSpy.popUp.calls.count()).toBe(0);
       expect(assessment.id).toBe(1);
       expect(assessment.context_id).toBe(2);
@@ -543,11 +542,12 @@ describe('AssessmentComponent', () => {
     });
 
     it('submitting', () => {
+      savingButtonDisabled = true;
       component.submit(false);
       assessment = assessmentSpy.saveAnswers.calls.first().args[0];
       answers = assessmentSpy.saveAnswers.calls.first().args[1];
-      expect(component.submitting).toEqual('Retrieving new task...');
-      expect(component.saving).toBe(false);
+      expect(component.submitting).toEqual(false);
+      expect(component.saving).toBe(true);
       expect(assessment.in_progress).toBe(false);
     });
   });
@@ -613,23 +613,19 @@ describe('AssessmentComponent', () => {
       tick(10 * 1000); // 10 secs
     }));
 
-    it('should check fastfeedback availability as pulseCheck is `true`', fakeAsync(() => {
+    it(`should check fastfeedback availability as pulseCheck is 'true'`, fakeAsync(() => {
       component.submit(false);
       const spy = spyOn(fastFeedbackSpy, 'pullFastFeedback').and.returnValue(of(fastFeedbackSpy.pullFastFeedback()));
-      spyOn(component, 'redirectToNextMilestoneTask');
-      spyOn(component, 'navigationRoute');
+      spyOn(component, 'goToNextTask');
+      spyOn(component, 'navigateBack');
 
       tick(12 * 1000); // simulate 12sec (submission 10s & fastfeedback 2s)
 
       fixture.detectChanges();
       fixture.whenStable().then(() => {
         expect(fastFeedbackSpy.pullFastFeedback.calls.count()).toEqual(1);
-        expect(notificationSpy.presentToast.calls.count()).toEqual(1);
-
         if (component.doReview === true) {
-          expect(component.navigationRoute).toHaveBeenCalled();
-        } else {
-          expect(component.redirectToNextMilestoneTask).toHaveBeenCalled();
+          expect(component.navigateBack).toHaveBeenCalled();
         }
       });
     }));
@@ -637,12 +633,77 @@ describe('AssessmentComponent', () => {
     it('should skip fastfeedback if pulsecheck = false', () => {
       component.assessment.pulseCheck = false;
       spyOn(fastFeedbackSpy, 'pullFastFeedback');
-      spyOn(component, 'redirectToNextMilestoneTask');
-
+      spyOn(component, 'goToNextTask');
       component.submit(false);
       expect(fastFeedbackSpy.pullFastFeedback.calls.count()).toEqual(0);
-      expect(notificationSpy.presentToast.calls.count()).toEqual(0);
-      expect(component.redirectToNextMilestoneTask).toHaveBeenCalled();
     });
+  });
+
+  describe('click continue button', () => {
+    it('should go to next task', () => {
+      component.clickBtnContinue();
+      expect(activitySpy.gotoNextTask.calls.count()).toEqual(1);
+      expect(component.continueBtnLoading).toBe(true);
+    });
+    it('should mark feedback as read and go to next task', fakeAsync(() => {
+      component.submission.status = 'published';
+      component.feedbackReviewed = false;
+      component.clickBtnContinue();
+      tick();
+      expect(assessmentSpy.saveFeedbackReviewed.calls.count()).toEqual(1);
+      expect(activitySpy.gotoNextTask.calls.count()).toEqual(1);
+      expect(component.continueBtnLoading).toBe(true);
+    }));
+    it('should go to events page', () => {
+      spyOn(component.navigate, 'emit');
+      component.fromPage = 'events';
+      component.action = 'assessment';
+      component.clickBtnContinue();
+      expect(component.navigate.emit).toHaveBeenCalled();
+    });
+  });
+
+  describe('when testing footerText()', () => {
+    it('should return submitting', () => {
+      component.doAssessment = true;
+      component.submitting = true;
+      expect(component.footerText()).toEqual('submitting');
+    });
+    it('should return submitted', () => {
+      component.doReview = true;
+      component.submitted = true;
+      expect(component.footerText()).toEqual('submitted');
+    });
+    it('should return feedback available', () => {
+      component.submission.status = 'published';
+      expect(component.footerText()).toEqual('feedback available');
+    });
+    it('should return done', () => {
+      component.submission.status = 'published';
+      component.feedbackReviewed = true;
+      expect(component.footerText()).toEqual('done');
+    });
+    it('should return pending review', () => {
+      component.submission.status = 'pending approval';
+      expect(component.footerText()).toEqual('pending review');
+    });
+    it('should return pending review', () => {
+      component.submission.status = 'pending review';
+      expect(component.footerText()).toEqual('pending review');
+    });
+  });
+
+  describe('when testing markReviewFeedbackAsRead()', () => {
+    it('should pop up review rating modal', fakeAsync(() => {
+      storageSpy.getUser.and.returnValue({ hasReviewRating: true });
+      component.markReviewFeedbackAsRead();
+      tick();
+      expect(assessmentSpy.popUpReviewRating.calls.count()).toBe(1);
+    }));
+  });
+
+  it('showQuestionInfo() should popup info modal', () => {
+    component.showQuestionInfo('abc');
+    expect(notificationSpy.popUp.calls.count()).toBe(1);
   });
 });

@@ -212,7 +212,7 @@ export class ContactNumberFormComponent implements OnInit {
     this.profile.contactNumber = this.profile.contactNumber.replace(/[^0-9+]+/ig, '');
     // check if newly input number is valid or not.
     if (!this.validateContactNumber(this.profile.contactNumber)) {
-      return this.notificationService.presentToast('Invalid contact number', false);
+      return this.notificationService.presentToast('Invalid contact number');
     }
     this.updating = true;
     return this.notificationService.alert({
