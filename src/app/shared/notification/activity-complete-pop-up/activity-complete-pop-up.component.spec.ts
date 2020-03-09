@@ -3,11 +3,14 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActivityCompletePopUpComponent } from './activity-complete-pop-up.component';
 import { Observable, of, pipe } from 'rxjs';
 import { ModalController } from '@ionic/angular';
+import { Router } from '@angular/router';
+import { MockRouter } from '@testing/mocked.service';
 
 describe('ActivityCompletePopUpComponent', () => {
   let component: ActivityCompletePopUpComponent;
   let fixture: ComponentFixture<ActivityCompletePopUpComponent>;
   const modalCtrlSpy = jasmine.createSpyObj('ModalController', ['dismiss', 'create']);
+  let routerSpy: jasmine.SpyObj<Router>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
@@ -17,6 +20,10 @@ describe('ActivityCompletePopUpComponent', () => {
         {
           provide: ModalController,
           useValue: modalCtrlSpy
+        },
+        {
+          provide: Router,
+          useClass: MockRouter
         }
       ],
     })
