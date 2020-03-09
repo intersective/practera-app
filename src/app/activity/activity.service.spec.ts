@@ -7,7 +7,7 @@ import { NotificationService } from '@shared/notification/notification.service';
 import { Router } from '@angular/router';
 import { MockRouter } from '@testing/mocked.service';
 
-fdescribe('ActivityService', () => {
+describe('ActivityService', () => {
   let service: ActivityService;
   let requestSpy: jasmine.SpyObj<RequestService>;
   let routerSpy: jasmine.SpyObj<Router>;
@@ -38,6 +38,7 @@ fdescribe('ActivityService', () => {
     });
     service = TestBed.get(ActivityService);
     requestSpy = TestBed.get(RequestService);
+    routerSpy = TestBed.get(Router);
     notificationSpy = TestBed.get(NotificationService);
   });
 
@@ -161,5 +162,61 @@ fdescribe('ActivityService', () => {
     service.getActivity(1).subscribe(res => expect(res).toEqual(expected));
   });
 
-
+  describe('when testing gotoNextTask()', () => {
+    it('should go to home page', fakeAsync(() => {
+      requestSpy.get.and.returnValue(of({
+        data: {
+          no_more_task: true,
+          task: []
+        }
+      }));
+      service.gotoNextTask(1, 'assessment', 2);
+      tick();
+      expect(routerSpy.navigate.calls.first().args[0]).toEqual(['app', 'home']);
+      expect(routerSpy.navigate.calls.first().args[1]).toEqual({ queryParams: { activityId: 1, activityCompleted: true }});
+    }));
+    it('should pop up modal', fakeAsync(() => {
+      requestSpy.get.and.returnValue(of({
+        data: {
+          no_more_task: true,
+          task: {
+            id: 11,
+            name: 'assessment1',
+            type: 'assessment',
+            context_id: 12
+          }
+        }
+      }));
+      service.gotoNextTask(1, 'assessment', 2);
+      tick();
+      expect(notificationSpy.activityCompletePopUp.calls.count()).toBe(1);
+    }));
+    it('should go to assessment page', fakeAsync(() => {
+      requestSpy.get.and.returnValue(of({
+        data: {
+          no_more_task: false,
+          task: {
+            id: 11,
+            name: 'assessment1',
+            type: 'assessment',
+            context_id: 12
+          }
+        }
+      }));
+      service.gotoNextTask(1, 'assessment', 2).then(res => expect(res).toEqual(['assessment', 'assessment', '1', '12', '11']));
+    }));
+    it('should go to topic page', fakeAsync(() => {
+      requestSpy.get.and.returnValue(of({
+        data: {
+          no_more_task: false,
+          task: {
+            id: 11,
+            name: 'topic1',
+            type: 'topic'
+          }
+        }
+      }));
+      service.gotoNextTask(1, 'topic', 2).then(res => expect(res).toEqual(['topic', '1', '11']));
+    }));
+  });
 });
