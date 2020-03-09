@@ -104,7 +104,7 @@ describe('GoMobileComponent', () => {
     it('should prevent bad contact number format', () => {
       component.profile.contactNumber = '0123456789'; // mock bad format
       component.submit();
-      expect(notificationSpy.presentToast).toHaveBeenCalledWith('Invalid contact number', false);
+      expect(notificationSpy.presentToast).toHaveBeenCalledWith('Invalid contact number');
     });
 
     it('should submit to update profile', () => {
