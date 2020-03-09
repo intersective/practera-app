@@ -7,7 +7,7 @@ import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { BrowserStorageService } from '@services/storage.service';
 import { RouterEnter } from '@services/router-enter.service';
 import { SharedService } from '@services/shared.service';
-import { ActivityService, OverviewActivity, OverviewTask } from '../activity/activity.service';
+import { ActivityService } from '../activity/activity.service';
 import { FastFeedbackService } from '../fast-feedback/fast-feedback.service';
 import { interval, timer, Subscription } from 'rxjs';
 import { map, takeUntil } from 'rxjs/operators';

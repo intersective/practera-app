@@ -7,7 +7,7 @@ import { RouterEnter } from '@services/router-enter.service';
 import { UtilsService } from '@services/utils.service';
 import { BrowserStorageService } from '@services/storage.service';
 import { NotificationService } from '@shared/notification/notification.service';
-import { ActivityService, Task, OverviewActivity, OverviewTask } from '../activity/activity.service';
+import { ActivityService, Task } from '../activity/activity.service';
 import { SharedService } from '@services/shared.service';
 import { Subscription, Observable } from 'rxjs';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
