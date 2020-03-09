@@ -345,6 +345,10 @@ export class UtilsService {
     // add "T" between date and time, so that it works on Safari
     // time = time.replace(' ', 'T');
     if (typeof time === 'string') {
+      if (!time.includes('GMT') && !(time.toLowerCase()).includes('z')) {
+        time = `${time} GMT+0000`;
+      }
+
       return (new Date(time)).toISOString();
     }
 
