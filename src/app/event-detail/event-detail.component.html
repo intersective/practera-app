@@ -24,11 +24,11 @@
       <div id="time" class="subtitle-1">{{ utils.utcToLocal(event.startTime, 'time') }} - {{ utils.utcToLocal(event.endTime, 'time') }}</div>
     </ion-item>
     <ion-item>
-      <ion-icon class="leading-icon" name="pin" color="primary"></ion-icon>
+      <ion-icon class="leading-icon" name="location" color="primary"></ion-icon>
       <div id="location" class="subtitle-1">{{ event.location }}</div>
     </ion-item>
     <ion-item lines="none">
-      <ion-icon class="leading-icon" name="contacts" color="primary"></ion-icon>
+      <ion-icon class="leading-icon" name="people" color="primary"></ion-icon>
       <div id="capacity" class="subtitle-1">{{ event.remainingCapacity }} Seats Available Out of {{ event.capacity }}</div>
     </ion-item>
   </ion-list>

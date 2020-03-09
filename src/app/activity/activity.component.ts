@@ -227,7 +227,7 @@ export class ActivityComponent {
       case 'done':
         return 'checkmark';
       case 'pending review':
-        return 'hourglass';
+        return 'hourglass-outline';
       case 'feedback available':
       case 'in progress':
       default:
