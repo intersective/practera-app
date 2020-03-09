@@ -2,7 +2,7 @@ import { Component, Input, NgZone, Output, EventEmitter } from '@angular/core';
 import { Router } from '@angular/router';
 import { Observable, of, forkJoin, Subscription } from 'rxjs';
 import { catchError } from 'rxjs/operators';
-import { ActivityService, Activity, OverviewActivity, Task } from './activity.service';
+import { ActivityService, Activity, Task } from './activity.service';
 import { UtilsService } from '../services/utils.service';
 import { NotificationService } from '@shared/notification/notification.service';
 import { BrowserStorageService } from '@services/storage.service';
@@ -233,12 +233,6 @@ export class ActivityComponent {
       default:
         return 'arrow-forward';
     }
-  }
-
-  getNextTask() {
-    this.activityService.getNextTask(this.id, this.currentTask.type, this.currentTask.id).subscribe(res => {
-      console.log(res);
-    });
   }
 
 }
