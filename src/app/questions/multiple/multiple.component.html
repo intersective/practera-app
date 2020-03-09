@@ -1,24 +1,24 @@
 <ng-container *ngIf="submissionStatus !== 'in progress' && submission.answer">
   <ion-list class="no-bg">
-    <ion-item *ngFor="let choice of question.choices; let i = index" color="light" [lines]="i == question.choices.length - 1 ? 'none' : ''">
-      <ion-label class="white-space-normal subtitle-1">{{ choice.name }}</ion-label>
+    <ion-item *ngFor="let choice of question.choices; let i = index" [lines]="i == question.choices.length - 1 ? 'none' : ''">
+      <ion-label class="white-space-normal subtitle-1 black">{{ choice.name }}</ion-label>
       <ion-checkbox [checked]="submission.answer.includes(choice.id)" disabled mode="md"></ion-checkbox>
     </ion-item>
   </ion-list>
   <div *ngIf="submission.explanation && submission.explanation.changingThisBreaksApplicationSecurity" class="q-reviews">
-    <ion-label class="q-title">Explanation</ion-label>
+    <ion-label class="q-title black">Explanation</ion-label>
     <p class="paragraph" [innerHtml]="submission.explanation"></p>
   </div>
 </ng-container>
 
 <div *ngIf="reviewStatus !== 'in progress' && (review.answer || review.comment)" class="q-reviews">
-  <ion-label class="q-title subtitle-2">Feedback</ion-label>
+  <ion-label class="q-title subtitle-2 black">Feedback</ion-label>
   <ng-container *ngIf="review.answer">
     <ion-list class="no-bg">
       <ng-container *ngFor="let choice of question.choices; let i = index">
         <ng-container *ngIf="review.answer.includes(choice.id)">
-          <ion-item color="light" [lines]="i == question.choices.length - 1 ? 'none' : ''">
-            <ion-label class="white-space-normal subtitle-1">{{ choice.name }}</ion-label>
+          <ion-item [lines]="i == question.choices.length - 1 ? 'none' : ''">
+            <ion-label class="white-space-normal subtitle-1 gray-2">{{ choice.name }}</ion-label>
             <ion-checkbox checked disabled mode="md"></ion-checkbox>
           </ion-item>
         </ng-container>
