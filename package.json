@@ -43,7 +43,6 @@
     "cordova-sqlite-storage": "^2.6.0",
     "core-js": "^2.5.4",
     "filestack-js": "^3.10.1",
-    "linkifyjs": "^2.1.7",
     "lodash": "^4.17.15",
     "moment": "^2.24.0",
     "newrelic": "^5.11.0",
