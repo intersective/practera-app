@@ -69,7 +69,7 @@
         <ng-container *ngFor="let event of events; let i = index">
           <app-list-item
             *ngIf="i < 2"
-            leadingIcon="calendar"
+            leadingIcon="calendar-outline"
             [leadingIconColor]="eventListService.isNotActionable(event) ? 'medium' : 'primary'"
             [title]="event.name"
             [titleColor]="eventListService.isNotActionable(event) ? 'gray-2' : ''"
@@ -85,7 +85,7 @@
           *ngIf="events.length > 2"
           lines="none"
           (click)="gotoEvent()">
-          <ion-icon name="more" color="primary" class="ion-margin-end"></ion-icon>
+          <ion-icon name="ellipsis-vertical" color="primary" class="ion-margin-end"></ion-icon>
           <p>Show More</p>
         </clickable-item>
       </ion-list>
