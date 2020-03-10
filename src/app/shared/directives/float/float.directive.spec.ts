@@ -7,13 +7,11 @@ import { FloatDirective } from './float.directive';
 
 // @NOTE: keep this for future elements debugging (unit testing purpose only)
 function cardListingHelper(debugElement) {
-  console.log(`parent::`, debugElement.nativeElement.getBoundingClientRect().top);
   const cards: DebugElement[] = debugElement.queryAll(By.css('ion-card'));
   cards.forEach((debugCard, index) => {
     const card: HTMLElement = debugCard.nativeElement;
     card.style.top = `${100 * index}`;
     const boundary = card.getBoundingClientRect();
-    console.log(`${index}`, boundary.top);
   });
 }
 

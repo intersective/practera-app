@@ -76,8 +76,8 @@ describe('GoMobileComponent', () => {
   describe('ngOnInit()', () => {
     it('should pre-configure profile and locale standard', () => {
       const testContactNumber = '0123456789'; // same as mocked user in testing/mocked.service;
-
       expect(component.profile.contactNumber).toEqual('');
+
       component.ngOnInit();
       expect(newRelicSpy.setPageViewName).toHaveBeenCalledWith('go-mobile');
       expect(component.profile.contactNumber).toEqual(testContactNumber);
