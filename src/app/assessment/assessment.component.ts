@@ -564,7 +564,7 @@ export class AssessmentComponent extends RouterEnter {
             if (currentQuestion && currentQuestion.type === 'multiple') {
               answer = [];
             } else {
-              answer = '';
+              answer = null;
             }
           });
         }

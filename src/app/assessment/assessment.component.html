@@ -10,7 +10,7 @@
       'subtitle-2': !utils.isMobile()
     }">Assessment</ion-title>
     <ng-container *ngIf="doAssessment || doReview">
-      <ion-title class="ion-text-center sub-title caption gray-2">{{savingMessage}}</ion-title>
+      <div class="ion-text-center sub-title caption gray-2 saving-msg">{{savingMessage}}</div>
       <ion-button [disabled]="savingButtonDisabled || submitted" (click)="submit(true, false, true)" class="text-button subtitle-1" color="primary" slot="end" fill="clear" size="small">Save</ion-button>
     </ng-container>
   </ion-toolbar>
