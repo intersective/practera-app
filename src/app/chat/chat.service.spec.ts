@@ -42,6 +42,7 @@ describe('ChatService', () => {
 
   describe('when testing getchatList()', () => {
     let requestResponse;
+    let expected;
     beforeEach(() => {
       requestResponse = {
         success: true,
@@ -85,13 +86,101 @@ describe('ChatService', () => {
           }
         ]
       };
+      expected = [
+        {
+          team_id: 1,
+          team_name: 'Team 1',
+          team_member_id: null,
+          name: 'Team',
+          role: null,
+          unread_messages: 2,
+          last_message_created: '2020-01-30 06:18:45',
+          last_message: 'test 1',
+          is_team: true,
+          participants_only: false
+        },
+        {
+          team_id: 1,
+          team_name: 'Team 1',
+          team_member_id: null,
+          name: 'Team',
+          role: null,
+          unread_messages: 5,
+          last_message_created: '2020-01-30 06:18:45',
+          last_message: 'test 1',
+          is_team: true,
+          participants_only: true
+        },
+        {
+          team_id: 1,
+          team_name: 'Team 1',
+          team_member_id: 25,
+          name: 'sanjaya_1',
+          role: 'participant',
+          unread_messages: 0,
+          last_message_created: '2020-01-30 04:45:08',
+          last_message: 'test 1',
+          is_team: false,
+          participants_only: false,
+          team_member_image: 'https://cdn.filestackcontent.com/uYQuauwNRdD43PfCQ4iW'
+        }
+      ];
     });
     it('should throw Chat format error, if data format not match', () => {
       const tmpRes = JSON.parse(JSON.stringify(requestResponse));
       tmpRes.data = {};
       requestSpy.get.and.returnValue(of(tmpRes));
       service.getchatList().subscribe();
-      expect(requestSpy.apiResponseFormatError.calls.count()).toBe(2);
+      expect(requestSpy.apiResponseFormatError.calls.count()).toBe(1);
+    });
+
+    it('should throw Chat object format error, if data format not match', () => {
+      const tmpRes = JSON.parse(JSON.stringify(requestResponse));
+      delete tmpRes.data[0].team_id;
+      requestSpy.get.and.returnValue(of(tmpRes));
+      service.getchatList().subscribe();
+      expect(requestSpy.apiResponseFormatError.calls.count()).toBe(1);
+    });
+
+    it('should get correct chat name', () => {
+      const tmpRes = JSON.parse(JSON.stringify(
+        {
+          success: true,
+          data: [
+            {
+              team_id: 1,
+              team_name: 'Team 1',
+              team_member_id: 25,
+              name: 'sanjaya_1',
+              role: 'participant',
+              unread_messages: 0,
+              last_message_created: '2020-01-30 04:45:08',
+              last_message: 'test 1',
+              is_team: false,
+              participants_only: false,
+              team_member_image: 'https://cdn.filestackcontent.com/uYQuauwNRdD43PfCQ4iW'
+            }
+          ]
+        }
+      ));
+      requestSpy.get.and.returnValue(of(tmpRes));
+      spyOn<any>(service, '_getChatName').and.returnValue('sanjaya_1');
+      service.getchatList().subscribe(
+        chatList => {
+          expect(chatList[0].name).toEqual('sanjaya_1');
+        }
+      );
+      expect(requestSpy.get.calls.count()).toBe(1);
+    });
+
+    it('should get correct chat list data', () => {
+      requestSpy.get.and.returnValue(of(requestResponse));
+      service.getchatList().subscribe(
+        chatList => {
+          expect(chatList).toEqual(expected);
+        }
+      );
+      expect(requestSpy.get.calls.count()).toBe(1);
     });
   });
 
