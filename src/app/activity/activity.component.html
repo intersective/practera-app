@@ -69,7 +69,7 @@
         <ng-container *ngFor="let event of events; let i = index">
           <app-list-item
             *ngIf="i < 2"
-            leadingIcon="calendar"
+            leadingIcon="calendar-outline"
             [leadingIconColor]="eventListService.isNotActionable(event) ? 'medium' : 'primary'"
             [title]="event.name"
             [titleColor]="eventListService.isNotActionable(event) ? 'gray-2' : ''"
