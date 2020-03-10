@@ -4,7 +4,7 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { Router } from '@angular/router';
 
 import { HomeComponent } from './home.component';
-import { Intercom } from 'ng-intercom';
+import { Intercom, IntercomConfig } from 'ng-intercom';
 import { HomeService } from './home.service';
 import { FastFeedbackService } from '@app/fast-feedback/fast-feedback.service';
 import { AchievementsService } from '@app/achievements/achievements.service';
@@ -84,6 +84,9 @@ describe('HomeComponent', () => {
         NewRelicService,
         {
           provide: Intercom
+        },
+        {
+          provide: IntercomConfig
         },
         {
           provide: HomeService,

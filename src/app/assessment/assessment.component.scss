@@ -27,6 +27,10 @@
 
 ion-header ion-toolbar {
   min-height: 56px;
+  .saving-msg {
+    margin-top: 30px;
+    margin-left: 60px;
+  }
 }
 
 .member-detail-container {
