@@ -134,7 +134,7 @@ describe('ChatService', () => {
       expect(requestSpy.apiResponseFormatError.calls.count()).toBe(1);
     });
 
-    it('should throw Chat object format error, if data format not match', () => {
+    it('should throw Chat object format error, if team id not found', () => {
       const tmpRes = JSON.parse(JSON.stringify(requestResponse));
       delete tmpRes.data[0].team_id;
       requestSpy.get.and.returnValue(of(tmpRes));
@@ -142,35 +142,36 @@ describe('ChatService', () => {
       expect(requestSpy.apiResponseFormatError.calls.count()).toBe(1);
     });
 
-    it('should get correct chat name', () => {
-      const tmpRes = JSON.parse(JSON.stringify(
-        {
-          success: true,
-          data: [
-            {
-              team_id: 1,
-              team_name: 'Team 1',
-              team_member_id: 25,
-              name: 'sanjaya_1',
-              role: 'participant',
-              unread_messages: 0,
-              last_message_created: '2020-01-30 04:45:08',
-              last_message: 'test 1',
-              is_team: false,
-              participants_only: false,
-              team_member_image: 'https://cdn.filestackcontent.com/uYQuauwNRdD43PfCQ4iW'
-            }
-          ]
-        }
-      ));
+    it('should throw Chat object format error, if is_team not found', () => {
+      const tmpRes = JSON.parse(JSON.stringify(requestResponse));
+      delete tmpRes.data[0].is_team;
       requestSpy.get.and.returnValue(of(tmpRes));
-      spyOn<any>(service, '_getChatName').and.returnValue('sanjaya_1');
-      service.getchatList().subscribe(
-        chatList => {
-          expect(chatList[0].name).toEqual('sanjaya_1');
-        }
-      );
-      expect(requestSpy.get.calls.count()).toBe(1);
+      service.getchatList().subscribe();
+      expect(requestSpy.apiResponseFormatError.calls.count()).toBe(1);
+    });
+
+    it('should throw Chat object format error, if participants only not found', () => {
+      const tmpRes = JSON.parse(JSON.stringify(requestResponse));
+      delete tmpRes.data[0].participants_only;
+      requestSpy.get.and.returnValue(of(tmpRes));
+      service.getchatList().subscribe();
+      expect(requestSpy.apiResponseFormatError.calls.count()).toBe(1);
+    });
+
+    it('should throw Chat object format error, if name not found', () => {
+      const tmpRes = JSON.parse(JSON.stringify(requestResponse));
+      delete tmpRes.data[0].name;
+      requestSpy.get.and.returnValue(of(tmpRes));
+      service.getchatList().subscribe();
+      expect(requestSpy.apiResponseFormatError.calls.count()).toBe(1);
+    });
+
+    it('should throw Chat object format error, if team name not found', () => {
+      const tmpRes = JSON.parse(JSON.stringify(requestResponse));
+      delete tmpRes.data[0].team_name;
+      requestSpy.get.and.returnValue(of(tmpRes));
+      service.getchatList().subscribe();
+      expect(requestSpy.apiResponseFormatError.calls.count()).toBe(1);
     });
 
     it('should get correct chat list data', () => {
