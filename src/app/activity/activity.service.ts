@@ -106,7 +106,7 @@ export class ActivityService {
             isForTeam: task.is_team,
             dueDate: task.deadline,
             isOverdue: task.deadline ? this.utils.timeComparer(task.deadline) < 0 : false,
-            isDueToday: task.deadline ? this.utils.timeComparer(task.deadline, undefined, true) === 0 : false,
+            isDueToday: task.deadline ? this.utils.timeComparer(task.deadline, { compareDate: true }) === 0 : false,
             status: task.status.status === 'pending approval' ? 'pending review' : task.status.status,
             isLocked: task.status.is_locked,
             submitter: {
