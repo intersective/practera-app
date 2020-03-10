@@ -221,7 +221,7 @@ export class ActivityComponent {
 
   taskEndingIcon(task) {
     if (task.isLocked) {
-      return 'md-lock';
+      return 'lock-closed-outline';
     }
     switch (task.status) {
       case 'done':

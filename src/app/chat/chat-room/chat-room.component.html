@@ -69,7 +69,7 @@
             )">
               <ion-item class="message-body general-attachment" (click)="previewFile(message.file)">
                 <ion-ripple-effect></ion-ripple-effect>
-                <ion-icon name="document" slot="start"></ion-icon>
+                <ion-icon name="document-outline" slot="start"></ion-icon>
                 <ion-label color="primary">
                   {{ message.file.filename }}
                 </ion-label>
@@ -120,12 +120,12 @@
     <ion-row nowrap class="ion-no-padding ion-align-items-end">
       <ion-col size="1" class="ion-no-padding ion-text-center">
         <ion-button (click)="attach('image')" fill="clear" class="ion-no-padding">
-          <ion-icon name="images" slot="icon-only"></ion-icon>
+          <ion-icon name="images-outline" slot="icon-only"></ion-icon>
         </ion-button>
       </ion-col>
       <ion-col size="1" class="ion-no-padding ion-text-center">
         <ion-button (click)="attach('any')" fill="clear" class="ion-no-padding">
-          <ion-icon name="attach" slot="icon-only"></ion-icon>
+          <ion-icon name="attach-outline" slot="icon-only"></ion-icon>
         </ion-button>
       </ion-col>
       <ion-col size="9" class="ion-align-self-center">
@@ -141,7 +141,7 @@
       </ion-col>
       <ion-col size="1" class="ion-no-padding ion-text-center">
         <ion-button (click)="sendMessage()" type="submit" fill="clear" class="ion-no-padding">
-          <ion-icon name="send" slot="icon-only"></ion-icon>
+          <ion-icon name="send-outline" slot="icon-only"></ion-icon>
         </ion-button>
       </ion-col>
     </ion-row>
