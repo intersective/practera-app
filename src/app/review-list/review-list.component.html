@@ -48,7 +48,7 @@
           <ng-container *ngFor="let review of reviews; let i = index">
             <app-list-item
               *ngIf="review.isDone == showDone"
-              leadingIcon="clipboard"
+              leadingIcon="clipboard-outline"
               [title]="review.name"
               [subtitle1]="'submitted by ' + review.submitterName"
               [subtitle2]="review.teamName"
