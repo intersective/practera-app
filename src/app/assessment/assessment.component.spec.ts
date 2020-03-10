@@ -280,7 +280,7 @@ describe('AssessmentComponent', () => {
     fixture.whenStable().then(() => {
       expect(component.assessment).toEqual(mockAssessment);
       expect(component.loadingAssessment).toEqual(false);
-      expect(page.savingMessage).toBeTruthy();
+      expect(page.savingMessage).toBeFalsy();
       expect(page.assessmentName.innerHTML).toEqual(mockAssessment.name);
       expect(page.assessmentDescription).toBeTruthy();
       expect(page.overDueMsg).toBeFalsy();
@@ -515,7 +515,7 @@ describe('AssessmentComponent', () => {
         },
         {
           assessment_question_id: 124,
-          answer: ''
+          answer: null
         },
         {
           assessment_question_id: 125,
