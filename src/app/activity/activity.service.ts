@@ -143,7 +143,13 @@ export class ActivityService {
     if (res.noMoreTask) {
       if (!res.task) {
         // go back to home page, and highlight the next activity
-        this.router.navigate(['app', 'home'], { queryParams: { activityId: activityId, activityCompleted: activityCompleted } });
+        if (activityCompleted) {
+          // and display the toast
+          this.router.navigate(['app', 'home'], { queryParams: { activityId: activityId, activityCompleted: activityCompleted } });
+        } else {
+          // and don't display the toast
+          this.router.navigate(['app', 'home'], { queryParams: { activityId: activityId } });
+        }
       } else {
         this.notification.activityCompletePopUp(activityId, activityCompleted);
       }

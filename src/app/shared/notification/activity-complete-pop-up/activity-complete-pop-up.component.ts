@@ -23,7 +23,11 @@ export class ActivityCompletePopUpComponent {
     if (!continueToActivity) {
       this.router.navigate(['app', 'activity', this.activityId]);
     } else {
-      this.router.navigate(['app', 'home'], { queryParams: { activityId: this.activityId, activityCompleted: this.activityCompleted } });
+      if (this.activityCompleted) {
+        this.router.navigate(['app', 'home'], { queryParams: { activityId: this.activityId, activityCompleted: this.activityCompleted } });
+      } else {
+        this.router.navigate(['app', 'home'], { queryParams: { activityId: this.activityId } });
+      }
     }
   }
 }

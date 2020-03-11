@@ -107,7 +107,7 @@ export class ProjectComponent implements OnInit {
         if (this.activityCompleted) {
           this.notificationService.presentToast(`&#127881; Congratulations. You've completed this activity.`, {
             position: 'bottom',
-            color: 'success',
+            color: 'primary',
             duration: 5000
           });
         }
