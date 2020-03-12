@@ -1,25 +1,26 @@
 <ion-header>
-  <ion-toolbar class="center">
-    <ion-title text-center padding-horizontal>{{programName}}</ion-title>
+  <ion-toolbar>
+    <ion-title class="ion-text-center ion-padding-horizontal">{{programName}}</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content>
-  <ng-container *ngIf="!isMobile; else singlePage">
+<ion-content *ngIf="!isMobile; else singlePage">
+  <ng-container>
     <ion-grid class="desktop-view">
       <ion-row>
-        <ion-col class="ion-no-padding">
+        <ion-col class="ion-no-padding" appFloat>
           <app-home [refresh]="initiator$"></app-home>
         </ion-col>
-        <ion-col class="ion-no-padding">
+        <ion-col class="ion-no-padding" appFloat isActivityCard="true">
           <app-project [refresh]="initiator$"></app-project>
         </ion-col>
       </ion-row>
     </ion-grid>
   </ng-container>
-
-  <ng-template #singlePage>
+</ion-content>
+<ng-template #singlePage>
+  <ion-content appFloat isActivityCard="true">
     <app-home [refresh]="initiator$"></app-home>
     <app-project [refresh]="initiator$"></app-project>
-  </ng-template>
-</ion-content>
+  </ion-content>
+</ng-template>

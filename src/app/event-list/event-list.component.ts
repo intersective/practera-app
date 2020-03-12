@@ -34,7 +34,7 @@ export class EventListComponent {
   constructor (
     public router: Router,
     private route: ActivatedRoute,
-    private eventService: EventListService,
+    public eventListService: EventListService,
     public utils: UtilsService,
     private ngZone: NgZone,
     private newRelic: NewRelicService
@@ -62,7 +62,7 @@ export class EventListComponent {
   onEnter() {
     this.newRelic.setPageViewName('event-list');
     this._initialise();
-    this.eventService.getEvents().subscribe(events => {
+    this.eventListService.getEvents().subscribe(events => {
       if (this.utils.isEmpty(events)) {
         this.loadingEvents = false;
         return;
@@ -84,7 +84,12 @@ export class EventListComponent {
         date: compareDateAttended,
         events: []
       };
+      const activityIdsWithEvent = [];
       events.forEach(event => {
+        // record the id of activity that has event, so that we can filter the activity list later
+        if (!activityIdsWithEvent.includes(event.activityId)) {
+          activityIdsWithEvent.push(event.activityId);
+        }
         if (!event.isBooked) {
           // group event for 'browse' type
           [this.eventsCategorised.browse, eventGroupBrowse, compareDateBrowse] = this._groupEvents(event, this.eventsCategorised.browse, eventGroupBrowse, compareDateBrowse, true);
@@ -136,9 +141,11 @@ export class EventListComponent {
         this._rearrangeEvents();
       }
       this.loadingEvents = false;
-    });
-    this.eventService.getActivities().subscribe(activities => {
-      this.activities = activities;
+      // get activity list
+      this.eventListService.getActivities().subscribe(activities => {
+        // only display activity that has event
+        this.activities = activities.filter(activity => activityIdsWithEvent.includes(activity.id));
+      });
     });
   }
 
@@ -204,11 +211,12 @@ export class EventListComponent {
 
   // tell parent component that user is going to an event
   goto(event) {
-    // only goto an event for desktop view
+    // pop up event detail for mobile
     if (this.utils.isMobile()) {
-      return ;
+      return this.eventListService.eventDetailPopUp(event);
     }
-    this.navigate.emit(event);
+    // goto an event for desktop view
+    return this.navigate.emit(event);
   }
 
   /**
@@ -269,18 +277,6 @@ export class EventListComponent {
     return [events, eventGroup, compareDate];
   }
 
-  /**
-   * This is used to get the proper time information need to be displayed on card
-   * @param {Event} event [event data]
-   */
-  timeDisplayed(event) {
-    // display date only if it is a past event and is not booked
-    if (this.utils.timeComparer(event.startTime) < 0 && !event.isBooked) {
-      return this.utils.utcToLocal(event.startTime, 'date');
-    }
-    // otherwise display time only
-    return this.utils.utcToLocal(event.startTime, 'time') + ' - ' + this.utils.utcToLocal(event.endTime, 'time');
-  }
 
   showBrowse() {
     this.newRelic.addPageAction('show browse');
@@ -314,8 +310,8 @@ export class EventListComponent {
    */
   private _rearrangeEvents() {
     this._filterByActivities();
-    // don't need to go to first event if it is the inital loading and event id is passed in
-    if (!this.goToFirstEvent) {
+    // don't need to go to first event if it is the inital loading and event id is passed in or it is on mobile mode
+    if (!this.goToFirstEvent || this.utils.isMobile()) {
       return ;
     }
     // Go to the first event.

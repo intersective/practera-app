@@ -6,7 +6,7 @@ import { UtilsService } from '@services/utils.service';
 import { BrowserStorageService } from '@services/storage.service';
 import { PusherService } from '@shared/pusher/pusher.service';
 import { SharedService } from '@services/shared.service';
-import { ReviewsService } from '@app/reviews/reviews.service';
+import { ReviewListService } from '@app/review-list/review-list.service';
 import { EventListService } from '@app/event-list/event-list.service';
 import { environment } from '@environments/environment';
 
@@ -32,11 +32,11 @@ export interface Program {
   id: number;
   name: string;
   experience_id: number;
-  config?: ProgramConfig;
+  config: ProgramConfig;
 }
 
 export interface ProgramConfig {
-  theme_color?: string;
+  theme_color: string;
   card_style?: string;
   review_rating?: boolean;
   truncate_description?: boolean;
@@ -67,12 +67,24 @@ export class SwitcherService {
     private storage: BrowserStorageService,
     private sharedService: SharedService,
     private pusherService: PusherService,
-    private reviewsService: ReviewsService,
+    private reviewsService: ReviewListService,
     private eventsService: EventListService,
   ) {}
 
   getPrograms() {
-    return of(this.storage.get('programs'));
+    const programs = this.storage.get('programs');
+    const cdn = 'https://cdn.filestackcontent.com/resize=fit:crop,width:';
+    let imagewidth = 600;
+    programs.forEach(program => {
+      if (program.project.lead_image) {
+        const imageId = program.project.lead_image.split('/').pop();
+        if (!this.utils.isMobile()) {
+          imagewidth = 1024;
+        }
+        program.project.lead_image = `${cdn}${imagewidth}/${imageId}`;
+      }
+    });
+    return of(programs);
   }
 
   switchProgram(programObj: ProgramObj): Observable<any> {
@@ -198,7 +210,7 @@ export class SwitcherService {
    * if method got 'one program object', switch to that program object and navigate to dashboard.
    * if method got 'empty value', do nothing.
    */
-  async switchProgramAndNavigate(programs) {
+  async switchProgramAndNavigate(programs): Promise<any> {
     if (!this.utils.isEmpty(programs)) {
       // Array with multiple program objects -> [{},{},{},{}]
       if (Array.isArray(programs) && !this.checkIsOneProgram(programs)) {
@@ -211,7 +223,7 @@ export class SwitcherService {
         await this.switchProgram(programs).toPromise();
       }
 
-      this.pusherService.initialise({ unsubscribe: true });
+      await this.pusherService.initialise({ unsubscribe: true });
       // clear the cached data
       this.utils.clearCache();
       if ((typeof environment.goMobile !== 'undefined' && environment.goMobile === false)
@@ -226,6 +238,7 @@ export class SwitcherService {
         return ['go-mobile'];
       }
     }
+    return;
   }
 
   getNewJwt() {

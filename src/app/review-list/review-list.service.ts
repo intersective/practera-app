@@ -22,7 +22,7 @@ export interface Review {
 @Injectable({
   providedIn: 'root',
 })
-export class ReviewsService {
+export class ReviewListService {
 
   constructor(
     private request: RequestService,
