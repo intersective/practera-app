@@ -60,7 +60,7 @@ export class FileDisplayComponent implements OnInit, OnChanges {
     try {
       return await this.filestackService.previewFile(file);
     } catch (err) {
-      console.log(err);
+      return err;
     }
   }
 }

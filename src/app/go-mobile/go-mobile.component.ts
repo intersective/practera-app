@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { GoMobileService } from './go-mobile.service';
-import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { UtilsService } from '@services/utils.service';
 import { NotificationService } from '@shared/notification/notification.service';
 import { BrowserStorageService } from '@services/storage.service';
@@ -50,14 +49,14 @@ export class GoMobileComponent implements OnInit {
     }
   }
 
-  submit() {
+  submit(): Promise<void> {
     const nrSubmitContactTracer = this.newRelic.createTracer('submit contact');
     this.newRelic.addPageAction('submit contact info');
     this.sendingSMS = true;
     this.profile.contactNumber = this.profile.contactNumber.replace(/[^0-9+]+/ig, '');
     // check if newly input number is valid or not.
     if (!this.validateContactNumber()) {
-      return this.notification.presentToast('Invalid contact number', false);
+      return this.notification.presentToast('Invalid contact number');
     }
 
     this.goMobileService.submit({
@@ -78,6 +77,7 @@ export class GoMobileComponent implements OnInit {
             },
           }],
         });
+        return alertBox;
       },
       err => {
         const toasted = this.notification.alert({
@@ -86,7 +86,7 @@ export class GoMobileComponent implements OnInit {
         });
         nrSubmitContactTracer();
         this.newRelic.noticeError('submitting contact error', JSON.stringify(err));
-        throw new Error(err);
+        return toasted;
       }
     );
   }

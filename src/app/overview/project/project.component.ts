@@ -1,11 +1,12 @@
 import { Component, HostListener, ViewChild, ViewChildren, QueryList, ElementRef, Inject, Input, OnInit } from '@angular/core';
 import { DOCUMENT } from '@angular/common';
 import { Router, ActivatedRoute } from '@angular/router';
-import { ProjectService, Milestone, DummyMilestone } from './project.service';
+import { ProjectService, Milestone } from './project.service';
 import { UtilsService } from '@services/utils.service';
 import { Subscription } from 'rxjs';
 import { Platform } from '@ionic/angular';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
+import { NotificationService } from '@shared/notification/notification.service';
 import { trigger, state, transition, style, animate, useAnimation } from '@angular/animations';
 import { fadeIn } from '../../animations';
 import { Observable } from 'rxjs';
@@ -38,7 +39,7 @@ export class ProjectComponent implements OnInit {
 
   private showingMilestones: Array<Milestone | { id: number; }>;
   public programName: string;
-  public milestones: Array<Milestone | DummyMilestone> = [];
+  public milestones: Array<Milestone> = [];
   public loadingMilestone = true;
   @ViewChild('contentRef', {read: ElementRef}) contentRef: any;
   @ViewChildren('milestoneRef', {read: ElementRef}) milestoneRefs: QueryList<ElementRef>;
@@ -46,6 +47,7 @@ export class ProjectComponent implements OnInit {
   // used to indicate the milestone progress bar at top
   public activeMilestoneIndex = 0;
   private highlightedActivityId: number;
+  private activityCompleted: boolean;
   private subscriptions: Subscription[] = [];
   public isMobile: boolean;
 
@@ -56,6 +58,7 @@ export class ProjectComponent implements OnInit {
     private projectService: ProjectService,
     private platform: Platform,
     private newRelic: NewRelicService,
+    private notificationService: NotificationService,
     @Inject(DOCUMENT) private readonly document: Document
    ) {
     this.showingMilestones = [];
@@ -70,6 +73,64 @@ export class ProjectComponent implements OnInit {
 
   private _initialise() {
     this.loadingMilestone = true;
+  }
+
+  onEnter() {
+    this._initialise();
+    this.newRelic.setPageViewName('Project View');
+    this.route.queryParamMap.subscribe(params => {
+      this.highlightedActivityId = +params.get('activityId') || undefined;
+      this.activityCompleted = !!params.get('activityCompleted') || false;
+    });
+
+    this.subscriptions.push(this.projectService.getProject().subscribe(
+      milestones => {
+        if (!milestones) {
+          return;
+        }
+        // don't need to do anything if data not changed
+        if (JSON.parse(JSON.stringify(milestones)) === JSON.parse(JSON.stringify(this.milestones))) {
+          return;
+        }
+        this.milestones = milestones;
+        milestones.forEach(m => {
+          if (m.progress !== 1) {
+            this.showingMilestones.push(m);
+          }
+        });
+        this.loadingMilestone = false;
+        // scroll to highlighted activity if has one
+        if (this.highlightedActivityId) {
+          setTimeout(() => this.scrollTo(`activity-card-${this.highlightedActivityId}`), 1000);
+        }
+        // show activity complete toast message
+        if (this.activityCompleted) {
+          this.notificationService.presentToast(`&#127881; Congratulations. You've completed this activity.`, {
+            position: 'bottom',
+            color: 'primary',
+            duration: 5000
+          });
+        }
+      },
+      error => {
+        this.newRelic.noticeError(error);
+      }
+    ));
+
+  }
+
+  scrollTo(domId: string, index?: number): void {
+    // update active milestone status (mark whatever user select)
+    if (index > -1) {
+      this.activeMilestoneIndex = index;
+    }
+
+    const el = this.document.getElementById(domId);
+    if (el) {
+      el.scrollIntoView({ block: 'start', behavior: 'smooth', inline: 'nearest' });
+      el.classList.add('highlighted');
+      setTimeout(() => el.classList.remove('highlighted'), 1000);
+    }
   }
 
   toggleGroup(milestone: Milestone) {
@@ -96,71 +157,6 @@ export class ProjectComponent implements OnInit {
       return finding === undefined;
     }
     return true;
-  }
-
-  onEnter() {
-    this._initialise();
-    this.newRelic.setPageViewName('Project View');
-    this.route.queryParamMap.subscribe(params => {
-      this.highlightedActivityId = +params.get('activityId') || undefined;
-    });
-
-    this.subscriptions.push(this.projectService.getProject().subscribe(
-      milestones => {
-        if (!milestones) {
-          milestones = [{ dummy: true }];
-        }
-        this.milestones = milestones;
-        milestones.forEach(m => {
-          if (m.progress !== 1) {
-            this.showingMilestones.push(m);
-          }
-        });
-        this.loadingMilestone = false;
-        // scroll to highlighted activity if has one
-        if (this.highlightedActivityId) {
-          this.scrollTo(`activity-card-${this.highlightedActivityId}`);
-        }
-      },
-      error => {
-        this.newRelic.noticeError(error);
-      }
-    ));
-
-  }
-
-  trackScrolling(event) {
-    // get the position of each milestone
-    const milestonePositions = this.milestoneRefs.map(milestoneRef => {
-      return milestoneRef.nativeElement.offsetTop;
-    });
-    this.activeMilestoneIndex = milestonePositions.findIndex((element, i) => {
-      const {
-        detail, // current scrolling event
-        srcElement // ion-content's height
-      } = event;
-      const screenMidPoint = detail.currentY + (srcElement.offsetHeight / 2);
-
-      if (i === milestonePositions.length - 1) {
-        return screenMidPoint >= element;
-      }
-
-      return screenMidPoint >= element && screenMidPoint < milestonePositions[i + 1];
-    });
-  }
-
-  scrollTo(domId: string, index?: number): void {
-    // update active milestone status (mark whatever user select)
-    if (index > -1) {
-      this.activeMilestoneIndex = index;
-    }
-
-    const el = this.document.getElementById(domId);
-    if (el) {
-      el.scrollIntoView({ block: 'start', behavior: 'smooth', inline: 'nearest' });
-      el.classList.add('highlighted');
-      setTimeout(() => el.classList.remove('highlighted'), 1000);
-    }
   }
 
   goToActivity(id) {

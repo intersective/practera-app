@@ -4,7 +4,7 @@ import { UtilsService } from '@services/utils.service';
 import { BrowserStorageService } from '@services/storage.service';
 import { RouterEnter } from '@services/router-enter.service';
 import { SwitcherService } from '../switcher/switcher.service';
-import { ReviewsService } from '../reviews/reviews.service';
+import { ReviewListService } from '@app/review-list/review-list.service';
 import { Router } from '@angular/router';
 import { SharedService } from '@services/shared.service';
 import { EventListService } from '@app/event-list/event-list.service';
@@ -30,7 +30,7 @@ export class TabsComponent extends RouterEnter {
     public storage: BrowserStorageService,
     public utils: UtilsService,
     private switcherService: SwitcherService,
-    private reviewsService: ReviewsService,
+    private reviewsService: ReviewListService,
     private sharedService: SharedService,
     private eventsService: EventListService,
     private newRelic: NewRelicService,

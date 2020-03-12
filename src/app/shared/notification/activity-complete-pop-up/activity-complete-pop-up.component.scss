@@ -1,0 +1,11 @@
+p {
+  line-height: 1.5,
+}
+.fixed-bottom {
+  position: fixed;
+  width: 100%;
+  bottom: 0;
+  hr {
+    border-top: 3px solid var(--ion-color-light);
+  }
+}

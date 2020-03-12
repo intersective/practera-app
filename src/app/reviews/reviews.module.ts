@@ -1,24 +1,22 @@
-import { IonicModule } from '@ionic/angular';
 import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { ReviewsComponent } from './reviews.component';
+import { SharedModule } from '@shared/shared.module';
+import { ReviewsRoutingComponent } from './reviews-routing.component';
+
 import { ReviewsRoutingModule } from './reviews-routing.module';
-import { ReviewsService } from './reviews.service';
-import { ReviewsRoutingComponent } from './reviews-routing.components';
+import { ReviewsComponent } from './reviews.component';
+import { ReviewListModule } from '../review-list/review-list.module';
+import { AssessmentModule } from '../assessment/assessment.module';
 
 @NgModule({
-  imports: [
-    IonicModule,
-    CommonModule,
-    FormsModule,
-    ReviewsRoutingModule,
-
-  ],
   declarations: [
     ReviewsComponent,
     ReviewsRoutingComponent
   ],
-  providers: [ ReviewsService]
+  imports: [
+    SharedModule,
+    ReviewsRoutingModule,
+    ReviewListModule,
+    AssessmentModule
+  ]
 })
-export class ReviewsModule {}
+export class ReviewsModule { }
