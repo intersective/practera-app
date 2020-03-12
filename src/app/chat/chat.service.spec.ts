@@ -75,7 +75,7 @@ describe('ChatService', () => {
             team_id: 1,
             team_name: 'Team 1',
             team_member_id: 25,
-            name: 'sanjaya_1',
+            name: 'user_1',
             role: 'participant',
             unread_messages: 0,
             last_message_created: '2020-01-30 04:45:08',
@@ -91,7 +91,7 @@ describe('ChatService', () => {
           team_id: 1,
           team_name: 'Team 1',
           team_member_id: null,
-          name: 'Team',
+          name: 'Team 1 + Mentor',
           role: null,
           unread_messages: 2,
           last_message_created: '2020-01-30 06:18:45',
@@ -103,7 +103,7 @@ describe('ChatService', () => {
           team_id: 1,
           team_name: 'Team 1',
           team_member_id: null,
-          name: 'Team',
+          name: 'Team 1',
           role: null,
           unread_messages: 5,
           last_message_created: '2020-01-30 06:18:45',
@@ -115,7 +115,7 @@ describe('ChatService', () => {
           team_id: 1,
           team_name: 'Team 1',
           team_member_id: 25,
-          name: 'sanjaya_1',
+          name: 'user_1',
           role: 'participant',
           unread_messages: 0,
           last_message_created: '2020-01-30 04:45:08',
@@ -183,6 +183,226 @@ describe('ChatService', () => {
       );
       expect(requestSpy.get.calls.count()).toBe(1);
     });
+  });
+
+  describe('when testing getMessageList()', () => {
+    let requestResponseTeamChat;
+    let requestResponseOneToOneChat;
+    let expectedTeamChat;
+    let expectedOneToOneChat;
+    beforeEach(() => {
+      requestResponseTeamChat = {
+        success: true,
+        data: [
+          {
+            id: 1,
+            sender_name: 'user_1',
+            sender_image: 'https://www.gravatar.com/avatar/3ee6ef0c6f1ec24418680ce71e8b06f1?d=https%3A%2F%2Fmy.practera.com%2Fimg%2Fuser-512.png&s=50',
+            message: 'test message 01',
+            file: null,
+            sent_time: '2020-02-27 01:48:28',
+            receiver_name: '',
+            receiver_image: '',
+            is_sender: true
+          },
+          {
+            id: 2,
+            sender_name: 'admin_1',
+            sender_image: 'https://www.gravatar.com/avatar/3ee6ef0c6f1ec24418680ce71e8b06f1?d=https%3A%2F%2Fmy.practera.com%2Fimg%2Fuser-512.png&s=50',
+            message: 'test admin message 01',
+            file: {
+              filename: 'Screen_Shot_2019-09-30_at_6.55.30_AM.png',
+              url: 'https://cdn.filestackcontent.com/hZh76R6TmmKr1qqFAd9C',
+              mimetype: 'image/png'
+            },
+            sent_time: '2020-01-30 06:18:45',
+            receiver_name: '',
+            receiver_image: '',
+            is_sender: false
+          },
+          {
+            id: 3,
+            sender_name: 'user_2',
+            sender_image: 'https://www.gravatar.com/avatar/3ee6ef0c6f1ec24418680ce71e8b06f1?d=https%3A%2F%2Fmy.practera.com%2Fimg%2Fuser-512.png&s=50',
+            message: 'test message 02',
+            file: null,
+            sent_time: '2019-11-27 02:21:21',
+            receiver_name: '',
+            receiver_image: '',
+            is_sender: false
+          }
+        ]
+      };
+
+      requestResponseOneToOneChat = {
+        success: true,
+        data: [
+          {
+            id: 1,
+            sender_name: 'user_1',
+            sender_image: 'https://www.gravatar.com/avatar/5d838f937ce3f0d470120b5c2a182830?d=https%3A%2F%2Fmy.practera.com%2Fimg%2Fuser-512.png&s=50',
+            message: 'test 1',
+            file: null,
+            sent_time: '2020-01-30 04:45:08',
+            receiver_name: 'user_2',
+            receiver_image: 'https://www.gravatar.com/avatar/3ee6ef0c6f1ec24418680ce71e8b06f1?d=https%3A%2F%2Fmy.practera.com%2Fimg%2Fuser-512.png&s=50',
+            is_sender: false
+          },
+          {
+            id: 2,
+            sender_name: 'user_2',
+            sender_image: 'https://www.gravatar.com/avatar/3ee6ef0c6f1ec24418680ce71e8b06f1?d=https%3A%2F%2Fmy.practera.com%2Fimg%2Fuser-512.png&s=50',
+            message: 'test 2',
+            file: null,
+            sent_time: '2019-11-26 07:08:35',
+            receiver_name: 'user_1',
+            receiver_image: 'https://www.gravatar.com/avatar/5d838f937ce3f0d470120b5c2a182830?d=https%3A%2F%2Fmy.practera.com%2Fimg%2Fuser-512.png&s=50',
+            is_sender: true
+          },
+          {
+            id: 3,
+            sender_name: 'user_2',
+            sender_image: 'https://www.gravatar.com/avatar/3ee6ef0c6f1ec24418680ce71e8b06f1?d=https%3A%2F%2Fmy.practera.com%2Fimg%2Fuser-512.png&s=50',
+            message: 'test 3',
+            file: {
+              filename: 'Screen_Shot_2019-09-30_at_6.55.30_AM.png',
+              url: 'https://cdn.filestackcontent.com/hZh76R6TmmKr1qqFAd9C',
+              mimetype: 'image/png'
+            },
+            sent_time: '2019-11-26 07:08:35',
+            receiver_name: 'user_1',
+            receiver_image: 'https://www.gravatar.com/avatar/5d838f937ce3f0d470120b5c2a182830?d=https%3A%2F%2Fmy.practera.com%2Fimg%2Fuser-512.png&s=50',
+            is_sender: true
+          }
+        ]
+      };
+
+      expectedTeamChat = [
+        {
+          id: 1,
+          sender_name: 'user_1',
+          sender_image: 'https://www.gravatar.com/avatar/3ee6ef0c6f1ec24418680ce71e8b06f1?d=https%3A%2F%2Fmy.practera.com%2Fimg%2Fuser-512.png&s=50',
+          message: 'test message 01',
+          file: null,
+          sent_time: '2020-02-27 01:48:28',
+          receiver_name: '',
+          receiver_image: '',
+          is_sender: true
+        },
+        {
+          id: 2,
+          sender_name: 'admin_1',
+          sender_image: 'https://www.gravatar.com/avatar/3ee6ef0c6f1ec24418680ce71e8b06f1?d=https%3A%2F%2Fmy.practera.com%2Fimg%2Fuser-512.png&s=50',
+          message: 'test admin message 01',
+          file: {
+            filename: 'Screen_Shot_2019-09-30_at_6.55.30_AM.png',
+            url: 'https://cdn.filestackcontent.com/hZh76R6TmmKr1qqFAd9C',
+            mimetype: 'image/png'
+          },
+          sent_time: '2020-01-30 06:18:45',
+          receiver_name: '',
+          receiver_image: '',
+          is_sender: false
+        },
+        {
+          id: 3,
+          sender_name: 'user_2',
+          sender_image: 'https://www.gravatar.com/avatar/3ee6ef0c6f1ec24418680ce71e8b06f1?d=https%3A%2F%2Fmy.practera.com%2Fimg%2Fuser-512.png&s=50',
+          message: 'test message 02',
+          file: null,
+          sent_time: '2019-11-27 02:21:21',
+          receiver_name: '',
+          receiver_image: '',
+          is_sender: false
+        }
+      ];
+
+      expectedOneToOneChat = [
+        {
+          id: 1,
+          sender_name: 'user_1',
+          sender_image: 'https://www.gravatar.com/avatar/5d838f937ce3f0d470120b5c2a182830?d=https%3A%2F%2Fmy.practera.com%2Fimg%2Fuser-512.png&s=50',
+          message: 'test 1',
+          file: null,
+          sent_time: '2020-01-30 04:45:08',
+          receiver_name: 'user_2',
+          receiver_image: 'https://www.gravatar.com/avatar/3ee6ef0c6f1ec24418680ce71e8b06f1?d=https%3A%2F%2Fmy.practera.com%2Fimg%2Fuser-512.png&s=50',
+          is_sender: false
+        },
+        {
+          id: 2,
+          sender_name: 'user_2',
+          sender_image: 'https://www.gravatar.com/avatar/3ee6ef0c6f1ec24418680ce71e8b06f1?d=https%3A%2F%2Fmy.practera.com%2Fimg%2Fuser-512.png&s=50',
+          message: 'test 2',
+          file: null,
+          sent_time: '2019-11-26 07:08:35',
+          receiver_name: 'user_1',
+          receiver_image: 'https://www.gravatar.com/avatar/5d838f937ce3f0d470120b5c2a182830?d=https%3A%2F%2Fmy.practera.com%2Fimg%2Fuser-512.png&s=50',
+          is_sender: true
+        },
+        {
+          id: 3,
+          sender_name: 'user_2',
+          sender_image: 'https://www.gravatar.com/avatar/3ee6ef0c6f1ec24418680ce71e8b06f1?d=https%3A%2F%2Fmy.practera.com%2Fimg%2Fuser-512.png&s=50',
+          message: 'test 3',
+          file: {
+            filename: 'Screen_Shot_2019-09-30_at_6.55.30_AM.png',
+            url: 'https://cdn.filestackcontent.com/hZh76R6TmmKr1qqFAd9C',
+            mimetype: 'image/png'
+          },
+          sent_time: '2019-11-26 07:08:35',
+          receiver_name: 'user_1',
+          receiver_image: 'https://www.gravatar.com/avatar/5d838f937ce3f0d470120b5c2a182830?d=https%3A%2F%2Fmy.practera.com%2Fimg%2Fuser-512.png&s=50',
+          is_sender: true
+        }
+      ];
+    });
+
+    it('should throw Message array format error, if team chat data format not match', () => {
+      const tmpRes = JSON.parse(JSON.stringify(requestResponseTeamChat));
+      const chatData = {
+        team_id: 1,
+        team_member_id: 1,
+        page: 1,
+        size: 15,
+        participants_only: false
+        };
+      tmpRes.data = {};
+      requestSpy.get.and.returnValue(of(tmpRes));
+      service.getMessageList(chatData, true).subscribe();
+      expect(requestSpy.apiResponseFormatError.calls.count()).toBe(1);
+    });
+
+    it('should throw Message array format error, if one 2 one chat data format not match', () => {
+      const tmpRes = JSON.parse(JSON.stringify(requestResponseOneToOneChat));
+      const chatData = {
+        team_id: 1,
+        team_member_id: 1,
+        page: 1,
+        size: 15,
+        participants_only: false
+        };
+      tmpRes.data = {};
+      requestSpy.get.and.returnValue(of(tmpRes));
+      service.getMessageList(chatData, false).subscribe();
+      expect(requestSpy.apiResponseFormatError.calls.count()).toBe(1);
+    });
+
+    it('should throw Message format error, if any required data not found', () => {
+      const tmpRes = JSON.parse(JSON.stringify(requestResponseOneToOneChat));
+      const chatData = {
+        team_id: 1,
+        team_member_id: 1,
+        page: 1,
+        size: 15,
+        participants_only: false
+        };
+      delete tmpRes.data[0].sender_name;
+      requestSpy.get.and.returnValue(of(tmpRes));
+      service.getMessageList(chatData, false).subscribe();
+      expect(requestSpy.apiResponseFormatError.calls.count()).toBe(1);
+    });
+
   });
 
   // it('should instantiated with variables', () => {
