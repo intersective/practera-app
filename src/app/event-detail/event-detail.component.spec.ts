@@ -10,6 +10,7 @@ import { NotificationService } from '@shared/notification/notification.service';
 import { TestUtils } from '@testing/utils';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ModalController } from '@ionic/angular';
+import { BrowserStorageService } from '@services/storage.service';
 
 class Page {
   get eventName() {
@@ -77,6 +78,17 @@ describe('EventDetailComponent', () => {
           useValue: {
             navigate: jasmine.createSpy('navigate')
           }
+        },
+        {
+          provide: BrowserStorageService,
+          useValue: jasmine.createSpyObj('BrowserStorageService', {
+            getBookedEventActivityIds: [2],
+            getUser: {
+              truncateDescription: true
+            },
+            setBookedEventActivityIds: () => {},
+            removeBookedEventActivityIds: () => {}
+          })
         },
         {
           provide: NotificationService,
@@ -186,6 +198,18 @@ describe('EventDetailComponent', () => {
         expect(notificationSpy.alert.calls.count()).toBe(1);
         expect(serviceSpy.bookEvent.calls.count()).toBe(0);
         notificationSpy.alert.calls.first().args[0].buttons[0].handler();
+        expect(serviceSpy.bookEvent.calls.count()).toBe(1);
+        // expect(modalSpy.dismiss.calls.count()).toEqual(1);
+      });
+
+      it(`should book event directly it is single booking and there is no booking under this activity`, () => {
+        tmpEvent.singleBooking = true;
+        tmpEvent.activityId = 3;
+        component.event = tmpEvent;
+        fixture.detectChanges();
+        component.confirmed();
+        expected = 'Cancel Booking';
+        expect(notificationSpy.alert.calls.count()).toBe(1);
         expect(serviceSpy.bookEvent.calls.count()).toBe(1);
         // expect(modalSpy.dismiss.calls.count()).toEqual(1);
       });

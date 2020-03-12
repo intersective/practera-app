@@ -6,7 +6,7 @@
 </ng-container>
 
 <div *ngIf="reviewStatus !== 'in progress' && (review.answer || review.comment)" class="q-reviews">
-  <ion-label class="q-title subtitle-2">Feedback</ion-label>
+  <ion-label class="q-title subtitle-2 black">Feedback</ion-label>
   <ng-container *ngIf="review.answer">
     <app-file-display
       [file]="review.answer"
@@ -23,6 +23,7 @@
     [accept]="fileTypes"
     [fileType]="question.fileType"
     (complete)="onFileUploadCompleted($event)"
+    [disabled]="control.disabled"
   >
   </file-stack>
   <ion-text *ngFor="let error of errors" color="danger">
@@ -40,6 +41,7 @@
       [accept]="fileTypes"
       [fileType]="question.fileType"
       (complete)="onFileUploadCompleted($event, 'answer')"
+      [disabled]="control.disabled"
     >
     </file-stack>
     <app-file-display
@@ -47,5 +49,13 @@
       [fileType]="question.fileType"
     ></app-file-display>
   </ng-container>
-  <ion-textarea *ngIf="question.canComment && submission.answer" class="background-white" #commentEle margin-top rows="4" [(ngModel)]="comment" (ngModelChange)="onChange(comment, 'comment')" placeholder="Please put your feedback here"></ion-textarea>
+  <ion-textarea
+    *ngIf="question.canComment && submission.answer"
+    class="background-white ion-margin-top"
+    #commentEle
+    rows="4"
+    [(ngModel)]="comment"
+    (ngModelChange)="onChange(comment, 'comment')"
+    placeholder="Please put your feedback here"
+    [disabled]="control.disabled"></ion-textarea>
 </ng-container>

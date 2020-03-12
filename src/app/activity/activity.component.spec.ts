@@ -100,7 +100,7 @@ describe('ActivityComponent', () => {
         },
         {
           provide: EventListService,
-          useValue: jasmine.createSpyObj('EventListService', ['getEvents'])
+          useValue: jasmine.createSpyObj('EventListService', ['getEvents', 'isNotActionable', 'timeDisplayed'])
         },
       ],
     })
@@ -202,6 +202,8 @@ describe('ActivityComponent', () => {
   beforeEach(() => {
     activitySpy.getActivity.and.returnValue(of(mockActivity));
     eventSpy.getEvents.and.returnValue(of(mockEvents));
+    eventSpy.isNotActionable.and.returnValue(false);
+    eventSpy.timeDisplayed.and.returnValue('');
     fastFeedbackSpy.pullFastFeedback.and.returnValue(of({}));
     storageSpy.getUser.and.returnValue({
       teamId: 1

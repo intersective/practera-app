@@ -1,18 +1,29 @@
 .surface-light {
-  color: #FAFAFC !important;
+  color: var(--practera-surface-light) !important;
 }
 .surface {
-  color: #F5F6FA !important;
+  color: var(--practera-surface) !important;
 }
 .gray-0 {
-  color: #ABAEBB !important;
+  color: var(--practera-30-Percent-gray) !important;
 }
 .gray-1 {
-  color: #A4A8B7 !important;
+  color: var(--practera-40-Percent-gray) !important;
 }
 .gray-2 {
-  color: #818496 !important;
+  color: var(--practera-60-Percent-gray) !important;
 }
 .gray-3 {
-  color: #565B70 !important;
+  color: var(--practera-80-Percent-gray) !important;
+}
+.black {
+  color: black !important;
+}
+
+
+.textarea {
+  border-color: #ccc;
+    border-width: 1px;
+    border-style: dashed;
+    border-radius: 5px;
 }

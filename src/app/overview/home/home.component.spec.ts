@@ -4,7 +4,7 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { Router } from '@angular/router';
 
 import { HomeComponent } from './home.component';
-import { Intercom } from 'ng-intercom';
+import { Intercom, IntercomConfig } from 'ng-intercom';
 import { HomeService } from './home.service';
 import { FastFeedbackService } from '@app/fast-feedback/fast-feedback.service';
 import { AchievementsService } from '@app/achievements/achievements.service';
@@ -84,6 +84,9 @@ describe('HomeComponent', () => {
         NewRelicService,
         {
           provide: Intercom
+        },
+        {
+          provide: IntercomConfig
         },
         {
           provide: HomeService,
@@ -478,10 +481,17 @@ describe('HomeComponent', () => {
     });
   });
 
-  describe('when testing goToReview()', () => {
-    it('should navigate to the correct review page', () => {
+  describe('goToReview()', () => {
+    it('should navigate to the correct review page (desktop)', () => {
+      spyOn(utils, 'isMobile').and.returnValue(false);
       component.goToReview(1, 2, 3);
-      expect(routerSpy.navigate.calls.first().args[0]).toEqual(['assessment', 'review', 1, 2, 3]);
+      expect(routerSpy.navigate).toHaveBeenCalledWith(['app', 'reviews', 3]);
+    });
+
+    it('should navigate to the correct review page (mobile)', () => {
+      spyOn(utils, 'isMobile').and.returnValue(true);
+      component.goToReview(1, 2, 3);
+      expect(routerSpy.navigate).toHaveBeenCalledWith(['assessment', 'review', 1, 2, 3]);
     });
   });
 

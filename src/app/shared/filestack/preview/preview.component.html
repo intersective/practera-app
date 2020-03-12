@@ -1,24 +1,26 @@
 <ion-header mode="ios">
   <ion-toolbar>
-    <ion-icon *ngIf="file.url"
-      name="download"
+    <ion-icon
+      *ngIf="file.url"
+      name="download-outline"
       (click)="download()"
       color="primary"
       size="large"
       slot="end"
-      margin-start
+      class="ion-margin-start"
     ></ion-icon>
 
-    <ion-icon name="close-circle-outline"
+    <ion-icon
+      name="close-circle-outline"
       (click)="close()"
       color="primary"
       size="large"
       slot="end"
-      margin-start
+      class="ion-margin-start"
     ></ion-icon>
   </ion-toolbar>
 </ion-header>
 
-<ion-content color="light" text-center>
+<ion-content color="light" class="ion-text-center">
   <iframe [src]="sanitizer.bypassSecurityTrustResourceUrl(url)" width="100%" height="100%"></iframe>
 </ion-content>
