@@ -2,115 +2,90 @@
   <ion-toolbar [ngClass]="{'ion-toolbar-absolute': !utils.isMobile()}">
     <ion-buttons slot="start">
       <ion-button (click)="back()">
-        <ion-icon class="icon-backward" name="arrow-back" color="primary" slot="icon-only" margin-start></ion-icon>
+        <ion-icon class="icon-backward ion-margin-start" name="arrow-back" color="primary" slot="icon-only"></ion-icon>
       </ion-button>
     </ion-buttons>
-    <ion-title text-center>Activity</ion-title>
+    <ion-title class="ion-text-center">Activity</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content padding color="light" text-center [ngClass]="{
+<ion-content class="ion-padding ion-text-center" color="light" [ngClass]="{
   'ion-content-absolute': !utils.isMobile(),
   'ion-content-mobile': utils.isMobile()
 }">
+
   <ng-container *ngIf="loadingActivity">
-    <ion-spinner></ion-spinner>
+    <p><ion-skeleton-text animated style="width: 40%; margin-left: 30%; height: 20px"></ion-skeleton-text></p>
+    <p><ion-skeleton-text animated style="width: 80%"></ion-skeleton-text></p>
+    <div class="ion-text-left ion-margin-top">
+      <ion-label color="medium" class="subtitle-2 gray-2">Tasks</ion-label>
+    </div>
+    <ion-card class="practera-card">
+      <ion-list>
+        <app-list-item loading="true"></app-list-item>
+        <app-list-item loading="true" lines="none"></app-list-item>
+      </ion-list>
+    </ion-card>
   </ng-container>
-  <h1 class="headline-4">{{ activity.name }}</h1>
-  <div text-left>
-    <app-description *ngIf="activity.description" [content]="activity.description" class="body-1"></app-description>
-  </div>
-  <div text-left margin-top>
-    <ion-label color="medium" class="subtitle-2 gray-2">
-      Tasks
-    </ion-label>
-  </div>
 
-  <ion-card class="practera-card" id="tasks-card">
-    <ion-list>
-      <clickable-item
-        *ngFor="let task of activity.tasks; let i = index"
-        (click)="goto(task)"
-        [active]="currentTask && currentTask.type == task.type && currentTask.id == task.id"
-        [lines]="i == activity.tasks.length - 1 ? 'none' : ''">
+  <ng-container *ngIf="!loadingActivity">
+    <h1 class="headline-4">{{ activity.name }}</h1>
+    <div class="ion-text-left">
+      <app-description *ngIf="activity.description" [content]="activity.description" class="body-1"></app-description>
+    </div>
+    <div class="ion-text-left ion-margin-top">
+      <ion-label color="medium" class="subtitle-2 gray-2">Tasks</ion-label>
+      <ion-button style="display: none;" (click)="getNextTask()">Get Next</ion-button>
+    </div>
 
-        <ng-container [ngSwitch]="task.type">
-
-          <ng-container *ngSwitchCase="'Locked'">
-            <ion-icon class="task-leading-icon" name="lock" slot="start" color="primary"></ion-icon>
-          </ng-container>
-          <ng-container *ngSwitchCase="'Topic'">
-            <ion-icon class="task-leading-icon" name="list-box" slot="start" color="primary"></ion-icon>
-          </ng-container>
-          <ng-container *ngSwitchCase="'Assessment'">
-            <ion-icon
-              class="task-leading-icon ng-star-inserted ion-color ion-color-primary hydrated"
-              [ngClass]="(task.isDueToday && (task.status === '' || task.status === 'in progress')) ? 'pulsing' : ''"
-              name="clipboard"
-              slot="start" ></ion-icon>
-          </ng-container>
-          <div class="icon-item">
-            <h4 class="task-name subtitle-1">{{ task.name }}</h4>
-            <p *ngIf="task.type === 'Assessment' && (!task.status || task.status === '' || task.status === 'in progress')" class="due-date caption" [ngClass]="{'over': task.isOverdue}">
-              {{ this.sharedService.dueDateFormatter(task.dueDate) }}
-            </p>
-            <p>
-              <ion-text *ngIf="task.type != 'Locked'" [color]="task.status == 'feedback available' ? 'primary' : 'medium'" class="task-type-status caption gray-2">
-                {{ task.type }}
-                <ng-container *ngIf="task.isLocked; else status"> - Locked by {{task.submitter.name}}</ng-container>
-                <ng-template #status>{{ task.status }}</ng-template>
-              </ion-text>
-            </p>
-          </div>
-
-          <ng-container *ngIf="task.isLocked; else otherIcons">
-            <ion-icon name="md-lock" slot="end" color="medium"></ion-icon>
-          </ng-container>
-          <ng-template #otherIcons>
-            <ng-container *ngIf="!task.status || task.status == 'feedback available' || task.status == 'in progress'">
-              <ion-icon name="arrow-forward" slot="end" color="primary" class="icon-forward"></ion-icon>
-            </ng-container>
-
-            <ng-container *ngIf="task.status == 'done'">
-              <ion-icon name="checkmark" slot="end" color="primary" class="icon-check"></ion-icon>
-            </ng-container>
-
-            <ng-container *ngIf="task.status == 'pending review'">
-              <ion-icon name="hourglass" slot="end" color="primary"></ion-icon>
-            </ng-container>
-          </ng-template>
-
-        </ng-container>
-      </clickable-item>
-    </ion-list>
-  </ion-card>
+    <ion-card class="practera-card" id="tasks-card">
+      <ion-list>
+        <app-list-item
+          *ngFor="let task of activity.tasks; let i = index"
+          [leadingIcon]="taskLeadingIcon(task)"
+          [leadingIconPulsing]="assessmentNotSubmitted(task) && task.isDueToday"
+          [title]="task.name"
+          [subtitle1]="assessmentNotSubmitted(task) ? sharedService.dueDateFormatter(task.dueDate) : ''"
+          [subtitle1Color]="task.isOverdue ? 'danger' : ''"
+          [subtitle2]="taskSubtitle2(task)"
+          [endingIcon]="taskEndingIcon(task)"
+          [active]="currentTask && currentTask.type == task.type && currentTask.id == task.id"
+          [lines]="i == activity.tasks.length - 1 ? 'none' : ''"
+          (click)="goto(task)"
+        ></app-list-item>
+      </ion-list>
+    </ion-card>
+  </ng-container>
 
   <ng-container *ngIf="loadingEvents">
     <ion-spinner></ion-spinner>
   </ng-container>
   <ng-container *ngIf="events && events.length > 0">
-    <div text-left margin-top>
-      <ion-label color="medium" class="subtitle-2 gray-2">
-        Events
-      </ion-label>
+    <div class="ion-text-left ion-margin-top">
+      <ion-label class="subtitle-2 gray-2">Events</ion-label>
     </div>
     <ion-card class="practera-card" id="events-card">
       <ion-list>
         <ng-container *ngFor="let event of events; let i = index">
-          <clickable-item *ngIf="i < 2"
-            (click)="gotoEvent(event)">
-            <event-card
-              [event]="event"
-              [time]="displayEventTime(event)"
-              class="width-100"
-            ></event-card>
-          </clickable-item>
+          <app-list-item
+            *ngIf="i < 2"
+            leadingIcon="calendar-outline"
+            [leadingIconColor]="eventListService.isNotActionable(event) ? 'medium' : 'primary'"
+            [title]="event.name"
+            [titleColor]="eventListService.isNotActionable(event) ? 'gray-2' : ''"
+            [subtitle1]="event.activityName"
+            [subtitle2]="eventListService.timeDisplayed(event)"
+            [endingIcon]="!eventListService.isNotActionable(event) ? 'arrow-forward' : ''"
+            [eventExpired]="event.isPast && !event.isBooked"
+            [lines]="i == events.length - 1 ? 'none' : ''"
+            (click)="gotoEvent(event)"
+          ></app-list-item>
         </ng-container>
         <clickable-item
           *ngIf="events.length > 2"
           lines="none"
           (click)="gotoEvent()">
-          <ion-icon name="more" color="primary" margin-end></ion-icon>
+          <ion-icon name="ellipsis-vertical" color="primary" class="ion-margin-end"></ion-icon>
           <p>Show More</p>
         </clickable-item>
       </ion-list>

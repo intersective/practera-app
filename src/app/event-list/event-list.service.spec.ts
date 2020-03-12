@@ -5,6 +5,7 @@ import { RequestService } from '@shared/request/request.service';
 import { UtilsService } from '@services/utils.service';
 import { NotificationService } from '@shared/notification/notification.service';
 import { TestUtils } from '@testing/utils';
+import { BrowserStorageService } from '@services/storage.service';
 
 describe('EventListService', () => {
   let service: EventListService;
@@ -25,6 +26,14 @@ describe('EventListService', () => {
         {
           provide: NotificationService,
           useValue: jasmine.createSpyObj('NotificationService', ['modal'])
+        },
+        {
+          provide: BrowserStorageService,
+          useValue: jasmine.createSpyObj('BrowserStorageService', {
+            setBookedEventActivityIds: () => {},
+            removeBookedEventActivityIds: () => {},
+            initBookedEventActivityIds: () => {}
+          })
         },
       ]
     });
@@ -174,10 +183,6 @@ describe('EventListService', () => {
       it('Activity array format error', () => {
         tmpRes.data = {};
         errMsg = 'Activity array format error';
-      });
-      it('Activity format error', () => {
-        tmpRes.data[0] = {id: 11};
-        errMsg = 'Activity format error';
       });
     });
 

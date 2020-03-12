@@ -16,16 +16,6 @@ const api = {
   progress: 'api/v2/motivations/progress/list.json'
 };
 
-// added for displaying empty placeholder (enhance UX)
-export interface DummyMilestone {
-  dummy?: boolean;
-  Activity?: Array<DummyActivity>;
-}
-
-export interface DummyActivity {
-  dummy?: boolean;
-}
-
 export interface Activity {
   id: number;
   name: string;
@@ -40,7 +30,7 @@ export interface Milestone {
   description?: string;
   isLocked: boolean;
   progress: number;
-  Activity: Array <Activity | DummyActivity>;
+  Activity: Array <Activity>;
 }
 
 @Injectable({
@@ -75,7 +65,7 @@ export class ProjectService {
       .pipe(map(res => this._normaliseProject(res.data)));
   }
 
-  private _normaliseProject(data): Array<Milestone | DummyMilestone> {
+  private _normaliseProject(data): Array<Milestone> {
     return data.milestones.map(m => {
       return {
         id: m.id,

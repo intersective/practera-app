@@ -2,36 +2,35 @@
   <ion-toolbar [ngClass]="{'ion-toolbar-absolute': !utils.isMobile()}">
     <ion-buttons slot="start" *ngIf="utils.isMobile()">
       <ion-button (click)="back()" id="btn-back">
-        <ion-icon class="icon-backward" name="arrow-back" color="primary" slot="icon-only" margin-start></ion-icon>
+        <ion-icon class="icon-backward ion-margin-start" name="arrow-back" color="primary" slot="icon-only" ></ion-icon>
       </ion-button>
     </ion-buttons>
 
-    <ion-title text-center [ngClass]="{
+    <ion-title class="ion-text-center" [ngClass]="{
       'subtitle-2': !utils.isMobile()
     }">Assessment</ion-title>
     <ng-container *ngIf="doAssessment || doReview">
-      <ion-title text-center class="sub-title caption gray-2">{{savingMessage}}</ion-title>
-      <ion-button [disabled]="savingButtonDisabled" (click)="submit(true, false, true)" class="text-button subtitle-1" color="primary" slot="end" fill="clear" size="small">Save</ion-button>
+      <div class="ion-text-center sub-title caption gray-2 saving-msg">{{savingMessage}}</div>
+      <ion-button [disabled]="savingButtonDisabled || submitted" (click)="submit(true, false, true)" class="text-button subtitle-1" color="primary" slot="end" fill="clear" size="small">Save</ion-button>
     </ng-container>
   </ion-toolbar>
 </ion-header>
-<ion-content padding color="light" text-center [ngClass]="{
-  'ion-content-absolute-with-footer': !utils.isMobile() && hasFooter(),
-  'ion-content-absolute': !utils.isMobile() && !hasFooter()
-}">
+<ion-content class="ion-padding ion-text-center" color="light" [ngClass]="{
+  'ion-content-absolute-with-footer': !utils.isMobile()
+}" appFloat>
   <h1 class="headline-4">{{ assessment.name }}</h1>
-  <ion-text color="medium" text-left>
-    <app-description *ngIf="assessment.description" [content]="assessment.description" id="asmt-des" class="body-1"></app-description>
+  <ion-text class="ion-text-left">
+    <app-description *ngIf="assessment.description" [content]="assessment.description" id="asmt-des" class="body-1 black"></app-description>
   </ion-text>
-  <p class="due-date assessment subtitle-1 gray-2" [ngClass]="{'over': assessment.isOverdue}" *ngIf="doAssessment" text-center>
+  <p class="due-date assessment subtitle-1 gray-2 ion-text-center" [ngClass]="{'over': assessment.isOverdue}" *ngIf="doAssessment">
     {{ this.sharedService.dueDateFormatter(assessment.dueDate) }}
   </p>
-  <div *ngIf="!doAssessment && submission.submitterName && !submission.isLocked" class="review-submitter" text-left>
+  <div *ngIf="!doAssessment && submission.submitterName && !submission.isLocked" class="review-submitter ion-text-left">
     <p class="subtitle-1">
       Submitted by {{ submission.submitterName }}
     </p>
   </div>
-  <div *ngIf="submission.reviewerName" class="review-submitter" text-left>
+  <div *ngIf="submission.reviewerName" class="review-submitter ion-text-left">
     <p class="subtitle-1 gray-3">
       Reviewed by {{ submission.reviewerName }} {{review.status}}
     </p>
@@ -55,24 +54,24 @@
     </ng-container>
     <ng-container *ngFor="let group of assessment.groups">
       <h3 class="headline-6">{{ group.name }}</h3>
-      <ion-text color="medium" text-left>
+      <ion-text color="dark" class="ion-text-left">
         <app-description class="g-description" *ngIf="group.description" [content]="group.description"></app-description>
       </ion-text>
       <ng-container *ngFor="let question of group.questions">
-        <ion-card class="practera-card question-card" text-left>
-          <ion-card-header class="q-title body-2">
+        <ion-card class="practera-card question-card ion-text-left">
+          <ion-card-header class="q-title body-2 black">
             {{ question.name }}
             <ion-text class="required-indicator" color="danger" *ngIf="question.isRequired">*</ion-text>
             <ion-icon *ngIf="question.info" color="primary" class="icon-info vertical-middle" (click)="showQuestionInfo(question.info)" name="information-circle-outline"></ion-icon>
-            <ion-text color="medium" class="paragraph" text-left>
+            <ion-text color="dark" class="paragraph ion-text-left">
               <app-description class="q-description" *ngIf="question.description" [content]="question.description"></app-description>
             </ion-text>
           </ion-card-header>
-          <div text-center margin-bottom *ngIf="loadingSubmission; else submissionTpl">
+          <div class="ion-text-center ion-margin-bottom" *ngIf="loadingSubmission; else submissionTpl">
             <ion-spinner></ion-spinner>
           </div>
           <ng-template #submissionTpl>
-            <ion-card-content [ngSwitch]="question.type" padding-horizontal class="q-content" color="light" margin-top>
+            <ion-card-content [ngSwitch]="question.type" class="q-content ion-margin-top ion-padding-horizontal" color="light">
               <p><i *ngIf="!doAssessment &&
                 (
                   (!question.reviewerOnly && !submission.answers[question.id]) ||
@@ -156,59 +155,40 @@
       </ng-container>
     </ng-container>
 
-    <div class="ion-text-center">
-      <ion-button
-        id="btn-submit"
-        *ngIf="doAssessment || doReview"
-        [disabled]="submitting || questionsForm.invalid"
-        (click)="submit(false)"
-        shape="round"
-        class="btn-cta">
-        <ng-container *ngIf="!submitting">Submit</ng-container>
-        <ng-container *ngIf="submitting !== false && submitting === 'redirecting'">
-          <ion-icon src="/assets/checkmark.svg"></ion-icon>
-        </ng-container>
-        <ng-container *ngIf="submitting !== false && submitting !== 'redirecting'">
-          <ion-spinner style="width: 100%;" name="dots" class="vertical-middle text-center"></ion-spinner>
-        </ng-container>
-      </ion-button>
-    </div>
-
   </form>
 </ion-content>
 
-<ion-footer
-  color="light"
-  [ngClass]="{'ion-footer-absolute': !utils.isMobile()}"
-  *ngIf="hasFooter()">
-  <ion-toolbar class="ion-text-center">
-    <ion-spinner style="width: 100%;"
-      *ngIf="loadingSubmission || (loadingFeedbackReviewed && submission.status == 'published')"
+<ion-footer color="light" [ngClass]="{'ion-footer-absolute': !utils.isMobile()}">
+  <ion-toolbar class="ion-text-center" style="height: 100%">
+    <ion-spinner
+      *ngIf="loadingSubmission || loadingFeedbackReviewed"
       name="dots"
-      class="vertical-middle text-center"
+      class="vertical-middle ion-text-center"
+      style="width: 100%"
     ></ion-spinner>
+    <ng-container *ngIf="!loadingSubmission && !loadingFeedbackReviewed">
+      <ion-button
+        *ngIf="(doAssessment || doReview) && !submitting && !submitted"
+        id="btn-submit"
+        [disabled]="questionsForm.invalid"
+        (click)="submit(false)"
+        shape="round"
+        fill="clear"
+        class="footer-action"
+        >SUBMIT</ion-button>
 
-    <ion-button *ngIf="!loadingMarkedDone && !loadingFeedbackReviewed && submission.status == 'published' && !feedbackReviewed"
-      (click)="markReviewFeedbackAsRead()"
-      shape="round"
-      class="continue btn-cta">
-      {{markingAsReview}}
-    </ion-button>
-
-    <ion-button *ngIf="['pending review', 'done', 'pending approval'].indexOf(submission.status) !== -1 || (feedbackReviewed && submission.status == 'published')"
-      (click)="redirectToNextMilestoneTask({ continue: true })"
-      [disabled]="isRedirectingToNextMilestoneTask"
-      shape="round"
-      class="continue btn-cta">
-      <ng-container *ngIf="isRedirectingToNextMilestoneTask; else continue">
-        <ion-spinner style="width: 100%;" name="dots" class="vertical-middle text-center"></ion-spinner>
+      <ng-container *ngIf="footerText()">
+        <span class="footer-text ion-float-left">{{ footerText() }}</span>
+        <img *ngIf="continueBtnLoading || submitting; else continueTmp" class="footer-action ion-float-right" src="/assets/loading.gif">
+        <ng-template #continueTmp>
+          <ion-button
+            (click)="clickBtnContinue()"
+            shape="round"
+            fill="clear"
+            class="ion-float-right footer-action">CONTINUE</ion-button>
+        </ng-template>
       </ng-container>
-
-      <ng-template #continue>
-        <ion-icon slot="start" src="/assets/checkmark.svg"></ion-icon>
-        <ion-text>CONTINUE</ion-text>
-      </ng-template>
-    </ion-button>
+    </ng-container>
 
   </ion-toolbar>
 </ion-footer>

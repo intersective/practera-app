@@ -1,14 +1,14 @@
 <ion-header mode="ios">
   <ion-toolbar [ngClass]="{'ion-toolbar-absolute': !utils.isMobile()}">
     <ion-icon *ngIf="utils.isMobile()" name="arrow-back" (click)="back()" color="primary" slot="start" margin-start></ion-icon>
-    <ion-title text-center [ngClass]="{
+    <ion-title class="ion-text-center" [ngClass]="{
       'subtitle-2': !utils.isMobile()
     }">{{selectedChat.is_team ? selectedChat.team_name : selectedChat.name}}</ion-title>
   </ion-toolbar>
 </ion-header>
 <ion-content [ngClass]="{'ion-content-absolute-with-footer': !utils.isMobile()}" color="light" [scrollEvents]="true" (ionScroll)="loadMoreMessages($event)">
   <ng-container *ngIf="loadingChatMessages">
-    <div text-center>
+    <div class="ion-text-center">
       <ion-spinner></ion-spinner>
     </div>
   </ng-container>
@@ -69,7 +69,7 @@
             )">
               <ion-item class="message-body general-attachment" (click)="previewFile(message.file)">
                 <ion-ripple-effect></ion-ripple-effect>
-                <ion-icon name="document" slot="start"></ion-icon>
+                <ion-icon name="document-outline" slot="start"></ion-icon>
                 <ion-label color="primary">
                   {{ message.file.filename }}
                 </ion-label>
@@ -108,7 +108,7 @@
     </ng-container>
   </ion-list>
   <ng-container *ngIf="!messageList.length && !loadingChatMessages">
-    <div text-center class="not-started-empty-status">
+    <div class="ion-text-center not-started-empty-status">
       <img class="image" [ngClass]="{'desktop': !utils.isMobile()}" src="/assets/icon-epmty-chat.svg">
       <p class="head-text headline-5 gray-3">Type your first message!</p>
       <p class="sub-text subtitle-1 gray-1">It's time to start a chat</p>
@@ -117,18 +117,18 @@
 </ion-content>
 <ion-footer class="footer" [ngClass]="{'ion-footer-absolute': !utils.isMobile()}">
   <ion-grid class="white-bg">
-    <ion-row nowrap no-padding align-items-end>
-      <ion-col size="1" no-padding text-center>
-        <ion-button (click)="attach('image')" fill="clear" no-padding>
-          <ion-icon name="photos" slot="icon-only"></ion-icon>
+    <ion-row nowrap class="ion-no-padding ion-align-items-end">
+      <ion-col size="1" class="ion-no-padding ion-text-center">
+        <ion-button (click)="attach('image')" fill="clear" class="ion-no-padding">
+          <ion-icon name="images-outline" slot="icon-only"></ion-icon>
         </ion-button>
       </ion-col>
-      <ion-col size="1" no-padding text-center>
-        <ion-button (click)="attach('any')" fill="clear" no-padding>
-          <ion-icon name="attach" slot="icon-only"></ion-icon>
+      <ion-col size="1" class="ion-no-padding ion-text-center">
+        <ion-button (click)="attach('any')" fill="clear" class="ion-no-padding">
+          <ion-icon name="attach-outline" slot="icon-only"></ion-icon>
         </ion-button>
       </ion-col>
-      <ion-col size="9" align-self-center>
+      <ion-col size="9" class="ion-align-self-center">
         <ion-textarea
           placeholder="Enter your message"
           required="true"
@@ -139,9 +139,9 @@
           rows="1"
         ></ion-textarea>
       </ion-col>
-      <ion-col size="1" no-padding text-center>
-        <ion-button (click)="sendMessage()" type="submit" fill="clear" no-padding>
-          <ion-icon name="send" slot="icon-only"></ion-icon>
+      <ion-col size="1" class="ion-no-padding ion-text-center">
+        <ion-button (click)="sendMessage()" type="submit" fill="clear" class="ion-no-padding">
+          <ion-icon name="send-outline" slot="icon-only"></ion-icon>
         </ion-button>
       </ion-col>
     </ion-row>

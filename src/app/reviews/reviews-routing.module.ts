@@ -1,9 +1,9 @@
 import { NgModule } from '@angular/core';
-import { RouterModule, Routes } from '@angular/router';
+import { Routes, RouterModule } from '@angular/router';
+import { ReviewsRoutingComponent } from './reviews-routing.component';
 import { ReviewsComponent } from './reviews.component';
-import { ReviewsRoutingComponent } from './reviews-routing.components';
 
-const reviewsRoutes: Routes = [
+const routes: Routes = [
   {
     path: '',
     component: ReviewsRoutingComponent,
@@ -11,12 +11,16 @@ const reviewsRoutes: Routes = [
       {
         path: '',
         component: ReviewsComponent
+      },
+      {
+        path: ':submissionId',
+        component: ReviewsComponent
       }
     ]
   }
 ];
 @NgModule({
-  imports: [ RouterModule.forChild(reviewsRoutes) ],
-  exports: [ RouterModule ]
+  imports: [RouterModule.forChild(routes)],
+  exports: [RouterModule]
 })
 export class ReviewsRoutingModule { }
