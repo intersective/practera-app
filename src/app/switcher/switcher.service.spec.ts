@@ -201,6 +201,15 @@ describe('SwitcherService', () => {
 
     describe('getTeamInfo()', () => {
       it('should make API request to `api/teams.json`', () => {
+        requestSpy.get.and.returnValue(of({
+          success: true,
+          data: {
+            Teams: [
+              { id: 1 }
+            ]
+          }
+        }));
+
         service.getTeamInfo().subscribe();
         expect(requestSpy.get).toHaveBeenCalledWith('api/teams.json');
       });
@@ -208,6 +217,21 @@ describe('SwitcherService', () => {
 
     describe('getMyInfo()', () => {
       it('should make API request to `api/users.json`', () => {
+        requestSpy.get.and.returnValue(of({
+          data: {
+            User: {
+              name: 'name',
+              contactNumber: 'contact_number',
+              email: 'email',
+              role: 'role',
+              image: 'image',
+              linkedinConnected: 'linkedinConnected',
+              linkedinUrl: 'linkedin_url',
+              userHash: 'userhash',
+            }
+          }
+        }));
+
         service.getMyInfo().subscribe(res => {
           expect(requestSpy.get).toHaveBeenCalledWith('api/users.json');
         });
