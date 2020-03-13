@@ -129,44 +129,45 @@ export class ActivityService {
   /**
    * Go to the next task within the same activity, or go back to former layer
    * Logic:
-   *  - If there's an unfinished task after the current task, go to that task
-   *  - If all tasks after the current task are done, if there's no unfinished task before the current task, go to the home page
-   *  - If all tasks after the current task are done, if there is unfinished task before the current task, show a pop up for user to choose whether go to the activity page or home page
+   *  - If current task is not the last task in the activity, go to the next task
+   *  - If current task is the last task in the activity and there's no unfinished task before the current task, go to the home page
+   *  - If current task is the last task in the activity and there is unfinished task before the current task, show a pop up for user to choose whether go to the activity page or home page
    *
    * @param activityId Activity id
    * @param taskType   Current task type ('assessment'/'topic')
    * @param taskId     Current task id
-   * @param activityCompleted Whether display activity completed toast message
+   * @param justFinished Whether the current task is just finished or not
    */
-  async gotoNextTask(activityId: number, taskType: string, taskId: number, activityCompleted = true): Promise<string[]> {
+  async gotoNextTask(activityId: number, taskType: string, taskId: number, justFinished = true): Promise<string[]> {
     const res = await this.getNextTask(activityId, taskType, taskId).toPromise();
-    if (res.noMoreTask) {
-      if (!res.task) {
-        // go back to home page, and highlight the next activity
-        if (activityCompleted) {
-          // and display the toast
-          this.router.navigate(['app', 'home'], { queryParams: { activityId: activityId, activityCompleted: activityCompleted } });
-        } else {
-          // and don't display the toast
-          this.router.navigate(['app', 'home'], { queryParams: { activityId: activityId } });
-        }
-      } else {
-        this.notification.activityCompletePopUp(activityId, activityCompleted);
-      }
-      return null;
-    }
-    // go to the next task
-    let route = ['app', 'home'];
-    switch (res.task.type) {
-      case 'assessment':
-        route = ['assessment', 'assessment', activityId.toString(), res.task.contextId.toString(), res.task.id.toString()];
-        break;
+    // go to next task
+    if (!res.isLast) {
+      // go to the next task
+      let route = ['app', 'home'];
+      switch (res.task.type) {
+        case 'assessment':
+          route = ['assessment', 'assessment', activityId.toString(), res.task.contextId.toString(), res.task.id.toString()];
+          break;
 
-      case 'topic':
-        route = ['topic', activityId.toString(), res.task.id.toString()];
-        break;
+        case 'topic':
+          route = ['topic', activityId.toString(), res.task.id.toString()];
+          break;
+      }
+      return route;
     }
-    return route;
+    if (!res.task) {
+      // pop up activity completed modal
+      this.notification.activityCompletePopUp(activityId, justFinished);
+      return ;
+    }
+    // go back to home page, and scroll to the activity
+    if (justFinished) {
+      // and display the toast
+      this.router.navigate(['app', 'home'], { queryParams: { activityId: activityId, activityCompleted: true } });
+    } else {
+      // and don't display the toast
+      this.router.navigate(['app', 'home'], { queryParams: { activityId: activityId } });
+    }
   }
 
   /**
@@ -175,7 +176,7 @@ export class ActivityService {
    * @param currentTaskType The type of current task
    * @param currentTaskId   The id of current task
    */
-  getNextTask(activityId: number, currentTaskType: string, currentTaskId: number): Observable <{ noMoreTask: boolean; task: Task; }> {
+  getNextTask(activityId: number, currentTaskType: string, currentTaskId: number): Observable <{ isLast: boolean; task: Task; }> {
     return this.request.get(api.nextTask, {
         params: {
           activity_id: activityId,
@@ -184,7 +185,7 @@ export class ActivityService {
         }
       }).pipe(map(res => {
         return {
-          noMoreTask: res.data.no_more_task,
+          isLast: res.data.is_last,
           task: !this.utils.isEmpty(res.data.task) ? {
             id: res.data.task.id,
             name: res.data.task.name,
