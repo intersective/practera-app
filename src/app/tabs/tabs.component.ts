@@ -16,7 +16,7 @@ import { NewRelicService } from '@shared/new-relic/new-relic.service';
   styleUrls: ['tabs.component.scss']
 })
 export class TabsComponent extends RouterEnter {
-  routeUrl = '/app/';
+  routeUrl = '/app';
   showReview = false;
   showChat = false;
   showEvents = false;
@@ -71,6 +71,7 @@ export class TabsComponent extends RouterEnter {
     this.showChat = false;
     this.showReview = false;
     this.showEvents = false;
+
   }
 
   onEnter() {
