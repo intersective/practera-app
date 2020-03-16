@@ -155,7 +155,7 @@ export class ActivityService {
       }
       return route;
     }
-    if (!res.task) {
+    if (res.task) {
       // pop up activity completed modal
       this.notification.activityCompletePopUp(activityId, justFinished);
       return ;
