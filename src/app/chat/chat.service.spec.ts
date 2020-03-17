@@ -362,7 +362,6 @@ describe('ChatService', () => {
       const tmpRes = JSON.parse(JSON.stringify(requestResponseTeamChat));
       const chatData = {
         team_id: 1,
-        team_member_id: 1,
         page: 1,
         size: 15,
         participants_only: false
@@ -379,8 +378,7 @@ describe('ChatService', () => {
         team_id: 1,
         team_member_id: 1,
         page: 1,
-        size: 15,
-        participants_only: false
+        size: 15
         };
       tmpRes.data = {};
       requestSpy.get.and.returnValue(of(tmpRes));
@@ -394,8 +392,7 @@ describe('ChatService', () => {
         team_id: 1,
         team_member_id: 1,
         page: 1,
-        size: 15,
-        participants_only: false
+        size: 15
         };
       delete tmpRes.data[0].sender_name;
       requestSpy.get.and.returnValue(of(tmpRes));
@@ -403,27 +400,421 @@ describe('ChatService', () => {
       expect(requestSpy.apiResponseFormatError.calls.count()).toBe(1);
     });
 
+    it('should get correct message list data for team chat', () => {
+      const chatData = {
+        team_id: 1,
+        page: 1,
+        size: 15,
+        participants_only: false
+        };
+      requestSpy.get.and.returnValue(of(requestResponseTeamChat));
+      service.getMessageList(chatData, true).subscribe(
+        chatList => {
+          expect(chatList).toEqual(expectedTeamChat);
+        }
+      );
+      expect(requestSpy.get.calls.count()).toBe(1);
+    });
+
+    it('should get correct message list data for one 2 one chat', () => {
+      const chatData = {
+        team_id: 1,
+        team_member_id: 1,
+        page: 1,
+        size: 15,
+        };
+      requestSpy.get.and.returnValue(of(requestResponseOneToOneChat));
+      service.getMessageList(chatData, true).subscribe(
+        chatList => {
+          expect(chatList).toEqual(expectedOneToOneChat);
+        }
+      );
+      expect(requestSpy.get.calls.count()).toBe(1);
+    });
+
   });
 
-  // it('should instantiated with variables', () => {
-  //   expect(service['chatList']).toBeTruthy();
-  //   expect(service['messageList']).toBeTruthy();
-  // });
+  describe('when testing markMessagesAsSeen()', () => {
+    let requestResponse;
+    let expectedPram;
+    beforeEach(() => {
+      requestResponse = {
+        success: true,
+        data: {
+          msg: 'Messages successfuly mark as seen.'
+        }
+      };
+      expectedPram = {
+        team_id: 1,
+        id: 1,
+        action: 'mark_seen'
+      };
+    });
 
-  // it('#getchatList should', () => {
-  //   expect(service.getchatList).toBeTruthy();
-  // });
+    it('should call with correct data', () => {
+      const pram = {
+        team_id: 1,
+        id: 1
+      };
+      requestSpy.post.and.returnValue(of(requestResponse));
+      service.markMessagesAsSeen(pram);
+      expect(requestSpy.post.calls.count()).toBe(1);
+      expect(requestSpy.post.calls.first().args[1]).toEqual(expectedPram);
+    });
 
-  // it('#getMessageList should', () => {
-  //   expect(service.getMessageList).toBeTruthy();
-  // });
+  });
 
-  // it('#markMessagesAsSeen should', () => {
-  //   expect(service.markMessagesAsSeen).toBeTruthy();
-  // });
+  describe('when testing postNewMessage()', () => {
+    let requestResponseTextMessage;
+    let requestResponseMediaMessage;
+    let expectedTextMessage;
+    let expectedMediaMessage;
+    beforeEach(() => {
+      requestResponseTextMessage = {
+        success: true,
+        data : {
+          message: 'test message',
+          file: null,
+          id: 10,
+          sender_name: 'User_1',
+          sent_time: '2020-03-13 03:38:28',
+          is_sender: true,
+          team_id: 13,
+          team_name: 'Team 1'
+        }
+      };
+      requestResponseMediaMessage = {
+        success: true,
+        data : {
+          message: null,
+          file: {
+            filename: 'unnamed.jpg',
+            mimetype: 'image/jpeg',
+            url: 'https://cdn.filestackcontent.com/X8Cj0Y4QS2AmDUZX6LSq',
+            status: 'Stored'
+          },
+          id: 10,
+          sender_name: 'User_1',
+          sent_time: '2020-03-13 03:38:28',
+          is_sender: true,
+          team_id: 13,
+          team_name: 'Team 1'
+        }
+      };
+      expectedTextMessage = {
+        message: 'test message',
+        file: null,
+        id: 10,
+        sender_name: 'User_1',
+        sent_time: '2020-03-13 03:38:28',
+        is_sender: true,
+        team_id: 13,
+        team_name: 'Team 1'
+      };
+      expectedMediaMessage = {
+        message: null,
+        file: {
+          filename: 'unnamed.jpg',
+          mimetype: 'image/jpeg',
+          url: 'https://cdn.filestackcontent.com/X8Cj0Y4QS2AmDUZX6LSq',
+          status: 'Stored'
+        },
+        id: 10,
+        sender_name: 'User_1',
+        sent_time: '2020-03-13 03:38:28',
+        is_sender: true,
+        team_id: 13,
+        team_name: 'Team 1'
+      };
+    });
+    it('should call with correct data, to post new text message to one 2 one chat', () => {
+      const param = {
+        to: 1,
+        message: 'test message',
+        team_id: 10,
+        env: environment.env
+      };
+      requestSpy.post.and.returnValue(of(requestResponseTextMessage));
+      service.postNewMessage(param).subscribe(
+        message => {
+          expect(message.data).toEqual(jasmine.objectContaining(expectedTextMessage));
+        }
+      );
+      expect(requestSpy.post.calls.count()).toBe(1);
+      expect(requestSpy.post.calls.first().args[1]).toEqual(jasmine.objectContaining(
+        {
+          to: 1,
+          message: 'test message',
+          team_id: 10,
+          env: environment.env
+        }
+      ));
+    });
 
-  // it('#postNewMessage should', () => {
-  //   expect(service.postNewMessage).toBeTruthy();
-  // });
+    it('should call with correct data, to post new text message to team chat', () => {
+      const param = {
+        to: 'team',
+        message: 'test message',
+        team_id: 10,
+        env: environment.env
+      };
+      requestSpy.post.and.returnValue(of(requestResponseTextMessage));
+      service.postNewMessage(param).subscribe(
+        message => {
+          expect(message.data).toEqual(jasmine.objectContaining(expectedTextMessage));
+        }
+      );
+      expect(requestSpy.post.calls.count()).toBe(1);
+      expect(requestSpy.post.calls.first().args[1]).toEqual(jasmine.objectContaining(
+        {
+          to: 'team',
+          message: 'test message',
+          team_id: 10,
+          env: environment.env
+        }
+      ));
+    });
+
+    it('should call with correct data, to post new media message to one 2 one chat', () => {
+      const param = {
+        to: 1,
+        message: 'test message',
+        team_id: 10,
+        env: environment.env,
+        file : {
+          filename: 'unnamed.jpg',
+          mimetype: 'image/jpeg',
+          url: 'https://cdn.filestackcontent.com/X8Cj0Y4QS2AmDUZX6LSq',
+          status: 'Stored'
+        }
+      };
+      requestSpy.post.and.returnValue(of(requestResponseMediaMessage));
+      service.postNewMessage(param).subscribe(
+        message => {
+          expect(message.data).toEqual(expectedMediaMessage);
+        }
+      );
+      expect(requestSpy.post.calls.count()).toBe(1);
+      expect(requestSpy.post.calls.first().args[1]).toEqual(
+        {
+          to: 1,
+          message: 'test message',
+          team_id: 10,
+          env: environment.env,
+          file : {
+            filename: 'unnamed.jpg',
+            mimetype: 'image/jpeg',
+            url: 'https://cdn.filestackcontent.com/X8Cj0Y4QS2AmDUZX6LSq',
+            status: 'Stored'
+          }
+        }
+      );
+    });
+
+    it('should call with correct data, to post new media message to team chat', () => {
+      const param = {
+        to: 'team',
+        message: 'test message',
+        team_id: 10,
+        env: environment.env,
+        file : {
+          filename: 'unnamed.jpg',
+          mimetype: 'image/jpeg',
+          url: 'https://cdn.filestackcontent.com/X8Cj0Y4QS2AmDUZX6LSq',
+          status: 'Stored'
+        }
+      };
+      requestSpy.post.and.returnValue(of(requestResponseMediaMessage));
+      service.postNewMessage(param).subscribe(
+        message => {
+          expect(message.data).toEqual(expectedMediaMessage);
+        }
+      );
+      expect(requestSpy.post.calls.count()).toBe(1);
+      expect(requestSpy.post.calls.first().args[1]).toEqual(
+        {
+          to: 'team',
+          message: 'test message',
+          team_id: 10,
+          env: environment.env,
+          file : {
+            filename: 'unnamed.jpg',
+            mimetype: 'image/jpeg',
+            url: 'https://cdn.filestackcontent.com/X8Cj0Y4QS2AmDUZX6LSq',
+            status: 'Stored'
+          }
+        }
+      );
+    });
+  });
+
+  describe('when testing postAttachmentMessage()', () => {
+    let expected;
+    beforeEach(() => {
+      expected = {
+        message: null,
+        file: {
+          filename: 'unnamed.jpg',
+          mimetype: 'image/jpeg',
+          url: 'https://cdn.filestackcontent.com/X8Cj0Y4QS2AmDUZX6LSq',
+          status: 'Stored'
+        },
+        id: 10,
+        sender_name: 'User_1',
+        sent_time: '2020-03-13 03:38:28',
+        is_sender: true,
+        team_id: 13,
+        team_name: 'Team 1'
+      };
+      spyOn(service, 'postNewMessage').and.returnValue(expected);
+    });
+    it('should get error, when file not found', () => {
+      const param = {
+        to: 1,
+        message: 'test message',
+        team_id: 10,
+        env: environment.env
+      };
+      expect(
+        function() {
+          service.postAttachmentMessage(param);
+        }).toThrow(new Error('Fatal: File value must not be empty.'));
+    });
+
+    it('should call postNewMessage, when got correct data', () => {
+      const param = {
+        to: 1,
+        message: 'test message',
+        team_id: 10,
+        env: environment.env,
+        file : {
+          filename: 'unnamed.jpg',
+          mimetype: 'image/jpeg',
+          url: 'https://cdn.filestackcontent.com/X8Cj0Y4QS2AmDUZX6LSq',
+          status: 'Stored'
+        }
+      };
+      service.postAttachmentMessage(param);
+      expect(service.postNewMessage).toHaveBeenCalled();
+    });
+  });
+
+  describe('when testing unreadMessageCout()', () => {
+    let requestResponse;
+    let expectedPram;
+    beforeEach(() => {
+      requestResponse = {
+        success: true,
+        data: {
+          unread_message_count: 5
+        }
+      };
+      expectedPram = {
+        unread_count_for: 'all',
+      };
+    });
+
+    it('should call with correct data', () => {
+      const pram = {
+        filter: 'all'
+      };
+      requestSpy.get.and.returnValue(of(requestResponse));
+      service.unreadMessageCout(pram);
+      expect(requestSpy.get.calls.count()).toBe(1);
+      expect(requestSpy.get.calls.first().args[1]).toEqual(expectedPram);
+    });
+  });
+
+  describe('when testing getTeamName()', () => {
+    let requestResponse;
+    let expected;
+    beforeEach(() => {
+      requestResponse = {
+        success: true,
+        data: {
+          Team : {
+            name: 'Team 1',
+            id: 12
+          },
+          TeamMember: []
+        }
+      };
+      expected = 'Team 1';
+    });
+
+    it('should call with correct data', () => {
+      requestSpy.get.and.returnValue(of(requestResponse));
+      service.getTeamName(12).subscribe(
+        response => {
+          expect(response).toEqual(expected);
+        }
+      );
+      expect(requestSpy.get.calls.count()).toBe(1);
+    });
+  });
+
+  describe('when testing getMessageFromEvent()', () => {
+    let data;
+    beforeEach(() => {
+      data = {
+        event: {
+          id: 120,
+          from: 10,
+          to: 20,
+          is_sender: false,
+          message: 'test message',
+          sender_name: 'user_1',
+          sent_time: '9:40',
+          file: null,
+          sender_image: '',
+          participants_only: false
+        },
+        isTeam: false,
+        participants_only: false,
+        chatName: ''
+      };
+    });
+    it('should return null, if presence channel equal to from', () => {
+      pusherSpy.getMyPresenceChannelId.and.returnValue(10);
+      expect(service.getMessageFromEvent(data)).toEqual(null);
+    });
+
+    it('should return null, if presence channel equal to this user', () => {
+      pusherSpy.getMyPresenceChannelId.and.returnValue(20);
+      expect(service.getMessageFromEvent(data)).toEqual(null);
+    });
+
+    it('should return null, if presence channel equal to team', () => {
+      data.event.to = 'team';
+      pusherSpy.getMyPresenceChannelId.and.returnValue('team');
+      expect(service.getMessageFromEvent(data)).toEqual(null);
+    });
+
+    it('should return null, if not current user team or individual chat info', () => {
+      data.event.to = 20;
+      data.isTeam = true;
+      data.participants_only = true;
+      data.chatName = 'User_04';
+      pusherSpy.getMyPresenceChannelId.and.returnValue(20);
+      expect(service.getMessageFromEvent(data)).toEqual(null);
+    });
+
+    it('should return message object, if all data correct', () => {
+      data.event.to = 20;
+      data.chatName = 'user_1';
+      pusherSpy.getMyPresenceChannelId.and.returnValue(20);
+      expect(service.getMessageFromEvent(data)).toEqual(
+        {
+          id: 120,
+          is_sender: false,
+          message: 'test message',
+          sender_name: 'user_1',
+          sent_time: '9:40',
+          file: null,
+          sender_image: ''
+        }
+      );
+    });
+  });
 
 });
