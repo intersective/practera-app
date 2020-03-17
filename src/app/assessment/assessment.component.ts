@@ -734,6 +734,9 @@ export class AssessmentComponent extends RouterEnter {
       // display the submit button, don't need the text in the footer
       return false;
     }
+    if (this.action === 'review') {
+      return false;
+    }
     switch (this.submission.status) {
       case 'published':
         if (this.feedbackReviewed) {
