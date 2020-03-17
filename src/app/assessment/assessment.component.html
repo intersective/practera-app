@@ -158,7 +158,10 @@
   </form>
 </ion-content>
 
-<ion-footer color="light" [ngClass]="{'ion-footer-absolute': !utils.isMobile()}">
+<ion-footer
+  color="light"
+  [ngClass]="{'ion-footer-absolute': !utils.isMobile()}"
+  *ngIf="loadingSubmission || loadingFeedbackReviewed || doAssessment || doReview || footerText()">
   <ion-toolbar class="ion-text-center" style="height: 100%">
     <ion-spinner
       *ngIf="loadingSubmission || loadingFeedbackReviewed"
