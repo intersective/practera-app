@@ -78,12 +78,12 @@ export class TopicComponent extends RouterEnter {
   onEnter() {
     this._initialise();
     if (this.inputId) {
-      this.id = this.inputId;
+      this.id = +this.inputId;
     } else {
       this.id = +this.route.snapshot.paramMap.get('id');
     }
     if (this.inputActivityId) {
-      this.activityId = this.inputActivityId;
+      this.activityId = +this.inputActivityId;
     } else {
       this.activityId = +this.route.snapshot.paramMap.get('activityId');
     }

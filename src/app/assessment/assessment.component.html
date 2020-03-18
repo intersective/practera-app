@@ -16,7 +16,8 @@
   </ion-toolbar>
 </ion-header>
 <ion-content class="ion-padding ion-text-center" color="light" [ngClass]="{
-  'ion-content-absolute-with-footer': !utils.isMobile()
+  'ion-content-absolute-with-footer': !utils.isMobile() && hasFooter(),
+  'ion-content-absolute': utils.isMobile() || !hasFooter()
 }" appFloat>
   <h1 class="headline-4">{{ assessment.name }}</h1>
   <ion-text class="ion-text-left">
@@ -158,7 +159,10 @@
   </form>
 </ion-content>
 
-<ion-footer color="light" [ngClass]="{'ion-footer-absolute': !utils.isMobile()}">
+<ion-footer
+  color="light"
+  [ngClass]="{'ion-footer-absolute': !utils.isMobile()}"
+  *ngIf="hasFooter()">
   <ion-toolbar class="ion-text-center" style="height: 100%">
     <ion-spinner
       *ngIf="loadingSubmission || loadingFeedbackReviewed"

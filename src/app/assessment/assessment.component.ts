@@ -718,6 +718,10 @@ export class AssessmentComponent extends RouterEnter {
     }).format(new Date());
   }
 
+  hasFooter() {
+    return this.loadingSubmission || this.loadingFeedbackReviewed || this.doAssessment || this.doReview || this.footerText();
+  }
+
   /**
    * Get the text on the left of the footer.
    * Return false if it shouldn't be displayed
@@ -732,6 +736,9 @@ export class AssessmentComponent extends RouterEnter {
         return 'submitted';
       }
       // display the submit button, don't need the text in the footer
+      return false;
+    }
+    if (this.action === 'review') {
       return false;
     }
     switch (this.submission.status) {
