@@ -719,7 +719,7 @@ export class AssessmentComponent extends RouterEnter {
   }
 
   hasFooter() {
-    return this.loadingSubmission || this.loadingFeedbackReviewed || this.doAssessment || this.doReview || this.footerText()
+    return this.loadingSubmission || this.loadingFeedbackReviewed || this.doAssessment || this.doReview || this.footerText();
   }
 
   /**
