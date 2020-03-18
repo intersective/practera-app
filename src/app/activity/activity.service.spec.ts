@@ -166,8 +166,8 @@ describe('ActivityService', () => {
     it('should go to home page', fakeAsync(() => {
       requestSpy.get.and.returnValue(of({
         data: {
-          no_more_task: true,
-          task: []
+          is_last: true,
+          task: null
         }
       }));
       service.gotoNextTask(1, 'assessment', 2);
@@ -178,7 +178,7 @@ describe('ActivityService', () => {
     it('should pop up modal', fakeAsync(() => {
       requestSpy.get.and.returnValue(of({
         data: {
-          no_more_task: true,
+          is_last: true,
           task: {
             id: 11,
             name: 'assessment1',
@@ -194,7 +194,7 @@ describe('ActivityService', () => {
     it('should go to assessment page', fakeAsync(() => {
       requestSpy.get.and.returnValue(of({
         data: {
-          no_more_task: false,
+          is_last: false,
           task: {
             id: 11,
             name: 'assessment1',
@@ -208,7 +208,7 @@ describe('ActivityService', () => {
     it('should go to topic page', fakeAsync(() => {
       requestSpy.get.and.returnValue(of({
         data: {
-          no_more_task: false,
+          is_last: false,
           task: {
             id: 11,
             name: 'topic1',
