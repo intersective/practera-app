@@ -49,11 +49,11 @@ describe('SwitcherProgramComponent', () => {
 
     fixture = TestBed.createComponent(SwitcherProgramComponent);
     component = fixture.componentInstance;
-    newrelicSpy = TestBed.get(NewRelicService);
-    switcherSpy = TestBed.get(SwitcherService);
-    routerSpy = TestBed.get(Router);
-    loadingSpy = TestBed.get(LoadingController);
-    notifySpy = TestBed.get(NotificationService);
+    newrelicSpy = TestBed.inject(NewRelicService) as jasmine.SpyObj<NewRelicService>;
+    switcherSpy = TestBed.inject(SwitcherService) as jasmine.SpyObj<SwitcherService>;
+    routerSpy = TestBed.inject(Router) as jasmine.SpyObj<Router>;
+    loadingSpy = TestBed.inject(LoadingController) as jasmine.SpyObj<LoadingController>;
+    notifySpy = TestBed.inject(NotificationService) as jasmine.SpyObj<NotificationService>;
   }));
 
   beforeEach(() => {
