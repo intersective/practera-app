@@ -46,9 +46,9 @@ describe('ReviewListComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(ReviewListComponent);
     component = fixture.componentInstance;
-    serviceSpy = TestBed.get(ReviewListService);
-    routerSpy = TestBed.get(Router);
-    utils = TestBed.get(UtilsService);
+    serviceSpy = TestBed.inject(ReviewListService) as jasmine.SpyObj<ReviewListService>;
+    routerSpy = TestBed.inject(Router) as jasmine.SpyObj<Router>;
+    utils = TestBed.inject(UtilsService);
   });
 
   it('should get the correct data onEnter()', () => {
