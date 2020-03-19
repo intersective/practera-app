@@ -36,8 +36,8 @@ describe('PreviewComponent', () => {
 
     fixture = TestBed.createComponent(PreviewComponent);
     component = fixture.componentInstance;
-    modalSpy = TestBed.get(ModalController);
-    domSanitizerSpy = TestBed.get(DomSanitizer);
+    modalSpy = TestBed.inject(ModalController);
+    domSanitizerSpy = TestBed.inject(DomSanitizer);
 
     // fixture.detectChanges();
   });
