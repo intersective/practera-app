@@ -43,9 +43,7 @@ describe('OverviewComponent', () => {
         },
         {
           provide: FastFeedbackService,
-          useValue: jasmine.createSpyObj('FastFeedbackService', {
-            pullFastFeedback: of(true)
-          })
+          useValue: jasmine.createSpyObj('FastFeedbackService', ['pullFastFeedback'])
         },
       ]
     });
@@ -57,6 +55,8 @@ describe('OverviewComponent', () => {
     routeSpy = TestBed.inject(ActivatedRoute);
     utils = TestBed.inject(UtilsService);
     fastfeedbackSpy = TestBed.inject(FastFeedbackService) as jasmine.SpyObj<FastFeedbackService>;
+    fastfeedbackSpy.pullFastFeedback.and.returnValue(of(true));
+    component.initiator$ = of({});
   });
 
   it('should be created', () => {
@@ -66,7 +66,6 @@ describe('OverviewComponent', () => {
   describe('ngOnInit', () => {
     it('should get program name and pull fastfeedback', () => {
       component.ngOnInit();
-
       expect(component.programName).toEqual(PROGRAM_NAME);
       expect(fastfeedbackSpy.pullFastFeedback).toHaveBeenCalled();
     });

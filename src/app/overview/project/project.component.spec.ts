@@ -87,7 +87,8 @@ describe('ProjectComponent', () => {
           useValue: {
             snapshot: {
               paramMap: convertToParamMap({ activityId: 1 })
-            }
+            },
+            queryParamMap: of(convertToParamMap({ activityId: 1 }))
           }
         },
         {
@@ -138,6 +139,7 @@ describe('ProjectComponent', () => {
 
   it('when testing onEnter(), should get correct data', () => {
     fixture.detectChanges();
+    component.onEnter();
     expect(component.loadingMilestone).toBe(false);
     expect(component.milestones).toEqual(milestones);
   });
