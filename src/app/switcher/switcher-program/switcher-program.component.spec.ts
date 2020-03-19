@@ -72,7 +72,7 @@ describe('SwitcherProgramComponent', () => {
       component.ngOnInit();
 
       expect(newrelicSpy.setPageViewName).toHaveBeenCalledWith('program switcher');
-      expect(switcherSpy.getPrograms().subscribe).toHaveBeenCalled();
+      expect(switcherSpy.getPrograms).toHaveBeenCalled();
       expect(component.programs).toEqual(ProgramFixture);
     });
   });
