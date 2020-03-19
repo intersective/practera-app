@@ -66,8 +66,8 @@ describe('EventListComponent', () => {
     fixture = TestBed.createComponent(EventListComponent);
     component = fixture.componentInstance;
     page = new Page(fixture);
-    eventsSpy = TestBed.get(EventListService);
-    utils = TestBed.get(UtilsService);
+    eventsSpy = TestBed.inject(EventListService) as jasmine.SpyObj<EventListService>;
+    utils = TestBed.inject(UtilsService);
   });
 
   // data needed to create mock events

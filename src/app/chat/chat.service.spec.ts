@@ -28,12 +28,10 @@ describe('ChatService', () => {
         },
       ]
     });
-    service = TestBed.get(ChatService);
-    requestSpy = TestBed.get(RequestService);
-    utils = TestBed.get(UtilsService);
-    pusherSpy = TestBed.get(PusherService);
-    pusherSpy = TestBed.get(PusherService);
-
+    service = TestBed.inject(ChatService);
+    requestSpy = TestBed.inject(RequestService) as jasmine.SpyObj<RequestService>;
+    utils = TestBed.inject(UtilsService);
+    pusherSpy = TestBed.inject(PusherService) as jasmine.SpyObj<PusherService>;
   });
 
   it('should be created', () => {
