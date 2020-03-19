@@ -17,8 +17,8 @@ describe('TabsService', () => {
         },
       ]
     });
-    service = TestBed.get(TabsService);
-    requestSpy = TestBed.get(RequestService);
+    service = TestBed.inject(TabsService);
+    requestSpy = TestBed.inject(RequestService) as jasmine.SpyObj<RequestService>;
   });
 
   it('should be created', () => {
