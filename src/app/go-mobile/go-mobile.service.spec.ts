@@ -27,8 +27,8 @@ describe('GoMobileService', () => {
       ],
     });
 
-    service = TestBed.get(GoMobileService);
-    sharedService = TestBed.get(SharedService);
+    service = TestBed.inject(GoMobileService);
+    sharedService = TestBed.inject(SharedService);
   });
 
   it('should created', () => {

@@ -17,7 +17,7 @@ describe('UtilsService', () => {
       ]
     });
 
-    service = TestBed.get(UtilsService);
+    service = TestBed.inject(UtilsService);
   });
 
   it('should created', () => {
