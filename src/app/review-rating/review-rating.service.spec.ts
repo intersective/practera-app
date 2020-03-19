@@ -17,8 +17,8 @@ describe('ReviewRatingService', () => {
         },
       ]
     });
-    service = TestBed.get(ReviewRatingService);
-    requestSpy = TestBed.get(RequestService);
+    service = TestBed.inject(ReviewRatingService);
+    requestSpy = TestBed.inject(RequestService) as jasmine.SpyObj<RequestService>;
   });
 
   it('should be created', () => {

@@ -236,15 +236,15 @@ describe('AssessmentComponent', () => {
     component = fixture.componentInstance;
 
     page = new Page(fixture);
-    assessmentSpy = TestBed.get(AssessmentService);
-    notificationSpy = TestBed.get(NotificationService);
-    activitySpy = TestBed.get(ActivityService);
-    fastFeedbackSpy = TestBed.get(FastFeedbackService);
-    routeStub = TestBed.get(ActivatedRoute);
-    routerSpy = TestBed.get(Router);
-    storageSpy = TestBed.get(BrowserStorageService);
-    shared = TestBed.get(SharedService);
-    utils = TestBed.get(UtilsService);
+    assessmentSpy = TestBed.inject(AssessmentService) as jasmine.SpyObj<AssessmentService>;
+    notificationSpy = TestBed.inject(NotificationService) as jasmine.SpyObj<NotificationService>;
+    activitySpy = TestBed.inject(ActivityService) as jasmine.SpyObj<ActivityService>;
+    fastFeedbackSpy = TestBed.inject(FastFeedbackService) as jasmine.SpyObj<FastFeedbackService>;
+    routeStub = TestBed.inject(ActivatedRoute);
+    routerSpy = TestBed.inject(Router) as jasmine.SpyObj<Router>;
+    storageSpy = TestBed.inject(BrowserStorageService) as jasmine.SpyObj<BrowserStorageService>;
+    shared = TestBed.inject(SharedService);
+    utils = TestBed.inject(UtilsService);
 
     // initialise service calls
     assessmentSpy.getAssessment.and.returnValue(of(mockAssessment));
