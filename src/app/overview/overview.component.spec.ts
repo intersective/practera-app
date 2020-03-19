@@ -3,10 +3,9 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { OverviewComponent } from './overview.component';
 import { FastFeedbackService } from '../fast-feedback/fast-feedback.service';
 import { UtilsService } from '@services/utils.service';
-import { ActivatedRouteStub } from '@testing/activated-route-stub';
 import { TestUtils } from '@testing/utils';
 import { MockRouter } from '@testing/mocked.service';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, convertToParamMap } from '@angular/router';
 import { Observable, of, pipe } from 'rxjs';
 import { BrowserStorageService } from '@services/storage.service';
 
@@ -15,7 +14,7 @@ describe('OverviewComponent', () => {
 
   let component: OverviewComponent;
   let fixture: ComponentFixture<OverviewComponent>;
-  let routeStub: ActivatedRouteStub;
+  let routeSpy: ActivatedRoute;
   let utils: UtilsService;
   let fastfeedbackSpy: jasmine.SpyObj<FastFeedbackService>;
 
@@ -36,7 +35,11 @@ describe('OverviewComponent', () => {
         },
         {
           provide: ActivatedRoute,
-          useValue: new ActivatedRouteStub({ activityId: 1 })
+          useValue: {
+            snapshot: {
+              paramMap: convertToParamMap({ activityId: 1 })
+            }
+          }
         },
         {
           provide: FastFeedbackService,
@@ -51,9 +54,9 @@ describe('OverviewComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(OverviewComponent);
     component = fixture.componentInstance;
-    routeStub = TestBed.get(ActivatedRoute);
-    utils = TestBed.get(UtilsService);
-    fastfeedbackSpy = TestBed.get(FastFeedbackService);
+    routeSpy = TestBed.inject(ActivatedRoute);
+    utils = TestBed.inject(UtilsService);
+    fastfeedbackSpy = TestBed.inject(FastFeedbackService) as jasmine.SpyObj<FastFeedbackService>;
   });
 
   it('should be created', () => {

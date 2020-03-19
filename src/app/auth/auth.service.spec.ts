@@ -48,12 +48,12 @@ describe('AuthService', () => {
         },
       ]
     });
-    service = TestBed.get(AuthService);
-    requestSpy = TestBed.get(RequestService);
-    routerSpy = TestBed.get(Router);
-    storageSpy = TestBed.get(BrowserStorageService);
-    pusherSpy = TestBed.get(PusherService);
-    utilsSpy = TestBed.get(UtilsService);
+    service = TestBed.inject(AuthService);
+    requestSpy = TestBed.inject(RequestService) as jasmine.SpyObj<RequestService>;
+    routerSpy = TestBed.inject(Router) as jasmine.SpyObj<Router>;
+    storageSpy = TestBed.inject(BrowserStorageService) as jasmine.SpyObj<BrowserStorageService>;
+    pusherSpy = TestBed.inject(PusherService) as jasmine.SpyObj<PusherService>;
+    utilsSpy = TestBed.inject(UtilsService) as jasmine.SpyObj<UtilsService>;
   });
 
   it('should be created', () => {
