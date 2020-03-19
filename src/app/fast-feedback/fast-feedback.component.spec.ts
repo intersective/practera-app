@@ -76,9 +76,9 @@ describe('FastFeedbackComponent', () => {
     fixture = TestBed.createComponent(FastFeedbackComponent);
     component = fixture.componentInstance;
     page = new Page(fixture);
-    fastfeedbackSpy = TestBed.get(FastFeedbackSubmitterService);
-    notificationSpy = TestBed.get(NotificationService);
-    modalSpy = TestBed.get(ModalController);
+    fastfeedbackSpy = TestBed.inject(FastFeedbackSubmitterService) as jasmine.SpyObj<FastFeedbackSubmitterService>;
+    notificationSpy = TestBed.inject(NotificationService) as jasmine.SpyObj<NotificationService>;
+    modalSpy = TestBed.inject(ModalController) as jasmine.SpyObj<ModalController>;
   });
 
   it('should create', () => {

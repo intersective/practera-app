@@ -109,11 +109,11 @@ describe('EventDetailComponent', () => {
     fixture = TestBed.createComponent(EventDetailComponent);
     component = fixture.componentInstance;
     page = new Page(fixture);
-    serviceSpy = TestBed.get(EventDetailService);
-    routerSpy = TestBed.get(Router);
-    utils = TestBed.get(UtilsService);
-    notificationSpy = TestBed.get(NotificationService);
-    modalSpy = TestBed.get(ModalController);
+    serviceSpy = TestBed.inject(EventDetailService) as jasmine.SpyObj<EventDetailService>;
+    routerSpy = TestBed.inject(Router) as jasmine.SpyObj<Router>;
+    utils = TestBed.inject(UtilsService);
+    notificationSpy = TestBed.inject(NotificationService) as jasmine.SpyObj<NotificationService>;
+    modalSpy = TestBed.inject(ModalController) as jasmine.SpyObj<ModalController>;
   });
 
   beforeEach(() => {

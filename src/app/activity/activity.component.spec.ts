@@ -111,14 +111,14 @@ describe('ActivityComponent', () => {
     fixture = TestBed.createComponent(ActivityComponent);
     component = fixture.componentInstance;
     page = new Page(fixture);
-    activitySpy = TestBed.get(ActivityService);
-    routeStub = TestBed.get(ActivatedRoute);
-    routerSpy = TestBed.get(Router);
-    notificationSpy = TestBed.get(NotificationService);
-    utils = TestBed.get(UtilsService);
-    fastFeedbackSpy = TestBed.get(FastFeedbackService);
-    eventSpy = TestBed.get(EventListService);
-    storageSpy = TestBed.get(BrowserStorageService);
+    activitySpy = TestBed.inject(ActivityService) as jasmine.SpyObj<ActivityService>;
+    routeStub = TestBed.inject(ActivatedRoute);
+    routerSpy = TestBed.inject(Router) as jasmine.SpyObj<Router>;
+    notificationSpy = TestBed.inject(NotificationService) as jasmine.SpyObj<NotificationService>;
+    utils = TestBed.inject(UtilsService) as jasmine.SpyObj<UtilsService>;
+    fastFeedbackSpy = TestBed.inject(FastFeedbackService) as jasmine.SpyObj<FastFeedbackService>;
+    eventSpy = TestBed.inject(EventListService) as jasmine.SpyObj<EventListService>;
+    storageSpy = TestBed.inject(BrowserStorageService) as jasmine.SpyObj<BrowserStorageService>;
   });
 
   const mockActivity = {
