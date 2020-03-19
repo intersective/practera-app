@@ -129,13 +129,13 @@ describe('HomeComponent', () => {
     fixture = TestBed.createComponent(HomeComponent);
     component = fixture.componentInstance;
     page = new Page(fixture);
-    homeServiceSpy = TestBed.get(HomeService);
-    eventsServiceSpy = TestBed.get(EventListService);
-    achieventsServiceSpy = TestBed.get(AchievementsService);
-    fastFeedbackServiceSpy = TestBed.get(FastFeedbackService);
-    storageServiceSpy = TestBed.get(BrowserStorageService);
-    routerSpy = TestBed.get(Router);
-    utils = TestBed.get(UtilsService);
+    homeServiceSpy = TestBed.inject(HomeService) as jasmine.SpyObj<HomeService>;
+    eventsServiceSpy = TestBed.inject(EventListService) as jasmine.SpyObj<EventListService>;
+    achieventsServiceSpy = TestBed.inject(AchievementsService) as jasmine.SpyObj<AchievementsService>;
+    fastFeedbackServiceSpy = TestBed.inject(FastFeedbackService) as jasmine.SpyObj<FastFeedbackService>;
+    storageServiceSpy = TestBed.inject(BrowserStorageService) as jasmine.SpyObj<BrowserStorageService>;
+    routerSpy = TestBed.inject(Router) as jasmine.SpyObj<Router>;
+    utils = TestBed.inject(UtilsService);
   });
 
   beforeEach(() => {

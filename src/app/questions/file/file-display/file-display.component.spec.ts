@@ -40,7 +40,7 @@ describe('FileDisplayComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(FileDisplayComponent);
     component = fixture.debugElement.componentInstance;
-    filestackSpy = TestBed.get(FilestackService);
+    filestackSpy = TestBed.inject(FilestackService) as jasmine.SpyObj<FilestackService>;
   });
 
   it('should create', () => {

@@ -36,10 +36,10 @@ describe('ActivityService', () => {
         },
       ]
     });
-    service = TestBed.get(ActivityService);
-    requestSpy = TestBed.get(RequestService);
-    routerSpy = TestBed.get(Router);
-    notificationSpy = TestBed.get(NotificationService);
+    service = TestBed.inject(ActivityService);
+    requestSpy = TestBed.inject(RequestService) as jasmine.SpyObj<RequestService>;
+    routerSpy = TestBed.inject(Router) as jasmine.SpyObj<Router>;
+    notificationSpy = TestBed.inject(NotificationService) as jasmine.SpyObj<NotificationService>;
   });
 
   it('should be created', () => {
