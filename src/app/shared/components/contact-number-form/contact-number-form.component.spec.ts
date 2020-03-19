@@ -52,9 +52,9 @@ describe('ContactNumberFormComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(ContactNumberFormComponent);
     component = fixture.componentInstance;
-    storageSpy = TestBed.get(BrowserStorageService);
-    notificationSpy = TestBed.get(NotificationService);
-    settingSpy = TestBed.get(SettingService);
+    storageSpy = TestBed.inject(BrowserStorageService);
+    notificationSpy = TestBed.inject(NotificationService);
+    settingSpy = TestBed.inject(SettingService);
     fixture.detectChanges();
   });
 

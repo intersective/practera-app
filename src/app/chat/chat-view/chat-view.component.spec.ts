@@ -30,8 +30,8 @@ describe('ChatViewComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(ChatViewComponent);
     component = fixture.componentInstance;
-    routerSpy = TestBed.get(Router);
-    utils = TestBed.get(UtilsService);
+    routerSpy = TestBed.inject(Router) as jasmine.SpyObj<Router>;
+    utils = TestBed.inject(UtilsService);
     component.chatList = { onEnter() {} };
     component.chatRoom = { onEnter() {} };
   });

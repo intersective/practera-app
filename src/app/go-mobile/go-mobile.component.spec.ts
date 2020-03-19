@@ -64,9 +64,9 @@ describe('GoMobileComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(GoMobileComponent);
     component = fixture.debugElement.componentInstance;
-    newRelicSpy = TestBed.get(NewRelicService);
-    goMobileSpy = TestBed.get(GoMobileService);
-    notificationSpy = TestBed.get(NotificationService);
+    newRelicSpy = TestBed.inject(NewRelicService);
+    goMobileSpy = TestBed.inject(GoMobileService);
+    notificationSpy = TestBed.inject(NotificationService);
   });
 
   it('should created', () => {
