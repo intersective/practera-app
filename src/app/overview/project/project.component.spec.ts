@@ -3,11 +3,10 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { ProjectComponent } from './project.component';
 import { ProjectService } from './project.service';
 import { Observable, of, pipe } from 'rxjs';
-import { Router, ActivatedRoute } from '@angular/router';
+import { Router, ActivatedRoute, convertToParamMap } from '@angular/router';
 import { SharedModule } from '@shared/shared.module';
 import { UtilsService } from '@services/utils.service';
 import { HomeService } from '../home/home.service';
-import { ActivatedRouteStub } from '@testing/activated-route-stub';
 import { TestUtils } from '@testing/utils';
 import { DOCUMENT } from '@angular/common';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
@@ -51,7 +50,7 @@ describe('ProjectComponent', () => {
   let page: Page;
   let projectSpy: jasmine.SpyObj<ProjectService>;
   let routerSpy: jasmine.SpyObj<Router>;
-  let routeStub: ActivatedRouteStub;
+  let routeSpy: ActivatedRoute;
   let utils: UtilsService;
   let homeSpy: jasmine.SpyObj<HomeService>;
 
@@ -85,7 +84,12 @@ describe('ProjectComponent', () => {
         },
         {
           provide: ActivatedRoute,
-          useValue: new ActivatedRouteStub({ activityId: 1 })
+          useValue: {
+            snapshot: {
+              paramMap: convertToParamMap({ activityId: 1 })
+            },
+            queryParamMap: of(convertToParamMap({ activityId: 1 }))
+          }
         },
         {
           provide: Document,
@@ -119,11 +123,11 @@ describe('ProjectComponent', () => {
     fixture = TestBed.createComponent(ProjectComponent);
     component = fixture.componentInstance;
     page = new Page(fixture);
-    projectSpy = TestBed.get(ProjectService);
-    routerSpy = TestBed.get(Router);
-    routeStub = TestBed.get(ActivatedRoute);
-    utils = TestBed.get(UtilsService);
-    homeSpy = TestBed.get(HomeService);
+    projectSpy = TestBed.inject(ProjectService) as jasmine.SpyObj<ProjectService>;
+    routerSpy = TestBed.inject(Router) as jasmine.SpyObj<Router>;
+    routeSpy = TestBed.inject(ActivatedRoute);
+    utils = TestBed.inject(UtilsService);
+    homeSpy = TestBed.inject(HomeService) as jasmine.SpyObj<HomeService>;
     // homeSpy.getProgramName.and.returnValue(of('program name'));
     projectSpy.getProject.and.returnValue(of(milestones));
     component.refresh = of(true);
@@ -135,6 +139,7 @@ describe('ProjectComponent', () => {
 
   it('when testing onEnter(), should get correct data', () => {
     fixture.detectChanges();
+    component.onEnter();
     expect(component.loadingMilestone).toBe(false);
     expect(component.milestones).toEqual(milestones);
   });

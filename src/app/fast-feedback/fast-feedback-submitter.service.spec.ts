@@ -17,8 +17,8 @@ describe('FastFeedbackSubmitterService', () => {
         }
       ]
     });
-    service = TestBed.get(FastFeedbackSubmitterService);
-    requestSpy = TestBed.get(RequestService);
+    service = TestBed.inject(FastFeedbackSubmitterService);
+    requestSpy = TestBed.inject(RequestService) as jasmine.SpyObj<RequestService>;
   });
 
   it('should be created', () => {
