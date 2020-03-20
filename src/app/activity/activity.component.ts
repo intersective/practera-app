@@ -192,6 +192,20 @@ export class ActivityComponent {
     return this.router.navigate(['app', 'events', {activity_id: this.id, event_id: event.id}]);
   }
 
+  /**
+   * Manually change the status of a task
+   * @param type   The type of the task('Assessment', 'Topic')
+   * @param id     The id of the task
+   * @param status The status
+   */
+  changeTaskStatus(type: string, id: number, status: string) {
+    const index = this.activity.tasks.findIndex(t => t.id === id && t.type === type);
+    if (index < 0) {
+      return;
+    }
+    this.activity.tasks[index].status = status;
+  }
+
   /******************
     Used for task layout
   ******************/

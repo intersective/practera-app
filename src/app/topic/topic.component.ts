@@ -21,6 +21,7 @@ export class TopicComponent extends RouterEnter {
   @Input() inputActivityId: number;
   @Input() inputId: number;
   @Output() navigate = new EventEmitter();
+  @Output() onMarkAsDone = new EventEmitter();
   routeUrl = '/topic/';
   topic: Topic = {
     id: 0,
@@ -140,6 +141,7 @@ export class TopicComponent extends RouterEnter {
     return this.topicService.updateTopicProgress(this.id).pipe(response => {
       // toggle event change should happen after subscription is completed
       this.btnToggleTopicIsDone = true;
+      this.onMarkAsDone.emit();
       return response;
     });
   }
@@ -149,6 +151,8 @@ export class TopicComponent extends RouterEnter {
    * @description button action to trigger `gotoNextTask()`
    */
   async continue() {
+    // if we are going to mark topic as done
+    const markAsDone = !this.btnToggleTopicIsDone;
     // if topic has been marked as read
     if (!this.btnToggleTopicIsDone) {
       this.loadingMarkedDone = true;
@@ -166,7 +170,7 @@ export class TopicComponent extends RouterEnter {
     }
 
     this.redirecting = true;
-    this.activityService.gotoNextTask(this.activityId, 'topic', this.topic.id, !this.btnToggleTopicIsDone).then(redirect => {
+    this.activityService.gotoNextTask(this.activityId, 'topic', this.topic.id, markAsDone).then(redirect => {
       this.redirecting = false;
       if (redirect) {
         this._navigate(redirect);

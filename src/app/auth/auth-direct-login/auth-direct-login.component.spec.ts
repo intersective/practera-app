@@ -3,8 +3,7 @@ import { async, ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core
 import { AuthDirectLoginComponent } from './auth-direct-login.component';
 import { AuthService } from '../auth.service';
 import { Observable, of, pipe } from 'rxjs';
-import { Router, ActivatedRoute } from '@angular/router';
-import { ActivatedRouteStub } from '@testing/activated-route-stub';
+import { Router, ActivatedRoute, convertToParamMap } from '@angular/router';
 import { SharedModule } from '@shared/shared.module';
 import { UtilsService } from '@services/utils.service';
 import { NotificationService } from '@shared/notification/notification.service';
@@ -18,7 +17,7 @@ describe('AuthDirectLoginComponent', () => {
   let fixture: ComponentFixture<AuthDirectLoginComponent>;
   let serviceSpy: jasmine.SpyObj<AuthService>;
   let routerSpy: jasmine.SpyObj<Router>;
-  let routeStub: ActivatedRouteStub;
+  let routeSpy: ActivatedRoute;
   let utils: UtilsService;
   let notificationSpy: jasmine.SpyObj<NotificationService>;
   let switcherSpy: jasmine.SpyObj<SwitcherService>;
@@ -57,7 +56,13 @@ describe('AuthDirectLoginComponent', () => {
         },
         {
           provide: ActivatedRoute,
-          useValue: new ActivatedRouteStub({ authToken: 'abc' })
+          useValue: {
+            snapshot: {
+              paramMap: convertToParamMap({
+                authToken: 'abc'
+              })
+            }
+          }
         },
       ],
     })
@@ -67,13 +72,13 @@ describe('AuthDirectLoginComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(AuthDirectLoginComponent);
     component = fixture.componentInstance;
-    serviceSpy = TestBed.get(AuthService);
-    routerSpy = TestBed.get(Router);
-    routeStub = TestBed.get(ActivatedRoute);
-    utils = TestBed.get(UtilsService);
-    notificationSpy = TestBed.get(NotificationService);
-    switcherSpy = TestBed.get(SwitcherService);
-    storageSpy = TestBed.get(BrowserStorageService);
+    serviceSpy = TestBed.inject(AuthService) as jasmine.SpyObj<AuthService>;
+    routerSpy = TestBed.inject(Router) as jasmine.SpyObj<Router>;
+    routeSpy = TestBed.inject(ActivatedRoute);
+    utils = TestBed.inject(UtilsService);
+    notificationSpy = TestBed.inject(NotificationService) as jasmine.SpyObj<NotificationService>;
+    switcherSpy = TestBed.inject(SwitcherService) as jasmine.SpyObj<SwitcherService>;
+    storageSpy = TestBed.inject(BrowserStorageService) as jasmine.SpyObj<BrowserStorageService>;
   });
 
   beforeEach(() => {
@@ -86,7 +91,8 @@ describe('AuthDirectLoginComponent', () => {
 
   describe('when testing ngOnInit()', () => {
     it('should pop up alert if auth token is not provided', fakeAsync(() => {
-      routeStub.setParamMap({ authToken: null });
+      const params = { authToken: null };
+      routeSpy.snapshot.paramMap.get = jasmine.createSpy().and.callFake(key => params[key]);
       tick();
       fixture.detectChanges();
       fixture.whenStable().then(() => {
@@ -95,7 +101,8 @@ describe('AuthDirectLoginComponent', () => {
     }));
 
     it('should pop up alert if direct login service throw error', fakeAsync(() => {
-      routeStub.setParamMap({authToken: 'abc'});
+      const params = { authToken: 'abc' };
+      routeSpy.snapshot.paramMap.get = jasmine.createSpy().and.callFake(key => params[key]);
       serviceSpy.directLogin.and.throwError('');
       fixture.detectChanges();
       tick();
@@ -122,7 +129,7 @@ describe('AuthDirectLoginComponent', () => {
         tmpParams = JSON.parse(JSON.stringify(params));
       });
       afterEach(fakeAsync(() => {
-        routeStub.setParamMap(tmpParams);
+        routeSpy.snapshot.paramMap.get = jasmine.createSpy().and.callFake(key => tmpParams[key]);
         fixture.detectChanges();
         tick();
         fixture.detectChanges();

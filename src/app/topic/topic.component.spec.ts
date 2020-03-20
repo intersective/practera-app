@@ -79,7 +79,7 @@ describe('TopicComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(TopicComponent);
     component = fixture.componentInstance;
-    routerSpy = TestBed.get(Router);
+    routerSpy = TestBed.inject(Router) as jasmine.SpyObj<Router>;
     storageSpy.getUser.and.returnValue({
       teamId: 1,
       projectId: 2
