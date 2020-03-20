@@ -199,7 +199,7 @@ export class ActivityComponent {
    * @param status The status
    */
   changeTaskStatus(type: string, id: number, status: string) {
-    const index = this.activity.tasks.findIndex(t => t.id === id && t.type === type);
+    const index = this.activity.tasks.findIndex(t => t.id === +id && t.type === type);
     if (index < 0) {
       return;
     }

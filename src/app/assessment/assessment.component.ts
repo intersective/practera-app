@@ -28,7 +28,7 @@ export class AssessmentComponent extends RouterEnter {
   @Input() inputAction: string;
   @Input() fromPage = '';
   @Output() navigate = new EventEmitter();
-  @Output() onSubmit = new EventEmitter();
+  @Output() changeStatus = new EventEmitter();
   getAssessment: Subscription;
   getSubmission: Subscription;
   routeUrl = '/assessment/';
@@ -201,22 +201,22 @@ export class AssessmentComponent extends RouterEnter {
       this.fromPage = this.route.snapshot.data.from;
     }
     if (this.inputId) {
-      this.id = this.inputId;
+      this.id = +this.inputId;
     } else {
       this.id = +this.route.snapshot.paramMap.get('id');
     }
     if (this.inputActivityId) {
-      this.activityId = this.inputActivityId;
+      this.activityId = +this.inputActivityId;
     } else {
       this.activityId = +this.route.snapshot.paramMap.get('activityId');
     }
     if (this.inputContextId) {
-      this.contextId = this.inputContextId;
+      this.contextId = +this.inputContextId;
     } else {
       this.contextId = +this.route.snapshot.paramMap.get('contextId');
     }
     if (this.inputSubmissionId) {
-      this.submissionId = this.inputSubmissionId;
+      this.submissionId = +this.inputSubmissionId;
     } else {
       this.submissionId = +this.route.snapshot.paramMap.get('submissionId');
     }
@@ -621,7 +621,10 @@ export class AssessmentComponent extends RouterEnter {
           this.newRelic.actionText('Assessment Submitted.');
           this.submitting = false;
           this.submitted = true;
-          this.onSubmit.emit(this.assessment.type === 'moderated' ? 'pending review' : 'done');
+          this.changeStatus.emit({
+            id: +this.id,
+            status: this.assessment.type === 'moderated' ? 'pending review' : 'done'
+          });
           // disabled all forms controls
           Object.keys(this.questionsForm.controls).forEach(key => this.questionsForm.controls[key].disable());
           return this.pullFastFeedback();
