@@ -37,6 +37,7 @@ export interface AssessmentSubmission {
 
 export interface Assessment {
   name: string;
+  type: string;
   description: string;
   isForTeam: boolean;
   dueDate?: string;
@@ -141,6 +142,7 @@ export class AssessmentService {
 
     const assessment: Assessment = {
       name: thisAssessment.Assessment.name,
+      type: thisAssessment.Assessment.assessment_type,
       description: thisAssessment.Assessment.description,
       isForTeam: thisAssessment.Assessment.is_team,
       dueDate: thisAssessment.Assessment.deadline,
