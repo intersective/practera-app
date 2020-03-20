@@ -21,7 +21,7 @@ export class TopicComponent extends RouterEnter {
   @Input() inputActivityId: number;
   @Input() inputId: number;
   @Output() navigate = new EventEmitter();
-  @Output() onMarkAsDone = new EventEmitter();
+  @Output() changeStatus = new EventEmitter();
   routeUrl = '/topic/';
   topic: Topic = {
     id: 0,
@@ -141,7 +141,7 @@ export class TopicComponent extends RouterEnter {
     return this.topicService.updateTopicProgress(this.id).pipe(response => {
       // toggle event change should happen after subscription is completed
       this.btnToggleTopicIsDone = true;
-      this.onMarkAsDone.emit();
+      this.changeStatus.emit(this.id);
       return response;
     });
   }
