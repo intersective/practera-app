@@ -19,8 +19,8 @@ describe('EventDetailService', () => {
         },
       ]
     });
-    service = TestBed.get(EventDetailService);
-    requestSpy = TestBed.get(RequestService);
+    service = TestBed.inject(EventDetailService) as jasmine.SpyObj<EventDetailService>;
+    requestSpy = TestBed.inject(RequestService) as jasmine.SpyObj<RequestService>;
   });
 
   it('should be created', () => {
