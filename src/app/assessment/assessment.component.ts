@@ -28,6 +28,7 @@ export class AssessmentComponent extends RouterEnter {
   @Input() inputAction: string;
   @Input() fromPage = '';
   @Output() navigate = new EventEmitter();
+  @Output() onSubmit = new EventEmitter();
   getAssessment: Subscription;
   getSubmission: Subscription;
   routeUrl = '/assessment/';
@@ -41,6 +42,7 @@ export class AssessmentComponent extends RouterEnter {
   // the structure of assessment
   assessment: Assessment = {
     name: '',
+    type: '',
     description: '',
     isForTeam: false,
     dueDate: '',
@@ -145,6 +147,7 @@ export class AssessmentComponent extends RouterEnter {
   private _initialise() {
     this.assessment = {
       name: '',
+      type: '',
       description: '',
       isForTeam: false,
       dueDate: '',
@@ -618,6 +621,7 @@ export class AssessmentComponent extends RouterEnter {
           this.newRelic.actionText('Assessment Submitted.');
           this.submitting = false;
           this.submitted = true;
+          this.onSubmit.emit(this.assessment.type === 'moderated' ? 'pending review' : 'done');
           // disabled all forms controls
           Object.keys(this.questionsForm.controls).forEach(key => this.questionsForm.controls[key].disable());
           return this.pullFastFeedback();
