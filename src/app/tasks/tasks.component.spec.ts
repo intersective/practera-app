@@ -4,15 +4,14 @@ import { ActivityModule } from '../activity/activity.module';
 import { TopicModule } from '../topic/topic.module';
 import { AssessmentModule } from '../assessment/assessment.module';
 import { Observable, of, pipe } from 'rxjs';
-import { Router, ActivatedRoute } from '@angular/router';
-import { ActivatedRouteStub } from '@testing/activated-route-stub';
+import { Router, ActivatedRoute, convertToParamMap } from '@angular/router';
 import { MockRouter } from '@testing/mocked.service';
 import { BrowserStorageService } from '@services/storage.service';
 
 describe('TasksComponent', () => {
   let component: TasksComponent;
   let fixture: ComponentFixture<TasksComponent>;
-  let routeStub: ActivatedRouteStub;
+  let routeSpy: ActivatedRoute;
   let storageSpy: jasmine.SpyObj<BrowserStorageService>;
 
   beforeEach(async(() => {
@@ -26,7 +25,11 @@ describe('TasksComponent', () => {
         },
         {
           provide: ActivatedRoute,
-          useValue: new ActivatedRouteStub({ id: 1 })
+          useValue: {
+            snapshot: {
+              paramMap: convertToParamMap({ id: 1 })
+            }
+          }
         },
         {
           provide: BrowserStorageService,
@@ -40,8 +43,8 @@ describe('TasksComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(TasksComponent);
     component = fixture.componentInstance;
-    routeStub = TestBed.get(ActivatedRoute);
-    storageSpy = TestBed.get(BrowserStorageService);
+    routeSpy = TestBed.inject(ActivatedRoute);
+    storageSpy = TestBed.inject(BrowserStorageService) as jasmine.SpyObj<BrowserStorageService>;
     // mock the activity object
     component.activity = { onEnter() {} };
     // mock the topic object
@@ -70,6 +73,7 @@ describe('TasksComponent', () => {
     let expectedTopicId;
     let expectedAssessmentId;
     let expectedContextId;
+    let params;
     beforeEach(() => {
       // initialise the ids
       component.topicId = null;
@@ -83,9 +87,13 @@ describe('TasksComponent', () => {
       expectedTopicId = null;
       expectedAssessmentId = null;
       expectedContextId = null;
+      params = null;
     });
     afterEach(() => {
       // do the test
+      if (params) {
+        routeSpy.snapshot.paramMap.get = jasmine.createSpy().and.callFake(key => params[key]);
+      }
       component.goToFirstTask(tasks);
       expect(component.topicId).toEqual(expectedTopicId);
       expect(component.assessmentId).toEqual(expectedAssessmentId);
@@ -100,44 +108,44 @@ describe('TasksComponent', () => {
       expectedAssessmentId = 1;
     });
     it('should go to the topic if passed in as the parameter', () => {
-      routeStub.setParamMap({
+      params = {
         id: 1,
         task: 'topic',
         task_id: 11
-      });
+      };
       expectedTopicId = 11;
     });
     it('should go to the assessment if passed in as the parameter', () => {
-      routeStub.setParamMap({
+      params = {
         id: 1,
         task: 'assessment',
         task_id: 11,
         context_id: 111
-      });
+      };
       expectedAssessmentId = 11;
       expectedContextId = 111;
     });
     it('should go to the topic in the tasks if parameters passed in are not correct #1', () => {
-      routeStub.setParamMap({
+      params = {
         id: 1,
         task: 'assessment'
-      });
+      };
       expectedTopicId = 2;
     });
     it('should go to the topic in the tasks if parameters passed in are not correct #2', () => {
-      routeStub.setParamMap({
+      params = {
         id: 1,
         task: 'assessment',
         task_id: 11
-      });
+      };
       expectedTopicId = 2;
     });
     it('should go to the topic in the tasks if parameters passed in are not correct #3', () => {
-      routeStub.setParamMap({
+      params = {
         id: 1,
         task: 'other',
         task_id: 11
-      });
+      };
       expectedTopicId = 2;
     });
     it('should go to the second task(first unfinished) in the tasks', () => {

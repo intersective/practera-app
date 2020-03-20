@@ -22,9 +22,9 @@ describe('TopicService', () => {
         }
       ]
     });
-    service = TestBed.get(TopicService);
-    requestSpy = TestBed.get(RequestService);
-    utils = TestBed.get(UtilsService);
+    service = TestBed.inject(TopicService);
+    requestSpy = TestBed.inject(RequestService) as jasmine.SpyObj<RequestService>;
+    utils = TestBed.inject(UtilsService);
   });
 
   it('should be created', () => {
