@@ -77,9 +77,9 @@ export class AuthService {
     // do clear user cache here
   }
 
-  private _login(body: HttpParams) {
+  private _login(body: HttpParams, timelineid?: number) {
     return this.request.post(api.login, body.toString(), {
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded',timelineid }
     }).pipe(map(res => this._handleLoginResponse(res)));
   }
 
@@ -106,9 +106,10 @@ export class AuthService {
    *              so must convert them into compatible formdata before submission
    * @param {object} { authToken } in string
    */
-  directLogin({ authToken }): Observable<any> {
+  directLogin({ authToken, timelineId }): Observable<any> {
     const body = new HttpParams()
-      .set('auth_token', authToken);
+      .set('auth_token', authToken)
+      .set('timelineId',timelineId)
     return this._login(body);
   }
 
