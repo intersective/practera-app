@@ -128,9 +128,9 @@ describe('AuthService', () => {
   });
 
   describe('when testing logout()', () => {
-    it('should navigate to login', () => {
+    it('should navigate to login by default', () => {
       storageSpy.getConfig.and.returnValue({color: ''});
-      service.logout();
+      service.logout({});
       expect(pusherSpy.unsubscribeChannels.calls.count()).toBe(1);
       expect(pusherSpy.disconnect.calls.count()).toBe(1);
       expect(storageSpy.clear.calls.count()).toBe(1);
@@ -144,6 +144,12 @@ describe('AuthService', () => {
       expect(storageSpy.clear.calls.count()).toBe(1);
       expect(routerSpy.navigate.calls.first().args[0]).toEqual(['login']);
       expect(routerSpy.navigate.calls.first().args[1]).toEqual({data: 'data'});
+    });
+
+    it('should not navigate to login when it is called with isDirectLogin = true', () => {
+      storageSpy.getConfig.and.returnValue({color: ''});
+      service.logout({}, true);
+      expect(routerSpy.navigate.calls.count()).toBe(0);
     });
   });
 
