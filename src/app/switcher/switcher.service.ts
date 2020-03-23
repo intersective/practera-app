@@ -145,7 +145,7 @@ export class SwitcherService {
    * @name getMyInfo
    * @description get user info
    */
-  async getMyInfo(timelineid?: number): Promise <Observable<any>> {
+  async getMyInfo(timelineid?: number ): Promise <Observable<any>> {
     return this.request.get(api.me,{ headers: { timelineid } }).pipe(map(response => {
       if (response.data) {
         if (!this.utils.has(response, 'data.User')) {
