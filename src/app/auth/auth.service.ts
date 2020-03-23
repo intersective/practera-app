@@ -77,8 +77,8 @@ export class AuthService {
     // do clear user cache here
   }
 
-  private _login(body: HttpParams) {
-    this.logout();
+  private _login(body: HttpParams, isDirectLogin) {
+    this.logout({}, isDirectLogin);
     return this.request.post(api.login, body.toString(), {
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
     }).pipe(map(res => this._handleLoginResponse(res)));
@@ -98,7 +98,7 @@ export class AuthService {
       .set('data[User][password]', password)
       .set('domain', this.getDomain());
 
-    return this._login(body);
+    return this._login(body, false);
   }
 
   /**
@@ -110,7 +110,7 @@ export class AuthService {
   directLogin({ authToken }): Observable<any> {
     const body = new HttpParams()
       .set('auth_token', authToken);
-    return this._login(body);
+    return this._login(body, true);
   }
 
   private _handleLoginResponse(response): Observable<any> {
@@ -151,7 +151,7 @@ export class AuthService {
     return this.storage.get('isLoggedIn');
   }
 
-  logout(navigationParams = {}) {
+  logout(navigationParams = {}, isDirectLogin?) {
     // use the config color
     this.utils.changeThemeColor(this.storage.getConfig().color || '#2bbfd4');
     this.pusherService.unsubscribeChannels();
@@ -160,9 +160,10 @@ export class AuthService {
     this.storage.clear();
     // still store config info even logout
     this.storage.setConfig(config);
-    return this.router.navigate(['login'], navigationParams);
+    if (!isDirectLogin) {
+      return this.router.navigate(['login'], navigationParams);
+    }
   }
-
    /**
    * @name forgotPassword
    * @description make request to server to send out email with reset password url
