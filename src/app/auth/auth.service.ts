@@ -79,7 +79,7 @@ export class AuthService {
 
   private _login(body: HttpParams, timelineid?: number) {
     return this.request.post(api.login, body.toString(), {
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded',timelineid }
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded', timelineid }
     }).pipe(map(res => this._handleLoginResponse(res)));
   }
 
@@ -109,7 +109,7 @@ export class AuthService {
   directLogin({ authToken, timelineId }): Observable<any> {
     const body = new HttpParams()
       .set('auth_token', authToken)
-      .set('timelineId',timelineId)
+      .set('timelineId', timelineId);
     return this._login(body);
   }
 
