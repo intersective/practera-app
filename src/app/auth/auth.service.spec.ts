@@ -80,6 +80,7 @@ describe('AuthService', () => {
         ]
       }
     }));
+    storageSpy.getConfig.and.returnValue(true);
     utilsSpy.has.and.returnValue(true);
     service.login({ email: 'test@test.com', password: '123' }).subscribe();
     expect(requestSpy.post.calls.count()).toBe(1);
@@ -108,6 +109,7 @@ describe('AuthService', () => {
         ]
       }
     }));
+    storageSpy.getConfig.and.returnValue(true);
     service.directLogin({ authToken: 'abcd' }).subscribe();
     expect(requestSpy.post.calls.count()).toBe(1);
     expect(requestSpy.post.calls.first().args[1]).toContain('abcd');
