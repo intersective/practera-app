@@ -137,6 +137,7 @@ describe('AssessmentComponent', () => {
   const mockAssessment = {
     name: 'test',
     description: 'test',
+    type: 'quiz',
     isForTeam: false,
     dueDate: '2029-02-02',
     isOverdue: false,
@@ -582,6 +583,7 @@ describe('AssessmentComponent', () => {
       component.action = action;
       component.assessment = {
         name: 'Test Assessment',
+        type: 'quiz',
         description: 'Test Description',
         isForTeam: false,
         dueDate: '',
