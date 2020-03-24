@@ -109,6 +109,7 @@ export class AuthService {
   directLogin({ authToken }): Observable<any> {
     const body = new HttpParams()
       .set('auth_token', authToken);
+    this.logout({}, false);
     return this._login(body);
   }
 
@@ -150,7 +151,12 @@ export class AuthService {
     return this.storage.get('isLoggedIn');
   }
 
-  logout(navigationParams = {}) {
+  /**
+   * Clear user's information and log the user out
+   * @param navigationParams the parameters needed when redirect
+   * @param redirect         Whether redirect the user to login page or not
+   */
+  logout(navigationParams = {}, redirect = true) {
     // use the config color
     this.utils.changeThemeColor(this.storage.getConfig().color || '#2bbfd4');
     this.pusherService.unsubscribeChannels();
@@ -159,9 +165,10 @@ export class AuthService {
     this.storage.clear();
     // still store config info even logout
     this.storage.setConfig(config);
-    return this.router.navigate(['login'], navigationParams);
+    if (redirect) {
+      return this.router.navigate(['login'], navigationParams);
+    }
   }
-
    /**
    * @name forgotPassword
    * @description make request to server to send out email with reset password url

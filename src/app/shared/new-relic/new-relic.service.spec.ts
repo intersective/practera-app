@@ -16,8 +16,8 @@ describe('NewRelicService', () => {
         }
       ]
     });
-    service = TestBed.get(NewRelicService);
-    storageSpy = TestBed.get(BrowserStorageService);
+    service = TestBed.inject(NewRelicService);
+    storageSpy = TestBed.inject(BrowserStorageService);
   });
 
   it('should has setPageViewName', () => {

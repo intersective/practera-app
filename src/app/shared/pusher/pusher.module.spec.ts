@@ -14,7 +14,7 @@ describe('PusherModule', () => {
       ],
     });
 
-    pusherModule = TestBed.get(PusherModule);
+    pusherModule = TestBed.inject(PusherModule);
   });
 
   it(`should provide services`, () => {

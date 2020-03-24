@@ -22,7 +22,7 @@
       [ngClass]="{'unread': chat.unread_messages > 0}"
       [lines]="'none'">
       <ion-avatar [ngClass]="{'color-team': chat.is_team}" slot="start" text-center>
-        <ng-container *ngIf="chat.is_team; else avatarElseBlock"><ion-icon name="people"></ion-icon></ng-container>
+        <ng-container *ngIf="chat.is_team; else avatarElseBlock"><ion-icon name="people-outline"></ion-icon></ng-container>
         <ng-template #avatarElseBlock><img [src]="chat.team_member_image"></ng-template>
       </ion-avatar>
       <ion-label>

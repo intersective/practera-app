@@ -13,6 +13,7 @@
       [inputId]="topicId"
       [inputActivityId]="activityId"
       (navigate)="goto($event);activity.onEnter()"
+      (changeStatus)="activity.changeTaskStatus('Topic', $event, 'done')"
     ></app-topic>
     <app-assessment
       #assessment
@@ -22,6 +23,7 @@
       [inputContextId]="contextId"
       [inputAction]="'assessment'"
       (navigate)="goto($event);activity.onEnter()"
+      (changeStatus)="activity.changeTaskStatus('Assessment', $event.id, $event.status)"
       ></app-assessment>
   </ion-content>
 </ion-split-pane>
