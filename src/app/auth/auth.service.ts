@@ -165,7 +165,7 @@ export class AuthService {
     this.storage.clear();
     // still store config info even logout
     this.storage.setConfig(config);
-    if (!redirect) {
+    if (redirect) {
       return this.router.navigate(['login'], navigationParams);
     }
   }
