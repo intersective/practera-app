@@ -145,7 +145,7 @@ export class SwitcherService {
    * @name getMyInfo
    * @description get user info
    */
-  getMyInfo(): Observable<any> {
+  getMyInfo():  Observable<any> {
     return this.request.get(api.me).pipe(map(response => {
       if (response.data) {
         if (!this.utils.has(response, 'data.User')) {

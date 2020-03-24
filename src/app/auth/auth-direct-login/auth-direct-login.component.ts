@@ -35,8 +35,8 @@ export class AuthDirectLoginComponent implements OnInit {
 
     try {
       const nrDirectLoginTracer = this.newRelic.createTracer('Processing direct login');
-      const loginStatus = await this.authService.directLogin({ authToken }).toPromise();
-      const userInfo = await this.switcherService.getMyInfo().toPromise();
+      await this.authService.directLogin({ authToken }).toPromise();
+      await this.switcherService.getMyInfo().toPromise();
       nrDirectLoginTracer();
       return this._redirect();
     } catch (err) {
