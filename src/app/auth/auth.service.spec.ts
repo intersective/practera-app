@@ -146,7 +146,7 @@ describe('AuthService', () => {
       expect(routerSpy.navigate.calls.first().args[1]).toEqual({data: 'data'});
     });
 
-    it('should not navigate to login when it is called with isDirectLogin = true', () => {
+    it('should not navigate to login when it is called with redirect = true', () => {
       storageSpy.getConfig.and.returnValue({color: ''});
       service.logout({}, true);
       expect(routerSpy.navigate.calls.count()).toBe(0);
