@@ -146,9 +146,9 @@ describe('AuthService', () => {
       expect(routerSpy.navigate.calls.first().args[1]).toEqual({data: 'data'});
     });
 
-    it('should not navigate to login when it is called with redirect = true', () => {
+    it('should not navigate to login when it is called with redirect = false', () => {
       storageSpy.getConfig.and.returnValue({color: ''});
-      service.logout({}, true);
+      service.logout({}, false);
       expect(routerSpy.navigate.calls.count()).toBe(0);
     });
   });
