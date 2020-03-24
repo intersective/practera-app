@@ -51,10 +51,10 @@ describe('AuthForgotPasswordComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(AuthForgotPasswordComponent);
     component = fixture.componentInstance;
-    serviceSpy = TestBed.get(AuthService);
-    utils = TestBed.get(UtilsService);
-    notificationSpy = TestBed.get(NotificationService);
-    storageSpy = TestBed.get(BrowserStorageService);
+    serviceSpy = TestBed.inject(AuthService) as jasmine.SpyObj<AuthService>;
+    utils = TestBed.inject(UtilsService);
+    notificationSpy = TestBed.inject(NotificationService) as jasmine.SpyObj<NotificationService>;
+    storageSpy = TestBed.inject(BrowserStorageService) as jasmine.SpyObj<BrowserStorageService>;
     storageSpy.getConfig.and.returnValue({logo: null});
   });
 

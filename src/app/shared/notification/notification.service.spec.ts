@@ -48,7 +48,7 @@ describe('NotificationService', () => {
   }));
 
   beforeEach(() => {
-    service = TestBed.get(NotificationService);
+    service = TestBed.inject(NotificationService);
   });
 
   it('should create', () => {
@@ -73,7 +73,10 @@ describe('NotificationService', () => {
   it('when testing presentToast(), it should create the modal', () => {
     service.presentToast('test');
     expect(toastSpy.create.calls.count()).toBe(1);
-    service.presentToast('test', true, 1000, true);
+    service.presentToast('test', {
+      color: 'success',
+      duration: 1000
+    });
     expect(toastSpy.create.calls.count()).toBe(2);
   });
 

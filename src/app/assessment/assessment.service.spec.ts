@@ -37,10 +37,10 @@ describe('AssessmentService', () => {
         },
       ]
     });
-    service = TestBed.get(AssessmentService);
-    requestSpy = TestBed.get(RequestService);
-    notificationSpy = TestBed.get(NotificationService);
-    utils = TestBed.get(UtilsService);
+    service = TestBed.inject(AssessmentService);
+    requestSpy = TestBed.inject(RequestService) as jasmine.SpyObj<RequestService>;
+    notificationSpy = TestBed.inject(NotificationService) as jasmine.SpyObj<NotificationService>;
+    utils = TestBed.inject(UtilsService);
   });
 
   it('should be created', () => {

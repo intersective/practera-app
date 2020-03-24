@@ -20,8 +20,8 @@ describe('StorageService', function() {
         },
       ]
     });
-    service = TestBed.get(BrowserStorageService);
-    storage = TestBed.get(BROWSER_STORAGE);
+    service = TestBed.inject(BrowserStorageService);
+    storage = TestBed.inject(BROWSER_STORAGE);
   });
 
   it('should created', () => {

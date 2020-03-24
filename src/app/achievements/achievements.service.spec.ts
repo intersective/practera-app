@@ -26,8 +26,8 @@ describe('AchievementsService', () => {
         },
       ]
     });
-    service = TestBed.get(AchievementsService);
-    requestSpy = TestBed.get(RequestService);
+    service = TestBed.inject(AchievementsService) as jasmine.SpyObj<AchievementsService>;
+    requestSpy = TestBed.inject(RequestService) as jasmine.SpyObj<RequestService>;
   });
 
   it('should be created', () => {

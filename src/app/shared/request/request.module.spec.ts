@@ -15,7 +15,7 @@ describe('RequestModule', () => {
       ],
     });
 
-    requestModule = TestBed.get(RequestModule);
+    requestModule = TestBed.inject(RequestModule);
   });
 
   it(`should provide services`, () => {

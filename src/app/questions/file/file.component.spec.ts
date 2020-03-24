@@ -29,7 +29,7 @@ describe('FileComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(FileComponent);
     component = fixture.componentInstance;
-    filestackSpy = TestBed.get(FilestackService);
+    filestackSpy = TestBed.inject(FilestackService) as jasmine.SpyObj<FilestackService>;
   });
 
   beforeEach(() => {

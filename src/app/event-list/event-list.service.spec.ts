@@ -37,10 +37,10 @@ describe('EventListService', () => {
         },
       ]
     });
-    service = TestBed.get(EventListService);
-    requestSpy = TestBed.get(RequestService);
-    utils = TestBed.get(UtilsService);
-    notificationSpy = TestBed.get(NotificationService);
+    service = TestBed.inject(EventListService);
+    requestSpy = TestBed.inject(RequestService) as jasmine.SpyObj<RequestService>;
+    utils = TestBed.inject(UtilsService);
+    notificationSpy = TestBed.inject(NotificationService) as jasmine.SpyObj<NotificationService>;
   });
 
   it('should be created', () => {
