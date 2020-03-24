@@ -60,7 +60,7 @@
       <ion-list>
         <app-list-item
           *ngFor="let event of eventObj.events; let i = index"
-          leadingIcon="calendar"
+          leadingIcon="calendar-outline"
           [leadingIconColor]="eventListService.isNotActionable(event) ? 'medium' : 'primary'"
           [title]="event.name"
           [titleColor]="eventListService.isNotActionable(event) ? 'gray-2' : ''"

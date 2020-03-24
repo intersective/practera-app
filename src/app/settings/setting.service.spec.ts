@@ -23,9 +23,9 @@ describe('SettingService', () => {
         },
       ]
     });
-    service = TestBed.get(SettingService);
-    requestSpy = TestBed.get(RequestService);
-    sharedSpy = TestBed.get(SharedService);
+    service = TestBed.inject(SettingService);
+    requestSpy = TestBed.inject(RequestService) as jasmine.SpyObj<RequestService>;
+    sharedSpy = TestBed.inject(SharedService) as jasmine.SpyObj<SharedService>;
   });
 
   it('should be created', () => {

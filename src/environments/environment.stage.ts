@@ -21,8 +21,8 @@ export const environment = {
         '3c38ef53-a9d0-4aa4-9234-617d9f03c0de',
       ],
     },
-    policy: '<CUSTOM_FILESTACK_POLICY>',
-    signature: '<CUSTOM_FILESTACK_SIGNATURE>',
+    policy: 'eyJleHBpcnkiOjE3MzU2NTAwMDB9',
+    signature: '30323e4c80bb68e30afef26b32aa4dae401b0581b8e8ba9da93f3a01701be267',
     workflows: {
       virusDetection: '3c38ef53-a9d0-4aa4-9234-617d9f03c0de',
     },
