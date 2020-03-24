@@ -77,8 +77,8 @@ export class AuthService {
     // do clear user cache here
   }
 
-  private _login(body: HttpParams, isDirectLogin) {
-    this.logout({}, isDirectLogin);
+  private _login(body: HttpParams, redirect) {
+    this.logout({}, redirect);
     return this.request.post(api.login, body.toString(), {
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
     }).pipe(map(res => this._handleLoginResponse(res)));
@@ -151,7 +151,12 @@ export class AuthService {
     return this.storage.get('isLoggedIn');
   }
 
-  logout(navigationParams = {}, isDirectLogin?) {
+  /**
+   * Clear user's information and log the user out
+   * @param navigationParams the parameters needed when redirect
+   * @param redirect         Whether redirect the user to login page or not
+   */
+  logout(navigationParams = {}, redirect = true) {
     // use the config color
     this.utils.changeThemeColor(this.storage.getConfig().color || '#2bbfd4');
     this.pusherService.unsubscribeChannels();
@@ -160,7 +165,7 @@ export class AuthService {
     this.storage.clear();
     // still store config info even logout
     this.storage.setConfig(config);
-    if (!isDirectLogin) {
+    if (!redirect) {
       return this.router.navigate(['login'], navigationParams);
     }
   }
