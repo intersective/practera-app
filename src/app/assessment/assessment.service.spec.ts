@@ -58,6 +58,7 @@ describe('AssessmentService', () => {
             pulse_check: false,
             Assessment: {
               name: 'test',
+              assessment_type: 'quiz',
               description: 'des',
               is_team: false,
               deadline: '2019-02-02',
@@ -199,6 +200,7 @@ describe('AssessmentService', () => {
       const question4 = group1.AssessmentGroupQuestion[1].AssessmentQuestion;
       expected = {
         name: assessment.Assessment.name,
+        type: assessment.Assessment.assessment_type,
         description: assessment.Assessment.description,
         isForTeam: assessment.Assessment.is_team,
         dueDate: assessment.Assessment.deadline,
