@@ -66,13 +66,13 @@ describe('SettingsComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(SettingsComponent);
     component = fixture.componentInstance;
-    settingsSpy = TestBed.get(SettingService);
-    routerSpy = TestBed.get(Router);
-    utils = TestBed.get(UtilsService);
-    fastFeedbackSpy = TestBed.get(FastFeedbackService);
-    storageSpy = TestBed.get(BrowserStorageService);
-    authSpy = TestBed.get(AuthService);
-    newRelicSpy = TestBed.get(NewRelicService);
+    settingsSpy = TestBed.inject(SettingService) as jasmine.SpyObj<SettingService>;
+    routerSpy = TestBed.inject(Router) as jasmine.SpyObj<Router>;
+    utils = TestBed.inject(UtilsService);
+    fastFeedbackSpy = TestBed.inject(FastFeedbackService) as jasmine.SpyObj<FastFeedbackService>;
+    storageSpy = TestBed.inject(BrowserStorageService) as jasmine.SpyObj<BrowserStorageService>;
+    authSpy = TestBed.inject(AuthService) as jasmine.SpyObj<AuthService>;
+    newRelicSpy = TestBed.inject(NewRelicService) as jasmine.SpyObj<NewRelicService>;
 
     storageSpy.getUser.and.returnValue({
       email: 'test@test.com',

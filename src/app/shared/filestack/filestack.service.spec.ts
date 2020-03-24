@@ -40,12 +40,12 @@ describe('FilestackService', () => {
           },
         ]
     });
-    service = TestBed.get(FilestackService);
-    utils = TestBed.get(UtilsService);
-    notificationSpy = TestBed.get(NotificationService);
-    storageSpy = TestBed.get(BrowserStorageService);
-    mockBackend = TestBed.get(HttpTestingController);
-    modalctrlSpy = TestBed.get(ModalController);
+    service = TestBed.inject(FilestackService);
+    utils = TestBed.inject(UtilsService);
+    notificationSpy = TestBed.inject(NotificationService) as jasmine.SpyObj<NotificationService>;
+    storageSpy = TestBed.inject(BrowserStorageService) as jasmine.SpyObj<BrowserStorageService>;
+    mockBackend = TestBed.inject(HttpTestingController);
+    modalctrlSpy = TestBed.inject(ModalController) as jasmine.SpyObj<ModalController>;
   });
 
   it('should be created', () => {

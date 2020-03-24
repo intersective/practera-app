@@ -56,7 +56,7 @@ export class GoMobileComponent implements OnInit {
     this.profile.contactNumber = this.profile.contactNumber.replace(/[^0-9+]+/ig, '');
     // check if newly input number is valid or not.
     if (!this.validateContactNumber()) {
-      return this.notification.presentToast('Invalid contact number', false);
+      return this.notification.presentToast('Invalid contact number');
     }
 
     this.goMobileService.submit({
