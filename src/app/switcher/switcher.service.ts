@@ -113,13 +113,13 @@ export class SwitcherService {
     });
 
     this.sharedService.onPageLoad();
-    return forkJoin(
+    return forkJoin([
       this.getNewJwt(),
       this.getTeamInfo(),
       this.getMyInfo(),
       this.getReviews(),
       this.getEvents()
-    );
+    ]);
   }
 
   getTeamInfo(): Observable<any> {

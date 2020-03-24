@@ -114,11 +114,11 @@ describe('RequestService', () => {
       ]
     });
 
-    service = TestBed.get(RequestService);
-    mockBackend = TestBed.get(HttpTestingController);
-    requestConfigSpy = TestBed.get(RequestConfig);
-    devModeServiceSpy = TestBed.get(DevModeService);
-    storageSpy = TestBed.get(BrowserStorageService);
+    service = TestBed.inject(RequestService);
+    mockBackend = TestBed.inject(HttpTestingController);
+    requestConfigSpy = TestBed.inject(RequestConfig);
+    devModeServiceSpy = TestBed.inject(DevModeService);
+    storageSpy = TestBed.inject(BrowserStorageService);
   });
 
   it('should be created', () => {

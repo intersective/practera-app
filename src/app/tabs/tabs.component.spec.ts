@@ -85,14 +85,14 @@ describe('TabsComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(TabsComponent);
     component = fixture.componentInstance;
-    tabsSpy = TestBed.get(TabsService);
-    routerSpy = TestBed.get(Router);
-    utils = TestBed.get(UtilsService);
-    storageSpy = TestBed.get(BrowserStorageService);
-    newRelicSpy = TestBed.get(NewRelicService);
-    switcherSpy = TestBed.get(SwitcherService);
-    reviewsSpy = TestBed.get(ReviewListService);
-    eventsSpy = TestBed.get(EventListService);
+    tabsSpy = TestBed.inject(TabsService) as jasmine.SpyObj<TabsService>;
+    routerSpy = TestBed.inject(Router) as jasmine.SpyObj<Router>;
+    utils = TestBed.inject(UtilsService);
+    storageSpy = TestBed.inject(BrowserStorageService) as jasmine.SpyObj<BrowserStorageService>;
+    newRelicSpy = TestBed.inject(NewRelicService) as jasmine.SpyObj<NewRelicService>;
+    switcherSpy = TestBed.inject(SwitcherService) as jasmine.SpyObj<SwitcherService>;
+    reviewsSpy = TestBed.inject(ReviewListService) as jasmine.SpyObj<ReviewListService>;
+    eventsSpy = TestBed.inject(EventListService) as jasmine.SpyObj<EventListService>;
 
     switcherSpy.getTeamInfo.and.returnValue(of(''));
     reviewsSpy.getReviews.and.returnValue(of(['', '']));
