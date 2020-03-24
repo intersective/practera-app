@@ -44,11 +44,11 @@ describe('HomeService', () => {
         },
       ]
     });
-    service = TestBed.get(HomeService);
-    requestSpy = TestBed.get(RequestService);
-    notificationSpy = TestBed.get(NotificationService);
-    eventsSpy = TestBed.get(EventListService);
-    utils = TestBed.get(UtilsService);
+    service = TestBed.inject(HomeService);
+    requestSpy = TestBed.inject(RequestService) as jasmine.SpyObj<RequestService>;
+    notificationSpy = TestBed.inject(NotificationService) as jasmine.SpyObj<NotificationService>;
+    eventsSpy = TestBed.inject(EventListService) as jasmine.SpyObj<EventListService>;
+    utils = TestBed.inject(UtilsService);
   });
 
   it('should be created', () => {

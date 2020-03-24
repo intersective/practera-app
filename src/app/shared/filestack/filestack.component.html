@@ -1,10 +1,10 @@
 <ng-container [ngSwitch]="type">
   <ng-container *ngSwitchCase="'profileImage'">
-    <p class="upload-icon" (click)="uploadFile()"><ion-icon ios="ios-camera" md="md-camera"></ion-icon></p>
+    <p class="upload-icon" (click)="uploadFile()"><ion-icon name="camera-outline"></ion-icon></p>
   </ng-container>
 
   <ng-container *ngSwitchDefault>
-    <ion-button size="small" shape="round" (click)="uploadFile()">
+    <ion-button size="small" shape="round" (click)="uploadFile()" [disabled]="disabled">
       <i>Upload File</i>
     </ion-button>
   </ng-container>

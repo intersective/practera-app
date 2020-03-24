@@ -106,7 +106,7 @@ export class TopicService {
         });
         return progress.progress;
       } else {
-          return false;
+        return false;
       }
     }));
   }

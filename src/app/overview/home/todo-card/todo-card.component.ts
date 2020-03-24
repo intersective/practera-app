@@ -12,9 +12,9 @@ export class TodoCardComponent {
   icons = {
     feedback_available: 'information-circle-outline',
     review_submission: 'information-circle-outline',
-    chat: 'chatboxes',
+    chat: 'chatbubbles-outline',
     event: 'calendar',
-    assessment_submission_reminder: 'clipboard'
+    assessment_submission_reminder: 'clipboard-outline'
   };
 
   constructor() {}

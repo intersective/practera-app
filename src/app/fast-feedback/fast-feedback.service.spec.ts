@@ -31,10 +31,10 @@ describe('FastFeedbackService', () => {
         }
       ]
     });
-    service = TestBed.get(FastFeedbackService);
-    requestSpy = TestBed.get(RequestService);
-    notificationSpy = TestBed.get(NotificationService);
-    storageSpy = TestBed.get(BrowserStorageService);
+    service = TestBed.inject(FastFeedbackService);
+    requestSpy = TestBed.inject(RequestService) as jasmine.SpyObj<RequestService>;
+    notificationSpy = TestBed.inject(NotificationService) as jasmine.SpyObj<NotificationService>;
+    storageSpy = TestBed.inject(BrowserStorageService) as jasmine.SpyObj<BrowserStorageService>;
   });
 
   it('should be created', () => {

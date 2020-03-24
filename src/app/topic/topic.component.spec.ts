@@ -23,7 +23,7 @@ describe('TopicComponent', () => {
   const embedSpy = jasmine.createSpyObj('EmbedVideoService', ['embed']);
   const newRelicSpy = jasmine.createSpyObj('NewRelicService', ['noticeError', 'addPageAction', 'setPageViewName']);
   const sharedSpy = jasmine.createSpyObj('SharedService', ['stopPlayingVideos']);
-  const activitySpy = jasmine.createSpyObj('ActivityService', ['getTasksByActivityId']);
+  const activitySpy = jasmine.createSpyObj('ActivityService', ['gotoNextTask']);
   let routerSpy: jasmine.SpyObj<Router>;
   const routeStub = new ActivatedRouteStub({ activityId: 1, id: 2 });
   const notificationSpy = jasmine.createSpyObj('NotificationService', ['alert', 'presentToast']);
@@ -79,11 +79,12 @@ describe('TopicComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(TopicComponent);
     component = fixture.componentInstance;
-    routerSpy = TestBed.get(Router);
+    routerSpy = TestBed.inject(Router) as jasmine.SpyObj<Router>;
     storageSpy.getUser.and.returnValue({
       teamId: 1,
       projectId: 2
     });
+    activitySpy.gotoNextTask.and.returnValue(new Promise(() => {}));
   });
 
   it('should create', () => {
@@ -172,7 +173,7 @@ describe('TopicComponent', () => {
     it('should go to the next task #2', () => {
       component.btnToggleTopicIsDone = true;
       component.continue();
-      expect(component.redirecting).toBe(false);
+      expect(component.redirecting).toBe(true);
       expect(component.loadingTopic).toBe(true);
     });
   });
@@ -188,15 +189,6 @@ describe('TopicComponent', () => {
       component.isLoadingPreview = false;
       component.previewFile('');
       expect(component.isLoadingPreview).toBe(true);
-    });
-  });
-  describe('when testing redirectToNextMilestoneTask()', () => {
-    it('should go to next task', () => {
-      activitySpy.getTasksByActivityId.and.returnValue({
-        currentActivity: {},
-        nextTask: {}
-      });
-      component.redirectToNextMilestoneTask();
     });
   });
   describe('when testing back()', () => {

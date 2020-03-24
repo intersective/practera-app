@@ -7,7 +7,7 @@
             <ion-item lines="none" color="light" (click)="toggleGroup(milestone)">
               <ion-icon
                 *ngIf="milestone.isLocked"
-                name="lock"
+                name="lock-closed"
                 color="medium"
                 class="milestone-lock"
                 slot="start"></ion-icon>
@@ -18,7 +18,7 @@
 
               <ion-icon *ngIf="!milestone.isLocked && (milestone.Activity && milestone.Activity.length > 0)"
                 slot="end"
-                [name]="isCollapsed(milestone) ? 'ios-arrow-down' : 'ios-arrow-up'"
+                [name]="isCollapsed(milestone) ? 'chevron-down' : 'chevron-up'"
                 class="collapsible-icon"
               ></ion-icon>
             </ion-item>
@@ -47,7 +47,7 @@
                     </ng-container>
                     <ng-template #activityLocked>
                       <div class="row-cards">
-                        <ion-icon name="lock" color="medium" class="icon-lock"></ion-icon>
+                        <ion-icon name="lock-closed" color="medium" class="icon-lock"></ion-icon>
                       </div>
                     </ng-template>
                     <app-activity-card id="activity-card-{{activity.id}}" [activity]="activity"
