@@ -48,12 +48,12 @@ describe('AuthService', () => {
         },
       ]
     });
-    service = TestBed.get(AuthService);
-    requestSpy = TestBed.get(RequestService);
-    routerSpy = TestBed.get(Router);
-    storageSpy = TestBed.get(BrowserStorageService);
-    pusherSpy = TestBed.get(PusherService);
-    utilsSpy = TestBed.get(UtilsService);
+    service = TestBed.inject(AuthService);
+    requestSpy = TestBed.inject(RequestService) as jasmine.SpyObj<RequestService>;
+    routerSpy = TestBed.inject(Router) as jasmine.SpyObj<Router>;
+    storageSpy = TestBed.inject(BrowserStorageService) as jasmine.SpyObj<BrowserStorageService>;
+    pusherSpy = TestBed.inject(PusherService) as jasmine.SpyObj<PusherService>;
+    utilsSpy = TestBed.inject(UtilsService) as jasmine.SpyObj<UtilsService>;
   });
 
   it('should be created', () => {
@@ -80,6 +80,7 @@ describe('AuthService', () => {
         ]
       }
     }));
+    storageSpy.getConfig.and.returnValue(true);
     utilsSpy.has.and.returnValue(true);
     service.login({ email: 'test@test.com', password: '123' }).subscribe();
     expect(requestSpy.post.calls.count()).toBe(1);
@@ -108,6 +109,7 @@ describe('AuthService', () => {
         ]
       }
     }));
+    storageSpy.getConfig.and.returnValue(true);
     service.directLogin({ authToken: 'abcd' }).subscribe();
     expect(requestSpy.post.calls.count()).toBe(1);
     expect(requestSpy.post.calls.first().args[1]).toContain('abcd');
@@ -126,9 +128,9 @@ describe('AuthService', () => {
   });
 
   describe('when testing logout()', () => {
-    it('should navigate to login', () => {
+    it('should navigate to login by default', () => {
       storageSpy.getConfig.and.returnValue({color: ''});
-      service.logout();
+      service.logout({});
       expect(pusherSpy.unsubscribeChannels.calls.count()).toBe(1);
       expect(pusherSpy.disconnect.calls.count()).toBe(1);
       expect(storageSpy.clear.calls.count()).toBe(1);
@@ -142,6 +144,12 @@ describe('AuthService', () => {
       expect(storageSpy.clear.calls.count()).toBe(1);
       expect(routerSpy.navigate.calls.first().args[0]).toEqual(['login']);
       expect(routerSpy.navigate.calls.first().args[1]).toEqual({data: 'data'});
+    });
+
+    it('should not navigate to login when it is called with redirect = false', () => {
+      storageSpy.getConfig.and.returnValue({color: ''});
+      service.logout({}, false);
+      expect(routerSpy.navigate.calls.count()).toBe(0);
     });
   });
 

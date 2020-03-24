@@ -46,9 +46,9 @@ describe('RequestInterceptor', () => {
       ]
     });
 
-    service = TestBed.get(RequestService);
-    httpMock = TestBed.get(HttpTestingController);
-    storageSpy = TestBed.get(BrowserStorageService);
+    service = TestBed.inject(RequestService);
+    httpMock = TestBed.inject(HttpTestingController);
+    storageSpy = TestBed.inject(BrowserStorageService);
   });
 
   beforeEach(fakeAsync(() => {
