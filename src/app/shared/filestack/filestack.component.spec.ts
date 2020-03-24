@@ -24,7 +24,7 @@ describe('FilestackComponent', () => {
     }).compileComponents();
     fixture = TestBed.createComponent(FilestackComponent);
     component = fixture.debugElement.componentInstance;
-    filestackSpy = TestBed.get(FilestackService);
+    filestackSpy = TestBed.inject(FilestackService);
   }));
 
   it('should create the filestack component', () => {

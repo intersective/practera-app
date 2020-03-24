@@ -4,14 +4,14 @@ import { EventListModule } from '../event-list/event-list.module';
 import { EventDetailModule } from '../event-detail/event-detail.module';
 import { AssessmentModule } from '../assessment/assessment.module';
 import { Observable, of, pipe } from 'rxjs';
-import { Router, ActivatedRoute } from '@angular/router';
+import { Router, ActivatedRoute, convertToParamMap } from '@angular/router';
 import { ActivatedRouteStub } from '@testing/activated-route-stub';
 import { MockRouter } from '@testing/mocked.service';
 
 describe('EventsComponent', () => {
   let component: EventsComponent;
   let fixture: ComponentFixture<EventsComponent>;
-  let routeStub: ActivatedRouteStub;
+  let routeSpy: ActivatedRoute;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
@@ -24,7 +24,11 @@ describe('EventsComponent', () => {
         },
         {
           provide: ActivatedRoute,
-          useValue: new ActivatedRouteStub({ activity_id: 1, event_id: 2 })
+          useValue: {
+            snapshot: {
+              paramMap: convertToParamMap({ activity_id: 1, event_id: 2 })
+            }
+          }
         },
       ]
     })
@@ -34,7 +38,7 @@ describe('EventsComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(EventsComponent);
     component = fixture.componentInstance;
-    routeStub = TestBed.get(ActivatedRoute);
+    routeSpy = TestBed.inject(ActivatedRoute);
     // mock the activity object
     component.eventList = { onEnter() {} };
     // spy on the onEnter function

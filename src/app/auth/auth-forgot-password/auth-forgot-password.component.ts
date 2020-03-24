@@ -25,7 +25,7 @@ export class AuthForgotPasswordComponent {
     // basic validation
     if (this.email.length < 0 || !this.email) {
       this.newRelic.actionText('email missing');
-      return this.notificationService.presentToast('Please enter email', false);
+      return this.notificationService.presentToast('Please enter email');
     }
     this.isSending = true;
 
@@ -62,7 +62,7 @@ export class AuthForgotPasswordComponent {
             });
           }
         }
-        return this.notificationService.presentToast('Issue occured. Please try again', false);
+        return this.notificationService.presentToast('Issue occured. Please try again');
       }
     );
   }

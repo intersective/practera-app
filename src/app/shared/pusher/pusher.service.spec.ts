@@ -132,11 +132,11 @@ describe('PusherService', async () => {
       ],
     }).compileComponents();
 
-    mockBackend = TestBed.get(HttpTestingController);
-    service = TestBed.get(PusherService);
-    requestSpy = TestBed.get(RequestService);
-    utilSpy = TestBed.get(UtilsService);
-    storageSpy = TestBed.get(BrowserStorageService);
+    mockBackend = TestBed.inject(HttpTestingController);
+    service = TestBed.inject(PusherService);
+    requestSpy = TestBed.inject(RequestService) as jasmine.SpyObj<RequestService>;
+    utilSpy = TestBed.inject(UtilsService);
+    storageSpy = TestBed.inject(BrowserStorageService);
   });
 
   it('should create', () => {
