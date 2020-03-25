@@ -2,7 +2,7 @@
   <ng-container [ngSwitch]="fileType">
 
     <ng-container *ngSwitchCase="'image'">
-      <ion-img [src]="file.url"></ion-img>
+      <app-img [imgSrc]="file.url"></app-img>
     </ng-container>
 
     <ng-container *ngSwitchCase="'video'">
