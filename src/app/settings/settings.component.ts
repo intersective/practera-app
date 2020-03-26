@@ -29,6 +29,8 @@ export class SettingsComponent extends RouterEnter {
   currentProgramName = '';
   currentProgramImage = '';
 
+  returnLtiUrl = '';
+
   helpline = 'help@practera.com';
 
   termsUrl = 'https://images.practera.com/terms_and_conditions/practera_terms_conditions.pdf';
@@ -47,7 +49,8 @@ export class SettingsComponent extends RouterEnter {
     private notificationService: NotificationService,
     private filestackService: FilestackService,
     public fastFeedbackService: FastFeedbackService,
-    private newRelic: NewRelicService
+    private newRelic: NewRelicService,
+
   ) {
     super(router);
   }
@@ -65,6 +68,7 @@ export class SettingsComponent extends RouterEnter {
     this.currentProgramName = this.storage.getUser().programName;
     this.currentProgramImage = this._getCurrentProgramImage();
     this.fastFeedbackService.pullFastFeedback().subscribe();
+    this.returnLtiUrl = this.storage.getUser().LtiReturnUrl;
   }
 
   // loading pragram image to settings page by resizing it depend on device.
@@ -86,10 +90,14 @@ export class SettingsComponent extends RouterEnter {
     this.newRelic.actionText('Open T&C link');
     window.open(this.termsUrl, '_system');
   }
-
   switchProgram() {
-    this.newRelic.actionText('browse to program switcher');
-    this.router.navigate(['/switcher']);
+    if (this.returnLtiUrl) {
+      this.newRelic.actionText('browse to LTI return link');
+      window.location.href = 'https://' + this.returnLtiUrl;
+    } else {
+      this.newRelic.actionText('browse to program switcher');
+      this.router.navigate(['/switcher']);
+    }
   }
 
   isInMultiplePrograms() {
