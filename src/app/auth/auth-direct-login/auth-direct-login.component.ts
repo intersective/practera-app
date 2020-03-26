@@ -68,6 +68,11 @@ export class AuthDirectLoginComponent implements OnInit {
       // if there's no redirection or timeline id
       return this._saveOrRedirect(['switcher'], redirectLater);
     }
+    if ( this.route.snapshot.paramMap.has('return_url')) {
+      this.storage.setUser({
+        LtiReturnUrl: this.route.snapshot.paramMap.get('return_url')
+      });
+    }
     // switch parogram if user already registered
     if (!redirectLater) {
       const program = this.utils.find(this.storage.get('programs'), value => {
