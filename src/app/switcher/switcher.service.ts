@@ -26,6 +26,8 @@ export interface ProgramObj {
   project: Project;
   timeline: Timeline;
   enrolment: Enrolment;
+  progress?: number;
+  todoItems?: number;
 }
 
 export interface Program {
@@ -85,6 +87,23 @@ export class SwitcherService {
       }
     });
     return of(programs);
+  }
+
+  /**
+   * Get the progress and number of notifications for each project
+   * @param projectIds Project ids
+   */
+  getProgresses(projectIds: number[]) {
+    return this.request.postGraphQL('"{projects(ids: ' + JSON.stringify(projectIds) + ') {id progress todo_items{is_done}}}"')
+      .pipe(map(res => {
+        return res.data.projects.map(v => {
+          return {
+            id: +v.id,
+            progress: v.progress,
+            todoItems: v.todo_items.filter(ti => !ti.is_done).length
+          };
+        });
+      }));
   }
 
   switchProgram(programObj: ProgramObj): Observable<any> {
