@@ -10,11 +10,30 @@ import { ProgramFixture } from '@testing/fixtures/programs';
 
 export class MockSwitcherService extends SpyObject {
   getPrograms;
+  getProgresses;
   switchProgramAndNavigate;
+  mockProgresses = [
+    {
+      id: 1,
+      progress: 0.1,
+      todoItems: 1
+    },
+    {
+      id: 2,
+      progress: 0.2,
+      todoItems: 2
+    },
+    {
+      id: 3,
+      progress: 0.3,
+      todoItems: 3
+    }
+  ];
 
   constructor() {
     super(SwitcherService);
     this.getPrograms = this.spy('getPrograms').and.returnValue(of(ProgramFixture));
+    this.getProgresses = this.spy('getProgresses').and.returnValue(of(this.mockProgresses));
     this.switchProgramAndNavigate = this.spy('switchProgramAndNavigate');
   }
 }
