@@ -2,11 +2,11 @@ import { Injectable } from '@angular/core';
 import { SharedService, Profile } from '@services/shared.service';
 import { map } from 'rxjs/operators';
 import { RequestService } from '@shared/request/request.service';
-import { UtilsService } from '@services/utils.service';
 
 const api = {
   profileImageUpload: 'api/v2/user/account/edit',
 };
+
 @Injectable({
   providedIn: 'root'
 })
@@ -15,7 +15,6 @@ export class SettingService {
   constructor(
     private sharedService: SharedService,
     private request: RequestService,
-    private utils: UtilsService,
   ) { }
 
   updateProfile(data: Profile) {
