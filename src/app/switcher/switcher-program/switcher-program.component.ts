@@ -37,7 +37,19 @@ export class SwitcherProgramComponent implements OnInit {
     this.switcherService.getPrograms()
       .subscribe(programs => {
         this.programs = programs;
+        this._getProgresses(programs);
       });
+  }
+
+  private _getProgresses(programs) {
+    const projectIds = programs.map(v => v.project.id);
+    this.switcherService.getProgresses(projectIds).subscribe(res => {
+      res.forEach(progress => {
+        const i = this.programs.findIndex(program => program.project.id === progress.id);
+        this.programs[i].progress = progress.progress;
+        this.programs[i].todoItems = progress.todoItems;
+      });
+    });
   }
 
   async switch(index): Promise<void> {
