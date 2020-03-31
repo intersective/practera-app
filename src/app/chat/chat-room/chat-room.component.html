@@ -115,10 +115,10 @@
     </div>
   </ng-container>
 </ion-content>
-<ion-footer class="footer" [ngClass]="{'ion-footer-absolute': !utils.isMobile(), 'focus': textFieldFocused}">
+<ion-footer class="footer" [ngClass]="{'ion-footer-absolute': !utils.isMobile(), 'focus': showBottomAttachmentButtons}">
   <ion-grid class="white-bg">
     <ion-row nowrap class="ion-no-padding">
-      <ion-col [size]="!utils.isMobile() || textFieldFocused ? '12' : '9'" class="ion-align-self-center">
+      <ion-col [size]="!utils.isMobile() || showBottomAttachmentButtons ? '12' : '9'" class="ion-align-self-center">
         <ion-textarea
           placeholder="Enter your message"
           required="true"
@@ -127,14 +127,14 @@
           (ngModelChange)="typing()"
           appAutoresize="100"
           rows="1"
-          (ionFocus)="textFieldFocused = true;"
+          (ionFocus)="showBottomAttachmentButtons = true;"
         ></ion-textarea>
       </ion-col>
-      <ng-container *ngIf="utils.isMobile() && !textFieldFocused">
+      <ng-container *ngIf="utils.isMobile() && !showBottomAttachmentButtons">
         <ng-container *ngTemplateOutlet="attachmentButtons; context: { offset: 0 }"></ng-container>
       </ng-container>
     </ion-row>
-    <ion-row nowrap class="ion-no-padding ion-align-items-end" *ngIf="!utils.isMobile() || textFieldFocused">
+    <ion-row nowrap class="ion-no-padding ion-align-items-end" *ngIf="!utils.isMobile() || showBottomAttachmentButtons">
       <ng-container *ngTemplateOutlet="attachmentButtons; context: { offset: 8 }"></ng-container>
       <ion-col class="ion-no-padding ion-text-center">
         <ion-button (click)="sendMessage()" type="submit" fill="clear" class="ion-no-padding">
@@ -146,7 +146,7 @@
 </ion-footer>
 
 <ng-template #attachmentButtons let-offset="offset">
-  <ion-col offset="{{ offset }}" class="ion-no-padding ion-text-center">
+  <ion-col [offset]="offset" class="ion-no-padding ion-text-center">
     <ion-button (click)="attach('video')" fill="clear" class="ion-no-padding">
       <ion-icon name="film-outline" slot="icon-only"></ion-icon>
     </ion-button>

@@ -41,7 +41,7 @@ export class ChatRoomComponent extends RouterEnter {
   typingMessage: string;
   // this use to show/hide bottom section of text field which have attachment buttons and send button,
   // when user typing text messages
-  textFieldFocused = false;
+  showBottomAttachmentButtons = false;
 
   constructor(
     private chatService: ChatService,
@@ -134,7 +134,7 @@ export class ChatRoomComponent extends RouterEnter {
     this.loadingMesageSend = false;
     this.isTyping = false;
     this.typingMessage = '';
-    this.textFieldFocused = false;
+    this.showBottomAttachmentButtons = false;
   }
 
   private _validateRouteParams() {
@@ -301,11 +301,11 @@ export class ChatRoomComponent extends RouterEnter {
         this.messageList.push(response.data);
         this.loadingMesageSend = false;
         this._scrollToBottom();
-        this.textFieldFocused = false;
+        this.showBottomAttachmentButtons = false;
       },
       error => {
         this.loadingMesageSend = false;
-        this.textFieldFocused = false;
+        this.showBottomAttachmentButtons = false;
       }
     );
   }
@@ -464,10 +464,10 @@ export class ChatRoomComponent extends RouterEnter {
    */
   typing() {
     if (!this.utils.isEmpty(this.message)) {
-      this.textFieldFocused = true;
+      this.showBottomAttachmentButtons = true;
       this._scrollToBottom();
     } else {
-      this.textFieldFocused = false;
+      this.showBottomAttachmentButtons = false;
     }
     this.pusherService.triggerTyping(
       {
@@ -585,12 +585,12 @@ export class ChatRoomComponent extends RouterEnter {
 
         this.messageList.push(message);
         this.loadingMesageSend = false;
-        this.textFieldFocused = false;
+        this.showBottomAttachmentButtons = false;
         this._scrollToBottom();
       },
       error => {
         this.loadingMesageSend = false;
-        this.textFieldFocused = false;
+        this.showBottomAttachmentButtons = false;
         // error feedback to user for failed upload
       }
     );
