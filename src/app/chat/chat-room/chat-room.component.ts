@@ -39,6 +39,7 @@ export class ChatRoomComponent extends RouterEnter {
   loadingMesageSend = false;
   isTyping = false;
   typingMessage: string;
+  textFieldFocused = false;
 
   constructor(
     private chatService: ChatService,
@@ -131,6 +132,7 @@ export class ChatRoomComponent extends RouterEnter {
     this.loadingMesageSend = false;
     this.isTyping = false;
     this.typingMessage = '';
+    this.textFieldFocused = false;
   }
 
   private _validateRouteParams() {
@@ -297,9 +299,11 @@ export class ChatRoomComponent extends RouterEnter {
         this.messageList.push(response.data);
         this.loadingMesageSend = false;
         this._scrollToBottom();
+        this.textFieldFocused = false;
       },
       error => {
         this.loadingMesageSend = false;
+        this.textFieldFocused = false;
       }
     );
   }
@@ -457,6 +461,12 @@ export class ChatRoomComponent extends RouterEnter {
    * Trigger typing event when user is typing
    */
   typing() {
+    if (!this.utils.isEmpty(this.message)) {
+      this.textFieldFocused = true;
+      this._scrollToBottom();
+    } else {
+      this.textFieldFocused = false;
+    }
     this.pusherService.triggerTyping(
       {
         from: this.pusherService.getMyPresenceChannelId(),
@@ -529,6 +539,7 @@ export class ChatRoomComponent extends RouterEnter {
 
     if (this.filestackService.getFileTypes(type)) {
       options.accept = this.filestackService.getFileTypes(type);
+      options.storeTo = this.filestackService.getS3Config(type);
     }
     await this.filestackService.open(
       options,
