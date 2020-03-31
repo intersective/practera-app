@@ -127,6 +127,7 @@
           (ngModelChange)="typing()"
           appAutoresize="100"
           rows="1"
+          (ionFocus)="textFieldFocused = true; _scrollToBottom();"
         ></ion-textarea>
       </ion-col>
       <ng-container *ngIf="utils.isMobile() && !textFieldFocused">
