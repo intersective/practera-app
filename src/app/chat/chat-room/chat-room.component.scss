@@ -215,9 +215,18 @@ $message-body-size: 224px;
   padding: 0;
 
   &.ion-footer-absolute {
-    height: 48px;
+    height: 96px;
     ion-grid {
       padding: 0;
+      min-height: 96px;
+    }
+  }
+
+  &.focus {
+    min-height: 96px;
+    ion-grid {
+      padding: 0;
+      min-height: 96px;
     }
   }
 
