@@ -583,10 +583,12 @@ export class ChatRoomComponent extends RouterEnter {
 
         this.messageList.push(message);
         this.loadingMesageSend = false;
+        this.textFieldFocused = false;
         this._scrollToBottom();
       },
       error => {
         this.loadingMesageSend = false;
+        this.textFieldFocused = false;
         // error feedback to user for failed upload
       }
     );
