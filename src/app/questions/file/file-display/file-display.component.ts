@@ -13,8 +13,7 @@ export class FileDisplayComponent implements OnInit, OnChanges {
 
   @Input() fileType = 'any';
   @Input() file: any;
-  @ViewChild('video')
-  public video: ElementRef;
+  @ViewChild('video') video: ElementRef;
 
   constructor(private filestackService: FilestackService, private utils: UtilsService) { }
 
@@ -27,7 +26,7 @@ export class FileDisplayComponent implements OnInit, OnChanges {
   private resetUILogic() {
     this.virusDetection = {};
     this.quarantine = {};
-    this.video?.nativeElement.load();
+    this.video.nativeElement.load();
   }
 
   private updateWorkflowStatus(file?) {
