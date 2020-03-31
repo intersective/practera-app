@@ -39,6 +39,8 @@ export class ChatRoomComponent extends RouterEnter {
   loadingMesageSend = false;
   isTyping = false;
   typingMessage: string;
+  // this use to show/hide bottom section of text field which have attachment buttons and send button,
+  // when user typing text messages
   textFieldFocused = false;
 
   constructor(
