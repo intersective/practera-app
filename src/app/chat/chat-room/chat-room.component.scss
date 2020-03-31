@@ -209,6 +209,9 @@ $message-body-size: 224px;
   width: 100% !important;
   text-align: left !important;
 }
+.ion-content-absolute-with-footer {
+  height: calc(100% - 155px);
+}
 
 .footer {
   min-height: 48px;
