@@ -40,7 +40,7 @@ describe('FileDisplayComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(FileDisplayComponent);
     component = fixture.debugElement.componentInstance;
-    filestackSpy = TestBed.get(FilestackService);
+    filestackSpy = TestBed.inject(FilestackService) as jasmine.SpyObj<FilestackService>;
   });
 
   it('should create', () => {
@@ -74,7 +74,7 @@ describe('FileDisplayComponent', () => {
       component.fileType = 'image';
       fixture.detectChanges();
 
-      const imageEle: HTMLElement = fixture.nativeElement.querySelector('ion-img');
+      const imageEle: HTMLElement = fixture.nativeElement.querySelector('app-img');
       const videoEle: HTMLElement = fixture.nativeElement.querySelector('video');
       const anyEle: HTMLElement = fixture.nativeElement.querySelector('div');
       expect(imageEle).toBeTruthy();
@@ -86,7 +86,7 @@ describe('FileDisplayComponent', () => {
       component.fileType = 'video';
       fixture.detectChanges();
 
-      const imageEle: HTMLElement = fixture.nativeElement.querySelector('ion-img');
+      const imageEle: HTMLElement = fixture.nativeElement.querySelector('app-img');
       const videoEle: HTMLElement = fixture.nativeElement.querySelector('video');
       const anyEle: HTMLElement = fixture.nativeElement.querySelector('div');
       expect(imageEle).toBeFalsy();
@@ -98,7 +98,7 @@ describe('FileDisplayComponent', () => {
       component.fileType = 'any';
       fixture.detectChanges();
 
-      const imageEle: HTMLElement = fixture.nativeElement.querySelector('ion-img');
+      const imageEle: HTMLElement = fixture.nativeElement.querySelector('app-img');
       const videoEle: HTMLElement = fixture.nativeElement.querySelector('video');
       const anyEle: HTMLElement = fixture.nativeElement.querySelector('div');
       expect(imageEle).toBeFalsy();

@@ -7,6 +7,7 @@ import { UtilsService } from '@services/utils.service';
 import { HomeService } from './home.service';
 import { NotificationService } from '@shared/notification/notification.service';
 import { EventListService } from '@app/event-list/event-list.service';
+import * as moment from 'moment';
 
 describe('HomeService', () => {
   let service: HomeService;
@@ -43,11 +44,11 @@ describe('HomeService', () => {
         },
       ]
     });
-    service = TestBed.get(HomeService);
-    requestSpy = TestBed.get(RequestService);
-    notificationSpy = TestBed.get(NotificationService);
-    eventsSpy = TestBed.get(EventListService);
-    utils = TestBed.get(UtilsService);
+    service = TestBed.inject(HomeService);
+    requestSpy = TestBed.inject(RequestService) as jasmine.SpyObj<RequestService>;
+    notificationSpy = TestBed.inject(NotificationService) as jasmine.SpyObj<NotificationService>;
+    eventsSpy = TestBed.inject(EventListService) as jasmine.SpyObj<EventListService>;
+    utils = TestBed.inject(UtilsService);
   });
 
   it('should be created', () => {
@@ -147,11 +148,7 @@ describe('HomeService', () => {
         {
           type: 'assessment_submission_reminder',
           name: requestResponse.data[5].meta.assessment_name,
-          description: 'Overdue 3 Feb 2019 ' + new Intl.DateTimeFormat('en-GB', {
-            hour12: true,
-            hour: 'numeric',
-            minute: 'numeric'
-          }).format(new Date(requestResponse.data[5].meta.due_date + 'Z')),
+          description: `Overdue 3 Feb 2019 ${moment(new Date(requestResponse.data[5].meta.due_date + ' GMT+0000')).format('h:mm a')}`,
           time: '2 Feb',
           meta: requestResponse.data[5].meta
         }

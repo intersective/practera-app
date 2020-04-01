@@ -52,9 +52,9 @@ describe('ContactNumberFormComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(ContactNumberFormComponent);
     component = fixture.componentInstance;
-    storageSpy = TestBed.get(BrowserStorageService);
-    notificationSpy = TestBed.get(NotificationService);
-    settingSpy = TestBed.get(SettingService);
+    storageSpy = TestBed.inject(BrowserStorageService);
+    notificationSpy = TestBed.inject(NotificationService);
+    settingSpy = TestBed.inject(SettingService);
     fixture.detectChanges();
   });
 
@@ -154,7 +154,7 @@ describe('ContactNumberFormComponent', () => {
       component.activeCountryModelInfo.countryCode = '10';
 
       component.updateContactNumber();
-      expect(notificationSpy.presentToast).toHaveBeenCalledWith('Invalid contact number', false);
+      expect(notificationSpy.presentToast).toHaveBeenCalledWith('Invalid contact number');
     });
 
     it('should update contact number (US)', () => {

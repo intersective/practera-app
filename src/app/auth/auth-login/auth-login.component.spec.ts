@@ -20,7 +20,7 @@ describe('AuthLoginComponent', () => {
   let notificationSpy: jasmine.SpyObj<NotificationService>;
   let routerSpy: jasmine.SpyObj<Router>;
   let switcherServiceSpy: jasmine.SpyObj<SwitcherService>;
-  let newRelicSpy: jasmine.SpyObj<MockNewRelicService>;
+  let newRelicSpy: jasmine.SpyObj<NewRelicService>;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -59,11 +59,11 @@ describe('AuthLoginComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(AuthLoginComponent);
     component = fixture.componentInstance;
-    serviceSpy = TestBed.get(AuthService);
-    notificationSpy = TestBed.get(NotificationService);
-    routerSpy = TestBed.get(Router);
-    switcherServiceSpy = TestBed.get(SwitcherService);
-    newRelicSpy = TestBed.get(NewRelicService);
+    serviceSpy = TestBed.inject(AuthService) as jasmine.SpyObj<AuthService>;
+    notificationSpy = TestBed.inject(NotificationService) as jasmine.SpyObj<NotificationService>;
+    routerSpy = TestBed.inject(Router) as jasmine.SpyObj<Router>;
+    switcherServiceSpy = TestBed.inject(SwitcherService) as jasmine.SpyObj<SwitcherService>;
+    newRelicSpy = TestBed.inject(NewRelicService) as jasmine.SpyObj<NewRelicService>;
   });
 
   it('should create', () => {

@@ -101,7 +101,7 @@ export class AuthResetPasswordComponent implements OnInit {
             });
           }
         }
-        return this.notificationService.presentToast('Error updating password.Try again', false);
+        return this.notificationService.presentToast('Error updating password.Try again');
       }
     );
   }

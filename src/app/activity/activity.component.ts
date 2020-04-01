@@ -2,7 +2,7 @@ import { Component, Input, NgZone, Output, EventEmitter } from '@angular/core';
 import { Router } from '@angular/router';
 import { Observable, of, forkJoin, Subscription } from 'rxjs';
 import { catchError } from 'rxjs/operators';
-import { ActivityService, Activity, OverviewActivity, Task } from './activity.service';
+import { ActivityService, Activity, Task } from './activity.service';
 import { UtilsService } from '../services/utils.service';
 import { NotificationService } from '@shared/notification/notification.service';
 import { BrowserStorageService } from '@services/storage.service';
@@ -192,17 +192,31 @@ export class ActivityComponent {
     return this.router.navigate(['app', 'events', {activity_id: this.id, event_id: event.id}]);
   }
 
+  /**
+   * Manually change the status of a task
+   * @param type   The type of the task('Assessment', 'Topic')
+   * @param id     The id of the task
+   * @param status The status
+   */
+  changeTaskStatus(type: string, id: number, status: string) {
+    const index = this.activity.tasks.findIndex(t => t.id === +id && t.type === type);
+    if (index < 0) {
+      return;
+    }
+    this.activity.tasks[index].status = status;
+  }
+
   /******************
     Used for task layout
   ******************/
   taskLeadingIcon(task) {
     switch (task.type) {
       case 'Locked':
-        return 'lock';
+        return 'lock-closed-outline';
       case 'Topic':
-        return 'list-box';
+        return 'reader-outline';
       case 'Assessment':
-        return 'clipboard';
+        return 'clipboard-outline';
     }
   }
 
@@ -221,24 +235,18 @@ export class ActivityComponent {
 
   taskEndingIcon(task) {
     if (task.isLocked) {
-      return 'md-lock';
+      return 'lock-closed-outline';
     }
     switch (task.status) {
       case 'done':
         return 'checkmark';
       case 'pending review':
-        return 'hourglass';
+        return 'hourglass-outline';
       case 'feedback available':
       case 'in progress':
       default:
         return 'arrow-forward';
     }
-  }
-
-  getNextTask() {
-    this.activityService.getNextTask(this.id, this.currentTask.type, this.currentTask.id).subscribe(res => {
-      console.log(res);
-    });
   }
 
 }
