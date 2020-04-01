@@ -39,7 +39,7 @@
     <ion-radio-group [value]="submission.answer" #answerEle (ionChange)="onChange(answerEle.value)">
       <ion-item class="choice-item" *ngFor="let choice of question.choices; let i = index" [lines]="i == question.choices.length - 1 ? 'none' : ''">
         <ion-label class="white-space-normal subtitle-1">{{ choice.name }}</ion-label>
-        <ion-radio [value]="choice.id" mode="md"></ion-radio>
+        <ion-radio [value]="choice.id" mode="md" [disabled]="control.disabled"></ion-radio>
       </ion-item>
     </ion-radio-group>
   </ion-list>
@@ -53,9 +53,17 @@
       </ion-list-header>
       <ion-item class="choice-item" *ngFor="let choice of question.choices; let i = index" [lines]="i == question.choices.length - 1 ? 'none' : ''">
         <ion-label class="white-space-normal subtitle-1">{{ choice.name }}</ion-label>
-        <ion-radio [value]="choice.id" mode="md"></ion-radio>
+        <ion-radio [value]="choice.id" mode="md" [disabled]="control.disabled"></ion-radio>
       </ion-item>
     </ion-radio-group>
   </ion-list>
-  <ion-textarea *ngIf="question.canComment && submission.answer" class="background-white" #commentEle [(ngModel)]="comment" margin-top rows="4" (ngModelChange)="onChange(comment, 'comment')" placeholder="Please put your feedback here"></ion-textarea>
+  <ion-textarea
+    *ngIf="question.canComment && submission.answer"
+    class="background-white ion-margin-top"
+    #commentEle
+    [(ngModel)]="comment"
+    rows="4"
+    (ngModelChange)="onChange(comment, 'comment')"
+    placeholder="Please put your feedback here"
+    [disabled]="control.disabled"></ion-textarea>
 </ng-container>

@@ -113,13 +113,13 @@ export class SwitcherService {
     });
 
     this.sharedService.onPageLoad();
-    return forkJoin(
+    return forkJoin([
       this.getNewJwt(),
       this.getTeamInfo(),
       this.getMyInfo(),
       this.getReviews(),
       this.getEvents()
-    );
+    ]);
   }
 
   getTeamInfo(): Observable<any> {
@@ -145,7 +145,7 @@ export class SwitcherService {
    * @name getMyInfo
    * @description get user info
    */
-  getMyInfo(): Observable<any> {
+  getMyInfo():  Observable<any> {
     return this.request.get(api.me).pipe(map(response => {
       if (response.data) {
         if (!this.utils.has(response, 'data.User')) {

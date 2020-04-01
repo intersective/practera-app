@@ -51,15 +51,15 @@ describe('SwitcherService', () => {
             },
           ]
       });
-      service = TestBed.get(SwitcherService);
-      requestSpy = TestBed.get(RequestService);
-      utils = TestBed.get(UtilsService);
-      notificationSpy = TestBed.get(NotificationService);
-      storageSpy = TestBed.get(BrowserStorageService);
-      eventSpy = TestBed.get(EventListService);
-      reviewSpy = TestBed.get(ReviewListService);
-      pusherSpy = TestBed.get(PusherService);
-      sharedSpy = TestBed.get(SharedService);
+      service = TestBed.inject(SwitcherService);
+      requestSpy = TestBed.inject(RequestService) as jasmine.SpyObj<RequestService>;
+      utils = TestBed.inject(UtilsService);
+      notificationSpy = TestBed.inject(NotificationService) as jasmine.SpyObj<NotificationService>;
+      storageSpy = TestBed.inject(BrowserStorageService) as jasmine.SpyObj<BrowserStorageService>;
+      eventSpy = TestBed.inject(EventListService) as jasmine.SpyObj<EventListService>;
+      reviewSpy = TestBed.inject(ReviewListService) as jasmine.SpyObj<ReviewListService>;
+      pusherSpy = TestBed.inject(PusherService) as jasmine.SpyObj<PusherService>;
+      sharedSpy = TestBed.inject(SharedService) as jasmine.SpyObj<SharedService>;
 
       requestSpy.get = jasmine.createSpy('get').and.returnValue(new Observable());
     });
@@ -201,6 +201,15 @@ describe('SwitcherService', () => {
 
     describe('getTeamInfo()', () => {
       it('should make API request to `api/teams.json`', () => {
+        requestSpy.get.and.returnValue(of({
+          success: true,
+          data: {
+            Teams: [
+              { id: 1 }
+            ]
+          }
+        }));
+
         service.getTeamInfo().subscribe();
         expect(requestSpy.get).toHaveBeenCalledWith('api/teams.json');
       });
@@ -208,6 +217,21 @@ describe('SwitcherService', () => {
 
     describe('getMyInfo()', () => {
       it('should make API request to `api/users.json`', () => {
+        requestSpy.get.and.returnValue(of({
+          data: {
+            User: {
+              name: 'name',
+              contactNumber: 'contact_number',
+              email: 'email',
+              role: 'role',
+              image: 'image',
+              linkedinConnected: 'linkedinConnected',
+              linkedinUrl: 'linkedin_url',
+              userHash: 'userhash',
+            }
+          }
+        }));
+
         service.getMyInfo().subscribe(res => {
           expect(requestSpy.get).toHaveBeenCalledWith('api/users.json');
         });

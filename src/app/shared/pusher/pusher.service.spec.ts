@@ -1,6 +1,6 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { async, ComponentFixture, inject, TestBed, tick, fakeAsync } from '@angular/core/testing';
-import { Observable, of, pipe } from 'rxjs';
+import { async, ComponentFixture, inject, TestBed, tick, fakeAsync, flushMicrotasks } from '@angular/core/testing';
+import { Observable, of, pipe, Subject } from 'rxjs';
 import { PusherService, PusherConfig } from '@shared/pusher/pusher.service';
 import { BrowserStorageService } from '@services/storage.service';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
@@ -79,6 +79,7 @@ describe('PusherService', async () => {
   let service: PusherService;
   let requestSpy: jasmine.SpyObj<RequestService>;
   let utilSpy: UtilsService;
+  let storageSpy: BrowserStorageService;
   let mockBackend: HttpTestingController;
   // let pusherLibSpy: any;
 
@@ -131,10 +132,11 @@ describe('PusherService', async () => {
       ],
     }).compileComponents();
 
-    mockBackend = TestBed.get(HttpTestingController);
-    service = TestBed.get(PusherService);
-    requestSpy = TestBed.get(RequestService);
-    utilSpy = TestBed.get(UtilsService);
+    mockBackend = TestBed.inject(HttpTestingController);
+    service = TestBed.inject(PusherService);
+    requestSpy = TestBed.inject(RequestService) as jasmine.SpyObj<RequestService>;
+    utilSpy = TestBed.inject(UtilsService);
+    storageSpy = TestBed.inject(BrowserStorageService);
   });
 
   it('should create', () => {
@@ -221,6 +223,85 @@ describe('PusherService', async () => {
     });
   });
 
+  describe('private _subscribeChannels()', () => {
+    beforeEach(() => {
+      environment.env = 'test';
+      service['pusher'] = new PusherLib();
+      // spyOn(service, 'initialise').and.returnValue(Promise.resolve(service['pusher']));
+      const subscribed = [];
+
+      function subscribedEvent(title) {
+
+        return jasmine.createSpy('bind').and.returnValue(true);
+
+        /*return (name, callback) => {
+          console.log('getEvent', name);
+          this.eventTitle = name;
+          expect(callback).toBeTruthy();
+          return this;
+        };*/
+      }
+      const binder = function (name, callback) {
+        return spyOn(this, 'bind').and.callFake(() => {
+          return true;
+        });
+      };
+
+      service['pusher'].allChannels = jasmine.createSpy('allChannels').and.returnValue(subscribed);
+
+      spyOn(service['pusher'], 'subscribe').and.callFake(name => {
+        subscribed.push(name);
+        return binder;
+      });
+
+    });
+
+    it('should subscribe to channels (none no-mentor)', fakeAsync(() => {
+      const channels = [
+        {
+          channel: `private-${environment.env}-team-`,
+        },
+        {
+          channel: `private-${environment.env}-notification-`,
+        },
+        {
+          channel: `presence-${environment.env}-team-`,
+        },
+      ];
+
+      requestSpy.get.and.returnValue(of({
+        data: channels
+      }));
+
+      service.getChannels().subscribe();
+
+      flushMicrotasks();
+
+      expect(service['channels'].team).toBeTruthy();
+      expect(service['channels'].teamNoMentor).toBeFalsy();
+      expect(service['channels'].notification).toBeTruthy();
+      expect(service['channels'].presence).toBeTruthy();
+    }));
+
+    it('should subscribe to no-mentor channel', fakeAsync(() => {
+      requestSpy.get.and.returnValue(of({
+        data: [
+          {
+            channel: `private-${environment.env}-team-nomentor-`,
+          },
+        ]
+      }));
+
+      service.getChannels().subscribe();
+
+      flushMicrotasks();
+      expect(service['channels'].teamNoMentor).toBeTruthy();
+      expect(service['channels'].team).toBeNull();
+      expect(service['channels'].notification).toBeNull();
+      expect(service['channels'].presence).toBeNull();
+    }));
+  });
+
   describe('initialise()', () => {
     beforeEach(() => {
       service['initialisePusher'] = jasmine.createSpy('initialisePusher').and.returnValue(new Promise(res => {
@@ -234,13 +315,53 @@ describe('PusherService', async () => {
       service['pusher'] = undefined;
     });
 
-    it('should initialise pusher', fakeAsync(async () => {
+    it('should initialise pusher', fakeAsync(() => {
       expect(service['pusher']).not.toBeTruthy();
       expect(service['apiurl']).toBe(PUSHER_APIURL);
 
-      const res = await service.initialise();
-      tick();
+      service.initialise().then();
+      flushMicrotasks();
       expect(service['pusher']).toBeTruthy();
+    }));
+
+    it('should unsubscribe with option {unsubscribe: true}', fakeAsync(() => {
+      spyOn(service, 'unsubscribeChannels');
+      service.initialise({unsubscribe: true}).then();
+      flushMicrotasks();
+
+      expect(service.unsubscribeChannels).toHaveBeenCalled();
+      expect(service['typingAction']).toEqual(new Subject<any>());
+    }));
+  });
+
+  describe('initialisePusher()', () => {
+    it('should skip initiation if storage is empty apikey or timelineid', fakeAsync(() => {
+      service['pusher'] = undefined;
+
+      storageSpy.getUser = jasmine.createSpy('getUser').and.returnValue({
+        apikey: null,
+        timelineId: null,
+      });
+
+      let result;
+      service['initialisePusher']().then(res => {
+        result = res;
+      });
+
+      flushMicrotasks();
+      expect(result).toEqual(service['pusher']);
+    }));
+
+    it('should return instantiated pusher is there is existing one', fakeAsync(() => {
+      const instantiatedpusher = new PusherLib();
+      service['pusher'] = instantiatedpusher;
+      let result;
+      service['initialisePusher']().then(res => {
+        result = res;
+      });
+      flushMicrotasks();
+
+      expect(typeof result).toEqual(typeof instantiatedpusher);
     }));
   });
 
@@ -327,8 +448,17 @@ describe('PusherService', async () => {
   });
 
   describe('typing message', () => {
-    it('should trigger triggerTyping()', () => {});
-    it('should trigger initiateTypingEvent()', () => {});
+    it('should trigger triggerTyping()', () => {
+      spyOn(service['typingAction'], 'next').and.returnValue(true);
+      service.triggerTyping('test', true);
+      expect(service['typingAction'].next).toHaveBeenCalledTimes(1);
+    });
+
+    it('should trigger initiateTypingEvent()', () => {
+      spyOn(service['typingAction'], 'pipe').and.returnValue(true);
+      service.initiateTypingEvent();
+      expect(service['typingAction'].pipe).toHaveBeenCalledTimes(1);
+    });
   });
 
 });

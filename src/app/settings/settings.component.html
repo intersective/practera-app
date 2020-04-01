@@ -35,17 +35,17 @@
     <div class="ion-margin-top support-mobile subtitle-1">
       <ion-label class="subtitle-2 gray-2">Support</ion-label>
       <ion-item class="no-bg" (click)="mailTo()" lines="none">
-        <ion-icon class="ion-padding-end" color="primary" name="mail"></ion-icon>
+        <ion-icon class="ion-padding-end" color="primary" name="mail-outline"></ion-icon>
         Email Help
-        <ion-icon ios="ios-arrow-forward" md="ios-arrow-forward" color="medium" slot="end"></ion-icon>
+        <ion-icon name="arrow-forward" color="medium" slot="end"></ion-icon>
       </ion-item>
       <ion-item class="no-bg" (click)="openLink()" lines="none">
-        <ion-icon class="ion-padding-end" color="primary" name="clipboard"></ion-icon>
+        <ion-icon class="ion-padding-end" color="primary" name="clipboard-outline"></ion-icon>
         Terms of Use
-        <ion-icon ios="ios-arrow-forward" md="ios-arrow-forward" color="medium" slot="end"></ion-icon>
+        <ion-icon name="arrow-forward" color="medium" slot="end"></ion-icon>
       </ion-item>
       <ion-item id="item-logout" class="no-bg" (click)="logout()" lines="none">
-        <ion-icon class="ion-padding-end" color="primary" name="log-out"></ion-icon>
+        <ion-icon class="ion-padding-end" color="primary" name="log-out-outline"></ion-icon>
         Logout
       </ion-item>
     </div>
@@ -75,15 +75,15 @@
           </div>
           <div class="ion-margin-top subtitle-1">
             <ion-item class="no-bg" (click)="mailTo()" lines="none">
-              <ion-icon class="ion-padding-end" color="primary" name="mail"></ion-icon>
+              <ion-icon class="ion-padding-end" color="primary" name="mail-outline"></ion-icon>
               Email Help
             </ion-item>
             <ion-item class="no-bg" (click)="openLink()" lines="none">
-              <ion-icon class="ion-padding-end" color="primary" name="clipboard"></ion-icon>
+              <ion-icon class="ion-padding-end" color="primary" name="clipboard-outline"></ion-icon>
               Terms of Use
             </ion-item>
             <ion-item id="item-logout" class="no-bg" (click)="logout()" lines="none">
-              <ion-icon class="ion-padding-end" color="primary" name="log-out"></ion-icon>
+              <ion-icon class="ion-padding-end" color="primary" name="log-out-outline"></ion-icon>
               Logout
             </ion-item>
           </div>
@@ -107,10 +107,10 @@
                 </ion-card-content>
               </ion-card>
             </ion-col>
-            <ion-col size="5" *ngIf="isInMultiplePrograms()" class="ion-no-padding switch-card-container">
+            <ion-col size="5" *ngIf="isInMultiplePrograms() || returnLtiUrl" class="ion-no-padding switch-card-container">
               <ion-card class="practera-card experience-card" (click)="switchProgram()">
                 <div class="div-icon-swap">
-                  <ion-icon name="swap" color="primary"></ion-icon>
+                  <ion-icon name="swap-horizontal" color="primary"></ion-icon>
                 </div>
                 <ion-card-content>
                   <clickable-item color="light" [lines]="'none'" [isSwitcherCard]="true">

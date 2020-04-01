@@ -46,8 +46,8 @@ describe('ReviewRatingComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(ReviewRatingComponent);
     component = fixture.componentInstance;
-    serviceSpy = TestBed.get(ReviewRatingService);
-    routerSpy = TestBed.get(Router);
+    serviceSpy = TestBed.inject(ReviewRatingService) as jasmine.SpyObj<ReviewRatingService>;
+    routerSpy = TestBed.inject(Router) as jasmine.SpyObj<Router>;
   });
 
   it('should create', () => {

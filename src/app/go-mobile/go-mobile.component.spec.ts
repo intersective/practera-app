@@ -64,9 +64,9 @@ describe('GoMobileComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(GoMobileComponent);
     component = fixture.debugElement.componentInstance;
-    newRelicSpy = TestBed.get(NewRelicService);
-    goMobileSpy = TestBed.get(GoMobileService);
-    notificationSpy = TestBed.get(NotificationService);
+    newRelicSpy = TestBed.inject(NewRelicService);
+    goMobileSpy = TestBed.inject(GoMobileService);
+    notificationSpy = TestBed.inject(NotificationService);
   });
 
   it('should created', () => {
@@ -76,8 +76,8 @@ describe('GoMobileComponent', () => {
   describe('ngOnInit()', () => {
     it('should pre-configure profile and locale standard', () => {
       const testContactNumber = '0123456789'; // same as mocked user in testing/mocked.service;
-
       expect(component.profile.contactNumber).toEqual('');
+
       component.ngOnInit();
       expect(newRelicSpy.setPageViewName).toHaveBeenCalledWith('go-mobile');
       expect(component.profile.contactNumber).toEqual(testContactNumber);
@@ -104,7 +104,7 @@ describe('GoMobileComponent', () => {
     it('should prevent bad contact number format', () => {
       component.profile.contactNumber = '0123456789'; // mock bad format
       component.submit();
-      expect(notificationSpy.presentToast).toHaveBeenCalledWith('Invalid contact number', false);
+      expect(notificationSpy.presentToast).toHaveBeenCalledWith('Invalid contact number');
     });
 
     it('should submit to update profile', () => {
