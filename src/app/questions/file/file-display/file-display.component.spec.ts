@@ -165,7 +165,6 @@ describe('FileDisplayComponent', () => {
       const quarantine = {
         data: 'quarantine_test_data',
       };
-
       filestackSpy.getWorkflowStatus.and.returnValue(Promise.resolve([
         {
           results: {
@@ -173,7 +172,7 @@ describe('FileDisplayComponent', () => {
             quarantine,
           },
           status: 'FINISHED',
-        },
+      },
       ]));
 
       const jsonData = { just: 'first test' };
@@ -181,10 +180,15 @@ describe('FileDisplayComponent', () => {
         and: 'second test',
         workflows: true,
       }};
-
+      component.video = {
+        nativeElement: {
+          load: () => jasmine.createSpy()
+        }
+      };
       component.ngOnChanges({
         file: new OnChangedValues(jsonData, newJsonData),
       });
+
       flushMicrotasks();
 
       expect(filestackSpy.getWorkflowStatus).toHaveBeenCalledWith(newJsonData.workflows);
