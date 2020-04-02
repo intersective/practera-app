@@ -1,5 +1,6 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed, fakeAsync, flushMicrotasks, tick } from '@angular/core/testing';
+import { Observable, of, pipe, throwError } from 'rxjs';
 import { HttpTestingController, HttpClientTestingModule } from '@angular/common/http/testing';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
 import { SwitcherProgramComponent } from './switcher-program.component';
@@ -66,15 +67,15 @@ describe('SwitcherProgramComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  describe('ngOnInit()', () => {
+  describe('onEnter()', () => {
     it('should instantiate with API program list', () => {
       const programs = ProgramFixture;
       programs.forEach((p, i) => {
         programs[i].progress = (i + 1) / 10,
         programs[i].todoItems = (i + 1);
       });
-      spyOn(switcherSpy.getPrograms(), 'subscribe');
-      component.ngOnInit();
+      switcherSpy.getPrograms.and.returnValue(of(programs));
+      component.onEnter();
 
       expect(newrelicSpy.setPageViewName).toHaveBeenCalledWith('program switcher');
       expect(switcherSpy.getPrograms).toHaveBeenCalled();
