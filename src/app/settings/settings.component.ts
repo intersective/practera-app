@@ -89,7 +89,7 @@ export class SettingsComponent extends RouterEnter {
 
   switchProgram() {
     this.newRelic.actionText('browse to program switcher');
-    this.router.navigate(['/switcher']);
+    this.router.navigate(['switcher', 'switcher-program']);
   }
 
   isInMultiplePrograms() {
