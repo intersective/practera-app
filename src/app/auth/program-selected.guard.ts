@@ -21,7 +21,7 @@ export class ProgramSelectedGuard implements CanActivate {
     }
 
     // navigate to not found page
-    this.router.navigate(['switcher']);
+    this.router.navigate(['switcher', 'switcher-program']);
     return false;
   }
 
