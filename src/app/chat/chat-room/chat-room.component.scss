@@ -209,15 +209,27 @@ $message-body-size: 224px;
   width: 100% !important;
   text-align: left !important;
 }
+.ion-content-absolute-with-footer {
+  height: calc(100% - 155px);
+}
 
 .footer {
   min-height: 48px;
   padding: 0;
 
   &.ion-footer-absolute {
-    height: 48px;
+    height: 96px;
     ion-grid {
       padding: 0;
+      min-height: 96px;
+    }
+  }
+
+  &.focus {
+    min-height: 96px;
+    ion-grid {
+      padding: 0;
+      min-height: 96px;
     }
   }
 

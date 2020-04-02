@@ -30,6 +30,7 @@ export interface User {
   enrolment?: any;
   hasEvents?: boolean;
   hasReviews?: boolean;
+  LtiReturnUrl?: string;
 }
 
 export interface Config {
@@ -92,7 +93,6 @@ export class BrowserStorageService {
     this.set('config', Object.assign(this.getConfig(), config));
     return true;
   }
-
   /*********
     'bookedEventActivityIds' records the single booking activity ids that event has been booked for current user
   **********/
