@@ -66,7 +66,7 @@ export class AuthDirectLoginComponent implements OnInit {
     this.utils.clearCache();
     if (!redirect || !timelineId) {
       // if there's no redirection or timeline id
-      return this._saveOrRedirect(['switcher'], redirectLater);
+      return this._saveOrRedirect(['switcher', 'switcher-program'], redirectLater);
     }
     if ( this.route.snapshot.paramMap.has('return_url')) {
       this.storage.setUser({
@@ -80,7 +80,7 @@ export class AuthDirectLoginComponent implements OnInit {
       });
       if (this.utils.isEmpty(program)) {
         // if the timeline id is not found
-        return this._saveOrRedirect(['switcher']);
+        return this._saveOrRedirect(['switcher', 'switcher-program']);
       }
       // switch to the program
       await this.switcherService.switchProgram(program).toPromise();
