@@ -1,6 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { Injectable, Inject } from '@angular/core';
+import { RouterEnter } from '@services/router-enter.service';
 import { SwitcherService, ProgramObj } from '../switcher.service';
 import { LoadingController } from '@ionic/angular';
 import { environment } from '@environments/environment';
@@ -19,7 +20,8 @@ import { UtilsService } from '@services/utils.service';
   styleUrls: ['switcher-program.component.scss']
 })
 
-export class SwitcherProgramComponent implements OnInit {
+export class SwitcherProgramComponent extends RouterEnter {
+  routeUrl = '/switcher/switcher-program';
   programs: Array<ProgramObj>;
 
   constructor(
@@ -30,9 +32,9 @@ export class SwitcherProgramComponent implements OnInit {
     private newRelic: NewRelicService,
     private notificationService: NotificationService,
     private utils: UtilsService
-  ) {}
+  ) { super(router); }
 
-  ngOnInit() {
+  onEnter() {
     this.newRelic.setPageViewName('program switcher');
     this.switcherService.getPrograms()
       .subscribe(programs => {
