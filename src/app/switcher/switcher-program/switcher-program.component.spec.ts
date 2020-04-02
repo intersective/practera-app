@@ -66,7 +66,7 @@ describe('SwitcherProgramComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  describe('ngOnInit()', () => {
+  describe('onEnter()', () => {
     it('should instantiate with API program list', () => {
       const programs = ProgramFixture;
       programs.forEach((p, i) => {
@@ -74,7 +74,7 @@ describe('SwitcherProgramComponent', () => {
         programs[i].todoItems = (i + 1);
       });
       spyOn(switcherSpy.getPrograms(), 'subscribe');
-      component.ngOnInit();
+      component.onEnter();
 
       expect(newrelicSpy.setPageViewName).toHaveBeenCalledWith('program switcher');
       expect(switcherSpy.getPrograms).toHaveBeenCalled();
