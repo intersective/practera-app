@@ -39,6 +39,9 @@ export class ChatRoomComponent extends RouterEnter {
   loadingMesageSend = false;
   isTyping = false;
   typingMessage: string;
+  // this use to show/hide bottom section of text field which have attachment buttons and send button,
+  // when user typing text messages
+  showBottomAttachmentButtons = false;
 
   constructor(
     private chatService: ChatService,
@@ -131,6 +134,7 @@ export class ChatRoomComponent extends RouterEnter {
     this.loadingMesageSend = false;
     this.isTyping = false;
     this.typingMessage = '';
+    this.showBottomAttachmentButtons = false;
   }
 
   private _validateRouteParams() {
@@ -297,9 +301,11 @@ export class ChatRoomComponent extends RouterEnter {
         this.messageList.push(response.data);
         this.loadingMesageSend = false;
         this._scrollToBottom();
+        this.showBottomAttachmentButtons = false;
       },
       error => {
         this.loadingMesageSend = false;
+        this.showBottomAttachmentButtons = false;
       }
     );
   }
@@ -457,6 +463,12 @@ export class ChatRoomComponent extends RouterEnter {
    * Trigger typing event when user is typing
    */
   typing() {
+    if (!this.utils.isEmpty(this.message)) {
+      this.showBottomAttachmentButtons = true;
+      this._scrollToBottom();
+    } else {
+      this.showBottomAttachmentButtons = false;
+    }
     this.pusherService.triggerTyping(
       {
         from: this.pusherService.getMyPresenceChannelId(),
@@ -529,6 +541,7 @@ export class ChatRoomComponent extends RouterEnter {
 
     if (this.filestackService.getFileTypes(type)) {
       options.accept = this.filestackService.getFileTypes(type);
+      options.storeTo = this.filestackService.getS3Config(type);
     }
     await this.filestackService.open(
       options,
@@ -572,10 +585,12 @@ export class ChatRoomComponent extends RouterEnter {
 
         this.messageList.push(message);
         this.loadingMesageSend = false;
+        this.showBottomAttachmentButtons = false;
         this._scrollToBottom();
       },
       error => {
         this.loadingMesageSend = false;
+        this.showBottomAttachmentButtons = false;
         // error feedback to user for failed upload
       }
     );
