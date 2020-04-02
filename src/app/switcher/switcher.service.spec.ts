@@ -117,7 +117,7 @@ describe('SwitcherService', () => {
           result = data;
         });
         flushMicrotasks();
-        expect(result).toEqual(['switcher']);
+        expect(result).toEqual(['switcher', 'switcher-program']);
     }));
 
     it('should return [app, home] if programs is Array with multiple program objects ', fakeAsync(() => {

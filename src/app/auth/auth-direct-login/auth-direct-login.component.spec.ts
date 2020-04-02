@@ -142,7 +142,7 @@ describe('AuthDirectLoginComponent', () => {
       }));
       it('program switcher page if timeline id is not passed in', () => {
         switchProgram = false;
-        redirect = ['switcher'];
+        redirect = ['switcher', 'switcher-program'];
       });
       it('program switcher page if timeline id is not in programs', () => {
         tmpParams.redirect = 'home';
@@ -150,7 +150,7 @@ describe('AuthDirectLoginComponent', () => {
           {timeline: {id: 2}}
         ]);
         switchProgram = false;
-        redirect = ['switcher'];
+        redirect = ['switcher', 'switcher-program'];
       });
       it('home page', () => {
         tmpParams.redirect = 'home';

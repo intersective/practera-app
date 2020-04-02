@@ -233,7 +233,7 @@ export class SwitcherService {
     if (!this.utils.isEmpty(programs)) {
       // Array with multiple program objects -> [{},{},{},{}]
       if (Array.isArray(programs) && !this.checkIsOneProgram(programs)) {
-        return ['switcher'];
+        return ['switcher', 'switcher-program'];
       // Array with one program object -> [{}]
       } else if (Array.isArray(programs) && this.checkIsOneProgram(programs)) {
         await this.switchProgram(programs[0]).toPromise();
