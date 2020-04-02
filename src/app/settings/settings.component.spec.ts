@@ -111,7 +111,7 @@ describe('SettingsComponent', () => {
 
   it('should navigate to switcher page', () => {
     component.switchProgram();
-    expect(routerSpy.navigate.calls.first().args[0]).toEqual(['/switcher']);
+    expect(routerSpy.navigate.calls.first().args[0]).toEqual(['switcher', 'switcher-program']);
   });
 
   it('should allow access to T&C file', () => {
