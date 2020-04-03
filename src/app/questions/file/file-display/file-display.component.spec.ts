@@ -185,6 +185,7 @@ describe('FileDisplayComponent', () => {
           load: () => jasmine.createSpy()
         }
       };
+      
       component.ngOnChanges({
         file: new OnChangedValues(jsonData, newJsonData),
       });
