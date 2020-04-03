@@ -1,11 +1,13 @@
 <ion-split-pane *ngIf="!utils.isMobile()" contentId="main-content" when="xs">
-  <app-activity
-    #activity
-    [id]="activityId"
-    [currentTask]="currentTask()"
-    (navigate)="goto($event)"
-    (tasksReady)="goToFirstTask($event)"
-  ></app-activity>
+  <ion-menu contentId="main-content">
+    <app-activity
+      #activity
+      [id]="activityId"
+      [currentTask]="currentTask()"
+      (navigate)="goto($event)"
+      (tasksReady)="goToFirstTask($event)"
+    ></app-activity>
+  </ion-menu>
   <ion-content color="light" id="main-content">
     <app-topic
       #topic
