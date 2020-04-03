@@ -1,9 +1,11 @@
 <ion-split-pane *ngIf="!utils.isMobile()" contentId="main-content" when="xs">
-  <app-review-list
-    #reviewList
-    [submissionId]="submissionId"
-    (navigate)="goto($event)"
-    ></app-review-list>
+  <ion-menu contentId="main-content">
+    <app-review-list
+      #reviewList
+      [submissionId]="submissionId"
+      (navigate)="goto($event)"
+      ></app-review-list>
+    </ion-menu>
   <ion-content color="light" id="main-content">
     <app-assessment
       #assessment
