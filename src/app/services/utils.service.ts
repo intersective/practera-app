@@ -342,19 +342,23 @@ export class UtilsService {
    * Z for timezone (UTC) delimiter (+0000)
    */
   iso8601Formatter(time: Date | string) {
-    // add "T" between date and time, so that it works on Safari
-    time = time.replace(' ', 'T');
-    // This doesn't work in Safari
-    // if (typeof time === 'string') {
-    //   if (!time.includes('GMT') && !(time.toLowerCase()).includes('z')) {
-    //     time = `${time} GMT+0000`;
-    //   }
-
-    //   return (new Date(time)).toISOString();
-    // }
-
-    // return time.toISOString();
-    // add "Z" to indicate that it is UTC time, it will automatically convert to local time
-    return time + 'Z';
+    try {
+      if (typeof time === 'string') {
+        if (!time.includes('GMT') && !(time.toLowerCase()).includes('z')) {
+          time = `${time} GMT+0000`;
+        }
+        return (new Date(time)).toISOString();
+      }
+      return time.toISOString();
+    } catch (err) {
+      // in case the above doesn't work on Safari
+      if (typeof time === 'string') {
+        // add "T" between date and time, so that it works on Safari
+        time = time.replace(' ', 'T');
+        // add "Z" to indicate that it is UTC time, it will automatically convert to local time
+        return time + 'Z';
+      }
+      return time.toISOString();
+    }
   }
 }
