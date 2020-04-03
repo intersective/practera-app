@@ -1,6 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { Injectable, Inject } from '@angular/core';
+import { RouterEnter } from '@services/router-enter.service';
 import { SwitcherService, ProgramObj } from '../switcher.service';
 import { LoadingController } from '@ionic/angular';
 import { environment } from '@environments/environment';
@@ -19,7 +20,8 @@ import { UtilsService } from '@services/utils.service';
   styleUrls: ['switcher-program.component.scss']
 })
 
-export class SwitcherProgramComponent implements OnInit {
+export class SwitcherProgramComponent extends RouterEnter {
+  routeUrl = '/switcher/switcher-program';
   programs: Array<ProgramObj>;
 
   constructor(
@@ -30,14 +32,26 @@ export class SwitcherProgramComponent implements OnInit {
     private newRelic: NewRelicService,
     private notificationService: NotificationService,
     private utils: UtilsService
-  ) {}
+  ) { super(router); }
 
-  ngOnInit() {
+  onEnter() {
     this.newRelic.setPageViewName('program switcher');
     this.switcherService.getPrograms()
       .subscribe(programs => {
         this.programs = programs;
+        this._getProgresses(programs);
       });
+  }
+
+  private _getProgresses(programs) {
+    const projectIds = programs.map(v => v.project.id);
+    this.switcherService.getProgresses(projectIds).subscribe(res => {
+      res.forEach(progress => {
+        const i = this.programs.findIndex(program => program.project.id === progress.id);
+        this.programs[i].progress = progress.progress;
+        this.programs[i].todoItems = progress.todoItems;
+      });
+    });
   }
 
   async switch(index): Promise<void> {
