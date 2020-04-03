@@ -346,7 +346,7 @@ export class UtilsService {
       if (typeof time === 'string') {
         let tmpTime = time;
         if (!time.includes('GMT') && !(time.toLowerCase()).includes('z')) {
-          tmpTime += 'GMT+0000';
+          tmpTime += ' GMT+0000';
         }
         return (new Date(tmpTime)).toISOString();
       }
