@@ -344,10 +344,11 @@ export class UtilsService {
   iso8601Formatter(time: Date | string) {
     try {
       if (typeof time === 'string') {
+        let tmpTime = time;
         if (!time.includes('GMT') && !(time.toLowerCase()).includes('z')) {
-          time = `${time} GMT+0000`;
+          tmpTime += 'GMT+0000';
         }
-        return (new Date(time)).toISOString();
+        return (new Date(tmpTime)).toISOString();
       }
       return time.toISOString();
     } catch (err) {
