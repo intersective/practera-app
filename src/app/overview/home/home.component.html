@@ -1,0 +1,90 @@
+<div class="app-home" [ngStyle]="utils.isMobile() ? {} : {padding: '1em', height: '100%'}">
+  <div class="ion-text-center ion-padding">
+    <app-circle-progress [data]="progressConfig" [type]="'large'" [loading]="loadingProgress"></app-circle-progress>
+  </div>
+
+  <ng-container *ngTemplateOutlet="badges"></ng-container>
+
+  <ng-container *ngIf="utils.isMobile(); else notificationsDesktop">
+    <ion-item lines="none" color="transparent" class="ion-no-padding">
+      <ion-label class="subtitle-2 gray-2 ion-padding-start ion-padding-end">Notifications</ion-label>
+    </ion-item>
+
+    <ng-container *ngIf="loadingTodoItems; else doneLoading">
+      <div class="margin-left-right ion-padding-bottom">
+        <app-todo-card [loading]="true" [todoItem]="false"></app-todo-card>
+      </div>
+    </ng-container>
+
+    <ng-template #doneLoading>
+      <ng-container @newLoaded *ngIf="(eventReminders || []).concat(todoItems) as notices">
+        <app-slidable
+          *ngIf="notices.length > 0; else noNotices"
+          [notifications]="notices"
+          (goto)="clickTodoItem($event)"
+        ></app-slidable>
+
+        <ng-template #noNotices>
+          <div class="margin-left-right ion-padding-bottom">
+            <ng-container *ngTemplateOutlet="noItemsTpl"></ng-container>
+          </div>
+        </ng-template>
+      </ng-container>
+    </ng-template>
+  </ng-container>
+</div>
+
+<ng-template #badges>
+  <ng-container @newLoaded *ngIf="achievements && achievements.length > 0">
+
+    <ion-label class="subtitle-2 gray-2 achievement ion-padding-start">My Badges</ion-label>
+    <ion-label class="float-right" *ngIf="achievements.length > 1">
+      <a color="primary" class="button ion-padding-end" (click)='goTo(["achievements"])'>VIEW ALL</a>
+    </ion-label>
+
+    <ion-grid class="ion-no-padding">
+      <ion-row class="ion-text-center ion-margin-bottom">
+        <ion-col *ngFor="let achievement of achievements; let i = index;" size="4" @newLoaded>
+          <achievement-badge [achievement]="achievement"></achievement-badge>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </ng-container>
+</ng-template>
+
+<ng-template #notificationsDesktop>
+  <ion-label class="subtitle-2 gray-2 ion-padding-start ion-padding-end">Notifications</ion-label>
+  <ion-list class="todo-list" lines="none">
+    <ng-container *ngIf="loadingTodoItems; else todoItemsTpl">
+      <app-todo-card class="ion-padding-bottom" [loading]="true" [todoItem]="false"></app-todo-card>
+    </ng-container>
+  </ion-list>
+</ng-template>
+
+<ng-template #todoItemsTpl>
+  <ng-container *ngFor="let event of eventReminders" @newLoaded>
+    <app-todo-card
+      [todoItem]="{
+        name: event.name,
+        description: '',
+        type: 'event',
+        time: utils.timeFormatter(event.startTime)
+      }"
+      (click)="showEventDetail(event)"
+    ></app-todo-card>
+  </ng-container>
+
+  <ng-container *ngIf="todoItems.length; else noItemsTpl">
+    <div *ngFor="let todoItem of todoItems" @newLoaded>
+      <app-todo-card
+        [todoItem]="todoItem"
+        (click)="clickTodoItem(todoItem)"
+      ></app-todo-card>
+    </div>
+  </ng-container>
+
+</ng-template>
+
+<ng-template #noItemsTpl>
+  <app-todo-card *ngIf="!eventReminders.length" [todoItem]="false"></app-todo-card>
+</ng-template>

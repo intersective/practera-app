@@ -2,7 +2,7 @@
   <ng-container [ngSwitch]="fileType">
 
     <ng-container *ngSwitchCase="'image'">
-      <ion-img [src]="file.url"></ion-img>
+      <app-img [imgSrc]="file.url"></app-img>
     </ng-container>
 
     <ng-container *ngSwitchCase="'video'">
@@ -19,10 +19,10 @@
 
     <ng-container *ngSwitchCase="'any'">
       <div *ngIf="!(virusDetection && virusDetection.infected); else virusDetected">
-        <a [href]="file.url" target="_blank">
+        <a [href]="file.url" target="_blank" class="subtitle-1">
           <ion-icon name="document"></ion-icon>&nbsp;{{ file.filename }}
         </a>
-        <ion-icon *ngIf="file.url.length > 0" name="search" (click)="previewFile(file)" color="primary" padding-left float-right></ion-icon>
+        <ion-icon *ngIf="file.url.length > 0" name="search" (click)="previewFile(file)" color="primary" class="ion-padding-left ion-float-right"></ion-icon>
       </div>
       <ng-template #virusDetected>
         <ion-item lines="none" color="transparent">

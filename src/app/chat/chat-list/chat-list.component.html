@@ -1,39 +1,54 @@
 <ion-header mode="ios">
-  <ion-toolbar color="light">
+  <ion-toolbar [ngClass]="{'ion-toolbar-absolute': !utils.isMobile()}">
     <ion-title>Chat</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content color="light">
+<ion-content color="light" [ngClass]="{'ion-content-absolute': !utils.isMobile()}">
   <ng-container *ngIf="loadingChatList">
-    <div text-center>
-        <ion-spinner></ion-spinner>
+    <div class="ion-text-center">
+      <ion-spinner></ion-spinner>
     </div>
   </ng-container>
-  <ion-list>
+  <ion-list [ngClass]="{'desktop-view': !utils.isMobile()}">
     <clickable-item
       *ngFor="let chat of chatList; let i = index"
-      [lines]="i == chatList.length - 1 ? 'none' : ''"
       (click)="navigateToChatRoom(chat)"
-      [ngClass]="{'unread': chat.unread_messages > 0}">
+      [active]="currentChat &&
+      (currentChat.teamId == chat.team_id) &&
+      (currentChat.teamMemberId == chat.team_member_id) &&
+      (currentChat.participantsOnly == chat.participants_only) &&
+      (currentChat.chatName == chat.name)"
+      [ngClass]="{'unread': chat.unread_messages > 0}"
+      [lines]="'none'">
       <ion-avatar [ngClass]="{'color-team': chat.is_team}" slot="start" text-center>
-        <ng-container *ngIf="chat.is_team; else avatarElseBlock"><ion-icon name="people"></ion-icon></ng-container>
+        <ng-container *ngIf="chat.is_team; else avatarElseBlock"><ion-icon name="people-outline"></ion-icon></ng-container>
         <ng-template #avatarElseBlock><img [src]="chat.team_member_image"></ng-template>
       </ion-avatar>
       <ion-label>
-        <div class="chat-name-container">
-          <h2 [class]="chat.is_team ? 'chat-name team-channel' : 'chat-name'">{{chat.name}}</h2>
-          <ng-container *ngIf="(chat.role === 'mentor') && (haveMoreTeam)"><span>mentor - {{chat.team_name}}</span></ng-container>
-          <ng-container *ngIf="(chat.role === 'mentor') && (!haveMoreTeam)"><span>mentor</span></ng-container>
-          <ng-container *ngIf="(chat.role !== 'mentor') && (!chat.is_team) && (haveMoreTeam)"><span>{{chat.team_name}}</span></ng-container>
+        <div class="chat-name-container caption">
+          <p class="chat-name subtitle-1" [ngClass]="{'team-channel': chat.is_team, 'bold': chat.unread_messages > 0}">{{chat.name}}</p>
+          <ng-container *ngIf="(chat.role === 'mentor') && (haveMoreTeam)">
+            <span>mentor - {{chat.team_name}}</span>
+          </ng-container>
+          <ng-container *ngIf="(chat.role === 'mentor') && (!haveMoreTeam)">
+            <span>mentor</span>
+          </ng-container>
+          <ng-container *ngIf="(chat.role !== 'mentor') && (!chat.is_team) && (haveMoreTeam)">
+            <span>{{chat.team_name}}</span>
+          </ng-container>
         </div>
-        <ng-container *ngIf="chat.last_message; else messgeElseBlock"><p>{{chat.last_message}}</p></ng-container>
-        <ng-template #messgeElseBlock><p>No messages.</p></ng-template>
+        <ng-container *ngIf="chat.last_message; else messgeElseBlock">
+          <p class="body-2">{{chat.last_message}}</p>
+        </ng-container>
+        <ng-template #messgeElseBlock><p class="body-2 gray-2">No messages.</p></ng-template>
       </ion-label>
       <div slot="end" class="time-container">
-        <span>{{getChatDate(chat.last_message_created)}}</span>
+        <div class="caption gray-2">
+          <span>{{getChatDate(chat.last_message_created)}}</span>
+        </div>
         <ng-container *ngIf="chat.unread_messages > 0">
-            <ion-badge>{{chat.unread_messages}}</ion-badge>
+          <ion-badge class="caption">{{chat.unread_messages}}</ion-badge>
         </ng-container>
       </div>
     </clickable-item>

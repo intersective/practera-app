@@ -1,10 +1,42 @@
 import { of, Observable } from 'rxjs';
 import { SpyObject } from './utils';
+import { SwitcherService } from '../app/switcher/switcher.service';
 import { BrowserStorageService } from '@services/storage.service';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
 import { RouterEnter } from '@services/router-enter.service';
 import { Router, NavigationEnd } from '@angular/router';
 import { NgZone } from '@angular/core';
+import { ProgramFixture } from '@testing/fixtures/programs';
+
+export class MockSwitcherService extends SpyObject {
+  getPrograms;
+  getProgresses;
+  switchProgramAndNavigate;
+  mockProgresses = [
+    {
+      id: 1,
+      progress: 0.1,
+      todoItems: 1
+    },
+    {
+      id: 2,
+      progress: 0.2,
+      todoItems: 2
+    },
+    {
+      id: 3,
+      progress: 0.3,
+      todoItems: 3
+    }
+  ];
+
+  constructor() {
+    super(SwitcherService);
+    this.getPrograms = this.spy('getPrograms').and.returnValue(of(ProgramFixture));
+    this.getProgresses = this.spy('getProgresses').and.returnValue(of(this.mockProgresses));
+    this.switchProgramAndNavigate = this.spy('switchProgramAndNavigate');
+  }
+}
 
 export class MockNgZone extends SpyObject {
   run;
@@ -54,12 +86,14 @@ export class MockNewRelicService extends SpyObject {
   noticeError;
   actionText;
   createTracer;
+  setPageViewName;
 
   constructor() {
     super(NewRelicService);
     this.createTracer = this.spy('createTracer').and.returnValue(() => true);
     this.noticeError = this.spy('noticeError').and.returnValue(true);
     this.actionText = this.spy('actionText').and.returnValue(true);
+    this.setPageViewName = this.spy('setPageViewName').and.returnValue(true);
   }
 }
 
@@ -107,6 +141,7 @@ export class BrowserStorageServiceMock extends SpyObject {
       apikey: 'test',
       timelineId: 'test',
       teamId: 'test',
+      contactNumber: '0123456789',
     };
     this.getUser = this.spy('getUser').and.returnValue(USER);
     this.setUser = this.spy('setUser').and.returnValue(true);

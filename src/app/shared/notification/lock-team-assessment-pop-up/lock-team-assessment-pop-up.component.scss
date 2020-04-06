@@ -1,48 +1,33 @@
 .pop-up-content {
-  border-radius: 12px !important;
   background-color: #ffffff !important;
   --ion-color-base: #ffffff  !important;
   overflow-y: hidden !important;
 
-  .imgage-content {
-    text-align: -webkit-center;
-    margin-top: 20px;
-    margin-bottom: 20px;
-
-    .image {
-      background-color: #ffffff !important;
-      width: -webkit-fit-content;
-      padding: 5px;
-      border-radius: 50%;
-
-      img {
-        border-radius: 50%;
-        width: 56px;
-
-      }
+  &.desktop-view {
+    .image-content {
+      margin-top: 35px;
+    }
+    .div-after-img {
+      margin-bottom: 35px;
     }
   }
 
-  .details-container {
-    background-color: #ffffff !important;
+  .image-content {
+    margin-top: 20px;
+
+    .image {
+      padding: 5px;
+    }
   }
 
   .div-after-img {
-    margin: 0 15px 15px;
+    margin: 0;
+    margin-bottom: 15px;
+  }
 
-    .description {
-      text-align: -webkit-center;
-      font-weight: 600;
-      color: var(--ion-color-medium);
-      font-size: 12px;
-      line-height: 17px;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      display: -webkit-box;
-      max-height: 50px;
-      -webkit-line-clamp: 3;
-      -webkit-box-orient: vertical !important;
-    }
+  .description {
+    max-height: none !important;
+    -webkit-line-clamp: unset !important;
   }
 
 }

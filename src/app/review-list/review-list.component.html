@@ -1,0 +1,66 @@
+<ion-header mode="ios">
+  <ion-toolbar [ngClass]="{'ion-toolbar-absolute': !utils.isMobile()}">
+    <ion-title class="ion-text-center">Reviews</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding" color="light" [ngClass]="{
+  'ion-content-absolute': !utils.isMobile(),
+  'ion-content-mobile': utils.isMobile()
+}">
+  <div class="btn-filter ion-text-center">
+    <ion-button
+      class="btn-left-half"
+      [ngClass]="{'btn-activated': !showDone}"
+      (click)="clickToDo()"
+      >
+      <ion-ripple-effect type="unbounded"></ion-ripple-effect>
+      To do
+    </ion-button>
+    <ion-button
+      class="btn-right-half"
+      [ngClass]="{'btn-activated': showDone}"
+      (click)="clickDone()">
+      <ion-ripple-effect type="unbounded"></ion-ripple-effect>
+      Done
+    </ion-button>
+  </div>
+  <ion-card *ngIf="loadingReviews; else reviewsTmpl" class="practera-card">
+    <ion-list>
+      <app-list-item loading="true"></app-list-item>
+      <app-list-item loading="true" lines="none"></app-list-item>
+    </ion-list>
+  </ion-card>
+  <ng-template #reviewsTmpl>
+
+    <ion-card *ngIf="noReviewsToDo()" class="practera-card list-empty-message">
+      <p class="subtitle-1 gray-3">You have no new submissions to review.</p>
+      <span class="body-2 gray-1">To do reviews show up here, so you can easily view them here later.</span>
+    </ion-card>
+    <ion-card *ngIf="noReviewsDone()" class="practera-card list-empty-message">
+      <p class="subtitle-1 gray-3">You have not reviewed any submissions.</p>
+      <span class="body-2 gray-1">Done reviews show up here, so you can easily view them here later.</span>
+    </ion-card>
+
+    <ng-container *ngIf="!noReviewsToDo() && !noReviewsDone()">
+      <ion-card class="practera-card">
+        <ion-list>
+          <ng-container *ngFor="let review of reviews; let i = index">
+            <app-list-item
+              *ngIf="review.isDone == showDone"
+              leadingIcon="clipboard-outline"
+              [title]="review.name"
+              [subtitle1]="'submitted by ' + review.submitterName"
+              [subtitle2]="review.teamName"
+              [endingText]="review.date"
+              [active]="submissionId === review.submissionId"
+              [lines]="i == reviews.length - 1 ? 'none' : ''"
+              (click)="gotoReview(review.contextId, review.assessmentId, review.submissionId)"
+            ></app-list-item>
+          </ng-container>
+        </ion-list>
+      </ion-card>
+    </ng-container>
+
+  </ng-template>
+</ion-content>

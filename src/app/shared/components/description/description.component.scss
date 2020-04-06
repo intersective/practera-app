@@ -1,11 +1,48 @@
-.limit-height {
-  max-height: 90px;
-  overflow-y: hidden;
-}
-p {
-  margin-bottom: 0px;
+.container {
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: auto;
+  min-height: 20%;
+  overflow: hidden;
+  .text-content {
+    overflow: hidden;
+    min-height: 64px;
+    max-height: 100%;
+  }
 }
 
-div {
-  margin-top: 5px;
+.limit-height {
+  max-height: 90px;
+  text-overflow: ellipsis;
+  animation-name: collapse;
+  animation-duration: 0.5s;
+}
+
+.full-height {
+  max-height: 100%;
+  overflow: visible;
+  animation-name: expand;
+  animation-duration: 0.5s;
+}
+
+.full-height-popup {
+  max-height: 200px;
+  overflow: auto;
+  animation-name: expand;
+  animation-duration: 0.5s;
+}
+
+@keyframes collapse {
+  from { max-height: 1000px;}
+  to { max-height: 90px;}
+}
+
+@keyframes expand {
+  from { max-height: 90px;}
+  to { max-height: 1000px;}
+}
+
+ion-button {
+  --background-hover: transparent !important;
 }

@@ -1,3 +1,5 @@
+import * as moment from 'moment';
+
 export class TestUtils {
 
   static createRouterSpy() {
@@ -15,17 +17,11 @@ export class TestUtils {
    * getDateString(1, 0) returns tomorrow at the same time
    * getDateString(-1, 0) returns yesterday at the same time
    * getDateString(0, 1) returns today at one minute later
+   * @return {string} UTC date string
    */
-  getDateString(day: number, minute: number) {
-    const date = new Date();
-    date.setDate(date.getDate() + day);
-    date.setHours(date.getMinutes() + minute);
-    return `${date.getFullYear()}-` +
-      `${this.numberFormatter(date.getMonth() + 1)}-` +
-      `${this.numberFormatter(date.getDate())} ` +
-      `${this.numberFormatter(date.getHours())}:` +
-      `${this.numberFormatter(date.getMinutes())}:` +
-      `${this.numberFormatter(date.getSeconds())}`;
+  getDateString(day: number, minute: number): string {
+    const momentDate = `${moment.utc().add(day, 'days').add(minute, 'minute').format('YYYY-MM-DD hh:mm:ss')}`;
+    return momentDate;
   }
 
   /**

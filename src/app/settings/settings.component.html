@@ -1,58 +1,127 @@
 <ion-header mode="ios">
-  <ion-toolbar color="light">
-    <ion-title>Settings</ion-title>
+  <ion-toolbar>
+    <ion-title class="ion-text-center">Settings</ion-title>
   </ion-toolbar>
 </ion-header>
-<ion-content padding color="light">
-  <ion-card class="practera-card">
-      <ion-item class="profile-info" lines="none">
-          <ion-avatar class="profile-image" slot="start">
-            <img *ngIf="!imageUpdating" [src]="profile.image">
-            <p *ngIf="imageUpdating" class="loading-icon"><ion-spinner name="bubbles"></ion-spinner></p>
-            <file-stack
-              [accept]="acceptFileTypes"
-              [fileType]="'image'"
-              [type]="'profileImage'"
-              (complete)="uploadProfileImage($event)"
-            >
-            </file-stack>
-          </ion-avatar>
-          <ion-label>
-            <ion-label class="profile-name" *ngIf="profile.name">
-                {{profile.name}}
-            </ion-label>
-            <ion-label class="profile-email" *ngIf="profile.email">
-                {{profile.email}}
-            </ion-label>
-          </ion-label>
-        </ion-item>
-  </ion-card>
-  <ion-card class="practera-card">
-
+<ion-content class="ion-padding" color="light">
+  <ng-container *ngIf="utils.isMobile()">
+    <ion-item class="profile-info no-bg" lines="none">
+      <ion-avatar class="profile-image" slot="start">
+        <img *ngIf="!imageUpdating" [src]="profile.image">
+        <p *ngIf="imageUpdating" class="loading-icon"><ion-spinner name="bubbles"></ion-spinner></p>
+        <file-stack
+          [accept]="acceptFileTypes"
+          [fileType]="'image'"
+          [type]="'profileImage'"
+          (complete)="uploadProfileImage($event)"
+        ></file-stack>
+      </ion-avatar>
+      <ion-label>
+        <ion-label class="headline-6" *ngIf="profile.name">
+          {{profile.name}}
+        </ion-label>
+        <ion-label class="subtitle-1 gray-2" *ngIf="profile.email">
+          {{profile.email}}
+        </ion-label>
+      </ion-label>
+    </ion-item>
     <app-contact-number-form [page]="'settings'"></app-contact-number-form>
 
-    <clickable-item (click)="switchProgram()" lines="none">
-      <ion-icon padding name="radio-button-on"></ion-icon>
-      Switch to another experience
-    </clickable-item>
-  </ion-card>
+    <ion-item *ngIf="isInMultiplePrograms()" lines="none" class="exp-switch">
+      <ion-label class="subtitle-2 gray-2">Switch to another experience</ion-label>
+      <ion-button class="practera-btn mobile-btn" slot="end" (click)="switchProgram()">SWITCH</ion-button>
+    </ion-item>
 
-  <ion-card class="practera-card">
-    <ion-item>Support</ion-item>
-    <clickable-item (click)="mailTo()">
-      <ion-icon padding name="mail"></ion-icon>
-      Email Help
-    </clickable-item>
-    <clickable-item (click)="openLink()" lines="none">
-      <ion-icon padding name="clipboard"></ion-icon>
-      Terms of Use
-    </clickable-item>
-  </ion-card>
+    <div class="ion-margin-top support-mobile subtitle-1">
+      <ion-label class="subtitle-2 gray-2">Support</ion-label>
+      <ion-item class="no-bg" (click)="mailTo()" lines="none">
+        <ion-icon class="ion-padding-end" color="primary" name="mail-outline"></ion-icon>
+        Email Help
+        <ion-icon name="arrow-forward" color="medium" slot="end"></ion-icon>
+      </ion-item>
+      <ion-item class="no-bg" (click)="openLink()" lines="none">
+        <ion-icon class="ion-padding-end" color="primary" name="clipboard-outline"></ion-icon>
+        Terms of Use
+        <ion-icon name="arrow-forward" color="medium" slot="end"></ion-icon>
+      </ion-item>
+      <ion-item id="item-logout" class="no-bg" (click)="logout()" lines="none">
+        <ion-icon class="ion-padding-end" color="primary" name="log-out-outline"></ion-icon>
+        Logout
+      </ion-item>
+    </div>
+  </ng-container>
 
-  <ion-card class="practera-card">
-    <clickable-item (click)="logout()" lines="none">
-      <ion-icon padding name="log-out"></ion-icon>
-      Logout
-    </clickable-item>
-  </ion-card>
+  <ng-container *ngIf="!utils.isMobile()">
+    <ion-grid>
+      <ion-row>
+        <ion-col size="3" class="support">
+          <div class="profile-info">
+            <ion-avatar class="profile-image" slot="start">
+              <img *ngIf="!imageUpdating" [src]="profile.image">
+              <p *ngIf="imageUpdating" class="loading-icon"><ion-spinner name="bubbles"></ion-spinner></p>
+              <file-stack
+                [accept]="acceptFileTypes"
+                [fileType]="'image'"
+                [type]="'profileImage'"
+                (complete)="uploadProfileImage($event)"
+              ></file-stack>
+            </ion-avatar>
+            <ion-label class="headline-6" *ngIf="profile.name">
+              {{profile.name}}
+            </ion-label>
+            <ion-label class="subtitle-1 gray-2" *ngIf="profile.email">
+              {{profile.email}}
+            </ion-label>
+          </div>
+          <div class="ion-margin-top subtitle-1">
+            <ion-item class="no-bg" (click)="mailTo()" lines="none">
+              <ion-icon class="ion-padding-end" color="primary" name="mail-outline"></ion-icon>
+              Email Help
+            </ion-item>
+            <ion-item class="no-bg" (click)="openLink()" lines="none">
+              <ion-icon class="ion-padding-end" color="primary" name="clipboard-outline"></ion-icon>
+              Terms of Use
+            </ion-item>
+            <ion-item id="item-logout" class="no-bg" (click)="logout()" lines="none">
+              <ion-icon class="ion-padding-end" color="primary" name="log-out-outline"></ion-icon>
+              Logout
+            </ion-item>
+          </div>
+        </ion-col>
+        <ion-col class="content">
+          <app-contact-number-form [page]="'settings'"></app-contact-number-form>
+          <ion-item lines="none" class="no-bg">
+            <ion-label *ngIf="isInMultiplePrograms()" class="subtitle-2 gray-2">Switch to another experience</ion-label>
+            <ion-label *ngIf="!isInMultiplePrograms()" class="subtitle-2 gray-2">Your experience</ion-label>
+          </ion-item>
+          <ion-row class="experience-content">
+            <ion-col size="7" class="ion-no-padding experience-card-container">
+              <ion-card class="practera-card experience-card no-box-shadow">
+                <div class="image-container">
+                  <img [src]="currentProgramImage ? currentProgramImage : '/assets/default-experience-image.svg'" [alt]="currentProgramName"/>
+                </div>
+                <ion-card-content>
+                  <ion-item lines="none" class="switcher-card-item subtitle-1">
+                    <ion-label>{{ currentProgramName }}</ion-label>
+                  </ion-item>
+                </ion-card-content>
+              </ion-card>
+            </ion-col>
+            <ion-col size="5" *ngIf="isInMultiplePrograms() || returnLtiUrl" class="ion-no-padding switch-card-container">
+              <ion-card class="practera-card experience-card" (click)="switchProgram()">
+                <div class="div-icon-swap">
+                  <ion-icon name="swap-horizontal" color="primary"></ion-icon>
+                </div>
+                <ion-card-content>
+                  <clickable-item color="light" [lines]="'none'" [isSwitcherCard]="true">
+                    <ion-label class="subtitle-1">Switch Experience</ion-label>
+                  </clickable-item>
+                </ion-card-content>
+              </ion-card>
+            </ion-col>
+          </ion-row>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </ng-container>
 </ion-content>

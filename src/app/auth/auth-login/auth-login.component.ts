@@ -21,6 +21,7 @@ export class AuthLoginComponent implements OnInit {
     password: new FormControl('', [Validators.required]),
   });
   isLoggingIn = false;
+  showPassword = false;
 
   constructor(
     private router: Router,

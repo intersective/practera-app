@@ -3,6 +3,7 @@ import * as _ from 'lodash';
 import { DOCUMENT } from '@angular/common';
 import { Observable, Subject, BehaviorSubject } from 'rxjs';
 import { map, filter } from 'rxjs/operators';
+import { Platform } from '@ionic/angular';
 
 // @TODO: enhance Window reference later, we shouldn't refer directly to browser's window object like this
 declare var window: any;
@@ -22,6 +23,7 @@ export class UtilsService {
 
   constructor(
     @Inject(DOCUMENT) private document: Document,
+    private platform: Platform
   ) {
     if (_) {
       this.lodash = _;
@@ -31,10 +33,20 @@ export class UtilsService {
   }
 
   /**
-   * check if a value is empty
+   * @name isMobile
+   * @description grouping device type into 2 group (mobile/desktop) and return true if mobile, otherwise return false
+   * @example https://github.com/ionic-team/ionic/blob/master/angular/src/providers/platform.ts#L71-L115
+   */
+  isMobile() {
+    return window.innerWidth <= 576;
+  }
+
+  /** check if a value is empty
    * precautions:
-   *   Lodash's isEmpty, by default, sees "number" type value as empty,
-   *   but in our case, we just treat null/undefined/""/[]/{} as empty.
+   *  - Lodash's isEmpty, by default, sees "number" type value as empty,
+   *    but in our case, we just treat null/undefined/""/[]/{} as empty.
+   *  - [{}] = true
+   *  - [{}, {}, {}] = false
    *
    * @param  {any}     value
    * @return {boolean}       true: when empty string/object/array, otherwise false
@@ -58,6 +70,10 @@ export class UtilsService {
 
   find(collections, callback) {
     return this.lodash.find(collections, callback);
+  }
+
+  findIndex(collections: any[], callback: any) {
+    return this.lodash.findIndex(collections, callback);
   }
 
   has(object, path) {
@@ -94,10 +110,11 @@ export class UtilsService {
     return array;
   }
 
-  changeThemeColor(color) {
+  changeThemeColor(color): void {
     this.document.documentElement.style.setProperty('--ion-color-primary', color);
     this.document.documentElement.style.setProperty('--ion-color-primary-shade', color);
-    this.document.documentElement.style.setProperty('--ion-color-primary-tint', color);
+    // get the tint version of the color(20% opacity)
+    this.document.documentElement.style.setProperty('--ion-color-primary-tint', color + '33');
     // convert hex color to rgb and update css variable
     const hex = color.replace('#', '');
     const red = parseInt(hex.substring(0, 2), 16);
@@ -162,19 +179,17 @@ export class UtilsService {
    * Any time before yesterday(one day before 'compareWith') will return 'Yesterday'
    * Any time today(the same day as 'compareWith') will return the time
    * Any other time will just return the date in "3 May" format
-   * @param {string} time        [The time string going to be formatted (In UTC timezone)]
-   * @param {string} compareWith [The time string used to compare with]
+   * @param {Date} time        [The time string going to be formatted (In UTC timezone)]
+   * @param {Date} compareWith [The time string used to compare with]
    */
-  timeFormatter(time: string, compareWith?: string) {
+  timeFormatter(time: Date | string, compareWith?: Date | string): string {
     if (!time) {
       return '';
     }
     // if no compareWith provided, compare with today
-    let compareDate = new Date();
-    if (compareWith) {
-      compareDate = new Date(this.timeStringFormatter(compareWith));
-    }
-    const date = new Date(this.timeStringFormatter(time));
+    const compareDate = (compareWith) ? new Date(this.iso8601Formatter(compareWith)) : new Date();
+
+    const date = new Date(this.iso8601Formatter(time));
     if (date.getFullYear() === compareDate.getFullYear() && date.getMonth() === compareDate.getMonth()) {
       if (date.getDate() === compareDate.getDate() - 1) {
         return 'Yesterday';
@@ -196,11 +211,16 @@ export class UtilsService {
     }).format(date);
   }
 
-  utcToLocal(time: string, display: string = 'all') {
+  /**
+   * turn date into customised & human-readable language (non RFC2822/ISO standard)
+   * @param {Date | string}    time Date
+   * @param {string}       display date: display date, time: display time, all: date + time
+   */
+  utcToLocal(time: Date | string, display: string = 'all') {
     if (!time) {
       return '';
     }
-    const date = new Date(this.timeStringFormatter(time));
+    const date = new Date(this.iso8601Formatter(time));
     const formattedTime = new Intl.DateTimeFormat('en-GB', {
       hour12: true,
       hour: 'numeric',
@@ -219,7 +239,11 @@ export class UtilsService {
     }
   }
 
-  dateFormatter(date: Date) {
+  /**
+   * @description turn date into string formatted date
+   * @param {Date} date targetted date
+   */
+  dateFormatter(date: Date): string {
     const today = new Date();
     let formattedDate = new Intl.DateTimeFormat('en-GB', {
       month: 'short',
@@ -241,11 +265,25 @@ export class UtilsService {
     return formattedDate;
   }
 
-  timeComparer(timeString: string, comparedString?: string, compareDate?: boolean) {
-    const time = new Date(this.timeStringFormatter(timeString));
+  /**
+   * @description dates comparison (between today/provided date)
+   * @param {Date    | string} timeString [description]
+   * @param {boolean}            = {}} options [description]
+   * @return {number} -1: before, 0: same date, 1: after
+   */
+  timeComparer(
+    timeString: Date | string,
+    options: {
+      comparedString?: Date | string,
+      compareDate?: boolean
+    } = {}
+  ): number {
+    const { comparedString, compareDate } = options;
+
+    const time = new Date(this.iso8601Formatter(timeString));
     let compared = new Date();
     if (comparedString) {
-      compared = new Date(this.timeStringFormatter(comparedString));
+      compared = new Date(this.iso8601Formatter(comparedString));
     }
     if (compareDate && (time.getDate() === compared.getDate() &&
     time.getMonth() === compared.getMonth() &&
@@ -298,11 +336,30 @@ export class UtilsService {
    *
    * Example time string: '2019-08-06 15:03:00'
    * After formatter: '2019-08-06T15:03:00Z'
+   *
+   * SAFARI enforce ISO 8601 (no space as time delimiter allowed)
+   * T for time delimiter
+   * Z for timezone (UTC) delimiter (+0000)
    */
-  timeStringFormatter(time: string) {
-    // add "T" between date and time, so that it works on Safari
-    time = time.replace(' ', 'T');
-    // add "Z" to indicate that it is UTC time, it will automatically convert to local time
-    return time + 'Z';
+  iso8601Formatter(time: Date | string) {
+    try {
+      if (typeof time === 'string') {
+        let tmpTime = time;
+        if (!time.includes('GMT') && !(time.toLowerCase()).includes('z')) {
+          tmpTime += ' GMT+0000';
+        }
+        return (new Date(tmpTime)).toISOString();
+      }
+      return time.toISOString();
+    } catch (err) {
+      // in case the above doesn't work on Safari
+      if (typeof time === 'string') {
+        // add "T" between date and time, so that it works on Safari
+        time = time.replace(' ', 'T');
+        // add "Z" to indicate that it is UTC time, it will automatically convert to local time
+        return time + 'Z';
+      }
+      return time.toISOString();
+    }
   }
 }

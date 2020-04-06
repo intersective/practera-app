@@ -1,25 +1,50 @@
-<ion-content color="light" text-center>
+<ion-content color="light" class="ion-text-center">
   <div class="div-logo">
     <app-branding-logo></app-branding-logo>
   </div>
   <div class="div-after-logo">
     <form (ngSubmit)="login()" [formGroup]="loginForm" (keyup.enter)="login()">
-      <ion-list margin>
+      <ion-list class="ion-margin">
         <ion-item>
-          <ion-input name="email" formControlName="email" required autocomplete="on" inputmode="email" type="email" placeholder="Email" ></ion-input>
+          <ion-input
+            name="email"
+            formControlName="email"
+            required
+            autocomplete="on"
+            inputmode="email"
+            type="email"
+            placeholder="Email"
+            ></ion-input>
         </ion-item>
         <ion-item lines="none">
-          <ion-input name="password" formControlName="password" autocomplete="on" inputmode="password" required type="password" placeholder="Password" ></ion-input>
+          <ion-input
+            name="password"
+            formControlName="password"
+            autocomplete="on"
+            inputmode="password"
+            required
+            [type]="showPassword ? 'text' : 'password'"
+            placeholder="Password"
+            ></ion-input>
+            <ion-button (click)="showPassword = !showPassword" fill="clear">
+              <ion-icon slot="end" [name]="showPassword ? 'eye' : 'eye-off'"></ion-icon>
+            </ion-button>
         </ion-item>
       </ion-list>
-      <ion-button shape="round" color="primary" [disabled]="!loginForm.valid || isLoggingIn" type="submit">
+      <ion-button
+        shape="round"
+        color="primary"
+        [disabled]="!loginForm.valid || isLoggingIn"
+        type="submit"
+        expand="full"
+        >
         <ng-container *ngIf="!isLoggingIn">LOGIN</ng-container>
         <ng-container *ngIf="isLoggingIn">LOGGING IN...</ng-container>
       </ion-button>
     </form>
   </div>
   <div class="text-split">
-    <a routerLink="/forgot_password">Problem signing in?</a>
+    <a routerLink="/forgot_password" class="subtitle-2">Problem signing in?</a>
   </div>
   <div>
     <a>Powered by</a><img src="/assets/logo.svg" height="25" class="img-inline">

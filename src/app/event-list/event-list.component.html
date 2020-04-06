@@ -1,0 +1,105 @@
+<ion-header mode="ios">
+  <ion-toolbar [ngClass]="{'ion-toolbar-absolute': !utils.isMobile()}">
+    <ion-title class="ion-text-center">Events</ion-title>
+  </ion-toolbar>
+</ion-header>
+<ion-content color="light" class="ion-text-center ion-padding" [ngClass]="{
+  'ion-content-absolute': !utils.isMobile(),
+  'ion-content-mobile': utils.isMobile()
+}" appFloat>
+
+  <div class="btn-filter">
+    <ion-button
+      class="btn-left-half"
+      [ngClass]="{'btn-activated': activated == 'browse'}"
+      (click)="showBrowse()">
+      <ion-ripple-effect type="unbounded"></ion-ripple-effect>
+      Browse
+    </ion-button>
+    <ion-button
+      class="btn-middle"
+      [ngClass]="{'btn-activated': activated == 'booked'}"
+      (click)="showBooked()">
+      <ion-ripple-effect type="unbounded"></ion-ripple-effect>
+      Booked
+    </ion-button>
+    <ion-button
+      class="btn-right-half"
+      [ngClass]="{'btn-activated': activated == 'attended'}"
+      (click)="showAttended()">
+      <ion-ripple-effect type="unbounded"></ion-ripple-effect>
+      Attended
+    </ion-button>
+  </div>
+
+  <ion-item lines="none" color="light" class="ion-margin-top item-filter">
+    <ion-label id="activity-filter" class="subtitle-1" [ngClass]="!events.length ? 'gray-0' : 'gray-2'">Filter by Activity</ion-label>
+    <ion-select
+      multiple="true"
+      aria-labelledby="activity-filter"
+      [value]="selectedActivities"
+      (ionChange)="onSelect(filterEle.value)"
+      #filterEle>
+      <ion-select-option *ngFor="let activity of activities" [value]="activity.id" selected>{{ activity.name }}</ion-select-option>
+    </ion-select>
+  </ion-item>
+
+  <ng-container *ngIf="loadingEvents">
+    <p><ion-skeleton-text animated style="width: 40%"></ion-skeleton-text></p>
+    <ion-card class="practera-card">
+      <ion-list>
+        <app-list-item loading="true"></app-list-item>
+        <app-list-item loading="true" lines="none"></app-list-item>
+      </ion-list>
+    </ion-card>
+  </ng-container>
+
+  <ng-container *ngFor="let eventObj of events">
+    <p class="sutitle-2 gray-2 ion-text-left">{{ eventObj.date }}</p>
+    <ion-card class="practera-card">
+      <ion-list>
+        <app-list-item
+          *ngFor="let event of eventObj.events; let i = index"
+          leadingIcon="calendar-outline"
+          [leadingIconColor]="eventListService.isNotActionable(event) ? 'medium' : 'primary'"
+          [title]="event.name"
+          [titleColor]="eventListService.isNotActionable(event) ? 'gray-2' : ''"
+          [subtitle1]="event.activityName"
+          [subtitle2]="eventListService.timeDisplayed(event)"
+          [endingIcon]="!eventListService.isNotActionable(event) ? 'arrow-forward' : ''"
+          [eventExpired]="event.isPast && !event.isBooked"
+          [active]="eventId === event.id"
+          [lines]="i == eventObj.events.length - 1 ? 'none' : ''"
+          (click)="goto(event)"
+        ></app-list-item>
+      </ion-list>
+    </ion-card>
+  </ng-container>
+
+  <ion-infinite-scroll threshold="50px" (ionInfinite)="loadMoreEvents($event)">
+    <ion-infinite-scroll-content
+      loadingSpinner="bubbles"
+      loadingText="Loading more events...">
+    </ion-infinite-scroll-content>
+  </ion-infinite-scroll>
+
+  <div *ngIf="!events.length && !loadingEvents">
+    <ion-card class="practera-card list-empty-message">
+      <ng-container [ngSwitch]="activated">
+        <ng-container *ngSwitchCase="'browse'">
+          <p class="subtitle-1 gray-3">There's no new events.</p>
+          <span class="gray-1 body-2">Go to the booked tab to see the events you've booked.</span>
+        </ng-container>
+        <ng-container *ngSwitchCase="'booked'">
+          <p class="subtitle-1 gray-3">You have no booked events.</p>
+          <span class="gray-1 body-2">Go to the browse tab and book an event to see it here.</span>
+        </ng-container>
+        <ng-container *ngSwitchCase="'attended'">
+          <p class="subtitle-1 gray-3">You have not attended any events.</p>
+          <span class="gray-1 body-2">You can see all your past events in this tab.</span>
+        </ng-container>
+      </ng-container>
+    </ion-card>
+  </div>
+
+</ion-content>

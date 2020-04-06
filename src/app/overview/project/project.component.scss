@@ -1,0 +1,187 @@
+.expandable {
+  --color: inherit;
+  --background: transparent;
+
+  box-shadow: none;
+  border: none;
+  ion-item {
+    --padding-start: 0px;
+    --background: transparent;
+    --background-color: transparent;
+    border: none;
+
+    ion-label.milestone-title {
+      font-weight: bold;
+      color: inherit;
+    }
+  }
+
+  ion-card-content {
+    --padding-start: 0px;
+    --practera-label-color: #000;
+    color: inherit;
+    padding-top: 0;
+    padding-left: var(--padding-start);
+  }
+
+  .collapsible-icon {
+    font-size: 18px;
+  }
+}
+
+.project-toolbar {
+  --border-width: 0px !important;
+}
+
+.milestone-bar {
+  list-style: none;
+  margin: 0px;
+  background: var(--ion-color-light);
+  border-bottom: 0.5px solid var( --ion-color-light-shade);
+  top: 44px;
+  height: 54px;
+  max-height: 54px;
+
+  .bubbles-top {
+    padding-top: 3px;
+    text-align: center;
+    ion-icon {
+      padding-top: 5px;
+    }
+    .icon-lock, .icon-done {
+      font-size: 32px;
+    }
+  }
+
+  .active {
+    background-color: lightgrey;
+    border-radius: 50%;
+    width: 42px;
+    height: 2.6em;
+    position: relative;
+    margin-left: auto;
+    margin-right: auto;
+    line-height: 0.5em;
+    padding-top: 2px;
+    .icon-lock, .icon-done {
+      margin-top: -2px;
+    }
+  }
+}
+
+.project-list {
+  margin: 0;
+
+  .project-item.mobile {
+    --padding-start: 0px;
+    --padding-end: 0px;
+    --inner-padding-start:0px;
+    --inner-padding-end: 0px;
+  }
+
+  .project-card {
+    width: 100%;
+    .milestone {
+      .milestone-title {
+        text-transform: capitalize;
+        width: 308px;
+
+        &.locked {
+          height: inherit;
+        }
+      }
+
+      .milestone-lock {
+        font-size: 24px;
+        margin-right: 12px;
+      }
+
+      &.lock {
+        padding-bottom: 16px;
+      }
+    }
+    .milestone-description {
+      color: var(--practera-label-color);
+      line-height: 20px;
+      font-size: 14px;
+      padding: 0px;
+
+      p {
+        overflow: hidden;
+        background-color: black;
+      }
+    }
+    transition: border 0.5s, border-radius 0.5s;
+    &.highlighted {
+      border: 1px solid var(--ion-color-primary);
+      border-radius: 1em;
+    }
+    transition: border 0.5s, border-radius 0.5s;
+    &.highlighted {
+      border: 1px solid var(--ion-color-primary);
+      border-radius: 1em;
+    }
+  }
+  :last-child {
+    --inner-border-width: 0px !important;
+  }
+  background: var(--ion-color-light) !important;
+}
+
+.activity-list {
+  background: transparent;
+  margin-bottom: 0px;
+
+  .icon-done {
+    margin-right: 18px;
+    font-size: 32px;
+  }
+  .icon-lock {
+    margin-right: 18px;
+    font-size: 32px;
+  }
+  .progress-icon {
+    margin-left: -3px;
+  }
+  ion-col {
+    padding-top: 0px;
+    padding-bottom: 0px;
+    .row-cards {
+      margin-top: -18px;
+      min-width: 53px !important;
+      .skeleton-progress {
+        width: 30px;
+        height: 30px;
+      }
+    }
+  }
+}
+.activity-item {
+  --border-width: 0px !important;
+  --inner-border-width: 0px !important;
+  --padding-start: 0px;
+  --ion-safe-area-left: 0px;
+  --padding-end:0px;
+  --inner-padding-start:0px;
+  --ion-safe-area-right: 0px;
+  --inner-padding-end: 0px;
+
+  &.mobile {
+    --inner-padding-start: 12px;
+    --inner-padding-end: 23px;
+  }
+}
+.icon-done {
+  font-size: 33px;
+  margin-left: 0px;
+}
+
+.activity-card {
+  width: 100%;
+}
+
+ion-spinner {
+  display: block;
+  margin: auto;
+}
+

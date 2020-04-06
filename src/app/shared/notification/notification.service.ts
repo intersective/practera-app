@@ -4,7 +4,9 @@ import { AlertOptions, ToastOptions, ModalOptions, LoadingOptions } from '@ionic
 import { PopUpComponent } from './pop-up/pop-up.component';
 import { AchievementPopUpComponent } from './achievement-pop-up/achievement-pop-up.component';
 import { LockTeamAssessmentPopUpComponent } from './lock-team-assessment-pop-up/lock-team-assessment-pop-up.component';
+import { ActivityCompletePopUpComponent } from './activity-complete-pop-up/activity-complete-pop-up.component';
 import { Achievement, AchievementsService } from '@app/achievements/achievements.service';
+import { UtilsService } from '@services/utils.service';
 
 export interface CustomTostOptions {
   message: string;
@@ -22,6 +24,7 @@ export class NotificationService {
     private toastController: ToastController,
     private loadingController: LoadingController,
     public achievementService: AchievementsService,
+    public utils: UtilsService,
   ) {}
 
   dismiss() {
@@ -79,17 +82,14 @@ export class NotificationService {
   }
 
   // toast message pop up, by default, shown success message for 2 seconds.
-  async presentToast(message, success = false, duration?, custom = false) {
+  async presentToast(message: string, options?: any) {
     let toastOptions: ToastOptions = {
       message: message,
-      duration: duration || 2000,
+      duration: 2000,
       position: 'top',
-      color : success ? 'success' : 'danger'
+      color : 'danger'
     };
-    if (custom) {
-      delete toastOptions['color'];
-      toastOptions = Object.assign({ cssClass: 'practera-toast' }, toastOptions);
-    }
+    toastOptions = Object.assign(toastOptions, options);
     const toast = await this.toastController.create(toastOptions);
     return toast.present();
   }
@@ -119,7 +119,7 @@ export class NotificationService {
       this.achievementService.markAchievementAsSeen(achievement.id);
     }
     const modal = await this.modal(component, componentProps, {
-      cssClass: 'achievement-popup',
+      cssClass: this.utils.isMobile() ? 'practera-popup' : 'practera-popup desktop-view',
       keyboardClose: false,
       backdropDismiss: false
     });
@@ -144,11 +144,33 @@ export class NotificationService {
     const modal = await this.modal(
       component, componentProps,
       {
-      cssClass: 'lock-assessment-popup'
+        cssClass: this.utils.isMobile() ? 'practera-popup lock-assessment-popup' : 'practera-popup lock-assessment-popup desktop-view',
       },
       event
     );
     return modal;
+  }
+
+  /**
+   * pop up activity complete notification and detail
+   *
+   * sample call for activity complete popup
+   * NotificationService.activityCompletePopUp(3);
+   */
+  async activityCompletePopUp(activityId: number, activityCompleted: boolean) {
+    let cssClass = 'practera-popup activity-complete-popup';
+    if (this.utils.isMobile()) {
+      cssClass += ' mobile-view';
+    }
+    return await this.modal(
+      ActivityCompletePopUpComponent,
+      { activityId, activityCompleted },
+      {
+        cssClass: cssClass,
+        keyboardClose: false,
+        backdropDismiss: false
+      }
+    );
   }
 
   async loading(opts?: LoadingOptions): Promise<void> {

@@ -1,37 +1,45 @@
 <ion-header mode="ios">
-  <ion-toolbar color="light">
-    <ion-icon name="close-circle-outline" class="close-icon" (click)="close()" color="primary" slot="end"></ion-icon>
+  <ion-toolbar [ngClass]="{'ion-toolbar-absolute': !utils.isMobile()}">
+    <ion-icon *ngIf="utils.isMobile()" name="close-circle-outline" class="close-icon" (click)="close()" color="primary" slot="end"></ion-icon>
+    <ion-title class="ion-text-center" [ngClass]="{
+      'subtitle-2': !utils.isMobile()
+    }">Event</ion-title>
   </ion-toolbar>
 </ion-header>
-<ion-content color="light" text-center>
-  <div class="div-btn">
-    <h1>{{ event.name }}</h1>
-    <div class="div-activity-name">{{ event.activityName }}</div>
-    <app-description *ngIf="event.description" [content]="event.description"></app-description>
+<ion-content color="light" [ngClass]="{ 'ion-content-absolute': !utils.isMobile() }">
+  <div class="ion-text-center ion-margin">
+    <h1 class="headline-4">{{ event.name }}</h1>
+    <div class="div-activity-name subtitle-1 gray-2">{{ event.activityName }}</div>
+    <app-description *ngIf="event.description" class="body-1" [content]="event.description"></app-description>
   </div>
-  <h3 *ngIf="event.isPast && !event.isBooked" class="expired-text">Event Expired</h3>
+  <p *ngIf="event.isPast && !event.isBooked" class="expired-text ion-margin-horizontal subtitle-2 gray-2">Event Expired</p>
 
   <ion-list>
     <ion-item>
-      <ion-icon class="leading-icon" name="calendar" color="primary"></ion-icon>
-      <div id="date">{{ utils.utcToLocal(event.startTime, 'date') }}</div>
+      <ion-icon class="leading-icon" name="calendar-outline" color="primary"></ion-icon>
+      <div id="date" class="subtitle-1">{{ utils.utcToLocal(event.startTime, 'date') }}</div>
     </ion-item>
     <ion-item>
-      <ion-icon class="leading-icon" name="time" color="primary"></ion-icon>
-      <div id="time">{{ utils.utcToLocal(event.startTime, 'time') }} - {{ utils.utcToLocal(event.endTime, 'time') }}</div>
+      <ion-icon class="leading-icon" name="time-outline" color="primary"></ion-icon>
+      <div id="time" class="subtitle-1">{{ utils.utcToLocal(event.startTime, 'time') }} - {{ utils.utcToLocal(event.endTime, 'time') }}</div>
     </ion-item>
     <ion-item>
-      <ion-icon class="leading-icon" name="pin" color="primary"></ion-icon>
-      <div id="location">{{ event.location }}</div>
+      <ion-icon class="leading-icon" name="location-outline" color="primary"></ion-icon>
+      <div id="location" class="subtitle-1">{{ event.location }}</div>
     </ion-item>
     <ion-item lines="none">
-      <ion-icon class="leading-icon" name="contacts" color="primary"></ion-icon>
-      <div id="capacity">{{ event.remainingCapacity }} Seats Available Out of {{ event.capacity }}</div>
+      <ion-icon class="leading-icon" name="people-outline" color="primary"></ion-icon>
+      <div id="capacity" class="subtitle-1">{{ event.remainingCapacity }} Seats Available Out of {{ event.capacity }}</div>
     </ion-item>
   </ion-list>
 
-  <div class="div-btn" *ngIf="buttonText()">
-    <ion-button (click)="confirmed()" [disabled]="event.isPast && !event.isBooked" shape="round" [color]="event.isPast && !event.isBooked ? 'medium' : 'primary'" expand="full">
+  <div class="ion-margin-top ion-text-center" *ngIf="buttonText()">
+    <ion-button
+      class="btn-cta"
+      (click)="confirmed()"
+      [disabled]="(event.isPast && !event.isBooked) || ctaIsActing"
+      shape="round"
+      [color]="event.isPast && !event.isBooked ? 'medium' : 'primary'">
       {{ buttonText() }}
     </ion-button>
   </div>

@@ -1,31 +1,63 @@
 <ion-tabs>
 
-  <ion-tab-bar slot="bottom">
+  <ion-tab-bar *ngIf="utils.isMobile()" slot="bottom">
 
-    <ion-tab-button tab="home" [class.selected]="selectedTab == 'home'">
-      <ion-icon name="home"></ion-icon>
+    <ion-tab-button layout="icon-top" tab="home" [class.selected]="selectedTab == 'overview'">
+      <ion-icon class="gray-2" name="home-outline"></ion-icon>
       <ion-badge color="danger" *ngIf="noOfTodoItems > 0">{{ noOfTodoItems }}</ion-badge>
-      <ion-label>Home</ion-label>
-    </ion-tab-button>
-    <ion-tab-button tab="project" [class.selected]="selectedTab == 'project'">
-      <ion-icon name="list-box"></ion-icon>
-      <ion-label>Activities</ion-label>
+      <ion-label class="gray-2">Home</ion-label>
     </ion-tab-button>
 
-    <ion-tab-button *ngIf="showReview" tab="reviews" [class.selected]="selectedTab == 'reviews'">
-      <ion-icon name="clipboard"></ion-icon>
-      <ion-label>Review</ion-label>
+    <ion-tab-button layout="icon-top" *ngIf="showEvents" tab="events" [class.selected]="selectedTab == 'events'">
+      <ion-icon class="gray-2" name="calendar-outline"></ion-icon>
+      <ion-label class="gray-2">Events</ion-label>
     </ion-tab-button>
 
-    <ion-tab-button *ngIf="showChat" tab="chat" [class.selected]="selectedTab == 'chat'">
-      <ion-icon name="chatboxes"></ion-icon>
+    <ion-tab-button layout="icon-top" *ngIf="showReview" tab="reviews" [class.selected]="selectedTab == 'reviews'">
+      <ion-icon  class="gray-2" name="clipboard-outline"></ion-icon>
+      <ion-label class="gray-2">Review</ion-label>
+    </ion-tab-button>
+
+    <ion-tab-button layout="icon-top" *ngIf="showChat" tab="chat" [class.selected]="selectedTab == 'chat'">
+      <ion-icon class="gray-2" name="chatbubbles-outline"></ion-icon>
       <ion-badge color="danger" *ngIf="noOfChats > 0">{{ noOfChats }}</ion-badge>
-      <ion-label>Chat</ion-label>
+      <ion-label class="gray-2">Chat</ion-label>
     </ion-tab-button>
 
-    <ion-tab-button tab="settings" [class.selected]="selectedTab == 'settings'">
-      <ion-icon name="settings"></ion-icon>
-      <ion-label>Settings</ion-label>
+    <ion-tab-button layout="icon-top" tab="settings" [class.selected]="selectedTab == 'settings'">
+      <ion-icon class="gray-2" name="settings-outline"></ion-icon>
+      <ion-label class="gray-2">Settings</ion-label>
+    </ion-tab-button>
+
+  </ion-tab-bar>
+
+  <ion-tab-bar *ngIf="!utils.isMobile()" slot="top">
+
+    <ion-tab-button layout="icon-top" tab="home" [class.selected]="selectedTab == 'overview'">
+      <ion-icon class="gray-2" name="home-outline"></ion-icon>
+      <ion-badge color="danger" *ngIf="noOfTodoItems > 0">{{ noOfTodoItems }}</ion-badge>
+      <ion-label class="gray-2">Home</ion-label>
+    </ion-tab-button>
+
+    <ion-tab-button layout="icon-top" *ngIf="showEvents" tab="events" [class.selected]="selectedTab == 'events'">
+      <ion-icon class="gray-2" name="calendar-outline"></ion-icon>
+      <ion-label class="gray-2">Events</ion-label>
+    </ion-tab-button>
+
+    <ion-tab-button layout="icon-top" *ngIf="showReview" tab="reviews" [class.selected]="selectedTab == 'reviews'">
+      <ion-icon class="gray-2" name="clipboard-outline"></ion-icon>
+      <ion-label class="gray-2">Review</ion-label>
+    </ion-tab-button>
+
+    <ion-tab-button layout="icon-top" *ngIf="showChat" tab="chat" [class.selected]="selectedTab == 'chat'">
+      <ion-icon class="gray-2" name="chatbubbles-outline"></ion-icon>
+      <ion-badge color="danger" *ngIf="noOfChats > 0">{{ noOfChats }}</ion-badge>
+      <ion-label class="gray-2">Chat</ion-label>
+    </ion-tab-button>
+
+    <ion-tab-button layout="icon-top" tab="settings" [class.selected]="selectedTab == 'settings'">
+      <ion-icon class="gray-2" name="settings-outline"></ion-icon>
+      <ion-label class="gray-2">Settings</ion-label>
     </ion-tab-button>
 
   </ion-tab-bar>

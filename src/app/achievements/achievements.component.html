@@ -1,45 +1,50 @@
 <ion-header mode="ios">
-  <ion-toolbar color="light">
-    <ion-icon name="arrow-back" (click)="back()" color="primary" slot="start" margin-start></ion-icon>
-    <ion-title text-center>Badges</ion-title>
+  <ion-toolbar>
+    <ion-icon name="arrow-back" (click)="back()" color="primary" slot="start" class="ion-margin-start"></ion-icon>
+    <ion-title class="ion-text-center">Badges</ion-title>
   </ion-toolbar>
 </ion-header>
-<ion-content padding color="light" text-center>
+<ion-content color="light" class="ion-text-center">
   <ng-container *ngIf="loadingAchievements">
     <ion-spinner></ion-spinner>
   </ng-container>
-  <ion-grid *ngIf="this.achievementService.getIsPointsConfigured() && !loadingAchievements">
-    <ion-row class="total-points">
-      <ion-col class="trophy" size="3">
-        <div class="circle-background">
-            <ion-icon ios="md-trophy" md="md-trophy"></ion-icon>
-        </div>
-      </ion-col>
-      <ion-col class="points" align-items-start>
-        <h4>Total Points Earned : {{ this.achievementService.getEarnedPoints() }}</h4>
-      </ion-col>
-    </ion-row>
-  </ion-grid>
-  <hr *ngIf="this.achievementService.getIsPointsConfigured()">
-  <ion-grid>
-    <ion-row>
-      <ion-col class="title-container">
-        <p>My Badges</p>
-      </ion-col>
-    </ion-row>
-    <ion-row>
-      <ion-col
-        *ngFor="let achievement of achievements; let i = index;"
-        size-xs="4"
-        size-sm="3"
-        size-md="2"
-        margin-bottom
-      >
-        <achievement-badge
-          [achievement]="achievement"
-          [showName]=true
-        ></achievement-badge>
-      </ion-col>
-    </ion-row>
-  </ion-grid>
+    <ion-grid class="ion-no-padding ion-padding-start ion-padding-end" *ngIf="this.achievementService.getIsPointsConfigured() && !loadingAchievements">
+      <ion-row class="total-points" [ngClass]="{'desktop' : !utils.isMobile()}">
+        <ion-col class="trophy" size-xs="4" size-sm="4" size-md="4" size-lg="12" size-xl="12">
+          <div>
+            <div class="circle-background">
+              <ion-avatar>
+                <img [src]="userInfo.image">
+              </ion-avatar>
+            </div>
+          </div>
+          <div *ngIf="!utils.isMobile()" class="points">
+              <p class="headline-5">Total Points : {{ this.achievementService.getEarnedPoints() }}</p>
+              <p class="subtitle-2 gray-3">{{userInfo.name}}</p>
+            </div>
+        </ion-col>
+        <ion-col size-xs="8" *ngIf="utils.isMobile()" class="points ion-align-items-start">
+            <p class="headline-5">Total Points : {{ this.achievementService.getEarnedPoints() }}</p>
+            <p class="subtitle-2 gray-3">{{userInfo.name}}</p>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+    <hr *ngIf="utils.isMobile() && this.achievementService.getIsPointsConfigured()">
+    <ion-grid class="ion-no-padding ion-padding-start ion-padding-end">
+        <ion-row [ngClass]="{'badge-container' : !utils.isMobile()}">
+          <ion-col class="title-container" size-xs="9" size-sm="9" size-md="12" size-lg="12" size-xl="12">
+            <p class="subtitle-2 gray-2">My Badges</p>
+          </ion-col>
+        </ion-row>
+        <ion-row [ngClass]="{'badge-container' : !utils.isMobile()}">
+          <ion-col class="badge-col ion-margin-bottom" *ngFor="let achievement of achievements; let i = index;"
+          size-xs="4" size-sm="3" size-md="3" size-lg="3" size-xl="3">
+          <!-- need to add loading -->
+            <achievement-badge
+              [achievement]="achievement"
+              [showName]=true
+            ></achievement-badge>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
 </ion-content>

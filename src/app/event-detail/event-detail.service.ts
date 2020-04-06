@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { RequestService } from '@shared/request/request.service';
-import { Event } from '@app/events/events.service';
+import { Event } from '@app/event-list/event-list.service';
 
 const api = {
   post: {

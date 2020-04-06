@@ -17,6 +17,7 @@ export class AuthResetPasswordComponent implements OnInit {
 
   verifySuccess = false;
   isResetting = false;
+  showPassword = false;
 
   resetPasswordForm = new FormGroup(
     {
@@ -100,7 +101,7 @@ export class AuthResetPasswordComponent implements OnInit {
             });
           }
         }
-        return this.notificationService.presentToast('Error updating password.Try again', false);
+        return this.notificationService.presentToast('Error updating password.Try again');
       }
     );
   }

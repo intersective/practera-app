@@ -1,60 +1,34 @@
-<ion-header mode="ios">
-  <ion-toolbar color="light">
-    <ion-title center>Reviews</ion-title>
-  </ion-toolbar>
-</ion-header>
-
-<ion-content padding color="light">
-  <div class="btn-filter" text-center>
-    <ion-button
-      class="btn-left-half"
-      [ngClass]="{'btn-activated': !showDone}"
-      (click)="showDone = false"
-      >
-      <ion-ripple-effect type="unbounded"></ion-ripple-effect>
-      To do
-    </ion-button>
-    <ion-button
-      class="btn-right-half"
-      [ngClass]="{'btn-activated': showDone}"
-      (click)="showDone = true">
-      <ion-ripple-effect type="unbounded"></ion-ripple-effect>
-      Done
-    </ion-button>
-  </div>
-  <div text-center *ngIf="loadingReviews; else reviewsTmpl">
-    <ion-spinner></ion-spinner>
-  </div>
-  <ng-template #reviewsTmpl>
-
-    <div *ngIf="noReviewsToDo()" class="no-review-show" padding text-center>
-      <div class="empty-status background-white">
-        <h2 text-center>You have no new submissions to review</h2>
-      </div>
-    </div>
-    <div *ngIf="noReviewsDone()" class="no-review-show" padding text-center>
-      <div class="empty-status background-white">
-        <h2 text-center>You have not reviewed any submissions</h2>
-      </div>
-    </div>
-    <ng-container *ngIf="!noReviewsToDo() && !noReviewsDone()">
-      <ng-container *ngFor="let review of reviews">
-        <ion-card
-          color="primary"
-          class="card practera-card"
-          *ngIf="review.isDone == showDone"
-          (click)="gotoReview(review.contextId, review.assessmentId, review.submissionId)"
-        >
-          <ion-card-content class="review">
-            <h2>{{review.name}}</h2>
-            <ion-icon *ngIf="review.isDone" name="checkmark-circle" class="check-mark"></ion-icon>
-            <h4 padding-top>{{review.submitterName}}</h4>
-            <h4 *ngIf="review.teamName">{{review.teamName}}</h4>
-            <ion-text>{{review.date}}</ion-text>
-          </ion-card-content>
-        </ion-card>
+<ion-split-pane *ngIf="!utils.isMobile()" contentId="main-reviews" when="xs">
+  <app-review-list
+    #reviewList
+    style="display: flex"
+    [submissionId]="submissionId"
+    (navigate)="goto($event)"
+    ></app-review-list>
+  <ion-content color="light" id="main-reviews">
+    <app-assessment
+      #assessment
+      *ngIf="submissionId"
+      [inputId]="assessmentId"
+      [inputSubmissionId]="submissionId"
+      [inputContextId]="contextId"
+      inputAction="review"
+      fromPage="reviews"
+      (navigate)="submissionId = null; reviewList.onEnter()"
+      ></app-assessment>
+      <ng-container *ngIf="!submissionId">
+        <ion-header mode="ios">
+          <ion-toolbar class="ion-toolbar-absolute">
+            <ion-title class="ion-text-center title-small"></ion-title>
+          </ion-toolbar>
+        </ion-header>
+        <ion-content color="light" class="ion-text-center ion-content-absolute">
+          <ion-icon class="empty-icon" name="clipboard-outline" color="medium"></ion-icon>
+        </ion-content>
       </ng-container>
-    </ng-container>
+  </ion-content>
+</ion-split-pane>
 
-  </ng-template>
+<ion-content *ngIf="utils.isMobile()">
+  <app-review-list #reviewList></app-review-list>
 </ion-content>

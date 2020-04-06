@@ -1,0 +1,20 @@
+<ion-card color="primary-contrast" class="todo-card practera-card">
+  <app-list-item
+    *ngIf="todoItem.type"
+    [leadingIcon]="icons[todoItem.type] || 'information-circle-outline'"
+    [title]="todoItem.name"
+    [subtitle1]="todoItem.description"
+    [endingText]="todoItem.time"
+    lines="none"
+  ></app-list-item>
+
+  <app-list-item *ngIf="loading" loading="true" lines="none"></app-list-item>
+
+  <clickable-item *ngIf="!todoItem.type && !loading" lines="none">
+    <ion-icon name="notifications-outline" slot="start" color="primary"></ion-icon>
+    <div>
+      <ion-text color="medium">You have no new notifications.</ion-text>
+    </div>
+  </clickable-item>
+
+</ion-card>

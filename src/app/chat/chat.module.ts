@@ -7,10 +7,10 @@ import { ChatRoomComponent } from './chat-room/chat-room.component';
 import { ChatPreviewComponent } from './chat-preview/chat-preview.component';
 import { ChatRoutingModule } from './chat-routing.module';
 import { ChatService } from './chat.service';
-import { LinkifyPipe } from '../shared/pipes/linkify/linkify.pipe';
 import { FilestackModule } from '../shared/filestack/filestack.module';
 import { FastFeedbackModule } from '../fast-feedback/fast-feedback.module';
 import { AutoresizeDirective } from '../shared/directives/autoresize/autoresize.directive';
+import { ChatViewComponent } from './chat-view/chat-view.component';
 
 @NgModule({
   imports: [
@@ -24,8 +24,8 @@ import { AutoresizeDirective } from '../shared/directives/autoresize/autoresize.
     ChatListComponent,
     ChatPreviewComponent,
     ChatRoomComponent,
-    LinkifyPipe,
-    AutoresizeDirective
+    AutoresizeDirective,
+    ChatViewComponent
   ],
   entryComponents: [ChatPreviewComponent],
   providers: [ChatService],

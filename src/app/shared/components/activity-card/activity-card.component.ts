@@ -15,7 +15,6 @@ export class ActivityCardComponent implements OnInit {
     name: string;
     isLocked?: boolean;
     progress?: number;
-    hasFeedback?: boolean;
     leadImage?: string;
     highlighted?: boolean;
   };

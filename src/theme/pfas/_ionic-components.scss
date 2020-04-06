@@ -1,0 +1,29 @@
+ion-button {
+  @extend .button;
+}
+ion-header ion-toolbar ion-title {
+  @extend .headline-6, .black;
+}
+ion-textarea, ion-input, input, textarea {
+  @extend .subtitle-1;
+  --placeholder-color: var(--practera-40-Percent-gray);
+  --placeholder-opacity: 1;
+  &::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
+    color: var(--practera-40-Percent-gray) !important;
+    opacity: 1 !important; /* Firefox */
+  }
+
+  &:-ms-input-placeholder { /* Internet Explorer 10-11 */
+    color: var(--practera-40-Percent-gray) !important;
+    opacity: 1 !important;
+  }
+
+  &::-ms-input-placeholder { /* Microsoft Edge */
+    color: var(--practera-40-Percent-gray) !important;
+    opacity: 1 !important;
+  }
+  @extend .black;
+}
+ion-split-pane.split-pane-visible>.split-pane-side {
+  flex: 1;
+}

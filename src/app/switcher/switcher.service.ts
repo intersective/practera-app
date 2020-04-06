@@ -6,6 +6,8 @@ import { UtilsService } from '@services/utils.service';
 import { BrowserStorageService } from '@services/storage.service';
 import { PusherService } from '@shared/pusher/pusher.service';
 import { SharedService } from '@services/shared.service';
+import { ReviewListService } from '@app/review-list/review-list.service';
+import { EventListService } from '@app/event-list/event-list.service';
 import { environment } from '@environments/environment';
 
 /**
@@ -24,17 +26,19 @@ export interface ProgramObj {
   project: Project;
   timeline: Timeline;
   enrolment: Enrolment;
+  progress?: number;
+  todoItems?: number;
 }
 
 export interface Program {
   id: number;
   name: string;
   experience_id: number;
-  config?: ProgramConfig;
+  config: ProgramConfig;
 }
 
 export interface ProgramConfig {
-  theme_color?: string;
+  theme_color: string;
   card_style?: string;
   review_rating?: boolean;
   truncate_description?: boolean;
@@ -42,6 +46,7 @@ export interface ProgramConfig {
 
 export interface Project {
   id: number;
+  lead_image?: string;
 }
 
 export interface Timeline {
@@ -64,21 +69,54 @@ export class SwitcherService {
     private storage: BrowserStorageService,
     private sharedService: SharedService,
     private pusherService: PusherService,
+    private reviewsService: ReviewListService,
+    private eventsService: EventListService,
   ) {}
 
   getPrograms() {
-    return of(this.storage.get('programs'));
+    const programs = this.storage.get('programs');
+    const cdn = 'https://cdn.filestackcontent.com/resize=fit:crop,width:';
+    let imagewidth = 600;
+    programs.forEach(program => {
+      if (program.project.lead_image) {
+        const imageId = program.project.lead_image.split('/').pop();
+        if (!this.utils.isMobile()) {
+          imagewidth = 1024;
+        }
+        program.project.lead_image = `${cdn}${imagewidth}/${imageId}`;
+      }
+    });
+    return of(programs);
   }
 
-  switchProgram(programObj: ProgramObj) {
+  /**
+   * Get the progress and number of notifications for each project
+   * @param projectIds Project ids
+   */
+  getProgresses(projectIds: number[]) {
+    return this.request.postGraphQL('"{projects(ids: ' + JSON.stringify(projectIds) + ') {id progress todo_items{is_done}}}"')
+      .pipe(map(res => {
+        return res.data.projects.map(v => {
+          return {
+            id: +v.id,
+            progress: v.progress,
+            todoItems: v.todo_items.filter(ti => !ti.is_done).length
+          };
+        });
+      }));
+  }
+
+  switchProgram(programObj: ProgramObj): Observable<any> {
     const themeColor = this.utils.has(programObj, 'program.config.theme_color') ? programObj.program.config.theme_color : '#2bbfd4';
     let cardBackgroundImage = '';
     if (this.utils.has(programObj, 'program.config.card_style')) {
       cardBackgroundImage = '/assets/' + programObj.program.config.card_style;
     }
+
     this.storage.setUser({
       programId: programObj.program.id,
       programName: programObj.program.name,
+      programImage: programObj.project.lead_image,
       hasReviewRating: this.utils.has(programObj, 'program.config.review_rating') ? programObj.program.config.review_rating : false,
       truncateDescription: this.utils.has(programObj, 'program.config.truncate_description') ? programObj.program.config.truncate_description : true,
       experienceId: programObj.program.experience_id,
@@ -88,14 +126,19 @@ export class SwitcherService {
       themeColor: themeColor,
       activityCardImage: cardBackgroundImage,
       enrolment: programObj.enrolment,
+      teamId: null,
+      hasEvents: false,
+      hasReviews: false
     });
 
     this.sharedService.onPageLoad();
-    return forkJoin(
+    return forkJoin([
       this.getNewJwt(),
       this.getTeamInfo(),
       this.getMyInfo(),
-    ).subscribe();
+      this.getReviews(),
+      this.getEvents()
+    ]);
   }
 
   getTeamInfo(): Observable<any> {
@@ -121,7 +164,7 @@ export class SwitcherService {
    * @name getMyInfo
    * @description get user info
    */
-  getMyInfo(): Observable<any> {
+  getMyInfo():  Observable<any> {
     return this.request.get(api.me).pipe(map(response => {
       if (response.data) {
         if (!this.utils.has(response, 'data.User')) {
@@ -141,6 +184,24 @@ export class SwitcherService {
         });
       }
       return response;
+    }));
+  }
+
+  getReviews() {
+    return this.reviewsService.getReviews().pipe(map(data => {
+      this.storage.setUser({
+        hasReviews: (data && data.length > 0)
+      });
+      return data;
+    }));
+  }
+
+  getEvents() {
+    return this.eventsService.getEvents().pipe(map(events => {
+      this.storage.setUser({
+        hasEvents: !this.utils.isEmpty(events)
+      });
+      return events;
     }));
   }
 
@@ -168,28 +229,35 @@ export class SwitcherService {
    * if method got 'one program object', switch to that program object and navigate to dashboard.
    * if method got 'empty value', do nothing.
    */
-  async switchProgramAndNavigate(programs) {
+  async switchProgramAndNavigate(programs): Promise<any> {
     if (!this.utils.isEmpty(programs)) {
       // Array with multiple program objects -> [{},{},{},{}]
       if (Array.isArray(programs) && !this.checkIsOneProgram(programs)) {
-        return ['switcher'];
+        return ['switcher', 'switcher-program'];
       // Array with one program object -> [{}]
       } else if (Array.isArray(programs) && this.checkIsOneProgram(programs)) {
-        await this.switchProgram(programs[0]);
+        await this.switchProgram(programs[0]).toPromise();
       } else {
       // one program object -> {}
-        await this.switchProgram(programs);
+        await this.switchProgram(programs).toPromise();
       }
-      this.pusherService.initialise({ unsubscribe: true });
+
+      await this.pusherService.initialise({ unsubscribe: true });
       // clear the cached data
       this.utils.clearCache();
       if ((typeof environment.goMobile !== 'undefined' && environment.goMobile === false)
         || /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
-        return ['app', 'home'];
+          if (this.storage.get('directLinkRoute')) {
+            const route = this.storage.get('directLinkRoute');
+            this.storage.remove('directLinkRoute');
+            return route;
+          }
+          return ['app', 'home'];
       } else {
         return ['go-mobile'];
       }
     }
+    return;
   }
 
   getNewJwt() {

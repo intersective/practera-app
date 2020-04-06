@@ -4,7 +4,8 @@ import { TabsService } from './tabs.service';
 import { UtilsService } from '@services/utils.service';
 import { BrowserStorageService } from '@services/storage.service';
 import { SwitcherService } from '../switcher/switcher.service';
-import { ReviewsService } from '../reviews/reviews.service';
+import { ReviewListService } from '../review-list/review-list.service';
+import { EventListService } from '@app/event-list/event-list.service';
 import { Router } from '@angular/router';
 import { SharedService } from '@services/shared.service';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
@@ -22,7 +23,8 @@ describe('TabsComponent', () => {
   let storageSpy: jasmine.SpyObj<BrowserStorageService>;
   let newRelicSpy: jasmine.SpyObj<NewRelicService>;
   let switcherSpy: jasmine.SpyObj<SwitcherService>;
-  let reviewsSpy: jasmine.SpyObj<ReviewsService>;
+  let reviewsSpy: jasmine.SpyObj<ReviewListService>;
+  let eventsSpy: jasmine.SpyObj<EventListService>;
   let utils: UtilsService;
 
   beforeEach(async(() => {
@@ -64,8 +66,12 @@ describe('TabsComponent', () => {
           useValue: jasmine.createSpyObj('SwitcherService', ['getTeamInfo'])
         },
         {
-          provide: ReviewsService,
-          useValue: jasmine.createSpyObj('ReviewsService', ['getReviews'])
+          provide: ReviewListService,
+          useValue: jasmine.createSpyObj('ReviewListService', ['getReviews'])
+        },
+        {
+          provide: EventListService,
+          useValue: jasmine.createSpyObj('EventListService', ['getEvents'])
         },
         {
           provide: Router,
@@ -79,15 +85,18 @@ describe('TabsComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(TabsComponent);
     component = fixture.componentInstance;
-    tabsSpy = TestBed.get(TabsService);
-    routerSpy = TestBed.get(Router);
-    utils = TestBed.get(UtilsService);
-    storageSpy = TestBed.get(BrowserStorageService);
-    newRelicSpy = TestBed.get(NewRelicService);
-    switcherSpy = TestBed.get(SwitcherService);
-    reviewsSpy = TestBed.get(ReviewsService);
+    tabsSpy = TestBed.inject(TabsService) as jasmine.SpyObj<TabsService>;
+    routerSpy = TestBed.inject(Router) as jasmine.SpyObj<Router>;
+    utils = TestBed.inject(UtilsService);
+    storageSpy = TestBed.inject(BrowserStorageService) as jasmine.SpyObj<BrowserStorageService>;
+    newRelicSpy = TestBed.inject(NewRelicService) as jasmine.SpyObj<NewRelicService>;
+    switcherSpy = TestBed.inject(SwitcherService) as jasmine.SpyObj<SwitcherService>;
+    reviewsSpy = TestBed.inject(ReviewListService) as jasmine.SpyObj<ReviewListService>;
+    eventsSpy = TestBed.inject(EventListService) as jasmine.SpyObj<EventListService>;
+
     switcherSpy.getTeamInfo.and.returnValue(of(''));
     reviewsSpy.getReviews.and.returnValue(of(['', '']));
+    eventsSpy.getEvents.and.returnValue(of([{id: 1}]));
     tabsSpy.getNoOfChats.and.returnValue(of(4));
     tabsSpy.getNoOfTodoItems.and.returnValue(of(5));
     component.routeUrl = '/test';
@@ -121,6 +130,7 @@ describe('TabsComponent', () => {
       expect(component.noOfChats).toBe(4);
       expect(component.showChat).toBe(true);
       expect(component.showReview).toBe(true);
+      expect(component.showEvents).toBe(true);
     });
 
     it('should get correct data without team id', () => {
@@ -132,15 +142,17 @@ describe('TabsComponent', () => {
         id: 1
       });
       reviewsSpy.getReviews.and.returnValue(of([]));
+      eventsSpy.getEvents.and.returnValue(of([]));
       fixture.detectChanges();
       expect(component.noOfChats).toBe(0);
       expect(component.showChat).toBe(false);
       expect(component.showReview).toBe(false);
+      expect(component.showEvents).toBe(false);
     });
   });
 
   describe('when testing _checkRoute()', () => {
-    it('should select home tab', () => {
+    it('should select overview tab', () => {
       // spyOnProperty(routerSpy, 'url', 'get').and.returnValue('/app/home');
       // expect(component.selectedTab).toEqual('home');
     });

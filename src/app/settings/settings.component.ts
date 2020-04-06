@@ -27,6 +27,9 @@ export class SettingsComponent extends RouterEnter {
     name: ''
   };
   currentProgramName = '';
+  currentProgramImage = '';
+
+  returnLtiUrl = '';
 
   helpline = 'help@practera.com';
 
@@ -34,6 +37,8 @@ export class SettingsComponent extends RouterEnter {
   // controll profile image updating
   imageUpdating = false;
   acceptFileTypes;
+  // card image CDN
+  cdn = 'https://cdn.filestackcontent.com/resize=fit:crop,width:';
 
   constructor (
     public router: Router,
@@ -44,7 +49,8 @@ export class SettingsComponent extends RouterEnter {
     private notificationService: NotificationService,
     private filestackService: FilestackService,
     public fastFeedbackService: FastFeedbackService,
-    private newRelic: NewRelicService
+    private newRelic: NewRelicService,
+
   ) {
     super(router);
   }
@@ -60,17 +66,42 @@ export class SettingsComponent extends RouterEnter {
     this.acceptFileTypes = this.filestackService.getFileTypes('image');
     // also get program name
     this.currentProgramName = this.storage.getUser().programName;
+    this.currentProgramImage = this._getCurrentProgramImage();
     this.fastFeedbackService.pullFastFeedback().subscribe();
+    this.returnLtiUrl = this.storage.getUser().LtiReturnUrl;
+  }
+
+  // loading pragram image to settings page by resizing it depend on device.
+  // in mobile we are not showing card with image but in some mobile phones on landscape mode desktop view is loading.
+  // because of that we load image also in mobile view.
+  private _getCurrentProgramImage () {
+    if (!this.utils.isEmpty(this.storage.getUser().programImage)) {
+      let imagewidth = 600;
+      const imageId = this.storage.getUser().programImage.split('/').pop();
+      if (!this.utils.isMobile()) {
+        imagewidth = 1024;
+      }
+      return `${this.cdn}${imagewidth}/${imageId}`;
+    }
+    return '';
   }
 
   openLink() {
     this.newRelic.actionText('Open T&C link');
     window.open(this.termsUrl, '_system');
   }
-
   switchProgram() {
-    this.newRelic.actionText('browse to program switcher');
-    this.router.navigate(['/switcher']);
+    if (this.returnLtiUrl) {
+      this.newRelic.actionText('browse to LTI return link');
+      window.location.href = 'https://' + this.returnLtiUrl;
+    } else {
+      this.newRelic.actionText('browse to program switcher');
+      this.router.navigate(['switcher', 'switcher-program']);
+    }
+  }
+
+  isInMultiplePrograms() {
+    return this.storage.get('programs').length > 1;
   }
 
   // send email to Help request

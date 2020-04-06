@@ -1,21 +1,37 @@
-<circle-progress
-  [animateTitle]='config.animateTitle'
-  [animation]='config.animation'
-  [backgroundColor]='config.backgroundColor'
-  [backgroundPadding]='config.backgroundPadding'
-  [backgroundStrokeWidth]='config.backgroundStrokeWidth'
-  [maxPercent]='config.maxPercent'
-  [outerStrokeColor]='config.outerStrokeColor'
-  [outerStrokeLinecap]='config.outerStrokeLinecap'
-  [outerStrokeWidth]='config.outerStrokeWidth'
-  [percent]='config.percent'
-  [radius]='config.radius'
-  [showInnerStroke]='config.showInnerStroke'
-  [showSubtitle]='config.showSubtitle'
-  [showTitle]='config.showTitle'
-  [showUnits]='config.showUnits'
-  [space]='config.space'
-  [startFromZero]='config.startFromZero'
-  [toFixed]='config.toFixed'
-></circle-progress>
+<ng-container *ngIf="!loading">
+    <circle-progress
+    [animateTitle]='config.animateTitle'
+    [animation]='config.animation'
+    [backgroundColor]='config.backgroundColor'
+    [backgroundPadding]='config.backgroundPadding'
+    [backgroundStroke]='config.backgroundStroke'
+    [backgroundStrokeWidth]='config.backgroundStrokeWidth'
+    [maxPercent]='config.maxPercent'
+    [outerStrokeColor]='config.outerStrokeColor'
+    [outerStrokeLinecap]='config.outerStrokeLinecap'
+    [outerStrokeWidth]='config.outerStrokeWidth'
+    [innerStrokeWidth]='config.innerStrokeWidth'
+    [innerStrokeColor]='config.innerStrokeColor'
+    [percent]='config.percent'
+    [radius]='config.radius'
+    [showInnerStroke]='config.showInnerStroke'
+    [showSubtitle]='config.showSubtitle'
+    [showTitle]='config.showTitle'
+    [showUnits]='config.showUnits'
+    [space]='config.space'
+    [startFromZero]='config.startFromZero'
+    [toFixed]='config.toFixed'
+  ></circle-progress>
+</ng-container>
+<ng-container *ngIf="loading">
+  <div class="skeleton">
+    <ion-skeleton-text animated class="progress-circle" [ngClass]="{'desktop' : !utils.isMobile()}"></ion-skeleton-text>
+    <div class="progress-content" [ngClass]="{'desktop' : !utils.isMobile()}">
+      <div class="labels">
+        <p><ion-skeleton-text animated></ion-skeleton-text></p>
+        <p><ion-skeleton-text animated></ion-skeleton-text></p>
+      </div>
+    </div>
+  </div>
+</ng-container>
 

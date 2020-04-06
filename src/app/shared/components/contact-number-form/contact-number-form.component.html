@@ -1,61 +1,62 @@
 <ng-container *ngIf="page === 'settings'">
-  <ion-item>
-    <ion-label>Select Country</ion-label>
-    <ion-select [(ngModel)]="countryModel" (ionChange)="updateCountry()">
-      <ion-select-option *ngFor="let countryCode of contactNumberFormat.countryCodes" [value]="countryCode.code">{{countryCode.name}}</ion-select-option>
-    </ion-select>
-  </ion-item>
-  <ion-item>
-    <ion-grid class="contact-grid">
-      <ion-row>
-        <ion-col class="contact-label">
-            <ion-label>Contact No.</ion-label>
-        </ion-col>
-      </ion-row>
-      <ion-row class="text-field" nowrap align-items-center>
-        <ion-col>
-          <ion-row class="contact-details">
-            <ion-col size="4">
-              <p class="country-code">{{activeCountryModelInfo.countryCode}}</p>
-            </ion-col>
-            <ion-col>
-                <input maxlength="{{activeCountryModelInfo.length}}" pattern="{{activeCountryModelInfo.pattern}}" placeholder="{{activeCountryModelInfo.placeholder}}" [(ngModel)]="contactNumber" type="text"
-                class="contact-input" (keydown)="disableArrowKeys($event)" (keyup)="formatContactNumber()" />
-            </ion-col>
-          </ion-row>
-        </ion-col>
-        <ion-col size="5">
-          <ion-button class="update-btn" [disabled]="updating" (click)="updateContactNumber()">
-            <ng-container *ngIf="!updating">Update</ng-container>
-            <ng-container *ngIf="updating">Updating..</ng-container>
-          </ion-button>
-        </ion-col>
-      </ion-row>
-    </ion-grid>
-  </ion-item>
+  <ion-label class="subtitle-2 gray-2">Contact Number</ion-label>
+  <ion-card class="practera-card" [ngClass]="{'desktop-view': !utils.isMobile()}">
+    <ion-item lines="none">
+      <ion-grid>
+        <ion-row>
+          <ion-col size="5">
+            <ion-select class="subtitle-1" [(ngModel)]="countryModel" (ionChange)="updateCountry()">
+              <ion-select-option *ngFor="let countryCode of contactNumberFormat.countryCodes" [value]="countryCode.code">{{countryCode.code}} {{contactNumberFormat.masks[countryCode.code].format}}</ion-select-option>
+            </ion-select>
+          </ion-col>
+          <ion-col>
+            <input type="text"
+              [attr.maxlength]="activeCountryModelInfo.length"
+              pattern="{{activeCountryModelInfo.pattern}}"
+              placeholder="{{activeCountryModelInfo.placeholder}}"
+              [(ngModel)]="contactNumber"
+              class="contact-input subtitle-1 gray-1"
+              (keydown)="disableArrowKeys($event)"
+              (keyup)="formatContactNumber()" />
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    </ion-item>
+  </ion-card>
+  <ion-button class="practera-btn" [ngClass]="{'mobile-btn': utils.isMobile()}" [disabled]="updating" (click)="updateContactNumber()">
+    <ng-container *ngIf="!updating">Update</ng-container>
+    <ng-container *ngIf="updating">Updating..</ng-container>
+  </ion-button>
 </ng-container>
 <ng-container *ngIf="page === 'go-mobile'">
   <ion-item lines="none" class="text-field">
-      <ion-col>
-        <ion-row class="contact-details">
-          <ion-col size="4">
-            <p class="country-code">{{activeCountryModelInfo.countryCode}}</p>
-          </ion-col>
-          <ion-col>
-            <input maxlength="{{activeCountryModelInfo.length}}" pattern="{{activeCountryModelInfo.pattern}}" placeholder="{{activeCountryModelInfo.placeholder}}" [(ngModel)]="contactNumber" type="text"
-              class="contact-input" (keydown)="disableArrowKeys($event)" (blur)="formatContactNumber()" (keyup)="formatContactNumber()" />
-          </ion-col>
-        </ion-row>
-      </ion-col>
-      <ion-col size="5">
-        <ion-select placeholder="Select Country"
-          name="countryModel"
-          [(ngModel)]="countryModel"
-          (ionChange)="updateCountry()">
-          <ion-select-option *ngFor="let countryCode of contactNumberFormat.countryCodes" [value]="countryCode.code">
-            {{countryCode.name}}
-          </ion-select-option>
-        </ion-select>
-      </ion-col>
+    <ion-grid>
+      <ion-row class="contact-details">
+        <ion-col size="4">
+          <p class="country-code">{{activeCountryModelInfo.countryCode}}</p>
+        </ion-col>
+        <ion-col>
+          <input type="text"
+            [attr.maxlength]="activeCountryModelInfo.length"
+            pattern="{{activeCountryModelInfo.pattern}}"
+            placeholder="{{activeCountryModelInfo.placeholder}}"
+            [(ngModel)]="contactNumber"
+            class="contact-input"
+            (keydown)="disableArrowKeys($event)"
+            (blur)="formatContactNumber()"
+            (keyup)="formatContactNumber()" />
+        </ion-col>
+        <ion-col size="5">
+          <ion-select placeholder="Select Country"
+            name="countryModel"
+            [(ngModel)]="countryModel"
+            (ionChange)="updateCountry()">
+            <ion-select-option *ngFor="let countryCode of contactNumberFormat.countryCodes" [value]="countryCode.code">
+              {{countryCode.name}}
+            </ion-select-option>
+          </ion-select>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
   </ion-item>
 </ng-container>

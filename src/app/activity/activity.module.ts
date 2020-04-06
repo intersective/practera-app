@@ -17,6 +17,8 @@ import { ActivityService } from './activity.service';
   providers: [
     ActivityService
   ],
-  exports: [ SharedModule ]
+  exports: [
+    ActivityComponent
+  ]
 })
 export class ActivityModule {}

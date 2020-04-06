@@ -1,11 +1,11 @@
 <ion-header mode="ios">
-  <ion-toolbar color="light">
-    <ion-title center>Pulse Check</ion-title>
+  <ion-toolbar>
+    <ion-title text-center>Pulse Check</ion-title>
   </ion-toolbar>
 </ion-header>
 <ion-content>
   <div text-center>
-    <p>Before you continue, please spend 10 seconds to answer these questions.</p>
+    <p class="body-1 ion-margin">Before you continue, please spend 10 seconds to answer these questions.</p>
   </div>
 
   <form (ngSubmit)="submit()" [formGroup]="fastFeedbackForm">
@@ -13,18 +13,20 @@
       <question [question]="question" [form]="fastFeedbackForm"></question>
     </ng-container>
 
-    <ion-button type="submit"
-      [disabled]="fastFeedbackForm.invalid || loading"
-      shape="round"
-      expand="block">
-      <ng-container *ngIf="!loading">Submit</ng-container>
-      <ng-container *ngIf="loading && !submissionCompleted">
-        <ion-spinner name="dots"></ion-spinner>
-      </ng-container>
-      <ng-container *ngIf="loading && submissionCompleted">
-        <ion-icon src="/assets/checkmark.svg"></ion-icon>
-      </ng-container>
-    </ion-button>
+    <div class="ion-text-center">
+      <ion-button type="submit"
+        [disabled]="fastFeedbackForm.invalid || loading"
+        shape="round"
+        class="btn-cta">
+        <ng-container *ngIf="!loading">Submit</ng-container>
+        <ng-container *ngIf="loading && !submissionCompleted">
+          <ion-spinner name="dots"></ion-spinner>
+        </ng-container>
+        <ng-container *ngIf="loading && submissionCompleted">
+          <ion-icon src="/assets/checkmark.svg"></ion-icon>
+        </ng-container>
+      </ion-button>
+    </div>
   </form>
 
 </ion-content>

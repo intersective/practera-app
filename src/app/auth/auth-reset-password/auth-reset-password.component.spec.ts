@@ -21,7 +21,7 @@ describe('AuthResetPasswordComponent', () => {
   let utils: UtilsService;
   let notificationSpy: jasmine.SpyObj<NotificationService>;
   let routerSpy: jasmine.SpyObj<Router>;
-  let routeStub: ActivatedRouteStub;
+  let routeSpy: ActivatedRoute;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
@@ -66,11 +66,11 @@ describe('AuthResetPasswordComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(AuthResetPasswordComponent);
     component = fixture.componentInstance;
-    serviceSpy = TestBed.get(AuthService);
-    utils = TestBed.get(UtilsService);
-    notificationSpy = TestBed.get(NotificationService);
-    routerSpy = TestBed.get(Router);
-    routeStub = TestBed.get(ActivatedRoute);
+    serviceSpy = TestBed.inject(AuthService) as jasmine.SpyObj<AuthService>;
+    utils = TestBed.inject(UtilsService);
+    notificationSpy = TestBed.inject(NotificationService) as jasmine.SpyObj<NotificationService>;
+    routerSpy = TestBed.inject(Router) as jasmine.SpyObj<Router>;
+    routeSpy = TestBed.inject(ActivatedRoute);
     serviceSpy.verifyResetPassword.and.returnValue(of({}));
     serviceSpy.resetPassword.and.returnValue(of({}));
   });
@@ -81,10 +81,11 @@ describe('AuthResetPasswordComponent', () => {
 
   describe('when testing ngOnInit()', () => {
     it('should pop up alert and redirect if no key or email passed', () => {
-      routeStub.setParamMap({
+      const params = {
         key: null,
         email: 'abc@test.com'
-      });
+      };
+      routeSpy.snapshot.paramMap.get = jasmine.createSpy().and.callFake(key => params[key]);
       fixture.detectChanges();
       expect(notificationSpy.alert.calls.count()).toBe(1);
       expect(notificationSpy.alert.calls.first().args[0].message).toContain('Invalid');

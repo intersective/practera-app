@@ -1,30 +1,28 @@
-<ion-content color="light" class="pop-up-content" text-center>
+<ion-content color="light" class="pop-up-content" [ngClass]="{'desktop-view': !utils.isMobile()}" text-center>
 
-  <div class="imgage-content">
+  <div class="image-content">
     <div class="image">
-        <img [src]="achievement.image ? achievement.image : '/assets/achievement-popup-default.svg'">
+        <img alt="{{achievement.name}}" [src]="achievement.image ? achievement.image : '/assets/achievement-popup-default.svg'">
     </div>
   </div>
 
-  <div class="details-container">
+  <div class="details-container ion-text-center">
     <div class="div-after-img" *ngIf="type === 'notification'">
-      <p class="title notify">Congratulations</p>
-      <p class="subtitle">You have earned a new badge</p>
-      <div class="description" *ngIf="achievement.name">{{achievement.name}}</div>
-      <ion-text color="medium" *ngIf="achievement.description" text-left>
-        <app-description *ngIf="achievement.description" [content]="achievement.description"></app-description>
-      </ion-text>
+      <p class="headline-6">Congratulations</p>
+      <p class="body-1">You have earned a new badge</p>
+      <div class="description subtitle-1 gray-2" *ngIf="achievement.name">{{achievement.name}}</div>
     </div>
 
     <div class="div-after-img" *ngIf="type !== 'notification'">
-      <p class="title" *ngIf="achievement.name">{{achievement.name}}</p>
-      <p class="points" *ngIf="achievement.points && type !== 'notification'">{{achievement.points}} points!</p>
-      <ion-text color="medium" *ngIf="achievement.description" text-left>
-        <app-description *ngIf="achievement.description" [content]="achievement.description"></app-description>
-      </ion-text>
+      <p class="headline-6" *ngIf="achievement.name">{{achievement.name}}</p>
+      <p class="body-1" *ngIf="achievement.points && type !== 'notification'">{{achievement.points}} points!</p>
     </div>
 
-    <div class="div-after-img">
+    <ion-text color="medium" *ngIf="achievement.description" text-center>
+      <app-description *ngIf="achievement.description" class="body-1 gray-2" [content]="achievement.description" [isInPopup]="true"></app-description>
+    </ion-text>
+
+    <div class="div-after-img button-container">
       <ion-button (click)="confirmed()" shape="round" color="primary" expand="full">OK</ion-button>
     </div>
   </div>

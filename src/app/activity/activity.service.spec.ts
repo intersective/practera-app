@@ -1,13 +1,17 @@
-import { TestBed, fakeAsync, tick } from '@angular/core/testing';
-import { ActivityService, Overview } from './activity.service';
+import { TestBed, fakeAsync, tick, flushMicrotasks } from '@angular/core/testing';
+import { ActivityService } from './activity.service';
 import { of } from 'rxjs';
 import { RequestService } from '@shared/request/request.service';
 import { UtilsService } from '@services/utils.service';
-import { OverviewFixture, RawOverviewRes } from '@testing/fixtures/overview';
+import { NotificationService } from '@shared/notification/notification.service';
+import { Router } from '@angular/router';
+import { MockRouter } from '@testing/mocked.service';
 
 describe('ActivityService', () => {
   let service: ActivityService;
   let requestSpy: jasmine.SpyObj<RequestService>;
+  let routerSpy: jasmine.SpyObj<Router>;
+  let notificationSpy: jasmine.SpyObj<NotificationService>;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -22,30 +26,25 @@ describe('ActivityService', () => {
             'postGraphQL'
           ])
         },
+        {
+          provide: NotificationService,
+          useValue: jasmine.createSpyObj('NotificationService', ['activityCompletePopUp'])
+        },
+        {
+          provide: Router,
+          useClass: MockRouter,
+        },
       ]
     });
-    service = TestBed.get(ActivityService);
-    requestSpy = TestBed.get(RequestService);
+    service = TestBed.inject(ActivityService);
+    requestSpy = TestBed.inject(RequestService) as jasmine.SpyObj<RequestService>;
+    routerSpy = TestBed.inject(Router) as jasmine.SpyObj<Router>;
+    notificationSpy = TestBed.inject(NotificationService) as jasmine.SpyObj<NotificationService>;
   });
 
   it('should be created', () => {
     expect(service).toBeTruthy();
   });
-
-  /*describe('getTasksByActivityId()', () => {
-    const projectId = 1;
-    const activityId = 1;
-
-    it('getOverview should be triggered', fakeAsync (() => {
-      const getOverviewSpy = jasmine.createSpy('getOverview').and.returnValue(of(true));
-      const test = service.getTasksByActivityId(projectId, activityId, {
-        currentTaskId: 1,
-        teamId: 1,
-      });
-      tick();
-      expect(service.getOverview).toHaveBeenCalled();
-    }));
-  });*/
 
   it('when testing getActivity(), should get the correct data', () => {
     const requestResponse = {
@@ -163,20 +162,61 @@ describe('ActivityService', () => {
     service.getActivity(1).subscribe(res => expect(res).toEqual(expected));
   });
 
-  describe('getOverview()', function() {
-    let response;
-    const projectId = 1;
-    const overviewList = OverviewFixture;
-
-    beforeEach(async() => {
-      requestSpy.get.and.returnValue(of({data: overviewList}));
-      response = await service.getOverview(projectId).toPromise();
-    });
-
-    it('should return project overview', () => {
-      expect(requestSpy.get).toHaveBeenCalled();
-      expect(response).toEqual(OverviewFixture);
-    });
+  describe('when testing gotoNextTask()', () => {
+    it('should go to home page', fakeAsync(() => {
+      requestSpy.get.and.returnValue(of({
+        data: {
+          is_last: true,
+          task: null
+        }
+      }));
+      service.gotoNextTask(1, 'assessment', 2);
+      tick();
+      expect(routerSpy.navigate.calls.first().args[0]).toEqual(['app', 'home']);
+      expect(routerSpy.navigate.calls.first().args[1]).toEqual({ queryParams: { activityId: 1, activityCompleted: true }});
+    }));
+    it('should pop up modal', fakeAsync(() => {
+      requestSpy.get.and.returnValue(of({
+        data: {
+          is_last: true,
+          task: {
+            id: 11,
+            name: 'assessment1',
+            type: 'assessment',
+            context_id: 12
+          }
+        }
+      }));
+      service.gotoNextTask(1, 'assessment', 2);
+      tick();
+      expect(notificationSpy.activityCompletePopUp.calls.count()).toBe(1);
+    }));
+    it('should go to assessment page', fakeAsync(() => {
+      requestSpy.get.and.returnValue(of({
+        data: {
+          is_last: false,
+          task: {
+            id: 11,
+            name: 'assessment1',
+            type: 'assessment',
+            context_id: 12
+          }
+        }
+      }));
+      service.gotoNextTask(1, 'assessment', 2).then(res => expect(res).toEqual(['assessment', 'assessment', '1', '12', '11']));
+    }));
+    it('should go to topic page', fakeAsync(() => {
+      requestSpy.get.and.returnValue(of({
+        data: {
+          is_last: false,
+          task: {
+            id: 11,
+            name: 'topic1',
+            type: 'topic'
+          }
+        }
+      }));
+      service.gotoNextTask(1, 'topic', 2).then(res => expect(res).toEqual(['topic', '1', '11']));
+    }));
   });
-
 });

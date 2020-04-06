@@ -1,16 +1,10 @@
-.label {
-  font-weight: bold;
-}
+
 .icon-check {
   font-size: 30px;
 }
-.icon-forward {
-  font-size: 20px;
+.icon-backward, .icon-forward {
+  font-size: 20px !important;
 }
-div {
-  &.icon-item {
-    p {
-      font-size: 12px;
-    }
-  }
+.task-leading-icon {
+  margin-right: 20px;
 }

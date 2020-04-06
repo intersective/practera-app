@@ -92,7 +92,7 @@ export class SharedService {
     const videos = Array.from(document.querySelectorAll( 'video' ));
     if ( iframes ) {
       iframes.forEach(frame => {
-        frame.src = frame.src;
+        frame.src = null;
       });
     }
     if ( videos ) {

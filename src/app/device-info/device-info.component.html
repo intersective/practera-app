@@ -1,0 +1,49 @@
+<ion-content class="ion-padding">
+  <ion-list>
+    <ion-item-divider>
+      <ion-label>
+        General
+      </ion-label>
+    </ion-item-divider>
+    <ion-item>
+      Platform type: {{ platform.platforms() | json }}
+    </ion-item>
+    <ion-item>
+      Current URL: {{ platform.url() }}
+    </ion-item>
+    <ion-item>
+      Height: {{ platform.height() }}
+    </ion-item>
+    <ion-item>
+      Width: {{ platform.width() }}
+    </ion-item>
+  </ion-list>
+  <ion-list>
+    <ion-item-divider>
+      <ion-label>
+        Browser Info
+      </ion-label>
+    </ion-item-divider>
+    <ion-item>
+      is('mobile'): {{ platform.is('mobile') }}
+    </ion-item>
+    <ion-item>
+      Is Mobile: {{ isMobile() }}
+    </ion-item>
+    <ion-item>
+      Agent: {{ navigator.userAgent }}
+    </ion-item>
+    <ion-item>
+      Vendor: {{ navigator.vendor }}
+    </ion-item>
+    <ion-item>
+      Code name: {{ navigator.appCodeName }}
+    </ion-item>
+    <ion-item>
+      Version: {{ navigator.appVersion }}
+    </ion-item>
+    <ion-item>
+      Platform: {{ navigator.platform }}
+    </ion-item>
+  </ion-list>
+</ion-content>

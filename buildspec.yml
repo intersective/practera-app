@@ -3,7 +3,7 @@ version: 0.2
 phases:
   install:
     runtime-versions:
-        nodejs: 10
+      nodejs: 10
     commands:
       - echo Installing source NPM dependencies...
       - apt-get update -y
@@ -11,15 +11,14 @@ phases:
       - npm install forever -g
       - npm install -g @angular/cli
       - npm install
-      - node node_modules/node-sass/scripts/install.js
-      - npm rebuild node-sass
   build:
     commands:
       - echo Build started on `date`
+      - sed -i "s/<CUSTOM_PIWIK_ENVIRONEMENT>/$CUSTOM_PIWIK_ENVIRONEMENT/" src/index.html
       - chmod +x ./env.sh
       - ./env.sh
       # - while IFS='=' read -r name value ; do  if [[ $name == 'FILESTACK_'* ]]; then sed -i "s#<$name>#${!name}#g" src/environments/filestack.ts; fi; done < <(env)
-      - ng build --configuration=custom
+      - ng build --configuration=$BUILD_CONFIG
       - npm run generate-version
   post_build:
     commands:

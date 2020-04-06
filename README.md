@@ -1,5 +1,7 @@
 # Practera-app-v2
 
+![Build Status](https://codebuild.ap-southeast-2.amazonaws.com/badges?uuid=eyJlbmNyeXB0ZWREYXRhIjoiYVA3Zi9rVHlUSlNWT1VkZkY3R1FPS3pwd01EeWo4UTlFanUyQk1UanUveW1VRlgvdnhudVR3RUhsUXBhYk9kYXhmNnJTYjBramVuTkRTc3JyNkZJajZFPSIsIml2UGFyYW1ldGVyU3BlYyI6IkVabm9Va3hoUnhhSmNTSTEiLCJtYXRlcmlhbFNldFNlcmlhbCI6MX0%3D&branch=master)
+
 ## Requirements
 
 - Ionic 4 
@@ -21,13 +23,11 @@ Run `npm run local` to start a development server on your local, and calling 127
 ### Release Processes
 
 1. Merge `develop` branch to `master` (if we are releasing develop branch)
-2. Merge `master` branch to `release/eos` 
-3. Create a new release in [Github](https://github.com/intersective/practera-app-v2/releases) with the release pull request link as the description
-4. Change the version number on Slack `team-dev` channel 
+1. Merge `master` branch to `release/eos` 
+1. Create a new release in [Github](https://github.com/intersective/practera-app-v2/releases) with the release pull request link as the description
+1. Change the version number on Slack `team-dev` channel 
   - `master` is always + 0.01 version ahead of `live`
   - `develop` is always + 0.1 version ahead of `live`
-
-## Deployment Notes
 
 ### New Relics Setup
 
@@ -35,6 +35,28 @@ Run `npm run local` to start a development server on your local, and calling 127
 1. Please select either `newrelic.js.dev` or `newrelic.js.prod` based on the deployment environment
 1. Live environment, use `newrelic.js.prod`. Development environment, use `newrelic.js.dev`
 1. With the step above, new relic can collect and group collected information based on different environment.
+
+### Useful links
+
+1. [Ionic Components](https://ionicframework.com/docs/api/)
+1. [Protractor API](https://www.protractortest.org/#/api)
+1. [Chai API](https://www.chaijs.com/api/bdd/)
+
+## Automation Test
+
+### NPM commands
+
+1. `npm run e2e` test all features for desktop & Android & Iphone
+1. `npm run e2e-dev` used for devs to develop tests
+1. `npm run e2e-sandbox` used to run automation test on sandbox
+
+### Development
+
+- Copy & paste `e2e/config/index.default.ts` and change the name to `index.ts` and fill in correct accounts
+- Copy & paste `e2e/protractor-dev.default.conf.js` and change the name to `protractor-dev.conf.js`
+- Change the feature file path in `e2e/protractor-dev.conf.js` to the feature that you are developing
+- If you need to develop automation test for mobile, uncomment the `chromeOptions->mobileEmulation` part inside `e2e/protractor-dev.conf.js`
+- run `npm run e2e-dev` to see the result
 
 ## External link format
 

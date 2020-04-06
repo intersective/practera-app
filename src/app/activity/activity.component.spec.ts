@@ -9,7 +9,7 @@ import { UtilsService } from '@services/utils.service';
 import { NotificationService } from '@shared/notification/notification.service';
 import { SharedModule } from '@shared/shared.module';
 import { FastFeedbackService } from '@app/fast-feedback/fast-feedback.service';
-import { EventsService } from '@app/events/events.service';
+import { EventListService } from '@app/event-list/event-list.service';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { BrowserStorageService } from '@services/storage.service';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
@@ -54,7 +54,7 @@ describe('ActivityComponent', () => {
   let routerSpy: jasmine.SpyObj<Router>;
   let routeStub: Partial<ActivatedRoute>;
   let notificationSpy: jasmine.SpyObj<NotificationService>;
-  let eventSpy: jasmine.SpyObj<EventsService>;
+  let eventSpy: jasmine.SpyObj<EventListService>;
   let utils: UtilsService;
   let storageSpy: jasmine.SpyObj<BrowserStorageService>;
 
@@ -99,8 +99,8 @@ describe('ActivityComponent', () => {
           useValue: jasmine.createSpyObj('FastFeedbackService', ['pullFastFeedback'])
         },
         {
-          provide: EventsService,
-          useValue: jasmine.createSpyObj('EventsService', ['getEvents'])
+          provide: EventListService,
+          useValue: jasmine.createSpyObj('EventListService', ['getEvents', 'isNotActionable', 'timeDisplayed'])
         },
       ],
     })
@@ -111,14 +111,14 @@ describe('ActivityComponent', () => {
     fixture = TestBed.createComponent(ActivityComponent);
     component = fixture.componentInstance;
     page = new Page(fixture);
-    activitySpy = TestBed.get(ActivityService);
-    routeStub = TestBed.get(ActivatedRoute);
-    routerSpy = TestBed.get(Router);
-    notificationSpy = TestBed.get(NotificationService);
-    utils = TestBed.get(UtilsService);
-    fastFeedbackSpy = TestBed.get(FastFeedbackService);
-    eventSpy = TestBed.get(EventsService);
-    storageSpy = TestBed.get(BrowserStorageService);
+    activitySpy = TestBed.inject(ActivityService) as jasmine.SpyObj<ActivityService>;
+    routeStub = TestBed.inject(ActivatedRoute);
+    routerSpy = TestBed.inject(Router) as jasmine.SpyObj<Router>;
+    notificationSpy = TestBed.inject(NotificationService) as jasmine.SpyObj<NotificationService>;
+    utils = TestBed.inject(UtilsService) as jasmine.SpyObj<UtilsService>;
+    fastFeedbackSpy = TestBed.inject(FastFeedbackService) as jasmine.SpyObj<FastFeedbackService>;
+    eventSpy = TestBed.inject(EventListService) as jasmine.SpyObj<EventListService>;
+    storageSpy = TestBed.inject(BrowserStorageService) as jasmine.SpyObj<BrowserStorageService>;
   });
 
   const mockActivity = {
@@ -202,11 +202,12 @@ describe('ActivityComponent', () => {
   beforeEach(() => {
     activitySpy.getActivity.and.returnValue(of(mockActivity));
     eventSpy.getEvents.and.returnValue(of(mockEvents));
+    eventSpy.isNotActionable.and.returnValue(false);
+    eventSpy.timeDisplayed.and.returnValue('');
     fastFeedbackSpy.pullFastFeedback.and.returnValue(of({}));
     storageSpy.getUser.and.returnValue({
       teamId: 1
     });
-    component.routeUrl = '/test';
   });
 
   it('should create', () => {
@@ -216,16 +217,15 @@ describe('ActivityComponent', () => {
   describe('when testing constructor()', () => {
     it(`should call getEvents once more if an 'update-event' event triggered`, () => {
       utils.broadcastEvent('update-event', {});
-      fixture.detectChanges();
-      fixture.whenStable().then(() => {
-        expect(eventSpy.getEvents.calls.count()).toBe(2);
-        expect(component.events.length).toBeGreaterThan(0);
-      });
+      component.onEnter();
+      expect(eventSpy.getEvents.calls.count()).toBe(2);
+      expect(component.events.length).toBeGreaterThan(0);
     });
   });
 
   describe('when testing onEnter()', () => {
     it('should get correct activity info and events', () => {
+      component.onEnter();
       fixture.detectChanges();
       expect(component.activity).toEqual(mockActivity);
       expect(activitySpy.getActivity.calls.count()).toBe(1);
@@ -246,20 +246,26 @@ describe('ActivityComponent', () => {
   describe('when testing back()', () => {
     it('should navigate to the project page', () => {
       component.back();
-      expect(routerSpy.navigate.calls.first().args[0]).toEqual(['app', 'project']);
+      expect(routerSpy.navigate.calls.first().args[0]).toEqual(['app', 'home']);
     });
   });
 
   describe('when testing goto()', () => {
     it('should navigate to the assessment page correctly', () => {
       component.id = 1;
+      component.navigate.subscribe(event =>
+        expect(event).toEqual({
+          type: 'assessment',
+          contextId: 21,
+          assessmentId: 2
+        })
+      );
       component.goto({
         id: 2,
         type: 'Assessment',
         isLocked: false,
         contextId: 21
       });
-      expect(routerSpy.navigate.calls.first().args[0]).toEqual(['assessment', 'assessment', 1, 21, 2]);
     });
 
     it('should pop up locked message', () => {
@@ -279,8 +285,14 @@ describe('ActivityComponent', () => {
         name: 'sub',
         image: 'image'
       });
+      component.navigate.subscribe(event =>
+        expect(event).toEqual({
+          type: 'assessment',
+          contextId: 21,
+          assessmentId: 2
+        })
+      );
       notificationSpy.lockTeamAssessmentPopUp.calls.first().args[1]({data: true});
-      expect(routerSpy.navigate.calls.first().args[0]).toEqual(['assessment', 'assessment', 1, 21, 2]);
     });
 
     it('should pop up not in team message', () => {
@@ -300,11 +312,16 @@ describe('ActivityComponent', () => {
 
     it('should navigate to correct topic page', () => {
       component.id = 1;
+      component.navigate.subscribe(event =>
+        expect(event).toEqual({
+          type: 'topic',
+          topicId: 2
+        })
+      );
       component.goto({
         id: 2,
         type: 'Topic'
       });
-      expect(routerSpy.navigate.calls.first().args[0]).toEqual(['topic', 1, 2]);
     });
 
     it('should pop up locked message', () => {

@@ -1,13 +1,15 @@
 <div class="badge" (click)="showAchievementDetails()">
-  <img
-    [src]="achievement.image ? achievement.image : '/assets/achievement.svg'"
+  <img [src]="achievement.image ? achievement.image : '/assets/achievement.svg'"
     [ngClass]="{'black-white-image': !achievement.isEarned}">
-  <ion-icon *ngIf="achievement.isEarned" name="checkmark-circle" color="primary" ></ion-icon>
-  <ion-icon *ngIf="!achievement.isEarned" name="lock" color="medium"></ion-icon>
+  <ion-icon *ngIf="achievement.isEarned" name="checkmark-circle" color="primary"></ion-icon>
+  <ion-icon *ngIf="!achievement.isEarned" name="lock-closed" color="medium"></ion-icon>
 </div>
-<div *ngIf="showName" class="badge-name">
+
+<div *ngIf="showName" class="badge-name body-2" [ngClass]="achievement.isEarned ? 'gray-3' : 'gray-0'">
   {{achievement.name}}
 </div>
-<ion-text *ngIf="achievement.points" class="badge-point" [ngClass]="{'badge-point-unearned': !achievement.isEarned }">
+
+<div *ngIf="achievement.points" class="badge-point subtitle-2"
+  [ngClass]="{'badge-point-unearned': !achievement.isEarned, 'desktop' : !utils.isMobile()}">
   {{achievement.points}} Points
-</ion-text>
+</div>

@@ -1,34 +1,36 @@
 <ion-header mode="ios">
-  <ion-toolbar color="light">
-    <ion-icon name="arrow-back" (click)="back()" color="primary" slot="start" margin-start></ion-icon>
-    <ion-title text-center>{{selectedChat.is_team ? selectedChat.team_name : selectedChat.name}}</ion-title>
+  <ion-toolbar [ngClass]="{'ion-toolbar-absolute': !utils.isMobile()}">
+    <ion-icon *ngIf="utils.isMobile()" name="arrow-back" (click)="back()" color="primary" slot="start" margin-start></ion-icon>
+    <ion-title class="ion-text-center" [ngClass]="{
+      'subtitle-2': !utils.isMobile()
+    }">{{selectedChat.is_team ? selectedChat.team_name : selectedChat.name}}</ion-title>
   </ion-toolbar>
 </ion-header>
-<ion-content color="light" [scrollEvents]="true" (ionScroll)="loadMoreMessages($event)">
+<ion-content [ngClass]="{'ion-content-absolute-with-footer': !utils.isMobile()}" color="light" [scrollEvents]="true" (ionScroll)="loadMoreMessages($event)">
   <ng-container *ngIf="loadingChatMessages">
-    <div text-center>
+    <div class="ion-text-center">
       <ion-spinner></ion-spinner>
     </div>
   </ng-container>
-  <ion-list lines="none" color="light" class="chat-list">
+  <ion-list lines="none" color="light" class="chat-list" [ngClass]="{'desktop-view': !utils.isMobile()}">
     <ng-container *ngFor="let message of messageList">
       <ion-item color="light">
         <ng-container *ngIf="checkIsLastMessage(message)">
-          <ion-avatar [ngClass]="!checkToShowMessageTime(message) && checkIsLastMessage(message) ? 'no-time': ''" slot="start">
+          <ion-avatar [ngClass]="getAvatarClass(message)" slot="start">
             <img [src]="message.sender_image">
           </ion-avatar>
         </ng-container>
 
         <ng-container *ngIf="!message.file; else attachment">
           <ion-label [ngClass]="getClassForMessageBubble(message)">
-            <div *ngIf="checkToShowMessageTime(message)" class="time">
+            <div *ngIf="checkToShowMessageTime(message)" class="time caption gray-2">
               <p>{{getMessageDate(message.sent_time)}}</p>
             </div>
             <div class="message-body">
-              <p class="message-text" [innerHTML]="message.message"></p>
+              <p class="message-text subtitle-1" [innerHTML]="message.message"></p>
             </div>
             <ng-container *ngIf="!message.noAvatar && selectedChat.is_team">
-              <div class="seen-text">
+              <div class="seen-text caption gray-2">
                 <p>{{message.sender_name}}</p>
               </div>
             </ng-container>
@@ -62,13 +64,12 @@
               </div>
             </ng-container>
 
-
             <ng-container *ngIf="message.file && (
               !message.file.mimetype.includes('image') && !message.file.mimetype.includes('video')
             )">
               <ion-item class="message-body general-attachment" (click)="previewFile(message.file)">
                 <ion-ripple-effect></ion-ripple-effect>
-                <ion-icon name="document" slot="start"></ion-icon>
+                <ion-icon name="document-outline" slot="start"></ion-icon>
                 <ion-label color="primary">
                   {{ message.file.filename }}
                 </ion-label>
@@ -79,7 +80,7 @@
             </ng-container>
 
             <ng-container *ngIf="!message.noAvatar && selectedChat.is_team">
-              <div class="seen-text">
+              <div class="seen-text caption gray-2">
                 <p>{{message.sender_name}}</p>
               </div>
             </ng-container>
@@ -106,21 +107,18 @@
       </ion-item>
     </ng-container>
   </ion-list>
+  <ng-container *ngIf="!messageList.length && !loadingChatMessages">
+    <div class="ion-text-center not-started-empty-status">
+      <img class="image" [ngClass]="{'desktop': !utils.isMobile()}" src="/assets/icon-epmty-chat.svg">
+      <p class="head-text headline-5 gray-3">Type your first message!</p>
+      <p class="sub-text subtitle-1 gray-1">It's time to start a chat</p>
+    </div>
+  </ng-container>
 </ion-content>
-<ion-footer class="footer">
+<ion-footer class="footer" [ngClass]="{'ion-footer-absolute': !utils.isMobile(), 'focus': showBottomAttachmentButtons}">
   <ion-grid class="white-bg">
-    <ion-row nowrap no-padding align-items-end>
-      <ion-col size="1" no-padding text-center>
-        <ion-button (click)="attach('image')" fill="clear" no-padding>
-          <ion-icon name="photos" slot="icon-only"></ion-icon>
-        </ion-button>
-      </ion-col>
-      <ion-col size="1" no-padding text-center>
-        <ion-button (click)="attach('any')" fill="clear" no-padding>
-          <ion-icon name="attach" slot="icon-only"></ion-icon>
-        </ion-button>
-      </ion-col>
-      <ion-col size="9" align-self-center>
+    <ion-row nowrap class="ion-no-padding">
+      <ion-col [size]="!utils.isMobile() || showBottomAttachmentButtons ? '12' : '9'" class="ion-align-self-center">
         <ion-textarea
           placeholder="Enter your message"
           required="true"
@@ -129,13 +127,38 @@
           (ngModelChange)="typing()"
           appAutoresize="100"
           rows="1"
+          (ionFocus)="showBottomAttachmentButtons = true;"
         ></ion-textarea>
       </ion-col>
-      <ion-col size="1" no-padding text-center>
-        <ion-button (click)="sendMessage()" type="submit" fill="clear" no-padding>
-          <ion-icon name="send" slot="icon-only"></ion-icon>
+      <ng-container *ngIf="utils.isMobile() && !showBottomAttachmentButtons">
+        <ng-container *ngTemplateOutlet="attachmentButtons; context: { offset: 0 }"></ng-container>
+      </ng-container>
+    </ion-row>
+    <ion-row nowrap class="ion-no-padding ion-align-items-end" *ngIf="!utils.isMobile() || showBottomAttachmentButtons">
+      <ng-container *ngTemplateOutlet="attachmentButtons; context: { offset: 8 }"></ng-container>
+      <ion-col class="ion-no-padding ion-text-center">
+        <ion-button (click)="sendMessage()" type="submit" fill="clear" class="ion-no-padding">
+          <ion-icon name="send-outline" slot="icon-only"></ion-icon>
         </ion-button>
       </ion-col>
     </ion-row>
   </ion-grid>
 </ion-footer>
+
+<ng-template #attachmentButtons let-offset="offset">
+  <ion-col [offset]="offset" class="ion-no-padding ion-text-center">
+    <ion-button (click)="attach('video')" fill="clear" class="ion-no-padding">
+      <ion-icon name="film-outline" slot="icon-only"></ion-icon>
+    </ion-button>
+  </ion-col>
+  <ion-col class="ion-no-padding ion-text-center">
+    <ion-button (click)="attach('image')" fill="clear" class="ion-no-padding">
+      <ion-icon name="images-outline" slot="icon-only"></ion-icon>
+    </ion-button>
+  </ion-col>
+  <ion-col class="ion-no-padding ion-text-center">
+    <ion-button (click)="attach('any')" fill="clear" class="ion-no-padding">
+      <ion-icon name="attach-outline" slot="icon-only"></ion-icon>
+    </ion-button>
+  </ion-col>
+</ng-template>

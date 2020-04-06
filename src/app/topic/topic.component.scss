@@ -2,20 +2,40 @@
   font-size: small;
 }
 .file-name-view {
-  span {
-    font-size: 0.7em;
+  p {
+    margin: 0;
+    font-size: 14px;
   }
+}
+.icon-backward {
+  font-size: 20px !important;
 }
 
 .margin-right {
   margin-right: 10px;
 }
-.topic-icons {
+.supporting-files {
+  font-size: 14px;
+  line-height: 20px;
   ion-icon {
     font-size: 20px;
   }
 }
+.practera-card {
+  margin: 18px 0;
+}
 
-ion-footer ion-toolbar ion-button.continue {
-  margin: 0 16px;
+.video-container {
+  position: relative;
+  padding-bottom: 56.25%;
+  &.desktop-view {
+    padding-bottom: 40%;
+  }
+}
+.hover-pointer {
+  cursor: pointer;
+}
+.footer-action {
+  height: 40px;
+  margin: 10px 20px;
 }

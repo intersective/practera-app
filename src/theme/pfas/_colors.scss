@@ -1,0 +1,29 @@
+.surface-light {
+  color: var(--practera-surface-light) !important;
+}
+.surface {
+  color: var(--practera-surface) !important;
+}
+.gray-0 {
+  color: var(--practera-30-Percent-gray) !important;
+}
+.gray-1 {
+  color: var(--practera-40-Percent-gray) !important;
+}
+.gray-2 {
+  color: var(--practera-60-Percent-gray) !important;
+}
+.gray-3 {
+  color: var(--practera-80-Percent-gray) !important;
+}
+.black {
+  color: black !important;
+}
+
+
+.textarea {
+  border-color: #ccc;
+    border-width: 1px;
+    border-style: dashed;
+    border-radius: 5px;
+}

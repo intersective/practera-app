@@ -1,15 +1,14 @@
-ion-input {
-    font-size: small !important;
-}
-.terms-and-conditions {
-    font-size: small !important;
-}
-ion-lis {
-    .item:last-child {
-        border: none !important;
-    }
-}
-
-.error-message {
-    color: var(--ion-color-danger) !important;
+.list-terms {
+  text-align: left;
+  background: transparent;
+  margin: auto;
+  margin-top: 16px;
+  max-width: 480px;
+  ion-checkbox {
+    vertical-align: middle;
+    margin-right: 16px;
+  }
+  a {
+    cursor: pointer;
+  }
 }

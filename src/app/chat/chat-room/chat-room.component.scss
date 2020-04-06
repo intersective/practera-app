@@ -1,13 +1,46 @@
 $message-body-size: 224px;
 
+.not-started-empty-status {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%,-50%);
+  .head-text {
+    margin-bottom: 0px;
+    margin-top: 0px;
+    &.desktop {
+      margin-top: 24px;
+    }
+  }
+  .sub-text {
+    margin-top: 5px;
+  }
+  .image {
+    min-width: 96px;
+    min-height: 96px;
+    max-width: 96px;
+    max-height: 96px;
+    &.desktop {
+      min-width: 120px;
+      min-height: 120px;
+      max-width: 120px;
+      max-height: 120px;
+    }
+  }
+}
+
 .chat-list {
   background-color: transparent !important;
-
   ion-item {
     ion-avatar {
-      margin: 2px 6px 2px 0 !important;
+      width: 32px;
+      height: 32px;
+      margin: 0 12px 2px 0 !important;
       margin-left: -8px !important;
       &.no-time {
+        margin-top: 8% !important;
+      }
+      &.no-time-team {
         margin-top: -8% !important;
       }
     }
@@ -16,13 +49,12 @@ $message-body-size: 224px;
       .time {
         width: 100%;
         text-align: center;
-        color: var(--practera-chat-color-time-text-color);
         margin-bottom: 8px;
       }
 
       .message-body {
         padding: 8px 16px;
-        min-width: 73px;
+        min-width: 48px;
         max-width: $message-body-size;
         border-radius: 25px;
         width: fit-content;
@@ -36,20 +68,10 @@ $message-body-size: 224px;
 
         p, .message-text {
           color: black;
-          font-size: 16px;
-          line-height: 24px;
           margin: 0;
           text-align: left;
           user-select: all !important;
           white-space: pre-wrap !important;
-
-          a.linkified {
-            color: black;
-            font-size: 16px;
-            line-height: 24px;
-            margin: 0;
-            text-align: left;
-          }
         }
 
         &.video-attachment-container {
@@ -104,7 +126,6 @@ $message-body-size: 224px;
 
       .seen-text {
         padding: 8px 16px;
-        color: var(--practera-chat-color-time-text-color);
       }
 
       &.received-messages {
@@ -115,17 +136,18 @@ $message-body-size: 224px;
         }
 
         .time {
-          margin-left: -10% !important;
+          margin-left: -14% !important;
           width: -webkit-fill-available !important;
         }
 
         &.no-avatar {
-          margin-left: 10%;
+          margin-left: 12%;
         }
       }
 
       &.send-messages {
         text-align: right;
+        margin-right: 0;
 
         .message-body {
           background-color: var(--ion-color-primary);
@@ -140,9 +162,37 @@ $message-body-size: 224px;
 
           .message-text {
             color: white !important;
-            a.linkified {
-              color: white;
-            }
+          }
+        }
+      }
+    }
+  }
+
+  &.desktop-view {
+    ion-item {
+      ion-avatar {
+        margin-left: 0 !important;
+        margin-top: 3% !important;
+        &.no-time {
+          margin-top: 0 !important;
+        }
+        &.no-time-team {
+          margin-top: -3% !important;
+        }
+        &.with-time-team {
+          margin-top: 0 !important;
+        }
+      }
+      ion-label {
+        .time {
+          margin-left: 2.5% !important;
+        }
+        &.received-messages {
+          .time {
+            margin-left: 0 !important;
+          }
+          &.no-avatar {
+            margin-left: 44px !important;
           }
         }
       }
@@ -159,18 +209,40 @@ $message-body-size: 224px;
   width: 100% !important;
   text-align: left !important;
 }
+.ion-content-absolute-with-footer {
+  height: calc(100% - 155px);
+}
 
 .footer {
-  ion-grid {
-    background-color: white;
-    border-top: 0.1px solid var(--practera-chat-footer-border-color) !important;
+  min-height: 48px;
+  padding: 0;
+
+  &.ion-footer-absolute {
+    height: 96px;
+    ion-grid {
+      padding: 0;
+      min-height: 96px;
+    }
+  }
+
+  &.focus {
+    min-height: 96px;
+    ion-grid {
+      padding: 0;
+      min-height: 96px;
+    }
   }
 
   ion-grid {
+    background-color: white;
+    min-height: 48px;
     ion-row {
+      min-height: 48px;
       ion-col {
+        min-height: 48px;
         ion-button {
-          min-height: 28px;
+          padding-top: 6px;
+          min-height: 24px;
           max-height: 100px;
           height: auto;
           ion-icon {
@@ -182,6 +254,7 @@ $message-body-size: 224px;
           --padding-end: 0;
           --padding-bottom: 0;
           --padding-start: 0;
+          margin-top: 8px;
         }
       }
     }

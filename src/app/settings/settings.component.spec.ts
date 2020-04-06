@@ -44,7 +44,7 @@ describe('SettingsComponent', () => {
         },
         {
           provide: BrowserStorageService,
-          useValue: jasmine.createSpyObj('BrowserStorageService', ['getUser', 'setUser'])
+          useValue: jasmine.createSpyObj('BrowserStorageService', ['getUser', 'setUser', 'get'])
         },
         {
           provide: AuthService,
@@ -66,13 +66,13 @@ describe('SettingsComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(SettingsComponent);
     component = fixture.componentInstance;
-    settingsSpy = TestBed.get(SettingService);
-    routerSpy = TestBed.get(Router);
-    utils = TestBed.get(UtilsService);
-    fastFeedbackSpy = TestBed.get(FastFeedbackService);
-    storageSpy = TestBed.get(BrowserStorageService);
-    authSpy = TestBed.get(AuthService);
-    newRelicSpy = TestBed.get(NewRelicService);
+    settingsSpy = TestBed.inject(SettingService) as jasmine.SpyObj<SettingService>;
+    routerSpy = TestBed.inject(Router) as jasmine.SpyObj<Router>;
+    utils = TestBed.inject(UtilsService);
+    fastFeedbackSpy = TestBed.inject(FastFeedbackService) as jasmine.SpyObj<FastFeedbackService>;
+    storageSpy = TestBed.inject(BrowserStorageService) as jasmine.SpyObj<BrowserStorageService>;
+    authSpy = TestBed.inject(AuthService) as jasmine.SpyObj<AuthService>;
+    newRelicSpy = TestBed.inject(NewRelicService) as jasmine.SpyObj<NewRelicService>;
 
     storageSpy.getUser.and.returnValue({
       email: 'test@test.com',
@@ -81,6 +81,9 @@ describe('SettingsComponent', () => {
       name: 'student',
       programName: 'program'
     });
+
+    storageSpy.get.and.returnValue([]);
+
     fastFeedbackSpy.pullFastFeedback.and.returnValue(of({}));
     newRelicSpy.actionText.and.returnValue('');
     newRelicSpy.setPageViewName.and.returnValue('');
@@ -93,6 +96,7 @@ describe('SettingsComponent', () => {
   });
 
   it('when testing onEnter(), it should get correct data', () => {
+    spyOn<any>(component, '_getCurrentProgramImage').and.returnValue('');
     fixture.detectChanges();
     expect(component.profile).toEqual({
       email: 'test@test.com',
@@ -107,7 +111,7 @@ describe('SettingsComponent', () => {
 
   it('should navigate to switcher page', () => {
     component.switchProgram();
-    expect(routerSpy.navigate.calls.first().args[0]).toEqual(['/switcher']);
+    expect(routerSpy.navigate.calls.first().args[0]).toEqual(['switcher', 'switcher-program']);
   });
 
   it('should allow access to T&C file', () => {

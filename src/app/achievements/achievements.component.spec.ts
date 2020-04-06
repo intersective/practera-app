@@ -75,8 +75,8 @@ describe('AchievementsComponent', () => {
     fixture = TestBed.createComponent(AchievementsComponent);
     component = fixture.componentInstance;
     page = new Page(fixture);
-    achievementsSpy = TestBed.get(AchievementsService);
-    routerSpy = TestBed.get(Router);
+    achievementsSpy = TestBed.inject(AchievementsService) as jasmine.SpyObj<AchievementsService>;
+    routerSpy = TestBed.inject(Router) as jasmine.SpyObj<Router>;
   });
 
   const mockAchievements = [
@@ -115,6 +115,7 @@ describe('AchievementsComponent', () => {
     });
 
     it(`should get correct achievements`, fakeAsync(() => {
+      spyOn(component.storage, 'get').and.returnValue({});
       fixture.detectChanges();
       fixture.whenStable().then(() => {
         expect(component.loadingAchievements).toBe(false);

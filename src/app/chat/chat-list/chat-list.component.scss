@@ -1,8 +1,11 @@
+.ion-toolbar-absolute {
+  text-align: center;
+}
 ion-avatar {
-
+  text-align: center;
   ion-icon {
-    width: 36px;
-    height: 36px;
+    width: 32px;
+    height: 32px;
     color: white;
   }
 
@@ -14,21 +17,9 @@ ion-avatar {
 }
 
 clickable-item {
-  &.unread {
-    ion-label {
-      h2 {
-        color: var(--ion-color-primary);
-      }
-    }
-
-    .time-container {
-      span {
-        color: var(--ion-color-primary);
-      }
-    }
-
+  .bold {
+    font-weight: bold;
   }
-
   .item-inner {
     border: none !important;
   }
@@ -45,18 +36,15 @@ clickable-item {
 
       span {
         border: 1px solid var(--ion-color-primary);
-        color: var(--ion-color-primary);
         padding: 1px 5px 0 5px;
         border-radius: 10px;
         vertical-align: baseline;
         text-align: center;
         white-space: nowrap;
-        font-size: 12px;
-        line-height: 16px;
-        margin-left: 3px;
         max-width: 70% !important;
         text-overflow: inherit;
         overflow: inherit;
+        color: var(--ion-color-primary);
       }
 
       .chat-name {
@@ -64,8 +52,10 @@ clickable-item {
         overflow: inherit;
         max-width: 90%;
         width: fit-content;
+        margin-right: 3px;
 
         &.team-channel {
+          margin-right: 3px;
           max-width: -webkit-fill-available !important;
           width: auto !important;
           .chat-name-container {
@@ -80,19 +70,35 @@ clickable-item {
   .time-container {
     width: 22% !important;
     display: grid;
-    text-align: -webkit-right;
+    justify-items: end;
     margin-left: 4px !important;
 
-    span {
-      font-size: 14px;
-      color: var(--practera-chat-color-time-text-color);
-    }
-
     ion-badge {
+      margin-top: 2px;
       max-width: 43px !important;
+      max-height: 20px;
+      min-width: 20px;
+      min-height: 20px;
       border-radius: 8px !important;
       width: fit-content;
     }
 
+  }
+}
+.desktop-view {
+  .time-container {
+    width: auto !important;
+    height: 100%;
+    padding-bottom: 10px;
+    padding-top: 10px;
+  }
+  clickable-item {
+    ion-label {
+      .chat-name-container {
+        span {
+          max-width: none !important;
+        }
+      }
+    }
   }
 }

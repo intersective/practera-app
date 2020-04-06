@@ -1,29 +1,29 @@
 <ion-header mode="ios">
-  <ion-toolbar color="light">
-    <ion-title text-center>It's 10x better on mobile!</ion-title>
+  <ion-toolbar>
+    <ion-title class="ion-text-center">It's 10x better on mobile!</ion-title>
   </ion-toolbar>
 </ion-header>
 <ion-content class='go-mobile'>
   <form (ngSubmit)="submit()" >
   <ion-grid>
     <div *ngIf="profile.contactNumber && saved">
-      <ion-row justify-content-center>
-        <ion-col class="glazing-effect" align-self-center text-center>
+      <ion-row class="ion-justify-content-center">
+        <ion-col class="glazing-effect ion-align-self-center ion-text-center">
           <img src='/assets/img/mobile.png'/>
           <P>You can now launch Practera on your phone for a better experience. Just click below!</P>
         </ion-col>
       </ion-row>
     </div>
     <div *ngIf="!profile.contactNumber || !saved">
-      <ion-row justify-content-center>
-        <ion-col class="glazing-effect" align-self-center text-center>
+      <ion-row class="ion-justify-content-center">
+        <ion-col class="glazing-effect ion-align-self-center ion-text-center">
           <img src='/assets/img/mobile.png'/>
           <P>Add your mobile number to get the most out of Practera. We will never send you spam!</P>
         </ion-col>
       </ion-row>
       <app-contact-number-form [page]="'go-mobile'" (updateNumber)="updateCountry()"></app-contact-number-form>
     </div>
-    <div text-center>
+    <div class="ion-text-center">
         <ion-button expand="block" type="submit" [disabled]="invalidNumber || sendingSMS">
           Send Instant-Login via SMS  <ion-spinner *ngIf="sendingSMS"></ion-spinner>
         </ion-button>

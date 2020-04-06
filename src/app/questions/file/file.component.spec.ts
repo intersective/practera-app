@@ -11,7 +11,7 @@ describe('FileComponent', () => {
   let fixture: ComponentFixture<FileComponent>;
   let filestackSpy: jasmine.SpyObj<FilestackService>;
 
-  beforeEach(async(() => {
+  beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [ SharedModule, ReactiveFormsModule ],
       declarations: [ FileComponent ],
@@ -24,12 +24,12 @@ describe('FileComponent', () => {
       ],
     })
     .compileComponents();
-  }));
+  });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(FileComponent);
     component = fixture.componentInstance;
-    filestackSpy = TestBed.get(FilestackService);
+    filestackSpy = TestBed.inject(FilestackService) as jasmine.SpyObj<FilestackService>;
   });
 
   beforeEach(() => {

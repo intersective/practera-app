@@ -16,6 +16,7 @@ export interface User {
   linkedinUrl?: string;
   programId?: number;
   programName?: string;
+  programImage?: string;
   experienceId?: number;
   timelineId?: number;
   projectId?: number;
@@ -27,6 +28,9 @@ export interface User {
   hasReviewRating?: boolean;
   truncateDescription?: boolean;
   enrolment?: any;
+  hasEvents?: boolean;
+  hasReviews?: boolean;
+  LtiReturnUrl?: string;
 }
 
 export interface Config {
@@ -88,5 +92,37 @@ export class BrowserStorageService {
   setConfig(config: Config) {
     this.set('config', Object.assign(this.getConfig(), config));
     return true;
+  }
+  /*********
+    'bookedEventActivityIds' records the single booking activity ids that event has been booked for current user
+  **********/
+  // get the list of activity ids in local storage to check whether we need to show the single booking pop up or not
+  getBookedEventActivityIds(): Array<number> {
+    return this.get('bookedEventActivityIds') || [];
+  }
+
+  // 1. set this value when we get events data from API
+  // 2. record the activity id when user book an event
+  setBookedEventActivityIds(id: number): void {
+    const ids = this.getBookedEventActivityIds();
+    ids.push(id);
+    this.set('bookedEventActivityIds', ids);
+  }
+
+  // remove the activity id when user cancel booking
+  removeBookedEventActivityIds(id: number): void {
+    const ids = this.getBookedEventActivityIds();
+    const index = ids.indexOf(id);
+    if (index < 0) {
+      return;
+    }
+    ids.splice(index, 1);
+    this.set('bookedEventActivityIds', ids);
+    return;
+  }
+
+  // remove this cache from local storage
+  initBookedEventActivityIds(): void {
+    this.remove('bookedEventActivityIds');
   }
 }

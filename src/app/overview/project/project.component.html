@@ -1,0 +1,100 @@
+<ion-grid class="project-list ion-padding">
+  <ng-container *ngIf="!loadingMilestone">
+    <ion-item class="project-item" [ngClass]="{'mobile': isMobile}" lines="none" *ngFor="let milestone of milestones" color="light" #milestoneRef @newLoad>
+      <div color="light" class="project-card" id="milestone-{{milestone.id}}">
+        <div class="milestone" [ngClass]="{'lock': milestone.isLocked}">
+          <div class="expandable">
+            <ion-item lines="none" color="light" (click)="toggleGroup(milestone)">
+              <ion-icon
+                *ngIf="milestone.isLocked"
+                name="lock-closed"
+                color="medium"
+                class="milestone-lock"
+                slot="start"></ion-icon>
+
+              <ion-label
+                class="milestone-title headline-6"
+                [ngClass]="{'locked': milestone.isLocked}">{{ milestone.name }}</ion-label>
+
+              <ion-icon *ngIf="!milestone.isLocked && (milestone.Activity && milestone.Activity.length > 0)"
+                slot="end"
+                [name]="isCollapsed(milestone) ? 'chevron-down' : 'chevron-up'"
+                class="collapsible-icon"
+              ></ion-icon>
+            </ion-item>
+
+            <ion-card-content
+              class="milestone-description"
+              *ngIf="milestone.description && !isCollapsed(milestone)">
+              <app-description [content]="milestone.description" class="body-2"></app-description>
+            </ion-card-content>
+          </div>
+
+          <div *ngIf="milestone.Activity && !milestone.isLocked" class="milestone-activities">
+            <ion-list class="activity-list" color="light">
+
+              <ion-row *ngIf="!isCollapsed(milestone)" [@slide]>
+                <ion-col size-sm="9" size-xs="12"
+                  *ngFor="let activity of milestone.Activity">
+                  <ion-item class="activity-item" [ngClass]="{'mobile': isMobile}" color="light">
+                    <ng-container *ngIf="!activity.isLocked; else activityLocked">
+                      <div class="row-cards">
+                        <ion-icon *ngIf="activity.progress >= 1; else activityCircleProgress" name="checkmark-circle" class="icon-done" color="primary"></ion-icon>
+                        <ng-template #activityCircleProgress>
+                          <app-circle-progress class="progress-icon" [data]='{ percent: activity.progress * 100 }' (click)="!activity.isLocked && goToActivity(activity.id)"></app-circle-progress>
+                        </ng-template>
+                      </div>
+                    </ng-container>
+                    <ng-template #activityLocked>
+                      <div class="row-cards">
+                        <ion-icon name="lock-closed" color="medium" class="icon-lock"></ion-icon>
+                      </div>
+                    </ng-template>
+                    <app-activity-card id="activity-card-{{activity.id}}" [activity]="activity"
+                      (click)="!activity.isLocked && goToActivity(activity.id)"
+                      class="activity-card"
+                    ></app-activity-card>
+                  </ion-item>
+                </ion-col>
+              </ion-row>
+            </ion-list>
+          </div>
+        </div>
+      </div>
+    </ion-item>
+  </ng-container>
+
+  <ng-container *ngIf="loadingMilestone">
+    <ion-item *ngFor="let milestone of [1, 1]" class="project-item" [ngClass]="{'mobile': isMobile}" lines="none" color="light">
+      <div color="light" class="project-card">
+        <div class="milestone">
+          <div class="expandable">
+            <ion-item>
+              <ion-label class="milestone-title headline-6">
+                <ion-skeleton-text animated style="width: 40%;"></ion-skeleton-text>
+              </ion-label>
+            </ion-item>
+          </div>
+          <div class="milestone-activities">
+            <ion-list class="activity-list" color="light">
+              <ion-row>
+                <ion-col *ngFor="let activity of [1, 1]" size-sm="9" size-xs="12">
+                  <ion-item class="activity-item" [ngClass]="{'mobile': isMobile}" color="light">
+                    <div class="row-cards">
+                      <ion-avatar class="skeleton-progress">
+                        <ion-skeleton-text animated></ion-skeleton-text>
+                      </ion-avatar>
+                    </div>
+                    <app-activity-card loading="true" activity="false" class="activity-card"></app-activity-card>
+                  </ion-item>
+                </ion-col>
+              </ion-row>
+            </ion-list>
+          </div>
+        </div>
+      </div>
+    </ion-item>
+  </ng-container>
+
+</ion-grid>
+
