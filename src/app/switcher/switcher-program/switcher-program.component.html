@@ -16,9 +16,9 @@
             <clickable-item color="light" [lines]="'none'" [backgroundColor]="program.program.config.theme_color" [isSwitcherCard]="true">
               <ion-label class="subtitle-1">
                 {{ program.program.name }}
-                <ion-progress-bar *ngIf="program.progress !== undefined" [value]="program.progress"></ion-progress-bar>
+                <!-- <ion-progress-bar *ngIf="program.progress !== undefined" [value]="program.progress"></ion-progress-bar> -->
               </ion-label>
-              <ion-badge *ngIf="program.todoItems !== undefined" slot="end">{{ program.todoItems }}</ion-badge>
+              <!-- <ion-badge *ngIf="program.todoItems !== undefined" slot="end">{{ program.todoItems }}</ion-badge> -->
               <ion-icon name="chevron-forward" slot="end"></ion-icon>
             </clickable-item>
           </ion-card-content>
