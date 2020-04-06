@@ -1,5 +1,6 @@
 import { TopicService, Topic } from './topic.service';
-import { Component, OnInit, NgZone, Input, Output, EventEmitter } from '@angular/core';
+import { Component, NgZone, Input, Output, EventEmitter, Inject } from '@angular/core';
+import { DOCUMENT } from '@angular/common';
 import { EmbedVideoService } from 'ngx-embed-video';
 import { Router, ActivatedRoute } from '@angular/router';
 import { FilestackService } from '@shared/filestack/filestack.service';
@@ -11,6 +12,7 @@ import { ActivityService, Task } from '../activity/activity.service';
 import { SharedService } from '@services/shared.service';
 import { Subscription, Observable } from 'rxjs';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
+import * as Plyr from 'plyr';
 
 @Component({
   selector: 'app-topic',
@@ -41,6 +43,7 @@ export class TopicComponent extends RouterEnter {
   isLoadingPreview = false;
   askForMarkAsDone: boolean;
   redirecting = false;
+  player;
 
   constructor(
     private topicService: TopicService,
@@ -54,9 +57,11 @@ export class TopicComponent extends RouterEnter {
     private activityService: ActivityService,
     private sharedService: SharedService,
     private ngZone: NgZone,
-    private newRelic: NewRelicService
+    private newRelic: NewRelicService,
+    @Inject(DOCUMENT) private readonly document: Document
   ) {
     super(router);
+    // this.player = new Plyr('#player', {});
   }
 
   private _initialise() {
@@ -74,6 +79,7 @@ export class TopicComponent extends RouterEnter {
     this.isLoadingPreview = false;
     this.btnToggleTopicIsDone = false;
     this.askForMarkAsDone = false;
+    // console.log(new Plyr('#player', {}));
   }
 
   onEnter() {
@@ -90,6 +96,7 @@ export class TopicComponent extends RouterEnter {
     }
     this._getTopic();
     this._getTopicProgress();
+    setTimeout(() => this.player = new Plyr(this.document.getElementById('player'), {ratio: '16:9', autoplay: true}), 2000);
     setTimeout(() => this.askForMarkAsDone = true, 15000);
   }
 
