@@ -1,11 +1,12 @@
-<ion-split-pane *ngIf="!utils.isMobile()" contentId="main-content" when="xs">
+<ion-split-pane *ngIf="!utils.isMobile()" contentId="main-events" when="xs">
   <app-event-list
     #eventList
+    style="display: flex"
     [activityId]="activityId"
     [eventId]="eventId"
     (navigate)="goto($event)"
   ></app-event-list>
-  <ion-content color="light" id="main-content">
+  <ion-content color="light" id="main-events">
     <app-event-detail
       #eventDetail
       *ngIf="!assessmentId && currentEvent"
