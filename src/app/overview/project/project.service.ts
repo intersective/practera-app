@@ -66,7 +66,7 @@ export class ProjectService {
   }
 
   private _normaliseProject(data): Array<Milestone> {
-    return data.milestones.map(m => {
+    return (data.milestones || []).map(m => {
       return {
         id: m.id,
         name: m.name,
