@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, Input, OnInit, OnChanges, SimpleChanges , ViewChild, ElementRef} from '@angular/core';
 import { FilestackService } from '@shared/filestack/filestack.service';
 import { UtilsService } from '@services/utils.service';
 
@@ -13,8 +13,9 @@ export class FileDisplayComponent implements OnInit, OnChanges {
 
   @Input() fileType = 'any';
   @Input() file: any;
+  @ViewChild('video') video: ElementRef;
 
-  constructor( private filestackService: FilestackService, private utils: UtilsService) {}
+  constructor(private filestackService: FilestackService, private utils: UtilsService) { }
 
   ngOnInit() {
     if (this.file && this.file.workflows) {
@@ -25,6 +26,7 @@ export class FileDisplayComponent implements OnInit, OnChanges {
   private resetUILogic() {
     this.virusDetection = {};
     this.quarantine = {};
+    this.video.nativeElement.load();
   }
 
   private updateWorkflowStatus(file?) {
@@ -57,6 +59,7 @@ export class FileDisplayComponent implements OnInit, OnChanges {
   }
 
   async previewFile(file) {
+
     try {
       return await this.filestackService.previewFile(file);
     } catch (err) {
