@@ -1,4 +1,3 @@
-import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { AuthLogoutComponent } from './auth-logout.component';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { AuthService } from '../auth.service';
@@ -17,9 +16,7 @@ describe('AuthLogoutComponent', () => {
 
     beforeEach(async(() => {
         TestBed.configureTestingModule({
-            imports: [],
             declarations: [AuthLogoutComponent],
-            schemas: [CUSTOM_ELEMENTS_SCHEMA],
             providers: [
 
                 {
