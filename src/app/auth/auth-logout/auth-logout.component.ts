@@ -21,7 +21,6 @@ export class AuthLogoutComponent extends RouterEnter {
   }
 
   onEnter() {
-    console.log({ params: this.route.params })
     this.newRelic.setPageViewName('logout');
     this.route.params.subscribe(params => {
       if (params && params.t) {
