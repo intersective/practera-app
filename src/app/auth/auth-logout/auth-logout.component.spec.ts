@@ -61,11 +61,11 @@ describe('AuthLogoutComponent', () => {
     });
 
     it('when testing onEnter() should call auth Service logout', () => {
-        const params = {abc:'abcv'};
+        const params = {abc: 'abcv'};
         component.onEnter();
         expect(newRelicSpy.setPageViewName).toHaveBeenCalledWith('logout');
         routeSpy.snapshot.paramMap.get = jasmine.createSpy().and.callFake(key => params[key]);
         authSpy.logout.and.returnValue({});
         expect(authSpy.logout.calls.count()).toBe(1);
-    })
-})
+    });
+});
