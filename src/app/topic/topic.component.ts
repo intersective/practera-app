@@ -61,7 +61,6 @@ export class TopicComponent extends RouterEnter {
     @Inject(DOCUMENT) private readonly document: Document
   ) {
     super(router);
-    // this.player = new Plyr('#player', {});
   }
 
   private _initialise() {
@@ -79,7 +78,6 @@ export class TopicComponent extends RouterEnter {
     this.isLoadingPreview = false;
     this.btnToggleTopicIsDone = false;
     this.askForMarkAsDone = false;
-    // console.log(new Plyr('#player', {}));
   }
 
   onEnter() {
@@ -96,7 +94,17 @@ export class TopicComponent extends RouterEnter {
     }
     this._getTopic();
     this._getTopicProgress();
-    setTimeout(() => this.player = new Plyr(this.document.getElementById('player'), {ratio: '16:9', autoplay: true}), 2000);
+    setTimeout(() => {
+      const players = Array.from(document.querySelectorAll('#video')).map(p => console.log('map element - ', p));
+      const videoEle = this.document.getElementById('video');
+      console.log('normal element - ', videoEle);
+      this.player = new Plyr(videoEle, {ratio: '16:9'});
+      videoEle.classList.add('topic-video');
+      if (!this.utils.isMobile()) {
+        videoEle.classList.add('desktop-view');
+      }
+    // tslint:disable-next-line:align
+    }, 2000);
     setTimeout(() => this.askForMarkAsDone = true, 15000);
   }
 
