@@ -25,11 +25,11 @@
   margin: 18px 0;
 }
 
-.plyr {
-  &.desktop-view {
-    padding-bottom: 40%;
-  }
+.plyr--video, .plyr__poster {
+  background: transparent !important;
+  background-color: transparent !important;
 }
+
 .hover-pointer {
   cursor: pointer;
 }
