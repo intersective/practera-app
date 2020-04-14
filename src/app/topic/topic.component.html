@@ -18,10 +18,7 @@
   <h3 class="headline-4 ion-text-center">{{topic.title}}</h3>
   <div *ngIf="topic.videolink && topic.videolink !=='magiclink'" class="text-center">
     <label class="subtitle-2 gray-2">Video</label>
-    <!-- <div class="video-container ion-text-center">
-    </div> -->
-    <!-- <iframe src="https://www.youtube.com/embed/G9yCM_rnC-w" frameborder="0" allowfullscreen=""></iframe> -->
-    <div class="plyr__video-embed" id="player" [ngClass]="{'desktop-view': !utils.isMobile()}" [innerHtml]="iframeHtml">
+    <div class="plyr__video-embed" id="video" [ngClass]="{'desktop-view': !utils.isMobile()}" [innerHtml]="iframeHtml">
     </div>
   </div>
 
