@@ -110,6 +110,15 @@ export class UtilsService {
     return array;
   }
 
+  /**
+   * Given query in GraphQL format, change it to the normal query body string
+   * i.e. remove the new line and additional spaces
+   * @param query the query string
+   */
+  graphQLQueryStringFormatter(query: string) {
+    return query.replace(/(\r\n|\n|\r) */gm, ' ');
+  }
+
   changeThemeColor(color): void {
     this.document.documentElement.style.setProperty('--ion-color-primary', color);
     this.document.documentElement.style.setProperty('--ion-color-primary-shade', color);
