@@ -26,7 +26,7 @@ const api = {
   }
 };
 
-export interface AssessmentSubmission {
+export interface AssessmentSubmitBody {
   id: number;
   in_progress: boolean;
   context_id?: number;
@@ -87,6 +87,7 @@ export interface Submission {
   submitterName: string;
   modified: string;
   isLocked: boolean;
+  completed?: boolean;
   submitterImage: string;
   reviewerName: string | void;
 }
@@ -113,152 +114,124 @@ export class AssessmentService {
     public sanitizer: DomSanitizer,
   ) {}
 
-  getAssessment(id, action): Observable<any> {
-    return this.request.get(api.get.assessment, {params: {
-        assessment_id: id,
-        structured: true,
-        review: (action === 'review') ? true : false
-      }})
-      .pipe(map(response => {
-        if (response.success && response.data) {
-          return this._normaliseAssessment(response.data);
-        } else {
-          return {};
-        }
-      })
-    );
+  getAssessment(id, action, activityId, contextId) {
+    return this.request.postGraphQL(
+      this.utils.graphQLQueryStringFormatter(
+        `"{
+          assessment(id:`+ id +`,reviewer:`+ (action === 'review') +`,activity_id:`+ activityId +`) {
+            name type description due_date is_team pulse_check
+            groups{
+              name description
+              questions{
+                id name description type is_required has_comment audience file_type
+                choices{
+                  id name explanation
+                }
+                team_members{
+                  userId userName teamId
+                }
+              }
+            }
+            submissions(context_id:`+ contextId +`) {
+              id status completed modified locked
+              submitter {
+                name image
+              }
+              answers{
+                question_id answer
+              }
+              review {
+                id status modified
+                answers {
+                  question_id answer comment
+                }
+              }
+            }
+          }
+        }"`)
+      )
+      .pipe(map(res => {
+        return {
+          assessment: this._normaliseAssessment(res.data, action),
+          submission: this._normaliseSubmission(res.data),
+          review: this._normaliseReview(res.data, action)
+        };
+      }));
   }
 
-  private _normaliseAssessment(data) {
-    // In API response, 'data' is an array of assessments
-    // (since we passed assessment id, it will return only one assessment, but still in array format).
-    // That's why we use data[0]
-    if (!Array.isArray(data) ||
-        !this.utils.has(data[0], 'Assessment') ||
-        !this.utils.has(data[0], 'AssessmentGroup')) {
-      return this.request.apiResponseFormatError('Assessment format error');
+  private _normaliseAssessment(data, action): Assessment {
+    if (!data.assessment) {
+      return null;
     }
-    const thisAssessment = data[0];
-
-    const assessment: Assessment = {
-      name: thisAssessment.Assessment.name,
-      type: thisAssessment.Assessment.assessment_type,
-      description: thisAssessment.Assessment.description,
-      isForTeam: thisAssessment.Assessment.is_team,
-      dueDate: thisAssessment.Assessment.deadline,
-      isOverdue: thisAssessment.Assessment.deadline ? this.utils.timeComparer(thisAssessment.Assessment.deadline) < 0 : false,
-      groups: [],
-      pulseCheck: thisAssessment.Assessment.pulse_check
-    };
-
-    thisAssessment.AssessmentGroup.forEach(group => {
-      if (!this.utils.has(group, 'name') ||
-          !this.utils.has(group, 'description') ||
-          !this.utils.has(group, 'AssessmentGroupQuestion') ||
-          !Array.isArray(group.AssessmentGroupQuestion)) {
-        return this.request.apiResponseFormatError('Assessment.AssessmentGroup format error');
-      }
-      const questions: Array<Question> = [];
-      group.AssessmentGroupQuestion.forEach(question => {
-        if (!this.utils.has(question, 'AssessmentQuestion')) {
-          return this.request.apiResponseFormatError('Assessment.AssessmentGroupQuestion format error');
-        }
-        if (!this.utils.has(question.AssessmentQuestion, 'id') ||
-            !this.utils.has(question.AssessmentQuestion, 'name') ||
-            !this.utils.has(question.AssessmentQuestion, 'description') ||
-            !this.utils.has(question.AssessmentQuestion, 'question_type') ||
-            !this.utils.has(question.AssessmentQuestion, 'is_required') ||
-            !this.utils.has(question.AssessmentQuestion, 'has_comment') ||
-            !this.utils.has(question.AssessmentQuestion, 'can_answer') ||
-            !this.utils.has(question.AssessmentQuestion, 'audience')
-            ) {
-          return this.request.apiResponseFormatError('Assessment.AssessmentQuestion format error');
-        }
-        // save question to "questions" object, for later use in normaliseSubmission()
-        this.questions[question.AssessmentQuestion.id] = question.AssessmentQuestion;
-        const audience = question.AssessmentQuestion.audience;
-        const questionObject: Question = {
-          id: question.AssessmentQuestion.id,
-          name: question.AssessmentQuestion.name,
-          type: question.AssessmentQuestion.question_type,
-          description: question.AssessmentQuestion.description,
-          isRequired: question.AssessmentQuestion.is_required,
-          canComment: question.AssessmentQuestion.has_comment,
-          canAnswer: question.AssessmentQuestion.can_answer,
-          audience: audience,
-          submitterOnly: audience.length === 1 && audience.includes('submitter'),
-          reviewerOnly: audience.length === 1 && audience.includes('reviewer')
+    const assessment = {
+      name: data.assessment.name,
+      type: data.assessment.type,
+      description: data.assessment.description,
+      isForTeam: data.assessment.is_team,
+      dueDate: data.assessment.due_date,
+      isOverdue: data.assessment.due_date ? this.utils.timeComparer(data.assessment.due_date) < 0 : false,
+      pulseCheck: data.assessment.pulse_check,
+      groups: []
+    }
+    data.assessment.groups.forEach(eachGroup => {
+      const questions: Question[] = [];
+      eachGroup.questions.forEach(eachQuestion => {
+        this.questions[eachQuestion.id] = eachQuestion;
+        const question: Question = {
+          id: eachQuestion.id,
+          name: eachQuestion.name,
+          type: eachQuestion.type,
+          description: eachQuestion.description,
+          isRequired: eachQuestion.is_required,
+          canComment: eachQuestion.has_comment,
+          canAnswer: action === 'review' ? eachQuestion.audience.includes('reviewer') : eachQuestion.audience.includes('submitter'),
+          audience: eachQuestion.audience,
+          submitterOnly: eachQuestion.audience.length === 1 && eachQuestion.audience.includes('submitter'),
+          reviewerOnly: eachQuestion.audience.length === 1 && eachQuestion.audience.includes('reviewer')
         };
-        switch (question.AssessmentQuestion.question_type) {
+        switch (eachQuestion.type) {
           case 'oneof':
           case 'multiple':
-            if (!this.utils.has(question.AssessmentQuestion, 'AssessmentQuestionChoice') ||
-                !Array.isArray(question.AssessmentQuestion.AssessmentQuestionChoice)
-              ) {
-              return this.request.apiResponseFormatError('Assessment.AssessmentQuestionChoice format error');
-            }
-            const choices: Array<Choice> = [];
+            const choices: Choice[] = [];
             let info = '';
-            question.AssessmentQuestion.AssessmentQuestionChoice.forEach(questionChoice => {
-              if (
-                  !this.utils.has(questionChoice, 'id') ||
-                  !this.utils.has(questionChoice, 'AssessmentChoice.name')
-                ) {
-                return this.request.apiResponseFormatError('Assessment.AssessmentChoice format error');
-              }
-              // Here we use the AssessmentQuestionChoice.id (instead of AssessmentChoice.id) as the choice id,
-              // this is the current logic from Practera server
+            eachQuestion.choices.forEach(eachChoice => {
               choices.push({
-                id: questionChoice.id,
-                name: questionChoice.AssessmentChoice.name,
-                explanation: this.utils.has(questionChoice, 'AssessmentChoice.explanation') ? questionChoice.AssessmentChoice.explanation : ''
+                id: eachChoice.id,
+                name: eachChoice.name,
+                explanation: eachChoice.explanation,
               });
-              if (this.utils.has(questionChoice, 'AssessmentChoice.description') && questionChoice.AssessmentChoice.description) {
-                info += '<p>' + questionChoice.AssessmentChoice.name + ' - ' + questionChoice.AssessmentChoice.description + '</p>';
+              if (eachChoice.description) {
+                info += '<p>' + eachChoice.name + ' - ' + eachChoice.description + '</p>';
               }
             });
             if (info) {
-              // Add the title
+              // add the title
               info = '<h3>Choice Description:</h3>' + info;
             }
-            questionObject['info'] = info;
-            questionObject['choices'] = choices;
+            question.info = info;
+            question.choices = choices;
             break;
 
           case 'file':
-            if (!this.utils.has(question.AssessmentQuestion, 'file_type.type')) {
-              return this.request.apiResponseFormatError('Assessment.AssessmentQuestion.file_type format error');
-            }
-            questionObject['fileType'] = question.AssessmentQuestion.file_type.type;
+            question.fileType = eachQuestion.file_type;
             break;
 
           case 'team member selector':
-            if (!this.utils.has(question.AssessmentQuestion, 'TeamMember') ||
-                !Array.isArray(question.AssessmentQuestion.TeamMember)
-              ) {
-              return this.request.apiResponseFormatError('Assessment.TeamMember format error');
-            }
-            const teamMembers: Array<TeamMember> = [];
-            question.AssessmentQuestion.TeamMember.forEach(teamMember => {
-              if (
-                  !this.utils.has(teamMember, 'userName')
-                ) {
-                return this.request.apiResponseFormatError('Assessment.TeamMember format error');
-              }
-              teamMembers.push({
-                key: JSON.stringify(teamMember),
-                userName: teamMember.userName
+            question.teamMembers = [];
+            eachQuestion.team_members.forEach(eachTeamMember => {
+              question.teamMembers.push({
+                key: JSON.stringify(eachTeamMember),
+                userName: eachTeamMember.userName
               });
             });
-            questionObject['teamMembers'] = teamMembers;
             break;
         }
-        questions.push(questionObject);
+        questions.push(question);
       });
       if (!this.utils.isEmpty(questions)) {
         assessment.groups.push({
-          name: group.name,
-          description: group.description,
+          name: eachGroup.name,
+          description: eachGroup.description,
           questions: questions
         });
       }
@@ -266,146 +239,88 @@ export class AssessmentService {
     return assessment;
   }
 
-  getSubmission(assessmentId, contextId, action, submissionId?): Observable<any> {
-    let params;
-    if (action === 'review') {
-      params = {
-        assessment_id: assessmentId,
-        context_id: contextId,
-        review: true
-      };
-    } else {
-      params = {
-        assessment_id: assessmentId,
-        context_id: contextId,
-        review: false
-      };
+  private _normaliseSubmission(data): Submission {
+    if (!this.utils.has(data, 'assessment.submissions') || data.assessment.submissions.length < 1) {
+      return null;
     }
-    if (submissionId) {
-      params['id'] = submissionId;
-    }
-    return this.request.get(api.get.submissions, {params: params})
-      .pipe(map(response => {
-        if (response.success && !this.utils.isEmpty(response.data)) {
-          return this._normaliseSubmission(response.data, action);
-        } else {
-          return {
-            submission: {},
-            review: {}
-          };
-        }
-      })
-    );
-  }
-
-  private _normaliseSubmission(data, action) {
-    // In API response, 'data' is an array of submissions
-    // (currently we only support one submission per assessment, but it is still in array format).
-    // That's why we use data[0]
-    if (!Array.isArray(data) ||
-        !this.utils.has(data[0], 'AssessmentSubmission')) {
-      return this.request.apiResponseFormatError('AssessmentSubmission format error');
-    }
-    const thisSubmission = data[0];
+    const firstSubmission = data.assessment.submissions[0];
     let submission: Submission = {
-      id: thisSubmission.AssessmentSubmission.id,
-      status: thisSubmission.AssessmentSubmission.status,
-      answers: {},
-      submitterName: thisSubmission.Submitter.name,
-      modified: thisSubmission.AssessmentSubmission.modified,
-      isLocked: thisSubmission.AssessmentSubmission.is_locked,
-      submitterImage: thisSubmission.Submitter.image,
-      reviewerName: this.checkReviewer(thisSubmission.Reviewer)
+      id: firstSubmission.id,
+      status: firstSubmission.status,
+      submitterName: firstSubmission.submitter.name,
+      submitterImage: firstSubmission.submitter.image,
+      modified: firstSubmission.modified,
+      isLocked: firstSubmission.locked,
+      completed: firstSubmission.completed,
+      reviewerName: firstSubmission.review ? this.checkReviewer(firstSubmission.review.reviewer) : null,
+      answers: {}
     };
-    // -- normalise submission answers
-    if (!this.utils.has(thisSubmission, 'AssessmentSubmissionAnswer') ||
-        !Array.isArray(thisSubmission.AssessmentSubmissionAnswer)
-        ) {
-      return this.request.apiResponseFormatError('AssessmentSubmissionAnswer format error');
-    }
-    thisSubmission.AssessmentSubmissionAnswer.forEach(answer => {
-      if (!this.utils.has(answer, 'assessment_question_id') ||
-          !this.utils.has(answer, 'answer')
-          ) {
-        return this.request.apiResponseFormatError('AssessmentSubmissionAnswer.answer format error');
-      }
-      answer.answer = this._normaliseAnswer(answer.assessment_question_id, answer.answer);
-      submission.answers[answer.assessment_question_id] = {
-        answer: answer.answer
+    firstSubmission.answers.forEach(eachAnswer => {
+      eachAnswer.answer = this._normaliseAnswer(eachAnswer.question_id, eachAnswer.answer);
+      submission.answers[eachAnswer.question_id] = {
+        answer: eachAnswer.answer
       };
-      if (submission.status === 'published' || submission.status === 'done') {
-        submission = this._addChoiceExplanation(answer, submission);
+      if (['published', 'done'].includes(submission.status)) {
+        submission = this._addChoiceExplanation(eachAnswer, submission);
       }
     });
+    return submission;
+  }
 
-    // -- normalise reviewer answers
-    let review: Review;
-    // AssessmentReview is in array format, current we only support one review per submission, that's why we use AssessmentReview[0]
-    if (this.utils.has(thisSubmission, 'AssessmentReview[0].id')) {
-      review = {
-        id: thisSubmission.AssessmentReview[0].id,
-        answers: {},
-        status: thisSubmission.AssessmentReview[0].status,
-        modified: thisSubmission.AssessmentReview[0].modified
-      };
+  private _normaliseReview(data, action): Review {
+    if (!this.utils.has(data, 'assessment.submissions') || data.assessment.submissions.length < 1) {
+      return null;
     }
-    // only get the review answer if the review is published (submission.status === 'published') or this is from /assessment/review
-    if ( (submission.status === 'published' || action === 'review') &&
-        this.utils.has(thisSubmission, 'AssessmentReviewAnswer') &&
-        Array.isArray(thisSubmission.AssessmentReviewAnswer)) {
-      if (!review) {
-        review = {
-          // we use the review id in this way only if AssessmentReviewAnswer is not returned,
-          // we should change API so that it returns AssessmentReviewAnswer object later
-          id: thisSubmission.AssessmentReviewAnswer[0].assessment_review_id,
-          answers: {},
-          status: '',
-          modified: ''
-        };
-      }
-      thisSubmission.AssessmentReviewAnswer.forEach(answer => {
-        if (!this.utils.has(answer, 'assessment_question_id') ||
-            !this.utils.has(answer, 'answer') ||
-            !this.utils.has(answer, 'comment')
-            ) {
-          return this.request.apiResponseFormatError('AssessmentReviewAnswer format error');
-        }
-        answer.answer = this._normaliseAnswer(answer.assessment_question_id, answer.answer);
-        review.answers[answer.assessment_question_id] = {
-          answer: answer.answer,
-          comment: answer.comment
-        };
-      });
+    const firstSubmission = data.assessment.submissions[0];
+    const firstSubmissionReview = firstSubmission.review;
+    if (!firstSubmissionReview) {
+      return null;
     }
-
-    return {
-      submission: submission,
-      review: review ? review : {}
+    const review: Review = {
+      id: firstSubmissionReview.id,
+      status: firstSubmissionReview.status,
+      modified: firstSubmissionReview.modified,
+      answers: {}
     };
+
+    // only get the review answer if the review is published, or it is for the reviewer to see the review
+    // i.e. don't display the review answer if it is for submitter and review not published yet
+    if (firstSubmission.status !== 'published' && action === 'assessment') {
+      return review;
+    }
+
+    firstSubmissionReview.answers.forEach(eachAnswer => {
+      eachAnswer.answer = this._normaliseAnswer(eachAnswer.question_id, eachAnswer.answer);
+      review.answers[eachAnswer.question_id] = {
+        answer: eachAnswer.answer,
+        comment: eachAnswer.comment
+      };
+    });
+    return review;
   }
 
   /**
    * For each question that has choice (oneof & multiple), show the choice explanation in the submission if it is not empty
    */
-  private _addChoiceExplanation(submissionAnswer, submission): Submission {
-    const questionId = submissionAnswer.assessment_question_id;
+  private _addChoiceExplanation(submissionAnswer, submission: Submission): Submission {
+    const questionId = submissionAnswer.question_id;
     const answer = submissionAnswer.answer;
     // don't do anything if there's no choices
-    if (this.utils.isEmpty(this.questions[questionId].AssessmentQuestionChoice)) {
+    if (this.utils.isEmpty(this.questions[questionId].choices)) {
       return submission;
     }
     let explanation = '';
     if (Array.isArray(answer)) {
       // multiple question
-      this.questions[questionId].AssessmentQuestionChoice.forEach(choice => {
+      this.questions[questionId].choices.forEach(choice => {
         // only display the explanation if it is not empty
         if (answer.includes(choice.id) && !this.utils.isEmpty(choice.explanation)) {
-          explanation += choice.AssessmentChoice.name + ' - ' + choice.explanation + '\n';
+          explanation += choice.name + ' - ' + choice.explanation + '\n';
         }
       });
     } else {
       // oneof question
-      this.questions[questionId].AssessmentQuestionChoice.forEach(choice => {
+      this.questions[questionId].choices.forEach(choice => {
         // only display the explanation if it is not empty
         if (answer === choice.id && !this.utils.isEmpty(choice.explanation)) {
           explanation = choice.explanation;
@@ -421,7 +336,7 @@ export class AssessmentService {
 
   private _normaliseAnswer(questionId, answer) {
     if (this.questions[questionId]) {
-      switch (this.questions[questionId].question_type) {
+      switch (this.questions[questionId].type) {
         case 'oneof':
           // re-format answer from string to number
           if (typeof answer === 'string' && answer.length === 0) {
@@ -449,7 +364,7 @@ export class AssessmentService {
     return answer;
   }
 
-  saveAnswers(assessment: AssessmentSubmission, answers: object, action: string, submissionId?: number) {
+  saveAnswers(assessment: AssessmentSubmitBody, answers: object, action: string, submissionId?: number) {
     let postData;
     switch (action) {
       case 'assessment':
@@ -517,13 +432,11 @@ export class AssessmentService {
     });
   }
 
-  checkReviewer(reviewer): string | void {
+  checkReviewer(reviewer): string {
     if (!reviewer) {
-      return undefined;
+      return null;
     }
-    return reviewer.name !== this.storage.getUser().name ? reviewer.name : undefined;
+    return reviewer.name !== this.storage.getUser().name ? reviewer.name : null;
   }
 
 }
-
-
