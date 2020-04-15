@@ -1,11 +1,11 @@
-<ng-container *ngIf="submissionStatus !== 'in progress' && submission.answer">
+<ng-container *ngIf="submissionStatus !== 'in progress' && submission && submission.answer">
   <app-file-display
     [file]="submission.answer"
     [fileType]="question.fileType"
   ></app-file-display>
 </ng-container>
 
-<div *ngIf="reviewStatus !== 'in progress' && (review.answer || review.comment)" class="q-reviews">
+<div *ngIf="reviewStatus !== 'in progress' && review && (review.answer || review.comment)" class="q-reviews">
   <ion-label class="q-title subtitle-2 black">Feedback</ion-label>
   <ng-container *ngIf="review.answer">
     <app-file-display
