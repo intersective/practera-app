@@ -36,6 +36,7 @@ export class TopicComponent extends RouterEnter {
   externalUrl: SafeResourceUrl;
   styles = '';
   iframeHtml = '';
+  topicCache = {};
   btnToggleTopicIsDone = false;
   loadingMarkedDone = true;
   loadingTopic = true;
@@ -112,10 +113,15 @@ export class TopicComponent extends RouterEnter {
           if ( topic.videolink ) {
             if (topic.videolink.indexOf('trailhead') > 0) {
               //this.externalUrl = this.sanitizer.bypassSecurityTrustResourceUrl(topic.videolink);
+              this.iframeHtml = '';
+              if (this.topicCache[topic.videolink]) {
+                this.iframeHtml = this.topicCache[topic.videolink];
+              }
               this.http.get("https://cors-anywhere.herokuapp.com/" + topic.videolink, { responseType: 'text' }).subscribe( result => {
                 var parser = new DOMParser();
                 var xmlDoc = parser.parseFromString(result,"text/html");
                 this.iframeHtml = xmlDoc.getElementById('main').innerHTML;
+                this.topicCache[topic.videolink] = this.iframeHtml;
               });
             } else {
               this.iframeHtml = this.embedService.embed(this.topic.videolink, { attr: { class: !this.utils.isMobile() ? 'topic-video desktop-view' : 'topic-video' }});

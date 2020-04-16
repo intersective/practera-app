@@ -19,10 +19,76 @@
   <div *ngIf="topic.videolink && topic.videolink !=='magiclink' && topic.videolink.indexOf('trailhead') == -1" class="text-center">
     <div [innerHtml]="iframeHtml" class="video-container ion-text-center" [ngClass]="{'desktop-view': !utils.isMobile()}"></div>
   </div>
-  <div *ngIf="topic.videolink && topic.videolink !=='magiclink' && topic.videolink.indexOf('trailhead') > 0">
+  <div *ngIf="iframeHtml && topic.videolink && topic.videolink !=='magiclink' && topic.videolink.indexOf('trailhead') > 0">
       <div [innerHtml]="iframeHtml" id="trailheadInner" [ngClass]="{'desktop-view': !utils.isMobile()}"></div>
   </div>
-
+  <div *ngIf="!iframeHtml && topic.videolink !=='magiclink' && topic.videolink.indexOf('trailhead') > 0">
+      <div class="ion-text-center" style="margin-top: 20px;">
+        Loading content from
+         <img width=50 src="https://trailhead.salesforce.com/assets/trailhead-logo-86df2c10154e03fb8b18110597a115ecce58d8bb2887e33a155ae8784cca5784.svg"> 
+      </div>
+      <div class="ion-padding custom-skeleton">
+        <ion-skeleton-text animated style="width: 60%"></ion-skeleton-text>
+        <ion-skeleton-text animated></ion-skeleton-text>
+        <ion-skeleton-text animated style="width: 88%"></ion-skeleton-text>
+        <ion-skeleton-text animated style="width: 70%"></ion-skeleton-text>
+        <ion-skeleton-text animated style="width: 60%"></ion-skeleton-text>
+      </div>
+      <ion-list>
+        <ion-list-header>
+          <ion-label>
+            <ion-skeleton-text animated style="width: 20%"></ion-skeleton-text>
+          </ion-label>
+        </ion-list-header>
+        <ion-item>
+          <ion-avatar slot="start">
+            <ion-skeleton-text animated></ion-skeleton-text>
+          </ion-avatar>
+          <ion-label>
+            <h3>
+              <ion-skeleton-text animated style="width: 50%"></ion-skeleton-text>
+            </h3>
+            <p>
+              <ion-skeleton-text animated style="width: 80%"></ion-skeleton-text>
+            </p>
+            <p>
+              <ion-skeleton-text animated style="width: 60%"></ion-skeleton-text>
+            </p>
+          </ion-label>
+        </ion-item>
+        <ion-item>
+          <ion-thumbnail slot="start">
+            <ion-skeleton-text animated></ion-skeleton-text>
+          </ion-thumbnail>
+          <ion-label>
+            <h3>
+              <ion-skeleton-text animated style="width: 50%"></ion-skeleton-text>
+            </h3>
+            <p>
+              <ion-skeleton-text animated style="width: 80%"></ion-skeleton-text>
+            </p>
+            <p>
+              <ion-skeleton-text animated style="width: 60%"></ion-skeleton-text>
+            </p>
+          </ion-label>
+        </ion-item>
+        <ion-item>
+          <ion-skeleton-text animated style="width: 27px; height: 27px" slot="start"></ion-skeleton-text>
+          <ion-label>
+            <h3>
+              <ion-skeleton-text animated style="width: 50%"></ion-skeleton-text>
+            </h3>
+            <p>
+              <ion-skeleton-text animated style="width: 80%"></ion-skeleton-text>
+            </p>
+            <p>
+              <ion-skeleton-text animated style="width: 60%"></ion-skeleton-text>
+            </p>
+          </ion-label>
+        </ion-item>
+      </ion-list>
+  </div>   
+ 
 
   <ng-container *ngIf="topic.content  && topic.videolink.indexOf('trailhead') == -1">
     <ion-card class="background-white practera-card">
