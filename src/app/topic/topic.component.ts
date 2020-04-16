@@ -11,6 +11,8 @@ import { ActivityService, Task } from '../activity/activity.service';
 import { SharedService } from '@services/shared.service';
 import { Subscription, Observable } from 'rxjs';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-topic',
@@ -31,6 +33,8 @@ export class TopicComponent extends RouterEnter {
     files: [],
     hasComments: false
   };
+  externalUrl: SafeResourceUrl;
+  styles = '';
   iframeHtml = '';
   btnToggleTopicIsDone = false;
   loadingMarkedDone = true;
@@ -50,10 +54,12 @@ export class TopicComponent extends RouterEnter {
     private filestackService: FilestackService,
     public storage: BrowserStorageService,
     public utils: UtilsService,
+    public sanitizer: DomSanitizer,
     public notificationService: NotificationService,
     private activityService: ActivityService,
     private sharedService: SharedService,
     private ngZone: NgZone,
+    private http: HttpClient,
     private newRelic: NewRelicService
   ) {
     super(router);
@@ -104,7 +110,16 @@ export class TopicComponent extends RouterEnter {
           this.topic = topic;
           this.loadingTopic = false;
           if ( topic.videolink ) {
-            this.iframeHtml = this.embedService.embed(this.topic.videolink, { attr: { class: !this.utils.isMobile() ? 'topic-video desktop-view' : 'topic-video' }});
+            if (topic.videolink.indexOf('trailhead') > 0) {
+              //this.externalUrl = this.sanitizer.bypassSecurityTrustResourceUrl(topic.videolink);
+              this.http.get("https://cors-anywhere.herokuapp.com/" + topic.videolink, { responseType: 'text' }).subscribe( result => {
+                var parser = new DOMParser();
+                var xmlDoc = parser.parseFromString(result,"text/html");
+                this.iframeHtml = xmlDoc.getElementById('main').innerHTML;
+              });
+            } else {
+              this.iframeHtml = this.embedService.embed(this.topic.videolink, { attr: { class: !this.utils.isMobile() ? 'topic-video desktop-view' : 'topic-video' }});
+            }
           }
           this.newRelic.setPageViewName(`Topic ${this.topic.title} ID: ${this.topic.id}`);
         },

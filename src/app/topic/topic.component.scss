@@ -1,41 +1,5711 @@
-.toggle-mark {
-  font-size: small;
-}
-.file-name-view {
-  p {
-    margin: 0;
+
+  .toggle-mark {
+    font-size: small;
+  }
+
+  .file-name-view {
+    p {
+      margin: 0;
+      font-size: 14px;
+    }
+  }
+
+  .icon-backward {
+    font-size: 20px !important;
+  }
+
+  .margin-right {
+    margin-right: 10px;
+  }
+
+  .supporting-files {
     font-size: 14px;
-  }
-}
-.icon-backward {
-  font-size: 20px !important;
-}
+    line-height: 20px;
 
-.margin-right {
-  margin-right: 10px;
-}
-.supporting-files {
-  font-size: 14px;
-  line-height: 20px;
-  ion-icon {
-    font-size: 20px;
+    ion-icon {
+      font-size: 20px;
+    }
   }
-}
-.practera-card {
-  margin: 18px 0;
-}
 
-.video-container {
-  position: relative;
-  padding-bottom: 56.25%;
-  &.desktop-view {
-    padding-bottom: 40%;
+  .practera-card {
+    margin: 18px 0;
   }
-}
-.hover-pointer {
-  cursor: pointer;
-}
-.footer-action {
-  height: 40px;
-  margin: 10px 20px;
-}
+
+  .video-container {
+    position: relative;
+    padding-bottom: 56.25%;
+
+    &.desktop-view {
+      padding-bottom: 40%;
+    }
+  }
+
+  .hover-pointer {
+    cursor: pointer;
+  }
+
+  .footer-action {
+    height: 40px;
+    margin: 10px 20px;
+  }
+
+ 
+
+
+
+  // /* salesforce */
+  // #trailheadInner .th-icon--in-progress {
+  //   border-radius: 50%;
+  //   -moz-background-clip: padding;
+  //   -webkit-background-clip: padding-box;
+  //   background-clip: padding-box;
+  //   background-color: #fff;
+  //   -webkit-box-shadow: 0 0px 0px 1px #e2e2e2;
+  //   box-shadow: 0 0px 0px 1px #e2e2e2;
+  //   color: #666;
+  //   font-size: 20px;
+  //   line-height: 1;
+  //   height: 24px;
+  //   width: 24px;
+  //   display: -webkit-box;
+  //   display: -webkit-flex;
+  //   display: -ms-flexbox;
+  //   display: flex;
+  //   -webkit-box-pack: center;
+  //   -webkit-justify-content: center;
+  //   -ms-flex-pack: center;
+  //   justify-content: center;
+  //   -webkit-align-content: center;
+  //   -ms-flex-line-pack: center;
+  //   align-content: center;
+  //   background-image: none
+  // }
+
+  // #trailheadInner .th-icon--in-progress svg {
+  //   fill: #666
+  // }
+
+  // #trailheadInner .th-icon--completed {
+  //   border-radius: 50%;
+  //   -moz-background-clip: padding;
+  //   -webkit-background-clip: padding-box;
+  //   background-clip: padding-box;
+  //   background-color: #048149;
+  //   height: 24px;
+  //   width: 24px;
+  //   background-image: none;
+  //   display: -webkit-box;
+  //   display: -webkit-flex;
+  //   display: -ms-flexbox;
+  //   display: flex;
+  //   -webkit-align-content: center;
+  //   -ms-flex-line-pack: center;
+  //   align-content: center;
+  //   -webkit-box-align: center;
+  //   -webkit-align-items: center;
+  //   -ms-flex-align: center;
+  //   align-items: center;
+  //   -webkit-box-pack: center;
+  //   -webkit-justify-content: center;
+  //   -ms-flex-pack: center;
+  //   justify-content: center;
+  //   color: #fff
+  // }
+
+  // #trailheadInner .th-icon--completed svg {
+  //   fill: white
+  // }
+
+  // body {
+  //   height: 100%;
+  //   position: relative
+  // }
+
+  // #trailheadInner .callout:before {
+  //   content: ""
+  // }
+
+  // #trailheadInner .unit-content .codeblock {
+  //   word-wrap: break-word
+  // }
+
+  // #trailheadInner .unit-content blockquote {
+  //   border-color: #e2e2e2
+  // }
+
+  // #trailheadInner .unit-content blockquote p {
+  //   font-weight: normal;
+  //   font-style: italic
+  // }
+
+  // #trailheadInner .unit-content ul,
+  // .unit-content ol {
+  //   margin-left: 2rem
+  // }
+
+  // #trailheadInner .unit-content p>code {
+  //   white-space: normal
+  // }
+
+  // #trailheadInner .unit-content code,
+  // .unit-content samp {
+  //   font-size: 12px;
+  //   padding: 2px 4px;
+  //   color: #d14;
+  //   background-color: #f7f7f9;
+  //   border: 1px solid #e1e1e8;
+  //   font-family: Monaco, Menlo, Consolas, "Courier New", monospace;
+  //   border-radius: 3px
+  // }
+
+  // #trailheadInner .unit-content h1,
+  // .unit-content h1 span,
+  // .unit-content h2,
+  // .unit-content h2 span,
+  // .unit-content h3,
+  // .unit-content h3 span,
+  // .unit-content h4,
+  // .unit-content h4 span {
+  //   color: #333
+  // }
+
+  // #trailheadInner .unit-content .data.colSort {
+  //   overflow: auto;
+  //   width: 100%
+  // }
+
+  // #trailheadInner .unit-content h1 {
+  //   font-size: 26px;
+  //   margin: 2rem 0 6px;
+  //   line-height: 1.3
+  // }
+
+  // #trailheadInner .unit-content h1:first-child {
+  //   margin-top: 0
+  // }
+
+  // #trailheadInner .unit-content h2 {
+  //   font-size: 24px;
+  //   margin: 2rem 0 6px;
+  //   line-height: 1.3
+  // }
+
+  // #trailheadInner .unit-content h2:first-child {
+  //   margin-top: 0
+  // }
+
+  // #trailheadInner .unit-content h3 {
+  //   font-size: 20px;
+  //   margin: 2rem 0 6px;
+  //   line-height: 1.3;
+  //   font-weight: normal
+  // }
+
+  // #trailheadInner .unit-content h3:first-child {
+  //   margin-top: 0
+  // }
+
+  // #trailheadInner .unit-content h3.helpHead3 {
+  //   margin-top: 2rem
+  // }
+
+  // #trailheadInner .unit-content h4 {
+  //   font-size: 1rem;
+  //   font-weight: bold;
+  //   margin: 24px 0 6px
+  // }
+
+  // #trailheadInner .unit-content dt {
+  //   font-weight: bold
+  // }
+
+  // #trailheadInner .unit-content .topic h2 {
+  //   margin-top: 60px;
+  //   margin-bottom: 20px
+  // }
+
+  // #trailheadInner .unit-content .topic h2,
+  // .unit-content .topic h2 span {
+  //   color: #333
+  // }
+
+  // #trailheadInner .unit-content p,
+  // #trailheadInner .unit-content div.p,
+  // #trailheadInner .unit-content ul,
+  // #trailheadInner .unit-content ol {
+  //   margin-bottom: 1rem
+  // }
+
+  // #trailheadInner .unit-content p p,
+  // #trailheadInner .unit-content p div.p,
+  // #trailheadInner .unit-content p ul p,
+  // #trailheadInner .unit-content p ul div.p,
+  // #trailheadInner .unit-content p ul li p,
+  // #trailheadInner .unit-content p ul li div.p,
+  // #trailheadInner .unit-content p ol p,
+  // #trailheadInner .unit-content p ol div.p,
+  // #trailheadInner .unit-content p ol li p,
+  // #trailheadInner .unit-content p ol li div.p,
+  // #trailheadInner .unit-content div.p p,
+  // #trailheadInner .unit-content div.p div.p,
+  // #trailheadInner .unit-content div.p ul p,
+  // #trailheadInner .unit-content div.p ul div.p,
+  // #trailheadInner .unit-content div.p ul li p,
+  // #trailheadInner .unit-content div.p ul li div.p,
+  // #trailheadInner .unit-content div.p ol p,
+  // #trailheadInner .unit-content div.p ol div.p,
+  // #trailheadInner .unit-content div.p ol li p,
+  // #trailheadInner .unit-content div.p ol li div.p,
+  // #trailheadInner .unit-content ul p,
+  // #trailheadInner .unit-content ul div.p,
+  // #trailheadInner .unit-content ul ul p,
+  // #trailheadInner .unit-content ul ul div.p,
+  // #trailheadInner .unit-content ul ul li p,
+  // #trailheadInner .unit-content ul ul li div.p,
+  // #trailheadInner .unit-content ul ol p,
+  // #trailheadInner .unit-content ul ol div.p,
+  // #trailheadInner .unit-content ul ol li p,
+  // #trailheadInner .unit-content ul ol li div.p,
+  // #trailheadInner .unit-content ol p,
+  // #trailheadInner .unit-content ol div.p,
+  // #trailheadInner .unit-content ol ul p,
+  // #trailheadInner .unit-content ol ul div.p,
+  // #trailheadInner .unit-content ol ul li p,
+  // #trailheadInner .unit-content ol ul li div.p,
+  // #trailheadInner .unit-content ol ol p,
+  // #trailheadInner .unit-content ol ol div.p,
+  // #trailheadInner .unit-content ol ol li p,
+  // #trailheadInner .unit-content ol ol li div.p {
+  //   margin-bottom: 0
+  // }
+
+  // #trailheadInner .unit-content ol ol {
+  //   list-style: lower-alpha;
+  //   margin-bottom: 0
+  // }
+
+  // #trailheadInner .unit-content table ol,
+  // #trailheadInner .unit-content table ul {
+  //   margin-bottom: 0
+  // }
+
+  // #trailheadInner .unit-content .p .bulletList {
+  //   list-style: disc;
+  //   margin: 1rem 2rem 0
+  // }
+
+  // #trailheadInner .unit-content .box {
+  //   padding: 1rem 2rem 1rem 1rem;
+  //   margin: 1rem 0
+  // }
+
+  // #trailheadInner .unit-content .box.info,
+  // #trailheadInner .unit-content .box.confirm,
+  // #trailheadInner .unit-content .box.warn {
+  //   background: #fffcdd
+  // }
+
+  // #trailheadInner .unit-content .box h4 {
+  //   margin: 1rem 0;
+  //   font-size: 18px;
+  //   line-height: 1.3;
+  //   font-weight: bold
+  // }
+
+  // #trailheadInner .unit-content .box .media>.mediaBd {
+  //   float: none;
+  //   padding-left: 65px
+  // }
+
+  // #trailheadInner .unit-content .box .media>.mediaBd>ul,
+  // #trailheadInner .unit-content .box .media>.mediaBd>ol {
+  //   margin: 0
+  // }
+
+  // #trailheadInner .unit-content .box .media>.mediaBd>ul li,
+  // #trailheadInner .unit-content .box .media>.mediaBd>ol li {
+  //   margin: 0 0 0 1rem
+  // }
+
+  // #trailheadInner .unit-content .box .media>.mediaBd p {
+  //   margin: 0 0 1rem
+  // }
+
+  // #trailheadInner .unit-content .box .media>.mediaBd p:last-child {
+  //   margin-bottom: 0
+  // }
+
+  // #trailheadInner .unit-content .box.callout {
+  //   background: #f2fbff;
+  //   padding: 1rem 2rem 2rem
+  // }
+
+  // #trailheadInner .unit-content .box.callout .media>.mediaBd {
+  //   padding-left: 0
+  // }
+
+  // #trailheadInner .unit-content .section .userinput,
+  // #trailheadInner .unit-content .body .userinput {
+  //   font-family: monospace;
+  //   background: white;
+  //   padding: 0 4px
+  // }
+
+  // #trailheadInner .unit-content .section ol,
+  // #trailheadInner .unit-content .body ol {
+  //   line-height: 1.5
+  // }
+
+  // #trailheadInner .unit-content .section ol li,
+  // #trailheadInner .unit-content .body ol li {
+  //   line-height: inherit
+  // }
+
+  // #trailheadInner .unit-content .section pre,
+  // #trailheadInner .unit-content .body pre {
+  //   margin-bottom: 20px;
+  //   margin-top: 20px
+  // }
+
+  // #trailheadInner .unit-content .section dl,
+  // #trailheadInner .unit-content .body dl {
+  //   font-size: 16px;
+  //   line-height: 1.5
+  // }
+
+  // #trailheadInner .unit-content .section dd,
+  // #trailheadInner .unit-content .body dd {
+  //   margin: 0 0 1rem;
+  //   line-height: inherit
+  // }
+
+  // #trailheadInner .unit-content .section div.shortdesc,
+  // #trailheadInner .unit-content .body div.shortdesc {
+  //   font-size: 16px;
+  //   line-height: 1.5;
+  //   word-wrap: break-word
+  // }
+
+  // #trailheadInner .unit-content .section iframe,
+  // #trailheadInner .unit-content .body iframe {
+  //   display: block;
+  //   max-width: 100%
+  // }
+
+  // #trailheadInner .unit-content .section div.p,
+  // #trailheadInner .unit-content .section p,
+  // #trailheadInner .unit-content .section span,
+  // #trailheadInner .unit-content .section li div,
+  // #trailheadInner .unit-content .body div.p,
+  // #trailheadInner .unit-content .body p,
+  // #trailheadInner .unit-content .body span,
+  // #trailheadInner .unit-content .body li div {
+  //   word-wrap: break-word
+  // }
+
+  // #trailheadInner .unit-content .section div.p object,
+  // #trailheadInner .unit-content .section div.p iframe,
+  // #trailheadInner .unit-content .section p object,
+  // #trailheadInner .unit-content .section p iframe,
+  // #trailheadInner .unit-content .section span object,
+  // #trailheadInner .unit-content .section span iframe,
+  // #trailheadInner .unit-content .section li div object,
+  // #trailheadInner .unit-content .section li div iframe,
+  // #trailheadInner .unit-content .body div.p object,
+  // #trailheadInner .unit-content .body div.p iframe,
+  // #trailheadInner .unit-content .body p object,
+  // #trailheadInner .unit-content .body p iframe,
+  // #trailheadInner .unit-content .body span object,
+  // #trailheadInner .unit-content .body span iframe,
+  // #trailheadInner .unit-content .body li div object,
+  // #trailheadInner .unit-content .body li div iframe {
+  //   margin-top: 20px;
+  //   margin-bottom: 20px
+  // }
+
+  // #trailheadInner .unit-content .section div.p .image-block img,
+  // #trailheadInner .unit-content .section p .image-block img,
+  // #trailheadInner .unit-content .section span .image-block img,
+  // #trailheadInner .unit-content .section li div .image-block img,
+  // #trailheadInner .unit-content .body div.p .image-block img,
+  // #trailheadInner .unit-content .body p .image-block img,
+  // #trailheadInner .unit-content .body span .image-block img,
+  // #trailheadInner .unit-content .body li div .image-block img {
+  //   margin-top: 0;
+  //   margin-bottom: 0
+  // }
+
+  // #trailheadInner .unit-content .section div.p pre,
+  // #trailheadInner .unit-content .section div.p table,
+  // #trailheadInner .unit-content .section div.p .fig img,
+  // #trailheadInner .unit-content .section p pre,
+  // #trailheadInner .unit-content .section p table,
+  // #trailheadInner .unit-content .section p .fig img,
+  // #trailheadInner .unit-content .section span pre,
+  // #trailheadInner .unit-content .section span table,
+  // #trailheadInner .unit-content .section span .fig img,
+  // #trailheadInner .unit-content .section li div pre,
+  // #trailheadInner .unit-content .section li div table,
+  // #trailheadInner .unit-content .section li div .fig img,
+  // #trailheadInner .unit-content .body div.p pre,
+  // #trailheadInner .unit-content .body div.p table,
+  // #trailheadInner .unit-content .body div.p .fig img,
+  // #trailheadInner .unit-content .body p pre,
+  // #trailheadInner .unit-content .body p table,
+  // #trailheadInner .unit-content .body p .fig img,
+  // #trailheadInner .unit-content .body span pre,
+  // #trailheadInner .unit-content .body span table,
+  // #trailheadInner .unit-content .body span .fig img,
+  // #trailheadInner .unit-content .body li div pre,
+  // #trailheadInner .unit-content .body li div table,
+  // #trailheadInner .unit-content .body li div .fig img {
+  //   margin-top: 20px;
+  //   margin-bottom: 20px;
+  //   height: auto
+  // }
+
+  // #trailheadInner .unit-content .section p,
+  // #trailheadInner .unit-content .section ul,
+  // #trailheadInner .unit-content .section iframe,
+  // #trailheadInner .unit-content .section object,
+  // #trailheadInner .unit-content .section div.shortdesc,
+  // #trailheadInner .unit-content .body p,
+  // #trailheadInner .unit-content .body ul,
+  // #trailheadInner .unit-content .body iframe,
+  // #trailheadInner .unit-content .body object,
+  // #trailheadInner .unit-content .body div.shortdesc {
+  //   margin-top: 20px;
+  //   margin-bottom: 20px
+  // }
+
+  // #trailheadInner .unit-content .section p+h2,
+  // #trailheadInner .unit-content .section ul+h2,
+  // #trailheadInner .unit-content .section iframe+h2,
+  // #trailheadInner .unit-content .section object+h2,
+  // #trailheadInner .unit-content .section div.shortdesc+h2,
+  // #trailheadInner .unit-content .body p+h2,
+  // #trailheadInner .unit-content .body ul+h2,
+  // #trailheadInner .unit-content .body iframe+h2,
+  // #trailheadInner .unit-content .body object+h2,
+  // #trailheadInner .unit-content .body div.shortdesc+h2 {
+  //   margin-top: 30px
+  // }
+
+  // #trailheadInner .unit-content .section p object,
+  // #trailheadInner .unit-content .body p object {
+  //   margin-top: 0;
+  //   margin-bottom: 0
+  // }
+
+  // #trailheadInner .unit-content .section .fignone .image,
+  // #trailheadInner .unit-content .body .fignone .image {
+  //   margin-top: 0;
+  //   margin-bottom: 0
+  // }
+
+  // #trailheadInner .unit-content .img.mtm {
+  //   float: left
+  // }
+
+  // #trailheadInner .unit-content .media {
+  //   overflow: hidden
+  // }
+
+  // #trailheadInner .unit-content .media>img {
+  //   float: left;
+  //   margin: 0 1rem 0 0;
+  //   max-width: 100px
+  // }
+
+  // #trailheadInner .unit-content .media .mediaBd {
+  //   float: left
+  // }
+
+  // #trailheadInner .unit-content .media .mediaBd>ul,
+  // #trailheadInner .unit-content .media .mediaBd>ol {
+  //   margin: 1rem 0 1rem 3rem
+  // }
+
+  // #trailheadInner .unit-content .anchor {
+  //   visibility: hidden
+  // }
+
+  // #trailheadInner .unit-content>ul,
+  // #trailheadInner .unit-content>ol,
+  // #trailheadInner .unit-content dd>ul,
+  // #trailheadInner .unit-content dd>ol {
+  //   margin: 1rem 0 1rem 2rem
+  // }
+
+  // #trailheadInner .unit-content .image-block {
+  //   display: block;
+  //   margin: 4px 0
+  // }
+
+  // #trailheadInner .unit-content .image-center {
+  //   margin-left: auto;
+  //   margin-right: auto;
+  //   display: block
+  // }
+
+  // #trailheadInner .unit-content .image-right {
+  //   margin-left: auto;
+  //   display: block
+  // }
+
+  // #trailheadInner .unit-content ol {
+  //   list-style: decimal
+  // }
+
+  // #trailheadInner .unit-content ul {
+  //   list-style: disc
+  // }
+
+  // #trailheadInner .unit-content li>ul,
+  // #trailheadInner .unit-content li>ol {
+  //   margin-left: 1rem
+  // }
+
+  // #trailheadInner .unit-content li>ul {
+  //   list-style: circle
+  // }
+
+  // #trailheadInner .tablecap {
+  //   color: #777777;
+  //   font-size: 14px
+  // }
+
+  // #trailheadInner .featureTable {
+  //   width: 100%;
+  //   color: #1e1e1c;
+  //   margin-bottom: 2rem;
+  //   font-size: 0.875rem
+  // }
+
+  // #trailheadInner .featureTable th {
+  //   background-color: #fff;
+  //   font-weight: bold;
+  //   padding: 1rem
+  // }
+
+  // #trailheadInner .featureTable th {
+  //   border-bottom: 4px solid #e2e2e2;
+  //   border-top: 1px solid #e2e2e2;
+  //   border-right: 1px solid #e2e2e2
+  // }
+
+  // #trailheadInner .featureTable th:first-child {
+  //   border-left: 1px solid #e2e2e2
+  // }
+
+  // #trailheadInner .featureTable td {
+  //   background-color: #fff;
+  //   padding: 1rem;
+  //   border-right: 1px solid #dedede;
+  //   border-bottom: 1px solid #dedede;
+  //   vertical-align: top
+  // }
+
+  // #trailheadInner .featureTable td ul,
+  // #trailheadInner .featureTable td ul ul li,
+  // #trailheadInner .featureTable td p {
+  //   font-size: inherit
+  // }
+
+  // #trailheadInner #trailheadInner .featureTable tr td:first-child {
+  //   border-left: 1px solid #dedede
+  // }
+
+  // @media (max-width: 479px) {
+
+  //   #trailheadInner .featureTable th,
+  //   #trailheadInner .featureTable td {
+  //     padding: 3px;
+  //     font-size: 12px
+  //   }
+
+  //   #trailheadInner .featureTable ul {
+  //     font-size: 12px
+  //   }
+  // }
+
+  // #trailheadInner .label-info,
+  // .badge-info {
+  //   color: #fff;
+  //   background-color: #048EC6;
+  //   color: #fff;
+  //   font-size: 13px;
+  //   text-shadow: none;
+  //   height: 28px;
+  //   line-height: 24px;
+  //   border-radius: 25px
+  // }
+
+  // #trailheadInner .badge-info.new {
+  //   background-color: #c23934
+  // }
+
+  // #trailheadInner .badge-info.complete {
+  //   background-color: #048149
+  // }
+
+  // #trailheadInner .challenge-tag {
+  //   line-height: 28px;
+  //   font-size: 13px;
+  //   color: #333
+  // }
+
+  // hr.trailhead-unit-hr {
+  //   margin: 60px 0
+  // }
+
+  // #trailheadInner .challenge-points h3 {
+  //   margin: 0;
+  //   margin-bottom: 20px;
+  //   font-size: 28px;
+  //   color: #333;
+  //   font-weight: normal
+  // }
+
+  // #trailheadInner .challenge-section {
+  //   background: #FFFFFF;
+  //   border-radius: 6px;
+  //   margin: 0;
+  //   padding: 20px 0;
+  //   overflow: visible
+  // }
+
+  // #trailheadInner .challenge-section.complete,
+  // .challenge-section.not-complete {
+  //   display: none
+  // }
+
+  // #trailheadInner .challenge-section.complete .bottom-section {
+  //   border-top: 1px solid #DEDEDE
+  // }
+
+  // #trailheadInner .challenge-section.complete {
+  //   font-size: 15px
+  // }
+
+  // #trailheadInner .challenge-section.complete h3 {
+  //   color: #01344e;
+  //   font-size: 24px;
+  //   font-weight: bold;
+  //   margin: 10px 0
+  // }
+
+  // #trailheadInner .challenge-section.quiz {
+  //   padding-bottom: 0
+  // }
+
+  // #trailheadInner .challenge-section.quiz,
+  // .challenge-section.quiz .bottom-section {
+  //   padding-top: 0
+  // }
+
+  // #trailheadInner .challenge-section.quiz .top-section {
+  //   padding-top: 20px
+  // }
+
+  // #trailheadInner .challenge-section.quiz .check-quiz-actions {
+  //   padding-bottom: 26px
+  // }
+
+  // #trailheadInner .challenge-section.quiz .check-quiz-actions button {
+  //   margin-bottom: 0
+  // }
+
+  // #trailheadInner .challenge-section.quiz .check-quiz-actions .quiz-details {
+  //   line-height: 42px;
+  //   font-size: 15px
+  // }
+
+  // #trailheadInner .challenge-section.no-assessment.not-complete {
+  //   padding: 30px 0
+  // }
+
+  // #trailheadInner .challenge-section.no-assessment p {
+  //   margin-bottom: 30px
+  // }
+
+  // #trailheadInner .challenge-section .top-section,
+  // .challenge-section .mid-section,
+  // .challenge-section .bottom-section,
+  // .challenge-section .fail {
+  //   padding-left: 20px;
+  //   padding-right: 20px
+  // }
+
+  // #trailheadInner .challenge-section .top-section {
+  //   padding-bottom: 20px
+  // }
+
+  // #trailheadInner .challenge-section .mid-section {
+  //   padding-top: 30px;
+  //   padding-bottom: 30px;
+  //   background: #EFEFEF;
+  //   border: 1px solid #DEDEDE;
+  //   border-width: 1px 0px;
+  //   font-size: 18px;
+  //   font-weight: bold
+  // }
+
+  // #trailheadInner .challenge-section .bottom-section {
+  //   padding-top: 20px;
+  //   font-size: 16px
+  // }
+
+  // #trailheadInner .challenge-section .bottom-section.step-bottom {
+  //   padding-top: 0
+  // }
+
+  // #trailheadInner .challenge-section .bottom-section p,
+  // .challenge-section .bottom-section ul,
+  // .challenge-section .bottom-section ul li {
+  //   font-size: 15px;
+  //   line-height: 1.5
+  // }
+
+  // #trailheadInner .challenge-section .bottom-section ul {
+  //   margin-top: 20px
+  // }
+
+  // #trailheadInner .challenge-section .bottom-section ul li {
+  //   padding: 4px 0
+  // }
+
+  // #trailheadInner .challenge-section .bottom-section .questions {
+  //   margin-left: -20px;
+  //   margin-right: -20px;
+  //   margin-bottom: 0
+  // }
+
+  // #trailheadInner .challenge-section .bottom-section .questions .question {
+  //   border-bottom: 1px solid #E7E7E7
+  // }
+
+  // #trailheadInner .challenge-section .bottom-section .questions .question:last-child {
+  //   border-bottom: 0
+  // }
+
+  // #trailheadInner .challenge-section .bottom-section .questions .question .question_title {
+  //   padding: 26px 30px 26px 74px;
+  //   background: #F8F8F8;
+  //   border-bottom: 1px solid #E7E7E7;
+  //   line-height: 1.5
+  // }
+
+  // #trailheadInner .challenge-section .bottom-section .questions .question .question_title b {
+  //   margin: 0 33px 0 -42px;
+  //   display: inline-block;
+  //   width: 9px
+  // }
+
+  // #trailheadInner .challenge-section .bottom-section .questions .question .question_answer {
+  //   background: #FFFFFF;
+  //   padding: 20px;
+  //   border-width: 1px 0;
+  //   border-style: solid;
+  //   border-color: transparent
+  // }
+
+  // #trailheadInner .challenge-section .bottom-section .questions .question .question_answer:hover {
+  //   background: #F8F8F8;
+  //   cursor: pointer;
+  //   border: 1px solid #E7E7E7;
+  //   border-width: 1px 0
+  // }
+
+  // #trailheadInner .challenge-section .bottom-section .questions .question .question_answer p {
+  //   margin: 7px 0 0;
+  //   color: #666;
+  //   margin-left: 55px;
+  //   word-wrap: break-word
+  // }
+
+  // #trailheadInner .challenge-section .bottom-section .questions .question .question_answer.selected p {
+  //   color: #333
+  // }
+
+  // #trailheadInner .challenge-section .bottom-section .questions .question .question_answer .status_unselected,
+  // .challenge-section .bottom-section .questions .question .question_answer .status_selected,
+  // .challenge-section .bottom-section .questions .question .question_answer .status_error,
+  // .challenge-section .bottom-section .questions .question .question_answer .status_success {
+  //   border-radius: 500px;
+  //   padding: 10px;
+  //   float: left;
+  //   width: 35px;
+  //   height: 35px;
+  //   margin-right: 20px
+  // }
+
+  // #trailheadInner .challenge-section .bottom-section .questions .question .question_answer .status_unselected {
+  //   display: block
+  // }
+
+  // #trailheadInner .challenge-section .bottom-section .questions .question .question_answer .status_selected,
+  // .challenge-section .bottom-section .questions .question .question_answer .status_error,
+  // .challenge-section .bottom-section .questions .question .question_answer .status_success {
+  //   display: none
+  // }
+
+  // #trailheadInner .challenge-section .bottom-section .questions .question .question_answer.selected {
+  //   background: #cbeffe;
+  //   border-color: #048EC6;
+  //   border-style: solid;
+  //   border-width: 1px 0
+  // }
+
+  // #trailheadInner .challenge-section .bottom-section .questions .question .question_answer.selected .status_selected {
+  //   display: block
+  // }
+
+  // #trailheadInner .challenge-section .bottom-section .questions .question .question_answer.selected .status_unselected,
+  // .challenge-section .bottom-section .questions .question .question_answer.selected .status_error,
+  // .challenge-section .bottom-section .questions .question .question_answer.selected .status_success {
+  //   display: none
+  // }
+
+  // #trailheadInner .challenge-section .bottom-section .questions .question .question_answer .status_unselected {
+  //   padding: 0;
+  //   border: 1px solid #cecece;
+  //   -webkit-box-sizing: border-box;
+  //   box-sizing: border-box;
+  //   text-align: center;
+  //   line-height: 33px;
+  //   height: 35px;
+  //   width: 35px;
+  //   color: #666;
+  //   font-weight: bold
+  // }
+
+  // #trailheadInner .challenge-section .bottom-section .questions .question .question_answer:hover .status_unselected {
+  //   border-color: #333;
+  //   color: #333
+  // }
+
+  // #trailheadInner .challenge-section .bottom-section .questions .question .question_answer:hover p {
+  //   color: #333
+  // }
+
+  // #trailheadInner .challenge-section .bottom-section .questions .question .question_answer .status_selected {
+  //   color: #fff;
+  //   background: #048EC6
+  // }
+
+  // #trailheadInner .challenge-section .bottom-section .questions .question .question_answer .status_error {
+  //   color: #fff;
+  //   background: #d53c3c;
+  //   padding: 10px 9px 10px 11px;
+  //   font-size: 14px
+  // }
+
+  // #trailheadInner .challenge-section .bottom-section .questions .question .question_answer .status_success {
+  //   color: #fff;
+  //   background: #7FC60E
+  // }
+
+  // #trailheadInner .challenge-section .bottom-section .questions .question .question_answer.selected+.question_answer,
+  // .challenge-section .bottom-section .questions .question .question_answer.error+.question_answer,
+  // .challenge-section .bottom-section .questions .question .question_answer.success+.question_answer {
+  //   border-top-color: transparent
+  // }
+
+  // #trailheadInner .challenge-section .bottom-section .questions .question.error .question_answer.selected.error {
+  //   background: initial;
+  //   border: 1px solid transparent;
+  //   border-width: 1px 0
+  // }
+
+  // #trailheadInner .challenge-section .bottom-section .questions .question.error .question_answer.selected.error .status_selected {
+  //   background: #ccc
+  // }
+
+  // #trailheadInner .challenge-section .bottom-section .questions .question.error .question_answer.selected.error:hover {
+  //   background: #F8F8F8;
+  //   cursor: pointer;
+  //   border: 1px solid #E7E7E7;
+  //   border-width: 1px 0
+  // }
+
+  // #trailheadInner .challenge-section .bottom-section .questions .question.error .question_title {
+  //   background: #f9e4e4;
+  //   border-color: #d53c3c;
+  //   border-style: solid;
+  //   border-width: 1px 0;
+  //   position: relative;
+  //   padding-top: 27px;
+  //   padding-bottom: 27px
+  // }
+
+  // #trailheadInner .challenge-section .bottom-section .questions .question.error .question_title b {
+  //   color: #fff;
+  //   position: relative;
+  //   display: inline-block;
+  //   width: 6px;
+  //   text-align: center;
+  //   margin: 0 33px 0 -42px
+  // }
+
+  // #trailheadInner .challenge-section .bottom-section .questions .question.error .question_title:before {
+  //   background: #d53c3c;
+  //   content: '';
+  //   display: block;
+  //   position: absolute;
+  //   width: 35px;
+  //   height: 35px;
+  //   top: 20px;
+  //   left: 20px;
+  //   border-radius: 500px;
+  //   -moz-background-clip: padding;
+  //   -webkit-background-clip: padding-box;
+  //   background-clip: padding-box
+  // }
+
+  // #trailheadInner .challenge-section .bottom-section .questions .question.success .question_answer.selected .status_selected {
+  //   background: #ccc
+  // }
+
+  // #trailheadInner .challenge-section .bottom-section .questions .question.success .question_answer,
+  // .challenge-section .bottom-section .questions .question.success .question_answer:hover {
+  //   background: initial;
+  //   border-color: initial;
+  //   border-style: initial;
+  //   border-width: initial;
+  //   cursor: initial
+  // }
+
+  // #trailheadInner .challenge-section .bottom-section .questions .question.success .question_answer .status_unselected,
+  // .challenge-section .bottom-section .questions .question.success .question_answer:hover .status_unselected {
+  //   border-color: #cecece;
+  //   color: #666
+  // }
+
+  // #trailheadInner .challenge-section .bottom-section .questions .question.success .question_title {
+  //   background: #eefcd7;
+  //   border-color: #7FC60E;
+  //   border-style: solid;
+  //   border-width: 1px 0;
+  //   position: relative
+  // }
+
+  // #trailheadInner .challenge-section .bottom-section .questions .question.success .question_title b {
+  //   color: #fff;
+  //   position: relative;
+  //   display: inline-block;
+  //   width: 6px;
+  //   text-align: center
+  // }
+
+  // #trailheadInner .challenge-section .bottom-section .questions .question.success .question_title:before {
+  //   background: #7FC60E;
+  //   content: '';
+  //   display: block;
+  //   position: absolute;
+  //   width: 35px;
+  //   height: 35px;
+  //   top: 20px;
+  //   left: 20px;
+  //   border-radius: 500px;
+  //   -moz-background-clip: padding;
+  //   -webkit-background-clip: padding-box;
+  //   background-clip: padding-box
+  // }
+
+  // #trailheadInner .challenge-section .fail {
+  //   display: none;
+  //   padding-top: 20px;
+  //   padding-bottom: 20px;
+  //   background: #d53c3c;
+  //   color: #fff
+  // }
+
+  // #trailheadInner .challenge-section .fail.margin-bottom {
+  //   margin-bottom: 20px
+  // }
+
+  // #trailheadInner .challenge-section .fail-text {
+  //   color: #fff
+  // }
+
+  // #trailheadInner .challenge-section .points-earned {
+  //   margin-top: 20px;
+  //   margin-bottom: 20px
+  // }
+
+  // #trailheadInner .challenge-section .points-earned-label {
+  //   color: #7FC60E
+  // }
+
+  // #trailheadInner .challenge-section .points-earned-total {
+  //   font-size: 4rem;
+  //   line-height: 1.2;
+  //   color: #7FC60E
+  // }
+
+  // #trailheadInner .challenge-section .challenge-check-btn,
+  // .challenge-section .challenge-new-btn {
+  //   position: relative;
+  //   margin-top: 20px
+  // }
+
+  // #trailheadInner .challenge-section .challenge-check-btn .btn-text,
+  // .challenge-section .challenge-new-btn .btn-text {
+  //   color: #fff
+  // }
+
+  // #trailheadInner .challenge-section .challenge-check-btn .btn-text i,
+  // .challenge-section .challenge-new-btn .btn-text i {
+  //   font-style: normal
+  // }
+
+  // #trailheadInner .challenge-section .challenge-new-btn {
+  //   margin-bottom: 20px
+  // }
+
+  // #trailheadInner .challenge-section .btn-success.earn-points.hidden {
+  //   display: none
+  // }
+
+  // #trailheadInner .challenge-section .retake {
+  //   margin-top: 20px
+  // }
+
+  // #trailheadInner .challenge-section .retake-text,
+  // .challenge-section .retake-link {
+  //   line-height: 24px
+  // }
+
+  // #trailheadInner .challenge-section .challenge-check-btn.in-progress .btn-text {
+  //   color: transparent !important
+  // }
+
+  // #trailheadInner .challenge-section .completion-date {
+  //   margin-bottom: 30px
+  // }
+
+  // #trailheadInner .unit-sidebar .topic-list-nav ul li a {
+  //   color: #1e1e1c;
+  //   padding: 0.3125rem 1rem;
+  //   display: block;
+  //   border-left: 5px solid transparent
+  // }
+
+  // #trailheadInner .unit-sidebar .topic-list-nav ul li a:active,
+  // .unit-sidebar .topic-list-nav ul li a:hover,
+  // .unit-sidebar .topic-list-nav ul li a:focus {
+  //   text-decoration: none
+  // }
+
+  // #trailheadInner .unit-sidebar .topic-list-nav ul li a:hover {
+  //   background-color: #e2e2e2
+  // }
+
+  // #trailheadInner .unit-sidebar .topic-list-nav ul li.active a {
+  //   color: #0070d2;
+  //   background-color: inherit;
+  //   border-color: #0070d2
+  // }
+
+  // #trailheadInner .unit-sidebar .topic-list-nav ul li.topic-challenge {
+  //   border: 1px solid #e2e2e2;
+  //   border-width: 1px 0 1px
+  // }
+
+  // #trailheadInner .unit-sidebar .topic-list-nav ul li.topic-challenge a {
+  //   padding: .5rem 1rem;
+  //   display: -webkit-box;
+  //   display: -webkit-flex;
+  //   display: -ms-flexbox;
+  //   display: flex
+  // }
+
+  // @media (max-width: 767px) {
+  //   .topic-list {
+  //     display: none
+  //   }
+  // }
+
+  // #trailheadInner .codeblock .syntaxhighlighter {
+  //   border: 1px solid #cecece !important;
+  //   padding: 8px !important;
+  //   font-size: 16px !important
+  // }
+
+  // #trailheadInner .challenge-section h2 {
+  //   color: #333
+  // }
+
+  // #trailheadInner .challenge-section__description ul li,
+  // .challenge-section__text ul li {
+  //   margin-bottom: 2px
+  // }
+
+  // #trailheadInner .challenge-section__description li>ul,
+  // .challenge-section__text li>ul {
+  //   margin-bottom: 0
+  // }
+
+  // #trailheadInner .challenge-section__description h2,
+  // .challenge-section__text h2 {
+  //   margin-top: 0;
+  //   font-size: 28px
+  // }
+
+  // #trailheadInner .challenge-section__description h2 span.challenge-points-green,
+  // .challenge-section__text h2 span.challenge-points-green {
+  //   float: right
+  // }
+
+  // #trailheadInner .challenge-section__description ol,
+  // .challenge-section__text ol {
+  //   list-style: decimal
+  // }
+
+  // #trailheadInner .challenge-section__description ul,
+  // .challenge-section__text ul {
+  //   list-style: disc
+  // }
+
+  // #trailheadInner .challenge-section__description ol,
+  // .challenge-section__description ul,
+  // .challenge-section__text ol,
+  // .challenge-section__text ul {
+  //   margin-left: 2rem
+  // }
+
+  // #trailheadInner .challenge-section__description,
+  // .challenge-section__description p,
+  // .challenge-section__description ul li,
+  // .challenge-section__text,
+  // .challenge-section__text p,
+  // .challenge-section__text ul li {
+  //   font-size: 16px;
+  //   line-height: 24px;
+  //   color: #585858
+  // }
+
+  // #trailheadInner .challenge-section__description h3,
+  // .challenge-section__text h3 {
+  //   font-size: 20px;
+  //   line-height: 1.3;
+  //   color: #000;
+  //   margin-top: 1rem
+  // }
+
+  // #trailheadInner .challenge-section-container {
+  //   background: #FFF;
+  //   border-radius: 8px;
+  //   padding: 1.5rem;
+  //   font-size: 1rem
+  // }
+
+  // #trailheadInner .challenge-section-container.quiz {
+  //   padding: 0 28px
+  // }
+
+  // #trailheadInner .challenge-section-container h3,
+  // .challenge-section-container p,
+  // .challenge-section-container ul,
+  // .challenge-section-container header a.login {
+  //   margin-bottom: 20px
+  // }
+
+  // #trailheadInner .challenge-section-container .questions {
+  //   margin: 0 -28px 26px -28px !important;
+  //   border-bottom: 1px solid #E7E7E7
+  // }
+
+  // #trailheadInner .challenge-section-container header {
+  //   background: transparent
+  // }
+
+  // #trailheadInner .challenge-section-container header+.bottom-section .questions {
+  //   margin-top: 0 !important
+  // }
+
+  // #trailheadInner .challenge-section-container .btn.login {
+  //   font-size: 16px
+  // }
+
+  // #trailheadInner .challenge-section-container .question_title {
+  //   background: #F8F8F8
+  // }
+
+  // #trailheadInner .challenge-section-container .bottom-section {
+  //   padding: 0 !important
+  // }
+
+  // #trailheadInner .challenge-section-container .status_unselected,
+  // .challenge-section-container .status_selected,
+  // .challenge-section-container .status_error,
+  // .challenge-section-container .status_success {
+  //   display: block !important
+  // }
+
+  // #trailheadInner .challenge-section-container span.quiz-errors,
+  // .challenge-section-container span.quiz-details {
+  //   margin-left: 28px
+  // }
+
+  // #trailheadInner .challenge-section-container .faq-link {
+  //   margin-left: 28px;
+  //   font-size: 18px;
+  //   vertical-align: middle
+  // }
+
+  // #trailheadInner .challenge-section-container span.quiz-errors {
+  //   color: #d53c3c;
+  //   font-size: 15px;
+  //   line-height: 42px
+  // }
+
+  // #trailheadInner .challenge-section-container .fail-text {
+  //   color: #fff
+  // }
+
+  // #trailheadInner .challenge-section-container .fail {
+  //   background: #d53c3c;
+  //   padding: 20px 28px;
+  //   margin: 1.5rem -1.5rem 0
+  // }
+
+  // #trailheadInner .challenge-section-container .fail a {
+  //   color: white;
+  //   text-decoration: underline
+  // }
+
+  // #trailheadInner .challenge-points-green {
+  //   color: #048149
+  // }
+
+  // blockquote.quote-style {
+  //   padding: 15px;
+  //   margin: 0 0 20px;
+  //   font-size: 1.1em;
+  //   font-style: italic;
+  //   background: white;
+  //   border-left: 5px solid #d4d1d1;
+  //   line-height: 1.55em
+  // }
+
+  // @media (max-width: 1144px) {
+  //   .challenge-section-container span.quiz-details {
+  //     display: block;
+  //     margin-top: 1rem;
+  //     margin-left: 0
+  //   }
+  // }
+
+  // #trailheadInner .unit-sidebar .sidebar-selector i {
+  //   color: transparent
+  // }
+
+  // #trailheadInner .unit-sidebar .sidebar-selector .active i {
+  //   color: inherit
+  // }
+
+  // #trailheadInner .unit-sidebar .sidebar-selector li a:hover i {
+  //   text-decoration: none
+  // }
+
+  // #trailheadInner .unit-sidebar .sidebar-selector li a:hover {
+  //   cursor: pointer
+  // }
+
+  // #trailheadInner .module-icon {
+  //   position: relative
+  // }
+
+  // @media (max-width: 767px) {
+  //   .unit-sidebar {
+  //     margin-top: 20px
+  //   }
+
+  //   .unit-content {
+  //     padding-right: 0
+  //   }
+  // }
+
+  // body>img {
+  //   display: none
+  // }
+
+  // #trailheadInner .visible-lg {
+  //   display: none
+  // }
+
+  // @media (min-width: 979px) {
+  //   .visible-lg {
+  //     display: block
+  //   }
+  // }
+
+  // li [class^="icon-"] {
+  //   width: auto
+  // }
+
+  // #trailheadInner .th2-invisible {
+  //   visibility: hidden
+  // }
+
+  // a span.translation_missing,
+  // .translation_missing {
+  //   color: #fff
+  // }
+
+  // #trailheadInner .nav a .translation_missing,
+  // nav a .translation_missing {
+  //   font-size: 16px !important
+  // }
+
+  // #trailheadInner .trailhead-item-container {
+  //   min-height: 300px
+  // }
+
+  // #trailheadInner .trailhead-item-status-completed .th-icon--in-progress,
+  // .completed .th-icon--in-progress {
+  //   display: none
+  // }
+
+  // #trailheadInner .trailhead-item-status-completed .th-icon--completed,
+  // .completed .th-icon--completed {
+  //   display: block
+  // }
+
+  // #trailheadInner .trailhead-item-status-new .th-icon--completed,
+  // .trailhead-item-status-new .th-icon--in-progress,
+  // .new .th-icon--completed,
+  // .new .th-icon--in-progress {
+  //   display: none
+  // }
+
+  // #trailheadInner .trailhead-item-status-in-progress .th-icon--completed,
+  // .in-progress .th-icon--completed {
+  //   display: none
+  // }
+
+  // #trailheadInner .trailhead-item-status-in-progress .th-icon--in-progress,
+  // .in-progress .th-icon--in-progress {
+  //   display: block
+  // }
+
+  // #trailheadInner .btn-square {
+  //   border-radius: 0
+  // }
+
+  // #completeModal .footer-shim {
+  //   height: 175px !important
+  // }
+
+  // @media (max-width: 979px) and (min-width: 768px) {
+  //   .trailhead-hero-description {
+  //     padding: 0 30px
+  //   }
+  // }
+
+  // @media only screen and (max-width: 979px) {
+  //   .trailhead-item-container {
+  //     min-height: auto
+  //   }
+  // }
+
+  // [class^="icon-"].hidden,
+  // [class*=" icon-"].hidden {
+  //   display: none
+  // }
+
+  // div#conversion-tracking {
+  //   height: 0px;
+  //   overflow: hidden
+  // }
+
+  // #trailheadInner .panel-box {
+  //   border: 1px solid #ECECEC;
+  //   border-radius: 8px;
+  //   -webkit-box-sizing: border-box;
+  //   box-sizing: border-box;
+  //   overflow: hidden;
+  //   padding: 0;
+  //   margin: 0
+  // }
+
+  // #trailheadInner .panel-box__item {
+  //   border-bottom: 1px solid #ECECEC
+  // }
+
+  // #trailheadInner .th-round-badge {
+  //   width: 3rem;
+  //   line-height: 3rem;
+  //   border: 1px solid #e2e2e2;
+  //   color: #707070;
+  //   border-radius: 100%;
+  //   text-align: center;
+  //   height: 3rem;
+  //   font-size: 1.25rem;
+  //   font-weight: 600
+  // }
+
+  // #trailheadInner .th-round-badge--small {
+  //   width: 35px;
+  //   height: 35px;
+  //   line-height: 34px;
+  //   font-size: 1em;
+  //   color: #333
+  // }
+
+  // #trailheadInner .th-round-badge--success {
+  //   background: #048149;
+  //   border-color: #048149
+  // }
+
+  // #trailheadInner .th-round-badge--success>i {
+  //   color: white !important
+  // }
+
+  // #trailheadInner .th-round-badge--error {
+  //   background: #D33E41;
+  //   border-color: #D33E41
+  // }
+
+  // #trailheadInner .th-round-badge--error,
+  // .th-round-badge--error * {
+  //   color: white !important
+  // }
+
+  // #trailheadInner .th-round-badge--info {
+  //   background: #105E89;
+  //   border-color: #105E89
+  // }
+
+  // #trailheadInner .th-round-badge--info>i {
+  //   color: white !important
+  // }
+
+  // #trailheadInner .hidden {
+  //   display: none !important;
+  //   opacity: 0;
+  //   visibility: hidden;
+  //   height: 0;
+  //   width: 0
+  // }
+
+  // #skill-chart {
+  //   height: 280px;
+  //   width: 100%
+  // }
+
+  // #skill-chart svg {
+  //   display: block;
+  //   width: 100%;
+  //   height: auto;
+  //   overflow: visible
+  // }
+
+  // #skill-chart .c3-legend-item text,
+  // #skill-chart .c3-texts,
+  // #skill-chart .c3-tooltip {
+  //   text-transform: capitalize
+  // }
+
+  // #skill-chart .c3-chart-arc text {
+  //   font-size: 100%
+  // }
+
+  // #trailheadInner .panel.skill-panel {
+  //   overflow: visible
+  // }
+
+  // #trailheadInner .panel.skill-panel .no-skills {
+  //   margin-top: 130px
+  // }
+
+  // button.modal-close {
+  //   border: 0;
+  //   padding: 0;
+  //   background: transparent;
+  //   position: absolute;
+  //   top: 10px;
+  //   right: 10px
+  // }
+
+  // #trailheadInner .challenge-modal {
+  //   border: none
+  // }
+
+  // #trailheadInner .challenge-modal.modal {
+  //   top: calc(146px + 5%) !important;
+  //   margin-left: -275px;
+  //   width: 550px
+  // }
+
+  // #trailheadInner .challenge-modal .close {
+  //   filter: alpha(opacity=100);
+  //   font-size: 28px;
+  //   position: absolute;
+  //   top: -40px;
+  //   right: -30px;
+  //   float: none;
+  //   text-shadow: 0 3px 7px rgba(0, 0, 0, 0.3);
+  //   opacity: 1
+  // }
+
+  // #trailheadInner .challenge-modal .close span {
+  //   float: left;
+  //   font-size: 16px;
+  //   margin-right: 10px;
+  //   margin-left: 5px
+  // }
+
+  // #trailheadInner .challenge-modal .challenge-success-description__social {
+  //   border-top: 1px solid #E7E7E7;
+  //   padding: 30px 0 20px;
+  //   font-size: 18px;
+  //   font-weight: bold;
+  //   margin-bottom: 0
+  // }
+
+  // #trailheadInner .challenge-modal .challenge-item {
+  //   min-height: 240px;
+  //   padding: 0
+  // }
+
+  // #trailheadInner .challenge-modal .challenge-item.challenge-item-module .module-badge {
+  //   margin: 0 auto 20px
+  // }
+
+  // #trailheadInner .challenge-modal .challenge-item.challenge-item-module .challenge-success-text {
+  //   margin-bottom: 10px;
+  //   margin-top: 15px;
+  //   line-height: 1.2
+  // }
+
+  // #trailheadInner .challenge-modal .challenge-item.challenge-item-module .challenge-success-description {
+  //   font-size: 14px
+  // }
+
+  // #trailheadInner .challenge-modal .modal-header {
+  //   border-bottom: none
+  // }
+
+  // #trailheadInner .challenge-modal .modal-body {
+  //   padding: 0;
+  //   min-height: 200px;
+  //   max-height: none
+  // }
+
+  // #trailheadInner .challenge-modal .body-content {
+  //   padding: 20px
+  // }
+
+  // #trailheadInner .challenge-modal .modal-share {
+  //   -webkit-border-top-right-radius: 0;
+  //   -webkit-border-bottom-right-radius: 6px;
+  //   -webkit-border-bottom-left-radius: 6px;
+  //   -webkit-border-top-left-radius: 0;
+  //   -moz-border-radius-topright: 0;
+  //   -moz-border-radius-bottomright: 6px;
+  //   -moz-border-radius-bottomleft: 6px;
+  //   -moz-border-radius-topleft: 0;
+  //   border-top-right-radius: 0;
+  //   border-bottom-right-radius: 6px;
+  //   border-bottom-left-radius: 6px;
+  //   border-top-left-radius: 0;
+  //   -moz-background-clip: padding;
+  //   -webkit-background-clip: padding-box;
+  //   background-clip: padding-box;
+  //   background-color: #fff;
+  //   color: #666;
+  //   font-size: 14px;
+  //   padding: 10px 20px;
+  //   margin-top: 20px
+  // }
+
+  // #trailheadInner .challenge-modal .challenge-content {
+  //   text-align: center;
+  //   margin: 30px 0
+  // }
+
+  // #trailheadInner .challenge-modal .challenge-success-description-bold {
+  //   color: #666;
+  //   font-weight: bold;
+  //   font-size: 21px;
+  //   line-height: 1.3
+  // }
+
+  // #trailheadInner .challenge-modal .challenge-points {
+  //   text-align: center
+  // }
+
+  // #trailheadInner .challenge-modal .challenge-points li {
+  //   padding: 10px 40px !important;
+  //   border-right: 1px solid #eee
+  // }
+
+  // #trailheadInner .challenge-modal .challenge-points li:last-child {
+  //   border-right: none
+  // }
+
+  // #trailheadInner .challenge-modal .challenge-points .points {
+  //   height: 140px;
+  //   vertical-align: middle;
+  //   width: 140px
+  // }
+
+  // #trailheadInner .challenge-modal .challenge-points .points.aggregated {
+  //   border-radius: 50%;
+  //   -moz-background-clip: padding;
+  //   -webkit-background-clip: padding-box;
+  //   background-clip: padding-box;
+  //   border: 2px dashed #7FC60E;
+  //   margin-top: 10px;
+  //   margin-bottom: 30px;
+  //   margin-left: auto;
+  //   margin-right: auto
+  // }
+
+  // #trailheadInner .challenge-modal .challenge-points .points .aggregated-points {
+  //   color: #7FC60E;
+  //   font-size: 40px;
+  //   font-weight: 300;
+  //   margin-bottom: 10px;
+  //   margin-top: 50px
+  // }
+
+  // #trailheadInner .challenge-modal .challenge-points .points .aggregated-points-text {
+  //   color: #7FC60E;
+  //   font-size: 12px;
+  //   font-weight: bold
+  // }
+
+  // #trailheadInner .challenge-modal .challenge-points .challenge-success-description-next {
+  //   margin-top: 20px;
+  //   margin-bottom: 0
+  // }
+
+  // #trailheadInner .challenge-modal .challenge-success-text {
+  //   color: #666;
+  //   font-family: TrailheadBold !important;
+  //   font-weight: bold;
+  //   font-size: 36px;
+  //   margin-bottom: 10px;
+  //   margin-top: 0;
+  //   line-height: 1.2
+  // }
+
+  // #trailheadInner .challenge-modal .challenge-success-description {
+  //   color: #666;
+  //   font-size: 16px
+  // }
+
+  // #trailheadInner .challenge-modal .challenge-success-astro {
+  //   margin-bottom: 15px;
+  //   width: 120px
+  // }
+
+  // #trailheadInner .challenge-modal .challenge-success-streak {
+  //   margin-bottom: 0;
+  //   margin-top: 30px
+  // }
+
+  // #trailheadInner .challenge-modal .challenge-success-description-light {
+  //   color: #999;
+  //   font-size: 16px
+  // }
+
+  // #trailheadInner .challenge-modal .module-badge {
+  //   height: 140px;
+  //   width: 140px;
+  //   margin: 40px auto 40px auto;
+  //   position: relative
+  // }
+
+  // #trailheadInner .challenge-modal .module-badge .th-icon--completed {
+  //   border: 3px solid #fff;
+  //   position: absolute;
+  //   top: 0;
+  //   right: 0;
+  //   height: 30px;
+  //   width: 30px
+  // }
+
+  // #trailheadInner .challenge-modal .challenge-points-earned {
+  //   color: #7FC60E;
+  //   font-weight: bold;
+  //   font-size: 24px;
+  //   margin-bottom: 20px;
+  //   margin-top: 20px
+  // }
+
+  // #trailheadInner .challenge-modal .challenge-table {
+  //   display: table;
+  //   width: 100%;
+  //   height: 100%
+  // }
+
+  // #trailheadInner .challenge-modal .challenge-table-cell {
+  //   display: table-cell;
+  //   vertical-align: middle
+  // }
+
+  // #trailheadInner .challenge-modal .challenge-item-module .challenge-points,
+  // .challenge-modal .challenge-item-module .challenge-content {
+  //   width: 230px
+  // }
+
+  // #trailheadInner .challenge-modal .challenge-item-module .challenge-points {
+  //   margin-left: 20px
+  // }
+
+  // #trailheadInner .challenge-modal .challenge-modal-close,
+  // .challenge-modal .challenge-modal-close span {
+  //   color: #189CD7;
+  //   font-size: 16px
+  // }
+
+  // @media only screen and (max-width: 767px) {
+  //   .challenge-modal .close {
+  //     top: 10px;
+  //     right: 10px;
+  //     z-index: 1100;
+  //     font-size: 18px;
+  //     text-shadow: none
+  //   }
+
+  //   .challenge-modal.modal {
+  //     left: 0;
+  //     right: 0;
+  //     top: 0 !important;
+  //     bottom: 0;
+  //     width: 100%;
+  //     border-radius: 0;
+  //     margin: 0;
+  //     z-index: 10001;
+  //     overflow-y: scroll
+  //   }
+
+  //   .challenge-modal .challenge-item {
+  //     min-height: auto;
+  //     padding: 0
+  //   }
+
+  //   .challenge-modal .challenge-item .challenge-points,
+  //   .challenge-modal .challenge-item .challenge-content {
+  //     width: 100%
+  //   }
+
+  //   .challenge-modal .challenge-item .points.aggregated {
+  //     margin-left: auto;
+  //     margin-right: auto
+  //   }
+
+  //   .challenge-modal .challenge-item-module .challenge-points {
+  //     margin-left: 0;
+  //     position: absolute;
+  //     top: 50px;
+  //     left: 0
+  //   }
+  // }
+
+  // @media only screen and (max-height: 567px) {
+  //   .challenge-modal .challenge-item {
+  //     float: left
+  //   }
+
+  //   .challenge-modal .challenge-success-description__social {
+  //     border-top: none
+  //   }
+  // }
+
+  // @media only screen and (max-width: 320px) {
+  //   .challenge-modal .challenge-success-description__social {
+  //     padding: 10px 0
+  //   }
+
+  //   .challenge-modal .th-share-list li {
+  //     margin-left: 2px
+  //   }
+  // }
+
+  // @media only screen and (max-height: 320px) {
+  //   .challenge-modal .module-badge {
+  //     height: 85px;
+  //     width: 100px
+  //   }
+
+  //   .challenge-modal .th-share-list li {
+  //     margin-left: 0;
+  //     width: 38px;
+  //     height: 38px
+  //   }
+
+  //   .challenge-modal .th-share-list li:first-child {
+  //     width: 58px;
+  //     height: 58px
+  //   }
+  // }
+
+  // @media only screen and (max-height: 480px) {
+  //   .challenge-modal .challenge-content {
+  //     margin: 0
+  //   }
+
+  //   .challenge-modal .challenge-item {
+  //     float: none
+  //   }
+
+  //   .challenge-modal .challenge-success-astro {
+  //     width: 80px
+  //   }
+
+  //   .challenge-modal .challenge-item-module {
+  //     float: left;
+  //     -webkit-box-sizing: border-box;
+  //     box-sizing: border-box;
+  //     width: 50%
+  //   }
+
+  //   .challenge-modal .challenge-item-module .module-badge {
+  //     width: 100px;
+  //     height: 100px
+  //   }
+
+  //   .challenge-modal .modal-share {
+  //     float: left;
+  //     -webkit-box-sizing: border-box;
+  //     box-sizing: border-box;
+  //     width: 50%
+  //   }
+  // }
+
+  // #trailheadInner .trailhead-locale-de .panel--level.next-level .panel-heading h3,
+  // .trailhead-locale-fr .panel--level.next-level .panel-heading h3,
+  // .trailhead-locale-es-MX .panel--level.next-level .panel-heading h3,
+  // .trailhead-locale-pt-BR .panel--level.next-level .panel-heading h3 {
+  //   margin-bottom: 0
+  // }
+
+  // #trailheadInner .trailhead-locale-de .panel--level.next-level .panel-heading a,
+  // .trailhead-locale-fr .panel--level.next-level .panel-heading a,
+  // .trailhead-locale-es-MX .panel--level.next-level .panel-heading a,
+  // .trailhead-locale-pt-BR .panel--level.next-level .panel-heading a {
+  //   display: block;
+  //   margin: 0 0 10px;
+  //   font-size: 14px;
+  //   clear: left;
+  //   float: none !important;
+  //   line-height: 2
+  // }
+
+  // #trailheadInner .trailhead-locale-de .panel--level.next-level .th-profile-rank-image,
+  // .trailhead-locale-fr .panel--level.next-level .th-profile-rank-image,
+  // .trailhead-locale-es-MX .panel--level.next-level .th-profile-rank-image,
+  // .trailhead-locale-pt-BR .panel--level.next-level .th-profile-rank-image {
+  //   height: 120px;
+  //   width: 120px
+  // }
+
+  // #trailheadInner .tag {
+  //   display: block;
+  //   font-size: 12px;
+  //   color: #666;
+  //   line-height: 25px;
+  //   background: rgba(0, 0, 0, 0.05);
+  //   border-radius: 4px;
+  //   padding: 0 10px;
+  //   text-decoration: none
+  // }
+
+  // #trailheadInner .tag:hover {
+  //   color: #0070d2;
+  //   cursor: pointer
+  // }
+
+  // #trailheadInner .tag.active {
+  //   background: #0070d2;
+  //   color: white
+  // }
+
+  // #trailheadInner .tag:hover,
+  // .tag:active,
+  // .tag:focus {
+  //   text-decoration: none
+  // }
+
+  // #trailheadInner .favorite {
+  //   padding: 0 !important;
+  //   height: 38px;
+  //   width: 38px
+  // }
+
+  // #trailheadInner .favorite .heart {
+  //   margin: auto;
+  //   height: 30px;
+  //   width: 30px;
+  //   background: url(/assets/favorites/heart_sprite-e35a056109cddda4e471c69b3b1322faa53945e30086acb029da3b8eb3e4f3e5.svg);
+  //   background-repeat: no-repeat;
+  //   background-position: center 6px
+  // }
+
+  // #trailheadInner .favorite:hover {
+  //   background: rgba(0, 0, 0, 0.05);
+  //   cursor: pointer
+  // }
+
+  // #trailheadInner .favorite:hover .heart {
+  //   background-position: center -26px
+  // }
+
+  // #trailheadInner .favorite.active .heart {
+  //   background-position: center -58px
+  // }
+
+  // #trailheadInner .favorite:after {
+  //   background-image: url(/assets/favorites/astro-heart-76157b40805e82e50923a4b09c90a6d297164dc6824e5279dc0f0a4acabe77d1.svg);
+  //   background-repeat: no-repeat;
+  //   width: 40px;
+  //   height: 50px;
+  //   content: " ";
+  //   opacity: 0;
+  //   position: absolute;
+  //   bottom: -8px;
+  //   right: -2px;
+  //   z-index: 2
+  // }
+
+  // #trailheadInner .favorite.loving {
+  //   overflow: visible
+  // }
+
+  // #trailheadInner .favorite.loving:after {
+  //   -webkit-animation: astro-grow .75s ease-out;
+  //   animation: astro-grow .75s ease-out
+  // }
+
+  // #trailheadInner .favorite:before {
+  //   background-image: url(/assets/favorites/astro-heartless-bb49198b31124f55e309f60e555a36b7a48b3bc2858230b2a44150f06d0ab37c.svg);
+  //   background-repeat: no-repeat;
+  //   width: 70px;
+  //   height: 80px;
+  //   content: " ";
+  //   opacity: 0;
+  //   position: absolute;
+  //   bottom: -15px;
+  //   right: -15px;
+  //   z-index: 2
+  // }
+
+  // #trailheadInner .favorite .heart:after {
+  //   background-image: url(/assets/favorites/heart-20380dfe934c00ea913e70174454acd792e9c3e99d7232e899f5b2e50779c580.svg);
+  //   background-repeat: no-repeat;
+  //   width: 70px;
+  //   height: 70px;
+  //   content: " ";
+  //   opacity: 0;
+  //   position: absolute;
+  //   bottom: -15px;
+  //   left: -15px
+  // }
+
+  // #trailheadInner .favorite.unloving {
+  //   overflow: visible
+  // }
+
+  // #trailheadInner .favorite.unloving:before {
+  //   -webkit-animation: astro-unlove .65s linear;
+  //   animation: astro-unlove .65s linear
+  // }
+
+  // #trailheadInner .favorite.unloving .heart:after {
+  //   -webkit-animation: heart-drop .75s linear;
+  //   animation: heart-drop .75s linear
+  // }
+
+  // @-webkit-keyframes astro-grow {
+
+  //   25%,
+  //   75% {
+  //     opacity: 1
+  //   }
+
+  //   100% {
+  //     -webkit-transform: scale(2);
+  //     transform: scale(2);
+  //     opacity: 0
+  //   }
+  // }
+
+  // @keyframes astro-grow {
+
+  //   25%,
+  //   75% {
+  //     opacity: 1
+  //   }
+
+  //   100% {
+  //     -webkit-transform: scale(2);
+  //     transform: scale(2);
+  //     opacity: 0
+  //   }
+  // }
+
+  // @-webkit-keyframes astro-unlove {
+
+  //   0%,
+  //   80% {
+  //     opacity: 1
+  //   }
+
+  //   100% {
+  //     opacity: 0
+  //   }
+  // }
+
+  // @keyframes astro-unlove {
+
+  //   0%,
+  //   80% {
+  //     opacity: 1
+  //   }
+
+  //   100% {
+  //     opacity: 0
+  //   }
+  // }
+
+  // @-webkit-keyframes heart-drop {
+  //   0% {
+  //     -webkit-transform: scale(1);
+  //     transform: scale(1);
+  //     opacity: 1
+  //   }
+
+  //   20% {
+  //     -webkit-transform: translate(-7px, 15px);
+  //     transform: translate(-7px, 15px)
+  //   }
+
+  //   40% {
+  //     -webkit-transform: translate(0px, 30px);
+  //     transform: translate(0px, 30px)
+  //   }
+
+  //   60% {
+  //     opacity: 1;
+  //     -webkit-transform: translate(10px, 45px);
+  //     transform: translate(10px, 45px)
+  //   }
+
+  //   80% {
+  //     opacity: 0;
+  //     -webkit-transform: scale(0.5) translate(0px, 120px);
+  //     transform: scale(0.5) translate(0px, 120px)
+  //   }
+  // }
+
+  // @keyframes heart-drop {
+  //   0% {
+  //     -webkit-transform: scale(1);
+  //     transform: scale(1);
+  //     opacity: 1
+  //   }
+
+  //   20% {
+  //     -webkit-transform: translate(-7px, 15px);
+  //     transform: translate(-7px, 15px)
+  //   }
+
+  //   40% {
+  //     -webkit-transform: translate(0px, 30px);
+  //     transform: translate(0px, 30px)
+  //   }
+
+  //   60% {
+  //     opacity: 1;
+  //     -webkit-transform: translate(10px, 45px);
+  //     transform: translate(10px, 45px)
+  //   }
+
+  //   80% {
+  //     opacity: 0;
+  //     -webkit-transform: scale(0.5) translate(0px, 120px);
+  //     transform: scale(0.5) translate(0px, 120px)
+  //   }
+  // }
+
+  // #trailheadInner .private-ribbon {
+  //   content: 'internal';
+  //   width: 98px;
+  //   height: 26px;
+  //   line-height: 26px;
+  //   text-transform: uppercase;
+  //   text-indent: 14px;
+  //   text-align: left;
+  //   letter-spacing: 0.25px;
+  //   color: white;
+  //   font-size: 12px;
+  //   position: absolute;
+  //   background-image: url(/assets/private_ribbon_blank-37dc53aa446d51ebb4ed3931e2f7f9ea696381e31664538b8879e24a2b4368a7.png);
+  //   background-repeat: no-repeat;
+  //   -ms-interpolation-mode: nearest-neighbor;
+  //   image-rendering: -webkit-optimize-contrast;
+  //   image-rendering: -moz-crisp-edges;
+  //   image-rendering: -o-pixelated;
+  //   image-rendering: pixelated;
+  //   position: absolute;
+  //   z-index: 10
+  // }
+
+  // #trailheadInner .content-information .private-ribbon {
+  //   bottom: -13px;
+  //   left: -6px
+  // }
+
+  // #trailheadInner .launch-org {
+  //   margin-bottom: 1rem
+  // }
+
+  // #trailheadInner .launch-org__notices {
+  //   margin: 1rem 0 !important;
+  //   list-style: none !important
+  // }
+
+  // #trailheadInner .launch-org__notices li {
+  //   line-height: 1.5;
+  //   margin: 0
+  // }
+
+  // #trailheadInner .launch-org__notices li i {
+  //   height: 24px;
+  //   width: 24px;
+  //   font-size: 20px;
+  //   margin: 0 6px 0 2px;
+  //   color: #fff;
+  //   line-height: 1;
+  //   border-radius: 100%
+  // }
+
+  // #trailheadInner .launch-org__notices .msg-icon {
+  //   position: relative;
+  //   display: inline-block;
+  //   width: 24px;
+  //   height: 24px;
+  //   vertical-align: middle;
+  //   margin-right: 6px
+  // }
+
+  // #trailheadInner .launch-org__link {
+  //   line-height: 40px;
+  //   white-space: nowrap;
+  //   vertical-align: top;
+  //   font-size: 16px
+  // }
+
+  // #trailheadInner .site-notifier {
+  //   -webkit-transition: max-height 0.5s ease-out;
+  //   -o-transition: max-height 0.5s ease-out;
+  //   transition: max-height 0.5s ease-out;
+  //   overflow: hidden;
+  //   max-height: 120px
+  // }
+
+  // #trailheadInner .site-notifier.slide-up {
+  //   max-height: 0
+  // }
+
+  // #trailheadInner .site-notifier .site-notifier-container {
+  //   margin: 0 auto;
+  //   max-width: 660px;
+  //   text-align: center;
+  //   padding: 10px 20px;
+  //   -webkit-box-sizing: border-box;
+  //   box-sizing: border-box;
+  //   width: 100%;
+  //   position: relative;
+  //   font-size: 13px;
+  //   line-height: 1.5
+  // }
+
+  // #trailheadInner .site-notifier .site-notifier-container #notifier-close {
+  //   position: absolute;
+  //   top: 10px;
+  //   right: 5px;
+  //   font-size: 12px
+  // }
+
+  // #trailheadInner .site-notifier .site-notifier-container #notifier-close:hover {
+  //   opacity: 0.6;
+  //   text-decoration: none
+  // }
+
+  // #trailheadInner .site-notifier.notifier-info {
+  //   background-color: #d9edf7;
+  //   border-color: #bcdff1;
+  //   color: #0062b9
+  // }
+
+  // #trailheadInner .site-notifier.notifier-info .site-notifier-container {
+  //   font-size: 16px
+  // }
+
+  // #trailheadInner .site-notifier.notifier-info a {
+  //   color: inherit;
+  //   text-decoration: underline
+  // }
+
+  // #trailheadInner .site-notifier.notifier-info a:hover {
+  //   text-decoration: none
+  // }
+
+  // #trailheadInner .site-notifier.notifier-warning {
+  //   background-color: #fcf8e3;
+  //   border-color: #faf2cc;
+  //   color: #8a6d3b
+  // }
+
+  // #trailheadInner .site-notifier.notifier-success {
+  //   background-color: #dff0d8;
+  //   border-color: #d0e9c6;
+  //   color: #3c763d
+  // }
+
+  // #trailheadInner .site-notifier.notifier-danger {
+  //   background-color: #f2dede;
+  //   border-color: #ebcccc;
+  //   color: #a94442
+  // }
+
+  // #trailheadInner .site-notification-settings,
+  // .trailmix {
+  //   margin: 80px 0
+  // }
+
+  // #trailheadInner .site-notification-settings table,
+  // .trailmix table {
+  //   width: 100%;
+  //   margin-bottom: 40px
+  // }
+
+  // #trailheadInner .site-notification-settings table th,
+  // .site-notification-settings table td,
+  // .trailmix table th,
+  // .trailmix table td {
+  //   text-align: left;
+  //   padding: 8px
+  // }
+
+  // #trailheadInner .site-notification-settings table tr:first-child th,
+  // .site-notification-settings table tr:first-child td,
+  // .trailmix table tr:first-child th,
+  // .trailmix table tr:first-child td {
+  //   border-bottom: 1px solid #e3e3e3
+  // }
+
+  // #trailheadInner .site-notification-settings .form-horizontal,
+  // .trailmix .form-horizontal {
+  //   margin: 20px 0
+  // }
+
+  // #trailheadInner .site-notification-settings .form-horizontal .form-group,
+  // .trailmix .form-horizontal .form-group {
+  //   display: inline-block;
+  //   margin-right: 20px
+  // }
+
+  // #trailheadInner .site-notification-settings .form-horizontal .form-group label,
+  // .site-notification-settings .form-horizontal .form-group input,
+  // .trailmix .form-horizontal .form-group label,
+  // .trailmix .form-horizontal .form-group input {
+  //   display: inline-block
+  // }
+
+  // #trailheadInner .site-notification-settings .form-horizontal .form-group input[type='text'],
+  // .trailmix .form-horizontal .form-group input[type='text'] {
+  //   min-width: 400px
+  // }
+
+  // #trailheadInner .site-notification-settings .form-horizontal .form-group select,
+  // .trailmix .form-horizontal .form-group select {
+  //   width: 120px
+  // }
+
+  // #trailheadInner .site-notification-settings .form-horizontal .form-group.blocks label,
+  // .site-notification-settings .form-horizontal .form-group.blocks input,
+  // .site-notification-settings .form-horizontal .form-group.blocks select,
+  // .trailmix .form-horizontal .form-group.blocks label,
+  // .trailmix .form-horizontal .form-group.blocks input,
+  // .trailmix .form-horizontal .form-group.blocks select {
+  //   display: block
+  // }
+
+  // #trailheadInner .site-notification-settings .form-horizontal input[type="submit"],
+  // .trailmix .form-horizontal input[type="submit"] {
+  //   padding: 5px 20px
+  // }
+
+  // #trailheadInner .custom-step-edit-icon__label {
+  //   display: inline-block
+  // }
+
+  // #trailheadInner .custom-step-edit-icon__label--task {
+  //   width: auto;
+  //   vertical-align: text-top
+  // }
+
+  // #trailheadInner .custom-step-edit-icon__label--link {
+  //   width: 100%
+  // }
+
+  // #trailheadInner .custom-step-edit-icon__select {
+  //   display: inline-block
+  // }
+
+  // #trailheadInner .custom-step-edit-icon__select--task {
+  //   display: none
+  // }
+
+  // #trailheadInner .custom-step-edit-icon__select--link {
+  //   width: 200px
+  // }
+
+  // @media (max-width: 576px) {
+  //   .custom-step-edit-icon__select--link {
+  //     width: 100%
+  //   }
+  // }
+
+  // #trailheadInner .custom-step-edit-icon__icon {
+  //   display: inline-block;
+  //   margin-left: 20px
+  // }
+
+  // #trailheadInner .custom-step-edit-icon__icon img {
+  //   height: 40px
+  // }
+
+  // #trailheadInner .custom-step-edit-icon__icon--task {
+  //   margin-left: 15px
+  // }
+
+  // #trailheadInner .custom-step-edit-icon__icon--link {
+  //   vertical-align: top
+  // }
+
+  // @media (max-width: 576px) {
+  //   .custom-step-edit-icon__icon--link {
+  //     display: none
+  //   }
+  // }
+
+  // #trailheadInner .th-new-hero {
+  //   overflow: hidden;
+  //   position: relative;
+  //   z-index: 0
+  // }
+
+  // #trailheadInner .th-new-hero__astro-animation {
+  //   width: 136px;
+  //   position: absolute;
+  //   bottom: 40px;
+  //   left: 570px
+  // }
+
+  // @media (max-width: 2140px) {
+  //   .th-new-hero__astro-animation {
+  //     width: 130px;
+  //     bottom: 21px;
+  //     left: 477px
+  //   }
+  // }
+
+  // @media (max-width: 1850px) {
+  //   .th-new-hero__astro-animation {
+  //     width: 136px;
+  //     bottom: 28px;
+  //     left: 222px
+  //   }
+  // }
+
+  // @media (max-width: 1400px) {
+  //   .th-new-hero__astro-animation {
+  //     width: 126px;
+  //     bottom: 21px;
+  //     left: 174px
+  //   }
+  // }
+
+  // @media (max-width: 1150px) {
+  //   .th-new-hero__astro-animation {
+  //     width: 117px;
+  //     left: 158px;
+  //     bottom: 26px
+  //   }
+  // }
+
+  // @media (max-width: 1000px) {
+  //   .th-new-hero__astro-animation {
+  //     left: 109px;
+  //     width: 95px
+  //   }
+  // }
+
+  // @media (max-width: 750px) {
+  //   .th-new-hero__astro-animation {
+  //     width: 87px;
+  //     left: 28px
+  //   }
+  // }
+
+  // @media (max-width: 480px) {
+  //   .th-new-hero__astro-animation {
+  //     width: 87px;
+  //     left: 36px
+  //   }
+  // }
+
+  // #trailheadInner .th-new-hero__codey-animation {
+  //   width: 192px;
+  //   height: 309px;
+  //   position: absolute;
+  //   right: 536px;
+  //   bottom: 20px
+  // }
+
+  // @media (max-width: 2140px) {
+  //   .th-new-hero__codey-animation {
+  //     width: 185px;
+  //     height: 298px;
+  //     right: 447px;
+  //     bottom: 23px
+  //   }
+  // }
+
+  // @media (max-width: 1850px) {
+  //   .th-new-hero__codey-animation {
+  //     width: 185px;
+  //     height: 298px;
+  //     right: 215px;
+  //     bottom: 27px
+  //   }
+  // }
+
+  // @media (max-width: 1400px) {
+  //   .th-new-hero__codey-animation {
+  //     width: 170px;
+  //     height: 274px;
+  //     right: 160px;
+  //     bottom: 20px
+  //   }
+  // }
+
+  // @media (max-width: 1150px) {
+  //   .th-new-hero__codey-animation {
+  //     right: 139px;
+  //     height: 256px;
+  //     width: 159px;
+  //     bottom: 20px
+  //   }
+  // }
+
+  // @media (max-width: 1000px) {
+  //   .th-new-hero__codey-animation {
+  //     right: 78px;
+  //     width: 135px;
+  //     bottom: 3px
+  //   }
+  // }
+
+  // @media (max-width: 750px) {
+  //   .th-new-hero__codey-animation {
+  //     display: none
+  //   }
+  // }
+
+  // @media (max-width: 480px) {
+  //   .th-new-hero__codey-animation {
+  //     display: none
+  //   }
+  // }
+
+  // #trailheadInner .th-new-hero--landscape {
+  //   height: 460px;
+  //   background-color: #DEF2FF;
+  //   background-image: url(/assets/home/hero/squirrel-90ffc759c6139b08796470b65fa0a8294097d238f68afd388a478ee256661cfc.png), url(/assets/home/hero/left-landscape-fa85699bb61dcbe80aea12d7a2bda3a65d22212636d824bfbcb66e49e25047f5.png), url(/assets/home/hero/right-landscape-87a7a7db71151e2a18647323a5d1670164d7c2c8b2ccfaef1adf3a87e7b6e7fb.png), url(/assets/home/hero/white-bg-888421646b384a68b10a2dbcc2e5ae4c2cb35719a4987979888a0a3cb46cf6b6.png), url(/assets/home/hero/clouds-3fb217544688012948b2e14c2dd8a3635c9fb2ebfa76defead28f217b0ebdde5.png);
+  //   background-image: url(/assets/home/hero/squirrel-90ffc759c6139b08796470b65fa0a8294097d238f68afd388a478ee256661cfc.png), -webkit-image-set(url(/assets/home/hero/left-landscape-fa85699bb61dcbe80aea12d7a2bda3a65d22212636d824bfbcb66e49e25047f5.png) 1x, url(/assets/home/hero/left-landscape2x-73847ddf6b08274943d107da907b47297441407247659954670674cd73b6ed97.png) 2x), -webkit-image-set(url(/assets/home/hero/right-landscape-87a7a7db71151e2a18647323a5d1670164d7c2c8b2ccfaef1adf3a87e7b6e7fb.png) 1x, url(/assets/home/hero/right-landscape2x-fd1e87dda60a47781b0dcef8b432275fd577bb35b6b7745e91883d34f5d7890c.png) 2x), url(/assets/home/hero/white-bg-888421646b384a68b10a2dbcc2e5ae4c2cb35719a4987979888a0a3cb46cf6b6.png), url(/assets/home/hero/clouds-3fb217544688012948b2e14c2dd8a3635c9fb2ebfa76defead28f217b0ebdde5.png);
+  //   background-image: url(/assets/home/hero/squirrel-90ffc759c6139b08796470b65fa0a8294097d238f68afd388a478ee256661cfc.png), image-set(url(/assets/home/hero/left-landscape-fa85699bb61dcbe80aea12d7a2bda3a65d22212636d824bfbcb66e49e25047f5.png) 1x, url(/assets/home/hero/left-landscape2x-73847ddf6b08274943d107da907b47297441407247659954670674cd73b6ed97.png) 2x), image-set(url(/assets/home/hero/right-landscape-87a7a7db71151e2a18647323a5d1670164d7c2c8b2ccfaef1adf3a87e7b6e7fb.png) 1x, url(/assets/home/hero/right-landscape2x-fd1e87dda60a47781b0dcef8b432275fd577bb35b6b7745e91883d34f5d7890c.png) 2x), url(/assets/home/hero/white-bg-888421646b384a68b10a2dbcc2e5ae4c2cb35719a4987979888a0a3cb46cf6b6.png), url(/assets/home/hero/clouds-3fb217544688012948b2e14c2dd8a3635c9fb2ebfa76defead28f217b0ebdde5.png);
+  //   background-repeat: no-repeat;
+  //   background-position: left 690px bottom 13px, left 36px bottom -130px, right -61px bottom -171px, left 0 bottom 0px, left 525px top 60px;
+  //   min-height: 210px;
+  //   background-size: 84px 63px, 1175px 530px, 1278px 455px, 2800px 9px, 1150px 130px
+  // }
+
+  // @media (max-width: 2140px) {
+  //   .th-new-hero--landscape {
+  //     background-position: left 624px bottom 20px, left 5px bottom -116px, right -70px bottom -153px, left 0 bottom 0px, left 435px top 73px;
+  //     background-size: 84px 63px, 1058px 477px, 1150px 410px, 2500px 9px, 1150px 130px
+  //   }
+  // }
+
+  // @media (max-width: 1850px) {
+  //   .th-new-hero--landscape {
+  //     background-position: left 351px bottom 21px, left -193px bottom -116px, right -303px bottom -153px, left 0 bottom 0px, left 105px top 42px;
+  //     background-size: 84px 63px, 1058px 477px, 1150px 410px, 2500px 9px, 1150px 130px
+  //   }
+  // }
+
+  // @media (max-width: 1400px) {
+  //   .th-new-hero--landscape {
+  //     background-position: left 308px bottom 18px, left -144px bottom -91px, right -214px bottom -121px, left 0 bottom 0px, left 5px top 55px;
+  //     background-size: 84px 63px, 846px 382px, 920px 328px, 2500px 9px, 1150px 130px
+  //   }
+  // }
+
+  // @media (max-width: 1150px) {
+  //   .th-new-hero--landscape {
+  //     background-position: left 264px bottom 18px, left -194px bottom -91px, right -268px bottom -121px, left 0 bottom 0px, left -95px top 40px;
+  //     background-size: 84px 63px, 846px 382px, 920px 328px, 2500px 9px
+  //   }
+  // }
+
+  // @media (max-width: 1000px) {
+  //   .th-new-hero--landscape {
+  //     height: 460px;
+  //     background-position: left 210px bottom 17px, left -186px bottom -72px, right -262px bottom -95px, left 0 bottom 0px, left -175px top 75px;
+  //     background-size: 64px 43px, 677px 306px, 736px 262px, 2500px 9px, 1150px 130px
+  //   }
+  // }
+
+  // @media (max-width: 750px) {
+  //   .th-new-hero--landscape {
+  //     height: 420px;
+  //     background-position: left 115px bottom 21px, left -183px bottom -65px, right -288px bottom -84px, left 0 bottom 0px, left 515px top 15px;
+  //     background-size: 50px 35px, 579px 281px, 687px 235px, 1500px 9px, 1150px 130px
+  //   }
+  // }
+
+  // @media (max-width: 480px) {
+  //   .th-new-hero--landscape {
+  //     height: 420px;
+  //     background-position: left 115px bottom 21px, left -183px bottom -65px, right -288px bottom -84px, left 0 bottom 0px, left 515px top 15px;
+  //     background-size: 50px 35px, 579px 281px, 687px 235px, 1500px 9px, 1150px 130px
+  //   }
+  // }
+
+  // #trailheadInner .th-hero {
+  //   overflow: hidden
+  // }
+
+  // #trailheadInner .th-hero--custom {
+  //   min-height: 200px;
+  //   background-position: center;
+  //   background-size: cover
+  // }
+
+  // #trailheadInner .th-hero__heading {
+  //   letter-spacing: -0.44px;
+  //   text-transform: uppercase;
+  //   color: #15385f;
+  //   font-size: 36px;
+  //   line-height: 1.1;
+  //   margin: 0 0 0.5rem
+  // }
+
+  // @media (max-width: 880px) {
+  //   .th-hero__heading {
+  //     font-size: 36px
+  //   }
+  // }
+
+  // @media (max-width: 680px) {
+  //   .th-hero__heading {
+  //     font-size: 24px
+  //   }
+  // }
+
+  // #trailheadInner .th-hero__heading--signed-out {
+  //   padding-top: 2rem;
+  //   font-size: 40px
+  // }
+
+  // #trailheadInner .th-hero__sub-heading {
+  //   color: #15385f;
+  //   font-size: 24px;
+  //   font-weight: bold;
+  //   line-height: 1.3
+  // }
+
+  // #trailheadInner .th-hero__sub-heading::first-letter {
+  //   text-transform: uppercase
+  // }
+
+  // @media (max-width: 880px) {
+  //   .th-hero__sub-heading {
+  //     font-size: 24px
+  //   }
+  // }
+
+  // @media (max-width: 680px) {
+  //   .th-hero__sub-heading {
+  //     font-size: 16px
+  //   }
+  // }
+
+  // #trailheadInner .page-user-incomplete {
+  //   background: #f3f3f3;
+  //   overflow-x: hidden
+  // }
+
+  // #trailheadInner .page-user-incomplete .user-incomplete-container {
+  //   position: relative;
+  //   margin: 0 auto 40px
+  // }
+
+  // #trailheadInner .page-user-incomplete .user-incomplete-container form {
+  //   margin: 0 auto;
+  //   max-width: 540px
+  // }
+
+  // #trailheadInner .page-user-incomplete .user-incomplete-container .astro {
+  //   margin: 2rem auto 1rem;
+  //   width: 200px
+  // }
+
+  // #trailheadInner .page-user-incomplete .user-incomplete-container .form-error {
+  //   border-radius: 4px;
+  //   margin-bottom: 2rem;
+  //   color: #C23934;
+  //   text-align: center
+  // }
+
+  // #trailheadInner .page-user-incomplete .user-incomplete-container h3 {
+  //   font-size: 26px;
+  //   text-align: center;
+  //   margin: 0;
+  //   font-weight: bold
+  // }
+
+  // #trailheadInner .page-user-incomplete .user-incomplete-container p {
+  //   font-size: 18px;
+  //   text-align: center;
+  //   margin: 0.5rem 0 1.5rem
+  // }
+
+  // #trailheadInner .page-user-incomplete .user-incomplete-container fieldset {
+  //   background: white;
+  //   padding: 40px;
+  //   margin-bottom: 30px;
+  //   -webkit-box-shadow: 0 2px 0 0 rgba(0, 0, 0, 0.1);
+  //   box-shadow: 0 2px 0 0 rgba(0, 0, 0, 0.1);
+  //   border-radius: 4px
+  // }
+
+  // #trailheadInner .page-user-incomplete .user-incomplete-container fieldset .form-groups-split {
+  //   display: -webkit-box;
+  //   display: -webkit-flex;
+  //   display: -ms-flexbox;
+  //   display: flex
+  // }
+
+  // #trailheadInner .page-user-incomplete .user-incomplete-container fieldset .form-groups-split>div {
+  //   -webkit-box-flex: 1;
+  //   -webkit-flex-grow: 1;
+  //   -ms-flex-positive: 1;
+  //   flex-grow: 1
+  // }
+
+  // #trailheadInner .page-user-incomplete .user-incomplete-container fieldset .form-groups-split>div:first-child {
+  //   margin-right: 10px
+  // }
+
+  // #trailheadInner .page-user-incomplete .user-incomplete-container fieldset .form-groups-split>div:last-child {
+  //   margin-left: 10px
+  // }
+
+  // #trailheadInner .page-user-incomplete .user-incomplete-container fieldset label {
+  //   color: #54698D;
+  //   font-size: 14px;
+  //   line-height: 1.5
+  // }
+
+  // #trailheadInner .page-user-incomplete .user-incomplete-container fieldset label .required {
+  //   color: #C23934
+  // }
+
+  // #trailheadInner .page-user-incomplete .user-incomplete-container fieldset label a {
+  //   color: #0076DE
+  // }
+
+  // #trailheadInner .page-user-incomplete .user-incomplete-container .form-group-checkbox input[type=checkbox] {
+  //   margin: 5px 8px 0 0;
+  //   float: left
+  // }
+
+  // #trailheadInner .page-user-incomplete .user-incomplete-container .form-group {
+  //   margin-bottom: 10px
+  // }
+
+  // #trailheadInner .page-user-incomplete .user-incomplete-container .form-group input[type=text],
+  // .page-user-incomplete .user-incomplete-container .form-group input[type=email],
+  // .page-user-incomplete .user-incomplete-container .form-group select {
+  //   border: 1px solid #D8DDE6;
+  //   -webkit-box-shadow: none;
+  //   box-shadow: none;
+  //   color: #16325C;
+  //   font-size: 14px;
+  //   height: 40px;
+  //   -webkit-box-sizing: border-box;
+  //   box-sizing: border-box;
+  //   width: 100%;
+  //   padding: 0 10px;
+  //   margin-bottom: 10px
+  // }
+
+  // #trailheadInner .page-user-incomplete .user-incomplete-container .plead {
+  //   color: #C23934;
+  //   font-size: 14px;
+  //   margin: 0
+  // }
+
+  // #trailheadInner .page-user-incomplete .user-incomplete-container .phone-number-validation {
+  //   margin-top: 26px;
+  //   font-size: 14px;
+  //   line-height: 40px;
+  //   color: #c00
+  // }
+
+  // #trailheadInner .page-user-incomplete .user-incomplete-container .phone-number-validation--valid {
+  //   color: #1d984c
+  // }
+
+  // @media (max-width: 620px) {
+  //   .page-user-incomplete .user-incomplete-container h3 {
+  //     margin: 3rem 40px 0
+  //   }
+
+  //   .page-user-incomplete .user-incomplete-container p {
+  //     margin: 1.5rem 40px
+  //   }
+
+  //   .page-user-incomplete .user-incomplete-container fieldset {
+  //     border-radius: 0
+  //   }
+
+  //   .page-user-incomplete .user-incomplete-container fieldset .form-groups-split {
+  //     display: block
+  //   }
+
+  //   .page-user-incomplete .user-incomplete-container fieldset .form-groups-split>div:first-child,
+  //   .page-user-incomplete .user-incomplete-container fieldset .form-groups-split div:last-child {
+  //     margin: 0 0 10px
+  //   }
+  // }
+
+  // #trailheadInner .page-steps {
+  //   background: #f3f3f3
+  // }
+
+  // #trailheadInner .page-steps .th-profile-step-container {
+  //   min-height: 435px;
+  //   max-width: 750px;
+  //   margin: 140px auto 0 auto;
+  //   padding: 0 20px
+  // }
+
+  // #trailheadInner .page-steps .th-profile-step-container:last-child {
+  //   background-image: url(/assets/profile/step/step-1-9b8924a4980097d5f78a23c62ac8a898449481136250fae46748964779ee94bd.png);
+  //   background-position: bottom right;
+  //   background-repeat: no-repeat
+  // }
+
+  // #trailheadInner .page-steps .th-profile-step-container:first-child {
+  //   background-image: url(/assets/profile/step/step-2-e889e2bba5ba9a5febfc2ab2241c7da730ae2fd4cdab5fa92bedac1b98097ecf.png);
+  //   background-repeat: no-repeat
+  // }
+
+  // #trailheadInner .page-steps .th-profile-step-slide {
+  //   min-height: 435px;
+  //   max-width: 750px;
+  //   position: absolute
+  // }
+
+  // #trailheadInner .page-steps .th-profile-step-slide:first-child {
+  //   display: none
+  // }
+
+  // #trailheadInner .page-steps .th-profile-step-box {
+  //   background-color: #fff;
+  //   -webkit-box-shadow: 0px 2px 2px 0px rgba(0, 0, 0, 0.1);
+  //   box-shadow: 0px 2px 2px 0px rgba(0, 0, 0, 0.1);
+  //   border-radius: 4px;
+  //   padding: 30px;
+  //   width: 100%;
+  //   max-width: 300px;
+  //   margin: 0 auto;
+  //   -webkit-box-sizing: border-box;
+  //   box-sizing: border-box
+  // }
+
+  // #trailheadInner .page-steps .th-profile-step-box ul {
+  //   list-style: none;
+  //   padding: 0;
+  //   margin: 0
+  // }
+
+  // #trailheadInner .page-steps .th-profile-step-box ul li {
+  //   margin: 20px 0 0
+  // }
+
+  // #trailheadInner .page-steps .th-profile-step-box ul li .btn {
+  //   color: #213441;
+  //   background-color: #F3F3F3;
+  //   background-image: none;
+  //   border-color: #F3F3F3;
+  //   -webkit-box-shadow: 0px 1px 0px 0px rgba(0, 0, 0, 0.1);
+  //   box-shadow: 0px 1px 0px 0px rgba(0, 0, 0, 0.1);
+  //   border-radius: 4px;
+  //   display: block;
+  //   width: 100%;
+  //   line-height: 30px;
+  //   text-shadow: none;
+  //   padding: 4px 12px
+  // }
+
+  // #trailheadInner .page-steps .th-profile-step-box ul li .btn:active,
+  // .page-steps .th-profile-step-box ul li .btn:focus {
+  //   border-color: #F3F3F3;
+  //   outline: none
+  // }
+
+  // #trailheadInner .page-steps .th-profile-step-box h4 {
+  //   color: #213441;
+  //   font-size: 18px;
+  //   text-align: center;
+  //   margin: 0
+  // }
+
+  // #trailheadInner .page-steps h3 {
+  //   color: #444;
+  //   font-family: TrailheadBold !important;
+  //   font-size: 36px;
+  //   text-align: center;
+  //   line-height: 1;
+  //   font-weight: bold
+  // }
+
+  // #trailheadInner .page-steps p {
+  //   color: #444;
+  //   font-size: 18px;
+  //   line-height: 1.4;
+  //   text-align: center;
+  //   margin: 1.5rem 0
+  // }
+
+  // #trailheadInner .minimal-layout {
+  //   background: #E7E7E7;
+  //   min-height: 1200px
+  // }
+
+  // #trailheadInner .minimal-layout img.th-astro {
+  //   display: block;
+  //   padding: 2rem 0 0;
+  //   margin: 0 auto
+  // }
+
+  // #trailheadInner .minimal-layout .info-container {
+  //   background: white;
+  //   padding: 40px;
+  //   max-width: 480px;
+  //   margin: 2rem auto;
+  //   border-radius: 4px;
+  //   text-align: center
+  // }
+
+  // #trailheadInner .minimal-layout .info-container h3 {
+  //   color: #01344e;
+  //   font-family: TrailheadBold !important;
+  //   font-size: 36px;
+  //   line-height: 1.2;
+  //   margin: 10px 0;
+  //   font-weight: bold
+  // }
+
+  // #trailheadInner .minimal-layout .info-container p,
+  // .minimal-layout .info-container ul li {
+  //   font-size: 18px;
+  //   line-height: 1.3;
+  //   font-weight: 300;
+  //   margin-bottom: 20px
+  // }
+
+  // #trailheadInner .minimal-layout .info-container p strong,
+  // .minimal-layout .info-container ul li strong {
+  //   color: #01344e
+  // }
+
+  // #trailheadInner .minimal-layout .info-container .btn {
+  //   height: 40px;
+  //   line-height: 40px;
+  //   padding: 0 20px !important;
+  //   -webkit-transition: background 0.3s;
+  //   -o-transition: background 0.3s;
+  //   transition: background 0.3s;
+  //   vertical-align: baseline !important;
+  //   border: 0;
+  //   text-shadow: none;
+  //   transition: background 0.3s;
+  //   border-radius: 4px;
+  //   margin-bottom: 15px
+  // }
+
+  // #trailheadInner .minimal-layout .info-container .btn-primary {
+  //   background: #69B0ED;
+  //   -webkit-box-shadow: 0 2px 0 0 #4095DE;
+  //   box-shadow: 0 2px 0 0 #4095DE
+  // }
+
+  // #trailheadInner .minimal-layout .info-container .btn-primary:hover {
+  //   background: #54a0e0
+  // }
+
+  // #trailheadInner .minimal-layout .info-container .btn-default {
+  //   background: #f7f7f7;
+  //   -webkit-box-shadow: 0 2px 0 0 #e3e3e3;
+  //   box-shadow: 0 2px 0 0 #e3e3e3
+  // }
+
+  // #trailheadInner .minimal-layout .info-container .btn-default:hover {
+  //   background-color: #efefef
+  // }
+
+  // #trailheadInner .minimal-layout .plan-b {
+  //   margin-top: 1rem;
+  //   font-weight: 500
+  // }
+
+  // @media (max-width: 500px) {
+  //   .minimal-layout .info-container {
+  //     border-radius: 0
+  //   }
+  // }
+
+  // #trailheadInner .trailhead-locale-de .info-container .btn,
+  // .trailhead-locale-pt-BR .info-container .btn {
+  //   font-size: 14px
+  // }
+
+  // #trailheadInner .trailhead-locale-es-MX .info-container .btn {
+  //   font-size: 12px
+  // }
+
+  // #trailheadInner .grid-tiles {
+  //   padding: 0 2rem
+  // }
+
+  // @media (max-width: 480px) {
+  //   .grid-tiles {
+  //     padding: 0 1rem
+  //   }
+  // }
+
+  // @media (max-width: 360px) {
+  //   .grid-tiles {
+  //     padding: 0 0.25rem
+  //   }
+  // }
+
+  // #trailheadInner .trailblazers-text {
+  //   float: left;
+  //   -webkit-box-sizing: border-box;
+  //   box-sizing: border-box;
+  //   padding: 30px 70px 0 30px;
+  //   text-align: center;
+  //   width: 35%
+  // }
+
+  // #trailheadInner .trailblazers-text p {
+  //   color: #003F61;
+  //   font-size: 18px;
+  //   line-height: 30px;
+  //   margin-bottom: 20px
+  // }
+
+  // @media (max-width: 1140px) {
+  //   .trailblazers-text {
+  //     width: 40%
+  //   }
+  // }
+
+  // @media (max-width: 920px) {
+  //   .trailblazers-text {
+  //     float: none;
+  //     width: 100%;
+  //     padding: 30px
+  //   }
+  // }
+
+  // @media (max-width: 490px) {
+  //   .trailblazers-text {
+  //     padding: 30px 10px
+  //   }
+  // }
+
+  // #trailheadInner .trailblazers-image {
+  //   float: right;
+  //   width: 65%
+  // }
+
+  // #trailheadInner .trailblazers-image img {
+  //   display: block;
+  //   width: 100%
+  // }
+
+  // @media (max-width: 1140px) {
+  //   .trailblazers-image {
+  //     width: 60%
+  //   }
+  // }
+
+  // @media (max-width: 920px) {
+  //   .trailblazers-image {
+  //     float: none;
+  //     width: 100%;
+  //     max-width: 600px;
+  //     margin: 0 auto
+  //   }
+  // }
+
+  // @media (max-width: 1000px) {
+
+  //   .th-new-hero__codey-animation,
+  //   .th-new-hero__astro-animation {
+  //     display: none
+  //   }
+  // }
+
+  // #trailheadInner .empty-message {
+  //   margin: 40px auto 400px;
+  //   text-align: center;
+  //   max-width: 640px
+  // }
+
+  // #trailheadInner .empty-message h2 {
+  //   font-weight: bold;
+  //   font-size: 24px;
+  //   color: #213441;
+  //   letter-spacing: 0;
+  //   line-height: 24px;
+  //   margin: 24px 20px 12px
+  // }
+
+  // #trailheadInner .empty-message .message {
+  //   margin: 0 20px;
+  //   font-size: 18px;
+  //   line-height: 26px;
+  //   color: #707070
+  // }
+
+  // #trailheadInner .empty-message .message img {
+  //   height: 18px
+  // }
+
+  // #trailheadInner .trailblazers .hero-section-container h2 {
+  //   line-height: 26px
+  // }
+
+  // #completeModal {
+  //   height: auto;
+  //   border: none
+  // }
+
+  // #completeModal .footer-shim {
+  //   height: 82px
+  // }
+
+  // #completeModal #shareContainer * {
+  //   -webkit-box-sizing: content-box;
+  //   box-sizing: content-box
+  // }
+
+  // #completeModal .challenge-success-description__social {
+  //   padding: 30px 0 20px
+  // }
+
+  // #completeModal .modal-share {
+  //   background-color: #fff
+  // }
+
+  // #completeModal .close {
+  //   position: absolute;
+  //   top: -40px;
+  //   right: -30px;
+  //   float: none;
+  //   margin-top: 0;
+  //   margin-right: 0;
+  //   text-shadow: 0 3px 7px rgba(0, 0, 0, 0.3)
+  // }
+
+  // #completeModal .challenge-success-description__social {
+  //   border-top: 1px solid #E7E7E7;
+  //   padding: 30px 0 20px;
+  //   font-size: 18px;
+  //   font-weight: bold
+  // }
+
+  // #completeModal .modal-footer {
+  //   border-top: none
+  // }
+
+  // #completeModal .sb-challenge-modal--footer {
+  //   background: none
+  // }
+
+  // #completeModal .btn {
+  //   color: white
+  // }
+
+  // #trailheadInner .th-share {
+  //   display: block;
+  //   height: 50px;
+  //   width: 50px;
+  //   background: url(/assets/share-sprite-62703a50dd05e2ccaaf83623a84b492dee5a628c6b100a2b08edbfb515f3aef5.svg) no-repeat;
+  //   text-indent: -9999em;
+  //   cursor: pointer
+  // }
+
+  // #trailheadInner .th-share--facebook {
+  //   background-position: -70px 0
+  // }
+
+  // #trailheadInner .th-share--facebook:hover {
+  //   background-position: -70px -70px
+  // }
+
+  // #trailheadInner .th-share--twitter {
+  //   background-position: 0 0
+  // }
+
+  // #trailheadInner .th-share--twitter:hover {
+  //   background-position: 0 -70px
+  // }
+
+  // #trailheadInner .th-share--google {
+  //   background-size: cover;
+  //   background-image: url(/assets/trailhead_app/social/google-round-icon-dd839de419f6788118059ead1ca0f39887ffb0d9cae97d424c532fed9c4a24ac.svg)
+  // }
+
+  // #trailheadInner .th-share--google:hover {
+  //   background-image: url(/assets/trailhead_app/social/google-round-icon-dark-47e217d98e3e494e2363a765b0bb67fb189d7d6b0c39ac7b1dc0747d643b6f3d.svg)
+  // }
+
+  // #trailheadInner .th-share-list {
+  //   margin: 0.625rem 0;
+  //   list-style: none;
+  //   display: -webkit-box;
+  //   display: -webkit-flex;
+  //   display: -ms-flexbox;
+  //   display: flex;
+  //   -webkit-box-pack: center;
+  //   -webkit-justify-content: center;
+  //   -ms-flex-pack: center;
+  //   justify-content: center
+  // }
+
+  // #trailheadInner .th-share-list li,
+  // .th-share-list li:first-child {
+  //   margin: 0 0.625rem
+  // }
+
+  // #trailheadInner .panel {
+  //   padding: 20px;
+  //   background-color: #ffffff;
+  //   border-radius: 4px;
+  //   -webkit-box-shadow: 0px 2px 2px 0px rgba(0, 0, 0, 0.1);
+  //   box-shadow: 0px 2px 2px 0px rgba(0, 0, 0, 0.1);
+  //   position: relative
+  // }
+
+  // #trailheadInner .panel--s {
+  //   height: 180px
+  // }
+
+  // #trailheadInner .panel--m {
+  //   height: 350px
+  // }
+
+  // #trailheadInner .panel-heading {
+  //   padding: 0 15px;
+  //   margin: -15px -15px 0;
+  //   font-size: 17.5px;
+  //   font-weight: 500;
+  //   border-top-right-radius: 3px;
+  //   border-top-left-radius: 3px
+  // }
+
+  // #trailheadInner .panel-heading__title {
+  //   color: #2B4453;
+  //   font-size: 18px;
+  //   font-weight: bold;
+  //   line-height: 20px;
+  //   margin: 10px 0
+  // }
+
+  // #trailheadInner .panel-heading__title__xbig {
+  //   font-size: 30px;
+  //   margin: 20px 0 10px 0
+  // }
+
+  // #trailheadInner .panel-heading__title__big {
+  //   font-size: 24px;
+  //   margin: 20px 0 10px 0
+  // }
+
+  // #trailheadInner .panel-heading__title__medium {
+  //   font-size: 18px
+  // }
+
+  // #trailheadInner .panel-heading__title__small {
+  //   font-size: 16px
+  // }
+
+  // #trailheadInner .panel-footer {
+  //   position: relative;
+  //   padding: 10px 15px;
+  //   margin: 15px -15px -15px;
+  //   background-color: #f5f5f5;
+  //   border-top: 1px solid #dddddd;
+  //   border-bottom-right-radius: 3px;
+  //   border-bottom-left-radius: 3px
+  // }
+
+  // #trailheadInner .panel-primary {
+  //   border-color: #428bca
+  // }
+
+  // #trailheadInner .panel-primary .panel-heading {
+  //   color: #ffffff;
+  //   background-color: #428bca;
+  //   border-color: #428bca
+  // }
+
+  // #trailheadInner .panel-success {
+  //   border-color: #d6e9c6
+  // }
+
+  // #trailheadInner .panel-success .panel-heading {
+  //   color: #468847;
+  //   background-color: #dff0d8;
+  //   border-color: #d6e9c6
+  // }
+
+  // #trailheadInner .panel-warning {
+  //   border-color: #fbeed5
+  // }
+
+  // #trailheadInner .panel-warning .panel-heading {
+  //   color: #c09853;
+  //   background-color: #fcf8e3;
+  //   border-color: #fbeed5
+  // }
+
+  // #trailheadInner .panel-danger {
+  //   border-color: #eed3d7
+  // }
+
+  // #trailheadInner .panel-danger .panel-heading {
+  //   color: #b94a48;
+  //   background-color: #f2dede;
+  //   border-color: #eed3d7
+  // }
+
+  // #trailheadInner .panel-info {
+  //   border-color: #bce8f1
+  // }
+
+  // #trailheadInner .panel-info .panel-heading {
+  //   color: #3a87ad;
+  //   background-color: #d9edf7;
+  //   border-color: #bce8f1
+  // }
+
+  // #trailheadInner .panel-heading__actions {
+  //   margin-top: 30px
+  // }
+
+  // @media (max-width: 480px) {
+  //   .panel-heading__actions {
+  //     margin: 8px 0
+  //   }
+  // }
+
+  // #trailheadInner .panel .btn-default.btn-more {
+  //   border: 1px solid #DBDBDB;
+  //   color: #555;
+  //   -webkit-box-shadow: 0 1px 0 0 rgba(0, 0, 0, 0.1);
+  //   box-shadow: 0 1px 0 0 rgba(0, 0, 0, 0.1);
+  //   -webkit-transition: all 0.2s;
+  //   -o-transition: all 0.2s;
+  //   transition: all 0.2s;
+  //   line-height: 28px;
+  //   padding: 3px 25px
+  // }
+
+  // #trailheadInner .panel .btn-default.btn-more:hover {
+  //   -webkit-box-shadow: 0 1px 0 0 rgba(0, 0, 0, 0.3);
+  //   box-shadow: 0 1px 0 0 rgba(0, 0, 0, 0.3);
+  //   border-color: #c7c7c7
+  // }
+
+  // @media (max-width: 480px) {
+  //   .panel .btn-default.btn-more {
+  //     line-height: 20px;
+  //     background: none;
+  //     border: 0;
+  //     padding: 0;
+  //     color: #189cd7;
+  //     font-size: 14px;
+  //     -webkit-box-shadow: none;
+  //     box-shadow: none
+  //   }
+  // }
+
+  // #trailheadInner .th-form-element__help {
+  //   white-space: nowrap
+  // }
+
+  // @media (max-width: 576px) {
+  //   .th-form-element__help {
+  //     white-space: normal
+  //   }
+  // }
+
+  // #trailheadInner .trailmixes-page .trailmix-nav-tab {
+  //   color: #aebacc;
+  //   border-bottom: 4px solid transparent
+  // }
+
+  // #trailheadInner .trailmixes-page .trailmix-nav-tab:hover {
+  //   color: white;
+  //   text-decoration: none
+  // }
+
+  // #trailheadInner .trailmixes-page .trailmix-nav-tab--active {
+  //   color: white;
+  //   cursor: default;
+  //   border-bottom-color: #0070d2
+  // }
+
+  // @media all and (max-width: 440px) {
+  //   .trailmixes-page .trailmix-nav-tab {
+  //     font-size: 14px
+  //   }
+  // }
+
+  // #trailheadInner .trailmixes-page .trailmix-section-header {
+  //   display: -webkit-box;
+  //   display: -webkit-flex;
+  //   display: -ms-flexbox;
+  //   display: flex;
+  //   -webkit-box-orient: horizontal;
+  //   -webkit-box-direction: normal;
+  //   -webkit-flex-direction: row;
+  //   -ms-flex-direction: row;
+  //   flex-direction: row;
+  //   -webkit-box-align: center;
+  //   -webkit-align-items: center;
+  //   -ms-flex-align: center;
+  //   align-items: center;
+  //   width: 100%;
+  //   -webkit-box-pack: justify;
+  //   -webkit-justify-content: space-between;
+  //   -ms-flex-pack: justify;
+  //   justify-content: space-between
+  // }
+
+  // #trailheadInner .trailmixes-page .pagination {
+  //   width: 100%;
+  //   text-align: center
+  // }
+
+  // #trailheadInner .trailmixes-page .pagination li {
+  //   display: inline-block;
+  //   background: #fff;
+  //   padding: 0.25rem 0.5rem;
+  //   font-size: 0.875rem;
+  //   border-radius: 0.25rem;
+  //   border: 1px solid #e2e2e2
+  // }
+
+  // #trailheadInner .trailmixes-page .empty-trailmix-section {
+  //   display: -webkit-box;
+  //   display: -webkit-flex;
+  //   display: -ms-flexbox;
+  //   display: flex;
+  //   padding: 25px 18px;
+  //   -webkit-box-pack: center;
+  //   -webkit-justify-content: center;
+  //   -ms-flex-pack: center;
+  //   justify-content: center;
+  //   -webkit-box-orient: vertical;
+  //   -webkit-box-direction: normal;
+  //   -webkit-flex-direction: column;
+  //   -ms-flex-direction: column;
+  //   flex-direction: column;
+  //   -webkit-box-align: center;
+  //   -webkit-align-items: center;
+  //   -ms-flex-align: center;
+  //   align-items: center
+  // }
+
+  // #trailheadInner .trailmixes-page .empty-trailmix-section .empty-trailmix-section-text {
+  //   padding-top: 30px;
+  //   opacity: 0.9;
+  //   text-align: center;
+  //   line-height: 23px
+  // }
+
+  // #trailheadInner .trailmixes-page .empty-trailmix-section>img {
+  //   display: block
+  // }
+
+  // #trailheadInner .ajax-loader {
+  //   background: url(/assets/ajax-loader-round-095b4fce20bd2023786a1fb78e578dfbf693890e7cdf692ad50ef65557ddd5ed.gif) center center no-repeat;
+  //   width: 15px;
+  //   height: 15px
+  // }
+
+  // #trailheadInner .th-api-name-input-peer-assessment {
+  //   overflow: unset
+  // }
+
+  // #trailheadInner .th-api-name-input-peer-assessment .sr-only {
+  //   position: absolute;
+  //   width: 1px;
+  //   height: 1px;
+  //   padding: 0;
+  //   margin: -1px;
+  //   overflow: hidden;
+  //   clip: rect(0, 0, 0, 0);
+  //   border: 0
+  // }
+
+  // #trailheadInner .th-time-component .th-time-component__input {
+  //   width: 45%;
+  //   padding-right: 5px
+  // }
+
+  // #trailheadInner .th-time-component .th-time-component__separator {
+  //   width: 10%;
+  //   text-align: center;
+  //   display: inline-block
+  // }
+
+  // #trailheadInner .add-btn-header-container {
+  //   margin-left: 3rem;
+  //   -webkit-transform: translate(0, -50%);
+  //   -ms-transform: translate(0, -50%);
+  //   transform: translate(0, -50%);
+  //   float: left;
+  //   position: relative;
+  //   z-index: 40
+  // }
+
+  // @media (max-width: 800px) {
+  //   .add-btn-header-container {
+  //     margin-left: 0px
+  //   }
+  // }
+
+  // #trailheadInner .vertical-dotted-line {
+  //   position: relative
+  // }
+
+  // #trailheadInner .vertical-dotted-line:after {
+  //   content: "";
+  //   position: absolute;
+  //   z-index: 1;
+  //   top: 0;
+  //   bottom: 0;
+  //   left: 50%;
+  //   -webkit-transform: translate(-50%);
+  //   -ms-transform: translate(-50%);
+  //   transform: translate(-50%);
+  //   border-left: 10px dotted rgba(0, 0, 0, 0.1)
+  // }
+
+  // #trailheadInner .vertical-dotted-line>div {
+  //   position: relative;
+  //   z-index: 2
+  // }
+
+  // #trailheadInner .edit-slug {
+  //   -webkit-flex-wrap: nowrap;
+  //   -ms-flex-wrap: nowrap;
+  //   flex-wrap: nowrap;
+  //   display: -webkit-box;
+  //   display: -webkit-flex;
+  //   display: -ms-flexbox;
+  //   display: flex;
+  //   width: 100%
+  // }
+
+  // #trailheadInner .edit-slug>input[type='text'] {
+  //   min-height: 30px;
+  //   height: 40px;
+  //   line-height: 18px
+  // }
+
+  // #trailheadInner .edit-slug__prefix {
+  //   font-size: 14px;
+  //   color: #333;
+  //   -o-text-overflow: ellipsis;
+  //   text-overflow: ellipsis;
+  //   word-break: keep-all;
+  //   overflow: hidden;
+  //   -webkit-box-flex: 2;
+  //   -webkit-flex-grow: 2;
+  //   -ms-flex-positive: 2;
+  //   flex-grow: 2;
+  //   font-weight: normal;
+  //   vertical-align: bottom;
+  //   display: inline-block
+  // }
+
+  // #trailheadInner .edit-slug input[type="text"] {
+  //   margin-bottom: 0;
+  //   display: inline-block;
+  //   -webkit-box-flex: 1;
+  //   -webkit-flex-grow: 1;
+  //   -ms-flex-positive: 1;
+  //   flex-grow: 1
+  // }
+
+  // #trailheadInner .fact-group .edit-slug input[type="text"] {
+  //   width: 160px;
+  //   -webkit-box-shadow: none;
+  //   box-shadow: none
+  // }
+
+  // #trailheadInner .trailmix-new-form,
+  // .trailmix-edit-form {
+  //   max-width: 600px;
+  //   margin-right: auto;
+  //   margin-left: auto;
+  //   margin-bottom: 0
+  // }
+
+  // @media (max-width: 767px) {
+
+  //   .trailmix-new-form .panel-heading__actions li,
+  //   .trailmix-edit-form .panel-heading__actions li {
+  //     width: 100%;
+  //     padding: 0
+  //   }
+
+  //   .trailmix-new-form .panel-heading__actions li:not(:last-child),
+  //   .trailmix-edit-form .panel-heading__actions li:not(:last-child) {
+  //     margin-bottom: 10px
+  //   }
+
+  //   .trailmix-new-form .panel-heading__actions li button,
+  //   .trailmix-edit-form .panel-heading__actions li button {
+  //     width: 100%
+  //   }
+
+  //   .trailmix-new-form .panel-heading__actions li a,
+  //   .trailmix-new-form .panel-heading__actions li button,
+  //   .trailmix-edit-form .panel-heading__actions li a,
+  //   .trailmix-edit-form .panel-heading__actions li button {
+  //     display: block;
+  //     min-width: 0
+  //   }
+  // }
+
+  // #trailheadInner .trailmix__items {
+  //   padding-top: 0.25rem;
+  //   position: relative;
+  //   z-index: 1
+  // }
+
+  // #trailheadInner .trailmix__items .trailmix-item {
+  //   list-style: none;
+  //   cursor: move;
+  //   cursor: -webkit-grab;
+  //   cursor: grab;
+  //   margin-top: 0.25rem;
+  //   margin-bottom: 2.75rem
+  // }
+
+  // #trailheadInner .trailmix-currently-dragged {
+  //   cursor: -webkit-grabbing;
+  //   cursor: grabbing;
+  //   list-style: none;
+  //   z-index: 40;
+  //   -webkit-box-shadow: 0px 2px 8px 0 rgba(0, 0, 0, 0.4);
+  //   box-shadow: 0px 2px 8px 0 rgba(0, 0, 0, 0.4)
+  // }
+
+  // #trailheadInner .trailmix-item * {
+  //   -webkit-user-select: none;
+  //   -moz-user-select: none;
+  //   -ms-user-select: none;
+  //   user-select: none
+  // }
+
+  // #trailheadInner .trailmix-item img {
+  //   max-width: 110px;
+  //   -webkit-user-drag: none;
+  //   -khtml-user-drag: none;
+  //   -moz-user-drag: none;
+  //   -o-user-drag: none;
+  //   user-drag: none
+  // }
+
+  // #trailheadInner .trailmix-deafult {
+  //   width: 100%;
+  //   background: url(/assets/trailmixes/hero-pattern-2bb5bf97037f25bd7e3e1fd1e9d5daf53189e0750a79ccadebd3e81892fdd921.png), #0d1e38;
+  //   padding: 1.5rem 0 0;
+  //   color: white
+  // }
+
+  // #trailheadInner .trailmix-deafult__content {
+  //   margin: 0 auto;
+  //   padding: 0 40px;
+  //   max-width: 795px;
+  //   text-align: center;
+  //   position: relative
+  // }
+
+  // #trailheadInner .trailmix-hero {
+  //   width: 100%;
+  //   background: url(/assets/trailmixes/hero-pattern-2bb5bf97037f25bd7e3e1fd1e9d5daf53189e0750a79ccadebd3e81892fdd921.png), #0d1e38;
+  //   padding: 1.5rem 0 0;
+  //   color: white
+  // }
+
+  // #trailheadInner .trailmix-hero__content {
+  //   margin: 0 auto;
+  //   padding: 0 40px;
+  //   max-width: 795px;
+  //   text-align: center;
+  //   position: relative
+  // }
+
+  // #trailheadInner .trailmix-hero__content:before {
+  //   background: url(/assets/trailmixes/dj-astro-c11996b69910591a39f2efe715077a890aee73d591d75012cf0ff9add10271be.svg) no-repeat;
+  //   background-size: 230px;
+  //   content: '';
+  //   position: absolute;
+  //   left: -130px;
+  //   bottom: -75px;
+  //   height: 210px;
+  //   width: 230px;
+  //   z-index: 1
+  // }
+
+  // @media all and (max-width: 940px) {
+  //   .trailmix-hero__content:before {
+  //     display: none
+  //   }
+  // }
+
+  // @media all and (min-width: 1200px) {
+  //   .trailmix-hero__content:before {
+  //     left: -180px
+  //   }
+  // }
+
+  // #trailheadInner .trailmix-hero__content:after {
+  //   background: url(/assets/trailmixes/say-anything-cody-6e42a63994453697d70464f80093e1cd862138ced67244041500840a4ebd3eb5.svg) no-repeat;
+  //   background-size: 178px;
+  //   content: '';
+  //   position: absolute;
+  //   right: -130px;
+  //   bottom: -130px;
+  //   height: 300px;
+  //   width: 178px
+  // }
+
+  // @media all and (max-width: 940px) {
+  //   .trailmix-hero__content:after {
+  //     display: none
+  //   }
+  // }
+
+  // @media all and (min-width: 1200px) {
+  //   .trailmix-hero__content:after {
+  //     right: -180px
+  //   }
+  // }
+
+  // #trailheadInner .trailmix-hero__nav {
+  //   background: rgba(7, 16, 30, 0.5);
+  //   margin-top: 35px;
+  //   z-index: 2;
+  //   position: relative
+  // }
+
+  // #trailheadInner .trailmix-hero__description {
+  //   font-size: 18px;
+  //   line-height: 25px;
+  //   margin: 10px 0 25px;
+  //   color: #aebacc
+  // }
+
+  // #trailheadInner .trailmix-share__controls {
+  //   width: 100%;
+  //   max-width: 610px;
+  //   padding: 0 30px;
+  //   -webkit-box-sizing: border-box;
+  //   box-sizing: border-box;
+  //   margin: 0 auto
+  // }
+
+  // #trailheadInner .trailmix-share__control {
+  //   margin-bottom: 24px
+  // }
+
+  // #trailheadInner .trailmix-share__control:last-child {
+  //   margin-bottom: 0
+  // }
+
+  // #trailheadInner .trailmix-share__control .visibility-notices {
+  //   margin-top: 26px;
+  //   margin-left: 9px;
+  //   list-style: none
+  // }
+
+  // #trailheadInner .trailmix-share__control .visibility-notices li {
+  //   display: inline;
+  //   line-height: 21px;
+  //   font-size: 16px
+  // }
+
+  // #trailheadInner .trailmix-share__control .visibility-notices .in-progress div {
+  //   display: inline-block
+  // }
+
+  // #trailheadInner .trailmix-share__control .visibility-notices .spinner-container {
+  //   position: relative;
+  //   width: 30px;
+  //   top: -5px;
+  //   margin-left: 6px
+  // }
+
+  // #trailheadInner .trailmix-share__control .visibility-notices .slds-spinner {
+  //   top: 0px;
+  //   left: 0px;
+  //   display: inline-block
+  // }
+
+  // #trailheadInner .trailmix-share__control .visibility-notices .notice-text {
+  //   color: #303030
+  // }
+
+  // #trailheadInner .trailmix-share__control .visibility-notices .spinner-container+.notice-text {
+  //   margin-left: -12px
+  // }
+
+  // #trailheadInner .trailmix-share__control .visibility-notices i+.notice-text {
+  //   margin-left: 9px
+  // }
+
+  // #trailheadInner .trailmix-share__footer {
+  //   text-align: center;
+  //   padding: 40px 0 42px
+  // }
+
+  // #trailheadInner .trailmix-share__footer .btn {
+  //   min-width: 140px
+  // }
+
+  // #trailheadInner .th-mobile-only {
+  //   display: none
+  // }
+
+  // #trailheadInner .th-modal {
+  //   top: calc(146px + 5%);
+  //   border: none
+  // }
+
+  // #trailheadInner .th-modal .modal-body {
+  //   background-color: #fff;
+  //   border-radius: 10px;
+  //   max-height: 650px;
+  //   padding: 0;
+  //   overflow-y: auto;
+  //   -webkit-overflow-scrolling: touch
+  // }
+
+  // #trailheadInner .th-modal .body-content {
+  //   padding: 30px
+  // }
+
+  // #trailheadInner .th-modal .close {
+  //   position: absolute;
+  //   top: -40px;
+  //   right: -30px;
+  //   float: none;
+  //   margin-top: 0;
+  //   margin-right: 0;
+  //   text-shadow: 0 3px 7px rgba(0, 0, 0, 0.3);
+  //   opacity: 1;
+  //   font-size: 30px
+  // }
+
+  // #trailheadInner .th-modal .modal-footer {
+  //   background-color: #fff;
+  //   border-top: none;
+  //   border-radius: 0 0 10px 10px;
+  //   padding-top: 0
+  // }
+
+  // #trailheadInner .th-modal .modal-footer .th-modal-description {
+  //   margin-top: 10px
+  // }
+
+  // #trailheadInner .th-modal .th-modal-btn {
+  //   margin: 20px auto
+  // }
+
+  // #trailheadInner .th-modal-title {
+  //   color: #444;
+  //   font-family: TrailheadBold;
+  //   font-size: 32px;
+  //   font-weight: bold
+  // }
+
+  // #trailheadInner .th-modal-title__hero {
+  //   margin: 40px 0
+  // }
+
+  // #trailheadInner .th-modal-description {
+  //   color: #444;
+  //   font-size: 14px
+  // }
+
+  // #trailheadInner .th-modal-description__de {
+  //   margin: 40px auto 20px auto
+  // }
+
+  // #trailheadInner .social-login-list {
+  //   margin-top: 46px
+  // }
+
+  // #trailheadInner .th-modal-btn {
+  //   background: #00A1DF;
+  //   border: none;
+  //   border-radius: 4px;
+  //   color: #fff;
+  //   display: block;
+  //   font-size: 16px;
+  //   font-weight: bold;
+  //   line-height: 40px;
+  //   padding: 0;
+  //   margin: 15px auto;
+  //   height: 40px;
+  //   text-align: left;
+  //   text-shadow: none;
+  //   width: 240px
+  // }
+
+  // #trailheadInner .th-modal-btn:hover,
+  // .th-modal-btn:active,
+  // .th-modal-btn:focus {
+  //   color: white;
+  //   text-decoration: none
+  // }
+
+  // #trailheadInner .th-modal__signin,
+  // .th-modal__signup {
+  //   width: 680px;
+  //   margin-left: -340px
+  // }
+
+  // @media (min-width: 929px) {
+
+  //   .th-modal__signin,
+  //   .th-modal__signup {
+  //     width: 850px;
+  //     margin-left: -425px
+  //   }
+  // }
+
+  // #trailheadInner .th-modal__signin .th-modal-title,
+  // .th-modal__signup .th-modal-title {
+  //   margin: 35px 0
+  // }
+
+  // #trailheadInner .th-modal-btn__linkedin {
+  //   background: #0B7BB7
+  // }
+
+  // #trailheadInner .th-modal-btn__linkedin:hover {
+  //   background: #0B7BB7
+  // }
+
+  // #trailheadInner .th-modal-btn__google {
+  //   background: #d9453d
+  // }
+
+  // #trailheadInner .th-modal-btn__google:hover {
+  //   background: #d9453d
+  // }
+
+  // #trailheadInner .th-modal-btn__twitter {
+  //   background: #63CDF1
+  // }
+
+  // #trailheadInner .th-modal-btn__twitter:hover {
+  //   background: #63CDF1
+  // }
+
+  // #trailheadInner .th-modal-btn__facebook {
+  //   background: #507CBE
+  // }
+
+  // #trailheadInner .th-modal-btn__facebook:hover {
+  //   background: #507CBE
+  // }
+
+  // #trailheadInner .th-line-behind {
+  //   position: relative;
+  //   z-index: 1
+  // }
+
+  // #trailheadInner .th-line-behind:before {
+  //   border-top: 2px solid #dfdfdf;
+  //   content: "";
+  //   margin: 0 auto;
+  //   position: absolute;
+  //   top: 50%;
+  //   left: 0;
+  //   right: 0;
+  //   bottom: 0;
+  //   width: 95%;
+  //   z-index: -1
+  // }
+
+  // #trailheadInner .th-line-behind .th-line-behind-text {
+  //   background: #fff;
+  //   display: inline-block;
+  //   padding: 0 10px
+  // }
+
+  // #signup_modal .social-login-list {
+  //   margin-top: 90px
+  // }
+
+  // @media (min-width: 767px) {
+  //   .th-line-behind__vertical {
+  //     background-color: #f1f1f1;
+  //     position: absolute;
+  //     height: 86%;
+  //     width: 2px;
+  //     margin: 0;
+  //     left: 50%;
+  //     top: 7%
+  //   }
+
+  //   .th-line-behind__vertical .th-line-behind-text {
+  //     top: 50%;
+  //     position: absolute;
+  //     margin-top: -36px;
+  //     margin-left: -18px;
+  //     padding: 30px 0
+  //   }
+  // }
+
+  // @media (max-width: 767px) {
+  //   .th-mobile-only {
+  //     display: block;
+  //     font-size: 15px
+  //   }
+
+  //   .social-login-list {
+  //     margin-top: 0
+  //   }
+
+  //   .th-modal-fullscreen {
+  //     background-color: white;
+  //     left: 0;
+  //     right: 0;
+  //     margin: 0;
+  //     top: 0;
+  //     bottom: 0;
+  //     width: 100%;
+  //     overflow: auto;
+  //     border-radius: 0;
+  //     position: absolute
+  //   }
+
+  //   .th-modal-fullscreen .close {
+  //     display: none
+  //   }
+
+  //   .th-modal-fullscreen .modal-body {
+  //     max-height: initial;
+  //     padding: 30px 0
+  //   }
+
+  //   .th-modal-fullscreen .th-line-behind__vertical {
+  //     position: relative
+  //   }
+
+  //   #signup_modal .social-login-list {
+  //     margin-top: 0
+  //   }
+  // }
+
+  // #trailheadInner .trailhead-locale-de #signin_modal .th-modal-btn,
+  // .trailhead-locale-fr #signin_modal .th-modal-btn,
+  // .trailhead-locale-es-MX #signin_modal .th-modal-btn {
+  //   font-size: 13px
+  // }
+
+  // #trailheadInner .trailhead-locale-de #signup_modal .th-modal-btn,
+  // .trailhead-locale-fr #signup_modal .th-modal-btn,
+  // .trailhead-locale-es-MX #signup_modal .th-modal-btn {
+  //   font-size: 11px
+  // }
+
+  // #trailheadInner .trailhead-locale-de #signup_modal .th-modal-title,
+  // .trailhead-locale-fr #signup_modal .th-modal-title,
+  // .trailhead-locale-es-MX #signup_modal .th-modal-title {
+  //   font-size: 28px
+  // }
+
+  // #trailheadInner .trailhead-locale-de .th-line-behind__vertical .th-line-behind-text,
+  // .trailhead-locale-fr .th-line-behind__vertical .th-line-behind-text,
+  // .trailhead-locale-es-MX .th-line-behind__vertical .th-line-behind-text {
+  //   font-size: 24px;
+  //   margin-left: -20px
+  // }
+
+  // #trailheadInner .trailhead-locale-fr .th-line-behind__vertical .th-line-behind-text {
+  //   font-size: 32px;
+  //   margin-left: -18px
+  // }
+
+  // #trailheadInner .trailhead-locale-fr #signup_modal .th-modal-btn {
+  //   font-size: 14px
+  // }
+
+  // #trailheadInner .trailhead-locale-fr #signup_modal .th-modal-title {
+  //   font-size: 32px
+  // }
+
+  // #trailheadInner .trailhead-locale-es-MX #signin_modal .th-modal-title {
+  //   font-size: 28px
+  // }
+
+  // #trailheadInner .trailhead-locale-es-MX #signup_modal .th-modal-btn {
+  //   font-size: 14px
+  // }
+
+  // #trailheadInner .trailhead-locale-es-MX #signup_modal .th-modal-title {
+  //   font-size: 32px
+  // }
+
+  // #trailheadInner .trailhead-locale-pt-BR #signin_modal .th-modal-title {
+  //   font-size: 28px
+  // }
+
+  // #trailheadInner .trailhead-locale-pt-BR #signin_modal .th-modal-btn {
+  //   font-size: 15px
+  // }
+
+  // #trailheadInner .trailhead-locale-pt-BR #signup_modal .th-modal-btn {
+  //   font-size: 13px
+  // }
+
+  // #trailheadInner .trailhead-locale-pt-BR #signup_modal .th-modal-title {
+  //   font-size: 28px
+  // }
+
+  // #trailheadInner .panel {
+  //   padding: 20px;
+  //   background-color: #ffffff;
+  //   border-radius: 4px;
+  //   -webkit-box-shadow: 0px 2px 2px 0px rgba(0, 0, 0, 0.1);
+  //   box-shadow: 0px 2px 2px 0px rgba(0, 0, 0, 0.1);
+  //   position: relative
+  // }
+
+  // #trailheadInner .panel--s {
+  //   height: 180px
+  // }
+
+  // #trailheadInner .panel--m {
+  //   height: 350px
+  // }
+
+  // #trailheadInner .panel-heading {
+  //   padding: 0 15px;
+  //   margin: -15px -15px 0;
+  //   font-size: 17.5px;
+  //   font-weight: 500;
+  //   border-top-right-radius: 3px;
+  //   border-top-left-radius: 3px
+  // }
+
+  // #trailheadInner .panel-heading__title {
+  //   color: #2B4453;
+  //   font-size: 18px;
+  //   font-weight: bold;
+  //   line-height: 20px;
+  //   margin: 10px 0
+  // }
+
+  // #trailheadInner .panel-heading__title__xbig {
+  //   font-size: 30px;
+  //   margin: 20px 0 10px 0
+  // }
+
+  // #trailheadInner .panel-heading__title__big {
+  //   font-size: 24px;
+  //   margin: 20px 0 10px 0
+  // }
+
+  // #trailheadInner .panel-heading__title__medium {
+  //   font-size: 18px
+  // }
+
+  // #trailheadInner .panel-heading__title__small {
+  //   font-size: 16px
+  // }
+
+  // #trailheadInner .panel-footer {
+  //   position: relative;
+  //   padding: 10px 15px;
+  //   margin: 15px -15px -15px;
+  //   background-color: #f5f5f5;
+  //   border-top: 1px solid #dddddd;
+  //   border-bottom-right-radius: 3px;
+  //   border-bottom-left-radius: 3px
+  // }
+
+  // #trailheadInner .panel-primary {
+  //   border-color: #428bca
+  // }
+
+  // #trailheadInner .panel-primary .panel-heading {
+  //   color: #ffffff;
+  //   background-color: #428bca;
+  //   border-color: #428bca
+  // }
+
+  // #trailheadInner .panel-success {
+  //   border-color: #d6e9c6
+  // }
+
+  // #trailheadInner .panel-success .panel-heading {
+  //   color: #468847;
+  //   background-color: #dff0d8;
+  //   border-color: #d6e9c6
+  // }
+
+  // #trailheadInner .panel-warning {
+  //   border-color: #fbeed5
+  // }
+
+  // #trailheadInner .panel-warning .panel-heading {
+  //   color: #c09853;
+  //   background-color: #fcf8e3;
+  //   border-color: #fbeed5
+  // }
+
+  // #trailheadInner .panel-danger {
+  //   border-color: #eed3d7
+  // }
+
+  // #trailheadInner .panel-danger .panel-heading {
+  //   color: #b94a48;
+  //   background-color: #f2dede;
+  //   border-color: #eed3d7
+  // }
+
+  // #trailheadInner .panel-info {
+  //   border-color: #bce8f1
+  // }
+
+  // #trailheadInner .panel-info .panel-heading {
+  //   color: #3a87ad;
+  //   background-color: #d9edf7;
+  //   border-color: #bce8f1
+  // }
+
+  // #trailheadInner .panel-heading__actions {
+  //   margin-top: 30px
+  // }
+
+  // @media (max-width: 480px) {
+  //   .panel-heading__actions {
+  //     margin: 8px 0
+  //   }
+  // }
+
+  // #trailheadInner .panel .btn-default.btn-more {
+  //   border: 1px solid #DBDBDB;
+  //   color: #555;
+  //   -webkit-box-shadow: 0 1px 0 0 rgba(0, 0, 0, 0.1);
+  //   box-shadow: 0 1px 0 0 rgba(0, 0, 0, 0.1);
+  //   -webkit-transition: all 0.2s;
+  //   -o-transition: all 0.2s;
+  //   transition: all 0.2s;
+  //   line-height: 28px;
+  //   padding: 3px 25px
+  // }
+
+  // #trailheadInner .panel .btn-default.btn-more:hover {
+  //   -webkit-box-shadow: 0 1px 0 0 rgba(0, 0, 0, 0.3);
+  //   box-shadow: 0 1px 0 0 rgba(0, 0, 0, 0.3);
+  //   border-color: #c7c7c7
+  // }
+
+  // @media (max-width: 480px) {
+  //   .panel .btn-default.btn-more {
+  //     line-height: 20px;
+  //     background: none;
+  //     border: 0;
+  //     padding: 0;
+  //     color: #189cd7;
+  //     font-size: 14px;
+  //     -webkit-box-shadow: none;
+  //     box-shadow: none
+  //   }
+  // }
+
+  // #trailheadInner .th-icon-chevron-right {
+  //   background-repeat: no-repeat;
+  //   background-image: url(/assets/profile/chevron-right-e5cf9d9199ebda18b84b07d7affdb00188a8029e8b4c34495bfba2e2da394ee9.svg);
+  //   display: block;
+  //   height: 20px;
+  //   width: 12px
+  // }
+
+  // #trailheadInner .panel-social {
+  //   margin-top: 30px
+  // }
+
+  // @media (max-width: 480px) {
+  //   .panel-social .media>a {
+  //     display: none
+  //   }
+  // }
+
+  // #trailheadInner .connected-orgs .panel-heading__title {
+  //   margin: 20px 0 10px 0
+  // }
+
+  // #trailheadInner .connected-orgs .panel-social-heading__title {
+  //   margin: 0 8px 8px 0px;
+  //   line-height: 40px;
+  //   padding-left: 8px
+  // }
+
+  // #trailheadInner .connected-orgs .th-profile-description {
+  //   line-height: 21px
+  // }
+
+  // #trailheadInner .icon-refresh {
+  //   margin-right: 8px;
+  //   font-size: 22px;
+  //   line-height: 16px;
+  //   vertical-align: middle;
+  //   opacity: 1;
+  //   color: #DBDBDB
+  // }
+
+  // #trailheadInner .merge-right-arrow {
+  //   position: absolute;
+  //   top: 15%;
+  //   right: 85%
+  // }
+
+  // #trailheadInner .merge-equal-icon {
+  //   position: absolute;
+  //   top: 13%;
+  //   right: 98%
+  // }
+
+  // #trailheadInner .break-word-wrap {
+  //   word-wrap: break-word
+  // }
+
+  // #trailheadInner .btn-default {
+  //   background-color: #fff;
+  //   border: 1px solid #DBDBDB;
+  //   border-radius: 4px;
+  //   color: #909090;
+  //   font-size: 16px;
+  //   padding: 3px 25px
+  // }
+
+  // #trailheadInner .btn-default:hover,
+  // .btn-default:active {
+  //   color: #7fa8cc;
+  //   background-color: #fff;
+  //   vertical-align: middle
+  // }
+
+  // #trailheadInner .btn-cancel {
+  //   color: #4D90C9;
+  //   font-weight: bold
+  // }
+
+  // #trailheadInner .th-expandable-toggler {
+  //   display: none
+  // }
+
+  // #trailheadInner .th-expandable-toggler:hover {
+  //   cursor: pointer
+  // }
+
+  // #trailheadInner .btn .caret.th-caret--centered {
+  //   margin: 0 4px
+  // }
+
+  // #trailheadInner .btn .caret.th-caret--medium {
+  //   margin-top: 10px;
+  //   margin-right: 9px
+  // }
+
+  // #trailheadInner .th-caret--medium {
+  //   border-top: 6px solid #909090;
+  //   border-right: 6px solid transparent;
+  //   border-left: 6px solid transparent
+  // }
+
+  // #trailheadInner .panel--wrap {
+  //   overflow: hidden
+  // }
+
+  // #trailheadInner .panel--private {
+  //   background-image: url(/assets/profile/private-751c3c15ec45a14095c146d86e4176d2837e3c359186dadd3a7401cdfaade0f8.png);
+  //   background-repeat: no-repeat;
+  //   background-position: right bottom
+  // }
+
+  // #trailheadInner .panel--private-profile {
+  //   height: 275px;
+  //   display: -webkit-box;
+  //   display: -webkit-flex;
+  //   display: -ms-flexbox;
+  //   display: flex;
+  //   -webkit-box-align: center;
+  //   -webkit-align-items: center;
+  //   -ms-flex-align: center;
+  //   align-items: center;
+  //   -webkit-box-pack: center;
+  //   -webkit-justify-content: center;
+  //   -ms-flex-pack: center;
+  //   justify-content: center
+  // }
+
+  // #trailheadInner .panel--private-profile h3.hidden-profile-heading {
+  //   font-size: 64px;
+  //   line-height: 1
+  // }
+
+  // #trailheadInner .panel--level .th-progress {
+  //   height: 10px;
+  //   width: 60%;
+  //   margin: 20px auto
+  // }
+
+  // #trailheadInner .panel--level .th-profile-description {
+  //   font-size: 16px;
+  //   font-weight: normal;
+  //   line-height: 20px
+  // }
+
+  // #trailheadInner .panel--level .th-profile-rank-image {
+  //   width: 150px;
+  //   height: 150px;
+  //   margin: 0 auto;
+  //   display: -webkit-box;
+  //   display: -webkit-flex;
+  //   display: -ms-flexbox;
+  //   display: flex;
+  //   -webkit-box-pack: center;
+  //   -webkit-justify-content: center;
+  //   -ms-flex-pack: center;
+  //   justify-content: center;
+  //   -webkit-box-align: end;
+  //   -webkit-align-items: flex-end;
+  //   -ms-flex-align: end;
+  //   align-items: flex-end
+  // }
+
+  // #trailheadInner .panel--level .th-profile-rank-image>img {
+  //   max-width: 100%;
+  //   max-height: 100%
+  // }
+
+  // #trailheadInner .panel--level .th-link__header {
+  //   line-height: 20px;
+  //   font-size: 14px
+  // }
+
+  // #trailheadInner .panel .panel-heading {
+  //   vertical-align: top
+  // }
+
+  // #trailheadInner .panel .panel-heading .th-icon-profile-edit {
+  //   height: 35px;
+  //   width: 35px
+  // }
+
+  // #trailheadInner .panel .th-icon-profile-collapse,
+  // .panel .th-icon-profile-expand {
+  //   bottom: -1px;
+  //   left: 50%;
+  //   margin-left: -50px;
+  //   position: absolute
+  // }
+
+  // #trailheadInner .th-profile-rank__text {
+  //   font-weight: bold;
+  //   line-height: 20px
+  // }
+
+  // #trailheadInner .th-profile-rank__text-light {
+  //   color: #909090
+  // }
+
+  // #trailheadInner .th-profile-rank__points {
+  //   color: #048149;
+  //   font-weight: bold;
+  //   line-height: 20px
+  // }
+
+  // #trailheadInner .th-profile-rank__description {
+  //   font-size: 16px;
+  //   line-height: 21px;
+  //   font-weight: normal
+  // }
+
+  // #trailheadInner .th-profile-rank-emphasized {
+  //   font-weight: bold !important
+  // }
+
+  // @media (min-width: 1020px) and (max-width: 1120px),
+  // (min-width: 798px) and (max-width: 896px),
+  // (min-width: 480px) and (max-width: 610px) {
+
+  //   .th-profile-rank__text,
+  //   .th-profile-rank__points,
+  //   .th-profile-rank__description {
+  //     font-size: 14px
+  //   }
+  // }
+
+  // ul.th-profile-nav {
+  //   list-style: none;
+  //   margin: 0;
+  //   padding: 0 30px;
+  //   font-size: 16px;
+  //   line-height: 1.5;
+  //   font-weight: bold;
+  //   text-transform: uppercase;
+  //   text-align: center
+  // }
+
+  // ul.th-profile-nav>li {
+  //   display: inline-block;
+  //   margin-right: 45px;
+  //   line-height: 47px;
+  //   font-size: inherit;
+  //   border: 4px solid white;
+  //   border-width: 4px 0
+  // }
+
+  // ul.th-profile-nav>li:last-child {
+  //   margin-right: 0
+  // }
+
+  // ul.th-profile-nav a {
+  //   color: #909090;
+  //   font-size: inherit;
+  //   line-height: inherit;
+  //   letter-spacing: 1px
+  // }
+
+  // ul.th-profile-nav a:hover,
+  // ul.th-profile-nav a:focus {
+  //   text-decoration: none
+  // }
+
+  // ul.th-profile-nav .th-link {
+  //   font-size: 16px;
+  //   font-weight: normal;
+  //   text-transform: none
+  // }
+
+  // ul.th-profile-nav .active {
+  //   border-bottom: 4px solid #048149
+  // }
+
+  // ul.th-profile-nav .active a {
+  //   color: #213441
+  // }
+
+  // ul.th-profile-nav--back {
+  //   text-align: left
+  // }
+
+  // ul.th-profile-nav--back a {
+  //   color: #213441
+  // }
+
+  // ul.th-profile-nav--back .th-icon-profile-back {
+  //   margin-bottom: -5px;
+  //   margin-right: 5px
+  // }
+
+  // @media (max-width: 580px) {
+  //   ul.th-profile-nav {
+  //     font-size: 14px
+  //   }
+
+  //   ul.th-profile-nav>li {
+  //     margin-right: 15px;
+  //     line-height: 40px
+  //   }
+  // }
+
+  // #trailheadInner .th-btn-group {
+  //   border: 1px solid #DBDBDB;
+  //   border-radius: 5px
+  // }
+
+  // #trailheadInner .th-btn-group .btn {
+  //   width: 180px
+  // }
+
+  // #trailheadInner .th-btn-group .btn.dropdown-toggle {
+  //   background-color: #fff !important;
+  //   -webkit-box-shadow: none;
+  //   box-shadow: none
+  // }
+
+  // #trailheadInner .th-btn-group--caret .btn {
+  //   width: auto;
+  //   display: block;
+  //   padding: 14px 8px !important
+  // }
+
+  // #trailheadInner .th-btn-group--caret .btn .caret {
+  //   border-width: 6px 6px 0 6px
+  // }
+
+  // #trailheadInner .th-btn-group .caret {
+  //   border-top-color: #909090
+  // }
+
+  // #trailheadInner .th-profile-badges-share .dropdown-toggle {
+  //   padding: 0 !important
+  // }
+
+  // #trailheadInner .th-profile-badges-share .btn-group.open .dropdown-toggle {
+  //   background-color: #fff;
+  //   -webkit-box-shadow: none;
+  //   box-shadow: none
+  // }
+
+  // #trailheadInner .th-profile--line {
+  //   line-height: 18px;
+  //   padding: 2px 20px
+  // }
+
+  // a.no-decoration:hover,
+  // a.no-decoration:focus {
+  //   text-decoration: none
+  // }
+
+  // #trailheadInner .th-profile-dropdown-menu {
+  //   padding: 10px 0;
+  //   margin-top: 24px;
+  //   text-align: left;
+  //   width: 100%
+  // }
+
+  // #trailheadInner .th-profile-dropdown-menu .media i {
+  //   opacity: 1 !important
+  // }
+
+  // #trailheadInner .th-profile-dropdown-menu li.share-on {
+  //   color: #999;
+  //   font-size: 14px;
+  //   font-weight: 500;
+  //   padding: 15px 20px 5px;
+  //   text-transform: uppercase
+  // }
+
+  // #trailheadInner .th-profile-dropdown-menu li.share-on:hover {
+  //   background: #fff
+  // }
+
+  // #trailheadInner .th-profile-dropdown-menu__share-title {
+  //   font-size: 16px;
+  //   font-weight: normal;
+  //   color: #999;
+  //   line-height: 20px
+  // }
+
+  // #trailheadInner .th-profile-dropdown-menu__share-title--rounded {
+  //   line-height: 26px
+  // }
+
+  // #trailheadInner .th-profile-dropdown-menu__share-subtitle {
+  //   font-size: 14px;
+  //   font-weight: normal;
+  //   color: #999;
+  //   letter-spacing: 0.87px;
+  //   line-height: 16px;
+  //   opacity: 0.5;
+  //   text-transform: uppercase
+  // }
+
+  // #trailheadInner .th-profile-dropdown-menu__earned-title {
+  //   display: block;
+  //   color: #0D5638;
+  //   font-weight: bold;
+  //   font-size: 10px;
+  //   line-height: 20px;
+  //   letter-spacing: 1px;
+  //   text-transform: uppercase
+  // }
+
+  // #trailheadInner .th-profile-dropdown-menu__earned-text {
+  //   display: block;
+  //   color: #fff;
+  //   font-weight: bold;
+  //   font-size: 14px;
+  //   line-height: 18px
+  // }
+
+  // #trailheadInner .th-profile-dropdown-menu--over li {
+  //   line-height: 18px !important
+  // }
+
+  // #trailheadInner .th-profile-dropdown-menu--over li.th-profile--line--header:first-child {
+  //   padding-top: 10px !important
+  // }
+
+  // #trailheadInner .th-profile-dropdown-menu--over li:hover {
+  //   background: #DBDBDB
+  // }
+
+  // #trailheadInner .th-profile-dropdown-menu--over li:hover .separator {
+  //   background: #fff
+  // }
+
+  // #trailheadInner .th-profile-dropdown-menu--profile {
+  //   left: -75px
+  // }
+
+  // #trailheadInner .th-profile-dropdown-menu--green {
+  //   padding: 0 0 10px;
+  //   width: 250px;
+  //   left: -100px
+  // }
+
+  // #trailheadInner .th-profile-dropdown-menu--green .media>a {
+  //   margin-right: 20px
+  // }
+
+  // #trailheadInner .th-profile-dropdown-menu--green li {
+  //   padding: 11px 20px
+  // }
+
+  // #trailheadInner .th-profile-dropdown-menu--green li:first-child {
+  //   background: #048149;
+  //   border-top-right-radius: 4px;
+  //   border-top-left-radius: 4px
+  // }
+
+  // #trailheadInner .th-profile-dropdown-menu--green li.share-on {
+  //   color: #999;
+  //   font-size: 14px;
+  //   font-weight: 500;
+  //   padding: 15px 20px 5px;
+  //   text-transform: uppercase
+  // }
+
+  // #trailheadInner .th-profile-dropdown-menu--green li.share-on:hover {
+  //   background: #fff
+  // }
+
+  // #trailheadInner .th-profile-dropdown-menu--green:before {
+  //   border-bottom: 14px solid #048149 !important;
+  //   right: 48px !important
+  // }
+
+  // #trailheadInner .th-profile-dropdown-menu--green:after {
+  //   border-bottom: 13px solid #048149 !important;
+  //   right: 48px !important
+  // }
+
+  // #trailheadInner .th-profile-dropdown-menu:before {
+  //   position: absolute;
+  //   top: -14px;
+  //   right: 9px;
+  //   display: inline-block;
+  //   border-right: 14px solid transparent;
+  //   border-bottom: 14px solid #ccc;
+  //   border-left: 14px solid transparent;
+  //   border-bottom-color: rgba(0, 0, 0, 0.2);
+  //   content: ''
+  // }
+
+  // #trailheadInner .th-profile-dropdown-menu:after {
+  //   position: absolute;
+  //   top: -13px;
+  //   right: 10px;
+  //   display: inline-block;
+  //   border-right: 13px solid transparent;
+  //   border-bottom: 13px solid #ffffff;
+  //   border-left: 13px solid transparent;
+  //   content: ''
+  // }
+
+  // #trailheadInner .th-profile-dropdown-menu>li>a {
+  //   color: #555;
+  //   font-size: 16px;
+  //   padding: 10px 20px
+  // }
+
+  // #trailheadInner .th-profile-dropdown-menu>li>a:hover,
+  // .th-profile-dropdown-menu>li>a:focus,
+  // .th-profile-dropdown-menu:hover>a,
+  // .th-profile-dropdown-menu:focus>a {
+  //   background: #EBEBED;
+  //   color: #333
+  // }
+
+  // #trailheadInner .th-profile-dropdown-menu>li>a.th-profile-share {
+  //   width: 100%;
+  //   padding: 0px 20px;
+  //   -webkit-box-sizing: border-box;
+  //   box-sizing: border-box;
+  //   background: inherit;
+  //   cursor: pointer
+  // }
+
+  // #trailheadInner .th-profile-dropdown-menu>li>a.th-profile-share>i {
+  //   margin-right: 20px
+  // }
+
+  // #trailheadInner .th-profile-dropdown-menu .active {
+  //   border-left: 4px solid #048149
+  // }
+
+  // #trailheadInner .th-profile-dropdown-menu--big {
+  //   width: 250px;
+  //   padding: 0 0 10px
+  // }
+
+  // #trailheadInner .th-profile-dropdown-menu--big li.th-profile--line {
+  //   padding: 0
+  // }
+
+  // #trailheadInner .th-profile-dropdown-menu--big li.th-profile--line a {
+  //   line-height: 40px
+  // }
+
+  // #trailheadInner .th-profile-dropdown-menu--big li.th-profile--line a i {
+  //   vertical-align: middle
+  // }
+
+  // #trailheadInner .th-profile-dropdown-menu--big li.th-profile--line a span {
+  //   line-height: 40px
+  // }
+
+  // input.th-profile-input,
+  // textarea.th-profile-input {
+  //   border: 1px solid #DBDBDB;
+  //   font-size: 16px;
+  //   color: #213441
+  // }
+
+  // #trailheadInner .control-group.error .help-inline {
+  //   color: #b94a48
+  // }
+
+  // #trailheadInner .btn-noop {
+  //   white-space: normal
+  // }
+
+  // #trailheadInner .btn-noop:hover,
+  // .btn-noop:focus,
+  // .btn-noop:active {
+  //   background-color: #fff
+  // }
+
+  // #trailheadInner .btn-group .btn-noop {
+  //   color: #555;
+  //   font-size: 16px;
+  //   padding: 6px;
+  //   text-align: left;
+  //   line-height: 28px
+  // }
+
+  // #trailheadInner .btn-group .btn-noop span {
+  //   color: #555;
+  //   font-size: 16px
+  // }
+
+  // #trailheadInner .btn-group .btn-noop__text {
+  //   padding-left: 10px
+  // }
+
+  // #trailheadInner .btn-group .open .btn-noop.dropdown-toggle {
+  //   background-color: #fff;
+  //   -webkit-box-shadow: none;
+  //   box-shadow: none
+  // }
+
+  // #trailheadInner .ranks-description {
+  //   margin: 0 auto;
+  //   max-width: 800px
+  // }
+
+  // #trailheadInner .ranks-description p {
+  //   font-size: 16px;
+  //   margin: 15px 0 30px;
+  //   line-height: 1.4
+  // }
+
+  // #trailheadInner .th-profile-badges,
+  // .th-profile-ranks {
+  //   display: -webkit-box;
+  //   display: -webkit-flex;
+  //   display: -ms-flexbox;
+  //   display: flex;
+  //   -webkit-flex-wrap: wrap;
+  //   -ms-flex-wrap: wrap;
+  //   flex-wrap: wrap;
+  //   -webkit-box-pack: center;
+  //   -webkit-justify-content: center;
+  //   -ms-flex-pack: center;
+  //   justify-content: center;
+  //   width: 100%
+  // }
+
+  // #trailheadInner .th-profile-badges.multi-row,
+  // .th-profile-ranks.multi-row {
+  //   margin-bottom: 0
+  // }
+
+  // #trailheadInner .th-profile-badges.multi-row .th-profile-rank,
+  // .th-profile-ranks.multi-row .th-profile-rank {
+  //   margin: 0 15px 40px;
+  //   width: 250px
+  // }
+
+  // #trailheadInner .th-profile-ranks .th-profile-rank-image {
+  //   height: 150px;
+  //   line-height: 10;
+  //   -webkit-box-align: center;
+  //   -webkit-align-items: center;
+  //   -ms-flex-align: center;
+  //   align-items: center
+  // }
+
+  // #trailheadInner .th-profile-ranks .th-profile-rank-image img {
+  //   max-height: 150px;
+  //   max-width: 150px
+  // }
+
+  // #trailheadInner .th-profile-badges {
+  //   display: -webkit-box;
+  //   display: -webkit-flex;
+  //   display: -ms-flexbox;
+  //   display: flex;
+  //   -webkit-flex-wrap: wrap;
+  //   -ms-flex-wrap: wrap;
+  //   flex-wrap: wrap;
+  //   margin-top: 22px;
+  //   -webkit-justify-content: space-around;
+  //   -ms-flex-pack: distribute;
+  //   justify-content: space-around
+  // }
+
+  // #trailheadInner .th-profile-badges.multi-row .th-profile-badge {
+  //   -webkit-flex-basis: 14.28%;
+  //   -ms-flex-preferred-size: 14.28%;
+  //   flex-basis: 14.28%;
+  //   -webkit-box-flex: 0;
+  //   -webkit-flex-grow: 0;
+  //   -ms-flex-positive: 0;
+  //   flex-grow: 0
+  // }
+
+  // #trailheadInner .th-profile-badge {
+  //   -webkit-flex-basis: 33.333%;
+  //   -ms-flex-preferred-size: 33.333%;
+  //   flex-basis: 33.333%;
+  //   padding: 10px;
+  //   -webkit-box-sizing: border-box;
+  //   box-sizing: border-box;
+  //   text-align: center
+  // }
+
+  // #trailheadInner .th-profile-badge .badge-link {
+  //   display: block
+  // }
+
+  // #trailheadInner .th-profile-badge img {
+  //   border-radius: 4px;
+  //   max-height: 110px
+  // }
+
+  // #trailheadInner .th-profile-badge:first-child {
+  //   margin-left: 0
+  // }
+
+  // #trailheadInner .th-profile-badge .th-progress {
+  //   margin: 20px auto;
+  //   width: 110px
+  // }
+
+  // #trailheadInner .th-profile-badge>ul {
+  //   margin-bottom: 0
+  // }
+
+  // #trailheadInner .th-profile-badge .th-link {
+  //   height: 72px;
+  //   font-size: 18px;
+  //   line-height: 24px;
+  //   display: block;
+  //   overflow: hidden
+  // }
+
+  // #trailheadInner .th-profile-badge__share li {
+  //   position: relative
+  // }
+
+  // #trailheadInner .th-profile-badge__share .separator:hover {
+  //   background: #fff
+  // }
+
+  // #trailheadInner .th-profile-badge__share .th-btn-group--caret {
+  //   display: none;
+  //   position: absolute;
+  //   right: 5px;
+  //   top: 50%;
+  //   margin-top: -25px
+  // }
+
+  // #trailheadInner .th-profile-badge__share.open .th-btn-group--caret {
+  //   display: inline-block
+  // }
+
+  // #trailheadInner .th-profile-badge__short .th-link {
+  //   height: 48px
+  // }
+
+  // #trailheadInner .th-profile-badge__short img {
+  //   margin-bottom: 10px
+  // }
+
+  // @media (max-width: 540px) {
+  //   .th-profile-badge {
+  //     -webkit-flex-basis: 50%;
+  //     -ms-flex-preferred-size: 50%;
+  //     flex-basis: 50%
+  //   }
+  // }
+
+  // #trailheadInner .th-progress.progress {
+  //   -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr=#40000000,endColorstr=#40000000)";
+  //   filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr=#40000000,endColorstr=#40000000)";
+  //   background-color: rgba(0, 0, 0, 0.25);
+  //   background-image: none;
+  //   -webkit-box-shadow: none;
+  //   box-shadow: none;
+  //   height: 10px;
+  //   border-radius: 5px
+  // }
+
+  // #trailheadInner .th-progress--success .bar {
+  //   background-color: #65A68B;
+  //   background-image: none;
+  //   border-radius: 5px
+  // }
+
+  // #trailheadInner a.th-link,
+  // .th-link {
+  //   color: #189cd7;
+  //   font-size: 18px
+  // }
+
+  // #trailheadInner a.th-link:hover,
+  // .th-link:hover {
+  //   color: #189cd7;
+  //   text-decoration: none
+  // }
+
+  // #trailheadInner a.th-link__header,
+  // .th-link__header {
+  //   margin: 10px auto
+  // }
+
+  // #trailheadInner .th-profile-container {
+  //   padding: 30px 0
+  // }
+
+  // #trailheadInner .th-profile-container a:focus {
+  //   text-decoration: none
+  // }
+
+  // #trailheadInner .th-profile-nav {
+  //   margin-bottom: 0
+  // }
+
+  // #trailheadInner .th-profile-description {
+  //   color: #707070;
+  //   font-size: 16px;
+  //   line-height: 18px;
+  //   text-transform: none
+  // }
+
+  // #trailheadInner .th-profile-description .th-link {
+  //   font-weight: normal;
+  //   font-size: 16px
+  // }
+
+  // #trailheadInner .th-profile-description--popover {
+  //   font-weight: 300;
+  //   line-height: 20px;
+  //   text-align: left
+  // }
+
+  // #trailheadInner .th-icon-profile-back {
+  //   display: inline-block;
+  //   height: 20px;
+  //   width: 24px;
+  //   background-image: url(/assets/arrows/back-arrow-1e709ba5a4ab8f0ec9cdc24397d0a7df54daab346e5a1d9b1afae20b5f2ad453.svg);
+  //   background-repeat: no-repeat;
+  //   background-position: left center
+  // }
+
+  // #trailheadInner .th-icon-salesforce {
+  //   background: url(/assets/trailhead_app/salesforce-logo-1c0d33fe7365c6de1bde465246b66aadf554e5d1c399b652af176fa7c16e7817.png) no-repeat left center;
+  //   display: inline-block;
+  //   height: 56px;
+  //   width: 80px
+  // }
+
+  // #trailheadInner .th-profile--line:hover .th-icon-salesforce {
+  //   background-image: url(/assets/trailhead_app/salesforce-logo-1c0d33fe7365c6de1bde465246b66aadf554e5d1c399b652af176fa7c16e7817.png)
+  // }
+
+  // #trailheadInner .th-icon-salesforce--dark {
+  //   background-image: url(/assets/trailhead_app/social/sf-cloud-icon-dark-7898b2e44bf599b560619d4ae37f5e2ca7b7148512bb4991c16026fae6454ca0.svg)
+  // }
+
+  // #trailheadInner .th-icon-sf {
+  //   background-image: url(/assets/trailhead_app/social/sf-cloud-icon-78b4986f107b31574366707e687c3d56945d3a2de67f2856a21cf5bd5c97a167.svg);
+  //   display: inline-block;
+  //   height: 30px;
+  //   background-repeat: no-repeat;
+  //   background-position: center center
+  // }
+
+  // #trailheadInner .th-icon-sf--dark {
+  //   background-image: url(/assets/trailhead_app/social/sf-cloud-icon-dark-7898b2e44bf599b560619d4ae37f5e2ca7b7148512bb4991c16026fae6454ca0.svg)
+  // }
+
+  // #trailheadInner .th-icon-round-fb {
+  //   background: url(/assets/trailhead_app/social/fb-round-icon-34e27abc89b2bf9e7d9964ff47fedeb82cfd0b0311a567411767dde25e8c74ae.svg) no-repeat left center;
+  //   display: inline-block;
+  //   height: 40px;
+  //   width: 40px
+  // }
+
+  // #trailheadInner .th-icon-round-fb--dark {
+  //   background-image: url(/assets/trailhead_app/social/fb-round-icon-dark-193779810e1590df45343dc6f99ee14145b8152ddd56e9b574321adb444f96bf.svg)
+  // }
+
+  // #trailheadInner .th-profile--line:hover .th-icon-round-fb {
+  //   background-image: url(/assets/trailhead_app/social/fb-round-icon-34e27abc89b2bf9e7d9964ff47fedeb82cfd0b0311a567411767dde25e8c74ae.svg)
+  // }
+
+  // #trailheadInner .th-icon-round-google {
+  //   background: url(/assets/trailhead_app/social/google-3f939bf3f3358b08804a0a668076b23fdcc4d794948c7300bfc23e2af3c3db9b.svg) no-repeat left center;
+  //   display: inline-block;
+  //   height: 40px;
+  //   width: 40px
+  // }
+
+  // #trailheadInner .th-icon-round-google--dark {
+  //   background-image: url(/assets/trailhead_app/social/google-round-icon-dark-47e217d98e3e494e2363a765b0bb67fb189d7d6b0c39ac7b1dc0747d643b6f3d.svg)
+  // }
+
+  // #trailheadInner .th-profile--line:hover .th-icon-round-google {
+  //   background-image: url(/assets/trailhead_app/social/google-round-icon-dd839de419f6788118059ead1ca0f39887ffb0d9cae97d424c532fed9c4a24ac.svg)
+  // }
+
+  // #trailheadInner .th-icon-round-li {
+  //   background: url(/assets/trailhead_app/social/li-round-icon-2db24e155271535bfaaa30b69be520cd7c405ad2817a5c299787bcb56b4b87f7.svg) no-repeat left center;
+  //   display: inline-block;
+  //   height: 40px;
+  //   width: 40px
+  // }
+
+  // #trailheadInner .th-icon-round-li--dark {
+  //   background-image: url(/assets/trailhead_app/social/li-round-icon-dark-61ccc8ed7469af4566b5391892ac1ae6e8b717395ae36395fca034782762181c.svg)
+  // }
+
+  // #trailheadInner .th-profile--line:hover .th-icon-round-li {
+  //   background-image: url(/assets/trailhead_app/social/li-round-icon-2db24e155271535bfaaa30b69be520cd7c405ad2817a5c299787bcb56b4b87f7.svg)
+  // }
+
+  // #trailheadInner .th-icon-round-tw {
+  //   background: url(/assets/trailhead_app/social/tw-round-icon-6bb5b92e7987406ea89e9d9029f4ea6e8e19b13b11a3e1834814ab4c7dd334d2.svg) no-repeat left center;
+  //   display: inline-block;
+  //   height: 40px;
+  //   width: 40px
+  // }
+
+  // #trailheadInner .th-icon-round-tw--dark {
+  //   background-image: url(/assets/trailhead_app/social/tw-round-icon-dark-3eaa33c8b88eac6a0c31a43dbb5e83550c5b0d03ff7631a1e10e52ebf1beb95a.svg)
+  // }
+
+  // #trailheadInner .th-profile--line:hover .th-icon-round-tw {
+  //   background-image: url(/assets/trailhead_app/social/tw-round-icon-6bb5b92e7987406ea89e9d9029f4ea6e8e19b13b11a3e1834814ab4c7dd334d2.svg)
+  // }
+
+  // #trailheadInner .th-icon-salesforce--small {
+  //   width: 30px;
+  //   height: 21px;
+  //   background-size: contain
+  // }
+
+  // #trailheadInner .th-icon-round--small {
+  //   width: 30px;
+  //   height: 30px;
+  //   background-size: contain
+  // }
+
+  // #trailheadInner .th-icon-round--medium {
+  //   width: 36px;
+  //   height: 36px;
+  //   background-size: contain
+  // }
+
+  // #trailheadInner .th-icon-profile-share {
+  //   background: url(/assets/profile/share-dbd64fc00c8e0b3990c24209c693892e71e089fb45fa7dd47963ed5f63d538d4.png) no-repeat center center;
+  //   display: inline-block;
+  //   height: 40px;
+  //   width: 40px;
+  //   border: 1px solid #DBDBDB;
+  //   border-radius: 4px;
+  //   vertical-align: middle
+  // }
+
+  // #trailheadInner .th-icon-profile-edit {
+  //   background: url(/assets/pencil-869b59f3716606644a6c111f71c06a4a20774f7c6cf4474e996d551ca06c8874.svg) no-repeat center center;
+  //   display: inline-block;
+  //   height: 42px;
+  //   width: 42px;
+  //   border: 1px solid #DBDBDB;
+  //   border-radius: 4px;
+  //   vertical-align: middle;
+  //   cursor: pointer
+  // }
+
+  // #trailheadInner .th-icon-profile-edit.small {
+  //   height: 30px;
+  //   width: 30px
+  // }
+
+  // #trailheadInner .th-icon-profile-delete {
+  //   background: url(/assets/profile/delete-46afb0d1535d930fec0c08548620b07a2f4c5234d0337e4c8aa723e28979755a.png) no-repeat center center;
+  //   display: inline-block;
+  //   height: 42px;
+  //   width: 42px;
+  //   border: 1px solid #DBDBDB;
+  //   border-radius: 4px;
+  //   vertical-align: middle
+  // }
+
+  // #trailheadInner .th-icon-profile-delete.small {
+  //   height: 30px;
+  //   width: 30px
+  // }
+
+  // #trailheadInner .panel-in-progress .panel-heading {
+  //   height: 61px
+  // }
+
+  // #trailheadInner .panel-body {
+  //   font-size: 16px;
+  //   font-weight: normal
+  // }
+
+  // #trailheadInner .panel-body--white {
+  //   color: #FFFFFF
+  // }
+
+  // #trailheadInner .panel-body--medium {
+  //   font-size: 18px;
+  //   font-weight: bold
+  // }
+
+  // @media screen and (max-width: 767px) {
+  //   #trailheadInner .panel-body--medium-responsive {
+  //     font-size: 16px
+  //   }
+  // }
+
+  // #trailheadInner .table.table-header-footer {
+  //   -webkit-box-shadow: 0px 1px 1px 0px rgba(0, 0, 0, 0.1);
+  //   box-shadow: 0px 1px 1px 0px rgba(0, 0, 0, 0.1);
+  //   border: 1px solid rgba(219, 219, 219, 0.75);
+  //   table-layout: fixed
+  // }
+
+  // #trailheadInner .table.table-header-footer thead,
+  // #trailheadInner .table.table-header-footer tfoot {
+  //   background: #FAFBFB
+  // }
+
+  // #trailheadInner .table.table-header-footer th {
+  //   font-weight: normal;
+  //   text-transform: uppercase
+  // }
+
+  // #trailheadInner .table.table-header-footer tbody a.th-link {
+  //   font-size: 16px
+  // }
+
+  // #trailheadInner .table.table-header-footer th,
+  // #trailheadInner .table.table-header-footer td {
+  //   vertical-align: middle;
+  //   max-width: 200px;
+  //   white-space: nowrap;
+  //   overflow: hidden;
+  //   -o-text-overflow: ellipsis;
+  //   text-overflow: ellipsis
+  // }
+
+  // #trailheadInner .table.table-header-footer tr {
+  //   height: 60px
+  // }
+
+  // #trailheadInner .table.table-header-footer--editing th:last-child {
+  //   width: 210px
+  // }
+
+  // #trailheadInner .table th.text-center,
+  // #trailheadInner .table td.text-center {
+  //   text-align: center
+  // }
+
+  // #trailheadInner .table th.text-left,
+  // #trailheadInner .table td.text-left {
+  //   text-align: left
+  // }
+
+  // #trailheadInner .table th.text-right,
+  // #trailheadInner .table td.text-right {
+  //   text-align: right
+  // }
+
+  // #trailheadInner .table-no-column-lines th,
+  // #trailheadInner .table-no-column-lines td {
+  //   border-left: 0px
+  // }
+
+  // #trailheadInner .row-actions>div,
+  // #trailheadInner .row-actions>button {
+  //   margin-left: 4px;
+  //   margin-right: 4px
+  // }
+
+  // #trailheadInner .row-actions {
+  //   min-width: 80px
+  // }
+
+  // #trailheadInner .th-icon-row-action {
+  //   display: inline-block
+  // }
+
+  // #trailheadInner .btn-edit {
+  //   background-image: url(/assets/profile/edit-b47663ab906986e77f496065e7448f168aaba1c62bb32162dcfbc32ea10dbe74.png);
+  //   background-size: 15px
+  // }
+
+  // #trailheadInner .btn-delete {
+  //   background-image: url(/assets/profile/delete-46afb0d1535d930fec0c08548620b07a2f4c5234d0337e4c8aa723e28979755a.png);
+  //   background-size: 15px
+  // }
+
+  // #trailheadInner td.th-profile-label {
+  //   white-space: pre-wrap !important;
+  //   cursor: pointer
+  // }
+
+  // #trailheadInner th.th-profile-wide {
+  //   width: 30%
+  // }
+
+  // #trailheadInner th.th-profile-medium {
+  //   width: 20%
+  // }
+
+  // #trailheadInner th.th-profile-narrow {
+  //   width: 10%
+  // }
+
+  // #trailheadInner .th-profile-radio input[type="radio"] {
+  //   display: none
+  // }
+
+  // #trailheadInner .th-profile-radio input[type="radio"]+label {
+  //   background-image: url(/assets/profile/radio-6d2ce97e5de351454813d82b4a6c10281bc32703a7b47e49df079b5723d7d20e.png);
+  //   background-size: 20px;
+  //   height: 20px;
+  //   width: 20px;
+  //   display: inline-block;
+  //   padding: 0 0 0 0px;
+  //   vertical-align: middle;
+  //   margin-bottom: 1px
+  // }
+
+  // #trailheadInner .th-profile-radio input[type="radio"]:checked+label {
+  //   background-image: url(/assets/profile/radio-selected-b203e23561d5f447d0c526152e27e64050e8a2acf8c481c8a0aa714b2ee06d8d.png);
+  //   background-size: 20px;
+  //   height: 20px;
+  //   width: 20px;
+  //   display: inline-block;
+  //   padding: 0 0 0 0px;
+  //   background-position: center;
+  //   vertical-align: middle;
+  //   margin-bottom: 1px
+  // }
+
+  // #trailheadInner .th-profile-radio label.disabled {
+  //   opacity: 0.5
+  // }
+
+  // #trailheadInner .th-profile-checkbox input[type="checkbox"] {
+  //   display: none
+  // }
+
+  // #trailheadInner .th-profile-checkbox input[type="checkbox"]+label {
+  //   background-image: url(/assets/profile/checkbox-unselected-7f1a52d0328a6b9d0b2dfa05cd58c46c8931f90bde37b51424185caa06fc7b42.svg);
+  //   background-size: 23px;
+  //   background-position: center center;
+  //   background-repeat: no-repeat;
+  //   height: 24px;
+  //   width: 24px;
+  //   display: inline-block;
+  //   padding: 0 0 0 0px;
+  //   margin-bottom: 0px
+  // }
+
+  // #trailheadInner .th-profile-checkbox input[type="checkbox"]:checked+label {
+  //   background-image: url(/assets/profile/checkbox-selected-026c4ccfdaceb19c3e590415e174427d1994ef0af7521239ac52821656dc3beb.svg);
+  //   background-size: 24px;
+  //   background-position: center center;
+  //   background-repeat: no-repeat;
+  //   height: 24px;
+  //   width: 24px;
+  //   display: inline-block;
+  //   padding: 0 0 0 0px;
+  //   background-position: center;
+  //   margin-bottom: 0px
+  // }
+
+  // @media only screen and (min-width: 768px) and (max-width: 1200px) {
+
+  //   #trailheadInner .th-profile-container [class*="span"],
+  //   #trailheadInner .th-profile-container .uneditable-input[class*="span"],
+  //   #trailheadInner .th-profile-container .row-fluid [class*="span"] {
+  //     display: block;
+  //     float: none;
+  //     width: 100%;
+  //     margin-left: 0;
+  //     -webkit-box-sizing: border-box;
+  //     box-sizing: border-box
+  //   }
+
+  //   #trailheadInner .th-profile-container .row {
+  //     margin-right: 20px;
+  //     margin-left: 20px
+  //   }
+
+  //   #trailheadInner .th-profile-container .span12,
+  //   #trailheadInner .th-profile-container .row-fluid .span12 {
+  //     width: 100%;
+  //     -webkit-box-sizing: border-box;
+  //     box-sizing: border-box
+  //   }
+  // }
+
+  // #trailheadInner .identify-message {
+  //   color: white;
+  //   margin: 20px 0 0
+  // }
+
+  // #trailheadInner .connected-orgs .fail {
+  //   padding-left: 14px;
+  //   padding-right: 14px;
+  //   border-radius: 4px;
+  //   display: block
+  // }
+
+  // #trailheadInner .connected-orgs td.idp_username {
+  //   overflow: visible
+  // }
+
+  // #trailheadInner .js-disconnect-btn,
+  // #trailheadInner .idp-error {
+  //   cursor: pointer
+  // }
+
+  // #trailheadInner .fail {
+  //   display: none;
+  //   padding-top: 20px;
+  //   padding-bottom: 20px;
+  //   background: #d53c3c;
+  //   color: #fff;
+  //   font-size: 15px
+  // }
+
+  // #trailheadInner .fail.margin-bottom {
+  //   margin-bottom: 20px
+  // }
+
+  // #trailheadInner .fail-text {
+  //   color: #707070;
+  //   padding: 0 2rem 0 0
+  // }
+
+  // #trailheadInner .challenge-badge-icon {
+  //   float: right;
+  //   width: 150px;
+  //   height: 150px
+  // }
+
+  // @media only screen and (max-width: 767px) {
+  //   #trailheadInner .challenge-badge-icon {
+  //     float: none;
+  //     margin: 0 auto 25px
+  //   }
+  // }
+
+  // #trailheadInner .challenge-badge-icon>img {
+  //   max-width: 135px
+  // }
+
+  // #trailheadInner .h-panel {
+  //   border-bottom: 1px solid lightgray
+  // }
+
+  // #trailheadInner .h-panel:first-child {
+  //   border-radius: 8px 8px 0 0
+  // }
+
+  // #trailheadInner .h-panel:last-child {
+  //   border-bottom: none;
+  //   border-radius: 0 0 8px 8px
+  // }
+
+  // @media only screen and (max-width: 767px) {
+  //   #trailheadInner .sb-challenge-item .th-round-badge {
+  //     font-size: 14px;
+  //     height: 30px;
+  //     width: 30px;
+  //     line-height: 28px
+  //   }
+
+  //   #trailheadInner .sb-challenge-item .sb-challenge-body .h4,
+  //   #trailheadInner .sb-challenge-item .sb-challenge-body .p {
+  //     font-size: 16px;
+  //     line-height: 1.4;
+  //     word-break: break-word
+  //   }
+  // }
+
+  // @media only screen and (max-width: 480px) {
+  //   #trailheadInner .sb-challenge-item .media-img {
+  //     display: none
+  //   }
+  // }
+
+  // #trailheadInner .sb-challenge-item--no-body .h4 {
+  //   padding-top: 14px
+  // }
+
+  // #trailheadInner .sb-challenge-btn {
+  //   text-align: right;
+  //   -webkit-box-sizing: border-box;
+  //   box-sizing: border-box
+  // }
+
+  // #trailheadInner .sb-mcq-answer .th-round-badge--small,
+  // #trailheadInner .sb-mcq .th-round-badge--small {
+  //   text-transform: uppercase
+  // }
+
+  // #trailheadInner .sb-mcq {
+  //   border-bottom: 1px solid #ECECEC;
+  //   background: #F8F8F8
+  // }
+
+  // #trailheadInner .sb-mcq .th-round-badge--small {
+  //   border-color: transparent
+  // }
+
+  // #trailheadInner .sb-mcq p:last-child {
+  //   margin: 0
+  // }
+
+  // #trailheadInner .sb-answer {
+  //   cursor: pointer
+  // }
+
+  // #trailheadInner .challenge-btn {
+  //   margin-bottom: 8px
+  // }
+
+  // #trailheadInner .challenges-container .sb-points-awarded,
+  // .challenges-container .sb-points-awarded * {
+  //   color: #048149
+  // }
+
+  // #trailheadInner .sb-points-awarded {
+  //   padding-top: 5px
+  // }
+
+  // #trailheadInner .sb-points-awarded {
+  //   font-size: 15px
+  // }
+
+  // #trailheadInner .disabled-challenge {
+  //   margin-bottom: 10px
+  // }
+
+  // #trailheadInner .sb-completed {
+  //   background: white;
+  //   padding: 35px;
+  //   text-align: center;
+  //   border-radius: 10px;
+  //   font-size: 15px
+  // }
+
+  // #trailheadInner .sb-completed .sb-completed-points,
+  // .sb-completed .sb-completed-points__header {
+  //   color: #88BF6B;
+  //   font-size: 22px
+  // }
+
+  // #trailheadInner .sb-completed .sb-completed-points__header {
+  //   font-weight: 500;
+  //   font-size: 60px;
+  //   line-height: 60px;
+  //   padding-bottom: 5px
+  // }
+
+  // #trailheadInner .sb-completed a {
+  //   color: #189cd7
+  // }
+
+  // #trailheadInner .sb-completed a:hover {
+  //   text-decoration: underline
+  // }
+
+  // #trailheadInner .sb-challenge-item:first-child .sb-challenge-error-msg {
+  //   border-top-left-radius: 8px;
+  //   border-top-right-radius: 8px
+  // }
+
+  // #trailheadInner .sb-challenge-error-msg {
+  //   position: relative;
+  //   margin-top: -1px;
+  //   background: #D33E41;
+  //   padding: 1.5rem;
+  //   color: white;
+  //   font-size: 1rem;
+  //   display: -webkit-box;
+  //   display: -webkit-flex;
+  //   display: -ms-flexbox;
+  //   display: flex
+  // }
+
+  // #trailheadInner .sb-challenge-error-msg>div {
+  //   color: white;
+  //   -webkit-box-flex: 1;
+  //   -webkit-flex-grow: 1;
+  //   -ms-flex-positive: 1;
+  //   flex-grow: 1
+  // }
+
+  // #trailheadInner .sb-server-error {
+  //   padding-bottom: 0;
+  //   border-color: transparent
+  // }
+
+  // #trailheadInner .sb-server-error>div {
+  //   margin-bottom: 0
+  // }
+
+  // #trailheadInner .sb-challenge-error-msg__close {
+  //   cursor: pointer
+  // }
+
+  // #trailheadInner .sb-complete-modal__header {
+  //   font-size: 30px;
+  //   font-weight: bold;
+  //   line-height: 50px
+  // }
+
+  // #completeModal .sb-txt-success,
+  // #completeModal .sb-txt-success * {
+  //   color: #67C16C
+  // }
+
+  // #trailheadInner .sb-complete-modal__body {
+  //   padding: 25px 70px
+  // }
+
+  // #sb-complete-modal .modal-footer {
+  //   -webkit-box-sizing: border-box;
+  //   box-sizing: border-box
+  // }
+
+  // #superbadge-complete {
+  //   display: none
+  // }
+
+  // #trailheadInner .sb-feedback-container {
+  //   border: 1px solid #ECECEC;
+  //   margin-top: 30px;
+  //   border-bottom: 1px solid lightgray
+  // }
+
+  // #trailheadInner .sb-feedback-container .feedback-top a {
+  //   color: #189cd7
+  // }
+
+  // #trailheadInner .merge-card--gray {
+  //   background-color: whitesmoke
+  // }
+
+  // #trailheadInner .merge-card__highlighted--gray {
+  //   background-color: #fafafa
+  // }
+
+  // #trailheadInner .merge-card--blue {
+  //   background-color: #daebf8
+  // }
+
+  // #trailheadInner .merge-card__highlighted--blue {
+  //   background-color: #ecf5fb
+  // }

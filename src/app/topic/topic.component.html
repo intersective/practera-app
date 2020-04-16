@@ -11,17 +11,20 @@
     }">Topic</ion-title>
   </ion-toolbar>
 </ion-header>
-<ion-content class="ion-padding" color="light" [ngClass]="{'ion-content-absolute-with-footer': !utils.isMobile()}">
+<ion-content class="ion-padding app-topic" color="light" [ngClass]="{'ion-content-absolute-with-footer': !utils.isMobile()}">
   <div class="ion-text-center ion-margin-top" *ngIf="loadingTopic">
     <ion-spinner></ion-spinner>
   </div>
   <h3 class="headline-4 ion-text-center">{{topic.title}}</h3>
-  <div *ngIf="topic.videolink && topic.videolink !=='magiclink'" class="text-center">
-    <label class="subtitle-2 gray-2">Video</label>
+  <div *ngIf="topic.videolink && topic.videolink !=='magiclink' && topic.videolink.indexOf('trailhead') == -1" class="text-center">
     <div [innerHtml]="iframeHtml" class="video-container ion-text-center" [ngClass]="{'desktop-view': !utils.isMobile()}"></div>
   </div>
+  <div *ngIf="topic.videolink && topic.videolink !=='magiclink' && topic.videolink.indexOf('trailhead') > 0">
+      <div [innerHtml]="iframeHtml" id="trailheadInner" [ngClass]="{'desktop-view': !utils.isMobile()}"></div>
+  </div>
 
-  <ng-container *ngIf="topic.content">
+
+  <ng-container *ngIf="topic.content  && topic.videolink.indexOf('trailhead') == -1">
     <ion-card class="background-white practera-card">
       <ion-card-content class="body-1 black" [innerHtml]="topic.content"></ion-card-content>
     </ion-card>
