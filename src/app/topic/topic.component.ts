@@ -43,7 +43,6 @@ export class TopicComponent extends RouterEnter {
   isLoadingPreview = false;
   askForMarkAsDone: boolean;
   redirecting = false;
-  player;
 
   constructor(
     private topicService: TopicService,
