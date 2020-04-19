@@ -94,15 +94,16 @@ export class TopicComponent extends RouterEnter {
     }
     this._getTopic();
     this._getTopicProgress();
+    // convert other brand video players to custom player.
     setTimeout(() => {
-      const players = Array.from(document.querySelectorAll('#video')).map(p => console.log('map element - ', p));
-      const videoEle = this.document.getElementById('video');
-      console.log('normal element - ', videoEle);
-      this.player = new Plyr(videoEle, {ratio: '16:9'});
-      videoEle.classList.add('topic-video');
-      if (!this.utils.isMobile()) {
-        videoEle.classList.add('desktop-view');
-      }
+      Array.from(this.document.querySelectorAll('#video')).map(player => {
+        // tslint:disable-next-line:no-unused-expression
+        new Plyr(player as HTMLElement, {ratio: '16:9'});
+        player.classList.add('topic-video');
+        if (!this.utils.isMobile()) {
+          player.classList.add('desktop-view');
+        }
+      });
     // tslint:disable-next-line:align
     }, 2000);
     setTimeout(() => this.askForMarkAsDone = true, 15000);
@@ -119,7 +120,7 @@ export class TopicComponent extends RouterEnter {
           this.topic = topic;
           this.loadingTopic = false;
           if ( topic.videolink ) {
-            this.iframeHtml = this.embedService.embed(this.topic.videolink, { attr: { class: !this.utils.isMobile() ? 'topic-video desktop-view' : 'topic-video' }});
+            this.iframeHtml = this.embedService.embed(this.topic.videolink);
           }
           this.newRelic.setPageViewName(`Topic ${this.topic.title} ID: ${this.topic.id}`);
         },
