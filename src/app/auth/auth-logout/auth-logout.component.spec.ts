@@ -1,9 +1,12 @@
 import { AuthLogoutComponent } from './auth-logout.component';
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { async, ComponentFixture, TestBed, fakeAsync } from '@angular/core/testing';
 import { AuthService } from '../auth.service';
-import { Router, ActivatedRoute, convertToParamMap } from '@angular/router';
+import { Router, ActivatedRoute, convertToParamMap, Params } from '@angular/router';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
-import { MockNewRelicService } from '@testing/mocked.service';
+import { MockNewRelicService, MockRouter } from '@testing/mocked.service';
+import { Observable, of } from 'rxjs';
+import { RouterTestingModule } from '@angular/router/testing';
+import { doesNotReject } from 'assert';
 
 describe('AuthLogoutComponent', () => {
     let component: AuthLogoutComponent;
@@ -17,32 +20,30 @@ describe('AuthLogoutComponent', () => {
     beforeEach(async(() => {
         TestBed.configureTestingModule({
             declarations: [AuthLogoutComponent],
+            imports: [RouterTestingModule],
             providers: [
 
                 {
                     provide: AuthService,
                     useValue: jasmine.createSpyObj('AuthService', ['logout'])
                 },
-                {
-                    provide: Router,
-                    useValue: {
-                        navigate: jasmine.createSpy('navigate')
-                    }
-                },
+
                 {
                     provide: NewRelicService,
                     useClass: MockNewRelicService
                 },
                 {
-                    provide: ActivatedRoute,
+                    provide: ActivatedRoute, 
                     useValue: {
-                        snapshot: {
-                            paramMap: convertToParamMap({
-                                params: 'abc'
-                            })
+                        useValue: {
+                            snapshot: {
+                                paramMap: convertToParamMap({
+                                    params: of({ t: 1 })
+                                })
+                            }
                         }
                     }
-                },
+                }
             ],
         }).compileComponents();
     }));
@@ -56,16 +57,18 @@ describe('AuthLogoutComponent', () => {
         newRelicSpy = TestBed.inject(NewRelicService) as jasmine.SpyObj<NewRelicService>;
     });
 
+
     it('should create', () => {
         expect(component).toBeDefined();
     });
 
-    it('when testing onEnter() should call auth Service logout', () => {
-        const params = {abc: 'abcv'};
+    it('when testing onEnter() and there is no route param should call auth Service logout', fakeAsync(() => {
+        const params =  of({ t: 1 });
+        routeSpy.snapshot.paramMap.get = jasmine.createSpy().and.callFake(key => params[key]);
+        fixture.detectChanges();
         component.onEnter();
         expect(newRelicSpy.setPageViewName).toHaveBeenCalledWith('logout');
-        routeSpy.snapshot.paramMap.get = jasmine.createSpy().and.callFake(key => params[key]);
         authSpy.logout.and.returnValue({});
         expect(authSpy.logout.calls.count()).toBe(1);
-    });
+    }));
 });
