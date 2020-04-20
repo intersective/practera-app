@@ -6,7 +6,9 @@ import { NewRelicService } from '@shared/new-relic/new-relic.service';
 import { MockNewRelicService } from '@testing/mocked.service';
 import { Observable, of } from 'rxjs';
 import { RouterTestingModule } from '@angular/router/testing';
+import { doesNotReject } from 'assert';
 import { ActivatedRouteStub } from '@testing/activated-route-stub';
+
 describe('AuthLogoutComponent', () => {
     let component: AuthLogoutComponent;
     let fixture: ComponentFixture<AuthLogoutComponent>;
