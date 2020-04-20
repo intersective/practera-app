@@ -38,6 +38,9 @@ export class HomeComponent implements OnDestroy, OnInit {
   achievements: Array<Achievement>;
   progressConfig: any;
   loadingAchievements = true;
+  currentProgramName = '';
+  currentProgramImage = '';
+  cdn = 'https://cdn.filestackcontent.com/resize=fit:crop,height:';
 
   constructor(
     private intercom: Intercom,
@@ -98,6 +101,9 @@ export class HomeComponent implements OnDestroy, OnInit {
     this.loadingProgress = true;
     this.achievements = [];
     this.loadingAchievements = true;
+    this.currentProgramName = this.storage.getUser().programName;
+    this.currentProgramImage = this._getCurrentProgramImage();
+
   }
 
   onEnter() {
@@ -280,4 +286,15 @@ export class HomeComponent implements OnDestroy, OnInit {
     }
   }
 
+  private _getCurrentProgramImage () {
+    if (!this.utils.isEmpty(this.storage.getUser().programImage)) {
+      let imageheight = 200;
+      const imageId = this.storage.getUser().programImage.split('/').pop();
+      // if (!this.utils.isMobile()) {
+      //   imagewidth = 400;
+      // }
+      return `${this.cdn}${imageheight}/${imageId}`;
+    }
+    return '';
+  }
 }
