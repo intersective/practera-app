@@ -7,6 +7,7 @@ import { MockNewRelicService, MockRouter } from '@testing/mocked.service';
 import { Observable, of } from 'rxjs';
 import { RouterTestingModule } from '@angular/router/testing';
 import { doesNotReject } from 'assert';
+import { ActivatedRouteStub } from '@testing/activated-route-stub';
 
 describe('AuthLogoutComponent', () => {
     let component: AuthLogoutComponent;
@@ -33,16 +34,17 @@ describe('AuthLogoutComponent', () => {
                     useClass: MockNewRelicService
                 },
                 {
-                    provide: ActivatedRoute, 
-                    useValue: {
-                        useValue: {
-                            snapshot: {
-                                paramMap: convertToParamMap({
-                                    params: of({ t: 1 })
-                                })
-                            }
-                        }
-                    }
+                    provide: ActivatedRoute,
+                    useValue: new ActivatedRouteStub({ t: 1 })
+                    /*
+                      compare the solution above with previous code below
+                      useValue: {
+                      snapshot: {
+                          paramMap: convertToParamMap({
+                              params: of({ t: 1 })
+                          })
+                      }
+                    }*/
                 }
             ],
         }).compileComponents();
