@@ -1,13 +1,12 @@
 import { AuthLogoutComponent } from './auth-logout.component';
 import { async, ComponentFixture, TestBed, fakeAsync } from '@angular/core/testing';
 import { AuthService } from '../auth.service';
-import { Router, ActivatedRoute, convertToParamMap, Params } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
-import { MockNewRelicService, MockRouter } from '@testing/mocked.service';
+import { MockNewRelicService } from '@testing/mocked.service';
 import { Observable, of } from 'rxjs';
 import { RouterTestingModule } from '@angular/router/testing';
-import { doesNotReject } from 'assert';
-
+import { ActivatedRouteStub } from '@testing/activated-route-stub';
 describe('AuthLogoutComponent', () => {
     let component: AuthLogoutComponent;
     let fixture: ComponentFixture<AuthLogoutComponent>;
@@ -33,16 +32,8 @@ describe('AuthLogoutComponent', () => {
                     useClass: MockNewRelicService
                 },
                 {
-                    provide: ActivatedRoute, 
-                    useValue: {
-                        useValue: {
-                            snapshot: {
-                                paramMap: convertToParamMap({
-                                    params: of({ t: 1 })
-                                })
-                            }
-                        }
-                    }
+                    provide: ActivatedRoute,
+                    useValue: new ActivatedRouteStub({ t: 1 })
                 }
             ],
         }).compileComponents();
