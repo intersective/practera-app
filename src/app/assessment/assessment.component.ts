@@ -227,6 +227,7 @@ export class AssessmentComponent extends RouterEnter {
           this.newRelic.setPageViewName(`Assessment: ${this.assessment.name} ID: ${this.id}`);
           this.populateQuestionsForm();
           this.loadingAssessment = false;
+          this._handleSubmissionData(result.submission);
           // display pop up if it is team assessment and user is not in team
           if (this.doAssessment && this.assessment.isForTeam && !this.storage.getUser().teamId) {
             return this.notificationService.alert({
@@ -246,8 +247,6 @@ export class AssessmentComponent extends RouterEnter {
               ]
             });
           }
-
-          this._handleSubmissionData(result.submission);
           this._handleReviewData(result.review);
         },
         error => {
