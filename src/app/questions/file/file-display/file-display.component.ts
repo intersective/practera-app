@@ -20,11 +20,11 @@ export class FileDisplayComponent implements OnInit, OnChanges {
 
   ngOnInit() {
     if (this.file && this.file.workflows) {
-      this._updateWorkflowStatus();
+      this.updateWorkflowStatus();
     }
   }
 
-  private _updateWorkflowStatus(file?) {
+  updateWorkflowStatus(file?) {
     this._resetUILogic();
     // don't do virus detection on development environment
     if (!environment.production) {
@@ -60,7 +60,7 @@ export class FileDisplayComponent implements OnInit, OnChanges {
 
   ngOnChanges(change: SimpleChanges) {
     if (change.file.currentValue && change.file.currentValue.workflows) {
-      this._updateWorkflowStatus(change.file.currentValue);
+      this.updateWorkflowStatus(change.file.currentValue);
     }
   }
 
