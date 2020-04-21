@@ -79,9 +79,7 @@ export class AssessmentComponent extends RouterEnter {
   doReview = false;
 
   feedbackReviewed = false;
-  loadingFeedbackReviewed: boolean;
   loadingAssessment = true;
-  loadingSubmission = true;
   questionsForm = new FormGroup({});
   submitting: boolean;
   submitted: boolean;
@@ -697,7 +695,7 @@ export class AssessmentComponent extends RouterEnter {
   }
 
   hasFooter() {
-    return this.loadingSubmission || this.loadingFeedbackReviewed || this.doAssessment || this.doReview || this.footerText();
+    return this.doAssessment || this.doReview || this.footerText();
   }
 
   /**
