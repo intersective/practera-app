@@ -1,12 +1,18 @@
 <div class="app-home" [ngStyle]="utils.isMobile() ? {} : {padding: '1em', height: '100%'}">
-  <div *ngIf="currentProgramImage" class="ion-text-center ion-padding">
-    <img [src]="currentProgramImage" alt="{{ currentProgramName }}"/>
-  </div>
-
-  <div class="ion-text-center ion-padding">
-    <app-circle-progress [data]="progressConfig" [type]="'large'" [loading]="loadingProgress"></app-circle-progress>
-  </div>
-
+  <ion-row>
+    <ion-col>
+      <div *ngIf="currentProgramImage" class="ion-text-center ion-padding">
+        <img [src]="currentProgramImage" alt="{{ currentProgramName }}"/>
+      </div>
+    </ion-col>
+  </ion-row>
+  <ion-row>
+    <ion-col>
+      <div class="ion-text-center ion-padding">
+        <app-circle-progress [data]="progressConfig" [type]="'large'" [loading]="loadingProgress"></app-circle-progress>
+      </div>
+    </ion-col>
+  </ion-row>
   <ng-container *ngTemplateOutlet="badges"></ng-container>
 
   <ng-container *ngIf="utils.isMobile(); else notificationsDesktop">

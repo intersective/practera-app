@@ -5,17 +5,15 @@
         <ion-icon class="icon-backward ion-margin-start" name="arrow-back" (click)="back()" color="primary" slot="icon-only"></ion-icon>
       </ion-button>
     </ion-buttons>
-
-    <ion-title class="ion-text-center" [ngClass]="{
-      'subtitle-2': !utils.isMobile()
-    }">Topic</ion-title>
+    <h3 class="navtitle ion-text-center">{{topic.title}}</h3>
+    <!-- <ion-title class="ion-text-center">Topic</ion-title> -->
   </ion-toolbar>
 </ion-header>
 <ion-content class="ion-padding app-topic" color="light" [ngClass]="{'ion-content-absolute-with-footer': !utils.isMobile()}">
   <div class="ion-text-center ion-margin-top" *ngIf="loadingTopic">
     <ion-spinner></ion-spinner>
   </div>
-  <h3 class="headline-4 ion-text-center">{{topic.title}}</h3>
+  <!-- <h3 class="headline-6 ion-text-center">{{topic.title}}</h3> -->
   <div *ngIf="topic.videolink && topic.videolink !=='magiclink' && topic.videolink.indexOf('trailhead') == -1" class="text-center">
     <div [innerHtml]="iframeHtml" class="video-container ion-text-center" [ngClass]="{'desktop-view': !utils.isMobile()}"></div>
   </div>

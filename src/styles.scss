@@ -465,8 +465,17 @@ for videos in topics
     transform: translate(-50%, -50%);
   }
 }
+.navtitle {
+  font-size: 20px!important;
+    line-height: 26px!important;
+    letter-spacing: .15px!important;
+    font-weight: var(--font-weight-medium)!important;
+    margin: auto;
+}
 
-
+.submitter {
+  background-color: #fffaaa;
+}
 
   /* salesforce */
   #trailheadInner .th-icon--in-progress {
