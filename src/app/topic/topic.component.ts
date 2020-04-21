@@ -1,5 +1,6 @@
 import { TopicService, Topic } from './topic.service';
-import { Component, OnInit, NgZone, Input, Output, EventEmitter } from '@angular/core';
+import { Component, NgZone, Input, Output, EventEmitter, Inject } from '@angular/core';
+import { DOCUMENT } from '@angular/common';
 import { EmbedVideoService } from 'ngx-embed-video';
 import { Router, ActivatedRoute } from '@angular/router';
 import { FilestackService } from '@shared/filestack/filestack.service';
@@ -11,6 +12,7 @@ import { ActivityService, Task } from '../activity/activity.service';
 import { SharedService } from '@services/shared.service';
 import { Subscription, Observable } from 'rxjs';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
+import * as Plyr from 'plyr';
 
 @Component({
   selector: 'app-topic',
@@ -54,7 +56,8 @@ export class TopicComponent extends RouterEnter {
     private activityService: ActivityService,
     private sharedService: SharedService,
     private ngZone: NgZone,
-    private newRelic: NewRelicService
+    private newRelic: NewRelicService,
+    @Inject(DOCUMENT) private readonly document: Document
   ) {
     super(router);
   }
@@ -90,6 +93,18 @@ export class TopicComponent extends RouterEnter {
     }
     this._getTopic();
     this._getTopicProgress();
+    // convert other brand video players to custom player.
+    setTimeout(() => {
+      this.utils.each(this.document.querySelectorAll('.plyr__video-embed'), player => {
+        // tslint:disable-next-line:no-unused-expression
+        new Plyr(player as HTMLElement, {ratio: '16:9'});
+        player.classList.add('topic-video');
+        if (!this.utils.isMobile()) {
+          player.classList.add('desktop-view');
+        }
+      });
+    // tslint:disable-next-line:align
+    }, 2000);
     setTimeout(() => this.askForMarkAsDone = true, 15000);
   }
 
@@ -104,7 +119,7 @@ export class TopicComponent extends RouterEnter {
           this.topic = topic;
           this.loadingTopic = false;
           if ( topic.videolink ) {
-            this.iframeHtml = this.embedService.embed(this.topic.videolink, { attr: { class: !this.utils.isMobile() ? 'topic-video desktop-view' : 'topic-video' }});
+            this.iframeHtml = this.embedService.embed(this.topic.videolink);
           }
           this.newRelic.setPageViewName(`Topic ${this.topic.title} ID: ${this.topic.id}`);
         },
