@@ -95,12 +95,26 @@ export class TopicComponent extends RouterEnter {
     this._getTopicProgress();
     // convert other brand video players to custom player.
     setTimeout(() => {
-      this.utils.each(this.document.querySelectorAll('.plyr__video-embed'), player => {
+      this.utils.each(this.document.querySelectorAll('.plyr__video-embed'), embedVideo => {
         // tslint:disable-next-line:no-unused-expression
-        new Plyr(player as HTMLElement, {ratio: '16:9'});
-        player.classList.add('topic-video');
+        new Plyr(embedVideo as HTMLElement, {ratio: '16:9'});
+        // if we have video tag, plugin will adding div tags to wrap video tag and main div contain .plyr css class.
+        // so we need to add topic-video and desktop-view to that div to load video properly .
+        if (embedVideo.nodeName === 'VIDEO') {
+          embedVideo.classList.remove('plyr__video-embed');
+          this.utils.each(this.document.querySelectorAll('.plyr'), videoPlayer => {
+            if (!videoPlayer.classList.contains('topic-video', 'desktop-view')) {
+              videoPlayer.classList.add('topic-video');
+              if (!this.utils.isMobile()) {
+                videoPlayer.classList.add('desktop-view');
+              }
+            }
+          });
+          return;
+        }
+        embedVideo.classList.add('topic-video');
         if (!this.utils.isMobile()) {
-          player.classList.add('desktop-view');
+          embedVideo.classList.add('desktop-view');
         }
       });
     // tslint:disable-next-line:align
