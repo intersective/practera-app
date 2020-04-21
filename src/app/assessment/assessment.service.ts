@@ -118,7 +118,7 @@ export class AssessmentService {
     return this.request.postGraphQL(
       this.utils.graphQLQueryStringFormatter(
         `"{
-          assessment(id:`+ id +`,reviewer:`+ (action === 'review') +`,activity_id:`+ activityId +`) {
+          assessment(id:` + id + `,reviewer:` + (action === 'review') + `,activity_id:` + activityId + `) {
             name type description due_date is_team pulse_check
             groups{
               name description
@@ -132,7 +132,7 @@ export class AssessmentService {
                 }
               }
             }
-            submissions(context_id:`+ contextId +`) {
+            submissions(context_id:` + contextId + `) {
               id status completed modified locked
               submitter {
                 name image
@@ -172,9 +172,12 @@ export class AssessmentService {
       isOverdue: data.assessment.due_date ? this.utils.timeComparer(data.assessment.due_date) < 0 : false,
       pulseCheck: data.assessment.pulse_check,
       groups: []
-    }
+    };
     data.assessment.groups.forEach(eachGroup => {
       const questions: Question[] = [];
+      if (!eachGroup.questions) {
+        return;
+      }
       eachGroup.questions.forEach(eachQuestion => {
         this.questions[eachQuestion.id] = eachQuestion;
         const question: Question = {
@@ -198,7 +201,7 @@ export class AssessmentService {
               choices.push({
                 id: eachChoice.id,
                 name: eachChoice.name,
-                explanation: eachChoice.explanation,
+                explanation: eachChoice.explanation || null,
               });
               if (eachChoice.description) {
                 info += '<p>' + eachChoice.name + ' - ' + eachChoice.description + '</p>';
@@ -327,6 +330,9 @@ export class AssessmentService {
         }
       });
     }
+    if (!explanation) {
+      return submission;
+    }
     // put the explanation in the submission
     const thisExplanation = explanation.replace(/text-align: center;/gi, 'text-align: center; text-align: -webkit-center;');
     submission.answers[questionId].explanation = this.sanitizer.bypassSecurityTrustHtml(thisExplanation);
@@ -389,31 +395,6 @@ export class AssessmentService {
     return of({
       success: false
     });
-  }
-
-  getFeedbackReviewed(submissionId) {
-    return this.request.get(api.get.todoitem, {params: {
-      project_id: this.storage.getUser().projectId,
-      identifier: 'AssessmentSubmission-' + submissionId
-    }})
-      .pipe(map(response => {
-        if (response.success && !this.utils.isEmpty(response.data)) {
-          return this._normaliseFeedbackReviewed(response.data);
-        } else {
-          return false;
-        }
-      })
-    );
-  }
-
-  private _normaliseFeedbackReviewed(data) {
-    // In API response, 'data' is an array of todo items.
-    // Since we passed "identifier", there should be just one in the array. That's why we use data[0]
-    if (!Array.isArray(data) ||
-        !this.utils.has(data[0], 'is_done')) {
-      return this.request.apiResponseFormatError('TodoItem format error');
-    }
-    return data[0].is_done;
   }
 
   saveFeedbackReviewed(submissionId) {
