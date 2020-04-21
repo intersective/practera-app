@@ -95,7 +95,7 @@ export class TopicComponent extends RouterEnter {
     this._getTopicProgress();
     // convert other brand video players to custom player.
     setTimeout(() => {
-      Array.from(this.document.querySelectorAll('#video')).map(player => {
+      this.utils.each(this.document.querySelectorAll('.plyr__video-embed'), player => {
         // tslint:disable-next-line:no-unused-expression
         new Plyr(player as HTMLElement, {ratio: '16:9'});
         player.classList.add('topic-video');
