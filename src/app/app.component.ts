@@ -10,6 +10,7 @@ import { VersionCheckService } from '@services/version-check.service';
 import { environment } from '@environments/environment';
 import { PusherService } from '@shared/pusher/pusher.service';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-root',
@@ -26,7 +27,8 @@ export class AppComponent implements OnInit {
     private versionCheckService: VersionCheckService,
     private pusherService: PusherService,
     private ngZone: NgZone,
-    private newRelic: NewRelicService
+    private newRelic: NewRelicService,
+    private http: HttpClient
     // private splashScreen: SplashScreen,
     // private statusBar: StatusBar
   ) {
@@ -49,6 +51,7 @@ export class AppComponent implements OnInit {
   ngOnInit() {
     this.configVerification();
     this.sharedService.onPageLoad();
+    this.getIpLocation();
 
     // @TODO: need to build a new micro service to get the config and serve the custom branding config from a microservice
     // Get the custom branding info and update the theme color if needed
@@ -133,6 +136,21 @@ export class AppComponent implements OnInit {
       // initialise Pusher
       await this.pusherService.initialise();
     });
+  }
+
+  /**
+   * Get the user's current location from IP
+   */
+  getIpLocation() {
+    this._ipAPI().subscribe(res => {
+      if (res.status === 'success') {
+        this.storage.setCountry(res.country);
+      }
+    });
+  }
+
+  private _ipAPI(): Observable<any> {
+    return this.http.get('http://ip-api.com/json');
   }
 
 }
