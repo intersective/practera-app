@@ -191,13 +191,13 @@ export class UtilsService {
     // if no compareWith provided, compare with today
     // and create tomorrow and yesterday from it.
     const compareDate = moment((compareWith) ? new Date(this.iso8601Formatter(compareWith)) : new Date());
-    const TOMORROW = compareDate.clone().add(1, 'day').startOf('day');
-    const YESTERDAY = compareDate.clone().subtract(1, 'day').startOf('day');
+    const tomorrow = compareDate.clone().add(1, 'day').startOf('day');
+    const yesterday = compareDate.clone().subtract(1, 'day').startOf('day');
 
-    if (date.isSame(YESTERDAY, 'd')) {
+    if (date.isSame(yesterday, 'd')) {
       return 'Yesterday';
     }
-    if (date.isSame(TOMORROW, 'd')) {
+    if (date.isSame(tomorrow, 'd')) {
       return 'Tomorrow';
     }
     if (date.isSame(compareDate, 'd')) {
@@ -246,25 +246,26 @@ export class UtilsService {
    * @param {Date} date targetted date
    */
   dateFormatter(date: Date): string {
-    const today = new Date();
-    let formattedDate = new Intl.DateTimeFormat('en-GB', {
+    const dateToFormat = moment(date);
+    const today = moment(new Date());
+    const tomorrow = today.clone().add(1, 'day').startOf('day');
+    const yesterday = today.clone().subtract(1, 'day').startOf('day');
+
+    if (dateToFormat.isSame(yesterday, 'd')) {
+      return 'Yesterday';
+    }
+    if (dateToFormat.isSame(tomorrow, 'd')) {
+      return 'Tomorrow';
+    }
+    if (dateToFormat.isSame(today, 'd')) {
+      return 'Today';
+    }
+
+    return new Intl.DateTimeFormat('en-GB', {
       month: 'short',
       day: 'numeric',
       year: 'numeric'
-    }).format(date);
-
-    if (date.getFullYear() === today.getFullYear() && date.getMonth() === today.getMonth()) {
-      if (date.getDate() === today.getDate() - 1) {
-        formattedDate = 'Yesterday';
-      }
-      if (date.getDate() === today.getDate()) {
-        formattedDate = 'Today';
-      }
-      if (date.getDate() === today.getDate() + 1) {
-        formattedDate = 'Tomorrow';
-      }
-    }
-    return formattedDate;
+    }).format(dateToFormat.toDate());
   }
 
   /**
