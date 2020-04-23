@@ -14,11 +14,6 @@ import { DomSanitizer } from '@angular/platform-browser';
  * @type {Object}
  */
 const api = {
-  get: {
-    assessment: 'api/assessments.json',
-    submissions: 'api/submissions.json',
-    todoitem: 'api/v2/motivations/todo_item/list.json'
-  },
   post: {
     submissions: 'api/assessment_submissions.json',
     reviews: 'api/feedback_submissions.json',
