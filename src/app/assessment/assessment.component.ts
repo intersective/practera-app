@@ -360,6 +360,7 @@ export class AssessmentComponent extends RouterEnter {
     this.newRelic.actionText('Back to previous page.');
 
     if (this.action === 'assessment'
+      && this.submission
       && this.submission.status === 'published'
       && !this.feedbackReviewed) {
       return this.notificationService.alert({
@@ -551,7 +552,7 @@ export class AssessmentComponent extends RouterEnter {
     if (this.doReview) {
       assessment = Object.assign(assessment, {
         review_id: this.review.id,
-        submission_id: this.submission.id,
+        submission_id: this.submission ? this.submission.id : 0,
         in_progress: (saveInProgress) ? true : false,
       });
 
@@ -578,7 +579,7 @@ export class AssessmentComponent extends RouterEnter {
       assessment,
       answers,
       this.action,
-      this.submission.id
+      this.submission ? this.submission.id : 0
     ).subscribe(
       result => {
         if (saveInProgress) {
