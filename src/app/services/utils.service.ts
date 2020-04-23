@@ -4,6 +4,7 @@ import { DOCUMENT } from '@angular/common';
 import { Observable, Subject, BehaviorSubject } from 'rxjs';
 import { map, filter } from 'rxjs/operators';
 import { Platform } from '@ionic/angular';
+import * as moment from 'moment';
 
 // @TODO: enhance Window reference later, we shouldn't refer directly to browser's window object like this
 declare var window: any;
@@ -186,29 +187,30 @@ export class UtilsService {
     if (!time) {
       return '';
     }
+    const date = moment(new Date(this.iso8601Formatter(time)));
     // if no compareWith provided, compare with today
-    const compareDate = (compareWith) ? new Date(this.iso8601Formatter(compareWith)) : new Date();
+    // and create tomorrow and yesterday from it.
+    const compareDate = moment((compareWith) ? new Date(this.iso8601Formatter(compareWith)) : new Date());
+    const tomorrow = compareDate.clone().add(1, 'day').startOf('day');
+    const yesterday = compareDate.clone().subtract(1, 'day').startOf('day');
 
-    const date = new Date(this.iso8601Formatter(time));
-    if (date.getFullYear() === compareDate.getFullYear() && date.getMonth() === compareDate.getMonth()) {
-      if (date.getDate() === compareDate.getDate() - 1) {
-        return 'Yesterday';
-      }
-      if (date.getDate() === compareDate.getDate() + 1) {
-        return 'Tomorrow';
-      }
-      if (date.getDate() === compareDate.getDate()) {
-        return new Intl.DateTimeFormat('en-GB', {
-          hour12: true,
-          hour: 'numeric',
-          minute: 'numeric'
-        }).format(date);
-      }
+    if (date.isSame(yesterday, 'd')) {
+      return 'Yesterday';
+    }
+    if (date.isSame(tomorrow, 'd')) {
+      return 'Tomorrow';
+    }
+    if (date.isSame(compareDate, 'd')) {
+      return new Intl.DateTimeFormat('en-GB', {
+        hour12: true,
+        hour: 'numeric',
+        minute: 'numeric'
+      }).format(date.toDate());
     }
     return new Intl.DateTimeFormat('en-GB', {
       month: 'short',
       day: 'numeric'
-    }).format(date);
+    }).format(date.toDate());
   }
 
   /**
@@ -244,25 +246,26 @@ export class UtilsService {
    * @param {Date} date targetted date
    */
   dateFormatter(date: Date): string {
-    const today = new Date();
-    let formattedDate = new Intl.DateTimeFormat('en-GB', {
+    const dateToFormat = moment(date);
+    const today = moment(new Date());
+    const tomorrow = today.clone().add(1, 'day').startOf('day');
+    const yesterday = today.clone().subtract(1, 'day').startOf('day');
+
+    if (dateToFormat.isSame(yesterday, 'd')) {
+      return 'Yesterday';
+    }
+    if (dateToFormat.isSame(tomorrow, 'd')) {
+      return 'Tomorrow';
+    }
+    if (dateToFormat.isSame(today, 'd')) {
+      return 'Today';
+    }
+
+    return new Intl.DateTimeFormat('en-GB', {
       month: 'short',
       day: 'numeric',
       year: 'numeric'
-    }).format(date);
-
-    if (date.getFullYear() === today.getFullYear() && date.getMonth() === today.getMonth()) {
-      if (date.getDate() === today.getDate() - 1) {
-        formattedDate = 'Yesterday';
-      }
-      if (date.getDate() === today.getDate()) {
-        formattedDate = 'Today';
-      }
-      if (date.getDate() === today.getDate() + 1) {
-        formattedDate = 'Tomorrow';
-      }
-    }
-    return formattedDate;
+    }).format(dateToFormat.toDate());
   }
 
   /**
