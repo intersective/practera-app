@@ -15,7 +15,7 @@ export class RequestInterceptor implements HttpInterceptor {
   }
 
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    if (req.url.includes('ip-api.com')) {
+    if (req.url.includes('ipapi.co')) {
       return next.handle(req);
     }
     const apikey = this.storage.getUser().apikey;

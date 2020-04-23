@@ -111,14 +111,12 @@ export class SharedService {
    */
   getIpLocation() {
     this._ipAPI().subscribe(res => {
-      if (res.status === 'success') {
-        this.storage.setCountry(res.country);
-      }
+      this.storage.setCountry(res.country_name);
     });
   }
 
   private _ipAPI(): Observable<any> {
-    return this.http.get('http://ip-api.com/json');
+    return this.http.get('https://ipapi.co/json');
   }
 
 }
