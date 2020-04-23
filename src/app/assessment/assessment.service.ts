@@ -114,7 +114,7 @@ export class AssessmentService {
     public sanitizer: DomSanitizer,
   ) {}
 
-  getAssessment(id, action, activityId, contextId) {
+  getAssessment(id, action, activityId, contextId, submissionId?) {
     return this.request.postGraphQL(
       this.utils.graphQLQueryStringFormatter(
         `"{
@@ -132,7 +132,7 @@ export class AssessmentService {
                 }
               }
             }
-            submissions(context_id:` + contextId + `) {
+            submissions(` + (submissionId ? `id:` + submissionId : `context_id:` + contextId) + `) {
               id status completed modified locked
               submitter {
                 name image
