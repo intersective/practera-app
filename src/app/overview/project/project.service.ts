@@ -11,9 +11,6 @@ import { BrowserStorageService } from '@services/storage.service';
  * @type {Object}
  */
 const api = {
-  milestone: 'api/milestone.json',
-  activity: 'api/activities.json',
-  progress: 'api/v2/motivations/progress/list.json'
 };
 
 export interface Activity {
