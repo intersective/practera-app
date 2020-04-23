@@ -125,7 +125,7 @@ export class AssessmentService {
               questions{
                 id name description type is_required has_comment audience file_type
                 choices{
-                  id name explanation
+                  id name explanation description
                 }
                 team_members{
                   userId userName teamId
@@ -142,6 +142,7 @@ export class AssessmentService {
               }
               review {
                 id status modified
+                reviewer { name }
                 answers {
                   question_id answer comment
                 }
