@@ -218,7 +218,7 @@ export class AssessmentComponent extends RouterEnter {
     }
 
     // get assessment structure and populate the question form
-    this.assessmentService.getAssessment(this.id, this.action, this.activityId, this.contextId)
+    this.assessmentService.getAssessment(this.id, this.action, this.activityId, this.contextId, this.submissionId)
       .subscribe(
         result => {
           this.assessment = result.assessment;
