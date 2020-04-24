@@ -5,6 +5,7 @@ import { NotificationService } from '@shared/notification/notification.service';
 import { RequestService } from '@shared/request/request.service';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { NewRelicService } from '@shared/new-relic/new-relic.service';
 
 export interface Profile {
   contact_number: string;
@@ -30,7 +31,8 @@ export class SharedService {
     private storage: BrowserStorageService,
     private notification: NotificationService,
     private request: RequestService,
-    private http: HttpClient
+    private http: HttpClient,
+    private newrelic: NewRelicService
   ) {}
 
   // call this function on every page refresh and after switch program
@@ -110,9 +112,10 @@ export class SharedService {
    * Get the user's current location from IP
    */
   getIpLocation() {
-    this._ipAPI().subscribe(res => {
-      this.storage.setCountry(res.country_name);
-    });
+    this._ipAPI().subscribe(
+      res => this.storage.setCountry(res.country_name),
+      err => this.newrelic.noticeError(err)
+    );
   }
 
   private _ipAPI(): Observable<any> {
