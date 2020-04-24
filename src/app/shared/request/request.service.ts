@@ -6,6 +6,7 @@ import { catchError, tap, concatMap } from 'rxjs/operators';
 import { UtilsService } from '@services/utils.service';
 import { BrowserStorageService } from '@services/storage.service';
 import { environment } from '@environments/environment';
+import { NewRelicService } from '@shared/new-relic/new-relic.service';
 
 @Injectable({ providedIn: 'root' })
 export class DevModeService {
@@ -51,6 +52,7 @@ export class RequestService {
     private storage: BrowserStorageService,
     private router: Router,
     @Optional() config: RequestConfig,
+    private newrelic: NewRelicService,
     private devMode: DevModeService
   ) {
     if (config) {
@@ -229,7 +231,7 @@ export class RequestService {
       );
       this.router.navigate(['logout']);
     }
-
+    this.newrelic.noticeError(err);
     // if error.error is a html template error (when try to read remote version.txt)
     if (typeof error.error === 'string' && error.error.indexOf('<!DOCTYPE html>') !== -1) {
       return throwError(error.message);
