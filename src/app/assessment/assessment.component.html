@@ -26,18 +26,18 @@
   <p class="due-date assessment subtitle-1 gray-2 ion-text-center" [ngClass]="{'over': assessment.isOverdue}" *ngIf="doAssessment">
     {{ this.sharedService.dueDateFormatter(assessment.dueDate) }}
   </p>
-  <div *ngIf="!doAssessment && submission.submitterName && !submission.isLocked" class="review-submitter ion-text-left">
+  <div *ngIf="!doAssessment && submission && submission.submitterName && !submission.isLocked" class="review-submitter ion-text-left">
     <p class="subtitle-1">
       Submitted by {{ submission.submitterName }}
     </p>
   </div>
-  <div *ngIf="submission.reviewerName" class="review-submitter ion-text-left">
+  <div *ngIf="submission && submission.reviewerName && review" class="review-submitter ion-text-left">
     <p class="subtitle-1 gray-3">
-      Reviewed by {{ submission.reviewerName }} {{review.status}}
+      Reviewed by {{ submission.reviewerName }} {{ review.status }}
     </p>
   </div>
 
-  <ion-list *ngIf="submission.isLocked" class="member-detail-container no-bg" lines="none">
+  <ion-list *ngIf="submission && submission.isLocked" class="member-detail-container no-bg" lines="none">
     <ion-item lines="none">
       <ion-avatar slot="start">
         <img [src]="submission.submitterImage ? submission.submitterImage : 'https://my.practera.com/img/user-512.png'">
@@ -68,15 +68,15 @@
               <app-description class="q-description" *ngIf="question.description" [content]="question.description"></app-description>
             </ion-text>
           </ion-card-header>
-          <div class="ion-text-center ion-margin-bottom" *ngIf="loadingSubmission; else submissionTpl">
+          <div class="ion-text-center ion-margin-bottom" *ngIf="loadingAssessment; else submissionTpl">
             <ion-spinner></ion-spinner>
           </div>
           <ng-template #submissionTpl>
             <ion-card-content [ngSwitch]="question.type" class="q-content ion-margin-top ion-padding-horizontal" color="light">
               <p><i *ngIf="!doAssessment &&
                 (
-                  (!question.reviewerOnly && !submission.answers[question.id]) ||
-                  (!doReview && question.reviewerOnly && !review.answers[question.id])
+                  (!question.reviewerOnly && submission && !submission.answers[question.id]) ||
+                  (!doReview && question.reviewerOnly && review && !review.answers[question.id])
                 )"
                 >No Answer Submitted</i></p>
 
@@ -85,10 +85,10 @@
                 [question]="question"
                 [doAssessment]="doAssessment"
                 [doReview]="doReview"
-                [submission]="(submission.answers && submission.answers[question.id]) ? submission.answers[question.id] : {}"
-                [review]="(review.answers && review.answers[question.id]) ? review.answers[question.id] : {}"
-                [reviewStatus]="review.status"
-                [submissionStatus]= "submission.status"
+                [submission]="(submission && submission.answers && submission.answers[question.id]) ? submission.answers[question.id] : {}"
+                [review]="(review && review.answers && review.answers[question.id]) ? review.answers[question.id] : {}"
+                [reviewStatus]="review ? review.status : ''"
+                [submissionStatus]="submission ? submission.status : ''"
                 [formControlName]="'q-' + question.id"
                 [control]="questionsForm.controls['q-' + question.id]"
                 (saveProgress)="submit(true)"
@@ -99,10 +99,10 @@
                 [question]="question"
                 [doAssessment]="doAssessment"
                 [doReview]="doReview"
-                [submission]="(submission.answers && submission.answers[question.id]) ? submission.answers[question.id] : {}"
-                [review]="(review.answers && review.answers[question.id]) ? review.answers[question.id] : {}"
-                [reviewStatus]="review.status"
-                [submissionStatus]= "submission.status"
+                [submission]="(submission && submission.answers && submission.answers[question.id]) ? submission.answers[question.id] : {}"
+                [review]="(review && review.answers && review.answers[question.id]) ? review.answers[question.id] : {}"
+                [reviewStatus]="review ? review.status : ''"
+                [submissionStatus]="submission ? submission.status : ''"
                 [formControlName]="'q-' + question.id"
                 [control]="questionsForm.controls['q-' + question.id]"
                 (saveProgress)="submit(true)"
@@ -113,10 +113,10 @@
                 [question]="question"
                 [doAssessment]="doAssessment"
                 [doReview]="doReview"
-                [submission]="(submission.answers && submission.answers[question.id]) ? submission.answers[question.id] : {}"
-                [review]="(review.answers && review.answers[question.id]) ? review.answers[question.id] : {}"
-                [reviewStatus]="review.status"
-                [submissionStatus]= "submission.status"
+                [submission]="(submission && submission.answers && submission.answers[question.id]) ? submission.answers[question.id] : {}"
+                [review]="(review && review.answers && review.answers[question.id]) ? review.answers[question.id] : {}"
+                [reviewStatus]="review ? review.status : ''"
+                [submissionStatus]="submission ? submission.status : ''"
                 [formControlName]="'q-' + question.id"
                 [control]="questionsForm.controls['q-' + question.id]"
                 (saveProgress)="submit(true)"
@@ -127,10 +127,10 @@
                 [question]="question"
                 [doAssessment]="doAssessment"
                 [doReview]="doReview"
-                [submission]="(submission.answers && submission.answers[question.id]) ? submission.answers[question.id] : {}"
-                [review]="(review.answers && review.answers[question.id]) ? review.answers[question.id] : {}"
-                [reviewStatus]="review.status"
-                [submissionStatus]= "submission.status"
+                [submission]="(submission && submission.answers && submission.answers[question.id]) ? submission.answers[question.id] : {}"
+                [review]="(review && review.answers && review.answers[question.id]) ? review.answers[question.id] : {}"
+                [reviewStatus]="review ? review.status : ''"
+                [submissionStatus]="submission ? submission.status : ''"
                 [formControlName]="'q-' + question.id"
                 [control]="questionsForm.controls['q-' + question.id]"
                 (saveProgress)="submit(true)"
@@ -141,10 +141,10 @@
                 [question]="question"
                 [doAssessment]="doAssessment"
                 [doReview]="doReview"
-                [submission]="(submission.answers && submission.answers[question.id]) ? submission.answers[question.id] : {}"
-                [review]="(review.answers && review.answers[question.id]) ? review.answers[question.id] : {}"
-                [reviewStatus]="review.status"
-                [submissionStatus]= "submission.status"
+                [submission]="(submission && submission.answers && submission.answers[question.id]) ? submission.answers[question.id] : {}"
+                [review]="(review && review.answers && review.answers[question.id]) ? review.answers[question.id] : {}"
+                [reviewStatus]="review ? review.status : ''"
+                [submissionStatus]="submission ? submission.status : ''"
                 [formControlName]="'q-' + question.id"
                 [control]="questionsForm.controls['q-' + question.id]"
                 (saveProgress)="submit(true)"
@@ -165,12 +165,12 @@
   *ngIf="hasFooter()">
   <ion-toolbar class="ion-text-center" style="height: 100%">
     <ion-spinner
-      *ngIf="loadingSubmission || loadingFeedbackReviewed"
+      *ngIf="loadingAssessment"
       name="dots"
       class="vertical-middle ion-text-center"
       style="width: 100%"
     ></ion-spinner>
-    <ng-container *ngIf="!loadingSubmission && !loadingFeedbackReviewed">
+    <ng-container *ngIf="!loadingAssessment">
       <ion-button
         *ngIf="(doAssessment || doReview) && !submitting && !submitted"
         id="btn-submit"
