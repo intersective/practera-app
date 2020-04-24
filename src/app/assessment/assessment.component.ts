@@ -415,7 +415,7 @@ export class AssessmentComponent extends RouterEnter {
    * When user click the continue button
    */
   async clickBtnContinue() {
-    if (this.submission.status === 'published' && !this.feedbackReviewed) {
+    if (this.submission && this.submission.status === 'published' && !this.feedbackReviewed) {
       await this.markReviewFeedbackAsRead();
     }
     this.goToNextTask();
