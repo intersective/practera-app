@@ -11,7 +11,9 @@ export const environment = {
     s3Config: {
       location: 's3',
       container: '<CUSTOM_S3_BUCKET>',
+      containerChina: '<CUSTOM_S3_BUCKET_CHINA>',
       region: '<CUSTOM_AWS_REGION>',
+      regionChina: '<CUSTOM_AWS_REGION_CHINA>',
       paths: {
         any: '<CUSTOM_PATH_ANY>',
         image: '<CUSTOM_PATH_IMAGE>',
