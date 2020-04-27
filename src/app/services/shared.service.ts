@@ -3,6 +3,9 @@ import { UtilsService } from '@services/utils.service';
 import { BrowserStorageService } from '@services/storage.service';
 import { NotificationService } from '@shared/notification/notification.service';
 import { RequestService } from '@shared/request/request.service';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
+import { NewRelicService } from '@shared/new-relic/new-relic.service';
 
 export interface Profile {
   contact_number: string;
@@ -27,11 +30,14 @@ export class SharedService {
     private utils: UtilsService,
     private storage: BrowserStorageService,
     private notification: NotificationService,
-    private request: RequestService
+    private request: RequestService,
+    private http: HttpClient,
+    private newrelic: NewRelicService
   ) {}
 
   // call this function on every page refresh and after switch program
   onPageLoad() {
+    this.getIpLocation();
     // only do these if a timeline is choosen
     if (!this.storage.getUser().timelineId) {
       return;
@@ -100,6 +106,20 @@ export class SharedService {
         video.pause();
       });
     }
+  }
+
+  /**
+   * Get the user's current location from IP
+   */
+  getIpLocation() {
+    this._ipAPI().subscribe(
+      res => this.storage.setCountry(res.country_name),
+      err => this.newrelic.noticeError(err)
+    );
+  }
+
+  private _ipAPI(): Observable<any> {
+    return this.http.get('https://ipapi.co/json');
   }
 
 }
