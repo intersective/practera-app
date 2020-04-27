@@ -23,6 +23,7 @@ import { BrowserStorageService } from '@services/storage.service';
 })
 export class DescriptionComponent implements AfterViewInit, OnChanges {
   heightLimit = 120;
+  hasContent = true;
   isTruncating = false;
   heightExceeded = false;
   elementHeight: number;
@@ -42,6 +43,11 @@ export class DescriptionComponent implements AfterViewInit, OnChanges {
   }
 
   ngAfterViewInit() {
+    if (this.content.length == 0) {
+      this.hasContent = false;
+      this.elementHeight = 0;
+      return;
+    }
     this.calculateHeight();
   }
 

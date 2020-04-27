@@ -1,5 +1,5 @@
 <div class="container">
-  <div *ngIf="content.length" class="text-content">
+  <div *ngIf="hasContent" class="text-content">
     <p #description [innerHtml]="content"
       [ngClass]="{ 'limit-height': isTruncating || heightExceeded, 'full-height': !isTruncating && !isInPopup, 'full-height-popup': !isTruncating && isInPopup }">
     </p>

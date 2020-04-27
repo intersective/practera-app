@@ -5,10 +5,10 @@
         <ion-icon class="icon-backward ion-margin-start" name="arrow-back" color="primary" slot="icon-only"></ion-icon>
       </ion-button>
     </ion-buttons>
-   <h3 class="navtitle ion-text-center">{{ activity.name }}</h3>
-   <!-- <ion-title class="ion-text-center" [ngClass]="{
+   <h3 *ngIf="!utils.isMobile()" class="navtitle activity ion-text-center">{{ activity.name }}</h3>
+   <ion-title *ngIf="utils.isMobile()" class="ion-text-center" [ngClass]="{
       'subtitle-2': !utils.isMobile()
-    }">{{ activity.name }}</ion-title> -->
+    }">{{ activity.name }}</ion-title>
   </ion-toolbar>
 </ion-header>
 
@@ -32,9 +32,9 @@
   </ng-container>
 
   <ng-container *ngIf="!loadingActivity">
-    <!-- <h1 class="headline-6">{{ activity.name }}</h1> -->
+    <h1 *ngIf="utils.isMobile()" class="headline-6">{{ activity.name }}</h1>
     <div class="ion-text-left">
-      <app-description *ngIf="activity.description" [content]="activity.description" class="body-1"></app-description>
+      <app-description *ngIf="activity.description" [content]="activity.description" class="activity-description body-1"></app-description>
     </div>
     <div class="ion-text-left ion-margin-top">
       <ion-label color="medium" class="subtitle-2 gray-2">Tasks</ion-label>
