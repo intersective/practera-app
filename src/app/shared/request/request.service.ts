@@ -231,7 +231,7 @@ export class RequestService {
       );
       this.router.navigate(['logout']);
     }
-    this.newrelic.noticeError(err);
+    this.newrelic.noticeError(error);
     // if error.error is a html template error (when try to read remote version.txt)
     if (typeof error.error === 'string' && error.error.indexOf('<!DOCTYPE html>') !== -1) {
       return throwError(error.message);
