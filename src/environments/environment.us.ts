@@ -10,7 +10,9 @@ export const environment = {
     s3Config: {
       location: 's3',
       container: 'practera-us',
+      containerChina: 'practera-kr',
       region: 'us-east-1',
+      regionChina: 'ap-northeast-2',
       paths: {
         any: '/appv2/live/uploads/',
         image: '/appv2/live/uploads/',

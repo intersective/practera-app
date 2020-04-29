@@ -76,13 +76,14 @@ export class FilestackService {
 
   // get s3 config
   getS3Config(fileType) {
-    const {
+    let location, container, region, workflows, paths;
+    ({
       location,
       container,
       region,
       workflows,
       paths,
-    } = environment.filestack.s3Config;
+    } = environment.filestack.s3Config);
 
     let path = paths.any;
     // get s3 path based on file type
@@ -91,7 +92,10 @@ export class FilestackService {
     }
     // add user hash to the path
     path = path + this.storage.getUser().userHash + '/';
-
+    if (this.storage.getCountry() === 'China') {
+      container = environment.filestack.s3Config.containerChina;
+      region = environment.filestack.s3Config.regionChina;
+    }
     return {
       location,
       container,
