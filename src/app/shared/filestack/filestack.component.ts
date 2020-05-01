@@ -58,4 +58,22 @@ export class FilestackComponent {
 
     return await this.filestackService.open(pickerOptions);
   }
+
+  async dragAndDropUpload(file) {
+    const s3Config = this.filestackService.getS3Config(this.fileType);
+    // const callBacks = {
+    //   onProgress: data => {
+    //     console.log('onProgress', data);
+    //   }
+    // };
+
+    await this.filestackService.upload(file[0], s3Config);
+
+  }
+
+  onFileDrop(data) {
+    console.log(data);
+    console.log(this.fileType, this.accept);
+  }
+
 }
