@@ -13,6 +13,7 @@ import { ContactNumberFormComponent } from '@shared/components/contact-number-fo
 import { ListItemComponent } from '@shared/components/list-item/list-item.component';
 import { FloatDirective } from './directives/float/float.directive';
 import { ImgComponent } from '@shared/components/img/img.component';
+import { DragAndDropDirective } from './directives/drag-and-drop/drag-and-drop.directive';
 
 const largeCircleDefaultConfig = {
   backgroundColor: 'var(--ion-color-light)',
@@ -47,7 +48,8 @@ const largeCircleDefaultConfig = {
     ContactNumberFormComponent,
     ListItemComponent,
     FloatDirective,
-    ImgComponent
+    DragAndDropDirective,
+    ImgComponent,
   ],
   exports: [
     ActivityCardComponent,
@@ -62,7 +64,8 @@ const largeCircleDefaultConfig = {
     ContactNumberFormComponent,
     ListItemComponent,
     FloatDirective,
-    ImgComponent
+    ImgComponent,
+    DragAndDropDirective
   ],
 })
 export class SharedModule {}

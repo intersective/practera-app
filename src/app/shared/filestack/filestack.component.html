@@ -4,8 +4,15 @@
   </ng-container>
 
   <ng-container *ngSwitchDefault>
-    <ion-button size="small" shape="round" (click)="uploadFile()" [disabled]="disabled">
-      <i>Upload File</i>
-    </ion-button>
+    <div class="drop-zone" appDragAndDrop (fileDropped)="onFileDrop($event)">
+      <!-- <input type="file" (change)="dragAndDropUpload($event.target.files)" > -->
+      <ion-icon slot="start" name="cloud-upload-outline"></ion-icon>
+      <p>Drag and drop file here</p>
+      <p>or</p>
+      <ion-button size="small" class="upload-button" shape="round" fill="solid" expand="full" (click)="uploadFile()" [disabled]="disabled">
+        <ion-icon slot="start" name="cloud-upload-outline"></ion-icon> UPLOAD FILE
+      </ion-button>
+    </div>
+    <p></p>
   </ng-container>
 </ng-container>
