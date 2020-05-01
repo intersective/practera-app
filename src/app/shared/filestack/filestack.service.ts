@@ -186,6 +186,19 @@ export class FilestackService {
     return await this.filestack.picker(Object.assign(pickerOptions, options)).open();
   }
 
+  async upload(file, path = this.getS3Config(this.getFileTypes())) {
+    console.log('file', file);
+    const option = {
+      onProgress: data => {
+        console.log('onProgress', data);
+      }
+    };
+
+    await this.filestack.upload(file, option, path).then(res => {
+      console.log('res', res);
+    });
+  }
+
   async previewModal(url, filestackUploadedResponse?): Promise<void> {
     const modal = await this.modalController.create({
       component: PreviewComponent,
