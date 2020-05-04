@@ -186,16 +186,17 @@ export class FilestackService {
     return await this.filestack.picker(Object.assign(pickerOptions, options)).open();
   }
 
-  async upload(file, path = this.getS3Config(this.getFileTypes())) {
-    console.log('file', file);
+  async upload(file, uploadOptions, path = this.getS3Config(this.getFileTypes()), uploadToken) {
     const option = {
-      onProgress: data => {
-        console.log('onProgress', data);
-      }
+      onProgress: uploadOptions.onProgress
     };
 
-    await this.filestack.upload(file, option, path).then(res => {
-      console.log('res', res);
+    await this.filestack.upload(file, option, path, uploadToken)
+    .then(res => {
+      return uploadOptions.onFileUploadFinished(res);
+    })
+    .catch(err => {
+      return uploadOptions.onFileUploadFailed(err);
     });
   }
 
