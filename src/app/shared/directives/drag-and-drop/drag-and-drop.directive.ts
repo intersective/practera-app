@@ -24,43 +24,37 @@ export class DragAndDropDirective {
   @HostListener('drop', ['$event']) ondrop(evt) {
     evt.preventDefault();
     evt.stopPropagation();
-    console.log('drop');
-    console.log('file', evt.dataTransfer.files);
     this.fileOver = false;
     const files = evt.dataTransfer.files;
     // error - no file droped
     if (files.length < 0) {
-      console.log('error - no file droped');
       this.fileDropped.emit({
         success: false,
-        message: 'no file droped'
+        message: 'No file droped'
       });
       return;
     }
     // error - more than one file droped
     if (files.length > 1) {
-      console.log('error - more than one file droped');
       this.fileDropped.emit({
         success: false,
-        message: 'more than one file droped'
+        message: 'More than one file droped'
       });
       return;
     }
     const file = files[0];
-    if (this.acceptFileType && this.acceptFileType !== 'any' && file.type.includes(this.acceptFileType)) {
-      this.fileDropped.emit({
-        success: true,
-        data: file
-      });
-    } else {
-      // error - not maching file type
-      console.log('error - not maching file type');
+    // error - not maching file type
+    if (this.acceptFileType && this.acceptFileType !== 'any' && !file.type.includes(this.acceptFileType)) {
       this.fileDropped.emit({
         success: false,
-        message: 'not maching file type'
+        message: 'Not a maching file type'
       });
       return;
     }
+    this.fileDropped.emit({
+      success: true,
+      file: file
+    });
   }
 
 }
