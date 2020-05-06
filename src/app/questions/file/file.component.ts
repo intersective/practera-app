@@ -106,7 +106,6 @@ export class FileComponent implements ControlValueAccessor, OnInit {
 
     // propagate value into form control using control value accessor interface
     this.propagateChange(this.innerValue);
-
     this.saveProgress.emit(true);
   }
 
@@ -145,7 +144,7 @@ export class FileComponent implements ControlValueAccessor, OnInit {
     this.control.setValue(this.innerValue);
   }
 
-  removeSubmitFile() {
+  removeSubmitFile(data) {
     this.uploadedFile = null;
     this.submission.answer = null;
     this.onChange('', null);
