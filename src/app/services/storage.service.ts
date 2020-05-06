@@ -125,4 +125,12 @@ export class BrowserStorageService {
   initBookedEventActivityIds(): void {
     this.remove('bookedEventActivityIds');
   }
+
+  setCountry(country: string) {
+    this.set('country', country);
+  }
+
+  getCountry() {
+    return this.get('country');
+  }
 }

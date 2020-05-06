@@ -8,7 +8,7 @@ phases:
       - echo "Nothing to pre_build"
   build:
     commands:
-      - ./scripts/build.sh
+      - ng build
       - ng test --karmaConfig=src/karma.conf.aws.js --no-watch
   post_build:
     commands:

@@ -3,7 +3,7 @@ import { of } from 'rxjs';
 import { RequestService } from '@shared/request/request.service';
 import { BrowserStorageService } from '@services/storage.service';
 import { UtilsService } from '@services/utils.service';
-
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { HomeService } from './home.service';
 import { NotificationService } from '@shared/notification/notification.service';
 import { EventListService } from '@app/event-list/event-list.service';
@@ -18,6 +18,7 @@ describe('HomeService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
+      imports: [ HttpClientTestingModule ],
       providers: [
         HomeService,
         UtilsService,
