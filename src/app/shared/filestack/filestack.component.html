@@ -7,24 +7,20 @@
 
   <ng-container *ngSwitchDefault>
     <ng-container *ngIf="utils.isMobile()">
-      <ion-button size="small" class="upload-button" shape="round" (click)="uploadFile()" [disabled]="disabled">
-        UPLOAD FILE
-      </ion-button>
+      <ion-button size="small" class="upload-button" shape="round" (click)="uploadFile()" [disabled]="disabled">UPLOAD FILE</ion-button>
     </ng-container>
     <ng-container *ngIf="!utils.isMobile()">
       <div *ngIf="!isDroped" class="drop-zone" appDragAndDrop (fileDropped)="dragAndDropUpload($event)"
         acceptFileType="{{ fileType }}">
         <p class="gray-2 subtitle-1">
           <ion-icon name="cloud-upload-outline"></ion-icon> Drag and drop file here or
-          <ion-button size="small" class="upload-button" shape="round" (click)="uploadFile()" [disabled]="disabled">
-            UPLOAD FILE
-          </ion-button>
+          <ion-button size="small" class="upload-button" shape="round" (click)="uploadFile()" [disabled]="disabled">UPLOAD FILE</ion-button>
         </p>
       </div>
       <div *ngIf="isDroped" class="upload-progress">
         <ion-grid>
           <ion-row>
-            <ion-col class="fileTypeIcon">
+            <ion-col size="1" class="fileTypeIcon">
               <ng-container [ngSwitch]="fileType">
                 <ng-container *ngSwitchCase="'video'">
                   <ion-icon name="film-outline"></ion-icon>
@@ -43,14 +39,14 @@
                   <ion-col size="11" class="file-name-container">
                     <p class="black subtitle-1">{{ uploadingFile.fileName }}</p>
                   </ion-col>
-                  <ion-col class="cancel-btn-container">
+                  <ion-col size="1" class="cancel-btn-container">
                     <ion-button size="small" fill="clear" class="cancel-btn" (click)="cancelFileUpload()">
                       <ion-icon slot="icon-only" name="close-outline"></ion-icon>
                     </ion-button>
                   </ion-col>
                 </ion-row>
                 <ion-row>
-                  <ion-col>
+                  <ion-col size="12">
                     <ion-progress-bar color="primary" value="{{ (uploadingFile.uploadProgress) / 100 }}" mode="ios">
                     </ion-progress-bar>
                   </ion-col>
