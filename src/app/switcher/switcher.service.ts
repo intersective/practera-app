@@ -94,13 +94,13 @@ export class SwitcherService {
    * @param projectIds Project ids
    */
   getProgresses(projectIds: number[]) {
-    return this.request.postGraphQL('"{projects(ids: ' + JSON.stringify(projectIds) + ') {id progress todo_items{is_done}}}"')
+    return this.request.postGraphQL('"{projects(ids: ' + JSON.stringify(projectIds) + ') {id progress todoItems{isDone}}}"')
       .pipe(map(res => {
         return res.data.projects.map(v => {
           return {
             id: +v.id,
             progress: v.progress,
-            todoItems: v.todo_items.filter(ti => !ti.is_done).length
+            todoItems: v.todoItems.filter(ti => !ti.isDone).length
           };
         });
       }));
