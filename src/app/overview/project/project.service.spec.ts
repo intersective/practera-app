@@ -47,14 +47,14 @@ describe('ProjectService', () => {
             id: i + 1,
             name: 'm' + i,
             description: 'des' + i,
-            is_locked: false,
+            isLocked: false,
             progress: (i + 1) / 10,
             activities: Array.from({length: 3}, (y, j) => {
               return {
                 id: i * 10 + j + 1,
                 name: 'activity name' + j,
-                is_locked: false,
-                lead_image: '',
+                isLocked: false,
+                leadImage: '',
                 progress: (i * 10 + j + 1) / 100,
               };
             })

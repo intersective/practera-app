@@ -59,9 +59,9 @@ describe('AssessmentService', () => {
             name: 'test',
             type: 'quiz',
             description: 'des',
-            is_team: false,
-            due_date: '2019-02-02',
-            pulse_check: false,
+            isTeam: false,
+            dueDate: '2019-02-02',
+            pulseCheck: false,
             groups: [
               {
                 name: 'g name',
@@ -72,8 +72,8 @@ describe('AssessmentService', () => {
                     name: 'test name 1',
                     description: 'des 1',
                     type: 'text',
-                    is_required: true,
-                    has_comment: true,
+                    isRequired: true,
+                    hasComment: true,
                     audience: ['submitter']
                   },
                   {
@@ -81,8 +81,8 @@ describe('AssessmentService', () => {
                     name: 'test name 2',
                     description: 'des 2',
                     type: 'oneof',
-                    is_required: true,
-                    has_comment: true,
+                    isRequired: true,
+                    hasComment: true,
                     audience: ['reviewer'],
                     choices: [
                       {
@@ -100,8 +100,8 @@ describe('AssessmentService', () => {
                     name: 'test name 3',
                     description: 'des 3',
                     type: 'multiple',
-                    is_required: true,
-                    has_comment: true,
+                    isRequired: true,
+                    hasComment: true,
                     audience: ['submitter', 'reviewer'],
                     choices: [
                       {
@@ -127,20 +127,20 @@ describe('AssessmentService', () => {
                     name: 'test name 11',
                     description: 'des 11',
                     type: 'file',
-                    is_required: true,
-                    has_comment: true,
+                    isRequired: true,
+                    hasComment: true,
                     audience: ['submitter', 'reviewer'],
-                    file_type: 'any'
+                    fileType: 'any'
                   },
                   {
                     id: 12,
                     name: 'test name 12',
                     description: 'des 12',
                     type: 'team member selector',
-                    is_required: true,
-                    has_comment: true,
+                    isRequired: true,
+                    hasComment: true,
                     audience: ['submitter', 'reviewer'],
-                    team_members: [
+                    teamMembers: [
                       {
                         id: 121,
                         userName: 'member name 1'
@@ -167,23 +167,23 @@ describe('AssessmentService', () => {
                 },
                 answers: [
                   {
-                    question_id: 1,
+                    questionId: 1,
                     answer: 'abc'
                   },
                   {
-                    question_id: 2,
+                    questionId: 2,
                     answer: 21
                   },
                   {
-                    question_id: 3,
+                    questionId: 3,
                     answer: [31]
                   },
                   {
-                    question_id: 11,
+                    questionId: 11,
                     answer: ''
                   },
                   {
-                    question_id: 12,
+                    questionId: 12,
                     answer: '{"id": 121,"userName": "member name 1"}'
                   }
                 ],
@@ -196,27 +196,27 @@ describe('AssessmentService', () => {
                   },
                   answers: [
                     {
-                      question_id: 1,
+                      questionId: 1,
                       answer: 'abc',
                       comment: null
                     },
                     {
-                      question_id: 2,
+                      questionId: 2,
                       answer: 21,
                       comment: 'def'
                     },
                     {
-                      question_id: 3,
+                      questionId: 3,
                       answer: [31],
                       comment: 'def'
                     },
                     {
-                      question_id: 11,
+                      questionId: 11,
                       answer: '',
                       comment: 'def'
                     },
                     {
-                      question_id: 12,
+                      questionId: 12,
                       answer: null,
                       comment: null
                     }
@@ -244,10 +244,10 @@ describe('AssessmentService', () => {
         name: assessment.name,
         type: assessment.type,
         description: assessment.description,
-        isForTeam: assessment.is_team,
-        dueDate: assessment.due_date,
-        isOverdue: assessment.due_date ? utils.timeComparer(assessment.due_date) < 0 : false,
-        pulseCheck: assessment.pulse_check,
+        isForTeam: assessment.isTeam,
+        dueDate: assessment.dueDate,
+        isOverdue: assessment.dueDate ? utils.timeComparer(assessment.dueDate) < 0 : false,
+        pulseCheck: assessment.pulseCheck,
         groups: [
           {
             name: group0.name,
@@ -258,8 +258,8 @@ describe('AssessmentService', () => {
                 name: question0.name,
                 type: question0.type,
                 description: question0.description,
-                isRequired: question0.is_required,
-                canComment: question0.has_comment,
+                isRequired: question0.isRequired,
+                canComment: question0.hasComment,
                 canAnswer: question0.audience.includes('submitter'),
                 audience: question0.audience,
                 submitterOnly: true,
@@ -270,8 +270,8 @@ describe('AssessmentService', () => {
                 name: question1.name,
                 type: question1.type,
                 description: question1.description,
-                isRequired: question1.is_required,
-                canComment: question1.has_comment,
+                isRequired: question1.isRequired,
+                canComment: question1.hasComment,
                 canAnswer: question1.audience.includes('submitter'),
                 audience: question1.audience,
                 submitterOnly: false,
@@ -295,8 +295,8 @@ describe('AssessmentService', () => {
                 name: question2.name,
                 type: question2.type,
                 description: question2.description,
-                isRequired: question2.is_required,
-                canComment: question2.has_comment,
+                isRequired: question2.isRequired,
+                canComment: question2.hasComment,
                 canAnswer: question2.audience.includes('submitter'),
                 audience: question2.audience,
                 submitterOnly: false,
@@ -328,33 +328,33 @@ describe('AssessmentService', () => {
                 name: question3.name,
                 type: question3.type,
                 description: question3.description,
-                isRequired: question3.is_required,
-                canComment: question3.has_comment,
+                isRequired: question3.isRequired,
+                canComment: question3.hasComment,
                 canAnswer: question3.audience.includes('submitter'),
                 audience: question3.audience,
                 submitterOnly: false,
                 reviewerOnly: false,
-                fileType: question3.file_type
+                fileType: question3.fileType
               },
               {
                 id: question4.id,
                 name: question4.name,
                 type: question4.type,
                 description: question4.description,
-                isRequired: question4.is_required,
-                canComment: question4.has_comment,
+                isRequired: question4.isRequired,
+                canComment: question4.hasComment,
                 canAnswer: question4.audience.includes('submitter'),
                 audience: question4.audience,
                 submitterOnly: false,
                 reviewerOnly: false,
                 teamMembers: [
                   {
-                    key: JSON.stringify(question4.team_members[0]),
-                    userName: question4.team_members[0].userName
+                    key: JSON.stringify(question4.teamMembers[0]),
+                    userName: question4.teamMembers[0].userName
                   },
                   {
-                    key: JSON.stringify(question4.team_members[1]),
-                    userName: question4.team_members[1].userName
+                    key: JSON.stringify(question4.teamMembers[1]),
+                    userName: question4.teamMembers[1].userName
                   }
                 ]
               }
