@@ -70,8 +70,8 @@ export class ActivityService {
       `"{` +
         `activity(id:${id}){` +
           `id name description tasks{` +
-            `id name type is_locked is_team deadline context_id status{` +
-              `status is_locked submitter_name submitter_image` +
+            `id name type isLocked isTeam deadline contextId status{` +
+              `status isLocked submitterName submitterImage` +
             `}` +
           `}` +
         `}` +
@@ -81,7 +81,7 @@ export class ActivityService {
 
   private _normaliseActivity(data): Activity {
     data.activity.tasks = data.activity.tasks.map(task => {
-      if (task.is_locked) {
+      if (task.isLocked) {
         return {
           id: 0,
           type: 'Locked',
@@ -102,16 +102,16 @@ export class ActivityService {
             id: task.id,
             name: task.name,
             type: 'Assessment',
-            contextId: task.context_id,
-            isForTeam: task.is_team,
+            contextId: task.contextId,
+            isForTeam: task.isTeam,
             dueDate: task.deadline,
             isOverdue: task.deadline ? this.utils.timeComparer(task.deadline) < 0 : false,
             isDueToday: task.deadline ? this.utils.timeComparer(task.deadline, { compareDate: true }) === 0 : false,
             status: task.status.status === 'pending approval' ? 'pending review' : task.status.status,
-            isLocked: task.status.is_locked,
+            isLocked: task.status.isLocked,
             submitter: {
-              name: task.status.submitter_name,
-              image: task.status.submitter_image
+              name: task.status.submitterName,
+              image: task.status.submitterImage
             }
           };
         default:
