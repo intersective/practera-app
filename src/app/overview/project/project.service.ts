@@ -54,8 +54,8 @@ export class ProjectService {
     return this.request.postGraphQL(
       `"{` +
         `milestones{` +
-          `id name progress description is_locked activities{` +
-            `id name progress is_locked lead_image ` +
+          `id name progress description isLocked activities{` +
+            `id name progress isLocked leadImage ` +
           `}` +
         `}` +
       `}"`)
@@ -69,14 +69,14 @@ export class ProjectService {
         name: m.name,
         description: m.description,
         progress: m.progress,
-        isLocked: m.is_locked,
+        isLocked: m.isLocked,
         Activity: (m.activities === null ? [] : m.activities).map(a => {
           return {
             id: a.id,
             name: a.name,
             progress: a.progress,
-            isLocked: a.is_locked,
-            leadImage: a.lead_image
+            isLocked: a.isLocked,
+            leadImage: a.leadImage
           };
         })
       };

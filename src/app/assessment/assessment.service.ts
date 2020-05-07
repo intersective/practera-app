@@ -113,33 +113,33 @@ export class AssessmentService {
     return this.request.postGraphQL(
       this.utils.graphQLQueryStringFormatter(
         `"{
-          assessment(id:` + id + `,reviewer:` + (action === 'review') + `,activity_id:` + activityId + `) {
-            name type description due_date is_team pulse_check
+          assessment(id:` + id + `,reviewer:` + (action === 'review') + `,activityId:` + activityId + `) {
+            name type description dueDate isTeam pulseCheck
             groups{
               name description
               questions{
-                id name description type is_required has_comment audience file_type
+                id name description type isRequired hasComment audience fileType
                 choices{
                   id name explanation description
                 }
-                team_members{
+                teamMembers{
                   userId userName teamId
                 }
               }
             }
-            submissions(` + (submissionId ? `id:` + submissionId : `context_id:` + contextId) + `) {
+            submissions(` + (submissionId ? `id:` + submissionId : `contextId:` + contextId) + `) {
               id status completed modified locked
               submitter {
                 name image
               }
               answers{
-                question_id answer
+                questionId answer
               }
               review {
                 id status modified
                 reviewer { name }
                 answers {
-                  question_id answer comment
+                  questionId answer comment
                 }
               }
             }
@@ -163,10 +163,10 @@ export class AssessmentService {
       name: data.assessment.name,
       type: data.assessment.type,
       description: data.assessment.description,
-      isForTeam: data.assessment.is_team,
-      dueDate: data.assessment.due_date,
-      isOverdue: data.assessment.due_date ? this.utils.timeComparer(data.assessment.due_date) < 0 : false,
-      pulseCheck: data.assessment.pulse_check,
+      isForTeam: data.assessment.isTeam,
+      dueDate: data.assessment.dueDate,
+      isOverdue: data.assessment.dueDate ? this.utils.timeComparer(data.assessment.dueDate) < 0 : false,
+      pulseCheck: data.assessment.pulseCheck,
       groups: []
     };
     data.assessment.groups.forEach(eachGroup => {
@@ -181,8 +181,8 @@ export class AssessmentService {
           name: eachQuestion.name,
           type: eachQuestion.type,
           description: eachQuestion.description,
-          isRequired: eachQuestion.is_required,
-          canComment: eachQuestion.has_comment,
+          isRequired: eachQuestion.isRequired,
+          canComment: eachQuestion.hasComment,
           canAnswer: action === 'review' ? eachQuestion.audience.includes('reviewer') : eachQuestion.audience.includes('submitter'),
           audience: eachQuestion.audience,
           submitterOnly: eachQuestion.audience.length === 1 && eachQuestion.audience.includes('submitter'),
@@ -212,12 +212,12 @@ export class AssessmentService {
             break;
 
           case 'file':
-            question.fileType = eachQuestion.file_type;
+            question.fileType = eachQuestion.fileType;
             break;
 
           case 'team member selector':
             question.teamMembers = [];
-            eachQuestion.team_members.forEach(eachTeamMember => {
+            eachQuestion.teamMembers.forEach(eachTeamMember => {
               question.teamMembers.push({
                 key: JSON.stringify(eachTeamMember),
                 userName: eachTeamMember.userName
@@ -255,8 +255,8 @@ export class AssessmentService {
       answers: {}
     };
     firstSubmission.answers.forEach(eachAnswer => {
-      eachAnswer.answer = this._normaliseAnswer(eachAnswer.question_id, eachAnswer.answer);
-      submission.answers[eachAnswer.question_id] = {
+      eachAnswer.answer = this._normaliseAnswer(eachAnswer.questionId, eachAnswer.answer);
+      submission.answers[eachAnswer.questionId] = {
         answer: eachAnswer.answer
       };
       if (['published', 'done'].includes(submission.status)) {
@@ -289,8 +289,8 @@ export class AssessmentService {
     }
 
     firstSubmissionReview.answers.forEach(eachAnswer => {
-      eachAnswer.answer = this._normaliseAnswer(eachAnswer.question_id, eachAnswer.answer);
-      review.answers[eachAnswer.question_id] = {
+      eachAnswer.answer = this._normaliseAnswer(eachAnswer.questionId, eachAnswer.answer);
+      review.answers[eachAnswer.questionId] = {
         answer: eachAnswer.answer,
         comment: eachAnswer.comment
       };
@@ -302,7 +302,7 @@ export class AssessmentService {
    * For each question that has choice (oneof & multiple), show the choice explanation in the submission if it is not empty
    */
   private _addChoiceExplanation(submissionAnswer, submission: Submission): Submission {
-    const questionId = submissionAnswer.question_id;
+    const questionId = submissionAnswer.questionId;
     const answer = submissionAnswer.answer;
     // don't do anything if there's no choices
     if (this.utils.isEmpty(this.questions[questionId].choices)) {
