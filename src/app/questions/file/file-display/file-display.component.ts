@@ -75,9 +75,7 @@ export class FileDisplayComponent implements OnInit, OnChanges {
   }
 
   removeUploadedFile() {
-    if (this.removeFile) {
-      this.removeFile.emit(true);
-    }
+    this.removeFile.emit(true);
   }
 
 }
