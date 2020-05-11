@@ -73,7 +73,12 @@ export class FileComponent implements ControlValueAccessor, OnInit {
       this.onChange('', type);
     } else {
       // display error message for user
-      this.errors.push('File upload failed, please try again later.');
+      // if error is drag and drop error will show a custom message. ex:- nore than one file droped, invalid file type droped.
+      if (file.data.isDragAndDropError) {
+        this.errors.push(`${file.data.message}, please try again.`);
+      } else {
+        this.errors.push('File upload failed, please try again later.');
+      }
     }
   }
 
@@ -101,7 +106,6 @@ export class FileComponent implements ControlValueAccessor, OnInit {
 
     // propagate value into form control using control value accessor interface
     this.propagateChange(this.innerValue);
-
     this.saveProgress.emit(true);
   }
 
@@ -138,6 +142,12 @@ export class FileComponent implements ControlValueAccessor, OnInit {
     }
     this.propagateChange(this.innerValue);
     this.control.setValue(this.innerValue);
+  }
+
+  removeSubmitFile(data) {
+    this.uploadedFile = null;
+    this.submission.answer = null;
+    this.onChange('', null);
   }
 
 }
