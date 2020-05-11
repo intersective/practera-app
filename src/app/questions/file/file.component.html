@@ -2,6 +2,7 @@
   <app-file-display
     [file]="submission.answer"
     [fileType]="question.fileType"
+    [isFileComponent]="true"
   ></app-file-display>
 </ng-container>
 
@@ -11,6 +12,7 @@
     <app-file-display
       [file]="review.answer"
       [fileType]="question.fileType"
+      [isFileComponent]="true"
     ></app-file-display>
   </ng-container>
   <ng-container *ngIf="review.comment">
@@ -19,7 +21,7 @@
 </div>
 
 <ng-container *ngIf="doAssessment">
-  <file-stack
+  <file-stack *ngIf="!uploadedFile && !submission.answer"
     [accept]="fileTypes"
     [fileType]="question.fileType"
     (complete)="onFileUploadCompleted($event)"
@@ -32,12 +34,14 @@
   <app-file-display
     [file]="uploadedFile ? uploadedFile : submission.answer"
     [fileType]="question.fileType"
+    [isFileComponent]="true"
+    (removeFile)="removeSubmitFile($event)"
   ></app-file-display>
 </ng-container>
 
 <ng-container *ngIf="doReview">
   <ng-container *ngIf="question.canAnswer">
-    <file-stack
+    <file-stack *ngIf="!uploadedFile && !review.answer"
       [accept]="fileTypes"
       [fileType]="question.fileType"
       (complete)="onFileUploadCompleted($event, 'answer')"
@@ -47,6 +51,8 @@
     <app-file-display
       [file]="uploadedFile ? uploadedFile : review.answer"
       [fileType]="question.fileType"
+      [isFileComponent]="true"
+      (removeFile)="removeSubmitFile($event)"
     ></app-file-display>
   </ng-container>
   <ion-textarea
