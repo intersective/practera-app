@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, OnChanges, SimpleChanges , ViewChild, ElementRef} from '@angular/core';
+import { Component, Input, Output, OnInit, OnChanges, SimpleChanges , ViewChild, ElementRef, EventEmitter} from '@angular/core';
 import { FilestackService } from '@shared/filestack/filestack.service';
 import { UtilsService } from '@services/utils.service';
 import { environment } from '@environments/environment';
@@ -14,7 +14,9 @@ export class FileDisplayComponent implements OnInit, OnChanges {
 
   @Input() fileType = 'any';
   @Input() file: any;
+  @Input() isFileComponent?: boolean;
   @ViewChild('videoEle') videoEle: ElementRef;
+  @Output() removeFile?: EventEmitter<any> = new EventEmitter();
 
   constructor(private filestackService: FilestackService, private utils: UtilsService) { }
 
@@ -71,4 +73,9 @@ export class FileDisplayComponent implements OnInit, OnChanges {
       return err;
     }
   }
+
+  removeUploadedFile() {
+    this.removeFile.emit(true);
+  }
+
 }
