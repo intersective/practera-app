@@ -93,7 +93,34 @@ export class TopicComponent extends RouterEnter {
     }
     this._getTopic();
     this._getTopicProgress();
-    // convert other brand video players to custom player.
+
+    setTimeout(() => this.askForMarkAsDone = true, 15000);
+  }
+
+  ionViewWillLeave() {
+    this.sharedService.stopPlayingVideos();
+  }
+
+  private _getTopic() {
+    this.topicService.getTopic(this.id)
+      .subscribe(
+        topic => {
+          this.topic = topic;
+          this.loadingTopic = false;
+          if ( topic.videolink ) {
+            this.iframeHtml = this.embedService.embed(this.topic.videolink);
+          }
+          this._initVideoPlayer();
+          this.newRelic.setPageViewName(`Topic ${this.topic.title} ID: ${this.topic.id}`);
+        },
+        err => {
+          this.newRelic.noticeError(`${JSON.stringify(err)}`);
+        }
+      );
+  }
+
+  // convert other brand video players to custom player.
+  private _initVideoPlayer() {
     setTimeout(() => {
       this.utils.each(this.document.querySelectorAll('.plyr__video-embed'), embedVideo => {
         // tslint:disable-next-line:no-unused-expression
@@ -119,28 +146,6 @@ export class TopicComponent extends RouterEnter {
       });
     // tslint:disable-next-line:align
     }, 2000);
-    setTimeout(() => this.askForMarkAsDone = true, 15000);
-  }
-
-  ionViewWillLeave() {
-    this.sharedService.stopPlayingVideos();
-  }
-
-  private _getTopic() {
-    this.topicService.getTopic(this.id)
-      .subscribe(
-        topic => {
-          this.topic = topic;
-          this.loadingTopic = false;
-          if ( topic.videolink ) {
-            this.iframeHtml = this.embedService.embed(this.topic.videolink);
-          }
-          this.newRelic.setPageViewName(`Topic ${this.topic.title} ID: ${this.topic.id}`);
-        },
-        err => {
-          this.newRelic.noticeError(`${JSON.stringify(err)}`);
-        }
-      );
   }
 
   private _getTopicProgress() {
