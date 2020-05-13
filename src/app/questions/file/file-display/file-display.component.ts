@@ -17,6 +17,8 @@ export class FileDisplayComponent implements OnInit, OnChanges {
   @Input() isFileComponent?: boolean;
   @ViewChild('videoEle') videoEle: ElementRef;
   @Output() removeFile?: EventEmitter<any> = new EventEmitter();
+  // this is for get assessment/review submit or not
+  @Input() submitted?: boolean;
 
   constructor(private filestackService: FilestackService, private utils: UtilsService) { }
 
@@ -61,9 +63,15 @@ export class FileDisplayComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(change: SimpleChanges) {
-    if (change.file.currentValue && change.file.currentValue.workflows) {
+    if (change.file && change.file.currentValue && change.file.currentValue.workflows) {
       this.updateWorkflowStatus(change.file.currentValue);
     }
+
+    if (change.submitted && change.submitted.currentValue) {
+      this.submitted = change.submitted.currentValue;
+    }
+    console.log('change', change);
+    console.log('this.submitted', this.submitted);
   }
 
   async previewFile(file) {

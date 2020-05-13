@@ -11,7 +11,7 @@
     </ng-container>
     <ng-container *ngIf="!utils.isMobile()">
       <div *ngIf="!isDroped" class="drop-zone" appDragAndDrop (fileDropped)="dragAndDropUpload($event)"
-        acceptFileType="{{ fileType }}">
+        acceptFileType="{{ fileType }}" disabledDragDrop="{{ disabled }}">
         <p class="gray-2 subtitle-1">
           <ion-icon name="cloud-upload-outline"></ion-icon> Drag and drop file here or
           <ion-button size="small" class="upload-button" shape="round" (click)="uploadFile()" [disabled]="disabled">UPLOAD FILE</ion-button>
