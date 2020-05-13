@@ -108,7 +108,7 @@ export class TopicComponent extends RouterEnter {
           this.topic = topic;
           this.loadingTopic = false;
           if ( topic.videolink ) {
-            this.iframeHtml = this.embedService.embed(this.topic.videolink);
+            this.iframeHtml = this.embedService.embed(this.topic.videolink, { attr: { class: !this.utils.isMobile() ? 'topic-video desktop-view' : 'topic-video' }});
           }
           this._initVideoPlayer();
           this.newRelic.setPageViewName(`Topic ${this.topic.title} ID: ${this.topic.id}`);
@@ -130,8 +130,8 @@ export class TopicComponent extends RouterEnter {
         if (embedVideo.nodeName === 'VIDEO') {
           embedVideo.classList.remove('plyr__video-embed');
           this.utils.each(this.document.querySelectorAll('.plyr'), videoPlayer => {
-            if (!videoPlayer.classList.contains('topic-video', 'desktop-view')) {
-              videoPlayer.classList.add('topic-video');
+            if (!videoPlayer.classList.contains('topic-custome-player', 'desktop-view')) {
+              videoPlayer.classList.add('topic-custome-player');
               if (!this.utils.isMobile()) {
                 videoPlayer.classList.add('desktop-view');
               }
@@ -139,13 +139,13 @@ export class TopicComponent extends RouterEnter {
           });
           return;
         }
-        embedVideo.classList.add('topic-video');
+        embedVideo.classList.add('topic-custome-player');
         if (!this.utils.isMobile()) {
           embedVideo.classList.add('desktop-view');
         }
       });
     // tslint:disable-next-line:align
-    }, 2000);
+    }, 500);
   }
 
   private _getTopicProgress() {
