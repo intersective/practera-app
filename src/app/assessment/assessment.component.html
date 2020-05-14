@@ -134,7 +134,6 @@
                 [formControlName]="'q-' + question.id"
                 [control]="questionsForm.controls['q-' + question.id]"
                 (saveProgress)="submit(true)"
-                [submitted]="submitted"
               ></app-file>
 
               <app-team-member-selector
