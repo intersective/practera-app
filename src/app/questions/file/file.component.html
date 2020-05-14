@@ -36,7 +36,7 @@
     [fileType]="question.fileType"
     [isFileComponent]="true"
     (removeFile)="removeSubmitFile($event)"
-    [submitted]="submitted"
+    [disabled]="control.disabled"
   ></app-file-display>
 </ng-container>
 
@@ -54,7 +54,7 @@
       [fileType]="question.fileType"
       [isFileComponent]="true"
       (removeFile)="removeSubmitFile($event)"
-      [submitted]="submitted"
+      [disabled]="control.disabled"
     ></app-file-display>
   </ng-container>
   <ion-textarea

@@ -1,22 +1,20 @@
-import { Directive, HostListener, HostBinding, Output, EventEmitter, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { Directive, HostListener, HostBinding, Output, EventEmitter, Input } from '@angular/core';
 
 @Directive({
   selector: '[appDragAndDrop]'
 })
-export class DragAndDropDirective implements OnChanges {
+export class DragAndDropDirective {
   @Output() fileDropped = new EventEmitter<any>();
   @Input() acceptFileType?: string;
-  @Input() disabledDragDrop?: boolean;
+  @Input() disabled?: boolean;
 
   @HostBinding('class.fileover') fileOver: boolean;
 
   @HostListener('dragover', ['$event']) ondragover(evt) {
     evt.preventDefault();
     evt.stopPropagation();
-    console.log('this.disabledDragDrop', this.disabledDragDrop);
-    if (this.disabledDragDrop) {
+    if (!this.disabled) {
       this.fileOver = true;
-      console.log('this.fileOver', this.fileOver);
     }
   }
 
@@ -29,9 +27,7 @@ export class DragAndDropDirective implements OnChanges {
   @HostListener('drop', ['$event']) ondrop(evt) {
     evt.preventDefault();
     evt.stopPropagation();
-    console.log('this.disabledDragDrop', this.disabledDragDrop);
-    if (this.disabledDragDrop) {
-      console.log('1234567');
+    if (this.disabled) {
       return;
     }
     this.fileOver = false;
@@ -65,13 +61,6 @@ export class DragAndDropDirective implements OnChanges {
       success: true,
       file: file
     });
-  }
-
-  ngOnChanges (changes: SimpleChanges) {
-    console.log('ngOnChanges - DragAndDropDirective', changes);
-    // if (changes.submitted && changes.submitted.currentValue) {
-    //   this.submitted = changes.submitted.currentValue;
-    // }
   }
 
 }
