@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, Output, EventEmitter, forwardRef, ViewChild, ElementRef, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter, forwardRef, ViewChild, ElementRef } from '@angular/core';
 import { NG_VALUE_ACCESSOR, ControlValueAccessor, FormControl } from '@angular/forms';
 import { FilestackService } from '@shared/filestack/filestack.service';
 
@@ -14,7 +14,7 @@ import { FilestackService } from '@shared/filestack/filestack.service';
     }
   ]
 })
-export class FileComponent implements ControlValueAccessor, OnInit, OnChanges {
+export class FileComponent implements ControlValueAccessor, OnInit {
 
   @Input() question = {
     name: '',
@@ -40,8 +40,6 @@ export class FileComponent implements ControlValueAccessor, OnInit, OnChanges {
   @ViewChild('commentEle') commentRef: ElementRef;
   // call back for save changes
   @Output() saveProgress = new EventEmitter<boolean>();
-  // this is for get assessment/review submit or not
-  @Input() submitted: boolean;
 
   uploadedFile;
   fileTypes = '';
@@ -59,12 +57,6 @@ export class FileComponent implements ControlValueAccessor, OnInit, OnChanges {
   ngOnInit() {
     this.fileTypes = this.filestackService.getFileTypes(this.question.fileType);
     this._showSavedAnswers();
-  }
-
-  ngOnChanges (changes: SimpleChanges) {
-    if (changes.submitted && changes.submitted.currentValue) {
-      this.submitted = changes.submitted.currentValue;
-    }
   }
 
   // propagate changes into the form control
