@@ -122,7 +122,12 @@ export class TopicComponent extends RouterEnter {
   // convert other brand video players to custom player.
   private _initVideoPlayer() {
     setTimeout(() => {
-      this.utils.each(this.document.querySelectorAll('.plyr__video-embed'), embedVideo => {
+      this.utils.each(this.document.querySelectorAll('.video-embed'), embedVideo => {
+        embedVideo.classList.remove('topic-video');
+        if (!this.utils.isMobile()) {
+          embedVideo.classList.remove('desktop-view');
+        }
+        embedVideo.classList.add('plyr__video-embed');
         // tslint:disable-next-line:no-unused-expression
         new Plyr(embedVideo as HTMLElement, {ratio: '16:9'});
         // if we have video tag, plugin will adding div tags to wrap video tag and main div contain .plyr css class.
