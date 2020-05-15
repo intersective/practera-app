@@ -80,7 +80,7 @@
             <ng-container *ngIf="fileType === 'any'">
               <ion-icon name="search-outline" color="primary" (click)="previewFile(file)"></ion-icon>&nbsp;
             </ng-container>
-            <ion-icon *ngIf="removeFile" name="trash-outline" color="primary" class="ion-float-right" (click)="removeUploadedFile()"></ion-icon>
+            <ion-icon *ngIf="removeFile.observers.length > 0 && !disabled" name="trash-outline" color="primary" class="ion-float-right" (click)="removeUploadedFile()"></ion-icon>
           </div>
         </ion-col>
       </ion-row>
