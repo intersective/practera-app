@@ -6,13 +6,16 @@ import { Directive, HostListener, HostBinding, Output, EventEmitter, Input } fro
 export class DragAndDropDirective {
   @Output() fileDropped = new EventEmitter<any>();
   @Input() acceptFileType?: string;
+  @Input() disabled?: boolean;
 
   @HostBinding('class.fileover') fileOver: boolean;
 
   @HostListener('dragover', ['$event']) ondragover(evt) {
     evt.preventDefault();
     evt.stopPropagation();
-    this.fileOver = true;
+    if (!this.disabled) {
+      this.fileOver = true;
+    }
   }
 
   @HostListener('dragleave', ['$event']) ondragleave(evt) {
@@ -24,6 +27,9 @@ export class DragAndDropDirective {
   @HostListener('drop', ['$event']) ondrop(evt) {
     evt.preventDefault();
     evt.stopPropagation();
+    if (this.disabled) {
+      return;
+    }
     this.fileOver = false;
     const files = evt.dataTransfer.files;
     // error - no file droped

@@ -17,6 +17,7 @@ export class FileDisplayComponent implements OnInit, OnChanges {
   @Input() isFileComponent?: boolean;
   @ViewChild('videoEle') videoEle: ElementRef;
   @Output() removeFile?: EventEmitter<any> = new EventEmitter();
+  @Input() disabled?: boolean;
 
   constructor(private filestackService: FilestackService, private utils: UtilsService) { }
 
@@ -61,7 +62,7 @@ export class FileDisplayComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(change: SimpleChanges) {
-    if (change.file.currentValue && change.file.currentValue.workflows) {
+    if (change.file && change.file.currentValue && change.file.currentValue.workflows) {
       this.updateWorkflowStatus(change.file.currentValue);
     }
   }
