@@ -82,7 +82,7 @@ export class FilestackService {
       container,
       region,
       workflows,
-      paths,
+      paths
     } = environment.filestack.s3Config);
 
     let path = paths.any;
