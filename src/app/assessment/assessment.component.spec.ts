@@ -308,7 +308,7 @@ describe('AssessmentComponent', () => {
             expect(page.questionDescriptions[questionIndex]).toBeTruthy();
           });
         });
-        expect(notificationSpy.alert.calls.count()).toBe(0);
+        expect(notificationSpy.alert.calls.count()).toBe(1);
       };
     });
 
