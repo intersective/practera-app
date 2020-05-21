@@ -1,5 +1,6 @@
 import { TopicService, Topic } from './topic.service';
-import { Component, OnInit, NgZone, Input, Output, EventEmitter } from '@angular/core';
+import { Component, NgZone, Input, Output, EventEmitter, Inject } from '@angular/core';
+import { DOCUMENT } from '@angular/common';
 import { EmbedVideoService } from 'ngx-embed-video';
 import { Router, ActivatedRoute } from '@angular/router';
 import { FilestackService } from '@shared/filestack/filestack.service';
@@ -11,6 +12,7 @@ import { ActivityService, Task } from '../activity/activity.service';
 import { SharedService } from '@services/shared.service';
 import { Subscription, Observable } from 'rxjs';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
+import * as Plyr from 'plyr';
 
 @Component({
   selector: 'app-topic',
@@ -54,7 +56,8 @@ export class TopicComponent extends RouterEnter {
     private activityService: ActivityService,
     private sharedService: SharedService,
     private ngZone: NgZone,
-    private newRelic: NewRelicService
+    private newRelic: NewRelicService,
+    @Inject(DOCUMENT) private readonly document: Document
   ) {
     super(router);
   }
@@ -90,6 +93,7 @@ export class TopicComponent extends RouterEnter {
     }
     this._getTopic();
     this._getTopicProgress();
+
     setTimeout(() => this.askForMarkAsDone = true, 15000);
   }
 
@@ -106,12 +110,47 @@ export class TopicComponent extends RouterEnter {
           if ( topic.videolink ) {
             this.iframeHtml = this.embedService.embed(this.topic.videolink, { attr: { class: !this.utils.isMobile() ? 'topic-video desktop-view' : 'topic-video' }});
           }
+          this._initVideoPlayer();
           this.newRelic.setPageViewName(`Topic ${this.topic.title} ID: ${this.topic.id}`);
         },
         err => {
           this.newRelic.noticeError(`${JSON.stringify(err)}`);
         }
       );
+  }
+
+  // convert other brand video players to custom player.
+  private _initVideoPlayer() {
+    setTimeout(() => {
+      this.utils.each(this.document.querySelectorAll('.video-embed'), embedVideo => {
+        embedVideo.classList.remove('topic-video');
+        if (!this.utils.isMobile()) {
+          embedVideo.classList.remove('desktop-view');
+        }
+        embedVideo.classList.add('plyr__video-embed');
+        // tslint:disable-next-line:no-unused-expression
+        new Plyr(embedVideo as HTMLElement, {ratio: '16:9'});
+        // if we have video tag, plugin will adding div tags to wrap video tag and main div contain .plyr css class.
+        // so we need to add topic-video and desktop-view to that div to load video properly .
+        if (embedVideo.nodeName === 'VIDEO') {
+          embedVideo.classList.remove('plyr__video-embed');
+          this.utils.each(this.document.querySelectorAll('.plyr'), videoPlayer => {
+            if (!videoPlayer.classList.contains('topic-custome-player', 'desktop-view')) {
+              videoPlayer.classList.add('topic-custome-player');
+              if (!this.utils.isMobile()) {
+                videoPlayer.classList.add('desktop-view');
+              }
+            }
+          });
+          return;
+        }
+        embedVideo.classList.add('topic-custome-player');
+        if (!this.utils.isMobile()) {
+          embedVideo.classList.add('desktop-view');
+        }
+      });
+    // tslint:disable-next-line:align
+    }, 500);
   }
 
   private _getTopicProgress() {

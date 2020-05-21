@@ -448,6 +448,14 @@ ion-skeleton-text {
 /******************
 for videos in topics
 *******************/
+.topic-custome-player {
+  margin: auto;
+  &.desktop-view {
+    max-width: 710px;
+    max-height: 400px;
+  }
+}
+
 .topic-video {
   position: absolute;
   top: 0;
