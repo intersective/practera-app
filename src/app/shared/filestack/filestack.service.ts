@@ -82,7 +82,7 @@ export class FilestackService {
       container,
       region,
       workflows,
-      paths,
+      paths
     } = environment.filestack.s3Config);
 
     let path = paths.any;
@@ -188,6 +188,30 @@ export class FilestackService {
     };
 
     return await this.filestack.picker(Object.assign(pickerOptions, options)).open();
+  }
+
+  async upload(file, uploadOptions, path, uploadToken): Promise<any> {
+    const option = {
+      onProgress: uploadOptions.onProgress
+    };
+
+    if (!path) {
+      path = this.getS3Config(this.getFileTypes());
+    }
+
+    await this.filestack.upload(file, option, path, uploadToken)
+    .then(res => {
+      const missingAttribute = {
+        container: res.container,
+        key: res.key,
+        filename: res.filename,
+        mimetype: res.mimetype
+      };
+      return uploadOptions.onFileUploadFinished(Object.assign(res.toJSON(), missingAttribute));
+    })
+    .catch(err => {
+      return uploadOptions.onFileUploadFailed(err);
+    });
   }
 
   async previewModal(url, filestackUploadedResponse?): Promise<void> {

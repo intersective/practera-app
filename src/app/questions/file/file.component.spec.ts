@@ -74,7 +74,7 @@ describe('FileComponent', () => {
 
   describe('when testing onFileUploadCompleted()', () => {
     it('should get error if file upload fail', () => {
-      component.onFileUploadCompleted({success: false}, 'a');
+      component.onFileUploadCompleted({success: false, data: {}}, 'a');
       expect(component.errors.length).toBe(1);
     });
     it('should get correct data if file upload success when doing submission', () => {
