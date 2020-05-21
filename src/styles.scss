@@ -255,8 +255,11 @@ ion-skeleton-text {
         margin: 0 15px 30px;
         ion-button {
           max-width: 312px;
+          margin-left: auto;
+          margin-right: auto;
         }
         &.button-container {
+          
           margin: 0 15px 4px;
         }
         .description {
