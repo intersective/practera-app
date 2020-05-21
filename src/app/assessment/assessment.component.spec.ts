@@ -1,5 +1,5 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { ReactiveFormsModule } from '@angular/forms';
+import { ReactiveFormsModule, FormGroup, FormControl } from '@angular/forms';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { async, ComponentFixture, TestBed, fakeAsync, tick, inject } from '@angular/core/testing';
 import { QuestionsModule } from '@app/questions/questions.module';
@@ -154,6 +154,7 @@ describe('AssessmentComponent', () => {
     answers: [],
     submitterName: 'name',
     modified: '2019-02-02',
+    completed: false,
     isLocked: false,
     submitterImage: '',
     reviewerName: 'name'
@@ -205,7 +206,7 @@ describe('AssessmentComponent', () => {
         },
         {
           provide: AssessmentService,
-          useValue: jasmine.createSpyObj('AssessmentService', ['getAssessment', 'getSubmission', 'getFeedbackReviewed', 'saveAnswers', 'saveFeedbackReviewed', 'popUpReviewRating'])
+          useValue: jasmine.createSpyObj('AssessmentService', ['getAssessment', 'saveAnswers', 'saveFeedbackReviewed', 'popUpReviewRating'])
         },
         {
           provide: NotificationService,
@@ -248,13 +249,12 @@ describe('AssessmentComponent', () => {
     utils = TestBed.inject(UtilsService);
 
     // initialise service calls
-    assessmentSpy.getAssessment.and.returnValue(of(mockAssessment));
-    assessmentSpy.getSubmission.and.returnValue(of({
-      submission: {},
-      review: {}
+    assessmentSpy.getAssessment.and.returnValue(of({
+      assessment: mockAssessment,
+      submission: null,
+      review: null
     }));
-    assessmentSpy.saveAnswers.and.returnValue(of({}));
-    assessmentSpy.getFeedbackReviewed.and.returnValue(of(true));
+    assessmentSpy.saveAnswers.and.returnValue(of(true));
     assessmentSpy.saveFeedbackReviewed.and.returnValue(of({success: true}));
     activitySpy.gotoNextTask.and.returnValue(new Promise(() => {}));
     storageSpy.getUser.and.returnValue(mockUser);
@@ -267,145 +267,131 @@ describe('AssessmentComponent', () => {
 
   it('should get correct parameters from routing', () => {
     fixture.detectChanges();
-    fixture.whenStable().then(() => {
-      expect(component.id).toEqual(1);
-      expect(component.activityId).toEqual(2);
-      expect(component.contextId).toEqual(3);
-      expect(component.submissionId).toEqual(4);
-      expect(component.action).toEqual('assessment');
-    });
+    expect(component.id).toEqual(1);
+    expect(component.activityId).toEqual(2);
+    expect(component.contextId).toEqual(3);
+    expect(component.submissionId).toEqual(4);
+    expect(component.action).toEqual('assessment');
   });
 
-  it('should get correct assessment and display correct info in html', () => {
-    fixture.detectChanges();
-    fixture.whenStable().then(() => {
-      expect(component.assessment).toEqual(mockAssessment);
-      expect(component.loadingAssessment).toEqual(false);
-      expect(page.savingMessage).toBeFalsy();
-      expect(page.assessmentName.innerHTML).toEqual(mockAssessment.name);
-      expect(page.assessmentDescription).toBeTruthy();
-      expect(page.overDueMsg).toBeFalsy();
-      expect(page.dueMsg.innerHTML.trim()).toEqual(shared.dueDateFormatter(mockAssessment.dueDate));
-      mockAssessment.groups.forEach((group, groupIndex) => {
-        expect(page.groupNames[groupIndex].innerHTML).toEqual(group.name);
-        expect(page.groupDescriptions[groupIndex]).toBeTruthy();
-        group.questions.forEach((question, questionIndex) => {
-          expect(page.questionNames[questionIndex].innerHTML).toContain(question.name);
-          expect(page.questionDescriptions[questionIndex]).toBeTruthy();
+  describe('when testing getAssessment()', () => {
+    let tmpAssessment, tmpSubmission, tmpReview, customTests;
+    beforeEach(() => {
+      tmpAssessment = mockAssessment;
+      tmpSubmission = null;
+      tmpReview = null;
+      customTests = () => {};
+    });
+    afterEach(() => {
+      assessmentSpy.getAssessment.and.returnValue(of({
+        assessment: tmpAssessment,
+        submission: tmpSubmission,
+        review: tmpReview
+      }));
+      fixture.detectChanges();
+      customTests();
+    });
+    it('should get correct assessment and display correct info in html', () => {
+      customTests = () => {
+        expect(component.assessment).toEqual(mockAssessment);
+        expect(component.loadingAssessment).toEqual(false);
+        expect(page.savingMessage).toBeFalsy();
+        expect(page.assessmentName.innerHTML).toEqual(mockAssessment.name);
+        expect(page.assessmentDescription).toBeTruthy();
+        expect(page.overDueMsg).toBeFalsy();
+        expect(page.dueMsg.innerHTML.trim()).toEqual(shared.dueDateFormatter(mockAssessment.dueDate));
+        mockAssessment.groups.forEach((group, groupIndex) => {
+          expect(page.groupNames[groupIndex].innerHTML).toEqual(group.name);
+          expect(page.groupDescriptions[groupIndex]).toBeTruthy();
+          group.questions.forEach((question, questionIndex) => {
+            expect(page.questionNames[questionIndex].innerHTML).toContain(question.name);
+            expect(page.questionDescriptions[questionIndex]).toBeTruthy();
+          });
         });
-      });
-      expect(notificationSpy.alert.calls.count()).toBe(0);
-      expect(assessmentSpy.getSubmission.calls.count()).toBe(1);
+        expect(notificationSpy.alert.calls.count()).toBe(1);
+      };
     });
-  });
 
-  it('should pop up alert if it is team assessment and user is not in team', fakeAsync(() => {
-      const tmpAssessment = JSON.parse(JSON.stringify(mockAssessment));
+    it('should pop up alert if it is team assessment and user is not in team', () => {
+      tmpAssessment = JSON.parse(JSON.stringify(mockAssessment));
       tmpAssessment.isForTeam = true;
-      assessmentSpy.getAssessment.and.returnValue(of(tmpAssessment));
       const tmpUser = JSON.parse(JSON.stringify(mockUser));
       tmpUser.teamId = null;
       storageSpy.getUser.and.returnValue(tmpUser);
-
-      tick(); // getAssessment
-      tick(); // getSubmission
-      tick(); // getFeedbackReviewed
-
-      fixture.detectChanges();
-      fixture.whenStable().then(() => {
+      customTests = () => {
         expect(notificationSpy.alert.calls.count()).toBe(1);
-        // we need to call getSubmission to determine the values for doReview/doAssessment
-        expect(assessmentSpy.getSubmission.calls.count()).toBe(1);
-      });
-    })
-  );
-
-  it('should get correct in progress submission', () => {
-    assessmentSpy.getSubmission.and.returnValue(of({
-      submission: mockSubmission,
-      review: {}
-    }));
-    fixture.detectChanges();
-    fixture.whenStable().then(() => {
-      expect(component.submission).toEqual(mockSubmission);
-      expect(component.loadingSubmission).toEqual(false);
-      expect(component.doAssessment).toBe(true);
-      expect(component.doReview).toBe(false);
-      expect(component.savingMessage).toEqual('Last saved ' + utils.timeFormatter(mockSubmission.modified));
-      expect(component.savingButtonDisabled).toBe(false);
+      };
     });
-  });
 
-  it('should get correct in progress locked submission', () => {
-    const tmpSubmission = JSON.parse(JSON.stringify(mockSubmission));
-    tmpSubmission.isLocked = true;
-    assessmentSpy.getSubmission.and.returnValue(of({
-      submission: tmpSubmission,
-      review: {}
-    }));
-    fixture.detectChanges();
-    fixture.whenStable().then(() => {
-      expect(component.doAssessment).toBe(false);
-      expect(component.doReview).toBe(false);
-      expect(component.savingButtonDisabled).toBe(true);
-      expect(component.submission.status).toEqual('done');
+    it('should get correct in progress submission', () => {
+      tmpSubmission = mockSubmission;
+      customTests = () => {
+        expect(component.submission).toEqual(mockSubmission);
+        expect(component.doAssessment).toBe(true);
+        expect(component.doReview).toBe(false);
+        expect(component.savingMessage).toEqual('Last saved ' + utils.timeFormatter(mockSubmission.modified));
+        expect(component.savingButtonDisabled).toBe(false);
+      };
     });
-  });
 
-  it('should get correct done submission', () => {
-    const tmpSubmission = JSON.parse(JSON.stringify(mockSubmission));
-    tmpSubmission.status = 'done';
-    assessmentSpy.getSubmission.and.returnValue(of({
-      submission: tmpSubmission,
-      review: {}
-    }));
-    fixture.detectChanges();
-    fixture.whenStable().then(() => {
-      expect(component.submission).toEqual(tmpSubmission);
-      expect(component.loadingSubmission).toEqual(false);
-      expect(component.doAssessment).toBe(false);
-      expect(component.doReview).toBe(false);
-      expect(component.savingButtonDisabled).toBe(true);
+    it('should get correct in progress locked submission', () => {
+      tmpSubmission = JSON.parse(JSON.stringify(mockSubmission));
+      tmpSubmission.isLocked = true;
+      customTests = () => {
+        expect(component.doAssessment).toBe(false);
+        expect(component.doReview).toBe(false);
+        expect(component.savingButtonDisabled).toBe(true);
+        expect(component.submission.status).toEqual('done');
+      };
     });
-  });
 
-  it('should get correct in progress review', () => {
-    const tmpSubmission = JSON.parse(JSON.stringify(mockSubmission));
-    tmpSubmission.status = 'pending review';
-    assessmentSpy.getSubmission.and.returnValue(of({
-      submission: tmpSubmission,
-      review: mockReview
-    }));
-    routeStub.snapshot.data.action = 'review';
-    fixture.detectChanges();
-    fixture.whenStable().then(() => {
-      expect(component.review).toEqual(mockReview);
-      expect(component.doAssessment).toBe(false);
-      expect(component.doReview).toBe(true);
-      expect(component.savingButtonDisabled).toBe(false);
-      expect(assessmentSpy.getFeedbackReviewed.calls.count()).toBe(0);
+    it('should get correct done submission', () => {
+      tmpSubmission = JSON.parse(JSON.stringify(mockSubmission));
+      tmpSubmission.status = 'done';
+      customTests = () => {
+        expect(component.submission).toEqual(tmpSubmission);
+        expect(component.doAssessment).toBe(false);
+        expect(component.doReview).toBe(false);
+        expect(component.savingButtonDisabled).toBe(true);
+      };
     });
-  });
 
-  it('should get correct published review', () => {
-    const tmpSubmission = JSON.parse(JSON.stringify(mockSubmission));
-    tmpSubmission.status = 'published';
-    const tmpReview = JSON.parse(JSON.stringify(mockReview));
-    tmpReview.status = '';
-    assessmentSpy.getSubmission.and.returnValue(of({
-      submission: tmpSubmission,
-      review: tmpReview
-    }));
+    it('should get correct in progress review', () => {
+      tmpSubmission = JSON.parse(JSON.stringify(mockSubmission));
+      tmpSubmission.status = 'pending review';
+      tmpReview = mockReview;
+      routeStub.snapshot.data.action = 'review';
+      customTests = () => {
+        expect(component.review).toEqual(mockReview);
+        expect(component.doAssessment).toBe(false);
+        expect(component.doReview).toBe(true);
+        expect(component.savingButtonDisabled).toBe(false);
+      };
+    });
 
-    fixture.detectChanges();
-    fixture.whenStable().then(() => {
-      expect(component.review).toEqual(tmpReview);
-      expect(component.doAssessment).toBe(false, 'not do assessment');
-      expect(component.doReview).toBe(false, 'not do review');
-      expect(component.savingButtonDisabled).toBe(true);
-      expect(assessmentSpy.getFeedbackReviewed.calls.count()).toBe(1);
-      expect(component.feedbackReviewed).toBe(true);
-      expect(component.loadingFeedbackReviewed).toBe(false);
+    it('should get correct published review', () => {
+      tmpSubmission = JSON.parse(JSON.stringify(mockSubmission));
+      tmpSubmission.status = 'published';
+      tmpReview = JSON.parse(JSON.stringify(mockReview));
+      tmpReview.status = '';
+      customTests = () => {
+        expect(component.review).toEqual(tmpReview);
+        expect(component.doAssessment).toBe(false, 'not do assessment');
+        expect(component.doReview).toBe(false, 'not do review');
+        expect(component.savingButtonDisabled).toBe(true);
+        expect(component.feedbackReviewed).toBe(false);
+      };
+    });
+
+    it('should get correct review published status', () => {
+      tmpSubmission = JSON.parse(JSON.stringify(mockSubmission));
+      tmpSubmission.status = 'published';
+      tmpSubmission.completed = true;
+      tmpReview = JSON.parse(JSON.stringify(mockReview));
+      tmpReview.status = 'done';
+      customTests = () => {
+        expect(component.feedbackReviewed).toBe(true);
+      };
     });
   });
 
@@ -423,14 +409,12 @@ describe('AssessmentComponent', () => {
     component.navigateBack();
   });
 
-  it('should navigate to the correct page #3', fakeAsync(() => {
+  it('should navigate to the correct page #3', () => {
     component.activityId = 1;
-    tick();
-    const test = component.navigateBack();
-    tick();
+    component.navigateBack();
     expect(component.activityId).toEqual(1);
     expect(routerSpy.navigate.calls.first().args[0]).toEqual(['app', 'activity', 1]);
-  }));
+  });
 
   it('should navigate to the correct page #4', () => {
     component.activityId = null;
@@ -492,15 +476,15 @@ describe('AssessmentComponent', () => {
     let savingButtonDisabled = false;
 
     beforeEach(() => {
-      fixture.detectChanges();
+      component.assessment = mockAssessment;
       component.id = 1;
       component.doAssessment = true;
       component.contextId = 2;
       component.assessment.isForTeam = true;
-      component.questionsForm.patchValue({
-        'q-123': 'abc',
-        'q-124': null,
-        'q-125': null
+      component.questionsForm = new FormGroup({
+        'q-123': new FormControl('abc'),
+        'q-124': new FormControl(null),
+        'q-125': new FormControl(null)
       });
     });
 
@@ -529,7 +513,7 @@ describe('AssessmentComponent', () => {
       component.submit(true);
       assessment = assessmentSpy.saveAnswers.calls.first().args[0];
       answers = assessmentSpy.saveAnswers.calls.first().args[1];
-      expect(component.submitting).toBe(false);
+      expect(component.submitting).toBeFalsy();
       expect(component.savingMessage).toContain('Last saved');
       expect(assessment.in_progress).toBe(true);
       expect(assessment.unlock).toBeFalsy();
@@ -553,24 +537,18 @@ describe('AssessmentComponent', () => {
     });
   });
 
-  it('should pop up alert if required answer missing when submitting', fakeAsync(() => {
-    const tmpAssessment = JSON.parse(JSON.stringify(mockAssessment));
-    assessmentSpy.getAssessment.and.returnValue(of(tmpAssessment));
-
+  it('should pop up alert if required answer missing when submitting', () => {
     component.doAssessment = true;
     fixture.detectChanges();
-    fixture.whenStable().then(() => {
-      component.questionsForm.patchValue({
-        'q-123': null,
-        'q-124': null,
-        'q-125': null
-      });
-      component.submit(false);
-      tick();
-      expect(component.submitting).toBe(false);
-      expect(notificationSpy.popUp.calls.count()).toBe(1);
+    component.questionsForm = new FormGroup({
+      'q-123': new FormControl(null),
+      'q-124': new FormControl(null),
+      'q-125': new FormControl(null)
     });
-  }));
+    component.submit(false);
+    expect(component.submitting).toBe(false);
+    expect(notificationSpy.popUp.calls.count()).toBe(1);
+  });
 
   describe('submitting assessment submit(false)', () => {
     const activityId = 1;
@@ -591,17 +569,10 @@ describe('AssessmentComponent', () => {
         groups: [],
         pulseCheck: true,
       };
-      // component.doAssessment = true;
     });
 
-    it('should be called with correct assessment answer/action/activity status', fakeAsync(() => {
-      const tmpAssessment = JSON.parse(JSON.stringify(mockAssessment));
-      assessmentSpy.getAssessment.and.returnValue(of(tmpAssessment));
-      tick();
-
+    it('should be called with correct assessment answer/action/activity status', () => {
       component.submit(false);
-      tick();
-
       expect(assessmentSpy.saveAnswers).toHaveBeenCalled();
       expect(assessmentSpy.saveAnswers).toHaveBeenCalledWith(
         {
@@ -612,25 +583,19 @@ describe('AssessmentComponent', () => {
         action,
         assessmentId
       );
-      tick(10 * 1000); // 10 secs
-    }));
+    });
 
-    it(`should check fastfeedback availability as pulseCheck is 'true'`, fakeAsync(() => {
+    it(`should check fastfeedback availability as pulseCheck is 'true'`, () => {
       component.submit(false);
       const spy = spyOn(fastFeedbackSpy, 'pullFastFeedback').and.returnValue(of(fastFeedbackSpy.pullFastFeedback()));
       spyOn(component, 'goToNextTask');
       spyOn(component, 'navigateBack');
-
-      tick(12 * 1000); // simulate 12sec (submission 10s & fastfeedback 2s)
-
       fixture.detectChanges();
-      fixture.whenStable().then(() => {
-        expect(fastFeedbackSpy.pullFastFeedback.calls.count()).toEqual(1);
-        if (component.doReview === true) {
-          expect(component.navigateBack).toHaveBeenCalled();
-        }
-      });
-    }));
+      expect(fastFeedbackSpy.pullFastFeedback.calls.count()).toEqual(1);
+      if (component.doReview === true) {
+        expect(component.navigateBack).toHaveBeenCalled();
+      }
+    });
 
     it('should skip fastfeedback if pulsecheck = false', () => {
       component.assessment.pulseCheck = false;

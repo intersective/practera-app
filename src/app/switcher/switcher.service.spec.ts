@@ -183,30 +183,30 @@ describe('SwitcherService', () => {
           {
             id: 1,
             progress: 0.1,
-            todo_items: [
+            todoItems: [
               {
-                is_done: true
+                isDone: true
               },
               {
-                is_done: false
+                isDone: false
               },
               {
-                is_done: true
+                isDone: true
               }
             ]
           },
           {
             id: 2,
             progress: 0.31,
-            todo_items: [
+            todoItems: [
               {
-                is_done: true
+                isDone: true
               },
               {
-                is_done: false
+                isDone: false
               },
               {
-                is_done: false
+                isDone: false
               }
             ]
           }

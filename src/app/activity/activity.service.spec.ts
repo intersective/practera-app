@@ -58,13 +58,13 @@ describe('ActivityService', () => {
               id: 1,
               type: 'topic',
               name: 'topic 1',
-              is_locked: true
+              isLocked: true
             },
             {
               id: 11,
               type: 'topic',
               name: 'topic 2',
-              is_locked: false,
+              isLocked: false,
               status: {
                 status: 'done'
               }
@@ -73,30 +73,30 @@ describe('ActivityService', () => {
               id: 21,
               type: 'assessment',
               name: 'asmt 21',
-              is_team: false,
-              is_locked: false,
+              isTeam: false,
+              isLocked: false,
               deadline: '2019-02-02',
-              context_id: 211,
+              contextId: 211,
               status: {
                 status: 'in progress',
-                is_locked: false,
-                submitter_name: 'sub name',
-                submitter_image: 'sub image'
+                isLocked: false,
+                submitterName: 'sub name',
+                submitterImage: 'sub image'
               }
             },
             {
               id: 22,
               type: 'assessment',
               name: 'asmt 22',
-              is_team: false,
-              is_locked: false,
+              isTeam: false,
+              isLocked: false,
               deadline: '2039-02-02',
-              context_id: 211,
+              contextId: 211,
               status: {
                 status: 'pending approval',
-                is_locked: false,
-                submitter_name: 'sub name',
-                submitter_image: 'sub image'
+                isLocked: false,
+                submitterName: 'sub name',
+                submitterImage: 'sub image'
               }
             }
           ]
@@ -129,31 +129,31 @@ describe('ActivityService', () => {
           type: 'Assessment',
           name: assessment1.name,
           contextId: 211,
-          isForTeam: assessment1.is_team,
+          isForTeam: assessment1.isTeam,
           dueDate: assessment1.deadline,
           isOverdue: true,
           isDueToday: false,
           status: assessment1.status.status,
-          isLocked: assessment1.status.is_locked,
+          isLocked: assessment1.status.isLocked,
           submitter: {
-            name: assessment1.status.submitter_name,
-            image: assessment1.status.submitter_image
+            name: assessment1.status.submitterName,
+            image: assessment1.status.submitterImage
           }
         },
         {
           id: assessment2.id,
           type: 'Assessment',
           name: assessment2.name,
-          contextId: assessment2.context_id,
-          isForTeam: assessment2.is_team,
+          contextId: assessment2.contextId,
+          isForTeam: assessment2.isTeam,
           dueDate: assessment2.deadline,
           isOverdue: false,
           isDueToday: false,
           status: 'pending review',
-          isLocked: assessment2.status.is_locked,
+          isLocked: assessment2.status.isLocked,
           submitter: {
-            name: assessment2.status.submitter_name,
-            image: assessment2.status.submitter_image
+            name: assessment2.status.submitterName,
+            image: assessment2.status.submitterImage
           }
         }
       ]
