@@ -39,6 +39,17 @@
   border-style: solid;
   padding: 1px 10px 1px 10px;
 }
+.video-conference-batch {
+  font-size: 12px;
+  position: absolute;
+  top: 15%;
+  right: 15px;
+  color: var(--ion-color-primary);
+  border-radius: 12px;
+  border: 1px var(--ion-color-primary);
+  border-style: solid;
+  padding: 1px 10px 1px 10px;
+}
 // use for expired event title @extend .gray-2 not working because this is a component scss file.
 .color-gray-2 {
   color: var(--practera-60-Percent-gray) !important;

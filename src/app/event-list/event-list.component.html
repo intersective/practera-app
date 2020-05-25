@@ -58,6 +58,7 @@
     <p class="sutitle-2 gray-2 ion-text-left">{{ eventObj.date }}</p>
     <ion-card class="practera-card">
       <ion-list>
+        <!-- @TODO add isVideoConference by checking event zoom object -->
         <app-list-item
           *ngFor="let event of eventObj.events; let i = index"
           leadingIcon="calendar-outline"
