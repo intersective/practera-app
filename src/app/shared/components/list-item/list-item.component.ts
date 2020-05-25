@@ -22,5 +22,6 @@ export class ListItemComponent {
   // whether hightlight the background or not
   @Input() active: boolean;
   @Input() eventExpired: boolean;
+  @Input() isVideoConference: boolean;
 
 }

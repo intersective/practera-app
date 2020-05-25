@@ -7,3 +7,30 @@ ion-icon {
 h1 {
   margin: 0;
 }
+
+.zoom-meeting {
+  img {
+    width: 27px !important;
+    height: 27px !important;
+    margin-right: 10px;
+  }
+  ion-icon {
+    width: 24px !important;
+    height: 24px !important;
+  }
+  .item-content {
+    width: 100%;
+    p {
+      text-overflow: ellipsis;
+      overflow: hidden;
+      white-space: nowrap;
+      // margin: 0;
+    }
+    p:nth-child(1) {
+      margin-bottom: 0 !important
+    }
+    p:nth-child(2) {
+      margin-top: 0 !important
+    }
+  }
+}
