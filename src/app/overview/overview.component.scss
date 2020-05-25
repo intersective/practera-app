@@ -13,3 +13,25 @@ ion-grid.desktop-view {
 ion-col {
   background: var(--ion-color-light) !important;
 }
+
+.home-component {
+  // max-width: 320px !important;
+  margin-left: calc(calc(1 / var(--ion-grid-columns, 12)) * 100%);
+  // margin-right: 16px;
+}
+
+@media screen and (max-width: 1020px) {
+  .home-component {
+    margin-left: 0 !important;
+  }
+  .project-component {
+    margin-right: 0 !important;
+  }
+}
+
+.project-component {
+  // max-width: 524px !important;
+  margin-right: calc(calc(1 / var(--ion-grid-columns, 12)) * 100%);
+  // margin-right: 83px;
+  // margin-left: 16px;
+}
