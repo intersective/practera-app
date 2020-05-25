@@ -173,4 +173,9 @@ export class EventDetailComponent implements OnInit {
   close() {
     this.modalController.dismiss();
   }
+
+  openMeetingLink(link) {
+    window.open(link, '_system');
+  }
+
 }
