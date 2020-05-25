@@ -13,6 +13,7 @@
   <ion-icon *ngIf="endingIcon" [name]="endingIcon" slot="end" [color]="endingIconColor || 'primary'"></ion-icon>
 
   <div *ngIf="eventExpired" class="expired-batch gray-2">Expired</div>
+  <div *ngIf="isVideoConference && !eventExpired" class="video-conference-batch">Zoom</div>
 
 </clickable-item>
 

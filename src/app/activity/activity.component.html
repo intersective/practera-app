@@ -67,6 +67,7 @@
     <ion-card class="practera-card" id="events-card">
       <ion-list>
         <ng-container *ngFor="let event of events; let i = index">
+          <!-- @TODO add isVideoConference by checking event zoom object -->
           <app-list-item
             *ngIf="i < 2"
             leadingIcon="calendar-outline"
