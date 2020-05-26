@@ -175,7 +175,9 @@ export class EventDetailComponent implements OnInit {
   }
 
   openMeetingLink(link) {
-    window.open(link, '_system');
+    if (this.utils.timeComparer(this.event.startTime) >= 0) {
+      window.open(link, '_system');
+    }
   }
 
 }
