@@ -86,10 +86,6 @@ export class ContactNumberFormComponent implements OnInit {
       {
         name: 'United Kingdom',
         code: 'UK'
-      },
-      {
-        name: 'Canada',
-        code: 'CA'
       }
     ]
   };
@@ -125,6 +121,30 @@ export class ContactNumberFormComponent implements OnInit {
 
     if (prefix === '+61') {
       this.countryModel = 'AUS';
+      this.activeCountryModelInfo.countryCode = this.contactNumberFormat.masks[this.countryModel].format;
+      this.activeCountryModelInfo.placeholder = this.contactNumberFormat.masks[this.countryModel].placeholder;
+      this.activeCountryModelInfo.pattern = this.contactNumberFormat.masks[this.countryModel].pattern;
+      this.activeCountryModelInfo.length = this.contactNumberFormat.masks[this.countryModel].numberLength;
+      return;
+    }
+    if (prefix === '+64') {
+      this.countryModel = 'NZ';
+      this.activeCountryModelInfo.countryCode = this.contactNumberFormat.masks[this.countryModel].format;
+      this.activeCountryModelInfo.placeholder = this.contactNumberFormat.masks[this.countryModel].placeholder;
+      this.activeCountryModelInfo.pattern = this.contactNumberFormat.masks[this.countryModel].pattern;
+      this.activeCountryModelInfo.length = this.contactNumberFormat.masks[this.countryModel].numberLength;
+      return;
+    }
+    if (prefix === '+49') {
+      this.countryModel = 'DE';
+      this.activeCountryModelInfo.countryCode = this.contactNumberFormat.masks[this.countryModel].format;
+      this.activeCountryModelInfo.placeholder = this.contactNumberFormat.masks[this.countryModel].placeholder;
+      this.activeCountryModelInfo.pattern = this.contactNumberFormat.masks[this.countryModel].pattern;
+      this.activeCountryModelInfo.length = this.contactNumberFormat.masks[this.countryModel].numberLength;
+      return;
+    }
+    if (prefix === '+44') {
+      this.countryModel = 'UK';
       this.activeCountryModelInfo.countryCode = this.contactNumberFormat.masks[this.countryModel].format;
       this.activeCountryModelInfo.placeholder = this.contactNumberFormat.masks[this.countryModel].placeholder;
       this.activeCountryModelInfo.pattern = this.contactNumberFormat.masks[this.countryModel].pattern;
