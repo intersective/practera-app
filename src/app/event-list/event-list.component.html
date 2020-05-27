@@ -67,7 +67,7 @@
           [titleColor]="eventListService.isNotActionable(event) ? 'gray-2' : ''"
           [subtitle1]="event.activityName"
           [subtitle2]="eventListService.timeDisplayed(event)"
-          [eventVideoConferences]="event.videoConferences"
+          [eventVideoConference]="event.videoConference"
           [eventExpired]="event.isPast && !event.isBooked"
           [active]="eventId === event.id"
           [lines]="i == eventObj.events.length - 1 ? 'none' : ''"
