@@ -46,6 +46,24 @@ export class ContactNumberFormComponent implements OnInit {
         placeholder: '000 000 0000',
         pattern: '^[0-9]{3}[\s\-]?[\0-9]{3}[\s\-]?[0-9]{4}$',
         numberLength: '12'
+      },
+      NZ: {
+        format: '+64',
+        placeholder: '000 000 000',
+        pattern: '^[0-9]{3}[\s\-]?[\0-9]{3}[\s\-]?[0-9]{3}$',
+        numberLength: '12'
+      },
+      DE: {
+        format: '+49',
+        placeholder: '000 000 000',
+        pattern: '^[0-9]{3}[\s\-]?[\0-9]{3}[\s\-]?[0-9]{4}$',
+        numberLength: '12'
+      },
+      UK: {
+        format: '+44',
+        placeholder: '00 0000 0000',
+        pattern: '^[0-9]{2}[\s\-]?[\0-9]{4}[\s\-]?[0-9]{4}$',
+        numberLength: '12'
       }
     },
     countryCodes: [
@@ -57,6 +75,18 @@ export class ContactNumberFormComponent implements OnInit {
         name: 'US/Canada',
         code: 'US'
       },
+      {
+        name: 'New Zealand',
+        code: 'NZ'
+      },
+      {
+        name: 'Germany',
+        code: 'DE'
+      },
+      {
+        name: 'United Kingdom',
+        code: 'UK'
+      }
     ]
   };
 
@@ -91,6 +121,30 @@ export class ContactNumberFormComponent implements OnInit {
 
     if (prefix === '+61') {
       this.countryModel = 'AUS';
+      this.activeCountryModelInfo.countryCode = this.contactNumberFormat.masks[this.countryModel].format;
+      this.activeCountryModelInfo.placeholder = this.contactNumberFormat.masks[this.countryModel].placeholder;
+      this.activeCountryModelInfo.pattern = this.contactNumberFormat.masks[this.countryModel].pattern;
+      this.activeCountryModelInfo.length = this.contactNumberFormat.masks[this.countryModel].numberLength;
+      return;
+    }
+    if (prefix === '+64') {
+      this.countryModel = 'NZ';
+      this.activeCountryModelInfo.countryCode = this.contactNumberFormat.masks[this.countryModel].format;
+      this.activeCountryModelInfo.placeholder = this.contactNumberFormat.masks[this.countryModel].placeholder;
+      this.activeCountryModelInfo.pattern = this.contactNumberFormat.masks[this.countryModel].pattern;
+      this.activeCountryModelInfo.length = this.contactNumberFormat.masks[this.countryModel].numberLength;
+      return;
+    }
+    if (prefix === '+49') {
+      this.countryModel = 'DE';
+      this.activeCountryModelInfo.countryCode = this.contactNumberFormat.masks[this.countryModel].format;
+      this.activeCountryModelInfo.placeholder = this.contactNumberFormat.masks[this.countryModel].placeholder;
+      this.activeCountryModelInfo.pattern = this.contactNumberFormat.masks[this.countryModel].pattern;
+      this.activeCountryModelInfo.length = this.contactNumberFormat.masks[this.countryModel].numberLength;
+      return;
+    }
+    if (prefix === '+44') {
+      this.countryModel = 'UK';
       this.activeCountryModelInfo.countryCode = this.contactNumberFormat.masks[this.countryModel].format;
       this.activeCountryModelInfo.placeholder = this.contactNumberFormat.masks[this.countryModel].placeholder;
       this.activeCountryModelInfo.pattern = this.contactNumberFormat.masks[this.countryModel].pattern;
