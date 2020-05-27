@@ -4,7 +4,7 @@ import { RequestService } from '@shared/request/request.service';
 import { BrowserStorageService } from '@services/storage.service';
 import { UtilsService } from '@services/utils.service';
 import { NotificationService } from '@shared/notification/notification.service';
-import { AssessmentService, AssessmentSubmission } from './assessment.service';
+import { AssessmentService, AssessmentSubmitBody } from './assessment.service';
 import { SubmissionFixture } from '@testing/fixtures';
 
 describe('AssessmentService', () => {
@@ -24,7 +24,7 @@ describe('AssessmentService', () => {
         },
         {
           provide: RequestService,
-          useValue: jasmine.createSpyObj('RequestService', ['get', 'post', 'apiResponseFormatError'])
+          useValue: jasmine.createSpyObj('RequestService', ['get', 'post', 'postGraphQL', 'apiResponseFormatError'])
         },
         {
           provide: BrowserStorageService,
@@ -49,163 +49,205 @@ describe('AssessmentService', () => {
 
   describe('when testing getAssessment()', () => {
     let requestResponse;
-    let expected;
+    let expectedAssessment, expectedSubmission, expectedReview;
+    let assessment, group0, question0, question1, question2, group1, question3, question4, submission, review;
     beforeEach(() => {
       requestResponse = {
-        success: true,
-        data: [
-          {
-            pulse_check: false,
-            Assessment: {
-              name: 'test',
-              assessment_type: 'quiz',
-              description: 'des',
-              is_team: false,
-              deadline: '2019-02-02',
-              pulse_check: false
-            },
-            AssessmentGroup: [
+        data: {
+          assessment: {
+            id: 1,
+            name: 'test',
+            type: 'quiz',
+            description: 'des',
+            isTeam: false,
+            dueDate: '2019-02-02',
+            pulseCheck: false,
+            groups: [
               {
                 name: 'g name',
                 description: 'g des',
-                AssessmentGroupQuestion: [
+                questions: [
                   {
-                    AssessmentQuestion: {
-                      id: 1,
-                      name: 'test name 1',
-                      description: 'des 1',
-                      question_type: 'text',
-                      is_required: true,
-                      has_comment: true,
-                      can_answer: true,
-                      audience: ['submitter']
-                    }
+                    id: 1,
+                    name: 'test name 1',
+                    description: 'des 1',
+                    type: 'text',
+                    isRequired: true,
+                    hasComment: true,
+                    audience: ['submitter']
                   },
                   {
-                    AssessmentQuestion: {
-                      id: 2,
-                      name: 'test name 2',
-                      description: 'des 2',
-                      question_type: 'oneof',
-                      is_required: true,
-                      has_comment: true,
-                      can_answer: true,
-                      audience: ['reviewer'],
-                      AssessmentQuestionChoice: [
-                        {
-                          id: 21,
-                          AssessmentChoice: {
-                            name: 'choice name 1'
-                          }
-                        },
-                        {
-                          id: 22,
-                          AssessmentChoice: {
-                            name: 'choice name 2',
-                            explanation: 'exp 2'
-                          }
-                        }
-                      ]
-                    }
+                    id: 2,
+                    name: 'test name 2',
+                    description: 'des 2',
+                    type: 'oneof',
+                    isRequired: true,
+                    hasComment: true,
+                    audience: ['reviewer'],
+                    choices: [
+                      {
+                        id: 21,
+                        name: 'choice name 1'
+                      },
+                      {
+                        id: 22,
+                        name: 'choice name 2'
+                      }
+                    ]
                   },
                   {
-                    AssessmentQuestion: {
-                      id: 3,
-                      name: 'test name 3',
-                      description: 'des 3',
-                      question_type: 'multiple',
-                      is_required: true,
-                      has_comment: true,
-                      can_answer: true,
-                      audience: ['submitter', 'reviewer'],
-                      AssessmentQuestionChoice: [
-                        {
-                          id: 31,
-                          AssessmentChoice: {
-                            name: 'choice name 1',
-                            description: 'choice des 1'
-                          }
-                        },
-                        {
-                          id: 32,
-                          AssessmentChoice: {
-                            name: 'choice name 2',
-                            description: 'choice des 2'
-                          }
-                        }
-                      ]
-                    }
+                    id: 3,
+                    name: 'test name 3',
+                    description: 'des 3',
+                    type: 'multiple',
+                    isRequired: true,
+                    hasComment: true,
+                    audience: ['submitter', 'reviewer'],
+                    choices: [
+                      {
+                        id: 31,
+                        name: 'choice name 1',
+                        description: 'choice des 1'
+                      },
+                      {
+                        id: 32,
+                        name: 'choice name 2',
+                        description: 'choice des 2'
+                      }
+                    ]
                   }
                 ]
               },
               {
                 name: 'g name',
                 description: 'g des',
-                AssessmentGroupQuestion: [
+                questions: [
                   {
-                    AssessmentQuestion: {
-                      id: 11,
-                      name: 'test name 11',
-                      description: 'des 11',
-                      question_type: 'file',
-                      is_required: true,
-                      has_comment: true,
-                      can_answer: true,
-                      audience: ['submitter', 'reviewer'],
-                      file_type: {
-                        type: 'any'
-                      }
-                    }
+                    id: 11,
+                    name: 'test name 11',
+                    description: 'des 11',
+                    type: 'file',
+                    isRequired: true,
+                    hasComment: true,
+                    audience: ['submitter', 'reviewer'],
+                    fileType: 'any'
                   },
                   {
-                    AssessmentQuestion: {
-                      id: 12,
-                      name: 'test name 12',
-                      description: 'des 12',
-                      question_type: 'team member selector',
-                      is_required: true,
-                      has_comment: true,
-                      can_answer: true,
-                      audience: ['submitter', 'reviewer'],
-                      TeamMember: [
-                        {
-                          id: 121,
-                          userName: 'member name 1'
-                        },
-                        {
-                          id: 122,
-                          userName: 'member name 2'
-                        }
-                      ]
-                    }
+                    id: 12,
+                    name: 'test name 12',
+                    description: 'des 12',
+                    type: 'team member selector',
+                    isRequired: true,
+                    hasComment: true,
+                    audience: ['submitter', 'reviewer'],
+                    teamMembers: [
+                      {
+                        id: 121,
+                        userName: 'member name 1'
+                      },
+                      {
+                        id: 122,
+                        userName: 'member name 2'
+                      }
+                    ]
                   },
                 ]
               }
+            ],
+            submissions: [
+              {
+                id: 1,
+                status: 'published',
+                modified: '2019-02-02',
+                locked: false,
+                completed: false,
+                submitter: {
+                  name: 'test name',
+                  image: ''
+                },
+                answers: [
+                  {
+                    questionId: 1,
+                    answer: 'abc'
+                  },
+                  {
+                    questionId: 2,
+                    answer: 21
+                  },
+                  {
+                    questionId: 3,
+                    answer: [31]
+                  },
+                  {
+                    questionId: 11,
+                    answer: ''
+                  },
+                  {
+                    questionId: 12,
+                    answer: '{"id": 121,"userName": "member name 1"}'
+                  }
+                ],
+                review: {
+                  id: 2,
+                  status: 'done',
+                  modified: '2019-02-02',
+                  reviewer: {
+                    name: 'test reviewer name'
+                  },
+                  answers: [
+                    {
+                      questionId: 1,
+                      answer: 'abc',
+                      comment: null
+                    },
+                    {
+                      questionId: 2,
+                      answer: 21,
+                      comment: 'def'
+                    },
+                    {
+                      questionId: 3,
+                      answer: [31],
+                      comment: 'def'
+                    },
+                    {
+                      questionId: 11,
+                      answer: '',
+                      comment: 'def'
+                    },
+                    {
+                      questionId: 12,
+                      answer: null,
+                      comment: null
+                    }
+                  ]
+                }
+              }
             ]
           }
-        ]
+        }
       };
-      const assessment = requestResponse.data[0];
-      const group0 = assessment.AssessmentGroup[0];
+      assessment = requestResponse.data.assessment;
+      group0 = assessment.groups[0];
       // text
-      const question0 = group0.AssessmentGroupQuestion[0].AssessmentQuestion;
+      question0 = group0.questions[0];
       // oneof
-      const question1 = group0.AssessmentGroupQuestion[1].AssessmentQuestion;
+      question1 = group0.questions[1];
       // multiple
-      const question2 = group0.AssessmentGroupQuestion[2].AssessmentQuestion;
-      const group1 = assessment.AssessmentGroup[1];
+      question2 = group0.questions[2];
+      group1 = assessment.groups[1];
       // file
-      const question3 = group1.AssessmentGroupQuestion[0].AssessmentQuestion;
+      question3 = group1.questions[0];
       // team member selector
-      const question4 = group1.AssessmentGroupQuestion[1].AssessmentQuestion;
-      expected = {
-        name: assessment.Assessment.name,
-        type: assessment.Assessment.assessment_type,
-        description: assessment.Assessment.description,
-        isForTeam: assessment.Assessment.is_team,
-        dueDate: assessment.Assessment.deadline,
-        isOverdue: assessment.Assessment.deadline ? utils.timeComparer(assessment.Assessment.deadline) < 0 : false,
-        pulseCheck: assessment.Assessment.pulse_check,
+      question4 = group1.questions[1];
+      expectedAssessment = {
+        name: assessment.name,
+        type: assessment.type,
+        description: assessment.description,
+        isForTeam: assessment.isTeam,
+        dueDate: assessment.dueDate,
+        isOverdue: assessment.dueDate ? utils.timeComparer(assessment.dueDate) < 0 : false,
+        pulseCheck: assessment.pulseCheck,
         groups: [
           {
             name: group0.name,
@@ -214,11 +256,11 @@ describe('AssessmentService', () => {
               {
                 id: question0.id,
                 name: question0.name,
-                type: question0.question_type,
+                type: question0.type,
                 description: question0.description,
-                isRequired: question0.is_required,
-                canComment: question0.has_comment,
-                canAnswer: question0.can_answer,
+                isRequired: question0.isRequired,
+                canComment: question0.hasComment,
+                canAnswer: question0.audience.includes('submitter'),
                 audience: question0.audience,
                 submitterOnly: true,
                 reviewerOnly: false
@@ -226,52 +268,52 @@ describe('AssessmentService', () => {
               {
                 id: question1.id,
                 name: question1.name,
-                type: question1.question_type,
+                type: question1.type,
                 description: question1.description,
-                isRequired: question1.is_required,
-                canComment: question1.has_comment,
-                canAnswer: question1.can_answer,
+                isRequired: question1.isRequired,
+                canComment: question1.hasComment,
+                canAnswer: question1.audience.includes('submitter'),
                 audience: question1.audience,
                 submitterOnly: false,
                 reviewerOnly: true,
                 info: '',
                 choices: [
                   {
-                    id: question1.AssessmentQuestionChoice[0].id,
-                    name: question1.AssessmentQuestionChoice[0].AssessmentChoice.name,
-                    explanation: ''
+                    id: question1.choices[0].id,
+                    name: question1.choices[0].name,
+                    explanation: null
                   },
                   {
-                    id: question1.AssessmentQuestionChoice[1].id,
-                    name: question1.AssessmentQuestionChoice[1].AssessmentChoice.name,
-                    explanation: question1.AssessmentQuestionChoice[1].AssessmentChoice.explanation
+                    id: question1.choices[1].id,
+                    name: question1.choices[1].name,
+                    explanation: null
                   }
                 ]
               },
               {
                 id: question2.id,
                 name: question2.name,
-                type: question2.question_type,
+                type: question2.type,
                 description: question2.description,
-                isRequired: question2.is_required,
-                canComment: question2.has_comment,
-                canAnswer: question2.can_answer,
+                isRequired: question2.isRequired,
+                canComment: question2.hasComment,
+                canAnswer: question2.audience.includes('submitter'),
                 audience: question2.audience,
                 submitterOnly: false,
                 reviewerOnly: false,
-                info: `<h3>Choice Description:</h3><p>${question2.AssessmentQuestionChoice[0].AssessmentChoice.name} ` +
-                  `- ${question2.AssessmentQuestionChoice[0].AssessmentChoice.description}</p><p>${question2.AssessmentQuestionChoice[1].AssessmentChoice.name} ` +
-                  `- ${question2.AssessmentQuestionChoice[1].AssessmentChoice.description}</p>`,
+                info: `<h3>Choice Description:</h3><p>${question2.choices[0].name} ` +
+                  `- ${question2.choices[0].description}</p><p>${question2.choices[1].name} ` +
+                  `- ${question2.choices[1].description}</p>`,
                 choices: [
                   {
-                    id: question2.AssessmentQuestionChoice[0].id,
-                    name: question2.AssessmentQuestionChoice[0].AssessmentChoice.name,
-                    explanation: ''
+                    id: question2.choices[0].id,
+                    name: question2.choices[0].name,
+                    explanation: null
                   },
                   {
-                    id: question2.AssessmentQuestionChoice[1].id,
-                    name: question2.AssessmentQuestionChoice[1].AssessmentChoice.name,
-                    explanation: ''
+                    id: question2.choices[1].id,
+                    name: question2.choices[1].name,
+                    explanation: null
                   }
                 ]
               }
@@ -284,35 +326,35 @@ describe('AssessmentService', () => {
               {
                 id: question3.id,
                 name: question3.name,
-                type: question3.question_type,
+                type: question3.type,
                 description: question3.description,
-                isRequired: question3.is_required,
-                canComment: question3.has_comment,
-                canAnswer: question3.can_answer,
+                isRequired: question3.isRequired,
+                canComment: question3.hasComment,
+                canAnswer: question3.audience.includes('submitter'),
                 audience: question3.audience,
                 submitterOnly: false,
                 reviewerOnly: false,
-                fileType: question3.file_type.type
+                fileType: question3.fileType
               },
               {
                 id: question4.id,
                 name: question4.name,
-                type: question4.question_type,
+                type: question4.type,
                 description: question4.description,
-                isRequired: question4.is_required,
-                canComment: question4.has_comment,
-                canAnswer: question4.can_answer,
+                isRequired: question4.isRequired,
+                canComment: question4.hasComment,
+                canAnswer: question4.audience.includes('submitter'),
                 audience: question4.audience,
                 submitterOnly: false,
                 reviewerOnly: false,
                 teamMembers: [
                   {
-                    key: JSON.stringify(question4.TeamMember[0]),
-                    userName: question4.TeamMember[0].userName
+                    key: JSON.stringify(question4.teamMembers[0]),
+                    userName: question4.teamMembers[0].userName
                   },
                   {
-                    key: JSON.stringify(question4.TeamMember[1]),
-                    userName: question4.TeamMember[1].userName
+                    key: JSON.stringify(question4.teamMembers[1]),
+                    userName: question4.teamMembers[1].userName
                   }
                 ]
               }
@@ -320,405 +362,100 @@ describe('AssessmentService', () => {
           }
         ]
       };
+      submission = assessment.submissions[0];
+      expectedSubmission = {
+        id: submission.id,
+        status: submission.status,
+        submitterName: submission.submitter.name,
+        submitterImage: submission.submitter.image,
+        modified: submission.modified,
+        isLocked: submission.locked,
+        completed: submission.completed,
+        reviewerName: submission.review.reviewer.name,
+        answers: {
+          1: {
+            answer: submission.answers[0].answer
+          },
+          2: {
+            answer: submission.answers[1].answer
+          },
+          3: {
+            answer: submission.answers[2].answer
+          },
+          11: {
+            answer: submission.answers[3].answer
+          },
+          12: {
+            answer: submission.answers[4].answer
+          }
+        }
+      };
+      review = submission.review;
+      expectedReview = {
+        id: review.id,
+        status: review.status,
+        modified: review.modified,
+        answers: {
+          1: {
+            answer: review.answers[0].answer,
+            comment: review.answers[0].comment
+          },
+          2: {
+            answer: review.answers[1].answer,
+            comment: review.answers[1].comment
+          },
+          3: {
+            answer: review.answers[2].answer,
+            comment: review.answers[2].comment
+          },
+          11: {
+            answer: review.answers[3].answer,
+            comment: review.answers[3].comment
+          },
+          12: {
+            answer: review.answers[4].answer,
+            comment: review.answers[4].comment
+          }
+        }
+      };
     });
 
-    it('should throw Assessment format error, if data format not match', () => {
-      const tmpRes = JSON.parse(JSON.stringify(requestResponse));
-      tmpRes.data = [];
-      requestSpy.get.and.returnValue(of(tmpRes));
-      service.getAssessment(1, 'assessment').subscribe();
-      expect(requestSpy.apiResponseFormatError.calls.count()).toBe(1);
-    });
-
-    it('should throw Assessment.AssessmentGroup format error, if data format not match', () => {
-      const tmpRes = JSON.parse(JSON.stringify(requestResponse));
-      tmpRes.data[0].AssessmentGroup[0] = {};
-      requestSpy.get.and.returnValue(of(tmpRes));
-      service.getAssessment(1, 'assessment').subscribe();
-      expect(requestSpy.apiResponseFormatError.calls.count()).toBe(1);
-    });
-
-    it('should throw Assessment.AssessmentGroupQuestion format error, if data format not match', () => {
-      const tmpRes = JSON.parse(JSON.stringify(requestResponse));
-      tmpRes.data[0].AssessmentGroup[0].AssessmentGroupQuestion[0] = {};
-      requestSpy.get.and.returnValue(of(tmpRes));
-      service.getAssessment(1, 'assessment').subscribe();
-      expect(requestSpy.apiResponseFormatError.calls.count()).toBe(1);
-    });
-
-    it('should throw Assessment.AssessmentQuestion format error, if data format not match', () => {
-      const tmpRes = JSON.parse(JSON.stringify(requestResponse));
-      tmpRes.data[0].AssessmentGroup[0].AssessmentGroupQuestion[0].AssessmentQuestion = {};
-      requestSpy.get.and.returnValue(of(tmpRes));
-      service.getAssessment(1, 'assessment').subscribe();
-      expect(requestSpy.apiResponseFormatError.calls.count()).toBe(1);
-    });
-
-    it('should throw Assessment.AssessmentQuestionChoice format error, if data format not match', () => {
-      const tmpRes = JSON.parse(JSON.stringify(requestResponse));
-      tmpRes.data[0].AssessmentGroup[0].AssessmentGroupQuestion[1].AssessmentQuestion.AssessmentQuestionChoice = {};
-      requestSpy.get.and.returnValue(of(tmpRes));
-      service.getAssessment(1, 'assessment').subscribe();
-      expect(requestSpy.apiResponseFormatError.calls.count()).toBe(1);
-    });
-
-    it('should throw Assessment.AssessmentChoice format error, if data format not match', () => {
-      const tmpRes = JSON.parse(JSON.stringify(requestResponse));
-      tmpRes.data[0].AssessmentGroup[0].AssessmentGroupQuestion[1].AssessmentQuestion.AssessmentQuestionChoice[0] = {};
-      requestSpy.get.and.returnValue(of(tmpRes));
-      service.getAssessment(1, 'assessment').subscribe();
-      expect(requestSpy.apiResponseFormatError.calls.count()).toBe(1);
-    });
-
-    it('should throw Assessment.AssessmentQuestion.file_type format error, if data format not match', () => {
-      const tmpRes = JSON.parse(JSON.stringify(requestResponse));
-      tmpRes.data[0].AssessmentGroup[1].AssessmentGroupQuestion[0].AssessmentQuestion.file_type = {};
-      requestSpy.get.and.returnValue(of(tmpRes));
-      service.getAssessment(1, 'assessment').subscribe();
-      expect(requestSpy.apiResponseFormatError.calls.count()).toBe(1);
-    });
-
-    it('should throw Assessment.TeamMember #1 format error, if data format not match', () => {
-      const tmpRes = JSON.parse(JSON.stringify(requestResponse));
-      tmpRes.data[0].AssessmentGroup[1].AssessmentGroupQuestion[1].AssessmentQuestion.TeamMember = {};
-      requestSpy.get.and.returnValue(of(tmpRes));
-      service.getAssessment(1, 'assessment').subscribe();
-      expect(requestSpy.apiResponseFormatError.calls.count()).toBe(1);
-    });
-
-    it('should throw Assessment.TeamMember #2 format error, if data format not match', () => {
-      const tmpRes = JSON.parse(JSON.stringify(requestResponse));
-      tmpRes.data[0].AssessmentGroup[1].AssessmentGroupQuestion[1].AssessmentQuestion.TeamMember[0] = {};
-      requestSpy.get.and.returnValue(of(tmpRes));
-      service.getAssessment(1, 'assessment').subscribe();
-      expect(requestSpy.apiResponseFormatError.calls.count()).toBe(1);
-    });
-
-    it('should get correct assessment data', () => {
-      requestSpy.get.and.returnValue(of(requestResponse));
-      service.getAssessment(1, 'assessment').subscribe(
-        assessment => {
-          expect(assessment).toEqual(expected);
+    afterEach(() => {
+      requestSpy.postGraphQL.and.returnValue(of(requestResponse));
+      service.getAssessment(1, 'assessment', 2, 3).subscribe(
+        result => {
+          expect(result.assessment).toEqual(expectedAssessment);
+          expect(result.submission).toEqual(expectedSubmission);
+          expect(result.review).toEqual(expectedReview);
         }
       );
-      expect(requestSpy.get.calls.count()).toBe(1);
+      expect(requestSpy.postGraphQL.calls.count()).toBe(1);
     });
 
-    it(`should not include a question group if there's no question inside` , () => {
-      const tmpRes = JSON.parse(JSON.stringify(requestResponse));
+    it('should get correct assessment data', () => {});
+
+    it(`should not include a question group if there's no question inside`, () => {
       // if a question group doesn't have question
-      tmpRes.data[0].AssessmentGroup[1].AssessmentGroupQuestion = [];
-      const tmpExp = JSON.parse(JSON.stringify(expected));
+      requestResponse.data.assessment.groups[1].questions = [];
+      requestResponse.data.assessment.submissions[0].answers.splice(3, 2);
+      requestResponse.data.assessment.submissions[0].review.answers.splice(3, 2);
       // the expected result won't contain that group
-      tmpExp.groups.splice(1, 1);
-      requestSpy.get.and.returnValue(of(tmpRes));
-      service.getAssessment(1, 'assessment').subscribe(
-        assessment => expect(assessment).toEqual(tmpExp)
-      );
-      expect(requestSpy.get).toHaveBeenCalledWith(
-        'api/assessments.json',
-        {
-          params: {
-            assessment_id: 1,
-            structured: true,
-            review: false
-          }
-        }
-      );
-      expect(requestSpy.get.calls.count()).toBe(1);
-    });
-  });
-
-  describe('when testing getSubmission()', () => {
-    let requestResponse;
-    let expected;
-    beforeEach(() => {
-      requestResponse = {
-        success: true,
-        data: [{
-          AssessmentSubmission: {
-            id: 1,
-            status: 'pending approval',
-            modified: '2019-02-02',
-            is_locked: false
-          },
-          Submitter: {
-            name: 'test name',
-            image: ''
-          },
-          Reviewer: {
-            name: 'test reviewer name'
-          },
-          AssessmentSubmissionAnswer: [
-            {
-              assessment_question_id: 1,
-              answer: ''
-            },
-            {
-              assessment_question_id: 2,
-              answer: ''
-            },
-            {
-              assessment_question_id: 3,
-              answer: '123'
-            },
-            {
-              assessment_question_id: 4,
-              answer: ''
-            },
-            {
-              assessment_question_id: 5,
-              answer: '[1,2,3]'
-            },
-            {
-              assessment_question_id: 6,
-              answer: ['2', '3', '4']
-            }
-          ],
-          AssessmentReview: [{
-            id: 2,
-            status: 'done',
-            modified: '2019-02-02',
-          }],
-          AssessmentReviewAnswer: [
-            {
-              assessment_question_id: 1,
-              answer: '',
-              comment: ''
-            },
-            {
-              assessment_question_id: 2,
-              answer: '',
-              comment: ''
-            },
-            {
-              assessment_question_id: 3,
-              answer: '123',
-              comment: ''
-            },
-            {
-              assessment_question_id: 4,
-              answer: '',
-              comment: ''
-            },
-            {
-              assessment_question_id: 5,
-              answer: '[1,2,3]',
-              comment: ''
-            },
-            {
-              assessment_question_id: 6,
-              answer: ['2', '3', '4'],
-              comment: ''
-            }
-          ]
-        }]
-      };
-      const submission = requestResponse.data[0];
-      expected = {
-        submission: {
-          id: submission.AssessmentSubmission.id,
-          status: submission.AssessmentSubmission.status,
-          answers: {
-            1: {
-              answer: ''
-            },
-            2: {
-              answer: null
-            },
-            3: {
-              answer: 123
-            },
-            4: {
-              answer: []
-            },
-            5: {
-              answer: [1, 2, 3]
-            },
-            6: {
-              answer: [2, 3, 4]
-            }
-          },
-          submitterName: submission.Submitter.name,
-          modified: submission.AssessmentSubmission.modified,
-          isLocked: submission.AssessmentSubmission.is_locked,
-          submitterImage: submission.Submitter.image,
-          reviewerName: submission.Reviewer.name
-        },
-        review: {
-          id: submission.AssessmentReview[0].id,
-          status: submission.AssessmentReview[0].status,
-          modified: submission.AssessmentReview[0].modified,
-          answers: {
-            1: {
-              answer: '',
-              comment: ''
-            },
-            2: {
-              answer: null,
-              comment: ''
-            },
-            3: {
-              answer: 123,
-              comment: ''
-            },
-            4: {
-              answer: [],
-              comment: ''
-            },
-            5: {
-              answer: [1, 2, 3],
-              comment: ''
-            },
-            6: {
-              answer: [2, 3, 4],
-              comment: ''
-            }
-          }
-        }
-      };
-      service.questions = {
-        1: {
-          question_type: 'text'
-        },
-        2: {
-          question_type: 'oneof',
-          AssessmentQuestionChoice: [
-            {
-              id: 123,
-              AssessmentChoice: {
-                name: 'choice name 123'
-              },
-              explanation: 'exp 123'
-            }
-          ]
-        },
-        3: {
-          question_type: 'oneof',
-          AssessmentQuestionChoice: [
-            {
-              id: 123,
-              AssessmentChoice: {
-                name: 'choice name 123'
-              },
-              explanation: 'exp 123'
-            }
-          ]
-        },
-        4: {
-          question_type: 'multiple'
-        },
-        5: {
-          question_type: 'multiple',
-          AssessmentQuestionChoice: [
-            {
-              id: 22,
-              AssessmentChoice: {
-                name: 'choice name 2'
-              },
-              explanation: 'exp 2'
-            }
-          ]
-        },
-        6: {
-          question_type: 'multiple',
-          AssessmentQuestionChoice: [
-            {
-              id: 3,
-              AssessmentChoice: {
-                name: 'choice name 3'
-              },
-              explanation: 'exp 3'
-            }
-          ]
-        }
-      };
-    });
-
-    it('should return empty submission and review, if return data is empty', () => {
-      const tmpRes = JSON.parse(JSON.stringify(requestResponse));
-      tmpRes.data = [];
-      requestSpy.get.and.returnValue(of(tmpRes));
-      service.getSubmission(1, 2, 'assessment').subscribe(res => expect(res).toEqual({
-        submission: {},
-        review: {}
-      }));
-    });
-
-    it('should throw AssessmentSubmission format error, if data format not match', () => {
-      const tmpRes = JSON.parse(JSON.stringify(requestResponse));
-      tmpRes.data[0] = {};
-      requestSpy.get.and.returnValue(of(tmpRes));
-      service.getSubmission(1, 2, 'assessment').subscribe();
-      expect(requestSpy.apiResponseFormatError.calls.count()).toBe(1);
-    });
-
-    it('should throw AssessmentSubmissionAnswer format error, if data format not match', () => {
-      const tmpRes = JSON.parse(JSON.stringify(requestResponse));
-      tmpRes.data[0].AssessmentSubmissionAnswer = {};
-      requestSpy.get.and.returnValue(of(tmpRes));
-      service.getSubmission(1, 2, 'assessment').subscribe();
-      expect(requestSpy.apiResponseFormatError.calls.count()).toBe(1);
-    });
-
-    it('should throw AssessmentSubmissionAnswer.answer format error, if data format not match', () => {
-      const tmpRes = JSON.parse(JSON.stringify(requestResponse));
-      tmpRes.data[0].AssessmentSubmissionAnswer[0] = {};
-      requestSpy.get.and.returnValue(of(tmpRes));
-      service.getSubmission(1, 2, 'assessment').subscribe();
-      expect(requestSpy.apiResponseFormatError.calls.count()).toBe(1);
-    });
-
-    it('should throw AssessmentReviewAnswer format error, if data format not match', () => {
-      const tmpRes = JSON.parse(JSON.stringify(requestResponse));
-      tmpRes.data[0].AssessmentSubmission.status = 'published';
-      tmpRes.data[0].AssessmentReviewAnswer[0] = {};
-      requestSpy.get.and.returnValue(of(tmpRes));
-      service.getSubmission(1, 2, 'review').subscribe();
-      expect(requestSpy.apiResponseFormatError.calls.count()).toBe(1);
-      expect(requestSpy.apiResponseFormatError.calls.first().args[0]).toBe('AssessmentReviewAnswer format error');
-    });
-
-    it('should get correct submission & review data', () => {
-      requestSpy.get.and.returnValue(of(requestResponse));
-      service.getSubmission(1, 2, 'review').subscribe(
-        res => expect(res).toEqual(expected)
-      );
-      expect(requestSpy.get.calls.count()).toBe(1);
-    });
-
-    it('should get correct submission data with choice explanation added', () => {
-      const tmpRes = JSON.parse(JSON.stringify(requestResponse));
-      tmpRes.data[0].AssessmentSubmission.status = 'done';
-      requestSpy.get.and.returnValue(of(tmpRes));
-      service.getSubmission(1, 2, 'review', 3).subscribe(
-        res => {
-          expect(res.submission.answers[1].explanation).toBeFalsy();
-          expect(res.submission.answers[2].explanation).toBeTruthy();
-          expect(res.submission.answers[3].explanation).toBeTruthy();
-          expect(res.submission.answers[4].explanation).toBeFalsy();
-          expect(res.submission.answers[5].explanation).toBeTruthy();
-          expect(res.submission.answers[6].explanation).toBeTruthy();
-        }
-      );
-      expect(requestSpy.get.calls.count()).toBe(1);
+      expectedAssessment.groups.splice(1, 1);
+      delete expectedSubmission.answers[11];
+      delete expectedSubmission.answers[12];
+      delete expectedReview.answers[11];
+      delete expectedReview.answers[12];
     });
 
     it('should get correct submission data without review', () => {
-      const tmpRes = JSON.parse(JSON.stringify(requestResponse));
-      tmpRes.data[0].AssessmentReview = {};
-      const tmpExp = JSON.parse(JSON.stringify(expected));
-      tmpExp.review = {};
-      requestSpy.get.and.returnValue(of(tmpRes));
-      service.getSubmission(1, 2, 'assessment').subscribe(
-        res => expect(res).toEqual(tmpExp)
-      );
-      expect(requestSpy.get.calls.count()).toBe(1);
+      requestResponse.data.assessment.submissions[0].review = null;
+      expectedSubmission.reviewerName = null;
+      expectedReview = null;
     });
   });
 
   describe('when testing saveAnswers()', () => {
-    const assessment: AssessmentSubmission = SubmissionFixture;
+    const assessment: AssessmentSubmitBody = SubmissionFixture;
     const answers = {answers: true};
     beforeEach(() => {
       requestSpy.post.and.returnValue(of(true));
@@ -758,43 +495,6 @@ describe('AssessmentService', () => {
     });
   });
 
-  describe('when testing getFeedbackReviewed()', () => {
-    it('should return correct feedback reviewed status #1', () => {
-      requestSpy.get.and.returnValue(of({
-        success: true,
-        data: [{is_done: true}]
-      }));
-      service.getFeedbackReviewed(1).subscribe(res => expect(res).toBe(true));
-      expect(requestSpy.get.calls.count()).toBe(1);
-    });
-    it('should return correct feedback reviewed status #2', () => {
-      requestSpy.get.and.returnValue(of({
-        success: true,
-        data: [{is_done: false}]
-      }));
-      service.getFeedbackReviewed(1).subscribe(res => expect(res).toBe(false));
-      expect(requestSpy.get.calls.count()).toBe(1);
-    });
-    it('should return false if response.success is false', () => {
-      requestSpy.get.and.returnValue(of({
-        success: false,
-        data: [{is_done: true}]
-      }));
-      service.getFeedbackReviewed(1).subscribe(res => expect(res).toBe(false));
-      expect(requestSpy.get.calls.count()).toBe(1);
-    });
-    it('should throw error if data format incorrect', () => {
-      requestSpy.get.and.returnValue(of({
-        success: true,
-        data: [{}]
-      }));
-      service.getFeedbackReviewed(1).subscribe();
-      expect(requestSpy.get.calls.count()).toBe(1);
-      expect(requestSpy.apiResponseFormatError.calls.count()).toBe(1);
-      expect(requestSpy.apiResponseFormatError.calls.first().args[0]).toEqual('TodoItem format error');
-    });
-  });
-
   describe('when testing saveFeedbackReviewed()', () => {
     it('should post correct data', () => {
       service.saveFeedbackReviewed(11);
@@ -819,11 +519,11 @@ describe('AssessmentService', () => {
   });
 
   describe('when testing checkReviewer()', () => {
-    it('should return undefined if no reviewer passed in', () => {
-      expect(service.checkReviewer(null)).toEqual(undefined);
+    it('should return null if no reviewer passed in', () => {
+      expect(service.checkReviewer(null)).toEqual(null);
     });
-    it('should return undefined if reviewer is the current person', () => {
-      expect(service.checkReviewer({name: 'Test'})).toEqual(undefined);
+    it('should return null if reviewer is the current person', () => {
+      expect(service.checkReviewer({name: 'Test'})).toEqual(null);
     });
   });
 
