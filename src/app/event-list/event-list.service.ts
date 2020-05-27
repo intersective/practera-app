@@ -40,7 +40,7 @@ export interface Event {
     contextId: number;
     isDone: boolean;
   };
-  videoConferences?: {
+  videoConference?: {
     provider: string;
     url: string;
     meetingId: string;
@@ -132,11 +132,11 @@ export class EventListService {
           contextId: event.assessment.context_id,
           isDone: event.assessment.is_done || false
         } : null,
-        videoConferences: this.utils.has(event, 'video_conferences.url') ? {
-          provider: event.video_conferences.provider,
-          url: event.video_conferences.url,
-          meetingId: event.video_conferences.meeting_id,
-          password: event.video_conferences.password
+        videoConference: this.utils.has(event, 'video_conference.url') ? {
+          provider: event.video_conference.provider,
+          url: event.video_conference.url,
+          meetingId: event.video_conference.meeting_id,
+          password: event.video_conference.password
         } : null
       });
       // set the booked event activity id if it is single booking activity and booked
