@@ -77,7 +77,7 @@
             [subtitle1]="event.activityName"
             [subtitle2]="eventListService.timeDisplayed(event)"
             [eventExpired]="event.isPast && !event.isBooked"
-            [eventVideoConferences]="event.videoConferences"
+            [eventVideoConference]="event.videoConference"
             [lines]="i == events.length - 1 ? 'none' : ''"
             (click)="gotoEvent(event)"
           ></app-list-item>

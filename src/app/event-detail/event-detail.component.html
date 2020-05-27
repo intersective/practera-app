@@ -23,16 +23,16 @@
       <ion-icon class="leading-icon gray-2" name="time-outline"></ion-icon>
       <div id="time" class="subtitle-1">{{ utils.utcToLocal(event.startTime, 'time') }} - {{ utils.utcToLocal(event.endTime, 'time') }}</div>
     </ion-item>
-    <ng-container *ngIf="event.videoConferences">
+    <ng-container *ngIf="event.videoConference">
       <ion-item *ngIf="!event.isBooked" class="zoom-meeting">
         <img src="../../assets/icon_zoom_24.svg">
-        <div class="subtitle-1"> {{ event.videoConferences.provider }} Meeting </div>
+        <div class="subtitle-1"> {{ event.videoConference.provider }} Meeting </div>
       </ion-item>
-      <ion-item *ngIf="event.isBooked" class="zoom-meeting" (click)="openMeetingLink(event.videoConferences.url)">
+      <ion-item *ngIf="event.isBooked" class="zoom-meeting" (click)="openMeetingLink(event.videoConference.url)">
         <img src="../../assets/icon_zoom_24.svg">
         <div class="item-content">
-          <p class="subtitle-1"> Join {{ event.videoConferences.provider }} meeting </p>
-          <p class="caption gray-2"> ID: {{ event.videoConferences.meetingId }} </p>
+          <p class="subtitle-1"> Join {{ event.videoConference.provider }} meeting </p>
+          <p class="caption gray-2"> ID: {{ event.videoConference.meetingId }} </p>
         </div>
         <ion-icon *ngIf="utils.timeComparer(event.startTime) >= 0" slot="end" name="chevron-forward-outline"></ion-icon>
       </ion-item>
