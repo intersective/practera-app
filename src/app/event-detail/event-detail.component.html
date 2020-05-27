@@ -34,7 +34,7 @@
           <p class="subtitle-1"> Join {{ event.videoConference.provider }} meeting </p>
           <p class="caption gray-2"> ID: {{ event.videoConference.meetingId }} </p>
         </div>
-        <ion-icon *ngIf="utils.timeComparer(event.startTime) >= 0" slot="end" name="chevron-forward-outline"></ion-icon>
+        <ion-icon slot="end" name="chevron-forward-outline"></ion-icon>
       </ion-item>
     </ng-container>
     <ion-item *ngIf="event.location">
