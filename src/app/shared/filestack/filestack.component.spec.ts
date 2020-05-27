@@ -37,7 +37,7 @@ describe('FilestackComponent', () => {
       fixture.detectChanges();
       const button = fixture.nativeElement.querySelector('ion-button');
 
-      expect(button.textContent).toEqual('Upload File');
+      expect(button.textContent).toEqual('UPLOAD FILE');
     });
 
     it('should allow upload profile picture', () => {

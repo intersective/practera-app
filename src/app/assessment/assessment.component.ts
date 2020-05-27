@@ -1,6 +1,6 @@
 import { Component, Input, NgZone, Output, EventEmitter } from '@angular/core';
 import { Router, ActivatedRoute, ParamMap } from '@angular/router';
-import { AssessmentService, Assessment, Submission, Review, AssessmentSubmission } from './assessment.service';
+import { AssessmentService, Assessment, Submission, Review, AssessmentSubmitBody } from './assessment.service';
 import { UtilsService } from '../services/utils.service';
 import { NotificationService } from '@shared/notification/notification.service';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
@@ -39,7 +39,6 @@ export class AssessmentComponent extends RouterEnter {
   // context id
   contextId: number;
   submissionId: number;
-  // the structure of assessment
   assessment: Assessment = {
     name: '',
     type: '',
@@ -50,7 +49,6 @@ export class AssessmentComponent extends RouterEnter {
     groups: [],
     pulseCheck: false,
   };
-
   submission: Submission = {
     id: 0,
     status: '',
@@ -58,6 +56,7 @@ export class AssessmentComponent extends RouterEnter {
     submitterName: '',
     modified: '',
     isLocked: false,
+    completed: false,
     submitterImage: '',
     reviewerName: ''
   };
@@ -80,9 +79,7 @@ export class AssessmentComponent extends RouterEnter {
   doReview = false;
 
   feedbackReviewed = false;
-  loadingFeedbackReviewed: boolean;
   loadingAssessment = true;
-  loadingSubmission = true;
   questionsForm = new FormGroup({});
   submitting: boolean;
   submitted: boolean;
@@ -162,6 +159,7 @@ export class AssessmentComponent extends RouterEnter {
       submitterName: '',
       modified: '',
       isLocked: false,
+      completed: false,
       submitterImage: '',
       reviewerName: ''
     };
@@ -172,8 +170,6 @@ export class AssessmentComponent extends RouterEnter {
       modified: ''
     };
     this.loadingAssessment = true;
-    this.loadingSubmission = true;
-    this.loadingFeedbackReviewed = false;
     this.saving = false;
     this.doAssessment = false;
     this.doReview = false;
@@ -222,16 +218,15 @@ export class AssessmentComponent extends RouterEnter {
     }
 
     // get assessment structure and populate the question form
-    this.assessmentService.getAssessment(this.id, this.action)
+    this.assessmentService.getAssessment(this.id, this.action, this.activityId, this.contextId, this.submissionId)
       .subscribe(
-        assessment => {
-          this.assessment = assessment;
+        result => {
+          this.assessment = result.assessment;
           this.newRelic.setPageViewName(`Assessment: ${this.assessment.name} ID: ${this.id}`);
           this.populateQuestionsForm();
-
           this.loadingAssessment = false;
-          this._getSubmission();
-
+          this._handleSubmissionData(result.submission);
+          // display pop up if it is team assessment and user is not in team
           if (this.doAssessment && this.assessment.isForTeam && !this.storage.getUser().teamId) {
             return this.notificationService.alert({
               message: 'To do this assessment, you have to be in a team.',
@@ -250,89 +245,75 @@ export class AssessmentComponent extends RouterEnter {
               ]
             });
           }
-
+          this._handleReviewData(result.review);
         },
-        (error) => {
+        error => {
           this.newRelic.noticeError(error);
         }
       );
   }
 
-  ionViewWillLeave() {
-    this.sharedService.stopPlayingVideos();
+  private _handleSubmissionData(submission) {
+    this.submission = submission;
+    // If team assessment is locked, set the page to readonly mode.
+    // set doAssessment, doReview to false - when assessment is locked, user can't do both.
+    // set submission status to done - we need to show readonly answers in question components.
+    if (this.submission && this.submission.isLocked) {
+      this.doAssessment = false;
+      this.doReview = false;
+      this.savingButtonDisabled = true;
+      this.submission.status = 'done';
+      return;
+    }
+
+    // this component become a page for doing assessment if
+    // - submission is empty or
+    // - submission.status is 'in progress'
+    if (this.utils.isEmpty(this.submission) || this.submission.status === 'in progress') {
+      this.doAssessment = true;
+      this.doReview = false;
+      if (this.submission && this.submission.status === 'in progress') {
+        this.savingMessage = 'Last saved ' + this.utils.timeFormatter(this.submission.modified);
+        this.savingButtonDisabled = false;
+      }
+      return;
+    }
+
+    // this component become a page for doing review, if
+    // - the submission status is 'pending review' and
+    // - this.action is review
+    if (this.submission.status === 'pending review' && this.action === 'review') {
+      this.doReview = true;
+    }
+
+    this.feedbackReviewed = this.submission.completed;
   }
 
-  // get the submission answers &/| review answers
-  private _getSubmission() {
-    this.getSubmission = this.assessmentService.getSubmission(
-      this.id,
-      this.contextId,
-      this.action,
-      this.submissionId
-    ).subscribe(
-      result => {
-        const { submission, review } = result;
-        this.submission = submission;
-        this.review = review;
-        this.loadingSubmission = false;
-
-        // If team assessment locked set readonly view.
-        // set doAssessment, doReview to false - because when assessment lock we can't do both.
-        // set submission status to done - because we need to show readonly answers in question components.
-        if (this.submission.isLocked) {
-          this.doAssessment = false;
-          this.doReview = false;
-          this.savingButtonDisabled = true;
-          this.submission.status = 'done';
-          return;
-        }
-
-        // this component become a page for doing assessment if
-        // - submission is empty or
-        // - submission.status is 'in progress'
-        if (this.utils.isEmpty(this.submission) || this.submission.status === 'in progress') {
-          this.doAssessment = true;
-          this.doReview = false;
-          if (this.submission.status === 'in progress') {
-            this.savingMessage = 'Last saved ' + this.utils.timeFormatter(this.submission.modified);
-            this.savingButtonDisabled = false;
-          }
-          return;
-        }
-
-        if (review.status === 'in progress') {
-          this.savingMessage = 'Last saved ' + this.utils.timeFormatter(review.modified);
-          this.savingButtonDisabled = false;
-        }
-
-        // this component become a page for doing review, if
-        // - the submission status is 'pending review' and
-        // - this.action is review
-        //
-        // @TECHDEBT: why can't we just treat the entire assessment as "review" when
-        // `this.action` is equal to "review"?
-        if (this.submission.status === 'pending review' && this.action === 'review') {
-          this.doReview = true;
-        }
-
-        // call todo item to check if the feedback has been reviewed or not
-        if (this.submission.status === 'published') {
-          this.loadingFeedbackReviewed = true;
-          this.assessmentService.getFeedbackReviewed(this.submission.id)
-            .subscribe(
-              feedbackReviewed => {
-                this.feedbackReviewed = feedbackReviewed;
-                this.loadingFeedbackReviewed = false;
-              },
-              error => {
-                this.newRelic.noticeError(`${JSON.stringify(error)}`);
+  private _handleReviewData(review) {
+    this.review = review;
+    if (!review && this.action === 'review' && !this.doReview) {
+      return this.notificationService.alert({
+        message: 'There is no Assessment to review.',
+        buttons: [
+          {
+            text: 'OK',
+            role: 'cancel',
+            handler: () => {
+                this._navigate(['app', 'home']);
               }
-            );
-        }
-      },
-      (error) => {
-        this.newRelic.noticeError(`${JSON.stringify(error)}`);
+          }
+        ]
       });
+    }
+    if (this.doReview && review.status === 'in progress') {
+      this.savingMessage = 'Last saved ' + this.utils.timeFormatter(review.modified);
+      this.savingButtonDisabled = false;
+    }
+  }
+
+
+  ionViewWillLeave() {
+    this.sharedService.stopPlayingVideos();
   }
 
   /**
@@ -391,6 +372,7 @@ export class AssessmentComponent extends RouterEnter {
     this.newRelic.actionText('Back to previous page.');
 
     if (this.action === 'assessment'
+      && this.submission
       && this.submission.status === 'published'
       && !this.feedbackReviewed) {
       return this.notificationService.alert({
@@ -445,7 +427,7 @@ export class AssessmentComponent extends RouterEnter {
    * When user click the continue button
    */
   async clickBtnContinue() {
-    if (this.submission.status === 'published' && !this.feedbackReviewed) {
+    if (this.submission && this.submission.status === 'published' && !this.feedbackReviewed) {
       await this.markReviewFeedbackAsRead();
     }
     this.goToNextTask();
@@ -537,7 +519,7 @@ export class AssessmentComponent extends RouterEnter {
 
     const answers = [];
     let questionId = 0;
-    let assessment: AssessmentSubmission;
+    let assessment: AssessmentSubmitBody;
 
     assessment = {
       id: this.id,
@@ -582,7 +564,7 @@ export class AssessmentComponent extends RouterEnter {
     if (this.doReview) {
       assessment = Object.assign(assessment, {
         review_id: this.review.id,
-        submission_id: this.submission.id,
+        submission_id: this.submission ? this.submission.id : 0,
         in_progress: (saveInProgress) ? true : false,
       });
 
@@ -609,7 +591,7 @@ export class AssessmentComponent extends RouterEnter {
       assessment,
       answers,
       this.action,
-      this.submission.id
+      this.submission ? this.submission.id : 0
     ).subscribe(
       result => {
         if (saveInProgress) {
@@ -726,7 +708,7 @@ export class AssessmentComponent extends RouterEnter {
   }
 
   hasFooter() {
-    return this.loadingSubmission || this.loadingFeedbackReviewed || this.doAssessment || this.doReview || this.footerText();
+    return this.doAssessment || this.doReview || this.footerText();
   }
 
   /**
@@ -746,6 +728,9 @@ export class AssessmentComponent extends RouterEnter {
       return false;
     }
     if (this.action === 'review') {
+      return false;
+    }
+    if (!this.submission) {
       return false;
     }
     switch (this.submission.status) {
