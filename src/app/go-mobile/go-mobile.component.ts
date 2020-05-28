@@ -96,6 +96,8 @@ export class GoMobileComponent implements OnInit {
 
     switch (this.countryModel) {
       case 'AUS':
+      case 'NZ':
+      case 'DE':
         if (contactNumber.length === 12) {
           this.invalidNumber = false;
           return true;
@@ -112,7 +114,16 @@ export class GoMobileComponent implements OnInit {
           this.profile.contactNumber = null;
         }
         break;
-    }
+
+      case 'UK' :
+        if (contactNumber.length === 13) {
+          this.invalidNumber = false;
+          return true;
+        } else if (contactNumber.length === 3) {
+          this.profile.contactNumber = null;
+        }
+        break;
+      }
     this.invalidNumber = true;
     return false;
   }
