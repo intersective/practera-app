@@ -281,6 +281,8 @@ export class ContactNumberFormComponent implements OnInit {
   private validateContactNumber(contactNumber) {
     switch (this.countryModel) {
       case 'AUS':
+      case 'NZ':
+      case 'DE':
         if (contactNumber.length === 12) {
           return true;
         } else if (contactNumber.length === 3) {
@@ -297,7 +299,16 @@ export class ContactNumberFormComponent implements OnInit {
           return true;
         }
         break;
-    }
+
+      case 'UK' :
+        if (contactNumber.length === 13) {
+          return true;
+        } else if (contactNumber.length === 3) {
+          this.profile.contactNumber = null;
+          return true;
+        }
+        break;
+      }
     return false;
   }
 
