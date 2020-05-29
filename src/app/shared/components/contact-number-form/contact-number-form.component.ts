@@ -49,8 +49,8 @@ export class ContactNumberFormComponent implements OnInit {
       },
       NZ: {
         format: '+64',
-        placeholder: '000 000 000',
-        pattern: '^[0-9]{3}[\s\-]?[\0-9]{3}[\s\-]?[0-9]{3}$',
+        placeholder: '0000000000',
+        pattern: '^[0-9]{9-10}$',
         numberLength: '12'
       },
       DE: {
@@ -281,9 +281,17 @@ export class ContactNumberFormComponent implements OnInit {
   private validateContactNumber(contactNumber) {
     switch (this.countryModel) {
       case 'AUS':
-      case 'NZ':
       case 'DE':
         if (contactNumber.length === 12) {
+          return true;
+        } else if (contactNumber.length === 3) {
+          this.profile.contactNumber = null;
+          return true;
+        }
+        break;
+
+      case 'NZ':
+        if (contactNumber.length === 12 || contactNumber.length === 13) {
           return true;
         } else if (contactNumber.length === 3) {
           this.profile.contactNumber = null;
