@@ -1,8 +1,8 @@
-<div class="app-home" [ngStyle]="utils.isMobile() ? {} : {padding: '1em', height: '100%'}">
+<div class="app-home" [ngStyle]="utils.isMobile() ? {} : {padding: '1em'}">
   <div class="ion-text-center">
     <ion-grid class="leading-image-container">
       <ion-row>
-        <ion-col class="ion-justify-content-center ion-align-items-center">
+        <ion-col *ngIf="!utils.isMobile()" class="ion-justify-content-center ion-align-items-center">
           <img [src]="programInfo.image ? programInfo.image : '../../../assets/default-experience-image.svg'" alt="{{ programInfo.name }}"/>
         </ion-col>
         <ion-col class="ion-justify-content-center ion-align-items-center">
