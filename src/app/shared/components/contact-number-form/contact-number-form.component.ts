@@ -119,7 +119,7 @@ export class ContactNumberFormComponent implements OnInit {
     let number = contactNum.substring(3);
     this.contactNumber = this._separeteContactNumber(number);
 
-    switch (prefix) {
+switch (prefix) {
       case '+61':
         this._setCountry('AUS');
         return;
