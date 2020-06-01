@@ -1,7 +1,6 @@
 .app-home {
   overflow-y: visible;
   margin: 0;
-
   background: var(--ion-color-light) !important;
 }
 
@@ -23,4 +22,10 @@
 .leading-image-container {
   --ion-grid-padding: 0;
   --ion-grid-column-padding: 0;
+
+  ion-col {
+    display: flex!important;
+    align-content: center!important;
+    align-items: center!important;
+  }
 }
