@@ -13,7 +13,7 @@ phases:
   build:
     commands:
       - echo Build started on `date`
-      - aws sns publish --topic-arn $NOTIFIER_TOPIC --message "practera-app-v2-dev-lint for $CODEBUILD_SOURCE_VERSION"
+      - aws sns publish --topic-arn $NOTIFIER_TOPIC --message "practera-app-v2-dev-lint starts for $CODEBUILD_SOURCE_VERSION"
       - lintresult=$(ng lint --format=verbose)
   post_build:
     commands:
