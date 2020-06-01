@@ -2,16 +2,19 @@ version: 0.2
 
 phases:
   install:
+    runtime-versions:
+      nodejs: 10
     commands:
       - echo Install started on `date`
-      - sudo npm install forever -g
-      - sudo npm install -g @angular/cli
-      - sudo npm install
+      - npm install forever -g
+      - npm install -g @angular/cli
+      - npm install
       - echo Install completed on `date`
   build:
     commands:
       - echo Build started on `date`
-      - sudo ng lint
+      - export lint_result=$(ng lint --format=verbose)
   post_build:
     commands:
+      - aws sns publish --topic-arn $NOTIFIER_TOPIC --message "$lint_result"
       - echo Build completed on `date`
