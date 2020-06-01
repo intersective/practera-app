@@ -58,6 +58,7 @@
     <p class="sutitle-2 gray-2 ion-text-left">{{ eventObj.date }}</p>
     <ion-card class="practera-card">
       <ion-list>
+        <!-- @TODO add isVideoConference by checking event zoom object -->
         <app-list-item
           *ngFor="let event of eventObj.events; let i = index"
           leadingIcon="calendar-outline"
@@ -66,7 +67,7 @@
           [titleColor]="eventListService.isNotActionable(event) ? 'gray-2' : ''"
           [subtitle1]="event.activityName"
           [subtitle2]="eventListService.timeDisplayed(event)"
-          [endingIcon]="!eventListService.isNotActionable(event) ? 'arrow-forward' : ''"
+          [eventVideoConference]="event.videoConference"
           [eventExpired]="event.isPast && !event.isBooked"
           [active]="eventId === event.id"
           [lines]="i == eventObj.events.length - 1 ? 'none' : ''"
