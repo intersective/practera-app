@@ -291,14 +291,26 @@ export class AssessmentComponent extends RouterEnter {
 
   private _handleReviewData(review) {
     this.review = review;
-    if (!review) {
-      return;
+    if (!review && this.action === 'review' && !this.doReview) {
+      return this.notificationService.alert({
+        message: 'There is no Assessment to review.',
+        buttons: [
+          {
+            text: 'OK',
+            role: 'cancel',
+            handler: () => {
+                this._navigate(['app', 'home']);
+              }
+          }
+        ]
+      });
     }
     if (this.doReview && review.status === 'in progress') {
       this.savingMessage = 'Last saved ' + this.utils.timeFormatter(review.modified);
       this.savingButtonDisabled = false;
     }
   }
+
 
   ionViewWillLeave() {
     this.sharedService.stopPlayingVideos();
