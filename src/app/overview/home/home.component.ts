@@ -99,7 +99,6 @@ export class HomeComponent implements OnDestroy, OnInit {
     this.loadingProgress = true;
     this.achievements = [];
     this.loadingAchievements = true;
-    this.programInfo = {};
   }
 
   onEnter() {
