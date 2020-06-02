@@ -255,8 +255,11 @@ ion-skeleton-text {
         margin: 0 15px 30px;
         ion-button {
           max-width: 312px;
+          margin-left: auto;
+          margin-right: auto;
         }
         &.button-container {
+          
           margin: 0 15px 4px;
         }
         .description {
@@ -326,7 +329,7 @@ ion-skeleton-text {
   .modal-wrapper {
     --height: 100%;
     --width: 100%;
-    --border-radius: 12px;
+    --border-radius: 0px;
     --box-shadow: none;
   }
 }
