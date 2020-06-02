@@ -37,7 +37,10 @@ export class HomeComponent implements OnDestroy, OnInit {
   subscriptions: Subscription[] = [];
   achievements: Array<Achievement>;
   progressConfig: any;
-  programInfo = {};
+  programInfo = {
+    image: '',
+    name: ''
+  };
   loadingAchievements = true;
 
   constructor(
@@ -99,6 +102,10 @@ export class HomeComponent implements OnDestroy, OnInit {
     this.loadingProgress = true;
     this.achievements = [];
     this.loadingAchievements = true;
+    this.programInfo = {
+      image: '',
+      name: ''
+    };
   }
 
   onEnter() {
