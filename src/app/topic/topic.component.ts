@@ -110,6 +110,8 @@ export class TopicComponent extends RouterEnter {
           if ( topic.videolink ) {
             this.iframeHtml = this.embedService.embed(this.topic.videolink, { attr: { class: !this.utils.isMobile() ? 'topic-video desktop-view' : 'topic-video' }});
           }
+          // mark topic as started after topic load
+          this._markAsStartStop('started');
           this._initVideoPlayer();
           this.newRelic.setPageViewName(`Topic ${this.topic.title} ID: ${this.topic.id}`);
         },
@@ -177,12 +179,26 @@ export class TopicComponent extends RouterEnter {
    * @param {Function} callback optional callback function for further action after subcription is completed
    */
   markAsDone(callback?): Observable<any> {
-    return this.topicService.updateTopicProgress(this.id).pipe(response => {
+    return this.topicService.updateTopicProgress(this.id, 'completed').pipe(response => {
       // toggle event change should happen after subscription is completed
       this.btnToggleTopicIsDone = true;
       this.changeStatus.emit(this.id);
       return response;
     });
+  }
+
+  /**
+   * @name markAsStsrtStop
+   * @description set a topic as start reading or stop reading by providing current id and state
+   * * @param {String} state 'started' for mark start reading and 'stopped' for mark stop reading.
+   */
+  private _markAsStartStop(state) {
+    this.topicService.updateTopicProgress(this.id, state).subscribe(
+      response => {},
+      err => {
+        console.log('error in markAsStsrtStop - ', err);
+      }
+    );
   }
 
   /**
@@ -283,6 +299,8 @@ export class TopicComponent extends RouterEnter {
         this.activityId
       ]);
     }
+    // mark topic as stop reading before navigate back
+    this._markAsStartStop('stopped');
 
     const type = 'Topic';
     return this.notificationService.alert({
