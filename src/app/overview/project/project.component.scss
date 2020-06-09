@@ -72,7 +72,12 @@
 .project-list {
   margin: 0;
 
-  .project-item.mobile {
+  &.desktop {
+    margin-right: calc(calc(1 / var(--ion-grid-columns, 12)) * 100%);
+    max-width: 720px !important;
+  }
+
+  .project-item {
     --padding-start: 0px;
     --padding-end: 0px;
     --inner-padding-start:0px;
@@ -126,6 +131,14 @@
     --inner-border-width: 0px !important;
   }
   background: var(--ion-color-light) !important;
+}
+
+@media screen and (max-width: 1440px) {
+  .project-list {
+    &.desktop {
+      margin-right: 0 !important;
+    }
+  }
 }
 
 .activity-list {
