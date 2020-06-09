@@ -5,11 +5,22 @@ ion-grid.desktop-view {
   ion-row {
     height: 100%;
     ion-col {
-      overflow-y: scroll;
+      overflow-y: auto;
       height: 100%;
     }
   }
 }
-ion-col {
+ion-col, ion-row, ion-grid, ion-content {
   background: var(--ion-color-light) !important;
+}
+
+.home-component {
+  margin-left: calc(calc(1 / var(--ion-grid-columns, 12)) * 100%);
+  max-width: 720px !important;
+}
+
+@media screen and (max-width: 1440px) {
+  .home-component {
+    margin-left: 0 !important;
+  }
 }
