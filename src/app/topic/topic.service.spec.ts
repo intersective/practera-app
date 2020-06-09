@@ -114,7 +114,7 @@ describe('TopicService', () => {
 
   it('when testing updateTopicProgress(), it should post data', () => {
     requestSpy.post.and.returnValue(of(''));
-    service.updateTopicProgress(1).subscribe();
+    service.updateTopicProgress(1, '').subscribe();
     expect(requestSpy.post.calls.count()).toBe(1);
   });
 
