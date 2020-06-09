@@ -1,6 +1,15 @@
-<div class="app-home" [ngStyle]="utils.isMobile() ? {} : {padding: '1em', height: '100%'}">
-  <div class="ion-text-center ion-padding">
-    <app-circle-progress [data]="progressConfig" [type]="'large'" [loading]="loadingProgress"></app-circle-progress>
+<div class="app-home" [ngStyle]="utils.isMobile() ? {} : {padding: '1em'}">
+  <div class="ion-text-center">
+    <ion-grid class="leading-image-container">
+      <ion-row>
+        <ion-col *ngIf="!utils.isMobile()" class="ion-justify-content-center ion-align-items-center">
+          <img [src]="programInfo.image ? programInfo.image : '../../../assets/default-experience-image.svg'" alt="{{ programInfo.name }}"/>
+        </ion-col>
+        <ion-col class="ion-justify-content-center ion-align-items-center">
+          <app-circle-progress [data]="progressConfig" [type]="'large'" [loading]="loadingProgress"></app-circle-progress>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
   </div>
 
   <ng-container *ngTemplateOutlet="badges"></ng-container>
