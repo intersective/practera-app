@@ -99,6 +99,8 @@ export class TopicComponent extends RouterEnter {
 
   ionViewWillLeave() {
     this.sharedService.stopPlayingVideos();
+    // mark topic as stopped when leave topic page
+    this._markAsStartStop('stopped');
   }
 
   private _getTopic() {
