@@ -1,5 +1,5 @@
 import { TopicService, Topic } from './topic.service';
-import { Component, NgZone, Input, Output, EventEmitter, Inject } from '@angular/core';
+import { Component, NgZone, Input, Output, EventEmitter, Inject, OnDestroy } from '@angular/core';
 import { DOCUMENT } from '@angular/common';
 import { EmbedVideoService } from 'ngx-embed-video';
 import { Router, ActivatedRoute } from '@angular/router';
@@ -19,7 +19,7 @@ import * as Plyr from 'plyr';
   templateUrl: './topic.component.html',
   styleUrls: ['./topic.component.scss']
 })
-export class TopicComponent extends RouterEnter {
+export class TopicComponent extends RouterEnter implements OnDestroy {
   @Input() inputActivityId: number;
   @Input() inputId: number;
   @Output() navigate = new EventEmitter();
@@ -99,6 +99,14 @@ export class TopicComponent extends RouterEnter {
 
   ionViewWillLeave() {
     this.sharedService.stopPlayingVideos();
+    // mark topic as stopped when leave topic page
+    this._markAsStartStop('stopped');
+  }
+
+  /** sometime ngOnDestroy might not fire when you navigate from the current page
+  * Because of that put mark as stop reading calling from ionViewWillLeave and also ngOnDestroy
+  */
+  ngOnDestroy(): void {
     // mark topic as stopped when leave topic page
     this._markAsStartStop('stopped');
   }
