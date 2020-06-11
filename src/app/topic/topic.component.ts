@@ -195,14 +195,12 @@ export class TopicComponent extends RouterEnter {
    * * @param {String} state 'started' for mark start reading and 'stopped' for mark stop reading.
    */
   private _markAsStartStop(state) {
-    if (!this.btnToggleTopicIsDone) {
-      this.topicService.updateTopicProgress(this.id, state).subscribe(
-        response => {},
-        err => {
-          console.log('error in markAsStsrtStop - ', err);
-        }
-      );
-    }
+    this.topicService.updateTopicProgress(this.id, state).subscribe(
+      response => {},
+      err => {
+        console.log('error in mark as start stop - ', err);
+      }
+    );
   }
 
   /**
