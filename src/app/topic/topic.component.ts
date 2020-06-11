@@ -112,6 +112,8 @@ export class TopicComponent extends RouterEnter {
           if ( topic.videolink ) {
             this.iframeHtml = this.embedService.embed(this.topic.videolink, { attr: { class: !this.utils.isMobile() ? 'topic-video desktop-view' : 'topic-video' }});
           }
+          // mark topic as started after topic load
+          this._markAsStartStop('started');
           this._initVideoPlayer();
           this.newRelic.setPageViewName(`Topic ${this.topic.title} ID: ${this.topic.id}`);
         },
@@ -166,8 +168,6 @@ export class TopicComponent extends RouterEnter {
             }
           }
           this.loadingMarkedDone = false;
-          // mark topic as started after topic load
-          this._markAsStartStop('started');
         },
         err => {
           this.newRelic.noticeError(`${JSON.stringify(err)}`);
