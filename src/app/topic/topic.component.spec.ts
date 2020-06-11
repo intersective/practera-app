@@ -120,6 +120,7 @@ describe('TopicComponent', () => {
       };
       topicSpy.getTopic.and.returnValue(of(topic));
       topicSpy.getTopicProgress.and.returnValue(of(null));
+      topicSpy.updateTopicProgress.and.returnValue(of({}));
       fixture.detectChanges();
       component.onEnter();
       expect(component.loadingTopic).toBe(false);
@@ -161,7 +162,7 @@ describe('TopicComponent', () => {
   it('should mark topic as done', () => {
     topicSpy.updateTopicProgress.and.returnValue(of(''));
     component.markAsDone();
-    expect(topicSpy.updateTopicProgress.calls.count()).toBe(1);
+    expect(topicSpy.updateTopicProgress.calls.count()).toBe(4);
     expect(component.btnToggleTopicIsDone).toBe(true);
   });
   describe('when testing continue()', () => {
