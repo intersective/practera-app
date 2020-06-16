@@ -27,7 +27,7 @@ describe('TopicComponent', () => {
   let routerSpy: jasmine.SpyObj<Router>;
   const routeStub = new ActivatedRouteStub({ activityId: 1, id: 2 });
   const notificationSpy = jasmine.createSpyObj('NotificationService', ['alert', 'presentToast']);
-  const storageSpy = jasmine.createSpyObj('BrowserStorageService', ['getUser']);
+  const storageSpy = jasmine.createSpyObj('BrowserStorageService', ['getUser', 'get', 'remove']);
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
@@ -84,6 +84,8 @@ describe('TopicComponent', () => {
       teamId: 1,
       projectId: 2
     });
+    storageSpy.get.and.returnValue({});
+    // storageSpy.remove.and.returnValue({});
     activitySpy.gotoNextTask.and.returnValue(new Promise(() => {}));
   });
 
