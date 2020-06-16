@@ -3,6 +3,7 @@ import { Router, ActivatedRoute, ParamMap } from '@angular/router';
 import { UtilsService } from '@services/utils.service';
 import { RouterEnter } from '@services/router-enter.service';
 import { BrowserStorageService } from '@services/storage.service';
+import { SharedService } from '@services/shared.service';
 
 @Component({
   selector: 'app-tasks',
@@ -22,7 +23,8 @@ export class TasksComponent extends RouterEnter {
     public router: Router,
     private route: ActivatedRoute,
     public storage: BrowserStorageService,
-    public utils: UtilsService
+    public utils: UtilsService,
+    private sharedService: SharedService
   ) {
     super(router);
   }
@@ -118,6 +120,9 @@ export class TasksComponent extends RouterEnter {
 
   // display the task content in the right pane, and highlight on the left pane
   goto(event) {
+    // if user looking at topic mark it stop reading before go to next task.
+    this.sharedService.markTopicStopOnNavigating();
+
     switch (event.type) {
       case 'topic':
         this.topicId = event.topicId;

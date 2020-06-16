@@ -78,6 +78,7 @@ export class TabsComponent extends RouterEnter {
     this._initialise();
     this._checkRoute();
     this._stopPlayingVideos();
+    this._topicStopReading();
     this.tabsService.getNoOfTodoItems().subscribe(noOfTodoItems => {
       this.noOfTodoItems = noOfTodoItems;
     });
@@ -151,6 +152,11 @@ export class TabsComponent extends RouterEnter {
 
   private _stopPlayingVideos() {
     this.sharedService.stopPlayingVideos();
+  }
+
+  private _topicStopReading() {
+    // if user looking at topic mark it stop reading before go back.
+    this.sharedService.markTopicStopOnNavigating();
   }
 
 }
