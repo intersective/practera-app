@@ -196,7 +196,13 @@ export class TopicComponent extends RouterEnter {
    */
   private _markAsStartStop(state) {
     this.topicService.updateTopicProgress(this.id, state).subscribe(
-      response => {},
+      response => {
+        if (this.storage.get('startReadTopic') && state === 'stopped') {
+          this.storage.remove('startReadTopic');
+        } else if (!this.storage.get('startReadTopic') && state === 'started') {
+          this.storage.set('startReadTopic', this.id);
+        }
+      },
       err => {
         console.log('error in mark as start stop - ', err);
       }
