@@ -33,7 +33,7 @@ describe('TasksComponent', () => {
         },
         {
           provide: BrowserStorageService,
-          useValue: jasmine.createSpyObj('BrowserStorageService', ['getUser'])
+          useValue: jasmine.createSpyObj('BrowserStorageService', ['getUser', 'get'])
         },
       ]
     })
@@ -88,6 +88,7 @@ describe('TasksComponent', () => {
       expectedAssessmentId = null;
       expectedContextId = null;
       params = null;
+      storageSpy.get.and.returnValue({});
     });
     afterEach(() => {
       // do the test
