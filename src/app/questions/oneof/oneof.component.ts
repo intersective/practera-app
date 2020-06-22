@@ -41,11 +41,13 @@ export class OneofComponent implements ControlValueAccessor, OnInit {
   comment: string;
   // validation errors array
   errors: Array<any> = [];
+  isReviewAudience: Boolean;
 
   constructor(private utils: UtilsService) {}
 
   ngOnInit() {
     this._showSavedAnswers();
+    this._checkReviewAudience();
   }
   // propagate changes into the form control
   propagateChange = (_: any) => {};
@@ -116,6 +118,12 @@ export class OneofComponent implements ControlValueAccessor, OnInit {
     }
     this.propagateChange(this.innerValue);
     this.control.setValue(this.innerValue);
+  }
+
+  private _checkReviewAudience() {
+    if (this.question.audience.length > 1 && this.question.audience.includes('reviewer')) {
+      this.isReviewAudience = true;
+    }
   }
 
 }
