@@ -20,7 +20,8 @@ export class FileComponent implements ControlValueAccessor, OnInit {
     name: '',
     description: '',
     isRequired: false,
-    fileType: 'any'
+    fileType: 'any',
+    audience: []
   };
   @Input() submission;
   @Input() review;
@@ -49,6 +50,7 @@ export class FileComponent implements ControlValueAccessor, OnInit {
   comment: string;
   // validation errors array
   errors: Array<any> = [];
+  isReviewAudience: Boolean;
 
   constructor(
     private filestackService: FilestackService
@@ -57,6 +59,7 @@ export class FileComponent implements ControlValueAccessor, OnInit {
   ngOnInit() {
     this.fileTypes = this.filestackService.getFileTypes(this.question.fileType);
     this._showSavedAnswers();
+    this._checkReviewAudience();
   }
 
   // propagate changes into the form control
@@ -148,6 +151,12 @@ export class FileComponent implements ControlValueAccessor, OnInit {
     this.uploadedFile = null;
     this.submission.answer = null;
     this.onChange('', null);
+  }
+
+  private _checkReviewAudience() {
+    if (this.question.audience.length > 1 && this.question.audience.includes('reviewer')) {
+      this.isReviewAudience = true;
+    }
   }
 
 }
