@@ -59,12 +59,13 @@
         <app-description class="g-description" *ngIf="group.description" [content]="group.description"></app-description>
       </ion-text>
       <ng-container *ngFor="let question of group.questions">
-        <ion-card class="practera-card question-card ion-text-left">
+        <ion-card class="practera-card question-card ion-text-left" [ngClass]="{
+          'audience-mentor-question-card': question.reviewerOnly}">
           <ion-card-header class="q-title body-2 black">
             {{ question.name }}
             <ion-text class="required-indicator" color="danger" *ngIf="question.isRequired">*</ion-text>
             <ion-icon *ngIf="question.info" color="primary" class="icon-info vertical-middle" (click)="showQuestionInfo(question.info)" name="information-circle-outline"></ion-icon>
-            <ion-text color="dark" class="paragraph ion-text-left">
+            <ion-text class="paragraph ion-text-left gray-2">
               <app-description class="q-description" *ngIf="question.description" [content]="question.description"></app-description>
             </ion-text>
           </ion-card-header>
@@ -72,7 +73,7 @@
             <ion-spinner></ion-spinner>
           </div>
           <ng-template #submissionTpl>
-            <ion-card-content [ngSwitch]="question.type" class="q-content ion-margin-top ion-padding-horizontal" color="light">
+            <ion-card-content [ngSwitch]="question.type" class="q-content ion-margin-top ion-no-padding" color="light">
               <p><i *ngIf="!doAssessment &&
                 (
                   (!question.reviewerOnly && submission && !submission.answers[question.id]) ||

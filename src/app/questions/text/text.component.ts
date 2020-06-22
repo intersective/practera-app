@@ -41,11 +41,13 @@ export class TextComponent implements ControlValueAccessor, OnInit {
   comment: string;
   // validation errors array
   errors: Array<any> = [];
+  isReviewAudience: Boolean;
 
   constructor() {}
 
   ngOnInit() {
     this._showSavedAnswers();
+    this._checkReviewAudience();
   }
 
   // propagate changes into the form control
@@ -145,6 +147,10 @@ export class TextComponent implements ControlValueAccessor, OnInit {
     this.control.setValue(this.innerValue);
   }
 
-
+  private _checkReviewAudience() {
+    if (this.question.audience.length > 1 && this.question.audience.includes('reviewer')) {
+      this.isReviewAudience = true;
+    }
+  }
 
 }

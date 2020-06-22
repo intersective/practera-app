@@ -1,69 +1,75 @@
 <ng-container *ngIf="submissionStatus !== 'in progress' && submission.answer">
-  <ion-list class="no-bg">
-    <ion-radio-group [value]="submission.answer">
-      <ion-item *ngFor="let choice of question.choices; let i = index" [lines]="i == question.choices.length - 1 ? 'none' : ''">
-        <ion-label class="white-space-normal subtitle-1">{{ choice.name }}</ion-label>
-        <ion-radio [value]="choice.id" disabled mode="md"></ion-radio>
-      </ion-item>
-    </ion-radio-group>
-  </ion-list>
-  <div *ngIf="submission.explanation && submission.explanation.changingThisBreaksApplicationSecurity" class="q-reviews">
-    <ion-label class="q-title black">Explanation</ion-label>
-    <p class="paragraph" [innerHtml]="submission.explanation"></p>
-  </div>
-</ng-container>
+    <div class="ion-padding-horizontal ion-padding-bottom">
+        <ion-list class="no-bg">
+            <ion-radio-group [value]="submission.answer">
+              <ion-item *ngFor="let choice of question.choices; let i = index" [lines]="i == question.choices.length - 1 ? 'none' : ''">
+                <ion-label class="white-space-normal subtitle-1 gray-3">{{ choice.name }}</ion-label>
+                <ion-radio [value]="choice.id" disabled mode="md"></ion-radio>
+              </ion-item>
+            </ion-radio-group>
+          </ion-list>
+          <div *ngIf="submission.explanation && submission.explanation.changingThisBreaksApplicationSecurity" class="q-reviews">
+            <ion-label class="q-title gray-3">Explanation</ion-label>
+            <p class="paragraph" [innerHtml]="submission.explanation"></p>
+          </div>
+    </div>
+  </ng-container>
 
-<div *ngIf="reviewStatus !== 'in progress' && (review.answer || review.comment)" class="q-reviews">
-  <ion-label class="q-title subtitle-2 black">Feedback</ion-label>
-  <ng-container *ngIf="review.answer">
-    <ion-list class="no-bg">
-      <ion-radio-group [value]="review.answer">
-        <ng-container *ngFor="let choice of question.choices; let i = index">
-          <ng-container *ngIf="choice.id === review.answer">
-            <ion-item [lines]="i == question.choices.length - 1 ? 'none' : ''">
-              <ion-label class="white-space-normal subtitle-1 gray-2">{{ choice.name }}</ion-label>
-              <ion-radio [value]="choice.id" disabled mode="md"></ion-radio>
-            </ion-item>
+  <div *ngIf="reviewStatus !== 'in progress' && (review.answer || review.comment)" class="q-reviews ion-padding-horizontal ion-padding-bottom">
+    <ion-label class="q-title subtitle-2 gray-3">Feedback</ion-label>
+    <ng-container *ngIf="review.answer">
+      <ion-list class="no-bg">
+        <ion-radio-group [value]="review.answer">
+          <ng-container *ngFor="let choice of question.choices; let i = index">
+            <ng-container *ngIf="choice.id === review.answer">
+              <ion-item [lines]="i == question.choices.length - 1 ? 'none' : ''">
+                <ion-label class="white-space-normal subtitle-1 gray-3">{{ choice.name }}</ion-label>
+                <ion-radio [value]="choice.id" disabled mode="md"></ion-radio>
+              </ion-item>
+            </ng-container>
           </ng-container>
-        </ng-container>
+        </ion-radio-group>
+      </ion-list>
+    </ng-container>
+    <ng-container *ngIf="review.comment">
+      <p class="paragraph body-2 gray-3">{{ review.comment }}</p>
+    </ng-container>
+  </div>
+
+  <ng-container *ngIf="doAssessment">
+    <div class="ion-padding-horizontal ion-padding-bottom">
+        <ion-list class="no-bg">
+            <ion-radio-group [value]="submission.answer" #answerEle (ionChange)="onChange(answerEle.value)">
+              <ion-item class="choice-item" *ngFor="let choice of question.choices; let i = index" [lines]="i == question.choices.length - 1 ? 'none' : ''">
+                <ion-label class="white-space-normal subtitle-1">{{ choice.name }}</ion-label>
+                <ion-radio [value]="choice.id" mode="md" [disabled]="control.disabled"></ion-radio>
+              </ion-item>
+            </ion-radio-group>
+          </ion-list>
+    </div>
+  </ng-container>
+
+  <ng-container *ngIf="doReview">
+    <div class="ion-padding-horizontal ion-padding-bottom" [ngClass]="{ 'audience-mentor': isReviewAudience}">
+      <ion-list class="no-bg" *ngIf="question.canAnswer">
+      <ion-radio-group #answerEle [value]="review.answer" (ionChange)="onChange(answerEle.value, 'answer')">
+        <ion-list-header class="ion-no-padding" *ngIf="!question.reviewerOnly">
+          <ion-label class="body-2 black">Your Answer is</ion-label>
+        </ion-list-header>
+        <ion-item class="choice-item no-bg" *ngFor="let choice of question.choices; let i = index" [lines]="i == question.choices.length - 1 ? 'none' : ''">
+          <ion-label class="white-space-normal subtitle-1">{{ choice.name }}</ion-label>
+          <ion-radio [value]="choice.id" mode="md" [disabled]="control.disabled"></ion-radio>
+        </ion-item>
       </ion-radio-group>
     </ion-list>
+    <ion-textarea
+      *ngIf="question.canComment && submission.answer"
+      class="textarea"
+      #commentEle
+      [(ngModel)]="comment"
+      rows="4"
+      (ngModelChange)="onChange(comment, 'comment')"
+      placeholder="Please put your feedback here"
+      [disabled]="control.disabled"></ion-textarea>
+    </div>
   </ng-container>
-  <ng-container *ngIf="review.comment">
-    <p class="paragraph body-2 gray-2">{{ review.comment }}</p>
-  </ng-container>
-</div>
-
-<ng-container *ngIf="doAssessment">
-  <ion-list class="no-bg">
-    <ion-radio-group [value]="submission.answer" #answerEle (ionChange)="onChange(answerEle.value)">
-      <ion-item class="choice-item" *ngFor="let choice of question.choices; let i = index" [lines]="i == question.choices.length - 1 ? 'none' : ''">
-        <ion-label class="white-space-normal subtitle-1">{{ choice.name }}</ion-label>
-        <ion-radio [value]="choice.id" mode="md" [disabled]="control.disabled"></ion-radio>
-      </ion-item>
-    </ion-radio-group>
-  </ion-list>
-</ng-container>
-
-<ng-container *ngIf="doReview">
-  <ion-list class="no-bg" *ngIf="question.canAnswer">
-    <ion-radio-group #answerEle [value]="review.answer" (ionChange)="onChange(answerEle.value, 'answer')">
-      <ion-list-header>
-        <ion-label class="body-2 black">Your Answer is</ion-label>
-      </ion-list-header>
-      <ion-item class="choice-item" *ngFor="let choice of question.choices; let i = index" [lines]="i == question.choices.length - 1 ? 'none' : ''">
-        <ion-label class="white-space-normal subtitle-1">{{ choice.name }}</ion-label>
-        <ion-radio [value]="choice.id" mode="md" [disabled]="control.disabled"></ion-radio>
-      </ion-item>
-    </ion-radio-group>
-  </ion-list>
-  <ion-textarea
-    *ngIf="question.canComment && submission.answer"
-    class="background-white ion-margin-top"
-    #commentEle
-    [(ngModel)]="comment"
-    rows="4"
-    (ngModelChange)="onChange(comment, 'comment')"
-    placeholder="Please put your feedback here"
-    [disabled]="control.disabled"></ion-textarea>
-</ng-container>
