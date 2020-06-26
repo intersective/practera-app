@@ -8,8 +8,9 @@
   </div>
   </ng-container>
 
-  <div *ngIf="reviewStatus !== 'in progress' && review && (review.answer || review.comment)" class="q-reviews ion-padding-horizontal ion-padding-bottom">
-    <ion-label class="q-title subtitle-2 gray-3">Feedback</ion-label>
+  <div *ngIf="reviewStatus !== 'in progress' && review && (review.answer || review.comment)" class="ion-padding-horizontal ion-padding-bottom"
+  [ngClass]="{ 'audience-mentor': isReviewAudience}">
+    <ion-label *ngIf="isReviewAudience" class="q-title subtitle-2 black ion-padding-vertical">Reviewer’s feedback</ion-label>
     <ng-container *ngIf="review.answer">
       <app-file-display
         [file]="review.answer"
@@ -64,7 +65,7 @@
           </ng-container>
           <ion-textarea
             *ngIf="question.canComment && submission.answer"
-            class="background-white ion-margin-top"
+            class="textarea"
             #commentEle
             rows="4"
             [(ngModel)]="comment"
