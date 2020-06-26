@@ -67,14 +67,11 @@ ion-footer {
 }
 
 .audience-mentor-question-card {
-  border: 2px solid var(--ion-color-primary);
+  border: 2px solid var(--practera-review-border-color);
   ion-card-subtitle {
     text-transform: none !important;
   }
   ion-card-content {
-    // --background: var(--ion-color-primary-tint);
-    // background: var(--ion-color-primary-tint);
-    // background-color: var(--ion-color-primary-tint);
     margin-top: 0 !important;
     padding-top: 16px !important;
   }
