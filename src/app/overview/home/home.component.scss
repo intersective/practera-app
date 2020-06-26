@@ -25,9 +25,20 @@
   --ion-grid-column-padding: 0;
 
   .image-col {
-    img {
-      box-shadow: 0 4px 16px rgba(0,0,0,.12);
+
+    ion-card {
       border-radius: 12px;
+      width: 100%;
+      margin: 0px;
+      background: transparent !important;
+      .image-container {
+        img {
+          top: 0;
+          right: 0;
+          bottom: 0;
+          left: 0;
+        }
+      }
     }
   }
 
