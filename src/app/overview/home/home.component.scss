@@ -20,8 +20,16 @@
 }
 
 .leading-image-container {
+  margin-bottom: 24px;
   --ion-grid-padding: 0;
   --ion-grid-column-padding: 0;
+
+  .image-col {
+    img {
+      box-shadow: 0 4px 16px rgba(0,0,0,.12);
+      border-radius: 12px;
+    }
+  }
 
   ion-col {
     display: flex!important;
