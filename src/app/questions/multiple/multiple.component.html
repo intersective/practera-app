@@ -1,26 +1,31 @@
 <ng-container *ngIf="submissionStatus !== 'in progress' && submission.answer">
   <div class="ion-padding-horizontal ion-padding-bottom">
       <ion-list class="no-bg">
-          <ion-item *ngFor="let choice of question.choices; let i = index" [lines]="i == question.choices.length - 1 ? 'none' : ''">
-            <ion-label class="white-space-normal subtitle-1 gray-3">{{ choice.name }}</ion-label>
-            <ion-checkbox [checked]="submission.answer.includes(choice.id)" disabled mode="md"></ion-checkbox>
-          </ion-item>
-        </ion-list>
-        <div *ngIf="submission.explanation && submission.explanation.changingThisBreaksApplicationSecurity" class="q-reviews">
-          <ion-label class="q-title gray-3">Explanation</ion-label>
-          <p class="paragraph gray-3" [innerHtml]="submission.explanation"></p>
-        </div>
+        <ng-container *ngFor="let choice of question.choices; let i = index">
+          <ng-container *ngIf="submission.answer.includes(choice.id)">
+            <ion-item [lines]="i == question.choices.length - 1 ? 'none' : ''">
+              <ion-label class="white-space-normal body-2 gray-3">{{ choice.name }}</ion-label>
+              <ion-checkbox [checked]="submission.answer.includes(choice.id)" disabled mode="md"></ion-checkbox>
+            </ion-item>
+          </ng-container>
+        </ng-container>
+      </ion-list>
+      <div *ngIf="submission.explanation && submission.explanation.changingThisBreaksApplicationSecurity" class="q-reviews">
+        <ion-label class="q-title subtitle-2 gray-3">Explanation</ion-label>
+        <p class="paragraph gray-3" [innerHtml]="submission.explanation"></p>
+      </div>
   </div>
-  </ng-container>
+</ng-container>
 
-  <div *ngIf="reviewStatus !== 'in progress' && (review.answer || review.comment)" class="q-reviews ion-padding-horizontal ion-padding-bottom">
-    <ion-label class="q-title subtitle-2 gray-3">Feedback</ion-label>
+  <div *ngIf="reviewStatus !== 'in progress' && (review.answer || review.comment)" class="ion-padding-horizontal ion-padding-bottom"
+  [ngClass]="{ 'audience-mentor': isReviewAudience}">
+    <ion-label *ngIf="isReviewAudience" class="q-title subtitle-2 black ion-padding-vertical">Reviewer’s feedback</ion-label>
     <ng-container *ngIf="review.answer">
       <ion-list class="no-bg">
         <ng-container *ngFor="let choice of question.choices; let i = index">
           <ng-container *ngIf="review.answer.includes(choice.id)">
             <ion-item [lines]="i == question.choices.length - 1 ? 'none' : ''">
-              <ion-label class="white-space-normal subtitle-1 gray-3">{{ choice.name }}</ion-label>
+              <ion-label class="white-space-normal body-2 gray-3">{{ choice.name }}</ion-label>
               <ion-checkbox checked disabled mode="md"></ion-checkbox>
             </ion-item>
           </ng-container>
@@ -36,7 +41,7 @@
     <div class="ion-padding-horizontal ion-padding-bottom">
         <ion-list class="no-bg">
             <ion-item class="choice-item" *ngFor="let choice of question.choices; let i = index" [lines]="i == question.choices.length - 1 ? 'none' : ''">
-              <ion-label class="white-space-normal subtitle-1">{{ choice.name }}</ion-label>
+              <ion-label class="white-space-normal body-2 black">{{ choice.name }}</ion-label>
               <ion-checkbox
                 [checked]="submission.answer ? submission.answer.includes(choice.id) : false"
                 [value]="choice.id"
@@ -55,10 +60,10 @@
     <div class="ion-padding-horizontal ion-padding-bottom" [ngClass]="{ 'audience-mentor': isReviewAudience}">
         <ion-list class="no-bg" *ngIf="question.canAnswer">
             <ion-list-header class="ion-no-padding" *ngIf="!question.reviewerOnly">
-              <ion-label class="body-2">Your Answer is</ion-label>
+              <ion-label class="subtitle-2 black">Your Answer is</ion-label>
             </ion-list-header>
             <ion-item class="choice-item no-bg" *ngFor="let choice of question.choices; let i = index" [lines]="i == question.choices.length - 1 ? 'none' : ''">
-              <ion-label class="white-space-normal subtitle-1">{{ choice.name }}</ion-label>
+              <ion-label class="white-space-normal body-2 black">{{ choice.name }}</ion-label>
               <ion-checkbox
                 [checked]="review.answer ? review.answer.includes(choice.id) : false"
                 [value]="choice.id"
