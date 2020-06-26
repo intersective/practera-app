@@ -61,8 +61,9 @@
       <ng-container *ngFor="let question of group.questions">
         <ion-card class="practera-card question-card ion-text-left" [ngClass]="{
           'audience-mentor-question-card': question.reviewerOnly}">
-          <ion-card-header class="q-title body-2 black">
-            {{ question.name }}
+          <ion-card-header class="q-title">
+            <ion-card-subtitle *ngIf="question.reviewerOnly" class="caption gray-2">Reviewer’s feedback</ion-card-subtitle>
+            <ion-card-title class="body-1 black">{{ question.name }}</ion-card-title>
             <ion-text class="required-indicator" color="danger" *ngIf="question.isRequired">*</ion-text>
             <ion-icon *ngIf="question.info" color="primary" class="icon-info vertical-middle" (click)="showQuestionInfo(question.info)" name="information-circle-outline"></ion-icon>
             <ion-text class="paragraph ion-text-left gray-2">

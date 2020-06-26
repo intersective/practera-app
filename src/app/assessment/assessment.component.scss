@@ -68,6 +68,9 @@ ion-footer {
 
 .audience-mentor-question-card {
   border: 2px solid var(--ion-color-primary);
+  ion-card-subtitle {
+    text-transform: none !important;
+  }
   ion-card-content {
     // --background: var(--ion-color-primary-tint);
     // background: var(--ion-color-primary-tint);
