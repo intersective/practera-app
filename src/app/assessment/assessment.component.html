@@ -62,9 +62,13 @@
         <ion-card class="practera-card question-card ion-text-left" [ngClass]="{
           'audience-mentor-question-card': question.reviewerOnly}">
           <ion-card-header class="q-title">
-            <ion-card-subtitle *ngIf="question.reviewerOnly" class="caption gray-2">Reviewer’s feedback</ion-card-subtitle>
-            <ion-card-title class="body-1 black">{{ question.name }}</ion-card-title>
-            <ion-text class="required-indicator" color="danger" *ngIf="question.isRequired">*</ion-text>
+            <ion-card-subtitle *ngIf="(review && review.status === 'done') && question.reviewerOnly" class="caption gray-2">
+              Reviewer’s feedback
+            </ion-card-subtitle>
+            <ion-card-title class="body-1 black">
+              {{ question.name }}
+              <ion-text class="required-indicator" color="danger" *ngIf="question.isRequired">*</ion-text>
+            </ion-card-title>
             <ion-icon *ngIf="question.info" color="primary" class="icon-info vertical-middle" (click)="showQuestionInfo(question.info)" name="information-circle-outline"></ion-icon>
             <ion-text class="paragraph ion-text-left gray-2">
               <app-description class="q-description" *ngIf="question.description" [content]="question.description"></app-description>
