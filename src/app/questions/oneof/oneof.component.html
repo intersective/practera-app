@@ -4,19 +4,20 @@
       <ion-radio-group [value]="submission.answer">
         <ng-container *ngFor="let choice of question.choices; let i = index">
           <ng-container *ngIf="choice.id === submission.answer">
-            <ion-item [lines]="i == question.choices.length - 1 ? 'none' : ''">
+            <ion-item lines="none">
               <ion-label class="white-space-normal body-2 gray-3">{{ choice.name }}</ion-label>
-              <ion-label class="white-space-normal body-2 gray-3">{{ choice.explanation }}</ion-label>
               <ion-radio [value]="choice.id" disabled mode="md"></ion-radio>
             </ion-item>
           </ng-container>
         </ng-container>
       </ion-radio-group>
     </ion-list>
-    <div *ngIf="submission.explanation && submission.explanation.changingThisBreaksApplicationSecurity" class="q-reviews">
+    <!-- @TODO need to fix this in a separate story explanation in inside choice -->
+    <!-- This will comment as a safe step but we need to implement this -->
+    <!-- <div *ngIf="submission.explanation && submission.explanation.changingThisBreaksApplicationSecurity" class="q-reviews">
       <ion-label class="q-title gray-3">Explanation</ion-label>
       <p class="paragraph" [innerHtml]="submission.explanation"></p>
-    </div>
+    </div> -->
   </div>
 </ng-container>
 
@@ -28,7 +29,7 @@
       <ion-radio-group [value]="review.answer">
         <ng-container *ngFor="let choice of question.choices; let i = index">
           <ng-container *ngIf="choice.id === review.answer">
-            <ion-item [lines]="i == question.choices.length - 1 ? 'none' : ''">
+            <ion-item lines="none">
               <ion-label class="white-space-normal body-2 gray-3">{{ choice.name }}</ion-label>
               <ion-radio [value]="choice.id" disabled mode="md"></ion-radio>
             </ion-item>
@@ -55,9 +56,9 @@
   </div>
 </ng-container>
 
-  <ng-container *ngIf="doReview">
-    <div class="ion-padding-horizontal ion-padding-bottom" [ngClass]="{ 'audience-mentor': isReviewAudience}">
-      <ion-list class="no-bg" *ngIf="question.canAnswer">
+<ng-container *ngIf="doReview">
+  <div class="ion-padding-horizontal ion-padding-bottom" [ngClass]="{ 'audience-mentor': isReviewAudience}">
+    <ion-list class="no-bg" *ngIf="question.canAnswer">
       <ion-radio-group #answerEle [value]="review.answer" (ionChange)="onChange(answerEle.value, 'answer')">
         <ion-list-header class="ion-no-padding" *ngIf="!question.reviewerOnly">
           <ion-label class="subtitle-2 black">Your Answer is</ion-label>
@@ -77,5 +78,5 @@
       (ngModelChange)="onChange(comment, 'comment')"
       placeholder="Please put your feedback here"
       [disabled]="control.disabled"></ion-textarea>
-    </div>
-  </ng-container>
+  </div>
+</ng-container>
