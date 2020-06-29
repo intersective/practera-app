@@ -4,7 +4,7 @@
           <ion-radio-group [value]="submission.answer">
             <ng-container *ngFor="let teamMember of question.teamMembers;let i = index">
               <ng-container *ngIf="teamMember.key === submission.answer">
-                <ion-item [lines]="i == question.teamMembers.length - 1 ? 'none' : ''">
+                <ion-item lines="none">
                   <ion-label class="white-space-normal body-2 gray-3">{{ teamMember.userName }}</ion-label>
                   <ion-radio [value]="teamMember.key" disabled mode="md"></ion-radio>
                 </ion-item>
@@ -23,7 +23,7 @@
       <ion-radio-group [value]="review.answer">
         <ng-container *ngFor="let teamMember of question.teamMembers;let i = index">
           <ng-container *ngIf="teamMember.key === review.answer">
-            <ion-item [lines]="i == question.teamMembers.length - 1 ? 'none' : ''">
+            <ion-item lines="none">
               <ion-label class="white-space-normal sbody-2 gray-3">{{ teamMember.userName }}</ion-label>
               <ion-radio [value]="teamMember.key" disabled mode="md"></ion-radio>
             </ion-item>
