@@ -152,7 +152,9 @@ export class FileComponent implements ControlValueAccessor, OnInit {
     this.submission.answer = null;
     this.onChange('', null);
   }
-
+  // check question audience have more that one audience and is it includes reviewer as audience.
+  // then will identify it as a student and mentor answering in the same question and
+  // border need to add only for mentor section not for full question
   private _checkReviewAudience() {
     if (this.question.audience.length > 1 && this.question.audience.includes('reviewer')) {
       this.isReviewAudience = true;
