@@ -56,7 +56,7 @@
     <ng-container *ngFor="let group of assessment.groups">
       <h3 class="headline-6">{{ group.name }}</h3>
       <ion-text color="dark" class="ion-text-left">
-        <app-description class="g-description" [content]="group.description"></app-description>
+        <app-description class="g-description" *ngIf="group.description" [content]="group.description"></app-description>
       </ion-text>
       <ng-container *ngFor="let question of group.questions">
         <ion-card class="practera-card question-card ion-text-left" [ngClass]="{
