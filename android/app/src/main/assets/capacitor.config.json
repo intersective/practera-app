@@ -1,0 +1,13 @@
+{
+  "appId": "com.practera.appv2",
+  "appName": "practera-appv2",
+  "bundledWebRuntime": false,
+  "npmClient": "npm",
+  "webDir": "www",
+  "cordova": {},
+  "plugins": {
+    "PushNotifications": {
+      "presentationOptions": ["badge", "sound", "alert"]
+    }
+  }
+}
