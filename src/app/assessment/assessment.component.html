@@ -55,7 +55,7 @@
     </ng-container>
     <ng-container *ngFor="let group of assessment.groups">
       <h3 class="headline-6">{{ group.name }}</h3>
-      <ion-text color="dark" class="ion-text-left" *ngIf="group.description && group.description.changingThisBreaksApplicationSecurity">
+      <ion-text color="dark" class="ion-text-left">
         <app-description class="g-description" [content]="group.description"></app-description>
       </ion-text>
       <ng-container *ngFor="let question of group.questions">
