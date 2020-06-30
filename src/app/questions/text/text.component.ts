@@ -41,13 +41,13 @@ export class TextComponent implements ControlValueAccessor, OnInit {
   comment: string;
   // validation errors array
   errors: Array<any> = [];
-  isReviewAudience: Boolean;
+  audienceContainReviewer: Boolean;
 
   constructor() {}
 
   ngOnInit() {
     this._showSavedAnswers();
-    this._checkReviewAudience();
+    this.audienceContainReviewer = this._checkReviewAudience();
   }
 
   // propagate changes into the form control
@@ -151,9 +151,7 @@ export class TextComponent implements ControlValueAccessor, OnInit {
   // then will identify it as a student and mentor answering in the same question and
   // border need to add only for mentor section not for full question
   private _checkReviewAudience() {
-    if (this.question.audience.length > 1 && this.question.audience.includes('reviewer')) {
-      this.isReviewAudience = true;
-    }
+    return this.question.audience.length > 1 && this.question.audience.includes('reviewer');
   }
 
 }
