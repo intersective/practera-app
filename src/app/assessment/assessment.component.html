@@ -79,12 +79,11 @@
           </div>
           <ng-template #submissionTpl>
             <ion-card-content [ngSwitch]="question.type" class="q-content ion-margin-top ion-no-padding" color="light">
-              <p><i *ngIf="!doAssessment &&
-                (
-                  (!question.reviewerOnly && submission && !submission.answers[question.id]) ||
-                  (!doReview && question.reviewerOnly && review && !review.answers[question.id])
-                )"
-                >No Answer Submitted</i></p>
+              <p class="ion-padding" *ngIf="!doAssessment &&
+              (
+                (!question.reviewerOnly && submission && !submission.answers[question.id]) ||
+                (!doReview && question.reviewerOnly && review && !review.answers[question.id])
+              )"><i>No Answer Submitted</i></p>
 
               <app-text
                 *ngSwitchCase="'text'"
