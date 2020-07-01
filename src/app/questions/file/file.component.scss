@@ -1,8 +1,12 @@
 
 .audience-mentor {
+  padding-top: 16px;
   border: 2px solid var(--practera-review-border-color);
   border-bottom-left-radius : 12px;
   border-bottom-right-radius: 12px;
+  .textarea {
+    margin-top: 16px;
+  }
 }
 
 ion-textarea {
