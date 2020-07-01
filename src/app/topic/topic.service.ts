@@ -86,11 +86,11 @@ export class TopicService {
     return topic;
   }
 
-  updateTopicProgress(id) {
+  updateTopicProgress(id, state) {
     const postData = {
       model: 'topic',
       model_id: id,
-      state: 'completed'
+      state: state
     };
     return this.request.post(api.post.updateProgress, postData);
   }
