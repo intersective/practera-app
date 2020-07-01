@@ -20,8 +20,27 @@
 }
 
 .leading-image-container {
+  margin-bottom: 24px;
   --ion-grid-padding: 0;
   --ion-grid-column-padding: 0;
+
+  .image-col {
+
+    ion-card {
+      border-radius: 12px;
+      width: 100%;
+      margin: 0px;
+      background: transparent !important;
+      .image-container {
+        img {
+          top: 0;
+          right: 0;
+          bottom: 0;
+          left: 0;
+        }
+      }
+    }
+  }
 
   ion-col {
     display: flex!important;
