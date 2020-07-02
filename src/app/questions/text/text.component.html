@@ -5,8 +5,8 @@
   </ng-container>
 
   <div *ngIf="reviewStatus !== 'in progress' && (review.answer || review.comment)" class="ion-padding"
-  [ngClass]="{ 'audience-mentor': audienceContainReviewer}">
-    <ion-label *ngIf="audienceContainReviewer" class="q-title subtitle-2 black ion-padding-vertical">Reviewer’s feedback</ion-label>
+  [ngClass]="{ 'audience-mentor': audienceContainReviewer()}">
+    <ion-label *ngIf="audienceContainReviewer()" class="q-title subtitle-2 black ion-padding-vertical">Reviewer’s feedback</ion-label>
     <ng-container *ngIf="review.answer">
       <p class="paragraph body-2 gray-3">{{ review.answer }}</p>
     </ng-container>
@@ -32,7 +32,7 @@
   </ng-container>
 
   <ng-container *ngIf="doReview">
-    <div class="ion-padding" [ngClass]="{ 'audience-mentor': audienceContainReviewer}">
+    <div class="ion-padding" [ngClass]="{ 'audience-mentor': audienceContainReviewer()}">
         <ion-textarea
         *ngIf="question.canAnswer"
         class="textarea"
