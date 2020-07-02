@@ -1,69 +1,76 @@
 <ng-container *ngIf="submissionStatus !== 'in progress' && submission && submission.answer">
-  <app-file-display
-    [file]="submission.answer"
-    [fileType]="question.fileType"
-    [isFileComponent]="true"
-  ></app-file-display>
-</ng-container>
-
-<div *ngIf="reviewStatus !== 'in progress' && review && (review.answer || review.comment)" class="q-reviews">
-  <ion-label class="q-title subtitle-2 black">Feedback</ion-label>
-  <ng-container *ngIf="review.answer">
-    <app-file-display
-      [file]="review.answer"
+  <div class="ion-padding-horizontal ion-padding-bottom">
+      <app-file-display
+      [file]="submission.answer"
       [fileType]="question.fileType"
       [isFileComponent]="true"
     ></app-file-display>
+  </div>
   </ng-container>
-  <ng-container *ngIf="review.comment">
-    <p class="paragraph body-2 gray-2">{{ review.comment }}</p>
-  </ng-container>
-</div>
 
-<ng-container *ngIf="doAssessment">
-  <file-stack *ngIf="!uploadedFile && !submission.answer"
-    [accept]="fileTypes"
-    [fileType]="question.fileType"
-    (complete)="onFileUploadCompleted($event)"
-    [disabled]="control.disabled"
-  >
-  </file-stack>
-  <ion-text *ngFor="let error of errors" color="danger">
-    <p>{{error}}</p>
-  </ion-text>
-  <app-file-display
-    [file]="uploadedFile ? uploadedFile : submission.answer"
-    [fileType]="question.fileType"
-    [isFileComponent]="true"
-    (removeFile)="removeSubmitFile($event)"
-    [disabled]="control.disabled"
-  ></app-file-display>
-</ng-container>
+  <div *ngIf="reviewStatus !== 'in progress' && review && (review.answer || review.comment)" class="ion-padding-horizontal ion-padding-bottom"
+  [ngClass]="{ 'audience-mentor': audienceContainReviewer()}">
+    <ion-label *ngIf="audienceContainReviewer()" class="q-title subtitle-2 black ion-padding-vertical">Reviewer’s feedback</ion-label>
+    <ng-container *ngIf="review.answer">
+      <app-file-display
+        [file]="review.answer"
+        [fileType]="question.fileType"
+        [isFileComponent]="true"
+      ></app-file-display>
+    </ng-container>
+    <ng-container *ngIf="review.comment">
+      <p class="paragraph body-2 gray-3">{{ review.comment }}</p>
+    </ng-container>
+  </div>
 
-<ng-container *ngIf="doReview">
-  <ng-container *ngIf="question.canAnswer">
-    <file-stack *ngIf="!uploadedFile && !review.answer"
-      [accept]="fileTypes"
-      [fileType]="question.fileType"
-      (complete)="onFileUploadCompleted($event, 'answer')"
-      [disabled]="control.disabled"
-    >
-    </file-stack>
-    <app-file-display
-      [file]="uploadedFile ? uploadedFile : review.answer"
-      [fileType]="question.fileType"
-      [isFileComponent]="true"
-      (removeFile)="removeSubmitFile($event)"
-      [disabled]="control.disabled"
-    ></app-file-display>
+  <ng-container *ngIf="doAssessment">
+    <div class="ion-padding-horizontal ion-padding-bottom">
+        <file-stack *ngIf="!uploadedFile && !submission.answer"
+        [accept]="fileTypes"
+        [fileType]="question.fileType"
+        (complete)="onFileUploadCompleted($event)"
+        [disabled]="control.disabled"
+      >
+      </file-stack>
+      <ion-text *ngFor="let error of errors" color="danger">
+        <p>{{error}}</p>
+      </ion-text>
+      <app-file-display
+        [file]="uploadedFile ? uploadedFile : submission.answer"
+        [fileType]="question.fileType"
+        [isFileComponent]="true"
+        (removeFile)="removeSubmitFile($event)"
+        [disabled]="control.disabled"
+      ></app-file-display>
+    </div>
   </ng-container>
-  <ion-textarea
-    *ngIf="question.canComment && submission.answer"
-    class="background-white ion-margin-top"
-    #commentEle
-    rows="4"
-    [(ngModel)]="comment"
-    (ngModelChange)="onChange(comment, 'comment')"
-    placeholder="Please put your feedback here"
-    [disabled]="control.disabled"></ion-textarea>
-</ng-container>
+
+  <ng-container *ngIf="doReview">
+    <div class="ion-padding-horizontal ion-padding-bottom" [ngClass]="{ 'audience-mentor': audienceContainReviewer()}">
+        <ng-container *ngIf="question.canAnswer">
+            <file-stack *ngIf="!uploadedFile && !review.answer"
+              [accept]="fileTypes"
+              [fileType]="question.fileType"
+              (complete)="onFileUploadCompleted($event, 'answer')"
+              [disabled]="control.disabled"
+            >
+            </file-stack>
+            <app-file-display
+              [file]="uploadedFile ? uploadedFile : review.answer"
+              [fileType]="question.fileType"
+              [isFileComponent]="true"
+              (removeFile)="removeSubmitFile($event)"
+              [disabled]="control.disabled"
+            ></app-file-display>
+          </ng-container>
+          <ion-textarea
+            *ngIf="question.canComment && submission.answer"
+            class="textarea"
+            #commentEle
+            rows="4"
+            [(ngModel)]="comment"
+            (ngModelChange)="onChange(comment, 'comment')"
+            placeholder="Please put your feedback here"
+            [disabled]="control.disabled"></ion-textarea>
+    </div>
+  </ng-container>
