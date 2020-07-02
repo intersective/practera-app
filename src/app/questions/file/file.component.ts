@@ -50,7 +50,6 @@ export class FileComponent implements ControlValueAccessor, OnInit {
   comment: string;
   // validation errors array
   errors: Array<any> = [];
-  audienceContainReviewer: Boolean;
 
   constructor(
     private filestackService: FilestackService
@@ -59,7 +58,6 @@ export class FileComponent implements ControlValueAccessor, OnInit {
   ngOnInit() {
     this.fileTypes = this.filestackService.getFileTypes(this.question.fileType);
     this._showSavedAnswers();
-    this.audienceContainReviewer = this._checkReviewAudience();
   }
 
   // propagate changes into the form control
@@ -155,7 +153,7 @@ export class FileComponent implements ControlValueAccessor, OnInit {
   // check question audience have more that one audience and is it includes reviewer as audience.
   // then will identify it as a student and mentor answering in the same question and
   // border need to add only for mentor section not for full question
-  private _checkReviewAudience() {
+  audienceContainReviewer() {
     return this.question.audience.length > 1 && this.question.audience.includes('reviewer');
   }
 
