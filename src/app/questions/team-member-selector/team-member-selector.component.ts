@@ -40,13 +40,11 @@ export class TeamMemberSelectorComponent implements ControlValueAccessor, OnInit
   comment: string;
   // validation errors array
   errors: Array<any> = [];
-  audienceContainReviewer: Boolean;
 
   constructor() {}
 
   ngOnInit() {
     this._showSavedAnswers();
-    this.audienceContainReviewer = this._checkReviewAudience();
   }
   // propagate changes into the form control
   propagateChange = (_: any) => {};
@@ -122,7 +120,7 @@ export class TeamMemberSelectorComponent implements ControlValueAccessor, OnInit
   // check question audience have more that one audience and is it includes reviewer as audience.
   // then will identify it as a student and mentor answering in the same question and
   // border need to add only for mentor section not for full question
-  private _checkReviewAudience() {
+  audienceContainReviewer() {
     return this.question.audience.length > 1 && this.question.audience.includes('reviewer');
   }
 
