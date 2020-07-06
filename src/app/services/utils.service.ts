@@ -210,13 +210,13 @@ export class UtilsService {
       return 'Tomorrow';
     }
     if (date.isSame(compareDate, 'd')) {
-      return new Intl.DateTimeFormat('en-GB', {
+      return new Intl.DateTimeFormat('en-US', {
         hour12: true,
         hour: 'numeric',
         minute: 'numeric'
       }).format(date.toDate());
     }
-    return new Intl.DateTimeFormat('en-GB', {
+    return new Intl.DateTimeFormat('en-US', {
       month: 'short',
       day: 'numeric'
     }).format(date.toDate());
@@ -232,7 +232,7 @@ export class UtilsService {
       return '';
     }
     const date = new Date(this.iso8601Formatter(time));
-    const formattedTime = new Intl.DateTimeFormat('en-GB', {
+    const formattedTime = new Intl.DateTimeFormat('en-US', {
       hour12: true,
       hour: 'numeric',
       minute: 'numeric'
@@ -270,7 +270,7 @@ export class UtilsService {
       return 'Today';
     }
 
-    return new Intl.DateTimeFormat('en-GB', {
+    return new Intl.DateTimeFormat('en-US', {
       month: 'short',
       day: 'numeric',
       year: 'numeric'
