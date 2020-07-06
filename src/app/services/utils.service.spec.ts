@@ -257,7 +257,7 @@ describe('UtilsService', () => {
 
     it('should standardize date format', () => {
       const result = service.timeFormatter(NOW);
-      const formatted = new Intl.DateTimeFormat('en-GB', {
+      const formatted = new Intl.DateTimeFormat('en-US', {
         hour12: true,
         hour: 'numeric',
         minute: 'numeric'
@@ -268,7 +268,7 @@ describe('UtilsService', () => {
     it('should standardize date format international format', () => {
       const onePMUTC = `${moment().format('YYYY-MM-DD')} 13:00:00.000Z`;
       const result = service.timeFormatter(onePMUTC); // follows local GMT
-      const formatted = new Intl.DateTimeFormat('en-GB', {
+      const formatted = new Intl.DateTimeFormat('en-US', {
         hour12: true,
         hour: 'numeric',
         minute: 'numeric'
@@ -279,7 +279,7 @@ describe('UtilsService', () => {
     it('should ensure all numeric time format is return in expected time format (h:mm a)', () => {
       LOCAL_TIME_TODAY.forEach(timeString => {
         const result = service.timeFormatter(timeString);
-        const formatted = new Intl.DateTimeFormat('en-GB', {
+        const formatted = new Intl.DateTimeFormat('en-US', {
           hour12: true,
           hour: 'numeric',
           minute: 'numeric'
