@@ -216,7 +216,7 @@ export class UtilsService {
         minute: 'numeric'
       }).format(date.toDate());
     }
-    return new Intl.DateTimeFormat('en-US', {
+    return new Intl.DateTimeFormat('en-GB', {
       month: 'short',
       day: 'numeric'
     }).format(date.toDate());
@@ -270,7 +270,7 @@ export class UtilsService {
       return 'Today';
     }
 
-    return new Intl.DateTimeFormat('en-US', {
+    return new Intl.DateTimeFormat('en-GB', {
       month: 'short',
       day: 'numeric',
       year: 'numeric'

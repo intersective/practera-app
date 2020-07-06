@@ -149,7 +149,7 @@ describe('HomeService', () => {
         {
           type: 'assessment_submission_reminder',
           name: requestResponse.data[5].meta.assessment_name,
-          description: `Overdue 3 Feb 2019 ${moment(new Date(requestResponse.data[5].meta.due_date + ' GMT+0000')).format('h:mm a')}`,
+          description: `Overdue 3 Feb 2019 ${moment(new Date(requestResponse.data[5].meta.due_date + ' GMT+0000')).format('h:mm A')}`,
           time: '2 Feb',
           meta: requestResponse.data[5].meta
         }
