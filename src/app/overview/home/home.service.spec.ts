@@ -437,7 +437,7 @@ describe('HomeService', () => {
       const expected = {
         type: 'assessment_submission_reminder',
         name: event.meta.AssessmentSubmissionReminder.assessment_name,
-        description: 'Overdue 2 Feb 2019 ' + new Intl.DateTimeFormat('en-GB', {
+        description: 'Overdue 2 Feb 2019 ' + new Intl.DateTimeFormat('en-US', {
             hour12: true,
             hour: 'numeric',
             minute: 'numeric'
