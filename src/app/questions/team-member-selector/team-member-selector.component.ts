@@ -116,4 +116,12 @@ export class TeamMemberSelectorComponent implements ControlValueAccessor, OnInit
     this.propagateChange(this.innerValue);
     this.control.setValue(this.innerValue);
   }
+
+  // check question audience have more that one audience and is it includes reviewer as audience.
+  // then will identify it as a student and mentor answering in the same question and
+  // border need to add only for mentor section not for full question
+  audienceContainReviewer() {
+    return this.question.audience.length > 1 && this.question.audience.includes('reviewer');
+  }
+
 }
