@@ -700,7 +700,7 @@ export class AssessmentComponent extends RouterEnter {
   }
 
   private _getCurrentTime() {
-    return new Intl.DateTimeFormat('en-GB', {
+    return new Intl.DateTimeFormat('en-US', {
       hour12: true,
       hour: 'numeric',
       minute: 'numeric'
