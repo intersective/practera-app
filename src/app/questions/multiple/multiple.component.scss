@@ -1,3 +1,18 @@
 ion-item ion-label {
     opacity: 1 !important;
 }
+
+ion-item {
+  --padding-start: 0;
+}
+
+.audience-mentor {
+  border: 2px solid var(--practera-review-border-color);
+  border-bottom-left-radius : 12px;
+  border-bottom-right-radius: 12px;
+}
+
+ion-textarea {
+  padding-left: 5px;
+  padding-right: 5px;
+}

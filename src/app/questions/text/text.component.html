@@ -1,51 +1,57 @@
 <ng-container *ngIf="submissionStatus !== 'in progress' && submission.answer">
-  <p class="paragraph body-1 black">{{ submission.answer }}</p>
-</ng-container>
-
-<div *ngIf="reviewStatus !== 'in progress' && (review.answer || review.comment)" class="q-reviews">
-  <ion-label class="q-title subtitle-2 black">Feedback</ion-label>
-  <ng-container *ngIf="review.answer">
-    <p class="paragraph body-2 gray-2">{{ review.answer }}</p>
+  <div class="ion-padding-horizontal ion-padding-bottom">
+      <p class="paragraph body-2 gray-3">{{ submission.answer }}</p>
+  </div>
   </ng-container>
-  <ng-container *ngIf="review.comment">
-    <p class="paragraph body-2 gray-2">{{ review.comment }}</p>
+
+  <div *ngIf="reviewStatus !== 'in progress' && (review.answer || review.comment)" class="ion-padding"
+  [ngClass]="{ 'audience-mentor': audienceContainReviewer()}">
+    <ion-label *ngIf="audienceContainReviewer()" class="q-title subtitle-2 black ion-padding-vertical">Reviewer’s feedback</ion-label>
+    <ng-container *ngIf="review.answer">
+      <p class="paragraph body-2 gray-3">{{ review.answer }}</p>
+    </ng-container>
+    <ng-container *ngIf="review.comment">
+      <p class="paragraph body-2 gray-3">{{ review.comment }}</p>
+    </ng-container>
+  </div>
+
+  <ng-container *ngIf="doAssessment">
+    <div class="ion-padding-horizontal ion-padding-bottom">
+        <ion-textarea
+        class="background-white ion-margin-top textarea"
+        [(ngModel)]="answer"
+        #answerEle
+        rows="4"
+        (ionFocus)="onFocus()"
+        (ionChange)="onChange()"
+        [disabled]="control.disabled"></ion-textarea>
+      <ion-text *ngFor="let error of errors" color="danger">
+        <p>{{error}}</p>
+      </ion-text>
+    </div>
   </ng-container>
-</div>
 
-<ng-container *ngIf="doAssessment">
-  <ion-textarea
-    class="background-white ion-margin-top textarea"
-    [(ngModel)]="answer"
-    #answerEle
-    rows="4"
-    (ionFocus)="onFocus()"
-    (ionChange)="onChange()"
-    [disabled]="control.disabled"></ion-textarea>
-  <ion-text *ngFor="let error of errors" color="danger">
-    <p>{{error}}</p>
-  </ion-text>
-</ng-container>
-
-<ng-container *ngIf="doReview">
-  <ion-textarea
-    *ngIf="question.canAnswer"
-    class="background-white ion-margin-top textarea"
-    rows="4"
-    [(ngModel)]="answer"
-    #answerEle
-    (ionFocus)="onFocus()"
-    (ionChange)="onChange('answer')"
-    placeholder="Please put your answer here"
-    [disabled]="control.disabled"></ion-textarea>
-  <ion-textarea
-    *ngIf="question.canComment && submission.answer"
-    class="background-white ion-margin-top"
-    [(ngModel)]="comment"
-    #commentEle
-    rows="4"
-    (ionFocus)="onFocus()"
-    (ionChange)="onChange('comment')"
-    placeholder="Please put your feedback here"
-    [disabled]="control.disabled"></ion-textarea>
-</ng-container>
-
+  <ng-container *ngIf="doReview">
+    <div class="ion-padding" [ngClass]="{ 'audience-mentor': audienceContainReviewer()}">
+        <ion-textarea
+        *ngIf="question.canAnswer"
+        class="textarea"
+        rows="4"
+        [(ngModel)]="answer"
+        #answerEle
+        (ionFocus)="onFocus()"
+        (ionChange)="onChange('answer')"
+        placeholder="Please put your answer here"
+        [disabled]="control.disabled"></ion-textarea>
+      <ion-textarea
+        *ngIf="question.canComment && submission.answer"
+        class="textarea"
+        [(ngModel)]="comment"
+        #commentEle
+        rows="4"
+        (ionFocus)="onFocus()"
+        (ionChange)="onChange('comment')"
+        placeholder="Please put your feedback here"
+        [disabled]="control.disabled"></ion-textarea>
+    </div>
+  </ng-container>
