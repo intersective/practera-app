@@ -19,7 +19,12 @@
   <!-- Matomo -->
   <script type="text/javascript">
     var _paq = _paq || [];
-    /* tracker methods like "setCustomDimension" should be called before "trackPageView" */
+    _paq.push(['setCustomDimension', 1, 'Experience_type']);
+    _paq.push(['setCustomDimension', 2, 'role']);
+    _paq.push(['setCustomDimension', 3, 'programId']);
+    _paq.push(['setCustomDimension', 5, 'experienceId']);
+
+ /* tracker methods like "setCustomDimension" should be called before "trackPageView" */
     _paq.push(['trackPageView']);
     _paq.push(['enableLinkTracking']);
     (function() {
