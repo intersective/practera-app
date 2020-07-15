@@ -37,7 +37,8 @@ describe('OneofComponent', () => {
         choices: [
           { id: 1, name: 'choice1' },
           { id: 2, name: 'choice2' }
-        ]
+        ],
+        audience: []
       };
       component.submissionStatus = 'in progress';
       component.doAssessment = true;
@@ -56,7 +57,8 @@ describe('OneofComponent', () => {
         choices: [
           { id: 1, name: 'choice1' },
           { id: 2, name: 'choice2' }
-        ]
+        ],
+        audience: []
       };
       component.submissionStatus = 'pending review';
       component.doAssessment = false;
