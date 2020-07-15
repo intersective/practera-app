@@ -54,7 +54,8 @@ describe('TabsComponent', () => {
               name: 'Test User',
               email: 'user@test.com',
               id: 1
-            }
+            },
+            get: ''
           })
         },
         {
@@ -125,6 +126,7 @@ describe('TabsComponent', () => {
 
   describe('when testing onEnter()', () => {
     it('should get correct data', () => {
+      storageSpy.get.and.returnValue(0);
       fixture.detectChanges();
       expect(component.noOfTodoItems).toBe(5);
       expect(component.noOfChats).toBe(4);
