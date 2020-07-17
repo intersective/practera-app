@@ -80,20 +80,20 @@ describe('FileComponent', () => {
     it('should get correct data if file upload success when doing submission', () => {
       component.onFileUploadCompleted({
         success: true,
-        data: 'data'
+        data: {filename: 'abc.png'}
       });
       expect(component.errors.length).toBe(0);
-      expect(component.uploadedFile).toEqual('data');
-      expect(component.innerValue).toEqual('data');
+      expect(component.uploadedFile).toEqual({filename: 'abc.png'});
+      expect(component.innerValue).toEqual(JSON.stringify({filename: 'abc.png'}));
     });
   });
 
   describe('when testing onChange()', () => {
     it('should get correct data when writing review answer', () => {
-      component.uploadedFile = 'aaa';
+      component.uploadedFile = {filename: 'abc.png'};
       component.onChange('data', 'answer');
       expect(component.errors.length).toBe(0);
-      expect(component.innerValue).toEqual({answer: 'aaa', comment: ''});
+      expect(component.innerValue).toEqual({answer: JSON.stringify({filename: 'abc.png'}), comment: ''});
     });
     it('should get correct data when writing review comment', () => {
       component.innerValue = {answer: {}, comment: ''};
