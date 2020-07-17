@@ -373,6 +373,9 @@ export class AssessmentService {
   }
 
   saveAnswers(assessment: AssessmentSubmitParams, answers: Answer[], action: string) {
+    if (!['assessment', 'review'].includes(action)) {
+      return of(false);
+    }
     let params = `assessmentId:${assessment.id},inProgress:${assessment.inProgress},answers:${this._answersFormatter(answers)}`;
     ['submissionId', 'contextId', 'reviewId', 'unlock'].forEach(key => {
       if (assessment[key]) {
@@ -381,7 +384,7 @@ export class AssessmentService {
     });
     return this.request.postGraphQL(this.utils.graphQLQueryStringFormatter(`"
       mutation {
-        `+ (action === 'assessment' ? `submitAssessment` : `submitReview`) + `(`+ params +`)
+        ` + (action === 'assessment' ? `submitAssessment` : `submitReview`) + `(` + params + `)
       }
     "`));
   }

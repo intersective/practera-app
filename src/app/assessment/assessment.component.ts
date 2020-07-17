@@ -527,7 +527,7 @@ export class AssessmentComponent extends RouterEnter {
     if (saveInProgress) {
       assessment.inProgress = true;
     }
-    if (this.submission) {
+    if (this.submission && this.submission.id) {
       assessment.submissionId = this.submission.id;
     }
 
