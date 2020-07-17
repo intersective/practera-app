@@ -98,11 +98,11 @@ export class FileComponent implements ControlValueAccessor, OnInit {
         // just pass the value for comment since comment is always just text
         this.innerValue.comment = value;
       } else {
-        this.innerValue.answer = this.uploadedFile;
+        this.innerValue.answer = JSON.stringify(this.uploadedFile);
       }
     } else {
       // this is for submitter, just pass the uploaded file as the answer
-      this.innerValue = this.uploadedFile;
+      this.innerValue = JSON.stringify(this.uploadedFile);
     }
 
     // propagate value into form control using control value accessor interface
