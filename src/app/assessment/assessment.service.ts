@@ -392,7 +392,10 @@ export class AssessmentService {
       .replace(/"questionId":/g, 'questionId:')
       .replace(/"answer":/g, 'answer:')
       .replace(/"comment":/g, 'comment:')
-      .replace(/"/g, '\\"');
+      // change "abc" to \"abc\"
+      .replace(/"/g, '\\"')
+      // change    {\\"filename\\":\\"abc.png\\"}    to    {\\\"filename\\\":\\\"abc.png\\\"}
+      .replace(/\\\\/g, '\\\\\\');
   }
 
   saveFeedbackReviewed(submissionId) {
