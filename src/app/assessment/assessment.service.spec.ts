@@ -4,7 +4,7 @@ import { RequestService } from '@shared/request/request.service';
 import { BrowserStorageService } from '@services/storage.service';
 import { UtilsService } from '@services/utils.service';
 import { NotificationService } from '@shared/notification/notification.service';
-import { AssessmentService, AssessmentSubmitBody } from './assessment.service';
+import { AssessmentService, AssessmentSubmitParams } from './assessment.service';
 import { SubmissionFixture } from '@testing/fixtures';
 
 describe('AssessmentService', () => {
@@ -455,7 +455,7 @@ describe('AssessmentService', () => {
   });
 
   describe('when testing saveAnswers()', () => {
-    const assessment: AssessmentSubmitBody = SubmissionFixture;
+    const assessment: AssessmentSubmitParams = SubmissionFixture;
     const answers = {answers: true};
     beforeEach(() => {
       requestSpy.post.and.returnValue(of(true));

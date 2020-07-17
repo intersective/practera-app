@@ -21,12 +21,12 @@ const api = {
   }
 };
 
-export interface AssessmentSubmitBody {
+export interface AssessmentSubmitParams {
   id: number;
-  in_progress: boolean;
-  context_id?: number;
-  review_id?: number;
-  submission_id?: number;
+  inProgress?: boolean;
+  contextId?: number;
+  reviewId?: number;
+  submissionId?: number;
   unlock?: boolean;
 }
 
@@ -85,6 +85,12 @@ export interface Submission {
   completed?: boolean;
   submitterImage: string;
   reviewerName: string | void;
+}
+
+export interface Answer {
+  questionId: number;
+  answer?: any;
+  comment?: string;
 }
 
 export interface Review {
@@ -366,31 +372,27 @@ export class AssessmentService {
     return answer;
   }
 
-  saveAnswers(assessment: AssessmentSubmitBody, answers: object, action: string, submissionId?: number) {
-    let postData;
-    switch (action) {
-      case 'assessment':
-        postData = {
-          Assessment: assessment,
-          AssessmentSubmissionAnswer: answers
-        };
-        if (submissionId) {
-          postData.AssessmentSubmission = {
-            id: submissionId
-          };
-        }
-        return this.request.post(api.post.submissions, postData);
-
-      case 'review':
-        postData = {
-          Assessment: assessment,
-          AssessmentReviewAnswer: answers
-        };
-        return this.request.post(api.post.reviews, postData);
-    }
-    return of({
-      success: false
+  saveAnswers(assessment: AssessmentSubmitParams, answers: Answer[], action: string) {
+    let params = `assessmentId:${assessment.id},inProgress:${assessment.inProgress},answers:${this._answersFormatter(answers)}`;
+    ['submissionId', 'contextId', 'reviewId', 'unlock'].forEach(key => {
+      if (assessment[key]) {
+        params += `,${key}:${assessment[key]}`;
+      }
     });
+    return this.request.postGraphQL(this.utils.graphQLQueryStringFormatter(`"
+      mutation {
+        `+ (action === 'assessment' ? `submitAssessment` : `submitReview`) + `(`+ params +`)
+      }
+    "`));
+  }
+
+  // re-format answers array so that it can be passed to GraphQL
+  private _answersFormatter(answers: Answer[]) {
+    return JSON.stringify(answers)
+      .replace(/"questionId":/g, 'questionId:')
+      .replace(/"answer":/g, 'answer:')
+      .replace(/"comment":/g, 'comment:')
+      .replace(/"/g, '\\"');
   }
 
   saveFeedbackReviewed(submissionId) {
