@@ -457,50 +457,60 @@ describe('AssessmentService', () => {
     const answers = [
       { questionId: 123, answer: 'abc' },
       { questionId: 124, answer: 456 },
-      { questionId: 125, answer: [3,4] },
+      { questionId: 125, answer: [3, 4] },
       { questionId: 126, answer: [3] },
       { questionId: 127, answer: JSON.stringify({filename: 'abc.png'}) }
     ];
-    const paramsString = `assessmentId:1,inProgress:true,answers:[{questionId:123,answer:\\"abc\\"},{questionId:124,answer:456},{questionId:125,answer:[3,4]},{questionId:126,answer:[3]},{questionId:127,answer:\\"{\\\\\\"filename\\\\\\":\\\\\\"abc.png\\\\\\"}\\"}]`;
+    const paramsString = `assessmentId:1,inProgress:true,answers:[
+      {questionId:123,answer:\\"abc\\"},
+      {questionId:124,answer:456},
+      {questionId:125,answer:[3,4]},
+      {questionId:126,answer:[3]},
+      {questionId:127,answer:\\"{\\\\\\"filename\\\\\\":\\\\\\"abc.png\\\\\\"}\\"}]`
+      .replace(/(\r\n|\n|\r)/gm, '').replace(/ /gm, '');
     beforeEach(() => {
       requestSpy.postGraphQL.and.returnValue(of(true));
     });
 
     it('should save assessment answers correctly', () => {
-      service.saveAnswers({
+      const assessment = {
         id: 1,
         inProgress: true,
         contextId: 2
-      }, answers, 'assessment').subscribe();
+      };
+      service.saveAnswers(assessment, answers, 'assessment').subscribe();
       expect(requestSpy.postGraphQL.calls.first().args[0]).toEqual(`" mutation { submitAssessment(${paramsString},contextId:2) } "`);
     });
 
     it('should save assessment answers correctly with submission id', () => {
-      service.saveAnswers({
+      const assessment = {
         id: 1,
         inProgress: true,
         contextId: 2,
         submissionId: 3,
         unlock: true
-      }, answers, 'assessment').subscribe();
+      };
+      service.saveAnswers(assessment, answers, 'assessment').subscribe();
       expect(requestSpy.postGraphQL.calls.first().args[0]).toEqual(`" mutation { submitAssessment(${paramsString},submissionId:3,contextId:2,unlock:true) } "`);
     });
 
     it('should save review answers correctly', () => {
-      service.saveAnswers({
+      const assessment = {
         id: 1,
         inProgress: true,
         submissionId: 3,
         reviewId: 4
-      }, answers, 'review').subscribe();
+      };
+      service.saveAnswers(assessment, answers, 'review').subscribe();
       expect(requestSpy.postGraphQL.calls.first().args[0]).toEqual(`" mutation { submitReview(${paramsString},submissionId:3,reviewId:4) } "`);
     });
 
     it('should return success false if action not correct', () => {
-      service.saveAnswers({
+      const assessment = {
         id: 1,
         inProgress: true
-      }, answers, 'incorrect').subscribe(res => expect(res).toBe(false));
+      };
+      service.saveAnswers(assessment, answers, 'incorrect').subscribe(res => expect(res).toBe(false));
       expect(requestSpy.postGraphQL.calls.count()).toBe(0);
     });
   });
