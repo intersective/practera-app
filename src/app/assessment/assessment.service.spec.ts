@@ -4,8 +4,7 @@ import { RequestService } from '@shared/request/request.service';
 import { BrowserStorageService } from '@services/storage.service';
 import { UtilsService } from '@services/utils.service';
 import { NotificationService } from '@shared/notification/notification.service';
-import { AssessmentService, AssessmentSubmitBody } from './assessment.service';
-import { SubmissionFixture } from '@testing/fixtures';
+import { AssessmentService, AssessmentSubmitParams } from './assessment.service';
 
 describe('AssessmentService', () => {
   let service: AssessmentService;
@@ -455,43 +454,64 @@ describe('AssessmentService', () => {
   });
 
   describe('when testing saveAnswers()', () => {
-    const assessment: AssessmentSubmitBody = SubmissionFixture;
-    const answers = {answers: true};
+    const answers = [
+      { questionId: 123, answer: 'abc' },
+      { questionId: 124, answer: 456 },
+      { questionId: 125, answer: [3, 4] },
+      { questionId: 126, answer: [3] },
+      { questionId: 127, answer: JSON.stringify({filename: 'abc.png'}) }
+    ];
+    const paramsString = `assessmentId:1,inProgress:true,answers:[
+      {questionId:123,answer:\\"abc\\"},
+      {questionId:124,answer:456},
+      {questionId:125,answer:[3,4]},
+      {questionId:126,answer:[3]},
+      {questionId:127,answer:\\"{\\\\\\"filename\\\\\\":\\\\\\"abc.png\\\\\\"}\\"}]`
+      .replace(/(\r\n|\n|\r)/gm, '').replace(/ /gm, '');
     beforeEach(() => {
-      requestSpy.post.and.returnValue(of(true));
+      requestSpy.postGraphQL.and.returnValue(of(true));
     });
 
     it('should save assessment answers correctly', () => {
+      const assessment = {
+        id: 1,
+        inProgress: true,
+        contextId: 2
+      };
       service.saveAnswers(assessment, answers, 'assessment').subscribe();
-      expect(requestSpy.post.calls.count()).toBe(1);
-      expect(requestSpy.post.calls.first().args[1]).toEqual({
-        Assessment: assessment,
-        AssessmentSubmissionAnswer: answers
-      });
+      expect(requestSpy.postGraphQL.calls.first().args[0]).toEqual(`" mutation { submitAssessment(${paramsString},contextId:2) } "`);
     });
 
     it('should save assessment answers correctly with submission id', () => {
-      service.saveAnswers(assessment, answers, 'assessment', 1).subscribe();
-      expect(requestSpy.post.calls.count()).toBe(1);
-      expect(requestSpy.post.calls.first().args[1]).toEqual({
-        Assessment: assessment,
-        AssessmentSubmissionAnswer: answers,
-        AssessmentSubmission: {id: 1}
-      });
+      const assessment = {
+        id: 1,
+        inProgress: true,
+        contextId: 2,
+        submissionId: 3,
+        unlock: true
+      };
+      service.saveAnswers(assessment, answers, 'assessment').subscribe();
+      expect(requestSpy.postGraphQL.calls.first().args[0]).toEqual(`" mutation { submitAssessment(${paramsString},submissionId:3,contextId:2,unlock:true) } "`);
     });
 
     it('should save review answers correctly', () => {
+      const assessment = {
+        id: 1,
+        inProgress: true,
+        submissionId: 3,
+        reviewId: 4
+      };
       service.saveAnswers(assessment, answers, 'review').subscribe();
-      expect(requestSpy.post.calls.count()).toBe(1);
-      expect(requestSpy.post.calls.first().args[1]).toEqual({
-        Assessment: assessment,
-        AssessmentReviewAnswer: answers
-      });
+      expect(requestSpy.postGraphQL.calls.first().args[0]).toEqual(`" mutation { submitReview(${paramsString},submissionId:3,reviewId:4) } "`);
     });
 
     it('should return success false if action not correct', () => {
-      service.saveAnswers(assessment, answers, 'incorrect').subscribe(res => expect(res.success).toBe(false));
-      expect(requestSpy.post.calls.count()).toBe(0);
+      const assessment = {
+        id: 1,
+        inProgress: true
+      };
+      service.saveAnswers(assessment, answers, 'incorrect').subscribe(res => expect(res).toBe(false));
+      expect(requestSpy.postGraphQL.calls.count()).toBe(0);
     });
   });
 
