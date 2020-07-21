@@ -1,17 +1,10 @@
 import { Injectable } from '@angular/core';
 import { Observable, BehaviorSubject } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { RequestService } from '@shared/request/request.service';
 import { UtilsService } from '@services/utils.service';
 import { BrowserStorageService } from '@services/storage.service';
-
-/**
- * @name api
- * @description list of api endpoint involved in this service
- * @type {Object}
- */
-const api = {
-};
+import { Apollo } from 'apollo-angular';
+import gql from 'graphql-tag';
 
 export interface Activity {
   id: number;
@@ -38,10 +31,10 @@ export class ProjectService {
   public activities: Array<Activity> = [];
 
   constructor(
-    private request: RequestService,
     private storage: BrowserStorageService,
-    private utils: UtilsService
-  ) {}
+    private utils: UtilsService,
+    private apollo: Apollo
+  ) { }
 
   // request for the latest data, and return the previously saved data at the same time
   public getProject(): BehaviorSubject<any> {
@@ -51,15 +44,24 @@ export class ProjectService {
 
   // request for the latest project data
   private _getProjectData() {
-    return this.request.postGraphQL(
-      `"{` +
-        `milestones{` +
-          `id name progress description isLocked activities{` +
-            `id name progress isLocked leadImage ` +
-          `}` +
-        `}` +
-      `}"`)
-      .pipe(map(res => this._normaliseProject(res.data)));
+    return this.apollo
+      .watchQuery({
+        query: gql`
+          {
+            milestones{
+              id
+              name
+              progress
+              description
+              isLocked
+              activities{
+                id name progress isLocked leadImage
+              }
+            }
+          }
+        `,
+      })
+      .valueChanges.pipe(map(res => this._normaliseProject(res.data)));
   }
 
   private _normaliseProject(data): Array<Milestone> {
