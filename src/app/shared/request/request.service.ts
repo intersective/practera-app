@@ -7,6 +7,8 @@ import { UtilsService } from '@services/utils.service';
 import { BrowserStorageService } from '@services/storage.service';
 import { environment } from '@environments/environment';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
+import { Apollo } from 'apollo-angular';
+import gql from 'graphql-tag';
 
 @Injectable({ providedIn: 'root' })
 export class DevModeService {
@@ -53,7 +55,8 @@ export class RequestService {
     private router: Router,
     @Optional() config: RequestConfig,
     private newrelic: NewRelicService,
-    private devMode: DevModeService
+    private devMode: DevModeService,
+    private apollo: Apollo
   ) {
     if (config) {
       this.appkey = config.appkey;
@@ -153,10 +156,20 @@ export class RequestService {
       );
   }
 
-  postGraphQL(data): Observable<any> {
-    return this.http.post<any>(environment.graphQL, data, {
-      headers: this.appendHeaders()
-    })
+  postGraphQL(query: string, variables?: any, isMutation = false): Observable<any> {
+    let result;
+    if (isMutation) {
+      result = this.apollo.mutate({
+        mutation: gql(query),
+        variables: variables || {}
+      });
+    } else {
+      result = this.apollo.watchQuery({
+        query: gql(query),
+        variables: variables || {}
+      }).valueChanges;
+    }
+    return result
       .pipe(concatMap(response => {
         this._refreshApikey(response);
         return of(response);
