@@ -3,8 +3,7 @@ import { Observable, BehaviorSubject } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { UtilsService } from '@services/utils.service';
 import { BrowserStorageService } from '@services/storage.service';
-import { Apollo } from 'apollo-angular';
-import gql from 'graphql-tag';
+import { RequestService } from '@shared/request/request.service';
 
 export interface Activity {
   id: number;
@@ -33,7 +32,7 @@ export class ProjectService {
   constructor(
     private storage: BrowserStorageService,
     private utils: UtilsService,
-    private apollo: Apollo
+    private request: RequestService
   ) { }
 
   // request for the latest data, and return the previously saved data at the same time
@@ -44,24 +43,20 @@ export class ProjectService {
 
   // request for the latest project data
   private _getProjectData() {
-    return this.apollo
-      .watchQuery({
-        query: gql`
-          {
-            milestones{
-              id
-              name
-              progress
-              description
-              isLocked
-              activities{
-                id name progress isLocked leadImage
-              }
-            }
+    return this.request.postGraphQL(`
+      {
+        milestones{
+          id
+          name
+          progress
+          description
+          isLocked
+          activities{
+            id name progress isLocked leadImage
           }
-        `,
-      })
-      .valueChanges.pipe(map(res => this._normaliseProject(res.data)));
+        }
+      }`,
+    ).pipe(map(res => this._normaliseProject(res.data)));
   }
 
   private _normaliseProject(data): Array<Milestone> {
