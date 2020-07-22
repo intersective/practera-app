@@ -117,48 +117,54 @@ export class AssessmentService {
 
   getAssessment(id, action, activityId, contextId, submissionId?) {
     return this.request.postGraphQL(
-      this.utils.graphQLQueryStringFormatter(
-        `"{
-          assessment(id:` + id + `,reviewer:` + (action === 'review') + `,activityId:` + activityId + `) {
-            name type description dueDate isTeam pulseCheck
-            groups{
-              name description
-              questions{
-                id name description type isRequired hasComment audience fileType
-                choices{
-                  id name explanation description
-                }
-                teamMembers{
-                  userId userName teamId
-                }
+      `query getAssessment($assessmentId: Int!, $reviewer: Boolean!, $activityId: Int!, $contextId: Int!, $submissionId: Int) {
+        assessment(id:$assessmentId, reviewer:$reviewer, activityId:$activityId) {
+          name type description dueDate isTeam pulseCheck
+          groups{
+            name description
+            questions{
+              id name description type isRequired hasComment audience fileType
+              choices{
+                id name explanation description
               }
-            }
-            submissions(` + (submissionId ? `id:` + submissionId : `contextId:` + contextId) + `) {
-              id status completed modified locked
-              submitter {
-                name image
-              }
-              answers{
-                questionId answer
-              }
-              review {
-                id status modified
-                reviewer { name }
-                answers {
-                  questionId answer comment
-                }
+              teamMembers{
+                userId userName teamId
               }
             }
           }
-        }"`)
-      )
-      .pipe(map(res => {
-        return {
-          assessment: this._normaliseAssessment(res.data, action),
-          submission: this._normaliseSubmission(res.data),
-          review: this._normaliseReview(res.data, action)
-        };
-      }));
+          submissions(id:$submissionId, contextId:$contextId) {
+            id status completed modified locked
+            submitter {
+              name image
+            }
+            answers{
+              questionId answer
+            }
+            review {
+              id status modified
+              reviewer { name }
+              answers {
+                questionId answer comment
+              }
+            }
+          }
+        }
+      }`,
+      {
+        assessmentId: id,
+        reviewer: action === 'review',
+        activityId: activityId,
+        submissionId: submissionId || null,
+        contextId: contextId
+      }
+    )
+    .pipe(map(res => {
+      return {
+        assessment: this._normaliseAssessment(res.data, action),
+        submission: this._normaliseSubmission(res.data),
+        review: this._normaliseReview(res.data, action)
+      };
+    }));
   }
 
   private _normaliseAssessment(data, action): Assessment {
@@ -376,17 +382,33 @@ export class AssessmentService {
     if (!['assessment', 'review'].includes(action)) {
       return of(false);
     }
-    let params = `assessmentId:${assessment.id},inProgress:${assessment.inProgress},answers:${this._answersFormatter(answers)}`;
-    ['submissionId', 'contextId', 'reviewId', 'unlock'].forEach(key => {
-      if (assessment[key]) {
-        params += `,${key}:${assessment[key]}`;
+    let paramsFormat = '$assessmentId: Int!, $inProgress: Boolean, $answers: [AssessmentSubmissionAnswerInput]';
+    let params = 'assessmentId:$assessmentId, inProgress:$inProgress, answers:$answers';
+    const variables = {
+      assessmentId: assessment.id,
+      inProgress: assessment.inProgress,
+      answers: answers
+    };
+    [
+      { key: 'submissionId', type: 'Int' },
+      { key: 'contextId', type: 'Int!' },
+      { key: 'reviewId', type: 'Int' },
+      { key: 'unlock', type: 'Boolean'}
+    ].forEach(item => {
+      if (assessment[item.key]) {
+        paramsFormat += `, $${item.key}: ${item.type}`;
+        params += `,${item.key}: $${item.key}`;
+        variables[item.key] = assessment[item.key];
       }
     });
-    return this.request.postGraphQL(this.utils.graphQLQueryStringFormatter(`"
-      mutation {
-        ` + (action === 'assessment' ? `submitAssessment` : `submitReview`) + `(` + params + `)
+    return this.request.postGraphQL(`
+      mutation saveAnswers(${paramsFormat}){
+        ` + (action === 'assessment' ? `submitAssessment` : `submitReview`) + `(${params})
       }
-    "`));
+      `,
+      variables,
+      true
+    );
   }
 
   // re-format answers array so that it can be passed to GraphQL
