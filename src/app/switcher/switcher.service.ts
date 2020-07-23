@@ -94,7 +94,7 @@ export class SwitcherService {
    * @param projectIds Project ids
    */
   getProgresses(projectIds: number[]) {
-    return this.request.postGraphQL(
+    return this.request.graphQLQuery(
       `query getProjectList($ids: [Int]!) {
         projects(ids: $ids) {
           id

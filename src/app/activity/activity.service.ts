@@ -66,7 +66,7 @@ export class ActivityService {
 
   // // request for the latest project data
   // private _getActivityData(id) {
-    return this.request.postGraphQL(
+    return this.request.graphQLQuery(
       `query getActivity($id: Int!) {
         activity(id:$id){
           id name description tasks{
