@@ -168,52 +168,52 @@ describe('UtilsService', () => {
     });
   });
 
-  describe('getActivityCache()', () => {
-    it('should update cache for activitySubjects', () => {
-      service.activitySubjects = {};
-      service.getActivityCache('newCache');
+  // xdescribe('getActivityCache()', () => {
+  //   it('should update cache for activitySubjects', () => {
+  //     service.activitySubjects = {};
+  //     service.getActivityCache('newCache');
 
-      expect(service.activitySubjects['newCache']).toBeTruthy();
-      expect(service.activitySubjects['newCache'] instanceof BehaviorSubject).toBeTruthy();
-      expect(service.activitySubjects['notexist']).toBeFalsy();
-    });
-  });
+  //     expect(service.activitySubjects['newCache']).toBeTruthy();
+  //     expect(service.activitySubjects['newCache'] instanceof BehaviorSubject).toBeTruthy();
+  //     expect(service.activitySubjects['notexist']).toBeFalsy();
+  //   });
+  // });
 
-  describe('updateActivityCache()', () => {
-    it('should update cache for activitySubjects', () => {
-      service.activitySubjects = {};
-      service.updateActivityCache('test', 'activity');
+  // xdescribe('updateActivityCache()', () => {
+  //   it('should update cache for activitySubjects', () => {
+  //     service.activitySubjects = {};
+  //     service.updateActivityCache('test', 'activity');
 
-      expect(service.activitySubjects['test']).toBeTruthy();
-      expect(service.activitySubjects['test'] instanceof BehaviorSubject).toBeTruthy();
+  //     expect(service.activitySubjects['test']).toBeTruthy();
+  //     expect(service.activitySubjects['test'] instanceof BehaviorSubject).toBeTruthy();
 
-      let result;
-      service.activitySubjects['test'].subscribe(res => {
-        result = res;
-      });
+  //     let result;
+  //     service.activitySubjects['test'].subscribe(res => {
+  //       result = res;
+  //     });
 
-      expect(result).toEqual('activity');
+  //     expect(result).toEqual('activity');
 
-    });
-  });
+  //   });
+  // });
 
-  describe('clearCache()', () => {
-    it('should trigger cache clearing through observables', () => {
-      service.activitySubjects = [
-        { next: jasmine.createSpy('next') },
-        { next: jasmine.createSpy('next') },
-        { next: jasmine.createSpy('next') },
-      ];
+  // xdescribe('clearCache()', () => {
+  //   it('should trigger cache clearing through observables', () => {
+  //     service.activitySubjects = [
+  //       { next: jasmine.createSpy('next') },
+  //       { next: jasmine.createSpy('next') },
+  //       { next: jasmine.createSpy('next') },
+  //     ];
 
-      spyOn(service.projectSubject, 'next');
-      service.clearCache();
+  //     spyOn(service.projectSubject, 'next');
+  //     service.clearCache();
 
-      expect(service.projectSubject.next).toHaveBeenCalledWith(null);
-      expect(service.activitySubjects[0].next).toHaveBeenCalledWith(null);
-      expect(service.activitySubjects[1].next).toHaveBeenCalledWith(null);
-      expect(service.activitySubjects[2].next).toHaveBeenCalledWith(null);
-    });
-  });
+  //     expect(service.projectSubject.next).toHaveBeenCalledWith(null);
+  //     expect(service.activitySubjects[0].next).toHaveBeenCalledWith(null);
+  //     expect(service.activitySubjects[1].next).toHaveBeenCalledWith(null);
+  //     expect(service.activitySubjects[2].next).toHaveBeenCalledWith(null);
+  //   });
+  // });
 
   describe('urlQueryToObject()', () => {
     it('should turn url query into programmatically useable object', () => {
