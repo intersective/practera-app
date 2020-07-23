@@ -23,7 +23,7 @@ describe('AssessmentService', () => {
         },
         {
           provide: RequestService,
-          useValue: jasmine.createSpyObj('RequestService', ['get', 'post', 'postGraphQL', 'apiResponseFormatError'])
+          useValue: jasmine.createSpyObj('RequestService', ['get', 'post', 'graphQLQuery', 'apiResponseFormatError'])
         },
         {
           provide: BrowserStorageService,
@@ -420,7 +420,7 @@ describe('AssessmentService', () => {
     });
 
     afterEach(() => {
-      requestSpy.postGraphQL.and.returnValue(of(requestResponse));
+      requestSpy.graphQLQuery.and.returnValue(of(requestResponse));
       service.getAssessment(1, 'assessment', 2, 3).subscribe(
         result => {
           expect(result.assessment).toEqual(expectedAssessment);
@@ -428,7 +428,7 @@ describe('AssessmentService', () => {
           expect(result.review).toEqual(expectedReview);
         }
       );
-      expect(requestSpy.postGraphQL.calls.count()).toBe(1);
+      expect(requestSpy.graphQLQuery.calls.count()).toBe(1);
     });
 
     it('should get correct assessment data', () => {});
@@ -469,7 +469,7 @@ describe('AssessmentService', () => {
       {questionId:127,answer:\\"{\\\\\\"filename\\\\\\":\\\\\\"abc.png\\\\\\"}\\"}]`
       .replace(/(\r\n|\n|\r)/gm, '').replace(/ /gm, '');
     beforeEach(() => {
-      requestSpy.postGraphQL.and.returnValue(of(true));
+      requestSpy.graphQLQuery.and.returnValue(of(true));
     });
 
     it('should save assessment answers correctly', () => {
@@ -479,7 +479,7 @@ describe('AssessmentService', () => {
         contextId: 2
       };
       service.saveAnswers(assessment, answers, 'assessment').subscribe();
-      expect(requestSpy.postGraphQL.calls.first().args[0]).toEqual(`" mutation { submitAssessment(${paramsString},contextId:2) } "`);
+      expect(requestSpy.graphQLQuery.calls.first().args[0]).toEqual(`" mutation { submitAssessment(${paramsString},contextId:2) } "`);
     });
 
     it('should save assessment answers correctly with submission id', () => {
@@ -491,7 +491,7 @@ describe('AssessmentService', () => {
         unlock: true
       };
       service.saveAnswers(assessment, answers, 'assessment').subscribe();
-      expect(requestSpy.postGraphQL.calls.first().args[0]).toEqual(`" mutation { submitAssessment(${paramsString},submissionId:3,contextId:2,unlock:true) } "`);
+      expect(requestSpy.graphQLQuery.calls.first().args[0]).toEqual(`" mutation { submitAssessment(${paramsString},submissionId:3,contextId:2,unlock:true) } "`);
     });
 
     it('should save review answers correctly', () => {
@@ -502,7 +502,7 @@ describe('AssessmentService', () => {
         reviewId: 4
       };
       service.saveAnswers(assessment, answers, 'review').subscribe();
-      expect(requestSpy.postGraphQL.calls.first().args[0]).toEqual(`" mutation { submitReview(${paramsString},submissionId:3,reviewId:4) } "`);
+      expect(requestSpy.graphQLQuery.calls.first().args[0]).toEqual(`" mutation { submitReview(${paramsString},submissionId:3,reviewId:4) } "`);
     });
 
     it('should return success false if action not correct', () => {
@@ -511,7 +511,7 @@ describe('AssessmentService', () => {
         inProgress: true
       };
       service.saveAnswers(assessment, answers, 'incorrect').subscribe(res => expect(res).toBe(false));
-      expect(requestSpy.postGraphQL.calls.count()).toBe(0);
+      expect(requestSpy.graphQLQuery.calls.count()).toBe(0);
     });
   });
 

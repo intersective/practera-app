@@ -156,20 +156,29 @@ export class RequestService {
       );
   }
 
-  postGraphQL(query: string, variables?: any, isMutation = false): Observable<any> {
-    let result;
-    if (isMutation) {
-      result = this.apollo.mutate({
-        mutation: gql(query),
-        variables: variables || {}
-      });
-    } else {
-      result = this.apollo.watchQuery({
-        query: gql(query),
-        variables: variables || {}
-      }).valueChanges;
+  graphQLQuery(query: string, variables?: any, refetch = true): Observable<any> {
+    const watch = this.apollo.watchQuery({
+      query: gql(query),
+      variables: variables || {}
+    });
+    if (refetch) {
+      watch.refetch();
     }
-    return result
+    return watch.valueChanges
+      .pipe(concatMap(response => {
+        this._refreshApikey(response);
+        return of(response);
+      }))
+      .pipe(
+        catchError((error) => this.handleError(error))
+      );
+  }
+
+  graphQLMutate(query: string, variables?: any): Observable<any> {
+    return this.apollo.mutate({
+      mutation: gql(query),
+      variables: variables || {}
+    })
       .pipe(concatMap(response => {
         this._refreshApikey(response);
         return of(response);

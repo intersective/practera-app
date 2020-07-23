@@ -116,7 +116,7 @@ export class AssessmentService {
   ) {}
 
   getAssessment(id, action, activityId, contextId, submissionId?) {
-    return this.request.postGraphQL(
+    return this.request.graphQLQuery(
       `query getAssessment($assessmentId: Int!, $reviewer: Boolean!, $activityId: Int!, $contextId: Int!, $submissionId: Int) {
         assessment(id:$assessmentId, reviewer:$reviewer, activityId:$activityId) {
           name type description dueDate isTeam pulseCheck
@@ -401,26 +401,13 @@ export class AssessmentService {
         variables[item.key] = assessment[item.key];
       }
     });
-    return this.request.postGraphQL(`
+    return this.request.graphQLMutate(`
       mutation saveAnswers(${paramsFormat}){
         ` + (action === 'assessment' ? `submitAssessment` : `submitReview`) + `(${params})
       }
       `,
-      variables,
-      true
+      variables
     );
-  }
-
-  // re-format answers array so that it can be passed to GraphQL
-  private _answersFormatter(answers: Answer[]) {
-    return JSON.stringify(answers)
-      .replace(/"questionId":/g, 'questionId:')
-      .replace(/"answer":/g, 'answer:')
-      .replace(/"comment":/g, 'comment:')
-      // change "abc" to \"abc\"
-      .replace(/"/g, '\\"')
-      // change    {\\"filename\\":\\"abc.png\\"}    to    {\\\"filename\\\":\\\"abc.png\\\"}
-      .replace(/\\\\/g, '\\\\\\');
   }
 
   saveFeedbackReviewed(submissionId) {
