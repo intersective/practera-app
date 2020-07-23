@@ -41,6 +41,7 @@ Run `npm run local` to start a development server on your local, and calling 127
 1. [Ionic Components](https://ionicframework.com/docs/api/)
 1. [Protractor API](https://www.protractortest.org/#/api)
 1. [Chai API](https://www.chaijs.com/api/bdd/)
+1. [Apollo Client Devtools](https://chrome.google.com/webstore/detail/apollo-client-developer-t/jdkknkkbebbapilgoeccciglkfbmbnfm)
 
 ## Automation Test
 

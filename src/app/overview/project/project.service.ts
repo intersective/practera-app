@@ -43,7 +43,7 @@ export class ProjectService {
 
   // request for the latest project data
   private _getProjectData() {
-    return this.request.postGraphQL(`
+    return this.request.graphQLQuery(`
       {
         milestones{
           id
