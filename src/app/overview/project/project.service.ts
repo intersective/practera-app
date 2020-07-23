@@ -35,14 +35,7 @@ export class ProjectService {
     private request: RequestService
   ) { }
 
-  // request for the latest data, and return the previously saved data at the same time
-  public getProject(): BehaviorSubject<any> {
-    this._getProjectData().subscribe(res => this.utils.projectSubject.next(res));
-    return this.utils.projectSubject;
-  }
-
-  // request for the latest project data
-  private _getProjectData() {
+  public getProject(): Observable<any> {
     return this.request.graphQLQuery(`
       {
         milestones{
