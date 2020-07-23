@@ -58,14 +58,7 @@ export class ActivityService {
     private notification: NotificationService
   ) {}
 
-  // request for the latest data, and return the previously saved data at the same time
   public getActivity(id) {
-  //   this._getActivityData(id).subscribe(res => this.utils.updateActivityCache(id, res));
-  //   return this.utils.getActivityCache(id);
-  // }
-
-  // // request for the latest project data
-  // private _getActivityData(id) {
     return this.request.graphQLQuery(
       `query getActivity($id: Int!) {
         activity(id:$id){

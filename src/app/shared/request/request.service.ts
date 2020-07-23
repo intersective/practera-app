@@ -156,12 +156,19 @@ export class RequestService {
       );
   }
 
-  graphQLQuery(query: string, variables?: any, refetch = true): Observable<any> {
+  /**
+   * Valid options:
+   * noCache: Boolean default false. If set to false, will not cache the result
+   * refetch: Boolean default true. If set to false, will always read the data from cache without sending any request to server
+   */
+  graphQLQuery(query: string, variables?: any, options?: any): Observable<any> {
+    options = {...{ noCache: false, refetch: true }, ...options};
     const watch = this.apollo.watchQuery({
       query: gql(query),
-      variables: variables || {}
+      variables: variables || {},
+      fetchPolicy: options.noCache ? 'no-cache' : 'cache-first'
     });
-    if (refetch) {
+    if (options.refetch) {
       watch.refetch();
     }
     return watch.valueChanges
@@ -174,10 +181,13 @@ export class RequestService {
       );
   }
 
-  graphQLMutate(query: string, variables?: any): Observable<any> {
+  /**
+   *
+   */
+  graphQLMutate(query: string, variables = {}): Observable<any> {
     return this.apollo.mutate({
       mutation: gql(query),
-      variables: variables || {}
+      variables: variables
     })
       .pipe(concatMap(response => {
         this._refreshApikey(response);

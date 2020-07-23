@@ -156,6 +156,9 @@ export class AssessmentService {
         activityId: activityId,
         submissionId: submissionId || null,
         contextId: contextId
+      },
+      {
+        noCache: true
       }
     )
     .pipe(map(res => {
