@@ -87,6 +87,7 @@ export class MockNewRelicService extends SpyObject {
   actionText;
   createTracer;
   setPageViewName;
+  addPageAction;
 
   constructor() {
     super(NewRelicService);
@@ -94,6 +95,7 @@ export class MockNewRelicService extends SpyObject {
     this.noticeError = this.spy('noticeError').and.returnValue(true);
     this.actionText = this.spy('actionText').and.returnValue(true);
     this.setPageViewName = this.spy('setPageViewName').and.returnValue(true);
+    this.addPageAction = this.spy('addPageAction').and.returnValue(true);
   }
 }
 

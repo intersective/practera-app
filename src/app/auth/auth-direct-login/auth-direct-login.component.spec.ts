@@ -11,6 +11,7 @@ import { SwitcherService } from '../../switcher/switcher.service';
 import { BrowserStorageService } from '@services/storage.service';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
 import { BrowserStorageServiceMock } from '@testing/mocked.service';
+import { Apollo } from 'apollo-angular';
 
 describe('AuthDirectLoginComponent', () => {
   let component: AuthDirectLoginComponent;
@@ -19,6 +20,7 @@ describe('AuthDirectLoginComponent', () => {
   let routerSpy: jasmine.SpyObj<Router>;
   let routeSpy: ActivatedRoute;
   let utils: UtilsService;
+  let apolloSpy: jasmine.SpyObj<Apollo>;
   let notificationSpy: jasmine.SpyObj<NotificationService>;
   let switcherSpy: jasmine.SpyObj<SwitcherService>;
   let storageSpy: jasmine.SpyObj<BrowserStorageService>;
@@ -29,6 +31,10 @@ describe('AuthDirectLoginComponent', () => {
       declarations: [ AuthDirectLoginComponent ],
       schemas: [ CUSTOM_ELEMENTS_SCHEMA ],
       providers: [
+        {
+          provide: Apollo,
+          useValue: jasmine.createSpyObj('Apollo', ['getClient'])
+        },
         UtilsService,
         NewRelicService,
         {
@@ -76,6 +82,7 @@ describe('AuthDirectLoginComponent', () => {
     routerSpy = TestBed.inject(Router) as jasmine.SpyObj<Router>;
     routeSpy = TestBed.inject(ActivatedRoute);
     utils = TestBed.inject(UtilsService);
+    apolloSpy = TestBed.inject(Apollo) as jasmine.SpyObj<Apollo>;
     notificationSpy = TestBed.inject(NotificationService) as jasmine.SpyObj<NotificationService>;
     switcherSpy = TestBed.inject(SwitcherService) as jasmine.SpyObj<SwitcherService>;
     storageSpy = TestBed.inject(BrowserStorageService) as jasmine.SpyObj<BrowserStorageService>;
@@ -87,6 +94,7 @@ describe('AuthDirectLoginComponent', () => {
     switcherSpy.switchProgram.and.returnValue(of({}));
     storageSpy.get.and.returnValue([{timeline: {id: 1}}]);
     storageSpy.getConfig.and.returnValue({logo: null});
+    apolloSpy.getClient.and.returnValue({clearStore: () => true});
   });
 
   describe('when testing ngOnInit()', () => {
