@@ -4,6 +4,7 @@ import { Observable, of, pipe } from 'rxjs';
 import { NotificationService } from '@shared/notification/notification.service';
 import { ModalController, AlertController, ToastController, LoadingController } from '@ionic/angular';
 import { AchievementsService } from '@app/achievements/achievements.service';
+import { Apollo } from 'apollo-angular';
 
 describe('NotificationService', () => {
   let service: NotificationService;
@@ -22,6 +23,7 @@ describe('NotificationService', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       providers: [
+        Apollo,
         NotificationService,
         {
           provide: ModalController,

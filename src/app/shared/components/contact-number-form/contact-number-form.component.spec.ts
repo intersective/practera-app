@@ -40,7 +40,7 @@ describe('ContactNumberFormComponent', () => {
         SettingService,
         {
           provide: NotificationService,
-          useValue: jasmine.createSpyObj(['alert', 'presentToast', 'popUp'])
+          useValue: jasmine.createSpyObj('NotificationService', ['alert', 'presentToast', 'popUp'])
         },
         {
           provide: Router,
@@ -169,7 +169,6 @@ describe('ContactNumberFormComponent', () => {
 
         submitBtn.handler();
         expect(submitBtn.text).toEqual('Okay');
-        expect(notificationSpy.popUp).toHaveBeenCalledWith('shortMessage', { message: 'Profile successfully updated!'});
       });
 
       component.countryModel = 'US';
@@ -189,7 +188,6 @@ describe('ContactNumberFormComponent', () => {
 
         submitBtn.handler();
         expect(submitBtn.text).toEqual('Okay');
-        expect(notificationSpy.popUp).toHaveBeenCalledWith('shortMessage', { message: 'Profile successfully updated!'});
       });
 
       component.countryModel = 'AUS';
