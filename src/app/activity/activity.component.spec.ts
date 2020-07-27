@@ -14,6 +14,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { BrowserStorageService } from '@services/storage.service';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
 import { MockRouter } from '@testing/mocked.service';
+import { Apollo } from 'apollo-angular';
 
 class Page {
   get activityName() {
@@ -64,6 +65,7 @@ describe('ActivityComponent', () => {
       declarations: [ ActivityComponent ],
       schemas: [ CUSTOM_ELEMENTS_SCHEMA ],
       providers: [
+        Apollo,
         NewRelicService,
         UtilsService,
         {
