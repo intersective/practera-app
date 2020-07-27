@@ -2,10 +2,10 @@ import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouteReuseStrategy } from '@angular/router';
 import { IonicModule, IonicRouteStrategy } from '@ionic/angular';
-import { HttpClientModule } from "@angular/common/http";
-import { ApolloModule, APOLLO_OPTIONS } from "apollo-angular";
-import { HttpLinkModule, HttpLink } from "apollo-angular-link-http";
-import { InMemoryCache, defaultDataIdFromObject } from "apollo-cache-inmemory";
+import { HttpClientModule } from '@angular/common/http';
+import { ApolloModule, APOLLO_OPTIONS } from 'apollo-angular';
+import { HttpLinkModule, HttpLink } from 'apollo-angular-link-http';
+import { InMemoryCache, defaultDataIdFromObject } from 'apollo-cache-inmemory';
 
 import { AppRoutingModule } from './app-routing.module';
 import { RequestModule } from '@shared/request/request.module';
@@ -86,7 +86,7 @@ import { DeviceInfoComponent } from './device-info/device-info.component';
           link: httpLink.create({
             uri: environment.graphQL
           })
-        }
+        };
       },
       deps: [HttpLink]
     },
