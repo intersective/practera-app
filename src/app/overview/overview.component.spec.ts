@@ -8,6 +8,7 @@ import { MockRouter } from '@testing/mocked.service';
 import { ActivatedRoute, convertToParamMap } from '@angular/router';
 import { Observable, of, pipe } from 'rxjs';
 import { BrowserStorageService } from '@services/storage.service';
+import { Apollo } from 'apollo-angular';
 
 describe('OverviewComponent', () => {
   const PROGRAM_NAME = 'Dummy Program name';
@@ -24,6 +25,7 @@ describe('OverviewComponent', () => {
       declarations: [ OverviewComponent ],
       schemas: [ CUSTOM_ELEMENTS_SCHEMA ],
       providers: [
+        Apollo,
         UtilsService,
         {
           provide: BrowserStorageService,

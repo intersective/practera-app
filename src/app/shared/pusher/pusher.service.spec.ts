@@ -10,6 +10,7 @@ import { UtilsService } from '@services/utils.service';
 import { RequestService } from '@shared/request/request.service';
 import { environment } from '@environments/environment';
 import * as Pusher from 'pusher-js';
+import { Apollo } from 'apollo-angular';
 
 class PusherLib extends Pusher {
   connection;
@@ -90,6 +91,7 @@ describe('PusherService', async () => {
     TestBed.configureTestingModule({
       imports: [ HttpClientTestingModule ],
       providers: [
+        Apollo,
         PusherService,
         UtilsService,
         /*{

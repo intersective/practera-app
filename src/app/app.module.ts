@@ -2,6 +2,10 @@ import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouteReuseStrategy } from '@angular/router';
 import { IonicModule, IonicRouteStrategy } from '@ionic/angular';
+import { HttpClientModule } from '@angular/common/http';
+import { ApolloModule, APOLLO_OPTIONS } from 'apollo-angular';
+import { HttpLinkModule, HttpLink } from 'apollo-angular-link-http';
+import { InMemoryCache, defaultDataIdFromObject } from 'apollo-cache-inmemory';
 
 import { AppRoutingModule } from './app-routing.module';
 import { RequestModule } from '@shared/request/request.module';
@@ -38,6 +42,9 @@ import { DeviceInfoComponent } from './device-info/device-info.component';
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
+    HttpClientModule,
+    ApolloModule,
+    HttpLinkModule,
     IonicModule.forRoot(),
     AuthModule,
     RequestModule.forRoot({
@@ -62,6 +69,27 @@ import { DeviceInfoComponent } from './device-info/device-info.component';
     })
   ],
   providers: [
+    {
+      provide: APOLLO_OPTIONS,
+      useFactory: (httpLink: HttpLink) => {
+        return {
+          cache: new InMemoryCache({
+            dataIdFromObject: object => {
+              switch (object.__typename) {
+                case 'Task':
+                  return `Task:${object['type']}${object.id}`;
+                default:
+                  return defaultDataIdFromObject(object);
+              }
+            }
+          }),
+          link: httpLink.create({
+            uri: environment.graphQL
+          })
+        };
+      },
+      deps: [HttpLink]
+    },
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
     // Custom
     UtilsService,

@@ -5,6 +5,7 @@ import { RequestService } from '@shared/request/request.service';
 import { TestUtils } from '@testing/utils';
 import { NotificationService } from '@shared/notification/notification.service';
 import { BrowserStorageService } from '@services/storage.service';
+import { Apollo } from 'apollo-angular';
 
 describe('FastFeedbackService', () => {
   let service: FastFeedbackService;
@@ -16,6 +17,7 @@ describe('FastFeedbackService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
+        Apollo,
         FastFeedbackService,
         {
           provide: RequestService,
