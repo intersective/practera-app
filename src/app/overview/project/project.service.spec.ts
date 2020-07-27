@@ -5,6 +5,7 @@ import { RequestService } from '@shared/request/request.service';
 import { UtilsService } from '@services/utils.service';
 import { BrowserStorageService } from '@services/storage.service';
 import { TestUtils } from '@testing/utils';
+import { Apollo } from 'apollo-angular';
 
 describe('ProjectService', () => {
   let service: ProjectService;
@@ -14,6 +15,7 @@ describe('ProjectService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
+        Apollo,
         UtilsService,
         {
           provide: RequestService,
