@@ -2,6 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { of } from 'rxjs';
 import { RequestService } from '@shared/request/request.service';
 import { TabsService } from './tabs.service';
+import { Apollo } from 'apollo-angular';
 
 describe('TabsService', () => {
   let service: TabsService;
@@ -10,6 +11,7 @@ describe('TabsService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
+        Apollo,
         TabsService,
         {
           provide: RequestService,
