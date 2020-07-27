@@ -409,7 +409,7 @@ export class AssessmentService {
         ` + (action === 'assessment' ? `submitAssessment` : `submitReview`) + `(${params})
       }
       `,
-      variables
+                                      variables
     );
   }
 
