@@ -5,6 +5,7 @@ import { Observable, of, pipe } from 'rxjs';
 import { SharedModule } from '@shared/shared.module';
 import { ReactiveFormsModule, FormControl } from '@angular/forms';
 import { UtilsService } from '@services/utils.service';
+import { Apollo } from 'apollo-angular';
 
 describe('TeamMemberSelectorComponent', () => {
   let component: TeamMemberSelectorComponent;
@@ -16,6 +17,7 @@ describe('TeamMemberSelectorComponent', () => {
       declarations: [ TeamMemberSelectorComponent ],
       schemas: [ CUSTOM_ELEMENTS_SCHEMA ],
       providers: [
+        Apollo,
         UtilsService
       ],
     })

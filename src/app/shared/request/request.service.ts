@@ -7,6 +7,8 @@ import { UtilsService } from '@services/utils.service';
 import { BrowserStorageService } from '@services/storage.service';
 import { environment } from '@environments/environment';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
+import { Apollo } from 'apollo-angular';
+import gql from 'graphql-tag';
 
 @Injectable({ providedIn: 'root' })
 export class DevModeService {
@@ -53,7 +55,8 @@ export class RequestService {
     private router: Router,
     @Optional() config: RequestConfig,
     private newrelic: NewRelicService,
-    private devMode: DevModeService
+    private devMode: DevModeService,
+    private apollo: Apollo
   ) {
     if (config) {
       this.appkey = config.appkey;
@@ -153,9 +156,38 @@ export class RequestService {
       );
   }
 
-  postGraphQL(data): Observable<any> {
-    return this.http.post<any>(environment.graphQL, data, {
-      headers: this.appendHeaders()
+  /**
+   * Valid options:
+   * noCache: Boolean default false. If set to false, will not cache the result
+   * refetch: Boolean default true. If set to false, will always read the data from cache without sending any request to server
+   */
+  graphQLQuery(query: string, variables?: any, options?: any): Observable<any> {
+    options = {...{ noCache: false, refetch: true }, ...options};
+    const watch = this.apollo.watchQuery({
+      query: gql(query),
+      variables: variables || {},
+      fetchPolicy: options.noCache ? 'no-cache' : 'cache-first'
+    });
+    if (options.refetch) {
+      watch.refetch();
+    }
+    return watch.valueChanges
+      .pipe(concatMap(response => {
+        this._refreshApikey(response);
+        return of(response);
+      }))
+      .pipe(
+        catchError((error) => this.handleError(error))
+      );
+  }
+
+  /**
+   *
+   */
+  graphQLMutate(query: string, variables = {}): Observable<any> {
+    return this.apollo.mutate({
+      mutation: gql(query),
+      variables: variables
     })
       .pipe(concatMap(response => {
         this._refreshApikey(response);

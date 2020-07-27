@@ -19,6 +19,7 @@ import { TextMaskModule } from 'angular2-text-mask';
 import { Router } from '@angular/router';
 import { environment } from 'environments/environment';
 import { of, throwError } from 'rxjs';
+import { Apollo } from 'apollo-angular';
 
 describe('GoMobileComponent', () => {
   let component: GoMobileComponent;
@@ -39,6 +40,7 @@ describe('GoMobileComponent', () => {
       ],
       schemas: [ CUSTOM_ELEMENTS_SCHEMA ],
       providers: [
+        Apollo,
         GoMobileService,
         {
           provide: NotificationService,

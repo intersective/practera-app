@@ -9,6 +9,7 @@ import {
 } from '@angular/common/http/testing';
 
 import { MockRouter } from '@testing/mocked.service';
+import { Apollo } from 'apollo-angular';
 
 describe('GoMobileService', () => {
   let service: GoMobileService;
@@ -18,6 +19,7 @@ describe('GoMobileService', () => {
     TestBed.configureTestingModule({
       imports: [ SharedModule, HttpClientTestingModule, RouterModule ],
       providers: [
+        Apollo,
         GoMobileService,
         SharedService,
         {

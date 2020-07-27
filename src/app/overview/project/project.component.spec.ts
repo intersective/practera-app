@@ -14,6 +14,7 @@ import { FastFeedbackService } from '../../fast-feedback/fast-feedback.service';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
 import { MockRouter } from '@testing/mocked.service';
+import { Apollo } from 'apollo-angular';
 
 export class MockElementRef extends ElementRef {
   constructor() { super(null); }
@@ -64,6 +65,7 @@ describe('ProjectComponent', () => {
       declarations: [ ProjectComponent ],
       schemas: [ CUSTOM_ELEMENTS_SCHEMA ],
       providers: [
+        Apollo,
         UtilsService,
         NewRelicService,
         {
