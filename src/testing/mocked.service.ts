@@ -132,6 +132,7 @@ export class BrowserStorageServiceMock extends SpyObject {
   memoryCache;
   storage;
   setConfig;
+  getCountry;
 
   constructor() {
     super(BrowserStorageService);
@@ -148,6 +149,9 @@ export class BrowserStorageServiceMock extends SpyObject {
     this.getUser = this.spy('getUser').and.returnValue(USER);
     this.setUser = this.spy('setUser').and.returnValue(true);
     this.get = this.spy('get').and.returnValue(true);
+    this.set = this.spy('set').and.returnValue(true);
+    this.remove = this.spy('remove').and.returnValue(true);
+    this.getCountry = this.spy('getCountry').and.returnValue("Australia");
     this.getConfig = this.spy('getConfig').and.returnValue({
       logo: '',
     });
