@@ -13,6 +13,7 @@ import {
 } from '@angular/common/http/testing';
 import { NotificationService } from '@shared/notification/notification.service';
 import { MockRouter } from '@testing/mocked.service';
+import { Apollo } from 'apollo-angular';
 
 describe('ReviewListComponent', () => {
   let component: ReviewListComponent;
@@ -27,6 +28,7 @@ describe('ReviewListComponent', () => {
       declarations: [ ReviewListComponent ],
       schemas: [ CUSTOM_ELEMENTS_SCHEMA ],
       providers: [
+        Apollo,
         UtilsService,
         NewRelicService,
         NotificationService,

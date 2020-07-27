@@ -3,6 +3,7 @@ import { EventDetailService } from './event-detail.service';
 import { of } from 'rxjs';
 import { RequestService } from '@shared/request/request.service';
 import { TestUtils } from '@testing/utils';
+import { Apollo } from 'apollo-angular';
 
 describe('EventDetailService', () => {
   let service: EventDetailService;
@@ -12,6 +13,7 @@ describe('EventDetailService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
+        Apollo,
         EventDetailService,
         {
           provide: RequestService,

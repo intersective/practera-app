@@ -5,6 +5,7 @@ import { BrowserStorageService } from '@services/storage.service';
 import { UtilsService } from '@services/utils.service';
 import { NotificationService } from '@shared/notification/notification.service';
 import { AssessmentService, AssessmentSubmitParams } from './assessment.service';
+import { Apollo } from 'apollo-angular';
 
 describe('AssessmentService', () => {
   let service: AssessmentService;
@@ -15,6 +16,7 @@ describe('AssessmentService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
+        Apollo,
         AssessmentService,
         UtilsService,
         {
@@ -23,7 +25,7 @@ describe('AssessmentService', () => {
         },
         {
           provide: RequestService,
-          useValue: jasmine.createSpyObj('RequestService', ['get', 'post', 'postGraphQL', 'apiResponseFormatError'])
+          useValue: jasmine.createSpyObj('RequestService', ['get', 'post', 'graphQLQuery', 'graphQLMutate', 'apiResponseFormatError'])
         },
         {
           provide: BrowserStorageService,
@@ -420,7 +422,7 @@ describe('AssessmentService', () => {
     });
 
     afterEach(() => {
-      requestSpy.postGraphQL.and.returnValue(of(requestResponse));
+      requestSpy.graphQLQuery.and.returnValue(of(requestResponse));
       service.getAssessment(1, 'assessment', 2, 3).subscribe(
         result => {
           expect(result.assessment).toEqual(expectedAssessment);
@@ -428,7 +430,7 @@ describe('AssessmentService', () => {
           expect(result.review).toEqual(expectedReview);
         }
       );
-      expect(requestSpy.postGraphQL.calls.count()).toBe(1);
+      expect(requestSpy.graphQLQuery.calls.count()).toBe(1);
     });
 
     it('should get correct assessment data', () => {});
@@ -459,17 +461,10 @@ describe('AssessmentService', () => {
       { questionId: 124, answer: 456 },
       { questionId: 125, answer: [3, 4] },
       { questionId: 126, answer: [3] },
-      { questionId: 127, answer: JSON.stringify({filename: 'abc.png'}) }
+      { questionId: 127, answer: {filename: 'abc.png'} }
     ];
-    const paramsString = `assessmentId:1,inProgress:true,answers:[
-      {questionId:123,answer:\\"abc\\"},
-      {questionId:124,answer:456},
-      {questionId:125,answer:[3,4]},
-      {questionId:126,answer:[3]},
-      {questionId:127,answer:\\"{\\\\\\"filename\\\\\\":\\\\\\"abc.png\\\\\\"}\\"}]`
-      .replace(/(\r\n|\n|\r)/gm, '').replace(/ /gm, '');
     beforeEach(() => {
-      requestSpy.postGraphQL.and.returnValue(of(true));
+      requestSpy.graphQLMutate.and.returnValue(of(true));
     });
 
     it('should save assessment answers correctly', () => {
@@ -479,7 +474,13 @@ describe('AssessmentService', () => {
         contextId: 2
       };
       service.saveAnswers(assessment, answers, 'assessment').subscribe();
-      expect(requestSpy.postGraphQL.calls.first().args[0]).toEqual(`" mutation { submitAssessment(${paramsString},contextId:2) } "`);
+      expect(requestSpy.graphQLMutate.calls.first().args[0]).toContain('submitAssessment');
+      expect(requestSpy.graphQLMutate.calls.first().args[1]).toEqual({
+        assessmentId: assessment.id,
+        inProgress: assessment.inProgress,
+        contextId: assessment.contextId,
+        answers: answers
+      });
     });
 
     it('should save assessment answers correctly with submission id', () => {
@@ -491,7 +492,15 @@ describe('AssessmentService', () => {
         unlock: true
       };
       service.saveAnswers(assessment, answers, 'assessment').subscribe();
-      expect(requestSpy.postGraphQL.calls.first().args[0]).toEqual(`" mutation { submitAssessment(${paramsString},submissionId:3,contextId:2,unlock:true) } "`);
+      expect(requestSpy.graphQLMutate.calls.first().args[0]).toContain('submitAssessment');
+      expect(requestSpy.graphQLMutate.calls.first().args[1]).toEqual({
+        assessmentId: assessment.id,
+        inProgress: assessment.inProgress,
+        contextId: assessment.contextId,
+        submissionId: assessment.submissionId,
+        unlock: assessment.unlock,
+        answers: answers
+      });
     });
 
     it('should save review answers correctly', () => {
@@ -502,7 +511,14 @@ describe('AssessmentService', () => {
         reviewId: 4
       };
       service.saveAnswers(assessment, answers, 'review').subscribe();
-      expect(requestSpy.postGraphQL.calls.first().args[0]).toEqual(`" mutation { submitReview(${paramsString},submissionId:3,reviewId:4) } "`);
+      expect(requestSpy.graphQLMutate.calls.first().args[0]).toContain('submitReview');
+      expect(requestSpy.graphQLMutate.calls.first().args[1]).toEqual({
+        assessmentId: assessment.id,
+        inProgress: assessment.inProgress,
+        submissionId: assessment.submissionId,
+        reviewId: assessment.reviewId,
+        answers: answers
+      });
     });
 
     it('should return success false if action not correct', () => {
@@ -511,7 +527,7 @@ describe('AssessmentService', () => {
         inProgress: true
       };
       service.saveAnswers(assessment, answers, 'incorrect').subscribe(res => expect(res).toBe(false));
-      expect(requestSpy.postGraphQL.calls.count()).toBe(0);
+      expect(requestSpy.graphQLMutate.calls.count()).toBe(0);
     });
   });
 
