@@ -3,6 +3,7 @@ import { ReviewListService } from './review-list.service';
 import { of } from 'rxjs';
 import { RequestService } from '@shared/request/request.service';
 import { UtilsService } from '@services/utils.service';
+import { Apollo } from 'apollo-angular';
 
 describe('ReviewListService', () => {
   let service: ReviewListService;
@@ -12,6 +13,7 @@ describe('ReviewListService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
+        Apollo,
         ReviewListService,
         UtilsService,
         {
