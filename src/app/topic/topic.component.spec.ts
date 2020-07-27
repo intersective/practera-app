@@ -14,6 +14,7 @@ import { SharedService } from '@services/shared.service';
 import { ActivityService } from '../activity/activity.service';
 import { of, throwError } from 'rxjs';
 import { MockRouter } from '@testing/mocked.service';
+import { Apollo } from 'apollo-angular';
 
 describe('TopicComponent', () => {
   let component: TopicComponent;
@@ -35,6 +36,7 @@ describe('TopicComponent', () => {
       declarations: [ TopicComponent ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
       providers: [
+        Apollo,
         {
           provide: TopicService,
           useValue: topicSpy

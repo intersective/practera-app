@@ -3,6 +3,7 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { AchievementPopUpComponent } from './achievement-pop-up.component';
 import { Observable, of, pipe } from 'rxjs';
 import { ModalController } from '@ionic/angular';
+import { Apollo } from 'apollo-angular';
 
 describe('AchievementPopUpComponent', () => {
   let component: AchievementPopUpComponent;
@@ -14,6 +15,7 @@ describe('AchievementPopUpComponent', () => {
       declarations: [ AchievementPopUpComponent ],
       schemas: [ CUSTOM_ELEMENTS_SCHEMA ],
       providers: [
+        Apollo,
         {
           provide: ModalController,
           useValue: modalCtrlSpy
