@@ -7,6 +7,7 @@ import { UtilsService } from '@services/utils.service';
 import { ReviewRatingComponent } from './review-rating.component';
 import { ReviewRatingService } from './review-rating.service';
 import { ModalController } from '@ionic/angular';
+import { Apollo } from 'apollo-angular';
 
 describe('ReviewRatingComponent', () => {
   let component: ReviewRatingComponent;
@@ -20,6 +21,7 @@ describe('ReviewRatingComponent', () => {
       declarations: [ ReviewRatingComponent ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
       providers: [
+        Apollo,
         UtilsService,
         {
           provide: ReviewRatingService,

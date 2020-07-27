@@ -12,6 +12,7 @@ import { NewRelicService } from '@shared/new-relic/new-relic.service';
 import { ReactiveFormsModule } from '@angular/forms';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { MockNewRelicService } from '@testing/mocked.service';
+import { Apollo } from 'apollo-angular';
 
 describe('AuthLoginComponent', () => {
   let component: AuthLoginComponent;
@@ -28,6 +29,7 @@ describe('AuthLoginComponent', () => {
       declarations: [ AuthLoginComponent ],
       schemas: [ CUSTOM_ELEMENTS_SCHEMA ],
       providers: [
+        Apollo,
         {
           provide: AuthService,
           useValue: jasmine.createSpyObj('AuthService', ['login'])
