@@ -76,6 +76,9 @@ export class ActivityService {
   }
 
   private _normaliseActivity(data): Activity {
+    if (!data) {
+      return null;
+    }
     // clone the return data, instead of modifying it
     const result = JSON.parse(JSON.stringify(data.activity));
     result.tasks = result.tasks.map(task => {
