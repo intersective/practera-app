@@ -1,8 +1,8 @@
 import { Injectable, Optional, isDevMode } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams, HttpErrorResponse, HttpParameterCodec } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { Observable, of, throwError } from 'rxjs';
-import { catchError, tap, concatMap } from 'rxjs/operators';
+import { Observable, of, throwError, from } from 'rxjs';
+import { catchError, tap, concatMap, map } from 'rxjs/operators';
 import { UtilsService } from '@services/utils.service';
 import { BrowserStorageService } from '@services/storage.service';
 import { environment } from '@environments/environment';
@@ -159,22 +159,18 @@ export class RequestService {
   /**
    * Valid options:
    * noCache: Boolean default false. If set to false, will not cache the result
-   * refetch: Boolean default true. If set to false, will always read the data from cache without sending any request to server
    */
   graphQLQuery(query: string, variables?: any, options?: any): Observable<any> {
-    options = {...{ noCache: false, refetch: true }, ...options};
+    options = {...{ noCache: false }, ...options};
     const watch = this.apollo.watchQuery({
       query: gql(query),
       variables: variables || {},
-      fetchPolicy: options.noCache ? 'no-cache' : 'cache-first'
+      fetchPolicy: options.noCache ? 'no-cache' : 'cache-and-network'
     });
-    if (options.refetch) {
-      watch.refetch();
-    }
     return watch.valueChanges
-      .pipe(concatMap(response => {
+      .pipe(map(response => {
         this._refreshApikey(response);
-        return of(response);
+        return response;
       }))
       .pipe(
         catchError((error) => this.handleError(error))
