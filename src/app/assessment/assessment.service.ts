@@ -21,12 +21,12 @@ const api = {
   }
 };
 
-export interface AssessmentSubmitBody {
+export interface AssessmentSubmitParams {
   id: number;
-  in_progress: boolean;
-  context_id?: number;
-  review_id?: number;
-  submission_id?: number;
+  inProgress?: boolean;
+  contextId?: number;
+  reviewId?: number;
+  submissionId?: number;
   unlock?: boolean;
 }
 
@@ -87,6 +87,12 @@ export interface Submission {
   reviewerName: string | void;
 }
 
+export interface Answer {
+  questionId: number;
+  answer?: any;
+  comment?: string;
+}
+
 export interface Review {
   id: number;
   answers: any;
@@ -110,49 +116,58 @@ export class AssessmentService {
   ) {}
 
   getAssessment(id, action, activityId, contextId, submissionId?) {
-    return this.request.postGraphQL(
-      this.utils.graphQLQueryStringFormatter(
-        `"{
-          assessment(id:` + id + `,reviewer:` + (action === 'review') + `,activityId:` + activityId + `) {
-            name type description dueDate isTeam pulseCheck
-            groups{
-              name description
-              questions{
-                id name description type isRequired hasComment audience fileType
-                choices{
-                  id name explanation description
-                }
-                teamMembers{
-                  userId userName teamId
-                }
+    return this.request.graphQLQuery(
+      `query getAssessment($assessmentId: Int!, $reviewer: Boolean!, $activityId: Int!, $contextId: Int!, $submissionId: Int) {
+        assessment(id:$assessmentId, reviewer:$reviewer, activityId:$activityId) {
+          name type description dueDate isTeam pulseCheck
+          groups{
+            name description
+            questions{
+              id name description type isRequired hasComment audience fileType
+              choices{
+                id name explanation description
               }
-            }
-            submissions(` + (submissionId ? `id:` + submissionId : `contextId:` + contextId) + `) {
-              id status completed modified locked
-              submitter {
-                name image
-              }
-              answers{
-                questionId answer
-              }
-              review {
-                id status modified
-                reviewer { name }
-                answers {
-                  questionId answer comment
-                }
+              teamMembers{
+                userId userName teamId
               }
             }
           }
-        }"`)
-      )
-      .pipe(map(res => {
-        return {
-          assessment: this._normaliseAssessment(res.data, action),
-          submission: this._normaliseSubmission(res.data),
-          review: this._normaliseReview(res.data, action)
-        };
-      }));
+          submissions(id:$submissionId, contextId:$contextId) {
+            id status completed modified locked
+            submitter {
+              name image
+            }
+            answers{
+              questionId answer
+            }
+            review {
+              id status modified
+              reviewer { name }
+              answers {
+                questionId answer comment
+              }
+            }
+          }
+        }
+      }`,
+      {
+        assessmentId: id,
+        reviewer: action === 'review',
+        activityId: activityId,
+        submissionId: submissionId || null,
+        contextId: contextId
+      },
+      {
+        noCache: true
+      }
+    )
+    .pipe(map(res => {
+      return {
+        assessment: this._normaliseAssessment(res.data, action),
+        submission: this._normaliseSubmission(res.data),
+        review: this._normaliseReview(res.data, action)
+      };
+    }));
   }
 
   private _normaliseAssessment(data, action): Assessment {
@@ -366,31 +381,36 @@ export class AssessmentService {
     return answer;
   }
 
-  saveAnswers(assessment: AssessmentSubmitBody, answers: object, action: string, submissionId?: number) {
-    let postData;
-    switch (action) {
-      case 'assessment':
-        postData = {
-          Assessment: assessment,
-          AssessmentSubmissionAnswer: answers
-        };
-        if (submissionId) {
-          postData.AssessmentSubmission = {
-            id: submissionId
-          };
-        }
-        return this.request.post(api.post.submissions, postData);
-
-      case 'review':
-        postData = {
-          Assessment: assessment,
-          AssessmentReviewAnswer: answers
-        };
-        return this.request.post(api.post.reviews, postData);
+  saveAnswers(assessment: AssessmentSubmitParams, answers: Answer[], action: string) {
+    if (!['assessment', 'review'].includes(action)) {
+      return of(false);
     }
-    return of({
-      success: false
+    let paramsFormat = '$assessmentId: Int!, $inProgress: Boolean, $answers: [AssessmentSubmissionAnswerInput]';
+    let params = 'assessmentId:$assessmentId, inProgress:$inProgress, answers:$answers';
+    const variables = {
+      assessmentId: assessment.id,
+      inProgress: assessment.inProgress,
+      answers: answers
+    };
+    [
+      { key: 'submissionId', type: 'Int' },
+      { key: 'contextId', type: 'Int!' },
+      { key: 'reviewId', type: 'Int' },
+      { key: 'unlock', type: 'Boolean'}
+    ].forEach(item => {
+      if (assessment[item.key]) {
+        paramsFormat += `, $${item.key}: ${item.type}`;
+        params += `,${item.key}: $${item.key}`;
+        variables[item.key] = assessment[item.key];
+      }
     });
+    return this.request.graphQLMutate(`
+      mutation saveAnswers(${paramsFormat}){
+        ` + (action === 'assessment' ? `submitAssessment` : `submitReview`) + `(${params})
+      }
+      `,
+                                      variables
+    );
   }
 
   saveFeedbackReviewed(submissionId) {

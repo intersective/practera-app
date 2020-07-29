@@ -3,6 +3,7 @@ import { of } from 'rxjs';
 import { RequestService } from '@shared/request/request.service';
 import { SettingService } from './setting.service';
 import { SharedService } from '@services/shared.service';
+import { Apollo } from 'apollo-angular';
 
 describe('SettingService', () => {
   let service: SettingService;
@@ -12,6 +13,7 @@ describe('SettingService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
+        Apollo,
         SettingService,
         {
           provide: SharedService,
