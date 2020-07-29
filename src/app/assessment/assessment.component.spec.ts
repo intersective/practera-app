@@ -17,6 +17,7 @@ import { FastFeedbackServiceMock } from '@testing/mocked.service';
 import { of } from 'rxjs';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
 import { MockRouter, MockNewRelicService } from '@testing/mocked.service';
+import { Apollo } from 'apollo-angular';
 
 class Page {
   get savingMessage() {
@@ -180,6 +181,7 @@ describe('AssessmentComponent', () => {
       declarations: [AssessmentComponent],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
       providers: [
+        Apollo,
         {
           provide: ActivatedRoute,
           useValue: {
@@ -441,11 +443,11 @@ describe('AssessmentComponent', () => {
     component.assessment = mockAssessment;
     const answers = [
       {
-        'assessment_question_id': 123,
+        'questionId': 123,
         'answer': null
       },
       {
-        'assessment_question_id': 124,
+        'questionId': 124,
         'answer': null
       }
     ];
@@ -459,11 +461,11 @@ describe('AssessmentComponent', () => {
     component.assessment = mockAssessment;
     const answers = [
       {
-        'assessment_question_id': 123,
+        'questionId': 123,
         'answer': 'abc'
       },
       {
-        'assessment_question_id': 124,
+        'questionId': 124,
         'answer': null
       }
     ];
@@ -492,18 +494,18 @@ describe('AssessmentComponent', () => {
       expect(component.savingButtonDisabled).toBe(savingButtonDisabled);
       expect(notificationSpy.popUp.calls.count()).toBe(0);
       expect(assessment.id).toBe(1);
-      expect(assessment.context_id).toBe(2);
+      expect(assessment.contextId).toBe(2);
       expect(answers).toEqual([
         {
-          assessment_question_id: 123,
+          questionId: 123,
           answer: 'abc'
         },
         {
-          assessment_question_id: 124,
+          questionId: 124,
           answer: null
         },
         {
-          assessment_question_id: 125,
+          questionId: 125,
           answer: []
         }
       ]);
@@ -515,7 +517,7 @@ describe('AssessmentComponent', () => {
       answers = assessmentSpy.saveAnswers.calls.first().args[1];
       expect(component.submitting).toBeFalsy();
       expect(component.savingMessage).toContain('Last saved');
-      expect(assessment.in_progress).toBe(true);
+      expect(assessment.inProgress).toBe(true);
       expect(assessment.unlock).toBeFalsy();
     });
 
@@ -533,7 +535,6 @@ describe('AssessmentComponent', () => {
       answers = assessmentSpy.saveAnswers.calls.first().args[1];
       expect(component.submitting).toEqual(false);
       expect(component.saving).toBe(true);
-      expect(assessment.in_progress).toBe(false);
     });
   });
 
@@ -558,6 +559,8 @@ describe('AssessmentComponent', () => {
 
     beforeEach(() => {
       component.id = activityId;
+      component.doAssessment = true;
+      component.contextId = 2;
       component.action = action;
       component.assessment = {
         name: 'Test Assessment',
@@ -577,11 +580,10 @@ describe('AssessmentComponent', () => {
       expect(assessmentSpy.saveAnswers).toHaveBeenCalledWith(
         {
           id: activityId,
-          in_progress: false, // default value
+          contextId: 2
         },
         emptyAnswers,
-        action,
-        assessmentId
+        action
       );
     });
 

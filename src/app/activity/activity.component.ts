@@ -10,6 +10,8 @@ import { Event, EventListService } from '@app/event-list/event-list.service';
 import { SharedService } from '@services/shared.service';
 import { FastFeedbackService } from '../fast-feedback/fast-feedback.service';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
+import { Apollo } from 'apollo-angular';
+import gql from 'graphql-tag';
 
 @Component({
   selector: 'app-activity',
@@ -45,7 +47,8 @@ export class ActivityComponent {
     public sharedService: SharedService,
     public fastFeedbackService: FastFeedbackService,
     private newRelic: NewRelicService,
-    private ngZone: NgZone
+    private ngZone: NgZone,
+    private apollo: Apollo
   ) {
 
     // update event list after book/cancel an event
@@ -204,6 +207,26 @@ export class ActivityComponent {
       return;
     }
     this.activity.tasks[index].status = status;
+    // update the cache
+    this.apollo.getClient().writeFragment({
+      id: `Task:${this.activity.tasks[index].type.toLowerCase()}${this.activity.tasks[index].id}`,
+      fragment: gql`
+        fragment task on Task {
+          status {
+            status
+            __typename
+          }
+          __typename
+        }
+      `,
+      data: {
+        status: {
+          status: status,
+          __typename: 'TaskStatus'
+        },
+        __typename: 'Task'
+      }
+    });
   }
 
   /******************
