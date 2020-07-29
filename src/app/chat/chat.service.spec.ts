@@ -6,6 +6,7 @@ import { Observable, of } from 'rxjs';
 import { UtilsService } from '@services/utils.service';
 import { PusherService } from '@shared/pusher/pusher.service';
 import { environment } from '@environments/environment';
+import { Apollo } from 'apollo-angular';
 
 describe('ChatService', () => {
   let service: ChatService;
@@ -16,6 +17,7 @@ describe('ChatService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
+        Apollo,
         ChatService,
         UtilsService,
         {

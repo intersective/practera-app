@@ -5,6 +5,7 @@ import { RouterModule, Router, ActivatedRoute } from '@angular/router';
 import { MockRouter } from '@testing/mocked.service';
 import { ActivatedRouteStub } from '@testing/activated-route-stub';
 import { ReviewListComponent } from '../review-list/review-list.component';
+import { Apollo } from 'apollo-angular';
 
 describe('ReviewsComponent', () => {
   let fixture: ComponentFixture<ReviewsComponent>;
@@ -15,6 +16,7 @@ describe('ReviewsComponent', () => {
       schemas: [ CUSTOM_ELEMENTS_SCHEMA ],
       declarations: [ ReviewsComponent ],
       providers: [
+        Apollo,
         {
           provide: ActivatedRoute,
           useValue: new ActivatedRouteStub({submissionId: 1}),

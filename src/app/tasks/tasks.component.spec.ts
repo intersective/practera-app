@@ -7,6 +7,7 @@ import { Observable, of, pipe } from 'rxjs';
 import { Router, ActivatedRoute, convertToParamMap } from '@angular/router';
 import { MockRouter } from '@testing/mocked.service';
 import { BrowserStorageService } from '@services/storage.service';
+import { Apollo } from 'apollo-angular';
 
 describe('TasksComponent', () => {
   let component: TasksComponent;
@@ -19,6 +20,7 @@ describe('TasksComponent', () => {
       imports: [ ActivityModule, TopicModule, AssessmentModule ],
       declarations: [ TasksComponent ],
       providers: [
+        Apollo,
         {
           provide: Router,
           useClass: MockRouter

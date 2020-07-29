@@ -16,6 +16,7 @@ import { SettingService } from '@app/settings/setting.service';
 import { RouterModule, Router } from '@angular/router';
 import { MockRouter, BrowserStorageServiceMock } from '@testing/mocked.service';
 import { of } from 'rxjs';
+import { Apollo } from 'apollo-angular';
 
 describe('ContactNumberFormComponent', () => {
   let component: ContactNumberFormComponent;
@@ -30,6 +31,7 @@ describe('ContactNumberFormComponent', () => {
       declarations: [ ContactNumberFormComponent ],
       schemas: [ CUSTOM_ELEMENTS_SCHEMA ],
       providers: [
+        Apollo,
         {
           provide: BrowserStorageService,
           useClass: BrowserStorageServiceMock,
@@ -38,7 +40,7 @@ describe('ContactNumberFormComponent', () => {
         SettingService,
         {
           provide: NotificationService,
-          useValue: jasmine.createSpyObj(['alert', 'presentToast', 'popUp'])
+          useValue: jasmine.createSpyObj('NotificationService', ['alert', 'presentToast', 'popUp'])
         },
         {
           provide: Router,
@@ -167,7 +169,6 @@ describe('ContactNumberFormComponent', () => {
 
         submitBtn.handler();
         expect(submitBtn.text).toEqual('Okay');
-        expect(notificationSpy.popUp).toHaveBeenCalledWith('shortMessage', { message: 'Profile successfully updated!'});
       });
 
       component.countryModel = 'US';
@@ -187,7 +188,6 @@ describe('ContactNumberFormComponent', () => {
 
         submitBtn.handler();
         expect(submitBtn.text).toEqual('Okay');
-        expect(notificationSpy.popUp).toHaveBeenCalledWith('shortMessage', { message: 'Profile successfully updated!'});
       });
 
       component.countryModel = 'AUS';
