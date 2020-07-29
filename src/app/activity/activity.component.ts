@@ -214,13 +214,17 @@ export class ActivityComponent {
         fragment task on Task {
           status {
             status
+            __typename
           }
+          __typename
         }
       `,
       data: {
         status: {
-          status: status
-        }
+          status: status,
+          __typename: 'TaskStatus'
+        },
+        __typename: 'Task'
       }
     });
   }
