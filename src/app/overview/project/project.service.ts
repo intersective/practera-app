@@ -53,6 +53,9 @@ export class ProjectService {
   }
 
   private _normaliseProject(data): Array<Milestone> {
+    if (!data) {
+      return null;
+    }
     return (data.milestones || []).map(m => {
       return {
         id: m.id,
