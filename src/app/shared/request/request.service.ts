@@ -185,11 +185,11 @@ export class RequestService {
       mutation: gql(query),
       variables: variables
     })
-      .pipe(concatMap(response => {
-        this._refreshApikey(response);
-        return of(response);
-      }))
       .pipe(
+        concatMap(response => {
+          this._refreshApikey(response);
+          return of(response);
+        }),
         catchError((error) => this.handleError(error))
       );
   }
@@ -238,7 +238,7 @@ export class RequestService {
     return;
   }
 
-  private handleError(error: HttpErrorResponse) {
+  private handleError(error: HttpErrorResponse | any) {
     if (this.devMode.isDevMode()) {
       console.error(error); // log to console instead
     }
@@ -264,8 +264,13 @@ export class RequestService {
     if (typeof error.error === 'string' && error.error.indexOf('<!DOCTYPE html>') !== -1) {
       return throwError(error.message);
     }
-
-    return throwError(error.error);
+    if (error.error) {
+      return throwError(error.error);
+    }
+    if (error.graphQLErrors) {
+      return throwError(error.graphQLErrors[0]);
+    }
+    return throwError(error);
   }
 
   /**
