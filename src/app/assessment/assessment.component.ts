@@ -611,7 +611,7 @@ export class AssessmentComponent extends RouterEnter {
           return this.pullFastFeedback();
         }
       },
-      (err: {msg: string}) => {
+      (err: { msg?: string, message?: string }) => {
         this.newRelic.noticeError(JSON.stringify(err));
 
         this.submitting = false;
@@ -623,7 +623,7 @@ export class AssessmentComponent extends RouterEnter {
           // display a pop up if submission failed
           this.notificationService.alert({
             header: 'Submission failed',
-            message: err.msg || JSON.stringify(err),
+            message: 'Please refresh the page and try it again later',
             buttons: [
               {
                 text: 'OK',
@@ -631,7 +631,7 @@ export class AssessmentComponent extends RouterEnter {
               }
             ]
           });
-          throw new Error(err.msg || JSON.stringify(err));
+          throw new Error(err.msg || err.message || JSON.stringify(err));
         }
       }
     );
