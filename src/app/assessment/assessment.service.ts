@@ -385,7 +385,7 @@ export class AssessmentService {
     if (!['assessment', 'review'].includes(action)) {
       return of(false);
     }
-    let paramsFormat = '$assessmentId: Int!, $inProgress: Boolean, $answers: [AssessmentSubmissionAnswerInput]';
+    let paramsFormat = `$assessmentId: Int!, $inProgress: Boolean, $answers: [${(action === 'assessment' ? 'AssessmentSubmissionAnswerInput' : 'AssessmentReviewAnswerInput')}]`;
     let params = 'assessmentId:$assessmentId, inProgress:$inProgress, answers:$answers';
     const variables = {
       assessmentId: assessment.id,
