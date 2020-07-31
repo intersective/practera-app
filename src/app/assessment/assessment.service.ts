@@ -404,12 +404,11 @@ export class AssessmentService {
         variables[item.key] = assessment[item.key];
       }
     });
-    return this.request.graphQLMutate(`
-      mutation saveAnswers(${paramsFormat}){
+    return this.request.graphQLMutate(
+      `mutation saveAnswers(${paramsFormat}){
         ` + (action === 'assessment' ? `submitAssessment` : `submitReview`) + `(${params})
-      }
-      `,
-                                      variables
+      }`,
+      variables
     );
   }
 
