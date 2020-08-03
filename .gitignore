@@ -6,6 +6,7 @@
 assets/newrelic.js
 coverage/
 tests/
+dist/
 platforms
 resources/android/icon
 resources/android/splash
@@ -20,3 +21,5 @@ src/coverage
 www
 e2e/config/index.ts
 e2e/protractor-dev.conf.js
+
+src/environments/environment.alpha-native.ts
