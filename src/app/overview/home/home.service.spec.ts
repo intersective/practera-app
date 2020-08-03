@@ -8,6 +8,7 @@ import { HomeService } from './home.service';
 import { NotificationService } from '@shared/notification/notification.service';
 import { EventListService } from '@app/event-list/event-list.service';
 import * as moment from 'moment';
+import { Apollo } from 'apollo-angular';
 
 describe('HomeService', () => {
   let service: HomeService;
@@ -20,6 +21,7 @@ describe('HomeService', () => {
     TestBed.configureTestingModule({
       imports: [ HttpClientTestingModule ],
       providers: [
+        Apollo,
         HomeService,
         UtilsService,
         {

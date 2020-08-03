@@ -14,6 +14,7 @@ import { BrowserStorageServiceMock } from '@testing/mocked.service';
 import { environment } from '@environments/environment';
 import { ModalController, IonicModule } from '@ionic/angular';
 import * as filestack from 'filestack-js';
+import { Apollo } from 'apollo-angular';
 
 describe('FilestackService', () => {
   let service: FilestackService;
@@ -27,6 +28,7 @@ describe('FilestackService', () => {
     TestBed.configureTestingModule({
         imports: [ HttpClientTestingModule, IonicModule ],
         providers: [
+          Apollo,
           FilestackService,
           UtilsService,
           ModalController,

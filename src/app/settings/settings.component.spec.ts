@@ -13,6 +13,7 @@ import { BrowserStorageService } from '@services/storage.service';
 import { AuthService } from '../auth/auth.service';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
 import { MockRouter } from '@testing/mocked.service';
+import { Apollo } from 'apollo-angular';
 
 
 describe('SettingsComponent', () => {
@@ -32,6 +33,7 @@ describe('SettingsComponent', () => {
       declarations: [ SettingsComponent ],
       schemas: [ CUSTOM_ELEMENTS_SCHEMA ],
       providers: [
+        Apollo,
         UtilsService,
         FilestackService,
         {

@@ -14,6 +14,7 @@ import { ReviewListService } from '@app/review-list/review-list.service';
 import { environment } from '@environments/environment';
 import { ProgramFixture } from '@testing/fixtures/programs';
 import { PusherService } from '@shared/pusher/pusher.service';
+import { Apollo } from 'apollo-angular';
 
 describe('SwitcherService', () => {
   let service: SwitcherService;
@@ -31,6 +32,7 @@ describe('SwitcherService', () => {
     TestBed.configureTestingModule({
         imports: [ HttpClientTestingModule ],
         providers: [
+          Apollo,
           SwitcherService,
           UtilsService,
           EventListService,
@@ -43,7 +45,7 @@ describe('SwitcherService', () => {
           },
           {
             provide: RequestService,
-            useValue: jasmine.createSpyObj('RequestService', ['post', 'postGraphQL', 'apiResponseFormatError'])
+            useValue: jasmine.createSpyObj('RequestService', ['post', 'graphQLQuery', 'apiResponseFormatError'])
           },
           {
             provide: NotificationService,
@@ -177,7 +179,7 @@ describe('SwitcherService', () => {
   });
 
   it('getProgresses should return correct value', () => {
-    requestSpy.postGraphQL.and.returnValue(of({
+    requestSpy.graphQLQuery.and.returnValue(of({
       data: {
         projects: [
           {
