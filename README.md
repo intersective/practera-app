@@ -29,6 +29,13 @@ Run `npm run local` to start a development server on your local, and calling 127
   - `master` is always + 0.01 version ahead of `live`
   - `develop` is always + 0.1 version ahead of `live`
 
+#### Hybird App (Alpha Build)
+
+1. Prerequisite: 
+    1. Get `environment.alpha-native.ts` file placed under `src/environments` directory (ask from dev involved in the hybrid app project)
+    1. Capacitor cli - install globally on your system
+1. Run `npm run build-native` to update iOS and Android build with the latest code change from AppV2 (angular code).
+
 ### New Relics Setup
 
 1. Before we deploy app to live server, we'll need to create a `newrelic.js` file from project root directory's `/assets` folder
