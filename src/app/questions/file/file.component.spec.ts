@@ -5,6 +5,7 @@ import { FilestackService } from '@shared/filestack/filestack.service';
 import { Observable, of, pipe } from 'rxjs';
 import { SharedModule } from '@shared/shared.module';
 import { ReactiveFormsModule, FormControl } from '@angular/forms';
+import { Apollo } from 'apollo-angular';
 
 describe('FileComponent', () => {
   let component: FileComponent;
@@ -17,6 +18,7 @@ describe('FileComponent', () => {
       declarations: [ FileComponent ],
       schemas: [ CUSTOM_ELEMENTS_SCHEMA ],
       providers: [
+        Apollo,
         {
           provide: FilestackService,
           useValue: jasmine.createSpyObj('FilestackService', ['getFileTypes'])
@@ -80,20 +82,20 @@ describe('FileComponent', () => {
     it('should get correct data if file upload success when doing submission', () => {
       component.onFileUploadCompleted({
         success: true,
-        data: 'data'
+        data: {filename: 'abc.png'}
       });
       expect(component.errors.length).toBe(0);
-      expect(component.uploadedFile).toEqual('data');
-      expect(component.innerValue).toEqual('data');
+      expect(component.uploadedFile).toEqual({filename: 'abc.png'});
+      expect(component.innerValue).toEqual({filename: 'abc.png'});
     });
   });
 
   describe('when testing onChange()', () => {
     it('should get correct data when writing review answer', () => {
-      component.uploadedFile = 'aaa';
+      component.uploadedFile = {filename: 'abc.png'};
       component.onChange('data', 'answer');
       expect(component.errors.length).toBe(0);
-      expect(component.innerValue).toEqual({answer: 'aaa', comment: ''});
+      expect(component.innerValue).toEqual({answer: {filename: 'abc.png'}, comment: ''});
     });
     it('should get correct data when writing review comment', () => {
       component.innerValue = {answer: {}, comment: ''};
