@@ -1,12 +1,14 @@
 import { Injectable, Optional, isDevMode } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams, HttpErrorResponse, HttpParameterCodec } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { Observable, of, throwError } from 'rxjs';
-import { catchError, tap, concatMap } from 'rxjs/operators';
+import { Observable, of, throwError, from } from 'rxjs';
+import { catchError, tap, concatMap, map } from 'rxjs/operators';
 import { UtilsService } from '@services/utils.service';
 import { BrowserStorageService } from '@services/storage.service';
 import { environment } from '@environments/environment';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
+import { Apollo } from 'apollo-angular';
+import gql from 'graphql-tag';
 
 @Injectable({ providedIn: 'root' })
 export class DevModeService {
@@ -53,7 +55,8 @@ export class RequestService {
     private router: Router,
     @Optional() config: RequestConfig,
     private newrelic: NewRelicService,
-    private devMode: DevModeService
+    private devMode: DevModeService,
+    private apollo: Apollo
   ) {
     if (config) {
       this.appkey = config.appkey;
@@ -153,15 +156,40 @@ export class RequestService {
       );
   }
 
-  postGraphQL(data): Observable<any> {
-    return this.http.post<any>(environment.graphQL, data, {
-      headers: this.appendHeaders()
-    })
-      .pipe(concatMap(response => {
+  /**
+   * Valid options:
+   * noCache: Boolean default false. If set to false, will not cache the result
+   */
+  graphQLQuery(query: string, variables?: any, options?: any): Observable<any> {
+    options = {...{ noCache: false }, ...options};
+    const watch = this.apollo.watchQuery({
+      query: gql(query),
+      variables: variables || {},
+      fetchPolicy: options.noCache ? 'no-cache' : 'cache-and-network'
+    });
+    return watch.valueChanges
+      .pipe(map(response => {
         this._refreshApikey(response);
-        return of(response);
+        return response;
       }))
       .pipe(
+        catchError((error) => this.handleError(error))
+      );
+  }
+
+  /**
+   *
+   */
+  graphQLMutate(query: string, variables = {}): Observable<any> {
+    return this.apollo.mutate({
+      mutation: gql(query),
+      variables: variables
+    })
+      .pipe(
+        concatMap(response => {
+          this._refreshApikey(response);
+          return of(response);
+        }),
         catchError((error) => this.handleError(error))
       );
   }
@@ -210,7 +238,7 @@ export class RequestService {
     return;
   }
 
-  private handleError(error: HttpErrorResponse) {
+  private handleError(error: HttpErrorResponse | any) {
     if (this.devMode.isDevMode()) {
       console.error(error); // log to console instead
     }
@@ -236,8 +264,13 @@ export class RequestService {
     if (typeof error.error === 'string' && error.error.indexOf('<!DOCTYPE html>') !== -1) {
       return throwError(error.message);
     }
-
-    return throwError(error.error);
+    if (error.error) {
+      return throwError(error.error);
+    }
+    if (error.graphQLErrors) {
+      return throwError(error.graphQLErrors[0]);
+    }
+    return throwError(error);
   }
 
   /**

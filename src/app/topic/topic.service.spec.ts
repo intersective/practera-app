@@ -4,6 +4,7 @@ import { of } from 'rxjs';
 import { RequestService } from '@shared/request/request.service';
 import { UtilsService } from '@services/utils.service';
 import { TestUtils } from '@testing/utils';
+import { Apollo } from 'apollo-angular';
 
 describe('TopicService', () => {
   let service: TopicService;
@@ -14,6 +15,7 @@ describe('TopicService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
+        Apollo,
         TopicService,
         UtilsService,
         {
@@ -114,7 +116,7 @@ describe('TopicService', () => {
 
   it('when testing updateTopicProgress(), it should post data', () => {
     requestSpy.post.and.returnValue(of(''));
-    service.updateTopicProgress(1).subscribe();
+    service.updateTopicProgress(1, '').subscribe();
     expect(requestSpy.post.calls.count()).toBe(1);
   });
 

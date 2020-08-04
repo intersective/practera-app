@@ -1,6 +1,19 @@
-<div class="app-home" [ngStyle]="utils.isMobile() ? {} : {padding: '1em', height: '100%'}">
-  <div class="ion-text-center ion-padding">
-    <app-circle-progress [data]="progressConfig" [type]="'large'" [loading]="loadingProgress"></app-circle-progress>
+<div class="app-home" [ngStyle]="utils.isMobile() ? {} : {padding: '1em'}">
+  <div class="leading-image-container ion-text-center">
+    <ion-grid>
+      <ion-row>
+        <ion-col *ngIf="!utils.isMobile() && programInfo.image" class="image-col ion-justify-content-center ion-align-items-center">
+          <ion-card class="practera-card experience-card">
+            <div class="image-container">
+              <img [src]="programInfo.image" alt="{{ programInfo.name }}"/>
+            </div>
+          </ion-card>
+        </ion-col>
+        <ion-col class="ion-justify-content-center ion-align-items-center">
+          <app-circle-progress [data]="progressConfig" [type]="'large'" [loading]="loadingProgress"></app-circle-progress>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
   </div>
 
   <ng-container *ngTemplateOutlet="badges"></ng-container>

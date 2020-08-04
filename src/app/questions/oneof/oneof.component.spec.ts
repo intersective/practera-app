@@ -5,6 +5,7 @@ import { Observable, of, pipe } from 'rxjs';
 import { SharedModule } from '@shared/shared.module';
 import { ReactiveFormsModule, FormControl } from '@angular/forms';
 import { UtilsService } from '@services/utils.service';
+import { Apollo } from 'apollo-angular';
 
 describe('OneofComponent', () => {
   let component: OneofComponent;
@@ -16,6 +17,7 @@ describe('OneofComponent', () => {
       declarations: [ OneofComponent ],
       schemas: [ CUSTOM_ELEMENTS_SCHEMA ],
       providers: [
+        Apollo,
         UtilsService
       ],
     })
@@ -37,7 +39,8 @@ describe('OneofComponent', () => {
         choices: [
           { id: 1, name: 'choice1' },
           { id: 2, name: 'choice2' }
-        ]
+        ],
+        audience: []
       };
       component.submissionStatus = 'in progress';
       component.doAssessment = true;
@@ -56,7 +59,8 @@ describe('OneofComponent', () => {
         choices: [
           { id: 1, name: 'choice1' },
           { id: 2, name: 'choice2' }
-        ]
+        ],
+        audience: []
       };
       component.submissionStatus = 'pending review';
       component.doAssessment = false;

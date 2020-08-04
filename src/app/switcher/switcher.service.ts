@@ -94,16 +94,29 @@ export class SwitcherService {
    * @param projectIds Project ids
    */
   getProgresses(projectIds: number[]) {
-    return this.request.postGraphQL('"{projects(ids: ' + JSON.stringify(projectIds) + ') {id progress todoItems{isDone}}}"')
-      .pipe(map(res => {
-        return res.data.projects.map(v => {
-          return {
-            id: +v.id,
-            progress: v.progress,
-            todoItems: v.todoItems.filter(ti => !ti.isDone).length
-          };
-        });
-      }));
+    return this.request.graphQLQuery(
+      `query getProjectList($ids: [Int]!) {
+        projects(ids: $ids) {
+          id
+          progress
+          todoItems{
+            isDone
+          }
+        }
+      }`,
+      {
+        ids: projectIds
+      }
+    )
+    .pipe(map(res => {
+      return res.data.projects.map(v => {
+        return {
+          id: +v.id,
+          progress: v.progress,
+          todoItems: v.todoItems.filter(ti => !ti.isDone).length
+        };
+      });
+    }));
   }
 
   switchProgram(programObj: ProgramObj): Observable<any> {

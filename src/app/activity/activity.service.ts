@@ -58,29 +58,30 @@ export class ActivityService {
     private notification: NotificationService
   ) {}
 
-  // request for the latest data, and return the previously saved data at the same time
   public getActivity(id) {
-    this._getActivityData(id).subscribe(res => this.utils.updateActivityCache(id, res));
-    return this.utils.getActivityCache(id);
-  }
-
-  // request for the latest project data
-  private _getActivityData(id) {
-    return this.request.postGraphQL(
-      `"{` +
-        `activity(id:${id}){` +
-          `id name description tasks{` +
-            `id name type isLocked isTeam deadline contextId status{` +
-              `status isLocked submitterName submitterImage` +
-            `}` +
-          `}` +
-        `}` +
-      `}"`)
-      .pipe(map(res => this._normaliseActivity(res.data)));
+    return this.request.graphQLQuery(
+      `query getActivity($id: Int!) {
+        activity(id:$id){
+          id name description tasks{
+            id name type isLocked isTeam deadline contextId status{
+              status isLocked submitterName submitterImage
+            }
+          }
+        }
+      }`,
+      {
+        id: id
+      }
+    ).pipe(map(res => this._normaliseActivity(res.data)));
   }
 
   private _normaliseActivity(data): Activity {
-    data.activity.tasks = data.activity.tasks.map(task => {
+    if (!data) {
+      return null;
+    }
+    // clone the return data, instead of modifying it
+    const result = JSON.parse(JSON.stringify(data.activity));
+    result.tasks = result.tasks.map(task => {
       if (task.isLocked) {
         return {
           id: 0,
@@ -88,7 +89,7 @@ export class ActivityService {
           name: 'Locked'
         };
       }
-      switch (task.type) {
+      switch (task.type.toLowerCase()) {
         case 'topic':
           return {
             id: task.id,
@@ -123,7 +124,7 @@ export class ActivityService {
           };
       }
     });
-    return data.activity;
+    return result;
   }
 
   /**

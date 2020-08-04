@@ -4,6 +4,7 @@ import { DOCUMENT } from '@angular/common';
 import { Observable, Subject, BehaviorSubject } from 'rxjs';
 import { map, filter } from 'rxjs/operators';
 import { Platform } from '@ionic/angular';
+import { Apollo } from 'apollo-angular';
 import * as moment from 'moment';
 
 // @TODO: enhance Window reference later, we shouldn't refer directly to browser's window object like this
@@ -16,15 +17,17 @@ export class UtilsService {
   private lodash;
   // this Subject is used to broadcast an event to the app
   protected _eventsSubject = new Subject<{key: string, value: any}>();
-  // this Subject is used in project.service to cache the project data
-  public projectSubject = new BehaviorSubject(null);
-  // this Subject is used in activity.service to cache the activity data
-  // it stores key => Subject pairs of all activities
-  public activitySubjects = {};
+  // -- Not in used anymore, leave them commented in case we need later --
+  // // this Subject is used in project.service to cache the project data
+  // public projectSubject = new BehaviorSubject(null);
+  // // this Subject is used in activity.service to cache the activity data
+  // // it stores key => Subject pairs of all activities
+  // public activitySubjects = {};
 
   constructor(
     @Inject(DOCUMENT) private document: Document,
-    private platform: Platform
+    private platform: Platform,
+    private apollo: Apollo
   ) {
     if (_) {
       this.lodash = _;
@@ -152,29 +155,30 @@ export class UtilsService {
       );
   }
 
-  // get the activity Subject for cache
-  getActivityCache(key): BehaviorSubject<any> {
-    if (!(key in this.activitySubjects)) {
-      this.activitySubjects[key] = new BehaviorSubject(null);
-    }
-    return this.activitySubjects[key];
-  }
+  // // get the activity Subject for cache
+  // getActivityCache(key): BehaviorSubject<any> {
+  //   if (!(key in this.activitySubjects)) {
+  //     this.activitySubjects[key] = new BehaviorSubject(null);
+  //   }
+  //   return this.activitySubjects[key];
+  // }
 
-  // update the activity cache for given key(activity id)
-  updateActivityCache(key, value) {
-    if (!(key in this.activitySubjects)) {
-      this.activitySubjects[key] = new BehaviorSubject(null);
-    }
-    this.activitySubjects[key].next(value);
-  }
+  // // update the activity cache for given key(activity id)
+  // updateActivityCache(key, value) {
+  //   if (!(key in this.activitySubjects)) {
+  //     this.activitySubjects[key] = new BehaviorSubject(null);
+  //   }
+  //   this.activitySubjects[key].next(value);
+  // }
 
   // need to clear all Subject for cache
   clearCache() {
-    // initialise the Subject for caches
-    this.projectSubject.next(null);
-    this.each(this.activitySubjects, (subject, key) => {
-      this.activitySubjects[key].next(null);
-    });
+    this.apollo.getClient().clearStore();
+  //   // initialise the Subject for caches
+  //   this.projectSubject.next(null);
+  //   this.each(this.activitySubjects, (subject, key) => {
+  //     this.activitySubjects[key].next(null);
+  //   });
   }
 
   // transfer url query string to an object
@@ -210,7 +214,7 @@ export class UtilsService {
       return 'Tomorrow';
     }
     if (date.isSame(compareDate, 'd')) {
-      return new Intl.DateTimeFormat('en-GB', {
+      return new Intl.DateTimeFormat('en-US', {
         hour12: true,
         hour: 'numeric',
         minute: 'numeric'
@@ -232,7 +236,7 @@ export class UtilsService {
       return '';
     }
     const date = new Date(this.iso8601Formatter(time));
-    const formattedTime = new Intl.DateTimeFormat('en-GB', {
+    const formattedTime = new Intl.DateTimeFormat('en-US', {
       hour12: true,
       hour: 'numeric',
       minute: 'numeric'

@@ -14,21 +14,35 @@
   </div>
   <p *ngIf="event.isPast && !event.isBooked" class="expired-text ion-margin-horizontal subtitle-2 gray-2">Event Expired</p>
 
-  <ion-list>
+  <ion-list lines="full">
     <ion-item>
-      <ion-icon class="leading-icon" name="calendar-outline" color="primary"></ion-icon>
+      <ion-icon class="leading-icon gray-2" name="calendar-outline"></ion-icon>
       <div id="date" class="subtitle-1">{{ utils.utcToLocal(event.startTime, 'date') }}</div>
     </ion-item>
     <ion-item>
-      <ion-icon class="leading-icon" name="time-outline" color="primary"></ion-icon>
+      <ion-icon class="leading-icon gray-2" name="time-outline"></ion-icon>
       <div id="time" class="subtitle-1">{{ utils.utcToLocal(event.startTime, 'time') }} - {{ utils.utcToLocal(event.endTime, 'time') }}</div>
     </ion-item>
-    <ion-item>
-      <ion-icon class="leading-icon" name="location-outline" color="primary"></ion-icon>
+    <ng-container *ngIf="event.videoConference">
+      <ion-item *ngIf="!event.isBooked" class="zoom-meeting">
+        <img src="../../assets/icon_zoom_24.svg">
+        <div class="subtitle-1 ion-text-capitalize"> {{ event.videoConference.provider }} Meeting </div>
+      </ion-item>
+      <ion-item *ngIf="event.isBooked" class="zoom-meeting" (click)="openMeetingLink(event.videoConference.url)">
+        <img src="../../assets/icon_zoom_24.svg">
+        <div class="item-content">
+          <p class="subtitle-1"> Join {{ event.videoConference.provider }} meeting </p>
+          <p class="caption gray-2"> ID: {{ event.videoConference.meetingId }} </p>
+        </div>
+        <ion-icon slot="end" name="chevron-forward-outline"></ion-icon>
+      </ion-item>
+    </ng-container>
+    <ion-item *ngIf="event.location">
+      <ion-icon class="leading-icon gray-2" name="location-outline"></ion-icon>
       <div id="location" class="subtitle-1">{{ event.location }}</div>
     </ion-item>
-    <ion-item lines="none">
-      <ion-icon class="leading-icon" name="people-outline" color="primary"></ion-icon>
+    <ion-item lines="none" *ngIf="event.capacity">
+      <ion-icon class="leading-icon gray-2" name="people-outline"></ion-icon>
       <div id="capacity" class="subtitle-1">{{ event.remainingCapacity }} Seats Available Out of {{ event.capacity }}</div>
     </ion-item>
   </ion-list>

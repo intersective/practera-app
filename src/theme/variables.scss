@@ -6,7 +6,7 @@
 :root {
 
   --ion-item-background: #fff;
-  
+
   /** primary **/
   --ion-color-primary: #2bbfd4;
   --ion-color-primary-rgb: rgb(var(--ion-color-primary));
@@ -115,4 +115,10 @@
   --practera-40-Percent-gray: rgba(0, 0, 0, 0.4);
   --practera-60-Percent-gray: rgba(0, 0, 0, 0.6);
   --practera-80-Percent-gray: rgba(0, 0, 0, 0.8);
+
+  /** Event Video Conference **/
+  --practera-event-zoom-color: #2196F3;
+
+  /** Review Page **/
+  --practera-review-border-color: #008296;
 }

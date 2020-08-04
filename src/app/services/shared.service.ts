@@ -6,6 +6,7 @@ import { RequestService } from '@shared/request/request.service';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
+import { TopicService } from '../topic/topic.service';
 
 export interface Profile {
   contact_number: string;
@@ -32,7 +33,8 @@ export class SharedService {
     private notification: NotificationService,
     private request: RequestService,
     private http: HttpClient,
-    private newrelic: NewRelicService
+    private newrelic: NewRelicService,
+    private topicService: TopicService
   ) {}
 
   // call this function on every page refresh and after switch program
@@ -120,6 +122,22 @@ export class SharedService {
 
   private _ipAPI(): Observable<any> {
     return this.http.get('https://ipapi.co/json');
+  }
+
+  /**
+   * IF user lokking at a topic mark topic progress as stop reading when navigating.
+   */
+  markTopicStopOnNavigating() {
+    if (this.storage.get('startReadTopic')) {
+      this.topicService.updateTopicProgress(this.storage.get('startReadTopic'), 'stopped').subscribe(
+        response => {
+          this.storage.remove('startReadTopic');
+        },
+        err => {
+          console.log('error in mark Topic Stop On Navigating - ', err);
+        }
+      );
+    }
   }
 
 }
