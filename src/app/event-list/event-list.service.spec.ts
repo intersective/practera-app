@@ -6,6 +6,7 @@ import { UtilsService } from '@services/utils.service';
 import { NotificationService } from '@shared/notification/notification.service';
 import { TestUtils } from '@testing/utils';
 import { BrowserStorageService } from '@services/storage.service';
+import { Apollo } from 'apollo-angular';
 
 describe('EventListService', () => {
   let service: EventListService;
@@ -17,6 +18,7 @@ describe('EventListService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
+        Apollo,
         EventListService,
         UtilsService,
         {
@@ -79,7 +81,8 @@ describe('EventListService', () => {
             is_booked: false,
             single_booking: true,
             can_book: true,
-            assessment: null
+            assessment: null,
+            video_conference: null
           };
         })
       };
@@ -99,7 +102,8 @@ describe('EventListService', () => {
           singleBooking: event.single_booking,
           canBook: event.can_book,
           isPast: utils.timeComparer(event.start) < 0,
-          assessment: null
+          assessment: null,
+          videoConference: null
         };
       });
       expected = [formatted[2], formatted[1], formatted[3], formatted[4], formatted[0], formatted[5]];

@@ -8,6 +8,7 @@ import { HomeService } from './home.service';
 import { NotificationService } from '@shared/notification/notification.service';
 import { EventListService } from '@app/event-list/event-list.service';
 import * as moment from 'moment';
+import { Apollo } from 'apollo-angular';
 
 describe('HomeService', () => {
   let service: HomeService;
@@ -20,6 +21,7 @@ describe('HomeService', () => {
     TestBed.configureTestingModule({
       imports: [ HttpClientTestingModule ],
       providers: [
+        Apollo,
         HomeService,
         UtilsService,
         {
@@ -149,7 +151,7 @@ describe('HomeService', () => {
         {
           type: 'assessment_submission_reminder',
           name: requestResponse.data[5].meta.assessment_name,
-          description: `Overdue 3 Feb 2019 ${moment(new Date(requestResponse.data[5].meta.due_date + ' GMT+0000')).format('h:mm a')}`,
+          description: `Overdue 3 Feb 2019 ${moment(new Date(requestResponse.data[5].meta.due_date + ' GMT+0000')).format('h:mm A')}`,
           time: '2 Feb',
           meta: requestResponse.data[5].meta
         }
@@ -437,7 +439,7 @@ describe('HomeService', () => {
       const expected = {
         type: 'assessment_submission_reminder',
         name: event.meta.AssessmentSubmissionReminder.assessment_name,
-        description: 'Overdue 2 Feb 2019 ' + new Intl.DateTimeFormat('en-GB', {
+        description: 'Overdue 2 Feb 2019 ' + new Intl.DateTimeFormat('en-US', {
             hour12: true,
             hour: 'numeric',
             minute: 'numeric'

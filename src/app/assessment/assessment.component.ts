@@ -1,6 +1,6 @@
 import { Component, Input, NgZone, Output, EventEmitter } from '@angular/core';
 import { Router, ActivatedRoute, ParamMap } from '@angular/router';
-import { AssessmentService, Assessment, Submission, Review, AssessmentSubmitBody } from './assessment.service';
+import { AssessmentService, Assessment, Submission, Review, AssessmentSubmitParams } from './assessment.service';
 import { UtilsService } from '../services/utils.service';
 import { NotificationService } from '@shared/notification/notification.service';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
@@ -291,7 +291,7 @@ export class AssessmentComponent extends RouterEnter {
 
   private _handleReviewData(review) {
     this.review = review;
-    if (!review) {
+    if (!review && this.action === 'review' && !this.doReview) {
       return this.notificationService.alert({
         message: 'There is no Assessment to review.',
         buttons: [
@@ -407,7 +407,7 @@ export class AssessmentComponent extends RouterEnter {
     const missing = [];
     const answered = {};
     this.utils.each(answers, answer => {
-      answered[answer.assessment_question_id] = answer;
+      answered[answer.questionId] = answer;
     });
 
     this.assessment.groups.forEach(group => {
@@ -519,20 +519,22 @@ export class AssessmentComponent extends RouterEnter {
 
     const answers = [];
     let questionId = 0;
-    let assessment: AssessmentSubmitBody;
+    let assessment: AssessmentSubmitParams;
 
     assessment = {
-      id: this.id,
-      in_progress: false
+      id: this.id
     };
+    if (saveInProgress) {
+      assessment.inProgress = true;
+    }
+    if (this.submission && this.submission.id) {
+      assessment.submissionId = this.submission.id;
+    }
 
     // form submission answers
     if (this.doAssessment) {
-      assessment.context_id = this.contextId;
+      assessment.contextId = this.contextId;
 
-      if (saveInProgress) {
-        assessment.in_progress = true;
-      }
       if (this.assessment.isForTeam && goBack) {
         assessment.unlock = true;
       }
@@ -554,7 +556,7 @@ export class AssessmentComponent extends RouterEnter {
           });
         }
         answers.push({
-          assessment_question_id: questionId,
+          questionId: questionId,
           answer: answer
         });
       });
@@ -563,14 +565,12 @@ export class AssessmentComponent extends RouterEnter {
     // form feedback answers
     if (this.doReview) {
       assessment = Object.assign(assessment, {
-        review_id: this.review.id,
-        submission_id: this.submission ? this.submission.id : 0,
-        in_progress: (saveInProgress) ? true : false,
+        reviewId: this.review.id
       });
 
       this.utils.each(this.questionsForm.value, (answer, key) => {
         if (!this.utils.isEmpty(answer)) {
-          answer.assessment_question_id = +key.replace('q-', '');
+          answer.questionId = +key.replace('q-', '');
           answers.push(answer);
         }
       });
@@ -590,8 +590,7 @@ export class AssessmentComponent extends RouterEnter {
     this.assessmentService.saveAnswers(
       assessment,
       answers,
-      this.action,
-      this.submission ? this.submission.id : 0
+      this.action
     ).subscribe(
       result => {
         if (saveInProgress) {
@@ -612,7 +611,7 @@ export class AssessmentComponent extends RouterEnter {
           return this.pullFastFeedback();
         }
       },
-      (err: {msg: string}) => {
+      (err: { msg?: string, message?: string }) => {
         this.newRelic.noticeError(JSON.stringify(err));
 
         this.submitting = false;
@@ -624,7 +623,7 @@ export class AssessmentComponent extends RouterEnter {
           // display a pop up if submission failed
           this.notificationService.alert({
             header: 'Submission failed',
-            message: err.msg || JSON.stringify(err),
+            message: 'Please refresh the page and try it again later',
             buttons: [
               {
                 text: 'OK',
@@ -632,7 +631,7 @@ export class AssessmentComponent extends RouterEnter {
               }
             ]
           });
-          throw new Error(err.msg || JSON.stringify(err));
+          throw new Error(err.msg || err.message || JSON.stringify(err));
         }
       }
     );
@@ -700,7 +699,7 @@ export class AssessmentComponent extends RouterEnter {
   }
 
   private _getCurrentTime() {
-    return new Intl.DateTimeFormat('en-GB', {
+    return new Intl.DateTimeFormat('en-US', {
       hour12: true,
       hour: 'numeric',
       minute: 'numeric'

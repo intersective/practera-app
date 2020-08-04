@@ -7,6 +7,7 @@ import { Observable, of, pipe } from 'rxjs';
 import { Router, ActivatedRoute, convertToParamMap } from '@angular/router';
 import { ActivatedRouteStub } from '@testing/activated-route-stub';
 import { MockRouter } from '@testing/mocked.service';
+import { Apollo } from 'apollo-angular';
 
 describe('EventsComponent', () => {
   let component: EventsComponent;
@@ -18,6 +19,7 @@ describe('EventsComponent', () => {
       imports: [ EventListModule, EventDetailModule, AssessmentModule ],
       declarations: [ EventsComponent ],
       providers: [
+        Apollo,
         {
           provide: Router,
           useClass: MockRouter

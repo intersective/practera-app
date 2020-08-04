@@ -14,6 +14,7 @@ import { SharedService } from '@services/shared.service';
 import { ActivityService } from '../activity/activity.service';
 import { of, throwError } from 'rxjs';
 import { MockRouter } from '@testing/mocked.service';
+import { Apollo } from 'apollo-angular';
 
 describe('TopicComponent', () => {
   let component: TopicComponent;
@@ -27,7 +28,7 @@ describe('TopicComponent', () => {
   let routerSpy: jasmine.SpyObj<Router>;
   const routeStub = new ActivatedRouteStub({ activityId: 1, id: 2 });
   const notificationSpy = jasmine.createSpyObj('NotificationService', ['alert', 'presentToast']);
-  const storageSpy = jasmine.createSpyObj('BrowserStorageService', ['getUser']);
+  const storageSpy = jasmine.createSpyObj('BrowserStorageService', ['getUser', 'get', 'remove']);
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
@@ -35,6 +36,7 @@ describe('TopicComponent', () => {
       declarations: [ TopicComponent ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
       providers: [
+        Apollo,
         {
           provide: TopicService,
           useValue: topicSpy
@@ -84,6 +86,8 @@ describe('TopicComponent', () => {
       teamId: 1,
       projectId: 2
     });
+    storageSpy.get.and.returnValue({});
+    // storageSpy.remove.and.returnValue({});
     activitySpy.gotoNextTask.and.returnValue(new Promise(() => {}));
   });
 
@@ -102,6 +106,7 @@ describe('TopicComponent', () => {
       };
       topicSpy.getTopic.and.returnValue(of(topic));
       topicSpy.getTopicProgress.and.returnValue(of(1));
+      topicSpy.updateTopicProgress.and.returnValue(of(null));
       fixture.detectChanges();
       component.onEnter();
       expect(component.loadingTopic).toBe(false);
@@ -161,7 +166,7 @@ describe('TopicComponent', () => {
   it('should mark topic as done', () => {
     topicSpy.updateTopicProgress.and.returnValue(of(''));
     component.markAsDone();
-    expect(topicSpy.updateTopicProgress.calls.count()).toBe(1);
+    expect(topicSpy.updateTopicProgress.calls.count()).toBe(5);
     expect(component.btnToggleTopicIsDone).toBe(true);
   });
   describe('when testing continue()', () => {

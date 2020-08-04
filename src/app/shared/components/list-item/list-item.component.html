@@ -13,6 +13,7 @@
   <ion-icon *ngIf="endingIcon" [name]="endingIcon" slot="end" [color]="endingIconColor || 'primary'"></ion-icon>
 
   <div *ngIf="eventExpired" class="expired-batch gray-2">Expired</div>
+  <div *ngIf="eventVideoConference && !eventExpired" class="video-conference-batch ion-text-capitalize">{{ eventVideoConference.provider }}</div>
 
 </clickable-item>
 

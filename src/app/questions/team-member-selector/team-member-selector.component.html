@@ -1,23 +1,30 @@
 <ng-container *ngIf="submissionStatus !== 'in progress' && submission.answer">
-  <ion-list class="no-bg">
-    <ion-radio-group [value]="submission.answer">
-      <ion-item *ngFor="let teamMember of question.teamMembers;let i = index" [lines]="i == question.teamMembers.length - 1 ? 'none' : ''">
-        <ion-label class="white-space-normal subtitle-1 black">{{ teamMember.userName }}</ion-label>
-        <ion-radio [value]="teamMember.key" disabled mode="md"></ion-radio>
-      </ion-item>
-    </ion-radio-group>
-  </ion-list>
+  <div class="ion-padding-horizontal ion-padding-bottom">
+      <ion-list class="no-bg">
+          <ion-radio-group [value]="submission.answer">
+            <ng-container *ngFor="let teamMember of question.teamMembers;let i = index">
+              <ng-container *ngIf="teamMember.key === submission.answer">
+                <ion-item lines="none">
+                  <ion-label class="white-space-normal body-2 gray-3">{{ teamMember.userName }}</ion-label>
+                  <ion-radio [value]="teamMember.key" disabled mode="md"></ion-radio>
+                </ion-item>
+              </ng-container>
+            </ng-container>
+          </ion-radio-group>
+        </ion-list>
+  </div>
 </ng-container>
 
-<div *ngIf="reviewStatus !== 'in progress' && (review.answer || review.comment)" class="q-reviews">
-  <ion-label class="q-title subtitle-2 black">Feedback</ion-label>
+<div *ngIf="reviewStatus !== 'in progress' && (review.answer || review.comment)" class="ion-padding-horizontal ion-padding-bottom"
+[ngClass]="{ 'audience-mentor': audienceContainReviewer()}">
+  <ion-label *ngIf="audienceContainReviewer()" class="q-title subtitle-2 black ion-padding-vertical">Reviewer’s feedback</ion-label>
   <ng-container *ngIf="review.answer">
     <ion-list class="no-bg">
       <ion-radio-group [value]="review.answer">
         <ng-container *ngFor="let teamMember of question.teamMembers;let i = index">
           <ng-container *ngIf="teamMember.key === review.answer">
-            <ion-item [lines]="i == question.teamMembers.length - 1 ? 'none' : ''">
-              <ion-label class="white-space-normal subtitle-1 gray-2">{{ teamMember.userName }}</ion-label>
+            <ion-item lines="none">
+              <ion-label class="white-space-normal body-2 gray-3">{{ teamMember.userName }}</ion-label>
               <ion-radio [value]="teamMember.key" disabled mode="md"></ion-radio>
             </ion-item>
           </ng-container>
@@ -26,41 +33,40 @@
     </ion-list>
   </ng-container>
   <ng-container *ngIf="review.comment">
-    <p class="paragraph body-2 gray-2">{{ review.comment }}</p>
+    <p class="paragraph body-2 gray-3">{{ review.comment }}</p>
   </ng-container>
 </div>
 
 <ng-container *ngIf="doAssessment">
-  <ion-list class="no-bg">
-    <ion-radio-group [value]="submission.answer" #answerEle (ionChange)="onChange(answerEle.value)">
-      <ion-item class="choice-item" *ngFor="let teamMember of question.teamMembers;let i = index" [lines]="i == question.teamMembers.length - 1 ? 'none' : ''">
-        <ion-label class="white-space-normal subtitle-1">{{ teamMember.userName }}</ion-label>
-        <ion-radio [value]="teamMember.key" mode="md" [disabled]="control.disabled"></ion-radio>
-      </ion-item>
-    </ion-radio-group>
-  </ion-list>
+  <div class="ion-padding-horizontal ion-padding-bottom">
+      <ion-list class="no-bg">
+          <ion-radio-group [value]="submission.answer" #answerEle (ionChange)="onChange(answerEle.value)">
+            <ion-item class="choice-item" *ngFor="let teamMember of question.teamMembers;let i = index"
+              [lines]="i == question.teamMembers.length - 1 ? 'none' : ''">
+              <ion-label class="white-space-normal body-2 black">{{ teamMember.userName }}</ion-label>
+              <ion-radio [value]="teamMember.key" mode="md" [disabled]="control.disabled"></ion-radio>
+            </ion-item>
+          </ion-radio-group>
+        </ion-list>
+  </div>
 </ng-container>
 
 <ng-container *ngIf="doReview">
-  <ion-list class="no-bg" *ngIf="question.canAnswer">
-    <ion-radio-group #answerEle [value]="review.answer" (ionChange)="onChange(answerEle.value, 'answer')">
-      <ion-list-header>
-        <ion-label class="body-2">Your Answer is</ion-label>
-      </ion-list-header>
-      <ion-item class="choice-item" *ngFor="let teamMember of question.teamMembers;let i = index" [lines]="i == question.teamMembers.length - 1 ? 'none' : ''">
-        <ion-label class="white-space-normal subtitle-1">{{ teamMember.userName }}</ion-label>
-        <ion-radio [value]="teamMember.key" mode="md" [disabled]="control.disabled"></ion-radio>
-      </ion-item>
-    </ion-radio-group>
-  </ion-list>
-  <ion-textarea
-    *ngIf="question.canComment"
-    class="background-white ion-margin-top"
-    #commentEle
-    rows="4"
-    [(ngModel)]="comment"
-    (ngModelChange)="onChange(comment, 'comment')"
-    placeholder="Please put your feedback here"
-    [disabled]="control.disabled"></ion-textarea>
+  <div class="ion-padding-horizontal ion-padding-bottom" [ngClass]="{ 'audience-mentor': audienceContainReviewer()}">
+    <ion-list class="no-bg" *ngIf="question.canAnswer">
+      <ion-radio-group #answerEle [value]="review.answer" (ionChange)="onChange(answerEle.value, 'answer')">
+        <ion-list-header class="ion-no-padding" *ngIf="!question.reviewerOnly">
+          <ion-label class="subtitle-2 black">Your Answer is</ion-label>
+        </ion-list-header>
+        <ion-item class="choice-item no-bg" *ngFor="let teamMember of question.teamMembers;let i = index"
+          [lines]="i == question.teamMembers.length - 1 ? 'none' : ''">
+          <ion-label class="white-space-normal body-2 black">{{ teamMember.userName }}</ion-label>
+          <ion-radio [value]="teamMember.key" mode="md" [disabled]="control.disabled"></ion-radio>
+        </ion-item>
+      </ion-radio-group>
+    </ion-list>
+    <ion-textarea *ngIf="question.canComment" class="textarea" #commentEle rows="4" [(ngModel)]="comment"
+      (ngModelChange)="onChange(comment, 'comment')" placeholder="Please put your feedback here"
+      [disabled]="control.disabled"></ion-textarea>
+  </div>
 </ng-container>
-
