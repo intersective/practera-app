@@ -17,6 +17,7 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
 import { MockRouter } from '@testing/mocked.service';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+import { Apollo } from 'apollo-angular';
 
 @Directive({
   selector: '[routerLink], [routerLinkActive]'
@@ -80,6 +81,7 @@ describe('HomeComponent', () => {
       declarations: [HomeComponent, DummyRouterLinkDirective],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
       providers: [
+        Apollo,
         UtilsService,
         NewRelicService,
         {

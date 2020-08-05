@@ -11,6 +11,7 @@ import { TestUtils } from '@testing/utils';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ModalController } from '@ionic/angular';
 import { BrowserStorageService } from '@services/storage.service';
+import { Apollo } from 'apollo-angular';
 
 class Page {
   get eventName() {
@@ -68,6 +69,7 @@ describe('EventDetailComponent', () => {
       declarations: [ EventDetailComponent ],
       schemas: [ CUSTOM_ELEMENTS_SCHEMA ],
       providers: [
+        Apollo,
         UtilsService,
         {
           provide: EventDetailService,

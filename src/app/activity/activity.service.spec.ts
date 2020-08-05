@@ -6,6 +6,7 @@ import { UtilsService } from '@services/utils.service';
 import { NotificationService } from '@shared/notification/notification.service';
 import { Router } from '@angular/router';
 import { MockRouter } from '@testing/mocked.service';
+import { Apollo } from 'apollo-angular';
 
 describe('ActivityService', () => {
   let service: ActivityService;
@@ -16,6 +17,7 @@ describe('ActivityService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
+        Apollo,
         ActivityService,
         UtilsService,
         {
@@ -23,7 +25,7 @@ describe('ActivityService', () => {
           useValue: jasmine.createSpyObj('RequestService', [
             'get',
             'post',
-            'postGraphQL'
+            'graphQLQuery'
           ])
         },
         {
@@ -158,7 +160,7 @@ describe('ActivityService', () => {
         }
       ]
     };
-    requestSpy.postGraphQL.and.returnValue(of(requestResponse));
+    requestSpy.graphQLQuery.and.returnValue(of(requestResponse));
     service.getActivity(1).subscribe(res => expect(res).toEqual(expected));
   });
 
