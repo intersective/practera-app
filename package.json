@@ -23,8 +23,8 @@
     "e2e-sandbox": "ng e2e -c sandbox",
     "generate-version": "node ./hooks/post-build.js",
     "native-icons": "cordova-res android --skip-config --copy && cordova-res ios --skip-config --copy",
-    "build-native": "npx cap sync",
-    "prebuild-native": "ng build -c alpha"
+    "native-build": "npx cap sync",
+    "prenative-build": "ng build -c alpha"
   },
   "dependencies": {
     "@angular/animations": "^9.0.5",
