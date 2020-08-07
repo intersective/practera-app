@@ -32,7 +32,7 @@ export class ChatListComponent {
     this.utils.getEvent('chat:new-message').subscribe(event => this._loadChatData());
     if (!this.utils.isMobile()) {
       this.utils.getEvent('chat-badge-update').subscribe(event => {
-        const chatIndex = this.chatList.findIndex(data => data.channelId == event.channelId);
+        const chatIndex = this.chatList.findIndex(data => data.channelId === event.channelId);
         if (chatIndex > -1) {
           // set time out because when this calling from pusher events it need a time out.
           setTimeout(() => {
@@ -73,8 +73,7 @@ export class ChatListComponent {
     this._navigate(
       [
         'chat',
-        'chat-room',
-        chat.channelId
+        'chat-room'
       ],
       chat
     );
