@@ -185,7 +185,7 @@ export class PusherService {
       if (this.pusher) {
         this.pusher.unsubscribe(chat.name);
       }
-    })
+    });
     this.channels.notification = null;
     this.channels.chat = [];
   }
@@ -202,7 +202,7 @@ export class PusherService {
     if (this.isSubscribed(channelName)) {
       return;
     }
-    switch(type) {
+    switch (type) {
       case 'notification':
         this.channels.notification = {
           name: channelName,
@@ -228,6 +228,10 @@ export class PusherService {
           });
         break;
       case 'chat':
+        // don't need to subscribe again if already subscribed
+        if (this.channels.chat.find(c => c.name === channelName)) {
+          return;
+        }
         const channel = {
           name: channelName,
           subscription: this.pusher.subscribe(channelName)
