@@ -40,7 +40,7 @@ describe('ChatService', () => {
     expect(service).toBeTruthy();
   });
 
-  describe('when testing getchatList()', () => {
+  describe('when testing getChatList()', () => {
     let requestResponse;
     let expected;
     beforeEach(() => {
@@ -130,7 +130,7 @@ describe('ChatService', () => {
       const tmpRes = JSON.parse(JSON.stringify(requestResponse));
       tmpRes.data = {};
       requestSpy.get.and.returnValue(of(tmpRes));
-      service.getchatList().subscribe();
+      service.getChatList().subscribe();
       expect(requestSpy.apiResponseFormatError.calls.count()).toBe(1);
     });
 
@@ -138,7 +138,7 @@ describe('ChatService', () => {
       const tmpRes = JSON.parse(JSON.stringify(requestResponse));
       delete tmpRes.data[0].team_id;
       requestSpy.get.and.returnValue(of(tmpRes));
-      service.getchatList().subscribe();
+      service.getChatList().subscribe();
       expect(requestSpy.apiResponseFormatError.calls.count()).toBe(1);
     });
 
@@ -146,7 +146,7 @@ describe('ChatService', () => {
       const tmpRes = JSON.parse(JSON.stringify(requestResponse));
       delete tmpRes.data[0].is_team;
       requestSpy.get.and.returnValue(of(tmpRes));
-      service.getchatList().subscribe();
+      service.getChatList().subscribe();
       expect(requestSpy.apiResponseFormatError.calls.count()).toBe(1);
     });
 
@@ -154,7 +154,7 @@ describe('ChatService', () => {
       const tmpRes = JSON.parse(JSON.stringify(requestResponse));
       delete tmpRes.data[0].participants_only;
       requestSpy.get.and.returnValue(of(tmpRes));
-      service.getchatList().subscribe();
+      service.getChatList().subscribe();
       expect(requestSpy.apiResponseFormatError.calls.count()).toBe(1);
     });
 
@@ -162,7 +162,7 @@ describe('ChatService', () => {
       const tmpRes = JSON.parse(JSON.stringify(requestResponse));
       delete tmpRes.data[0].name;
       requestSpy.get.and.returnValue(of(tmpRes));
-      service.getchatList().subscribe();
+      service.getChatList().subscribe();
       expect(requestSpy.apiResponseFormatError.calls.count()).toBe(1);
     });
 
@@ -170,13 +170,13 @@ describe('ChatService', () => {
       const tmpRes = JSON.parse(JSON.stringify(requestResponse));
       delete tmpRes.data[0].team_name;
       requestSpy.get.and.returnValue(of(tmpRes));
-      service.getchatList().subscribe();
+      service.getChatList().subscribe();
       expect(requestSpy.apiResponseFormatError.calls.count()).toBe(1);
     });
 
     it('should get correct chat list data', () => {
       requestSpy.get.and.returnValue(of(requestResponse));
-      service.getchatList().subscribe(
+      service.getChatList().subscribe(
         chatList => {
           expect(chatList).toEqual(expected);
         }
@@ -696,32 +696,6 @@ describe('ChatService', () => {
       };
       service.postAttachmentMessage(param);
       expect(service.postNewMessage).toHaveBeenCalled();
-    });
-  });
-
-  describe('when testing unreadMessageCout()', () => {
-    let requestResponse;
-    let expectedPram;
-    beforeEach(() => {
-      requestResponse = {
-        success: true,
-        data: {
-          unread_message_count: 5
-        }
-      };
-      expectedPram = {
-        unread_count_for: 'all',
-      };
-    });
-
-    it('should call with correct data', () => {
-      const pram = {
-        filter: 'all'
-      };
-      requestSpy.get.and.returnValue(of(requestResponse));
-      service.unreadMessageCout(pram);
-      expect(requestSpy.get.calls.count()).toBe(1);
-      expect(requestSpy.get.calls.first().args[1]).toEqual(expectedPram);
     });
   });
 
