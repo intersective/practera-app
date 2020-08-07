@@ -68,7 +68,7 @@ export class ChatRoomComponent extends RouterEnter {
 
   onEnter() {
     this._initialise();
-    this._bindTypingEvent();
+    this._subscribeToPusherChannel();
     this._loadMessages();
     this._scrollToBottom();
   }
@@ -84,11 +84,13 @@ export class ChatRoomComponent extends RouterEnter {
     this.showBottomAttachmentButtons = false;
   }
 
-  private _bindTypingEvent() {
+  private _subscribeToPusherChannel() {
     if (!this.chatChannel) {
       this.chatChannel = this.storage.getCurrentChatChannel();
     }
     this.channelId = this.route.snapshot.paramMap.get('channelId') || this.chatChannel.channelId;
+    // subscribe to the Pusher channel for the current chat channel
+    this.pusherService.subscribeChannel('chat', this.chatChannel.pusherChannelName);
     // subscribe to typing event
     this.utils.getEvent('typing-' + this.chatChannel.pusherChannelName).subscribe(event => this._showTyping(event));
   }
