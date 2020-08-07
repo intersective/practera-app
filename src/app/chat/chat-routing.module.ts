@@ -17,7 +17,7 @@ const routes: Routes = [
     ]
   },
   {
-    path: 'chat-room/:channelId',
+    path: 'chat-room',
     component: ChatRoomComponent,
   }
 ];
