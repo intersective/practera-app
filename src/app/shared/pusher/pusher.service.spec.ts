@@ -30,15 +30,6 @@ class PusherLib extends Pusher {
   connect() {
     return true;
   }
-
-/*  allChannels(): Pusher.Channel {
-    return [{
-      name: 'test',
-      subscribed: true,
-      trigger: (eventName: string, data?: any) => true,
-      authorize: () => true,
-    }]
-  }*/
 }
 const initialisingPusher = {
   connection: {
@@ -148,84 +139,50 @@ describe('PusherService', async () => {
   describe('getChannels()', async () => {
 
     it(`should make API request to ${APIURL}`, fakeAsync(() => {
+      requestSpy.get.and.returnValue(of({
+        data: [
+          {
+            channel: 'notification-channel'
+          }
+        ]
+      }));
       service.getChannels().subscribe();
-      spyOn(service, 'initiateTypingEvent');
       tick(300);
       expect(requestSpy.get).toHaveBeenCalledWith(APIURL, {
         params: { env: environment.env }
       });
     }));
-
-    it(`should return error if channel is empty`, fakeAsync(() => {
-      requestSpy.get.and.returnValue(of({ data: 'not array' }));
-      spyOn(service, 'initiateTypingEvent');
-      // service['_subscribeChannels'] = jasmine.createSpy('_subscribeChannels');
-
-      let res: any;
-      service.getChannels().subscribe(_res => {
-        res = _res;
-      });
-      tick(300);
-
-      // expect(utilSpy.isEmpty).toHaveBeenCalled();
-      expect(requestSpy.apiResponseFormatError).toHaveBeenCalledWith('Pusher channels must be an array');
-      expect(service.initiateTypingEvent).not.toHaveBeenCalled();
-    }));
-
-    // it('should ')
   });
 
   describe('unsubscribeChannels()', () => {
-    const TESTVALUE = {
-      presence: {
-        name: 'TEST_VALUE',
-        subscription: 'TEST_VALUE',
-      },
-      team: {
-        name: 'TEST_VALUE',
-        subscription: 'TEST_VALUE',
-      },
-      teamNoMentor: {
-        name: 'TEST_VALUE',
-        subscription: 'TEST_VALUE',
-      },
-      notification: {
-        name: 'TEST_VALUE',
-        subscription: 'TEST_VALUE',
-      }
-    };
-
     const channels = {
-      presence: {
-        unbind_all: jasmine.createSpy('unbind_all'),
-      },
-      team: {
-        unbind_all: jasmine.createSpy('unbind_all'),
-      },
-      teamNoMentor: {
-        unbind_all: jasmine.createSpy('unbind_all'),
-      },
       notification: {
-        unbind_all: jasmine.createSpy('unbind_all'),
+        name: 'TEST_VALUE',
+        subscription: null,
       },
+      chat: [
+        {
+          name: 'TEST_VALUE',
+          subscription: null,
+        },
+        {
+          name: 'TEST_VALUE',
+          subscription: null,
+        }
+      ]
     };
 
     it('should unsubscribe', () => {
-      service['channelNames'] = TESTVALUE;
       service['channels'] = channels;
       service.unsubscribeChannels();
-
-      expect(service['channels'].presence).toEqual(null);
       expect(service['channels']).toEqual({
-        presence: null,
-        team: null,
-        teamNoMentor: null,
         notification: null,
+        chat: []
       });
     });
   });
 
-  describe('private _subscribeChannels()', () => {
+  describe('subscribeChannel()', () => {
     beforeEach(() => {
       environment.env = 'test';
       service['pusher'] = new PusherLib();
@@ -249,8 +206,6 @@ describe('PusherService', async () => {
         });
       };
 
-      service['pusher'].allChannels = jasmine.createSpy('allChannels').and.returnValue(subscribed);
-
       spyOn(service['pusher'], 'subscribe').and.callFake(name => {
         subscribed.push(name);
         return binder;
@@ -258,17 +213,11 @@ describe('PusherService', async () => {
 
     });
 
-    it('should subscribe to channels (none no-mentor)', fakeAsync(() => {
+    it('should subscribe to notification channel', fakeAsync(() => {
       const channels = [
         {
-          channel: `private-${environment.env}-team-`,
-        },
-        {
           channel: `private-${environment.env}-notification-`,
-        },
-        {
-          channel: `presence-${environment.env}-team-`,
-        },
+        }
       ];
 
       requestSpy.get.and.returnValue(of({
@@ -279,28 +228,7 @@ describe('PusherService', async () => {
 
       flushMicrotasks();
 
-      expect(service['channels'].team).toBeTruthy();
-      expect(service['channels'].teamNoMentor).toBeFalsy();
       expect(service['channels'].notification).toBeTruthy();
-      expect(service['channels'].presence).toBeTruthy();
-    }));
-
-    it('should subscribe to no-mentor channel', fakeAsync(() => {
-      requestSpy.get.and.returnValue(of({
-        data: [
-          {
-            channel: `private-${environment.env}-team-nomentor-`,
-          },
-        ]
-      }));
-
-      service.getChannels().subscribe();
-
-      flushMicrotasks();
-      expect(service['channels'].teamNoMentor).toBeTruthy();
-      expect(service['channels'].team).toBeNull();
-      expect(service['channels'].notification).toBeNull();
-      expect(service['channels'].presence).toBeNull();
     }));
   });
 
@@ -332,7 +260,6 @@ describe('PusherService', async () => {
       flushMicrotasks();
 
       expect(service.unsubscribeChannels).toHaveBeenCalled();
-      expect(service['typingAction']).toEqual(new Subject<any>());
     }));
   });
 
@@ -402,7 +329,6 @@ describe('PusherService', async () => {
 
       // mock successfully subsribed channel
       channels = service['pusher'].channels;
-      testChannel = service['pusher'].allChannels()[0];
       spyOn(testChannel, 'subscribed').and.returnValue(true);
     });
 
@@ -417,51 +343,6 @@ describe('PusherService', async () => {
     });
   });
 
-  describe('getMyPresenceChannelId()', () => {
-    it('should get my channel id', () => {
-      const id = '7b6f112e7e55968fd8c34d5727e4996d';
-      const sampleData = {
-        'channel': 'presence-sandbox-team-1234-567-89',
-        'data': {
-          'presence': {
-            'count': 1,
-            'ids': [
-              id
-            ],
-            'hash': {
-              '7b6f112e7e55968fd8c34d5727e4996d': {
-                name: 'test',
-              },
-            },
-            'members': {
-              'test-data': { id: 'test-data' },
-              'not-actual-user': { id: 'not-actual-user' },
-              'me': { id },
-            },
-          },
-        }
-      };
-
-      // in codebase, `this.channels.member`
-      service['channels']['presence'] = sampleData.data.presence;
-      const result = service.getMyPresenceChannelId();
-      expect(result).toEqual(id);
-    });
-  });
-
-  describe('typing message', () => {
-    it('should trigger triggerTyping()', () => {
-      spyOn(service['typingAction'], 'next').and.returnValue(true);
-      service.triggerTyping('test', true);
-      expect(service['typingAction'].next).toHaveBeenCalledTimes(1);
-    });
-
-    it('should trigger initiateTypingEvent()', () => {
-      spyOn(service['typingAction'], 'pipe').and.returnValue(true);
-      service.initiateTypingEvent();
-      expect(service['typingAction'].pipe).toHaveBeenCalledTimes(1);
-    });
-  });
 
 });
 
