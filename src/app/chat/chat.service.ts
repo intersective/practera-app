@@ -50,7 +50,7 @@ export interface Message {
 }
 
 interface NewMessageParam {
-  channel_id: number | string;
+  channelId: number | string;
   message: string;
   env?: string;
   file?: object;
@@ -190,7 +190,7 @@ export class ChatService {
    * @name postNewMessage
    * @description post new text message (with text) or attachment (with file)
    */
-  postNewMessage(data: Message): Observable<any> {
+  postNewMessage(data: NewMessageParam): Observable<any> {
     return this.request.post(api.createMessage, {
       channel_id: data.channelId,
       message: data.message,
@@ -199,7 +199,7 @@ export class ChatService {
     });
   }
 
-  postAttachmentMessage(data: Message): Observable<any> {
+  postAttachmentMessage(data: NewMessageParam): Observable<any> {
     if (!data.file) {
       throw new Error('Fatal: File value must not be empty.');
     }
