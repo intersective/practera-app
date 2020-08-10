@@ -32,8 +32,9 @@
               },
               {
                 "glob": "**/*",
+                "ignore": ["assetlinks.json.custom"],
                 "input": "src/well-known",
-                "output": "./well-known"
+                "output": ".well-known"
               }
             ],
             "styles": [
@@ -188,8 +189,9 @@
               },
               {
                 "glob": "**/*",
+                "ignore": ["assetlinks.json.custom"],
                 "input": "src/well-known",
-                "output": "./well-known"
+                "output": ".well-known"
               }
             ],
             "codeCoverage": true
