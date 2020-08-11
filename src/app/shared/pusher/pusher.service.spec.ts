@@ -327,7 +327,8 @@ xdescribe('PusherService', async () => {
   });
 
   describe('isSubscribed()', () => {
-    let channels, testChannel;
+    let channels;
+    const testChannel = null;
     beforeEach(() => {
       service['pusher'] = new PusherLib();
       service['pusher'].subscribe('test');
