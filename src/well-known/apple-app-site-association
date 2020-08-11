@@ -1,0 +1,11 @@
+{
+    "applinks": {
+        "apps": [],
+        "details": [
+            {
+                "appID": "8Z2J5C7D6R.com.practera.appv2",
+                "paths": ["*"]
+            }
+        ]
+    }
+}

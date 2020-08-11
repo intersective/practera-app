@@ -29,6 +29,12 @@
                 "glob": "**/*.svg",
                 "input": "node_modules/ionicons/dist/ionicons/svg",
                 "output": "./svg"
+              },
+              {
+                "glob": "**/*",
+                "ignore": ["assetlinks.json.custom"],
+                "input": "src/well-known",
+                "output": ".well-known"
               }
             ],
             "styles": [
@@ -180,6 +186,12 @@
                 "glob": "**/*",
                 "input": "src/assets",
                 "output": "/assets"
+              },
+              {
+                "glob": "**/*",
+                "ignore": ["assetlinks.json.custom"],
+                "input": "src/well-known",
+                "output": ".well-known"
               }
             ],
             "codeCoverage": true
