@@ -42,7 +42,6 @@ describe('ChatService', () => {
 
   describe('when testing getChatList()', () => {
     let requestResponse;
-    let expected;
     beforeEach(() => {
       requestResponse = {
         success: true,
@@ -194,7 +193,7 @@ describe('ChatService', () => {
             expect(chat.message).toEqual(requestResponse.data[i].message);
             expect(chat.sentTime).toEqual(requestResponse.data[i].sent_time);
             expect(chat.file).toEqual(requestResponse.data[i].file);
-          })
+          });
         }
       );
       expect(requestSpy.get.calls.count()).toBe(1);
