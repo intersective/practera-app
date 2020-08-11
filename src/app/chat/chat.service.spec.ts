@@ -109,16 +109,16 @@ describe('ChatService', () => {
       service.getChatList().subscribe(
         chatList => {
           chatList.forEach((chat, i) => {
-            expect(chat.channelId).toEqual(requestResponse[i].channel_id);
-            expect(chat.channelName).toEqual(requestResponse[i].channel_name);
-            expect(chat.channelAvatar).toEqual(requestResponse[i].channel_avatar);
-            expect(chat.pusherChannelName).toEqual(requestResponse[i].pusher_channel_name);
-            expect(chat.readonly).toEqual(requestResponse[i].readonly);
-            expect(chat.roles).toEqual(requestResponse[i].roles);
-            expect(chat.members).toEqual(requestResponse[i].members);
-            expect(chat.unreadMessages).toEqual(requestResponse[i].unread_messages);
-            expect(chat.lastMessage).toEqual(requestResponse[i].last_message);
-            expect(chat.lastMessageCreated).toEqual(requestResponse[i].last_message_created);
+            expect(chat.channelId).toEqual(requestResponse.data[i].channel_id);
+            expect(chat.channelName).toEqual(requestResponse.data[i].channel_name);
+            expect(chat.channelAvatar).toEqual(requestResponse.data[i].channel_avatar);
+            expect(chat.pusherChannelName).toEqual(requestResponse.data[i].pusher_channel_name);
+            expect(chat.readonly).toEqual(requestResponse.data[i].readonly);
+            expect(chat.roles).toEqual(requestResponse.data[i].roles);
+            expect(chat.members).toEqual(requestResponse.data[i].members);
+            expect(chat.unreadMessages).toEqual(requestResponse.data[i].unread_messages);
+            expect(chat.lastMessage).toEqual(requestResponse.data[i].last_message);
+            expect(chat.lastMessageCreated).toEqual(requestResponse.data[i].last_message_created);
           });
         }
       );
@@ -186,14 +186,14 @@ describe('ChatService', () => {
       service.getMessageList(chatData).subscribe(
         chatList => {
           chatList.forEach((chat, i) => {
-            expect(chat.id).toEqual(requestResponse[i].id);
-            expect(chat.senderName).toEqual(requestResponse[i].sender.name);
-            expect(chat.senderRole).toEqual(requestResponse[i].sender.role);
-            expect(chat.senderAvatar).toEqual(requestResponse[i].sender.avatar);
-            expect(chat.isSender).toEqual(requestResponse[i].is_sender);
-            expect(chat.message).toEqual(requestResponse[i].message);
-            expect(chat.sentTime).toEqual(requestResponse[i].sent_time);
-            expect(chat.file).toEqual(requestResponse[i].file);
+            expect(chat.id).toEqual(requestResponse.data[i].id);
+            expect(chat.senderName).toEqual(requestResponse.data[i].sender.name);
+            expect(chat.senderRole).toEqual(requestResponse.data[i].sender.role);
+            expect(chat.senderAvatar).toEqual(requestResponse.data[i].sender.avatar);
+            expect(chat.isSender).toEqual(requestResponse.data[i].is_sender);
+            expect(chat.message).toEqual(requestResponse.data[i].message);
+            expect(chat.sentTime).toEqual(requestResponse.data[i].sent_time);
+            expect(chat.file).toEqual(requestResponse.data[i].file);
           })
         }
       );
