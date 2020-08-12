@@ -102,7 +102,7 @@
     </ng-container>
   </ion-list>
 </ion-content>
-<ion-footer class="footer" [ngClass]="{'ion-footer-absolute': !utils.isMobile(), 'focus': showBottomAttachmentButtons}">
+<ion-footer *ngIf="!chatChannel.readonly" class="footer" [ngClass]="{'ion-footer-absolute': !utils.isMobile(), 'focus': showBottomAttachmentButtons}">
   <ion-grid class="white-bg">
     <ion-row nowrap class="ion-no-padding">
       <ion-col [size]="!utils.isMobile() || showBottomAttachmentButtons ? '12' : '9'" class="ion-align-self-center">
