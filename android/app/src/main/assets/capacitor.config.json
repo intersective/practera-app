@@ -1,6 +1,6 @@
 {
   "appId": "com.practera.appv2",
-  "appName": "practera-appv2",
+  "appName": "Practera",
   "bundledWebRuntime": false,
   "npmClient": "npm",
   "webDir": "www",
