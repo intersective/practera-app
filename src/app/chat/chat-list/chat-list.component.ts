@@ -4,7 +4,7 @@ import { BrowserStorageService } from '@services/storage.service';
 import { RouterEnter } from '@services/router-enter.service';
 import { UtilsService } from '@services/utils.service';
 import { FastFeedbackService } from '../../fast-feedback/fast-feedback.service';
-import { ChatService, ChatListObject } from '../chat.service';
+import { ChatService, ChatChannel } from '../chat.service';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
 
 @Component({
@@ -15,9 +15,8 @@ import { NewRelicService } from '@shared/new-relic/new-relic.service';
 export class ChatListComponent {
   @Output() navigate = new EventEmitter();
   @Output() chatListReady = new EventEmitter();
-  @Input() currentChat = {};
-  chatList: Array<ChatListObject>;
-  haveMoreTeam: boolean;
+  @Input() currentChat: ChatChannel;
+  chatList: ChatChannel[];
   loadingChatList = true;
 
   constructor(
@@ -30,28 +29,17 @@ export class ChatListComponent {
     private ngZone: NgZone
   ) {
     this.newrelic.setPageViewName('Chat list');
-
-    const role = this.storage.getUser().role;
-    this.utils.getEvent('team-message').subscribe(event => {
-      this._loadChatData();
-    });
-    if (role !== 'mentor') {
-      this.utils.getEvent('team-no-mentor-message').subscribe(event => {
-        this._loadChatData();
-      });
-    }
+    this.utils.getEvent('chat:new-message').subscribe(event => this._loadChatData());
     if (!this.utils.isMobile()) {
       this.utils.getEvent('chat-badge-update').subscribe(event => {
-        const chatIndex = this.chatList.findIndex((data, index) => {
-          return (event.teamID === data.team_id) &&
-          (event.teamMemberId === data.team_member_id) &&
-          (event.chatName === data.name) &&
-          (event.participantsOnly === data.participants_only);
-        });
+        const chatIndex = this.chatList.findIndex(data => data.channelId === event.channelId);
         if (chatIndex > -1) {
           // set time out because when this calling from pusher events it need a time out.
           setTimeout(() => {
-            this.chatList[chatIndex].unread_messages -= event.readcount;
+            this.chatList[chatIndex].unreadMessages -= event.readcount;
+            if (this.chatList[chatIndex].unreadMessages < 0) {
+              this.chatList[chatIndex].unreadMessages = 0;
+            }
           });
         }
       });
@@ -65,98 +53,43 @@ export class ChatListComponent {
   }
 
   private _initialise() {
-    this.haveMoreTeam = false;
     this.loadingChatList = true;
-    this.chatList = new Array();
+    this.chatList = [];
   }
 
   private _loadChatData(): void {
-    this.chatService.getchatList().subscribe(chats => {
+    this.chatService.getChatList().subscribe(chats => {
       this.chatList = chats;
-      this._checkHaveMoreTeam();
+      this.loadingChatList = false;
       this.chatListReady.emit(this.chatList);
     });
   }
 
-  /**
-   * this method check is this user in multiple teams.
-   */
-  private _checkHaveMoreTeam(): void {
-    if (this.chatList.length > 0) {
-      const myRole = this.storage.getUser().role;
-      let index = 0;
-      let teamCount = 0;
-      for (index = 0; index < this.chatList.length; index++) {
-        if (this.chatList[index].is_team) {
-          if (myRole === 'mentor' || !this.chatList[index].participants_only) {
-            teamCount++;
-          }
-        }
-      }
-      if (teamCount > 1) {
-        this.haveMoreTeam = true;
-      } else {
-        this.haveMoreTeam = false;
-      }
-      this.loadingChatList = false;
-    }
+  goToChatRoom(chat: ChatChannel) {
+    this.newrelic.addPageAction('selected chat room', {
+      channelId: chat.channelId,
+      chat: chat,
+    });
+    this._navigate(
+      [
+        'chat',
+        'chat-room'
+      ],
+      chat
+    );
   }
 
-  // force every navigation happen under radar of angular
-  private _navigate(direction) {
+  // navigation logic depends on the platform/screen size
+  private _navigate(direction, chatChannel) {
     if (this.utils.isMobile()) {
+      this.storage.setCurrentChatChannel(chatChannel);
       // redirect to chat room page for mobile
       return this.ngZone.run(() => {
         return this.router.navigate(direction);
       });
-    } else {
-      // emit event to parent component(chat view component)
-      if (direction[2] === 'team') {
-        this.navigate.emit({
-          teamId: direction[3],
-          participantsOnly: direction[4],
-          chatName: direction[5] ? direction[5].name : null
-        });
-        return;
-      } else {
-        this.navigate.emit({
-          teamId: direction[2],
-          teamMemberId: direction[3],
-          chatName: direction[4] ? direction[4].name : null
-        });
-        return;
-      }
     }
-  }
-
-  navigateToChatRoom(chat) {
-    this.newrelic.addPageAction('selected chat room', {
-      isTeam: chat.is_team,
-      raw: chat,
-    });
-
-    if (chat.is_team) {
-      this._navigate([
-        'chat',
-        'chat-room',
-        'team',
-        chat.team_id,
-        chat.participants_only,
-        {
-          name: chat.name
-        }
-      ]);
-    } else {
-      this._navigate([
-        'chat',
-        'chat-room',
-        chat.team_id,
-        chat.team_member_id,
-        {
-          name: chat.name
-        }
-      ]);
-    }
+    // emit chatChannel to parent component(chat view component)
+    this.navigate.emit(chatChannel);
   }
 
   getChatDate(date) {
