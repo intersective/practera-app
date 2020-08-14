@@ -61,7 +61,7 @@ export class HomeComponent implements OnDestroy, OnInit {
         this.todoItems.push(todoItem);
       }
     });
-    this.utils.getEvent('team-message').subscribe(event => {
+    this.utils.getEvent('chat').subscribe(event => {
       this.homeService.getChatMessage().subscribe(chatMessage => {
         if (!this.utils.isEmpty(chatMessage)) {
           this._addChatTodoItem(chatMessage);
@@ -75,18 +75,6 @@ export class HomeComponent implements OnDestroy, OnInit {
         }
       });
     });
-    if (role !== 'mentor') {
-      const noMentorMsgEvent = this.utils.getEvent('team-no-mentor-message');
-      if (noMentorMsgEvent) {
-        noMentorMsgEvent.subscribe(event => {
-          this.homeService.getChatMessage().subscribe(chatMessage => {
-            if (!this.utils.isEmpty(chatMessage)) {
-              this._addChatTodoItem(chatMessage);
-            }
-          });
-        });
-      }
-    }
   }
 
   ngOnInit() {
@@ -250,18 +238,7 @@ export class HomeComponent implements OnDestroy, OnInit {
 
   goToChat(todoItem?: TodoItem) {
     this.newRelic.actionText('goToChat');
-    if (!this.utils.isMobile()) {
-      return this.router.navigate(['app', 'chat']);
-    }
-
-    if (this.utils.isEmpty(todoItem.meta)) {
-      return this.router.navigate(['app', 'chat']);
-    }
-
-    if (todoItem.meta.team_member_id) {
-      return this.router.navigate(['chat', 'chat-room', todoItem.meta.team_id, todoItem.meta.team_member_id]);
-    }
-    return this.router.navigate(['chat', 'chat-room', 'team', todoItem.meta.team_id, todoItem.meta.participants_only]);
+    return this.router.navigate(['app', 'chat']);
   }
 
   ngOnDestroy(): void {
