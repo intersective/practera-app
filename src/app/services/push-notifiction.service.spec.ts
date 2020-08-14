@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
-import { PusherService } from './push-notifiction.service';
+import { PushNotificationService } from './push-notification.service';
 
 describe('StorageService', () => {
-  let service: PusherService;
+  let service: PushNotificationService;
 
 });
