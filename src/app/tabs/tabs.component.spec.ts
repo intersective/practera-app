@@ -118,11 +118,9 @@ describe('TabsComponent', () => {
       utils.broadcastEvent('event-reminder', '');
       expect(component.noOfTodoItems).toBe(2);
       tabsSpy.getNoOfChats.and.returnValue(of(3));
-      utils.broadcastEvent('team-message', '');
+      utils.broadcastEvent('chat', '');
       expect(component.noOfChats).toBe(3);
       tabsSpy.getNoOfChats.and.returnValue(of(4));
-      utils.broadcastEvent('team-no-mentor-message', '');
-      expect(component.noOfChats).toBe(4);
     });
   });
 

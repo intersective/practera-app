@@ -2,6 +2,7 @@ import { Component, ViewChild } from '@angular/core';
 import { Router, ActivatedRoute, ParamMap } from '@angular/router';
 import { UtilsService } from '@services/utils.service';
 import { RouterEnter } from '@services/router-enter.service';
+import { ChatChannel } from '../chat.service';
 
 @Component({
   selector: 'app-chat-view',
@@ -9,12 +10,8 @@ import { RouterEnter } from '@services/router-enter.service';
   styleUrls: ['./chat-view.component.scss']
 })
 export class ChatViewComponent extends RouterEnter {
-
   routeUrl = '/app/chat';
-  teamMemberId: Number;
-  participantsOnly: boolean;
-  teamId: Number;
-  chatName: string;
+  chatChannel: ChatChannel;
 
   @ViewChild('chatList') chatList;
   @ViewChild('chatRoom') chatRoom;
@@ -34,49 +31,27 @@ export class ChatViewComponent extends RouterEnter {
   }
 
   private _initialise() {
-    this.teamMemberId = null;
-    this.participantsOnly = null;
-    this.teamId = null;
-    this.chatName = null;
+    this.chatChannel = null;
   }
 
   goto(event) {
-    this.teamId = event.teamId;
-    this.teamMemberId = event.teamMemberId ? event.teamMemberId : null;
-    this.participantsOnly = event.participantsOnly ? event.participantsOnly : false;
-    this.chatName = event.chatName;
+    this.chatChannel = event;
     setTimeout(() => {
       this.chatRoom.onEnter();
     });
   }
 
-  getCurrentChat() {
-    return {
-      teamId: this.teamId,
-      chatName: this.chatName,
-      teamMemberId: this.teamMemberId,
-      participantsOnly: this.participantsOnly
-    };
-  }
-
   /**
    * this method call when chat-list component finished loading chat objects.
    * from this method we loading first chat to chat room component.
-   * @param chats chat list Array
-   * if we have teamId we are not doing any thing, that means we have already load first chat.
-   * if we didn't have teamId we will goto() method by passing first chat channel data. to load chat.
+   * @param chats chat list array
    */
   selectFirstChat(chats) {
-    if (this.teamId) {
-      return;
+    if (this.chatChannel) {
+      return ;
     }
     // navigate to the first chat
-    this.goto({
-      teamId: chats[0].team_id,
-      teamMemberId: chats[0].team_member_id,
-      participantsOnly: chats[0].participants_only,
-      chatName: chats[0].name
-    });
+    this.goto(chats[0]);
   }
 
 }
