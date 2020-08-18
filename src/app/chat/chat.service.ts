@@ -196,7 +196,41 @@ export class ChatService {
       message: data.message,
       env: environment.env,
       file: data.file,
-    });
+    })
+    .pipe(
+      map(response => {
+        if (response.success && response.data) {
+          return this._normalisePostMessageResponse(response.data);
+        }
+      })
+    );
+  }
+
+  /**
+   * modify the  new message response
+   */
+  private _normalisePostMessageResponse(data): Message {
+    if (!this.utils.has(data, 'id') ||
+        !this.utils.has(data, 'sender.name') ||
+        !this.utils.has(data, 'sender.role') ||
+        !this.utils.has(data, 'sender.avatar') ||
+        !this.utils.has(data, 'is_sender') ||
+        !this.utils.has(data, 'message') ||
+        !this.utils.has(data, 'sent_time') ||
+        !this.utils.has(data, 'file')) {
+      this.request.apiResponseFormatError('chat channel format error');
+      return null;
+    }
+    return {
+      id: data.id,
+      senderName: data.sender.name,
+      senderRole: data.sender.role,
+      senderAvatar: data.sender.avatar,
+      isSender: data.is_sender,
+      message: data.message,
+      sentTime: data.sent_time,
+      file: data.file
+    };
   }
 
   postAttachmentMessage(data: NewMessageParam): Observable<any> {
