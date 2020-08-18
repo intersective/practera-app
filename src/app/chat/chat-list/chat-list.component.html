@@ -21,6 +21,9 @@
       <ion-label>
         <div class="chat-name-container caption">
           <p class="chat-name subtitle-1" [ngClass]="{'bold': chat.unreadMessages > 0}">{{ chat.channelName }}</p>
+          <ng-container *ngIf="(chat.roles.length === 1) && (chat.roles.includes('mentor'))">
+            <span>mentor</span>
+          </ng-container>
         </div>
         <ng-container *ngIf="chat.lastMessage; else messgeElseBlock">
           <p class="body-2">{{ chat.lastMessage }}</p>
