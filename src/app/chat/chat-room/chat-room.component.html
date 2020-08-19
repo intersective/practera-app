@@ -27,12 +27,17 @@
       </ng-container>
 
       <ion-label [ngClass]="getClassForMessageBubble(message)" text-wrap>
+
         <div *ngIf="checkToShowMessageTime(message)" class="time caption gray-2">
           <p>{{ getMessageDate(message.sentTime) }}</p>
         </div>
 
         <ng-container *ngIf="!message.file; else attachment">
           <div class="message-body">
+            <ng-container *ngIf="!message.noAvatar">
+              <p class="seen-text subtitle-1 black">{{message.senderName}}</p>
+              <p class="seen-text caption gray-2" *ngIf="chatChannel.roles.length > 1">{{message.senderRole}}</p>
+            </ng-container>
             <p class="message-text subtitle-1" [innerHTML]="message.message"></p>
           </div>
         </ng-container>
@@ -40,6 +45,10 @@
         <ng-template #attachment>
           <ng-container *ngIf="message.file && message.file.mimetype.includes('video')">
             <div class="message-body video-attachment-container">
+              <ng-container *ngIf="!message.noAvatar">
+                <p class="seen-text subtitle-1 black">{{message.senderName}}</p>
+                <p class="seen-text caption gray-2" *ngIf="chatChannel.roles.length > 1">{{message.senderRole}}</p>
+              </ng-container>
               <div id="inner-box" (click)="preview(message.file)">
                 <p><ion-icon name="play-circle"></ion-icon></p>
               </div>
@@ -55,6 +64,10 @@
 
           <ng-container *ngIf="message.file && message.file.mimetype.includes('image')">
             <div class="message-body image" (click)="preview(message.file)">
+              <ng-container *ngIf="!message.noAvatar">
+                <p class="seen-text subtitle-1 black">{{message.senderName}}</p>
+                <p class="seen-text caption gray-2" *ngIf="chatChannel.roles.length > 1">{{message.senderRole}}</p>
+              </ng-container>
               <div [innerHTML]="message.preview"></div>
             </div>
           </ng-container>
@@ -62,7 +75,12 @@
           <ng-container *ngIf="message.file && (
             !message.file.mimetype.includes('image') && !message.file.mimetype.includes('video')
           )">
-            <ion-item class="message-body general-attachment" (click)="previewFile(message.file)">
+          <div class="message-body">
+            <ng-container *ngIf="!message.noAvatar">
+              <p class="seen-text subtitle-1 black">{{message.senderName}}</p>
+              <p class="seen-text caption gray-2" *ngIf="chatChannel.roles.length > 1">{{message.senderRole}}</p>
+            </ng-container>
+            <ion-item class="general-attachment" (click)="previewFile(message.file)">
               <ion-ripple-effect></ion-ripple-effect>
               <ion-icon name="document-outline" slot="start"></ion-icon>
               <ion-label color="primary">
@@ -72,14 +90,10 @@
                 {{ getTypeByMime(message.file.mimetype) }}
               </ion-note>
             </ion-item>
+          </div>
           </ng-container>
         </ng-template>
 
-        <ng-container *ngIf="!message.noAvatar">
-          <div class="seen-text caption gray-2">
-            <p>{{ message.senderName }}</p>
-          </div>
-        </ng-container>
       </ion-label>
     </ion-item>
 
@@ -93,6 +107,7 @@
         </ion-label>
       </ion-item>
     </ng-container>
+
     <ng-container *ngIf="sendingMessage">
       <ion-item color="light">
         <div class="message-sending-loading">
