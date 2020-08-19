@@ -9,5 +9,8 @@
     "PushNotifications": {
       "presentationOptions": ["badge", "sound", "alert"]
     }
+  },
+  "server": {
+    "hostname": "chaw"
   }
 }

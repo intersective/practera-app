@@ -32,6 +32,7 @@ dependencies {
     androidTestImplementation "androidx.test.ext:junit:$androidxJunitVersion"
     androidTestImplementation "androidx.test.espresso:espresso-core:$androidxEspressoCoreVersion"
     implementation project(':capacitor-cordova-android-plugins')
+    implementation "com.pusher:push-notifications-android:1.6.2"
 }
 
 apply from: 'capacitor.build.gradle'

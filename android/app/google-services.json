@@ -1,0 +1,83 @@
+{
+  "project_info": {
+    "project_number": "257329032751",
+    "firebase_url": "https://trt-83c80.firebaseio.com",
+    "project_id": "trt-83c80",
+    "storage_bucket": "trt-83c80.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:257329032751:android:13b7da51ee37ca308ea0da",
+        "android_client_info": {
+          "package_name": "com.practera.appv2"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "257329032751-b9rc9phij0dr2ts38bk5rl3j40jkmd9o.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCqJy_02KN6XZFX0hO39TkBuX1gkfqZ-Vc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "257329032751-b9rc9phij0dr2ts38bk5rl3j40jkmd9o.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "257329032751-9c25cqesg10riaeatm0eou05ts5l2fod.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.practera.appv2"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:257329032751:android:a089138a5aab10e48ea0da",
+        "android_client_info": {
+          "package_name": "com.practera.appv22"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "257329032751-b9rc9phij0dr2ts38bk5rl3j40jkmd9o.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCqJy_02KN6XZFX0hO39TkBuX1gkfqZ-Vc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "257329032751-b9rc9phij0dr2ts38bk5rl3j40jkmd9o.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "257329032751-9c25cqesg10riaeatm0eou05ts5l2fod.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.practera.appv2"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
