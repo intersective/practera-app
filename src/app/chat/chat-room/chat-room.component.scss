@@ -60,10 +60,26 @@ $message-body-size: 224px;
         width: fit-content;
 
         &.image {
-          background: none !important;
           line-height: 0;
-          padding: 0;
           cursor: pointer;
+          img {
+            border-radius: 25px;
+          }
+        }
+
+        // consistent colour to make attachment standout
+        .general-attachment {
+          background: white;
+          --background: white;
+        }
+
+        p {
+          &.seen-text {
+            &:nth-child(1) {
+              padding: 0 !important;
+              font-weight: 500;
+            }
+          }
         }
 
         p, .message-text {
