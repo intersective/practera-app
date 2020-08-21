@@ -43,7 +43,7 @@
               <p>{{getMessageDate(message.sent_time)}}</p>
             </div>
 
-            <ng-container *ngIf="message.file && message.file.mimetype.includes('video')">
+            <ng-container *ngIf="message.file && message.file.mimetype && message.file.mimetype.includes('video')">
               <div  class="message-body video-attachment-container">
                 <div id="inner-box" (click)="preview(message.file)">
                   <p><ion-icon name="play-circle"></ion-icon></p>
@@ -58,15 +58,17 @@
               </div>
             </ng-container>
 
-            <ng-container *ngIf="message.file && message.file.mimetype.includes('image')">
+            <ng-container *ngIf="message.file && message.file.mimetype && message.file.mimetype.includes('image')">
               <div class="message-body image" (click)="preview(message.file)">
                 <div [innerHTML]="message.preview"></div>
               </div>
             </ng-container>
 
-            <ng-container *ngIf="message.file && (
+            <!-- show attachment view to all the file that not image and video -->
+            <!-- and also if mimetype not found -->
+            <ng-container *ngIf="(message.file && !message.file.mimetype) || (message.file && (
               !message.file.mimetype.includes('image') && !message.file.mimetype.includes('video')
-            )">
+            ))">
               <ion-item class="message-body general-attachment" (click)="previewFile(message.file)">
                 <ion-ripple-effect></ion-ripple-effect>
                 <ion-icon name="document-outline" slot="start"></ion-icon>
