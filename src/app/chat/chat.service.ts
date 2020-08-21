@@ -44,6 +44,7 @@ export interface Message {
   message: string;
   sentTime?: string;
   channelId?: number | string;
+  channelIdAlias?: string;
   file?: object;
   preview?: string;
   noAvatar?: boolean;
@@ -209,7 +210,7 @@ export class ChatService {
   /**
    * modify the  new message response
    */
-  private _normalisePostMessageResponse(data): Message {
+  private _normalisePostMessageResponse(data): { message: Message, channelId?: number } {
     if (!this.utils.has(data, 'id') ||
         !this.utils.has(data, 'sender.name') ||
         !this.utils.has(data, 'sender.role') ||
@@ -222,14 +223,17 @@ export class ChatService {
       return null;
     }
     return {
-      id: data.id,
-      senderName: data.sender.name,
-      senderRole: data.sender.role,
-      senderAvatar: data.sender.avatar,
-      isSender: data.is_sender,
-      message: data.message,
-      sentTime: data.sent_time,
-      file: data.file
+      message: {
+        id: data.id,
+        senderName: data.sender.name,
+        senderRole: data.sender.role,
+        senderAvatar: data.sender.avatar,
+        isSender: data.is_sender,
+        message: data.message,
+        sentTime: data.sent_time,
+        file: data.file
+      },
+      channelId: data.channel ? data.channel.channel_id : null
     };
   }
 
