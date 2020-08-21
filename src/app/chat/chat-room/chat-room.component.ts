@@ -52,8 +52,14 @@ export class ChatRoomComponent extends RouterEnter {
     this.utils.getEvent('chat:new-message').subscribe(event => {
       const receivedMessage = this.getMessageFromEvent(event);
       if (receivedMessage.channelId !== this.channelId) {
-        // only display message for the current channel
-        return;
+        if (receivedMessage.channelIdAlias !== this.channelId) {
+          // only display message for the current channel
+          return;
+        }
+        this.utils.broadcastEvent('channel-id-update', {
+          previousId: this.channelId,
+          currentId: receivedMessage.channelId
+        });
       }
       if (receivedMessage && receivedMessage.file) {
         receivedMessage.preview = this.attachmentPreview(receivedMessage.file);
@@ -93,6 +99,11 @@ export class ChatRoomComponent extends RouterEnter {
     this.pusherService.subscribeChannel('chat', this.chatChannel.pusherChannelName);
     // subscribe to typing event
     this.utils.getEvent('typing-' + this.chatChannel.pusherChannelName).subscribe(event => this._showTyping(event));
+    this.utils.getEvent('channel-id-update').subscribe(event => {
+      if (this.channelId === event.previousId) {
+        this.channelId = event.currentId;
+      }
+    });
   }
 
   /**
@@ -107,6 +118,7 @@ export class ChatRoomComponent extends RouterEnter {
       message: data.meta.message,
       sentTime: data.meta.sent_time,
       channelId: data.meta.channel_id,
+      channelIdAlias: data.meta.channel_id_alias,
       file: data.meta.file
     };
   }
@@ -169,7 +181,13 @@ export class ChatRoomComponent extends RouterEnter {
       message: this.message
     }).subscribe(
       response => {
-        this.messageList.push(response.data);
+        this.messageList.push(response.message);
+        if (response.channelId) {
+          this.utils.broadcastEvent('channel-id-update', {
+            previousId: this.channelId,
+            currentId: response.channelId
+          });
+        }
         this._scrollToBottom();
         this._afterSendMessage();
       },
