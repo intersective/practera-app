@@ -100,14 +100,14 @@ export class ChatRoomComponent extends RouterEnter {
    */
   getMessageFromEvent(data): Message {
     return {
-      senderName: data.sender.name,
-      senderRole: data.sender.role,
-      senderAvatar: data.sender.avatar,
+      senderName: data.meta.sender.name,
+      senderRole: data.meta.sender.role,
+      senderAvatar: data.meta.sender.avatar,
       isSender: false,
-      message: data.message,
-      sentTime: data.sent_time,
-      channelId: data.channel_id,
-      file: data.file
+      message: data.meta.message,
+      sentTime: data.meta.sent_time,
+      channelId: data.meta.channel_id,
+      file: data.meta.file
     };
   }
 
