@@ -45,7 +45,7 @@ export class ChatListComponent {
       });
     }
     this.utils.getEvent('channel-id-update').subscribe(event => {
-      const channelIndex = this.chatList.findIndex(c => c.channelId === event.previousId)
+      const channelIndex = this.chatList.findIndex(c => c.channelId === event.previousId);
       if (channelIndex) {
         this.chatList[channelIndex].channelId = event.currentId;
       }
