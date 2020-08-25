@@ -3,10 +3,19 @@
     <ion-list class="no-bg">
       <ng-container *ngFor="let choice of question.choices; let i = index">
         <ng-container *ngIf="submission.answer.includes(choice.id)">
-          <ion-item [lines]="i == submission.answer.length - 1 ? 'none' : ''">
+          <ion-item [lines]="i == submission.answer.length - 1 ||
+           (choice.explanation && choice.explanation.changingThisBreaksApplicationSecurity) ? 'none' : ''">
             <ion-label class="white-space-normal body-2 gray-3">{{ choice.name }}</ion-label>
             <ion-checkbox [checked]="submission.answer.includes(choice.id)" disabled mode="md"></ion-checkbox>
           </ion-item>
+          <ng-container *ngIf="choice.explanation && choice.explanation.changingThisBreaksApplicationSecurity">
+            <div class="white-space-normal explanation"
+            [ngClass]="{ 'explanation-container': i !== submission.answer.length - 1 &&
+             (choice.explanation && choice.explanation.changingThisBreaksApplicationSecurity)}">
+              <p class="subtitle-2 title">Explanation</p>
+              <p class="white-space-normal body-2 gray-3" [innerHtml]="choice.explanation"></p>
+            </div>
+          </ng-container>
         </ng-container>
       </ng-container>
     </ion-list>
