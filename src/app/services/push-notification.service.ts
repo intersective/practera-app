@@ -11,7 +11,7 @@ import {
   LocalNotificationEnabledResult
 } from '@capacitor/core';
 
-const { PushNotifications, LocalNotifications } = Plugins;
+const { PushNotifications, LocalNotifications, CapacitorPusherBeams } = Plugins;
 
 @Injectable({
   providedIn: 'root'
@@ -64,5 +64,60 @@ export class PushNotificationService {
           console.log('Push action performed: ' + JSON.stringify(notification));
         }
       );
+    }
+
+    /**
+     * @name associateDeviceToUser
+     * @description link device to current user (we have native plugin code will)
+     */
+    async associateDeviceToUser(userID, token?) {
+      const linkedUser = await CapacitorPusherBeams.setUserID({
+        userID,
+        headers: {
+          appkey: 'b11e7c189b',
+          token: token ? token : 'TEST',
+        },
+        beamsAuthURL: 'http://localhost:3000/beams-auth'
+      });
+      console.log(linkedUser);
+      return linkedUser;
+    }
+
+    unsubscribeInterest(interest: string) {
+      return CapacitorPusherBeams.removeDeviceInterest(interest);
+    }
+
+    /**
+     * @description subsribe to single interest (string)
+     * @param  {string}        interest
+     * @return {Promise<void>}
+     */
+    subscribeToInterest(interest): Promise<void> {
+      return CapacitorPusherBeams.addDeviceInterest({ interest });
+    }
+
+    subscribeToInterests(interests: string[] | string): Promise<void> {
+      if (typeof interests === 'string') {
+        return this.subscribeToInterest(interests);
+      }
+      return CapacitorPusherBeams.setDeviceInterests(interests);
+    }
+
+    clearInterest(): Promise<void> {
+      return CapacitorPusherBeams.clearDeviceInterests();
+    }
+
+    getSubscribedInterests(): Promise<any> {
+      return CapacitorPusherBeams.getDeviceInterests();
+    }
+
+    clearPusherBeams() {
+      return CapacitorPusherBeams.clearAllState();
+    }
+
+    // temporary place this function here (as it's part of the capacitor plugin)
+    // ideally, should place at utility service
+    goToAppSetting() {
+      return CapacitorPusherBeams.goToAppSetting();
     }
 }
