@@ -52,7 +52,7 @@
     "apollo-cache-inmemory": "^1.6.6",
     "apollo-client": "^2.6.10",
     "apollo-link": "^1.2.14",
-    "capacitor-pusher-beams-auth": "file:../pusher-beams-auth",
+    "capacitor-pusher-beams": "file:../capacitor-pusher-beams",
     "cordova-sqlite-storage": "^2.6.0",
     "core-js": "^2.5.4",
     "exif-js": "^2.3.0",

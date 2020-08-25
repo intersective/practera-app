@@ -5,7 +5,7 @@ import android.os.Bundle;
 import com.getcapacitor.BridgeActivity;
 import com.getcapacitor.Plugin;
 import com.pusher.pushnotifications.PushNotifications;
-import com.trtshen.pusherbeamsauth.CapacitorPusherBeamsAuth;
+import com.practera.capacitor.pusherbeams.PusherBeams;
 
 import java.util.ArrayList;
 
@@ -20,7 +20,7 @@ public class MainActivity extends BridgeActivity {
       // Ex: add(TotallyAwesomePlugin.class);
       PushNotifications.start(getApplicationContext(), "f5df7283-144c-458c-ac23-622b2d47eed9");
       PushNotifications.addDeviceInterest("general");
-      add(CapacitorPusherBeamsAuth.class);
+      add(PusherBeams.class);
     }});
   }
 }
