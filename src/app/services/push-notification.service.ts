@@ -11,7 +11,7 @@ import {
   LocalNotificationEnabledResult
 } from '@capacitor/core';
 
-const { PushNotifications, LocalNotifications, CapacitorPusherBeams } = Plugins;
+const { PushNotifications, LocalNotifications, PusherBeams } = Plugins;
 
 @Injectable({
   providedIn: 'root'
@@ -71,7 +71,7 @@ export class PushNotificationService {
      * @description link device to current user (we have native plugin code will)
      */
     async associateDeviceToUser(userID, token?) {
-      const linkedUser = await CapacitorPusherBeams.setUserID({
+      const linkedUser = await PusherBeams.setUserID({
         userID,
         headers: {
           appkey: 'b11e7c189b',
@@ -84,7 +84,7 @@ export class PushNotificationService {
     }
 
     unsubscribeInterest(interest: string) {
-      return CapacitorPusherBeams.removeDeviceInterest(interest);
+      return PusherBeams.removeDeviceInterest(interest);
     }
 
     /**
@@ -93,31 +93,31 @@ export class PushNotificationService {
      * @return {Promise<void>}
      */
     subscribeToInterest(interest): Promise<void> {
-      return CapacitorPusherBeams.addDeviceInterest({ interest });
+      return PusherBeams.addDeviceInterest({ interest });
     }
 
     subscribeToInterests(interests: string[] | string): Promise<void> {
       if (typeof interests === 'string') {
         return this.subscribeToInterest(interests);
       }
-      return CapacitorPusherBeams.setDeviceInterests(interests);
+      return PusherBeams.setDeviceInterests(interests);
     }
 
     clearInterest(): Promise<void> {
-      return CapacitorPusherBeams.clearDeviceInterests();
+      return PusherBeams.clearDeviceInterests();
     }
 
     getSubscribedInterests(): Promise<any> {
-      return CapacitorPusherBeams.getDeviceInterests();
+      return PusherBeams.getDeviceInterests();
     }
 
     clearPusherBeams() {
-      return CapacitorPusherBeams.clearAllState();
+      return PusherBeams.clearAllState();
     }
 
     // temporary place this function here (as it's part of the capacitor plugin)
     // ideally, should place at utility service
     goToAppSetting() {
-      return CapacitorPusherBeams.goToAppSetting();
+      return PusherBeams.goToAppSetting();
     }
 }
