@@ -40,6 +40,7 @@ export class SettingsComponent extends RouterEnter {
   // card image CDN
   cdn = 'https://cdn.filestackcontent.com/resize=fit:crop,width:';
   interests: string;
+  associated: any;
 
   constructor (
     public router: Router,
@@ -116,6 +117,12 @@ export class SettingsComponent extends RouterEnter {
     const interests = await this.pushNotificationService.getSubscribedInterests();
     this.interests = interests;
     console.log(interests);
+  }
+
+  async linkUser() {
+    const associated = await this.pushNotificationService.associateDeviceToUser(this.storage.getUser().email, this.storage.getUser().apikey);
+    console.log(associated);
+    this.associated = associated;
   }
 
   logout() {

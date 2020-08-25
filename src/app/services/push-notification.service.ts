@@ -3,6 +3,7 @@ import { Observable, interval, pipe } from 'rxjs';
 import { switchMap, concatMap, tap, retryWhen, take, delay } from 'rxjs/operators';
 import { RequestService } from '@shared/request/request.service';
 import { BrowserStorageService } from '@services/storage.service';
+import { environment } from '@environments/environment';
 import {
   Plugins,
   PushNotification,
@@ -70,16 +71,15 @@ export class PushNotificationService {
      * @name associateDeviceToUser
      * @description link device to current user (we have native plugin code will)
      */
-    async associateDeviceToUser(userID, token?) {
+    async associateDeviceToUser(userID, token) {
       const linkedUser = await PusherBeams.setUserID({
         userID,
         headers: {
-          appkey: 'b11e7c189b',
-          token: token ? token : 'TEST',
+          appkey: environment.appkey,
+          apikey: token,
         },
-        beamsAuthURL: 'http://localhost:3000/beams-auth'
+        beamsAuthURL: 'https://wchpiwp904.execute-api.us-east-2.amazonaws.com/beams'
       });
-      console.log(linkedUser);
       return linkedUser;
     }
 
