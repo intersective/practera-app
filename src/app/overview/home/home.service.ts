@@ -230,18 +230,12 @@ export class HomeService {
           name: '',
           description: '',
           time: '',
-          meta: {}
         };
         unreadMessages += data.unread_messages;
         noOfChats ++;
         todoItem.name = data.channel_name;
         todoItem.description = data.last_message;
         todoItem.time = this.utils.timeFormatter(data.last_message_created);
-        todoItem.meta = {
-          team_id: data.team_id,
-          team_member_id: data.team_member_id,
-          participants_only: data.participants_only
-        };
       }
     });
     if (unreadMessages > 1) {
