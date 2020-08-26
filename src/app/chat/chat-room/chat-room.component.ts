@@ -183,6 +183,7 @@ export class ChatRoomComponent extends RouterEnter {
     }).subscribe(
       response => {
         this.messageList.push(response.message);
+        this.utils.broadcastEvent('chat:info-update', true);
         if (response.channelId) {
           this.utils.broadcastEvent('channel-id-update', {
             previousId: this.channelId,
