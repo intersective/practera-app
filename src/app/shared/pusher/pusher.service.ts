@@ -174,6 +174,9 @@ export class PusherService {
    * (use case: after switching program)
    */
   unsubscribeChannels(): void {
+    if (!this.channels.notification) {
+      return ;
+    }
     this.channels.notification.subscription.unbind_all();
     // handle issue logout at first load of program-switching view
     if (this.pusher) {
