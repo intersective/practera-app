@@ -45,7 +45,7 @@ export class TabsComponent extends RouterEnter {
     this.utils.getEvent('event-reminder').subscribe(event => {
       this.noOfTodoItems++;
     });
-    this.utils.getEvent('chat').subscribe(event => {
+    this.utils.getEvent('chat:new-message').subscribe(event => {
       this.tabsService.getNoOfChats().subscribe(noOfChats => {
         this.noOfChats = noOfChats;
       });
