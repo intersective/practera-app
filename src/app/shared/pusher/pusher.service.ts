@@ -241,6 +241,11 @@ export class PusherService {
         };
         channel.subscription
           .bind('typing-event', data => {
+            console.log('typing-event');
+            this.utils.broadcastEvent('typing-' + channelName, data);
+          })
+          .bind('client-typing-event', data => {
+            console.log('client-typing-event');
             this.utils.broadcastEvent('typing-' + channelName, data);
           })
           .bind('pusher:subscription_succeeded', data => {
@@ -264,7 +269,7 @@ export class PusherService {
     if (!channel) {
       return;
     }
-    channel.subscription.trigger('typing-event', {
+    channel.subscription.trigger('client-typing-event', {
       user: this.storage.getUser().name
     });
   }
