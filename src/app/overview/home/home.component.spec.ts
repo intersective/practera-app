@@ -188,7 +188,7 @@ describe('HomeComponent', () => {
         type: 'chat'
       }));
       // after 'chat' triggers
-      utils.broadcastEvent('chat', {});
+      utils.broadcastEvent('chat:new-message', {});
       fixture.detectChanges();
       // 2 calls, 1 from onEnter(), 1 from the event
       expect(homeServiceSpy.getChatMessage.calls.count()).toBe(2, '2 service call');
