@@ -1,31 +1,12 @@
 <ion-app>
-  <div style="height: 65px; background: white;">
-    <ion-grid>
-      <ion-row>
-        <ion-col style="height: 100%; margin: auto; text-align: left; padding: 0; padding-left: 10px;">
-          <img src="https://prosper.studyperth.com.au/assets/static/images/logo.svg">
-        </ion-col>
-        <ion-col style="height: 100%; margin: auto; text-align: right; padding: 0; padding-right: 10px;">
-          <button style="background: transparent; border: 2px solid #3cb1eb; border-radius: 64px; padding-left: 26px; padding-right: 26px; font-size: 14px !important;
-          line-height: 16px !important; letter-spacing: 0.75px !important; font-weight: medium !important; height: 36px;">return to prosper</button>
-          <ion-button href="https://prosper.studyperth.com.au/" style="margin: auto;" color="primary" fill="outline"
-            shape="round">return to prosper</ion-button>
-        </ion-col>
-      </ion-row>
-    </ion-grid>
-  </div>
-  <ion-router-outlet style="top: 65px; bottom: 60px;"></ion-router-outlet>
-  <div style="height: 65px; background: #05b0eb;">
-      <ion-grid>
-        <ion-row>
-          <ion-col style="height: 100%; margin: auto; text-align: left; padding: 0; padding-left: 10px;">
-            <img src="https://prosper.studyperth.com.au/assets/static/images/logo--white.svg">
-          </ion-col>
-          <ion-col style="height: 100%; margin: auto; text-align: right; padding: 0; padding-right: 10px;">
-            <ion-button href="https://prosper.studyperth.com.au/" style="margin: auto;" color="light" fill="outline"
-              shape="round">return to prosper</ion-button>
-          </ion-col>
-        </ion-row>
-      </ion-grid>
-    </div>
+  <ng-container *ngIf="checkCustomHeaderFooter('header')">
+    <div [innerHtml]="customHeader"></div>
+  </ng-container>
+  <ion-router-outlet [ngClass]="{
+    'custom-header': checkCustomHeaderFooter('header'),
+    'custom-footer': checkCustomHeaderFooter('footer')
+  }"></ion-router-outlet>
+  <ng-container *ngIf="checkCustomHeaderFooter('footer')">
+    <div [innerHtml]="customFooter"></div>
+  </ng-container>
 </ion-app>
