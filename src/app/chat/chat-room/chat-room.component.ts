@@ -17,9 +17,20 @@ import { NewRelicService } from '@shared/new-relic/new-relic.service';
 })
 export class ChatRoomComponent extends RouterEnter {
   @ViewChild(IonContent) content: IonContent;
-  @Input() chatChannel: ChatChannel;
+  @Input() chatChannel?: ChatChannel = {
+    channelId: 0,
+    channelName: '',
+    channelAvatar: '',
+    pusherChannelName: '',
+    readonly: false,
+    roles: [],
+    members: [],
+    unreadMessages: 0,
+    lastMessage: '',
+    lastMessageCreated: ''
+  };
 
-  routeUrl = '/chat-room/';
+  routeUrl = '/chat/chat-room';
   channelId: number | string;
   // message history list
   messageList: Message[] = [];
@@ -27,7 +38,7 @@ export class ChatRoomComponent extends RouterEnter {
   message: string;
   messagePageNumber = 0;
   messagePageSize = 20;
-  loadingChatMessages = true;
+  loadingChatMessages = false;
   sendingMessage = false;
   // display "someone is typing" when received a typing event
   whoIsTyping: string;
@@ -50,6 +61,12 @@ export class ChatRoomComponent extends RouterEnter {
     super(router);
     this.newrelic.setPageViewName(`Chat room`);
     this.utils.getEvent('chat:new-message').subscribe(event => {
+      if (!this.utils.isMobile() && (this.router.url !== '/app/chat')) {
+        return;
+      }
+      if (this.utils.isMobile() && (this.router.url !== '/chat/chat-room')) {
+        return;
+      }
       const receivedMessage = this.getMessageFromEvent(event);
       if (receivedMessage.channelId !== this.channelId) {
         if (receivedMessage.channelIdAlias !== this.channelId) {
@@ -82,7 +99,7 @@ export class ChatRoomComponent extends RouterEnter {
   private _initialise() {
     this.message = '';
     this.messageList = [];
-    this.loadingChatMessages = true;
+    this.loadingChatMessages = false;
     this.messagePageNumber = 0;
     this.messagePageSize = 20;
     this.sendingMessage = false;
@@ -91,7 +108,7 @@ export class ChatRoomComponent extends RouterEnter {
   }
 
   private _subscribeToPusherChannel() {
-    if (!this.chatChannel) {
+    if (this.chatChannel.channelId === 0 && !this.chatChannel.channelName) {
       this.chatChannel = this.storage.getCurrentChatChannel();
     }
     this.channelId = this.chatChannel.channelId;
@@ -125,6 +142,12 @@ export class ChatRoomComponent extends RouterEnter {
   }
 
   private _loadMessages() {
+    // if one chat request send to the api. not calling other one.
+    // because in some cases second api call respose return before first one.
+    // then messages getting mixed.
+    if (this.loadingChatMessages) {
+      return;
+    }
     this.loadingChatMessages = true;
     this.messagePageNumber += 1;
     this.chatService
