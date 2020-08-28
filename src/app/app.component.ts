@@ -10,12 +10,15 @@ import { VersionCheckService } from '@services/version-check.service';
 import { environment } from '@environments/environment';
 import { PusherService } from '@shared/pusher/pusher.service';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
+import { DomSanitizer } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-root',
   templateUrl: 'app.component.html'
 })
 export class AppComponent implements OnInit {
+  customHeader: string | any;
+  customFooter: string | any;
   constructor(
     private platform: Platform,
     private router: Router,
@@ -26,10 +29,13 @@ export class AppComponent implements OnInit {
     private versionCheckService: VersionCheckService,
     private pusherService: PusherService,
     private ngZone: NgZone,
-    private newRelic: NewRelicService
+    private newRelic: NewRelicService,
+    public sanitizer: DomSanitizer,
     // private splashScreen: SplashScreen,
     // private statusBar: StatusBar
   ) {
+    this.customHeader = null;
+    this.customFooter = null;
     this.initializeApp();
   }
 
@@ -61,6 +67,12 @@ export class AppComponent implements OnInit {
           if (numOfConfigs > 0 && numOfConfigs < 2) {
             let logo = expConfig[0].logo;
             const themeColor = expConfig[0].config.theme_color;
+            this.customFooter = expConfig[0].config.html_branding.footer ? expConfig[0].config.html_branding.footer : null;
+            this.customHeader = expConfig[0].config.html_branding.header ? expConfig[0].config.html_branding.header : null;
+            if (this.customFooter && this.customHeader) {
+              this.customFooter = this.sanitizer.bypassSecurityTrustHtml(this.customFooter);
+              this.customHeader = this.sanitizer.bypassSecurityTrustHtml(this.customHeader);
+            }
             // add the domain if the logo url is not a full url
             if (!logo.includes('http') && !this.utils.isEmpty(logo)) {
               logo = environment.APIEndpoint + logo;
@@ -134,6 +146,16 @@ export class AppComponent implements OnInit {
       // initialise Pusher
       await this.pusherService.initialise();
     });
+  }
+
+  checkCustomHeaderFooter(type: string): boolean {
+    if (type === 'header' && this.customHeader && this.authService.isAuthenticated()) {
+      return true;
+    }
+    if (type === 'footer' && this.customFooter && this.authService.isAuthenticated() && !this.utils.isMobile()) {
+      return true;
+    }
+    return false;
   }
 
 }

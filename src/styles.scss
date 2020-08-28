@@ -476,3 +476,13 @@ for videos in topics
     transform: translate(-50%, -50%);
   }
 }
+/***************
+use for custom header/footer (*Study perth)
+***************/
+
+.custom-header {
+  top: 65px !important;
+}
+.custom-footer {
+  bottom: 60px !important;
+}
