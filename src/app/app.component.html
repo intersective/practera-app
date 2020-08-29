@@ -1,12 +1,12 @@
 <ion-app>
-  <ng-container *ngIf="checkCustomHeaderFooter('header')">
+  <ng-container *ngIf="checkCustom('header')">
     <div [innerHtml]="customHeader"></div>
   </ng-container>
   <ion-router-outlet [ngClass]="{
-    'custom-header': checkCustomHeaderFooter('header'),
-    'custom-footer': checkCustomHeaderFooter('footer')
+    'custom-header': checkCustom('header'),
+    'custom-footer': checkCustom('footer')
   }"></ion-router-outlet>
-  <ng-container *ngIf="checkCustomHeaderFooter('footer')">
+  <ng-container *ngIf="checkCustom('footer')">
     <div [innerHtml]="customFooter"></div>
   </ng-container>
 </ion-app>
