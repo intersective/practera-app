@@ -67,8 +67,11 @@ export class AppComponent implements OnInit {
           if (numOfConfigs > 0 && numOfConfigs < 2) {
             let logo = expConfig[0].logo;
             const themeColor = expConfig[0].config.theme_color;
-            this.customFooter = expConfig[0].config.html_branding.footer ? expConfig[0].config.html_branding.footer : null;
-            this.customHeader = expConfig[0].config.html_branding.header ? expConfig[0].config.html_branding.header : null;
+            if (expConfig[0].config.html_branding && expConfig[0].config.html_branding.footer
+            && expConfig[0].config.html_branding.header) {
+              this.customFooter = expConfig[0].config.html_branding.footer;
+              this.customHeader = expConfig[0].config.html_branding.header;
+            }
             if (this.customFooter && this.customHeader) {
               this.customFooter = this.sanitizer.bypassSecurityTrustHtml(this.customFooter);
               this.customHeader = this.sanitizer.bypassSecurityTrustHtml(this.customHeader);
@@ -148,7 +151,11 @@ export class AppComponent implements OnInit {
     });
   }
 
-  checkCustomHeaderFooter(type: string): boolean {
+  /**
+   * checking conditions to show custom header or footer
+   * @param type header or footer
+   */
+  checkCustom(type: string): boolean {
     if (type === 'header' && this.customHeader && this.authService.isAuthenticated()) {
       return true;
     }
