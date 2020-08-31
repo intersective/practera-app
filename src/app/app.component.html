@@ -4,7 +4,8 @@
   </ng-container>
   <ion-router-outlet [ngClass]="{
     'custom-header': checkCustom('header'),
-    'custom-footer': checkCustom('footer')
+    'custom-footer': checkCustom('footer'),
+    'mobile':utils.isMobile()
   }"></ion-router-outlet>
   <ng-container *ngIf="checkCustom('footer')">
     <div [innerHtml]="customFooter"></div>
