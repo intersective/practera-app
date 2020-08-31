@@ -484,5 +484,14 @@ use for custom header/footer (*Study perth)
   top: 65px !important;
 }
 .custom-footer {
-  bottom: 60px !important;
+  bottom: 150px !important;
+}
+
+.mobile {
+  .prosper-col-logo {
+    padding-left: 10px !important;
+  }
+  .prosper-col-button {
+    padding-right: 10px !important;
+  }
 }

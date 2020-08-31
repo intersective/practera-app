@@ -1,6 +1,6 @@
 <ion-app>
   <ng-container *ngIf="checkCustom('header')">
-    <div [innerHtml]="customHeader"></div>
+    <div [ngClass]="{'mobile': utils.isMobile()}" [innerHtml]="customHeader"></div>
   </ng-container>
   <ion-router-outlet [ngClass]="{
     'custom-header': checkCustom('header'),
