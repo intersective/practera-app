@@ -258,6 +258,10 @@ export class PusherService {
 
   /**
    * When the current user start typing, send notification to the Pusher channel
+   * from pusher doc
+   * - A client event must have a name prefixed with 'client'- or it will be rejected by the server.
+   * - Client events can only be triggered on 'private' and 'presence' channels because they require authentication
+   * - private channel name start with 'private-' and presence channel name start with 'presence-'
    */
   triggerTyping(channelName): void {
     const channel = this.channels.chat.find(c => c.name === channelName);
