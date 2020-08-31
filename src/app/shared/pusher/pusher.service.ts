@@ -240,12 +240,7 @@ export class PusherService {
           subscription: this.pusher.subscribe(channelName)
         };
         channel.subscription
-          .bind('typing-event', data => {
-            console.log('typing-event');
-            this.utils.broadcastEvent('typing-' + channelName, data);
-          })
           .bind('client-typing-event', data => {
-            console.log('client-typing-event');
             this.utils.broadcastEvent('typing-' + channelName, data);
           })
           .bind('pusher:subscription_succeeded', data => {
