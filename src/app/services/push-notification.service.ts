@@ -33,6 +33,15 @@ export class PushNotificationService {
     await this.listenToActionPerformed();
   }
 
+  /**
+   * check Push Notification permission is allowed
+   * @return {Promise<boolean>} true = allowed, false = no permission granted
+   */
+  async hasPermission(): Promise<boolean> {
+    const result = await PushNotifications.requestPermission();
+    return result.granted || false;
+  }
+
   async requestPermission(): Promise<void> {
     // Request permission to use push notifications
     // iOS will prompt user and return if they granted permission or not
