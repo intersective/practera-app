@@ -1,14 +1,18 @@
 import UIKit
 import Capacitor
+import PushNotifications
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
   var window: UIWindow?
-
+  let pushNotifications = PushNotifications.shared
 
   func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
     // Override point for customization after application launch.
+    self.pushNotifications.start(instanceId: "c0ba349e-66c6-440d-8ac7-fe229709d088")
+    self.pushNotifications.registerForRemoteNotifications()
+    try? self.pushNotifications.addDeviceInterest(interest: "general")
     return true
   }
 
@@ -61,6 +65,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
   #if USE_PUSH
 
   func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
+    self.pushNotifications.registerDeviceToken(deviceToken)
     NotificationCenter.default.post(name: Notification.Name(CAPNotifications.DidRegisterForRemoteNotificationsWithDeviceToken.name()), object: deviceToken)
   }
 
@@ -68,6 +73,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     NotificationCenter.default.post(name: Notification.Name(CAPNotifications.DidFailToRegisterForRemoteNotificationsWithError.name()), object: error)
   }
 
+  func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable: Any], fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
+      self.pushNotifications.handleNotification(userInfo: userInfo)
+  }
 #endif
 
 }
