@@ -412,6 +412,9 @@ export class ChatRoomComponent extends RouterEnter {
   private attachmentPreview(filestackRes) {
     let preview = `Uploaded ${filestackRes.filename}`;
     const dimension = 224;
+    if (!filestackRes.mimetype) {
+      return preview;
+    }
     if (filestackRes.mimetype.includes('image')) {
       const attachmentURL = `https://cdn.filestackcontent.com/quality=value:70/resize=w:${dimension},h:${dimension},fit:crop/${filestackRes.handle}`;
       // preview = `<p>Uploaded ${filestackRes.filename}</p><img src=${attachmentURL}>`;
@@ -477,6 +480,10 @@ export class ChatRoomComponent extends RouterEnter {
     ];
 
     let result = '';
+
+    if (!mimetype) {
+      return 'File';
+    }
 
     if (zip.indexOf(mimetype) >= 0) {
       result = 'Zip';
