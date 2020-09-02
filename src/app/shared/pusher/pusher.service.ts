@@ -19,6 +19,11 @@ export class PusherConfig {
   apiurl = '';
 }
 
+class PusherChannel {
+  name: string;
+  subscription?: Channel;
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -27,32 +32,13 @@ export class PusherService {
   private pusherKey: string;
   private apiurl: string;
   private pusher: Pusher;
-  private channelNames = {
-    presence: {
-      name: null,
-      subscription: null,
-    },
-    team: {
-      name: null,
-      subscription: null,
-    },
-    teamNoMentor: {
-      name: null,
-      subscription: null,
-    },
-    notification: {
-      name: null,
-      subscription: null,
-    }
+  private channels: {
+    notification: PusherChannel;
+    chat: PusherChannel[];
+  } = {
+    notification: null,
+    chat: []
   };
-  private channels = {
-    presence: null,
-    team: null,
-    teamNoMentor: null,
-    notification: null
-  };
-
-  private typingAction = new Subject<any>();
 
   constructor(
     private http: HttpClient,
@@ -83,7 +69,6 @@ export class PusherService {
 
     if (options && options.unsubscribe) {
       this.unsubscribeChannels();
-      this.typingAction = new Subject<any>();
     }
 
     // handling condition at re-login without rebuilding pusher (where isInstantiated() is false)
@@ -163,16 +148,8 @@ export class PusherService {
    * true: subscribed
    * false: haven't subscribed
    */
-  isSubscribed(newChannelName): boolean {
-    const channels = this.pusher.allChannels();
-    let subscribedChannel = false;
-
-    this.utils.each(channels, (channel: Channel) => {
-      if (channel.name === newChannelName && channel.subscribed) {
-        subscribedChannel = true;
-      }
-    });
-    return subscribedChannel;
+  isSubscribed(channelName): boolean {
+    return !!this.pusher.allChannels().find((channel: Channel) => channel.name === channelName && channel.subscribed);
   }
 
   /**
@@ -181,10 +158,13 @@ export class PusherService {
    */
   getChannels(): Observable<any> {
     return this.request.get(api.channels, {
-      params: { env: environment.env }
+      params: {
+        env: environment.env,
+        for: 'notification'
+      }
     }).pipe(map(response => {
       if (response.data) {
-        return this._subscribeChannels(response.data);
+        return this.subscribeChannel('notification', response.data[0].channel);
       }
     }));
   }
@@ -194,109 +174,44 @@ export class PusherService {
    * (use case: after switching program)
    */
   unsubscribeChannels(): void {
-    this.utils.each(this.channelNames, (channel, key) => {
-      if (channel) {
-        this.channelNames[key] = { name: null, subscription: null };
-        if (this.channels[key]) {
-          // unbind all events from this channel
-          this.channels[key].unbind_all();
-          this.channels[key] = null;
-        }
-
-        // handle issue logout at first load of program-switching view
-        if (this.pusher) {
-          this.pusher.unbind_all();
-          this.pusher.unsubscribe(channel.name);
-        }
+    if (!this.channels.notification) {
+      return ;
+    }
+    this.channels.notification.subscription.unbind_all();
+    // handle issue logout at first load of program-switching view
+    if (this.pusher) {
+      this.pusher.unbind_all();
+      this.pusher.unsubscribe(this.channels.notification.name);
+    }
+    this.channels.chat.forEach(chat => {
+      chat.subscription.unbind_all();
+      if (this.pusher) {
+        this.pusher.unsubscribe(chat.name);
       }
     });
+    this.channels.notification = null;
+    this.channels.chat = [];
   }
 
-  private _subscribeChannels(channels) {
-    // channels format verification
-    if (this.utils.isEmpty(channels)) {
-      return this.request.apiResponseFormatError('Pusher channels cannot be empty');
+  /**
+   * Subscribe a Pusher channel
+   * @param type        The type of Pusher channel (notification/chat)
+   * @param channelName The name of the Pusher channel
+   */
+  subscribeChannel(type: string, channelName: string) {
+    if (!channelName) {
+      return false;
     }
-
-    if (!Array.isArray(channels)) {
-      return this.request.apiResponseFormatError('Pusher channels must be an array');
+    if (this.isSubscribed(channelName)) {
+      return;
     }
-
-    const incorrectChannelName = channels.find(channel => !this.utils.has(channel, 'channel'));
-    if (incorrectChannelName) {
-      return this.request.apiResponseFormatError('Pusher channel format error');
-    }
-
-    channels.forEach(channel => {
-      // subscribe channels and bind events
-      // team
-      if (channel.channel.includes('private-' + environment.env + '-team-') &&
-          !channel.channel.includes('nomentor')) {
-        if (this.isSubscribed(channel.channel)) {
-          return;
-        }
-
-        this.channelNames.team.name = channel.channel;
-        this.channels.team = this.pusher.subscribe(channel.channel);
-
-        this.channels.team
-          .bind('send-event', data => {
-            this.utils.broadcastEvent('team-message', data);
-          })
-          .bind('typing-event', data => {
-            this.utils.broadcastEvent('team-typing', data);
-          })
-          .bind('client-typing-event', data => {
-            this.utils.broadcastEvent('team-typing', data);
-          })
-          .bind('pusher:subscription_succeeded', data => {
-            this.channelNames.team.subscription = true;
-          })
-          .bind('pusher:subscription_error', () => {
-            this.channelNames.team.subscription = `${channel.channel} channel subscription failed.`;
-          });
-
-        return;
-      }
-
-      // team without mentor
-      if (channel.channel.includes('private-' + environment.env + '-team-nomentor-')) {
-        if (this.isSubscribed(channel.channel)) {
-          return;
-        }
-
-        this.channelNames.teamNoMentor.name = channel.channel;
-        this.channels.teamNoMentor = this.pusher.subscribe(channel.channel);
-
-        this.channels.teamNoMentor
-          .bind('send-event', data => {
-            this.utils.broadcastEvent('team-no-mentor-message', data);
-          })
-          .bind('typing-event', data => {
-            this.utils.broadcastEvent('team-no-mentor-typing', data);
-          })
-          .bind('client-typing-event', data => {
-            this.utils.broadcastEvent('team-no-mentor-typing', data);
-          })
-          .bind('pusher:subscription_succeeded', data => {
-            this.channelNames.teamNoMentor.subscription = true;
-          })
-          .bind('pusher:subscription_error', data => {
-            this.channelNames.teamNoMentor.subscription = `${channel.channel} channel subscription failed.`;
-          });
-        return;
-      }
-
-      // notification
-      if (channel.channel.includes('private-' + environment.env + '-notification-')) {
-        if (this.isSubscribed(channel.channel)) {
-          return;
-        }
-
-        this.channelNames.notification.name = channel.channel;
-        this.channels.notification = this.pusher.subscribe(channel.channel);
-
-        this.channels.notification
+    switch (type) {
+      case 'notification':
+        this.channels.notification = {
+          name: channelName,
+          subscription: this.pusher.subscribe(channelName)
+        };
+        this.channels.notification.subscription
           .bind('notification', data => {
             this.utils.broadcastEvent('notification', data);
           })
@@ -306,77 +221,56 @@ export class PusherService {
           .bind('event-reminder', data => {
             this.utils.broadcastEvent('event-reminder', data);
           })
+          .bind('chat', data => {
+            this.utils.broadcastEvent('chat:new-message', data);
+          })
           .bind('pusher:subscription_succeeded', data => {
-            this.channelNames.notification.subscription = true;
           })
           .bind('pusher:subscription_error', data => {
-            this.channelNames.notification.subscription = `${channel.channel} channel subscription failed.`;
+            // error handling
           });
-        return;
-      }
-
-      // team member presence
-      if (channel.channel.includes('presence-' + environment.env + '-team-')) {
-        if (this.isSubscribed(channel.channel)) {
+        break;
+      case 'chat':
+        // don't need to subscribe again if already subscribed
+        if (this.channels.chat.find(c => c.name === channelName)) {
           return;
         }
-
-        this.channelNames.presence.name = channel.channel;
-        this.channels.presence = this.pusher.subscribe(channel.channel);
-
-        this.channels.presence
+        const channel = {
+          name: channelName,
+          subscription: this.pusher.subscribe(channelName)
+        };
+        channel.subscription
+          .bind('client-typing-event', data => {
+            this.utils.broadcastEvent('typing-' + channelName, data);
+          })
           .bind('pusher:subscription_succeeded', data => {
-            this.channelNames.presence.subscription = true;
           })
           .bind('pusher:subscription_error', data => {
-            this.channelNames.presence.subscription = `${channel.channel} channel subscription failed.`;
+            // error handling
           });
-        return;
-      }
-    });
-
-    // subscribe to typing event
-    return this.initiateTypingEvent().subscribe(data => {
-      return this.pusher.channels;
-    });
-  }
-
-  getMyPresenceChannelId(): any {
-    if (!this.utils.isEmpty(this.channels.presence) && this.utils.has(this.channels.presence, 'members')) {
-      return this.channels.presence.members.me.id;
+        if (!this.channels.chat) {
+          this.channels.chat = [];
+        }
+        this.channels.chat.push(channel);
+        break;
     }
-    return;
   }
 
   /**
-   * prepare subsequent "next" trigger for hot observable,
-   * let rxjs handle the repeated trigger before API
+   * When the current user start typing, send notification to the Pusher channel
+   * from pusher doc
+   * - A client event must have a name prefixed with 'client'- or it will be rejected by the server.
+   * - Client events can only be triggered on 'private' and 'presence' channels because they require authentication
+   * - private channel name start with 'private-' and presence channel name start with 'presence-'
    */
-  triggerTyping(data, participantsOnly): void {
-    if (participantsOnly) {
-      return this.typingAction.next({
-        data,
-        channel: this.channels.teamNoMentor,
-      });
+  triggerTyping(channelName): void {
+    const channel = this.channels.chat.find(c => c.name === channelName);
+    if (!channel) {
+      return;
     }
-
-    return this.typingAction.next({
-      data,
-      channel: this.channels.team
+    channel.subscription.trigger('client-typing-event', {
+      user: this.storage.getUser().name
     });
-  }
-
-  initiateTypingEvent(): Observable<any> {
-    return this.typingAction.pipe(
-      debounceTime(300),
-      switchMap(event => {
-        if (event.channel) {
-          return of(event.channel.trigger('client-typing-event', event.data));
-        }
-        // error handling for unsubscribed pusher channel
-        return of(true);
-      })
-    );
   }
 
 }

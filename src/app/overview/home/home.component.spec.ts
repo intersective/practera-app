@@ -156,7 +156,7 @@ describe('HomeComponent', () => {
   });
 
   describe('when testing constructor()', () => {
-    it('should display correct todo card with notification/team-message/event-reminder/team-no-mentor-message event(Pusher)', () => {
+    it('should display correct todo card with notification/chat/event-reminder event(Pusher)', () => {
       // mock getTodoItems()
       homeServiceSpy.getTodoItems.and.returnValue(of([
         {
@@ -187,8 +187,8 @@ describe('HomeComponent', () => {
       homeServiceSpy.getChatMessage.and.returnValue(of({
         type: 'chat'
       }));
-      // after 'team-message' triggers
-      utils.broadcastEvent('team-message', {});
+      // after 'chat' triggers
+      utils.broadcastEvent('chat:new-message', {});
       fixture.detectChanges();
       // 2 calls, 1 from onEnter(), 1 from the event
       expect(homeServiceSpy.getChatMessage.calls.count()).toBe(2, '2 service call');
@@ -205,15 +205,6 @@ describe('HomeComponent', () => {
       fixture.detectChanges();
       expect(homeServiceSpy.getReminderEvent.calls.count()).toBe(1, '1 service call');
       expect(component.eventReminders.length).toEqual(1, '1 event reminder');
-      expect(page.todoCards.length).toBe(5);
-
-      // after 'team-no-mentor-message' triggers
-      utils.broadcastEvent('team-no-mentor-message', {});
-      fixture.detectChanges();
-      // 3 calls, 1 from onEnter(), 2 from the event
-      expect(homeServiceSpy.getChatMessage.calls.count()).toBe(3, 'one service call');
-      // todo items and todo card won't increase, because all chat messages are gathered to only 1 todo item
-      expect(component.todoItems.length).toEqual(4);
       expect(page.todoCards.length).toBe(5);
     });
   });
@@ -525,7 +516,7 @@ describe('HomeComponent', () => {
           team_member_id: 1
         }
       });
-      expect(routerSpy.navigate.calls.first().args[0]).toEqual(['chat', 'chat-room', 2, 1]);
+      expect(routerSpy.navigate.calls.first().args[0]).toEqual(['app', 'chat']);
     });
 
     it('should navigate to the correct chat page #3', () => {
@@ -536,7 +527,7 @@ describe('HomeComponent', () => {
           participants_only: true
         }
       });
-      expect(routerSpy.navigate.calls.first().args[0]).toEqual(['chat', 'chat-room', 'team', 2, true]);
+      expect(routerSpy.navigate.calls.first().args[0]).toEqual(['app', 'chat']);
     });
   });
 });
