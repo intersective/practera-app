@@ -10,6 +10,7 @@ def capacitor_pods
   # Automatic Capacitor Pod dependencies, do not delete
   pod 'Capacitor', :path => '../../node_modules/@capacitor/ios'
   pod 'CapacitorCordova', :path => '../../node_modules/@capacitor/ios'
+  pod 'CapacitorPusherBeams', :path => '../../../capacitor-pusher-beams'
   pod 'CordovaPlugins', :path => '../capacitor-cordova-ios-plugins'
   # Do not delete
 end
@@ -17,4 +18,5 @@ end
 target 'App' do
   capacitor_pods
   # Add your Pods here
+  pod 'PushNotifications'
 end

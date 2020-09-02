@@ -9,6 +9,7 @@ import { RouterEnter } from '@services/router-enter.service';
 import { FastFeedbackService } from '../fast-feedback/fast-feedback.service';
 import { FilestackService } from '@shared/filestack/filestack.service';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
+import { PushNotificationService } from '@services/push-notification.service';
 
 @Component({
   selector: 'app-settings',
@@ -38,6 +39,8 @@ export class SettingsComponent extends RouterEnter {
   acceptFileTypes;
   // card image CDN
   cdn = 'https://cdn.filestackcontent.com/resize=fit:crop,width:';
+  interests: string;
+  associated: any;
 
   constructor (
     public router: Router,
@@ -49,7 +52,7 @@ export class SettingsComponent extends RouterEnter {
     private filestackService: FilestackService,
     public fastFeedbackService: FastFeedbackService,
     private newRelic: NewRelicService,
-
+    private pushNotificationService: PushNotificationService
   ) {
     super(router);
   }
@@ -108,6 +111,18 @@ export class SettingsComponent extends RouterEnter {
     this.newRelic.actionText('mail to helpline');
     const mailto = 'mailto:' + this.helpline + '?subject=' + this.currentProgramName;
     window.open(mailto, '_self');
+  }
+
+  async getInterests() {
+    const interests = await this.pushNotificationService.getSubscribedInterests();
+    this.interests = interests;
+    console.log(interests);
+  }
+
+  async linkUser() {
+    const associated = await this.pushNotificationService.associateDeviceToUser(this.storage.getUser().email, this.storage.getUser().apikey);
+    console.log(associated);
+    this.associated = associated;
   }
 
   logout() {
