@@ -18,7 +18,6 @@ import { DomSanitizer } from '@angular/platform-browser';
 })
 export class AppComponent implements OnInit {
   customHeader: string | any;
-  customFooter: string | any;
   constructor(
     private platform: Platform,
     private router: Router,
@@ -35,7 +34,6 @@ export class AppComponent implements OnInit {
     // private statusBar: StatusBar
   ) {
     this.customHeader = null;
-    this.customFooter = null;
     this.initializeApp();
   }
 
@@ -67,13 +65,10 @@ export class AppComponent implements OnInit {
           if (numOfConfigs > 0 && numOfConfigs < 2) {
             let logo = expConfig[0].logo;
             const themeColor = expConfig[0].config.theme_color;
-            if (expConfig[0].config.html_branding && expConfig[0].config.html_branding.footer
-            && expConfig[0].config.html_branding.header) {
-              this.customFooter = expConfig[0].config.html_branding.footer;
+            if (expConfig[0].config.html_branding && expConfig[0].config.html_branding.header) {
               this.customHeader = expConfig[0].config.html_branding.header;
             }
-            if (this.customFooter && this.customHeader) {
-              this.customFooter = this.sanitizer.bypassSecurityTrustHtml(this.customFooter);
+            if (this.customHeader) {
               this.customHeader = this.sanitizer.bypassSecurityTrustHtml(this.customHeader);
             }
             // add the domain if the logo url is not a full url
@@ -152,14 +147,11 @@ export class AppComponent implements OnInit {
   }
 
   /**
-   * checking conditions to show custom header or footer
-   * @param type header or footer
+   * checking conditions to show custom header
+   * @param type header
    */
   checkCustom(type: string): boolean {
     if (type === 'header' && this.customHeader && this.authService.isAuthenticated()) {
-      return true;
-    }
-    if (type === 'footer' && this.customFooter && this.authService.isAuthenticated() && !this.utils.isMobile()) {
       return true;
     }
     return false;
