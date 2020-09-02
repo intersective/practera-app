@@ -176,25 +176,17 @@ describe('HomeService', () => {
         data: [
           {
             unread_messages: 1,
-            name: 'name',
+            channel_name: 'name',
             last_message: 'last',
-            last_message_created: '2019-02-02',
-            team_id: 2,
-            team_member_id: 3,
-            participants_only: true
+            last_message_created: '2019-02-02'
           }
         ]
       };
       const expected = {
         type: 'chat',
-        name: requestResponse.data[0].name,
+        name: requestResponse.data[0].channel_name,
         description: requestResponse.data[0].last_message,
-        time: '2 Feb',
-        meta: {
-          team_id: requestResponse.data[0].team_id,
-          team_member_id: requestResponse.data[0].team_member_id,
-          participants_only: requestResponse.data[0].participants_only
-        }
+        time: '2 Feb'
       };
       requestSpy.get.and.returnValue(of(requestResponse));
       service.getChatMessage().subscribe(
@@ -209,21 +201,15 @@ describe('HomeService', () => {
         data: [
           {
             unread_messages: 1,
-            name: 'name',
+            channel_name: 'name',
             last_message: 'last 1',
             last_message_created: '2019-02-02',
-            team_id: 2,
-            team_member_id: 3,
-            participants_only: true
           },
           {
             unread_messages: 2,
-            name: 'name',
+            channel_name: 'name',
             last_message: 'last 2',
             last_message_created: '2019-02-02',
-            team_id: 2,
-            team_member_id: 3,
-            participants_only: true
           }
         ]
       };
