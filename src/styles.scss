@@ -477,7 +477,7 @@ for videos in topics
   }
 }
 /***************
-use for custom header/footer (*Study perth)
+use for custom header (*Study perth)
 ***************/
 
 .custom-header {
@@ -485,9 +485,6 @@ use for custom header/footer (*Study perth)
   &.mobile {
     top: 65px !important;
   }
-}
-.custom-footer {
-  bottom: 70px !important;
 }
 
 .mobile {
