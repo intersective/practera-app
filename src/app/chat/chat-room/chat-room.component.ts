@@ -199,10 +199,11 @@ export class ChatRoomComponent extends RouterEnter {
     if (!this.message) {
       return;
     }
-    this.sendingMessage = true;
+    const message = this.message;
+    this._beforeSenMessages();
     this.chatService.postNewMessage({
       channelId: this.channelId,
-      message: this.message
+      message: message
     }).subscribe(
       response => {
         this.messageList.push(response.message);
@@ -222,10 +223,21 @@ export class ChatRoomComponent extends RouterEnter {
     );
   }
 
-  private _afterSendMessage() {
+  /**
+   * need to clear type message before send api call.
+   * because if we wait untill api response to clear the type message user may think message not sent and
+   *  will press send button multiple times.
+   * to indicate message sending we have loading controll by sendingMessage.
+   * we will insert type message to cost variable befoer clear it so type message will not lost from the api call.
+   */
+  private _beforeSenMessages() {
+    this.sendingMessage = true;
     // remove typed message from text area and shrink text area.
     this.message = '';
     this.element.nativeElement.querySelector('textarea').style.height = 'auto';
+  }
+
+  private _afterSendMessage() {
     this.sendingMessage = false;
     this.showBottomAttachmentButtons = false;
   }
