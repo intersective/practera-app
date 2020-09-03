@@ -2,16 +2,16 @@
   <app-chat-list
     #chatList
     style="display: flex"
-    [currentChat]="getCurrentChat()"
+    [currentChat]="chatChannel"
     (navigate)="goto($event)"
     (chatListReady)="selectFirstChat($event)">
   </app-chat-list>
   <ion-content color="light" id="main">
-    <app-chat-room #chatRoom *ngIf="teamId"
-      [teamId]="teamId"
-      [teamMemberId]="teamMemberId"
-      [participantsOnly]="participantsOnly"
-      [chatName]="chatName"></app-chat-room>
+    <app-chat-room
+      #chatRoom
+      *ngIf="chatChannel"
+      [chatChannel]="chatChannel"
+    ></app-chat-room>
   </ion-content>
 </ion-split-pane>
 
