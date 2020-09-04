@@ -65,8 +65,7 @@ export class TabsService {
   getNoOfChats() {
     return this.request.get(api.unreadMessages, {
       params: {
-        unread_count_for: 'all',
-        team_id: this.storage.getUser().teamId
+        unread_count_for: 'all'
       }
     })
       .pipe(map(response => {

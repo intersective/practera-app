@@ -52,7 +52,6 @@ export class BrowserStorageService {
     if (cached) {
       return JSON.parse(this.storage.getItem(key) || null);
     }
-
     return null;
   }
 
@@ -132,5 +131,13 @@ export class BrowserStorageService {
 
   getCountry() {
     return this.get('country');
+  }
+
+  setCurrentChatChannel(channel) {
+    this.set('chatChannel', channel);
+  }
+
+  getCurrentChatChannel() {
+    return this.get('chatChannel');
   }
 }
