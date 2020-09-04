@@ -1,4 +1,5 @@
 import { Inject, Injectable, InjectionToken, NgZone } from '@angular/core';
+import { Router, NavigationEnd } from '@angular/router';
 import { Observable, interval, pipe } from 'rxjs';
 import { switchMap, concatMap, tap, retryWhen, take, delay } from 'rxjs/operators';
 import { RequestService } from '@shared/request/request.service';
@@ -132,6 +133,18 @@ export class PushNotificationService {
 
   clearPusherBeams() {
     return PusherBeams.clearAllState();
+  }
+
+  /**
+   * required to prompt user for allowing permission for Push notification
+   * this function would only store unique visit, duplicates get filtered out.
+   */
+  recordVisit(snapshot: NavigationEnd): void {
+    const cache = this.storage.get('visited');
+    const visited = Array.isArray(cache) ? cache : [];
+    const newVisits = Array.from(new Set(visited.concat(snapshot.url)));
+    this.storage.set('visited', newVisits);
+    return;
   }
 
   // temporary place this function here (as it's part of the capacitor plugin)
