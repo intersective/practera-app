@@ -7,6 +7,7 @@ import { SwitcherService } from '../../switcher/switcher.service';
 import { UtilsService } from '@services/utils.service';
 import { BrowserStorageService } from '@services/storage.service';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
+import { async } from '../../../../node_modules/@types/q';
 
 @Component({
   selector: 'app-auth-direct-login',
@@ -35,10 +36,15 @@ export class AuthDirectLoginComponent implements OnInit {
 
     try {
       const nrDirectLoginTracer = this.newRelic.createTracer('Processing direct login');
-      await this.authService.directLogin({ authToken }).toPromise();
-      await this.switcherService.getMyInfo().toPromise();
-      nrDirectLoginTracer();
-      return this._redirect();
+      setTimeout(
+        async () => {
+          await this.authService.directLogin({ authToken }).toPromise();
+          await this.switcherService.getMyInfo().toPromise();
+          nrDirectLoginTracer();
+          return this._redirect();
+          // tslint:disable-next-line:align
+        }, 50
+      );
     } catch (err) {
       this._error(err);
     }
