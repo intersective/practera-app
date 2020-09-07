@@ -121,6 +121,11 @@ export class SettingsComponent extends RouterEnter {
     window.open(mailto, '_self');
   }
 
+  async goToSettingPermission() {
+    const goSettingStatus = await this.pushNotificationService.goToAppSetting();
+    console.log('goSettingStatus::', goSettingStatus);
+  }
+
   async getInterests() {
     const interests = await this.pushNotificationService.getSubscribedInterests();
     this.interests = interests;
