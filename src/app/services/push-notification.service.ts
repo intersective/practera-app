@@ -135,13 +135,30 @@ export class PushNotificationService {
     return PusherBeams.clearAllState();
   }
 
+  private _visitedCache(): string[] {
+    const cache = this.storage.get('visited');
+    const visited = Array.isArray(cache) ? cache : [];
+    return visited;
+  }
+
+  async checkPermission(type: string, where: string): Promise<boolean> {
+    const visited = this._visitedCache();
+    switch (type) {
+      case "isFirstVisit":
+        if (!visited.includes(where) && await this.hasPermission()) {
+          return true;
+        }
+        break;
+    }
+    return false;
+  }
+
   /**
    * required to prompt user for allowing permission for Push notification
    * this function would only store unique visit, duplicates get filtered out.
    */
   recordVisit(snapshot: NavigationEnd): void {
-    const cache = this.storage.get('visited');
-    const visited = Array.isArray(cache) ? cache : [];
+    const visited = this._visitedCache();
     const newVisits = Array.from(new Set(visited.concat(snapshot.url)));
     this.storage.set('visited', newVisits);
     return;

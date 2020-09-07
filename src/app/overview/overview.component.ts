@@ -5,6 +5,7 @@ import { UtilsService } from '@services/utils.service';
 import { combineLatest, Observable, of } from 'rxjs';
 import { FastFeedbackService } from '../fast-feedback/fast-feedback.service';
 import { PushNotificationService } from '@services/push-notification.service';
+import { NotificationService } from '@shared/notification/notification.service';
 
 @Component({
   selector: 'app-overview',
@@ -21,7 +22,8 @@ export class OverviewComponent implements OnInit {
     private utils: UtilsService,
     private route: ActivatedRoute,
     private fastFeedbackService: FastFeedbackService,
-    private pushNotificationService: PushNotificationService
+    private pushNotificationService: PushNotificationService,
+    private notificationService: NotificationService
   ) {
     this.isMobile = this.utils.isMobile();
   }
@@ -34,5 +36,13 @@ export class OverviewComponent implements OnInit {
       this.programName = this.storage.getUser().programName;
       this.fastFeedbackService.pullFastFeedback().subscribe();
     });
+  }
+
+  async ionViewDidEnter() {
+    if (await this.pushNotificationService.checkPermission('isFirstVisit', '/app/home')) {
+      this.notificationService.popUp('shortMessage', {
+        message: 'Reminder: Please enable Push Notification to never lose track of important updates.'
+      });
+    }
   }
 }

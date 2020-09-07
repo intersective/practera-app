@@ -73,6 +73,14 @@ export class SettingsComponent extends RouterEnter {
     this.returnLtiUrl = this.storage.getUser().LtiReturnUrl;
   }
 
+  async ionViewDidEnter() {
+    if (await this.pushNotificationService.checkPermission('isFirstVisit', '/app/home')) {
+      this.notificationService.popUp('shortMessage', {
+        message: 'Reminder: Please enable Push Notification to never lose track of important updates.'
+      });
+    }
+  }
+
   // loading pragram image to settings page by resizing it depend on device.
   // in mobile we are not showing card with image but in some mobile phones on landscape mode desktop view is loading.
   // because of that we load image also in mobile view.
