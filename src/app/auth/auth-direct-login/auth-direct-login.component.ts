@@ -34,20 +34,21 @@ export class AuthDirectLoginComponent implements OnInit {
       return this._error();
     }
 
-    try {
-      const nrDirectLoginTracer = this.newRelic.createTracer('Processing direct login');
-      setTimeout(
-        async () => {
+    const nrDirectLoginTracer = this.newRelic.createTracer('Processing direct login');
+    // move try catch inside to timeout, because if try catch is outside it not catch errors happen inside timeout.
+    setTimeout(
+      async () => {
+        try {
           await this.authService.directLogin({ authToken }).toPromise();
           await this.switcherService.getMyInfo().toPromise();
           nrDirectLoginTracer();
           return this._redirect();
-          // tslint:disable-next-line:align
-        }, 50
-      );
-    } catch (err) {
-      this._error(err);
-    }
+        } catch (err) {
+          this._error(err);
+        }
+        // tslint:disable-next-line:align
+      }, 50
+    );
   }
 
   // force every navigation happen under radar of angular
