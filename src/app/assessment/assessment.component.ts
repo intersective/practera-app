@@ -495,8 +495,11 @@ export class AssessmentComponent extends RouterEnter {
   async submit(saveInProgress: boolean, goBack?: boolean, isManualSave?: boolean): Promise<any> {
     const hasPNPermission = await this.pushNotificationService.checkPermission('isFirstVisit', '/app/assessment/');
 
-    console.log('hasPNPermission::', hasPNPermission);
-    return;
+    if (!hasPNPermission && this.assessment.type === 'moderated') {
+      await this.notificationService.popUp('shortMessage', {
+        message: 'Reminder: Please enable Push Notification to never lost track of important updates.'
+      });;
+    }
     /**
      * checking if this is a submission or progress save
      * - if it's a submission

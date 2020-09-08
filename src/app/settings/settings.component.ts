@@ -76,7 +76,7 @@ export class SettingsComponent extends RouterEnter {
   async ionViewDidEnter() {
     if (await this.pushNotificationService.checkPermission('isFirstVisit', '/app/home')) {
       this.notificationService.popUp('shortMessage', {
-        message: 'Reminder: Please enable Push Notification to never lose track of important updates.'
+        message: 'Reminder: Please enable Push Notification to never lost track of important updates.'
       });
     }
   }
