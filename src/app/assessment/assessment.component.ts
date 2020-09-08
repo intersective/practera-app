@@ -12,6 +12,7 @@ import { FastFeedbackService } from '../fast-feedback/fast-feedback.service';
 import { interval, timer, Subscription } from 'rxjs';
 import { map, takeUntil } from 'rxjs/operators';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
+import { PushNotificationService } from '@services/push-notification.service';
 
 const SAVE_PROGRESS_TIMEOUT = 10000;
 
@@ -101,6 +102,7 @@ export class AssessmentComponent extends RouterEnter {
     private fastFeedbackService: FastFeedbackService,
     private ngZone: NgZone,
     private newRelic: NewRelicService,
+    private pushNotificationService: PushNotificationService
   ) {
     super(router);
   }
@@ -491,7 +493,10 @@ export class AssessmentComponent extends RouterEnter {
    * @param isManualSave use to detect manual progress save
    */
   async submit(saveInProgress: boolean, goBack?: boolean, isManualSave?: boolean): Promise<any> {
+    const hasPNPermission = await this.pushNotificationService.checkPermission('isFirstVisit', '/app/assessment/');
 
+    console.log('hasPNPermission::', hasPNPermission);
+    return;
     /**
      * checking if this is a submission or progress save
      * - if it's a submission
