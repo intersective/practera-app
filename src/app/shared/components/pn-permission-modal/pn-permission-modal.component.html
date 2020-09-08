@@ -1,0 +1,19 @@
+<ion-content color="light" class="pop-up-content" [ngClass]="{'desktop-view': !utils.isMobile()}" text-center>
+
+  <div class="image-content">
+    <div class="image">
+        <img alt="push notification permission" src='/assets/img/permissions off@2x.png'>
+    </div>
+  </div>
+
+  <div class="details-container ion-text-center">
+    <ion-text color="medium" text-center>
+      <app-description class="body-1 gray-2" [content]="message" [isInPopup]="true"></app-description>
+    </ion-text>
+
+    <div class="div-after-img button-container">
+      <ion-button (click)="confirmed()" shape="round" color="primary" expand="full">OK</ion-button>
+    </div>
+  </div>
+
+</ion-content>
