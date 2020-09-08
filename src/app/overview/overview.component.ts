@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterStateSnapshot } from '@angular/router';
 import { BrowserStorageService } from '@services/storage.service';
 import { UtilsService } from '@services/utils.service';
 import { combineLatest, Observable, of } from 'rxjs';
@@ -27,6 +27,9 @@ export class OverviewComponent implements OnInit {
     private notificationService: NotificationService
   ) {
     this.isMobile = this.utils.isMobile();
+    route.data.subscribe(() => {
+      this.checkPNPermission(router.routerState.snapshot);
+    });
   }
 
   async ngOnInit() {
@@ -37,12 +40,12 @@ export class OverviewComponent implements OnInit {
     });
   }
 
-  async ionViewDidEnter() {
-    if (await this.pushNotificationService.checkPermission(PermissionTypes.firstVisit, '/app/home')) {
-      this.pushNotificationService.recordVisit(this.router.routerState.snapshot);
+  async checkPNPermission(snapshot: RouterStateSnapshot): Promise<void> {
+    if (await this.pushNotificationService.checkPermission(PermissionTypes.firstVisit, snapshot)) {
       this.notificationService.popUp('shortMessage', {
         message: 'Reminder: Please enable Push Notification to never lost track of important updates.'
       });
     }
+    return;
   }
 }

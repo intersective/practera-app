@@ -89,14 +89,13 @@ export class SettingsComponent extends RouterEnter {
   async checkPermission(): Promise<void> {
     this.firstVisitPermission = await this.pushNotificationService.checkPermission(
       PermissionTypes.firstVisit,
-      '/app/settings'
+      this.router.routerState.snapshot
     );
     if (this.firstVisitPermission) {
       this.notificationService.popUp('shortMessage', {
         message: 'Reminder: Please enable Push Notification to never lost track of important updates.'
       });
     }
-    this.pushNotificationService.recordVisit(this.router.routerState.snapshot);
     return;
   }
 

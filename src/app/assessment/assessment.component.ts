@@ -486,6 +486,16 @@ export class AssessmentComponent extends RouterEnter {
     }
   }
 
+  async checkPNPermission() {
+    const hasPNPermission = await this.pushNotificationService.checkPermission(PermissionTypes.firstVisit, this.router.routerState.snapshot);
+
+    if (!hasPNPermission && this.assessment.type === 'moderated') {
+      await this.notificationService.popUp('shortMessage', {
+        message: 'Reminder: Please enable Push Notification to never lost track of important updates.'
+      });;
+    }
+  }
+
   /**
    * handle submission and autosave
    * @param saveInProgress set true for autosaving or it treat the action as final submision
@@ -493,14 +503,7 @@ export class AssessmentComponent extends RouterEnter {
    * @param isManualSave use to detect manual progress save
    */
   async submit(saveInProgress: boolean, goBack?: boolean, isManualSave?: boolean): Promise<any> {
-    const hasPNPermission = await this.pushNotificationService.checkPermission(PermissionTypes.firstVisit, '/app/assessment/');
-
-    if (!hasPNPermission && this.assessment.type === 'moderated') {
-      this.pushNotificationService.recordVisit(this.router.routerState.snapshot);
-      await this.notificationService.popUp('shortMessage', {
-        message: 'Reminder: Please enable Push Notification to never lost track of important updates.'
-      });;
-    }
+    await this.checkPNPermission();
     /**
      * checking if this is a submission or progress save
      * - if it's a submission
