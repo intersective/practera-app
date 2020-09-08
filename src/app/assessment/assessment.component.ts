@@ -487,9 +487,9 @@ export class AssessmentComponent extends RouterEnter {
   }
 
   async checkPNPermission() {
-    const hasPNPermission = await this.pushNotificationService.checkPermission(PermissionTypes.firstVisit, this.router.routerState.snapshot);
+    const promptForPermission = await this.pushNotificationService.promptForPermission(PermissionTypes.firstVisit, this.router.routerState.snapshot);
 
-    if (!hasPNPermission && this.assessment.type === 'moderated') {
+    if (promptForPermission && this.assessment.type === 'moderated') {
       await this.notificationService.popUp('shortMessage', {
         message: 'Reminder: Please enable Push Notification to never lost track of important updates.'
       });;

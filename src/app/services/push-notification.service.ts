@@ -154,26 +154,29 @@ export class PushNotificationService {
   }
 
   /**
-   * @name checkPermission
+   * @name promptForPermission
    * @description check push notification permission by comparing visited page
    *              & permission granted on device
    * @param  {PermissionTypes}     type     Capacitor plugins's Permissions types
    * @param  {RouterStateSnapshot} snapshot Router's state snapshot
-   * @return {Promise<boolean>}             true = has permission, false = no permission
+   * @return {Promise<boolean>}
+   *         true = request for permission
+   *         false = do not request for permission
    */
-  async checkPermission(type: PermissionTypes, snapshot: RouterStateSnapshot): Promise<boolean> {
-    let hasPermission = false;
+  async promptForPermission(type: PermissionTypes, snapshot: RouterStateSnapshot): Promise<boolean> {
+    let result = false;
     const visited = this._visitedCache();
     switch (type) {
       case PermissionTypes.firstVisit:
-        if (!visited.includes(snapshot.url) && await this.hasPermission()) {
-          hasPermission = true;
+        const hasPermission = await this.hasPermission();
+        if (!visited.includes(snapshot.url) && !hasPermission) {
+          result = true;
         }
         break;
     }
 
     this.recordVisit(snapshot);
-    return hasPermission;
+    return result;
   }
 
   /**

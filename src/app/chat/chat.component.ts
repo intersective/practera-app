@@ -19,8 +19,8 @@ export class ChatComponent {
   }
 
   async checkPNPermission(snapshot) {
-    const hasPNPermission = await this.pushNotificationService.checkPermission(PermissionTypes.firstVisit, snapshot);
-    if (!hasPNPermission) {
+    const promptForPermission = await this.pushNotificationService.promptForPermission(PermissionTypes.firstVisit, snapshot);
+    if (promptForPermission) {
       this.notificationService.popUp('shortMessage', {
         message: 'To do this assessment, you have to be in a team.'
       });

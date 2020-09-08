@@ -41,7 +41,8 @@ export class OverviewComponent implements OnInit {
   }
 
   async checkPNPermission(snapshot: RouterStateSnapshot): Promise<void> {
-    if (await this.pushNotificationService.checkPermission(PermissionTypes.firstVisit, snapshot)) {
+    const showPrompt = await this.pushNotificationService.promptForPermission(PermissionTypes.firstVisit, snapshot);
+    if (showPrompt) {
       this.notificationService.popUp('shortMessage', {
         message: 'Reminder: Please enable Push Notification to never lost track of important updates.'
       });

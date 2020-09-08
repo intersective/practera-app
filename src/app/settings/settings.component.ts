@@ -87,7 +87,7 @@ export class SettingsComponent extends RouterEnter {
    * @return {Promise<void>}
    */
   async checkPermission(): Promise<void> {
-    this.firstVisitPermission = await this.pushNotificationService.checkPermission(
+    this.firstVisitPermission = await this.pushNotificationService.promptForPermission(
       PermissionTypes.firstVisit,
       this.router.routerState.snapshot
     );
