@@ -10,10 +10,13 @@ import {
   PushNotification,
   PushNotificationToken,
   PushNotificationActionPerformed,
-  LocalNotificationEnabledResult
+  LocalNotificationEnabledResult,
+  PermissionsOptions,
+  PermissionType
 } from '@capacitor/core';
 
-const { PushNotifications, LocalNotifications, PusherBeams } = Plugins;
+const { PushNotifications, LocalNotifications, PusherBeams, Permissions } = Plugins;
+const { Notifications } = PermissionType;
 
 @Injectable({
   providedIn: 'root'
@@ -23,7 +26,8 @@ export class PushNotificationService {
   constructor(
     private requestService: RequestService,
     private ngZone: NgZone,
-    private storage: BrowserStorageService
+    private storage: BrowserStorageService,
+    private permissionTypes: PermissionType
   ) {}
 
   async initiatePushNotification(): Promise<void> {
@@ -38,9 +42,16 @@ export class PushNotificationService {
    * check Push Notification permission is allowed
    * @return {Promise<boolean>} true = allowed, false = no permission granted
    */
-  async hasPermission(): Promise<boolean> {
+  async hasPermission() {//: Promise<boolean> {
+    const getPermission = await Permissions.query({ name: Notifications });
+    console.log('CAPACITOR-getPermission::', getPermission);
+
     const result = await PushNotifications.requestPermission();
-    return result.granted || false;
+    return {
+      getPermission,
+      requestPermission: result,
+    };
+    // return result.granted || false;
   }
 
   async requestPermission(): Promise<void> {

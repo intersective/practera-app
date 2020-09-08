@@ -17,6 +17,10 @@
   <ion-item *ngIf="associated">
     <pre>{{ associated | json }}</pre>
   </ion-item>
+  <ion-item>
+    <ion-label class="subtitle-2 gray-2">Permissions</ion-label>
+    <pre>{{ permission | json }}</pre>
+  </ion-item>
   <ng-container *ngIf="utils.isMobile()">
     <ion-item class="profile-info no-bg" lines="none">
       <ion-avatar class="profile-image" slot="start">
@@ -50,6 +54,7 @@
       <ion-item class="no-bg" (click)="goToSettingPermission()" lines="none">
         <ion-icon class="ion-padding-end" color="primary" name="cog-outline"></ion-icon>
         Settings
+        <ion-icon name="arrow-forward" color="medium" slot="end"></ion-icon>
       </ion-item>
       <ion-item class="no-bg" (click)="mailTo()" lines="none">
         <ion-icon class="ion-padding-end" color="primary" name="mail-outline"></ion-icon>
@@ -93,7 +98,7 @@
           <div class="ion-margin-top subtitle-1">
             <ion-item class="no-bg" (click)="goToSettingPermission()" lines="none">
               <ion-icon class="ion-padding-end" color="primary" name="cog-outline"></ion-icon>
-              Push Notification Permission
+              Settings
             </ion-item>
             <ion-item class="no-bg" (click)="mailTo()" lines="none">
               <ion-icon class="ion-padding-end" color="primary" name="mail-outline"></ion-icon>

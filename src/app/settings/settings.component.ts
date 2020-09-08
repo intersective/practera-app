@@ -41,6 +41,7 @@ export class SettingsComponent extends RouterEnter {
   cdn = 'https://cdn.filestackcontent.com/resize=fit:crop,width:';
   interests: string;
   associated: any;
+  permission: any;
 
   constructor (
     public router: Router,
@@ -74,11 +75,14 @@ export class SettingsComponent extends RouterEnter {
   }
 
   async ionViewDidEnter() {
-    if (await this.pushNotificationService.checkPermission('isFirstVisit', '/app/home')) {
+    this.permission = await this.pushNotificationService.hasPermission();
+    // console.log();
+/*    this.permission = await this.pushNotificationService.checkPermission('isFirstVisit', '/app/settings');
+    if (this.permission) {
       this.notificationService.popUp('shortMessage', {
         message: 'Reminder: Please enable Push Notification to never lost track of important updates.'
       });
-    }
+    }*/
   }
 
   // loading pragram image to settings page by resizing it depend on device.
