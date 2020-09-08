@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { PushNotificationService } from '@services/push-notification.service';
+import { PushNotificationService, PermissionTypes } from '@services/push-notification.service';
 import { NotificationService } from '@shared/notification/notification.service';
 
 @Component({
@@ -12,7 +12,7 @@ export class ChatComponent {
   ) {}
 
   async ionViewDidEnter() {
-    const hasPNPermission = await this.pushNotificationService.checkPermission('isFirstVisit', '/app/chat');
+    const hasPNPermission = await this.pushNotificationService.checkPermission(PermissionTypes.firstVisit, '/app/chat');
     if (!hasPNPermission) {
       this.notificationService.popUp('shortMessage', {message: 'To do this assessment, you have to be in a team.'});
     }

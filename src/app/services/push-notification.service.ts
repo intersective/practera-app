@@ -1,5 +1,5 @@
 import { Inject, Injectable, InjectionToken, NgZone } from '@angular/core';
-import { Router, NavigationEnd } from '@angular/router';
+import { Router, RouterStateSnapshot } from '@angular/router';
 import { Observable, interval, pipe } from 'rxjs';
 import { switchMap, concatMap, tap, retryWhen, take, delay } from 'rxjs/operators';
 import { RequestService } from '@shared/request/request.service';
@@ -18,6 +18,10 @@ import {
 const { PushNotifications, LocalNotifications, PusherBeams, Permissions } = Plugins;
 const { Notifications } = PermissionType;
 
+export enum PermissionTypes {
+  firstVisit = 'isFirstVisit',
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -26,8 +30,7 @@ export class PushNotificationService {
   constructor(
     private requestService: RequestService,
     private ngZone: NgZone,
-    private storage: BrowserStorageService,
-    private permissionTypes: PermissionType
+    private storage: BrowserStorageService
   ) {}
 
   async initiatePushNotification(): Promise<void> {
@@ -42,16 +45,14 @@ export class PushNotificationService {
    * check Push Notification permission is allowed
    * @return {Promise<boolean>} true = allowed, false = no permission granted
    */
-  async hasPermission() {//: Promise<boolean> {
+  async hasPermission(): Promise<boolean> {
     const getPermission = await Permissions.query({ name: Notifications });
-    console.log('CAPACITOR-getPermission::', getPermission);
-
     const result = await PushNotifications.requestPermission();
-    return {
-      getPermission,
-      requestPermission: result,
-    };
-    // return result.granted || false;
+    if (result.granted === true && getPermission.state === 'granted') {
+      return true;
+    }
+
+    return false;
   }
 
   async requestPermission(): Promise<void> {
@@ -152,10 +153,11 @@ export class PushNotificationService {
     return visited;
   }
 
-  async checkPermission(type: string, where: string): Promise<boolean> {
+
+  async checkPermission(type: PermissionTypes, where: string): Promise<boolean> {
     const visited = this._visitedCache();
     switch (type) {
-      case "isFirstVisit":
+      case PermissionTypes.firstVisit:
         if (!visited.includes(where) && await this.hasPermission()) {
           return true;
         }
@@ -168,7 +170,7 @@ export class PushNotificationService {
    * required to prompt user for allowing permission for Push notification
    * this function would only store unique visit, duplicates get filtered out.
    */
-  recordVisit(snapshot: NavigationEnd): void {
+  recordVisit(snapshot: RouterStateSnapshot): void {
     const visited = this._visitedCache();
     const newVisits = Array.from(new Set(visited.concat(snapshot.url)));
     this.storage.set('visited', newVisits);

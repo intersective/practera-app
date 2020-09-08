@@ -12,7 +12,7 @@ import { FastFeedbackService } from '../fast-feedback/fast-feedback.service';
 import { interval, timer, Subscription } from 'rxjs';
 import { map, takeUntil } from 'rxjs/operators';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
-import { PushNotificationService } from '@services/push-notification.service';
+import { PushNotificationService, PermissionTypes } from '@services/push-notification.service';
 
 const SAVE_PROGRESS_TIMEOUT = 10000;
 
@@ -493,9 +493,10 @@ export class AssessmentComponent extends RouterEnter {
    * @param isManualSave use to detect manual progress save
    */
   async submit(saveInProgress: boolean, goBack?: boolean, isManualSave?: boolean): Promise<any> {
-    const hasPNPermission = await this.pushNotificationService.checkPermission('isFirstVisit', '/app/assessment/');
+    const hasPNPermission = await this.pushNotificationService.checkPermission(PermissionTypes.firstVisit, '/app/assessment/');
 
     if (!hasPNPermission && this.assessment.type === 'moderated') {
+      this.pushNotificationService.recordVisit(this.router.routerState.snapshot);
       await this.notificationService.popUp('shortMessage', {
         message: 'Reminder: Please enable Push Notification to never lost track of important updates.'
       });;

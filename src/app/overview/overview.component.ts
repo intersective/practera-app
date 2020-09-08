@@ -1,10 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { BrowserStorageService } from '@services/storage.service';
 import { UtilsService } from '@services/utils.service';
 import { combineLatest, Observable, of } from 'rxjs';
 import { FastFeedbackService } from '../fast-feedback/fast-feedback.service';
-import { PushNotificationService } from '@services/push-notification.service';
+import { PushNotificationService, PermissionTypes } from '@services/push-notification.service';
 import { NotificationService } from '@shared/notification/notification.service';
 
 @Component({
@@ -21,6 +21,7 @@ export class OverviewComponent implements OnInit {
     private storage: BrowserStorageService,
     private utils: UtilsService,
     private route: ActivatedRoute,
+    private router: Router,
     private fastFeedbackService: FastFeedbackService,
     private pushNotificationService: PushNotificationService,
     private notificationService: NotificationService
@@ -28,10 +29,8 @@ export class OverviewComponent implements OnInit {
     this.isMobile = this.utils.isMobile();
   }
 
-  ngOnInit() {
-    this.pushNotificationService.initiatePushNotification().then(() => {
-      console.log('done');
-    });
+  async ngOnInit() {
+    await this.pushNotificationService.initiatePushNotification();
     this.initiator$.subscribe(() => {
       this.programName = this.storage.getUser().programName;
       this.fastFeedbackService.pullFastFeedback().subscribe();
@@ -39,7 +38,8 @@ export class OverviewComponent implements OnInit {
   }
 
   async ionViewDidEnter() {
-    if (await this.pushNotificationService.checkPermission('isFirstVisit', '/app/home')) {
+    if (await this.pushNotificationService.checkPermission(PermissionTypes.firstVisit, '/app/home')) {
+      this.pushNotificationService.recordVisit(this.router.routerState.snapshot);
       this.notificationService.popUp('shortMessage', {
         message: 'Reminder: Please enable Push Notification to never lost track of important updates.'
       });
