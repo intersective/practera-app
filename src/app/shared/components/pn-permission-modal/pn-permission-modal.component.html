@@ -1,19 +1,26 @@
-<ion-content color="light" class="pop-up-content" [ngClass]="{'desktop-view': !utils.isMobile()}" text-center>
+<ion-content color="light" class="pop-up-content" text-center>
 
   <div class="image-content">
     <div class="image">
-        <img alt="push notification permission" src='/assets/img/permissions off@2x.png'>
+      <img alt="push notification permission" src='/assets/img/permissions off@2x.png'>
     </div>
   </div>
 
   <div class="details-container ion-text-center">
+    <div class="div-after-img">
+      <app-description class="body-1" [content]="message" [isInPopup]="true"></app-description>
+    </div>
+
     <ion-text color="medium" text-center>
-      <app-description class="body-1 gray-2" [content]="message" [isInPopup]="true"></app-description>
+      Please allow Practera to send you notifications.
     </ion-text>
 
-    <div class="div-after-img button-container">
-      <ion-button (click)="confirmed()" shape="round" color="primary" expand="full">OK</ion-button>
-    </div>
   </div>
 
+  <div class="div-after-img button-container">
+    <ion-item lines="none">
+      <ion-button (click)="confirmed()" slot="start" fill="clear" expand="full">NOT NOW</ion-button>
+      <ion-button (click)="confirmed()" slot="end" fill="clear" expand="full">YES, SURE</ion-button>
+    </ion-item>
+  </div>
 </ion-content>

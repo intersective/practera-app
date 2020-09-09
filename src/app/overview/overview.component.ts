@@ -42,18 +42,13 @@ export class OverviewComponent implements OnInit {
   }
 
   async checkPNPermission(snapshot: RouterStateSnapshot): Promise<void> {
-    // this.notificationService.popUp('shortMessage', {
-    //   message: 'Reminder: Please enable Push Notification to never lost track of important updates.'
-    // });
-
-    this.notificationService.modal(PNPermissionModalComponent, {
-      message: 'Reminder: Please enable Push Notification to never lost track of important updates.'
-    });
-
     const showPrompt = await this.pushNotificationService.promptForPermission(PermissionTypes.firstVisit, snapshot);
     if (showPrompt) {
-      this.notificationService.popUp('shortMessage', {
-        message: 'Reminder: Please enable Push Notification to never lost track of important updates.'
+      this.notificationService.modal(PNPermissionModalComponent, {
+        message: 'Would you like to be notified when you receive new push notification?',
+        snapshot,
+      }, {
+        cssClass: 'practera-popup push-notification-popup',
       });
     }
     return;
