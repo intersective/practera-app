@@ -92,9 +92,7 @@ export class SettingsComponent extends RouterEnter {
       this.router.routerState.snapshot
     );
     if (this.firstVisitPermission) {
-      this.notificationService.popUp('shortMessage', {
-        message: 'Reminder: Please enable Push Notification to never lost track of important updates.'
-      });
+      await this.notificationService.pushNotificationPermissionPopUp('Would you like to be enable push notification?');
     }
     return;
   }

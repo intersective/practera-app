@@ -3,6 +3,8 @@ import { Router, ActivatedRoute, ParamMap } from '@angular/router';
 import { UtilsService } from '@services/utils.service';
 import { RouterEnter } from '@services/router-enter.service';
 import { Event, EventGroup } from '@app/event-list/event-list.service';
+import { PushNotificationService, PermissionTypes } from '@services/push-notification.service';
+import { NotificationService } from '@shared/notification/notification.service';
 
 @Component({
   selector: 'app-events',
@@ -31,9 +33,14 @@ export class EventsComponent extends RouterEnter {
   constructor(
     public router: Router,
     private route: ActivatedRoute,
-    public utils: UtilsService
+    public utils: UtilsService,
+    private pushNotificationService: PushNotificationService,
+    private notificationService: NotificationService,
   ) {
     super(router);
+    route.data.subscribe(() => {
+      this.checkPNPermission(this.router.routerState.snapshot);
+    });
   }
 
   onEnter() {
@@ -68,5 +75,12 @@ export class EventsComponent extends RouterEnter {
     setTimeout(() => {
       this.assessment.onEnter();
     });
+  }
+
+  async checkPNPermission(snapshot) {
+    const promptForPermission = await this.pushNotificationService.promptForPermission(PermissionTypes.firstVisit, snapshot);
+    if (promptForPermission) {
+      await this.notificationService.pushNotificationPermissionPopUp('Would you like to be notified when you receive event updates?');
+    }
   }
 }

@@ -6,7 +6,6 @@ import { combineLatest, Observable, of } from 'rxjs';
 import { FastFeedbackService } from '../fast-feedback/fast-feedback.service';
 import { PushNotificationService, PermissionTypes } from '@services/push-notification.service';
 import { NotificationService } from '@shared/notification/notification.service';
-import { PNPermissionModalComponent } from '@shared/components/pn-permission-modal/pn-permission-modal.component';
 
 @Component({
   selector: 'app-overview',
@@ -44,12 +43,7 @@ export class OverviewComponent implements OnInit {
   async checkPNPermission(snapshot: RouterStateSnapshot): Promise<void> {
     const showPrompt = await this.pushNotificationService.promptForPermission(PermissionTypes.firstVisit, snapshot);
     if (showPrompt) {
-      this.notificationService.modal(PNPermissionModalComponent, {
-        message: 'Would you like to be notified when you receive new push notification?',
-        snapshot,
-      }, {
-        cssClass: 'practera-popup push-notification-popup',
-      });
+      await this.notificationService.pushNotificationPermissionPopUp('Would you like to be notified when you receive new push notification?');
     }
     return;
   }

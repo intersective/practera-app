@@ -490,9 +490,7 @@ export class AssessmentComponent extends RouterEnter {
     const promptForPermission = await this.pushNotificationService.promptForPermission(PermissionTypes.firstVisit, this.router.routerState.snapshot);
 
     if (promptForPermission && this.assessment.type === 'moderated') {
-      await this.notificationService.popUp('shortMessage', {
-        message: 'Reminder: Please enable Push Notification to never lost track of important updates.'
-      });;
+      await this.notificationService.pushNotificationPermissionPopUp('Would you like to be notified when you receive feedback for your assessment?');
     }
   }
 
