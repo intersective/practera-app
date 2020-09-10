@@ -53,6 +53,7 @@ export class MockRouter extends SpyObject {
   navigate;
   events;
   url;
+  routerState;
 
   constructor() {
     super(Router);
@@ -69,6 +70,36 @@ export class MockRouter extends SpyObject {
       TEST_EVENT.urlAfterRedirects,
     ));
     this.url = 'abc';
+    this.prop('routerState', {
+      snapshot: {}
+    });
+  }
+}
+
+export class MockActivatedRouter extends MockRouter {
+  navigate;
+  events;
+  url;
+  snapshot;
+
+  constructor() {
+    super();
+    const TEST_EVENT: NavigationEnd = {
+      id: 1,
+      url: '/test',
+      urlAfterRedirects: 'test/test',
+    };
+
+    this.navigate = this.spy('navigate');
+    this.events = of(new NavigationEnd(
+      TEST_EVENT.id,
+      TEST_EVENT.url,
+      TEST_EVENT.urlAfterRedirects,
+    ));
+    this.url = 'abc';
+    this.snapshot = {
+      url: TEST_EVENT.url,
+    };
   }
 }
 
