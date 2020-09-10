@@ -27,9 +27,7 @@ export class OverviewComponent implements OnInit {
     private notificationService: NotificationService
   ) {
     this.isMobile = this.utils.isMobile();
-    route.data.subscribe(() => {
-      this.checkPNPermission(router.routerState.snapshot);
-    });
+    route.data.subscribe(() => this.checkPNPermission(router.routerState.snapshot));
   }
 
   ngOnInit() {

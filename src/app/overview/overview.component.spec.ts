@@ -97,9 +97,9 @@ describe('OverviewComponent', () => {
         },
         {
           provide: NotificationService,
-          useValue: jasmine.createSpyObj('NotificationService', [
-            'pushNotificationPermissionPopUp'
-          ])
+          useValue: jasmine.createSpyObj('NotificationService', {
+            'pushNotificationPermissionPopUp': Promise.resolve(true)
+          })
         },
       ]
     }).compileComponents();
@@ -123,6 +123,23 @@ describe('OverviewComponent', () => {
     expect(component).toBeTruthy();
   });
 
+  describe('on native app', () => {
+    it('should try to show popup if permission not granted', fakeAsync(() => {
+      // recreate component to test constructor
+      TestBed.createComponent(OverviewComponent);
+      flushMicrotasks();
+      expect(notificationSpy.pushNotificationPermissionPopUp).toHaveBeenCalled();
+    }));
+
+    it('should not popup if permission has been granted', fakeAsync(() => {
+      pushNotificationSpy.promptForPermission = jasmine.createSpy('promptForPermission').and.returnValue(Promise.resolve(false));
+      // recreate component to test constructor
+      TestBed.createComponent(OverviewComponent);
+      flushMicrotasks();
+      expect(notificationSpy.pushNotificationPermissionPopUp).not.toHaveBeenCalled();
+    }));
+  });
+
   describe('ngOnInit', () => {
     beforeEach(() => {
       component.ngOnInit();
@@ -136,11 +153,6 @@ describe('OverviewComponent', () => {
       expect(pushNotificationSpy.initiatePushNotification).toHaveBeenCalled();
       expect(pushNotificationSpy.promptForPermission).toHaveBeenCalled();
     });
-
-    it('should try to show popup if permission not granted on native device', fakeAsync(() => {
-      flushMicrotasks();
-      expect(notificationSpy.pushNotificationPermissionPopUp).toHaveBeenCalled();
-    }));
   });
 
   describe('view', () => {
