@@ -501,7 +501,6 @@ export class AssessmentComponent extends RouterEnter {
    * @param isManualSave use to detect manual progress save
    */
   async submit(saveInProgress: boolean, goBack?: boolean, isManualSave?: boolean): Promise<any> {
-    await this.checkPNPermission();
     /**
      * checking if this is a submission or progress save
      * - if it's a submission
@@ -523,6 +522,7 @@ export class AssessmentComponent extends RouterEnter {
         return;
       }
     } else {
+      await this.checkPNPermission();
       this.submitting = true;
     }
     this.saving = true;
