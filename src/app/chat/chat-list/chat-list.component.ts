@@ -30,6 +30,7 @@ export class ChatListComponent {
   ) {
     this.newrelic.setPageViewName('Chat list');
     this.utils.getEvent('chat:new-message').subscribe(event => this._loadChatData());
+    this.utils.getEvent('chat:info-update').subscribe(event => this._loadChatData());
     if (!this.utils.isMobile()) {
       this.utils.getEvent('chat-badge-update').subscribe(event => {
         const chatIndex = this.chatList.findIndex(data => data.channelId === event.channelId);

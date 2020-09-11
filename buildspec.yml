@@ -23,7 +23,7 @@ phases:
   post_build:
     commands:
       - aws s3 sync www/ s3://$S3_BUCKET/ --delete
-      - aws cloudfront create-invalidation --distribution-id $CF_DIST_ID --paths '/*'
+      - for i in $CF_DIST_ID;do aws cloudfront create-invalidation --distribution-id $i --paths '/*';done
       - echo Build completed on `date`
 artifacts:
   type: zip
