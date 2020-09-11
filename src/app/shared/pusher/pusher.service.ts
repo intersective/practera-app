@@ -174,6 +174,9 @@ export class PusherService {
    * (use case: after switching program)
    */
   unsubscribeChannels(): void {
+    if (!this.channels.notification) {
+      return ;
+    }
     this.channels.notification.subscription.unbind_all();
     // handle issue logout at first load of program-switching view
     if (this.pusher) {
@@ -237,7 +240,7 @@ export class PusherService {
           subscription: this.pusher.subscribe(channelName)
         };
         channel.subscription
-          .bind('typing-event', data => {
+          .bind('client-typing-event', data => {
             this.utils.broadcastEvent('typing-' + channelName, data);
           })
           .bind('pusher:subscription_succeeded', data => {
@@ -255,13 +258,17 @@ export class PusherService {
 
   /**
    * When the current user start typing, send notification to the Pusher channel
+   * from pusher doc
+   * - A client event must have a name prefixed with 'client'- or it will be rejected by the server.
+   * - Client events can only be triggered on 'private' and 'presence' channels because they require authentication
+   * - private channel name start with 'private-' and presence channel name start with 'presence-'
    */
   triggerTyping(channelName): void {
     const channel = this.channels.chat.find(c => c.name === channelName);
     if (!channel) {
       return;
     }
-    channel.subscription.trigger('typing-event', {
+    channel.subscription.trigger('client-typing-event', {
       user: this.storage.getUser().name
     });
   }

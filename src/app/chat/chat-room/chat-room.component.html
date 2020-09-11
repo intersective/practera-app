@@ -34,7 +34,7 @@
 
         <ng-container *ngIf="!message.file; else attachment">
           <div class="message-body">
-            <ng-container *ngIf="!message.noAvatar">
+            <ng-container *ngIf="!message.isSender">
               <p class="seen-text subtitle-1 black">{{message.senderName}}</p>
               <p class="seen-text caption gray-2" *ngIf="chatChannel.roles.length > 1">{{message.senderRole}}</p>
             </ng-container>
@@ -45,7 +45,7 @@
         <ng-template #attachment>
           <ng-container *ngIf="message.file && message.file.mimetype.includes('video')">
             <div class="message-body video-attachment-container">
-              <ng-container *ngIf="!message.noAvatar">
+              <ng-container *ngIf="!message.isSender">
                 <p class="seen-text subtitle-1 black">{{message.senderName}}</p>
                 <p class="seen-text caption gray-2" *ngIf="chatChannel.roles.length > 1">{{message.senderRole}}</p>
               </ng-container>
@@ -64,7 +64,7 @@
 
           <ng-container *ngIf="message.file && message.file.mimetype.includes('image')">
             <div class="message-body image" (click)="preview(message.file)">
-              <ng-container *ngIf="!message.noAvatar">
+              <ng-container *ngIf="!message.isSender">
                 <p class="seen-text subtitle-1 black">{{message.senderName}}</p>
                 <p class="seen-text caption gray-2" *ngIf="chatChannel.roles.length > 1">{{message.senderRole}}</p>
               </ng-container>
@@ -76,7 +76,7 @@
             !message.file.mimetype.includes('image') && !message.file.mimetype.includes('video')
           )">
           <div class="message-body">
-            <ng-container *ngIf="!message.noAvatar">
+            <ng-container *ngIf="!message.isSender">
               <p class="seen-text subtitle-1 black">{{message.senderName}}</p>
               <p class="seen-text caption gray-2" *ngIf="chatChannel.roles.length > 1">{{message.senderRole}}</p>
             </ng-container>
