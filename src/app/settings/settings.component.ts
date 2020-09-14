@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { AuthService } from '../auth/auth.service';
 import { SettingService } from './setting.service';
 import { BrowserStorageService } from '@services/storage.service';
@@ -9,7 +9,7 @@ import { RouterEnter } from '@services/router-enter.service';
 import { FastFeedbackService } from '../fast-feedback/fast-feedback.service';
 import { FilestackService } from '@shared/filestack/filestack.service';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
-import { PushNotificationService } from '@services/push-notification.service';
+import { PushNotificationService, PermissionTypes } from '@services/push-notification.service';
 
 @Component({
   selector: 'app-settings',
@@ -41,9 +41,11 @@ export class SettingsComponent extends RouterEnter {
   cdn = 'https://cdn.filestackcontent.com/resize=fit:crop,width:';
   interests: string;
   associated: any;
+  firstVisitPermission: any;
 
   constructor (
     public router: Router,
+    private activatedRoute: ActivatedRoute,
     private authService: AuthService,
     private settingService: SettingService,
     public storage: BrowserStorageService,
@@ -55,6 +57,10 @@ export class SettingsComponent extends RouterEnter {
     private pushNotificationService: PushNotificationService
   ) {
     super(router);
+    // forced "revisit" of this component whenever become reactivated
+    activatedRoute.data.subscribe(fragment => {
+      this.checkPermission();
+    });
   }
 
   onEnter() {
@@ -73,12 +79,22 @@ export class SettingsComponent extends RouterEnter {
     this.returnLtiUrl = this.storage.getUser().LtiReturnUrl;
   }
 
-  async ionViewDidEnter() {
-    if (await this.pushNotificationService.checkPermission('isFirstVisit', '/app/home')) {
-      this.notificationService.popUp('shortMessage', {
-        message: 'Reminder: Please enable Push Notification to never lose track of important updates.'
-      });
+  /**
+   * check if current device has Push Notification permission allowed
+   * criterias:
+   *   - first visit of this page (nothing recording in localStorage)
+   *   - permission allowed
+   * @return {Promise<void>}
+   */
+  async checkPermission(): Promise<void> {
+    this.firstVisitPermission = await this.pushNotificationService.promptForPermission(
+      PermissionTypes.firstVisit,
+      this.router.routerState.snapshot
+    );
+    if (this.firstVisitPermission) {
+      await this.notificationService.pushNotificationPermissionPopUp('Would you like to be enable push notification?');
     }
+    return;
   }
 
   // loading pragram image to settings page by resizing it depend on device.

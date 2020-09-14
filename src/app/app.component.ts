@@ -1,9 +1,8 @@
 import { Component, OnInit, NgZone } from '@angular/core';
-import { Router, NavigationEnd } from '@angular/router';
+import { Router } from '@angular/router';
 import { Platform } from '@ionic/angular';
 import { UtilsService } from '@services/utils.service';
 import { SharedService } from '@services/shared.service';
-import { PushNotificationService } from '@services/push-notification.service';
 import { Observable } from 'rxjs';
 import { filter } from 'rxjs/operators';
 import { AuthService } from './auth/auth.service';
@@ -20,7 +19,6 @@ import { DomSanitizer } from '@angular/platform-browser';
 })
 export class AppComponent implements OnInit {
   customHeader: string | any;
-  routeEvents: Observable<NavigationEnd>;
 
   constructor(
     private platform: Platform,
@@ -33,16 +31,12 @@ export class AppComponent implements OnInit {
     private pusherService: PusherService,
     private ngZone: NgZone,
     private newRelic: NewRelicService,
-    public sanitizer: DomSanitizer,
-    private pushNotificationService: PushNotificationService
+    public sanitizer: DomSanitizer
     // private splashScreen: SplashScreen,
     // private statusBar: StatusBar
   ) {
     this.customHeader = null;
     this.initializeApp();
-    this.routeEvents = router.events.pipe(
-      filter(event => event instanceof NavigationEnd)
-    ) as Observable<NavigationEnd>;
   }
 
   // force every navigation happen under radar of angular
@@ -59,10 +53,6 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.routeEvents.subscribe(res => {
-      this.pushNotificationService.recordVisit(res);
-    });
-
     this.configVerification();
     this.sharedService.onPageLoad();
 
