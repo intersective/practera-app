@@ -10,8 +10,7 @@
           </ion-item>
           <ng-container *ngIf="choice.explanation && choice.explanation.changingThisBreaksApplicationSecurity">
             <div class="white-space-normal explanation"
-            [ngClass]="{ 'explanation-container': i !== submission.answer.length - 1 &&
-             (choice.explanation && choice.explanation.changingThisBreaksApplicationSecurity)}">
+            [ngClass]="{ 'explanation-container': i !== question.choices.length - 1 }">
               <p class="subtitle-2 title">Explanation</p>
               <p class="white-space-normal body-2 gray-3" [innerHtml]="choice.explanation"></p>
             </div>
@@ -19,12 +18,6 @@
         </ng-container>
       </ng-container>
     </ion-list>
-    <!-- @TODO need to fix this in a separate story explanation in inside choice -->
-    <!-- This will comment as a safe step but we need to implement this -->
-    <!-- <div *ngIf="submission.explanation && submission.explanation.changingThisBreaksApplicationSecurity" class="q-reviews">
-      <ion-label class="q-title subtitle-2 gray-3">Explanation</ion-label>
-      <p class="paragraph gray-3" [innerHtml]="submission.explanation"></p>
-    </div> -->
   </div>
 </ng-container>
 
@@ -59,15 +52,22 @@
 <ng-container *ngIf="doAssessment">
   <div class="ion-padding-horizontal ion-padding-bottom">
     <ion-list class="no-bg">
-      <ion-item class="choice-item" *ngFor="let choice of question.choices; let i = index" [lines]="i == question.choices.length - 1 ? 'none' : ''">
-        <ion-label class="white-space-normal body-2 black">{{ choice.name }}</ion-label>
-        <ion-checkbox
-          [checked]="submission.answer ? submission.answer.includes(choice.id) : false"
-          [value]="choice.id"
-          mode="md"
-          (ionChange)="onChange(choice.id)"
-          [disabled]="control.disabled"></ion-checkbox>
-      </ion-item>
+      <ng-container *ngFor="let choice of question.choices; let i = index">
+        <ion-item class="choice-item" [lines]="i == question.choices.length - 1 ? 'none' : '' || checkInnerValue(choice.id) ? 'none': ''">
+          <ion-label class="white-space-normal body-2 black">{{ choice.name }}</ion-label>
+          <ion-checkbox [checked]="submission.answer ? submission.answer.includes(choice.id) : false"
+            [value]="choice.id" mode="md"
+            (ionChange)="onChange(choice.id)"
+            [disabled]="control.disabled"></ion-checkbox>
+        </ion-item>
+        <ng-container
+        *ngIf="control.disabled && choice.explanation && choice.explanation.changingThisBreaksApplicationSecurity && checkInnerValue(choice.id)">
+          <div class="white-space-normal explanation" [ngClass]="{ 'explanation-container': i !== question.choices.length - 1}">
+            <p class="subtitle-2 title">Explanation</p>
+            <p class="white-space-normal body-2 gray-3" [innerHtml]="choice.explanation"></p>
+          </div>
+        </ng-container>
+      </ng-container>
     </ion-list>
     <ion-text *ngFor="let error of errors" color="danger">
       <p>{{error}}</p>
