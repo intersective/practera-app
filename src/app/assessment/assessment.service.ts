@@ -212,7 +212,7 @@ export class AssessmentService {
               choices.push({
                 id: eachChoice.id,
                 name: eachChoice.name,
-                explanation: this.sanitizer.bypassSecurityTrustHtml(eachChoice.explanation) || null,
+                explanation: eachChoice.explanation ? this.sanitizer.bypassSecurityTrustHtml(eachChoice.explanation) : null,
               });
               if (eachChoice.description) {
                 info += '<p>' + eachChoice.name + ' - ' + eachChoice.description + '</p>';
