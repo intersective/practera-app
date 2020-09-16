@@ -67,7 +67,7 @@ export interface Question {
 export interface Choice {
   id: number;
   name: string;
-  explanation?: string;
+  explanation?: string | any;
 }
 
 export interface TeamMember {
@@ -212,7 +212,7 @@ export class AssessmentService {
               choices.push({
                 id: eachChoice.id,
                 name: eachChoice.name,
-                explanation: eachChoice.explanation || null,
+                explanation: eachChoice.explanation ? this.sanitizer.bypassSecurityTrustHtml(eachChoice.explanation) : null,
               });
               if (eachChoice.description) {
                 info += '<p>' + eachChoice.name + ' - ' + eachChoice.description + '</p>';
