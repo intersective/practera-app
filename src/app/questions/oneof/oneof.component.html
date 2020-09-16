@@ -8,16 +8,16 @@
               <ion-label class="white-space-normal body-2 gray-3">{{ choice.name }}</ion-label>
               <ion-radio [value]="choice.id" disabled mode="md"></ion-radio>
             </ion-item>
+            <ng-container *ngIf="choice.explanation && choice.explanation.changingThisBreaksApplicationSecurity">
+                <div class="white-space-normal explanation">
+                  <p class="subtitle-2 title">Explanation</p>
+                  <p class="white-space-normal body-2 gray-3" [innerHtml]="choice.explanation"></p>
+                </div>
+            </ng-container>
           </ng-container>
         </ng-container>
       </ion-radio-group>
     </ion-list>
-    <!-- @TODO need to fix this in a separate story explanation in inside choice -->
-    <!-- This will comment as a safe step but we need to implement this -->
-    <!-- <div *ngIf="submission.explanation && submission.explanation.changingThisBreaksApplicationSecurity" class="q-reviews">
-      <ion-label class="q-title gray-3">Explanation</ion-label>
-      <p class="paragraph" [innerHtml]="submission.explanation"></p>
-    </div> -->
   </div>
 </ng-container>
 
@@ -55,10 +55,19 @@
   <div class="ion-padding-horizontal ion-padding-bottom">
     <ion-list class="no-bg">
       <ion-radio-group [value]="submission.answer" #answerEle (ionChange)="onChange(answerEle.value)">
-        <ion-item class="choice-item" *ngFor="let choice of question.choices; let i = index" [lines]="i == question.choices.length - 1 ? 'none' : ''">
-          <ion-label class="white-space-normal body-2 black">{{ choice.name }}</ion-label>
-          <ion-radio [value]="choice.id" mode="md" [disabled]="control.disabled"></ion-radio>
-        </ion-item>
+        <ng-container *ngFor="let choice of question.choices; let i = index">
+          <ion-item class="choice-item" [lines]="i == question.choices.length - 1 ? 'none' : ''|| checkInnerValue(choice.id) ? 'none': ''">
+            <ion-label class="white-space-normal body-2 black">{{ choice.name }}</ion-label>
+            <ion-radio [value]="choice.id" mode="md" [disabled]="control.disabled"></ion-radio>
+          </ion-item>
+          <ng-container
+          *ngIf="control.disabled && choice.explanation && choice.explanation.changingThisBreaksApplicationSecurity && checkInnerValue(choice.id)">
+            <div class="white-space-normal explanation" [ngClass]="{ 'explanation-container': i !== question.choices.length - 1}">
+              <p class="subtitle-2 title">Explanation</p>
+              <p class="white-space-normal body-2 gray-3" [innerHtml]="choice.explanation"></p>
+            </div>
+          </ng-container>
+        </ng-container>
       </ion-radio-group>
     </ion-list>
   </div>
