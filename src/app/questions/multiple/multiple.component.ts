@@ -137,4 +137,18 @@ export class MultipleComponent implements ControlValueAccessor, OnInit {
     return this.question.audience.length > 1 && this.question.audience.includes('reviewer');
   }
 
+  /**
+   * This method checking passed choice id is inside the answer array.
+   * innerValue is the question answers and it's a array for checkbox questions
+   * @param choiceId question choice ID
+   */
+  checkInnerValue(choiceId) {
+    if (!choiceId) {
+      return;
+    }
+    if (this.utils.indexOf(this.innerValue, choiceId) > -1) {
+      return true;
+    }
+  }
+
 }
