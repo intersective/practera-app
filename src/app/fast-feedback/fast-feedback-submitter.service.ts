@@ -12,8 +12,8 @@ export class FastFeedbackSubmitterService {
     private request: RequestService
   ) {}
 
-  submit(data, params) {
-    return this.request.post(api.submit, data, {params: params});
+  submit(data, params: {}) {
+    return this.request.post(api.submit, data, { params });
   }
 
 }
