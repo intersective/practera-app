@@ -167,6 +167,13 @@ describe('FastFeedbackComponent', () => {
         });
       }));
 
+      it('should still submit, if meta is undefined', fakeAsync(() => {
+        component.meta = undefined;
+        component.submit();
+
+        tick(2500);
+        expect(fastfeedbackSpy.submit).toHaveBeenCalled();
+      }));
     });
   });
 });
