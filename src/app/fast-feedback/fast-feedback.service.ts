@@ -50,7 +50,7 @@ export class FastFeedbackService {
   fastFeedbackModal(
     props: {
       questions?: Array<Question>;
-      meta?: Meta;
+      meta?: Meta | Object;
     },
     modalOnly: boolean = false
   ): Promise<HTMLIonModalElement | void> {
