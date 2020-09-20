@@ -126,7 +126,7 @@ describe('FastFeedbackService', () => {
     it('should not popup modal when meta is not available', () => {
       requestSpy.get.and.returnValue(of({
         data: {
-          slider: [1,2],
+          slider: [1, 2],
           meta: undefined,
         }
       }));
