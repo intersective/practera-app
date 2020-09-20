@@ -60,21 +60,17 @@ export class FastFeedbackComponent implements OnInit {
       });
     });
 
-    // without meta value, fastfeedback submission would
-    // never work(made backward compatible)
     let params = {};
-    if (this.meta !== undefined) {
-      // prepare parameters
-      params = {
-        context_id: this.meta.context_id
-      };
-      // if team_id exist, pass team_id
-      if (this.meta.team_id) {
-        params['team_id'] = this.meta.team_id;
-      } else if (this.meta.target_user_id) {
-        // otherwise, pass target_user_id
-        params['target_user_id'] = this.meta.target_user_id;
-      }
+    // prepare parameters
+    params = {
+      context_id: this.meta.context_id
+    };
+    // if team_id exist, pass team_id
+    if (this.meta.team_id) {
+      params['team_id'] = this.meta.team_id;
+    } else if (this.meta.target_user_id) {
+      // otherwise, pass target_user_id
+      params['target_user_id'] = this.meta.target_user_id;
     }
 
     const nrFastFeedbackSubmissionTracer = this.newRelic.createTracer('fastfeeback submission');
