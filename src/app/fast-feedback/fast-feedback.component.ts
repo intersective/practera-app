@@ -60,9 +60,8 @@ export class FastFeedbackComponent implements OnInit {
       });
     });
 
-    let params = {};
     // prepare parameters
-    params = {
+    const params = {
       context_id: this.meta.context_id
     };
     // if team_id exist, pass team_id
