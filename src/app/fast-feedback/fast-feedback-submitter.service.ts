@@ -13,7 +13,7 @@ export class FastFeedbackSubmitterService {
   ) {}
 
   submit(data, params) {
-    return this.request.post(api.submit, data, {params: params});
+    return this.request.post(api.submit, data, { params });
   }
 
 }
