@@ -9,11 +9,13 @@ import {
   FormGroup,
   FormBuilder
 } from '@angular/forms';
+import { IonContent, ModalController } from '@ionic/angular';
 
 import { AuthService } from '../auth.service';
 import { BrowserStorageService } from '@services/storage.service';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
 import { SwitcherService } from '../../switcher/switcher.service';
+import { TermsConditionsPreviewComponent } from '../terms-conditions-preview/terms-conditions-preview.component';
 
 @Component({
   selector: 'app-auth-registration',
@@ -36,6 +38,8 @@ export class AuthRegistrationComponent implements OnInit {
   // validation errors array
   errors: Array<any> = [];
   showPassword = false;
+  // for unregisterd users using direct link
+  unRegisteredDirectLink = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -44,7 +48,8 @@ export class AuthRegistrationComponent implements OnInit {
     private storage: BrowserStorageService,
     private notificationService: NotificationService,
     private newRelic: NewRelicService,
-    private switcherService: SwitcherService
+    private switcherService: SwitcherService,
+    private modalController: ModalController,
   ) {
     this.initForm();
   }
@@ -57,6 +62,9 @@ export class AuthRegistrationComponent implements OnInit {
         : this.domain;
     this.validateQueryParams();
     this.newRelic.setPageViewName('registration');
+    if (this.storage.get('unRegisteredDirectLink')) {
+      this.unRegisteredDirectLink = true;
+    }
   }
 
   initForm() {
@@ -115,7 +123,6 @@ export class AuthRegistrationComponent implements OnInit {
                         datum.config && datum.config.auth_via_contact_number
                       );
                     });
-
                     if (data && data.config) {
                       if (data.config.auth_via_contact_number === true) {
                         this.hide_password = true;
@@ -160,6 +167,9 @@ export class AuthRegistrationComponent implements OnInit {
     if (this.validateRegistration()) {
       const nrRegisterTracer = this.newRelic.createTracer('registering');
       this.newRelic.actionText('Validated registration');
+      if (this.unRegisteredDirectLink) {
+        this._setupPassword();
+      }
       this.authService
         .saveRegistration({
           password: this.confirmPassword,
@@ -219,6 +229,15 @@ export class AuthRegistrationComponent implements OnInit {
   validateRegistration() {
     let isValid = true;
     this.errors = [];
+    if (this.unRegisteredDirectLink) {
+      if (!this.isAgreed) {
+        this.errors.push('You need to agree with terms and Conditions.');
+        isValid = false;
+        return isValid;
+      } else {
+        return isValid;
+      }
+    }
     if (this.hide_password) {
       if (!this.isAgreed) {
         this.errors.push('You need to agree with terms and Conditions.');
@@ -281,6 +300,29 @@ export class AuthRegistrationComponent implements OnInit {
         },
         redirect ? redirect : false
       );
+  }
+
+  private _setupPassword() {
+    if (this.password) {
+      this.user.password = this.password;
+    } else {
+      this.user.password = this.autoGeneratePassword();
+    }
+    this.confirmPassword = this.user.password;
+  }
+
+  async termsAndConditionsPopup() {
+    const modal = await this.modalController.create({
+      component: TermsConditionsPreviewComponent,
+      swipeToClose: false,
+      backdropDismiss: false
+    });
+    await modal.present();
+    modal.onWillDismiss().then((modalData) => {
+      if (modalData.data && (modalData.data.isAgreed)) {
+        this.isAgreed = modalData.data.isAgreed;
+      }
+    });
   }
 
 }
