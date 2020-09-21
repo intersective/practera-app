@@ -50,7 +50,7 @@ export class FastFeedbackService {
   fastFeedbackModal(
     props: {
       questions?: Array<Question>;
-      meta?: Meta;
+      meta?: Meta | Object;
     },
     modalOnly: boolean = false
   ): Promise<HTMLIonModalElement | void> {
@@ -74,6 +74,13 @@ export class FastFeedbackService {
       switchMap(res => {
         // don't open it again if there's one opening
         const fastFeedbackIsOpened = this.storage.get('fastFeedbackOpening');
+
+        // if any of either slider or meta is empty or not available,
+        // should just skip the modal popup
+        const { slider, meta } = res.data;
+        if (this.utils.isEmpty(slider) || this.utils.isEmpty(meta)) {
+          return of(res);
+        }
 
         // popup instant feedback view if question quantity found > 0
         if (!this.utils.isEmpty(res.data) && res.data.slider.length > 0 && !fastFeedbackIsOpened) {
