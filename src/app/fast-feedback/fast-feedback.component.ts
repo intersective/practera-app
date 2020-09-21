@@ -59,6 +59,7 @@ export class FastFeedbackComponent implements OnInit {
         choice_id: answer,
       });
     });
+
     // prepare parameters
     const params = {
       context_id: this.meta.context_id

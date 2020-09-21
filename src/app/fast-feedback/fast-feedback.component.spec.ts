@@ -166,7 +166,6 @@ describe('FastFeedbackComponent', () => {
           context_id: 1
         });
       }));
-
     });
   });
 });
