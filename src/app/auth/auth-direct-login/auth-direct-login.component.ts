@@ -69,6 +69,7 @@ export class AuthDirectLoginComponent implements OnInit {
     const contextId = +this.route.snapshot.paramMap.get('ctxt');
     const assessmentId = +this.route.snapshot.paramMap.get('asmt');
     const submissionId = +this.route.snapshot.paramMap.get('sm');
+    const topicId = +this.route.snapshot.paramMap.get('top');
     // clear the cached data
     this.utils.clearCache();
     if (!redirect || !timelineId) {
@@ -110,7 +111,16 @@ export class AuthDirectLoginComponent implements OnInit {
         if (this.utils.isMobile()) {
           return this._saveOrRedirect(['assessment', 'assessment', activityId, contextId, assessmentId], redirectLater);
         } else {
-          return this._saveOrRedirect(['app', 'activity', activityId, { task: 'assessment', task_id: assessmentId, context_id: contextId}], redirectLater);
+          return this._saveOrRedirect(['app', 'activity', activityId, { task: 'assessment', task_id: assessmentId, context_id: contextId }], redirectLater);
+        }
+      case 'topic':
+        if (!activityId || !topicId) {
+          return this._saveOrRedirect(['app', 'home'], redirectLater);
+        }
+        if (this.utils.isMobile()) {
+          return this._saveOrRedirect(['topic', activityId, topicId], redirectLater);
+        } else {
+          return this._saveOrRedirect(['app', 'activity', activityId, { task: 'topic', task_id: topicId }], redirectLater);
         }
       case 'reviews':
         return this._saveOrRedirect(['app', 'reviews'], redirectLater);
