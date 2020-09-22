@@ -125,4 +125,18 @@ export class OneofComponent implements ControlValueAccessor, OnInit {
     return this.question.audience.length > 1 && this.question.audience.includes('reviewer');
   }
 
+  /**
+   * This method checking is passed choice id is the selected answer.
+   * innerValue is the question answer
+   * @param choiceId question choice ID
+   */
+  checkInnerValue(choiceId) {
+    if (!choiceId) {
+      return;
+    }
+    if (choiceId === this.innerValue) {
+      return true;
+    }
+  }
+
 }
