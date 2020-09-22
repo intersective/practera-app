@@ -9,7 +9,7 @@ import {
   FormGroup,
   FormBuilder
 } from '@angular/forms';
-import { IonContent, ModalController } from '@ionic/angular';
+import { ModalController } from '@ionic/angular';
 
 import { AuthService } from '../auth.service';
 import { BrowserStorageService } from '@services/storage.service';
