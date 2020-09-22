@@ -7,6 +7,7 @@ import { SwitcherService } from '../../switcher/switcher.service';
 import { UtilsService } from '@services/utils.service';
 import { BrowserStorageService } from '@services/storage.service';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
+import { async } from '../../../../node_modules/@types/q';
 
 @Component({
   selector: 'app-auth-direct-login',
@@ -33,15 +34,21 @@ export class AuthDirectLoginComponent implements OnInit {
       return this._error();
     }
 
-    try {
-      const nrDirectLoginTracer = this.newRelic.createTracer('Processing direct login');
-      await this.authService.directLogin({ authToken }).toPromise();
-      await this.switcherService.getMyInfo().toPromise();
-      nrDirectLoginTracer();
-      return this._redirect();
-    } catch (err) {
-      this._error(err);
-    }
+    const nrDirectLoginTracer = this.newRelic.createTracer('Processing direct login');
+    // move try catch inside to timeout, because if try catch is outside it not catch errors happen inside timeout.
+    setTimeout(
+      async () => {
+        try {
+          await this.authService.directLogin({ authToken }).toPromise();
+          await this.switcherService.getMyInfo().toPromise();
+          nrDirectLoginTracer();
+          return this._redirect();
+        } catch (err) {
+          this._error(err);
+        }
+        // tslint:disable-next-line:align
+      }, 50
+    );
   }
 
   // force every navigation happen under radar of angular
@@ -62,6 +69,7 @@ export class AuthDirectLoginComponent implements OnInit {
     const contextId = +this.route.snapshot.paramMap.get('ctxt');
     const assessmentId = +this.route.snapshot.paramMap.get('asmt');
     const submissionId = +this.route.snapshot.paramMap.get('sm');
+    const topicId = +this.route.snapshot.paramMap.get('top');
     // clear the cached data
     this.utils.clearCache();
     if (!redirect || !timelineId) {
@@ -103,7 +111,16 @@ export class AuthDirectLoginComponent implements OnInit {
         if (this.utils.isMobile()) {
           return this._saveOrRedirect(['assessment', 'assessment', activityId, contextId, assessmentId], redirectLater);
         } else {
-          return this._saveOrRedirect(['app', 'activity', activityId, { task: 'assessment', task_id: assessmentId, context_id: contextId}], redirectLater);
+          return this._saveOrRedirect(['app', 'activity', activityId, { task: 'assessment', task_id: assessmentId, context_id: contextId }], redirectLater);
+        }
+      case 'topic':
+        if (!activityId || !topicId) {
+          return this._saveOrRedirect(['app', 'home'], redirectLater);
+        }
+        if (this.utils.isMobile()) {
+          return this._saveOrRedirect(['topic', activityId, topicId], redirectLater);
+        } else {
+          return this._saveOrRedirect(['app', 'activity', activityId, { task: 'topic', task_id: topicId }], redirectLater);
         }
       case 'reviews':
         return this._saveOrRedirect(['app', 'reviews'], redirectLater);

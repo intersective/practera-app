@@ -90,6 +90,9 @@ Run `npm run local` to start a development server on your local, and calling 127
   - `act` - activity id
   - `ctxt` - context id
   - `asmt` - assessment id
+- `topic` - redirect to topic page with the following parameters
+  - `act` - activity id
+  - `top` - topic id
 - `reviews` - redirect to reviews list page
 - `review` - redirect to assessment review page with the following parameters
   - `ctxt` - context id

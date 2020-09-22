@@ -101,7 +101,7 @@ describe('AuthDirectLoginComponent', () => {
     it('should pop up alert if auth token is not provided', fakeAsync(() => {
       const params = { authToken: null };
       routeSpy.snapshot.paramMap.get = jasmine.createSpy().and.callFake(key => params[key]);
-      tick();
+      tick(50);
       fixture.detectChanges();
       fixture.whenStable().then(() => {
         expect(notificationSpy.alert.calls.count()).toBe(1);
@@ -113,7 +113,7 @@ describe('AuthDirectLoginComponent', () => {
       routeSpy.snapshot.paramMap.get = jasmine.createSpy().and.callFake(key => params[key]);
       serviceSpy.directLogin.and.throwError('');
       fixture.detectChanges();
-      tick();
+      tick(50);
       fixture.detectChanges();
       expect(notificationSpy.alert.calls.count()).toBe(1);
       notificationSpy.alert.calls.first().args[0].buttons[0].handler();
@@ -139,7 +139,7 @@ describe('AuthDirectLoginComponent', () => {
       afterEach(fakeAsync(() => {
         routeSpy.snapshot.paramMap.get = jasmine.createSpy().and.callFake(key => tmpParams[key]);
         fixture.detectChanges();
-        tick();
+        tick(50);
         fixture.detectChanges();
         expect(serviceSpy.directLogin.calls.count()).toBe(1);
         expect(switcherSpy.getMyInfo.calls.count()).toBe(1);
