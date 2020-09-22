@@ -188,6 +188,7 @@ export class AuthRegistrationComponent implements OnInit {
               .subscribe(
                 async res => {
                   nrAutoLoginTracer();
+                  this.storage.remove('unRegisteredDirectLink');
                   const route = await this.switcherService.switchProgramAndNavigate(res.programs);
                   this.showPopupMessages('shortMessage', 'Registration success!', route);
                 },
