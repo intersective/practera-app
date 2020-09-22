@@ -10,6 +10,7 @@ import { FastFeedbackService } from '../fast-feedback/fast-feedback.service';
 import { FilestackService } from '@shared/filestack/filestack.service';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
 import { PushNotificationService, PermissionTypes } from '@services/push-notification.service';
+import { Capacitor } from '@capacitor/core';
 
 @Component({
   selector: 'app-settings',
@@ -18,6 +19,7 @@ import { PushNotificationService, PermissionTypes } from '@services/push-notific
 })
 
 export class SettingsComponent extends RouterEnter {
+  isNativeApp = Capacitor.isNative;
 
   routeUrl = '/app/settings';
   profile = {
@@ -116,6 +118,7 @@ export class SettingsComponent extends RouterEnter {
     this.newRelic.actionText('Open T&C link');
     window.open(this.termsUrl, '_system');
   }
+
   switchProgram() {
     if (this.returnLtiUrl) {
       this.newRelic.actionText('browse to LTI return link');
@@ -139,7 +142,7 @@ export class SettingsComponent extends RouterEnter {
 
   async goToSettingPermission() {
     const goSettingStatus = await this.pushNotificationService.goToAppSetting();
-    console.log('goSettingStatus::', goSettingStatus);
+    return goSettingStatus;
   }
 
   async getInterests() {

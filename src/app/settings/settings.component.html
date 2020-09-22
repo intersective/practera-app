@@ -34,7 +34,7 @@
 
     <div class="ion-margin-top support-mobile subtitle-1">
       <ion-label class="subtitle-2 gray-2">Support</ion-label>
-      <ion-item class="no-bg" (click)="goToSettingPermission()" lines="none">
+      <ion-item class="no-bg" (click)="goToSettingPermission()" lines="none" *ngIf="isNativeApp">
         <ion-icon class="ion-padding-end" color="primary" name="cog-outline"></ion-icon>
         Settings
         <ion-icon name="arrow-forward" color="medium" slot="end"></ion-icon>
@@ -79,7 +79,7 @@
             </ion-label>
           </div>
           <div class="ion-margin-top subtitle-1">
-            <ion-item class="no-bg" (click)="goToSettingPermission()" lines="none">
+            <ion-item class="no-bg" (click)="goToSettingPermission()" lines="none" *ngIf="isNativeApp">
               <ion-icon class="ion-padding-end" color="primary" name="cog-outline"></ion-icon>
               Settings
             </ion-item>
