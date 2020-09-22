@@ -1,0 +1,22 @@
+ion-toolbar {
+  border: none !important;
+  --border-width: 0px !important;
+}
+
+.subtitle-1 {
+  font-weight: var(--font-weight-medium) !important;
+  margin: 8px !important;
+}
+
+.iframe-box {
+  width: 100%;
+  border: none;
+  height: 85%;
+}
+
+ion-toolbar, ion-content {
+  --overflow: hidden;
+  .scroll-y {
+    overflow-y: hidden;
+  }
+}
