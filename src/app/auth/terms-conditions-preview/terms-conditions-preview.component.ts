@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ModalController } from '@ionic/angular';
 import { DomSanitizer } from '@angular/platform-browser';
-import { EmbedVideoService } from 'ngx-embed-video';
 
 @Component({
   selector: 'app-terms-conditions-preview',
@@ -14,8 +13,7 @@ export class TermsConditionsPreviewComponent implements OnInit {
 
   constructor(
     public modalController: ModalController,
-    public sanitizer: DomSanitizer,
-    private embedService: EmbedVideoService,
+    public sanitizer: DomSanitizer
   ) { }
 
   ngOnInit() {
