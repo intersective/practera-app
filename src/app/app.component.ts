@@ -15,7 +15,7 @@ import { NewRelicService } from '@shared/new-relic/new-relic.service';
 import { DomSanitizer } from '@angular/platform-browser';
 import { Plugins, AppState, Capacitor } from '@capacitor/core';
 
-const { App } = Plugins;
+const { App, SplashScreen } = Plugins;
 
 @Component({
   selector: 'app-root',

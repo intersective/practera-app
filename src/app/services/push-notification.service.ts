@@ -60,8 +60,8 @@ export class PushNotificationService {
     // iOS will prompt user and return if they granted permission or not
     // Android will just grant without prompting
     PushNotifications.requestPermission().then(result => {
-      this.storage.set('pushnotifications', result);
       if (result.granted) {
+        this.storage.set('pushnotifications', result);
         // Register with Apple / Google to receive push via APNS/FCM
         return PushNotifications.register();
       } else {
@@ -132,7 +132,7 @@ export class PushNotificationService {
     if (typeof interests === 'string') {
       return this.subscribeToInterest(interests);
     }
-    return PusherBeams.setDeviceInterests(interests);
+    return PusherBeams.setDeviceInterests({ interests });
   }
 
   clearInterest(): Promise<void> {
