@@ -4,10 +4,6 @@
   </ion-toolbar>
 </ion-header>
 <ion-content class="ion-padding" color="light">
-  <ion-item class="no-bg" (click)="setInterests()" lines="none" *ngIf="isNativeApp">
-    <ion-icon class="ion-padding-end" color="primary" name="expand`-outline"></ion-icon>
-    100 Interest(s)
-  </ion-item>
   <ng-container *ngIf="utils.isMobile()">
     <ion-item class="profile-info no-bg" lines="none">
       <ion-avatar class="profile-image" slot="start">
