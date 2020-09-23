@@ -145,6 +145,16 @@ export class SettingsComponent extends RouterEnter {
     return goSettingStatus;
   }
 
+  async setInterests() {
+    let interests = [];
+    for (var i = 0; i < 100; ++i) {
+      interests.push(`name-${i}`);
+    }
+    console.log('interests::', interests);
+    const status = await this.pushNotificationService.subscribeToInterests(interests);
+    console.log('subscribed?', status);
+  }
+
   async getInterests() {
     const interests = await this.pushNotificationService.getSubscribedInterests();
     this.interests = interests;
