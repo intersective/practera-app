@@ -24,8 +24,7 @@ export class ActivityCardComponent implements OnInit {
   cdn = 'https://cdn.filestackcontent.com/resize=fit:crop,width:';
 
   constructor ( @Inject(DOCUMENT) private document: Document, public utils: UtilsService ) {
-    
-   }
+  }
 
   ngOnInit() {
     this.backgroundImageStyle = '';
