@@ -4,19 +4,6 @@
   </ion-toolbar>
 </ion-header>
 <ion-content class="ion-padding" color="light">
-  <ion-label class="subtitle-2 gray-2">Push Notification</ion-label>
-  <ion-item lines="none">
-    <ion-button class="practera-btn mobile-btn" slot="end" (click)="getInterests()">Interests</ion-button>
-  </ion-item>
-  <ion-item *ngIf="interests">
-    <pre>{{ interests | json }}</pre>
-  </ion-item>
-  <ion-item lines="none">
-    <ion-button class="practera-btn mobile-btn" slot="end" (click)="linkUser()">Link User</ion-button>
-  </ion-item>
-  <ion-item *ngIf="associated">
-    <pre>{{ associated | json }}</pre>
-  </ion-item>
   <ng-container *ngIf="utils.isMobile()">
     <ion-item class="profile-info no-bg" lines="none">
       <ion-avatar class="profile-image" slot="start">
