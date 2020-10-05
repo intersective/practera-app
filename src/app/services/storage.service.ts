@@ -1,5 +1,4 @@
 import { Inject, Injectable, InjectionToken } from '@angular/core';
-import { Storage as NativeStorage } from '@ionic/storage';
 
 export const BROWSER_STORAGE = new InjectionToken<Storage>('Browser Storage', {
   providedIn: 'root',
@@ -46,56 +45,7 @@ export interface Config {
 export class BrowserStorageService {
   public memoryCache: any;
 
-  constructor(
-    private nativeStorage: NativeStorage,
-    @Inject(BROWSER_STORAGE) public storage: Storage
-  ) {}
-
-
-  async setObject(key, value) {
-    try {
-      const result = await this.nativeStorage.set(key, value);
-      return result;
-    } catch (err) {
-      return err;
-    }
-  }
-
-  async getObject(key) {
-    try {
-      const result = await this.nativeStorage.get(key);
-      return result;
-    } catch (err) {
-      return err;
-    }
-  }
-
-  async nativeRemove(key) {
-    try {
-      const result = await this.nativeStorage.remove(key);
-      return result;
-    } catch (err) {
-      return err;
-    }
-  }
-
-  async nativeKeys() {
-    try {
-      const { keys } = await this.nativeStorage.keys();
-      console.log('Got keys: ', keys);
-    } catch (err) {
-      return err;
-    }
-  }
-
-  async nativeClear() {
-    try {
-      const cleared = await this.nativeStorage.clear();
-      return cleared;
-    } catch (err) {
-      return err;
-    }
-  }
+  constructor(@Inject(BROWSER_STORAGE) public storage: Storage) {}
 
   get(key: string) {
     const cached = this.storage.getItem(key);
