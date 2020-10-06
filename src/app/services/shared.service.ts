@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { UtilsService } from '@services/utils.service';
 import { BrowserStorageService } from '@services/storage.service';
+import { NativeStorageService } from '@services/native-storage.service';
 import { NotificationService } from '@shared/notification/notification.service';
 import { RequestService } from '@shared/request/request.service';
 import { HttpClient } from '@angular/common/http';
@@ -30,6 +31,7 @@ export class SharedService {
   constructor(
     private utils: UtilsService,
     private storage: BrowserStorageService,
+    private nativeStorage: NativeStorageService,
     private notification: NotificationService,
     private request: RequestService,
     private http: HttpClient,
@@ -38,18 +40,25 @@ export class SharedService {
   ) {}
 
   // call this function on every page refresh and after switch program
-  onPageLoad() {
+  async onPageLoad() {
     this.getIpLocation();
+    const user = await this.nativeStorage.getObject('user');
+    const {
+      timelineId,
+      themeColor,
+      activityCardImage,
+    } = user;
+
     // only do these if a timeline is choosen
-    if (!this.storage.getUser().timelineId) {
+    if (!timelineId) {
       return;
     }
     // check and change theme color on every page refresh
-    const color = this.storage.getUser().themeColor;
+    const color = themeColor;
     if (color) {
       this.utils.changeThemeColor(color);
     }
-    const image = this.storage.getUser().activityCardImage;
+    const image = activityCardImage;
     if (image) {
       this.utils.changeCardBackgroundImage(image);
     }

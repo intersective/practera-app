@@ -6,6 +6,7 @@ import { SharedService } from '@services/shared.service';
 import { Observable } from 'rxjs';
 import { AuthService } from './auth/auth.service';
 import { BrowserStorageService } from '@services/storage.service';
+import { NativeStorageService } from '@services/native-storage.service';
 import { VersionCheckService } from '@services/version-check.service';
 import { environment } from '@environments/environment';
 import { PusherService } from '@shared/pusher/pusher.service';
@@ -25,6 +26,7 @@ export class AppComponent implements OnInit {
     private sharedService: SharedService,
     private authService: AuthService,
     private storage: BrowserStorageService,
+    private nativeStorage: NativeStorageService,
     private versionCheckService: VersionCheckService,
     private pusherService: PusherService,
     private ngZone: NgZone,
@@ -44,9 +46,11 @@ export class AppComponent implements OnInit {
     });
   }
 
-  private configVerification(): void {
-    if (this.storage.get('fastFeedbackOpening')) { // set default modal status
-      this.storage.set('fastFeedbackOpening', false);
+  private async configVerification(): Promise<void> {
+    const hasFF =  await this.nativeStorage.getObject('fastFeedbackOpening');
+    console.log('fastFeedbackOpening::', hasFF);
+    if (hasFF) { // set default modal status
+      this.nativeStorage.setObject('fastFeedbackOpening', false);
     }
   }
 

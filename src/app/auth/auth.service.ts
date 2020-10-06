@@ -5,6 +5,7 @@ import { map } from 'rxjs/operators';
 import { Observable, of } from 'rxjs';
 import { Router } from '@angular/router';
 import { BrowserStorageService } from '@services/storage.service';
+import { NativeStorageService } from '@services/native-storage.service';
 import { UtilsService } from '@services/utils.service';
 import { PusherService } from '@shared/pusher/pusher.service';
 
@@ -68,6 +69,7 @@ export class AuthService {
   constructor(
     private request: RequestService,
     private storage: BrowserStorageService,
+    private nativeStorage: NativeStorageService,
     private utils: UtilsService,
     private router: Router,
     private pusherService: PusherService
@@ -118,6 +120,10 @@ export class AuthService {
     this.storage.setUser({apikey: norm.apikey});
     this.storage.set('programs', norm.programs);
     this.storage.set('isLoggedIn', true);
+
+    this.nativeStorage.setObject('user', {apikey: norm.apikey});
+    this.nativeStorage.setObject('isLoggedIn', true);
+    this.nativeStorage.setObject('programs', norm.programs);
     return norm;
   }
 

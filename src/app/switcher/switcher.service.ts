@@ -3,6 +3,7 @@ import { Observable, of, forkJoin } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { RequestService } from '@shared/request/request.service';
 import { UtilsService } from '@services/utils.service';
+import { NativeStorageService } from '@services/native-storage.service';
 import { BrowserStorageService } from '@services/storage.service';
 import { PusherService } from '@shared/pusher/pusher.service';
 import { SharedService } from '@services/shared.service';
@@ -71,6 +72,7 @@ export class SwitcherService {
     private pusherService: PusherService,
     private reviewsService: ReviewListService,
     private eventsService: EventListService,
+    private nativeStorage: NativeStorageService
   ) {}
 
   getPrograms() {
@@ -119,14 +121,14 @@ export class SwitcherService {
     }));
   }
 
-  switchProgram(programObj: ProgramObj): Observable<any> {
+  async switchProgram(programObj: ProgramObj): Promise<Observable<any>> {
     const themeColor = this.utils.has(programObj, 'program.config.theme_color') ? programObj.program.config.theme_color : '#2bbfd4';
     let cardBackgroundImage = '';
     if (this.utils.has(programObj, 'program.config.card_style')) {
       cardBackgroundImage = '/assets/' + programObj.program.config.card_style;
     }
 
-    this.storage.setUser({
+    const user = {
       programId: programObj.program.id,
       programName: programObj.program.name,
       programImage: programObj.project.lead_image,
@@ -142,7 +144,9 @@ export class SwitcherService {
       teamId: null,
       hasEvents: false,
       hasReviews: false
-    });
+    };
+    await this.nativeStorage.setObject('user', user);
+    this.storage.setUser(user);
 
     this.sharedService.onPageLoad();
     return forkJoin([
@@ -249,10 +253,10 @@ export class SwitcherService {
         return ['switcher', 'switcher-program'];
       // Array with one program object -> [{}]
       } else if (Array.isArray(programs) && this.checkIsOneProgram(programs)) {
-        await this.switchProgram(programs[0]).toPromise();
+        await (await this.switchProgram(programs[0])).toPromise();
       } else {
       // one program object -> {}
-        await this.switchProgram(programs).toPromise();
+        await (await this.switchProgram(programs)).toPromise();
       }
 
       await this.pusherService.initialise({ unsubscribe: true });
