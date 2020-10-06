@@ -599,6 +599,10 @@ export class ChatRoomComponent extends RouterEnter {
   }
 
   async preview(file) {
+    // if file didn't have mimetype use filestack Url to priview the file.
+    if (!file.mimetype) {
+      return this.filestackService.previewFile(file);
+    }
     const modal = await this.modalController.create({
       component: ChatPreviewComponent,
       componentProps: {
