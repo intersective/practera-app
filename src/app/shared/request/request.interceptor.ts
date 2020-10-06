@@ -24,9 +24,15 @@ export class RequestInterceptor implements HttpInterceptor {
     }
 
     return fromPromise(this.nativeStorage.getObject('user')).pipe(switchMap(user => {
-      const apikey = (user && user.apikey) ? user.apikey : this.storage.getUser().apikey;
-      const timelineId = (user && user.timelineId) ? user.timelineId : this.storage.getUser().timelineId;
-      const teamId = (user && user.teamId) ? user.teamId : this.storage.getUser().teamId;
+      let {
+        apikey,
+        timelineId,
+        teamId,
+      } = this.storage.getUser();
+
+      apikey = (user && user.apikey) ? user.apikey : apikey;
+      timelineId = (user && user.timelineId) ? user.timelineId : timelineId;
+      teamId = (user && user.teamId) ? user.teamId : teamId;
 
       const headers = {};
       req.headers.keys().forEach(key => {
