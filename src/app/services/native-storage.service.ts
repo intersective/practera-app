@@ -10,7 +10,9 @@ export class NativeStorageService {
 
   async setObject(key, value) {
     try {
-      const result = await this.storage.set(key, value);
+      const cached = await this.getObject(key);
+      const newCache = Object.assign(cached, value);
+      const result = await this.storage.set(key, newCache);
       return result;
     } catch (err) {
       return err;
@@ -20,7 +22,8 @@ export class NativeStorageService {
   async getObject(key) {
     try {
       const result = await this.storage.get(key);
-      return result;
+      console.log('getObject::', result);
+      return result || {};
     } catch (err) {
       return err;
     }

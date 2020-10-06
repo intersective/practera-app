@@ -121,7 +121,7 @@ export class AuthService {
     this.storage.set('programs', norm.programs);
     this.storage.set('isLoggedIn', true);
 
-    this.nativeStorage.setObject('user', {apikey: norm.apikey});
+    this.nativeStorage.setObject('user', { apikey: norm.apikey });
     this.nativeStorage.setObject('isLoggedIn', true);
     this.nativeStorage.setObject('programs', norm.programs);
     return norm;

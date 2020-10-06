@@ -12,6 +12,7 @@ import { environment } from '@environments/environment';
 import { PusherService } from '@shared/pusher/pusher.service';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
 import { DomSanitizer } from '@angular/platform-browser';
+import { forkJoin } from 'rxjs';
 
 @Component({
   selector: 'app-root',
@@ -55,8 +56,10 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.configVerification();
-    this.sharedService.onPageLoad();
+    forkJoin(
+      this.configVerification(),
+      this.sharedService.onPageLoad(),
+    ).subscribe(res => console.log(res));
 
     // @TODO: need to build a new micro service to get the config and serve the custom branding config from a microservice
     // Get the custom branding info and update the theme color if needed

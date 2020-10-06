@@ -4,7 +4,7 @@ import { Observable } from 'rxjs/Observable';
 import { switchMap } from 'rxjs/operators';
 import { fromPromise } from 'rxjs/observable/fromPromise';
 import { RequestConfig } from './request.service';
-import { BrowserStorageService } from '@services/storage.service';
+import { BrowserStorageService, User } from '@services/storage.service';
 import { NativeStorageService } from '@services/native-storage.service';
 
 @Injectable()
@@ -23,16 +23,12 @@ export class RequestInterceptor implements HttpInterceptor {
       return next.handle(req);
     }
 
-    return fromPromise(this.nativeStorage.getObject('user')).pipe(switchMap(user => {
-      let {
-        apikey,
+    return fromPromise(this.nativeStorage.getObject('user')).pipe(switchMap((user: User) => {
+      const {
         timelineId,
+        apikey,
         teamId,
-      } = this.storage.getUser();
-
-      apikey = (user && user.apikey) ? user.apikey : apikey;
-      timelineId = (user && user.timelineId) ? user.timelineId : timelineId;
-      teamId = (user && user.teamId) ? user.teamId : teamId;
+      } = user;
 
       const headers = {};
       req.headers.keys().forEach(key => {
@@ -42,9 +38,9 @@ export class RequestInterceptor implements HttpInterceptor {
 
       // inject appkey
       if (this.currenConfig.appkey) {
-        const appkey = this.currenConfig.appkey;
-        headers['appkey'] = appkey;
+        headers['appkey'] = this.currenConfig.appkey;
       }
+
       if (apikey) {
         headers['apikey'] = apikey;
       }
