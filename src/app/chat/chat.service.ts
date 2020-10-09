@@ -22,17 +22,21 @@ export interface ChatChannel {
   channelId: number | string;
   channelName: string;
   channelAvatar: string;
+  isAnnouncement: boolean;
+  isDirectMessage: boolean;
   pusherChannelName: string;
   readonly: boolean;
   roles: string[];
-  members: {
-    name: string;
-    role: string;
-    avatar: string;
-  }[];
   unreadMessages: number;
   lastMessage: string;
   lastMessageCreated: string;
+}
+
+export interface ChannelMembers {
+  uuid: number | string;
+  name: string;
+  role: string;
+  avatar: string;
 }
 
 export interface Message {
@@ -59,7 +63,7 @@ interface NewMessageParam {
 
 interface MessageListParams {
   channel_id: number | string;
-  page: number;
+  cursor: number | string;
   size: number;
 }
 
@@ -88,36 +92,40 @@ export class ChatService {
    * this method return chat list data.
    */
   getChatList(): Observable<ChatChannel[]> {
-    return this.request.get(api.getChatList).pipe(
-      map(response => {
-        if (response.success && response.data) {
-          return this._normaliseChatListResponse(response.data);
+    return this.request.chatGraphQLQuery(
+      `query getChannels {
+        channels{
+          uuid name avatar isAnnouncement isDirectMessage readonly roles unreadMessageCount lastMessage lastMessageCreated
         }
-      })
-    );
+      }`
+    ).pipe(map(response => {
+      return this._normaliseChatListResponse(response.data);
+    }));
   }
 
   /**
    * modify the Chat list response
    */
   private _normaliseChatListResponse(data): ChatChannel[] {
-    if (!Array.isArray(data)) {
+    const result = JSON.parse(JSON.stringify(data.channels));
+    if (!Array.isArray(result)) {
       this.request.apiResponseFormatError('Chat format error');
       return [];
     }
-    if (data.length === 0) {
+    if (result.length === 0) {
       return [];
     }
     const chats = [];
-    data.forEach(chat => {
+    result.forEach(chat => {
       chats.push({
-        channelId: chat.channel_id,
-        channelName: chat.channel_name,
-        channelAvatar: chat.channel_avatar,
+        channelId: chat.uuid,
+        channelName: chat.name,
+        channelAvatar: chat.avatar,
+        isAnnouncement: chat.isAnnouncement,
+        isDirectMessage: chat.isDirectMessage,
         pusherChannelName: chat.pusher_channel_name,
         readonly: chat.readonly,
         roles: chat.roles,
-        members: chat.members,
         unreadMessages: chat.unread_messages,
         lastMessage: chat.last_message,
         lastMessageCreated: chat.last_message_created
@@ -131,49 +139,135 @@ export class ChatService {
    * data is a json object
    * {
    *   channel_id: 1234,
-   *   page: 1,
+   *   cursor: 1,
    *   size:20
    * }
    */
   getMessageList(data: MessageListParams): Observable<Message[]> {
-    return this.request
-      .get(api.getChatMessages, {
-        params: data
-      })
-      .pipe(
-        map(response => {
-          if (response.success && response.data) {
-            return this._normaliseMessageListResponse(response.data);
+    return this.request.chatGraphQLQuery(
+      `query getChannellogs($uuid:string!, $cursor:string!, $size:Int!) {
+        channel(uuid:$uuid){
+          chatLogsConnection(cursor:$cursor, size:$size){
+            cursor chatLogs{
+              senderUuid isSender message file created
+            }
           }
-        })
-      );
+        }
+      }`,
+      {
+        uuid: data.channel_id,
+        cursor: data.cursor,
+        size: data.size
+      }
+    ).pipe(map(response => {
+      return this._normaliseMessageListResponse(response.data, data.channel_id);
+    }));
   }
 
   /**
    * modify the message list response
+   * @TODO need to find a way to save cursor or send to component and keep in that side.
    */
-  private _normaliseMessageListResponse(data): Message[] {
-    if (!Array.isArray(data)) {
+  private _normaliseMessageListResponse(data, channelId): Message[] {
+    const messageListResult = JSON.parse(JSON.stringify(data.channel.chatLogsConnection.chatLogs));
+    const cursor = JSON.parse(JSON.stringify(data.channel.chatLogsConnection.cursor));
+    if (!Array.isArray(messageListResult)) {
       this.request.apiResponseFormatError('Message array format error');
       return [];
     }
-    if (data.length === 0) {
+    if (messageListResult.length === 0) {
       return [];
     }
+
     const messageList = [];
-    data.forEach(message => {
-      messageList.push({
-        id: message.id,
-        senderName: message.sender.name,
-        senderRole: message.sender.role,
-        senderAvatar: message.sender.avatar,
-        isSender: message.is_sender,
-        message: message.message,
-        sentTime: message.sent_time,
-        file: message.file
-      });
-    });
+    this.getChatMembers(channelId).subscribe(
+      members => {
+        if (!members) {
+          return [];
+        }
+
+        messageListResult.forEach(message => {
+
+          const sender = members.find(member => member.uuid === message.senderUuid);
+          if (!sender) {
+            return [];
+          }
+
+          messageList.push({
+            id: message.id,
+            senderName: sender.name,
+            senderRole: sender.role,
+            senderAvatar: sender.avatar,
+            isSender: message.isSender,
+            message: message.message,
+            sentTime: message.created,
+            file: message.file
+          });
+        });
+      }
+    );
     return messageList;
+  }
+
+  /**
+   * this method return members of a chat channels.
+   */
+  getChatMembers(channelId): Observable<ChannelMembers[]> {
+    return this.request.chatGraphQLQuery(
+      `query getChannelmembers($uuid:string!) {
+        channel(uuid:$uuid){
+          members{
+            uuid name role avatar
+          }
+        }
+      }`,
+      {
+        uuid: channelId
+      }
+    ).pipe(map(response => {
+      return this._normaliseChatMembersResponse(response.data);
+    }));
+  }
+
+  private _normaliseChatMembersResponse(data): ChannelMembers[] {
+    const result = JSON.parse(JSON.stringify(data.channel.members));
+    if (!Array.isArray(result)) {
+      this.request.apiResponseFormatError('Member array format error');
+      return [];
+    }
+    if (result.length === 0) {
+      return [];
+    }
+
+    return result;
+  }
+
+  /**
+   * This method is returning pusher channel list to subscribe.
+   */
+  getPusherChannels(): Observable<any[]> {
+    return this.request.chatGraphQLQuery(
+      `query getPusherChannels {
+        channels {
+          pusherChannel
+        }
+      }`
+    ).pipe(map(response => {
+      return this._normalisePusherChannelsResponse(response.data);
+    }));
+  }
+
+  private _normalisePusherChannelsResponse(data): any[] {
+    const result = JSON.parse(JSON.stringify(data.channels.pusherChannel));
+    if (!Array.isArray(result)) {
+      this.request.apiResponseFormatError('Pusher Channel array format error');
+      return [];
+    }
+    if (result.length === 0) {
+      return [];
+    }
+
+    return result;
   }
 
   markMessagesAsSeen(prams: MarkAsSeenParams): Observable<any> {

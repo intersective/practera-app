@@ -9,6 +9,7 @@ export const environment = {
   env: 'sandbox',
   APIEndpoint: 'https://sandbox.practera.com/',
   graphQL: 'https://kixs5acl6j.execute-api.ap-southeast-2.amazonaws.com/sandbox/',
+  chatGraphQL: 'https://kni584ctg1.execute-api.ap-southeast-2.amazonaws.com/dev/graphql',
   // APIEndpoint: 'http://127.0.0.1:8080/',
   // graphQL: 'http://127.0.0.1:8000/',
   intercomAppId: '',
