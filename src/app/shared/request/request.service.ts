@@ -194,6 +194,43 @@ export class RequestService {
       );
   }
 
+    /**
+     *
+   */
+  chatGraphQLQuery(query: string, variables?: any, options?: any): Observable<any> {
+    options = {...{ noCache: false }, ...options};
+    const watch = this.apollo.use('chatLink').watchQuery({
+      query: gql(query),
+      variables: variables || {},
+      fetchPolicy: options.noCache ? 'no-cache' : 'cache-and-network'
+    });
+    return watch.valueChanges
+      .pipe(map(response => {
+        this._refreshApikey(response);
+        return response;
+      }))
+      .pipe(
+        catchError((error) => this.handleError(error))
+      );
+  }
+
+  /**
+   *
+   */
+  chatGraphQLMutate(query: string, variables = {}): Observable<any> {
+    return this.apollo.use('chatLink').mutate({
+      mutation: gql(query),
+      variables: variables
+    })
+      .pipe(
+        concatMap(response => {
+          this._refreshApikey(response);
+          return of(response);
+        }),
+        catchError((error) => this.handleError(error))
+      );
+  }
+
   delete(endPoint: string = '', httpOptions?: any): Observable<any> {
     if (!httpOptions) {
       httpOptions = {};
