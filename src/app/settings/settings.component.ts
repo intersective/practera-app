@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { AuthService } from '../auth/auth.service';
 import { SettingService } from './setting.service';
 import { BrowserStorageService } from '@services/storage.service';
+import { NativeStorageService } from '@services/native-storage.service';
 import { UtilsService } from '@services/utils.service';
 import { NotificationService } from '@shared/notification/notification.service';
 import { RouterEnter } from '@services/router-enter.service';
@@ -10,6 +11,11 @@ import { FastFeedbackService } from '../fast-feedback/fast-feedback.service';
 import { FilestackService } from '@shared/filestack/filestack.service';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
 import { PushNotificationService } from '@services/push-notification.service';
+import { Observable } from 'rxjs/Observable';
+import { fromPromise } from 'rxjs/observable/fromPromise';
+import { Subject } from 'rxjs/Subject';
+import { flatMap, filter } from 'rxjs/operators';
+import { of } from 'rxjs/observable/of';
 
 @Component({
   selector: 'app-settings',
@@ -19,6 +25,7 @@ import { PushNotificationService } from '@services/push-notification.service';
 
 export class SettingsComponent extends RouterEnter {
 
+  multiProgramsChecker$: Observable<any>;
   routeUrl = '/app/settings';
   profile = {
     contactNumber: '',
@@ -47,6 +54,7 @@ export class SettingsComponent extends RouterEnter {
     private authService: AuthService,
     private settingService: SettingService,
     public storage: BrowserStorageService,
+    private nativeStorage: NativeStorageService,
     public utils: UtilsService,
     private notificationService: NotificationService,
     private filestackService: FilestackService,
@@ -55,6 +63,10 @@ export class SettingsComponent extends RouterEnter {
     private pushNotificationService: PushNotificationService
   ) {
     super(router);
+    this.multiProgramsChecker$ = fromPromise(this.isInMultiplePrograms()).pipe(
+      res => of(res),
+      filter(res => res instanceof Object)
+    );
   }
 
   onEnter() {
@@ -102,9 +114,10 @@ export class SettingsComponent extends RouterEnter {
     }
   }
 
-  isInMultiplePrograms() {
-    const programs = this.storage.get('programs') || [];
-    return programs.length > 1;
+  async isInMultiplePrograms() {
+    const programs = await this.nativeStorage.getObject('programs');
+    console.log('programs::', programs);
+    return (programs || []).length > 1;
   }
 
   // send email to Help request
