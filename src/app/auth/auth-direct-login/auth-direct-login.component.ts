@@ -39,9 +39,8 @@ export class AuthDirectLoginComponent implements OnInit {
     // move try catch inside to timeout, because if try catch is outside it not catch errors happen inside timeout.
     setTimeout(async () => {
       try {
-
-        const test1 = await this.authService.directLogin({ authToken });
-        test1.subscribe(async res => {
+        const directLogin = await this.authService.directLogin({ authToken });
+        directLogin.subscribe(async res => {
           await res;
           await this.switcherService.getMyInfo().toPromise();
           nrDirectLoginTracer();
