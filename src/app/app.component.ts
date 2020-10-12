@@ -48,9 +48,8 @@ export class AppComponent implements OnInit {
   }
 
   private async configVerification(): Promise<void> {
-    const hasFF =  await this.nativeStorage.getObject('fastFeedbackOpening');
-    console.log('fastFeedbackOpening::', hasFF);
-    if (hasFF) { // set default modal status
+    const hasOpened =  await this.nativeStorage.getObject('fastFeedbackOpening');
+    if (hasOpened) { // set default modal status
       this.nativeStorage.setObject('fastFeedbackOpening', false);
     }
   }
@@ -59,7 +58,7 @@ export class AppComponent implements OnInit {
     forkJoin(
       this.configVerification(),
       this.sharedService.onPageLoad(),
-    ).subscribe(res => console.log(res));
+    ).subscribe();
 
     // @TODO: need to build a new micro service to get the config and serve the custom branding config from a microservice
     // Get the custom branding info and update the theme color if needed
