@@ -168,14 +168,14 @@ export class AuthService {
    */
   async logout(navigationParams = {}, redirect = true) {
     // use the config color
-    this.utils.changeThemeColor(this.storage.getConfig().color || '#2bbfd4');
+    const config = await this.nativeStorage.getObject('config');
+    this.utils.changeThemeColor(config.color || '#2bbfd4');
     this.pusherService.unsubscribeChannels();
     this.pusherService.disconnect();
-    const config = this.storage.getConfig();
     this.storage.clear();
-    // still store config info even logout
-    this.storage.setConfig(config);
     await this.nativeStorage.clear();
+    // still store config info even logout
+    await this.nativeStorage.setObject('config', config);
     if (redirect) {
       return this.router.navigate(['login'], navigationParams);
     }

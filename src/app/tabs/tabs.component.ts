@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { TabsService } from './tabs.service';
 import { UtilsService } from '@services/utils.service';
-import { BrowserStorageService } from '@services/storage.service';
+import { NativeStorageService } from '@services/native-storage.service';
 import { RouterEnter } from '@services/router-enter.service';
 import { SwitcherService } from '../switcher/switcher.service';
 import { ReviewListService } from '@app/review-list/review-list.service';
@@ -9,6 +9,7 @@ import { Router } from '@angular/router';
 import { SharedService } from '@services/shared.service';
 import { EventListService } from '@app/event-list/event-list.service';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
+import { fromPromise } from 'rxjs/observable/fromPromise';
 
 @Component({
   selector: 'app-tabs',
@@ -27,18 +28,17 @@ export class TabsComponent extends RouterEnter {
   constructor(
     public router: Router,
     private tabsService: TabsService,
-    public storage: BrowserStorageService,
     public utils: UtilsService,
     private switcherService: SwitcherService,
     private reviewsService: ReviewListService,
     private sharedService: SharedService,
     private eventsService: EventListService,
     private newRelic: NewRelicService,
+    private nativeStorage: NativeStorageService
   ) {
     super(router);
     this.newRelic.setPageViewName('tab');
 
-    const role = this.storage.getUser().role;
     this.utils.getEvent('notification').subscribe(event => {
       this.noOfTodoItems++;
     });
@@ -61,7 +61,6 @@ export class TabsComponent extends RouterEnter {
     this.showChat = false;
     this.showReview = false;
     this.showEvents = false;
-
   }
 
   onEnter() {
@@ -69,44 +68,54 @@ export class TabsComponent extends RouterEnter {
     this._checkRoute();
     this._stopPlayingVideos();
     this._topicStopReading();
-    this.tabsService.getNoOfTodoItems().subscribe(noOfTodoItems => {
-      this.noOfTodoItems = noOfTodoItems;
+    fromPromise(this.tabsService.getNoOfTodoItems()).subscribe(noOfTodoItems => {
+      noOfTodoItems.subscribe(quantity => {
+        this.noOfTodoItems = quantity;
+      });
     });
-    // only get the number of chats if user is in team
-    if (this.storage.getUser().teamId) {
-      this.tabsService.getNoOfChats().subscribe(noOfChats => {
-        this.noOfChats = noOfChats;
-      });
-    }
-    // display the chat tab if the user is in team
-    if (this.storage.getUser().teamId) {
-      this.showChat = true;
-    } else {
-      this.showChat = false;
-      this.switcherService.getTeamInfo().subscribe(data => {
-        if (this.storage.getUser().teamId) {
-          this.showChat = true;
-        }
-      });
-    }
-    if (this.storage.getUser().hasReviews) {
-      this.showReview = true;
-    } else {
-      this.showReview = false;
-      this.reviewsService.getReviews().subscribe(data => {
-        if (data.length) {
-          this.showReview = true;
-        }
-      });
-    }
-    if (this.storage.getUser().hasEvents) {
-      this.showEvents = true;
-    } else {
-      this.showEvents = false;
-      this.eventsService.getEvents().subscribe(events => {
-        this.showEvents = !this.utils.isEmpty(events);
-      });
-    }
+
+    fromPromise(this.nativeStorage.getObject('user')).subscribe(user => {
+      const {
+        teamId,
+        hasReviews,
+        hasEvents
+      } = user;
+      // only get the number of chats if user is in team
+      if (teamId) {
+        this.tabsService.getNoOfChats().subscribe(noOfChats => {
+          this.noOfChats = noOfChats;
+        });
+      }
+      // display the chat tab if the user is in team
+      if (teamId) {
+        this.showChat = true;
+      } else {
+        this.showChat = false;
+        this.switcherService.getTeamInfo().subscribe(data => {
+          if (teamId) {
+            this.showChat = true;
+          }
+        });
+      }
+      if (hasReviews) {
+        this.showReview = true;
+      } else {
+        this.showReview = false;
+        this.reviewsService.getReviews().subscribe(data => {
+          if (data.length) {
+            this.showReview = true;
+          }
+        });
+      }
+      if (hasEvents) {
+        this.showEvents = true;
+      } else {
+        this.showEvents = false;
+        this.eventsService.getEvents().subscribe(events => {
+          this.showEvents = !this.utils.isEmpty(events);
+        });
+      }
+    });
   }
 
   private _checkRoute() {

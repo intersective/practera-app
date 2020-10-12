@@ -4,6 +4,7 @@ import { map } from 'rxjs/operators';
 import { RequestService } from '@shared/request/request.service';
 import { UtilsService } from '@services/utils.service';
 import { BrowserStorageService } from '@services/storage.service';
+import { NativeStorageService } from '@services/native-storage.service';
 
 /**
  * @name api
@@ -23,14 +24,17 @@ export class TabsService {
 
   constructor(
     private storage: BrowserStorageService,
+    private nativeStorage: NativeStorageService,
     private request: RequestService,
     private utils: UtilsService,
   ) {}
 
-  getNoOfTodoItems() {
+  async getNoOfTodoItems(): Promise<Observable<any>> {
+    const { projectId } = await this.nativeStorage.getObject('user');
+
     return this.request.get(api.todoItem, {
         params: {
-          project_id: this.storage.getUser().projectId
+          project_id: projectId
         }
       })
       .pipe(map(response => {
