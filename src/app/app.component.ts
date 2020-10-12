@@ -1,4 +1,5 @@
-import { Component, OnInit, NgZone } from '@angular/core';
+import { DOCUMENT } from '@angular/common';
+import { Component, OnInit, NgZone, Inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { Platform } from '@ionic/angular';
 import { UtilsService } from '@services/utils.service';
@@ -13,6 +14,7 @@ import { PusherService } from '@shared/pusher/pusher.service';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
 import { DomSanitizer } from '@angular/platform-browser';
 import { forkJoin } from 'rxjs';
+
 
 @Component({
   selector: 'app-root',
@@ -33,6 +35,7 @@ export class AppComponent implements OnInit {
     private ngZone: NgZone,
     private newRelic: NewRelicService,
     public sanitizer: DomSanitizer,
+    @Inject(DOCUMENT) private readonly document: Document
     // private splashScreen: SplashScreen,
     // private statusBar: StatusBar
   ) {
@@ -62,9 +65,9 @@ export class AppComponent implements OnInit {
 
     // @TODO: need to build a new micro service to get the config and serve the custom branding config from a microservice
     // Get the custom branding info and update the theme color if needed
-    const domain = window.location.hostname;
+    const domain = this.document.location.hostname;
     this.authService.getConfig({domain}).subscribe(
-      (response: any) => {
+      async (response: any) => {
         if (response !== null) {
           const expConfig = response.data;
           const numOfConfigs = expConfig.length;
@@ -86,7 +89,8 @@ export class AppComponent implements OnInit {
               'color': themeColor
             });
             // use brand color if no theme color
-            if (!this.utils.has(this.storage.getUser(), 'themeColor') || !this.storage.getUser().themeColor) {
+            const user = await this.nativeStorage.getObject('user');
+            if (!this.utils.has(user, 'themeColor') || !user.themeColor) {
               this.utils.changeThemeColor(themeColor);
             }
           }
@@ -99,10 +103,10 @@ export class AppComponent implements OnInit {
 
     let searchParams = null;
     let queryString = '';
-    if (window.location.search) {
-      queryString =  window.location.search.substring(1);
-    } else if (window.location.hash) {
-      queryString = window.location.hash.substring(2);
+    if (this.document.location.search) {
+      queryString =  this.document.location.search.substring(1);
+    } else if (this.document.location.hash) {
+      queryString = this.document.location.hash.substring(2);
     }
     searchParams = new URLSearchParams(queryString);
 
