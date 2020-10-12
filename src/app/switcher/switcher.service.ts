@@ -75,11 +75,11 @@ export class SwitcherService {
     private nativeStorage: NativeStorageService
   ) {}
 
-  getPrograms() {
-    const programs = this.storage.get('programs');
+  async getPrograms() {
+    const programs = await this.nativeStorage.getObject('programs');
     const cdn = 'https://cdn.filestackcontent.com/resize=fit:crop,width:';
     let imagewidth = 600;
-    programs.forEach(program => {
+    Object.values(programs).forEach((program: ProgramObj) => {
       if (program.project.lead_image) {
         const imageId = program.project.lead_image.split('/').pop();
         if (!this.utils.isMobile()) {
@@ -111,7 +111,7 @@ export class SwitcherService {
       }
     )
     .pipe(map(res => {
-      return res.data.projects.map(v => {
+      return ((res.data || {}).projects || []).map(v => {
         return {
           id: +v.id,
           progress: v.progress,
@@ -222,10 +222,10 @@ export class SwitcherService {
     }));
   }
 
-  checkIsOneProgram(programs?) {
+  async checkIsOneProgram(programs?) {
     let programList = programs;
     if (this.utils.isEmpty(programs)) {
-      programList = this.storage.get('programs');
+      programList = Object.values(this.nativeStorage.getObject('programs'));
     }
     if (programList.length === 1) {
       return true;
@@ -248,11 +248,12 @@ export class SwitcherService {
    */
   async switchProgramAndNavigate(programs): Promise<any> {
     if (!this.utils.isEmpty(programs)) {
+      const isOneProgram = await this.checkIsOneProgram(programs);
       // Array with multiple program objects -> [{},{},{},{}]
-      if (Array.isArray(programs) && !this.checkIsOneProgram(programs)) {
+      if (Array.isArray(programs) && !isOneProgram) {
         return ['switcher', 'switcher-program'];
       // Array with one program object -> [{}]
-      } else if (Array.isArray(programs) && this.checkIsOneProgram(programs)) {
+      } else if (Array.isArray(programs) && isOneProgram) {
         await (await this.switchProgram(programs[0])).toPromise();
       } else {
       // one program object -> {}

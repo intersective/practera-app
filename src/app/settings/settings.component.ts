@@ -116,7 +116,6 @@ export class SettingsComponent extends RouterEnter {
 
   async isInMultiplePrograms() {
     const programs = await this.nativeStorage.getObject('programs');
-    console.log('programs::', programs);
     return (programs || []).length > 1;
   }
 

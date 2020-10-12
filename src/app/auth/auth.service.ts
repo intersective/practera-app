@@ -108,11 +108,15 @@ export class AuthService {
    *              so must convert them into compatible formdata before submission
    * @param {object} { authToken } in string
    */
-  async directLogin({ authToken }): Promise<any> {
+  async directLogin({ authToken }): Promise<Observable<Promise<any>>> {
     const body = new HttpParams()
       .set('auth_token', authToken);
-    await this.logout({}, false);
-    return this._login(body);
+    try {
+      await this.logout({}, false);
+      return this._login(body);
+    } catch(err) {
+      console.log('directLogin', err);
+    }
   }
 
   private async _handleLoginResponse(response): Promise<any> {

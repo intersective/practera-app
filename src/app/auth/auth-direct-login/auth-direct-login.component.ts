@@ -1,13 +1,13 @@
 import { Component, OnInit, NgZone } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { AuthService } from '../auth.service';
-import { Observable, concat } from 'rxjs';
+import { Observable, forkJoin } from 'rxjs';
 import { NotificationService } from '@shared/notification/notification.service';
 import { SwitcherService } from '../../switcher/switcher.service';
 import { UtilsService } from '@services/utils.service';
 import { BrowserStorageService } from '@services/storage.service';
+import { NativeStorageService } from '@services/native-storage.service';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
-import { async } from '../../../../node_modules/@types/q';
 
 @Component({
   selector: 'app-auth-direct-login',
@@ -23,6 +23,7 @@ export class AuthDirectLoginComponent implements OnInit {
     public utils: UtilsService,
     private switcherService: SwitcherService,
     private storage: BrowserStorageService,
+    private nativeStorage: NativeStorageService,
     private ngZone: NgZone,
     private newRelic: NewRelicService
   ) {}
@@ -36,16 +37,19 @@ export class AuthDirectLoginComponent implements OnInit {
 
     const nrDirectLoginTracer = this.newRelic.createTracer('Processing direct login');
     // move try catch inside to timeout, because if try catch is outside it not catch errors happen inside timeout.
-    setTimeout(
-      async () => {
-        try {
-          await this.authService.directLogin({ authToken });
+    setTimeout(async () => {
+      try {
+
+        const test1 = await this.authService.directLogin({ authToken });
+        test1.subscribe(async res => {
+          await res;
           await this.switcherService.getMyInfo().toPromise();
           nrDirectLoginTracer();
           return this._redirect();
-        } catch (err) {
-          this._error(err);
-        }
+        });
+      } catch (err) {
+        this._error(err);
+      }
         // tslint:disable-next-line:align
       }, 50
     );
@@ -82,7 +86,8 @@ export class AuthDirectLoginComponent implements OnInit {
     }
     // switch parogram if user already registered
     if (!redirectLater) {
-      const program = this.utils.find(this.storage.get('programs'), value => {
+      const programs = await this.nativeStorage.getObject('programs');
+      const program = this.utils.find(Object.values(programs), value => {
         return value.timeline.id === timelineId;
       });
       if (this.utils.isEmpty(program)) {

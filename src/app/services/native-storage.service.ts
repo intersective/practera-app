@@ -22,7 +22,6 @@ export class NativeStorageService {
   async getObject(key) {
     try {
       const result = await this.storage.get(key);
-      console.log('getObject::', result);
       return result || {};
     } catch (err) {
       return err;
