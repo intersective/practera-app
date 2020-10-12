@@ -103,7 +103,8 @@ export class SettingsComponent extends RouterEnter {
   }
 
   isInMultiplePrograms() {
-    return this.storage.get('programs').length > 1;
+    const programs = this.storage.get('programs') || [];
+    return programs.length > 1;
   }
 
   // send email to Help request

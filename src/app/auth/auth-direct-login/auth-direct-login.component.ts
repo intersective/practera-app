@@ -39,7 +39,7 @@ export class AuthDirectLoginComponent implements OnInit {
     setTimeout(
       async () => {
         try {
-          await this.authService.directLogin({ authToken }).toPromise();
+          await this.authService.directLogin({ authToken });
           await this.switcherService.getMyInfo().toPromise();
           nrDirectLoginTracer();
           return this._redirect();

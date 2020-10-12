@@ -108,22 +108,22 @@ export class AuthService {
    *              so must convert them into compatible formdata before submission
    * @param {object} { authToken } in string
    */
-  directLogin({ authToken }): Observable<any> {
+  async directLogin({ authToken }): Promise<any> {
     const body = new HttpParams()
       .set('auth_token', authToken);
-    this.logout({}, false);
+    await this.logout({}, false);
     return this._login(body);
   }
 
-  private _handleLoginResponse(response): Observable<any> {
+  private async _handleLoginResponse(response): Promise<any> {
     const norm = this._normaliseAuth(response);
     this.storage.setUser({apikey: norm.apikey});
     this.storage.set('programs', norm.programs);
     this.storage.set('isLoggedIn', true);
 
-    this.nativeStorage.setObject('user', { apikey: norm.apikey });
-    this.nativeStorage.setObject('isLoggedIn', true);
-    this.nativeStorage.setObject('programs', norm.programs);
+    await this.nativeStorage.setObject('user', { apikey: norm.apikey });
+    await this.nativeStorage.setObject('isLoggedIn', true);
+    await this.nativeStorage.setObject('programs', norm.programs);
     return norm;
   }
 
@@ -162,7 +162,7 @@ export class AuthService {
    * @param navigationParams the parameters needed when redirect
    * @param redirect         Whether redirect the user to login page or not
    */
-  logout(navigationParams = {}, redirect = true) {
+  async logout(navigationParams = {}, redirect = true) {
     // use the config color
     this.utils.changeThemeColor(this.storage.getConfig().color || '#2bbfd4');
     this.pusherService.unsubscribeChannels();
@@ -171,6 +171,7 @@ export class AuthService {
     this.storage.clear();
     // still store config info even logout
     this.storage.setConfig(config);
+    await this.nativeStorage.clear();
     if (redirect) {
       return this.router.navigate(['login'], navigationParams);
     }
