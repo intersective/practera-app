@@ -7,11 +7,9 @@ export const environment = {
   appkey: 'b11e7c189b',
   pusherKey: '255f010d210933ca7675',
   env: 'sandbox',
-  APIEndpoint: 'https://sandbox.practera.com/',
-  graphQL: 'https://kixs5acl6j.execute-api.ap-southeast-2.amazonaws.com/sandbox/',
-  chatGraphQL: 'https://kni584ctg1.execute-api.ap-southeast-2.amazonaws.com/dev/graphql',
-  // APIEndpoint: 'http://127.0.0.1:8080/',
-  // graphQL: 'http://127.0.0.1:8000/',
+  APIEndpoint: 'http://127.0.0.1:8080/',
+  graphQL: 'http://127.0.0.1:8000/',
+  chatGraphQL: 'http://localhost:3000/local/graphql/',
   intercomAppId: '',
   filestack: {
     key: 'AO6F4C72uTPGRywaEijdLz',
@@ -22,9 +20,9 @@ export const environment = {
       region: 'ap-southeast-2',
       regionChina: 'ap-northeast-2',
       paths: {
-        any: '/appv2/stage/uploads/',
-        image: '/appv2/stage/uploads/',
-        video: '/appv2/stage/video/upload/'
+        any: '/appv2/local/uploads/',
+        image: '/appv2/local/uploads/',
+        video: '/appv2/local/video/upload/'
       },
       workflows: [
         '3c38ef53-a9d0-4aa4-9234-617d9f03c0de',
