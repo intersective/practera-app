@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot, Router, Route } from '@angular/router';
 import { Observable } from 'rxjs';
-import { BrowserStorageService } from '@services/storage.service';
+import { NativeStorageService } from '@services/native-storage.service';
 
 @Injectable()
 export class ProgramSelectedGuard implements CanActivate {
@@ -9,12 +9,13 @@ export class ProgramSelectedGuard implements CanActivate {
 
   constructor(
     private router: Router,
-    private storage: BrowserStorageService
+    private nativeStorage: NativeStorageService
   ) {}
 
   // if user hasn't selected a program
-  canActivate(next: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> | Promise<boolean> | boolean {
-    const timelineId = this.storage.getUser().timelineId;
+  async canActivate(next: ActivatedRouteSnapshot, state: RouterStateSnapshot): Promise<boolean> {
+    // const timelineId = this.storage.getUser().timelineId;
+    const { timelineId } = await this.nativeStorage.getObject('me');
 
     if (timelineId) {
       return true;
