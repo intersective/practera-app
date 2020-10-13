@@ -5,6 +5,7 @@ export const environment = {
   env: 'live',
   APIEndpoint: 'https://trial.practera.com/',
   graphQL: '',
+  chatGraphQL: '',
   intercomAppId: '',
   filestack: {
     key: 'AO6F4C72uTPGRywaEijdLz',
