@@ -13,6 +13,8 @@ import { PusherService } from '@shared/pusher/pusher.service';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
 import { DomSanitizer } from '@angular/platform-browser';
 import { forkJoin } from 'rxjs';
+import { fromPromise } from 'rxjs/observable/fromPromise';
+import { map } from 'rxjs/operators';
 
 
 @Component({
@@ -20,6 +22,8 @@ import { forkJoin } from 'rxjs';
   templateUrl: 'app.component.html'
 })
 export class AppComponent implements OnInit {
+  hasCustomHeader$: Observable<any>;
+  hasCustomHeader: boolean;
   customHeader: string | any;
   constructor(
     private platform: Platform,
@@ -92,6 +96,10 @@ export class AppComponent implements OnInit {
               this.utils.changeThemeColor(themeColor);
             }
           }
+
+          this.checkCustom('header').subscribe(hasHeader => {
+            this.hasCustomHeader = hasHeader;
+          });
         }
       },
       err => {
@@ -158,11 +166,10 @@ export class AppComponent implements OnInit {
    * checking conditions to show custom header
    * @param type header
    */
-  checkCustom(type: string): boolean {
-    if (type === 'header' && this.customHeader && this.authService.isAuthenticated()) {
-      return true;
-    }
-    return false;
+  checkCustom(type: string): Observable<any> {
+    return fromPromise(this.authService.isAuthenticated()).pipe(map(authenticated => {
+      return type === 'header' && this.customHeader && authenticated;
+    }));
   }
 
 }

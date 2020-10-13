@@ -15,20 +15,23 @@ import { AuthService } from './auth.service';
 export class AuthGuard implements CanActivate, CanActivateChild, CanLoad {
   constructor(private authService: AuthService, private router: Router) {}
 
-  canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean {
+  canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Promise<boolean> {
     return this.checkLogin();
   }
 
-  canActivateChild(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean {
+  canActivateChild(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Promise<boolean> {
     return this.canActivate(route, state);
   }
 
-  canLoad(route: Route): boolean {
+  canLoad(route: Route): Promise<boolean> {
     return this.checkLogin();
   }
 
-  checkLogin(): boolean {
-    if (this.authService.isAuthenticated()) {
+  async checkLogin(): Promise<boolean> {
+    const loggedIn = await this.authService.isAuthenticated();
+    console.log('checking login::', loggedIn);
+    if (loggedIn) {
+      console.log('loggedin?', loggedIn);
       return true;
     }
 

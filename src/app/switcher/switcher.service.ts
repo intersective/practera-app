@@ -160,19 +160,21 @@ export class SwitcherService {
 
   getTeamInfo(): Observable<any> {
     return this.request.get(api.teams)
-      .pipe(map(response => {
+      .pipe(map(async response => {
         if (response.success && response.data) {
           if (!this.utils.has(response.data, 'Teams') ||
               !Array.isArray(response.data.Teams) ||
               !this.utils.has(response.data.Teams[0], 'id')
              ) {
-            return this.storage.setUser({
+            const me = await this.nativeStorage.setObject('me', {
               teamId: null
             });
+            return me;
           }
-          return this.storage.setUser({
+          const me = await this.nativeStorage.setObject('me', {
             teamId: response.data.Teams[0].id
           });
+          return me;
         }
       }));
   }
@@ -228,7 +230,7 @@ export class SwitcherService {
   async checkIsOneProgram(programs?) {
     let programList = programs;
     if (this.utils.isEmpty(programs)) {
-      programList = Object.values(this.nativeStorage.getObject('programs'));
+      programList = Object.values(await this.nativeStorage.getObject('programs'));
     }
     if (programList.length === 1) {
       return true;
