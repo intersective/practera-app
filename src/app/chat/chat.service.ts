@@ -149,7 +149,7 @@ export class ChatService {
         channel(uuid:$uuid){
           chatLogsConnection(cursor:$cursor, size:$size){
             cursor chatLogs{
-              senderUuid isSender message file created
+              uuid senderUuid isSender message file created
             }
           }
         }
@@ -194,7 +194,7 @@ export class ChatService {
           }
 
           messageList.push({
-            id: message.id,
+            id: message.uuid,
             senderName: sender.name,
             senderRole: sender.role,
             senderAvatar: sender.avatar,
@@ -258,7 +258,7 @@ export class ChatService {
   }
 
   private _normalisePusherChannelsResponse(data): any[] {
-    const result = JSON.parse(JSON.stringify(data.channels.pusherChannel));
+    const result = JSON.parse(JSON.stringify(data.channels));
     if (!Array.isArray(result)) {
       this.request.apiResponseFormatError('Pusher Channel array format error');
       return [];
