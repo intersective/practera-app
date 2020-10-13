@@ -8,6 +8,8 @@ import { BrowserStorageService } from '@services/storage.service';
 import { environment } from '@environments/environment';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
 import { Apollo } from 'apollo-angular';
+import { HttpLink } from 'apollo-angular-link-http';
+import { InMemoryCache } from 'apollo-cache-inmemory';
 import gql from 'graphql-tag';
 
 @Injectable({ providedIn: 'root' })
@@ -56,12 +58,20 @@ export class RequestService {
     @Optional() config: RequestConfig,
     private newrelic: NewRelicService,
     private devMode: DevModeService,
-    private apollo: Apollo
+    private apollo: Apollo,
+    private httpLink: HttpLink
   ) {
     if (config) {
       this.appkey = config.appkey;
       this.prefixUrl = config.prefixUrl;
     }
+    const options = {
+      link: httpLink.create({
+        uri: environment.chatGraphQL
+      }),
+      cache: new InMemoryCache(),
+    };
+    this.apollo.create(options, 'chat');
   }
 
   /**
@@ -194,39 +204,19 @@ export class RequestService {
       );
   }
 
-    /**
-     *
+  /**
+   * Valid options:
+   * noCache: Boolean default false. If set to false, will not cache the result
    */
   chatGraphQLQuery(query: string, variables?: any, options?: any): Observable<any> {
     options = {...{ noCache: false }, ...options};
-    const watch = this.apollo.use('chatLink').watchQuery({
+    const watch = this.apollo.use('chat').watchQuery({
       query: gql(query),
       variables: variables || {},
       fetchPolicy: options.noCache ? 'no-cache' : 'cache-and-network'
     });
     return watch.valueChanges
-      .pipe(map(response => {
-        this._refreshApikey(response);
-        return response;
-      }))
       .pipe(
-        catchError((error) => this.handleError(error))
-      );
-  }
-
-  /**
-   *
-   */
-  chatGraphQLMutate(query: string, variables = {}): Observable<any> {
-    return this.apollo.use('chatLink').mutate({
-      mutation: gql(query),
-      variables: variables
-    })
-      .pipe(
-        concatMap(response => {
-          this._refreshApikey(response);
-          return of(response);
-        }),
         catchError((error) => this.handleError(error))
       );
   }
