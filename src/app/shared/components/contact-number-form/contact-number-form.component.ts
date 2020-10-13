@@ -122,7 +122,7 @@ export class ContactNumberFormComponent implements OnInit, OnDestroy {
     this.activeCountryModelInfo.length = this.contactNumberFormat.masks[this.countryModel].numberLength;
 
     // if user has the contact number
-    const { contactNumber } = await this.nativeStorage.getObject('user');
+    const { contactNumber } = await this.nativeStorage.getObject('me');
     if (this.page === 'settings' && (contactNumber && contactNumber != null)) {
       this._checkCurrentContactNumberOrigin(contactNumber);
     }
@@ -270,12 +270,12 @@ export class ContactNumberFormComponent implements OnInit, OnDestroy {
               this.updating = false;
               if (result.success) {
                 // update contact number in user local storage data array.
-                await this.nativeStorage.setObject('user', {
+                await this.nativeStorage.setObject('me', {
                   contactNumber: this.profile.contactNumber
                 });
                 const newContactNumber = this.profile.contactNumber;
                 // also update contact number in program object in local storage
-                const { timelineId } = await this.nativeStorage.getObject('user');  // get current timeline Id
+                const { timelineId } = await this.nativeStorage.getObject('me');  // get current timeline Id
                 const programs = await this.nativeStorage.getObject('programs');
                 const programsObj = this.utils.each(Object.values(programs), function(program) {
                     if (program.timeline.id === timelineId) {

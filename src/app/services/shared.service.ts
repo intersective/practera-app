@@ -42,7 +42,7 @@ export class SharedService {
   // call this function on every page refresh and after switch program
   async onPageLoad() {
     this.getIpLocation();
-    const user = await this.nativeStorage.getObject('user');
+    const user = await this.nativeStorage.getObject('me');
     const {
       timelineId,
       themeColor,

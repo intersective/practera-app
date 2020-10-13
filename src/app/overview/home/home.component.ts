@@ -106,7 +106,7 @@ export class HomeComponent implements OnDestroy, OnInit {
       })
     );
 
-    fromPromise(this.nativeStorage.getObject('user')).subscribe((user: User) => {
+    fromPromise(this.nativeStorage.getObject('me')).subscribe((user: User) => {
       this.programInfo = {
         image: user.programImage,
         name: user.programName

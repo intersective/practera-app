@@ -30,7 +30,7 @@ export class TabsService {
   ) {}
 
   async getNoOfTodoItems(): Promise<Observable<any>> {
-    const { projectId } = await this.nativeStorage.getObject('user');
+    const { projectId } = await this.nativeStorage.getObject('me');
 
     return this.request.get(api.todoItem, {
         params: {

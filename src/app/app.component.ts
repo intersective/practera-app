@@ -87,7 +87,7 @@ export class AppComponent implements OnInit {
               'color': themeColor
             });
             // use brand color if no theme color
-            const user = await this.nativeStorage.getObject('user');
+            const user = await this.nativeStorage.getObject('me');
             if (!this.utils.has(user, 'themeColor') || !user.themeColor) {
               this.utils.changeThemeColor(themeColor);
             }

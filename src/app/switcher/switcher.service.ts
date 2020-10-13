@@ -145,7 +145,7 @@ export class SwitcherService {
       hasEvents: false,
       hasReviews: false
     };
-    await this.nativeStorage.setObject('user', user);
+    await this.nativeStorage.setObject('me', user);
     this.storage.setUser(user);
 
     this.sharedService.onPageLoad();
@@ -188,7 +188,7 @@ export class SwitcherService {
           return this.request.apiResponseFormatError('User format error');
         }
         const apiData = response.data.User;
-        this.storage.setUser({
+        const me = {
           name: apiData.name,
           contactNumber: apiData.contact_number,
           email: apiData.email,
@@ -198,7 +198,10 @@ export class SwitcherService {
           linkedinUrl: apiData.linkedin_url,
           userHash: apiData.userhash,
           maxAchievablePoints: this.utils.has(apiData, 'max_achievable_points') ? apiData.max_achievable_points : null
-        });
+        };
+
+        this.storage.setUser(me);
+        this.nativeStorage.setObject('me', me);
       }
       return response;
     }));

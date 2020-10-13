@@ -23,7 +23,7 @@ export class RequestInterceptor implements HttpInterceptor {
       return next.handle(req);
     }
 
-    return fromPromise(this.nativeStorage.getObject('user')).pipe(switchMap((user: User) => {
+    return fromPromise(this.nativeStorage.getObject('me')).pipe(switchMap((user: User) => {
       const {
         timelineId,
         apikey,

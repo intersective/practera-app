@@ -74,7 +74,7 @@ export class TabsComponent extends RouterEnter {
       });
     });
 
-    fromPromise(this.nativeStorage.getObject('user')).subscribe(user => {
+    fromPromise(this.nativeStorage.getObject('me')).subscribe(user => {
       const {
         teamId,
         hasReviews,
