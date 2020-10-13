@@ -19,6 +19,18 @@ export class PusherConfig {
   apiurl = '';
 }
 
+export interface SendMessageParam {
+  channelName: string;
+  messageData: {
+    uuid: number | string;
+    senderUuid: string;
+    message: string;
+    file: string;
+    isSender: boolean;
+    created: string;
+  };
+}
+
 class PusherChannel {
   name: string;
   subscription?: Channel;
@@ -169,6 +181,23 @@ export class PusherService {
     }));
   }
 
+  getChatChannels(): Observable<any> {
+    return this.request.chatGraphQLQuery(
+      `query getPusherChannels {
+        channels {
+          pusherChannel
+        }
+      }`
+    ).pipe(map(response => {
+      if (response.data && response.data.channels) {
+        const result = JSON.parse(JSON.stringify(response.data.channels));
+        result.forEach(element => {
+          this.subscribeChannel('chat', element.pusherChannel);
+        });
+      }
+    }));
+  }
+
   /**
    * unsubscribe all channels
    * (use case: after switching program)
@@ -240,6 +269,9 @@ export class PusherService {
           subscription: this.pusher.subscribe(channelName)
         };
         channel.subscription
+          .bind('client-chat-new-message', data => {
+            this.utils.broadcastEvent('chat:new-messag', data);
+          })
           .bind('client-typing-event', data => {
             this.utils.broadcastEvent('typing-' + channelName, data);
           })
@@ -271,6 +303,20 @@ export class PusherService {
     channel.subscription.trigger('client-typing-event', {
       user: this.storage.getUser().name
     });
+  }
+
+  /**
+   * This method triggering 'client-chat-new-message' event of a pusher channel to send message to other members
+   * that subscribe to the pusher channel.
+   * when user send message it will save in api first and then call this.
+   * @param data send message object
+   */
+  triggerSendMessage(data: SendMessageParam) {
+    const channel = this.channels.chat.find(c => c.name === data.channelName);
+    if (!channel) {
+      return;
+    }
+    return channel.subscription.trigger('client-chat-new-message', data.messageData);
   }
 
 }
