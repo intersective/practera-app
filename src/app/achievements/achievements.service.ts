@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
-import { Observable, of } from 'rxjs';
+import { Observable, of, Subscription } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { RequestService } from '@shared/request/request.service';
 import { UtilsService } from '@services/utils.service';
-import { BrowserStorageService } from '@services/storage.service';
+import { NativeStorageService } from '@services/native-storage.service';
 
 /**
  * @name api
@@ -40,7 +40,7 @@ export class AchievementsService {
   constructor(
     private request: RequestService,
     private utils: UtilsService,
-    private storage: BrowserStorageService,
+    private nativeStorage: NativeStorageService,
   ) {}
 
   getAchievements(order?): Observable<any> {
@@ -106,9 +106,10 @@ export class AchievementsService {
     return this.isPointsConfigured;
   }
 
-  markAchievementAsSeen(achievementId) {
+  async markAchievementAsSeen(achievementId): Promise<Subscription> {
+    const user = await this.nativeStorage.getObject('user')
     const postData = {
-      project_id: this.storage.getUser().projectId,
+      project_id: user.projectId,
       identifier: 'Achievement-' + achievementId,
       is_done: true
     };

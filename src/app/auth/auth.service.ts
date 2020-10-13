@@ -214,23 +214,6 @@ export class AuthService {
   }
 
   /**
-   * check user linkedIn connection status
-   * @return {Boolean}
-   */
-  linkedinAuthenticated () {
-      return this.storage.getUser().linkedinConnected || false;
-  }
-
-  // Activity ID is no longer used as a parameter,
-  // but needs to be there so just pass in a 1
-  connectToLinkedIn () {
-    const url = '/api/auth_linkedin.json?apikey=' + this.storage.getUser().apikey + '&appkey=' + this.storage.get('appkey') + '&timeline_id=' + this.storage.getUser().timelineId;
-
-    this.utils.openUrl(url);
-    return;
-  }
-
-  /**
    * @name contactNumberLogin
    * @description fast/quick login with contact number
    * @param  {string}}        data [description]
