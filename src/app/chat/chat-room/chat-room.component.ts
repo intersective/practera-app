@@ -113,7 +113,12 @@ export class ChatRoomComponent extends RouterEnter {
     }
     this.channelId = this.chatChannel.channelId;
     // subscribe to the Pusher channel for the current chat channel
-    this.pusherService.subscribeChannel('chat', this.chatChannel.pusherChannelName);
+    setTimeout(
+      () => {
+        this.pusherService.subscribeChannel('chat', this.chatChannel.pusherChannelName);
+      },
+      100
+    );
     // subscribe to typing event
     this.utils.getEvent('typing-' + this.chatChannel.pusherChannelName).subscribe(event => this._showTyping(event));
     this.utils.getEvent('channel-id-update').subscribe(event => {
@@ -594,6 +599,10 @@ export class ChatRoomComponent extends RouterEnter {
   }
 
   async preview(file) {
+    // if file didn't have mimetype use filestack Url to priview the file.
+    if (!file.mimetype) {
+      return this.filestackService.previewFile(file);
+    }
     const modal = await this.modalController.create({
       component: ChatPreviewComponent,
       componentProps: {
