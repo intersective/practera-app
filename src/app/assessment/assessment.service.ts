@@ -4,6 +4,7 @@ import { map } from 'rxjs/operators';
 import { RequestService } from '@shared/request/request.service';
 import { UtilsService } from '@services/utils.service';
 import { BrowserStorageService } from '@services/storage.service';
+import { NativeStorageService } from '@services/native-storage.service';
 import { NotificationService } from '@shared/notification/notification.service';
 import { ReviewRatingComponent } from '../review-rating/review-rating.component';
 import { DomSanitizer } from '@angular/platform-browser';
@@ -111,6 +112,7 @@ export class AssessmentService {
     private request: RequestService,
     private utils: UtilsService,
     private storage: BrowserStorageService,
+    private nativeStorage: NativeStorageService,
     private notification: NotificationService,
     public sanitizer: DomSanitizer,
   ) {}
@@ -412,9 +414,10 @@ export class AssessmentService {
     );
   }
 
-  saveFeedbackReviewed(submissionId) {
+  async saveFeedbackReviewed(submissionId): Promise<Observable<any>> {
+    const { projectId } = await this.nativeStorage.getObject('me');
     const postData = {
-      project_id: this.storage.getUser().projectId,
+      project_id: projectId,
       identifier: 'AssessmentSubmission-' + submissionId,
       is_done: true
     };
@@ -428,7 +431,11 @@ export class AssessmentService {
     });
   }
 
-  checkReviewer(reviewer): string {
+  /**
+   * get reviewr name
+   * @return {string | void}    return name, or null if reviewr is N/A or current user is the
+   */
+  checkReviewer(reviewer): string | void {
     if (!reviewer) {
       return null;
     }

@@ -4,7 +4,7 @@ import { AssessmentService, Assessment, Submission, Review, AssessmentSubmitPara
 import { UtilsService } from '../services/utils.service';
 import { NotificationService } from '@shared/notification/notification.service';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
-import { BrowserStorageService } from '@services/storage.service';
+import { NativeStorageService } from '@services/native-storage.service';
 import { RouterEnter } from '@services/router-enter.service';
 import { SharedService } from '@services/shared.service';
 import { ActivityService } from '../activity/activity.service';
@@ -95,8 +95,8 @@ export class AssessmentComponent extends RouterEnter {
     private assessmentService: AssessmentService,
     public utils: UtilsService,
     private notificationService: NotificationService,
-    public storage: BrowserStorageService,
     public sharedService: SharedService,
+    private nativeStorage: NativeStorageService,
     private activityService: ActivityService,
     private fastFeedbackService: FastFeedbackService,
     private ngZone: NgZone,
@@ -220,14 +220,15 @@ export class AssessmentComponent extends RouterEnter {
     // get assessment structure and populate the question form
     this.assessmentService.getAssessment(this.id, this.action, this.activityId, this.contextId, this.submissionId)
       .subscribe(
-        result => {
+        async result => {
           this.assessment = result.assessment;
           this.newRelic.setPageViewName(`Assessment: ${this.assessment.name} ID: ${this.id}`);
           this.populateQuestionsForm();
           this.loadingAssessment = false;
           this._handleSubmissionData(result.submission);
           // display pop up if it is team assessment and user is not in team
-          if (this.doAssessment && this.assessment.isForTeam && !this.storage.getUser().teamId) {
+          const { teamId } = await this.nativeStorage.getObject('me');
+          if (this.doAssessment && this.assessment.isForTeam && !teamId) {
             return this.notificationService.alert({
               message: 'To do this assessment, you have to be in a team.',
               buttons: [
@@ -656,7 +657,7 @@ export class AssessmentComponent extends RouterEnter {
     this.newRelic.actionText('Waiting for review feedback read.');
     // Mark feedback as read
     try {
-      result = await this.assessmentService.saveFeedbackReviewed(this.submission.id).toPromise();
+      result = (await this.assessmentService.saveFeedbackReviewed(this.submission.id)).toPromise();
       this.feedbackReviewed = true;
       this.newRelic.actionText('Review feedback read.');
       this.continueBtnLoading = false;
@@ -672,7 +673,8 @@ export class AssessmentComponent extends RouterEnter {
     // After marking feedback as read, popup review rating modal if
     // 1. review is successfully marked as read (from above)
     // 2. hasReviewRating (activation): program configuration is set to enable review rating
-    if (!result.success || !this.storage.getUser().hasReviewRating) {
+    const { hasReviewRating } = await this.nativeStorage.getObject('me');
+    if (!result.success || !hasReviewRating) {
       return;
     }
     this.continueBtnLoading = true;
