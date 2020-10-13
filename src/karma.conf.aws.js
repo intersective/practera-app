@@ -19,7 +19,13 @@ module.exports = function (config) {
         coverageIstanbulReporter: {
             dir: require('path').join(__dirname, '../coverage'),
             reports: ['html', 'lcovonly'],
-            fixWebpackSourcePaths: true
+            fixWebpackSourcePaths: true,
+            thresholds: {
+                statements: 80,
+                lines: 80,
+                branches: 70,
+                functions: 80
+            }
         },
         htmlReporter: {
             outputFile: require('path').join(__dirname, '../tests/result.html'),
