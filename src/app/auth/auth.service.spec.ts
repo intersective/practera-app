@@ -89,7 +89,7 @@ describe('AuthService', () => {
     expect(storageSpy.setUser.calls.first().args[0]).toEqual({apikey: '123456'});
   });
 
-  it('when testing directLogin(), it should pass the correct data to API', () => {
+  it('when testing directLogin(), it should pass the correct data to API', async () => {
     requestSpy.post.and.returnValue(of({
       success: true,
       data: {
@@ -110,20 +110,20 @@ describe('AuthService', () => {
       }
     }));
     storageSpy.getConfig.and.returnValue(true);
-    service.directLogin({ authToken: 'abcd' }).subscribe();
+    (await service.directLogin({ authToken: 'abcd' })).subscribe();
     expect(requestSpy.post.calls.count()).toBe(1);
     expect(requestSpy.post.calls.first().args[1]).toContain('abcd');
     expect(storageSpy.setUser.calls.first().args[0]).toEqual({apikey: '123456'});
   });
 
   describe('when testing isAuthenticated()', () => {
-    it('should return true', () => {
+    it('should return true', async () => {
       storageSpy.get.and.returnValue(true);
-      expect(service.isAuthenticated()).toBe(true);
+      expect(await service.isAuthenticated()).toBe(true);
     });
-    it('should return false', () => {
+    it('should return false', async () => {
       storageSpy.get.and.returnValue(false);
-      expect(service.isAuthenticated()).toBe(false);
+      expect(await service.isAuthenticated()).toBe(false);
     });
   });
 

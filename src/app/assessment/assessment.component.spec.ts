@@ -665,7 +665,7 @@ describe('AssessmentComponent', () => {
   describe('when testing markReviewFeedbackAsRead()', () => {
     it('should pop up review rating modal', fakeAsync(() => {
       storageSpy.getUser.and.returnValue({ hasReviewRating: true });
-      component.markReviewFeedbackAsRead();
+      component['markReviewFeedbackAsRead']();
       tick();
       expect(assessmentSpy.popUpReviewRating.calls.count()).toBe(1);
     }));
