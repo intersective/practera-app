@@ -1,4 +1,4 @@
-import { TestBed } from '@angular/core/testing';
+import { TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { of } from 'rxjs';
 import { RequestService } from '@shared/request/request.service';
 import { TabsService } from './tabs.service';
@@ -29,13 +29,15 @@ describe('TabsService', () => {
 
   describe('when testing getNoOfTodoItems()', () => {
     let response, expected = 0, error = false;
-    afterEach(() => {
+    afterEach(fakeAsync(async () => {
       requestSpy.get.and.returnValue(of(response));
-      service.getNoOfTodoItems().subscribe(res => expect(res).toEqual(expected));
+      const getTodoItems = await service.getNoOfTodoItems();
+      getTodoItems.subscribe(res => expect(res).toEqual(expected));
+      tick();
       if (error) {
         expect(requestSpy.apiResponseFormatError.calls.count()).toBe(1);
       }
-    });
+    }));
     it('should throw error #1', () => {
        response = {
          success: true,
