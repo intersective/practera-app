@@ -220,11 +220,13 @@ export class AuthService {
   contactNumberLogin(data: { contactNumber: string }): Observable<any> {
     return this.request.post(api.login, {
       contact_number: data.contactNumber, // API accepts contact_numebr
-    }).pipe(map(response => {
+    }).pipe(map(async response => {
       if (response.data) {
         this.storage.setUser({apikey: response.data.apikey});
         this.storage.set('tutorial', response.data.tutorial);
-        this.storage.set('programs', response.data.timelines);
+
+        await this.nativeStorage.setObject('me', {apikey: response.data.apikey});
+        await this.nativeStorage.setObject('programs', response.data.timelines);
       }
 
       // @TODO: verify if safari browser localStorage store data above properly

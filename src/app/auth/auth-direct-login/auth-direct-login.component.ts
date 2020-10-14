@@ -79,11 +79,7 @@ export class AuthDirectLoginComponent implements OnInit {
       // if there's no redirection or timeline id
       return this._saveOrRedirect(['switcher', 'switcher-program'], redirectLater);
     }
-    if ( this.route.snapshot.paramMap.has('return_url')) {
-      this.storage.setUser({
-        LtiReturnUrl: this.route.snapshot.paramMap.get('return_url')
-      });
-
+    if (this.route.snapshot.paramMap.has('return_url')) {
       await this.nativeStorage.setObject('me', {
         LtiReturnUrl: this.route.snapshot.paramMap.get('return_url')
       });
