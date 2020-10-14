@@ -216,7 +216,25 @@ export class RequestService {
       fetchPolicy: options.noCache ? 'no-cache' : 'cache-and-network'
     });
     return watch.valueChanges
+    .pipe(map(response => {
+      // this._refreshApikey(response);
+      return response;
+    }))
       .pipe(
+        catchError((error) => this.handleError(error))
+      );
+  }
+
+  chatGraphQLMutate(query: string, variables = {}): Observable<any> {
+    return this.apollo.use('chat').mutate({
+      mutation: gql(query),
+      variables: variables
+    })
+      .pipe(
+        concatMap(response => {
+          // this._refreshApikey(response);
+          return of(response);
+        }),
         catchError((error) => this.handleError(error))
       );
   }

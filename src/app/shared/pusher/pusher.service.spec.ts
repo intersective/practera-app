@@ -151,7 +151,7 @@ xdescribe('PusherService', async () => {
           }
         ]
       }));
-      service.getChannels().subscribe();
+      service.getChannels();
       tick(300);
       expect(requestSpy.get).toHaveBeenCalledWith(APIURL, {
         params: { env: environment.env }
@@ -229,7 +229,7 @@ xdescribe('PusherService', async () => {
         data: channels
       }));
 
-      service.getChannels().subscribe();
+      service.getChannels();
 
       flushMicrotasks();
 
