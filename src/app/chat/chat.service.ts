@@ -19,57 +19,61 @@ const api = {
 };
 
 export interface ChatChannel {
-  channelId: number | string;
-  channelName: string;
-  channelAvatar: string;
+  uuid: string;
+  name: string;
+  avatar: string;
   isAnnouncement: boolean;
   isDirectMessage: boolean;
-  pusherChannelName: string;
+  pusherChannel: string;
   readonly: boolean;
   roles: string[];
-  unreadMessages: number;
+  unreadMessageCount: number;
   lastMessage: string;
   lastMessageCreated: string;
 }
 
 export interface ChannelMembers {
-  uuid: number | string;
+  uuid: string;
   name: string;
   role: string;
   avatar: string;
 }
 
+export interface MessageListResult {
+  cursor: string;
+  messages: Message[];
+}
+
 export interface Message {
-  id?: number;
+  uuid?: string;
   senderName?: string;
   senderRole?: string;
   senderAvatar?: string;
   isSender?: boolean;
   message: string;
-  sentTime?: string;
-  channelId?: number | string;
-  channelIdAlias?: string;
+  created?: string;
   file?: object;
   preview?: string;
   noAvatar?: boolean;
+  channelUuid?: string;
 }
 
 interface NewMessageParam {
-  channelId: number | string;
+  channeluuid: string;
   message: string;
   env?: string;
   file?: object;
 }
 
 interface MessageListParams {
-  channel_id: number | string;
-  cursor: number | string;
+  channelUuid: string;
+  cursor: string;
   size: number;
 }
 
 interface MarkAsSeenParams {
-  channel_id: number | string;
-  ids: number[];
+  channelUuid: string;
+  ids: string[];
   action?: string;
 }
 
@@ -118,17 +122,17 @@ export class ChatService {
     const chats = [];
     result.forEach(chat => {
       chats.push({
-        channelId: chat.uuid,
-        channelName: chat.name,
-        channelAvatar: chat.avatar,
+        uuid: chat.uuid,
+        name: chat.name,
+        avatar: chat.avatar,
         isAnnouncement: chat.isAnnouncement,
         isDirectMessage: chat.isDirectMessage,
-        pusherChannelName: chat.pusher_channel_name,
+        pusherChannel: chat.pusherChannel,
         readonly: chat.readonly,
         roles: chat.roles,
-        unreadMessages: chat.unread_messages,
-        lastMessage: chat.last_message,
-        lastMessageCreated: chat.last_message_created
+        unreadMessageCount: chat.unreadMessageCount,
+        lastMessage: chat.lastMessage,
+        lastMessageCreated: chat.lastMessageCreated
       });
     });
     return chats;
@@ -143,7 +147,7 @@ export class ChatService {
    *   size:20
    * }
    */
-  getMessageList(data: MessageListParams): Observable<Message[]> {
+  getMessageList(data: MessageListParams): Observable<MessageListResult> {
     return this.request.chatGraphQLQuery(
       `query getChannellogs($uuid:string!, $cursor:string!, $size:Int!) {
         channel(uuid:$uuid){
@@ -155,12 +159,12 @@ export class ChatService {
         }
       }`,
       {
-        uuid: data.channel_id,
+        uuid: data.channelUuid,
         cursor: data.cursor,
         size: data.size
       }
     ).pipe(map(response => {
-      return this._normaliseMessageListResponse(response.data, data.channel_id);
+      return this._normaliseMessageListResponse(response.data, data.channelUuid);
     }));
   }
 
@@ -168,15 +172,15 @@ export class ChatService {
    * modify the message list response
    * @TODO need to find a way to save cursor or send to component and keep in that side.
    */
-  private _normaliseMessageListResponse(data, channelId): Message[] {
-    const messageListResult = JSON.parse(JSON.stringify(data.channel.chatLogsConnection.chatLogs));
+  private _normaliseMessageListResponse(data, channelId): MessageListResult {
+    const messages = JSON.parse(JSON.stringify(data.channel.chatLogsConnection.chatLogs));
     const cursor = JSON.parse(JSON.stringify(data.channel.chatLogsConnection.cursor));
-    if (!Array.isArray(messageListResult)) {
+    if (!Array.isArray(messages)) {
       this.request.apiResponseFormatError('Message array format error');
-      return [];
+      return null;
     }
-    if (messageListResult.length === 0) {
-      return [];
+    if (messages.length === 0) {
+      return null;
     }
 
     const messageList = [];
@@ -186,7 +190,7 @@ export class ChatService {
           return [];
         }
 
-        messageListResult.forEach(message => {
+        messages.forEach(message => {
 
           const sender = members.find(member => member.uuid === message.senderUuid);
           if (!sender) {
@@ -194,19 +198,23 @@ export class ChatService {
           }
 
           messageList.push({
-            id: message.uuid,
+            uuid: message.uuid,
             senderName: sender.name,
             senderRole: sender.role,
             senderAvatar: sender.avatar,
             isSender: message.isSender,
             message: message.message,
-            sentTime: message.created,
+            created: message.created,
             file: message.file
           });
         });
       }
     );
-    return messageList;
+
+    return {
+      cursor: cursor,
+      messages: messageList
+    };
   }
 
   /**
@@ -272,7 +280,7 @@ export class ChatService {
 
   markMessagesAsSeen(prams: MarkAsSeenParams): Observable<any> {
     const body = {
-      channel_id: prams.channel_id,
+      channel_id: prams.channelUuid,
       id: prams.ids,
       action: 'mark_seen'
     };
@@ -287,7 +295,7 @@ export class ChatService {
    */
   postNewMessage(data: NewMessageParam): Observable<any> {
     return this.request.post(api.createMessage, {
-      channel_id: data.channelId,
+      channeluuid: data.channeluuid,
       message: data.message,
       env: environment.env,
       file: data.file,
@@ -304,11 +312,9 @@ export class ChatService {
   /**
    * modify the  new message response
    */
-  private _normalisePostMessageResponse(data): { message: Message, channelId?: number } {
-    if (!this.utils.has(data, 'id') ||
-        !this.utils.has(data, 'sender.name') ||
-        !this.utils.has(data, 'sender.role') ||
-        !this.utils.has(data, 'sender.avatar') ||
+  private _normalisePostMessageResponse(data): { message: Message, channelUuid?: string } {
+    if (!this.utils.has(data, 'uuid') ||
+        !this.utils.has(data, 'senderUuid') ||
         !this.utils.has(data, 'is_sender') ||
         !this.utils.has(data, 'message') ||
         !this.utils.has(data, 'sent_time') ||
@@ -318,16 +324,14 @@ export class ChatService {
     }
     return {
       message: {
-        id: data.id,
-        senderName: data.sender.name,
-        senderRole: data.sender.role,
-        senderAvatar: data.sender.avatar,
+        uuid: data.uuid,
+        senderName: data.senderUuid,
         isSender: data.is_sender,
         message: data.message,
-        sentTime: data.sent_time,
+        created: data.created,
         file: data.file
       },
-      channelId: data.channel ? data.channel.channel_id : null
+      channelUuid: data.channel ? data.channel.uuid : null
     };
   }
 

@@ -6,7 +6,7 @@ import { RouterEnter } from '@services/router-enter.service';
 import { UtilsService } from '@services/utils.service';
 import { PusherService } from '@shared/pusher/pusher.service';
 import { FilestackService } from '@shared/filestack/filestack.service';
-import { ChatService, ChatChannel, Message } from '../chat.service';
+import { ChatService, ChatChannel, Message, MessageListResult, ChannelMembers } from '../chat.service';
 import { ChatPreviewComponent } from '../chat-preview/chat-preview.component';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
 
@@ -18,25 +18,28 @@ import { NewRelicService } from '@shared/new-relic/new-relic.service';
 export class ChatRoomComponent extends RouterEnter {
   @ViewChild(IonContent) content: IonContent;
   @Input() chatChannel?: ChatChannel = {
-    channelId: 0,
-    channelName: '',
-    channelAvatar: '',
-    pusherChannelName: '',
+    uuid: '',
+    name: '',
+    avatar: '',
+    pusherChannel: '',
+    isAnnouncement: false,
+    isDirectMessage: false,
     readonly: false,
     roles: [],
-    members: [],
-    unreadMessages: 0,
+    unreadMessageCount: 0,
     lastMessage: '',
     lastMessageCreated: ''
   };
 
   routeUrl = '/chat/chat-room';
-  channelId: number | string;
+  channelUuid: string;
   // message history list
   messageList: Message[] = [];
+  // chat member list
+  memberList: ChannelMembers[] = [];
   // the message that the current user is typing
   message: string;
-  messagePageNumber = 0;
+  messagePageCursor = '';
   messagePageSize = 20;
   loadingChatMessages = false;
   sendingMessage = false;
@@ -44,6 +47,8 @@ export class ChatRoomComponent extends RouterEnter {
   whoIsTyping: string;
   // this use to show/hide bottom section of text field which have attachment buttons and send button, when user start typing text messages
   showBottomAttachmentButtons = false;
+
+  receivedMessage: Message;
 
   constructor(
     private chatService: ChatService,
@@ -67,22 +72,16 @@ export class ChatRoomComponent extends RouterEnter {
       if (this.utils.isMobile() && (this.router.url !== '/chat/chat-room')) {
         return;
       }
-      const receivedMessage = this.getMessageFromEvent(event);
-      if (receivedMessage.channelId !== this.channelId) {
-        if (receivedMessage.channelIdAlias !== this.channelId) {
-          // only display message for the current channel
-          return;
-        }
-        this.utils.broadcastEvent('channel-id-update', {
-          previousId: this.channelId,
-          currentId: receivedMessage.channelId
-        });
+      this.receivedMessage = null;
+      this.getMessageFromEvent(event);
+      if (this.receivedMessage.channelUuid !== this.channelUuid) {
+        return;
       }
-      if (receivedMessage && receivedMessage.file) {
-        receivedMessage.preview = this.attachmentPreview(receivedMessage.file);
+      if (this.receivedMessage && this.receivedMessage.file) {
+        this.receivedMessage.preview = this.attachmentPreview(this.receivedMessage.file);
       }
-      if (!this.utils.isEmpty(receivedMessage)) {
-        this.messageList.push(receivedMessage);
+      if (!this.utils.isEmpty(this.receivedMessage)) {
+        this.messageList.push(this.receivedMessage);
         this._markAsSeen();
         this._scrollToBottom();
       }
@@ -91,7 +90,8 @@ export class ChatRoomComponent extends RouterEnter {
 
   onEnter() {
     this._initialise();
-    this._subscribeToPusherChannel();
+    this._subscribeToTypingEvent();
+    this._loadMembers();
     this._loadMessages();
     this._scrollToBottom();
   }
@@ -100,50 +100,53 @@ export class ChatRoomComponent extends RouterEnter {
     this.message = '';
     this.messageList = [];
     this.loadingChatMessages = false;
-    this.messagePageNumber = 0;
+    this.messagePageCursor = '';
     this.messagePageSize = 20;
     this.sendingMessage = false;
     this.whoIsTyping = '';
     this.showBottomAttachmentButtons = false;
   }
 
-  private _subscribeToPusherChannel() {
-    if (this.chatChannel.channelId === 0 && !this.chatChannel.channelName) {
+  private _subscribeToTypingEvent() {
+    if ( this.utils.isEmpty(this.chatChannel.uuid) && this.utils.isEmpty(this.chatChannel.name)) {
       this.chatChannel = this.storage.getCurrentChatChannel();
     }
-    this.channelId = this.chatChannel.channelId;
-    // subscribe to the Pusher channel for the current chat channel
-    setTimeout(
-      () => {
-        this.pusherService.subscribeChannel('chat', this.chatChannel.pusherChannelName);
-      },
-      100
-    );
+    this.channelUuid = this.chatChannel.uuid;
     // subscribe to typing event
-    this.utils.getEvent('typing-' + this.chatChannel.pusherChannelName).subscribe(event => this._showTyping(event));
-    this.utils.getEvent('channel-id-update').subscribe(event => {
-      if (this.channelId === event.previousId) {
-        this.channelId = event.currentId;
-      }
-    });
+    this.utils.getEvent('typing-' + this.chatChannel.pusherChannel).subscribe(event => this._showTyping(event));
   }
 
   /**
    * @description listen to pusher event for new message
    */
-  getMessageFromEvent(data): Message {
-    return {
-      id: data.meta.id,
-      senderName: data.meta.sender.name,
-      senderRole: data.meta.sender.role,
-      senderAvatar: data.meta.sender.avatar,
-      isSender: false,
-      message: data.meta.message,
-      sentTime: data.meta.sent_time,
-      channelId: data.meta.channel_id,
-      channelIdAlias: data.meta.channel_id_alias,
-      file: data.meta.file
+  getMessageFromEvent(data) {
+    const sender = this.memberList.find(member => member.uuid === data.senderUuid);
+    if (!sender) {
+      this.receivedMessage = null;
+      return;
+    }
+    this.receivedMessage = {
+      uuid: data.uuid,
+      senderName: sender.name,
+      senderRole: sender.role,
+      senderAvatar: sender.avatar,
+      isSender: data.isSender,
+      message: data.message,
+      created: data.created,
+      file: data.file,
+      channelUuid: data.channelUuid
     };
+  }
+
+  private _loadMembers() {
+    this.chatService.getChatMembers(this.channelUuid).subscribe(
+      members => {
+        if (!members) {
+          return;
+        }
+        this.memberList = members;
+      }
+    );
   }
 
   private _loadMessages() {
@@ -154,20 +157,21 @@ export class ChatRoomComponent extends RouterEnter {
       return;
     }
     this.loadingChatMessages = true;
-    this.messagePageNumber += 1;
     this.chatService
       .getMessageList({
-        channel_id: this.channelId,
-        page: this.messagePageNumber,
+        channelUuid: this.channelUuid,
+        cursor: this.messagePageCursor,
         size: this.messagePageSize
       })
       .subscribe(
-        (messages: Message[]) => {
+        (messageListResult: MessageListResult) => {
+          let messages = messageListResult.messages;
           this.loadingChatMessages = false;
           if (messages.length === 0) {
-            this.messagePageNumber -= 1;
+            this.messagePageCursor = '';
             return;
           }
+          this.messagePageCursor = messageListResult.cursor;
           messages = messages.map(msg => {
             if (msg.file) {
               msg.preview = this.attachmentPreview(msg.file);
@@ -207,18 +211,24 @@ export class ChatRoomComponent extends RouterEnter {
     const message = this.message;
     this._beforeSenMessages();
     this.chatService.postNewMessage({
-      channelId: this.channelId,
+      channeluuid: this.channelUuid,
       message: message
     }).subscribe(
       response => {
+        this.pusherService.triggerSendMessage({
+          channelName: this.chatChannel.pusherChannel,
+          messageData: {
+            channelUuid: this.channelUuid,
+            uuid: response.message.uuid,
+            senderUuid: response.message.senderUuid,
+            message: response.message.message,
+            file: response.message.file,
+            isSender: response.message.isSender,
+            created: response.message.created
+          }
+        });
         this.messageList.push(response.message);
         this.utils.broadcastEvent('chat:info-update', true);
-        if (response.channelId) {
-          this.utils.broadcastEvent('channel-id-update', {
-            previousId: this.channelId,
-            currentId: response.channelId
-          });
-        }
         this._scrollToBottom();
         this._afterSendMessage();
       },
@@ -246,28 +256,42 @@ export class ChatRoomComponent extends RouterEnter {
     this.sendingMessage = false;
     this.showBottomAttachmentButtons = false;
     /**
-     * if there are no previous messages message page number is 0.
-     * after user start sending message, if page number is 0 we need to make it page 1.
-     * if we didn't do that when user scroll message list api call with page number 1 and load same messages again.
+     * if there are no previous messages message page cursor is empty.
+     * after user start sending message, if page cursor is empty we need to set cursor.
+     * if we didn't do that when user scroll message list api call with page cursor empty and load same messages again.
+     * only way we can get cursor is from API. so calling message list in background to get cursor.
      */
-    if (this.messageList.length > 0 && this.messagePageNumber === 0) {
-      this.messagePageNumber += 1;
+    if (this.messageList.length > 0 && this.utils.isEmpty(this.messagePageCursor)) {
+      this.chatService
+      .getMessageList({
+        channelUuid: this.channelUuid,
+        cursor: this.messagePageCursor,
+        size: this.messagePageSize
+      })
+      .subscribe((messageListResult: MessageListResult) => {
+        const messages = messageListResult.messages;
+        if (messages.length === 0) {
+          this.messagePageCursor = '';
+          return;
+        }
+        this.messagePageCursor = messageListResult.cursor;
+      });
     }
   }
 
   // call chat api to mark message as seen messages
   private _markAsSeen() {
-    const messageIds = this.messageList.map(m => m.id);
+    const messageIds = this.messageList.map(m => m.uuid);
     this.chatService
       .markMessagesAsSeen({
         ids: messageIds,
-        channel_id: this.channelId
+        channelUuid: this.channelUuid
       })
       .subscribe (
         res => {
           if (!this.utils.isMobile()) {
             this.utils.broadcastEvent('chat-badge-update', {
-              channelId: this.chatChannel.channelId,
+              channelUuid: this.chatChannel.uuid,
               readcount: messageIds.length
             });
           }
@@ -319,8 +343,8 @@ export class ChatRoomComponent extends RouterEnter {
       this.messageList[index].noAvatar = false;
       return true;
     }
-    const currentMessageTime = new Date(this.messageList[index].sentTime);
-    const nextMessageTime = new Date(this.messageList[index + 1].sentTime);
+    const currentMessageTime = new Date(this.messageList[index].created);
+    const nextMessageTime = new Date(this.messageList[index + 1].created);
     if (currentMessage.senderName !== nextMessage.senderName) {
       this.messageList[index].noAvatar = false;
       return true;
@@ -364,8 +388,8 @@ export class ChatRoomComponent extends RouterEnter {
     if (!this.messageList[index - 1]) {
       return true;
     }
-    const currentMessageTime = new Date(this.messageList[index].sentTime);
-    const oldMessageTime = new Date(this.messageList[index - 1].sentTime);
+    const currentMessageTime = new Date(this.messageList[index].created);
+    const oldMessageTime = new Date(this.messageList[index - 1].created);
     if ((currentMessageTime.getDate() - oldMessageTime.getDate()) === 0) {
       return this._checkmessageOldThan5Min(
         currentMessageTime,
@@ -400,7 +424,7 @@ export class ChatRoomComponent extends RouterEnter {
     } else {
       this.showBottomAttachmentButtons = false;
     }
-    this.pusherService.triggerTyping(this.chatChannel.pusherChannelName);
+    this.pusherService.triggerTyping(this.chatChannel.pusherChannel);
   }
 
   private _showTyping(event) {
@@ -467,7 +491,7 @@ export class ChatRoomComponent extends RouterEnter {
     }
     this.sendingMessage = true;
     this.chatService.postAttachmentMessage({
-      channelId: this.channelId,
+      channeluuid: this.channelUuid,
       message: this.message,
       file
     }).subscribe(
@@ -478,7 +502,7 @@ export class ChatRoomComponent extends RouterEnter {
         this.utils.broadcastEvent('chat:info-update', true);
         if (response.channelId) {
           this.utils.broadcastEvent('channel-id-update', {
-            previousId: this.channelId,
+            previousId: this.channelUuid,
             currentId: response.channelId
           });
         }

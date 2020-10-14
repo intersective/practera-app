@@ -114,7 +114,6 @@ describe('ChatService', () => {
             expect(chat.pusherChannelName).toEqual(requestResponse.data[i].pusher_channel_name);
             expect(chat.readonly).toEqual(requestResponse.data[i].readonly);
             expect(chat.roles).toEqual(requestResponse.data[i].roles);
-            expect(chat.members).toEqual(requestResponse.data[i].members);
             expect(chat.unreadMessages).toEqual(requestResponse.data[i].unread_messages);
             expect(chat.lastMessage).toEqual(requestResponse.data[i].last_message);
             expect(chat.lastMessageCreated).toEqual(requestResponse.data[i].last_message_created);
@@ -177,8 +176,8 @@ describe('ChatService', () => {
 
     it('should get correct message list data for team chat', () => {
       const chatData = {
-        channel_id: 1,
-        page: 1,
+        channelUuid: '1',
+        cursor: '1',
         size: 15,
       };
       requestSpy.get.and.returnValue(of(requestResponse));
