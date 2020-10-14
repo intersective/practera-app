@@ -12,8 +12,6 @@ import { environment } from '@environments/environment';
  * @type {Object}
  */
 const api = {
-  getChatList: 'api/v2/message/chat/list.json',
-  getChatMessages: 'api/v2/message/chat/list_messages.json',
   createMessage: 'api/v2/message/chat/create_message',
   markAsSeen: 'api/v2/message/chat/edit_message'
 };
@@ -39,13 +37,9 @@ export interface ChannelMembers {
   avatar: string;
 }
 
-export interface MessageListResult {
-  cursor: string;
-  messages: Message[];
-}
-
 export interface Message {
   uuid?: string;
+  senderUuid?: string;
   senderName?: string;
   senderRole?: string;
   senderAvatar?: string;
@@ -58,8 +52,13 @@ export interface Message {
   channelUuid?: string;
 }
 
+export interface MessageListResult {
+  cursor: string;
+  messages: Message[];
+}
+
 interface NewMessageParam {
-  channeluuid: string;
+  channelUuid: string;
   message: string;
   env?: string;
   file?: object;
@@ -101,9 +100,15 @@ export class ChatService {
         channels{
           uuid name avatar isAnnouncement isDirectMessage readonly roles unreadMessageCount lastMessage lastMessageCreated
         }
-      }`
+      }`,
+      {},
+      {
+        noCache: true
+      }
     ).pipe(map(response => {
-      return this._normaliseChatListResponse(response.data);
+      if (response.data) {
+        return this._normaliseChatListResponse(response.data);
+      }
     }));
   }
 
@@ -149,7 +154,7 @@ export class ChatService {
    */
   getMessageList(data: MessageListParams): Observable<MessageListResult> {
     return this.request.chatGraphQLQuery(
-      `query getChannellogs($uuid:string!, $cursor:string!, $size:Int!) {
+      `query getChannellogs($uuid:String!, $cursor:String!, $size:Int!) {
         channel(uuid:$uuid){
           chatLogsConnection(cursor:$cursor, size:$size){
             cursor chatLogs{
@@ -162,9 +167,14 @@ export class ChatService {
         uuid: data.channelUuid,
         cursor: data.cursor,
         size: data.size
+      },
+      {
+        noCache: true
       }
     ).pipe(map(response => {
-      return this._normaliseMessageListResponse(response.data, data.channelUuid);
+      if (response.data) {
+        return this._normaliseMessageListResponse(response.data, data.channelUuid);
+      }
     }));
   }
 
@@ -182,38 +192,9 @@ export class ChatService {
     if (messages.length === 0) {
       return null;
     }
-
-    const messageList = [];
-    this.getChatMembers(channelId).subscribe(
-      members => {
-        if (!members) {
-          return [];
-        }
-
-        messages.forEach(message => {
-
-          const sender = members.find(member => member.uuid === message.senderUuid);
-          if (!sender) {
-            return [];
-          }
-
-          messageList.push({
-            uuid: message.uuid,
-            senderName: sender.name,
-            senderRole: sender.role,
-            senderAvatar: sender.avatar,
-            isSender: message.isSender,
-            message: message.message,
-            created: message.created,
-            file: message.file
-          });
-        });
-      }
-    );
-
     return {
       cursor: cursor,
-      messages: messageList
+      messages: messages
     };
   }
 
@@ -222,7 +203,7 @@ export class ChatService {
    */
   getChatMembers(channelId): Observable<ChannelMembers[]> {
     return this.request.chatGraphQLQuery(
-      `query getChannelmembers($uuid:string!) {
+      `query getChannelmembers($uuid:String!) {
         channel(uuid:$uuid){
           members{
             uuid name role avatar
@@ -231,9 +212,14 @@ export class ChatService {
       }`,
       {
         uuid: channelId
+      },
+      {
+        noCache: true
       }
     ).pipe(map(response => {
-      return this._normaliseChatMembersResponse(response.data);
+      if (response.data) {
+        return this._normaliseChatMembersResponse(response.data);
+      }
     }));
   }
 
@@ -246,7 +232,6 @@ export class ChatService {
     if (result.length === 0) {
       return [];
     }
-
     return result;
   }
 
@@ -259,9 +244,15 @@ export class ChatService {
         channels {
           pusherChannel
         }
-      }`
+      }`,
+      {},
+      {
+        noCache: true
+      }
     ).pipe(map(response => {
-      return this._normalisePusherChannelsResponse(response.data);
+      if (response.data) {
+        return this._normalisePusherChannelsResponse(response.data);
+      }
     }));
   }
 
@@ -274,13 +265,12 @@ export class ChatService {
     if (result.length === 0) {
       return [];
     }
-
     return result;
   }
 
   markMessagesAsSeen(prams: MarkAsSeenParams): Observable<any> {
     const body = {
-      channel_id: prams.channelUuid,
+      channelUuid: prams.channelUuid,
       id: prams.ids,
       action: 'mark_seen'
     };
@@ -295,7 +285,7 @@ export class ChatService {
    */
   postNewMessage(data: NewMessageParam): Observable<any> {
     return this.request.post(api.createMessage, {
-      channeluuid: data.channeluuid,
+      channelUuid: data.channelUuid,
       message: data.message,
       env: environment.env,
       file: data.file,
@@ -315,9 +305,9 @@ export class ChatService {
   private _normalisePostMessageResponse(data): { message: Message, channelUuid?: string } {
     if (!this.utils.has(data, 'uuid') ||
         !this.utils.has(data, 'senderUuid') ||
-        !this.utils.has(data, 'is_sender') ||
+        !this.utils.has(data, 'isSender') ||
         !this.utils.has(data, 'message') ||
-        !this.utils.has(data, 'sent_time') ||
+        !this.utils.has(data, 'created') ||
         !this.utils.has(data, 'file')) {
       this.request.apiResponseFormatError('chat channel format error');
       return null;

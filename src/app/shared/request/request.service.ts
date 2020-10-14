@@ -58,20 +58,12 @@ export class RequestService {
     @Optional() config: RequestConfig,
     private newrelic: NewRelicService,
     private devMode: DevModeService,
-    private apollo: Apollo,
-    private httpLink: HttpLink
+    private apollo: Apollo
   ) {
     if (config) {
       this.appkey = config.appkey;
       this.prefixUrl = config.prefixUrl;
     }
-    const options = {
-      link: httpLink.create({
-        uri: environment.chatGraphQL
-      }),
-      cache: new InMemoryCache(),
-    };
-    this.apollo.create(options, 'chat');
   }
 
   /**
@@ -216,10 +208,10 @@ export class RequestService {
       fetchPolicy: options.noCache ? 'no-cache' : 'cache-and-network'
     });
     return watch.valueChanges
-    .pipe(map(response => {
-      // this._refreshApikey(response);
-      return response;
-    }))
+      .pipe(map(response => {
+        this._refreshApikey(response);
+        return response;
+      }))
       .pipe(
         catchError((error) => this.handleError(error))
       );
