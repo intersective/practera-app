@@ -6,6 +6,7 @@ import { UtilsService } from '@services/utils.service';
 import { SharedService } from '@services/shared.service';
 import { Observable } from 'rxjs';
 import { AuthService } from './auth/auth.service';
+import { BrowserStorageService } from '@services/storage.service';
 import { NativeStorageService } from '@services/native-storage.service';
 import { VersionCheckService } from '@services/version-check.service';
 import { environment } from '@environments/environment';
@@ -31,6 +32,7 @@ export class AppComponent implements OnInit {
     public utils: UtilsService,
     private sharedService: SharedService,
     private authService: AuthService,
+    private storage: BrowserStorageService,
     private nativeStorage: NativeStorageService,
     private versionCheckService: VersionCheckService,
     private pusherService: PusherService,
@@ -52,18 +54,16 @@ export class AppComponent implements OnInit {
     });
   }
 
-  private async configVerification(): Promise<void> {
-    const hasOpened =  await this.nativeStorage.getObject('fastFeedbackOpening');
+  private configVerification(): void {
+    const hasOpened = this.storage.get('fastFeedbackOpening');
     if (hasOpened) { // set default modal status
-      this.nativeStorage.setObject('fastFeedbackOpening', false);
+      this.storage.set('fastFeedbackOpening', false);
     }
   }
 
   ngOnInit() {
-    forkJoin(
-      this.configVerification(),
-      this.sharedService.onPageLoad(),
-    ).subscribe();
+    this.configVerification();
+    fromPromise(this.sharedService.onPageLoad()).subscribe();
 
     // @TODO: need to build a new micro service to get the config and serve the custom branding config from a microservice
     // Get the custom branding info and update the theme color if needed
