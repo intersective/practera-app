@@ -14,13 +14,13 @@
     <clickable-item
       *ngFor="let chat of chatList; let i = index"
       (click)="goToChatRoom(chat)"
-      [active]="currentChat && currentChat.channelId == chat.channelId"
-      [ngClass]="{'unread': chat.unreadMessages > 0}"
+      [active]="currentChat && currentChat.uuid == chat.uuid"
+      [ngClass]="{'unread': chat.unreadMessageCount > 0}"
       [lines]="'none'">
-      <ion-avatar slot="start" text-center><img [src]="chat.channelAvatar"></ion-avatar>
+      <ion-avatar slot="start" text-center><img [src]="chat.avatar"></ion-avatar>
       <ion-label>
         <div class="chat-name-container caption">
-          <p class="chat-name subtitle-1" [ngClass]="{'bold': chat.unreadMessages > 0}">{{ chat.channelName }}</p>
+          <p class="chat-name subtitle-1" [ngClass]="{'bold': chat.unreadMessageCount > 0}">{{ chat.name }}</p>
           <ng-container *ngIf="(chat.roles.length === 1) && (chat.roles.includes('mentor'))">
             <span>mentor</span>
           </ng-container>
@@ -34,8 +34,8 @@
         <div class="caption gray-2">
           <span>{{ getChatDate(chat.lastMessageCreated) }}</span>
         </div>
-        <ng-container *ngIf="chat.unreadMessages > 0">
-          <ion-badge class="caption">{{ chat.unreadMessages }}</ion-badge>
+        <ng-container *ngIf="chat.unreadMessageCount > 0">
+          <ion-badge class="caption">{{ chat.unreadMessageCount }}</ion-badge>
         </ng-container>
       </div>
     </clickable-item>

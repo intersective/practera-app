@@ -22,6 +22,7 @@ export class PusherConfig {
 export interface SendMessageParam {
   channelName: string;
   messageData: {
+    channelUuid: number | string;
     uuid: number | string;
     senderUuid: string;
     message: string;
@@ -90,7 +91,7 @@ export class PusherService {
     }
 
     // subscribe to event only when pusher is available
-    const channels = await this.getChannels().toPromise();
+    const channels = await this.getChannels();
     return {
       pusher: this.pusher,
       channels
@@ -168,7 +169,12 @@ export class PusherService {
    * get a list of channels from API request and subscribe every of them into
    * connected + authorised pusher
    */
-  getChannels(): Observable<any> {
+  async getChannels() {
+    await this.getNotificationChannel().toPromise();
+    await this.getChatChannels().toPromise();
+  }
+
+  getNotificationChannel(): Observable<any> {
     return this.request.get(api.channels, {
       params: {
         env: environment.env,
@@ -176,7 +182,7 @@ export class PusherService {
       }
     }).pipe(map(response => {
       if (response.data) {
-        return this.subscribeChannel('notification', response.data[0].channel);
+        this.subscribeChannel('notification', response.data[0].channel);
       }
     }));
   }
