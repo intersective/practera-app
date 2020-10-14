@@ -220,7 +220,8 @@ export class AssessmentComponent extends RouterEnter {
     // get assessment structure and populate the question form
     this.assessmentService.getAssessment(this.id, this.action, this.activityId, this.contextId, this.submissionId)
       .subscribe(
-        async result => {
+        async res => {
+          const result = await res;
           this.assessment = result.assessment;
           this.newRelic.setPageViewName(`Assessment: ${this.assessment.name} ID: ${this.id}`);
           this.populateQuestionsForm();

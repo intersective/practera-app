@@ -117,7 +117,7 @@ export class AssessmentService {
     public sanitizer: DomSanitizer,
   ) {}
 
-  getAssessment(id, action, activityId, contextId, submissionId?) {
+  getAssessment(id, action, activityId, contextId, submissionId?): Observable<any> {
     return this.request.graphQLQuery(
       `query getAssessment($assessmentId: Int!, $reviewer: Boolean!, $activityId: Int!, $contextId: Int!, $submissionId: Int) {
         assessment(id:$assessmentId, reviewer:$reviewer, activityId:$activityId) {
@@ -163,10 +163,10 @@ export class AssessmentService {
         noCache: true
       }
     )
-    .pipe(map(res => {
+    .pipe(map(async res => {
       return {
         assessment: this._normaliseAssessment(res.data, action),
-        submission: this._normaliseSubmission(res.data),
+        submission: await this._normaliseSubmission(res.data),
         review: this._normaliseReview(res.data, action)
       };
     }));
@@ -255,7 +255,7 @@ export class AssessmentService {
     return assessment;
   }
 
-  private _normaliseSubmission(data): Submission {
+  private async _normaliseSubmission(data): Promise<Submission> {
     if (!this.utils.has(data, 'assessment.submissions') || data.assessment.submissions.length < 1) {
       return null;
     }
@@ -268,7 +268,7 @@ export class AssessmentService {
       modified: firstSubmission.modified,
       isLocked: firstSubmission.locked,
       completed: firstSubmission.completed,
-      reviewerName: firstSubmission.review ? this.checkReviewer(firstSubmission.review.reviewer) : null,
+      reviewerName: firstSubmission.review ? await this.checkReviewer(firstSubmission.review.reviewer) : null,
       answers: {}
     };
     firstSubmission.answers.forEach(eachAnswer => {
@@ -435,11 +435,12 @@ export class AssessmentService {
    * get reviewr name
    * @return {string | void}    return name, or null if reviewr is N/A or current user is the
    */
-  checkReviewer(reviewer): string | void {
+  async checkReviewer(reviewer): Promise<string> {
+    const user = await this.nativeStorage.getObject('me');
     if (!reviewer) {
       return null;
     }
-    return reviewer.name !== this.storage.getUser().name ? reviewer.name : null;
+    return reviewer.name !== user.name ? reviewer.name : null;
   }
 
 }

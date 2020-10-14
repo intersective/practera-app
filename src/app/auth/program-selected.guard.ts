@@ -14,7 +14,6 @@ export class ProgramSelectedGuard implements CanActivate {
 
   // if user hasn't selected a program
   async canActivate(next: ActivatedRouteSnapshot, state: RouterStateSnapshot): Promise<boolean> {
-    // const timelineId = this.storage.getUser().timelineId;
     const { timelineId } = await this.nativeStorage.getObject('me');
 
     if (timelineId) {
