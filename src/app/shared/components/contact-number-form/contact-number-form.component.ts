@@ -114,6 +114,10 @@ export class ContactNumberFormComponent implements OnInit, OnDestroy {
     this.data$.unsubscribe();
   }
 
+  /**
+   * component initialization
+   * @return {Promise<void>}
+   */
   private async _initcomponent(): Promise<void> {
     this.countryModel = environment.defaultCountryModel;
     this.activeCountryModelInfo.countryCode = this.contactNumberFormat.masks[this.countryModel].format;
@@ -125,14 +129,27 @@ export class ContactNumberFormComponent implements OnInit, OnDestroy {
     const { contactNumber } = await this.nativeStorage.getObject('me');
     if (this.page === 'settings' && (contactNumber && contactNumber != null)) {
       this._checkCurrentContactNumberOrigin(contactNumber);
+    } else {
+      // without refresh page, we need to manually set to null (no pre-format needed)
+      this.contactNumber = null;
     }
+  }
+
+  /**
+   * reformat contact number format
+   * @param {[type]} contactNumber [description]
+   * @param {number} prefixCode    [description]
+   */
+  private reformatNumber(contactNumber, prefixCode: number) {
+    let prefix = contactNumber.substring(0, prefixCode);
+    let number = contactNumber.substring(prefixCode);
+    return this._separeteContactNumber(number);
   }
 
   private _checkCurrentContactNumberOrigin(contactNumber) {
     const contactNum = contactNumber;
     let prefix = contactNum.substring(0, 3);
-    let number = contactNum.substring(3);
-    this.contactNumber = this._separeteContactNumber(number);
+    this.contactNumber = this.reformatNumber(contactNum, 3);
 
     switch (prefix) {
       case '+61':
@@ -150,8 +167,7 @@ export class ContactNumberFormComponent implements OnInit, OnDestroy {
     }
 
     prefix = contactNum.substring(0, 2);
-    number = contactNum.substring(2);
-    this.contactNumber = this._separeteContactNumber(number);
+    this.contactNumber = this.reformatNumber(contactNum, 2);
     switch (prefix) {
       case '61':
       case '04':
@@ -163,8 +179,7 @@ export class ContactNumberFormComponent implements OnInit, OnDestroy {
     }
 
     prefix = contactNum.substring(0, 1);
-    number = contactNum.substring(1);
-    this.contactNumber = this._separeteContactNumber(number);
+    this.contactNumber = this.reformatNumber(contactNum, 1);
     if (prefix === '1') {
       this._setCountry('US');
       return;

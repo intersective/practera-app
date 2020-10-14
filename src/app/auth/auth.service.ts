@@ -121,7 +121,6 @@ export class AuthService {
 
   private async _handleLoginResponse(response): Promise<any> {
     const norm = this._normaliseAuth(response);
-    this.storage.setUser({apikey: norm.apikey});
 
     await this.nativeStorage.setObject('me', { apikey: norm.apikey });
     await this.nativeStorage.setObject('isLoggedIn', {isLoggedIn: true});
