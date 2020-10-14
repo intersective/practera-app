@@ -18,7 +18,6 @@ export class ContactNumberFormComponent implements OnInit, OnDestroy {
   @Input() page;
   @Output() updateNumber = new EventEmitter();
   data$: Subscription;
-  getUser$: Subscription;
 
   // use to pass data to api
   profile = {
@@ -110,7 +109,6 @@ export class ContactNumberFormComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.getUser$.unsubscribe();
     this.data$.unsubscribe();
   }
 
