@@ -104,8 +104,8 @@ export class ContactNumberFormComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit() {
-    this.data$ = this.routes.data.subscribe(() => {
-      this.getUser$ = fromPromise(this._initcomponent()).subscribe();
+    this.data$ = this.routes.data.subscribe(data => {
+      this._initcomponent(data.user.contactNumber);
     });
   }
 
@@ -118,7 +118,7 @@ export class ContactNumberFormComponent implements OnInit, OnDestroy {
    * component initialization
    * @return {Promise<void>}
    */
-  private async _initcomponent(): Promise<void> {
+  private _initcomponent(contactNumber: string): void {
     this.countryModel = environment.defaultCountryModel;
     this.activeCountryModelInfo.countryCode = this.contactNumberFormat.masks[this.countryModel].format;
     this.activeCountryModelInfo.placeholder = this.contactNumberFormat.masks[this.countryModel].placeholder;
@@ -126,7 +126,6 @@ export class ContactNumberFormComponent implements OnInit, OnDestroy {
     this.activeCountryModelInfo.length = this.contactNumberFormat.masks[this.countryModel].numberLength;
 
     // if user has the contact number
-    const { contactNumber } = await this.nativeStorage.getObject('me');
     if (this.page === 'settings' && (contactNumber && contactNumber != null)) {
       this._checkCurrentContactNumberOrigin(contactNumber);
     } else {
@@ -141,8 +140,7 @@ export class ContactNumberFormComponent implements OnInit, OnDestroy {
    * @param {number} prefixCode    [description]
    */
   private reformatNumber(contactNumber, prefixCode: number) {
-    let prefix = contactNumber.substring(0, prefixCode);
-    let number = contactNumber.substring(prefixCode);
+    const number = contactNumber.substring(prefixCode);
     return this._separeteContactNumber(number);
   }
 

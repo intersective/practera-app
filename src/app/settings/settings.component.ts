@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { AuthService } from '../auth/auth.service';
 import { SettingService } from './setting.service';
 import { BrowserStorageService } from '@services/storage.service';
@@ -51,6 +51,7 @@ export class SettingsComponent extends RouterEnter {
 
   constructor (
     public router: Router,
+    private routes: ActivatedRoute,
     private authService: AuthService,
     private settingService: SettingService,
     public storage: BrowserStorageService,
@@ -72,17 +73,29 @@ export class SettingsComponent extends RouterEnter {
   onEnter() {
     this.newRelic.setPageViewName('Setting');
 
-    // get contact number and email from local storage
-    this.profile.email = this.storage.getUser().email;
-    this.profile.contactNumber = this.storage.getUser().contactNumber;
-    this.profile.image = this.storage.getUser().image ? this.storage.getUser().image : 'https://my.practera.com/img/user-512.png';
-    this.profile.name = this.storage.getUser().name;
+    this.routes.data.subscribe(data => {
+      const {
+        email,
+        contactNumber,
+        image,
+        name,
+        programName,
+        LtiReturnUrl,
+      } = data.user;
+
+      // get contact number and email from local storage
+      this.profile.email = email;
+      this.profile.contactNumber = contactNumber;
+      this.profile.image = image ? image : 'https://my.practera.com/img/user-512.png';
+      this.profile.name = name;
+      this.currentProgramName = programName;
+      this.returnLtiUrl = LtiReturnUrl;
+    });
+
     this.acceptFileTypes = this.filestackService.getFileTypes('image');
     // also get program name
-    this.currentProgramName = this.storage.getUser().programName;
     this.currentProgramImage = this._getCurrentProgramImage();
     this.fastFeedbackService.pullFastFeedback().subscribe();
-    this.returnLtiUrl = this.storage.getUser().LtiReturnUrl;
   }
 
   // loading pragram image to settings page by resizing it depend on device.

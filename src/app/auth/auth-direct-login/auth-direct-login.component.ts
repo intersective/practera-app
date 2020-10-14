@@ -83,6 +83,10 @@ export class AuthDirectLoginComponent implements OnInit {
       this.storage.setUser({
         LtiReturnUrl: this.route.snapshot.paramMap.get('return_url')
       });
+
+      await this.nativeStorage.setObject('me', {
+        LtiReturnUrl: this.route.snapshot.paramMap.get('return_url')
+      });
     }
     // switch parogram if user already registered
     if (!redirectLater) {
