@@ -648,7 +648,7 @@ export class AssessmentComponent extends RouterEnter {
   /**
    * Mark review feedback as read
    */
-  async markReviewFeedbackAsRead(): Promise<void> {
+  private async markReviewFeedbackAsRead(): Promise<void> {
     // do nothing if feedback is already mark as read
     if (this.feedbackReviewed) {
       return;
@@ -658,7 +658,7 @@ export class AssessmentComponent extends RouterEnter {
     this.newRelic.actionText('Waiting for review feedback read.');
     // Mark feedback as read
     try {
-      result = (await this.assessmentService.saveFeedbackReviewed(this.submission.id)).toPromise();
+      result = await (await this.assessmentService.saveFeedbackReviewed(this.submission.id)).toPromise();
       this.feedbackReviewed = true;
       this.newRelic.actionText('Review feedback read.');
       this.continueBtnLoading = false;
