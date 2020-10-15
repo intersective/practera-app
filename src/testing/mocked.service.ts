@@ -120,6 +120,28 @@ export class FastFeedbackServiceMock {
   }
 }
 
+export class NativeStorageServiceMock extends SpyObject {
+  getObject;
+  setObject;
+
+  constructor() {
+    super(BrowserStorageService);
+    const USER = {
+      userHash: 'testuserhash',
+      enrolment: {
+        id: 1,
+      },
+      apikey: 'test',
+      timelineId: 'test',
+      teamId: 'test',
+      contactNumber: '0123456789',
+      projectId: 'test',
+    };
+    this.getObject = this.spy('getObject').and.returnValue(USER);
+    this.setObject = this.spy('setObject').and.returnValue(USER);
+  }
+}
+
 export class BrowserStorageServiceMock extends SpyObject {
   getUser;
   get;

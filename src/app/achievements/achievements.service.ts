@@ -107,7 +107,7 @@ export class AchievementsService {
   }
 
   async markAchievementAsSeen(achievementId): Promise<Subscription> {
-    const user = await this.nativeStorage.getObject('me')
+    const user = await this.nativeStorage.getObject('me');
     const postData = {
       project_id: user.projectId,
       identifier: 'Achievement-' + achievementId,
