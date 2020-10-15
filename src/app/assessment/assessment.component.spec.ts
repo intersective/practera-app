@@ -1,7 +1,7 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { ReactiveFormsModule, FormGroup, FormControl } from '@angular/forms';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { async, ComponentFixture, TestBed, fakeAsync, tick, inject } from '@angular/core/testing';
+import { async, ComponentFixture, TestBed, fakeAsync, flush, tick, inject } from '@angular/core/testing';
 import { QuestionsModule } from '@app/questions/questions.module';
 
 import { Router, ActivatedRoute, convertToParamMap } from '@angular/router';
@@ -12,11 +12,12 @@ import { NotificationService } from '@shared/notification/notification.service';
 import { ActivityService } from '@app/activity/activity.service';
 import { FastFeedbackService } from '@app/fast-feedback/fast-feedback.service';
 import { BrowserStorageService } from '@services/storage.service';
+import { NativeStorageService } from '@services/native-storage.service';
 import { SharedService } from '@services/shared.service';
 import { FastFeedbackServiceMock } from '@testing/mocked.service';
 import { of } from 'rxjs';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
-import { MockRouter, MockNewRelicService } from '@testing/mocked.service';
+import { MockRouter, MockNewRelicService, NativeStorageServiceMock } from '@testing/mocked.service';
 import { Apollo } from 'apollo-angular';
 
 class Page {
@@ -92,13 +93,14 @@ describe('AssessmentComponent', () => {
   let component: AssessmentComponent;
   let fixture: ComponentFixture<AssessmentComponent>;
   let page: Page;
-  let assessmentSpy: jasmine.SpyObj<AssessmentService>;
+  let assessmentServiceSpy: jasmine.SpyObj<AssessmentService>;
   let notificationSpy: jasmine.SpyObj<NotificationService>;
   let activitySpy: jasmine.SpyObj<ActivityService>;
   let fastFeedbackSpy: jasmine.SpyObj<FastFeedbackService>;
   let routerSpy: jasmine.SpyObj<Router>;
   let routeStub: Partial<ActivatedRoute>;
   let storageSpy: jasmine.SpyObj<BrowserStorageService>;
+  let nativeStorageSpy: jasmine.SpyObj<NativeStorageService>;
   let shared: SharedService;
   let utils: UtilsService;
 
@@ -203,6 +205,10 @@ describe('AssessmentComponent', () => {
         UtilsService,
         SharedService,
         {
+          provide: NativeStorageService,
+          useClass: NativeStorageServiceMock,
+        },
+        {
           provide: NewRelicService,
           useClass: MockNewRelicService,
         },
@@ -235,29 +241,30 @@ describe('AssessmentComponent', () => {
 
   });
 
-  beforeEach(async () => {
+  beforeEach(() => {
     fixture = TestBed.createComponent(AssessmentComponent);
     component = fixture.componentInstance;
 
     page = new Page(fixture);
-    assessmentSpy = TestBed.inject(AssessmentService) as jasmine.SpyObj<AssessmentService>;
+    assessmentServiceSpy = TestBed.inject(AssessmentService) as jasmine.SpyObj<AssessmentService>;
     notificationSpy = TestBed.inject(NotificationService) as jasmine.SpyObj<NotificationService>;
     activitySpy = TestBed.inject(ActivityService) as jasmine.SpyObj<ActivityService>;
     fastFeedbackSpy = TestBed.inject(FastFeedbackService) as jasmine.SpyObj<FastFeedbackService>;
     routeStub = TestBed.inject(ActivatedRoute);
     routerSpy = TestBed.inject(Router) as jasmine.SpyObj<Router>;
     storageSpy = TestBed.inject(BrowserStorageService) as jasmine.SpyObj<BrowserStorageService>;
+    nativeStorageSpy = TestBed.inject(NativeStorageService) as jasmine.SpyObj<NativeStorageService>;
     shared = TestBed.inject(SharedService);
     utils = TestBed.inject(UtilsService);
 
     // initialise service calls
-    assessmentSpy.getAssessment.and.returnValue(of({
+    assessmentServiceSpy.getAssessment.and.returnValue(of({
       assessment: mockAssessment,
       submission: null,
       review: null
     }));
-    assessmentSpy.saveAnswers.and.returnValue(of(true));
-    assessmentSpy.saveFeedbackReviewed.and.returnValue(of({success: true}));
+    assessmentServiceSpy.saveAnswers.and.returnValue(of(true));
+    assessmentServiceSpy.saveFeedbackReviewed.and.returnValue(of({success: true}));
     activitySpy.gotoNextTask.and.returnValue(new Promise(() => {}));
     storageSpy.getUser.and.returnValue(mockUser);
     component.routeUrl = '/test';
@@ -276,43 +283,57 @@ describe('AssessmentComponent', () => {
     expect(component.action).toEqual('assessment');
   });
 
-  describe('when testing getAssessment()', () => {
+  describe('when testing AssessmentService.getAssessment() - onEnter()', () => {
     let tmpAssessment, tmpSubmission, tmpReview, customTests;
-    beforeEach(() => {
+    beforeEach(fakeAsync(() => {
       tmpAssessment = mockAssessment;
       tmpSubmission = null;
       tmpReview = null;
       customTests = () => {};
-    });
-    afterEach(() => {
-      assessmentSpy.getAssessment.and.returnValue(of({
+      flush();
+    }));
+
+    afterEach(fakeAsync(() => {
+      assessmentServiceSpy.getAssessment.and.returnValue(of({
         assessment: tmpAssessment,
         submission: tmpSubmission,
         review: tmpReview
       }));
+      tick();
       fixture.detectChanges();
-      customTests();
-    });
-    it('should get correct assessment and display correct info in html', () => {
+      flush();
+      fixture.whenStable().then(() => {
+        customTests();
+      });
+    }));
+
+    it('should get correct assessment and display correct info in html', fakeAsync(() => {
       customTests = () => {
-        expect(component.assessment).toEqual(mockAssessment);
-        expect(component.loadingAssessment).toEqual(false);
-        expect(page.savingMessage).toBeFalsy();
-        expect(page.assessmentName.innerHTML).toEqual(mockAssessment.name);
-        expect(page.assessmentDescription).toBeTruthy();
-        expect(page.overDueMsg).toBeFalsy();
-        expect(page.dueMsg.innerHTML.trim()).toEqual(shared.dueDateFormatter(mockAssessment.dueDate));
-        mockAssessment.groups.forEach((group, groupIndex) => {
-          expect(page.groupNames[groupIndex].innerHTML).toEqual(group.name);
-          expect(page.groupDescriptions[groupIndex]).toBeTruthy();
-          group.questions.forEach((question, questionIndex) => {
-            expect(page.questionNames[questionIndex].innerHTML).toContain(question.name);
-            expect(page.questionDescriptions[questionIndex]).toBeTruthy();
+        fixture.whenStable().then(() => {
+          expect(component.assessment).toEqual(mockAssessment);
+          expect(component.loadingAssessment).toEqual(false);
+
+  console.log(page);
+          expect(page.savingMessage).toBeFalsy();
+  console.log('mockAssessment::', mockAssessment);
+  console.log('assessmentName::', page.assessmentName);
+  console.log('assessmentNameInnerHTML::', page.assessmentName.innerHTML);
+          expect(page.assessmentName.innerHTML).toEqual(mockAssessment.name);
+          expect(page.assessmentDescription).toBeTruthy();
+          expect(page.overDueMsg).toBeFalsy();
+          expect(page.dueMsg.innerHTML.trim()).toEqual(shared.dueDateFormatter(mockAssessment.dueDate));
+          mockAssessment.groups.forEach((group, groupIndex) => {
+            expect(page.groupNames[groupIndex].innerHTML).toEqual(group.name);
+            expect(page.groupDescriptions[groupIndex]).toBeTruthy();
+            group.questions.forEach((question, questionIndex) => {
+              expect(page.questionNames[questionIndex].innerHTML).toContain(question.name);
+              expect(page.questionDescriptions[questionIndex]).toBeTruthy();
+            });
           });
+          expect(notificationSpy.alert.calls.count()).toBe(0);
         });
-        expect(notificationSpy.alert.calls.count()).toBe(0);
       };
-    });
+    }));
 
     it('should pop up alert if it is team assessment and user is not in team', () => {
       tmpAssessment = JSON.parse(JSON.stringify(mockAssessment));
@@ -513,8 +534,8 @@ describe('AssessmentComponent', () => {
 
     it('saving in progress', () => {
       component.submit(true);
-      assessment = assessmentSpy.saveAnswers.calls.first().args[0];
-      answers = assessmentSpy.saveAnswers.calls.first().args[1];
+      assessment = assessmentServiceSpy.saveAnswers.calls.first().args[0];
+      answers = assessmentServiceSpy.saveAnswers.calls.first().args[1];
       expect(component.submitting).toBeFalsy();
       expect(component.savingMessage).toContain('Last saved');
       expect(assessment.inProgress).toBe(true);
@@ -523,16 +544,16 @@ describe('AssessmentComponent', () => {
 
     it('saving in progress, and unlock the submission for team assessment', () => {
       component.submit(true, true);
-      assessment = assessmentSpy.saveAnswers.calls.first().args[0];
-      answers = assessmentSpy.saveAnswers.calls.first().args[1];
+      assessment = assessmentServiceSpy.saveAnswers.calls.first().args[0];
+      answers = assessmentServiceSpy.saveAnswers.calls.first().args[1];
       expect(assessment.unlock).toBe(true);
     });
 
     it('submitting', () => {
       savingButtonDisabled = true;
       component.submit(false);
-      assessment = assessmentSpy.saveAnswers.calls.first().args[0];
-      answers = assessmentSpy.saveAnswers.calls.first().args[1];
+      assessment = assessmentServiceSpy.saveAnswers.calls.first().args[0];
+      answers = assessmentServiceSpy.saveAnswers.calls.first().args[1];
       expect(component.submitting).toEqual(false);
       expect(component.saving).toBe(true);
     });
@@ -576,8 +597,8 @@ describe('AssessmentComponent', () => {
 
     it('should be called with correct assessment answer/action/activity status', () => {
       component.submit(false);
-      expect(assessmentSpy.saveAnswers).toHaveBeenCalled();
-      expect(assessmentSpy.saveAnswers).toHaveBeenCalledWith(
+      expect(assessmentServiceSpy.saveAnswers).toHaveBeenCalled();
+      expect(assessmentServiceSpy.saveAnswers).toHaveBeenCalledWith(
         {
           id: activityId,
           contextId: 2
@@ -619,7 +640,7 @@ describe('AssessmentComponent', () => {
       component.feedbackReviewed = false;
       component.clickBtnContinue();
       tick();
-      expect(assessmentSpy.saveFeedbackReviewed.calls.count()).toEqual(1);
+      expect(assessmentServiceSpy.saveFeedbackReviewed.calls.count()).toEqual(1);
       expect(activitySpy.gotoNextTask.calls.count()).toEqual(1);
       expect(component.continueBtnLoading).toBe(true);
     }));
@@ -664,10 +685,10 @@ describe('AssessmentComponent', () => {
 
   describe('when testing markReviewFeedbackAsRead()', () => {
     it('should pop up review rating modal', fakeAsync(() => {
-      storageSpy.getUser.and.returnValue({ hasReviewRating: true });
+      nativeStorageSpy.getObject.and.returnValue({ hasReviewRating: true });
       component['markReviewFeedbackAsRead']();
-      tick();
-      expect(assessmentSpy.popUpReviewRating.calls.count()).toBe(1);
+      flush();
+      expect(assessmentServiceSpy.popUpReviewRating.calls.count()).toBe(1);
     }));
   });
 
