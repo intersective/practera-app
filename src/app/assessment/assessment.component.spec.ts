@@ -285,13 +285,12 @@ describe('AssessmentComponent', () => {
 
   describe('when testing AssessmentService.getAssessment() - onEnter()', () => {
     let tmpAssessment, tmpSubmission, tmpReview, customTests;
-    beforeEach(fakeAsync(() => {
+    beforeEach(() => {
       tmpAssessment = mockAssessment;
       tmpSubmission = null;
       tmpReview = null;
       customTests = () => {};
-      flush();
-    }));
+    });
 
     afterEach(fakeAsync(() => {
       assessmentServiceSpy.getAssessment.and.returnValue(of({
@@ -308,16 +307,13 @@ describe('AssessmentComponent', () => {
     }));
 
     it('should get correct assessment and display correct info in html', fakeAsync(() => {
+      flush();
       customTests = () => {
         fixture.whenStable().then(() => {
           expect(component.assessment).toEqual(mockAssessment);
           expect(component.loadingAssessment).toEqual(false);
 
-  console.log(page);
           expect(page.savingMessage).toBeFalsy();
-  console.log('mockAssessment::', mockAssessment);
-  console.log('assessmentName::', page.assessmentName);
-  console.log('assessmentNameInnerHTML::', page.assessmentName.innerHTML);
           expect(page.assessmentName.innerHTML).toEqual(mockAssessment.name);
           expect(page.assessmentDescription).toBeTruthy();
           expect(page.overDueMsg).toBeFalsy();
@@ -335,16 +331,18 @@ describe('AssessmentComponent', () => {
       };
     }));
 
-    it('should pop up alert if it is team assessment and user is not in team', () => {
+    it('should pop up alert if it is team assessment and user is not in team', fakeAsync(() => {
       tmpAssessment = JSON.parse(JSON.stringify(mockAssessment));
       tmpAssessment.isForTeam = true;
       const tmpUser = JSON.parse(JSON.stringify(mockUser));
       tmpUser.teamId = null;
-      storageSpy.getUser.and.returnValue(tmpUser);
+      nativeStorageSpy.getObject.and.returnValue(tmpUser);
+
+      flush();
       customTests = () => {
         expect(notificationSpy.alert.calls.count()).toBe(1);
       };
-    });
+    }));
 
     it('should get correct in progress submission', () => {
       tmpSubmission = mockSubmission;
@@ -559,9 +557,10 @@ describe('AssessmentComponent', () => {
     });
   });
 
-  it('should pop up alert if required answer missing when submitting', () => {
+  it('should pop up alert if required answer missing when submitting', fakeAsync(() => {
     component.doAssessment = true;
     fixture.detectChanges();
+    flush();
     component.questionsForm = new FormGroup({
       'q-123': new FormControl(null),
       'q-124': new FormControl(null),
@@ -570,7 +569,7 @@ describe('AssessmentComponent', () => {
     component.submit(false);
     expect(component.submitting).toBe(false);
     expect(notificationSpy.popUp.calls.count()).toBe(1);
-  });
+  }));
 
   describe('submitting assessment submit(false)', () => {
     const activityId = 1;
