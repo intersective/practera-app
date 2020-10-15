@@ -38,15 +38,15 @@ export interface ChannelMembers {
 }
 
 export interface Message {
-  uuid?: string;
+  uuid: string;
   senderUuid?: string;
   senderName?: string;
   senderRole?: string;
   senderAvatar?: string;
-  isSender?: boolean;
+  isSender: boolean;
   message: string;
-  created?: string;
-  file?: object;
+  created: string;
+  file: object;
   preview?: string;
   noAvatar?: boolean;
   channelUuid?: string;
