@@ -1,13 +1,11 @@
 import { Component, Output, EventEmitter, NgZone, Input } from '@angular/core';
 import { Router, NavigationExtras } from '@angular/router';
 import { BrowserStorageService } from '@services/storage.service';
-import { RouterEnter } from '@services/router-enter.service';
 import { UtilsService } from '@services/utils.service';
 import { FastFeedbackService } from '../../fast-feedback/fast-feedback.service';
 import { ChatService, ChatChannel } from '../chat.service';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
 import { PusherService } from '@shared/pusher/pusher.service';
-import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-chat-list',
@@ -70,6 +68,13 @@ export class ChatListComponent {
     });
   }
 
+  /**
+   * This method pusher service to subscribe to chat pusher channels
+   * - first it call chat service to get pusher channels.
+   * - then it call pusher service 'subscribeChannel' method to subscribe.
+   * - in pusher service it chaeck if we alrady subscribe or not.
+   *   if not it will subscribe to the pusher channel.
+   */
   private _checkAndSubscribePusherChannels() {
     this.chatService.getPusherChannels().subscribe(pusherChannels => {
       pusherChannels.forEach(channel => {
