@@ -134,3 +134,6 @@ Other variables that need to be passed to the codebuild project are:
 * CUSTOM_FILESTACK_POLICY - the filestack policy
 * CUSTOM_FILESTACK_VIRUS_DETECTION - the filestack virus detection policy
 * CUSTOM_FILESTACK_KEY - the filestack key
+
+
+###Read More [Documentation](./docs/docs.md)
