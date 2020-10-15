@@ -124,7 +124,8 @@ xdescribe('PusherService', async () => {
           provide: RequestService,
           useValue: jasmine.createSpyObj('RequestService', {
             get: of({ data: [] }),
-            apiResponseFormatError: 'ERROR'
+            apiResponseFormatError: 'ERROR',
+            chatGraphQLQuery: of({ data: [] }),
           }),
         }
       ],
@@ -156,6 +157,24 @@ xdescribe('PusherService', async () => {
       expect(requestSpy.get).toHaveBeenCalledWith(APIURL, {
         params: { env: environment.env }
       });
+    }));
+
+    it('should make API request to chat GraphQL Server', fakeAsync(() => {
+      requestSpy.chatGraphQLQuery.and.returnValue(of({
+        data: {
+          channel: [
+            {
+                pusherChannel: 'private-chat-5f44eb4f-dab0-403b-94d7-0f68ac110002'
+            },
+            {
+                pusherChannel: 'private-chat-5f44eb4f-878c-4077-8115-0f68ac110002'
+            }
+          ]
+        }
+      }));
+      service.getChannels();
+      tick(300);
+      expect(requestSpy.chatGraphQLQuery.calls.count()).toBe(1);
     }));
   });
 
