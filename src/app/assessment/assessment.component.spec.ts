@@ -292,23 +292,21 @@ describe('AssessmentComponent', () => {
       customTests = () => {};
     });
 
-    afterEach(fakeAsync(() => {
+    afterEach(() => {
       assessmentServiceSpy.getAssessment.and.returnValue(of({
         assessment: tmpAssessment,
         submission: tmpSubmission,
         review: tmpReview
       }));
-      tick();
       fixture.detectChanges();
-      flush();
       fixture.whenStable().then(() => {
         customTests();
       });
-    }));
+    });
 
-    it('should get correct assessment and display correct info in html', fakeAsync(() => {
-      flush();
+    it('should get correct assessment and display correct info in html', () => {
       customTests = () => {
+        fixture.detectChanges();
         fixture.whenStable().then(() => {
           expect(component.assessment).toEqual(mockAssessment);
           expect(component.loadingAssessment).toEqual(false);
@@ -329,7 +327,7 @@ describe('AssessmentComponent', () => {
           expect(notificationSpy.alert.calls.count()).toBe(0);
         });
       };
-    }));
+    });
 
     it('should pop up alert if it is team assessment and user is not in team', fakeAsync(() => {
       tmpAssessment = JSON.parse(JSON.stringify(mockAssessment));
