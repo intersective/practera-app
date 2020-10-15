@@ -492,7 +492,7 @@ export class AssessmentComponent extends RouterEnter {
    * @param goBack use to unlock team assessment when leave assessment by clicking back button
    * @param isManualSave use to detect manual progress save
    */
-  async submit(saveInProgress: boolean, goBack?: boolean, isManualSave?: boolean): Promise<any> {
+  submit(saveInProgress: boolean, goBack?: boolean, isManualSave?: boolean): Promise<any> {
 
     /**
      * checking if this is a submission or progress save
@@ -579,6 +579,7 @@ export class AssessmentComponent extends RouterEnter {
     }
 
     // check if all required questions have answer when assessment done
+
     const requiredQuestions = this.compulsoryQuestionsAnswered(answers);
     if (!saveInProgress && requiredQuestions.length > 0) {
       this.submitting = false;
