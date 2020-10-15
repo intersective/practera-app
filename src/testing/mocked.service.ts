@@ -2,6 +2,7 @@ import { of, Observable } from 'rxjs';
 import { SpyObject } from './utils';
 import { SwitcherService } from '../app/switcher/switcher.service';
 import { BrowserStorageService } from '@services/storage.service';
+import { NativeStorageService } from '@services/native-storage.service';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
 import { RouterEnter } from '@services/router-enter.service';
 import { Router, NavigationEnd } from '@angular/router';
@@ -125,7 +126,7 @@ export class NativeStorageServiceMock extends SpyObject {
   setObject;
 
   constructor() {
-    super(BrowserStorageService);
+    super(NativeStorageService);
     const USER = {
       userHash: 'testuserhash',
       enrolment: {
@@ -135,7 +136,7 @@ export class NativeStorageServiceMock extends SpyObject {
       timelineId: 'test',
       teamId: 'test',
       contactNumber: '0123456789',
-      projectId: 'test',
+      projectId: 'test_project_id',
     };
     this.getObject = this.spy('getObject').and.returnValue(USER);
     this.setObject = this.spy('setObject').and.returnValue(USER);
