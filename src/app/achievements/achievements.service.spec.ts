@@ -152,7 +152,7 @@ describe('AchievementsService', () => {
     flush();
     expect(requestSpy.post.calls.count()).toBe(1);
     expect(requestSpy.post.calls.first().args[1]).toEqual({
-      project_id: 'test',
+      project_id: 'test_project_id',
       identifier: 'Achievement-11',
       is_done: true
     });
