@@ -14,6 +14,7 @@ phases:
   build:
     commands:
       - echo Build started on `date`
+      - cat /dev/null > src/environments/environment.ts
       - sed -i "s/<CUSTOM_PIWIK_ENVIRONEMENT>/$CUSTOM_PIWIK_ENVIRONEMENT/" src/index.html
       - chmod +x ./env.sh
       - ./env.sh
