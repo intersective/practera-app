@@ -221,7 +221,7 @@ describe('ChatService', () => {
     beforeEach(() => {
       requestResponse = {
         data: {
-          channel: [
+          channels: [
             {
                 pusherChannel: 'private-chat-5f44eb4f-dab0-403b-94d7-0f68ac110002'
             },
@@ -238,7 +238,7 @@ describe('ChatService', () => {
       service.getPusherChannels().subscribe(
         members => {
           members.forEach((member, i) => {
-            expect(member.pusherChannel).toEqual(requestResponse.data.channel[i].pusherChannel);
+            expect(member.pusherChannel).toEqual(requestResponse.data.channels[i].pusherChannel);
           });
         }
       );
