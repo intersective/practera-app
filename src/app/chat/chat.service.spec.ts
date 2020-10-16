@@ -261,14 +261,14 @@ describe('ChatService', () => {
     };
 
     it('should call with correct data', () => {
-      // const pram = {
-      //   channelUuid: '1',
-      //   ids: ['1']
-      // };
-      // requestSpy.post.and.returnValue(of(requestResponse));
-      // service.markMessagesAsSeen(pram);
-      // expect(requestSpy.post.calls.count()).toBe(1);
-      // expect(requestSpy.post.calls.first().args[1]).toEqual(expectedBody);
+      const pram = {
+        channelUuid: '1',
+        ids: ['1']
+      };
+      requestSpy.post.and.returnValue(of(requestResponse));
+      service.markMessagesAsSeen(pram).subscribe();
+      expect(requestSpy.post.calls.count()).toBe(1);
+      expect(requestSpy.post.calls.first().args[1]).toEqual(expectedBody);
     });
 
   });
