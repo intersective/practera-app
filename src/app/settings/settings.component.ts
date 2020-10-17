@@ -10,6 +10,9 @@ import { FastFeedbackService } from '../fast-feedback/fast-feedback.service';
 import { FilestackService } from '@shared/filestack/filestack.service';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
 import { PushNotificationService } from '@services/push-notification.service';
+import { Plugins } from '@capacitor/core';
+
+const { PusherBeams } = Plugins;
 
 @Component({
   selector: 'app-settings',
@@ -177,5 +180,8 @@ export class SettingsComponent extends RouterEnter {
       });
     }
   }
-
+  async goToSetting() {    
+    await PusherBeams.goToAppSetting();
+    console.log('done');    
+  }
 }
