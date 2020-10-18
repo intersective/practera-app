@@ -1,4 +1,4 @@
-package com.getcapacitor.android;
+package com.example.myapp;
 
 import static org.junit.Assert.*;
 
@@ -8,7 +8,14 @@ import androidx.test.platform.app.InstrumentationRegistry;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-@PluginMethod()
+import com.getcapacitor.NativePlugin;
+import com.getcapacitor.Plugin;
+import com.getcapacitor.PluginCall;
+import com.getcapacitor.PluginMethod;
+
+@NativePlugin()
+public class CustomNativePlugin extends Plugin {
+    @PluginMethod()
     public void goToAppSetting(PluginCall call) {
         String value = call.getString("value");
 
@@ -21,3 +28,4 @@ import org.junit.runner.RunWith;
         startActivityForResult(call, intent, 1);
         call.success();
     }
+}        

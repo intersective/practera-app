@@ -12,7 +12,7 @@ import { NewRelicService } from '@shared/new-relic/new-relic.service';
 import { PushNotificationService } from '@services/push-notification.service';
 import { Plugins } from '@capacitor/core';
 
-const { PusherBeams } = Plugins;
+const { CustomNativePlugin } = Plugins;
 
 @Component({
   selector: 'app-settings',
@@ -181,7 +181,7 @@ export class SettingsComponent extends RouterEnter {
     }
   }
   async goToSetting() {    
-    await PusherBeams.goToAppSetting();
+    await CustomNativePlugin.goToAppSetting();
     console.log('done');    
   }
 }
