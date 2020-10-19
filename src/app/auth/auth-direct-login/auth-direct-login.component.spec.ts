@@ -24,7 +24,6 @@ describe('AuthDirectLoginComponent', () => {
   let apolloSpy: jasmine.SpyObj<Apollo>;
   let notificationSpy: jasmine.SpyObj<NotificationService>;
   let switcherSpy: jasmine.SpyObj<SwitcherService>;
-  let storageSpy: jasmine.SpyObj<BrowserStorageService>;
   let nativeStorageSpy: jasmine.SpyObj<NativeStorageService>;
 
   beforeEach(async(() => {
@@ -33,16 +32,11 @@ describe('AuthDirectLoginComponent', () => {
       declarations: [ AuthDirectLoginComponent ],
       schemas: [ CUSTOM_ELEMENTS_SCHEMA ],
       providers: [
-        {
-          provide: Apollo,
-          useValue: jasmine.createSpyObj('Apollo', ['getClient'])
-        },
         UtilsService,
         NewRelicService,
         {
-          provide: BrowserStorageService,
-          useClass: BrowserStorageServiceMock
-          // useValue: jasmine.createSpyObj('BrowserStorageService', ['get', 'getConfig', 'getUser'])
+          provide: Apollo,
+          useValue: jasmine.createSpyObj('Apollo', ['getClient'])
         },
         {
           provide: NativeStorageService,
@@ -91,7 +85,6 @@ describe('AuthDirectLoginComponent', () => {
     apolloSpy = TestBed.inject(Apollo) as jasmine.SpyObj<Apollo>;
     notificationSpy = TestBed.inject(NotificationService) as jasmine.SpyObj<NotificationService>;
     switcherSpy = TestBed.inject(SwitcherService) as jasmine.SpyObj<SwitcherService>;
-    storageSpy = TestBed.inject(BrowserStorageService) as jasmine.SpyObj<BrowserStorageService>;
     nativeStorageSpy = TestBed.inject(NativeStorageService) as jasmine.SpyObj<NativeStorageService>;
   });
 
@@ -99,8 +92,7 @@ describe('AuthDirectLoginComponent', () => {
     serviceSpy.directLogin.and.returnValue(of({}));
     switcherSpy.getMyInfo.and.returnValue(of({}));
     switcherSpy.switchProgram.and.returnValue(of({}));
-    storageSpy.get.and.returnValue([{timeline: {id: 1}}]);
-    storageSpy.getConfig.and.returnValue({logo: null});
+    nativeStorageSpy.getObject.and.returnValue([{timeline: {id: 1}}]);
     apolloSpy.getClient.and.returnValue({clearStore: () => true});
   });
 
@@ -159,18 +151,17 @@ describe('AuthDirectLoginComponent', () => {
         switchProgram = false;
         redirect = ['switcher', 'switcher-program'];
       });
+
       it('program switcher page if timeline id is not in programs', fakeAsync(() => {
         tmpParams.redirect = 'home';
         nativeStorageSpy.getObject.and.returnValue([
           {timeline: {id: 2}}
         ]);
-        // storageSpy.get.and.returnValue([
-        //   {timeline: {id: 2}}
-        // ]);
         switchProgram = false;
         redirect = ['switcher', 'switcher-program'];
         tick();
       }));
+
       it('home page', () => {
         tmpParams.redirect = 'home';
         redirect = ['app', 'home'];

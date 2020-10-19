@@ -28,7 +28,7 @@ export class AuthDirectLoginComponent implements OnInit {
     private newRelic: NewRelicService
   ) {}
 
-  async ngOnInit() {
+  ngOnInit() {
     this.newRelic.setPageViewName('direct-login');
     const authToken = this.route.snapshot.paramMap.get('authToken');
     if (!authToken) {
@@ -150,15 +150,21 @@ export class AuthDirectLoginComponent implements OnInit {
     return this.navigate(route);
   }
 
+  /**
+   * when param "res" is empty, just simply return with generic "expired" error
+   * @param  {any}       res
+   * @return {Promise<any>}
+   */
   private _error(res?): Promise<any> {
     this.newRelic.noticeError('failed direct login', res ? JSON.stringify(res) : undefined);
-    if (!this.utils.isEmpty(res) && res.status === 'forbidden' && [
+    if (!this.utils.isEmpty(res) && (res && res.status === 'forbidden') && [
       'User is not registered'
     ].includes(res.data.message)) {
       this._redirect(true);
       this.storage.set('unRegisteredDirectLink', true);
       return this.navigate(['registration', res.data.user.email, res.data.user.key]);
     }
+
     return this.notificationService.alert({
       message: 'Your link is invalid or expired.',
       buttons: [
