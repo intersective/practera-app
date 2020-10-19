@@ -124,6 +124,7 @@ export class FastFeedbackServiceMock {
 export class NativeStorageServiceMock extends SpyObject {
   getObject;
   setObject;
+  clear;
 
   constructor() {
     super(NativeStorageService);
@@ -140,6 +141,7 @@ export class NativeStorageServiceMock extends SpyObject {
     };
     this.getObject = this.spy('getObject').and.returnValue(USER);
     this.setObject = this.spy('setObject').and.returnValue(USER);
+    this.clear = this.spy('clear').and.returnValue(true);
   }
 }
 
