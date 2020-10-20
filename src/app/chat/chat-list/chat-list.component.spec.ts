@@ -87,10 +87,10 @@ describe('ChatListComponent', () => {
     data: {
       channels: [
         {
-          uuid: '35326928-4ee5-aeb5-02d8-d3a09fb2f4fe',
+          uuid: '35326928',
           name: 'Team 1',
           avatar: 'https://sandbox.practera.com/img/team-white.png',
-          pusherChannel: 'private-chat-5f44eb4f',
+          pusherChannel: 'sdb746-93r7dc-5f44eb4f',
           isAnnouncement: false,
           isDirectMessag: false,
           readonly: false,
@@ -104,10 +104,10 @@ describe('ChatListComponent', () => {
           lastMessageCreated: null
         },
         {
-          uuid: 'ced963c1-f709-1cbf-0561-0b9fc986b231',
+          uuid: 'ced963c1',
           name: 'Team 1 + Mentor',
           avatar: 'https://sandbox.practera.com/img/team-white.png',
-          pusherChannel: 'private-chat-5f45eb4g',
+          pusherChannel: 'kb5gt-9nfbj-5f45eb4g',
           isAnnouncement: false,
           isDirectMessage: false,
           readonly: false,
@@ -129,10 +129,10 @@ describe('ChatListComponent', () => {
     data: {
       channels: [
         {
-          pusherChannel: 'private-chat-5f44eb4f'
+          pusherChannel: 'sdb746-93r7dc-5f44eb4f'
         },
         {
-          pusherChannel: 'private-chat-5f45eb4g'
+          pusherChannel: 'kb5gt-9nfbj-5f45eb4g'
         }
       ]
     }
@@ -165,12 +165,5 @@ describe('ChatListComponent', () => {
       expect(chatSeviceSpy.getPusherChannels.calls.count()).toBe(1);
     });
   });
-
-  /*it('should load messages with loadMessage', () => {
-    spyOn(ChatService, 'getMessageList').and.returnValue(true);
-    expect(component.loadMessages).toBeDefined();
-    component.loadMessages();
-    expect(component.loadMessages).toBeDefined;
-  });*/
 
 });

@@ -46,7 +46,8 @@ export interface Message {
   isSender: boolean;
   message: string;
   created: string;
-  file: object;
+  file: string;
+  fileObject?: object;
   preview?: string;
   noAvatar?: boolean;
   channelUuid?: string;
@@ -60,20 +61,13 @@ export interface MessageListResult {
 interface NewMessageParam {
   channelUuid: string;
   message: string;
-  env?: string;
-  file?: object;
+  file?: string;
 }
 
 interface MessageListParams {
   channelUuid: string;
   cursor: string;
   size: number;
-}
-
-interface MarkAsSeenParams {
-  channelUuid: string;
-  ids: string[];
-  action?: string;
 }
 
 interface UnreadMessageParams {
@@ -203,7 +197,7 @@ export class ChatService {
    */
   getChatMembers(channelId): Observable<ChannelMembers[]> {
     return this.request.chatGraphQLQuery(
-      `query getChannelmembers($uuid:String!) {
+      `query getChannelmembers($uuid:String) {
         channel(uuid:$uuid){
           members{
             uuid name role avatar
@@ -268,15 +262,17 @@ export class ChatService {
     return result;
   }
 
-  markMessagesAsSeen(prams: MarkAsSeenParams): Observable<any> {
-    const body = {
-      channelUuid: prams.channelUuid,
-      id: prams.ids,
-      action: 'mark_seen'
-    };
-    return this.request.post(api.markAsSeen, body, {
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
-    });
+  markMessagesAsSeen(uuids: string[]): Observable<any> {
+    return this.request.chatGraphQLMutate(
+      `mutation markAsSeen($uuids: [String]) {
+        readChatLogs(uuids: $uuids) {
+          success
+        }
+      }`,
+      {
+        uuids: uuids
+      }
+    );
   }
 
   /**
@@ -284,15 +280,20 @@ export class ChatService {
    * @description post new text message (with text) or attachment (with file)
    */
   postNewMessage(data: NewMessageParam): Observable<any> {
-    return this.request.post(api.createMessage, {
-      channelUuid: data.channelUuid,
-      message: data.message,
-      env: environment.env,
-      file: data.file,
-    })
-    .pipe(
+    return this.request.chatGraphQLMutate(
+      `mutation createChatLogs($channelUuid: String, $message: String, $file: String) {
+        createChatLog(channelUuid: $channelUuid, message: $message, file: $file) {
+            uuid senderUuid isSender message file created
+        }
+      }`,
+      {
+        channelUuid: data.channelUuid,
+        message: data.message,
+        file: data.file
+      }
+    ).pipe(
       map(response => {
-        if (response.success && response.data) {
+        if (response.data) {
           return this._normalisePostMessageResponse(response.data);
         }
       })
@@ -302,26 +303,24 @@ export class ChatService {
   /**
    * modify the  new message response
    */
-  private _normalisePostMessageResponse(data): { message: Message, channelUuid?: string } {
-    if (!this.utils.has(data, 'uuid') ||
-        !this.utils.has(data, 'senderUuid') ||
-        !this.utils.has(data, 'isSender') ||
-        !this.utils.has(data, 'message') ||
-        !this.utils.has(data, 'created') ||
-        !this.utils.has(data, 'file')) {
+  private _normalisePostMessageResponse(data): Message {
+    const result = JSON.parse(JSON.stringify(data.createChatLog));
+    if (!this.utils.has(result, 'uuid') ||
+        !this.utils.has(result, 'senderUuid') ||
+        !this.utils.has(result, 'isSender') ||
+        !this.utils.has(result, 'message') ||
+        !this.utils.has(result, 'created') ||
+        !this.utils.has(result, 'file')) {
       this.request.apiResponseFormatError('chat channel format error');
       return null;
     }
     return {
-      message: {
-        uuid: data.uuid,
-        senderName: data.senderUuid,
-        isSender: data.is_sender,
-        message: data.message,
-        created: data.created,
-        file: data.file
-      },
-      channelUuid: data.channel ? data.channel.uuid : null
+      uuid: result.uuid,
+      senderName: result.senderUuid,
+      isSender: result.isSender,
+      message: result.message,
+      created: result.created,
+      file: result.file
     };
   }
 
