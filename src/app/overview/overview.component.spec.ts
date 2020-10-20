@@ -1,5 +1,5 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, fakeAsync, flush } from '@angular/core/testing';
 import { OverviewComponent } from './overview.component';
 import { FastFeedbackService } from '../fast-feedback/fast-feedback.service';
 import { UtilsService } from '@services/utils.service';
@@ -8,6 +8,7 @@ import { MockRouter } from '@testing/mocked.service';
 import { ActivatedRoute, convertToParamMap } from '@angular/router';
 import { Observable, of, pipe } from 'rxjs';
 import { BrowserStorageService } from '@services/storage.service';
+import { PushNotificationService } from '@services/push-notification.service';
 import { Apollo } from 'apollo-angular';
 
 describe('OverviewComponent', () => {
@@ -47,6 +48,12 @@ describe('OverviewComponent', () => {
           provide: FastFeedbackService,
           useValue: jasmine.createSpyObj('FastFeedbackService', ['pullFastFeedback'])
         },
+        {
+          provide: PushNotificationService,
+          useValue: jasmine.createSpyObj('PushNotificationService', {
+            initiatePushNotification: Promise.resolve(true)
+          })
+        }
       ]
     });
   });
@@ -66,10 +73,11 @@ describe('OverviewComponent', () => {
   });
 
   describe('ngOnInit', () => {
-    it('should get program name and pull fastfeedback', () => {
+    it('should get program name and pull fastfeedback', fakeAsync(() => {
       component.ngOnInit();
+      flush();
       expect(component.programName).toEqual(PROGRAM_NAME);
       expect(fastfeedbackSpy.pullFastFeedback).toHaveBeenCalled();
-    });
+    }));
   });
 });
