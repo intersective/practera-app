@@ -20,16 +20,13 @@ export class PusherConfig {
 }
 
 export interface SendMessageParam {
-  channelName: string;
-  messageData: {
-    channelUuid: number | string;
-    uuid: number | string;
-    senderUuid: string;
-    message: string;
-    file: string;
-    isSender: boolean;
-    created: string;
-  };
+  channelUuid: number | string;
+  uuid: number | string;
+  senderUuid: string;
+  message: string;
+  file: string;
+  isSender: boolean;
+  created: string;
 }
 
 class PusherChannel {
@@ -317,12 +314,12 @@ export class PusherService {
    * when user send message it will save in api first and then call this.
    * @param data send message object
    */
-  triggerSendMessage(data: SendMessageParam) {
-    const channel = this.channels.chat.find(c => c.name === data.channelName);
+  triggerSendMessage(channelName: string, data: SendMessageParam) {
+    const channel = this.channels.chat.find(c => c.name === channelName);
     if (!channel) {
       return;
     }
-    return channel.subscription.trigger('client-chat-new-message', data.messageData);
+    return channel.subscription.trigger('client-chat-new-message', data);
   }
 
 }

@@ -32,7 +32,7 @@
           <p>{{ getMessageDate(message.created) }}</p>
         </div>
 
-        <ng-container *ngIf="!message.file; else attachment">
+        <ng-container *ngIf="!message.fileObject; else attachment">
           <div class="message-body">
             <ng-container *ngIf="!message.isSender">
               <p class="seen-text subtitle-1 black">{{message.senderName}}</p>
@@ -43,27 +43,27 @@
         </ng-container>
 
         <ng-template #attachment>
-          <ng-container *ngIf="message.file && message.file.mimetype && message.file.mimetype.includes('video')">
+          <ng-container *ngIf="message.fileObject && message.fileObject.mimetype && message.fileObject.mimetype.includes('video')">
             <div class="message-body video-attachment-container">
               <ng-container *ngIf="!message.isSender">
                 <p class="seen-text subtitle-1 black">{{message.senderName}}</p>
                 <p class="seen-text caption gray-2" *ngIf="chatChannel.roles.length > 1">{{message.senderRole}}</p>
               </ng-container>
-              <div id="inner-box" (click)="preview(message.file)">
+              <div id="inner-box" (click)="preview(message.fileObject)">
                 <p><ion-icon name="play-circle"></ion-icon></p>
               </div>
               <div class="label">
                 <p>
                   <ion-label color="primary">
-                    {{ message.file.filename }}
+                    {{ message.fileObject.filename }}
                   </ion-label>
                 </p>
               </div>
             </div>
           </ng-container>
 
-          <ng-container *ngIf="message.file && message.file.mimetype && message.file.mimetype.includes('image')">
-            <div class="message-body image" (click)="preview(message.file)">
+          <ng-container *ngIf="message.fileObject && message.fileObject.mimetype && message.fileObject.mimetype.includes('image')">
+            <div class="message-body image" (click)="preview(message.fileObject)">
               <ng-container *ngIf="!message.isSender">
                 <p class="seen-text subtitle-1 black">{{message.senderName}}</p>
                 <p class="seen-text caption gray-2" *ngIf="chatChannel.roles.length > 1">{{message.senderRole}}</p>
@@ -72,21 +72,21 @@
             </div>
           </ng-container>
 
-          <ng-container *ngIf="(message.file && !message.file.mimetype) || (message.file && (
-            !message.file.mimetype.includes('image') && !message.file.mimetype.includes('video')))">
+          <ng-container *ngIf="(message.fileObject && !message.fileObject.mimetype) || (message.fileObject && (
+            !message.fileObject.mimetype.includes('image') && !message.fileObject.mimetype.includes('video')))">
           <div class="message-body">
             <ng-container *ngIf="!message.isSender">
               <p class="seen-text subtitle-1 black">{{message.senderName}}</p>
               <p class="seen-text caption gray-2" *ngIf="chatChannel.roles.length > 1">{{message.senderRole}}</p>
             </ng-container>
-            <ion-item class="general-attachment" (click)="previewFile(message.file)">
+            <ion-item class="general-attachment" (click)="previewFile(message.fileObject)">
               <ion-ripple-effect></ion-ripple-effect>
               <ion-icon name="document-outline" slot="start"></ion-icon>
               <ion-label color="primary">
-                {{ message.file.filename }}
+                {{ message.fileObject.filename }}
               </ion-label>
-              <ion-note *ngIf="getTypeByMime(message.file.mimetype)">
-                {{ getTypeByMime(message.file.mimetype) }}
+              <ion-note *ngIf="getTypeByMime(message.fileObject.mimetype)">
+                {{ getTypeByMime(message.fileObject.mimetype) }}
               </ion-note>
             </ion-item>
           </div>
