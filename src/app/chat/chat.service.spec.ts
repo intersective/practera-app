@@ -26,7 +26,7 @@ describe('ChatService', () => {
         },
         {
           provide: RequestService,
-          useValue: jasmine.createSpyObj('RequestService', ['get', 'post', 'apiResponseFormatError', 'chatGraphQLQuery'])
+          useValue: jasmine.createSpyObj('RequestService', ['get', 'post', 'apiResponseFormatError', 'chatGraphQLQuery', 'chatGraphQLMutate'])
         },
       ]
     });
@@ -223,10 +223,10 @@ describe('ChatService', () => {
         data: {
           channels: [
             {
-                pusherChannel: 'private-chat-5f44eb4f-dab0-403b-94d7-0f68ac110002'
+                pusherChannel: 'fgv34fg-34-8472354eb'
             },
             {
-                pusherChannel: 'private-chat-5f44eb4f-878c-4077-8115-0f68ac110002'
+                pusherChannel: 'k76i865-jyj-5f44eb4f'
             }
         ]
         }
@@ -249,85 +249,62 @@ describe('ChatService', () => {
 
   describe('when testing markMessagesAsSeen()', () => {
     const requestResponse = {
-      success: true,
-      data: {
-        msg: 'Messages successfuly mark as seen.'
-      }
+      success: true
     };
     const expectedBody = {
-      channelUuid: '1',
-      id: ['1'],
-      action: 'mark_seen'
+      uuids: ['1', '2']
     };
 
     it('should call with correct data', () => {
-      const pram = {
-        channelUuid: '1',
-        ids: ['1']
-      };
-      requestSpy.post.and.returnValue(of(requestResponse));
+      const pram = ['1', '2'];
+      requestSpy.chatGraphQLMutate.and.returnValue(of(requestResponse));
       service.markMessagesAsSeen(pram).subscribe();
-      expect(requestSpy.post.calls.count()).toBe(1);
-      expect(requestSpy.post.calls.first().args[1]).toEqual(expectedBody);
+      expect(requestSpy.chatGraphQLMutate.calls.count()).toBe(1);
+      expect(requestSpy.chatGraphQLMutate.calls.first().args[1]).toEqual(expectedBody);
     });
 
   });
 
   describe('when testing postNewMessage(), postAttachmentMessage()', () => {
     it('should call with correct data', () => {
-      requestSpy.post.and.returnValue(of({}));
+      requestSpy.chatGraphQLMutate.and.returnValue(of({}));
       service.postNewMessage({
         message: 'test message',
-        channelUuid: '10',
-        env: environment.env,
-        file : {
-          filename: 'unnamed.jpg',
-          mimetype: 'image/jpeg',
-          url: 'https://cdn.filestackcontent.com/X8Cj0Y4QS2AmDUZX6LSq',
-          status: 'Stored'
-        }
+        channelUuid: '10'
       }).subscribe();
-      expect(requestSpy.post.calls.count()).toBe(1);
-      expect(requestSpy.post.calls.first().args[1]).toEqual(jasmine.objectContaining(
+      expect(requestSpy.chatGraphQLMutate.calls.count()).toBe(1);
+      expect(requestSpy.chatGraphQLMutate.calls.first().args[1]).toEqual(jasmine.objectContaining(
         {
           message: 'test message',
           channelUuid: '10',
-          env: environment.env,
-          file : {
-            filename: 'unnamed.jpg',
-            mimetype: 'image/jpeg',
-            url: 'https://cdn.filestackcontent.com/X8Cj0Y4QS2AmDUZX6LSq',
-            status: 'Stored'
-          }
+          file : undefined
         }
       ));
     });
 
     it('postAttachmentMessage() should call with correct data', () => {
-      requestSpy.post.and.returnValue(of({}));
+      requestSpy.chatGraphQLMutate.and.returnValue(of({}));
       service.postAttachmentMessage({
         message: 'test message',
         channelUuid: '10',
-        env: environment.env,
-        file : {
+        file : JSON.stringify({
           filename: 'unnamed.jpg',
           mimetype: 'image/jpeg',
           url: 'https://cdn.filestackcontent.com/X8Cj0Y4QS2AmDUZX6LSq',
           status: 'Stored'
-        }
+        })
       }).subscribe();
-      expect(requestSpy.post.calls.count()).toBe(1);
-      expect(requestSpy.post.calls.first().args[1]).toEqual(jasmine.objectContaining(
+      expect(requestSpy.chatGraphQLMutate.calls.count()).toBe(1);
+      expect(requestSpy.chatGraphQLMutate.calls.first().args[1]).toEqual(jasmine.objectContaining(
         {
           message: 'test message',
           channelUuid: '10',
-          env: environment.env,
-          file : {
+          file : JSON.stringify({
             filename: 'unnamed.jpg',
             mimetype: 'image/jpeg',
             url: 'https://cdn.filestackcontent.com/X8Cj0Y4QS2AmDUZX6LSq',
             status: 'Stored'
-          }
+          })
         }
       ));
     });
