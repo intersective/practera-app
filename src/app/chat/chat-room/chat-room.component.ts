@@ -35,6 +35,8 @@ export class ChatRoomComponent extends RouterEnter {
   channelUuid: string;
   // message history list
   messageList: Message[] = [];
+  // channel member list
+  memberList: ChannelMembers[] = [];
   // the message that the current user is typing
   message: string;
   messagePageCursor = '';
@@ -45,8 +47,6 @@ export class ChatRoomComponent extends RouterEnter {
   whoIsTyping: string;
   // this use to show/hide bottom section of text field which have attachment buttons and send button, when user start typing text messages
   showBottomAttachmentButtons = false;
-
-  receivedMessage: Message;
 
   constructor(
     private chatService: ChatService,
@@ -70,16 +70,16 @@ export class ChatRoomComponent extends RouterEnter {
       if (this.utils.isMobile() && (this.router.url !== '/chat/chat-room')) {
         return;
       }
-      this.receivedMessage = null;
-      this.getMessageFromEvent(event);
-      if (this.receivedMessage.channelUuid !== this.channelUuid) {
+      const receivedMessage = this.getMessageFromEvent(event);
+      if (receivedMessage.channelUuid !== this.channelUuid) {
         return;
       }
-      if (this.receivedMessage && this.receivedMessage.file) {
-        this.receivedMessage.preview = this.attachmentPreview(this.receivedMessage.file);
+      if (receivedMessage && receivedMessage.file) {
+        receivedMessage.fileObject = JSON.parse(receivedMessage.file);
+        receivedMessage.preview = this.attachmentPreview(receivedMessage.fileObject);
       }
-      if (!this.utils.isEmpty(this.receivedMessage)) {
-        this.messageList.push(this.receivedMessage);
+      if (!this.utils.isEmpty(receivedMessage)) {
+        this.messageList.push(receivedMessage);
         this._markAsSeen();
         this._scrollToBottom();
       }
@@ -89,6 +89,7 @@ export class ChatRoomComponent extends RouterEnter {
   onEnter() {
     this._initialise();
     this._subscribeToTypingEvent();
+    this._loadMembers();
     this._loadMessages();
     this._scrollToBottom();
   }
@@ -116,28 +117,31 @@ export class ChatRoomComponent extends RouterEnter {
   /**
    * @description listen to pusher event for new message
    */
-  getMessageFromEvent(data) {
+  getMessageFromEvent(data): Message {
+    const sender = this.memberList.find(member => member.uuid === data.senderUuid);
+    if (!sender) {
+      return;
+    }
+    return {
+      uuid: data.uuid,
+      senderName: sender.name,
+      senderRole: sender.role,
+      senderAvatar: sender.avatar,
+      isSender: data.isSender,
+      message: data.message,
+      created: data.created,
+      file: data.file,
+      channelUuid: data.channelUuid
+    };
+  }
+
+  private _loadMembers() {
     this.chatService.getChatMembers(this.channelUuid).subscribe(
       members => {
         if (!members) {
           return;
         }
-        const sender = members.find(member => member.uuid === data.senderUuid);
-        if (!sender) {
-          this.receivedMessage = null;
-          return;
-        }
-        this.receivedMessage = {
-          uuid: data.uuid,
-          senderName: sender.name,
-          senderRole: sender.role,
-          senderAvatar: sender.avatar,
-          isSender: data.isSender,
-          message: data.message,
-          created: data.created,
-          file: data.file,
-          channelUuid: data.channelUuid
-        };
+        this.memberList = members;
       }
     );
   }
@@ -170,11 +174,13 @@ export class ChatRoomComponent extends RouterEnter {
               if (!members) {
                 return;
               }
+              this.memberList = members;
               messages = messages.map(msg => {
                 if (msg.file) {
-                  msg.preview = this.attachmentPreview(msg.file);
+                  msg.fileObject = JSON.parse(msg.file);
+                  msg.preview = this.attachmentPreview(msg.fileObject);
                 }
-                const sender = members.find(member => member.uuid === msg.senderUuid);
+                const sender = this.memberList.find(member => member.uuid === msg.senderUuid);
                 if (sender) {
                   msg.senderName = sender.name;
                   msg.senderRole = sender.role;
@@ -221,19 +227,33 @@ export class ChatRoomComponent extends RouterEnter {
       message: message
     }).subscribe(
       response => {
-        this.pusherService.triggerSendMessage({
-          channelName: this.chatChannel.pusherChannel,
-          messageData: {
-            channelUuid: this.channelUuid,
-            uuid: response.message.uuid,
-            senderUuid: response.message.senderUuid,
-            message: response.message.message,
-            file: response.message.file,
-            isSender: response.message.isSender,
-            created: response.message.created
-          }
+        const newMessage = {
+          uuid: response.uuid,
+          senderUuid: response.senderUuid,
+          isSender: response.isSender,
+          message: response.message,
+          file: response.file,
+          created: response.created,
+          senderName: '',
+          senderRole: '',
+          senderAvatar: ''
+        };
+        this.pusherService.triggerSendMessage(this.chatChannel.pusherChannel, {
+          channelUuid: this.channelUuid,
+          uuid: response.uuid,
+          senderUuid: response.senderUuid,
+          message: response.message,
+          file: response.file,
+          isSender: response.isSender,
+          created: response.created
         });
-        this.messageList.push(response.message);
+        const sender = this.memberList.find(member => member.uuid === response.senderUuid);
+        if (sender) {
+          newMessage.senderName = sender.name;
+          newMessage.senderRole = sender.role;
+          newMessage.senderAvatar = sender.avatar;
+        }
+        this.messageList.push(newMessage);
         this.utils.broadcastEvent('chat:info-update', true);
         this._scrollToBottom();
         this._afterSendMessage();
@@ -289,10 +309,7 @@ export class ChatRoomComponent extends RouterEnter {
   private _markAsSeen() {
     const messageIds = this.messageList.map(m => m.uuid);
     this.chatService
-      .markMessagesAsSeen({
-        ids: messageIds,
-        channelUuid: this.channelUuid
-      })
+      .markMessagesAsSeen(messageIds)
       .subscribe (
         res => {
           if (!this.utils.isMobile()) {
@@ -334,7 +351,10 @@ export class ChatRoomComponent extends RouterEnter {
    * @param {int} message
    */
   isLastMessage(message) {
-    const index = this.messageList.indexOf(message);
+    // const index = this.messageList.indexOf(message);
+    const index = this.messageList.findIndex(function(msg, i) {
+      return msg.uuid === message.uuid;
+    });
     if (index === -1) {
       this.messageList[index].noAvatar = true;
       return false;
@@ -386,7 +406,9 @@ export class ChatRoomComponent extends RouterEnter {
    * @param {int} message
    */
   checkToShowMessageTime(message) {
-    const index = this.messageList.indexOf(message);
+    const index = this.messageList.findIndex(function(msg, i) {
+      return msg.uuid === message.uuid;
+    });
     if (index <= -1) {
       return;
     }
@@ -488,7 +510,7 @@ export class ChatRoomComponent extends RouterEnter {
   }
 
   previewFile(file) {
-    return this.filestackService.previewFile(file);
+    return this.filestackService.previewFile(JSON.parse(file));
   }
 
   private _postAttachment(file) {
@@ -502,16 +524,36 @@ export class ChatRoomComponent extends RouterEnter {
       file
     }).subscribe(
       response => {
-        const message = response.message;
-        message.preview = this.attachmentPreview(file);
-        this.messageList.push(message);
-        this.utils.broadcastEvent('chat:info-update', true);
-        if (response.channelId) {
-          this.utils.broadcastEvent('channel-id-update', {
-            previousId: this.channelUuid,
-            currentId: response.channelId
-          });
+        const newMessage = {
+          uuid: response.uuid,
+          senderUuid: response.senderUuid,
+          isSender: response.isSender,
+          message: response.message,
+          file: response.file,
+          fileObject: JSON.parse(file),
+          preview: this.attachmentPreview(JSON.parse(file)),
+          created: response.created,
+          senderName: '',
+          senderRole: '',
+          senderAvatar: ''
+        };
+        this.pusherService.triggerSendMessage(this.chatChannel.pusherChannel, {
+          channelUuid: this.channelUuid,
+          uuid: response.uuid,
+          senderUuid: response.senderUuid,
+          message: response.message,
+          file: response.file,
+          isSender: response.isSender,
+          created: response.created
+        });
+        const sender = this.memberList.find(member => member.uuid === response.senderUuid);
+        if (sender) {
+          newMessage.senderName = sender.name;
+          newMessage.senderRole = sender.role;
+          newMessage.senderAvatar = sender.avatar;
         }
+        this.messageList.push(newMessage);
+        this.utils.broadcastEvent('chat:info-update', true);
         this._scrollToBottom();
         this._afterSendMessage();
       },
@@ -521,7 +563,7 @@ export class ChatRoomComponent extends RouterEnter {
     );
   }
 
-  private getTypeByMime(mimetype: string): string {
+  getTypeByMime(mimetype: string): string {
     const zip = [
       'application/x-compressed',
       'application/x-zip-compressed',
@@ -578,7 +620,7 @@ export class ChatRoomComponent extends RouterEnter {
     return result;
   }
 
-  private getIconByMime(mimetype: string): string {
+  getIconByMime(mimetype: string): string {
     const zip = [
       'application/x-compressed',
       'application/x-zip-compressed',
@@ -586,6 +628,10 @@ export class ChatRoomComponent extends RouterEnter {
       'multipart/x-zip',
     ];
     let result = '';
+
+    if (!mimetype) {
+      return 'document';
+    }
 
     if (zip.indexOf(mimetype) >= 0) {
       result = 'document';
