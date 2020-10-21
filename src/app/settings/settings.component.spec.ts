@@ -1,4 +1,4 @@
-import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA, Component } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { SettingsComponent } from './settings.component';
 import { SettingService } from './setting.service';
@@ -10,11 +10,15 @@ import { UtilsService } from '@services/utils.service';
 import { FilestackService } from '@shared/filestack/filestack.service';
 import { FastFeedbackService } from '../fast-feedback/fast-feedback.service';
 import { BrowserStorageService } from '@services/storage.service';
+import { NativeStorageService } from '@services/native-storage.service';
 import { AuthService } from '../auth/auth.service';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
-import { MockRouter } from '@testing/mocked.service';
+import { MockRouter, NativeStorageServiceMock } from '@testing/mocked.service';
+import { NotificationService } from '@shared/notification/notification.service';
 import { Apollo } from 'apollo-angular';
 
+@Component({selector: 'app-contact-number-form', template: ''})
+class ContactNumberFormStubComponent {}
 
 describe('SettingsComponent', () => {
   let component: SettingsComponent;
@@ -29,13 +33,22 @@ describe('SettingsComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [ SharedModule, HttpClientModule ],
-      declarations: [ SettingsComponent ],
-      schemas: [ CUSTOM_ELEMENTS_SCHEMA ],
+      imports: [ /*SharedModule,*/ HttpClientModule ],
+      declarations: [
+        SettingsComponent,
+      ],
+      schemas: [ NO_ERRORS_SCHEMA ],
       providers: [
         Apollo,
         UtilsService,
-        FilestackService,
+        {
+          provide: FilestackService,
+          useValue: jasmine.createSpyObj('FilestackService', ['getFileTypes'])
+        },
+        {
+          provide: NotificationService,
+          useValue: jasmine.createSpyObj('NotificationService', ['alert'])
+        },
         {
           provide: SettingService,
           useValue: jasmine.createSpyObj('SettingService', ['updateProfileImage'])
@@ -49,6 +62,10 @@ describe('SettingsComponent', () => {
           useValue: jasmine.createSpyObj('BrowserStorageService', ['getUser', 'setUser', 'get'])
         },
         {
+          provide: NativeStorageService,
+          useClass: NativeStorageServiceMock
+        },
+        {
           provide: AuthService,
           useValue: jasmine.createSpyObj('AuthService', ['logout'])
         },
@@ -59,6 +76,12 @@ describe('SettingsComponent', () => {
         {
           provide: Router,
           useClass: MockRouter
+        },
+        {
+          provide: ActivatedRoute,
+          useValue: jasmine.createSpyObj('ActivatedRoute', {
+            data: of(true)
+          })
         },
       ],
     })
@@ -100,15 +123,17 @@ describe('SettingsComponent', () => {
   it('when testing onEnter(), it should get correct data', () => {
     spyOn<any>(component, '_getCurrentProgramImage').and.returnValue('');
     fixture.detectChanges();
-    expect(component.profile).toEqual({
-      email: 'test@test.com',
-      contactNumber: '1234455',
-      image: 'abc',
-      name: 'student'
+    fixture.whenStable().then(() => {
+      expect(component.profile).toEqual({
+        email: 'test@test.com',
+        contactNumber: '1234455',
+        image: 'abc',
+        name: 'student'
+      });
+      expect(component.acceptFileTypes).toEqual('image/*');
+      expect(component.currentProgramName).toEqual('program');
+      expect(fastFeedbackSpy.pullFastFeedback.calls.count()).toBe(1);
     });
-    expect(component.acceptFileTypes).toEqual('image/*');
-    expect(component.currentProgramName).toEqual('program');
-    expect(fastFeedbackSpy.pullFastFeedback.calls.count()).toBe(1);
   });
 
   it('should navigate to switcher page', () => {
