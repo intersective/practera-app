@@ -24,103 +24,103 @@
 <title>cluster_EventsModule</title>
 <polygon fill="none" stroke="black" stroke-dasharray="1,5" points="8,-70 8,-195 1045,-195 1045,-70 8,-70"/>
 </g>
-<g id="clust2" class="cluster">
-<title>cluster_EventsModule_declarations</title>
-<polygon fill="none" stroke="black" points="719,-78 719,-130 1037,-130 1037,-78 719,-78"/>
-</g>
 <g id="clust5" class="cluster">
 <title>cluster_EventsModule_imports</title>
-<polygon fill="none" stroke="black" points="16,-78 16,-130 711,-130 711,-78 16,-78"/>
+<polygon fill="none" stroke="black" points="342,-78 342,-130 1037,-130 1037,-78 342,-78"/>
+</g>
+<g id="clust2" class="cluster">
+<title>cluster_EventsModule_declarations</title>
+<polygon fill="none" stroke="black" points="16,-78 16,-130 334,-130 334,-78 16,-78"/>
 </g>
 <!-- EventsComponent -->
 <g id="node1" class="node">
 <title>EventsComponent</title>
-<polygon fill="#ffffb3" stroke="black" points="1028.94,-122 909.06,-122 909.06,-86 1028.94,-86 1028.94,-122"/>
-<text text-anchor="middle" x="969" y="-99.8" font-family="Times,serif" font-size="14.00">EventsComponent</text>
+<polygon fill="#ffffb3" stroke="black" points="325.94,-122 206.06,-122 206.06,-86 325.94,-86 325.94,-122"/>
+<text text-anchor="middle" x="266" y="-99.8" font-family="Times,serif" font-size="14.00">EventsComponent</text>
 </g>
 <!-- EventsModule -->
 <g id="node3" class="node">
 <title>EventsModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="544.65,-187 541.65,-191 520.65,-191 517.65,-187 447.35,-187 447.35,-151 544.65,-151 544.65,-187"/>
-<text text-anchor="middle" x="496" y="-164.8" font-family="Times,serif" font-size="14.00">EventsModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="586.65,-187 583.65,-191 562.65,-191 559.65,-187 489.35,-187 489.35,-151 586.65,-151 586.65,-187"/>
+<text text-anchor="middle" x="538" y="-164.8" font-family="Times,serif" font-size="14.00">EventsModule</text>
 </g>
 <!-- EventsComponent&#45;&gt;EventsModule -->
 <g id="edge1" class="edge">
 <title>EventsComponent&#45;&gt;EventsModule</title>
-<path fill="none" stroke="black" d="M969,-122.29C969,-144.21 969,-178 969,-178 969,-178 554.84,-178 554.84,-178"/>
-<polygon fill="black" stroke="black" points="554.84,-174.5 544.84,-178 554.84,-181.5 554.84,-174.5"/>
+<path fill="none" stroke="black" d="M266,-122.11C266,-141.34 266,-169 266,-169 266,-169 479.06,-169 479.06,-169"/>
+<polygon fill="black" stroke="black" points="479.06,-172.5 489.06,-169 479.06,-165.5 479.06,-172.5"/>
 </g>
 <!-- EventsRoutingComponent -->
 <g id="node2" class="node">
 <title>EventsRoutingComponent</title>
-<polygon fill="#ffffb3" stroke="black" points="891.05,-122 726.95,-122 726.95,-86 891.05,-86 891.05,-122"/>
-<text text-anchor="middle" x="809" y="-99.8" font-family="Times,serif" font-size="14.00">EventsRoutingComponent</text>
+<polygon fill="#ffffb3" stroke="black" points="188.05,-122 23.95,-122 23.95,-86 188.05,-86 188.05,-122"/>
+<text text-anchor="middle" x="106" y="-99.8" font-family="Times,serif" font-size="14.00">EventsRoutingComponent</text>
 </g>
 <!-- EventsRoutingComponent&#45;&gt;EventsModule -->
 <g id="edge2" class="edge">
 <title>EventsRoutingComponent&#45;&gt;EventsModule</title>
-<path fill="none" stroke="black" d="M809,-122.11C809,-141.34 809,-169 809,-169 809,-169 554.91,-169 554.91,-169"/>
-<polygon fill="black" stroke="black" points="554.91,-165.5 544.91,-169 554.91,-172.5 554.91,-165.5"/>
+<path fill="none" stroke="black" d="M106,-122.29C106,-144.21 106,-178 106,-178 106,-178 479.28,-178 479.28,-178"/>
+<polygon fill="black" stroke="black" points="479.28,-181.5 489.28,-178 479.28,-174.5 479.28,-181.5"/>
 </g>
 <!-- AssessmentModule -->
 <g id="node4" class="node">
 <title>AssessmentModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="702.65,-122 699.65,-126 678.65,-126 675.65,-122 577.35,-122 577.35,-86 702.65,-86 702.65,-122"/>
-<text text-anchor="middle" x="640" y="-99.8" font-family="Times,serif" font-size="14.00">AssessmentModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="1028.65,-122 1025.65,-126 1004.65,-126 1001.65,-122 903.35,-122 903.35,-86 1028.65,-86 1028.65,-122"/>
+<text text-anchor="middle" x="966" y="-99.8" font-family="Times,serif" font-size="14.00">AssessmentModule</text>
 </g>
 <!-- AssessmentModule&#45;&gt;EventsModule -->
 <g id="edge3" class="edge">
 <title>AssessmentModule&#45;&gt;EventsModule</title>
-<path fill="none" stroke="black" d="M640,-122.03C640,-138.4 640,-160 640,-160 640,-160 554.75,-160 554.75,-160"/>
-<polygon fill="black" stroke="black" points="554.75,-156.5 544.75,-160 554.75,-163.5 554.75,-156.5"/>
+<path fill="none" stroke="black" d="M966,-122.29C966,-144.21 966,-178 966,-178 966,-178 596.68,-178 596.68,-178"/>
+<polygon fill="black" stroke="black" points="596.68,-174.5 586.68,-178 596.68,-181.5 596.68,-174.5"/>
 </g>
 <!-- EventDetailModule -->
 <g id="node5" class="node">
 <title>EventDetailModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="559.42,-122 556.42,-126 535.42,-126 532.42,-122 432.58,-122 432.58,-86 559.42,-86 559.42,-122"/>
-<text text-anchor="middle" x="496" y="-99.8" font-family="Times,serif" font-size="14.00">EventDetailModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="885.42,-122 882.42,-126 861.42,-126 858.42,-122 758.58,-122 758.58,-86 885.42,-86 885.42,-122"/>
+<text text-anchor="middle" x="822" y="-99.8" font-family="Times,serif" font-size="14.00">EventDetailModule</text>
 </g>
 <!-- EventDetailModule&#45;&gt;EventsModule -->
 <g id="edge4" class="edge">
 <title>EventDetailModule&#45;&gt;EventsModule</title>
-<path fill="none" stroke="black" d="M496,-122.11C496,-122.11 496,-140.99 496,-140.99"/>
-<polygon fill="black" stroke="black" points="492.5,-140.99 496,-150.99 499.5,-140.99 492.5,-140.99"/>
+<path fill="none" stroke="black" d="M822,-122.11C822,-141.34 822,-169 822,-169 822,-169 596.82,-169 596.82,-169"/>
+<polygon fill="black" stroke="black" points="596.82,-165.5 586.82,-169 596.82,-172.5 596.82,-165.5"/>
 </g>
 <!-- EventListModule -->
 <g id="node6" class="node">
 <title>EventListModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="414.99,-122 411.99,-126 390.99,-126 387.99,-122 301.01,-122 301.01,-86 414.99,-86 414.99,-122"/>
-<text text-anchor="middle" x="358" y="-99.8" font-family="Times,serif" font-size="14.00">EventListModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="740.99,-122 737.99,-126 716.99,-126 713.99,-122 627.01,-122 627.01,-86 740.99,-86 740.99,-122"/>
+<text text-anchor="middle" x="684" y="-99.8" font-family="Times,serif" font-size="14.00">EventListModule</text>
 </g>
 <!-- EventListModule&#45;&gt;EventsModule -->
 <g id="edge5" class="edge">
 <title>EventListModule&#45;&gt;EventsModule</title>
-<path fill="none" stroke="black" d="M358,-122.03C358,-138.4 358,-160 358,-160 358,-160 437.35,-160 437.35,-160"/>
-<polygon fill="black" stroke="black" points="437.35,-163.5 447.35,-160 437.35,-156.5 437.35,-163.5"/>
+<path fill="none" stroke="black" d="M684,-122.03C684,-138.4 684,-160 684,-160 684,-160 597.02,-160 597.02,-160"/>
+<polygon fill="black" stroke="black" points="597.02,-156.5 587.02,-160 597.02,-163.5 597.02,-156.5"/>
 </g>
 <!-- EventsRoutingModule -->
 <g id="node7" class="node">
 <title>EventsRoutingModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="283.27,-122 280.27,-126 259.27,-126 256.27,-122 140.73,-122 140.73,-86 283.27,-86 283.27,-122"/>
-<text text-anchor="middle" x="212" y="-99.8" font-family="Times,serif" font-size="14.00">EventsRoutingModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="609.27,-122 606.27,-126 585.27,-126 582.27,-122 466.73,-122 466.73,-86 609.27,-86 609.27,-122"/>
+<text text-anchor="middle" x="538" y="-99.8" font-family="Times,serif" font-size="14.00">EventsRoutingModule</text>
 </g>
 <!-- EventsRoutingModule&#45;&gt;EventsModule -->
 <g id="edge6" class="edge">
 <title>EventsRoutingModule&#45;&gt;EventsModule</title>
-<path fill="none" stroke="black" d="M212,-122.11C212,-141.34 212,-169 212,-169 212,-169 437.18,-169 437.18,-169"/>
-<polygon fill="black" stroke="black" points="437.18,-172.5 447.18,-169 437.18,-165.5 437.18,-172.5"/>
+<path fill="none" stroke="black" d="M538,-122.11C538,-122.11 538,-140.99 538,-140.99"/>
+<polygon fill="black" stroke="black" points="534.5,-140.99 538,-150.99 541.5,-140.99 534.5,-140.99"/>
 </g>
 <!-- SharedModule -->
 <g id="node8" class="node">
 <title>SharedModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="122.42,-122 119.42,-126 98.42,-126 95.42,-122 23.58,-122 23.58,-86 122.42,-86 122.42,-122"/>
-<text text-anchor="middle" x="73" y="-99.8" font-family="Times,serif" font-size="14.00">SharedModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="448.42,-122 445.42,-126 424.42,-126 421.42,-122 349.58,-122 349.58,-86 448.42,-86 448.42,-122"/>
+<text text-anchor="middle" x="399" y="-99.8" font-family="Times,serif" font-size="14.00">SharedModule</text>
 </g>
 <!-- SharedModule&#45;&gt;EventsModule -->
 <g id="edge7" class="edge">
 <title>SharedModule&#45;&gt;EventsModule</title>
-<path fill="none" stroke="black" d="M73,-122.29C73,-144.21 73,-178 73,-178 73,-178 437.06,-178 437.06,-178"/>
-<polygon fill="black" stroke="black" points="437.06,-181.5 447.06,-178 437.06,-174.5 437.06,-181.5"/>
+<path fill="none" stroke="black" d="M399,-122.03C399,-138.4 399,-160 399,-160 399,-160 478.99,-160 478.99,-160"/>
+<polygon fill="black" stroke="black" points="478.99,-163.5 488.99,-160 478.99,-156.5 478.99,-163.5"/>
 </g>
 </g>
 </svg>

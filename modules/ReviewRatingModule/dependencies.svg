@@ -28,13 +28,13 @@
 <title>cluster_ReviewRatingModule_providers</title>
 <polygon fill="none" stroke="black" points="238,-78 238,-130 444,-130 444,-78 238,-78"/>
 </g>
-<g id="clust5" class="cluster">
-<title>cluster_ReviewRatingModule_exports</title>
-<polygon fill="none" stroke="black" points="151,-208 151,-260 331,-260 331,-208 151,-208"/>
-</g>
 <g id="clust2" class="cluster">
 <title>cluster_ReviewRatingModule_declarations</title>
 <polygon fill="none" stroke="black" points="52,-78 52,-130 230,-130 230,-78 52,-78"/>
+</g>
+<g id="clust5" class="cluster">
+<title>cluster_ReviewRatingModule_exports</title>
+<polygon fill="none" stroke="black" points="151,-208 151,-260 331,-260 331,-208 151,-208"/>
 </g>
 <!-- ReviewRatingComponent -->
 <g id="node1" class="node">

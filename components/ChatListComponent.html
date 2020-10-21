@@ -498,17 +498,25 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="78"
-                            class="link-to-prism">src/app/chat/chat-list/chat-list.component.ts:78</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="82"
+                            class="link-to-prism">src/app/chat/chat-list/chat-list.component.ts:82</a></div>
                 </td>
             </tr>
 
 
             <tr>
                 <td class="col-md-4">
+                    <div class="io-description"><p>This is a private load data method</p>
+</div>
 
+                    <div>
+                    </div>
                     <div class="io-description">
                         <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        <p>nothing</p>
 
                     </div>
                 </td>
@@ -539,8 +547,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="101"
-                            class="link-to-prism">src/app/chat/chat-list/chat-list.component.ts:101</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="105"
+                            class="link-to-prism">src/app/chat/chat-list/chat-list.component.ts:105</a></div>
                 </td>
             </tr>
 
@@ -614,8 +622,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="113"
-                            class="link-to-prism">src/app/chat/chat-list/chat-list.component.ts:113</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="117"
+                            class="link-to-prism">src/app/chat/chat-list/chat-list.component.ts:117</a></div>
                 </td>
             </tr>
 
@@ -680,8 +688,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="86"
-                            class="link-to-prism">src/app/chat/chat-list/chat-list.component.ts:86</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="90"
+                            class="link-to-prism">src/app/chat/chat-list/chat-list.component.ts:90</a></div>
                 </td>
             </tr>
 
@@ -1029,6 +1037,10 @@ export class ChatListComponent {
     this.chatList &#x3D; [];
   }
 
+  /**
+    * This is a private load data method
+    * @returns nothing
+    */
   private _loadChatData(): void {
     this.chatService.getChatList().subscribe(chats &#x3D;&gt; {
       this.chatList &#x3D; chats;

@@ -24,21 +24,21 @@
 <title>cluster_NotificationModule</title>
 <polygon fill="none" stroke="black" stroke-dasharray="1,5" points="8,-70 8,-268 1197,-268 1197,-70 8,-70"/>
 </g>
-<g id="clust8" class="cluster">
-<title>cluster_NotificationModule_exports</title>
-<polygon fill="none" stroke="black" points="121,-208 121,-260 987,-260 987,-208 121,-208"/>
-</g>
 <g id="clust2" class="cluster">
 <title>cluster_NotificationModule_declarations</title>
 <polygon fill="none" stroke="black" points="336,-78 336,-130 1189,-130 1189,-78 336,-78"/>
 </g>
-<g id="clust10" class="cluster">
-<title>cluster_NotificationModule_providers</title>
-<polygon fill="none" stroke="black" points="138,-78 138,-130 328,-130 328,-78 138,-78"/>
-</g>
 <g id="clust7" class="cluster">
 <title>cluster_NotificationModule_imports</title>
-<polygon fill="none" stroke="black" points="16,-78 16,-130 130,-130 130,-78 16,-78"/>
+<polygon fill="none" stroke="black" points="214,-78 214,-130 328,-130 328,-78 214,-78"/>
+</g>
+<g id="clust10" class="cluster">
+<title>cluster_NotificationModule_providers</title>
+<polygon fill="none" stroke="black" points="16,-78 16,-130 206,-130 206,-78 16,-78"/>
+</g>
+<g id="clust8" class="cluster">
+<title>cluster_NotificationModule_exports</title>
+<polygon fill="none" stroke="black" points="121,-208 121,-260 987,-260 987,-208 121,-208"/>
 </g>
 <!-- AchievementPopUpComponent -->
 <g id="node1" class="node">
@@ -139,32 +139,32 @@
 <!-- NotificationModule&#45;&gt;PopUpComponent  -->
 <g id="edge9" class="edge">
 <title>NotificationModule&#45;&gt;PopUpComponent </title>
-<path fill="none" stroke="black" stroke-dasharray="5,2" d="M437.08,-178C348.61,-178 199.6,-178 199.6,-178 199.6,-178 199.6,-205.97 199.6,-205.97"/>
-<polygon fill="black" stroke="black" points="196.1,-205.97 199.6,-215.97 203.1,-205.97 196.1,-205.97"/>
+<path fill="none" stroke="black" stroke-dasharray="5,2" d="M437.17,-178C359.14,-178 237.32,-178 237.32,-178 237.32,-178 237.32,-205.97 237.32,-205.97"/>
+<polygon fill="black" stroke="black" points="233.82,-205.97 237.32,-215.97 240.82,-205.97 233.82,-205.97"/>
 </g>
 <!-- SharedModule -->
 <g id="node6" class="node">
 <title>SharedModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="122.42,-122 119.42,-126 98.42,-126 95.42,-122 23.58,-122 23.58,-86 122.42,-86 122.42,-122"/>
-<text text-anchor="middle" x="73" y="-99.8" font-family="Times,serif" font-size="14.00">SharedModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="320.42,-122 317.42,-126 296.42,-126 293.42,-122 221.58,-122 221.58,-86 320.42,-86 320.42,-122"/>
+<text text-anchor="middle" x="271" y="-99.8" font-family="Times,serif" font-size="14.00">SharedModule</text>
 </g>
 <!-- SharedModule&#45;&gt;NotificationModule -->
 <g id="edge5" class="edge">
 <title>SharedModule&#45;&gt;NotificationModule</title>
-<path fill="none" stroke="black" d="M73,-122.11C73,-141.34 73,-169 73,-169 73,-169 427.39,-169 427.39,-169"/>
-<polygon fill="black" stroke="black" points="427.39,-172.5 437.39,-169 427.39,-165.5 427.39,-172.5"/>
+<path fill="none" stroke="black" d="M295.49,-122.03C295.49,-138.4 295.49,-160 295.49,-160 295.49,-160 427.38,-160 427.38,-160"/>
+<polygon fill="black" stroke="black" points="427.38,-163.5 437.38,-160 427.38,-156.5 427.38,-163.5"/>
 </g>
 <!-- NotificationService -->
 <g id="node11" class="node">
 <title>NotificationService</title>
-<ellipse fill="#fdb462" stroke="black" cx="233" cy="-104" rx="86.81" ry="18"/>
-<text text-anchor="middle" x="233" y="-99.8" font-family="Times,serif" font-size="14.00">NotificationService</text>
+<ellipse fill="#fdb462" stroke="black" cx="111" cy="-104" rx="86.81" ry="18"/>
+<text text-anchor="middle" x="111" y="-99.8" font-family="Times,serif" font-size="14.00">NotificationService</text>
 </g>
 <!-- NotificationService&#45;&gt;NotificationModule -->
 <g id="edge10" class="edge">
 <title>NotificationService&#45;&gt;NotificationModule</title>
-<path fill="none" stroke="black" d="M295.21,-116.71C295.21,-133.23 295.21,-160 295.21,-160 295.21,-160 427.3,-160 427.3,-160"/>
-<polygon fill="black" stroke="black" points="427.3,-163.5 437.3,-160 427.3,-156.5 427.3,-163.5"/>
+<path fill="none" stroke="black" d="M163.4,-118.43C163.4,-137.58 163.4,-169 163.4,-169 163.4,-169 427.1,-169 427.1,-169"/>
+<polygon fill="black" stroke="black" points="427.1,-172.5 437.1,-169 427.1,-165.5 427.1,-172.5"/>
 </g>
 </g>
 </svg>
