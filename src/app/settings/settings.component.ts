@@ -180,8 +180,8 @@ export class SettingsComponent extends RouterEnter {
       });
     }
   }
-  async goToSetting() {    
-    await CustomNativePlugin.goToAppSetting();
+  goToSetting() {    
+     CustomNativePlugin.goToAppSetting();
     console.log('done');    
   }
 }
