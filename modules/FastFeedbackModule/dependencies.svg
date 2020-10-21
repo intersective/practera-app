@@ -24,71 +24,71 @@
 <title>cluster_FastFeedbackModule</title>
 <polygon fill="none" stroke="black" stroke-dasharray="1,5" points="8,-70 8,-268 558,-268 558,-70 8,-70"/>
 </g>
-<g id="clust8" class="cluster">
-<title>cluster_FastFeedbackModule_providers</title>
-<polygon fill="none" stroke="black" points="348,-78 348,-130 550,-130 550,-78 348,-78"/>
-</g>
 <g id="clust2" class="cluster">
 <title>cluster_FastFeedbackModule_declarations</title>
-<polygon fill="none" stroke="black" points="16,-78 16,-130 340,-130 340,-78 16,-78"/>
+<polygon fill="none" stroke="black" points="226,-78 226,-130 550,-130 550,-78 226,-78"/>
 </g>
 <g id="clust6" class="cluster">
 <title>cluster_FastFeedbackModule_exports</title>
-<polygon fill="none" stroke="black" points="164,-208 164,-260 342,-260 342,-208 164,-208"/>
+<polygon fill="none" stroke="black" points="211,-208 211,-260 389,-260 389,-208 211,-208"/>
+</g>
+<g id="clust8" class="cluster">
+<title>cluster_FastFeedbackModule_providers</title>
+<polygon fill="none" stroke="black" points="16,-78 16,-130 218,-130 218,-78 16,-78"/>
 </g>
 <!-- FastFeedbackComponent -->
 <g id="node1" class="node">
 <title>FastFeedbackComponent</title>
-<polygon fill="#ffffb3" stroke="black" points="332.31,-122 173.69,-122 173.69,-86 332.31,-86 332.31,-122"/>
-<text text-anchor="middle" x="253" y="-99.8" font-family="Times,serif" font-size="14.00">FastFeedbackComponent</text>
+<polygon fill="#ffffb3" stroke="black" points="542.31,-122 383.69,-122 383.69,-86 542.31,-86 542.31,-122"/>
+<text text-anchor="middle" x="463" y="-99.8" font-family="Times,serif" font-size="14.00">FastFeedbackComponent</text>
 </g>
 <!-- FastFeedbackModule -->
 <g id="node3" class="node">
 <title>FastFeedbackModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="321.02,-187 318.02,-191 297.02,-191 294.02,-187 184.98,-187 184.98,-151 321.02,-151 321.02,-187"/>
-<text text-anchor="middle" x="253" y="-164.8" font-family="Times,serif" font-size="14.00">FastFeedbackModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="368.02,-187 365.02,-191 344.02,-191 341.02,-187 231.98,-187 231.98,-151 368.02,-151 368.02,-187"/>
+<text text-anchor="middle" x="300" y="-164.8" font-family="Times,serif" font-size="14.00">FastFeedbackModule</text>
 </g>
 <!-- FastFeedbackComponent&#45;&gt;FastFeedbackModule -->
 <g id="edge1" class="edge">
 <title>FastFeedbackComponent&#45;&gt;FastFeedbackModule</title>
-<path fill="none" stroke="black" d="M253,-122.11C253,-122.11 253,-140.99 253,-140.99"/>
-<polygon fill="black" stroke="black" points="249.5,-140.99 253,-150.99 256.5,-140.99 249.5,-140.99"/>
+<path fill="none" stroke="black" d="M463,-122.11C463,-141.34 463,-169 463,-169 463,-169 378.18,-169 378.18,-169"/>
+<polygon fill="black" stroke="black" points="378.18,-165.5 368.18,-169 378.18,-172.5 378.18,-165.5"/>
 </g>
 <!-- QuestionComponent -->
 <g id="node2" class="node">
 <title>QuestionComponent</title>
-<polygon fill="#ffffb3" stroke="black" points="155.88,-122 24.12,-122 24.12,-86 155.88,-86 155.88,-122"/>
-<text text-anchor="middle" x="90" y="-99.8" font-family="Times,serif" font-size="14.00">QuestionComponent</text>
+<polygon fill="#ffffb3" stroke="black" points="365.88,-122 234.12,-122 234.12,-86 365.88,-86 365.88,-122"/>
+<text text-anchor="middle" x="300" y="-99.8" font-family="Times,serif" font-size="14.00">QuestionComponent</text>
 </g>
 <!-- QuestionComponent&#45;&gt;FastFeedbackModule -->
 <g id="edge2" class="edge">
 <title>QuestionComponent&#45;&gt;FastFeedbackModule</title>
-<path fill="none" stroke="black" d="M90,-122.11C90,-141.34 90,-169 90,-169 90,-169 174.82,-169 174.82,-169"/>
-<polygon fill="black" stroke="black" points="174.82,-172.5 184.82,-169 174.82,-165.5 174.82,-172.5"/>
+<path fill="none" stroke="black" d="M300,-122.11C300,-122.11 300,-140.99 300,-140.99"/>
+<polygon fill="black" stroke="black" points="296.5,-140.99 300,-150.99 303.5,-140.99 296.5,-140.99"/>
 </g>
 <!-- FastFeedbackComponent  -->
 <g id="node4" class="node">
 <title>FastFeedbackComponent </title>
-<polygon fill="#fb8072" stroke="black" points="333.81,-252 172.19,-252 172.19,-216 333.81,-216 333.81,-252"/>
-<text text-anchor="middle" x="253" y="-229.8" font-family="Times,serif" font-size="14.00">FastFeedbackComponent </text>
+<polygon fill="#fb8072" stroke="black" points="380.81,-252 219.19,-252 219.19,-216 380.81,-216 380.81,-252"/>
+<text text-anchor="middle" x="300" y="-229.8" font-family="Times,serif" font-size="14.00">FastFeedbackComponent </text>
 </g>
 <!-- FastFeedbackModule&#45;&gt;FastFeedbackComponent  -->
 <g id="edge3" class="edge">
 <title>FastFeedbackModule&#45;&gt;FastFeedbackComponent </title>
-<path fill="none" stroke="black" stroke-dasharray="5,2" d="M253,-187.11C253,-187.11 253,-205.99 253,-205.99"/>
-<polygon fill="black" stroke="black" points="249.5,-205.99 253,-215.99 256.5,-205.99 249.5,-205.99"/>
+<path fill="none" stroke="black" stroke-dasharray="5,2" d="M300,-187.11C300,-187.11 300,-205.99 300,-205.99"/>
+<polygon fill="black" stroke="black" points="296.5,-205.99 300,-215.99 303.5,-205.99 296.5,-205.99"/>
 </g>
 <!-- FastFeedbackService -->
 <g id="node5" class="node">
 <title>FastFeedbackService</title>
-<ellipse fill="#fdb462" stroke="black" cx="449" cy="-104" rx="93.17" ry="18"/>
-<text text-anchor="middle" x="449" y="-99.8" font-family="Times,serif" font-size="14.00">FastFeedbackService</text>
+<ellipse fill="#fdb462" stroke="black" cx="117" cy="-104" rx="93.17" ry="18"/>
+<text text-anchor="middle" x="117" y="-99.8" font-family="Times,serif" font-size="14.00">FastFeedbackService</text>
 </g>
 <!-- FastFeedbackService&#45;&gt;FastFeedbackModule -->
 <g id="edge4" class="edge">
 <title>FastFeedbackService&#45;&gt;FastFeedbackModule</title>
-<path fill="none" stroke="black" d="M449,-122.11C449,-141.34 449,-169 449,-169 449,-169 331.28,-169 331.28,-169"/>
-<polygon fill="black" stroke="black" points="331.28,-165.5 321.28,-169 331.28,-172.5 331.28,-165.5"/>
+<path fill="none" stroke="black" d="M117,-122.11C117,-141.34 117,-169 117,-169 117,-169 221.86,-169 221.86,-169"/>
+<polygon fill="black" stroke="black" points="221.86,-172.5 231.86,-169 221.86,-165.5 221.86,-172.5"/>
 </g>
 </g>
 </svg>

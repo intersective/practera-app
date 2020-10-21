@@ -24,55 +24,55 @@
 <title>cluster_TabsModule</title>
 <polygon fill="none" stroke="black" stroke-dasharray="1,5" points="42,-70 42,-195 454,-195 454,-70 42,-70"/>
 </g>
-<g id="clust4" class="cluster">
-<title>cluster_TabsModule_imports</title>
-<polygon fill="none" stroke="black" points="182,-78 182,-130 446,-130 446,-78 182,-78"/>
-</g>
 <g id="clust2" class="cluster">
 <title>cluster_TabsModule_declarations</title>
-<polygon fill="none" stroke="black" points="50,-78 50,-130 174,-130 174,-78 50,-78"/>
+<polygon fill="none" stroke="black" points="322,-78 322,-130 446,-130 446,-78 322,-78"/>
+</g>
+<g id="clust4" class="cluster">
+<title>cluster_TabsModule_imports</title>
+<polygon fill="none" stroke="black" points="50,-78 50,-130 314,-130 314,-78 50,-78"/>
 </g>
 <!-- TabsComponent -->
 <g id="node1" class="node">
 <title>TabsComponent</title>
-<polygon fill="#ffffb3" stroke="black" points="166.05,-122 57.95,-122 57.95,-86 166.05,-86 166.05,-122"/>
-<text text-anchor="middle" x="112" y="-99.8" font-family="Times,serif" font-size="14.00">TabsComponent</text>
+<polygon fill="#ffffb3" stroke="black" points="438.05,-122 329.95,-122 329.95,-86 438.05,-86 438.05,-122"/>
+<text text-anchor="middle" x="384" y="-99.8" font-family="Times,serif" font-size="14.00">TabsComponent</text>
 </g>
 <!-- TabsModule -->
 <g id="node2" class="node">
 <title>TabsModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="299.26,-187 296.26,-191 275.26,-191 272.26,-187 212.74,-187 212.74,-151 299.26,-151 299.26,-187"/>
-<text text-anchor="middle" x="256" y="-164.8" font-family="Times,serif" font-size="14.00">TabsModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="300.26,-187 297.26,-191 276.26,-191 273.26,-187 213.74,-187 213.74,-151 300.26,-151 300.26,-187"/>
+<text text-anchor="middle" x="257" y="-164.8" font-family="Times,serif" font-size="14.00">TabsModule</text>
 </g>
 <!-- TabsComponent&#45;&gt;TabsModule -->
 <g id="edge1" class="edge">
 <title>TabsComponent&#45;&gt;TabsModule</title>
-<path fill="none" stroke="black" d="M112,-122.11C112,-141.34 112,-169 112,-169 112,-169 202.4,-169 202.4,-169"/>
-<polygon fill="black" stroke="black" points="202.4,-172.5 212.4,-169 202.4,-165.5 202.4,-172.5"/>
+<path fill="none" stroke="black" d="M384,-122.11C384,-141.34 384,-169 384,-169 384,-169 310.35,-169 310.35,-169"/>
+<polygon fill="black" stroke="black" points="310.35,-165.5 300.35,-169 310.35,-172.5 310.35,-165.5"/>
 </g>
 <!-- SharedModule -->
 <g id="node3" class="node">
 <title>SharedModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="438.42,-122 435.42,-126 414.42,-126 411.42,-122 339.58,-122 339.58,-86 438.42,-86 438.42,-122"/>
-<text text-anchor="middle" x="389" y="-99.8" font-family="Times,serif" font-size="14.00">SharedModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="306.42,-122 303.42,-126 282.42,-126 279.42,-122 207.58,-122 207.58,-86 306.42,-86 306.42,-122"/>
+<text text-anchor="middle" x="257" y="-99.8" font-family="Times,serif" font-size="14.00">SharedModule</text>
 </g>
 <!-- SharedModule&#45;&gt;TabsModule -->
 <g id="edge2" class="edge">
 <title>SharedModule&#45;&gt;TabsModule</title>
-<path fill="none" stroke="black" d="M389,-122.11C389,-141.34 389,-169 389,-169 389,-169 309.55,-169 309.55,-169"/>
-<polygon fill="black" stroke="black" points="309.55,-165.5 299.55,-169 309.55,-172.5 309.55,-165.5"/>
+<path fill="none" stroke="black" d="M257,-122.11C257,-122.11 257,-140.99 257,-140.99"/>
+<polygon fill="black" stroke="black" points="253.5,-140.99 257,-150.99 260.5,-140.99 253.5,-140.99"/>
 </g>
 <!-- TabsRoutingModule -->
 <g id="node4" class="node">
 <title>TabsRoutingModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="321.88,-122 318.88,-126 297.88,-126 294.88,-122 190.12,-122 190.12,-86 321.88,-86 321.88,-122"/>
-<text text-anchor="middle" x="256" y="-99.8" font-family="Times,serif" font-size="14.00">TabsRoutingModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="189.88,-122 186.88,-126 165.88,-126 162.88,-122 58.12,-122 58.12,-86 189.88,-86 189.88,-122"/>
+<text text-anchor="middle" x="124" y="-99.8" font-family="Times,serif" font-size="14.00">TabsRoutingModule</text>
 </g>
 <!-- TabsRoutingModule&#45;&gt;TabsModule -->
 <g id="edge3" class="edge">
 <title>TabsRoutingModule&#45;&gt;TabsModule</title>
-<path fill="none" stroke="black" d="M256,-122.11C256,-122.11 256,-140.99 256,-140.99"/>
-<polygon fill="black" stroke="black" points="252.5,-140.99 256,-150.99 259.5,-140.99 252.5,-140.99"/>
+<path fill="none" stroke="black" d="M124,-122.11C124,-141.34 124,-169 124,-169 124,-169 203.45,-169 203.45,-169"/>
+<polygon fill="black" stroke="black" points="203.45,-172.5 213.45,-169 203.45,-165.5 203.45,-172.5"/>
 </g>
 </g>
 </svg>
