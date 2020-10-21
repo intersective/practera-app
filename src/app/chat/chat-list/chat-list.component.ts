@@ -7,6 +7,9 @@ import { FastFeedbackService } from '../../fast-feedback/fast-feedback.service';
 import { ChatService, ChatChannel } from '../chat.service';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
 
+/**
+ * this is an app chat list component
+ */
 @Component({
   selector: 'app-chat-list',
   templateUrl: 'chat-list.component.html',
