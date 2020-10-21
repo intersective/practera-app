@@ -1,0 +1,227 @@
+<!doctype html>
+<html class="no-js" lang="">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title>practera-app-v2 documentation</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="icon" type="image/x-icon" href="./images/favicon.ico">
+	      <link rel="stylesheet" href="./styles/style.css">
+    </head>
+    <body>
+
+        <div class="navbar navbar-default navbar-fixed-top visible-xs">
+            <a href="./" class="navbar-brand">practera-app-v2 documentation</a>
+            <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
+        </div>
+
+        <div class="xs-menu menu" id="mobile-menu">
+                <div id="book-search-input" role="search"><input type="text" placeholder="Type to search"></div>            <compodoc-menu></compodoc-menu>
+        </div>
+
+        <div class="container-fluid main">
+           <div class="row main">
+               <div class="hidden-xs menu">
+                   <compodoc-menu mode="normal"></compodoc-menu>
+               </div>
+               <!-- START CONTENT -->
+               <div class="content getting-started">
+                   <div class="content-data">
+
+<h1 id="practera-app-v2">Practera-app-v2</h1>
+<p><img src="https://codebuild.ap-southeast-2.amazonaws.com/badges?uuid=eyJlbmNyeXB0ZWREYXRhIjoiYVA3Zi9rVHlUSlNWT1VkZkY3R1FPS3pwd01EeWo4UTlFanUyQk1UanUveW1VRlgvdnhudVR3RUhsUXBhYk9kYXhmNnJTYjBramVuTkRTc3JyNkZJajZFPSIsIml2UGFyYW1ldGVyU3BlYyI6IkVabm9Va3hoUnhhSmNTSTEiLCJtYXRlcmlhbFNldFNlcmlhbCI6MX0%3D&branch=master" alt="Build Status" class="img-responsive"></p>
+<h2 id="requirements">Requirements</h2>
+<ul>
+<li>Ionic 4 </li>
+<li>Angular 7</li>
+</ul>
+<h2 id="development-notes">Development Notes</h2>
+<p>Run <code>npm install</code> to install necessary packages</p>
+<h3 id="starting-a-development-server-calling-the-stage-environment">Starting a development server calling the stage environment</h3>
+<p>Run <code>npm run start</code> to start a development server on your local, and calling stage-test.practera.com for API</p>
+<h3 id="starting-a-development-server-on-the-local-environment">Starting a development server on the local environment</h3>
+<p>Run <code>npm run local</code> to start a development server on your local, and calling 127.0.0.1:8080 for API</p>
+<h3 id="release-processes">Release Processes</h3>
+<ol>
+<li>Merge <code>develop</code> branch to <code>master</code> (if we are releasing develop branch)</li>
+<li>Merge <code>master</code> branch to <code>release/eos</code> </li>
+<li>Create a new release in <a href="https://github.com/intersective/practera-app-v2/releases">Github</a> with the release pull request link as the description</li>
+<li>Change the version number on Slack <code>team-dev</code> channel <ul>
+<li><code>master</code> is always + 0.01 version ahead of <code>live</code></li>
+<li><code>develop</code> is always + 0.1 version ahead of <code>live</code></li>
+</ul>
+</li>
+</ol>
+<h3 id="new-relics-setup">New Relics Setup</h3>
+<ol>
+<li>Before we deploy app to live server, we&#39;ll need to create a <code>newrelic.js</code> file from project root directory&#39;s <code>/assets</code> folder</li>
+<li>Please select either <code>newrelic.js.dev</code> or <code>newrelic.js.prod</code> based on the deployment environment</li>
+<li>Live environment, use <code>newrelic.js.prod</code>. Development environment, use <code>newrelic.js.dev</code></li>
+<li>With the step above, new relic can collect and group collected information based on different environment.</li>
+</ol>
+<h3 id="useful-links">Useful links</h3>
+<ol>
+<li><a href="https://ionicframework.com/docs/api/">Ionic Components</a></li>
+<li><a href="https://www.protractortest.org/#/api">Protractor API</a></li>
+<li><a href="https://www.chaijs.com/api/bdd/">Chai API</a></li>
+<li><a href="https://chrome.google.com/webstore/detail/apollo-client-developer-t/jdkknkkbebbapilgoeccciglkfbmbnfm">Apollo Client Devtools</a></li>
+</ol>
+<h2 id="automation-test">Automation Test</h2>
+<h3 id="npm-commands">NPM commands</h3>
+<ol>
+<li><code>npm run e2e</code> test all features for desktop &amp; Android &amp; Iphone</li>
+<li><code>npm run e2e-dev</code> used for devs to develop tests</li>
+<li><code>npm run e2e-sandbox</code> used to run automation test on sandbox</li>
+</ol>
+<h3 id="development">Development</h3>
+<ul>
+<li>Copy &amp; paste <code>e2e/config/index.default.ts</code> and change the name to <code>index.ts</code> and fill in correct accounts</li>
+<li>Copy &amp; paste <code>e2e/protractor-dev.default.conf.js</code> and change the name to <code>protractor-dev.conf.js</code></li>
+<li>Change the feature file path in <code>e2e/protractor-dev.conf.js</code> to the feature that you are developing</li>
+<li>If you need to develop automation test for mobile, uncomment the <code>chromeOptions-&gt;mobileEmulation</code> part inside <code>e2e/protractor-dev.conf.js</code></li>
+<li>run <code>npm run e2e-dev</code> to see the result</li>
+</ul>
+<h2 id="external-link-format">External link format</h2>
+<h3 id="1-direct-link-login">1. Direct link login</h3>
+<p><code>*.com?do=secure&amp;auth_token=*</code></p>
+<h3 id="2-direct-link-login-and-redirect-to-a-specific-page">2. Direct link login and redirect to a specific page</h3>
+<p><code>*.com?do=secure&amp;auth_token=*&amp;redirect=*&amp;tl=*</code></p>
+<h4 id="required-parameters">Required parameters:</h4>
+<ul>
+<li><code>auth_token</code> - the auth token used to authenticate user</li>
+<li><code>redirect</code> - the page you will be redirect to </li>
+<li><code>tl</code> - timeline id of the program you are in</li>
+</ul>
+<h4 id="valid-redirect-values">Valid <code>redirect</code> values:</h4>
+<ul>
+<li><code>home</code> - redirect to home page</li>
+<li><code>project</code> - redirect to project page</li>
+<li><code>activity</code> - redirect to project page with the following parameters<ul>
+<li><code>act</code> - activity id</li>
+</ul>
+</li>
+<li><code>assessment</code> - redirect to assessment page with the following parameters<ul>
+<li><code>act</code> - activity id</li>
+<li><code>ctxt</code> - context id</li>
+<li><code>asmt</code> - assessment id</li>
+</ul>
+</li>
+<li><code>topic</code> - redirect to topic page with the following parameters<ul>
+<li><code>act</code> - activity id</li>
+<li><code>top</code> - topic id</li>
+</ul>
+</li>
+<li><code>reviews</code> - redirect to reviews list page</li>
+<li><code>review</code> - redirect to assessment review page with the following parameters<ul>
+<li><code>ctxt</code> - context id</li>
+<li><code>asmt</code> - assessment id</li>
+<li><code>sm</code> - submission id</li>
+</ul>
+</li>
+<li><code>chat</code> - redirect to chat list page</li>
+<li><code>settings</code> - redirect to settings page</li>
+</ul>
+<h4 id="examples">Examples:</h4>
+<ol>
+<li><code>*.com?do=secure&amp;auth_token=abcdefg&amp;redirect=project&amp;tl=312</code> will redirect you to the project page</li>
+<li><code>*.com?do=secure&amp;auth_token=abcdefg&amp;redirect=assessment&amp;tl=312&amp;act=231&amp;ctxt=393&amp;asmt=928</code> will redirect you to the assessment page</li>
+</ol>
+<h3 id="3-reset-password">3. Reset password</h3>
+<p><code>*.com?do=resetpassword&amp;key=*&amp;email=*</code></p>
+<h3 id="4-registration">4. Registration</h3>
+<p><code>*.com?do=registration&amp;key=*&amp;email=*</code></p>
+<h2 id="aws-code-build">AWS code build</h2>
+<p>See buildspec.yml for the steps needed for the CodeBuild.</p>
+<h3 id="environmental-variables">Environmental variables</h3>
+<p>Any variables that will be passed with the prefix CUSTOM_ will be merged into the the <a href="./src/environments/environment.custom.ts">src/environments/environment.custom.ts</a> file and in the <a href="./angular.json">angular.json</a>. See the <a href="./env.sh">env.sh</a> file for details.</p>
+<p>Other variables that need to be passed to the codebuild project are:</p>
+<ul>
+<li>S3_BUCKET - the S3 bucket where the code will be deployed.</li>
+<li>CF_DIST_ID - the CF distribution that will be invalidated when a deploy happens</li>
+<li>CUSTOM_COUNTRY - country for the installation, supported values - <code>AUS</code>, <code>US</code></li>
+<li>CUSTOM_JS_ENVIRONEMENT - used in <a href="./angular.json">angular.json</a> for new relic, possible values <code>prod</code>,  <code>dev</code></li>
+<li>CUSTOM_ENVIRONMENT - the env variable used in the <a href="./src/environments/environment.custom.ts">src/environments/environment.custom.ts</a>. Possible values <code>develop</code>, <code>sandbox</code>, <code>stage</code>, <code>live</code></li>
+<li>CUSTOM_S3_BUCKET - the bucket used for the filestack uploads</li>
+<li>CUSTOM_API_ENDPOINT - the API endpoint</li>
+<li>CUSTOM_APP - the name of the app, used to prefix the file uploads, needed for multi tenancy</li>
+<li>CUSTOM_AWS_REGION - the region the app will work in</li>
+<li>CUSTOM_GRAPH_QL - the graph QL endpoint</li>
+<li>CUSTOM_INTERCOM - intercom details</li>
+<li>CUSTOM_APPKEY - Appkey used to talk to the API</li>
+<li>CUSTOM_PUSHERKEY - pusherKey used</li>
+<li>CUSTOM_FILESTACK_SIGNATURE - the filestack signature</li>
+<li>CUSTOM_FILESTACK_POLICY - the filestack policy</li>
+<li>CUSTOM_FILESTACK_VIRUS_DETECTION - the filestack virus detection policy</li>
+<li>CUSTOM_FILESTACK_KEY - the filestack key</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                   
+
+
+
+
+                   </div><div class="search-results">
+    <div class="has-results">
+        <h1 class="search-results-title"><span class='search-results-count'></span> result-matching "<span class='search-query'></span>"</h1>
+        <ul class="search-results-list"></ul>
+    </div>
+    <div class="no-results">
+        <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+    </div>
+</div>
+</div>
+               <!-- END CONTENT -->
+           </div>
+       </div>
+
+       <script>
+            var COMPODOC_CURRENT_PAGE_DEPTH = 0;
+            var COMPODOC_CURRENT_PAGE_CONTEXT = 'getting-started';
+            var COMPODOC_CURRENT_PAGE_URL = 'index.html';
+            var MAX_SEARCH_RESULTS = 15;
+       </script>
+
+       <script src="./js/libs/custom-elements.min.js"></script>
+       <script src="./js/libs/lit-html.js"></script>
+       <!-- Required to polyfill modern browsers as code is ES5 for IE... -->
+       <script src="./js/libs/custom-elements-es5-adapter.js" charset="utf-8" defer></script>
+       <script src="./js/menu-wc.js" defer></script>
+
+       <script src="./js/libs/bootstrap-native.js"></script>
+
+       <script src="./js/libs/es6-shim.min.js"></script>
+       <script src="./js/libs/EventDispatcher.js"></script>
+       <script src="./js/libs/promise.min.js"></script>
+       <script src="./js/libs/zepto.min.js"></script>
+
+       <script src="./js/compodoc.js"></script>
+
+       <script src="./js/tabs.js"></script>
+       <script src="./js/menu.js"></script>
+       <script src="./js/libs/clipboard.min.js"></script>
+       <script src="./js/libs/prism.js"></script>
+       <script src="./js/sourceCode.js"></script>
+          <script src="./js/search/search.js"></script>
+          <script src="./js/search/lunr.min.js"></script>
+          <script src="./js/search/search-lunr.js"></script>
+          <script src="./js/search/search_index.js"></script>
+       <script src="./js/lazy-load-graphs.js"></script>
+
+
+    </body>
+</html>

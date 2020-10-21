@@ -1,0 +1,4171 @@
+<!doctype html>
+<html class="no-js" lang="">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title>practera-app-v2 documentation</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+	      <link rel="stylesheet" href="../styles/style.css">
+    </head>
+    <body>
+
+        <div class="navbar navbar-default navbar-fixed-top visible-xs">
+            <a href="../" class="navbar-brand">practera-app-v2 documentation</a>
+            <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
+        </div>
+
+        <div class="xs-menu menu" id="mobile-menu">
+                <div id="book-search-input" role="search"><input type="text" placeholder="Type to search"></div>            <compodoc-menu></compodoc-menu>
+        </div>
+
+        <div class="container-fluid main">
+           <div class="row main">
+               <div class="hidden-xs menu">
+                   <compodoc-menu mode="normal"></compodoc-menu>
+               </div>
+               <!-- START CONTENT -->
+               <div class="content component">
+                   <div class="content-data">
+
+
+
+
+<ol class="breadcrumb">
+  <li>Components</li>
+  <li>ChatRoomComponent</li>
+</ol>
+
+<ul class="nav nav-tabs" role="tablist">
+        <li class="active">
+            <a href="#info" role="tab" id="info-tab" data-toggle="tab" data-link="info">Info</a>
+        </li>
+        <li >
+            <a href="#source" role="tab" id="source-tab" data-toggle="tab" data-link="source">Source</a>
+        </li>
+        <li >
+            <a href="#templateData" role="tab" id="templateData-tab" data-toggle="tab" data-link="template">Template</a>
+        </li>
+        <li >
+            <a href="#styleData" role="tab" id="styleData-tab" data-toggle="tab" data-link="style">Styles</a>
+        </li>
+        <li >
+            <a href="#tree" role="tab" id="tree-tab" data-toggle="tab" data-link="dom-tree">DOM Tree</a>
+        </li>
+</ul>
+
+<div class="tab-content">
+    <div class="tab-pane fade active in" id="c-info"><p class="comment">
+    <h3>File</h3>
+</p>
+<p class="comment">
+    <code>src/app/chat/chat-room/chat-room.component.ts</code>
+</p>
+
+
+    <p class="comment">
+        <h3>Extends</h3>
+    </p>
+    <p class="comment">
+                <code><a href="../classes/RouterEnter.html" target="_self" >RouterEnter</a></code>
+    </p>
+
+
+
+<section>
+    <h3>Metadata</h3>
+    <table class="table table-sm table-hover">
+        <tbody>
+
+
+
+
+
+
+
+
+
+
+
+            <tr>
+                <td class="col-md-3">selector</td>
+                <td class="col-md-9"><code>app-chat-room</code></td>
+            </tr>
+
+            <tr>
+                <td class="col-md-3">styleUrls</td>
+                <td class="col-md-9"><code>./chat-room.component.scss</code></td>
+            </tr>
+
+
+
+            <tr>
+                <td class="col-md-3">templateUrl</td>
+                <td class="col-md-9"><code>./chat-room.component.html</code></td>
+            </tr>
+
+
+
+
+
+
+
+
+        </tbody>
+    </table>
+</section>
+
+    <section>
+    <h3 id="index">Index</h3>
+    <table class="table table-sm table-bordered index-table">
+        <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Properties</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                <a href="#channelId">channelId</a>
+                            </li>
+                            <li>
+                                <a href="#content">content</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#element">element</a>
+                            </li>
+                            <li>
+                                <a href="#loadingChatMessages">loadingChatMessages</a>
+                            </li>
+                            <li>
+                                <a href="#message">message</a>
+                            </li>
+                            <li>
+                                <a href="#messageList">messageList</a>
+                            </li>
+                            <li>
+                                <a href="#messagePageNumber">messagePageNumber</a>
+                            </li>
+                            <li>
+                                <a href="#messagePageSize">messagePageSize</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#pusherService">pusherService</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#router">router</a>
+                            </li>
+                            <li>
+                                <a href="#routeUrl">routeUrl</a>
+                            </li>
+                            <li>
+                                <a href="#sendingMessage">sendingMessage</a>
+                            </li>
+                            <li>
+                                <a href="#showBottomAttachmentButtons">showBottomAttachmentButtons</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#storage">storage</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#utils">utils</a>
+                            </li>
+                            <li>
+                                <a href="#whoIsTyping">whoIsTyping</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#router">router</a>
+                            </li>
+                            <li>
+                                <a href="#routeUrl">routeUrl</a>
+                            </li>
+                            <li>
+                                <a href="#subscription">subscription</a>
+                            </li>
+                            <li>
+                                <a href="#subscriptions">subscriptions</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Methods</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#_afterSendMessage">_afterSendMessage</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#_beforeSenMessages">_beforeSenMessages</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#_checkmessageOldThan5Min">_checkmessageOldThan5Min</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#_initialise">_initialise</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#_loadMessages">_loadMessages</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#_markAsSeen">_markAsSeen</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#_postAttachment">_postAttachment</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#_scrollToBottom">_scrollToBottom</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#_showTyping">_showTyping</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#_subscribeToPusherChannel">_subscribeToPusherChannel</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#attach">attach</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#attachmentPreview">attachmentPreview</a>
+                            </li>
+                            <li>
+                                <a href="#back">back</a>
+                            </li>
+                            <li>
+                                <a href="#checkToShowMessageTime">checkToShowMessageTime</a>
+                            </li>
+                            <li>
+                                <a href="#createThumb">createThumb</a>
+                            </li>
+                            <li>
+                                <a href="#getAvatarClass">getAvatarClass</a>
+                            </li>
+                            <li>
+                                <a href="#getClassForMessageBubble">getClassForMessageBubble</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#getIconByMime">getIconByMime</a>
+                            </li>
+                            <li>
+                                <a href="#getMessageDate">getMessageDate</a>
+                            </li>
+                            <li>
+                                <a href="#getMessageFromEvent">getMessageFromEvent</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#getTypeByMime">getTypeByMime</a>
+                            </li>
+                            <li>
+                                <a href="#isLastMessage">isLastMessage</a>
+                            </li>
+                            <li>
+                                <a href="#loadMoreMessages">loadMoreMessages</a>
+                            </li>
+                            <li>
+                                <a href="#onEnter">onEnter</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#preview">preview</a>
+                            </li>
+                            <li>
+                                <a href="#previewFile">previewFile</a>
+                            </li>
+                            <li>
+                                <a href="#sendMessage">sendMessage</a>
+                            </li>
+                            <li>
+                                <a href="#typing">typing</a>
+                            </li>
+                            <li>
+                                <a href="#ngOnDestroy">ngOnDestroy</a>
+                            </li>
+                            <li>
+                                <a href="#ngOnInit">ngOnInit</a>
+                            </li>
+                            <li>
+                                <a href="#onEnter">onEnter</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Inputs</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                <a href="#chatChannel">chatChannel</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+
+
+
+        </tbody>
+    </table>
+</section>
+
+    <section>
+    <h3 id="constructor">Constructor</h3>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+<code>constructor(chatService: <a href="../injectables/ChatService.html">ChatService</a>, router: <a href="https://angular.io/api/router/Router" target="_blank">Router</a>, storage: <a href="../injectables/BrowserStorageService.html">BrowserStorageService</a>, route: <a href="https://angular.io/api/router/ActivatedRoute" target="_blank">ActivatedRoute</a>, utils: <a href="../injectables/UtilsService.html">UtilsService</a>, pusherService: <a href="../injectables/PusherService.html">PusherService</a>, filestackService: <a href="../injectables/FilestackService.html">FilestackService</a>, modalController: ModalController, ngZone: <a href="https://angular.io/api/core/NgZone" target="_blank">NgZone</a>, element: <a href="https://angular.io/api/core/ElementRef" target="_blank">ElementRef</a>, newrelic: <a href="../injectables/NewRelicService.html">NewRelicService</a>)</code>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="46" class="link-to-prism">src/app/chat/chat-room/chat-room.component.ts:46</a></div>
+                            </td>
+                        </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                            <div>
+                                    <b>Parameters :</b>
+                                    <table class="params">
+                                        <thead>
+                                            <tr>
+                                                <td>Name</td>
+                                                    <td>Type</td>
+                                                <td>Optional</td>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                                <tr>
+                                                        <td>chatService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/ChatService.html" target="_self" >ChatService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>router</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="https://angular.io/api/router/Router" target="_blank" >Router</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>storage</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/BrowserStorageService.html" target="_self" >BrowserStorageService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>route</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="https://angular.io/api/router/ActivatedRoute" target="_blank" >ActivatedRoute</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>utils</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/UtilsService.html" target="_self" >UtilsService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>pusherService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/PusherService.html" target="_self" >PusherService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>filestackService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/FilestackService.html" target="_self" >FilestackService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>modalController</td>
+                                                  
+                                                        <td>
+                                                                    <code>ModalController</code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>ngZone</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="https://angular.io/api/core/NgZone" target="_blank" >NgZone</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>element</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="https://angular.io/api/core/ElementRef" target="_blank" >ElementRef</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>newrelic</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/NewRelicService.html" target="_self" >NewRelicService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                        </tbody>
+                                    </table>
+                            </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+</section>
+
+    <section>
+    <h3 id="inputs">Inputs</h3>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="chatChannel"></a>
+                        <b>chatChannel</b>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../interfaces/ChatChannel.html" target="_self" >ChatChannel</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>{
+    channelId: 0,
+    channelName: &#x27;&#x27;,
+    channelAvatar: &#x27;&#x27;,
+    pusherChannelName: &#x27;&#x27;,
+    readonly: false,
+    roles: [],
+    members: [],
+    unreadMessages: 0,
+    lastMessage: &#x27;&#x27;,
+    lastMessageCreated: &#x27;&#x27;
+  }</code>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-2" colspan="2">
+                                    <div class="io-line">Defined in <a href="" data-line="20" class="link-to-prism">src/app/chat/chat-room/chat-room.component.ts:20</a></div>
+                            </td>
+                        </tr>
+            </tbody>
+        </table>
+</section>
+
+
+
+    <section>
+    
+    <h3 id="methods">
+        Methods
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="_afterSendMessage"></a>
+                    <span class="name">
+                        <b>
+                            <span class="modifier">Private</span>
+                            _afterSendMessage
+                        </b>
+                        <a href="#_afterSendMessage"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>_afterSendMessage()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="245"
+                            class="link-to-prism">src/app/chat/chat-room/chat-room.component.ts:245</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="_beforeSenMessages"></a>
+                    <span class="name">
+                        <b>
+                            <span class="modifier">Private</span>
+                            _beforeSenMessages
+                        </b>
+                        <a href="#_beforeSenMessages"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>_beforeSenMessages()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="238"
+                            class="link-to-prism">src/app/chat/chat-room/chat-room.component.ts:238</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-description"><p>need to clear type message before send api call.
+because if we wait untill api response to clear the type message user may think message not sent and
+  will press send button multiple times.
+to indicate message sending we have loading controll by sendingMessage.
+we will insert type message to cost variable befoer clear it so type message will not lost from the api call.</p>
+</div>
+
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="_checkmessageOldThan5Min"></a>
+                    <span class="name">
+                        <b>
+                            <span class="modifier">Private</span>
+                            _checkmessageOldThan5Min
+                        </b>
+                        <a href="#_checkmessageOldThan5Min"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>_checkmessageOldThan5Min(currentMessageTime, oldMessageTime)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="383"
+                            class="link-to-prism">src/app/chat/chat-room/chat-room.component.ts:383</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-description"><p>check time diffrance larger than 5 min.</p>
+</div>
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>currentMessageTime</td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>oldMessageTime</td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="_initialise"></a>
+                    <span class="name">
+                        <b>
+                            <span class="modifier">Private</span>
+                            _initialise
+                        </b>
+                        <a href="#_initialise"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>_initialise()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="99"
+                            class="link-to-prism">src/app/chat/chat-room/chat-room.component.ts:99</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="_loadMessages"></a>
+                    <span class="name">
+                        <b>
+                            <span class="modifier">Private</span>
+                            _loadMessages
+                        </b>
+                        <a href="#_loadMessages"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>_loadMessages()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="149"
+                            class="link-to-prism">src/app/chat/chat-room/chat-room.component.ts:149</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="_markAsSeen"></a>
+                    <span class="name">
+                        <b>
+                            <span class="modifier">Private</span>
+                            _markAsSeen
+                        </b>
+                        <a href="#_markAsSeen"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>_markAsSeen()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="259"
+                            class="link-to-prism">src/app/chat/chat-room/chat-room.component.ts:259</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="_postAttachment"></a>
+                    <span class="name">
+                        <b>
+                            <span class="modifier">Private</span>
+                            _postAttachment
+                        </b>
+                        <a href="#_postAttachment"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>_postAttachment(file)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="464"
+                            class="link-to-prism">src/app/chat/chat-room/chat-room.component.ts:464</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>file</td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="_scrollToBottom"></a>
+                    <span class="name">
+                        <b>
+                            <span class="modifier">Private</span>
+                            _scrollToBottom
+                        </b>
+                        <a href="#_scrollToBottom"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>_scrollToBottom()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="421"
+                            class="link-to-prism">src/app/chat/chat-room/chat-room.component.ts:421</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="_showTyping"></a>
+                    <span class="name">
+                        <b>
+                            <span class="modifier">Private</span>
+                            _showTyping
+                        </b>
+                        <a href="#_showTyping"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>_showTyping(event)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="406"
+                            class="link-to-prism">src/app/chat/chat-room/chat-room.component.ts:406</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>event</td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="_subscribeToPusherChannel"></a>
+                    <span class="name">
+                        <b>
+                            <span class="modifier">Private</span>
+                            _subscribeToPusherChannel
+                        </b>
+                        <a href="#_subscribeToPusherChannel"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>_subscribeToPusherChannel()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="110"
+                            class="link-to-prism">src/app/chat/chat-room/chat-room.component.ts:110</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="attach"></a>
+                    <span class="name">
+                        <b>
+                            <span class="modifier">Async</span>
+                            attach
+                        </b>
+                        <a href="#attach"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>attach(type: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="442"
+                            class="link-to-prism">src/app/chat/chat-room/chat-room.component.ts:442</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>type</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="attachmentPreview"></a>
+                    <span class="name">
+                        <b>
+                            <span class="modifier">Private</span>
+                            attachmentPreview
+                        </b>
+                        <a href="#attachmentPreview"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>attachmentPreview(filestackRes)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="425"
+                            class="link-to-prism">src/app/chat/chat-room/chat-room.component.ts:425</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>filestackRes</td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="back"></a>
+                    <span class="name">
+                        <b>
+                            back
+                        </b>
+                        <a href="#back"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>back()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="199"
+                            class="link-to-prism">src/app/chat/chat-room/chat-room.component.ts:199</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="checkToShowMessageTime"></a>
+                    <span class="name">
+                        <b>
+                            checkToShowMessageTime
+                        </b>
+                        <a href="#checkToShowMessageTime"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>checkToShowMessageTime(message)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="358"
+                            class="link-to-prism">src/app/chat/chat-room/chat-room.component.ts:358</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-description"><p>check date and time diffrance between current message(message object of index) old message.</p>
+</div>
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>message</td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="createThumb"></a>
+                    <span class="name">
+                        <b>
+                            createThumb
+                        </b>
+                        <a href="#createThumb"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>createThumb(video, w, h)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="616"
+                            class="link-to-prism">src/app/chat/chat-room/chat-room.component.ts:616</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>video</td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>w</td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>h</td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getAvatarClass"></a>
+                    <span class="name">
+                        <b>
+                            getAvatarClass
+                        </b>
+                        <a href="#getAvatarClass"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>getAvatarClass(message)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="295"
+                            class="link-to-prism">src/app/chat/chat-room/chat-room.component.ts:295</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-description"><p>this method will return correct css class for chat avatar to adjust view</p>
+</div>
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Optional</td>
+                                    <td>Description</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>message</td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                    <td>
+                                        <p>message object</p>
+<ul>
+<li>if selected chat is a team chat and we are not showing time with this message.</li>
+<li>return &#39;no-time-team&#39; css class. it will add &#39;margin-top: -8%&#39; to avatar.</li>
+<li>if selected chat is not a team and we are not showing time with this message.</li>
+<li>return &#39;no-time&#39; css class. it will add &#39;margin-top: 8%&#39; to avatar.</li>
+<li>if user not in mobile platform and selected chat is a team and we are showing time with this message.</li>
+<li>return &#39;with-time-team&#39; css class. it will add &#39;margin-top: 0&#39; to avatar.</li>
+<li>if these conditions not complete</li>
+<li>return empty srting.</li>
+</ul>
+
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>    <code>&quot;&quot; | &quot;no-time&quot;</code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getClassForMessageBubble"></a>
+                    <span class="name">
+                        <b>
+                            getClassForMessageBubble
+                        </b>
+                        <a href="#getClassForMessageBubble"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>getClassForMessageBubble(message)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="344"
+                            class="link-to-prism">src/app/chat/chat-room/chat-room.component.ts:344</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-description"><p>check message sender and return related css class</p>
+</div>
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>message</td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>    <code>&quot;send-messages&quot; | &quot;received-messages no-avatar&quot; | &quot;received-messages&quot;</code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getIconByMime"></a>
+                    <span class="name">
+                        <b>
+                            <span class="modifier">Private</span>
+                            getIconByMime
+                        </b>
+                        <a href="#getIconByMime"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getIconByMime(mimetype: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="551"
+                            class="link-to-prism">src/app/chat/chat-room/chat-room.component.ts:551</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>mimetype</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getMessageDate"></a>
+                    <span class="name">
+                        <b>
+                            getMessageDate
+                        </b>
+                        <a href="#getMessageDate"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>getMessageDate(date)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="279"
+                            class="link-to-prism">src/app/chat/chat-room/chat-room.component.ts:279</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>date</td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getMessageFromEvent"></a>
+                    <span class="name">
+                        <b>
+                            getMessageFromEvent
+                        </b>
+                        <a href="#getMessageFromEvent"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>getMessageFromEvent(data)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="134"
+                            class="link-to-prism">src/app/chat/chat-room/chat-room.component.ts:134</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>data</td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="../interfaces/Message.html" target="_self" >Message</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getTypeByMime"></a>
+                    <span class="name">
+                        <b>
+                            <span class="modifier">Private</span>
+                            getTypeByMime
+                        </b>
+                        <a href="#getTypeByMime"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getTypeByMime(mimetype: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="494"
+                            class="link-to-prism">src/app/chat/chat-room/chat-room.component.ts:494</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>mimetype</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="isLastMessage"></a>
+                    <span class="name">
+                        <b>
+                            isLastMessage
+                        </b>
+                        <a href="#isLastMessage"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>isLastMessage(message)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="306"
+                            class="link-to-prism">src/app/chat/chat-room/chat-room.component.ts:306</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-description"><p>check same user have messages inline</p>
+</div>
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>message</td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="loadMoreMessages"></a>
+                    <span class="name">
+                        <b>
+                            loadMoreMessages
+                        </b>
+                        <a href="#loadMoreMessages"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>loadMoreMessages(event)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="192"
+                            class="link-to-prism">src/app/chat/chat-room/chat-room.component.ts:192</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>event</td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="onEnter"></a>
+                    <span class="name">
+                        <b>
+                            onEnter
+                        </b>
+                        <a href="#onEnter"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>onEnter()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="92"
+                            class="link-to-prism">src/app/chat/chat-room/chat-room.component.ts:92</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="preview"></a>
+                    <span class="name">
+                        <b>
+                            <span class="modifier">Async</span>
+                            preview
+                        </b>
+                        <a href="#preview"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>preview(file)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="601"
+                            class="link-to-prism">src/app/chat/chat-room/chat-room.component.ts:601</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>file</td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>    <code>{}</code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="previewFile"></a>
+                    <span class="name">
+                        <b>
+                            previewFile
+                        </b>
+                        <a href="#previewFile"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>previewFile(file)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="460"
+                            class="link-to-prism">src/app/chat/chat-room/chat-room.component.ts:460</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>file</td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="sendMessage"></a>
+                    <span class="name">
+                        <b>
+                            sendMessage
+                        </b>
+                        <a href="#sendMessage"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>sendMessage()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="203"
+                            class="link-to-prism">src/app/chat/chat-room/chat-room.component.ts:203</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="typing"></a>
+                    <span class="name">
+                        <b>
+                            typing
+                        </b>
+                        <a href="#typing"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>typing()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="396"
+                            class="link-to-prism">src/app/chat/chat-room/chat-room.component.ts:396</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-description"><p>Trigger typing event when user is typing</p>
+</div>
+
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="ngOnDestroy"></a>
+                    <span class="name">
+                        <b>
+                            ngOnDestroy
+                        </b>
+                        <a href="#ngOnDestroy"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>ngOnDestroy()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Inherited from         <code><a href="../classes/RouterEnter.html" target="_self" >RouterEnter</a></code>
+</div>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-line">Defined in         <code><a href="../classes/RouterEnter.html#source" target="_self" >RouterEnter:56</a></code>
+</div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="ngOnInit"></a>
+                    <span class="name">
+                        <b>
+                            ngOnInit
+                        </b>
+                        <a href="#ngOnInit"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>ngOnInit()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Inherited from         <code><a href="../classes/RouterEnter.html" target="_self" >RouterEnter</a></code>
+</div>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-line">Defined in         <code><a href="../classes/RouterEnter.html#source" target="_self" >RouterEnter:42</a></code>
+</div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div>
+                        <b>Example :</b>
+                        <div>
+                            <pre class="line-numbers"><code class="language-html">let&amp;#39;s take RouterEnter as parent class of following components
+URL: &lt;code&gt;/app/project&lt;/code&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;TabComponent.onEnter()&lt;/li&gt;
+&lt;li&gt;ProjectComponent.onEnter()
+URL: &lt;code&gt;/app/assessment/assessment/123/123&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;TabComponent.onEnter()&lt;/li&gt;
+&lt;li&gt;AssessmentComponent.onEnter()
+URL: &lt;code&gt;/events/any-route&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;EventComponent.onEnter()
+URL: &lt;code&gt;/switcher/switcher-program&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;SwitcherProgramComponent.onEnter()
+URL: &lt;code&gt;/bad-url&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;PageNotFoundComponent.onEnter()&lt;/li&gt;
+&lt;/ul&gt;</code></pre>
+                        </div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        <p>void</p>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="onEnter"></a>
+                    <span class="name">
+                        <b>
+                            onEnter
+                        </b>
+                        <a href="#onEnter"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>onEnter()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Inherited from         <code><a href="../classes/RouterEnter.html" target="_self" >RouterEnter</a></code>
+</div>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-line">Defined in         <code><a href="../classes/RouterEnter.html#source" target="_self" >RouterEnter:65</a></code>
+</div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>
+    <section>
+    
+        <h3 id="inputs">
+            Properties
+        </h3>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="channelId"></a>
+                        <span class="name">
+                            <b>
+                            channelId</b>
+                            <a href="#channelId"><span class="icon ion-ios-link"></span></a>
+                        </span>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <i>Type : </i>    <code>number | string</code>
+
+                        </td>
+                    </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                    <div class="io-line">Defined in <a href="" data-line="34" class="link-to-prism">src/app/chat/chat-room/chat-room.component.ts:34</a></div>
+                            </td>
+                        </tr>
+
+
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="content"></a>
+                        <span class="name">
+                            <b>
+                            content</b>
+                            <a href="#content"><span class="icon ion-ios-link"></span></a>
+                        </span>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <i>Type : </i>    <code>IonContent</code>
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <b>Decorators : </b>
+                            <br />
+                            <code>
+                                @ViewChild(IonContent)<br />
+                            </code>
+                        </td>
+                    </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                    <div class="io-line">Defined in <a href="" data-line="19" class="link-to-prism">src/app/chat/chat-room/chat-room.component.ts:19</a></div>
+                            </td>
+                        </tr>
+
+
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="element"></a>
+                        <span class="name">
+                            <b>
+                                <span class="modifier">Public</span>
+                            element</b>
+                            <a href="#element"><span class="icon ion-ios-link"></span></a>
+                        </span>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <i>Type : </i>        <code><a href="https://angular.io/api/core/ElementRef" target="_blank" >ElementRef</a></code>
+
+                        </td>
+                    </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                    <div class="io-line">Defined in <a href="" data-line="58" class="link-to-prism">src/app/chat/chat-room/chat-room.component.ts:58</a></div>
+                            </td>
+                        </tr>
+
+
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="loadingChatMessages"></a>
+                        <span class="name">
+                            <b>
+                            loadingChatMessages</b>
+                            <a href="#loadingChatMessages"><span class="icon ion-ios-link"></span></a>
+                        </span>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <i>Default value : </i><code>false</code>
+                        </td>
+                    </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                    <div class="io-line">Defined in <a href="" data-line="41" class="link-to-prism">src/app/chat/chat-room/chat-room.component.ts:41</a></div>
+                            </td>
+                        </tr>
+
+
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="message"></a>
+                        <span class="name">
+                            <b>
+                            message</b>
+                            <a href="#message"><span class="icon ion-ios-link"></span></a>
+                        </span>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                        </td>
+                    </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                    <div class="io-line">Defined in <a href="" data-line="38" class="link-to-prism">src/app/chat/chat-room/chat-room.component.ts:38</a></div>
+                            </td>
+                        </tr>
+
+
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="messageList"></a>
+                        <span class="name">
+                            <b>
+                            messageList</b>
+                            <a href="#messageList"><span class="icon ion-ios-link"></span></a>
+                        </span>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <i>Type : </i>        <code><a href="../interfaces/Message.html" target="_self" >Message[]</a></code>
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <i>Default value : </i><code>[]</code>
+                        </td>
+                    </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                    <div class="io-line">Defined in <a href="" data-line="36" class="link-to-prism">src/app/chat/chat-room/chat-room.component.ts:36</a></div>
+                            </td>
+                        </tr>
+
+
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="messagePageNumber"></a>
+                        <span class="name">
+                            <b>
+                            messagePageNumber</b>
+                            <a href="#messagePageNumber"><span class="icon ion-ios-link"></span></a>
+                        </span>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <i>Default value : </i><code>0</code>
+                        </td>
+                    </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                    <div class="io-line">Defined in <a href="" data-line="39" class="link-to-prism">src/app/chat/chat-room/chat-room.component.ts:39</a></div>
+                            </td>
+                        </tr>
+
+
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="messagePageSize"></a>
+                        <span class="name">
+                            <b>
+                            messagePageSize</b>
+                            <a href="#messagePageSize"><span class="icon ion-ios-link"></span></a>
+                        </span>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <i>Default value : </i><code>20</code>
+                        </td>
+                    </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                    <div class="io-line">Defined in <a href="" data-line="40" class="link-to-prism">src/app/chat/chat-room/chat-room.component.ts:40</a></div>
+                            </td>
+                        </tr>
+
+
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="pusherService"></a>
+                        <span class="name">
+                            <b>
+                                <span class="modifier">Public</span>
+                            pusherService</b>
+                            <a href="#pusherService"><span class="icon ion-ios-link"></span></a>
+                        </span>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <i>Type : </i>        <code><a href="../injectables/PusherService.html" target="_self" >PusherService</a></code>
+
+                        </td>
+                    </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                    <div class="io-line">Defined in <a href="" data-line="54" class="link-to-prism">src/app/chat/chat-room/chat-room.component.ts:54</a></div>
+                            </td>
+                        </tr>
+
+
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="router"></a>
+                        <span class="name">
+                            <b>
+                                <span class="modifier">Public</span>
+                            router</b>
+                            <a href="#router"><span class="icon ion-ios-link"></span></a>
+                        </span>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <i>Type : </i>        <code><a href="https://angular.io/api/router/Router" target="_blank" >Router</a></code>
+
+                        </td>
+                    </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                    <div class="io-line">Defined in <a href="" data-line="50" class="link-to-prism">src/app/chat/chat-room/chat-room.component.ts:50</a></div>
+                            </td>
+                        </tr>
+
+
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="routeUrl"></a>
+                        <span class="name">
+                            <b>
+                            routeUrl</b>
+                            <a href="#routeUrl"><span class="icon ion-ios-link"></span></a>
+                        </span>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <i>Default value : </i><code>&#x27;/chat/chat-room&#x27;</code>
+                        </td>
+                    </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                    <div class="io-line">Defined in <a href="" data-line="33" class="link-to-prism">src/app/chat/chat-room/chat-room.component.ts:33</a></div>
+                            </td>
+                        </tr>
+
+
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="sendingMessage"></a>
+                        <span class="name">
+                            <b>
+                            sendingMessage</b>
+                            <a href="#sendingMessage"><span class="icon ion-ios-link"></span></a>
+                        </span>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <i>Default value : </i><code>false</code>
+                        </td>
+                    </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                    <div class="io-line">Defined in <a href="" data-line="42" class="link-to-prism">src/app/chat/chat-room/chat-room.component.ts:42</a></div>
+                            </td>
+                        </tr>
+
+
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="showBottomAttachmentButtons"></a>
+                        <span class="name">
+                            <b>
+                            showBottomAttachmentButtons</b>
+                            <a href="#showBottomAttachmentButtons"><span class="icon ion-ios-link"></span></a>
+                        </span>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <i>Default value : </i><code>false</code>
+                        </td>
+                    </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                    <div class="io-line">Defined in <a href="" data-line="46" class="link-to-prism">src/app/chat/chat-room/chat-room.component.ts:46</a></div>
+                            </td>
+                        </tr>
+
+
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="storage"></a>
+                        <span class="name">
+                            <b>
+                                <span class="modifier">Public</span>
+                            storage</b>
+                            <a href="#storage"><span class="icon ion-ios-link"></span></a>
+                        </span>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <i>Type : </i>        <code><a href="../injectables/BrowserStorageService.html" target="_self" >BrowserStorageService</a></code>
+
+                        </td>
+                    </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                    <div class="io-line">Defined in <a href="" data-line="51" class="link-to-prism">src/app/chat/chat-room/chat-room.component.ts:51</a></div>
+                            </td>
+                        </tr>
+
+
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="utils"></a>
+                        <span class="name">
+                            <b>
+                                <span class="modifier">Public</span>
+                            utils</b>
+                            <a href="#utils"><span class="icon ion-ios-link"></span></a>
+                        </span>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <i>Type : </i>        <code><a href="../injectables/UtilsService.html" target="_self" >UtilsService</a></code>
+
+                        </td>
+                    </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                    <div class="io-line">Defined in <a href="" data-line="53" class="link-to-prism">src/app/chat/chat-room/chat-room.component.ts:53</a></div>
+                            </td>
+                        </tr>
+
+
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="whoIsTyping"></a>
+                        <span class="name">
+                            <b>
+                            whoIsTyping</b>
+                            <a href="#whoIsTyping"><span class="icon ion-ios-link"></span></a>
+                        </span>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                        </td>
+                    </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                    <div class="io-line">Defined in <a href="" data-line="44" class="link-to-prism">src/app/chat/chat-room/chat-room.component.ts:44</a></div>
+                            </td>
+                        </tr>
+
+
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="router"></a>
+                        <span class="name">
+                            <b>
+                                <span class="modifier">Public</span>
+                            router</b>
+                            <a href="#router"><span class="icon ion-ios-link"></span></a>
+                        </span>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <i>Type : </i>        <code><a href="https://angular.io/api/router/Router" target="_blank" >Router</a></code>
+
+                        </td>
+                    </tr>
+                            <tr>
+                                <td class="col-md-4">
+                                    <div class="io-line">Inherited from         <code><a href="../classes/RouterEnter.html" target="_self" >RouterEnter</a></code>
+</div>
+                                </td>
+                            </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                    <div class="io-line">Defined in         <code><a href="../classes/RouterEnter.html#source" target="_self" >RouterEnter:11</a></code>
+</div>
+                            </td>
+                        </tr>
+
+
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="routeUrl"></a>
+                        <span class="name">
+                            <b>
+                            routeUrl</b>
+                            <a href="#routeUrl"><span class="icon ion-ios-link"></span></a>
+                        </span>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                        </td>
+                    </tr>
+                            <tr>
+                                <td class="col-md-4">
+                                    <div class="io-line">Inherited from         <code><a href="../classes/RouterEnter.html" target="_self" >RouterEnter</a></code>
+</div>
+                                </td>
+                            </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                    <div class="io-line">Defined in         <code><a href="../classes/RouterEnter.html#source" target="_self" >RouterEnter:8</a></code>
+</div>
+                            </td>
+                        </tr>
+
+
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="subscription"></a>
+                        <span class="name">
+                            <b>
+                            subscription</b>
+                            <a href="#subscription"><span class="icon ion-ios-link"></span></a>
+                        </span>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <i>Type : </i>    <code>Subscription</code>
+
+                        </td>
+                    </tr>
+                            <tr>
+                                <td class="col-md-4">
+                                    <div class="io-line">Inherited from         <code><a href="../classes/RouterEnter.html" target="_self" >RouterEnter</a></code>
+</div>
+                                </td>
+                            </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                    <div class="io-line">Defined in         <code><a href="../classes/RouterEnter.html#source" target="_self" >RouterEnter:6</a></code>
+</div>
+                            </td>
+                        </tr>
+
+
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="subscriptions"></a>
+                        <span class="name">
+                            <b>
+                            subscriptions</b>
+                            <a href="#subscriptions"><span class="icon ion-ios-link"></span></a>
+                        </span>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <i>Type : </i>    <code>Subscription[]</code>
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <i>Default value : </i><code>[]</code>
+                        </td>
+                    </tr>
+                            <tr>
+                                <td class="col-md-4">
+                                    <div class="io-line">Inherited from         <code><a href="../classes/RouterEnter.html" target="_self" >RouterEnter</a></code>
+</div>
+                                </td>
+                            </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                    <div class="io-line">Defined in         <code><a href="../classes/RouterEnter.html#source" target="_self" >RouterEnter:7</a></code>
+</div>
+                            </td>
+                        </tr>
+
+
+            </tbody>
+        </table>
+</section>
+
+</div>
+
+
+    <div class="tab-pane fade  tab-source-code" id="c-source">
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Component, Input, ViewChild, NgZone, AfterContentInit, AfterViewInit, ElementRef } from &#x27;@angular/core&#x27;;
+import { Router, ActivatedRoute } from &#x27;@angular/router&#x27;;
+import { IonContent, ModalController } from &#x27;@ionic/angular&#x27;;
+import { BrowserStorageService } from &#x27;@services/storage.service&#x27;;
+import { RouterEnter } from &#x27;@services/router-enter.service&#x27;;
+import { UtilsService } from &#x27;@services/utils.service&#x27;;
+import { PusherService } from &#x27;@shared/pusher/pusher.service&#x27;;
+import { FilestackService } from &#x27;@shared/filestack/filestack.service&#x27;;
+import { ChatService, ChatChannel, Message } from &#x27;../chat.service&#x27;;
+import { ChatPreviewComponent } from &#x27;../chat-preview/chat-preview.component&#x27;;
+import { NewRelicService } from &#x27;@shared/new-relic/new-relic.service&#x27;;
+
+@Component({
+  selector: &#x27;app-chat-room&#x27;,
+  templateUrl: &#x27;./chat-room.component.html&#x27;,
+  styleUrls: [&#x27;./chat-room.component.scss&#x27;]
+})
+export class ChatRoomComponent extends RouterEnter {
+  @ViewChild(IonContent) content: IonContent;
+  @Input() chatChannel?: ChatChannel &#x3D; {
+    channelId: 0,
+    channelName: &#x27;&#x27;,
+    channelAvatar: &#x27;&#x27;,
+    pusherChannelName: &#x27;&#x27;,
+    readonly: false,
+    roles: [],
+    members: [],
+    unreadMessages: 0,
+    lastMessage: &#x27;&#x27;,
+    lastMessageCreated: &#x27;&#x27;
+  };
+
+  routeUrl &#x3D; &#x27;/chat/chat-room&#x27;;
+  channelId: number | string;
+  // message history list
+  messageList: Message[] &#x3D; [];
+  // the message that the current user is typing
+  message: string;
+  messagePageNumber &#x3D; 0;
+  messagePageSize &#x3D; 20;
+  loadingChatMessages &#x3D; false;
+  sendingMessage &#x3D; false;
+  // display &quot;someone is typing&quot; when received a typing event
+  whoIsTyping: string;
+  // this use to show/hide bottom section of text field which have attachment buttons and send button, when user start typing text messages
+  showBottomAttachmentButtons &#x3D; false;
+
+  constructor(
+    private chatService: ChatService,
+    public router: Router,
+    public storage: BrowserStorageService,
+    private route: ActivatedRoute,
+    public utils: UtilsService,
+    public pusherService: PusherService,
+    private filestackService: FilestackService,
+    private modalController: ModalController,
+    private ngZone: NgZone,
+    public element: ElementRef,
+    private newrelic: NewRelicService
+  ) {
+    super(router);
+    this.newrelic.setPageViewName(&#x60;Chat room&#x60;);
+    this.utils.getEvent(&#x27;chat:new-message&#x27;).subscribe(event &#x3D;&gt; {
+      if (!this.utils.isMobile() &amp;&amp; (this.router.url !&#x3D;&#x3D; &#x27;/app/chat&#x27;)) {
+        return;
+      }
+      if (this.utils.isMobile() &amp;&amp; (this.router.url !&#x3D;&#x3D; &#x27;/chat/chat-room&#x27;)) {
+        return;
+      }
+      const receivedMessage &#x3D; this.getMessageFromEvent(event);
+      if (receivedMessage.channelId !&#x3D;&#x3D; this.channelId) {
+        if (receivedMessage.channelIdAlias !&#x3D;&#x3D; this.channelId) {
+          // only display message for the current channel
+          return;
+        }
+        this.utils.broadcastEvent(&#x27;channel-id-update&#x27;, {
+          previousId: this.channelId,
+          currentId: receivedMessage.channelId
+        });
+      }
+      if (receivedMessage &amp;&amp; receivedMessage.file) {
+        receivedMessage.preview &#x3D; this.attachmentPreview(receivedMessage.file);
+      }
+      if (!this.utils.isEmpty(receivedMessage)) {
+        this.messageList.push(receivedMessage);
+        this._markAsSeen();
+        this._scrollToBottom();
+      }
+    });
+  }
+
+  onEnter() {
+    this._initialise();
+    this._subscribeToPusherChannel();
+    this._loadMessages();
+    this._scrollToBottom();
+  }
+
+  private _initialise() {
+    this.message &#x3D; &#x27;&#x27;;
+    this.messageList &#x3D; [];
+    this.loadingChatMessages &#x3D; false;
+    this.messagePageNumber &#x3D; 0;
+    this.messagePageSize &#x3D; 20;
+    this.sendingMessage &#x3D; false;
+    this.whoIsTyping &#x3D; &#x27;&#x27;;
+    this.showBottomAttachmentButtons &#x3D; false;
+  }
+
+  private _subscribeToPusherChannel() {
+    if (this.chatChannel.channelId &#x3D;&#x3D;&#x3D; 0 &amp;&amp; !this.chatChannel.channelName) {
+      this.chatChannel &#x3D; this.storage.getCurrentChatChannel();
+    }
+    this.channelId &#x3D; this.chatChannel.channelId;
+    // subscribe to the Pusher channel for the current chat channel
+    setTimeout(
+      () &#x3D;&gt; {
+        this.pusherService.subscribeChannel(&#x27;chat&#x27;, this.chatChannel.pusherChannelName);
+      },
+      100
+    );
+    // subscribe to typing event
+    this.utils.getEvent(&#x27;typing-&#x27; + this.chatChannel.pusherChannelName).subscribe(event &#x3D;&gt; this._showTyping(event));
+    this.utils.getEvent(&#x27;channel-id-update&#x27;).subscribe(event &#x3D;&gt; {
+      if (this.channelId &#x3D;&#x3D;&#x3D; event.previousId) {
+        this.channelId &#x3D; event.currentId;
+      }
+    });
+  }
+
+  /**
+   * @description listen to pusher event for new message
+   */
+  getMessageFromEvent(data): Message {
+    return {
+      id: data.meta.id,
+      senderName: data.meta.sender.name,
+      senderRole: data.meta.sender.role,
+      senderAvatar: data.meta.sender.avatar,
+      isSender: false,
+      message: data.meta.message,
+      sentTime: data.meta.sent_time,
+      channelId: data.meta.channel_id,
+      channelIdAlias: data.meta.channel_id_alias,
+      file: data.meta.file
+    };
+  }
+
+  private _loadMessages() {
+    // if one chat request send to the api. not calling other one.
+    // because in some cases second api call respose return before first one.
+    // then messages getting mixed.
+    if (this.loadingChatMessages) {
+      return;
+    }
+    this.loadingChatMessages &#x3D; true;
+    this.messagePageNumber +&#x3D; 1;
+    this.chatService
+      .getMessageList({
+        channel_id: this.channelId,
+        page: this.messagePageNumber,
+        size: this.messagePageSize
+      })
+      .subscribe(
+        (messages: Message[]) &#x3D;&gt; {
+          this.loadingChatMessages &#x3D; false;
+          if (messages.length &#x3D;&#x3D;&#x3D; 0) {
+            this.messagePageNumber -&#x3D; 1;
+            return;
+          }
+          messages &#x3D; messages.map(msg &#x3D;&gt; {
+            if (msg.file) {
+              msg.preview &#x3D; this.attachmentPreview(msg.file);
+            }
+            return msg;
+          });
+          messages.reverse();
+          if (this.messageList.length &gt; 0) {
+            this.messageList &#x3D; messages.concat(this.messageList);
+          } else {
+            this.messageList &#x3D; messages;
+            this._scrollToBottom();
+          }
+          this._markAsSeen();
+        },
+        error &#x3D;&gt; {
+          this.loadingChatMessages &#x3D; false;
+        }
+      );
+  }
+
+  loadMoreMessages(event) {
+    const scrollTopPosition &#x3D; event.detail.scrollTop;
+    if (scrollTopPosition &#x3D;&#x3D;&#x3D; 0) {
+      this._loadMessages();
+    }
+  }
+
+  back() {
+    return this.ngZone.run(() &#x3D;&gt; this.router.navigate([&#x27;app&#x27;, &#x27;chat&#x27;]));
+  }
+
+  sendMessage() {
+    if (!this.message) {
+      return;
+    }
+    const message &#x3D; this.message;
+    this._beforeSenMessages();
+    this.chatService.postNewMessage({
+      channelId: this.channelId,
+      message: message
+    }).subscribe(
+      response &#x3D;&gt; {
+        this.messageList.push(response.message);
+        this.utils.broadcastEvent(&#x27;chat:info-update&#x27;, true);
+        if (response.channelId) {
+          this.utils.broadcastEvent(&#x27;channel-id-update&#x27;, {
+            previousId: this.channelId,
+            currentId: response.channelId
+          });
+        }
+        this._scrollToBottom();
+        this._afterSendMessage();
+      },
+      error &#x3D;&gt; {
+        this._afterSendMessage();
+      }
+    );
+  }
+
+  /**
+   * need to clear type message before send api call.
+   * because if we wait untill api response to clear the type message user may think message not sent and
+   *  will press send button multiple times.
+   * to indicate message sending we have loading controll by sendingMessage.
+   * we will insert type message to cost variable befoer clear it so type message will not lost from the api call.
+   */
+  private _beforeSenMessages() {
+    this.sendingMessage &#x3D; true;
+    // remove typed message from text area and shrink text area.
+    this.message &#x3D; &#x27;&#x27;;
+    this.element.nativeElement.querySelector(&#x27;textarea&#x27;).style.height &#x3D; &#x27;auto&#x27;;
+  }
+
+  private _afterSendMessage() {
+    this.sendingMessage &#x3D; false;
+    this.showBottomAttachmentButtons &#x3D; false;
+    /**
+     * if there are no previous messages message page number is 0.
+     * after user start sending message, if page number is 0 we need to make it page 1.
+     * if we didn&#x27;t do that when user scroll message list api call with page number 1 and load same messages again.
+     */
+    if (this.messageList.length &gt; 0 &amp;&amp; this.messagePageNumber &#x3D;&#x3D;&#x3D; 0) {
+      this.messagePageNumber +&#x3D; 1;
+    }
+  }
+
+  // call chat api to mark message as seen messages
+  private _markAsSeen() {
+    const messageIds &#x3D; this.messageList.map(m &#x3D;&gt; m.id);
+    this.chatService
+      .markMessagesAsSeen({
+        ids: messageIds,
+        channel_id: this.channelId
+      })
+      .subscribe (
+        res &#x3D;&gt; {
+          if (!this.utils.isMobile()) {
+            this.utils.broadcastEvent(&#x27;chat-badge-update&#x27;, {
+              channelId: this.chatChannel.channelId,
+              readcount: messageIds.length
+            });
+          }
+        },
+        err &#x3D;&gt; {}
+      );
+  }
+
+  getMessageDate(date) {
+    return this.utils.timeFormatter(date);
+  }
+
+  /**
+   * this method will return correct css class for chat avatar to adjust view
+   * @param message message object
+   * - if selected chat is a team chat and we are not showing time with this message.
+   *  - return &#x27;no-time-team&#x27; css class. it will add &#x27;margin-top: -8%&#x27; to avatar.
+   * - if selected chat is not a team and we are not showing time with this message.
+   *  - return &#x27;no-time&#x27; css class. it will add &#x27;margin-top: 8%&#x27; to avatar.
+   * - if user not in mobile platform and selected chat is a team and we are showing time with this message.
+   *  - return &#x27;with-time-team&#x27; css class. it will add &#x27;margin-top: 0&#x27; to avatar.
+   * - if these conditions not complete
+   *  - return empty srting.
+   */
+  getAvatarClass(message) {
+    if (!this.checkToShowMessageTime(message)) {
+      return &#x27;no-time&#x27;;
+    }
+    return &#x27;&#x27;;
+  }
+
+  /**
+   * check same user have messages inline
+   * @param {int} message
+   */
+  isLastMessage(message) {
+    const index &#x3D; this.messageList.indexOf(message);
+    if (index &#x3D;&#x3D;&#x3D; -1) {
+      this.messageList[index].noAvatar &#x3D; true;
+      return false;
+    }
+    const currentMessage &#x3D; this.messageList[index];
+    const nextMessage &#x3D; this.messageList[index + 1];
+    if (currentMessage.isSender) {
+      this.messageList[index].noAvatar &#x3D; true;
+      return false;
+    }
+    if (!nextMessage) {
+      this.messageList[index].noAvatar &#x3D; false;
+      return true;
+    }
+    const currentMessageTime &#x3D; new Date(this.messageList[index].sentTime);
+    const nextMessageTime &#x3D; new Date(this.messageList[index + 1].sentTime);
+    if (currentMessage.senderName !&#x3D;&#x3D; nextMessage.senderName) {
+      this.messageList[index].noAvatar &#x3D; false;
+      return true;
+    }
+    const timeDiff &#x3D;
+      (nextMessageTime.getTime() - currentMessageTime.getTime()) /
+      (60 * 1000);
+    if (timeDiff &gt; 5) {
+      this.messageList[index].noAvatar &#x3D; false;
+      return true;
+    } else {
+      this.messageList[index].noAvatar &#x3D; true;
+      return false;
+    }
+  }
+
+  /**
+   * check message sender and return related css class
+   * @param {object} message
+   */
+  getClassForMessageBubble(message) {
+    if (message.isSender) {
+      return &#x27;send-messages&#x27;;
+    }
+    if (message.noAvatar) {
+      return &#x27;received-messages no-avatar&#x27;;
+    }
+    return &#x27;received-messages&#x27;;
+  }
+
+  /**
+   * check date and time diffrance between current message(message object of index) old message.
+   * @param {int} message
+   */
+  checkToShowMessageTime(message) {
+    const index &#x3D; this.messageList.indexOf(message);
+    if (index &lt;&#x3D; -1) {
+      return;
+    }
+    // show message time for the first message
+    if (!this.messageList[index - 1]) {
+      return true;
+    }
+    const currentMessageTime &#x3D; new Date(this.messageList[index].sentTime);
+    const oldMessageTime &#x3D; new Date(this.messageList[index - 1].sentTime);
+    if ((currentMessageTime.getDate() - oldMessageTime.getDate()) &#x3D;&#x3D;&#x3D; 0) {
+      return this._checkmessageOldThan5Min(
+        currentMessageTime,
+        oldMessageTime
+      );
+    }
+    return true;
+  }
+
+  /**
+   * check time diffrance larger than 5 min.
+   * @param {object} currentMessageTime
+   * @param {object} oldMessageTime
+   */
+  private _checkmessageOldThan5Min(currentMessageTime, oldMessageTime) {
+    const timeDiff &#x3D;
+      (currentMessageTime.getTime() - oldMessageTime.getTime()) / (60 * 1000);
+    if (timeDiff &gt; 5) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  /**
+   * Trigger typing event when user is typing
+   */
+  typing() {
+    if (!this.utils.isEmpty(this.message)) {
+      this.showBottomAttachmentButtons &#x3D; true;
+      this._scrollToBottom();
+    } else {
+      this.showBottomAttachmentButtons &#x3D; false;
+    }
+    this.pusherService.triggerTyping(this.chatChannel.pusherChannelName);
+  }
+
+  private _showTyping(event) {
+    // don&#x27;t need to show typing message if the current user is the one who is typing
+    if (event.user &#x3D;&#x3D;&#x3D; this.storage.getUser().name) {
+      return;
+    }
+    this.whoIsTyping &#x3D; event.user + &#x27; is typing&#x27;;
+    this._scrollToBottom();
+    setTimeout(
+      () &#x3D;&gt; {
+        this.whoIsTyping &#x3D; &#x27;&#x27;;
+      },
+      3000
+    );
+  }
+
+  private _scrollToBottom() {
+    setTimeout(() &#x3D;&gt; this.content.scrollToBottom(), 500);
+  }
+
+  private attachmentPreview(filestackRes) {
+    let preview &#x3D; &#x60;Uploaded ${filestackRes.filename}&#x60;;
+    const dimension &#x3D; 224;
+    if (!filestackRes.mimetype) {
+      return preview;
+    }
+    if (filestackRes.mimetype.includes(&#x27;image&#x27;)) {
+      const attachmentURL &#x3D; &#x60;https://cdn.filestackcontent.com/quality&#x3D;value:70/resize&#x3D;w:${dimension},h:${dimension},fit:crop/${filestackRes.handle}&#x60;;
+      // preview &#x3D; &#x60;&lt;p&gt;Uploaded ${filestackRes.filename}&lt;/p&gt;&lt;img src&#x3D;${attachmentURL}&gt;&#x60;;
+      preview &#x3D; &#x60;&lt;img src&#x3D;${attachmentURL}&gt;&#x60;;
+    } else if (filestackRes.mimetype.includes(&#x27;video&#x27;)) {
+      // we&#x27;ll need to identify filetype for &#x27;any&#x27; type fileupload
+      preview &#x3D; &#x60;&lt;app-file-display [file]&#x3D;&quot;submission.answer&quot; [fileType]&#x3D;&quot;question.fileType&quot;&gt;&lt;/app-file-display&gt;&#x60;;
+    }
+    return preview;
+  }
+
+  async attach(type: string) {
+    const options: any &#x3D; {};
+
+    if (this.filestackService.getFileTypes(type)) {
+      options.accept &#x3D; this.filestackService.getFileTypes(type);
+      options.storeTo &#x3D; this.filestackService.getS3Config(type);
+    }
+    await this.filestackService.open(
+      options,
+      res &#x3D;&gt; {
+        return this._postAttachment(res);
+      },
+      err &#x3D;&gt; {
+        console.log(err);
+      }
+    );
+  }
+
+  previewFile(file) {
+    return this.filestackService.previewFile(file);
+  }
+
+  private _postAttachment(file) {
+    if (this.sendingMessage) {
+      return;
+    }
+    this.sendingMessage &#x3D; true;
+    this.chatService.postAttachmentMessage({
+      channelId: this.channelId,
+      message: this.message,
+      file
+    }).subscribe(
+      response &#x3D;&gt; {
+        const message &#x3D; response.message;
+        message.preview &#x3D; this.attachmentPreview(file);
+        this.messageList.push(message);
+        this.utils.broadcastEvent(&#x27;chat:info-update&#x27;, true);
+        if (response.channelId) {
+          this.utils.broadcastEvent(&#x27;channel-id-update&#x27;, {
+            previousId: this.channelId,
+            currentId: response.channelId
+          });
+        }
+        this._scrollToBottom();
+        this._afterSendMessage();
+      },
+      error &#x3D;&gt; {
+        this._afterSendMessage();
+      }
+    );
+  }
+
+  private getTypeByMime(mimetype: string): string {
+    const zip &#x3D; [
+      &#x27;application/x-compressed&#x27;,
+      &#x27;application/x-zip-compressed&#x27;,
+      &#x27;application/zip&#x27;,
+      &#x27;multipart/x-zip&#x27;,
+    ];
+
+    let result &#x3D; &#x27;&#x27;;
+
+    if (!mimetype) {
+      return &#x27;File&#x27;;
+    }
+
+    if (zip.indexOf(mimetype) &gt;&#x3D; 0) {
+      result &#x3D; &#x27;Zip&#x27;;
+
+    // set icon to different document type (excel, word, powerpoint, audio, video)
+    } else if (mimetype.indexOf(&#x27;audio/&#x27;) &gt;&#x3D; 0) {
+      result &#x3D; &#x27;Audio&#x27;;
+    } else if (mimetype.indexOf(&#x27;image/&#x27;) &gt;&#x3D; 0) {
+      result &#x3D; &#x27;Image&#x27;;
+    } else if (mimetype.indexOf(&#x27;text/&#x27;) &gt;&#x3D; 0) {
+      result &#x3D; &#x27;Text&#x27;;
+    } else if (mimetype.indexOf(&#x27;video/&#x27;) &gt;&#x3D; 0) {
+      result &#x3D; &#x27;Video&#x27;;
+    } else {
+      switch (mimetype) {
+        case &#x27;application/pdf&#x27;:
+          result &#x3D; &#x27;PDF&#x27;;
+          break;
+        case &#x27;application/msword&#x27;:
+        case &#x27;application/vnd.openxmlformats-officedocument.wordprocessingml.document&#x27;:
+          result &#x3D; &#x27;Word&#x27;;
+          break;
+        case &#x27;application/excel&#x27;:
+        case &#x27;application/vnd.ms-excel&#x27;:
+        case &#x27;application/vnd.openxmlformats-officedocument.spreadsheetml.sheet&#x27;:
+        case &#x27;application/x-excel&#x27;:
+        case &#x27;application/x-msexcel&#x27;:
+          result &#x3D; &#x27;Excel&#x27;;
+          break;
+        case &#x27;application/mspowerpoint&#x27;:
+        case &#x27;application/vnd.ms-powerpoint&#x27;:
+        case &#x27;application/vnd.openxmlformats-officedocument.presentationml.presentation&#x27;:
+        case &#x27;application/x-mspowerpoint&#x27;:
+          result &#x3D; &#x27;Powerpoint&#x27;;
+          break;
+        default:
+          result &#x3D; &#x27;File&#x27;;
+          break;
+      }
+    }
+
+    return result;
+  }
+
+  private getIconByMime(mimetype: string): string {
+    const zip &#x3D; [
+      &#x27;application/x-compressed&#x27;,
+      &#x27;application/x-zip-compressed&#x27;,
+      &#x27;application/zip&#x27;,
+      &#x27;multipart/x-zip&#x27;,
+    ];
+    let result &#x3D; &#x27;&#x27;;
+
+    if (zip.indexOf(mimetype) &gt;&#x3D; 0) {
+      result &#x3D; &#x27;document&#x27;;
+    } else if (mimetype.includes(&#x27;audio&#x27;)) {
+      result &#x3D; &#x27;volume-mute&#x27;;
+    } else if (mimetype.includes(&#x27;image&#x27;)) {
+      result &#x3D; &#x27;photos&#x27;;
+    } else if (mimetype.includes(&#x27;text&#x27;)) {
+      result &#x3D; &#x27;clipboard-outline&#x27;;
+    } else if (mimetype.includes(&#x27;video&#x27;)) {
+      result &#x3D; &#x27;videocam&#x27;;
+    } else {
+      switch (mimetype) {
+        case &#x27;application/pdf&#x27;:
+          result &#x3D; &#x27;document&#x27;; // &#x27;pdf&#x27;;
+          break;
+        case &#x27;application/msword&#x27;:
+        case &#x27;application/vnd.openxmlformats-officedocument.wordprocessingml.document&#x27;:
+          result &#x3D; &#x27;document&#x27;; // &#x27;word&#x27;;
+          break;
+        case &#x27;application/excel&#x27;:
+        case &#x27;application/vnd.ms-excel&#x27;:
+        case &#x27;application/vnd.openxmlformats-officedocument.spreadsheetml.sheet&#x27;:
+        case &#x27;application/x-excel&#x27;:
+        case &#x27;application/x-msexcel&#x27;:
+          result &#x3D; &#x27;document&#x27;; // &#x27;excel&#x27;;
+          break;
+        case &#x27;application/mspowerpoint&#x27;:
+        case &#x27;application/vnd.ms-powerpoint&#x27;:
+        case &#x27;application/vnd.openxmlformats-officedocument.presentationml.presentation&#x27;:
+        case &#x27;application/x-mspowerpoint&#x27;:
+          result &#x3D; &#x27;document&#x27;; // &#x27;powerpoint&#x27;;
+          break;
+        default:
+          result &#x3D; &#x27;document&#x27;; // &#x27;file&#x27;;
+          break;
+      }
+    }
+
+    return result;
+  }
+
+  async preview(file) {
+    // if file didn&#x27;t have mimetype use filestack Url to priview the file.
+    if (!file.mimetype) {
+      return this.filestackService.previewFile(file);
+    }
+    const modal &#x3D; await this.modalController.create({
+      component: ChatPreviewComponent,
+      componentProps: {
+        file,
+      }
+    });
+    return await modal.present();
+  }
+
+  // @Deprecated in case we need it later
+  createThumb(video, w, h) {
+    const c &#x3D; document.createElement(&#x27;canvas&#x27;),    // create a canvas
+        ctx &#x3D; c.getContext(&#x27;2d&#x27;);                // get context
+    c.width &#x3D; w;                                 // set size &#x3D; thumb
+    c.height &#x3D; h;
+    ctx.drawImage(video, 0, 0, w, h);            // draw in frame
+    return c;                                    // return canvas
+  }
+}
+</code></pre>
+    </div>
+
+    <div class="tab-pane fade " id="c-templateData">
+        <pre class="line-numbers"><code class="language-html">&lt;ion-header mode&#x3D;&quot;ios&quot;&gt;
+  &lt;ion-toolbar [ngClass]&#x3D;&quot;{&#x27;ion-toolbar-absolute&#x27;: !utils.isMobile()}&quot;&gt;
+    &lt;ion-icon *ngIf&#x3D;&quot;utils.isMobile()&quot; name&#x3D;&quot;arrow-back&quot; (click)&#x3D;&quot;back()&quot; color&#x3D;&quot;primary&quot; slot&#x3D;&quot;start&quot; margin-start&gt;&lt;/ion-icon&gt;
+    &lt;ion-title class&#x3D;&quot;ion-text-center&quot; [ngClass]&#x3D;&quot;{
+      &#x27;subtitle-2&#x27;: !utils.isMobile()
+    }&quot;&gt;{{ chatChannel.channelName }}&lt;/ion-title&gt;
+  &lt;/ion-toolbar&gt;
+&lt;/ion-header&gt;
+&lt;ion-content [ngClass]&#x3D;&quot;{&#x27;ion-content-absolute-with-footer&#x27;: !utils.isMobile()}&quot; color&#x3D;&quot;light&quot; [scrollEvents]&#x3D;&quot;true&quot; (ionScroll)&#x3D;&quot;loadMoreMessages($event)&quot;&gt;
+
+  &lt;div *ngIf&#x3D;&quot;loadingChatMessages&quot; class&#x3D;&quot;ion-text-center&quot;&gt;
+    &lt;ion-spinner&gt;&lt;/ion-spinner&gt;
+  &lt;/div&gt;
+
+  &lt;div *ngIf&#x3D;&quot;!messageList.length &amp;&amp; !loadingChatMessages&quot; class&#x3D;&quot;ion-text-center not-started-empty-status&quot;&gt;
+    &lt;img class&#x3D;&quot;image&quot; [ngClass]&#x3D;&quot;{&#x27;desktop&#x27;: !utils.isMobile()}&quot; src&#x3D;&quot;/assets/icon-epmty-chat.svg&quot;&gt;
+    &lt;p class&#x3D;&quot;head-text headline-5 gray-3&quot;&gt;Type your first message!&lt;/p&gt;
+    &lt;p class&#x3D;&quot;sub-text subtitle-1 gray-1&quot;&gt;It&#x27;s time to start a chat&lt;/p&gt;
+  &lt;/div&gt;
+
+  &lt;ion-list lines&#x3D;&quot;none&quot; color&#x3D;&quot;light&quot; class&#x3D;&quot;chat-list&quot; [ngClass]&#x3D;&quot;{&#x27;desktop-view&#x27;: !utils.isMobile()}&quot;&gt;
+    &lt;ion-item *ngFor&#x3D;&quot;let message of messageList&quot; color&#x3D;&quot;light&quot;&gt;
+      &lt;ng-container *ngIf&#x3D;&quot;isLastMessage(message)&quot;&gt;
+        &lt;ion-avatar [ngClass]&#x3D;&quot;getAvatarClass(message)&quot; slot&#x3D;&quot;start&quot;&gt;
+          &lt;img [src]&#x3D;&quot;message.senderAvatar&quot;&gt;
+        &lt;/ion-avatar&gt;
+      &lt;/ng-container&gt;
+
+      &lt;ion-label [ngClass]&#x3D;&quot;getClassForMessageBubble(message)&quot; text-wrap&gt;
+
+        &lt;div *ngIf&#x3D;&quot;checkToShowMessageTime(message)&quot; class&#x3D;&quot;time caption gray-2&quot;&gt;
+          &lt;p&gt;{{ getMessageDate(message.sentTime) }}&lt;/p&gt;
+        &lt;/div&gt;
+
+        &lt;ng-container *ngIf&#x3D;&quot;!message.file; else attachment&quot;&gt;
+          &lt;div class&#x3D;&quot;message-body&quot;&gt;
+            &lt;ng-container *ngIf&#x3D;&quot;!message.isSender&quot;&gt;
+              &lt;p class&#x3D;&quot;seen-text subtitle-1 black&quot;&gt;{{message.senderName}}&lt;/p&gt;
+              &lt;p class&#x3D;&quot;seen-text caption gray-2&quot; *ngIf&#x3D;&quot;chatChannel.roles.length &gt; 1&quot;&gt;{{message.senderRole}}&lt;/p&gt;
+            &lt;/ng-container&gt;
+            &lt;p class&#x3D;&quot;message-text subtitle-1&quot; [innerHTML]&#x3D;&quot;message.message&quot;&gt;&lt;/p&gt;
+          &lt;/div&gt;
+        &lt;/ng-container&gt;
+
+        &lt;ng-template #attachment&gt;
+          &lt;ng-container *ngIf&#x3D;&quot;message.file &amp;&amp; message.file.mimetype &amp;&amp; message.file.mimetype.includes(&#x27;video&#x27;)&quot;&gt;
+            &lt;div class&#x3D;&quot;message-body video-attachment-container&quot;&gt;
+              &lt;ng-container *ngIf&#x3D;&quot;!message.isSender&quot;&gt;
+                &lt;p class&#x3D;&quot;seen-text subtitle-1 black&quot;&gt;{{message.senderName}}&lt;/p&gt;
+                &lt;p class&#x3D;&quot;seen-text caption gray-2&quot; *ngIf&#x3D;&quot;chatChannel.roles.length &gt; 1&quot;&gt;{{message.senderRole}}&lt;/p&gt;
+              &lt;/ng-container&gt;
+              &lt;div id&#x3D;&quot;inner-box&quot; (click)&#x3D;&quot;preview(message.file)&quot;&gt;
+                &lt;p&gt;&lt;ion-icon name&#x3D;&quot;play-circle&quot;&gt;&lt;/ion-icon&gt;&lt;/p&gt;
+              &lt;/div&gt;
+              &lt;div class&#x3D;&quot;label&quot;&gt;
+                &lt;p&gt;
+                  &lt;ion-label color&#x3D;&quot;primary&quot;&gt;
+                    {{ message.file.filename }}
+                  &lt;/ion-label&gt;
+                &lt;/p&gt;
+              &lt;/div&gt;
+            &lt;/div&gt;
+          &lt;/ng-container&gt;
+
+          &lt;ng-container *ngIf&#x3D;&quot;message.file &amp;&amp; message.file.mimetype &amp;&amp; message.file.mimetype.includes(&#x27;image&#x27;)&quot;&gt;
+            &lt;div class&#x3D;&quot;message-body image&quot; (click)&#x3D;&quot;preview(message.file)&quot;&gt;
+              &lt;ng-container *ngIf&#x3D;&quot;!message.isSender&quot;&gt;
+                &lt;p class&#x3D;&quot;seen-text subtitle-1 black&quot;&gt;{{message.senderName}}&lt;/p&gt;
+                &lt;p class&#x3D;&quot;seen-text caption gray-2&quot; *ngIf&#x3D;&quot;chatChannel.roles.length &gt; 1&quot;&gt;{{message.senderRole}}&lt;/p&gt;
+              &lt;/ng-container&gt;
+              &lt;div [innerHTML]&#x3D;&quot;message.preview&quot;&gt;&lt;/div&gt;
+            &lt;/div&gt;
+          &lt;/ng-container&gt;
+
+          &lt;ng-container *ngIf&#x3D;&quot;(message.file &amp;&amp; !message.file.mimetype) || (message.file &amp;&amp; (
+            !message.file.mimetype.includes(&#x27;image&#x27;) &amp;&amp; !message.file.mimetype.includes(&#x27;video&#x27;)))&quot;&gt;
+          &lt;div class&#x3D;&quot;message-body&quot;&gt;
+            &lt;ng-container *ngIf&#x3D;&quot;!message.isSender&quot;&gt;
+              &lt;p class&#x3D;&quot;seen-text subtitle-1 black&quot;&gt;{{message.senderName}}&lt;/p&gt;
+              &lt;p class&#x3D;&quot;seen-text caption gray-2&quot; *ngIf&#x3D;&quot;chatChannel.roles.length &gt; 1&quot;&gt;{{message.senderRole}}&lt;/p&gt;
+            &lt;/ng-container&gt;
+            &lt;ion-item class&#x3D;&quot;general-attachment&quot; (click)&#x3D;&quot;previewFile(message.file)&quot;&gt;
+              &lt;ion-ripple-effect&gt;&lt;/ion-ripple-effect&gt;
+              &lt;ion-icon name&#x3D;&quot;document-outline&quot; slot&#x3D;&quot;start&quot;&gt;&lt;/ion-icon&gt;
+              &lt;ion-label color&#x3D;&quot;primary&quot;&gt;
+                {{ message.file.filename }}
+              &lt;/ion-label&gt;
+              &lt;ion-note *ngIf&#x3D;&quot;getTypeByMime(message.file.mimetype)&quot;&gt;
+                {{ getTypeByMime(message.file.mimetype) }}
+              &lt;/ion-note&gt;
+            &lt;/ion-item&gt;
+          &lt;/div&gt;
+          &lt;/ng-container&gt;
+        &lt;/ng-template&gt;
+
+      &lt;/ion-label&gt;
+    &lt;/ion-item&gt;
+
+    &lt;ng-container *ngIf&#x3D;&quot;whoIsTyping&quot;&gt;
+      &lt;ion-item color&#x3D;&quot;light&quot;&gt;
+        &lt;ion-label class&#x3D;&quot;received-messages no-avatar&quot; color&#x3D;&quot;medium&quot;&gt;
+          &lt;p class&#x3D;&quot;message-typing&quot;&gt;
+            &lt;i&gt;{{ whoIsTyping }}&lt;/i&gt;
+            &lt;ion-spinner name&#x3D;&quot;dots&quot; class&#x3D;&quot;vertical-middle&quot;&gt;&lt;/ion-spinner&gt;
+          &lt;/p&gt;
+        &lt;/ion-label&gt;
+      &lt;/ion-item&gt;
+    &lt;/ng-container&gt;
+
+    &lt;ng-container *ngIf&#x3D;&quot;sendingMessage&quot;&gt;
+      &lt;ion-item color&#x3D;&quot;light&quot;&gt;
+        &lt;div class&#x3D;&quot;message-sending-loading&quot;&gt;
+          &lt;ion-spinner name&#x3D;&quot;bubbles&quot;&gt;&lt;/ion-spinner&gt;
+        &lt;/div&gt;
+      &lt;/ion-item&gt;
+    &lt;/ng-container&gt;
+  &lt;/ion-list&gt;
+&lt;/ion-content&gt;
+&lt;ion-footer *ngIf&#x3D;&quot;!chatChannel.readonly&quot; class&#x3D;&quot;footer&quot; [ngClass]&#x3D;&quot;{&#x27;ion-footer-absolute&#x27;: !utils.isMobile(), &#x27;focus&#x27;: showBottomAttachmentButtons}&quot;&gt;
+  &lt;ion-grid class&#x3D;&quot;white-bg&quot;&gt;
+    &lt;ion-row nowrap class&#x3D;&quot;ion-no-padding&quot;&gt;
+      &lt;ion-col [size]&#x3D;&quot;!utils.isMobile() || showBottomAttachmentButtons ? &#x27;12&#x27; : &#x27;9&#x27;&quot; class&#x3D;&quot;ion-align-self-center&quot;&gt;
+        &lt;ion-textarea
+          placeholder&#x3D;&quot;Enter your message&quot;
+          required&#x3D;&quot;true&quot;
+          name&#x3D;&quot;message&quot;
+          [(ngModel)]&#x3D;&quot;message&quot;
+          (ngModelChange)&#x3D;&quot;typing()&quot;
+          appAutoresize&#x3D;&quot;100&quot;
+          rows&#x3D;&quot;1&quot;
+          (ionFocus)&#x3D;&quot;showBottomAttachmentButtons &#x3D; true;&quot;
+        &gt;&lt;/ion-textarea&gt;
+      &lt;/ion-col&gt;
+      &lt;ng-container *ngIf&#x3D;&quot;utils.isMobile() &amp;&amp; !showBottomAttachmentButtons&quot;&gt;
+        &lt;ng-container *ngTemplateOutlet&#x3D;&quot;attachmentButtons; context: { offset: 0 }&quot;&gt;&lt;/ng-container&gt;
+      &lt;/ng-container&gt;
+    &lt;/ion-row&gt;
+    &lt;ion-row nowrap class&#x3D;&quot;ion-no-padding ion-align-items-end&quot; *ngIf&#x3D;&quot;!utils.isMobile() || showBottomAttachmentButtons&quot;&gt;
+      &lt;ng-container *ngTemplateOutlet&#x3D;&quot;attachmentButtons; context: { offset: 8 }&quot;&gt;&lt;/ng-container&gt;
+      &lt;ion-col class&#x3D;&quot;ion-no-padding ion-text-center&quot;&gt;
+        &lt;ion-button (click)&#x3D;&quot;sendMessage()&quot; type&#x3D;&quot;submit&quot; fill&#x3D;&quot;clear&quot; class&#x3D;&quot;ion-no-padding&quot;&gt;
+          &lt;ion-icon name&#x3D;&quot;send-outline&quot; slot&#x3D;&quot;icon-only&quot;&gt;&lt;/ion-icon&gt;
+        &lt;/ion-button&gt;
+      &lt;/ion-col&gt;
+    &lt;/ion-row&gt;
+  &lt;/ion-grid&gt;
+&lt;/ion-footer&gt;
+
+&lt;ng-template #attachmentButtons let-offset&#x3D;&quot;offset&quot;&gt;
+  &lt;ion-col [offset]&#x3D;&quot;offset&quot; class&#x3D;&quot;ion-no-padding ion-text-center&quot;&gt;
+    &lt;ion-button (click)&#x3D;&quot;attach(&#x27;video&#x27;)&quot; fill&#x3D;&quot;clear&quot; class&#x3D;&quot;ion-no-padding&quot;&gt;
+      &lt;ion-icon name&#x3D;&quot;film-outline&quot; slot&#x3D;&quot;icon-only&quot;&gt;&lt;/ion-icon&gt;
+    &lt;/ion-button&gt;
+  &lt;/ion-col&gt;
+  &lt;ion-col class&#x3D;&quot;ion-no-padding ion-text-center&quot;&gt;
+    &lt;ion-button (click)&#x3D;&quot;attach(&#x27;image&#x27;)&quot; fill&#x3D;&quot;clear&quot; class&#x3D;&quot;ion-no-padding&quot;&gt;
+      &lt;ion-icon name&#x3D;&quot;images-outline&quot; slot&#x3D;&quot;icon-only&quot;&gt;&lt;/ion-icon&gt;
+    &lt;/ion-button&gt;
+  &lt;/ion-col&gt;
+  &lt;ion-col class&#x3D;&quot;ion-no-padding ion-text-center&quot;&gt;
+    &lt;ion-button (click)&#x3D;&quot;attach(&#x27;any&#x27;)&quot; fill&#x3D;&quot;clear&quot; class&#x3D;&quot;ion-no-padding&quot;&gt;
+      &lt;ion-icon name&#x3D;&quot;attach-outline&quot; slot&#x3D;&quot;icon-only&quot;&gt;&lt;/ion-icon&gt;
+    &lt;/ion-button&gt;
+  &lt;/ion-col&gt;
+&lt;/ng-template&gt;
+</code></pre>
+    </div>
+
+    <div class="tab-pane fade " id="c-styleData">
+                <p class="comment">
+                    <code>./chat-room.component.scss</code>
+                </p>
+                <pre class="line-numbers"><code class="language-scss">$message-body-size: 60%;
+
+.not-started-empty-status {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%,-50%);
+  .head-text {
+    margin-bottom: 0px;
+    margin-top: 0px;
+    &amp;.desktop {
+      margin-top: 24px;
+    }
+  }
+  .sub-text {
+    margin-top: 5px;
+  }
+  .image {
+    min-width: 96px;
+    min-height: 96px;
+    max-width: 96px;
+    max-height: 96px;
+    &amp;.desktop {
+      min-width: 120px;
+      min-height: 120px;
+      max-width: 120px;
+      max-height: 120px;
+    }
+  }
+}
+
+.chat-list {
+  background-color: transparent !important;
+  ion-item {
+    ion-avatar {
+      width: 32px;
+      height: 32px;
+      margin: 0 12px 2px 0 !important;
+      margin-left: -8px !important;
+      &amp;.no-time {
+        margin-top: 8% !important;
+      }
+      &amp;.no-time-team {
+        margin-top: -8% !important;
+      }
+    }
+
+    ion-label {
+      .time {
+        width: 100%;
+        text-align: center;
+        margin-bottom: 8px;
+      }
+
+      .message-body {
+        padding: 8px 16px;
+        min-width: 48px;
+        max-width: $message-body-size;
+        border-radius: 25px;
+        width: fit-content;
+
+        &amp;.image {
+          line-height: 0;
+          cursor: pointer;
+
+          img {
+            border-radius: 25px;
+          }
+        }
+
+        // consistent colour to make attachment standout
+        .general-attachment {
+          background: white;
+          --background: white;
+        }
+
+        p {
+          &amp;.seen-text {
+            &amp;:nth-child(1) {
+              padding: 0 !important;
+              font-weight: 500;
+            }
+          }
+        }
+
+        p, .message-text {
+          color: black;
+          margin: 0;
+          text-align: left;
+          user-select: all !important;
+          white-space: pre-wrap !important;
+        }
+
+        &amp;.video-attachment-container {
+          min-width: $message-body-size;
+          min-height: 125px;
+          background: #eaeaea !important;
+          line-height: 0;
+          padding: 0;
+          display:block;
+          position:relative;
+          cursor: pointer;
+          border: 1px #bbbbbb solid;
+
+          #inner-box {
+            border-radius: inherit;
+            min-width: inherit;
+            min-height: inherit;
+            position: absolute;
+            padding: 0;
+
+            p {
+              color: var(--ion-color-primary);
+              margin-top: 1.5em;
+              text-align: center;
+              ion-icon {
+                font-size: 5em !important;
+              }
+            }
+          }
+
+          .video {
+            padding: inherit;
+            min-width: 100%;
+            max-width: inherit;
+            min-height: 100%;
+            max-height: inherit;
+            border-radius: inherit;
+          }
+
+          .label {
+            margin-left: 0.8em;
+            text-shadow: 1px 1px white;
+          }
+
+          &amp;:hover {
+            background: #bbbbbb !important;
+            opacity: 0.9;
+            transition: 0.5s opacity, 0.5s background;
+          }
+        }
+      }
+
+      .seen-text {
+        padding-bottom: 8px;
+      }
+
+      &amp;.received-messages {
+        text-align: left;
+
+        .message-body {
+          background-color: white;
+        }
+
+        .time {
+          margin-left: -14% !important;
+          width: -webkit-fill-available !important;
+        }
+
+        &amp;.no-avatar {
+          margin-left: 12%;
+        }
+      }
+
+      &amp;.send-messages {
+        text-align: right;
+        margin-right: 0;
+
+        .message-body {
+          background-color: var(--ion-color-primary);
+
+          // consistent colour to make attachment standout
+          .general-attachment {
+            background: transparent;
+            --background: transparent;
+            ion-icon, ion-note, ion-label {
+              color: white !important;
+            }
+          }
+
+          // margin-left: calc(100% - 150px) !important;
+          float: right;
+
+          .message-text {
+            color: white !important;
+          }
+        }
+      }
+    }
+  }
+
+  &amp;.desktop-view {
+    ion-item {
+      ion-avatar {
+        margin-left: 0 !important;
+        margin-top: 3% !important;
+        &amp;.no-time {
+          margin-top: 0 !important;
+        }
+        &amp;.no-time-team {
+          margin-top: -3% !important;
+        }
+        &amp;.with-time-team {
+          margin-top: 0 !important;
+        }
+      }
+      ion-label {
+        .time {
+          margin-left: 2.5% !important;
+        }
+        &amp;.received-messages {
+          .time {
+            margin-left: 0 !important;
+          }
+          &amp;.no-avatar {
+            margin-left: 44px !important;
+          }
+        }
+      }
+    }
+  }
+}
+
+.message-sending-loading {
+  width: 100% !important;
+  text-align: right !important;
+}
+
+.message-typing {
+  width: 100% !important;
+  text-align: left !important;
+}
+.ion-content-absolute-with-footer {
+  height: calc(100% - 155px);
+}
+
+.footer {
+  min-height: 48px;
+  padding: 0;
+
+  &amp;.ion-footer-absolute {
+    height: 96px;
+    ion-grid {
+      padding: 0;
+      min-height: 96px;
+    }
+  }
+
+  &amp;.focus {
+    min-height: 96px;
+    ion-grid {
+      padding: 0;
+      min-height: 96px;
+    }
+  }
+
+  ion-grid {
+    background-color: white;
+    min-height: 48px;
+    ion-row {
+      min-height: 48px;
+      ion-col {
+        min-height: 48px;
+        ion-button {
+          padding-top: 6px;
+          min-height: 24px;
+          max-height: 100px;
+          height: auto;
+          ion-icon {
+            font-size: 24px;
+          }
+        }
+        ion-textarea {
+          --padding-top: 0;
+          --padding-end: 0;
+          --padding-bottom: 0;
+          --padding-start: 0;
+          margin-top: 8px;
+        }
+      }
+    }
+  }
+}
+</code></pre>
+    </div>
+
+    <div class="tab-pane fade " id="c-tree">
+        <div id="tree-container"></div>
+        <div class="tree-legend">
+            <div class="title">
+                <b>Legend</b>
+            </div>
+            <div>
+                <div class="color htmlelement"></div><span>Html element</span>
+            </div>
+            <div>
+                <div class="color component"></div><span>Component</span>
+            </div>
+            <div>
+                <div class="color directive"></div><span>Html element with directive</span>
+            </div>
+        </div>
+    </div>
+
+    
+</div>
+
+<script src="../js/libs/vis.min.js"></script>
+<script src="../js/libs/htmlparser.js"></script>
+<script src="../js/libs/deep-iterator.js"></script>
+<script>
+        var COMPONENT_TEMPLATE = '<div><ion-header mode="ios">  <ion-toolbar [ngClass]="{\'ion-toolbar-absolute\': !utils.isMobile()}">    <ion-icon *ngIf="utils.isMobile()" name="arrow-back" (click)="back()" color="primary" slot="start" margin-start></ion-icon>    <ion-title class="ion-text-center" [ngClass]="{      \'subtitle-2\': !utils.isMobile()    }">{{ chatChannel.channelName }}</ion-title>  </ion-toolbar></ion-header><ion-content [ngClass]="{\'ion-content-absolute-with-footer\': !utils.isMobile()}" color="light" [scrollEvents]="true" (ionScroll)="loadMoreMessages($event)">  <div *ngIf="loadingChatMessages" class="ion-text-center">    <ion-spinner></ion-spinner>  </div>  <div *ngIf="!messageList.length && !loadingChatMessages" class="ion-text-center not-started-empty-status">    <img class="image" [ngClass]="{\'desktop\': !utils.isMobile()}" src="/assets/icon-epmty-chat.svg">    <p class="head-text headline-5 gray-3">Type your first message!</p>    <p class="sub-text subtitle-1 gray-1">It\'s time to start a chat</p>  </div>  <ion-list lines="none" color="light" class="chat-list" [ngClass]="{\'desktop-view\': !utils.isMobile()}">    <ion-item *ngFor="let message of messageList" color="light">      <ng-container *ngIf="isLastMessage(message)">        <ion-avatar [ngClass]="getAvatarClass(message)" slot="start">          <img [src]="message.senderAvatar">        </ion-avatar>      </ng-container>      <ion-label [ngClass]="getClassForMessageBubble(message)" text-wrap>        <div *ngIf="checkToShowMessageTime(message)" class="time caption gray-2">          <p>{{ getMessageDate(message.sentTime) }}</p>        </div>        <ng-container *ngIf="!message.file; else attachment">          <div class="message-body">            <ng-container *ngIf="!message.isSender">              <p class="seen-text subtitle-1 black">{{message.senderName}}</p>              <p class="seen-text caption gray-2" *ngIf="chatChannel.roles.length > 1">{{message.senderRole}}</p>            </ng-container>            <p class="message-text subtitle-1" [innerHTML]="message.message"></p>          </div>        </ng-container>        <ng-template #attachment>          <ng-container *ngIf="message.file && message.file.mimetype && message.file.mimetype.includes(\'video\')">            <div class="message-body video-attachment-container">              <ng-container *ngIf="!message.isSender">                <p class="seen-text subtitle-1 black">{{message.senderName}}</p>                <p class="seen-text caption gray-2" *ngIf="chatChannel.roles.length > 1">{{message.senderRole}}</p>              </ng-container>              <div id="inner-box" (click)="preview(message.file)">                <p><ion-icon name="play-circle"></ion-icon></p>              </div>              <div class="label">                <p>                  <ion-label color="primary">                    {{ message.file.filename }}                  </ion-label>                </p>              </div>            </div>          </ng-container>          <ng-container *ngIf="message.file && message.file.mimetype && message.file.mimetype.includes(\'image\')">            <div class="message-body image" (click)="preview(message.file)">              <ng-container *ngIf="!message.isSender">                <p class="seen-text subtitle-1 black">{{message.senderName}}</p>                <p class="seen-text caption gray-2" *ngIf="chatChannel.roles.length > 1">{{message.senderRole}}</p>              </ng-container>              <div [innerHTML]="message.preview"></div>            </div>          </ng-container>          <ng-container *ngIf="(message.file && !message.file.mimetype) || (message.file && (            !message.file.mimetype.includes(\'image\') && !message.file.mimetype.includes(\'video\')))">          <div class="message-body">            <ng-container *ngIf="!message.isSender">              <p class="seen-text subtitle-1 black">{{message.senderName}}</p>              <p class="seen-text caption gray-2" *ngIf="chatChannel.roles.length > 1">{{message.senderRole}}</p>            </ng-container>            <ion-item class="general-attachment" (click)="previewFile(message.file)">              <ion-ripple-effect></ion-ripple-effect>              <ion-icon name="document-outline" slot="start"></ion-icon>              <ion-label color="primary">                {{ message.file.filename }}              </ion-label>              <ion-note *ngIf="getTypeByMime(message.file.mimetype)">                {{ getTypeByMime(message.file.mimetype) }}              </ion-note>            </ion-item>          </div>          </ng-container>        </ng-template>      </ion-label>    </ion-item>    <ng-container *ngIf="whoIsTyping">      <ion-item color="light">        <ion-label class="received-messages no-avatar" color="medium">          <p class="message-typing">            <i>{{ whoIsTyping }}</i>            <ion-spinner name="dots" class="vertical-middle"></ion-spinner>          </p>        </ion-label>      </ion-item>    </ng-container>    <ng-container *ngIf="sendingMessage">      <ion-item color="light">        <div class="message-sending-loading">          <ion-spinner name="bubbles"></ion-spinner>        </div>      </ion-item>    </ng-container>  </ion-list></ion-content><ion-footer *ngIf="!chatChannel.readonly" class="footer" [ngClass]="{\'ion-footer-absolute\': !utils.isMobile(), \'focus\': showBottomAttachmentButtons}">  <ion-grid class="white-bg">    <ion-row nowrap class="ion-no-padding">      <ion-col [size]="!utils.isMobile() || showBottomAttachmentButtons ? \'12\' : \'9\'" class="ion-align-self-center">        <ion-textarea          placeholder="Enter your message"          required="true"          name="message"          [(ngModel)]="message"          (ngModelChange)="typing()"          appAutoresize="100"          rows="1"          (ionFocus)="showBottomAttachmentButtons = true;"        ></ion-textarea>      </ion-col>      <ng-container *ngIf="utils.isMobile() && !showBottomAttachmentButtons">        <ng-container *ngTemplateOutlet="attachmentButtons; context: { offset: 0 }"></ng-container>      </ng-container>    </ion-row>    <ion-row nowrap class="ion-no-padding ion-align-items-end" *ngIf="!utils.isMobile() || showBottomAttachmentButtons">      <ng-container *ngTemplateOutlet="attachmentButtons; context: { offset: 8 }"></ng-container>      <ion-col class="ion-no-padding ion-text-center">        <ion-button (click)="sendMessage()" type="submit" fill="clear" class="ion-no-padding">          <ion-icon name="send-outline" slot="icon-only"></ion-icon>        </ion-button>      </ion-col>    </ion-row>  </ion-grid></ion-footer><ng-template #attachmentButtons let-offset="offset">  <ion-col [offset]="offset" class="ion-no-padding ion-text-center">    <ion-button (click)="attach(\'video\')" fill="clear" class="ion-no-padding">      <ion-icon name="film-outline" slot="icon-only"></ion-icon>    </ion-button>  </ion-col>  <ion-col class="ion-no-padding ion-text-center">    <ion-button (click)="attach(\'image\')" fill="clear" class="ion-no-padding">      <ion-icon name="images-outline" slot="icon-only"></ion-icon>    </ion-button>  </ion-col>  <ion-col class="ion-no-padding ion-text-center">    <ion-button (click)="attach(\'any\')" fill="clear" class="ion-no-padding">      <ion-icon name="attach-outline" slot="icon-only"></ion-icon>    </ion-button>  </ion-col></ng-template></div>'
+    var COMPONENTS = [{'name': 'AchievementBadgeComponent', 'selector': 'achievement-badge'},{'name': 'AchievementPopUpComponent', 'selector': 'app-achievement-pop-up'},{'name': 'AchievementsComponent', 'selector': 'app-achievements'},{'name': 'ActivityCardComponent', 'selector': 'app-activity-card'},{'name': 'ActivityCompletePopUpComponent', 'selector': 'app-activity-complete-pop-up'},{'name': 'ActivityComponent', 'selector': 'app-activity'},{'name': 'ActivityRoutingComponent', 'selector': ''},{'name': 'AppComponent', 'selector': 'app-root'},{'name': 'AssessmentComponent', 'selector': 'app-assessment'},{'name': 'AuthComponent', 'selector': 'app-auth'},{'name': 'AuthDirectLoginComponent', 'selector': 'app-auth-direct-login'},{'name': 'AuthForgotPasswordComponent', 'selector': 'app-auth-forgot-password'},{'name': 'AuthLoginComponent', 'selector': 'app-auth-login'},{'name': 'AuthLogoutComponent', 'selector': 'app-auth-logout'},{'name': 'AuthRegistrationComponent', 'selector': 'app-auth-registration'},{'name': 'AuthResetPasswordComponent', 'selector': 'app-auth-reset-password'},{'name': 'BrandingLogoComponent', 'selector': 'app-branding-logo'},{'name': 'ChatComponent', 'selector': ''},{'name': 'ChatListComponent', 'selector': 'app-chat-list'},{'name': 'ChatPreviewComponent', 'selector': 'chat-preview'},{'name': 'ChatRoomComponent', 'selector': 'app-chat-room'},{'name': 'ChatViewComponent', 'selector': 'app-chat-view'},{'name': 'CircleProgressComponent', 'selector': 'app-circle-progress'},{'name': 'ClickableItemComponent', 'selector': 'clickable-item'},{'name': 'ContactNumberFormComponent', 'selector': 'app-contact-number-form'},{'name': 'DescriptionComponent', 'selector': 'app-description'},{'name': 'DeviceInfoComponent', 'selector': ''},{'name': 'EventDetailComponent', 'selector': 'app-event-detail'},{'name': 'EventListComponent', 'selector': 'app-event-list'},{'name': 'EventsComponent', 'selector': 'app-events'},{'name': 'EventsRoutingComponent', 'selector': ''},{'name': 'FastFeedbackComponent', 'selector': 'app-fast-feedback'},{'name': 'FileComponent', 'selector': 'app-file'},{'name': 'FileDisplayComponent', 'selector': 'app-file-display'},{'name': 'FilestackComponent', 'selector': 'file-stack'},{'name': 'GoMobileComponent', 'selector': 'go-mobile'},{'name': 'HomeComponent', 'selector': 'app-home'},{'name': 'IconComponent', 'selector': 'icon-custom'},{'name': 'ImgComponent', 'selector': 'app-img'},{'name': 'ListItemComponent', 'selector': 'app-list-item'},{'name': 'LockTeamAssessmentPopUpComponent', 'selector': 'app-lock-team-assessment-pop-up'},{'name': 'MultipleComponent', 'selector': 'app-multiple'},{'name': 'OneofComponent', 'selector': 'app-oneof'},{'name': 'OverviewComponent', 'selector': 'app-overview'},{'name': 'PageNotFoundComponent', 'selector': 'app-page-not-found'},{'name': 'PopUpComponent', 'selector': 'app-pop-up'},{'name': 'PreviewComponent', 'selector': 'app-preview'},{'name': 'ProjectComponent', 'selector': 'app-project'},{'name': 'QuestionComponent', 'selector': 'question'},{'name': 'QuestionsComponent', 'selector': 'app-questions'},{'name': 'ReviewListComponent', 'selector': 'app-review-list'},{'name': 'ReviewRatingComponent', 'selector': 'app-review-rating'},{'name': 'ReviewsComponent', 'selector': 'app-reviews'},{'name': 'ReviewsRoutingComponent', 'selector': ''},{'name': 'SettingsComponent', 'selector': 'app-settings'},{'name': 'SettingsRoutingComponent', 'selector': ''},{'name': 'SlidableComponent', 'selector': 'app-slidable'},{'name': 'SwitcherComponent', 'selector': 'app-switcher'},{'name': 'SwitcherProgramComponent', 'selector': 'app-switcher-program'},{'name': 'TabsComponent', 'selector': 'app-tabs'},{'name': 'TasksComponent', 'selector': 'app-tasks'},{'name': 'TasksRoutingComponent', 'selector': ''},{'name': 'TeamMemberSelectorComponent', 'selector': 'app-team-member-selector'},{'name': 'TermsConditionsPreviewComponent', 'selector': 'app-terms-conditions-preview'},{'name': 'TextComponent', 'selector': 'app-text'},{'name': 'TodoCardComponent', 'selector': 'app-todo-card'},{'name': 'TopicComponent', 'selector': 'app-topic'},{'name': 'UnlockingComponent', 'selector': 'unlocking'}];
+    var DIRECTIVES = [{'name': 'AutoresizeDirective', 'selector': '[appAutoresize]'},{'name': 'DragAndDropDirective', 'selector': '[appDragAndDrop]'},{'name': 'FloatDirective', 'selector': '[appFloat]'}];
+    var ACTUAL_COMPONENT = {'name': 'ChatRoomComponent'};
+</script>
+<script src="../js/tree.js"></script>
+
+
+
+
+
+
+
+
+
+
+                   
+
+
+
+
+                   </div><div class="search-results">
+    <div class="has-results">
+        <h1 class="search-results-title"><span class='search-results-count'></span> result-matching "<span class='search-query'></span>"</h1>
+        <ul class="search-results-list"></ul>
+    </div>
+    <div class="no-results">
+        <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+    </div>
+</div>
+</div>
+               <!-- END CONTENT -->
+           </div>
+       </div>
+
+       <script>
+            var COMPODOC_CURRENT_PAGE_DEPTH = 1;
+            var COMPODOC_CURRENT_PAGE_CONTEXT = 'component';
+            var COMPODOC_CURRENT_PAGE_URL = 'ChatRoomComponent.html';
+            var MAX_SEARCH_RESULTS = 15;
+       </script>
+
+       <script src="../js/libs/custom-elements.min.js"></script>
+       <script src="../js/libs/lit-html.js"></script>
+       <!-- Required to polyfill modern browsers as code is ES5 for IE... -->
+       <script src="../js/libs/custom-elements-es5-adapter.js" charset="utf-8" defer></script>
+       <script src="../js/menu-wc.js" defer></script>
+
+       <script src="../js/libs/bootstrap-native.js"></script>
+
+       <script src="../js/libs/es6-shim.min.js"></script>
+       <script src="../js/libs/EventDispatcher.js"></script>
+       <script src="../js/libs/promise.min.js"></script>
+       <script src="../js/libs/zepto.min.js"></script>
+
+       <script src="../js/compodoc.js"></script>
+
+       <script src="../js/tabs.js"></script>
+       <script src="../js/menu.js"></script>
+       <script src="../js/libs/clipboard.min.js"></script>
+       <script src="../js/libs/prism.js"></script>
+       <script src="../js/sourceCode.js"></script>
+          <script src="../js/search/search.js"></script>
+          <script src="../js/search/lunr.min.js"></script>
+          <script src="../js/search/search-lunr.js"></script>
+          <script src="../js/search/search_index.js"></script>
+       <script src="../js/lazy-load-graphs.js"></script>
+
+
+    </body>
+</html>

@@ -1,0 +1,2162 @@
+<!doctype html>
+<html class="no-js" lang="">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title>practera-app-v2 documentation</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+	      <link rel="stylesheet" href="../styles/style.css">
+    </head>
+    <body>
+
+        <div class="navbar navbar-default navbar-fixed-top visible-xs">
+            <a href="../" class="navbar-brand">practera-app-v2 documentation</a>
+            <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
+        </div>
+
+        <div class="xs-menu menu" id="mobile-menu">
+                <div id="book-search-input" role="search"><input type="text" placeholder="Type to search"></div>            <compodoc-menu></compodoc-menu>
+        </div>
+
+        <div class="container-fluid main">
+           <div class="row main">
+               <div class="hidden-xs menu">
+                   <compodoc-menu mode="normal"></compodoc-menu>
+               </div>
+               <!-- START CONTENT -->
+               <div class="content component">
+                   <div class="content-data">
+
+
+
+
+<ol class="breadcrumb">
+  <li>Components</li>
+  <li>ActivityComponent</li>
+</ol>
+
+<ul class="nav nav-tabs" role="tablist">
+        <li class="active">
+            <a href="#info" role="tab" id="info-tab" data-toggle="tab" data-link="info">Info</a>
+        </li>
+        <li >
+            <a href="#source" role="tab" id="source-tab" data-toggle="tab" data-link="source">Source</a>
+        </li>
+        <li >
+            <a href="#templateData" role="tab" id="templateData-tab" data-toggle="tab" data-link="template">Template</a>
+        </li>
+        <li >
+            <a href="#styleData" role="tab" id="styleData-tab" data-toggle="tab" data-link="style">Styles</a>
+        </li>
+        <li >
+            <a href="#tree" role="tab" id="tree-tab" data-toggle="tab" data-link="dom-tree">DOM Tree</a>
+        </li>
+</ul>
+
+<div class="tab-content">
+    <div class="tab-pane fade active in" id="c-info"><p class="comment">
+    <h3>File</h3>
+</p>
+<p class="comment">
+    <code>src/app/activity/activity.component.ts</code>
+</p>
+
+
+
+
+
+<section>
+    <h3>Metadata</h3>
+    <table class="table table-sm table-hover">
+        <tbody>
+
+
+
+
+
+
+
+
+
+
+
+            <tr>
+                <td class="col-md-3">selector</td>
+                <td class="col-md-9"><code>app-activity</code></td>
+            </tr>
+
+            <tr>
+                <td class="col-md-3">styleUrls</td>
+                <td class="col-md-9"><code>./activity.component.scss</code></td>
+            </tr>
+
+
+
+            <tr>
+                <td class="col-md-3">templateUrl</td>
+                <td class="col-md-9"><code>./activity.component.html</code></td>
+            </tr>
+
+
+
+
+
+
+
+
+        </tbody>
+    </table>
+</section>
+
+    <section>
+    <h3 id="index">Index</h3>
+    <table class="table table-sm table-bordered index-table">
+        <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Properties</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                <a href="#activity">activity</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#eventListService">eventListService</a>
+                            </li>
+                            <li>
+                                <a href="#events">events</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#fastFeedbackService">fastFeedbackService</a>
+                            </li>
+                            <li>
+                                <a href="#getActivity">getActivity</a>
+                            </li>
+                            <li>
+                                <a href="#getEventPusher">getEventPusher</a>
+                            </li>
+                            <li>
+                                <a href="#getEvents">getEvents</a>
+                            </li>
+                            <li>
+                                <a href="#loadingActivity">loadingActivity</a>
+                            </li>
+                            <li>
+                                <a href="#loadingEvents">loadingEvents</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#router">router</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#sharedService">sharedService</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#storage">storage</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#utils">utils</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Methods</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#_getActivity">_getActivity</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#_getEvents">_getEvents</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#_navigate">_navigate</a>
+                            </li>
+                            <li>
+                                <a href="#assessmentNotSubmitted">assessmentNotSubmitted</a>
+                            </li>
+                            <li>
+                                <a href="#back">back</a>
+                            </li>
+                            <li>
+                                <a href="#changeTaskStatus">changeTaskStatus</a>
+                            </li>
+                            <li>
+                                <a href="#goto">goto</a>
+                            </li>
+                            <li>
+                                <a href="#gotoEvent">gotoEvent</a>
+                            </li>
+                            <li>
+                                <a href="#onEnter">onEnter</a>
+                            </li>
+                            <li>
+                                <a href="#taskEndingIcon">taskEndingIcon</a>
+                            </li>
+                            <li>
+                                <a href="#taskLeadingIcon">taskLeadingIcon</a>
+                            </li>
+                            <li>
+                                <a href="#taskSubtitle2">taskSubtitle2</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Inputs</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                <a href="#currentTask">currentTask</a>
+                            </li>
+                            <li>
+                                <a href="#id">id</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Outputs</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                <a href="#navigate">navigate</a>
+                            </li>
+                            <li>
+                                <a href="#tasksReady">tasksReady</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+
+
+        </tbody>
+    </table>
+</section>
+
+    <section>
+    <h3 id="constructor">Constructor</h3>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+<code>constructor(router: <a href="https://angular.io/api/router/Router" target="_blank">Router</a>, activityService: <a href="../injectables/ActivityService.html">ActivityService</a>, utils: <a href="../injectables/UtilsService.html">UtilsService</a>, notificationService: <a href="../injectables/NotificationService.html">NotificationService</a>, storage: <a href="../injectables/BrowserStorageService.html">BrowserStorageService</a>, eventListService: <a href="../injectables/EventListService.html">EventListService</a>, sharedService: <a href="../injectables/SharedService.html">SharedService</a>, fastFeedbackService: <a href="../injectables/FastFeedbackService.html">FastFeedbackService</a>, newRelic: <a href="../injectables/NewRelicService.html">NewRelicService</a>, ngZone: <a href="https://angular.io/api/core/NgZone" target="_blank">NgZone</a>, apollo: Apollo)</code>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="38" class="link-to-prism">src/app/activity/activity.component.ts:38</a></div>
+                            </td>
+                        </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                            <div>
+                                    <b>Parameters :</b>
+                                    <table class="params">
+                                        <thead>
+                                            <tr>
+                                                <td>Name</td>
+                                                    <td>Type</td>
+                                                <td>Optional</td>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                                <tr>
+                                                        <td>router</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="https://angular.io/api/router/Router" target="_blank" >Router</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>activityService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/ActivityService.html" target="_self" >ActivityService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>utils</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/UtilsService.html" target="_self" >UtilsService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>notificationService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/NotificationService.html" target="_self" >NotificationService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>storage</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/BrowserStorageService.html" target="_self" >BrowserStorageService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>eventListService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/EventListService.html" target="_self" >EventListService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>sharedService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/SharedService.html" target="_self" >SharedService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>fastFeedbackService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/FastFeedbackService.html" target="_self" >FastFeedbackService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>newRelic</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/NewRelicService.html" target="_self" >NewRelicService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>ngZone</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="https://angular.io/api/core/NgZone" target="_blank" >NgZone</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>apollo</td>
+                                                  
+                                                        <td>
+                                                                    <code>Apollo</code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                        </tbody>
+                                    </table>
+                            </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+</section>
+
+    <section>
+    <h3 id="inputs">Inputs</h3>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="currentTask"></a>
+                        <b>currentTask</b>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-2" colspan="2">
+                                    <div class="io-line">Defined in <a href="" data-line="23" class="link-to-prism">src/app/activity/activity.component.ts:23</a></div>
+                            </td>
+                        </tr>
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="id"></a>
+                        <b>id</b>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-2" colspan="2">
+                                    <div class="io-line">Defined in <a href="" data-line="22" class="link-to-prism">src/app/activity/activity.component.ts:22</a></div>
+                            </td>
+                        </tr>
+            </tbody>
+        </table>
+</section>
+    <section>
+    <h3 id="outputs">Outputs</h3>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="navigate"></a>
+                        <b>navigate</b>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../interfaces/Event.html" target="_self" >EventEmitter</a></code>
+
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-2" colspan="2">
+                                    <div class="io-line">Defined in <a href="" data-line="24" class="link-to-prism">src/app/activity/activity.component.ts:24</a></div>
+                            </td>
+                        </tr>
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="tasksReady"></a>
+                        <b>tasksReady</b>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../interfaces/Event.html" target="_self" >EventEmitter</a></code>
+
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-2" colspan="2">
+                                    <div class="io-line">Defined in <a href="" data-line="26" class="link-to-prism">src/app/activity/activity.component.ts:26</a></div>
+                            </td>
+                        </tr>
+            </tbody>
+        </table>
+</section>
+
+
+    <section>
+    
+    <h3 id="methods">
+        Methods
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="_getActivity"></a>
+                    <span class="name">
+                        <b>
+                            <span class="modifier">Private</span>
+                            _getActivity
+                        </b>
+                        <a href="#_getActivity"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>_getActivity()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="110"
+                            class="link-to-prism">src/app/activity/activity.component.ts:110</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="_getEvents"></a>
+                    <span class="name">
+                        <b>
+                            <span class="modifier">Private</span>
+                            _getEvents
+                        </b>
+                        <a href="#_getEvents"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>_getEvents(events?: <a href="../interfaces/Event.html">Event[]</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="129"
+                            class="link-to-prism">src/app/activity/activity.component.ts:129</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>events</td>
+                                    <td>
+                                                <code><a href="../interfaces/Event.html" target="_self" >Event[]</a></code>
+                                    </td>
+
+                                    <td>
+                                        Yes
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="_navigate"></a>
+                    <span class="name">
+                        <b>
+                            <span class="modifier">Private</span>
+                            _navigate
+                        </b>
+                        <a href="#_navigate"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>_navigate(direction)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="66"
+                            class="link-to-prism">src/app/activity/activity.component.ts:66</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>direction</td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="assessmentNotSubmitted"></a>
+                    <span class="name">
+                        <b>
+                            assessmentNotSubmitted
+                        </b>
+                        <a href="#assessmentNotSubmitted"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>assessmentNotSubmitted(task)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="246"
+                            class="link-to-prism">src/app/activity/activity.component.ts:246</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>task</td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="back"></a>
+                    <span class="name">
+                        <b>
+                            back
+                        </b>
+                        <a href="#back"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>back()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="145"
+                            class="link-to-prism">src/app/activity/activity.component.ts:145</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="changeTaskStatus"></a>
+                    <span class="name">
+                        <b>
+                            changeTaskStatus
+                        </b>
+                        <a href="#changeTaskStatus"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>changeTaskStatus(type: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, id: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>, status: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="204"
+                            class="link-to-prism">src/app/activity/activity.component.ts:204</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-description"><p>Manually change the status of a task</p>
+</div>
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                    <td>Description</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>type</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                    <td>
+                                        <p>The type of the task(&#39;Assessment&#39;, &#39;Topic&#39;)</p>
+
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>id</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                    <td>
+                                        <p>The id of the task</p>
+
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>status</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                    <td>
+                                        <p>The status</p>
+
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="goto"></a>
+                    <span class="name">
+                        <b>
+                            goto
+                        </b>
+                        <a href="#goto"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>goto(task)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="150"
+                            class="link-to-prism">src/app/activity/activity.component.ts:150</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>task</td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="gotoEvent"></a>
+                    <span class="name">
+                        <b>
+                            gotoEvent
+                        </b>
+                        <a href="#gotoEvent"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>gotoEvent(event?)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="185"
+                            class="link-to-prism">src/app/activity/activity.component.ts:185</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>event</td>
+
+                                    <td>
+                                        Yes
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="onEnter"></a>
+                    <span class="name">
+                        <b>
+                            onEnter
+                        </b>
+                        <a href="#onEnter"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>onEnter()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="96"
+                            class="link-to-prism">src/app/activity/activity.component.ts:96</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="taskEndingIcon"></a>
+                    <span class="name">
+                        <b>
+                            taskEndingIcon
+                        </b>
+                        <a href="#taskEndingIcon"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>taskEndingIcon(task)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="259"
+                            class="link-to-prism">src/app/activity/activity.component.ts:259</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>task</td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>    <code>&quot;lock-closed-outline&quot; | &quot;checkmark&quot; | &quot;hourglass-outline&quot; | &quot;arrow-forward&quot;</code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="taskLeadingIcon"></a>
+                    <span class="name">
+                        <b>
+                            taskLeadingIcon
+                        </b>
+                        <a href="#taskLeadingIcon"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>taskLeadingIcon(task)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="235"
+                            class="link-to-prism">src/app/activity/activity.component.ts:235</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-description"><hr>
+<p>Used for task layout</p>
+<hr>
+</div>
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>task</td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>    <code>&quot;lock-closed-outline&quot; | &quot;reader-outline&quot; | &quot;clipboard-outline&quot;</code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="taskSubtitle2"></a>
+                    <span class="name">
+                        <b>
+                            taskSubtitle2
+                        </b>
+                        <a href="#taskSubtitle2"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>taskSubtitle2(task)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="250"
+                            class="link-to-prism">src/app/activity/activity.component.ts:250</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>task</td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>
+    <section>
+    
+        <h3 id="inputs">
+            Properties
+        </h3>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="activity"></a>
+                        <span class="name">
+                            <b>
+                            activity</b>
+                            <a href="#activity"><span class="icon ion-ios-link"></span></a>
+                        </span>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <i>Type : </i>        <code><a href="../interfaces/Activity.html" target="_self" >Activity</a></code>
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <i>Default value : </i><code>{
+    id: 0,
+    name: &#x27;&#x27;,
+    description: &#x27;&#x27;,
+    tasks: []
+  }</code>
+                        </td>
+                    </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                    <div class="io-line">Defined in <a href="" data-line="30" class="link-to-prism">src/app/activity/activity.component.ts:30</a></div>
+                            </td>
+                        </tr>
+
+
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="eventListService"></a>
+                        <span class="name">
+                            <b>
+                                <span class="modifier">Public</span>
+                            eventListService</b>
+                            <a href="#eventListService"><span class="icon ion-ios-link"></span></a>
+                        </span>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <i>Type : </i>        <code><a href="../injectables/EventListService.html" target="_self" >EventListService</a></code>
+
+                        </td>
+                    </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                    <div class="io-line">Defined in <a href="" data-line="46" class="link-to-prism">src/app/activity/activity.component.ts:46</a></div>
+                            </td>
+                        </tr>
+
+
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="events"></a>
+                        <span class="name">
+                            <b>
+                            events</b>
+                            <a href="#events"><span class="icon ion-ios-link"></span></a>
+                        </span>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <i>Type : </i>        <code><a href="../interfaces/Event.html" target="_self" >Array&lt;Event&gt;</a></code>
+
+                        </td>
+                    </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                    <div class="io-line">Defined in <a href="" data-line="37" class="link-to-prism">src/app/activity/activity.component.ts:37</a></div>
+                            </td>
+                        </tr>
+
+
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="fastFeedbackService"></a>
+                        <span class="name">
+                            <b>
+                                <span class="modifier">Public</span>
+                            fastFeedbackService</b>
+                            <a href="#fastFeedbackService"><span class="icon ion-ios-link"></span></a>
+                        </span>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <i>Type : </i>        <code><a href="../injectables/FastFeedbackService.html" target="_self" >FastFeedbackService</a></code>
+
+                        </td>
+                    </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                    <div class="io-line">Defined in <a href="" data-line="48" class="link-to-prism">src/app/activity/activity.component.ts:48</a></div>
+                            </td>
+                        </tr>
+
+
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="getActivity"></a>
+                        <span class="name">
+                            <b>
+                            getActivity</b>
+                            <a href="#getActivity"><span class="icon ion-ios-link"></span></a>
+                        </span>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <i>Type : </i>    <code>Subscription</code>
+
+                        </td>
+                    </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                    <div class="io-line">Defined in <a href="" data-line="27" class="link-to-prism">src/app/activity/activity.component.ts:27</a></div>
+                            </td>
+                        </tr>
+
+
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="getEventPusher"></a>
+                        <span class="name">
+                            <b>
+                            getEventPusher</b>
+                            <a href="#getEventPusher"><span class="icon ion-ios-link"></span></a>
+                        </span>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <i>Type : </i>    <code>Subscription</code>
+
+                        </td>
+                    </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                    <div class="io-line">Defined in <a href="" data-line="28" class="link-to-prism">src/app/activity/activity.component.ts:28</a></div>
+                            </td>
+                        </tr>
+
+
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="getEvents"></a>
+                        <span class="name">
+                            <b>
+                            getEvents</b>
+                            <a href="#getEvents"><span class="icon ion-ios-link"></span></a>
+                        </span>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <i>Type : </i>    <code>Subscription</code>
+
+                        </td>
+                    </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                    <div class="io-line">Defined in <a href="" data-line="29" class="link-to-prism">src/app/activity/activity.component.ts:29</a></div>
+                            </td>
+                        </tr>
+
+
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="loadingActivity"></a>
+                        <span class="name">
+                            <b>
+                            loadingActivity</b>
+                            <a href="#loadingActivity"><span class="icon ion-ios-link"></span></a>
+                        </span>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <i>Default value : </i><code>true</code>
+                        </td>
+                    </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                    <div class="io-line">Defined in <a href="" data-line="36" class="link-to-prism">src/app/activity/activity.component.ts:36</a></div>
+                            </td>
+                        </tr>
+
+
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="loadingEvents"></a>
+                        <span class="name">
+                            <b>
+                            loadingEvents</b>
+                            <a href="#loadingEvents"><span class="icon ion-ios-link"></span></a>
+                        </span>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <i>Default value : </i><code>true</code>
+                        </td>
+                    </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                    <div class="io-line">Defined in <a href="" data-line="38" class="link-to-prism">src/app/activity/activity.component.ts:38</a></div>
+                            </td>
+                        </tr>
+
+
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="router"></a>
+                        <span class="name">
+                            <b>
+                                <span class="modifier">Public</span>
+                            router</b>
+                            <a href="#router"><span class="icon ion-ios-link"></span></a>
+                        </span>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <i>Type : </i>        <code><a href="https://angular.io/api/router/Router" target="_blank" >Router</a></code>
+
+                        </td>
+                    </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                    <div class="io-line">Defined in <a href="" data-line="41" class="link-to-prism">src/app/activity/activity.component.ts:41</a></div>
+                            </td>
+                        </tr>
+
+
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="sharedService"></a>
+                        <span class="name">
+                            <b>
+                                <span class="modifier">Public</span>
+                            sharedService</b>
+                            <a href="#sharedService"><span class="icon ion-ios-link"></span></a>
+                        </span>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <i>Type : </i>        <code><a href="../injectables/SharedService.html" target="_self" >SharedService</a></code>
+
+                        </td>
+                    </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                    <div class="io-line">Defined in <a href="" data-line="47" class="link-to-prism">src/app/activity/activity.component.ts:47</a></div>
+                            </td>
+                        </tr>
+
+
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="storage"></a>
+                        <span class="name">
+                            <b>
+                                <span class="modifier">Public</span>
+                            storage</b>
+                            <a href="#storage"><span class="icon ion-ios-link"></span></a>
+                        </span>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <i>Type : </i>        <code><a href="../injectables/BrowserStorageService.html" target="_self" >BrowserStorageService</a></code>
+
+                        </td>
+                    </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                    <div class="io-line">Defined in <a href="" data-line="45" class="link-to-prism">src/app/activity/activity.component.ts:45</a></div>
+                            </td>
+                        </tr>
+
+
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="utils"></a>
+                        <span class="name">
+                            <b>
+                                <span class="modifier">Public</span>
+                            utils</b>
+                            <a href="#utils"><span class="icon ion-ios-link"></span></a>
+                        </span>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <i>Type : </i>        <code><a href="../injectables/UtilsService.html" target="_self" >UtilsService</a></code>
+
+                        </td>
+                    </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                    <div class="io-line">Defined in <a href="" data-line="43" class="link-to-prism">src/app/activity/activity.component.ts:43</a></div>
+                            </td>
+                        </tr>
+
+
+            </tbody>
+        </table>
+</section>
+
+</div>
+
+
+    <div class="tab-pane fade  tab-source-code" id="c-source">
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Component, Input, NgZone, Output, EventEmitter } from &#x27;@angular/core&#x27;;
+import { Router } from &#x27;@angular/router&#x27;;
+import { Observable, of, forkJoin, Subscription } from &#x27;rxjs&#x27;;
+import { catchError } from &#x27;rxjs/operators&#x27;;
+import { ActivityService, Activity, Task } from &#x27;./activity.service&#x27;;
+import { UtilsService } from &#x27;../services/utils.service&#x27;;
+import { NotificationService } from &#x27;@shared/notification/notification.service&#x27;;
+import { BrowserStorageService } from &#x27;@services/storage.service&#x27;;
+import { Event, EventListService } from &#x27;@app/event-list/event-list.service&#x27;;
+import { SharedService } from &#x27;@services/shared.service&#x27;;
+import { FastFeedbackService } from &#x27;../fast-feedback/fast-feedback.service&#x27;;
+import { NewRelicService } from &#x27;@shared/new-relic/new-relic.service&#x27;;
+import { Apollo } from &#x27;apollo-angular&#x27;;
+import gql from &#x27;graphql-tag&#x27;;
+
+@Component({
+  selector: &#x27;app-activity&#x27;,
+  templateUrl: &#x27;./activity.component.html&#x27;,
+  styleUrls: [&#x27;./activity.component.scss&#x27;]
+})
+export class ActivityComponent {
+  @Input() id: number;
+  @Input() currentTask;
+  @Output() navigate &#x3D; new EventEmitter();
+  // when tasks are ready, emit tasks to the parent component so that the parent component can decide which task to display
+  @Output() tasksReady &#x3D; new EventEmitter();
+  getActivity: Subscription;
+  getEventPusher: Subscription;
+  getEvents: Subscription;
+  activity: Activity &#x3D; {
+    id: 0,
+    name: &#x27;&#x27;,
+    description: &#x27;&#x27;,
+    tasks: []
+  };
+  loadingActivity &#x3D; true;
+  events: Array&lt;Event&gt;;
+  loadingEvents &#x3D; true;
+
+  constructor(
+    public router: Router,
+    private activityService: ActivityService,
+    public utils: UtilsService,
+    private notificationService: NotificationService,
+    public storage: BrowserStorageService,
+    public eventListService: EventListService,
+    public sharedService: SharedService,
+    public fastFeedbackService: FastFeedbackService,
+    private newRelic: NewRelicService,
+    private ngZone: NgZone,
+    private apollo: Apollo
+  ) {
+
+    // update event list after book/cancel an event
+    this.getEventPusher &#x3D; this.utils.getEvent(&#x27;update-event&#x27;).subscribe(
+      event &#x3D;&gt; {
+        this._getEvents();
+      },
+      (error) &#x3D;&gt; {
+        this.newRelic.noticeError(error);
+      }
+    );
+  }
+
+  // force every navigation happen under radar of angular
+  private _navigate(direction) {
+    if (this.utils.isMobile()) {
+      // redirect to topic/assessment page for mobile
+      return this.ngZone.run(() &#x3D;&gt; {
+        return this.router.navigate(direction);
+      });
+    } else {
+      // emit event to parent component(task component)
+      switch (direction[0]) {
+        case &#x27;topic&#x27;:
+          this.navigate.emit({
+            type: &#x27;topic&#x27;,
+            topicId: direction[2]
+          });
+          break;
+        case &#x27;assessment&#x27;:
+          this.navigate.emit({
+            type: &#x27;assessment&#x27;,
+            contextId: direction[3],
+            assessmentId: direction[4]
+          });
+          break;
+        default:
+          return this.ngZone.run(() &#x3D;&gt; {
+            return this.router.navigate(direction);
+          });
+      }
+    }
+  }
+
+  onEnter() {
+    this.newRelic.setPageViewName(&#x27;activity components&#x27;);
+    this.activity &#x3D; {
+      id: 0,
+      name: &#x27;&#x27;,
+      description: &#x27;&#x27;,
+      tasks: []
+    };
+    this.loadingActivity &#x3D; true;
+    this._getActivity();
+    this._getEvents();
+    this.fastFeedbackService.pullFastFeedback().subscribe();
+  }
+
+  private _getActivity() {
+    this.getActivity &#x3D; this.activityService.getActivity(this.id)
+      .subscribe(
+        activity &#x3D;&gt; {
+          if (!activity) {
+            // activity is null by default
+            return ;
+          }
+          this.activity &#x3D; activity;
+          this.loadingActivity &#x3D; false;
+          this.newRelic.setPageViewName(&#x60;Activity ${this.activity.name}, ID: ${this.id}&#x60;);
+          this.tasksReady.emit(activity.tasks);
+        },
+        (error) &#x3D;&gt; {
+          this.newRelic.noticeError(error);
+        }
+      );
+  }
+
+  private _getEvents(events?: Event[]) {
+    this.events &#x3D; events || [];
+    if (events &#x3D;&#x3D;&#x3D; undefined) {
+      this.loadingEvents &#x3D; true;
+      this.getEvents &#x3D; this.eventListService.getEvents(this.id).subscribe(
+        res &#x3D;&gt; {
+          this.events &#x3D; res;
+          this.loadingEvents &#x3D; false;
+        },
+        error &#x3D;&gt; {
+          this.newRelic.noticeError(error);
+        }
+      );
+    }
+  }
+
+  back() {
+    this._navigate([ &#x27;app&#x27;, &#x27;home&#x27; ]);
+    this.newRelic.actionText(&#x27;Back button pressed on Activities Page.&#x27;);
+  }
+
+  goto(task) {
+    this.newRelic.actionText(&#x60;Selected Task (${task.type}): ID ${task.id}&#x60;);
+
+    switch (task.type) {
+      case &#x27;Assessment&#x27;:
+        if (task.isForTeam &amp;&amp; !this.storage.getUser().teamId) {
+          this.notificationService.popUp(&#x27;shortMessage&#x27;, {message: &#x27;To do this assessment, you have to be in a team.&#x27;});
+          break;
+        }
+        // check if assessment is locked by other team members
+        if (task.isLocked) {
+          this.notificationService.lockTeamAssessmentPopUp(
+            {
+              name: task.submitter.name,
+              image: task.submitter.image
+            },
+            data &#x3D;&gt; {
+              if (data.data) {
+                this._navigate([&#x27;assessment&#x27;, &#x27;assessment&#x27;, this.id , task.contextId, task.id]);
+              }
+            }
+          );
+          return ;
+        }
+        this._navigate([&#x27;assessment&#x27;, &#x27;assessment&#x27;, this.id , task.contextId, task.id]);
+        break;
+      case &#x27;Topic&#x27;:
+        this._navigate([&#x27;topic&#x27;, this.id, task.id]);
+        break;
+      case &#x27;Locked&#x27;:
+        this.notificationService.popUp(&#x27;shortMessage&#x27;, {message: &#x27;This part of the app is still locked. You can unlock the features by engaging with the app and completing all tasks.&#x27;});
+        break;
+    }
+  }
+
+  gotoEvent(event?) {
+    // go to the event page without choosing any event
+    if (!event) {
+      return this.router.navigate([&#x27;app&#x27;, &#x27;events&#x27;, {activity_id: this.id}]);
+    }
+    // display the event pop up for mobile
+    if (this.utils.isMobile()) {
+      return this.eventListService.eventDetailPopUp(event);
+    }
+    // go to the event page with an event selected
+    return this.router.navigate([&#x27;app&#x27;, &#x27;events&#x27;, {activity_id: this.id, event_id: event.id}]);
+  }
+
+  /**
+   * Manually change the status of a task
+   * @param type   The type of the task(&#x27;Assessment&#x27;, &#x27;Topic&#x27;)
+   * @param id     The id of the task
+   * @param status The status
+   */
+  changeTaskStatus(type: string, id: number, status: string) {
+    const index &#x3D; this.activity.tasks.findIndex(t &#x3D;&gt; t.id &#x3D;&#x3D;&#x3D; +id &amp;&amp; t.type &#x3D;&#x3D;&#x3D; type);
+    if (index &lt; 0) {
+      return;
+    }
+    this.activity.tasks[index].status &#x3D; status;
+    // update the cache
+    this.apollo.getClient().writeFragment({
+      id: &#x60;Task:${this.activity.tasks[index].type.toLowerCase()}${this.activity.tasks[index].id}&#x60;,
+      fragment: gql&#x60;
+        fragment task on Task {
+          status {
+            status
+            __typename
+          }
+          __typename
+        }
+      &#x60;,
+      data: {
+        status: {
+          status: status,
+          __typename: &#x27;TaskStatus&#x27;
+        },
+        __typename: &#x27;Task&#x27;
+      }
+    });
+  }
+
+  /******************
+    Used for task layout
+  ******************/
+  taskLeadingIcon(task) {
+    switch (task.type) {
+      case &#x27;Locked&#x27;:
+        return &#x27;lock-closed-outline&#x27;;
+      case &#x27;Topic&#x27;:
+        return &#x27;reader-outline&#x27;;
+      case &#x27;Assessment&#x27;:
+        return &#x27;clipboard-outline&#x27;;
+    }
+  }
+
+  assessmentNotSubmitted(task) {
+    return task.type &#x3D;&#x3D;&#x3D; &#x27;Assessment&#x27; &amp;&amp; (!task.status || task.status &#x3D;&#x3D;&#x3D; &#x27;&#x27; || task.status &#x3D;&#x3D;&#x3D; &#x27;in progress&#x27;);
+  }
+
+  taskSubtitle2(task) {
+    if (task.type &#x3D;&#x3D;&#x3D; &#x27;Locked&#x27;) {
+      return &#x27;&#x27;;
+    }
+    let title &#x3D; task.type + &#x27; &#x27;;
+    title +&#x3D; task.isLocked ? &#x27;- Locked by &#x27; + task.submitter.name : task.status;
+    return title;
+  }
+
+  taskEndingIcon(task) {
+    if (task.isLocked) {
+      return &#x27;lock-closed-outline&#x27;;
+    }
+    switch (task.status) {
+      case &#x27;done&#x27;:
+        return &#x27;checkmark&#x27;;
+      case &#x27;pending review&#x27;:
+        return &#x27;hourglass-outline&#x27;;
+      case &#x27;feedback available&#x27;:
+      case &#x27;in progress&#x27;:
+      default:
+        return &#x27;arrow-forward&#x27;;
+    }
+  }
+
+}
+</code></pre>
+    </div>
+
+    <div class="tab-pane fade " id="c-templateData">
+        <pre class="line-numbers"><code class="language-html">&lt;ion-header mode&#x3D;&quot;ios&quot;&gt;
+  &lt;ion-toolbar [ngClass]&#x3D;&quot;{&#x27;ion-toolbar-absolute&#x27;: !utils.isMobile()}&quot;&gt;
+    &lt;ion-buttons slot&#x3D;&quot;start&quot;&gt;
+      &lt;ion-button (click)&#x3D;&quot;back()&quot;&gt;
+        &lt;ion-icon class&#x3D;&quot;icon-backward ion-margin-start&quot; name&#x3D;&quot;arrow-back&quot; color&#x3D;&quot;primary&quot; slot&#x3D;&quot;icon-only&quot;&gt;&lt;/ion-icon&gt;
+      &lt;/ion-button&gt;
+    &lt;/ion-buttons&gt;
+    &lt;ion-title class&#x3D;&quot;ion-text-center&quot;&gt;Activity&lt;/ion-title&gt;
+  &lt;/ion-toolbar&gt;
+&lt;/ion-header&gt;
+
+&lt;ion-content class&#x3D;&quot;ion-padding ion-text-center&quot; color&#x3D;&quot;light&quot; [ngClass]&#x3D;&quot;{
+  &#x27;ion-content-absolute&#x27;: !utils.isMobile(),
+  &#x27;ion-content-mobile&#x27;: utils.isMobile()
+}&quot;&gt;
+
+  &lt;ng-container *ngIf&#x3D;&quot;loadingActivity&quot;&gt;
+    &lt;p&gt;&lt;ion-skeleton-text animated style&#x3D;&quot;width: 40%; margin-left: 30%; height: 20px&quot;&gt;&lt;/ion-skeleton-text&gt;&lt;/p&gt;
+    &lt;p&gt;&lt;ion-skeleton-text animated style&#x3D;&quot;width: 80%&quot;&gt;&lt;/ion-skeleton-text&gt;&lt;/p&gt;
+    &lt;div class&#x3D;&quot;ion-text-left ion-margin-top&quot;&gt;
+      &lt;ion-label color&#x3D;&quot;medium&quot; class&#x3D;&quot;subtitle-2 gray-2&quot;&gt;Tasks&lt;/ion-label&gt;
+    &lt;/div&gt;
+    &lt;ion-card class&#x3D;&quot;practera-card&quot;&gt;
+      &lt;ion-list&gt;
+        &lt;app-list-item loading&#x3D;&quot;true&quot;&gt;&lt;/app-list-item&gt;
+        &lt;app-list-item loading&#x3D;&quot;true&quot; lines&#x3D;&quot;none&quot;&gt;&lt;/app-list-item&gt;
+      &lt;/ion-list&gt;
+    &lt;/ion-card&gt;
+  &lt;/ng-container&gt;
+
+  &lt;ng-container *ngIf&#x3D;&quot;!loadingActivity&quot;&gt;
+    &lt;h1 class&#x3D;&quot;headline-4&quot;&gt;{{ activity.name }}&lt;/h1&gt;
+    &lt;div class&#x3D;&quot;ion-text-left&quot;&gt;
+      &lt;app-description *ngIf&#x3D;&quot;activity.description&quot; [content]&#x3D;&quot;activity.description&quot; class&#x3D;&quot;body-1&quot;&gt;&lt;/app-description&gt;
+    &lt;/div&gt;
+    &lt;div class&#x3D;&quot;ion-text-left ion-margin-top&quot;&gt;
+      &lt;ion-label color&#x3D;&quot;medium&quot; class&#x3D;&quot;subtitle-2 gray-2&quot;&gt;Tasks&lt;/ion-label&gt;
+      &lt;ion-button style&#x3D;&quot;display: none;&quot; (click)&#x3D;&quot;getNextTask()&quot;&gt;Get Next&lt;/ion-button&gt;
+    &lt;/div&gt;
+
+    &lt;ion-card class&#x3D;&quot;practera-card&quot; id&#x3D;&quot;tasks-card&quot;&gt;
+      &lt;ion-list&gt;
+        &lt;app-list-item
+          *ngFor&#x3D;&quot;let task of activity.tasks; let i &#x3D; index&quot;
+          [leadingIcon]&#x3D;&quot;taskLeadingIcon(task)&quot;
+          [leadingIconPulsing]&#x3D;&quot;assessmentNotSubmitted(task) &amp;&amp; task.isDueToday&quot;
+          [title]&#x3D;&quot;task.name&quot;
+          [subtitle1]&#x3D;&quot;assessmentNotSubmitted(task) ? sharedService.dueDateFormatter(task.dueDate) : &#x27;&#x27;&quot;
+          [subtitle1Color]&#x3D;&quot;task.isOverdue ? &#x27;danger&#x27; : &#x27;&#x27;&quot;
+          [subtitle2]&#x3D;&quot;taskSubtitle2(task)&quot;
+          [endingIcon]&#x3D;&quot;taskEndingIcon(task)&quot;
+          [active]&#x3D;&quot;currentTask &amp;&amp; currentTask.type &#x3D;&#x3D; task.type &amp;&amp; currentTask.id &#x3D;&#x3D; task.id&quot;
+          [lines]&#x3D;&quot;i &#x3D;&#x3D; activity.tasks.length - 1 ? &#x27;none&#x27; : &#x27;&#x27;&quot;
+          (click)&#x3D;&quot;goto(task)&quot;
+        &gt;&lt;/app-list-item&gt;
+      &lt;/ion-list&gt;
+    &lt;/ion-card&gt;
+  &lt;/ng-container&gt;
+
+  &lt;ng-container *ngIf&#x3D;&quot;loadingEvents&quot;&gt;
+    &lt;ion-spinner&gt;&lt;/ion-spinner&gt;
+  &lt;/ng-container&gt;
+  &lt;ng-container *ngIf&#x3D;&quot;events &amp;&amp; events.length &gt; 0&quot;&gt;
+    &lt;div class&#x3D;&quot;ion-text-left ion-margin-top&quot;&gt;
+      &lt;ion-label class&#x3D;&quot;subtitle-2 gray-2&quot;&gt;Events&lt;/ion-label&gt;
+    &lt;/div&gt;
+    &lt;ion-card class&#x3D;&quot;practera-card&quot; id&#x3D;&quot;events-card&quot;&gt;
+      &lt;ion-list&gt;
+        &lt;ng-container *ngFor&#x3D;&quot;let event of events; let i &#x3D; index&quot;&gt;
+          &lt;!-- @TODO add isVideoConference by checking event zoom object --&gt;
+          &lt;app-list-item
+            *ngIf&#x3D;&quot;i &lt; 2&quot;
+            leadingIcon&#x3D;&quot;calendar-outline&quot;
+            [leadingIconColor]&#x3D;&quot;eventListService.isNotActionable(event) ? &#x27;medium&#x27; : &#x27;primary&#x27;&quot;
+            [title]&#x3D;&quot;event.name&quot;
+            [titleColor]&#x3D;&quot;eventListService.isNotActionable(event) ? &#x27;gray-2&#x27; : &#x27;&#x27;&quot;
+            [subtitle1]&#x3D;&quot;event.activityName&quot;
+            [subtitle2]&#x3D;&quot;eventListService.timeDisplayed(event)&quot;
+            [eventExpired]&#x3D;&quot;event.isPast &amp;&amp; !event.isBooked&quot;
+            [eventVideoConference]&#x3D;&quot;event.videoConference&quot;
+            [lines]&#x3D;&quot;i &#x3D;&#x3D; events.length - 1 ? &#x27;none&#x27; : &#x27;&#x27;&quot;
+            (click)&#x3D;&quot;gotoEvent(event)&quot;
+          &gt;&lt;/app-list-item&gt;
+        &lt;/ng-container&gt;
+        &lt;clickable-item
+          *ngIf&#x3D;&quot;events.length &gt; 2&quot;
+          lines&#x3D;&quot;none&quot;
+          (click)&#x3D;&quot;gotoEvent()&quot;&gt;
+          &lt;ion-icon name&#x3D;&quot;ellipsis-vertical&quot; color&#x3D;&quot;primary&quot; class&#x3D;&quot;ion-margin-end&quot;&gt;&lt;/ion-icon&gt;
+          &lt;p&gt;Show More&lt;/p&gt;
+        &lt;/clickable-item&gt;
+      &lt;/ion-list&gt;
+    &lt;/ion-card&gt;
+  &lt;/ng-container&gt;
+&lt;/ion-content&gt;
+</code></pre>
+    </div>
+
+    <div class="tab-pane fade " id="c-styleData">
+                <p class="comment">
+                    <code>./activity.component.scss</code>
+                </p>
+                <pre class="line-numbers"><code class="language-scss">
+.icon-check {
+  font-size: 30px;
+}
+.icon-backward, .icon-forward {
+  font-size: 20px !important;
+}
+.task-leading-icon {
+  margin-right: 20px;
+}
+</code></pre>
+    </div>
+
+    <div class="tab-pane fade " id="c-tree">
+        <div id="tree-container"></div>
+        <div class="tree-legend">
+            <div class="title">
+                <b>Legend</b>
+            </div>
+            <div>
+                <div class="color htmlelement"></div><span>Html element</span>
+            </div>
+            <div>
+                <div class="color component"></div><span>Component</span>
+            </div>
+            <div>
+                <div class="color directive"></div><span>Html element with directive</span>
+            </div>
+        </div>
+    </div>
+
+    
+</div>
+
+<script src="../js/libs/vis.min.js"></script>
+<script src="../js/libs/htmlparser.js"></script>
+<script src="../js/libs/deep-iterator.js"></script>
+<script>
+        var COMPONENT_TEMPLATE = '<div><ion-header mode="ios">  <ion-toolbar [ngClass]="{\'ion-toolbar-absolute\': !utils.isMobile()}">    <ion-buttons slot="start">      <ion-button (click)="back()">        <ion-icon class="icon-backward ion-margin-start" name="arrow-back" color="primary" slot="icon-only"></ion-icon>      </ion-button>    </ion-buttons>    <ion-title class="ion-text-center">Activity</ion-title>  </ion-toolbar></ion-header><ion-content class="ion-padding ion-text-center" color="light" [ngClass]="{  \'ion-content-absolute\': !utils.isMobile(),  \'ion-content-mobile\': utils.isMobile()}">  <ng-container *ngIf="loadingActivity">    <p><ion-skeleton-text animated style="width: 40%; margin-left: 30%; height: 20px"></ion-skeleton-text></p>    <p><ion-skeleton-text animated style="width: 80%"></ion-skeleton-text></p>    <div class="ion-text-left ion-margin-top">      <ion-label color="medium" class="subtitle-2 gray-2">Tasks</ion-label>    </div>    <ion-card class="practera-card">      <ion-list>        <app-list-item loading="true"></app-list-item>        <app-list-item loading="true" lines="none"></app-list-item>      </ion-list>    </ion-card>  </ng-container>  <ng-container *ngIf="!loadingActivity">    <h1 class="headline-4">{{ activity.name }}</h1>    <div class="ion-text-left">      <app-description *ngIf="activity.description" [content]="activity.description" class="body-1"></app-description>    </div>    <div class="ion-text-left ion-margin-top">      <ion-label color="medium" class="subtitle-2 gray-2">Tasks</ion-label>      <ion-button style="display: none;" (click)="getNextTask()">Get Next</ion-button>    </div>    <ion-card class="practera-card" id="tasks-card">      <ion-list>        <app-list-item          *ngFor="let task of activity.tasks; let i = index"          [leadingIcon]="taskLeadingIcon(task)"          [leadingIconPulsing]="assessmentNotSubmitted(task) && task.isDueToday"          [title]="task.name"          [subtitle1]="assessmentNotSubmitted(task) ? sharedService.dueDateFormatter(task.dueDate) : \'\'"          [subtitle1Color]="task.isOverdue ? \'danger\' : \'\'"          [subtitle2]="taskSubtitle2(task)"          [endingIcon]="taskEndingIcon(task)"          [active]="currentTask && currentTask.type == task.type && currentTask.id == task.id"          [lines]="i == activity.tasks.length - 1 ? \'none\' : \'\'"          (click)="goto(task)"        ></app-list-item>      </ion-list>    </ion-card>  </ng-container>  <ng-container *ngIf="loadingEvents">    <ion-spinner></ion-spinner>  </ng-container>  <ng-container *ngIf="events && events.length > 0">    <div class="ion-text-left ion-margin-top">      <ion-label class="subtitle-2 gray-2">Events</ion-label>    </div>    <ion-card class="practera-card" id="events-card">      <ion-list>        <ng-container *ngFor="let event of events; let i = index">          <!-- @TODO add isVideoConference by checking event zoom object -->          <app-list-item            *ngIf="i < 2"            leadingIcon="calendar-outline"            [leadingIconColor]="eventListService.isNotActionable(event) ? \'medium\' : \'primary\'"            [title]="event.name"            [titleColor]="eventListService.isNotActionable(event) ? \'gray-2\' : \'\'"            [subtitle1]="event.activityName"            [subtitle2]="eventListService.timeDisplayed(event)"            [eventExpired]="event.isPast && !event.isBooked"            [eventVideoConference]="event.videoConference"            [lines]="i == events.length - 1 ? \'none\' : \'\'"            (click)="gotoEvent(event)"          ></app-list-item>        </ng-container>        <clickable-item          *ngIf="events.length > 2"          lines="none"          (click)="gotoEvent()">          <ion-icon name="ellipsis-vertical" color="primary" class="ion-margin-end"></ion-icon>          <p>Show More</p>        </clickable-item>      </ion-list>    </ion-card>  </ng-container></ion-content></div>'
+    var COMPONENTS = [{'name': 'AchievementBadgeComponent', 'selector': 'achievement-badge'},{'name': 'AchievementPopUpComponent', 'selector': 'app-achievement-pop-up'},{'name': 'AchievementsComponent', 'selector': 'app-achievements'},{'name': 'ActivityCardComponent', 'selector': 'app-activity-card'},{'name': 'ActivityCompletePopUpComponent', 'selector': 'app-activity-complete-pop-up'},{'name': 'ActivityComponent', 'selector': 'app-activity'},{'name': 'ActivityRoutingComponent', 'selector': ''},{'name': 'AppComponent', 'selector': 'app-root'},{'name': 'AssessmentComponent', 'selector': 'app-assessment'},{'name': 'AuthComponent', 'selector': 'app-auth'},{'name': 'AuthDirectLoginComponent', 'selector': 'app-auth-direct-login'},{'name': 'AuthForgotPasswordComponent', 'selector': 'app-auth-forgot-password'},{'name': 'AuthLoginComponent', 'selector': 'app-auth-login'},{'name': 'AuthLogoutComponent', 'selector': 'app-auth-logout'},{'name': 'AuthRegistrationComponent', 'selector': 'app-auth-registration'},{'name': 'AuthResetPasswordComponent', 'selector': 'app-auth-reset-password'},{'name': 'BrandingLogoComponent', 'selector': 'app-branding-logo'},{'name': 'ChatComponent', 'selector': ''},{'name': 'ChatListComponent', 'selector': 'app-chat-list'},{'name': 'ChatPreviewComponent', 'selector': 'chat-preview'},{'name': 'ChatRoomComponent', 'selector': 'app-chat-room'},{'name': 'ChatViewComponent', 'selector': 'app-chat-view'},{'name': 'CircleProgressComponent', 'selector': 'app-circle-progress'},{'name': 'ClickableItemComponent', 'selector': 'clickable-item'},{'name': 'ContactNumberFormComponent', 'selector': 'app-contact-number-form'},{'name': 'DescriptionComponent', 'selector': 'app-description'},{'name': 'DeviceInfoComponent', 'selector': ''},{'name': 'EventDetailComponent', 'selector': 'app-event-detail'},{'name': 'EventListComponent', 'selector': 'app-event-list'},{'name': 'EventsComponent', 'selector': 'app-events'},{'name': 'EventsRoutingComponent', 'selector': ''},{'name': 'FastFeedbackComponent', 'selector': 'app-fast-feedback'},{'name': 'FileComponent', 'selector': 'app-file'},{'name': 'FileDisplayComponent', 'selector': 'app-file-display'},{'name': 'FilestackComponent', 'selector': 'file-stack'},{'name': 'GoMobileComponent', 'selector': 'go-mobile'},{'name': 'HomeComponent', 'selector': 'app-home'},{'name': 'IconComponent', 'selector': 'icon-custom'},{'name': 'ImgComponent', 'selector': 'app-img'},{'name': 'ListItemComponent', 'selector': 'app-list-item'},{'name': 'LockTeamAssessmentPopUpComponent', 'selector': 'app-lock-team-assessment-pop-up'},{'name': 'MultipleComponent', 'selector': 'app-multiple'},{'name': 'OneofComponent', 'selector': 'app-oneof'},{'name': 'OverviewComponent', 'selector': 'app-overview'},{'name': 'PageNotFoundComponent', 'selector': 'app-page-not-found'},{'name': 'PopUpComponent', 'selector': 'app-pop-up'},{'name': 'PreviewComponent', 'selector': 'app-preview'},{'name': 'ProjectComponent', 'selector': 'app-project'},{'name': 'QuestionComponent', 'selector': 'question'},{'name': 'QuestionsComponent', 'selector': 'app-questions'},{'name': 'ReviewListComponent', 'selector': 'app-review-list'},{'name': 'ReviewRatingComponent', 'selector': 'app-review-rating'},{'name': 'ReviewsComponent', 'selector': 'app-reviews'},{'name': 'ReviewsRoutingComponent', 'selector': ''},{'name': 'SettingsComponent', 'selector': 'app-settings'},{'name': 'SettingsRoutingComponent', 'selector': ''},{'name': 'SlidableComponent', 'selector': 'app-slidable'},{'name': 'SwitcherComponent', 'selector': 'app-switcher'},{'name': 'SwitcherProgramComponent', 'selector': 'app-switcher-program'},{'name': 'TabsComponent', 'selector': 'app-tabs'},{'name': 'TasksComponent', 'selector': 'app-tasks'},{'name': 'TasksRoutingComponent', 'selector': ''},{'name': 'TeamMemberSelectorComponent', 'selector': 'app-team-member-selector'},{'name': 'TermsConditionsPreviewComponent', 'selector': 'app-terms-conditions-preview'},{'name': 'TextComponent', 'selector': 'app-text'},{'name': 'TodoCardComponent', 'selector': 'app-todo-card'},{'name': 'TopicComponent', 'selector': 'app-topic'},{'name': 'UnlockingComponent', 'selector': 'unlocking'}];
+    var DIRECTIVES = [{'name': 'AutoresizeDirective', 'selector': '[appAutoresize]'},{'name': 'DragAndDropDirective', 'selector': '[appDragAndDrop]'},{'name': 'FloatDirective', 'selector': '[appFloat]'}];
+    var ACTUAL_COMPONENT = {'name': 'ActivityComponent'};
+</script>
+<script src="../js/tree.js"></script>
+
+
+
+
+
+
+
+
+
+
+                   
+
+
+
+
+                   </div><div class="search-results">
+    <div class="has-results">
+        <h1 class="search-results-title"><span class='search-results-count'></span> result-matching "<span class='search-query'></span>"</h1>
+        <ul class="search-results-list"></ul>
+    </div>
+    <div class="no-results">
+        <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+    </div>
+</div>
+</div>
+               <!-- END CONTENT -->
+           </div>
+       </div>
+
+       <script>
+            var COMPODOC_CURRENT_PAGE_DEPTH = 1;
+            var COMPODOC_CURRENT_PAGE_CONTEXT = 'component';
+            var COMPODOC_CURRENT_PAGE_URL = 'ActivityComponent.html';
+            var MAX_SEARCH_RESULTS = 15;
+       </script>
+
+       <script src="../js/libs/custom-elements.min.js"></script>
+       <script src="../js/libs/lit-html.js"></script>
+       <!-- Required to polyfill modern browsers as code is ES5 for IE... -->
+       <script src="../js/libs/custom-elements-es5-adapter.js" charset="utf-8" defer></script>
+       <script src="../js/menu-wc.js" defer></script>
+
+       <script src="../js/libs/bootstrap-native.js"></script>
+
+       <script src="../js/libs/es6-shim.min.js"></script>
+       <script src="../js/libs/EventDispatcher.js"></script>
+       <script src="../js/libs/promise.min.js"></script>
+       <script src="../js/libs/zepto.min.js"></script>
+
+       <script src="../js/compodoc.js"></script>
+
+       <script src="../js/tabs.js"></script>
+       <script src="../js/menu.js"></script>
+       <script src="../js/libs/clipboard.min.js"></script>
+       <script src="../js/libs/prism.js"></script>
+       <script src="../js/sourceCode.js"></script>
+          <script src="../js/search/search.js"></script>
+          <script src="../js/search/lunr.min.js"></script>
+          <script src="../js/search/search-lunr.js"></script>
+          <script src="../js/search/search_index.js"></script>
+       <script src="../js/lazy-load-graphs.js"></script>
+
+
+    </body>
+</html>

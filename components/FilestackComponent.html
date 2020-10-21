@@ -1,0 +1,1102 @@
+<!doctype html>
+<html class="no-js" lang="">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title>practera-app-v2 documentation</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+	      <link rel="stylesheet" href="../styles/style.css">
+    </head>
+    <body>
+
+        <div class="navbar navbar-default navbar-fixed-top visible-xs">
+            <a href="../" class="navbar-brand">practera-app-v2 documentation</a>
+            <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
+        </div>
+
+        <div class="xs-menu menu" id="mobile-menu">
+                <div id="book-search-input" role="search"><input type="text" placeholder="Type to search"></div>            <compodoc-menu></compodoc-menu>
+        </div>
+
+        <div class="container-fluid main">
+           <div class="row main">
+               <div class="hidden-xs menu">
+                   <compodoc-menu mode="normal"></compodoc-menu>
+               </div>
+               <!-- START CONTENT -->
+               <div class="content component">
+                   <div class="content-data">
+
+
+
+
+<ol class="breadcrumb">
+  <li>Components</li>
+  <li>FilestackComponent</li>
+</ol>
+
+<ul class="nav nav-tabs" role="tablist">
+        <li class="active">
+            <a href="#info" role="tab" id="info-tab" data-toggle="tab" data-link="info">Info</a>
+        </li>
+        <li >
+            <a href="#source" role="tab" id="source-tab" data-toggle="tab" data-link="source">Source</a>
+        </li>
+        <li >
+            <a href="#templateData" role="tab" id="templateData-tab" data-toggle="tab" data-link="template">Template</a>
+        </li>
+        <li >
+            <a href="#styleData" role="tab" id="styleData-tab" data-toggle="tab" data-link="style">Styles</a>
+        </li>
+        <li >
+            <a href="#tree" role="tab" id="tree-tab" data-toggle="tab" data-link="dom-tree">DOM Tree</a>
+        </li>
+</ul>
+
+<div class="tab-content">
+    <div class="tab-pane fade active in" id="c-info"><p class="comment">
+    <h3>File</h3>
+</p>
+<p class="comment">
+    <code>src/app/shared/filestack/filestack.component.ts</code>
+</p>
+
+
+
+
+
+<section>
+    <h3>Metadata</h3>
+    <table class="table table-sm table-hover">
+        <tbody>
+
+
+
+
+
+
+
+
+
+
+
+            <tr>
+                <td class="col-md-3">selector</td>
+                <td class="col-md-9"><code>file-stack</code></td>
+            </tr>
+
+            <tr>
+                <td class="col-md-3">styleUrls</td>
+                <td class="col-md-9"><code>filestack.component.scss</code></td>
+            </tr>
+
+
+
+            <tr>
+                <td class="col-md-3">templateUrl</td>
+                <td class="col-md-9"><code>filestack.component.html</code></td>
+            </tr>
+
+
+
+
+
+
+
+
+        </tbody>
+    </table>
+</section>
+
+    <section>
+    <h3 id="index">Index</h3>
+    <table class="table table-sm table-bordered index-table">
+        <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Properties</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                <a href="#isDroped">isDroped</a>
+                            </li>
+                            <li>
+                                <a href="#uploadingFile">uploadingFile</a>
+                            </li>
+                            <li>
+                                <a href="#uploadToken">uploadToken</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Methods</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#_bytesToSize">_bytesToSize</a>
+                            </li>
+                            <li>
+                                <a href="#cancelFileUpload">cancelFileUpload</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#dragAndDropUpload">dragAndDropUpload</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#uploadFile">uploadFile</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Inputs</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                <a href="#accept">accept</a>
+                            </li>
+                            <li>
+                                <a href="#disabled">disabled</a>
+                            </li>
+                            <li>
+                                <a href="#fileType">fileType</a>
+                            </li>
+                            <li>
+                                <a href="#type">type</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Outputs</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                <a href="#complete">complete</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+
+
+        </tbody>
+    </table>
+</section>
+
+    <section>
+    <h3 id="constructor">Constructor</h3>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+<code>constructor(filestackService: <a href="../injectables/FilestackService.html">FilestackService</a>, utils: <a href="../injectables/UtilsService.html">UtilsService</a>)</code>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="42" class="link-to-prism">src/app/shared/filestack/filestack.component.ts:42</a></div>
+                            </td>
+                        </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                            <div>
+                                    <b>Parameters :</b>
+                                    <table class="params">
+                                        <thead>
+                                            <tr>
+                                                <td>Name</td>
+                                                    <td>Type</td>
+                                                <td>Optional</td>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                                <tr>
+                                                        <td>filestackService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/FilestackService.html" target="_self" >FilestackService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>utils</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/UtilsService.html" target="_self" >UtilsService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                        </tbody>
+                                    </table>
+                            </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+</section>
+
+    <section>
+    <h3 id="inputs">Inputs</h3>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="accept"></a>
+                        <b>accept</b>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-2" colspan="2">
+                                    <div class="io-line">Defined in <a href="" data-line="30" class="link-to-prism">src/app/shared/filestack/filestack.component.ts:30</a></div>
+                            </td>
+                        </tr>
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="disabled"></a>
+                        <b>disabled</b>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-2" colspan="2">
+                                    <div class="io-line">Defined in <a href="" data-line="34" class="link-to-prism">src/app/shared/filestack/filestack.component.ts:34</a></div>
+                            </td>
+                        </tr>
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="fileType"></a>
+                        <b>fileType</b>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-2" colspan="2">
+                                    <div class="io-line">Defined in <a href="" data-line="31" class="link-to-prism">src/app/shared/filestack/filestack.component.ts:31</a></div>
+                            </td>
+                        </tr>
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="type"></a>
+                        <b>type</b>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-2" colspan="2">
+                                    <div class="io-line">Defined in <a href="" data-line="33" class="link-to-prism">src/app/shared/filestack/filestack.component.ts:33</a></div>
+                            </td>
+                        </tr>
+            </tbody>
+        </table>
+</section>
+    <section>
+    <h3 id="outputs">Outputs</h3>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="complete"></a>
+                        <b>complete</b>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../interfaces/Event.html" target="_self" >EventEmitter&lt;any&gt;</a></code>
+
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-2" colspan="2">
+                                    <div class="io-line">Defined in <a href="" data-line="32" class="link-to-prism">src/app/shared/filestack/filestack.component.ts:32</a></div>
+                            </td>
+                        </tr>
+            </tbody>
+        </table>
+</section>
+
+
+    <section>
+    
+    <h3 id="methods">
+        Methods
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="_bytesToSize"></a>
+                    <span class="name">
+                        <b>
+                            <span class="modifier">Private</span>
+                            _bytesToSize
+                        </b>
+                        <a href="#_bytesToSize"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>_bytesToSize(bytes)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="127"
+                            class="link-to-prism">src/app/shared/filestack/filestack.component.ts:127</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>bytes</td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="cancelFileUpload"></a>
+                    <span class="name">
+                        <b>
+                            cancelFileUpload
+                        </b>
+                        <a href="#cancelFileUpload"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>cancelFileUpload()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="114"
+                            class="link-to-prism">src/app/shared/filestack/filestack.component.ts:114</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="dragAndDropUpload"></a>
+                    <span class="name">
+                        <b>
+                            <span class="modifier">Async</span>
+                            dragAndDropUpload
+                        </b>
+                        <a href="#dragAndDropUpload"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>dragAndDropUpload(dropData)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="74"
+                            class="link-to-prism">src/app/shared/filestack/filestack.component.ts:74</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>dropData</td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="uploadFile"></a>
+                    <span class="name">
+                        <b>
+                            <span class="modifier">Async</span>
+                            uploadFile
+                        </b>
+                        <a href="#uploadFile"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>uploadFile()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="49"
+                            class="link-to-prism">src/app/shared/filestack/filestack.component.ts:49</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Returns : </b>    <code>{}</code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>
+    <section>
+    
+        <h3 id="inputs">
+            Properties
+        </h3>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="isDroped"></a>
+                        <span class="name">
+                            <b>
+                            isDroped</b>
+                            <a href="#isDroped"><span class="icon ion-ios-link"></span></a>
+                        </span>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+
+                        </td>
+                    </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                    <div class="io-line">Defined in <a href="" data-line="41" class="link-to-prism">src/app/shared/filestack/filestack.component.ts:41</a></div>
+                            </td>
+                        </tr>
+
+
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="uploadingFile"></a>
+                        <span class="name">
+                            <b>
+                            uploadingFile</b>
+                            <a href="#uploadingFile"><span class="icon ion-ios-link"></span></a>
+                        </span>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/object" target="_blank" >object</a></code>
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <i>Default value : </i><code>{
+    uploadProgress: 0,
+    fileName: &#x27;&#x27;,
+    fileSize: &#x27;&#x27;,
+    uploadSize: &#x27;&#x27;
+  }</code>
+                        </td>
+                    </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                    <div class="io-line">Defined in <a href="" data-line="35" class="link-to-prism">src/app/shared/filestack/filestack.component.ts:35</a></div>
+                            </td>
+                        </tr>
+
+
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="uploadToken"></a>
+                        <span class="name">
+                            <b>
+                            uploadToken</b>
+                            <a href="#uploadToken"><span class="icon ion-ios-link"></span></a>
+                        </span>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <i>Type : </i>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                        </td>
+                    </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                    <div class="io-line">Defined in <a href="" data-line="42" class="link-to-prism">src/app/shared/filestack/filestack.component.ts:42</a></div>
+                            </td>
+                        </tr>
+
+
+            </tbody>
+        </table>
+</section>
+
+</div>
+
+
+    <div class="tab-pane fade  tab-source-code" id="c-source">
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Subscription } from &#x27;rxjs/Subscription&#x27;;
+import { Component, HostListener, EventEmitter, Output, Input } from &#x27;@angular/core&#x27;;
+import { FilestackService } from &#x27;./filestack.service&#x27;;
+import { UtilsService } from &#x27;@services/utils.service&#x27;;
+
+export interface FilestackUploaded {
+  handle: string;
+  url: string;
+  filename: string;
+  size: number;
+  mimetype: string;
+  key: string;
+  container: string;
+  status: string;
+  workflow?: object;
+
+  // flag to indicate detected virus (true: threat found, false: safe from virus/malware)
+  infected?: boolean;
+
+  // list of infected files
+  infections_list?: string[];
+}
+
+@Component({
+  selector: &#x27;file-stack&#x27;,
+  templateUrl: &#x27;filestack.component.html&#x27;,
+  styleUrls: [&#x27;filestack.component.scss&#x27;]
+})
+export class FilestackComponent {
+  @Input() accept: any;
+  @Input() fileType: string;
+  @Output() complete: EventEmitter&lt;any&gt; &#x3D; new EventEmitter();
+  @Input() type?: string;
+  @Input() disabled: boolean;
+  uploadingFile &#x3D; {
+    uploadProgress: 0,
+    fileName: &#x27;&#x27;,
+    fileSize: &#x27;&#x27;,
+    uploadSize: &#x27;&#x27;
+  };
+  isDroped: boolean;
+  uploadToken: any;
+
+  constructor(
+    private filestackService: FilestackService,
+    private utils: UtilsService
+  ) { }
+
+  async uploadFile() {
+    const s3Config &#x3D; this.filestackService.getS3Config(this.fileType);
+    const pickerOptions &#x3D; {
+      storeTo: s3Config,
+      onFileUploadFailed: data &#x3D;&gt; {
+        this.complete.emit({
+          success: false,
+          data: data
+        });
+      },
+      onFileUploadFinished: data &#x3D;&gt; {
+        this.complete.emit({
+          success: true,
+          data: data
+        });
+      },
+    };
+
+    if (this.accept) {
+      pickerOptions[&#x27;accept&#x27;] &#x3D; this.accept;
+    }
+
+    return await this.filestackService.open(pickerOptions);
+  }
+
+  async dragAndDropUpload(dropData) {
+    if (dropData.success) {
+      this.isDroped &#x3D; true;
+      this.uploadingFile.fileName &#x3D; dropData.file.name;
+      this.uploadingFile.fileSize &#x3D; this._bytesToSize(dropData.file.size);
+      const s3Config &#x3D; this.filestackService.getS3Config(this.fileType);
+      this.uploadToken &#x3D; {};
+      const uploadOptions &#x3D; {
+        onProgress: progressData &#x3D;&gt; {
+          this.uploadingFile.uploadProgress &#x3D; progressData.totalPercent;
+          this.uploadingFile.uploadSize &#x3D; this._bytesToSize(progressData.totalBytes);
+        },
+        onFileUploadFinished: fileData &#x3D;&gt; {
+          this.complete.emit({
+            success: true,
+            data: fileData
+          });
+        },
+        onFileUploadFailed: err &#x3D;&gt; {
+          this.complete.emit({
+            success: false,
+            data: err
+          });
+        }
+      };
+
+      await this.filestackService.upload(dropData.file, uploadOptions, s3Config, this.uploadToken);
+    } else {
+      this.isDroped &#x3D; false;
+      this.complete.emit({
+        success: false,
+        data: {
+          message: dropData.message,
+          isDragAndDropError: true
+        }
+      });
+    }
+
+  }
+
+  cancelFileUpload() {
+    if (this.uploadToken) {
+      this.uploadToken.cancel();
+      this.isDroped &#x3D; false;
+      this.uploadingFile &#x3D; {
+        uploadProgress: 0,
+        fileName: &#x27;&#x27;,
+        fileSize: &#x27;&#x27;,
+        uploadSize: &#x27;&#x27;
+      };
+    }
+  }
+
+  private _bytesToSize(bytes) {
+    if (bytes) {
+        const sizes &#x3D; [&#x27;Bytes&#x27;, &#x27;KB&#x27;, &#x27;MB&#x27;, &#x27;GB&#x27;, &#x27;TB&#x27;];
+        const i &#x3D; Math.min(parseInt(Math.floor(Math.log(bytes) / Math.log(1024)).toString(), 10), sizes.length - 1);
+        return &#x60;${(bytes / (1024 ** i)).toFixed(i ? 1 : 0)} ${sizes[i]}&#x60;;
+    }
+    return &#x27;0&#x27;;
+  }
+
+}
+</code></pre>
+    </div>
+
+    <div class="tab-pane fade " id="c-templateData">
+        <pre class="line-numbers"><code class="language-html">&lt;ng-container [ngSwitch]&#x3D;&quot;type&quot;&gt;
+  &lt;ng-container *ngSwitchCase&#x3D;&quot;&#x27;profileImage&#x27;&quot;&gt;
+    &lt;p class&#x3D;&quot;upload-icon&quot; (click)&#x3D;&quot;uploadFile()&quot;&gt;
+      &lt;ion-icon name&#x3D;&quot;camera-outline&quot;&gt;&lt;/ion-icon&gt;
+    &lt;/p&gt;
+  &lt;/ng-container&gt;
+
+  &lt;ng-container *ngSwitchDefault&gt;
+    &lt;ng-container *ngIf&#x3D;&quot;utils.isMobile()&quot;&gt;
+      &lt;ion-button size&#x3D;&quot;small&quot; class&#x3D;&quot;upload-button&quot; shape&#x3D;&quot;round&quot; (click)&#x3D;&quot;uploadFile()&quot; [disabled]&#x3D;&quot;disabled&quot;&gt;UPLOAD FILE&lt;/ion-button&gt;
+    &lt;/ng-container&gt;
+    &lt;ng-container *ngIf&#x3D;&quot;!utils.isMobile()&quot;&gt;
+      &lt;div *ngIf&#x3D;&quot;!isDroped&quot; class&#x3D;&quot;drop-zone&quot; appDragAndDrop (fileDropped)&#x3D;&quot;dragAndDropUpload($event)&quot;
+        [acceptFileType]&#x3D;&quot;fileType&quot; [disabled]&#x3D;&quot;disabled&quot;&gt;
+        &lt;p class&#x3D;&quot;gray-2 subtitle-1&quot;&gt;
+          &lt;ion-icon name&#x3D;&quot;cloud-upload-outline&quot;&gt;&lt;/ion-icon&gt; Drag and drop file here or
+          &lt;ion-button size&#x3D;&quot;small&quot; class&#x3D;&quot;upload-button&quot; shape&#x3D;&quot;round&quot; (click)&#x3D;&quot;uploadFile()&quot; [disabled]&#x3D;&quot;disabled&quot;&gt;UPLOAD FILE&lt;/ion-button&gt;
+        &lt;/p&gt;
+      &lt;/div&gt;
+      &lt;div *ngIf&#x3D;&quot;isDroped&quot; class&#x3D;&quot;upload-progress&quot;&gt;
+        &lt;ion-grid&gt;
+          &lt;ion-row&gt;
+            &lt;ion-col size&#x3D;&quot;1&quot; class&#x3D;&quot;fileTypeIcon&quot;&gt;
+              &lt;ng-container [ngSwitch]&#x3D;&quot;fileType&quot;&gt;
+                &lt;ng-container *ngSwitchCase&#x3D;&quot;&#x27;video&#x27;&quot;&gt;
+                  &lt;ion-icon name&#x3D;&quot;film-outline&quot;&gt;&lt;/ion-icon&gt;
+                &lt;/ng-container&gt;
+                &lt;ng-container *ngSwitchCase&#x3D;&quot;&#x27;image&#x27;&quot;&gt;
+                  &lt;ion-icon name&#x3D;&quot;image-outline&quot;&gt;&lt;/ion-icon&gt;
+                &lt;/ng-container&gt;
+                &lt;ng-container *ngSwitchDefault&gt;
+                  &lt;ion-icon name&#x3D;&quot;document-outline&quot;&gt;&lt;/ion-icon&gt;
+                &lt;/ng-container&gt;
+              &lt;/ng-container&gt;
+            &lt;/ion-col&gt;
+            &lt;ion-col size&#x3D;&quot;11&quot;&gt;
+              &lt;ion-grid&gt;
+                &lt;ion-row&gt;
+                  &lt;ion-col size&#x3D;&quot;11&quot; class&#x3D;&quot;file-name-container&quot;&gt;
+                    &lt;p class&#x3D;&quot;black subtitle-1&quot;&gt;{{ uploadingFile.fileName }}&lt;/p&gt;
+                  &lt;/ion-col&gt;
+                  &lt;ion-col size&#x3D;&quot;1&quot; class&#x3D;&quot;cancel-btn-container&quot;&gt;
+                    &lt;ion-button size&#x3D;&quot;small&quot; fill&#x3D;&quot;clear&quot; class&#x3D;&quot;cancel-btn&quot; (click)&#x3D;&quot;cancelFileUpload()&quot;&gt;
+                      &lt;ion-icon slot&#x3D;&quot;icon-only&quot; name&#x3D;&quot;close-outline&quot;&gt;&lt;/ion-icon&gt;
+                    &lt;/ion-button&gt;
+                  &lt;/ion-col&gt;
+                &lt;/ion-row&gt;
+                &lt;ion-row&gt;
+                  &lt;ion-col size&#x3D;&quot;12&quot;&gt;
+                    &lt;ion-progress-bar color&#x3D;&quot;primary&quot; value&#x3D;&quot;{{ (uploadingFile.uploadProgress) / 100 }}&quot; mode&#x3D;&quot;ios&quot;&gt;
+                    &lt;/ion-progress-bar&gt;
+                  &lt;/ion-col&gt;
+                &lt;/ion-row&gt;
+                &lt;ion-row class&#x3D;&quot;size-and-progress&quot;&gt;
+                  &lt;ion-col size&#x3D;&quot;6&quot; class&#x3D;&quot;file-size-container&quot;&gt;
+                    &lt;p class&#x3D;&quot;file-size caption gray-2&quot;&gt;{{ uploadingFile.uploadSize }} of {{ uploadingFile.fileSize }}
+                    &lt;/p&gt;
+                  &lt;/ion-col&gt;
+                  &lt;ion-col size&#x3D;&quot;6&quot; class&#x3D;&quot;file-progress-container&quot;&gt;
+                    &lt;p class&#x3D;&quot;file-upload-progress caption gray-2&quot;&gt;{{ uploadingFile.uploadProgress }}%&lt;/p&gt;
+                  &lt;/ion-col&gt;
+                &lt;/ion-row&gt;
+              &lt;/ion-grid&gt;
+            &lt;/ion-col&gt;
+          &lt;/ion-row&gt;
+        &lt;/ion-grid&gt;
+      &lt;/div&gt;
+    &lt;/ng-container&gt;
+  &lt;/ng-container&gt;
+&lt;/ng-container&gt;
+</code></pre>
+    </div>
+
+    <div class="tab-pane fade " id="c-styleData">
+                <p class="comment">
+                    <code>filestack.component.scss</code>
+                </p>
+                <pre class="line-numbers"><code class="language-scss">.upload-icon {
+    cursor: pointer;
+    border-radius: 50%;
+    overflow: hidden;
+    width: 32px;
+    height: 32px;
+    text-align: center;
+    background-color: var(--ion-color-primary);
+    color: white;
+    ion-icon {
+      margin-top: 10%;
+    }
+  }
+
+  .upload-button {
+    max-width: 200px;
+    // margin: auto;
+  }
+
+  .drop-zone {
+    height: 52px;
+    text-align: center;
+    border: dashed 1px var(--practera-30-Percent-gray);
+    position: relative;
+    margin: 0 auto;
+    vertical-align: -webkit-baseline-middle;
+    border-radius: 12px;
+    p {
+      height: inherit;
+      margin: 0;
+      padding: 5px;
+      ion-icon {
+        vertical-align: middle;
+      }
+      ion-button {
+        vertical-align: middle;
+      }
+    }
+  }
+
+  .fileover {
+    border: 2px solid var(--ion-color-primary);
+  }
+
+  .upload-progress {
+    --ion-grid-column-padding: 0;
+    .fileTypeIcon {
+      text-align: center;
+      ion-icon {
+        padding: 10px;
+      }
+    }
+    .file-size-container, .file-name-container {
+      text-align: left;
+    }
+    .file-name-container {
+      p {
+        margin: 0;
+        height: 29px;
+        padding-bottom: 4px;
+        padding-top: 4px;
+      }
+    }
+    .file-progress-container, .cancel-btn-container {
+      text-align: right;
+    }
+    .size-and-progress {
+      margin-top: 10px;
+    }
+    .cancel-btn {
+      --padding-start: 0;
+      --padding-end: 0;
+    }
+  }
+
+  ion-icon {
+    font-size: 24px;
+  }
+</code></pre>
+    </div>
+
+    <div class="tab-pane fade " id="c-tree">
+        <div id="tree-container"></div>
+        <div class="tree-legend">
+            <div class="title">
+                <b>Legend</b>
+            </div>
+            <div>
+                <div class="color htmlelement"></div><span>Html element</span>
+            </div>
+            <div>
+                <div class="color component"></div><span>Component</span>
+            </div>
+            <div>
+                <div class="color directive"></div><span>Html element with directive</span>
+            </div>
+        </div>
+    </div>
+
+    
+</div>
+
+<script src="../js/libs/vis.min.js"></script>
+<script src="../js/libs/htmlparser.js"></script>
+<script src="../js/libs/deep-iterator.js"></script>
+<script>
+        var COMPONENT_TEMPLATE = '<div><ng-container [ngSwitch]="type">  <ng-container *ngSwitchCase="\'profileImage\'">    <p class="upload-icon" (click)="uploadFile()">      <ion-icon name="camera-outline"></ion-icon>    </p>  </ng-container>  <ng-container *ngSwitchDefault>    <ng-container *ngIf="utils.isMobile()">      <ion-button size="small" class="upload-button" shape="round" (click)="uploadFile()" [disabled]="disabled">UPLOAD FILE</ion-button>    </ng-container>    <ng-container *ngIf="!utils.isMobile()">      <div *ngIf="!isDroped" class="drop-zone" appDragAndDrop (fileDropped)="dragAndDropUpload($event)"        [acceptFileType]="fileType" [disabled]="disabled">        <p class="gray-2 subtitle-1">          <ion-icon name="cloud-upload-outline"></ion-icon> Drag and drop file here or          <ion-button size="small" class="upload-button" shape="round" (click)="uploadFile()" [disabled]="disabled">UPLOAD FILE</ion-button>        </p>      </div>      <div *ngIf="isDroped" class="upload-progress">        <ion-grid>          <ion-row>            <ion-col size="1" class="fileTypeIcon">              <ng-container [ngSwitch]="fileType">                <ng-container *ngSwitchCase="\'video\'">                  <ion-icon name="film-outline"></ion-icon>                </ng-container>                <ng-container *ngSwitchCase="\'image\'">                  <ion-icon name="image-outline"></ion-icon>                </ng-container>                <ng-container *ngSwitchDefault>                  <ion-icon name="document-outline"></ion-icon>                </ng-container>              </ng-container>            </ion-col>            <ion-col size="11">              <ion-grid>                <ion-row>                  <ion-col size="11" class="file-name-container">                    <p class="black subtitle-1">{{ uploadingFile.fileName }}</p>                  </ion-col>                  <ion-col size="1" class="cancel-btn-container">                    <ion-button size="small" fill="clear" class="cancel-btn" (click)="cancelFileUpload()">                      <ion-icon slot="icon-only" name="close-outline"></ion-icon>                    </ion-button>                  </ion-col>                </ion-row>                <ion-row>                  <ion-col size="12">                    <ion-progress-bar color="primary" value="{{ (uploadingFile.uploadProgress) / 100 }}" mode="ios">                    </ion-progress-bar>                  </ion-col>                </ion-row>                <ion-row class="size-and-progress">                  <ion-col size="6" class="file-size-container">                    <p class="file-size caption gray-2">{{ uploadingFile.uploadSize }} of {{ uploadingFile.fileSize }}                    </p>                  </ion-col>                  <ion-col size="6" class="file-progress-container">                    <p class="file-upload-progress caption gray-2">{{ uploadingFile.uploadProgress }}%</p>                  </ion-col>                </ion-row>              </ion-grid>            </ion-col>          </ion-row>        </ion-grid>      </div>    </ng-container>  </ng-container></ng-container></div>'
+    var COMPONENTS = [{'name': 'AchievementBadgeComponent', 'selector': 'achievement-badge'},{'name': 'AchievementPopUpComponent', 'selector': 'app-achievement-pop-up'},{'name': 'AchievementsComponent', 'selector': 'app-achievements'},{'name': 'ActivityCardComponent', 'selector': 'app-activity-card'},{'name': 'ActivityCompletePopUpComponent', 'selector': 'app-activity-complete-pop-up'},{'name': 'ActivityComponent', 'selector': 'app-activity'},{'name': 'ActivityRoutingComponent', 'selector': ''},{'name': 'AppComponent', 'selector': 'app-root'},{'name': 'AssessmentComponent', 'selector': 'app-assessment'},{'name': 'AuthComponent', 'selector': 'app-auth'},{'name': 'AuthDirectLoginComponent', 'selector': 'app-auth-direct-login'},{'name': 'AuthForgotPasswordComponent', 'selector': 'app-auth-forgot-password'},{'name': 'AuthLoginComponent', 'selector': 'app-auth-login'},{'name': 'AuthLogoutComponent', 'selector': 'app-auth-logout'},{'name': 'AuthRegistrationComponent', 'selector': 'app-auth-registration'},{'name': 'AuthResetPasswordComponent', 'selector': 'app-auth-reset-password'},{'name': 'BrandingLogoComponent', 'selector': 'app-branding-logo'},{'name': 'ChatComponent', 'selector': ''},{'name': 'ChatListComponent', 'selector': 'app-chat-list'},{'name': 'ChatPreviewComponent', 'selector': 'chat-preview'},{'name': 'ChatRoomComponent', 'selector': 'app-chat-room'},{'name': 'ChatViewComponent', 'selector': 'app-chat-view'},{'name': 'CircleProgressComponent', 'selector': 'app-circle-progress'},{'name': 'ClickableItemComponent', 'selector': 'clickable-item'},{'name': 'ContactNumberFormComponent', 'selector': 'app-contact-number-form'},{'name': 'DescriptionComponent', 'selector': 'app-description'},{'name': 'DeviceInfoComponent', 'selector': ''},{'name': 'EventDetailComponent', 'selector': 'app-event-detail'},{'name': 'EventListComponent', 'selector': 'app-event-list'},{'name': 'EventsComponent', 'selector': 'app-events'},{'name': 'EventsRoutingComponent', 'selector': ''},{'name': 'FastFeedbackComponent', 'selector': 'app-fast-feedback'},{'name': 'FileComponent', 'selector': 'app-file'},{'name': 'FileDisplayComponent', 'selector': 'app-file-display'},{'name': 'FilestackComponent', 'selector': 'file-stack'},{'name': 'GoMobileComponent', 'selector': 'go-mobile'},{'name': 'HomeComponent', 'selector': 'app-home'},{'name': 'IconComponent', 'selector': 'icon-custom'},{'name': 'ImgComponent', 'selector': 'app-img'},{'name': 'ListItemComponent', 'selector': 'app-list-item'},{'name': 'LockTeamAssessmentPopUpComponent', 'selector': 'app-lock-team-assessment-pop-up'},{'name': 'MultipleComponent', 'selector': 'app-multiple'},{'name': 'OneofComponent', 'selector': 'app-oneof'},{'name': 'OverviewComponent', 'selector': 'app-overview'},{'name': 'PageNotFoundComponent', 'selector': 'app-page-not-found'},{'name': 'PopUpComponent', 'selector': 'app-pop-up'},{'name': 'PreviewComponent', 'selector': 'app-preview'},{'name': 'ProjectComponent', 'selector': 'app-project'},{'name': 'QuestionComponent', 'selector': 'question'},{'name': 'QuestionsComponent', 'selector': 'app-questions'},{'name': 'ReviewListComponent', 'selector': 'app-review-list'},{'name': 'ReviewRatingComponent', 'selector': 'app-review-rating'},{'name': 'ReviewsComponent', 'selector': 'app-reviews'},{'name': 'ReviewsRoutingComponent', 'selector': ''},{'name': 'SettingsComponent', 'selector': 'app-settings'},{'name': 'SettingsRoutingComponent', 'selector': ''},{'name': 'SlidableComponent', 'selector': 'app-slidable'},{'name': 'SwitcherComponent', 'selector': 'app-switcher'},{'name': 'SwitcherProgramComponent', 'selector': 'app-switcher-program'},{'name': 'TabsComponent', 'selector': 'app-tabs'},{'name': 'TasksComponent', 'selector': 'app-tasks'},{'name': 'TasksRoutingComponent', 'selector': ''},{'name': 'TeamMemberSelectorComponent', 'selector': 'app-team-member-selector'},{'name': 'TermsConditionsPreviewComponent', 'selector': 'app-terms-conditions-preview'},{'name': 'TextComponent', 'selector': 'app-text'},{'name': 'TodoCardComponent', 'selector': 'app-todo-card'},{'name': 'TopicComponent', 'selector': 'app-topic'},{'name': 'UnlockingComponent', 'selector': 'unlocking'}];
+    var DIRECTIVES = [{'name': 'AutoresizeDirective', 'selector': '[appAutoresize]'},{'name': 'DragAndDropDirective', 'selector': '[appDragAndDrop]'},{'name': 'FloatDirective', 'selector': '[appFloat]'}];
+    var ACTUAL_COMPONENT = {'name': 'FilestackComponent'};
+</script>
+<script src="../js/tree.js"></script>
+
+
+
+
+
+
+
+
+
+
+                   
+
+
+
+
+                   </div><div class="search-results">
+    <div class="has-results">
+        <h1 class="search-results-title"><span class='search-results-count'></span> result-matching "<span class='search-query'></span>"</h1>
+        <ul class="search-results-list"></ul>
+    </div>
+    <div class="no-results">
+        <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+    </div>
+</div>
+</div>
+               <!-- END CONTENT -->
+           </div>
+       </div>
+
+       <script>
+            var COMPODOC_CURRENT_PAGE_DEPTH = 1;
+            var COMPODOC_CURRENT_PAGE_CONTEXT = 'component';
+            var COMPODOC_CURRENT_PAGE_URL = 'FilestackComponent.html';
+            var MAX_SEARCH_RESULTS = 15;
+       </script>
+
+       <script src="../js/libs/custom-elements.min.js"></script>
+       <script src="../js/libs/lit-html.js"></script>
+       <!-- Required to polyfill modern browsers as code is ES5 for IE... -->
+       <script src="../js/libs/custom-elements-es5-adapter.js" charset="utf-8" defer></script>
+       <script src="../js/menu-wc.js" defer></script>
+
+       <script src="../js/libs/bootstrap-native.js"></script>
+
+       <script src="../js/libs/es6-shim.min.js"></script>
+       <script src="../js/libs/EventDispatcher.js"></script>
+       <script src="../js/libs/promise.min.js"></script>
+       <script src="../js/libs/zepto.min.js"></script>
+
+       <script src="../js/compodoc.js"></script>
+
+       <script src="../js/tabs.js"></script>
+       <script src="../js/menu.js"></script>
+       <script src="../js/libs/clipboard.min.js"></script>
+       <script src="../js/libs/prism.js"></script>
+       <script src="../js/sourceCode.js"></script>
+          <script src="../js/search/search.js"></script>
+          <script src="../js/search/lunr.min.js"></script>
+          <script src="../js/search/search-lunr.js"></script>
+          <script src="../js/search/search_index.js"></script>
+       <script src="../js/lazy-load-graphs.js"></script>
+
+
+    </body>
+</html>

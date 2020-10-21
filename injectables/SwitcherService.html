@@ -1,0 +1,1129 @@
+<!doctype html>
+<html class="no-js" lang="">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title>practera-app-v2 documentation</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+	      <link rel="stylesheet" href="../styles/style.css">
+    </head>
+    <body>
+
+        <div class="navbar navbar-default navbar-fixed-top visible-xs">
+            <a href="../" class="navbar-brand">practera-app-v2 documentation</a>
+            <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
+        </div>
+
+        <div class="xs-menu menu" id="mobile-menu">
+                <div id="book-search-input" role="search"><input type="text" placeholder="Type to search"></div>            <compodoc-menu></compodoc-menu>
+        </div>
+
+        <div class="container-fluid main">
+           <div class="row main">
+               <div class="hidden-xs menu">
+                   <compodoc-menu mode="normal"></compodoc-menu>
+               </div>
+               <!-- START CONTENT -->
+               <div class="content injectable">
+                   <div class="content-data">
+
+
+
+
+
+
+
+<ol class="breadcrumb">
+  <li>Injectables</li>
+  <li>SwitcherService</li>
+</ol>
+
+<ul class="nav nav-tabs" role="tablist">
+        <li class="active">
+            <a href="#info" role="tab" id="info-tab" data-toggle="tab" data-link="info">Info</a>
+        </li>
+        <li >
+            <a href="#source" role="tab" id="source-tab" data-toggle="tab" data-link="source">Source</a>
+        </li>
+</ul>
+
+<div class="tab-content">
+    <div class="tab-pane fade active in" id="c-info">
+        <p class="comment">
+            <h3>File</h3>
+        </p>
+        <p class="comment">
+            <code>src/app/switcher/switcher.service.ts</code>
+        </p>
+
+
+
+
+            <section>
+    <h3 id="index">Index</h3>
+    <table class="table table-sm table-bordered index-table">
+        <tbody>
+
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Methods</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                <a href="#checkIsOneProgram">checkIsOneProgram</a>
+                            </li>
+                            <li>
+                                <a href="#getEvents">getEvents</a>
+                            </li>
+                            <li>
+                                <a href="#getMyInfo">getMyInfo</a>
+                            </li>
+                            <li>
+                                <a href="#getNewJwt">getNewJwt</a>
+                            </li>
+                            <li>
+                                <a href="#getPrograms">getPrograms</a>
+                            </li>
+                            <li>
+                                <a href="#getProgresses">getProgresses</a>
+                            </li>
+                            <li>
+                                <a href="#getReviews">getReviews</a>
+                            </li>
+                            <li>
+                                <a href="#getTeamInfo">getTeamInfo</a>
+                            </li>
+                            <li>
+                                <a href="#switchProgram">switchProgram</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#switchProgramAndNavigate">switchProgramAndNavigate</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+
+
+
+
+        </tbody>
+    </table>
+</section>
+
+            <section>
+    <h3 id="constructor">Constructor</h3>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+<code>constructor(request: <a href="../injectables/RequestService.html">RequestService</a>, utils: <a href="../injectables/UtilsService.html">UtilsService</a>, storage: <a href="../injectables/BrowserStorageService.html">BrowserStorageService</a>, sharedService: <a href="../injectables/SharedService.html">SharedService</a>, pusherService: <a href="../injectables/PusherService.html">PusherService</a>, reviewsService: <a href="../injectables/ReviewListService.html">ReviewListService</a>, eventsService: <a href="../injectables/EventListService.html">EventListService</a>)</code>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="64" class="link-to-prism">src/app/switcher/switcher.service.ts:64</a></div>
+                            </td>
+                        </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                            <div>
+                                    <b>Parameters :</b>
+                                    <table class="params">
+                                        <thead>
+                                            <tr>
+                                                <td>Name</td>
+                                                    <td>Type</td>
+                                                <td>Optional</td>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                                <tr>
+                                                        <td>request</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/RequestService.html" target="_self" >RequestService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>utils</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/UtilsService.html" target="_self" >UtilsService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>storage</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/BrowserStorageService.html" target="_self" >BrowserStorageService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>sharedService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/SharedService.html" target="_self" >SharedService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>pusherService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/PusherService.html" target="_self" >PusherService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>reviewsService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/ReviewListService.html" target="_self" >ReviewListService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>eventsService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/EventListService.html" target="_self" >EventListService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                        </tbody>
+                                    </table>
+                            </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+</section>
+
+            <section>
+    
+    <h3 id="methods">
+        Methods
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="checkIsOneProgram"></a>
+                    <span class="name">
+                        <b>
+                            checkIsOneProgram
+                        </b>
+                        <a href="#checkIsOneProgram"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>checkIsOneProgram(programs?)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="221"
+                            class="link-to-prism">src/app/switcher/switcher.service.ts:221</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>programs</td>
+
+                                    <td>
+                                        Yes
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getEvents"></a>
+                    <span class="name">
+                        <b>
+                            getEvents
+                        </b>
+                        <a href="#getEvents"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>getEvents()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="212"
+                            class="link-to-prism">src/app/switcher/switcher.service.ts:212</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getMyInfo"></a>
+                    <span class="name">
+                        <b>
+                            getMyInfo
+                        </b>
+                        <a href="#getMyInfo"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>getMyInfo()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="180"
+                            class="link-to-prism">src/app/switcher/switcher.service.ts:180</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Returns : </b>    <code>Observable&lt;any&gt;</code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getNewJwt"></a>
+                    <span class="name">
+                        <b>
+                            getNewJwt
+                        </b>
+                        <a href="#getNewJwt"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>getNewJwt()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="276"
+                            class="link-to-prism">src/app/switcher/switcher.service.ts:276</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getPrograms"></a>
+                    <span class="name">
+                        <b>
+                            getPrograms
+                        </b>
+                        <a href="#getPrograms"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>getPrograms()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="76"
+                            class="link-to-prism">src/app/switcher/switcher.service.ts:76</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getProgresses"></a>
+                    <span class="name">
+                        <b>
+                            getProgresses
+                        </b>
+                        <a href="#getProgresses"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>getProgresses(projectIds: number[])</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="96"
+                            class="link-to-prism">src/app/switcher/switcher.service.ts:96</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-description"><p>Get the progress and number of notifications for each project</p>
+</div>
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                    <td>Description</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>projectIds</td>
+                                    <td>
+                                            <code>number[]</code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                    <td>
+                                        <p>Project ids</p>
+
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getReviews"></a>
+                    <span class="name">
+                        <b>
+                            getReviews
+                        </b>
+                        <a href="#getReviews"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>getReviews()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="203"
+                            class="link-to-prism">src/app/switcher/switcher.service.ts:203</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getTeamInfo"></a>
+                    <span class="name">
+                        <b>
+                            getTeamInfo
+                        </b>
+                        <a href="#getTeamInfo"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>getTeamInfo()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="157"
+                            class="link-to-prism">src/app/switcher/switcher.service.ts:157</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Returns : </b>    <code>Observable&lt;any&gt;</code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="switchProgram"></a>
+                    <span class="name">
+                        <b>
+                            switchProgram
+                        </b>
+                        <a href="#switchProgram"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>switchProgram(programObj: <a href="../interfaces/ProgramObj.html">ProgramObj</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="122"
+                            class="link-to-prism">src/app/switcher/switcher.service.ts:122</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>programObj</td>
+                                    <td>
+                                                <code><a href="../interfaces/ProgramObj.html" target="_self" >ProgramObj</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>    <code>Observable&lt;any&gt;</code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="switchProgramAndNavigate"></a>
+                    <span class="name">
+                        <b>
+                            <span class="modifier">Async</span>
+                            switchProgramAndNavigate
+                        </b>
+                        <a href="#switchProgramAndNavigate"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>switchProgramAndNavigate(programs)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="245"
+                            class="link-to-prism">src/app/switcher/switcher.service.ts:245</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-description"><p>this method will check program data and navigate to switcher or dashboard/go-mobile</p>
+</div>
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Optional</td>
+                                    <td>Description</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>programs</td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                    <td>
+                                        <p>there are 4 types of values can come to programs variable.</p>
+<ul>
+<li>Array with multiple program objects -&gt; [{},{},{},{}]</li>
+<li>Array with one program object -&gt; [{}]</li>
+<li>one program object -&gt; {}</li>
+<li>empty value
+if method got &#39;Array with multiple program objects&#39;, redirect to switcher page.
+if method got &#39;Array with one program object&#39;, switch to that program object and navigate to dashboard.
+if method got &#39;one program object&#39;, switch to that program object and navigate to dashboard.
+if method got &#39;empty value&#39;, do nothing.</li>
+</ul>
+
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>    <code>Promise&lt;any&gt;</code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>
+
+    </div>
+
+
+    <div class="tab-pane fade  tab-source-code" id="c-source">
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@angular/core&#x27;;
+import { Observable, of, forkJoin } from &#x27;rxjs&#x27;;
+import { map } from &#x27;rxjs/operators&#x27;;
+import { RequestService } from &#x27;@shared/request/request.service&#x27;;
+import { UtilsService } from &#x27;@services/utils.service&#x27;;
+import { BrowserStorageService } from &#x27;@services/storage.service&#x27;;
+import { PusherService } from &#x27;@shared/pusher/pusher.service&#x27;;
+import { SharedService } from &#x27;@services/shared.service&#x27;;
+import { ReviewListService } from &#x27;@app/review-list/review-list.service&#x27;;
+import { EventListService } from &#x27;@app/event-list/event-list.service&#x27;;
+import { environment } from &#x27;@environments/environment&#x27;;
+
+/**
+ * @name api
+ * @description list of api endpoint involved in this service
+ * @type {Object}
+ */
+const api &#x3D; {
+  me: &#x27;api/users.json&#x27;,
+  teams: &#x27;api/teams.json&#x27;,
+  jwt: &#x27;api/v2/users/jwt/refresh.json&#x27;
+};
+
+export interface ProgramObj {
+  program: Program;
+  project: Project;
+  timeline: Timeline;
+  enrolment: Enrolment;
+  progress?: number;
+  todoItems?: number;
+}
+
+export interface Program {
+  id: number;
+  name: string;
+  experience_id: number;
+  config: ProgramConfig;
+}
+
+export interface ProgramConfig {
+  theme_color: string;
+  card_style?: string;
+  review_rating?: boolean;
+  truncate_description?: boolean;
+}
+
+export interface Project {
+  id: number;
+  lead_image?: string;
+}
+
+export interface Timeline {
+  id: number;
+}
+
+export interface Enrolment {
+  contact_number: string;
+}
+
+@Injectable({
+  providedIn: &#x27;root&#x27;
+})
+
+export class SwitcherService {
+
+  constructor(
+    private request: RequestService,
+    private utils: UtilsService,
+    private storage: BrowserStorageService,
+    private sharedService: SharedService,
+    private pusherService: PusherService,
+    private reviewsService: ReviewListService,
+    private eventsService: EventListService,
+  ) {}
+
+  getPrograms() {
+    const programs &#x3D; this.storage.get(&#x27;programs&#x27;);
+    const cdn &#x3D; &#x27;https://cdn.filestackcontent.com/resize&#x3D;fit:crop,width:&#x27;;
+    let imagewidth &#x3D; 600;
+    programs.forEach(program &#x3D;&gt; {
+      if (program.project.lead_image) {
+        const imageId &#x3D; program.project.lead_image.split(&#x27;/&#x27;).pop();
+        if (!this.utils.isMobile()) {
+          imagewidth &#x3D; 1024;
+        }
+        program.project.lead_image &#x3D; &#x60;${cdn}${imagewidth}/${imageId}&#x60;;
+      }
+    });
+    return of(programs);
+  }
+
+  /**
+   * Get the progress and number of notifications for each project
+   * @param projectIds Project ids
+   */
+  getProgresses(projectIds: number[]) {
+    return this.request.graphQLQuery(
+      &#x60;query getProjectList($ids: [Int]!) {
+        projects(ids: $ids) {
+          id
+          progress
+          todoItems{
+            isDone
+          }
+        }
+      }&#x60;,
+      {
+        ids: projectIds
+      }
+    )
+    .pipe(map(res &#x3D;&gt; {
+      return res.data.projects.map(v &#x3D;&gt; {
+        return {
+          id: +v.id,
+          progress: v.progress,
+          todoItems: v.todoItems.filter(ti &#x3D;&gt; !ti.isDone).length
+        };
+      });
+    }));
+  }
+
+  switchProgram(programObj: ProgramObj): Observable&lt;any&gt; {
+    const themeColor &#x3D; this.utils.has(programObj, &#x27;program.config.theme_color&#x27;) ? programObj.program.config.theme_color : &#x27;#2bbfd4&#x27;;
+    let cardBackgroundImage &#x3D; &#x27;&#x27;;
+    if (this.utils.has(programObj, &#x27;program.config.card_style&#x27;)) {
+      cardBackgroundImage &#x3D; &#x27;/assets/&#x27; + programObj.program.config.card_style;
+    }
+
+    this.storage.setUser({
+      programId: programObj.program.id,
+      programName: programObj.program.name,
+      programImage: programObj.project.lead_image,
+      hasReviewRating: this.utils.has(programObj, &#x27;program.config.review_rating&#x27;) ? programObj.program.config.review_rating : false,
+      truncateDescription: this.utils.has(programObj, &#x27;program.config.truncate_description&#x27;) ? programObj.program.config.truncate_description : true,
+      experienceId: programObj.program.experience_id,
+      projectId: programObj.project.id,
+      timelineId: programObj.timeline.id,
+      contactNumber: programObj.enrolment.contact_number,
+      themeColor: themeColor,
+      activityCardImage: cardBackgroundImage,
+      enrolment: programObj.enrolment,
+      teamId: null,
+      hasEvents: false,
+      hasReviews: false
+    });
+
+    this.sharedService.onPageLoad();
+    return forkJoin([
+      this.getNewJwt(),
+      this.getTeamInfo(),
+      this.getMyInfo(),
+      this.getReviews(),
+      this.getEvents()
+    ]);
+  }
+
+  getTeamInfo(): Observable&lt;any&gt; {
+    return this.request.get(api.teams)
+      .pipe(map(response &#x3D;&gt; {
+        if (response.success &amp;&amp; response.data) {
+          if (!this.utils.has(response.data, &#x27;Teams&#x27;) ||
+              !Array.isArray(response.data.Teams) ||
+              !this.utils.has(response.data.Teams[0], &#x27;id&#x27;)
+             ) {
+            return this.storage.setUser({
+              teamId: null
+            });
+          }
+          return this.storage.setUser({
+            teamId: response.data.Teams[0].id
+          });
+        }
+      }));
+  }
+
+  /**
+   * @name getMyInfo
+   * @description get user info
+   */
+  getMyInfo():  Observable&lt;any&gt; {
+    return this.request.get(api.me).pipe(map(response &#x3D;&gt; {
+      if (response.data) {
+        if (!this.utils.has(response, &#x27;data.User&#x27;)) {
+          return this.request.apiResponseFormatError(&#x27;User format error&#x27;);
+        }
+        const apiData &#x3D; response.data.User;
+        this.storage.setUser({
+          name: apiData.name,
+          contactNumber: apiData.contact_number,
+          email: apiData.email,
+          role: apiData.role,
+          image: apiData.image,
+          linkedinConnected: apiData.linkedinConnected,
+          linkedinUrl: apiData.linkedin_url,
+          userHash: apiData.userhash,
+          maxAchievablePoints: this.utils.has(apiData, &#x27;max_achievable_points&#x27;) ? apiData.max_achievable_points : null
+        });
+      }
+      return response;
+    }));
+  }
+
+  getReviews() {
+    return this.reviewsService.getReviews().pipe(map(data &#x3D;&gt; {
+      this.storage.setUser({
+        hasReviews: (data &amp;&amp; data.length &gt; 0)
+      });
+      return data;
+    }));
+  }
+
+  getEvents() {
+    return this.eventsService.getEvents().pipe(map(events &#x3D;&gt; {
+      this.storage.setUser({
+        hasEvents: !this.utils.isEmpty(events)
+      });
+      return events;
+    }));
+  }
+
+  checkIsOneProgram(programs?) {
+    let programList &#x3D; programs;
+    if (this.utils.isEmpty(programs)) {
+      programList &#x3D; this.storage.get(&#x27;programs&#x27;);
+    }
+    if (programList.length &#x3D;&#x3D;&#x3D; 1) {
+      return true;
+    }
+    return false;
+  }
+
+  /**
+   * this method will check program data and navigate to switcher or dashboard/go-mobile
+   * @param programs
+   * there are 4 types of values can come to programs variable.
+   * - Array with multiple program objects -&gt; [{},{},{},{}]
+   * - Array with one program object -&gt; [{}]
+   * - one program object -&gt; {}
+   * - empty value
+   * if method got &#x27;Array with multiple program objects&#x27;, redirect to switcher page.
+   * if method got &#x27;Array with one program object&#x27;, switch to that program object and navigate to dashboard.
+   * if method got &#x27;one program object&#x27;, switch to that program object and navigate to dashboard.
+   * if method got &#x27;empty value&#x27;, do nothing.
+   */
+  async switchProgramAndNavigate(programs): Promise&lt;any&gt; {
+    if (!this.utils.isEmpty(programs)) {
+      // Array with multiple program objects -&gt; [{},{},{},{}]
+      if (Array.isArray(programs) &amp;&amp; !this.checkIsOneProgram(programs)) {
+        return [&#x27;switcher&#x27;, &#x27;switcher-program&#x27;];
+      // Array with one program object -&gt; [{}]
+      } else if (Array.isArray(programs) &amp;&amp; this.checkIsOneProgram(programs)) {
+        await this.switchProgram(programs[0]).toPromise();
+      } else {
+      // one program object -&gt; {}
+        await this.switchProgram(programs).toPromise();
+      }
+
+      await this.pusherService.initialise({ unsubscribe: true });
+      // clear the cached data
+      this.utils.clearCache();
+      if ((typeof environment.goMobile !&#x3D;&#x3D; &#x27;undefined&#x27; &amp;&amp; environment.goMobile &#x3D;&#x3D;&#x3D; false)
+        || /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
+          if (this.storage.get(&#x27;directLinkRoute&#x27;)) {
+            const route &#x3D; this.storage.get(&#x27;directLinkRoute&#x27;);
+            this.storage.remove(&#x27;directLinkRoute&#x27;);
+            return route;
+          }
+          return [&#x27;app&#x27;, &#x27;home&#x27;];
+      } else {
+        return [&#x27;go-mobile&#x27;];
+      }
+    }
+    return;
+  }
+
+  getNewJwt() {
+    return this.request.get(api.jwt);
+  }
+}
+</code></pre>
+    </div>
+
+</div>
+
+
+
+
+
+
+
+                   
+
+
+
+
+                   </div><div class="search-results">
+    <div class="has-results">
+        <h1 class="search-results-title"><span class='search-results-count'></span> result-matching "<span class='search-query'></span>"</h1>
+        <ul class="search-results-list"></ul>
+    </div>
+    <div class="no-results">
+        <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+    </div>
+</div>
+</div>
+               <!-- END CONTENT -->
+           </div>
+       </div>
+
+       <script>
+            var COMPODOC_CURRENT_PAGE_DEPTH = 1;
+            var COMPODOC_CURRENT_PAGE_CONTEXT = 'injectable';
+            var COMPODOC_CURRENT_PAGE_URL = 'SwitcherService.html';
+            var MAX_SEARCH_RESULTS = 15;
+       </script>
+
+       <script src="../js/libs/custom-elements.min.js"></script>
+       <script src="../js/libs/lit-html.js"></script>
+       <!-- Required to polyfill modern browsers as code is ES5 for IE... -->
+       <script src="../js/libs/custom-elements-es5-adapter.js" charset="utf-8" defer></script>
+       <script src="../js/menu-wc.js" defer></script>
+
+       <script src="../js/libs/bootstrap-native.js"></script>
+
+       <script src="../js/libs/es6-shim.min.js"></script>
+       <script src="../js/libs/EventDispatcher.js"></script>
+       <script src="../js/libs/promise.min.js"></script>
+       <script src="../js/libs/zepto.min.js"></script>
+
+       <script src="../js/compodoc.js"></script>
+
+       <script src="../js/tabs.js"></script>
+       <script src="../js/menu.js"></script>
+       <script src="../js/libs/clipboard.min.js"></script>
+       <script src="../js/libs/prism.js"></script>
+       <script src="../js/sourceCode.js"></script>
+          <script src="../js/search/search.js"></script>
+          <script src="../js/search/lunr.min.js"></script>
+          <script src="../js/search/search-lunr.js"></script>
+          <script src="../js/search/search_index.js"></script>
+       <script src="../js/lazy-load-graphs.js"></script>
+
+
+    </body>
+</html>

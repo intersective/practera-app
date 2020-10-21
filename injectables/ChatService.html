@@ -1,0 +1,1051 @@
+<!doctype html>
+<html class="no-js" lang="">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title>practera-app-v2 documentation</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+	      <link rel="stylesheet" href="../styles/style.css">
+    </head>
+    <body>
+
+        <div class="navbar navbar-default navbar-fixed-top visible-xs">
+            <a href="../" class="navbar-brand">practera-app-v2 documentation</a>
+            <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
+        </div>
+
+        <div class="xs-menu menu" id="mobile-menu">
+                <div id="book-search-input" role="search"><input type="text" placeholder="Type to search"></div>            <compodoc-menu></compodoc-menu>
+        </div>
+
+        <div class="container-fluid main">
+           <div class="row main">
+               <div class="hidden-xs menu">
+                   <compodoc-menu mode="normal"></compodoc-menu>
+               </div>
+               <!-- START CONTENT -->
+               <div class="content injectable">
+                   <div class="content-data">
+
+
+
+
+
+
+
+<ol class="breadcrumb">
+  <li>Injectables</li>
+  <li>ChatService</li>
+</ol>
+
+<ul class="nav nav-tabs" role="tablist">
+        <li class="active">
+            <a href="#info" role="tab" id="info-tab" data-toggle="tab" data-link="info">Info</a>
+        </li>
+        <li >
+            <a href="#source" role="tab" id="source-tab" data-toggle="tab" data-link="source">Source</a>
+        </li>
+</ul>
+
+<div class="tab-content">
+    <div class="tab-pane fade active in" id="c-info">
+        <p class="comment">
+            <h3>File</h3>
+        </p>
+        <p class="comment">
+            <code>src/app/chat/chat.service.ts</code>
+        </p>
+
+
+
+
+            <section>
+    <h3 id="index">Index</h3>
+    <table class="table table-sm table-bordered index-table">
+        <tbody>
+
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Methods</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#_normaliseChatListResponse">_normaliseChatListResponse</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#_normaliseMessageListResponse">_normaliseMessageListResponse</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#_normalisePostMessageResponse">_normalisePostMessageResponse</a>
+                            </li>
+                            <li>
+                                <a href="#getChatList">getChatList</a>
+                            </li>
+                            <li>
+                                <a href="#getMessageList">getMessageList</a>
+                            </li>
+                            <li>
+                                <a href="#markMessagesAsSeen">markMessagesAsSeen</a>
+                            </li>
+                            <li>
+                                <a href="#postAttachmentMessage">postAttachmentMessage</a>
+                            </li>
+                            <li>
+                                <a href="#postNewMessage">postNewMessage</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+
+
+
+
+        </tbody>
+    </table>
+</section>
+
+            <section>
+    <h3 id="constructor">Constructor</h3>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+<code>constructor(request: <a href="../injectables/RequestService.html">RequestService</a>, utils: <a href="../injectables/UtilsService.html">UtilsService</a>, pusherService: <a href="../injectables/PusherService.html">PusherService</a>)</code>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="79" class="link-to-prism">src/app/chat/chat.service.ts:79</a></div>
+                            </td>
+                        </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                            <div>
+                                    <b>Parameters :</b>
+                                    <table class="params">
+                                        <thead>
+                                            <tr>
+                                                <td>Name</td>
+                                                    <td>Type</td>
+                                                <td>Optional</td>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                                <tr>
+                                                        <td>request</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/RequestService.html" target="_self" >RequestService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>utils</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/UtilsService.html" target="_self" >UtilsService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>pusherService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/PusherService.html" target="_self" >PusherService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                        </tbody>
+                                    </table>
+                            </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+</section>
+
+            <section>
+    
+    <h3 id="methods">
+        Methods
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="_normaliseChatListResponse"></a>
+                    <span class="name">
+                        <b>
+                            <span class="modifier">Private</span>
+                            _normaliseChatListResponse
+                        </b>
+                        <a href="#_normaliseChatListResponse"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>_normaliseChatListResponse(data)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="103"
+                            class="link-to-prism">src/app/chat/chat.service.ts:103</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-description"><p>modify the Chat list response</p>
+</div>
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>data</td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="../interfaces/ChatChannel.html" target="_self" >ChatChannel[]</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="_normaliseMessageListResponse"></a>
+                    <span class="name">
+                        <b>
+                            <span class="modifier">Private</span>
+                            _normaliseMessageListResponse
+                        </b>
+                        <a href="#_normaliseMessageListResponse"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>_normaliseMessageListResponse(data)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="155"
+                            class="link-to-prism">src/app/chat/chat.service.ts:155</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-description"><p>modify the message list response</p>
+</div>
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>data</td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="../interfaces/Message.html" target="_self" >Message[]</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="_normalisePostMessageResponse"></a>
+                    <span class="name">
+                        <b>
+                            <span class="modifier">Private</span>
+                            _normalisePostMessageResponse
+                        </b>
+                        <a href="#_normalisePostMessageResponse"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>_normalisePostMessageResponse(data)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="213"
+                            class="link-to-prism">src/app/chat/chat.service.ts:213</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-description"><p>modify the  new message response</p>
+</div>
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>data</td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>    <code>literal type</code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getChatList"></a>
+                    <span class="name">
+                        <b>
+                            getChatList
+                        </b>
+                        <a href="#getChatList"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>getChatList()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="90"
+                            class="link-to-prism">src/app/chat/chat.service.ts:90</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-description"><p>this method return chat list data.</p>
+</div>
+
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="../interfaces/ChatChannel.html" target="_self" >Observable&lt;ChatChannel[]&gt;</a></code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getMessageList"></a>
+                    <span class="name">
+                        <b>
+                            getMessageList
+                        </b>
+                        <a href="#getMessageList"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>getMessageList(data: <a href="../interfaces/MessageListParams.html">MessageListParams</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="138"
+                            class="link-to-prism">src/app/chat/chat.service.ts:138</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-description"><p>this method return a list of messages for a chat channel.
+data is a json object
+{
+   channel_id: 1234,
+   page: 1,
+   size:20
+}</p>
+</div>
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>data</td>
+                                    <td>
+                                                <code><a href="../interfaces/MessageListParams.html" target="_self" >MessageListParams</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="../interfaces/Message.html" target="_self" >Observable&lt;Message[]&gt;</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="markMessagesAsSeen"></a>
+                    <span class="name">
+                        <b>
+                            markMessagesAsSeen
+                        </b>
+                        <a href="#markMessagesAsSeen"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>markMessagesAsSeen(prams: <a href="../interfaces/MarkAsSeenParams.html">MarkAsSeenParams</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="179"
+                            class="link-to-prism">src/app/chat/chat.service.ts:179</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>prams</td>
+                                    <td>
+                                                <code><a href="../interfaces/MarkAsSeenParams.html" target="_self" >MarkAsSeenParams</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>    <code>Observable&lt;any&gt;</code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="postAttachmentMessage"></a>
+                    <span class="name">
+                        <b>
+                            postAttachmentMessage
+                        </b>
+                        <a href="#postAttachmentMessage"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>postAttachmentMessage(data: <a href="../interfaces/NewMessageParam.html">NewMessageParam</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="240"
+                            class="link-to-prism">src/app/chat/chat.service.ts:240</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>data</td>
+                                    <td>
+                                                <code><a href="../interfaces/NewMessageParam.html" target="_self" >NewMessageParam</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>    <code>Observable&lt;any&gt;</code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="postNewMessage"></a>
+                    <span class="name">
+                        <b>
+                            postNewMessage
+                        </b>
+                        <a href="#postNewMessage"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>postNewMessage(data: <a href="../interfaces/NewMessageParam.html">NewMessageParam</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="194"
+                            class="link-to-prism">src/app/chat/chat.service.ts:194</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>data</td>
+                                    <td>
+                                                <code><a href="../interfaces/NewMessageParam.html" target="_self" >NewMessageParam</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>    <code>Observable&lt;any&gt;</code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>
+
+    </div>
+
+
+    <div class="tab-pane fade  tab-source-code" id="c-source">
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@angular/core&#x27;;
+import { RequestService } from &#x27;@shared/request/request.service&#x27;;
+import { map } from &#x27;rxjs/operators&#x27;;
+import { Observable, of } from &#x27;rxjs&#x27;;
+import { UtilsService } from &#x27;@services/utils.service&#x27;;
+import { PusherService } from &#x27;@shared/pusher/pusher.service&#x27;;
+import { environment } from &#x27;@environments/environment&#x27;;
+
+/**
+ * @name api
+ * @description list of api endpoint involved in this service
+ * @type {Object}
+ */
+const api &#x3D; {
+  getChatList: &#x27;api/v2/message/chat/list.json&#x27;,
+  getChatMessages: &#x27;api/v2/message/chat/list_messages.json&#x27;,
+  createMessage: &#x27;api/v2/message/chat/create_message&#x27;,
+  markAsSeen: &#x27;api/v2/message/chat/edit_message&#x27;
+};
+
+export interface ChatChannel {
+  channelId: number | string;
+  channelName: string;
+  channelAvatar: string;
+  pusherChannelName: string;
+  readonly: boolean;
+  roles: string[];
+  members: {
+    name: string;
+    role: string;
+    avatar: string;
+  }[];
+  unreadMessages: number;
+  lastMessage: string;
+  lastMessageCreated: string;
+}
+
+export interface Message {
+  id?: number;
+  senderName?: string;
+  senderRole?: string;
+  senderAvatar?: string;
+  isSender?: boolean;
+  message: string;
+  sentTime?: string;
+  channelId?: number | string;
+  channelIdAlias?: string;
+  file?: object;
+  preview?: string;
+  noAvatar?: boolean;
+}
+
+interface NewMessageParam {
+  channelId: number | string;
+  message: string;
+  env?: string;
+  file?: object;
+}
+
+interface MessageListParams {
+  channel_id: number | string;
+  page: number;
+  size: number;
+}
+
+interface MarkAsSeenParams {
+  channel_id: number | string;
+  ids: number[];
+  action?: string;
+}
+
+interface UnreadMessageParams {
+  filter: string;
+}
+
+@Injectable({
+  providedIn: &#x27;root&#x27;
+})
+export class ChatService {
+
+  constructor(
+    private request: RequestService,
+    private utils: UtilsService,
+    private pusherService: PusherService
+  ) {}
+
+  /**
+   * this method return chat list data.
+   */
+  getChatList(): Observable&lt;ChatChannel[]&gt; {
+    return this.request.get(api.getChatList).pipe(
+      map(response &#x3D;&gt; {
+        if (response.success &amp;&amp; response.data) {
+          return this._normaliseChatListResponse(response.data);
+        }
+      })
+    );
+  }
+
+  /**
+   * modify the Chat list response
+   */
+  private _normaliseChatListResponse(data): ChatChannel[] {
+    if (!Array.isArray(data)) {
+      this.request.apiResponseFormatError(&#x27;Chat format error&#x27;);
+      return [];
+    }
+    if (data.length &#x3D;&#x3D;&#x3D; 0) {
+      return [];
+    }
+    const chats &#x3D; [];
+    data.forEach(chat &#x3D;&gt; {
+      chats.push({
+        channelId: chat.channel_id,
+        channelName: chat.channel_name,
+        channelAvatar: chat.channel_avatar,
+        pusherChannelName: chat.pusher_channel_name,
+        readonly: chat.readonly,
+        roles: chat.roles,
+        members: chat.members,
+        unreadMessages: chat.unread_messages,
+        lastMessage: chat.last_message,
+        lastMessageCreated: chat.last_message_created
+      });
+    });
+    return chats;
+  }
+
+  /**
+   * this method return a list of messages for a chat channel.
+   * data is a json object
+   * {
+   *   channel_id: 1234,
+   *   page: 1,
+   *   size:20
+   * }
+   */
+  getMessageList(data: MessageListParams): Observable&lt;Message[]&gt; {
+    return this.request
+      .get(api.getChatMessages, {
+        params: data
+      })
+      .pipe(
+        map(response &#x3D;&gt; {
+          if (response.success &amp;&amp; response.data) {
+            return this._normaliseMessageListResponse(response.data);
+          }
+        })
+      );
+  }
+
+  /**
+   * modify the message list response
+   */
+  private _normaliseMessageListResponse(data): Message[] {
+    if (!Array.isArray(data)) {
+      this.request.apiResponseFormatError(&#x27;Message array format error&#x27;);
+      return [];
+    }
+    if (data.length &#x3D;&#x3D;&#x3D; 0) {
+      return [];
+    }
+    const messageList &#x3D; [];
+    data.forEach(message &#x3D;&gt; {
+      messageList.push({
+        id: message.id,
+        senderName: message.sender.name,
+        senderRole: message.sender.role,
+        senderAvatar: message.sender.avatar,
+        isSender: message.is_sender,
+        message: message.message,
+        sentTime: message.sent_time,
+        file: message.file
+      });
+    });
+    return messageList;
+  }
+
+  markMessagesAsSeen(prams: MarkAsSeenParams): Observable&lt;any&gt; {
+    const body &#x3D; {
+      channel_id: prams.channel_id,
+      id: prams.ids,
+      action: &#x27;mark_seen&#x27;
+    };
+    return this.request.post(api.markAsSeen, body, {
+      headers: { &#x27;Content-Type&#x27;: &#x27;application/x-www-form-urlencoded&#x27; }
+    });
+  }
+
+  /**
+   * @name postNewMessage
+   * @description post new text message (with text) or attachment (with file)
+   */
+  postNewMessage(data: NewMessageParam): Observable&lt;any&gt; {
+    return this.request.post(api.createMessage, {
+      channel_id: data.channelId,
+      message: data.message,
+      env: environment.env,
+      file: data.file,
+    })
+    .pipe(
+      map(response &#x3D;&gt; {
+        if (response.success &amp;&amp; response.data) {
+          return this._normalisePostMessageResponse(response.data);
+        }
+      })
+    );
+  }
+
+  /**
+   * modify the  new message response
+   */
+  private _normalisePostMessageResponse(data): { message: Message, channelId?: number } {
+    if (!this.utils.has(data, &#x27;id&#x27;) ||
+        !this.utils.has(data, &#x27;sender.name&#x27;) ||
+        !this.utils.has(data, &#x27;sender.role&#x27;) ||
+        !this.utils.has(data, &#x27;sender.avatar&#x27;) ||
+        !this.utils.has(data, &#x27;is_sender&#x27;) ||
+        !this.utils.has(data, &#x27;message&#x27;) ||
+        !this.utils.has(data, &#x27;sent_time&#x27;) ||
+        !this.utils.has(data, &#x27;file&#x27;)) {
+      this.request.apiResponseFormatError(&#x27;chat channel format error&#x27;);
+      return null;
+    }
+    return {
+      message: {
+        id: data.id,
+        senderName: data.sender.name,
+        senderRole: data.sender.role,
+        senderAvatar: data.sender.avatar,
+        isSender: data.is_sender,
+        message: data.message,
+        sentTime: data.sent_time,
+        file: data.file
+      },
+      channelId: data.channel ? data.channel.channel_id : null
+    };
+  }
+
+  postAttachmentMessage(data: NewMessageParam): Observable&lt;any&gt; {
+    if (!data.file) {
+      throw new Error(&#x27;Fatal: File value must not be empty.&#x27;);
+    }
+    return this.postNewMessage(data);
+  }
+}
+</code></pre>
+    </div>
+
+</div>
+
+
+
+
+
+
+
+                   
+
+
+
+
+                   </div><div class="search-results">
+    <div class="has-results">
+        <h1 class="search-results-title"><span class='search-results-count'></span> result-matching "<span class='search-query'></span>"</h1>
+        <ul class="search-results-list"></ul>
+    </div>
+    <div class="no-results">
+        <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+    </div>
+</div>
+</div>
+               <!-- END CONTENT -->
+           </div>
+       </div>
+
+       <script>
+            var COMPODOC_CURRENT_PAGE_DEPTH = 1;
+            var COMPODOC_CURRENT_PAGE_CONTEXT = 'injectable';
+            var COMPODOC_CURRENT_PAGE_URL = 'ChatService.html';
+            var MAX_SEARCH_RESULTS = 15;
+       </script>
+
+       <script src="../js/libs/custom-elements.min.js"></script>
+       <script src="../js/libs/lit-html.js"></script>
+       <!-- Required to polyfill modern browsers as code is ES5 for IE... -->
+       <script src="../js/libs/custom-elements-es5-adapter.js" charset="utf-8" defer></script>
+       <script src="../js/menu-wc.js" defer></script>
+
+       <script src="../js/libs/bootstrap-native.js"></script>
+
+       <script src="../js/libs/es6-shim.min.js"></script>
+       <script src="../js/libs/EventDispatcher.js"></script>
+       <script src="../js/libs/promise.min.js"></script>
+       <script src="../js/libs/zepto.min.js"></script>
+
+       <script src="../js/compodoc.js"></script>
+
+       <script src="../js/tabs.js"></script>
+       <script src="../js/menu.js"></script>
+       <script src="../js/libs/clipboard.min.js"></script>
+       <script src="../js/libs/prism.js"></script>
+       <script src="../js/sourceCode.js"></script>
+          <script src="../js/search/search.js"></script>
+          <script src="../js/search/lunr.min.js"></script>
+          <script src="../js/search/search-lunr.js"></script>
+          <script src="../js/search/search_index.js"></script>
+       <script src="../js/lazy-load-graphs.js"></script>
+
+
+    </body>
+</html>

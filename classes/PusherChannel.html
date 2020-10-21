@@ -1,0 +1,511 @@
+<!doctype html>
+<html class="no-js" lang="">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title>practera-app-v2 documentation</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+	      <link rel="stylesheet" href="../styles/style.css">
+    </head>
+    <body>
+
+        <div class="navbar navbar-default navbar-fixed-top visible-xs">
+            <a href="../" class="navbar-brand">practera-app-v2 documentation</a>
+            <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
+        </div>
+
+        <div class="xs-menu menu" id="mobile-menu">
+                <div id="book-search-input" role="search"><input type="text" placeholder="Type to search"></div>            <compodoc-menu></compodoc-menu>
+        </div>
+
+        <div class="container-fluid main">
+           <div class="row main">
+               <div class="hidden-xs menu">
+                   <compodoc-menu mode="normal"></compodoc-menu>
+               </div>
+               <!-- START CONTENT -->
+               <div class="content class">
+                   <div class="content-data">
+
+
+
+
+
+
+
+
+
+
+
+<ol class="breadcrumb">
+  <li>Classes</li>
+  <li>PusherChannel</li>
+</ol>
+
+<ul class="nav nav-tabs" role="tablist">
+        <li class="active">
+            <a href="#info" role="tab" id="info-tab" data-toggle="tab" data-link="info">Info</a>
+        </li>
+        <li >
+            <a href="#source" role="tab" id="source-tab" data-toggle="tab" data-link="source">Source</a>
+        </li>
+</ul>
+
+<div class="tab-content">
+    <div class="tab-pane fade active in" id="c-info">
+        <p class="comment">
+            <h3>File</h3>
+        </p>
+        <p class="comment">
+            <code>src/app/shared/pusher/pusher.service.ts</code>
+        </p>
+
+
+
+
+
+            <section>
+    <h3 id="index">Index</h3>
+    <table class="table table-sm table-bordered index-table">
+        <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Properties</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                <a href="#name">name</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Optional</span>
+                                <a href="#subscription">subscription</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+
+
+
+
+
+        </tbody>
+    </table>
+</section>
+
+
+            <section>
+    
+        <h3 id="inputs">
+            Properties
+        </h3>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="name"></a>
+                        <span class="name">
+                            <b>
+                            name</b>
+                            <a href="#name"><span class="icon ion-ios-link"></span></a>
+                        </span>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                        </td>
+                    </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                    <div class="io-line">Defined in <a href="" data-line="23" class="link-to-prism">src/app/shared/pusher/pusher.service.ts:23</a></div>
+                            </td>
+                        </tr>
+
+
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="subscription"></a>
+                        <span class="name">
+                            <b>
+                                <span class="modifier">Optional</span>
+                            subscription</b>
+                            <a href="#subscription"><span class="icon ion-ios-link"></span></a>
+                        </span>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <i>Type : </i>    <code>Channel</code>
+
+                        </td>
+                    </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                    <div class="io-line">Defined in <a href="" data-line="24" class="link-to-prism">src/app/shared/pusher/pusher.service.ts:24</a></div>
+                            </td>
+                        </tr>
+
+
+            </tbody>
+        </table>
+</section>
+
+
+
+
+
+
+
+    </div>
+
+
+    <div class="tab-pane fade  tab-source-code" id="c-source">
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable, Optional, NgZone } from &#x27;@angular/core&#x27;;
+import { HttpClient, HttpHeaders, HttpParams, HttpErrorResponse, HttpParameterCodec } from &#x27;@angular/common/http&#x27;;
+import { Observable, of, Subject } from &#x27;rxjs&#x27;;
+import { catchError, map, debounceTime, distinctUntilChanged, switchMap } from &#x27;rxjs/operators&#x27;;
+import { RequestService } from &#x27;@shared/request/request.service&#x27;;
+import { environment } from &#x27;@environments/environment&#x27;;
+import { UtilsService } from &#x27;@services/utils.service&#x27;;
+import { BrowserStorageService } from &#x27;@services/storage.service&#x27;;
+import { PusherStatic, Pusher, Config, Channel } from &#x27;pusher-js&#x27;;
+import * as PusherLib from &#x27;pusher-js&#x27;;
+
+const api &#x3D; {
+  pusherAuth: &#x27;api/v2/message/notify/pusher_auth.json&#x27;,
+  channels: &#x27;api/v2/message/notify/channels.json&#x27;
+};
+
+export class PusherConfig {
+  pusherKey &#x3D; &#x27;&#x27;;
+  apiurl &#x3D; &#x27;&#x27;;
+}
+
+class PusherChannel {
+  name: string;
+  subscription?: Channel;
+}
+
+@Injectable({
+  providedIn: &#x27;root&#x27;,
+})
+
+export class PusherService {
+  private pusherKey: string;
+  private apiurl: string;
+  private pusher: Pusher;
+  private channels: {
+    notification: PusherChannel;
+    chat: PusherChannel[];
+  } &#x3D; {
+    notification: null,
+    chat: []
+  };
+
+  constructor(
+    private http: HttpClient,
+    @Optional() config: PusherConfig,
+    private request: RequestService,
+    private utils: UtilsService,
+    public storage: BrowserStorageService,
+    private ngZone: NgZone
+  ) {
+    if (config) {
+      this.pusherKey &#x3D; config.pusherKey;
+      this.apiurl &#x3D; config.apiurl;
+    }
+  }
+
+  // initialise + subscribe to channels at one go
+  async initialise(options?: {
+    unsubscribe?: boolean;
+  }) {
+    // make sure pusher is connected
+    if (!this.pusher) {
+      this.pusher &#x3D; await this.initialisePusher();
+    }
+
+    if (!this.pusher) {
+      return {};
+    }
+
+    if (options &amp;&amp; options.unsubscribe) {
+      this.unsubscribeChannels();
+    }
+
+    // handling condition at re-login without rebuilding pusher (where isInstantiated() is false)
+    if (this.pusher.connection.state !&#x3D;&#x3D; &#x27;connected&#x27;) {
+      // reconnect pusher
+      this.pusher.connect();
+    }
+
+    // subscribe to event only when pusher is available
+    const channels &#x3D; await this.getChannels().toPromise();
+    return {
+      pusher: this.pusher,
+      channels
+    };
+  }
+
+  disconnect(): void {
+    if (this.pusher) {
+      return this.pusher.disconnect();
+    }
+    return;
+  }
+
+  // check if pusher has been instantiated correctly
+  isInstantiated(): boolean {
+    if (this.utils.isEmpty(this.pusher)) {
+      return false;
+    }
+
+    if (this.pusher.connection.state &#x3D;&#x3D;&#x3D; &#x27;disconnected&#x27;) {
+      return false;
+    }
+
+    return true;
+  }
+
+  private async initialisePusher(): Promise&lt;Pusher&gt; {
+    // during the app execution lifecycle
+    if (typeof this.pusher !&#x3D;&#x3D; &#x27;undefined&#x27;) {
+      return this.pusher;
+    }
+
+    // prevent pusher auth before user authenticated (skip silently)
+    const { apikey, timelineId } &#x3D; this.storage.getUser();
+    if (!apikey || !timelineId) {
+      return this.pusher;
+    }
+
+    // never reinstantiate another instance of Pusher
+    if (!this.utils.isEmpty(this.pusher)) {
+      return this.pusher;
+    }
+
+    try {
+      const config: Config &#x3D; {
+        cluster: &#x27;mt1&#x27;,
+        forceTLS: true,
+        authEndpoint: this.apiurl + api.pusherAuth,
+        auth: {
+          headers: {
+            &#x27;Authorization&#x27;: &#x27;pusherKey&#x3D;&#x27; + this.pusherKey,
+            &#x27;appkey&#x27;: environment.appkey,
+            &#x27;apikey&#x27;: this.storage.getUser().apikey,
+            &#x27;timelineid&#x27;: this.storage.getUser().timelineId
+          },
+        },
+      };
+      const newPusherInstance &#x3D; await new PusherLib(this.pusherKey, config);
+      return newPusherInstance;
+    } catch (err) {
+      throw new Error(err);
+    }
+  }
+
+  /**
+   * check if every channel has been subscribed properly
+   * true: subscribed
+   * false: haven&#x27;t subscribed
+   */
+  isSubscribed(channelName): boolean {
+    return !!this.pusher.allChannels().find((channel: Channel) &#x3D;&gt; channel.name &#x3D;&#x3D;&#x3D; channelName &amp;&amp; channel.subscribed);
+  }
+
+  /**
+   * get a list of channels from API request and subscribe every of them into
+   * connected + authorised pusher
+   */
+  getChannels(): Observable&lt;any&gt; {
+    return this.request.get(api.channels, {
+      params: {
+        env: environment.env,
+        for: &#x27;notification&#x27;
+      }
+    }).pipe(map(response &#x3D;&gt; {
+      if (response.data) {
+        return this.subscribeChannel(&#x27;notification&#x27;, response.data[0].channel);
+      }
+    }));
+  }
+
+  /**
+   * unsubscribe all channels
+   * (use case: after switching program)
+   */
+  unsubscribeChannels(): void {
+    if (!this.channels.notification) {
+      return ;
+    }
+    this.channels.notification.subscription.unbind_all();
+    // handle issue logout at first load of program-switching view
+    if (this.pusher) {
+      this.pusher.unbind_all();
+      this.pusher.unsubscribe(this.channels.notification.name);
+    }
+    this.channels.chat.forEach(chat &#x3D;&gt; {
+      chat.subscription.unbind_all();
+      if (this.pusher) {
+        this.pusher.unsubscribe(chat.name);
+      }
+    });
+    this.channels.notification &#x3D; null;
+    this.channels.chat &#x3D; [];
+  }
+
+  /**
+   * Subscribe a Pusher channel
+   * @param type        The type of Pusher channel (notification/chat)
+   * @param channelName The name of the Pusher channel
+   */
+  subscribeChannel(type: string, channelName: string) {
+    if (!channelName) {
+      return false;
+    }
+    if (this.isSubscribed(channelName)) {
+      return;
+    }
+    switch (type) {
+      case &#x27;notification&#x27;:
+        this.channels.notification &#x3D; {
+          name: channelName,
+          subscription: this.pusher.subscribe(channelName)
+        };
+        this.channels.notification.subscription
+          .bind(&#x27;notification&#x27;, data &#x3D;&gt; {
+            this.utils.broadcastEvent(&#x27;notification&#x27;, data);
+          })
+          .bind(&#x27;achievement&#x27;, data &#x3D;&gt; {
+            this.utils.broadcastEvent(&#x27;achievement&#x27;, data);
+          })
+          .bind(&#x27;event-reminder&#x27;, data &#x3D;&gt; {
+            this.utils.broadcastEvent(&#x27;event-reminder&#x27;, data);
+          })
+          .bind(&#x27;chat&#x27;, data &#x3D;&gt; {
+            this.utils.broadcastEvent(&#x27;chat:new-message&#x27;, data);
+          })
+          .bind(&#x27;pusher:subscription_succeeded&#x27;, data &#x3D;&gt; {
+          })
+          .bind(&#x27;pusher:subscription_error&#x27;, data &#x3D;&gt; {
+            // error handling
+          });
+        break;
+      case &#x27;chat&#x27;:
+        // don&#x27;t need to subscribe again if already subscribed
+        if (this.channels.chat.find(c &#x3D;&gt; c.name &#x3D;&#x3D;&#x3D; channelName)) {
+          return;
+        }
+        const channel &#x3D; {
+          name: channelName,
+          subscription: this.pusher.subscribe(channelName)
+        };
+        channel.subscription
+          .bind(&#x27;client-typing-event&#x27;, data &#x3D;&gt; {
+            this.utils.broadcastEvent(&#x27;typing-&#x27; + channelName, data);
+          })
+          .bind(&#x27;pusher:subscription_succeeded&#x27;, data &#x3D;&gt; {
+          })
+          .bind(&#x27;pusher:subscription_error&#x27;, data &#x3D;&gt; {
+            // error handling
+          });
+        if (!this.channels.chat) {
+          this.channels.chat &#x3D; [];
+        }
+        this.channels.chat.push(channel);
+        break;
+    }
+  }
+
+  /**
+   * When the current user start typing, send notification to the Pusher channel
+   * from pusher doc
+   * - A client event must have a name prefixed with &#x27;client&#x27;- or it will be rejected by the server.
+   * - Client events can only be triggered on &#x27;private&#x27; and &#x27;presence&#x27; channels because they require authentication
+   * - private channel name start with &#x27;private-&#x27; and presence channel name start with &#x27;presence-&#x27;
+   */
+  triggerTyping(channelName): void {
+    const channel &#x3D; this.channels.chat.find(c &#x3D;&gt; c.name &#x3D;&#x3D;&#x3D; channelName);
+    if (!channel) {
+      return;
+    }
+    channel.subscription.trigger(&#x27;client-typing-event&#x27;, {
+      user: this.storage.getUser().name
+    });
+  }
+
+}
+</code></pre>
+    </div>
+</div>
+
+
+
+                   
+
+
+
+
+                   </div><div class="search-results">
+    <div class="has-results">
+        <h1 class="search-results-title"><span class='search-results-count'></span> result-matching "<span class='search-query'></span>"</h1>
+        <ul class="search-results-list"></ul>
+    </div>
+    <div class="no-results">
+        <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+    </div>
+</div>
+</div>
+               <!-- END CONTENT -->
+           </div>
+       </div>
+
+       <script>
+            var COMPODOC_CURRENT_PAGE_DEPTH = 1;
+            var COMPODOC_CURRENT_PAGE_CONTEXT = 'class';
+            var COMPODOC_CURRENT_PAGE_URL = 'PusherChannel.html';
+            var MAX_SEARCH_RESULTS = 15;
+       </script>
+
+       <script src="../js/libs/custom-elements.min.js"></script>
+       <script src="../js/libs/lit-html.js"></script>
+       <!-- Required to polyfill modern browsers as code is ES5 for IE... -->
+       <script src="../js/libs/custom-elements-es5-adapter.js" charset="utf-8" defer></script>
+       <script src="../js/menu-wc.js" defer></script>
+
+       <script src="../js/libs/bootstrap-native.js"></script>
+
+       <script src="../js/libs/es6-shim.min.js"></script>
+       <script src="../js/libs/EventDispatcher.js"></script>
+       <script src="../js/libs/promise.min.js"></script>
+       <script src="../js/libs/zepto.min.js"></script>
+
+       <script src="../js/compodoc.js"></script>
+
+       <script src="../js/tabs.js"></script>
+       <script src="../js/menu.js"></script>
+       <script src="../js/libs/clipboard.min.js"></script>
+       <script src="../js/libs/prism.js"></script>
+       <script src="../js/sourceCode.js"></script>
+          <script src="../js/search/search.js"></script>
+          <script src="../js/search/lunr.min.js"></script>
+          <script src="../js/search/search-lunr.js"></script>
+          <script src="../js/search/search_index.js"></script>
+       <script src="../js/lazy-load-graphs.js"></script>
+
+
+    </body>
+</html>

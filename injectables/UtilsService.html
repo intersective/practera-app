@@ -1,0 +1,2784 @@
+<!doctype html>
+<html class="no-js" lang="">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title>practera-app-v2 documentation</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+	      <link rel="stylesheet" href="../styles/style.css">
+    </head>
+    <body>
+
+        <div class="navbar navbar-default navbar-fixed-top visible-xs">
+            <a href="../" class="navbar-brand">practera-app-v2 documentation</a>
+            <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
+        </div>
+
+        <div class="xs-menu menu" id="mobile-menu">
+                <div id="book-search-input" role="search"><input type="text" placeholder="Type to search"></div>            <compodoc-menu></compodoc-menu>
+        </div>
+
+        <div class="container-fluid main">
+           <div class="row main">
+               <div class="hidden-xs menu">
+                   <compodoc-menu mode="normal"></compodoc-menu>
+               </div>
+               <!-- START CONTENT -->
+               <div class="content injectable">
+                   <div class="content-data">
+
+
+
+
+
+
+
+<ol class="breadcrumb">
+  <li>Injectables</li>
+  <li>UtilsService</li>
+</ol>
+
+<ul class="nav nav-tabs" role="tablist">
+        <li class="active">
+            <a href="#info" role="tab" id="info-tab" data-toggle="tab" data-link="info">Info</a>
+        </li>
+        <li >
+            <a href="#source" role="tab" id="source-tab" data-toggle="tab" data-link="source">Source</a>
+        </li>
+</ul>
+
+<div class="tab-content">
+    <div class="tab-pane fade active in" id="c-info">
+        <p class="comment">
+            <h3>File</h3>
+        </p>
+        <p class="comment">
+            <code>src/app/services/utils.service.ts</code>
+        </p>
+
+
+
+
+            <section>
+    <h3 id="index">Index</h3>
+    <table class="table table-sm table-bordered index-table">
+        <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Properties</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                    <span class="modifier">Protected</span>
+                                <a href="#_eventsSubject">_eventsSubject</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#lodash">lodash</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Methods</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                <a href="#addOrRemove">addOrRemove</a>
+                            </li>
+                            <li>
+                                <a href="#broadcastEvent">broadcastEvent</a>
+                            </li>
+                            <li>
+                                <a href="#changeCardBackgroundImage">changeCardBackgroundImage</a>
+                            </li>
+                            <li>
+                                <a href="#changeThemeColor">changeThemeColor</a>
+                            </li>
+                            <li>
+                                <a href="#checkOrderById">checkOrderById</a>
+                            </li>
+                            <li>
+                                <a href="#clearCache">clearCache</a>
+                            </li>
+                            <li>
+                                <a href="#dateFormatter">dateFormatter</a>
+                            </li>
+                            <li>
+                                <a href="#each">each</a>
+                            </li>
+                            <li>
+                                <a href="#find">find</a>
+                            </li>
+                            <li>
+                                <a href="#findIndex">findIndex</a>
+                            </li>
+                            <li>
+                                <a href="#flatten">flatten</a>
+                            </li>
+                            <li>
+                                <a href="#getEvent">getEvent</a>
+                            </li>
+                            <li>
+                                <a href="#getNextArrayElement">getNextArrayElement</a>
+                            </li>
+                            <li>
+                                <a href="#graphQLQueryStringFormatter">graphQLQueryStringFormatter</a>
+                            </li>
+                            <li>
+                                <a href="#has">has</a>
+                            </li>
+                            <li>
+                                <a href="#indexOf">indexOf</a>
+                            </li>
+                            <li>
+                                <a href="#isEmpty">isEmpty</a>
+                            </li>
+                            <li>
+                                <a href="#isMobile">isMobile</a>
+                            </li>
+                            <li>
+                                <a href="#iso8601Formatter">iso8601Formatter</a>
+                            </li>
+                            <li>
+                                <a href="#openUrl">openUrl</a>
+                            </li>
+                            <li>
+                                <a href="#remove">remove</a>
+                            </li>
+                            <li>
+                                <a href="#timeComparer">timeComparer</a>
+                            </li>
+                            <li>
+                                <a href="#timeFormatter">timeFormatter</a>
+                            </li>
+                            <li>
+                                <a href="#unset">unset</a>
+                            </li>
+                            <li>
+                                <a href="#urlQueryToObject">urlQueryToObject</a>
+                            </li>
+                            <li>
+                                <a href="#utcToLocal">utcToLocal</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+
+
+
+
+        </tbody>
+    </table>
+</section>
+
+            <section>
+    <h3 id="constructor">Constructor</h3>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+<code>constructor(document: Document, platform: Platform, apollo: Apollo)</code>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="19" class="link-to-prism">src/app/services/utils.service.ts:19</a></div>
+                            </td>
+                        </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                            <div>
+                                    <b>Parameters :</b>
+                                    <table class="params">
+                                        <thead>
+                                            <tr>
+                                                <td>Name</td>
+                                                    <td>Type</td>
+                                                <td>Optional</td>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                                <tr>
+                                                        <td>document</td>
+                                                  
+                                                        <td>
+                                                                    <code>Document</code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>platform</td>
+                                                  
+                                                        <td>
+                                                                    <code>Platform</code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>apollo</td>
+                                                  
+                                                        <td>
+                                                                    <code>Apollo</code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                        </tbody>
+                                    </table>
+                            </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+</section>
+
+            <section>
+    
+    <h3 id="methods">
+        Methods
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="addOrRemove"></a>
+                    <span class="name">
+                        <b>
+                            addOrRemove
+                        </b>
+                        <a href="#addOrRemove"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>addOrRemove(array: Array<any>, value)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="105"
+                            class="link-to-prism">src/app/services/utils.service.ts:105</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>array</td>
+                                    <td>
+                                            <code>Array&lt;any&gt;</code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>value</td>
+                                    <td>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="broadcastEvent"></a>
+                    <span class="name">
+                        <b>
+                            broadcastEvent
+                        </b>
+                        <a href="#broadcastEvent"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>broadcastEvent(key: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, value: <a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank">any</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="145"
+                            class="link-to-prism">src/app/services/utils.service.ts:145</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>key</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>value</td>
+                                    <td>
+                                                <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="changeCardBackgroundImage"></a>
+                    <span class="name">
+                        <b>
+                            changeCardBackgroundImage
+                        </b>
+                        <a href="#changeCardBackgroundImage"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>changeCardBackgroundImage(image)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="140"
+                            class="link-to-prism">src/app/services/utils.service.ts:140</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>image</td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="changeThemeColor"></a>
+                    <span class="name">
+                        <b>
+                            changeThemeColor
+                        </b>
+                        <a href="#changeThemeColor"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>changeThemeColor(color)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="126"
+                            class="link-to-prism">src/app/services/utils.service.ts:126</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>color</td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="checkOrderById"></a>
+                    <span class="name">
+                        <b>
+                            checkOrderById
+                        </b>
+                        <a href="#checkOrderById"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>checkOrderById(target: any[], currentId, options: literal type)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="338"
+                            class="link-to-prism">src/app/services/utils.service.ts:338</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-description"><p>check if the targeted element in an array is located at the last in the last index</p>
+</div>
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>target</td>
+                                    <td>
+                                            <code>any[]</code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>currentId</td>
+                                    <td>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>options</td>
+                                    <td>
+                                            <code>literal type</code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="clearCache"></a>
+                    <span class="name">
+                        <b>
+                            clearCache
+                        </b>
+                        <a href="#clearCache"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>clearCache()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="175"
+                            class="link-to-prism">src/app/services/utils.service.ts:175</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="dateFormatter"></a>
+                    <span class="name">
+                        <b>
+                            dateFormatter
+                        </b>
+                        <a href="#dateFormatter"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>dateFormatter(date: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date" target="_blank">Date</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="261"
+                            class="link-to-prism">src/app/services/utils.service.ts:261</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                    <td>Description</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>date</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date" target="_blank" >Date</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                    <td>
+                                        <p>targetted date</p>
+
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="each"></a>
+                    <span class="name">
+                        <b>
+                            each
+                        </b>
+                        <a href="#each"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>each(collections, callback)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="67"
+                            class="link-to-prism">src/app/services/utils.service.ts:67</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>collections</td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>callback</td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="find"></a>
+                    <span class="name">
+                        <b>
+                            find
+                        </b>
+                        <a href="#find"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>find(collections, callback)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="75"
+                            class="link-to-prism">src/app/services/utils.service.ts:75</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>collections</td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>callback</td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="findIndex"></a>
+                    <span class="name">
+                        <b>
+                            findIndex
+                        </b>
+                        <a href="#findIndex"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>findIndex(collections: any[], callback: <a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank">any</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="79"
+                            class="link-to-prism">src/app/services/utils.service.ts:79</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>collections</td>
+                                    <td>
+                                            <code>any[]</code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>callback</td>
+                                    <td>
+                                                <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="flatten"></a>
+                    <span class="name">
+                        <b>
+                            flatten
+                        </b>
+                        <a href="#flatten"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>flatten(array)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="87"
+                            class="link-to-prism">src/app/services/utils.service.ts:87</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>array</td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getEvent"></a>
+                    <span class="name">
+                        <b>
+                            getEvent
+                        </b>
+                        <a href="#getEvent"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>getEvent(key: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="150"
+                            class="link-to-prism">src/app/services/utils.service.ts:150</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>key</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>    <code>Observable&lt;any&gt;</code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getNextArrayElement"></a>
+                    <span class="name">
+                        <b>
+                            getNextArrayElement
+                        </b>
+                        <a href="#getNextArrayElement"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>getNextArrayElement(target: any[], currentId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="324"
+                            class="link-to-prism">src/app/services/utils.service.ts:324</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-description"><p>get next element in an array,
+return undefined if the next value is not available</p>
+</div>
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>target</td>
+                                    <td>
+                                            <code>any[]</code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>currentId</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="graphQLQueryStringFormatter"></a>
+                    <span class="name">
+                        <b>
+                            graphQLQueryStringFormatter
+                        </b>
+                        <a href="#graphQLQueryStringFormatter"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>graphQLQueryStringFormatter(query: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="122"
+                            class="link-to-prism">src/app/services/utils.service.ts:122</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-description"><p>Given query in GraphQL format, change it to the normal query body string
+i.e. remove the new line and additional spaces</p>
+</div>
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                    <td>Description</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>query</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                    <td>
+                                        <p>the query string</p>
+
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="has"></a>
+                    <span class="name">
+                        <b>
+                            has
+                        </b>
+                        <a href="#has"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>has(object, path)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="83"
+                            class="link-to-prism">src/app/services/utils.service.ts:83</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>object</td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>path</td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="indexOf"></a>
+                    <span class="name">
+                        <b>
+                            indexOf
+                        </b>
+                        <a href="#indexOf"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>indexOf(array, value, fromIndex: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="91"
+                            class="link-to-prism">src/app/services/utils.service.ts:91</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                    <td>Default value</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>array</td>
+                                    <td>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+                                    <td>
+                                    </td>
+
+                                </tr>
+                                <tr>
+                                    <td>value</td>
+                                    <td>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+                                    <td>
+                                    </td>
+
+                                </tr>
+                                <tr>
+                                    <td>fromIndex</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+                                    <td>
+                                        <code>0</code>
+                                    </td>
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="isEmpty"></a>
+                    <span class="name">
+                        <b>
+                            isEmpty
+                        </b>
+                        <a href="#isEmpty"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>isEmpty(value: <a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank">any</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="58"
+                            class="link-to-prism">src/app/services/utils.service.ts:58</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-description"><p>check if a value is empty
+precautions:</p>
+<ul>
+<li>Lodash&#39;s isEmpty, by default, sees &quot;number&quot; type value as empty,
+but in our case, we just treat null/undefined/&quot;&quot;/[]/{} as empty.</li>
+<li>[{}] = true</li>
+<li>[{}, {}, {}] = false</li>
+</ul>
+</div>
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>value</td>
+                                    <td>
+                                                <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        <p>true: when empty string/object/array, otherwise false</p>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="isMobile"></a>
+                    <span class="name">
+                        <b>
+                            isMobile
+                        </b>
+                        <a href="#isMobile"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>isMobile()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="44"
+                            class="link-to-prism">src/app/services/utils.service.ts:44</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div>
+                        <b>Example :</b>
+                        <div>
+                            <pre class="line-numbers"><code class="language-html">&lt;a href=&quot;https://github.com/ionic-team/ionic/blob/master/angular/src/providers/platform.ts#L71-L115&quot;&gt;https://github.com/ionic-team/ionic/blob/master/angular/src/providers/platform.ts#L71-L115&lt;/a&gt;</code></pre>
+                        </div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="iso8601Formatter"></a>
+                    <span class="name">
+                        <b>
+                            iso8601Formatter
+                        </b>
+                        <a href="#iso8601Formatter"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>iso8601Formatter(time: Date | string)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="360"
+                            class="link-to-prism">src/app/services/utils.service.ts:360</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-description"><p>Format the time string</p>
+<ol>
+<li>Add &#39;T&#39; between date and time, for compatibility with Safari</li>
+<li>Add &#39;Z&#39; at last to indicate that it is UTC time, browser will automatically convert the time to local time</li>
+</ol>
+<p>Example time string: &#39;2019-08-06 15:03:00&#39;
+After formatter: &#39;2019-08-06T15:03:00Z&#39;</p>
+<p>SAFARI enforce ISO 8601 (no space as time delimiter allowed)
+T for time delimiter
+Z for timezone (UTC) delimiter (+0000)</p>
+</div>
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>time</td>
+                                    <td>
+                                            <code>Date | string</code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="openUrl"></a>
+                    <span class="name">
+                        <b>
+                            openUrl
+                        </b>
+                        <a href="#openUrl"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>openUrl(url, options?: literal type)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="99"
+                            class="link-to-prism">src/app/services/utils.service.ts:99</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>url</td>
+                                    <td>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>options</td>
+                                    <td>
+                                            <code>literal type</code>
+                                    </td>
+
+                                    <td>
+                                        Yes
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="remove"></a>
+                    <span class="name">
+                        <b>
+                            remove
+                        </b>
+                        <a href="#remove"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>remove(collections, callback)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="95"
+                            class="link-to-prism">src/app/services/utils.service.ts:95</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>collections</td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>callback</td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="timeComparer"></a>
+                    <span class="name">
+                        <b>
+                            timeComparer
+                        </b>
+                        <a href="#timeComparer"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>timeComparer(timeString: Date | string, options: literal type)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="290"
+                            class="link-to-prism">src/app/services/utils.service.ts:290</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                    <td>Default value</td>
+                                    <td>Description</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>timeString</td>
+                                    <td>
+                                            <code>Date | string</code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+                                    <td>
+                                    </td>
+
+                                    <td>
+                                        <p>[description]</p>
+
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>options</td>
+                                    <td>
+                                            <code>literal type</code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+                                    <td>
+                                        <code>{}</code>
+                                    </td>
+
+                                    <td>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        <p>-1: before, 0: same date, 1: after</p>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="timeFormatter"></a>
+                    <span class="name">
+                        <b>
+                            timeFormatter
+                        </b>
+                        <a href="#timeFormatter"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>timeFormatter(time: Date | string, compareWith?: Date | string)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="199"
+                            class="link-to-prism">src/app/services/utils.service.ts:199</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-description"><p>This is a time formatter that transfer time/date string to a nice string
+It will return different string based on the comparision with &#39;compareWith&#39; (default is today)
+Any time before yesterday(one day before &#39;compareWith&#39;) will return &#39;Yesterday&#39;
+Any time today(the same day as &#39;compareWith&#39;) will return the time
+Any other time will just return the date in &quot;3 May&quot; format</p>
+</div>
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                    <td>Description</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>time</td>
+                                    <td>
+                                            <code>Date | string</code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                    <td>
+                                        <p>[The time string going to be formatted (In UTC timezone)]</p>
+
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>compareWith</td>
+                                    <td>
+                                            <code>Date | string</code>
+                                    </td>
+
+                                    <td>
+                                        Yes
+                                    </td>
+
+
+                                    <td>
+                                        <p>[The time string used to compare with]</p>
+
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="unset"></a>
+                    <span class="name">
+                        <b>
+                            unset
+                        </b>
+                        <a href="#unset"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>unset(object, path)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="71"
+                            class="link-to-prism">src/app/services/utils.service.ts:71</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>object</td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>path</td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="urlQueryToObject"></a>
+                    <span class="name">
+                        <b>
+                            urlQueryToObject
+                        </b>
+                        <a href="#urlQueryToObject"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>urlQueryToObject(query: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="185"
+                            class="link-to-prism">src/app/services/utils.service.ts:185</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>query</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="utcToLocal"></a>
+                    <span class="name">
+                        <b>
+                            utcToLocal
+                        </b>
+                        <a href="#utcToLocal"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>utcToLocal(time: Date | string, display: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="234"
+                            class="link-to-prism">src/app/services/utils.service.ts:234</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-description"><p>turn date into customised &amp; human-readable language (non RFC2822/ISO standard)</p>
+</div>
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                    <td>Default value</td>
+                                    <td>Description</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>time</td>
+                                    <td>
+                                            <code>Date | string</code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+                                    <td>
+                                    </td>
+
+                                    <td>
+                                        <p>Date</p>
+
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>display</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+                                    <td>
+                                        <code>&#x27;all&#x27;</code>
+                                    </td>
+
+                                    <td>
+                                        <p>date: display date, time: display time, all: date + time</p>
+
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>
+            <section>
+    
+        <h3 id="inputs">
+            Properties
+        </h3>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="_eventsSubject"></a>
+                        <span class="name">
+                            <b>
+                                <span class="modifier">Protected</span>
+                            _eventsSubject</b>
+                            <a href="#_eventsSubject"><span class="icon ion-ios-link"></span></a>
+                        </span>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <i>Default value : </i><code>new Subject&lt;{key: string, value: any}&gt;()</code>
+                        </td>
+                    </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                    <div class="io-line">Defined in <a href="" data-line="19" class="link-to-prism">src/app/services/utils.service.ts:19</a></div>
+                            </td>
+                        </tr>
+
+
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="lodash"></a>
+                        <span class="name">
+                            <b>
+                                <span class="modifier">Private</span>
+                            lodash</b>
+                            <a href="#lodash"><span class="icon ion-ios-link"></span></a>
+                        </span>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                    <div class="io-line">Defined in <a href="" data-line="17" class="link-to-prism">src/app/services/utils.service.ts:17</a></div>
+                            </td>
+                        </tr>
+
+
+            </tbody>
+        </table>
+</section>
+
+    </div>
+
+
+    <div class="tab-pane fade  tab-source-code" id="c-source">
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable, Inject } from &#x27;@angular/core&#x27;;
+import * as _ from &#x27;lodash&#x27;;
+import { DOCUMENT } from &#x27;@angular/common&#x27;;
+import { Observable, Subject, BehaviorSubject } from &#x27;rxjs&#x27;;
+import { map, filter } from &#x27;rxjs/operators&#x27;;
+import { Platform } from &#x27;@ionic/angular&#x27;;
+import { Apollo } from &#x27;apollo-angular&#x27;;
+import * as moment from &#x27;moment&#x27;;
+
+// @TODO: enhance Window reference later, we shouldn&#x27;t refer directly to browser&#x27;s window object like this
+declare var window: any;
+
+@Injectable({
+  providedIn: &#x27;root&#x27;
+})
+export class UtilsService {
+  private lodash;
+  // this Subject is used to broadcast an event to the app
+  protected _eventsSubject &#x3D; new Subject&lt;{key: string, value: any}&gt;();
+  // -- Not in used anymore, leave them commented in case we need later --
+  // // this Subject is used in project.service to cache the project data
+  // public projectSubject &#x3D; new BehaviorSubject(null);
+  // // this Subject is used in activity.service to cache the activity data
+  // // it stores key &#x3D;&gt; Subject pairs of all activities
+  // public activitySubjects &#x3D; {};
+
+  constructor(
+    @Inject(DOCUMENT) private document: Document,
+    private platform: Platform,
+    private apollo: Apollo
+  ) {
+    if (_) {
+      this.lodash &#x3D; _;
+    } else {
+      throw new Error(&#x27;Lodash not available&#x27;);
+    }
+  }
+
+  /**
+   * @name isMobile
+   * @description grouping device type into 2 group (mobile/desktop) and return true if mobile, otherwise return false
+   * @example https://github.com/ionic-team/ionic/blob/master/angular/src/providers/platform.ts#L71-L115
+   */
+  isMobile() {
+    return window.innerWidth &lt;&#x3D; 576;
+  }
+
+  /** check if a value is empty
+   * precautions:
+   *  - Lodash&#x27;s isEmpty, by default, sees &quot;number&quot; type value as empty,
+   *    but in our case, we just treat null/undefined/&quot;&quot;/[]/{} as empty.
+   *  - [{}] &#x3D; true
+   *  - [{}, {}, {}] &#x3D; false
+   *
+   * @param  {any}     value
+   * @return {boolean}       true: when empty string/object/array, otherwise false
+   */
+  isEmpty(value: any): boolean {
+    // number type value shouldn&#x27;t be treat as empty
+    if (typeof value &#x3D;&#x3D;&#x3D; &#x27;number&#x27;) {
+      return false;
+    }
+
+    return this.lodash.isEmpty(value);
+  }
+
+  each(collections, callback) {
+    return this.lodash.each(collections, callback);
+  }
+
+  unset(object, path) {
+    return this.lodash.unset(object, path);
+  }
+
+  find(collections, callback) {
+    return this.lodash.find(collections, callback);
+  }
+
+  findIndex(collections: any[], callback: any) {
+    return this.lodash.findIndex(collections, callback);
+  }
+
+  has(object, path) {
+    return this.lodash.has(object, path);
+  }
+
+  flatten(array) {
+    return this.lodash.flatten(array);
+  }
+
+  indexOf(array, value, fromIndex&#x3D; 0) {
+    return this.lodash.indexOf(array, value, fromIndex);
+  }
+
+  remove(collections, callback) {
+    return this.lodash.remove(collections, callback);
+  }
+
+  openUrl(url, options?: { target: String }) {
+    options &#x3D; options || {target: &#x27;_self&#x27; };
+    return window.open(url, options.target);
+  }
+
+  // given an array and a value, check if this value is in this array, if it is, remove it, if not, add it to the array
+  addOrRemove(array: Array&lt;any&gt;, value) {
+    const position &#x3D; this.indexOf(array, value);
+    if (position &gt; -1) {
+      // find the position of this value and remove it
+      array.splice(position, 1);
+    } else {
+      // add it to the value array
+      array.push(value);
+    }
+    return array;
+  }
+
+  /**
+   * Given query in GraphQL format, change it to the normal query body string
+   * i.e. remove the new line and additional spaces
+   * @param query the query string
+   */
+  graphQLQueryStringFormatter(query: string) {
+    return query.replace(/(\r\n|\n|\r) */gm, &#x27; &#x27;);
+  }
+
+  changeThemeColor(color): void {
+    this.document.documentElement.style.setProperty(&#x27;--ion-color-primary&#x27;, color);
+    this.document.documentElement.style.setProperty(&#x27;--ion-color-primary-shade&#x27;, color);
+    // get the tint version of the color(20% opacity)
+    this.document.documentElement.style.setProperty(&#x27;--ion-color-primary-tint&#x27;, color + &#x27;33&#x27;);
+    // convert hex color to rgb and update css variable
+    const hex &#x3D; color.replace(&#x27;#&#x27;, &#x27;&#x27;);
+    const red &#x3D; parseInt(hex.substring(0, 2), 16);
+    const green &#x3D; parseInt(hex.substring(2, 4), 16);
+    const blue &#x3D; parseInt(hex.substring(4, 6), 16);
+
+    this.document.documentElement.style.setProperty(&#x27;--ion-color-primary-rgb&#x27;, red + &#x27;,&#x27; + green + &#x27;,&#x27; + blue);
+  }
+
+  changeCardBackgroundImage(image) {
+    this.document.documentElement.style.setProperty(&#x27;--practera-card-background-image&#x27;, &#x27;url(\&#x27;&#x27; + image + &#x27;\&#x27;)&#x27;);
+  }
+
+  // broadcast the event to whoever subscribed
+  broadcastEvent(key: string, value: any) {
+    this._eventsSubject.next({ key, value });
+  }
+
+  // get Event to subscribe to
+  getEvent(key: string): Observable&lt;any&gt; {
+    return this._eventsSubject.asObservable()
+      .pipe(
+        filter(e &#x3D;&gt; e.key &#x3D;&#x3D;&#x3D; key),
+        map(e &#x3D;&gt; e.value)
+      );
+  }
+
+  // // get the activity Subject for cache
+  // getActivityCache(key): BehaviorSubject&lt;any&gt; {
+  //   if (!(key in this.activitySubjects)) {
+  //     this.activitySubjects[key] &#x3D; new BehaviorSubject(null);
+  //   }
+  //   return this.activitySubjects[key];
+  // }
+
+  // // update the activity cache for given key(activity id)
+  // updateActivityCache(key, value) {
+  //   if (!(key in this.activitySubjects)) {
+  //     this.activitySubjects[key] &#x3D; new BehaviorSubject(null);
+  //   }
+  //   this.activitySubjects[key].next(value);
+  // }
+
+  // need to clear all Subject for cache
+  clearCache() {
+    this.apollo.getClient().clearStore();
+  //   // initialise the Subject for caches
+  //   this.projectSubject.next(null);
+  //   this.each(this.activitySubjects, (subject, key) &#x3D;&gt; {
+  //     this.activitySubjects[key].next(null);
+  //   });
+  }
+
+  // transfer url query string to an object
+  urlQueryToObject(query: string) {
+    return JSON.parse(&#x27;{&quot;&#x27; + decodeURI(query).replace(/&quot;/g, &#x27;\\&quot;&#x27;).replace(/&amp;/g, &#x27;&quot;,&quot;&#x27;).replace(/&#x3D;/g, &#x27;&quot;:&quot;&#x27;) + &#x27;&quot;}&#x27;);
+  }
+
+
+  /**
+   * This is a time formatter that transfer time/date string to a nice string
+   * It will return different string based on the comparision with &#x27;compareWith&#x27; (default is today)
+   * Any time before yesterday(one day before &#x27;compareWith&#x27;) will return &#x27;Yesterday&#x27;
+   * Any time today(the same day as &#x27;compareWith&#x27;) will return the time
+   * Any other time will just return the date in &quot;3 May&quot; format
+   * @param {Date} time        [The time string going to be formatted (In UTC timezone)]
+   * @param {Date} compareWith [The time string used to compare with]
+   */
+  timeFormatter(time: Date | string, compareWith?: Date | string): string {
+    if (!time) {
+      return &#x27;&#x27;;
+    }
+    const date &#x3D; moment(new Date(this.iso8601Formatter(time)));
+    // if no compareWith provided, compare with today
+    // and create tomorrow and yesterday from it.
+    const compareDate &#x3D; moment((compareWith) ? new Date(this.iso8601Formatter(compareWith)) : new Date());
+    const tomorrow &#x3D; compareDate.clone().add(1, &#x27;day&#x27;).startOf(&#x27;day&#x27;);
+    const yesterday &#x3D; compareDate.clone().subtract(1, &#x27;day&#x27;).startOf(&#x27;day&#x27;);
+
+    if (date.isSame(yesterday, &#x27;d&#x27;)) {
+      return &#x27;Yesterday&#x27;;
+    }
+    if (date.isSame(tomorrow, &#x27;d&#x27;)) {
+      return &#x27;Tomorrow&#x27;;
+    }
+    if (date.isSame(compareDate, &#x27;d&#x27;)) {
+      return new Intl.DateTimeFormat(&#x27;en-US&#x27;, {
+        hour12: true,
+        hour: &#x27;numeric&#x27;,
+        minute: &#x27;numeric&#x27;
+      }).format(date.toDate());
+    }
+    return new Intl.DateTimeFormat(&#x27;en-GB&#x27;, {
+      month: &#x27;short&#x27;,
+      day: &#x27;numeric&#x27;
+    }).format(date.toDate());
+  }
+
+  /**
+   * turn date into customised &amp; human-readable language (non RFC2822/ISO standard)
+   * @param {Date | string}    time Date
+   * @param {string}       display date: display date, time: display time, all: date + time
+   */
+  utcToLocal(time: Date | string, display: string &#x3D; &#x27;all&#x27;) {
+    if (!time) {
+      return &#x27;&#x27;;
+    }
+    const date &#x3D; new Date(this.iso8601Formatter(time));
+    const formattedTime &#x3D; new Intl.DateTimeFormat(&#x27;en-US&#x27;, {
+      hour12: true,
+      hour: &#x27;numeric&#x27;,
+      minute: &#x27;numeric&#x27;
+    }).format(date);
+
+    switch (display) {
+      case &#x27;date&#x27;:
+        return this.dateFormatter(date);
+
+      case &#x27;time&#x27;:
+        return formattedTime;
+
+      default:
+      return this.dateFormatter(date) + &#x27; &#x27; + formattedTime;
+    }
+  }
+
+  /**
+   * @description turn date into string formatted date
+   * @param {Date} date targetted date
+   */
+  dateFormatter(date: Date): string {
+    const dateToFormat &#x3D; moment(date);
+    const today &#x3D; moment(new Date());
+    const tomorrow &#x3D; today.clone().add(1, &#x27;day&#x27;).startOf(&#x27;day&#x27;);
+    const yesterday &#x3D; today.clone().subtract(1, &#x27;day&#x27;).startOf(&#x27;day&#x27;);
+
+    if (dateToFormat.isSame(yesterday, &#x27;d&#x27;)) {
+      return &#x27;Yesterday&#x27;;
+    }
+    if (dateToFormat.isSame(tomorrow, &#x27;d&#x27;)) {
+      return &#x27;Tomorrow&#x27;;
+    }
+    if (dateToFormat.isSame(today, &#x27;d&#x27;)) {
+      return &#x27;Today&#x27;;
+    }
+
+    return new Intl.DateTimeFormat(&#x27;en-GB&#x27;, {
+      month: &#x27;short&#x27;,
+      day: &#x27;numeric&#x27;,
+      year: &#x27;numeric&#x27;
+    }).format(dateToFormat.toDate());
+  }
+
+  /**
+   * @description dates comparison (between today/provided date)
+   * @param {Date    | string} timeString [description]
+   * @param {boolean}            &#x3D; {}} options [description]
+   * @return {number} -1: before, 0: same date, 1: after
+   */
+  timeComparer(
+    timeString: Date | string,
+    options: {
+      comparedString?: Date | string,
+      compareDate?: boolean
+    } &#x3D; {}
+  ): number {
+    const { comparedString, compareDate } &#x3D; options;
+
+    const time &#x3D; new Date(this.iso8601Formatter(timeString));
+    let compared &#x3D; new Date();
+    if (comparedString) {
+      compared &#x3D; new Date(this.iso8601Formatter(comparedString));
+    }
+    if (compareDate &amp;&amp; (time.getDate() &#x3D;&#x3D;&#x3D; compared.getDate() &amp;&amp;
+    time.getMonth() &#x3D;&#x3D;&#x3D; compared.getMonth() &amp;&amp;
+    time.getFullYear() &#x3D;&#x3D;&#x3D; compared.getFullYear())) {
+      return 0;
+    }
+    if (time.getTime() &lt; compared.getTime()) {
+      return -1;
+    }
+    if (time.getTime() &#x3D;&#x3D;&#x3D; compared.getTime()) {
+      return 0;
+    }
+    if (time.getTime() &gt; compared.getTime()) {
+      return 1;
+    }
+  }
+
+  /**
+   * get next element in an array,
+   * return undefined if the next value is not available
+   */
+  getNextArrayElement(target: any[], currentId: number): any {
+    const length &#x3D; target.length;
+    const index &#x3D; target.findIndex(datum &#x3D;&gt; {
+      return datum.id &#x3D;&#x3D;&#x3D; currentId;
+    });
+
+    const nextElement &#x3D; target[index + 1];
+
+    return target[index + 1];
+  }
+
+  /**
+   * check if the targeted element in an array is located at the last in the last index
+   */
+  checkOrderById(target: any[], currentId, options: {
+    isLast: boolean;
+  }): boolean {
+    const length &#x3D; target.length;
+    const index &#x3D; target.findIndex(datum &#x3D;&gt; {
+      return datum.id &#x3D;&#x3D;&#x3D; currentId;
+    });
+
+    return (length - 1) &#x3D;&#x3D;&#x3D; index;
+  }
+  /**
+   * Format the time string
+   * 1. Add &#x27;T&#x27; between date and time, for compatibility with Safari
+   * 2. Add &#x27;Z&#x27; at last to indicate that it is UTC time, browser will automatically convert the time to local time
+   *
+   * Example time string: &#x27;2019-08-06 15:03:00&#x27;
+   * After formatter: &#x27;2019-08-06T15:03:00Z&#x27;
+   *
+   * SAFARI enforce ISO 8601 (no space as time delimiter allowed)
+   * T for time delimiter
+   * Z for timezone (UTC) delimiter (+0000)
+   */
+  iso8601Formatter(time: Date | string) {
+    try {
+      if (typeof time &#x3D;&#x3D;&#x3D; &#x27;string&#x27;) {
+        let tmpTime &#x3D; time;
+        if (!time.includes(&#x27;GMT&#x27;) &amp;&amp; !(time.toLowerCase()).includes(&#x27;z&#x27;)) {
+          tmpTime +&#x3D; &#x27; GMT+0000&#x27;;
+        }
+        return (new Date(tmpTime)).toISOString();
+      }
+      return time.toISOString();
+    } catch (err) {
+      // in case the above doesn&#x27;t work on Safari
+      if (typeof time &#x3D;&#x3D;&#x3D; &#x27;string&#x27;) {
+        // add &quot;T&quot; between date and time, so that it works on Safari
+        time &#x3D; time.replace(&#x27; &#x27;, &#x27;T&#x27;);
+        // add &quot;Z&quot; to indicate that it is UTC time, it will automatically convert to local time
+        return time + &#x27;Z&#x27;;
+      }
+      return time.toISOString();
+    }
+  }
+}
+</code></pre>
+    </div>
+
+</div>
+
+
+
+
+
+
+
+                   
+
+
+
+
+                   </div><div class="search-results">
+    <div class="has-results">
+        <h1 class="search-results-title"><span class='search-results-count'></span> result-matching "<span class='search-query'></span>"</h1>
+        <ul class="search-results-list"></ul>
+    </div>
+    <div class="no-results">
+        <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+    </div>
+</div>
+</div>
+               <!-- END CONTENT -->
+           </div>
+       </div>
+
+       <script>
+            var COMPODOC_CURRENT_PAGE_DEPTH = 1;
+            var COMPODOC_CURRENT_PAGE_CONTEXT = 'injectable';
+            var COMPODOC_CURRENT_PAGE_URL = 'UtilsService.html';
+            var MAX_SEARCH_RESULTS = 15;
+       </script>
+
+       <script src="../js/libs/custom-elements.min.js"></script>
+       <script src="../js/libs/lit-html.js"></script>
+       <!-- Required to polyfill modern browsers as code is ES5 for IE... -->
+       <script src="../js/libs/custom-elements-es5-adapter.js" charset="utf-8" defer></script>
+       <script src="../js/menu-wc.js" defer></script>
+
+       <script src="../js/libs/bootstrap-native.js"></script>
+
+       <script src="../js/libs/es6-shim.min.js"></script>
+       <script src="../js/libs/EventDispatcher.js"></script>
+       <script src="../js/libs/promise.min.js"></script>
+       <script src="../js/libs/zepto.min.js"></script>
+
+       <script src="../js/compodoc.js"></script>
+
+       <script src="../js/tabs.js"></script>
+       <script src="../js/menu.js"></script>
+       <script src="../js/libs/clipboard.min.js"></script>
+       <script src="../js/libs/prism.js"></script>
+       <script src="../js/sourceCode.js"></script>
+          <script src="../js/search/search.js"></script>
+          <script src="../js/search/lunr.min.js"></script>
+          <script src="../js/search/search-lunr.js"></script>
+          <script src="../js/search/search_index.js"></script>
+       <script src="../js/lazy-load-graphs.js"></script>
+
+
+    </body>
+</html>

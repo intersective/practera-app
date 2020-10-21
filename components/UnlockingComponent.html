@@ -1,0 +1,1293 @@
+<!doctype html>
+<html class="no-js" lang="">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title>practera-app-v2 documentation</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+	      <link rel="stylesheet" href="../styles/style.css">
+    </head>
+    <body>
+
+        <div class="navbar navbar-default navbar-fixed-top visible-xs">
+            <a href="../" class="navbar-brand">practera-app-v2 documentation</a>
+            <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
+        </div>
+
+        <div class="xs-menu menu" id="mobile-menu">
+                <div id="book-search-input" role="search"><input type="text" placeholder="Type to search"></div>            <compodoc-menu></compodoc-menu>
+        </div>
+
+        <div class="container-fluid main">
+           <div class="row main">
+               <div class="hidden-xs menu">
+                   <compodoc-menu mode="normal"></compodoc-menu>
+               </div>
+               <!-- START CONTENT -->
+               <div class="content component">
+                   <div class="content-data">
+
+
+
+
+<ol class="breadcrumb">
+  <li>Components</li>
+  <li>UnlockingComponent</li>
+</ol>
+
+<ul class="nav nav-tabs" role="tablist">
+        <li class="active">
+            <a href="#info" role="tab" id="info-tab" data-toggle="tab" data-link="info">Info</a>
+        </li>
+        <li >
+            <a href="#source" role="tab" id="source-tab" data-toggle="tab" data-link="source">Source</a>
+        </li>
+        <li >
+            <a href="#templateData" role="tab" id="templateData-tab" data-toggle="tab" data-link="template">Template</a>
+        </li>
+        <li >
+            <a href="#styleData" role="tab" id="styleData-tab" data-toggle="tab" data-link="style">Styles</a>
+        </li>
+        <li >
+            <a href="#tree" role="tab" id="tree-tab" data-toggle="tab" data-link="dom-tree">DOM Tree</a>
+        </li>
+</ul>
+
+<div class="tab-content">
+    <div class="tab-pane fade active in" id="c-info"><p class="comment">
+    <h3>File</h3>
+</p>
+<p class="comment">
+    <code>src/app/shared/components/unlocking/unlocking.component.ts</code>
+</p>
+
+
+
+
+
+<section>
+    <h3>Metadata</h3>
+    <table class="table table-sm table-hover">
+        <tbody>
+
+
+
+
+
+
+
+
+
+
+
+            <tr>
+                <td class="col-md-3">selector</td>
+                <td class="col-md-9"><code>unlocking</code></td>
+            </tr>
+
+            <tr>
+                <td class="col-md-3">styleUrls</td>
+                <td class="col-md-9"><code>./unlocking.component.scss</code></td>
+            </tr>
+
+
+
+            <tr>
+                <td class="col-md-3">templateUrl</td>
+                <td class="col-md-9"><code>./unlocking.component.html</code></td>
+            </tr>
+
+
+
+
+
+
+
+
+        </tbody>
+    </table>
+</section>
+
+    <section>
+    <h3 id="index">Index</h3>
+    <table class="table table-sm table-bordered index-table">
+        <tbody>
+
+
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Inputs</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                <a href="#badgeUrl">badgeUrl</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+
+
+
+        </tbody>
+    </table>
+</section>
+
+    <section>
+    <h3 id="constructor">Constructor</h3>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+<code>constructor()</code>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="9" class="link-to-prism">src/app/shared/components/unlocking/unlocking.component.ts:9</a></div>
+                            </td>
+                        </tr>
+
+            </tbody>
+        </table>
+</section>
+
+    <section>
+    <h3 id="inputs">Inputs</h3>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="badgeUrl"></a>
+                        <b>badgeUrl</b>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-2" colspan="2">
+                                    <div class="io-line">Defined in <a href="" data-line="9" class="link-to-prism">src/app/shared/components/unlocking/unlocking.component.ts:9</a></div>
+                            </td>
+                        </tr>
+            </tbody>
+        </table>
+</section>
+
+
+
+
+
+</div>
+
+
+    <div class="tab-pane fade  tab-source-code" id="c-source">
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Component, Input } from &#x27;@angular/core&#x27;;
+
+@Component({
+  selector: &#x27;unlocking&#x27;,
+  templateUrl: &#x27;./unlocking.component.html&#x27;,
+  styleUrls: [&#x27;./unlocking.component.scss&#x27;]
+})
+export class UnlockingComponent {
+  @Input() badgeUrl: string;
+  constructor(
+  ) {}
+
+}
+</code></pre>
+    </div>
+
+    <div class="tab-pane fade " id="c-templateData">
+        <pre class="line-numbers"><code class="language-html">&lt;div class&#x3D;&quot;contain&quot;&gt;
+  &lt;img class&#x3D;&quot;badge&quot; [src]&#x3D;&quot;badgeUrl ? badgeUrl : &#x27;/assets/img/sample-badge.png&#x27;&quot;&gt;
+  &lt;div class&#x3D;&quot;div-svg&quot;&gt;
+    &lt;svg xmlns&#x3D;&quot;http://www.w3.org/2000/svg&quot; version&#x3D;&quot;1.1&quot; xmlns:xlink&#x3D;&quot;http://www.w3.org/1999/xlink&quot; preserveAspectRatio&#x3D;&quot;none&quot; x&#x3D;&quot;0px&quot; y&#x3D;&quot;0px&quot; width&#x3D;&quot;350px&quot; height&#x3D;&quot;350px&quot; viewBox&#x3D;&quot;0 0 350 350&quot;&gt;
+    &lt;defs&gt;
+
+    &lt;g&gt;
+      &lt;filter id&#x3D;&quot;blur-filter-1&quot; x&#x3D;&quot;-20%&quot; y&#x3D;&quot;-37.69373337726917%&quot; width&#x3D;&quot;140%&quot; height&#x3D;&quot;175.38746675453834%&quot; color-interpolation-filters&#x3D;&quot;sRGB&quot;&gt;
+      &lt;feGaussianBlur in&#x3D;&quot;SourceGraphic&quot; stdDeviation&#x3D;&quot;0,13.333333333333334&quot; result&#x3D;&quot;result1&quot;/&gt;
+      &lt;feColorMatrix in&#x3D;&quot;result1&quot; type&#x3D;&quot;matrix&quot; values&#x3D;&quot;1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 0 0&quot; result&#x3D;&quot;result2&quot;/&gt;
+      &lt;/filter&gt;
+
+      &lt;filter id&#x3D;&quot;blur-filter-2&quot; x&#x3D;&quot;-20%&quot; y&#x3D;&quot;-33.07832243736631%&quot; width&#x3D;&quot;140%&quot; height&#x3D;&quot;166.15664487473262%&quot; color-interpolation-filters&#x3D;&quot;sRGB&quot;&gt;
+      &lt;feGaussianBlur in&#x3D;&quot;SourceGraphic&quot; stdDeviation&#x3D;&quot;0,11.111043294270834&quot; result&#x3D;&quot;result1&quot;/&gt;
+      &lt;feColorMatrix in&#x3D;&quot;result1&quot; type&#x3D;&quot;matrix&quot; values&#x3D;&quot;1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 0.17 0&quot; result&#x3D;&quot;result2&quot;/&gt;
+      &lt;/filter&gt;
+
+      &lt;filter id&#x3D;&quot;blur-filter-3&quot; x&#x3D;&quot;-20%&quot; y&#x3D;&quot;-28.46291149746345%&quot; width&#x3D;&quot;140%&quot; height&#x3D;&quot;156.9258229949269%&quot; color-interpolation-filters&#x3D;&quot;sRGB&quot;&gt;
+      &lt;feGaussianBlur in&#x3D;&quot;SourceGraphic&quot; stdDeviation&#x3D;&quot;0,8.888956705729166&quot; result&#x3D;&quot;result1&quot;/&gt;
+      &lt;feColorMatrix in&#x3D;&quot;result1&quot; type&#x3D;&quot;matrix&quot; values&#x3D;&quot;1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 0.33 0&quot; result&#x3D;&quot;result2&quot;/&gt;
+      &lt;/filter&gt;
+
+      &lt;filter id&#x3D;&quot;blur-filter-4&quot; x&#x3D;&quot;-20%&quot; y&#x3D;&quot;-23.847077978276587%&quot; width&#x3D;&quot;140%&quot; height&#x3D;&quot;147.69415595655317%&quot; color-interpolation-filters&#x3D;&quot;sRGB&quot;&gt;
+      &lt;feGaussianBlur in&#x3D;&quot;SourceGraphic&quot; stdDeviation&#x3D;&quot;0,6.666666666666667&quot; result&#x3D;&quot;result1&quot;/&gt;
+      &lt;feColorMatrix in&#x3D;&quot;result1&quot; type&#x3D;&quot;matrix&quot; values&#x3D;&quot;1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 0.5 0&quot; result&#x3D;&quot;result2&quot;/&gt;
+      &lt;/filter&gt;
+
+      &lt;filter id&#x3D;&quot;blur-filter-5&quot; x&#x3D;&quot;-20%&quot; y&#x3D;&quot;-20%&quot; width&#x3D;&quot;140%&quot; height&#x3D;&quot;140%&quot; color-interpolation-filters&#x3D;&quot;sRGB&quot;&gt;
+      &lt;feGaussianBlur in&#x3D;&quot;SourceGraphic&quot; stdDeviation&#x3D;&quot;0,4.444376627604167&quot; result&#x3D;&quot;result1&quot;/&gt;
+      &lt;feColorMatrix in&#x3D;&quot;result1&quot; type&#x3D;&quot;matrix&quot; values&#x3D;&quot;1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 0.67 0&quot; result&#x3D;&quot;result2&quot;/&gt;
+      &lt;/filter&gt;
+
+      &lt;filter id&#x3D;&quot;blur-filter-6&quot; x&#x3D;&quot;-20%&quot; y&#x3D;&quot;-20%&quot; width&#x3D;&quot;140%&quot; height&#x3D;&quot;140%&quot; color-interpolation-filters&#x3D;&quot;sRGB&quot;&gt;
+      &lt;feGaussianBlur in&#x3D;&quot;SourceGraphic&quot; stdDeviation&#x3D;&quot;0,2.2222900390625&quot; result&#x3D;&quot;result1&quot;/&gt;
+      &lt;feColorMatrix in&#x3D;&quot;result1&quot; type&#x3D;&quot;matrix&quot; values&#x3D;&quot;1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 0.83 0&quot; result&#x3D;&quot;result2&quot;/&gt;
+      &lt;/filter&gt;
+    &lt;/g&gt;
+
+    &lt;g&gt;
+      &lt;g id&#x3D;&quot;Lock_move_0_Layer0_0_MEMBER_0_FILL&quot;&gt;
+      &lt;path fill&#x3D;&quot;#FFFFFF&quot; stroke&#x3D;&quot;none&quot; d&#x3D;&quot;
+      M 1032 294.1
+      Q 1023.3 291.35 1013.95 291.35 1004.85 291.35 996.7 294 988.5 296.7 982.25 301.7 974.7 307.65 970.8 316.15 966.9 324.65 966.9 335.05
+      L 966.9 455.65
+      Q 966.9 460.45 970.3 463.85 973.65 467.25 978.45 467.25 983.25 467.25 986.65 463.85 990.05 460.45 990.05 455.65
+      L 990.05 335.05
+      Q 990.05 325 996.65 319.75 999.85 317.2 1004.3 315.85 1008.75 314.5 1013.95 314.5 1023.8 314.5 1031.7 319.15 1041.5 324.9 1041.5 335.05
+      L 1041.5 350.8
+      Q 1041.5 355.55 1044.9 358.95 1048.25 362.35 1053.05 362.35 1057.85 362.35 1061.25 358.95 1064.6 355.55 1064.6 350.8
+      L 1064.6 335.05
+      Q 1064.6 325.1 1060.2 316.55 1055.8 308.05 1047.6 301.95 1040.65 296.8 1032 294.1 Z&quot;/&gt;
+      &lt;/g&gt;
+
+      &lt;g id&#x3D;&quot;Lock_move_0_Layer0_0_MEMBER_1_FILL&quot;&gt;
+      &lt;path fill&#x3D;&quot;#97928A&quot; stroke&#x3D;&quot;none&quot; d&#x3D;&quot;
+      M 1026.3 292.65
+      L 1026.4 292.7
+      Q 1038.9 300.2 1044.85 306.05 1053.2 314.25 1055.8 324.85 1058.5 335.95 1057.9 349.05 1057.55 355.7 1056.4 361.85 1060 360.75 1062.3 357.75 1064.6 354.65 1064.6 350.8
+      L 1064.6 335.05
+      Q 1064.6 325.1 1060.2 316.55 1055.8 308.05 1047.6 301.95 1038.35 295.1 1026.3 292.65 Z&quot;/&gt;
+      &lt;/g&gt;
+
+      &lt;g id&#x3D;&quot;Lock_move_0_Layer0_0_MEMBER_2_FILL&quot;&gt;
+      &lt;path fill&#x3D;&quot;#97928A&quot; stroke&#x3D;&quot;none&quot; d&#x3D;&quot;
+      M 1020.25 315.1
+      Q 1018.45 311.9 1018.35 311.9 1009.4 310.5 1000.05 313.4 983.2 318.65 983.2 337
+      L 983.2 466.2
+      Q 986.3 464.85 988.15 462 990.05 459.15 990.05 455.65
+      L 990.05 335.05
+      Q 990.05 325 996.65 319.75 999.85 317.2 1004.3 315.85 1008.75 314.5 1013.95 314.5 1016.95 314.5 1020.25 315.1 Z&quot;/&gt;
+      &lt;/g&gt;
+
+      &lt;g id&#x3D;&quot;Lock_move_0_Layer0_0_MEMBER_3_MEMBER_0_MEMBER_0_MEMBER_0_FILL&quot;&gt;
+      &lt;path class&#x3D;&quot;lock-color&quot; stroke&#x3D;&quot;none&quot; d&#x3D;&quot;
+      M 1051 357
+      Q 1049.3 357 1048 359.4 1047.6 360.4 1047.55 360.5
+      L 1051.45 360.5
+      Q 1054.8 360.5 1057.2 362.75 1059.55 364.95 1059.55 368.2
+      L 1059.55 456.95
+      Q 1059.55 460.2 1057.2 462.4 1054.8 464.65 1051.45 464.65
+      L 1048.3 464.65
+      Q 1049.5 466.5 1051 466.5
+      L 1080.15 466.5
+      Q 1081.9 466.5 1083.15 464.1 1084.35 461.7 1084.35 458.35
+      L 1084.35 365.15
+      Q 1084.35 361.8 1083.15 359.4 1081.9 357 1080.15 357
+      L 1051 357 Z&quot;/&gt;
+      &lt;/g&gt;
+
+      &lt;g id&#x3D;&quot;Lock_move_0_Layer0_0_MEMBER_4_MEMBER_0_MEMBER_0_MEMBER_0_FILL&quot;&gt;
+      &lt;path class&#x3D;&quot;lock-color&quot; stroke&#x3D;&quot;none&quot; d&#x3D;&quot;
+      M 1046.8 365.15
+      Q 1046.8 362.55 1047.55 360.5
+      L 966.75 360.5
+      Q 963.4 360.5 961 362.75 958.65 365.05 958.65 368.2
+      L 958.65 456.95
+      Q 958.65 460.15 961 462.4 963.4 464.65 966.75 464.65
+      L 1048.3 464.65 1048 464.1
+      Q 1046.8 461.7 1046.8 458.35
+      L 1046.8 365.15 Z&quot;/&gt;
+      &lt;/g&gt;
+
+      &lt;g id&#x3D;&quot;Lock_move_0_Layer0_0_MEMBER_4_MEMBER_0_MEMBER_0_MEMBER_1_FILL&quot;&gt;
+      &lt;path class&#x3D;&quot;lock-color&quot; stroke&#x3D;&quot;none&quot; d&#x3D;&quot;
+      M 1051.45 360.5
+      L 1047.55 360.5
+      Q 1046.8 362.55 1046.8 365.15
+      L 1046.8 458.35
+      Q 1046.8 461.7 1048 464.1
+      L 1048.3 464.65 1051.45 464.65
+      Q 1054.8 464.65 1057.2 462.4 1059.55 460.2 1059.55 456.95
+      L 1059.55 368.2
+      Q 1059.55 364.95 1057.2 362.75 1054.8 360.5 1051.45 360.5 Z&quot;/&gt;
+      &lt;/g&gt;
+
+      &lt;g id&#x3D;&quot;Lock_move_0_Layer0_0_MEMBER_5_MEMBER_0_FILL&quot;&gt;
+      &lt;path fill&#x3D;&quot;#161616&quot; stroke&#x3D;&quot;none&quot; d&#x3D;&quot;
+      M 1000.2 295.1
+      Q 1001.2 295.75 1002.35 295.5 1007.85 294.25 1013.95 294.25 1022.85 294.25 1031.1 296.85 1039.35 299.4 1045.85 304.25 1053.25 309.75 1057.3 317.25 1058.15 318.8 1059.85 318.8 1060.6 318.8 1061.25 318.45 1062.3 317.9 1062.65 316.75 1062.95 315.6 1062.4 314.55 1057.75 305.85 1049.3 299.6 1042 294.25 1032.9 291.35 1023.7 288.45 1013.95 288.45 1007.55 288.45 1001.15 289.85 999.95 290.05 999.3 291.1 998.65 292.05 998.9 293.25 999.15 294.45 1000.2 295.1 Z&quot;/&gt;
+      &lt;/g&gt;
+
+      &lt;g id&#x3D;&quot;Lock_move_0_Layer0_0_MEMBER_5_MEMBER_1_FILL&quot;&gt;
+      &lt;path fill&#x3D;&quot;#161616&quot; stroke&#x3D;&quot;none&quot; d&#x3D;&quot;
+      M 1061.15 322.4
+      Q 1060.3 323.25 1060.3 324.45 1060.3 325.65 1061.15 326.5 1062 327.35 1063.2 327.35 1064.4 327.35 1065.25 326.5 1066.1 325.65 1066.1 324.45 1066.1 323.25 1065.25 322.4 1064.4 321.55 1063.2 321.55 1062 321.55 1061.15 322.4 Z&quot;/&gt;
+      &lt;/g&gt;
+
+      &lt;g id&#x3D;&quot;Lock_move_0_Layer0_0_MEMBER_5_MEMBER_2_FILL&quot;&gt;
+      &lt;path fill&#x3D;&quot;#161616&quot; stroke&#x3D;&quot;none&quot; d&#x3D;&quot;
+      M 993.2 293.05
+      Q 992.1 292.6 991 293.1 984.95 295.75 980.45 299.4 972.4 305.85 968.2 314.9 964 324 964 335.05
+      L 964 353.55 956.35 353.55
+      Q 951.05 353.55 947.3 357.3 943.55 361.05 943.55 366.4
+      L 943.55 458.8
+      Q 943.55 464.1 947.3 467.85 951.05 471.6 956.35 471.6
+      L 1075.05 471.6
+      Q 1080.3 471.6 1084.05 467.85 1087.85 464.15 1087.85 458.8
+      L 1087.85 438
+      Q 1087.85 436.6 1086.8 435.55 1085.8 434.55 1084.35 434.55 1083 434.55 1081.9 435.55 1080.9 436.65 1080.9 438
+      L 1080.9 458.8
+      Q 1080.9 461.15 1079.2 462.95 1077.5 464.65 1075.05 464.65
+      L 956.35 464.65
+      Q 953.9 464.65 952.25 462.95 950.5 461.25 950.5 458.8
+      L 950.5 366.4
+      Q 950.5 363.95 952.25 362.2 953.9 360.5 956.35 360.5
+      L 1075.05 360.5
+      Q 1077.5 360.5 1079.2 362.2 1080.9 364.05 1080.9 366.4
+      L 1080.9 398.9
+      Q 1080.9 400.3 1081.9 401.4 1083 402.4 1084.35 402.4 1085.8 402.4 1086.8 401.4 1087.85 400.35 1087.85 398.9
+      L 1087.85 366.4
+      Q 1087.85 361.05 1084.05 357.3 1080.3 353.55 1075.05 353.55
+      L 1067.25 353.55
+      Q 1067.5 352.05 1067.5 350.8
+      L 1067.5 333.65
+      Q 1067.45 332.45 1066.6 331.65 1065.75 330.8 1064.6 330.8
+      L 1064.5 330.8
+      Q 1063.3 330.85 1062.5 331.7 1061.65 332.6 1061.7 333.8
+      L 1061.75 350.8
+      Q 1061.75 351.95 1061.3 353.55
+      L 1044.8 353.55
+      Q 1044.4 352.1 1044.4 350.8
+      L 1044.4 335.05
+      Q 1044.4 323.45 1033.6 316.9 1024.8 311.6 1013.95 311.6 1008.3 311.6 1003.35 313.15 998.45 314.65 994.85 317.5 988 323 987.25 332.5 987.15 333.7 987.9 334.6 988.7 335.55 989.9 335.65 991.1 335.75 992 334.95 992.95 334.2 993 333 993.6 325.95 998.45 322.05 1004.25 317.4 1013.95 317.4 1017.7 317.4 1021.75 318.35 1026.55 319.45 1030.25 321.65 1038.6 326.55 1038.6 335.05
+      L 1038.6 350.8
+      Q 1038.6 352.05 1038.85 353.55
+      L 992.95 353.55 992.95 341.85
+      Q 992.95 340.65 992.1 339.8 991.25 338.95 990.05 338.95 988.85 338.95 988 339.8 987.15 340.65 987.15 341.85
+      L 987.15 353.55 969.8 353.55 969.8 335.05
+      Q 969.8 325.35 973.4 317.45 977.05 309.5 984.05 303.95 988.15 300.7 993.3 298.4 994.4 297.9 994.85 296.8 995.3 295.7 994.8 294.6 994.3 293.5 993.2 293.05 Z&quot;/&gt;
+      &lt;/g&gt;
+
+      &lt;g id&#x3D;&quot;Lock_move_0_Layer0_0_MEMBER_5_MEMBER_3_FILL&quot;&gt;
+      &lt;path fill&#x3D;&quot;#161616&quot; stroke&#x3D;&quot;none&quot; d&#x3D;&quot;
+      M 1087.85 411.75
+      Q 1087.85 410.35 1086.8 409.3 1085.8 408.3 1084.35 408.3 1083 408.3 1081.9 409.3 1080.9 410.4 1080.9 411.75
+      L 1080.9 425.6
+      Q 1080.9 426.95 1081.9 428.05 1083 429.05 1084.35 429.05 1085.8 429.05 1086.8 428.05 1087.85 427 1087.85 425.6
+      L 1087.85 411.75 Z&quot;/&gt;
+      &lt;/g&gt;
+
+      &lt;g id&#x3D;&quot;Lock_move_0_Layer0_0_MEMBER_6_MEMBER_0_MEMBER_0_MEMBER_0_FILL&quot;&gt;
+      &lt;path fill&#x3D;&quot;#FFFFFF&quot; stroke&#x3D;&quot;none&quot; d&#x3D;&quot;
+      M 1022.35 400.8
+      Q 1019.6 398.05 1015.7 398.05 1011.8 398.05 1009.05 400.8 1006.3 403.55 1006.3 407.45 1006.3 409.9 1007.5 412 1008.6 414 1010.6 415.3
+      L 1008.7 427.1 1022.5 427.1 1020.7 415.4
+      Q 1022.7 414.15 1023.85 412 1025.1 409.8 1025.1 407.45 1025.1 403.65 1022.35 400.8 Z&quot;/&gt;
+      &lt;/g&gt;
+    &lt;/g&gt;
+
+    &lt;g&gt;
+      &lt;g id&#x3D;&quot;Lock_hook_0_Layer0_0_FILL&quot;&gt;
+      &lt;path fill&#x3D;&quot;#FFFFFF&quot; stroke&#x3D;&quot;none&quot; d&#x3D;&quot;
+      M 353.45 116.75
+      Q 341.5 107.9 326.5 103.2 311.45 98.45 295.3 98.45 279.65 98.45 265.5 103.05 251.35 107.65 240.5 116.3 227.5 126.65 220.75 141.35 214 156.05 214 174
+      L 214 382.5
+      Q 214 390.8 219.85 396.65 225.7 402.5 234 402.5 242.25 402.5 248.15 396.65 254 390.8 254 382.5
+      L 254 174
+      Q 254 156.65 265.45 147.55 270.95 143.15 278.65 140.8 286.4 138.45 295.3 138.45 312.3 138.45 326 146.5 342.9 156.45 342.9 174
+      L 342.9 201.2
+      Q 342.9 209.5 348.75 215.35 354.6 221.2 362.9 221.2 371.2 221.2 377.05 215.35 382.9 209.5 382.9 201.2
+      L 382.9 174
+      Q 382.9 156.85 375.3 142.05 367.7 127.3 353.45 116.75 Z&quot;/&gt;
+      &lt;/g&gt;
+
+      &lt;g id&#x3D;&quot;Lock_hook_0_Layer0_1_FILL&quot;&gt;
+      &lt;path fill&#x3D;&quot;#97928A&quot; stroke&#x3D;&quot;none&quot; d&#x3D;&quot;
+      M 375.3 142.05
+      Q 367.7 127.3 353.45 116.75 337.5 104.95 316.7 100.65
+      L 316.85 100.75
+      Q 338.4 113.75 348.7 123.85 363.15 138.05 367.65 156.35 372.35 175.55 371.25 198.15 370.7 209.85 368.7 220.35 374.95 218.45 378.9 213.2 382.9 207.85 382.9 201.2
+      L 382.9 174
+      Q 382.9 156.85 375.3 142.05 Z&quot;/&gt;
+      &lt;/g&gt;
+
+      &lt;g id&#x3D;&quot;Lock_hook_0_Layer0_2_FILL&quot;&gt;
+      &lt;path fill&#x3D;&quot;#97928A&quot; stroke&#x3D;&quot;none&quot; d&#x3D;&quot;
+      M 304.5 136.6
+      Q 303 133.95 302.9 133.95 298.75 133.3 292.05 133.45 280.7 133.65 271.35 136.6 242.2 145.7 242.2 177.35
+      L 242.2 400.7
+      Q 247.5 398.3 250.7 393.45 254 388.5 254 382.5
+      L 254 174
+      Q 254 156.65 265.45 147.55 270.95 143.15 278.65 140.8 286.4 138.45 295.3 138.45 300.35 138.45 306.25 139.45 306.1 139.3 304.5 136.6 Z&quot;/&gt;
+      &lt;/g&gt;
+
+      &lt;g id&#x3D;&quot;Lock_hook_0_Layer0_3_MEMBER_0_FILL&quot;&gt;
+      &lt;path fill&#x3D;&quot;#191919&quot; stroke&#x3D;&quot;none&quot; d&#x3D;&quot;
+      M 237.4 112.4
+      Q 223.45 123.5 216.25 139.2 209 154.85 209 174
+      L 209 382.5
+      Q 209 392.8 216.35 400.15 223.65 407.5 234 407.5 244.3 407.5 251.65 400.15 259 392.8 259 382.5
+      L 259 185.75
+      Q 259 183.7 257.55 182.2 256.05 180.75 254 180.75 251.9 180.75 250.45 182.2 249 183.7 249 185.75
+      L 249 382.5
+      Q 249 388.7 244.6 393.1 240.2 397.5 234 397.5 227.8 397.5 223.4 393.1 219 388.7 219 382.5
+      L 219 174
+      Q 219 157.25 225.25 143.55 231.55 129.85 243.6 120.2 250.65 114.6 259.65 110.6 261.55 109.8 262.3 107.85 263.05 105.95 262.2 104.05 261.4 102.15 259.45 101.4 257.55 100.6 255.65 101.45 245.4 105.95 237.4 112.4 Z&quot;/&gt;
+      &lt;/g&gt;
+
+      &lt;g id&#x3D;&quot;Lock_hook_0_Layer0_3_MEMBER_1_FILL&quot;&gt;
+      &lt;path fill&#x3D;&quot;#191919&quot; stroke&#x3D;&quot;none&quot; d&#x3D;&quot;
+      M 387.9 171.5
+      Q 387.85 169.5 386.35 168.05 384.9 166.65 382.9 166.65
+      L 382.75 166.65
+      Q 380.65 166.75 379.25 168.25 377.85 169.75 377.9 171.8
+      L 377.9 201.2
+      Q 377.9 207.4 373.5 211.8 369.1 216.2 362.9 216.2 356.7 216.2 352.3 211.8 347.9 207.4 347.9 201.2
+      L 347.9 174
+      Q 347.9 154 329.25 142.65 314.1 133.45 295.3 133.45 285.55 133.45 277 136.1 268.5 138.75 262.3 143.65 250.5 153.05 249.15 169.6 248.95 171.65 250.35 173.25 251.7 174.85 253.75 175 255.8 175.2 257.4 173.85 258.95 172.45 259.1 170.4 260.05 158.2 268.55 151.5 273.4 147.6 280.35 145.55 287.25 143.45 295.3 143.45 301.8 143.45 308.8 145.1 317.1 147.05 323.5 150.85 337.9 159.3 337.9 174
+      L 337.9 201.2
+      Q 337.9 211.5 345.25 218.85 352.6 226.2 362.9 226.2 373.25 226.2 380.6 218.85 387.9 211.5 387.9 201.2
+      L 387.9 171.5 Z&quot;/&gt;
+      &lt;/g&gt;
+
+      &lt;g id&#x3D;&quot;Lock_hook_0_Layer0_3_MEMBER_2_FILL&quot;&gt;
+      &lt;path fill&#x3D;&quot;#191919&quot; stroke&#x3D;&quot;none&quot; d&#x3D;&quot;
+      M 374.7 145.9
+      Q 375.95 145.9 377.05 145.3 378.9 144.3 379.5 142.3 380.1 140.35 379.1 138.5 370.9 123.4 356.45 112.75 343.85 103.4 328.05 98.45 312.25 93.45 295.3 93.45 284 93.45 273.15 95.8 271.1 96.25 270 98 268.9 99.75 269.35 101.75 269.8 103.75 271.55 104.9 273.25 106 275.3 105.6 284.85 103.45 295.3 103.45 310.65 103.45 324.95 107.9 339.15 112.4 350.5 120.75 363.25 130.25 370.3 143.25 370.95 144.5 372.15 145.2 373.35 145.9 374.7 145.9 Z&quot;/&gt;
+      &lt;/g&gt;
+
+      &lt;g id&#x3D;&quot;Lock_hook_0_Layer0_3_MEMBER_3_FILL&quot;&gt;
+      &lt;path fill&#x3D;&quot;#191919&quot; stroke&#x3D;&quot;none&quot; d&#x3D;&quot;
+      M 385.45 155.65
+      Q 385.45 153.6 384 152.1 382.5 150.65 380.45 150.65 378.4 150.65 376.9 152.1 375.45 153.6 375.45 155.65 375.45 157.75 376.9 159.2 378.4 160.65 380.45 160.65 382.5 160.65 384 159.2 385.45 157.75 385.45 155.65 Z&quot;/&gt;
+      &lt;/g&gt;
+
+      &lt;g id&#x3D;&quot;Lock_body_0_Layer0_0_MEMBER_0_MEMBER_0_MEMBER_0_FILL&quot;&gt;
+      &lt;path class&#x3D;&quot;lock-color&quot; stroke&#x3D;&quot;none&quot; d&#x3D;&quot;
+      M 414.95 439.3
+      Q 412.75 435.2 409.8 435.2
+      L 359.35 435.2
+      Q 356.35 435.2 354.2 439.3 352.1 443.5 352.1 449.25
+      L 352.1 610.4
+      Q 352.1 616.25 354.2 620.35 356.3 624.45 359.35 624.45
+      L 409.8 624.45
+      Q 412.8 624.45 414.95 620.35 417.05 616.25 417.05 610.4
+      L 417.05 449.25
+      Q 417.05 443.5 414.95 439.3 Z&quot;/&gt;
+      &lt;/g&gt;
+
+      &lt;g id&#x3D;&quot;Lock_body_0_Layer0_1_MEMBER_0_MEMBER_0_MEMBER_0_FILL&quot;&gt;
+      &lt;path class&#x3D;&quot;lock-color&quot; stroke&#x3D;&quot;none&quot; d&#x3D;&quot;
+      M 213.75 441.2
+      Q 207.95 441.2 203.8 445.1 199.7 449.15 199.7 454.6
+      L 199.7 607.95
+      Q 199.7 613.45 203.8 617.4 207.95 621.3 213.75 621.3
+      L 360.15 621.3
+      Q 366 621.3 370.1 617.4 374.2 613.55 374.2 607.95
+      L 374.2 454.6
+      Q 374.2 449.05 370.1 445.1 366 441.2 360.15 441.2
+      L 213.75 441.2 Z&quot;/&gt;
+      &lt;/g&gt;
+
+      &lt;g id&#x3D;&quot;Lock_body_0_Layer0_2_MEMBER_0_MEMBER_0_MEMBER_0_FILL&quot;&gt;
+      &lt;path fill&#x3D;&quot;#161616&quot; stroke&#x3D;&quot;none&quot; d&#x3D;&quot;
+      M 188.6 444.2
+      Q 191.6 441.2 195.75 441.2
+      L 400.9 441.2
+      Q 405.1 441.2 408.1 444.2 411.05 447.25 411.05 451.4
+      L 411.05 507.65
+      Q 411.05 510.15 412.8 511.9 414.55 513.65 417.05 513.65 419.6 513.65 421.3 511.9 423.05 510.15 423.05 507.65
+      L 423.05 451.4
+      Q 423.05 442.2 416.55 435.7 410 429.2 400.9 429.2
+      L 195.75 429.2
+      Q 186.7 429.2 180.1 435.7 173.6 442.3 173.6 451.4
+      L 173.6 611.15
+      Q 173.6 620.3 180.1 626.8 186.6 633.3 195.75 633.3
+      L 400.9 633.3
+      Q 410.05 633.3 416.55 626.8 423.05 620.4 423.05 611.15
+      L 423.05 575.25
+      Q 423.05 572.85 421.3 571 419.55 569.25 417.05 569.25 414.65 569.25 412.8 571 411.05 572.85 411.05 575.25
+      L 411.05 611.15
+      Q 411.05 615.35 408.1 618.35 405.15 621.3 400.9 621.3
+      L 195.75 621.3
+      Q 191.55 621.3 188.6 618.35 185.6 615.35 185.6 611.15
+      L 185.6 451.4
+      Q 185.6 447.2 188.6 444.2 Z&quot;/&gt;
+      &lt;/g&gt;
+
+      &lt;g id&#x3D;&quot;Lock_body_0_Layer0_3_MEMBER_0_MEMBER_0_MEMBER_0_FILL&quot;&gt;
+      &lt;path fill&#x3D;&quot;#161616&quot; stroke&#x3D;&quot;none&quot; d&#x3D;&quot;
+      M 412.8 525.6
+      Q 411.05 527.45 411.05 529.85
+      L 411.05 553.75
+      Q 411.05 556.25 412.8 558 414.5 559.75 417.05 559.75 419.6 559.75 421.3 558 423.05 556.25 423.05 553.75
+      L 423.05 529.85
+      Q 423.05 527.45 421.3 525.6 419.55 523.85 417.05 523.85 414.55 523.85 412.8 525.6 Z&quot;/&gt;
+      &lt;/g&gt;
+
+      &lt;g id&#x3D;&quot;Lock_body_0_Layer0_4_MEMBER_0_MEMBER_0_MEMBER_0_FILL&quot;&gt;
+      &lt;path fill&#x3D;&quot;#FFFFFF&quot; stroke&#x3D;&quot;none&quot; d&#x3D;&quot;
+      M 298.35 506.15
+      Q 291.6 506.15 286.85 510.9 282.1 515.75 282.1 522.35 282.1 526.6 284.15 530.25 286.15 533.8 289.55 536
+      L 286.2 556.4 310.1 556.4 306.95 536.1
+      Q 310.4 534 312.45 530.3 314.55 526.65 314.55 522.35 314.55 515.75 309.8 510.9 305.05 506.15 298.35 506.15 Z&quot;/&gt;
+      &lt;/g&gt;
+
+      &lt;g id&#x3D;&quot;Mask_Square_7_1_MASK_0_FILL&quot;&gt;
+      &lt;path fill&#x3D;&quot;#FFFFFF&quot; stroke&#x3D;&quot;none&quot; d&#x3D;&quot;
+      M -18.9 -16.65
+      L -50.9 -16.65 -50.9 19.7 -18.9 19.7 -18.9 -16.65 Z&quot;/&gt;
+      &lt;/g&gt;
+    &lt;/g&gt;
+
+    &lt;g id&#x3D;&quot;Square_67_Layer2_0_FILL&quot;&gt;
+      &lt;path id&#x3D;&quot;checkbox-68&quot; class&#x3D;&quot;lock-color&quot; fill-opacity&#x3D;&quot;0.00784313725490196&quot; stroke&#x3D;&quot;none&quot; d&#x3D;&quot;
+      M 5.65 -5.65
+      Q 3.3 -8 0 -8 -3.3 -8 -5.65 -5.65 -8 -3.3 -8 0 -8 3.3 -5.65 5.65 -3.3 8 0 8 3.3 8 5.65 5.65 8 3.3 8 0 8 -3.3 5.65 -5.65 Z&quot;/&gt;
+      &lt;path id&#x3D;&quot;checkbox-69&quot; class&#x3D;&quot;lock-color&quot; fill-opacity&#x3D;&quot;0.17254901960784313&quot; stroke&#x3D;&quot;none&quot; d&#x3D;&quot;
+      M 6.95 -6.95
+      Q 4.05 -9.85 0 -9.85 -4.05 -9.85 -6.95 -6.95 -9.85 -4.05 -9.85 0 -9.85 4.05 -6.95 6.95 -4.05 9.85 0 9.85 4.05 9.85 6.95 6.95 9.85 4.05 9.85 0 9.85 -4.05 6.95 -6.95 Z&quot;/&gt;
+      &lt;path id&#x3D;&quot;checkbox-70&quot; class&#x3D;&quot;lock-color&quot; fill-opacity&#x3D;&quot;0.33725490196078434&quot; stroke&#x3D;&quot;none&quot; d&#x3D;&quot;
+      M 8.25 -8.25
+      Q 4.8 -11.65 0 -11.65 -4.8 -11.65 -8.25 -8.25 -11.65 -4.8 -11.65 0 -11.65 4.8 -8.25 8.25 -4.8 11.65 0 11.65 4.8 11.65 8.25 8.25 11.65 4.8 11.65 0 11.65 -4.8 8.25 -8.25 Z&quot;/&gt;
+      &lt;path id&#x3D;&quot;checkbox-71&quot; class&#x3D;&quot;lock-color&quot; fill-opacity&#x3D;&quot;0.5058823529411764&quot; stroke&#x3D;&quot;none&quot; d&#x3D;&quot;
+      M 9.55 -9.55
+      Q 5.6 -13.5 0 -13.5 -5.55 -13.5 -9.55 -9.55 -13.5 -5.55 -13.5 0 -13.5 5.6 -9.55 9.55 -5.55 13.5 0 13.5 5.6 13.5 9.55 9.55 13.5 5.6 13.5 0 13.5 -5.55 9.55 -9.55 Z&quot;/&gt;
+      &lt;path id&#x3D;&quot;checkbox-72&quot; class&#x3D;&quot;lock-color&quot; fill-opacity&#x3D;&quot;0.6705882352941176&quot; stroke&#x3D;&quot;none&quot; d&#x3D;&quot;
+      M 10.8 -10.85
+      Q 6.35 -15.35 0 -15.35 -6.35 -15.35 -10.85 -10.85 -15.35 -6.35 -15.35 0 -15.35 6.35 -10.85 10.8 -6.35 15.35 0 15.35 6.35 15.35 10.8 10.8 15.35 6.35 15.35 0 15.35 -6.35 10.8 -10.85 Z&quot;/&gt;
+      &lt;path id&#x3D;&quot;checkbox-73&quot; class&#x3D;&quot;lock-color&quot; fill-opacity&#x3D;&quot;0.8352941176470589&quot; stroke&#x3D;&quot;none&quot; d&#x3D;&quot;
+      M 12.1 -12.15
+      Q 7.1 -17.15 0 -17.15 -7.1 -17.15 -12.15 -12.15 -17.15 -7.1 -17.15 0 -17.15 7.1 -12.15 12.1 -7.1 17.15 0 17.15 7.1 17.15 12.1 12.1 17.15 7.1 17.15 0 17.15 -7.1 12.1 -12.15 Z&quot;/&gt;
+      &lt;path id&#x3D;&quot;checkbox-74&quot; class&#x3D;&quot;lock-color&quot; stroke&#x3D;&quot;none&quot; d&#x3D;&quot;
+      M 13.4 -13.45
+      Q 7.85 -19 0 -19 -7.85 -19 -13.45 -13.45 -19 -7.85 -19 0 -19 7.85 -13.45 13.4 -7.85 19 0 19 7.85 19 13.4 13.4 19 7.85 19 0 19 -7.85 13.4 -13.45 Z&quot;/&gt;
+      &lt;path class&#x3D;&quot;checkbox-75 lock-color&quot; stroke&#x3D;&quot;none&quot; d&#x3D;&quot;
+      M 21.6 -16.55
+      Q 18.85 -24.4 9.85 -24.4 -3.9 -24.4 -16.55 -21.6 -24.4 -18.8 -24.4 -9.85 -24.4 3.95 -21.6 16.55 -18.8 24.4 -9.85 24.4 3.95 24.4 16.55 21.6 24.4 18.85 24.4 9.85 24.4 -3.9 21.6 -16.55 Z&quot;/&gt;
+      &lt;path class&#x3D;&quot;checkbox-border-final&quot; fill&#x3D;&quot;#FFFFFF&quot; stroke&#x3D;&quot;none&quot; d&#x3D;&quot;
+      M -108.4 144
+      Q -108.4 132 -120.4 132
+      L -167.2 132
+      Q -179.2 132 -179.2 144
+      L -179.2 190.8
+      Q -179.2 202.8 -167.2 202.8
+      L -120.4 202.8
+      Q -108.4 202.8 -108.4 190.8
+      L -108.4 144 Z&quot;/&gt;
+    &lt;/g&gt;
+
+    &lt;g id&#x3D;&quot;Mask_Mask_Tween_3_0_Layer0_0_FILL&quot;&gt;
+      &lt;path fill&#x3D;&quot;#FFFFFF&quot; stroke&#x3D;&quot;none&quot; d&#x3D;&quot;
+      M 16 18.2
+      L 16 -18.15 -16 -18.15 -16 18.2 16 18.2 Z&quot;/&gt;
+    &lt;/g&gt;
+    &lt;g id&#x3D;&quot;Tween_1_0_Layer0_0_FILL&quot;&gt;
+      &lt;path class&#x3D;&quot;lock-color&quot; stroke&#x3D;&quot;none&quot; d&#x3D;&quot;
+      M 1299 288.4
+      Q 1298.05 287.5 1296.95 287.4 1295.85 287.3 1295.1 288 1294.35 288.7 1294.45 289.75 1294.5 290.85 1295.4 291.75
+      L 1300.8 297
+      Q 1301.7 297.9 1303 297.85 1304.1 297.95 1305.15 296.65
+      L 1316.6 282.15
+      Q 1317.55 280.95 1317.4 279.9 1317.3 278.85 1316.2 278.25 1314.3 277.1 1312.6 279.25 1305.5 288.1 1303.65 290.55 1303 291.35 1302.5 291.4 1302 291.4 1301.35 290.65 1300.35 289.55 1299 288.4 Z&quot;/&gt;
+    &lt;/g&gt;
+    &lt;path id&#x3D;&quot;Square_74_Layer2_0_1_STROKES&quot; stroke&#x3D;&quot;#135967&quot; stroke-opacity&#x3D;&quot;0.5019607843137255&quot; stroke-width&#x3D;&quot;3&quot; stroke-linejoin&#x3D;&quot;round&quot; stroke-linecap&#x3D;&quot;round&quot; fill&#x3D;&quot;none&quot; d&#x3D;&quot;
+    M -24.4 -9.85
+    Q -24.4 -18.8 -16.55 -21.6 -3.9 -24.4 9.85 -24.4 18.85 -24.4 21.6 -16.55 24.4 -3.9 24.4 9.85 24.4 18.85 16.55 21.6 3.95 24.4 -9.85 24.4 -18.8 24.4 -21.6 16.55 -24.4 3.95 -24.4 -9.85 Z&quot;/&gt;
+    &lt;path class&#x3D;&quot;lock-color-stroke&quot; id&#x3D;&quot;Square_75_Layer2_0_1_STROKES&quot; stroke-width&#x3D;&quot;6&quot; stroke-linejoin&#x3D;&quot;round&quot; stroke-linecap&#x3D;&quot;round&quot; fill&#x3D;&quot;none&quot; d&#x3D;&quot;
+    M -19.698437499999997 -29.782812500000006
+    L 19.697656249999994 -29.782812500000006
+    Q 29.799218749999994 -29.782812500000006 29.799218749999994 -19.681250000000006
+    L 29.799218749999994 19.71484375
+    Q 29.799218749999994 29.81640625 19.697656249999994 29.81640625
+    L -19.698437499999997 29.81640625
+    Q -29.799999999999997 29.81640625 -29.799999999999997 19.71484375
+    L -29.799999999999997 -19.681250000000006
+    Q -29.799999999999997 -29.782812500000006 -19.698437499999997 -29.782812500000006 Z&quot;/&gt;
+    &lt;/defs&gt;
+
+    &lt;g transform&#x3D;&quot;matrix( 0.83843994140625, 0, 0, 0.83843994140625, 200,85.85) &quot;&gt;
+    &lt;g class&#x3D;&quot;blur-only&quot;&gt;
+      &lt;g class&#x3D;&quot;blur-filter&quot; transform&#x3D;&quot;matrix( 1.19268798828125, 0, 0, 1.19268798828125, -238.5,-102.35)&quot;&gt;
+      &lt;g class&#x3D;&quot;blur-lock&quot;&gt;
+      &lt;g transform&#x3D;&quot;matrix( 1, 0, 0, 1, -1015.7,-380) &quot;&gt;
+      &lt;use xlink:href&#x3D;&quot;#Lock_move_0_Layer0_0_MEMBER_0_FILL&quot;/&gt;
+      &lt;/g&gt;
+
+      &lt;g transform&#x3D;&quot;matrix( 1, 0, 0, 1, -1015.7,-380) &quot;&gt;
+      &lt;use xlink:href&#x3D;&quot;#Lock_move_0_Layer0_0_MEMBER_1_FILL&quot;/&gt;
+      &lt;/g&gt;
+
+      &lt;g transform&#x3D;&quot;matrix( 1, 0, 0, 1, -1015.7,-380) &quot;&gt;
+      &lt;use xlink:href&#x3D;&quot;#Lock_move_0_Layer0_0_MEMBER_2_FILL&quot;/&gt;
+      &lt;/g&gt;
+
+      &lt;g transform&#x3D;&quot;matrix( 1, 0, 0, 1, -1015.7,-380) &quot;&gt;
+      &lt;use xlink:href&#x3D;&quot;#Lock_move_0_Layer0_0_MEMBER_3_MEMBER_0_MEMBER_0_MEMBER_0_FILL&quot;/&gt;
+      &lt;/g&gt;
+
+      &lt;g transform&#x3D;&quot;matrix( 1, 0, 0, 1, -1015.7,-380) &quot;&gt;
+      &lt;use xlink:href&#x3D;&quot;#Lock_move_0_Layer0_0_MEMBER_4_MEMBER_0_MEMBER_0_MEMBER_0_FILL&quot;/&gt;
+      &lt;/g&gt;
+
+      &lt;g transform&#x3D;&quot;matrix( 1, 0, 0, 1, -1015.7,-380) &quot;&gt;
+      &lt;use xlink:href&#x3D;&quot;#Lock_move_0_Layer0_0_MEMBER_4_MEMBER_0_MEMBER_0_MEMBER_1_FILL&quot;/&gt;
+      &lt;/g&gt;
+
+      &lt;g transform&#x3D;&quot;matrix( 1, 0, 0, 1, -1015.7,-380) &quot;&gt;
+      &lt;use xlink:href&#x3D;&quot;#Lock_move_0_Layer0_0_MEMBER_5_MEMBER_0_FILL&quot;/&gt;
+      &lt;/g&gt;
+
+      &lt;g transform&#x3D;&quot;matrix( 1, 0, 0, 1, -1015.7,-380) &quot;&gt;
+      &lt;use xlink:href&#x3D;&quot;#Lock_move_0_Layer0_0_MEMBER_5_MEMBER_1_FILL&quot;/&gt;
+      &lt;/g&gt;
+
+      &lt;g transform&#x3D;&quot;matrix( 1, 0, 0, 1, -1015.7,-380) &quot;&gt;
+      &lt;use xlink:href&#x3D;&quot;#Lock_move_0_Layer0_0_MEMBER_5_MEMBER_2_FILL&quot;/&gt;
+      &lt;/g&gt;
+
+      &lt;g transform&#x3D;&quot;matrix( 1, 0, 0, 1, -1015.7,-380) &quot;&gt;
+      &lt;use xlink:href&#x3D;&quot;#Lock_move_0_Layer0_0_MEMBER_5_MEMBER_3_FILL&quot;/&gt;
+      &lt;/g&gt;
+
+      &lt;g transform&#x3D;&quot;matrix( 1, 0, 0, 1, -1015.7,-380) &quot;&gt;
+      &lt;use xlink:href&#x3D;&quot;#Lock_move_0_Layer0_0_MEMBER_6_MEMBER_0_MEMBER_0_MEMBER_0_FILL&quot;/&gt;
+      &lt;/g&gt;
+      &lt;/g&gt;
+      &lt;/g&gt;
+    &lt;/g&gt;
+
+    &lt;g class&#x3D;&quot;lock-only&quot;&gt;
+      &lt;g class&#x3D;&quot;lock-head&quot;&gt;
+      &lt;g transform&#x3D;&quot;matrix( 0.583160400390625, 0, 0, 0.583160400390625, -174.05,-146.1) &quot;&gt;
+      &lt;use xlink:href&#x3D;&quot;#Lock_hook_0_Layer0_0_FILL&quot;/&gt;
+      &lt;/g&gt;
+
+      &lt;g transform&#x3D;&quot;matrix( 0.583160400390625, 0, 0, 0.583160400390625, -174.05,-146.1) &quot;&gt;
+      &lt;use xlink:href&#x3D;&quot;#Lock_hook_0_Layer0_1_FILL&quot;/&gt;
+      &lt;/g&gt;
+
+      &lt;g transform&#x3D;&quot;matrix( 0.583160400390625, 0, 0, 0.583160400390625, -174.05,-146.1) &quot;&gt;
+      &lt;use xlink:href&#x3D;&quot;#Lock_hook_0_Layer0_2_FILL&quot;/&gt;
+      &lt;/g&gt;
+
+      &lt;g transform&#x3D;&quot;matrix( 0.5830535888671875, 0, 0, 0.5830535888671875, -174.05,-146.1) &quot;&gt;
+      &lt;use xlink:href&#x3D;&quot;#Lock_hook_0_Layer0_3_MEMBER_0_FILL&quot;/&gt;
+      &lt;/g&gt;
+
+      &lt;g transform&#x3D;&quot;matrix( 0.5830535888671875, 0, 0, 0.5830535888671875, -174.05,-146.1) &quot;&gt;
+      &lt;use xlink:href&#x3D;&quot;#Lock_hook_0_Layer0_3_MEMBER_1_FILL&quot;/&gt;
+      &lt;/g&gt;
+
+      &lt;g transform&#x3D;&quot;matrix( 0.5830535888671875, 0, 0, 0.5830535888671875, -174.05,-146.1) &quot;&gt;
+      &lt;use xlink:href&#x3D;&quot;#Lock_hook_0_Layer0_3_MEMBER_2_FILL&quot;/&gt;
+      &lt;/g&gt;
+
+      &lt;g transform&#x3D;&quot;matrix( 0.5830535888671875, 0, 0, 0.5830535888671875, -174.05,-146.1) &quot;&gt;
+      &lt;use xlink:href&#x3D;&quot;#Lock_hook_0_Layer0_3_MEMBER_3_FILL&quot;/&gt;
+      &lt;/g&gt;
+      &lt;/g&gt;
+
+      &lt;g class&#x3D;&quot;lock-body&quot;&gt;
+      &lt;g transform&#x3D;&quot;matrix( 0.5828399658203125, 0, 0, 0.5828399658203125, -173.95,-309.75) &quot;&gt;
+      &lt;use xlink:href&#x3D;&quot;#Lock_body_0_Layer0_0_MEMBER_0_MEMBER_0_MEMBER_0_FILL&quot;/&gt;
+      &lt;/g&gt;
+
+      &lt;g transform&#x3D;&quot;matrix( 0.5828399658203125, 0, 0, 0.6056060791015625, -173.95,-321.8) &quot;&gt;
+      &lt;use xlink:href&#x3D;&quot;#Lock_body_0_Layer0_1_MEMBER_0_MEMBER_0_MEMBER_0_FILL&quot;/&gt;
+      &lt;/g&gt;
+
+      &lt;g transform&#x3D;&quot;matrix( 0.5828399658203125, 0, 0, 0.5828399658203125, -173.95,-309.75) &quot;&gt;
+      &lt;use xlink:href&#x3D;&quot;#Lock_body_0_Layer0_2_MEMBER_0_MEMBER_0_MEMBER_0_FILL&quot;/&gt;
+      &lt;/g&gt;
+
+      &lt;g transform&#x3D;&quot;matrix( 0.5828399658203125, 0, 0, 0.5828399658203125, -173.95,-309.75) &quot;&gt;
+      &lt;use xlink:href&#x3D;&quot;#Lock_body_0_Layer0_3_MEMBER_0_MEMBER_0_MEMBER_0_FILL&quot;/&gt;
+      &lt;/g&gt;
+
+      &lt;g transform&#x3D;&quot;matrix( 0.5828399658203125, 0, 0, 0.5828399658203125, -173.95,-309.75) &quot;&gt;
+      &lt;use xlink:href&#x3D;&quot;#Lock_body_0_Layer0_4_MEMBER_0_MEMBER_0_MEMBER_0_FILL&quot;/&gt;
+      &lt;/g&gt;
+      &lt;/g&gt;
+    &lt;/g&gt;
+    &lt;/g&gt;
+
+    &lt;g transform&#x3D;&quot;matrix( 1.01104736328125, 0, 0, 1.01104736328125, 116.25,215.5) &quot;&gt;
+      &lt;g class&#x3D;&quot;checkbox-only&quot; transform&#x3D;&quot;matrix( 1, 0, 0, 1, 0,0) &quot;&gt;
+        &lt;use xlink:href&#x3D;&quot;#Square_67_Layer2_0_FILL&quot;/&gt;
+        &lt;use class&#x3D;&quot;checkbox-75&quot; xlink:href&#x3D;&quot;#Square_74_Layer2_0_1_STROKES&quot;/&gt;
+        &lt;use class&#x3D;&quot;checkbox-border-final&quot; xlink:href&#x3D;&quot;#Square_75_Layer2_0_1_STROKES&quot;/&gt;
+      &lt;/g&gt;
+
+      &lt;mask id&#x3D;&quot;Mask_Mask_1&quot;&gt;
+        &lt;g class&#x3D;&quot;checkbox-check&quot;&gt;
+          &lt;g transform&#x3D;&quot;matrix( 1, 0, 0, 1, 0,0) &quot;&gt;
+          &lt;use xlink:href&#x3D;&quot;#Mask_Mask_Tween_3_0_Layer0_0_FILL&quot;/&gt;
+          &lt;/g&gt;
+        &lt;/g&gt;
+      &lt;/mask&gt;
+
+      &lt;g mask&#x3D;&quot;url(#Mask_Mask_1)&quot;&gt;
+        &lt;g class&#x3D;&quot;checkbox-check-final&quot;&gt;
+          &lt;g transform&#x3D;&quot;matrix( 1, 0, 0, 1, 0,0) &quot;&gt;
+          &lt;g transform&#x3D;&quot;matrix( 1.391845703125, 0, 0, 1.3948974609375, -1817.65,-401.5) &quot;&gt;
+          &lt;use xlink:href&#x3D;&quot;#Tween_1_0_Layer0_0_FILL&quot;/&gt;
+          &lt;/g&gt;
+          &lt;/g&gt;
+        &lt;/g&gt;
+      &lt;/g&gt;
+    &lt;/g&gt;
+    &lt;/svg&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+</code></pre>
+    </div>
+
+    <div class="tab-pane fade " id="c-styleData">
+                <p class="comment">
+                    <code>./unlocking.component.scss</code>
+                </p>
+                <pre class="line-numbers"><code class="language-scss">@mixin animation {
+  animation-duration: 3s;
+  // animation-iteration-count: infinite;
+}
+
+.contain {
+  text-align: center;
+  margin: auto;
+  background-image: url(&quot;/assets/img/unlocking-background.gif&quot;);
+  background-size: 100%;
+  background-repeat: no-repeat;
+  .badge {
+    width: 25%;
+    float: left;
+    margin: 25% 0 0 20%;
+    animation-name: animation-badge;
+    animation-duration: 1.5s;
+  }
+  .div-svg {
+    display: inline-block;
+    margin: 10% 0 30% -10%;
+    width: 60%;
+  }
+  svg {
+    width: 100%;
+    height: 100%;
+    .lock-color {
+      fill: var(--ion-color-primary);
+    }
+    .lock-color-stroke {
+      stroke: var(--ion-color-primary);
+    }
+    // blur filter only applies to the first 6 frames
+    .blur-only {
+      @include animation;
+      animation-name: animation-blur-only;
+      opacity: 0;
+    }
+    .blur-filter {
+      @include animation;
+      animation-name: animation-blur-filter;
+      filter: url(#blur-filter-6);
+    }
+    .blur-lock {
+      @include animation;
+      animation-name: animation-blur-lock;
+      transform: matrix( 0.84478759765625, 0, 0, 0.84454345703125, 200,173);
+    }
+    // lock starts from frame 7
+    .lock-only {
+      @include animation;
+      animation-name: animation-lock-only;
+      opacity: 1;
+    }
+    .lock-head {
+      @include animation;
+      animation-name: animation-lock-head;
+      transform: matrix( -1, 0, 0, 1, -74.2,26.3);
+    }
+    .lock-body {
+      @include animation;
+      animation-name: animation-lock-body;
+      transform: matrix( 1, 0, 0, 1, 0,117.85);
+    }
+    // checkbox starts from frame 68
+    .checkbox-only {
+      @include animation;
+      animation-name: animation-checkbox-only;
+      opacity: 1;
+    }
+    #checkbox-68 {
+      @include animation;
+      animation-name: animation-checkbox-68;
+      opacity: 0;
+    }
+    #checkbox-69 {
+      @include animation;
+      animation-name: animation-checkbox-69;
+      opacity: 0;
+    }
+    #checkbox-70 {
+      @include animation;
+      animation-name: animation-checkbox-70;
+      opacity: 0;
+    }
+    #checkbox-71 {
+      @include animation;
+      animation-name: animation-checkbox-71;
+      opacity: 0;
+    }
+    #checkbox-72 {
+      @include animation;
+      animation-name: animation-checkbox-72;
+      opacity: 0;
+    }
+    #checkbox-73 {
+      @include animation;
+      animation-name: animation-checkbox-73;
+      opacity: 0;
+    }
+    #checkbox-74 {
+      @include animation;
+      animation-name: animation-checkbox-74;
+      opacity: 0;
+    }
+    .checkbox-75 {
+      @include animation;
+      animation-name: animation-checkbox-75;
+      opacity: 0;
+    }
+    // checkbox border final start from frame 76
+    .checkbox-border-final {
+      @include animation;
+      animation-name: animation-checkbox-border-final;
+      opacity: 1;
+    }
+    // start from frame 87
+    .checkbox-check-final {
+      @include animation;
+      animation-name: animation-checkbox-check-final;
+      opacity: 1;
+    }
+    // start from frame 87
+    .checkbox-check {
+      @include animation;
+      animation-name: animation-checkbox-check;
+      transform: matrix( 1, 0, 0, 1, 0,0);
+    }
+  }
+}
+@keyframes animation-badge {
+  0% {
+    transform: scale(0.1, 0.1);
+  }
+  60% {
+    transform: scale(1.2, 1.2);
+  }
+  70% {
+    transform: scale(0.8, 0.8);
+  }
+  80% {
+    transform: scale(1.1, 1.1);
+  }
+}
+@keyframes animation-blur-only {
+  // frame 1
+  0% {
+    opacity: 1;
+  }
+  5% {
+    opacity: 1;
+  }
+  // frame 7
+  6% {
+    opacity: 0;
+  }
+}
+@keyframes animation-blur-filter {
+  // frame 1
+  0% {
+    filter: url(#blur-filter-1);
+  }
+  1% {
+    filter: url(#blur-filter-2);
+  }
+  2% {
+    filter: url(#blur-filter-3);
+  }
+  3% {
+    filter: url(#blur-filter-4);
+  }
+  4% {
+    filter: url(#blur-filter-5);
+  }
+  // frame 6
+  5% {
+    filter: url(#blur-filter-6);
+  }
+}
+@keyframes animation-blur-lock {
+  // frame 1
+  0% {
+    transform: matrix( 0.844818115234375, 0, 0, 0.844573974609375, 199.95,253);
+  }
+  1% {
+    transform: matrix( 0.84478759765625, 0, 0, 0.84454345703125, 200,237);
+  }
+  2% {
+    transform: matrix( 0.84478759765625, 0, 0, 0.84454345703125, 200,221);
+  }
+  3% {
+    transform: matrix( 0.84478759765625, 0, 0, 0.84454345703125, 200,205);
+  }
+  4% {
+    transform: matrix( 0.84478759765625, 0, 0, 0.84454345703125, 200,189.05);
+  }
+  // frame 6
+  5% {
+    transform: matrix( 0.84478759765625, 0, 0, 0.84454345703125, 200,173);
+  }
+}
+@keyframes animation-lock-only {
+  0% {
+    opacity: 0;
+  }
+  5% {
+    opacity: 0;
+  }
+  6% {
+    opacity: 1;
+  }
+}
+@keyframes animation-lock-head {
+  // frame 7
+  6% {
+    transform: matrix( 1, 0, 0, 1, 0.1,84.7);
+  }
+  // frame 32
+  31% {
+    transform: matrix( 1, 0, 0, 1, 0.1,11.1);
+  }
+  // frame 39
+  38% {
+    transform: matrix( 1, 0, 0, 1, 0.1,30.3);
+  }
+  // frame 45
+  44% {
+    transform: matrix( 1, 0, 0, 1, 0.1,26.3);
+  }
+  // frame 54
+  53% {
+    transform: matrix( 1, 0, 0, 1, 0.1,30.3);
+  }
+  // frame 65
+  64% {
+    transform: matrix( 1, 0, 0, 1, 0.1,26.3);
+  }
+  // frame 68
+  67% {
+    transform: matrix( 1, 0, 0, 1, 0.1,26.3);
+  }
+  // frame 69
+  68% {
+    transform: matrix( 0.8571319580078125, 0, 0, 1, -5.2,26.3);
+  }
+  // frame 82
+  81% {
+    transform: matrix( -1, 0, 0, 1, -74.2,26.3);
+  }
+}
+@keyframes animation-lock-body {
+  // frame 20
+  19% {
+    transform: matrix( 1, 0, 0, 1, 0,117.85);
+  }
+  30% {
+    transform: matrix( 0.9559783935546875, 0, 0, 1.05377197265625, -0.05,114.65);
+  }
+  37% {
+    transform: matrix( 1, 0, 0, 1, 0,117.85);
+  }
+  43% {
+    transform: matrix( 0.9559783935546875, 0, 0, 1.033416748046875, -0.05,115.9);
+  }
+  // frame 54
+  53% {
+    transform: matrix( 1, 0, 0, 1, 0,117.85);
+  }
+}
+@keyframes animation-checkbox-only {
+  0% {
+    opacity: 0;
+  }
+  66% {
+    opacity: 0;
+  }
+  // frame 68
+  67% {
+    opacity: 1;
+  }
+}
+@keyframes animation-checkbox-68 {
+  0% {
+    opacity: 0;
+  }
+  66% {
+    opacity: 0;
+  }
+  // frame 68
+  67% {
+    opacity: 1;
+  }
+  68% {
+    opacity: 0;
+  }
+}
+@keyframes animation-checkbox-69 {
+  0% {
+    opacity: 0;
+  }
+  67% {
+    opacity: 0;
+  }
+  // frame 69
+  68% {
+    opacity: 1;
+  }
+  69% {
+    opacity: 0;
+  }
+}
+@keyframes animation-checkbox-70 {
+  0% {
+    opacity: 0;
+  }
+  68% {
+    opacity: 0;
+  }
+  // frame 70
+  69% {
+    opacity: 1;
+  }
+  70% {
+    opacity: 0;
+  }
+}
+@keyframes animation-checkbox-71 {
+  0% {
+    opacity: 0;
+  }
+  69% {
+    opacity: 0;
+  }
+  // frame 71
+  70% {
+    opacity: 1;
+  }
+  71% {
+    opacity: 0;
+  }
+}
+@keyframes animation-checkbox-72 {
+  0% {
+    opacity: 0;
+  }
+  70% {
+    opacity: 0;
+  }
+  // frame 72
+  71% {
+    opacity: 1;
+  }
+  72% {
+    opacity: 0;
+  }
+}
+@keyframes animation-checkbox-73 {
+  0% {
+    opacity: 0;
+  }
+  71% {
+    opacity: 0;
+  }
+  // frame 73
+  72% {
+    opacity: 1;
+  }
+  73% {
+    opacity: 0;
+  }
+}
+@keyframes animation-checkbox-74 {
+  0% {
+    opacity: 0;
+  }
+  72% {
+    opacity: 0;
+  }
+  // frame 74
+  73% {
+    opacity: 1;
+  }
+  74% {
+    opacity: 0;
+  }
+}
+@keyframes animation-checkbox-75 {
+  0% {
+    opacity: 0;
+  }
+  73% {
+    opacity: 0;
+  }
+  // frame 75
+  74% {
+    opacity: 1;
+  }
+  75% {
+    opacity: 0;
+  }
+}
+@keyframes animation-checkbox-border-final {
+  0% {
+    opacity: 0;
+  }
+  74% {
+    opacity: 0;
+  }
+  // frame 76
+  75% {
+    opacity: 1;
+  }
+}
+@keyframes animation-checkbox-check-final {
+  0% {
+    opacity: 0;
+  }
+  85% {
+    opacity: 0;
+  }
+  // frame 87
+  86% {
+    opacity: 1;
+  }
+}
+@keyframes animation-checkbox-check {
+  // frame 87
+  86% {
+    transform: matrix( 1, 0, 0, 1, -34.9,1.5);
+  }
+  90% {
+    transform: matrix( 1, 0, 0, 1, 0,0);
+  }
+}
+</code></pre>
+    </div>
+
+    <div class="tab-pane fade " id="c-tree">
+        <div id="tree-container"></div>
+        <div class="tree-legend">
+            <div class="title">
+                <b>Legend</b>
+            </div>
+            <div>
+                <div class="color htmlelement"></div><span>Html element</span>
+            </div>
+            <div>
+                <div class="color component"></div><span>Component</span>
+            </div>
+            <div>
+                <div class="color directive"></div><span>Html element with directive</span>
+            </div>
+        </div>
+    </div>
+
+    
+</div>
+
+<script src="../js/libs/vis.min.js"></script>
+<script src="../js/libs/htmlparser.js"></script>
+<script src="../js/libs/deep-iterator.js"></script>
+<script>
+        var COMPONENT_TEMPLATE = '<div><div class="contain">  <img class="badge" [src]="badgeUrl ? badgeUrl : \'/assets/img/sample-badge.png\'">  <div class="div-svg">    <svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" preserveAspectRatio="none" x="0px" y="0px" width="350px" height="350px" viewBox="0 0 350 350">    <defs>    <g>      <filter id="blur-filter-1" x="-20%" y="-37.69373337726917%" width="140%" height="175.38746675453834%" color-interpolation-filters="sRGB">      <feGaussianBlur in="SourceGraphic" stdDeviation="0,13.333333333333334" result="result1"/>      <feColorMatrix in="result1" type="matrix" values="1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 0 0" result="result2"/>      </filter>      <filter id="blur-filter-2" x="-20%" y="-33.07832243736631%" width="140%" height="166.15664487473262%" color-interpolation-filters="sRGB">      <feGaussianBlur in="SourceGraphic" stdDeviation="0,11.111043294270834" result="result1"/>      <feColorMatrix in="result1" type="matrix" values="1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 0.17 0" result="result2"/>      </filter>      <filter id="blur-filter-3" x="-20%" y="-28.46291149746345%" width="140%" height="156.9258229949269%" color-interpolation-filters="sRGB">      <feGaussianBlur in="SourceGraphic" stdDeviation="0,8.888956705729166" result="result1"/>      <feColorMatrix in="result1" type="matrix" values="1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 0.33 0" result="result2"/>      </filter>      <filter id="blur-filter-4" x="-20%" y="-23.847077978276587%" width="140%" height="147.69415595655317%" color-interpolation-filters="sRGB">      <feGaussianBlur in="SourceGraphic" stdDeviation="0,6.666666666666667" result="result1"/>      <feColorMatrix in="result1" type="matrix" values="1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 0.5 0" result="result2"/>      </filter>      <filter id="blur-filter-5" x="-20%" y="-20%" width="140%" height="140%" color-interpolation-filters="sRGB">      <feGaussianBlur in="SourceGraphic" stdDeviation="0,4.444376627604167" result="result1"/>      <feColorMatrix in="result1" type="matrix" values="1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 0.67 0" result="result2"/>      </filter>      <filter id="blur-filter-6" x="-20%" y="-20%" width="140%" height="140%" color-interpolation-filters="sRGB">      <feGaussianBlur in="SourceGraphic" stdDeviation="0,2.2222900390625" result="result1"/>      <feColorMatrix in="result1" type="matrix" values="1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 0.83 0" result="result2"/>      </filter>    </g>    <g>      <g id="Lock_move_0_Layer0_0_MEMBER_0_FILL">      <path fill="#FFFFFF" stroke="none" d="      M 1032 294.1      Q 1023.3 291.35 1013.95 291.35 1004.85 291.35 996.7 294 988.5 296.7 982.25 301.7 974.7 307.65 970.8 316.15 966.9 324.65 966.9 335.05      L 966.9 455.65      Q 966.9 460.45 970.3 463.85 973.65 467.25 978.45 467.25 983.25 467.25 986.65 463.85 990.05 460.45 990.05 455.65      L 990.05 335.05      Q 990.05 325 996.65 319.75 999.85 317.2 1004.3 315.85 1008.75 314.5 1013.95 314.5 1023.8 314.5 1031.7 319.15 1041.5 324.9 1041.5 335.05      L 1041.5 350.8      Q 1041.5 355.55 1044.9 358.95 1048.25 362.35 1053.05 362.35 1057.85 362.35 1061.25 358.95 1064.6 355.55 1064.6 350.8      L 1064.6 335.05      Q 1064.6 325.1 1060.2 316.55 1055.8 308.05 1047.6 301.95 1040.65 296.8 1032 294.1 Z"/>      </g>      <g id="Lock_move_0_Layer0_0_MEMBER_1_FILL">      <path fill="#97928A" stroke="none" d="      M 1026.3 292.65      L 1026.4 292.7      Q 1038.9 300.2 1044.85 306.05 1053.2 314.25 1055.8 324.85 1058.5 335.95 1057.9 349.05 1057.55 355.7 1056.4 361.85 1060 360.75 1062.3 357.75 1064.6 354.65 1064.6 350.8      L 1064.6 335.05      Q 1064.6 325.1 1060.2 316.55 1055.8 308.05 1047.6 301.95 1038.35 295.1 1026.3 292.65 Z"/>      </g>      <g id="Lock_move_0_Layer0_0_MEMBER_2_FILL">      <path fill="#97928A" stroke="none" d="      M 1020.25 315.1      Q 1018.45 311.9 1018.35 311.9 1009.4 310.5 1000.05 313.4 983.2 318.65 983.2 337      L 983.2 466.2      Q 986.3 464.85 988.15 462 990.05 459.15 990.05 455.65      L 990.05 335.05      Q 990.05 325 996.65 319.75 999.85 317.2 1004.3 315.85 1008.75 314.5 1013.95 314.5 1016.95 314.5 1020.25 315.1 Z"/>      </g>      <g id="Lock_move_0_Layer0_0_MEMBER_3_MEMBER_0_MEMBER_0_MEMBER_0_FILL">      <path class="lock-color" stroke="none" d="      M 1051 357      Q 1049.3 357 1048 359.4 1047.6 360.4 1047.55 360.5      L 1051.45 360.5      Q 1054.8 360.5 1057.2 362.75 1059.55 364.95 1059.55 368.2      L 1059.55 456.95      Q 1059.55 460.2 1057.2 462.4 1054.8 464.65 1051.45 464.65      L 1048.3 464.65      Q 1049.5 466.5 1051 466.5      L 1080.15 466.5      Q 1081.9 466.5 1083.15 464.1 1084.35 461.7 1084.35 458.35      L 1084.35 365.15      Q 1084.35 361.8 1083.15 359.4 1081.9 357 1080.15 357      L 1051 357 Z"/>      </g>      <g id="Lock_move_0_Layer0_0_MEMBER_4_MEMBER_0_MEMBER_0_MEMBER_0_FILL">      <path class="lock-color" stroke="none" d="      M 1046.8 365.15      Q 1046.8 362.55 1047.55 360.5      L 966.75 360.5      Q 963.4 360.5 961 362.75 958.65 365.05 958.65 368.2      L 958.65 456.95      Q 958.65 460.15 961 462.4 963.4 464.65 966.75 464.65      L 1048.3 464.65 1048 464.1      Q 1046.8 461.7 1046.8 458.35      L 1046.8 365.15 Z"/>      </g>      <g id="Lock_move_0_Layer0_0_MEMBER_4_MEMBER_0_MEMBER_0_MEMBER_1_FILL">      <path class="lock-color" stroke="none" d="      M 1051.45 360.5      L 1047.55 360.5      Q 1046.8 362.55 1046.8 365.15      L 1046.8 458.35      Q 1046.8 461.7 1048 464.1      L 1048.3 464.65 1051.45 464.65      Q 1054.8 464.65 1057.2 462.4 1059.55 460.2 1059.55 456.95      L 1059.55 368.2      Q 1059.55 364.95 1057.2 362.75 1054.8 360.5 1051.45 360.5 Z"/>      </g>      <g id="Lock_move_0_Layer0_0_MEMBER_5_MEMBER_0_FILL">      <path fill="#161616" stroke="none" d="      M 1000.2 295.1      Q 1001.2 295.75 1002.35 295.5 1007.85 294.25 1013.95 294.25 1022.85 294.25 1031.1 296.85 1039.35 299.4 1045.85 304.25 1053.25 309.75 1057.3 317.25 1058.15 318.8 1059.85 318.8 1060.6 318.8 1061.25 318.45 1062.3 317.9 1062.65 316.75 1062.95 315.6 1062.4 314.55 1057.75 305.85 1049.3 299.6 1042 294.25 1032.9 291.35 1023.7 288.45 1013.95 288.45 1007.55 288.45 1001.15 289.85 999.95 290.05 999.3 291.1 998.65 292.05 998.9 293.25 999.15 294.45 1000.2 295.1 Z"/>      </g>      <g id="Lock_move_0_Layer0_0_MEMBER_5_MEMBER_1_FILL">      <path fill="#161616" stroke="none" d="      M 1061.15 322.4      Q 1060.3 323.25 1060.3 324.45 1060.3 325.65 1061.15 326.5 1062 327.35 1063.2 327.35 1064.4 327.35 1065.25 326.5 1066.1 325.65 1066.1 324.45 1066.1 323.25 1065.25 322.4 1064.4 321.55 1063.2 321.55 1062 321.55 1061.15 322.4 Z"/>      </g>      <g id="Lock_move_0_Layer0_0_MEMBER_5_MEMBER_2_FILL">      <path fill="#161616" stroke="none" d="      M 993.2 293.05      Q 992.1 292.6 991 293.1 984.95 295.75 980.45 299.4 972.4 305.85 968.2 314.9 964 324 964 335.05      L 964 353.55 956.35 353.55      Q 951.05 353.55 947.3 357.3 943.55 361.05 943.55 366.4      L 943.55 458.8      Q 943.55 464.1 947.3 467.85 951.05 471.6 956.35 471.6      L 1075.05 471.6      Q 1080.3 471.6 1084.05 467.85 1087.85 464.15 1087.85 458.8      L 1087.85 438      Q 1087.85 436.6 1086.8 435.55 1085.8 434.55 1084.35 434.55 1083 434.55 1081.9 435.55 1080.9 436.65 1080.9 438      L 1080.9 458.8      Q 1080.9 461.15 1079.2 462.95 1077.5 464.65 1075.05 464.65      L 956.35 464.65      Q 953.9 464.65 952.25 462.95 950.5 461.25 950.5 458.8      L 950.5 366.4      Q 950.5 363.95 952.25 362.2 953.9 360.5 956.35 360.5      L 1075.05 360.5      Q 1077.5 360.5 1079.2 362.2 1080.9 364.05 1080.9 366.4      L 1080.9 398.9      Q 1080.9 400.3 1081.9 401.4 1083 402.4 1084.35 402.4 1085.8 402.4 1086.8 401.4 1087.85 400.35 1087.85 398.9      L 1087.85 366.4      Q 1087.85 361.05 1084.05 357.3 1080.3 353.55 1075.05 353.55      L 1067.25 353.55      Q 1067.5 352.05 1067.5 350.8      L 1067.5 333.65      Q 1067.45 332.45 1066.6 331.65 1065.75 330.8 1064.6 330.8      L 1064.5 330.8      Q 1063.3 330.85 1062.5 331.7 1061.65 332.6 1061.7 333.8      L 1061.75 350.8      Q 1061.75 351.95 1061.3 353.55      L 1044.8 353.55      Q 1044.4 352.1 1044.4 350.8      L 1044.4 335.05      Q 1044.4 323.45 1033.6 316.9 1024.8 311.6 1013.95 311.6 1008.3 311.6 1003.35 313.15 998.45 314.65 994.85 317.5 988 323 987.25 332.5 987.15 333.7 987.9 334.6 988.7 335.55 989.9 335.65 991.1 335.75 992 334.95 992.95 334.2 993 333 993.6 325.95 998.45 322.05 1004.25 317.4 1013.95 317.4 1017.7 317.4 1021.75 318.35 1026.55 319.45 1030.25 321.65 1038.6 326.55 1038.6 335.05      L 1038.6 350.8      Q 1038.6 352.05 1038.85 353.55      L 992.95 353.55 992.95 341.85      Q 992.95 340.65 992.1 339.8 991.25 338.95 990.05 338.95 988.85 338.95 988 339.8 987.15 340.65 987.15 341.85      L 987.15 353.55 969.8 353.55 969.8 335.05      Q 969.8 325.35 973.4 317.45 977.05 309.5 984.05 303.95 988.15 300.7 993.3 298.4 994.4 297.9 994.85 296.8 995.3 295.7 994.8 294.6 994.3 293.5 993.2 293.05 Z"/>      </g>      <g id="Lock_move_0_Layer0_0_MEMBER_5_MEMBER_3_FILL">      <path fill="#161616" stroke="none" d="      M 1087.85 411.75      Q 1087.85 410.35 1086.8 409.3 1085.8 408.3 1084.35 408.3 1083 408.3 1081.9 409.3 1080.9 410.4 1080.9 411.75      L 1080.9 425.6      Q 1080.9 426.95 1081.9 428.05 1083 429.05 1084.35 429.05 1085.8 429.05 1086.8 428.05 1087.85 427 1087.85 425.6      L 1087.85 411.75 Z"/>      </g>      <g id="Lock_move_0_Layer0_0_MEMBER_6_MEMBER_0_MEMBER_0_MEMBER_0_FILL">      <path fill="#FFFFFF" stroke="none" d="      M 1022.35 400.8      Q 1019.6 398.05 1015.7 398.05 1011.8 398.05 1009.05 400.8 1006.3 403.55 1006.3 407.45 1006.3 409.9 1007.5 412 1008.6 414 1010.6 415.3      L 1008.7 427.1 1022.5 427.1 1020.7 415.4      Q 1022.7 414.15 1023.85 412 1025.1 409.8 1025.1 407.45 1025.1 403.65 1022.35 400.8 Z"/>      </g>    </g>    <g>      <g id="Lock_hook_0_Layer0_0_FILL">      <path fill="#FFFFFF" stroke="none" d="      M 353.45 116.75      Q 341.5 107.9 326.5 103.2 311.45 98.45 295.3 98.45 279.65 98.45 265.5 103.05 251.35 107.65 240.5 116.3 227.5 126.65 220.75 141.35 214 156.05 214 174      L 214 382.5      Q 214 390.8 219.85 396.65 225.7 402.5 234 402.5 242.25 402.5 248.15 396.65 254 390.8 254 382.5      L 254 174      Q 254 156.65 265.45 147.55 270.95 143.15 278.65 140.8 286.4 138.45 295.3 138.45 312.3 138.45 326 146.5 342.9 156.45 342.9 174      L 342.9 201.2      Q 342.9 209.5 348.75 215.35 354.6 221.2 362.9 221.2 371.2 221.2 377.05 215.35 382.9 209.5 382.9 201.2      L 382.9 174      Q 382.9 156.85 375.3 142.05 367.7 127.3 353.45 116.75 Z"/>      </g>      <g id="Lock_hook_0_Layer0_1_FILL">      <path fill="#97928A" stroke="none" d="      M 375.3 142.05      Q 367.7 127.3 353.45 116.75 337.5 104.95 316.7 100.65      L 316.85 100.75      Q 338.4 113.75 348.7 123.85 363.15 138.05 367.65 156.35 372.35 175.55 371.25 198.15 370.7 209.85 368.7 220.35 374.95 218.45 378.9 213.2 382.9 207.85 382.9 201.2      L 382.9 174      Q 382.9 156.85 375.3 142.05 Z"/>      </g>      <g id="Lock_hook_0_Layer0_2_FILL">      <path fill="#97928A" stroke="none" d="      M 304.5 136.6      Q 303 133.95 302.9 133.95 298.75 133.3 292.05 133.45 280.7 133.65 271.35 136.6 242.2 145.7 242.2 177.35      L 242.2 400.7      Q 247.5 398.3 250.7 393.45 254 388.5 254 382.5      L 254 174      Q 254 156.65 265.45 147.55 270.95 143.15 278.65 140.8 286.4 138.45 295.3 138.45 300.35 138.45 306.25 139.45 306.1 139.3 304.5 136.6 Z"/>      </g>      <g id="Lock_hook_0_Layer0_3_MEMBER_0_FILL">      <path fill="#191919" stroke="none" d="      M 237.4 112.4      Q 223.45 123.5 216.25 139.2 209 154.85 209 174      L 209 382.5      Q 209 392.8 216.35 400.15 223.65 407.5 234 407.5 244.3 407.5 251.65 400.15 259 392.8 259 382.5      L 259 185.75      Q 259 183.7 257.55 182.2 256.05 180.75 254 180.75 251.9 180.75 250.45 182.2 249 183.7 249 185.75      L 249 382.5      Q 249 388.7 244.6 393.1 240.2 397.5 234 397.5 227.8 397.5 223.4 393.1 219 388.7 219 382.5      L 219 174      Q 219 157.25 225.25 143.55 231.55 129.85 243.6 120.2 250.65 114.6 259.65 110.6 261.55 109.8 262.3 107.85 263.05 105.95 262.2 104.05 261.4 102.15 259.45 101.4 257.55 100.6 255.65 101.45 245.4 105.95 237.4 112.4 Z"/>      </g>      <g id="Lock_hook_0_Layer0_3_MEMBER_1_FILL">      <path fill="#191919" stroke="none" d="      M 387.9 171.5      Q 387.85 169.5 386.35 168.05 384.9 166.65 382.9 166.65      L 382.75 166.65      Q 380.65 166.75 379.25 168.25 377.85 169.75 377.9 171.8      L 377.9 201.2      Q 377.9 207.4 373.5 211.8 369.1 216.2 362.9 216.2 356.7 216.2 352.3 211.8 347.9 207.4 347.9 201.2      L 347.9 174      Q 347.9 154 329.25 142.65 314.1 133.45 295.3 133.45 285.55 133.45 277 136.1 268.5 138.75 262.3 143.65 250.5 153.05 249.15 169.6 248.95 171.65 250.35 173.25 251.7 174.85 253.75 175 255.8 175.2 257.4 173.85 258.95 172.45 259.1 170.4 260.05 158.2 268.55 151.5 273.4 147.6 280.35 145.55 287.25 143.45 295.3 143.45 301.8 143.45 308.8 145.1 317.1 147.05 323.5 150.85 337.9 159.3 337.9 174      L 337.9 201.2      Q 337.9 211.5 345.25 218.85 352.6 226.2 362.9 226.2 373.25 226.2 380.6 218.85 387.9 211.5 387.9 201.2      L 387.9 171.5 Z"/>      </g>      <g id="Lock_hook_0_Layer0_3_MEMBER_2_FILL">      <path fill="#191919" stroke="none" d="      M 374.7 145.9      Q 375.95 145.9 377.05 145.3 378.9 144.3 379.5 142.3 380.1 140.35 379.1 138.5 370.9 123.4 356.45 112.75 343.85 103.4 328.05 98.45 312.25 93.45 295.3 93.45 284 93.45 273.15 95.8 271.1 96.25 270 98 268.9 99.75 269.35 101.75 269.8 103.75 271.55 104.9 273.25 106 275.3 105.6 284.85 103.45 295.3 103.45 310.65 103.45 324.95 107.9 339.15 112.4 350.5 120.75 363.25 130.25 370.3 143.25 370.95 144.5 372.15 145.2 373.35 145.9 374.7 145.9 Z"/>      </g>      <g id="Lock_hook_0_Layer0_3_MEMBER_3_FILL">      <path fill="#191919" stroke="none" d="      M 385.45 155.65      Q 385.45 153.6 384 152.1 382.5 150.65 380.45 150.65 378.4 150.65 376.9 152.1 375.45 153.6 375.45 155.65 375.45 157.75 376.9 159.2 378.4 160.65 380.45 160.65 382.5 160.65 384 159.2 385.45 157.75 385.45 155.65 Z"/>      </g>      <g id="Lock_body_0_Layer0_0_MEMBER_0_MEMBER_0_MEMBER_0_FILL">      <path class="lock-color" stroke="none" d="      M 414.95 439.3      Q 412.75 435.2 409.8 435.2      L 359.35 435.2      Q 356.35 435.2 354.2 439.3 352.1 443.5 352.1 449.25      L 352.1 610.4      Q 352.1 616.25 354.2 620.35 356.3 624.45 359.35 624.45      L 409.8 624.45      Q 412.8 624.45 414.95 620.35 417.05 616.25 417.05 610.4      L 417.05 449.25      Q 417.05 443.5 414.95 439.3 Z"/>      </g>      <g id="Lock_body_0_Layer0_1_MEMBER_0_MEMBER_0_MEMBER_0_FILL">      <path class="lock-color" stroke="none" d="      M 213.75 441.2      Q 207.95 441.2 203.8 445.1 199.7 449.15 199.7 454.6      L 199.7 607.95      Q 199.7 613.45 203.8 617.4 207.95 621.3 213.75 621.3      L 360.15 621.3      Q 366 621.3 370.1 617.4 374.2 613.55 374.2 607.95      L 374.2 454.6      Q 374.2 449.05 370.1 445.1 366 441.2 360.15 441.2      L 213.75 441.2 Z"/>      </g>      <g id="Lock_body_0_Layer0_2_MEMBER_0_MEMBER_0_MEMBER_0_FILL">      <path fill="#161616" stroke="none" d="      M 188.6 444.2      Q 191.6 441.2 195.75 441.2      L 400.9 441.2      Q 405.1 441.2 408.1 444.2 411.05 447.25 411.05 451.4      L 411.05 507.65      Q 411.05 510.15 412.8 511.9 414.55 513.65 417.05 513.65 419.6 513.65 421.3 511.9 423.05 510.15 423.05 507.65      L 423.05 451.4      Q 423.05 442.2 416.55 435.7 410 429.2 400.9 429.2      L 195.75 429.2      Q 186.7 429.2 180.1 435.7 173.6 442.3 173.6 451.4      L 173.6 611.15      Q 173.6 620.3 180.1 626.8 186.6 633.3 195.75 633.3      L 400.9 633.3      Q 410.05 633.3 416.55 626.8 423.05 620.4 423.05 611.15      L 423.05 575.25      Q 423.05 572.85 421.3 571 419.55 569.25 417.05 569.25 414.65 569.25 412.8 571 411.05 572.85 411.05 575.25      L 411.05 611.15      Q 411.05 615.35 408.1 618.35 405.15 621.3 400.9 621.3      L 195.75 621.3      Q 191.55 621.3 188.6 618.35 185.6 615.35 185.6 611.15      L 185.6 451.4      Q 185.6 447.2 188.6 444.2 Z"/>      </g>      <g id="Lock_body_0_Layer0_3_MEMBER_0_MEMBER_0_MEMBER_0_FILL">      <path fill="#161616" stroke="none" d="      M 412.8 525.6      Q 411.05 527.45 411.05 529.85      L 411.05 553.75      Q 411.05 556.25 412.8 558 414.5 559.75 417.05 559.75 419.6 559.75 421.3 558 423.05 556.25 423.05 553.75      L 423.05 529.85      Q 423.05 527.45 421.3 525.6 419.55 523.85 417.05 523.85 414.55 523.85 412.8 525.6 Z"/>      </g>      <g id="Lock_body_0_Layer0_4_MEMBER_0_MEMBER_0_MEMBER_0_FILL">      <path fill="#FFFFFF" stroke="none" d="      M 298.35 506.15      Q 291.6 506.15 286.85 510.9 282.1 515.75 282.1 522.35 282.1 526.6 284.15 530.25 286.15 533.8 289.55 536      L 286.2 556.4 310.1 556.4 306.95 536.1      Q 310.4 534 312.45 530.3 314.55 526.65 314.55 522.35 314.55 515.75 309.8 510.9 305.05 506.15 298.35 506.15 Z"/>      </g>      <g id="Mask_Square_7_1_MASK_0_FILL">      <path fill="#FFFFFF" stroke="none" d="      M -18.9 -16.65      L -50.9 -16.65 -50.9 19.7 -18.9 19.7 -18.9 -16.65 Z"/>      </g>    </g>    <g id="Square_67_Layer2_0_FILL">      <path id="checkbox-68" class="lock-color" fill-opacity="0.00784313725490196" stroke="none" d="      M 5.65 -5.65      Q 3.3 -8 0 -8 -3.3 -8 -5.65 -5.65 -8 -3.3 -8 0 -8 3.3 -5.65 5.65 -3.3 8 0 8 3.3 8 5.65 5.65 8 3.3 8 0 8 -3.3 5.65 -5.65 Z"/>      <path id="checkbox-69" class="lock-color" fill-opacity="0.17254901960784313" stroke="none" d="      M 6.95 -6.95      Q 4.05 -9.85 0 -9.85 -4.05 -9.85 -6.95 -6.95 -9.85 -4.05 -9.85 0 -9.85 4.05 -6.95 6.95 -4.05 9.85 0 9.85 4.05 9.85 6.95 6.95 9.85 4.05 9.85 0 9.85 -4.05 6.95 -6.95 Z"/>      <path id="checkbox-70" class="lock-color" fill-opacity="0.33725490196078434" stroke="none" d="      M 8.25 -8.25      Q 4.8 -11.65 0 -11.65 -4.8 -11.65 -8.25 -8.25 -11.65 -4.8 -11.65 0 -11.65 4.8 -8.25 8.25 -4.8 11.65 0 11.65 4.8 11.65 8.25 8.25 11.65 4.8 11.65 0 11.65 -4.8 8.25 -8.25 Z"/>      <path id="checkbox-71" class="lock-color" fill-opacity="0.5058823529411764" stroke="none" d="      M 9.55 -9.55      Q 5.6 -13.5 0 -13.5 -5.55 -13.5 -9.55 -9.55 -13.5 -5.55 -13.5 0 -13.5 5.6 -9.55 9.55 -5.55 13.5 0 13.5 5.6 13.5 9.55 9.55 13.5 5.6 13.5 0 13.5 -5.55 9.55 -9.55 Z"/>      <path id="checkbox-72" class="lock-color" fill-opacity="0.6705882352941176" stroke="none" d="      M 10.8 -10.85      Q 6.35 -15.35 0 -15.35 -6.35 -15.35 -10.85 -10.85 -15.35 -6.35 -15.35 0 -15.35 6.35 -10.85 10.8 -6.35 15.35 0 15.35 6.35 15.35 10.8 10.8 15.35 6.35 15.35 0 15.35 -6.35 10.8 -10.85 Z"/>      <path id="checkbox-73" class="lock-color" fill-opacity="0.8352941176470589" stroke="none" d="      M 12.1 -12.15      Q 7.1 -17.15 0 -17.15 -7.1 -17.15 -12.15 -12.15 -17.15 -7.1 -17.15 0 -17.15 7.1 -12.15 12.1 -7.1 17.15 0 17.15 7.1 17.15 12.1 12.1 17.15 7.1 17.15 0 17.15 -7.1 12.1 -12.15 Z"/>      <path id="checkbox-74" class="lock-color" stroke="none" d="      M 13.4 -13.45      Q 7.85 -19 0 -19 -7.85 -19 -13.45 -13.45 -19 -7.85 -19 0 -19 7.85 -13.45 13.4 -7.85 19 0 19 7.85 19 13.4 13.4 19 7.85 19 0 19 -7.85 13.4 -13.45 Z"/>      <path class="checkbox-75 lock-color" stroke="none" d="      M 21.6 -16.55      Q 18.85 -24.4 9.85 -24.4 -3.9 -24.4 -16.55 -21.6 -24.4 -18.8 -24.4 -9.85 -24.4 3.95 -21.6 16.55 -18.8 24.4 -9.85 24.4 3.95 24.4 16.55 21.6 24.4 18.85 24.4 9.85 24.4 -3.9 21.6 -16.55 Z"/>      <path class="checkbox-border-final" fill="#FFFFFF" stroke="none" d="      M -108.4 144      Q -108.4 132 -120.4 132      L -167.2 132      Q -179.2 132 -179.2 144      L -179.2 190.8      Q -179.2 202.8 -167.2 202.8      L -120.4 202.8      Q -108.4 202.8 -108.4 190.8      L -108.4 144 Z"/>    </g>    <g id="Mask_Mask_Tween_3_0_Layer0_0_FILL">      <path fill="#FFFFFF" stroke="none" d="      M 16 18.2      L 16 -18.15 -16 -18.15 -16 18.2 16 18.2 Z"/>    </g>    <g id="Tween_1_0_Layer0_0_FILL">      <path class="lock-color" stroke="none" d="      M 1299 288.4      Q 1298.05 287.5 1296.95 287.4 1295.85 287.3 1295.1 288 1294.35 288.7 1294.45 289.75 1294.5 290.85 1295.4 291.75      L 1300.8 297      Q 1301.7 297.9 1303 297.85 1304.1 297.95 1305.15 296.65      L 1316.6 282.15      Q 1317.55 280.95 1317.4 279.9 1317.3 278.85 1316.2 278.25 1314.3 277.1 1312.6 279.25 1305.5 288.1 1303.65 290.55 1303 291.35 1302.5 291.4 1302 291.4 1301.35 290.65 1300.35 289.55 1299 288.4 Z"/>    </g>    <path id="Square_74_Layer2_0_1_STROKES" stroke="#135967" stroke-opacity="0.5019607843137255" stroke-width="3" stroke-linejoin="round" stroke-linecap="round" fill="none" d="    M -24.4 -9.85    Q -24.4 -18.8 -16.55 -21.6 -3.9 -24.4 9.85 -24.4 18.85 -24.4 21.6 -16.55 24.4 -3.9 24.4 9.85 24.4 18.85 16.55 21.6 3.95 24.4 -9.85 24.4 -18.8 24.4 -21.6 16.55 -24.4 3.95 -24.4 -9.85 Z"/>    <path class="lock-color-stroke" id="Square_75_Layer2_0_1_STROKES" stroke-width="6" stroke-linejoin="round" stroke-linecap="round" fill="none" d="    M -19.698437499999997 -29.782812500000006    L 19.697656249999994 -29.782812500000006    Q 29.799218749999994 -29.782812500000006 29.799218749999994 -19.681250000000006    L 29.799218749999994 19.71484375    Q 29.799218749999994 29.81640625 19.697656249999994 29.81640625    L -19.698437499999997 29.81640625    Q -29.799999999999997 29.81640625 -29.799999999999997 19.71484375    L -29.799999999999997 -19.681250000000006    Q -29.799999999999997 -29.782812500000006 -19.698437499999997 -29.782812500000006 Z"/>    </defs>    <g transform="matrix( 0.83843994140625, 0, 0, 0.83843994140625, 200,85.85) ">    <g class="blur-only">      <g class="blur-filter" transform="matrix( 1.19268798828125, 0, 0, 1.19268798828125, -238.5,-102.35)">      <g class="blur-lock">      <g transform="matrix( 1, 0, 0, 1, -1015.7,-380) ">      <use xlink:href="#Lock_move_0_Layer0_0_MEMBER_0_FILL"/>      </g>      <g transform="matrix( 1, 0, 0, 1, -1015.7,-380) ">      <use xlink:href="#Lock_move_0_Layer0_0_MEMBER_1_FILL"/>      </g>      <g transform="matrix( 1, 0, 0, 1, -1015.7,-380) ">      <use xlink:href="#Lock_move_0_Layer0_0_MEMBER_2_FILL"/>      </g>      <g transform="matrix( 1, 0, 0, 1, -1015.7,-380) ">      <use xlink:href="#Lock_move_0_Layer0_0_MEMBER_3_MEMBER_0_MEMBER_0_MEMBER_0_FILL"/>      </g>      <g transform="matrix( 1, 0, 0, 1, -1015.7,-380) ">      <use xlink:href="#Lock_move_0_Layer0_0_MEMBER_4_MEMBER_0_MEMBER_0_MEMBER_0_FILL"/>      </g>      <g transform="matrix( 1, 0, 0, 1, -1015.7,-380) ">      <use xlink:href="#Lock_move_0_Layer0_0_MEMBER_4_MEMBER_0_MEMBER_0_MEMBER_1_FILL"/>      </g>      <g transform="matrix( 1, 0, 0, 1, -1015.7,-380) ">      <use xlink:href="#Lock_move_0_Layer0_0_MEMBER_5_MEMBER_0_FILL"/>      </g>      <g transform="matrix( 1, 0, 0, 1, -1015.7,-380) ">      <use xlink:href="#Lock_move_0_Layer0_0_MEMBER_5_MEMBER_1_FILL"/>      </g>      <g transform="matrix( 1, 0, 0, 1, -1015.7,-380) ">      <use xlink:href="#Lock_move_0_Layer0_0_MEMBER_5_MEMBER_2_FILL"/>      </g>      <g transform="matrix( 1, 0, 0, 1, -1015.7,-380) ">      <use xlink:href="#Lock_move_0_Layer0_0_MEMBER_5_MEMBER_3_FILL"/>      </g>      <g transform="matrix( 1, 0, 0, 1, -1015.7,-380) ">      <use xlink:href="#Lock_move_0_Layer0_0_MEMBER_6_MEMBER_0_MEMBER_0_MEMBER_0_FILL"/>      </g>      </g>      </g>    </g>    <g class="lock-only">      <g class="lock-head">      <g transform="matrix( 0.583160400390625, 0, 0, 0.583160400390625, -174.05,-146.1) ">      <use xlink:href="#Lock_hook_0_Layer0_0_FILL"/>      </g>      <g transform="matrix( 0.583160400390625, 0, 0, 0.583160400390625, -174.05,-146.1) ">      <use xlink:href="#Lock_hook_0_Layer0_1_FILL"/>      </g>      <g transform="matrix( 0.583160400390625, 0, 0, 0.583160400390625, -174.05,-146.1) ">      <use xlink:href="#Lock_hook_0_Layer0_2_FILL"/>      </g>      <g transform="matrix( 0.5830535888671875, 0, 0, 0.5830535888671875, -174.05,-146.1) ">      <use xlink:href="#Lock_hook_0_Layer0_3_MEMBER_0_FILL"/>      </g>      <g transform="matrix( 0.5830535888671875, 0, 0, 0.5830535888671875, -174.05,-146.1) ">      <use xlink:href="#Lock_hook_0_Layer0_3_MEMBER_1_FILL"/>      </g>      <g transform="matrix( 0.5830535888671875, 0, 0, 0.5830535888671875, -174.05,-146.1) ">      <use xlink:href="#Lock_hook_0_Layer0_3_MEMBER_2_FILL"/>      </g>      <g transform="matrix( 0.5830535888671875, 0, 0, 0.5830535888671875, -174.05,-146.1) ">      <use xlink:href="#Lock_hook_0_Layer0_3_MEMBER_3_FILL"/>      </g>      </g>      <g class="lock-body">      <g transform="matrix( 0.5828399658203125, 0, 0, 0.5828399658203125, -173.95,-309.75) ">      <use xlink:href="#Lock_body_0_Layer0_0_MEMBER_0_MEMBER_0_MEMBER_0_FILL"/>      </g>      <g transform="matrix( 0.5828399658203125, 0, 0, 0.6056060791015625, -173.95,-321.8) ">      <use xlink:href="#Lock_body_0_Layer0_1_MEMBER_0_MEMBER_0_MEMBER_0_FILL"/>      </g>      <g transform="matrix( 0.5828399658203125, 0, 0, 0.5828399658203125, -173.95,-309.75) ">      <use xlink:href="#Lock_body_0_Layer0_2_MEMBER_0_MEMBER_0_MEMBER_0_FILL"/>      </g>      <g transform="matrix( 0.5828399658203125, 0, 0, 0.5828399658203125, -173.95,-309.75) ">      <use xlink:href="#Lock_body_0_Layer0_3_MEMBER_0_MEMBER_0_MEMBER_0_FILL"/>      </g>      <g transform="matrix( 0.5828399658203125, 0, 0, 0.5828399658203125, -173.95,-309.75) ">      <use xlink:href="#Lock_body_0_Layer0_4_MEMBER_0_MEMBER_0_MEMBER_0_FILL"/>      </g>      </g>    </g>    </g>    <g transform="matrix( 1.01104736328125, 0, 0, 1.01104736328125, 116.25,215.5) ">      <g class="checkbox-only" transform="matrix( 1, 0, 0, 1, 0,0) ">        <use xlink:href="#Square_67_Layer2_0_FILL"/>        <use class="checkbox-75" xlink:href="#Square_74_Layer2_0_1_STROKES"/>        <use class="checkbox-border-final" xlink:href="#Square_75_Layer2_0_1_STROKES"/>      </g>      <mask id="Mask_Mask_1">        <g class="checkbox-check">          <g transform="matrix( 1, 0, 0, 1, 0,0) ">          <use xlink:href="#Mask_Mask_Tween_3_0_Layer0_0_FILL"/>          </g>        </g>      </mask>      <g mask="url(#Mask_Mask_1)">        <g class="checkbox-check-final">          <g transform="matrix( 1, 0, 0, 1, 0,0) ">          <g transform="matrix( 1.391845703125, 0, 0, 1.3948974609375, -1817.65,-401.5) ">          <use xlink:href="#Tween_1_0_Layer0_0_FILL"/>          </g>          </g>        </g>      </g>    </g>    </svg>  </div></div></div>'
+    var COMPONENTS = [{'name': 'AchievementBadgeComponent', 'selector': 'achievement-badge'},{'name': 'AchievementPopUpComponent', 'selector': 'app-achievement-pop-up'},{'name': 'AchievementsComponent', 'selector': 'app-achievements'},{'name': 'ActivityCardComponent', 'selector': 'app-activity-card'},{'name': 'ActivityCompletePopUpComponent', 'selector': 'app-activity-complete-pop-up'},{'name': 'ActivityComponent', 'selector': 'app-activity'},{'name': 'ActivityRoutingComponent', 'selector': ''},{'name': 'AppComponent', 'selector': 'app-root'},{'name': 'AssessmentComponent', 'selector': 'app-assessment'},{'name': 'AuthComponent', 'selector': 'app-auth'},{'name': 'AuthDirectLoginComponent', 'selector': 'app-auth-direct-login'},{'name': 'AuthForgotPasswordComponent', 'selector': 'app-auth-forgot-password'},{'name': 'AuthLoginComponent', 'selector': 'app-auth-login'},{'name': 'AuthLogoutComponent', 'selector': 'app-auth-logout'},{'name': 'AuthRegistrationComponent', 'selector': 'app-auth-registration'},{'name': 'AuthResetPasswordComponent', 'selector': 'app-auth-reset-password'},{'name': 'BrandingLogoComponent', 'selector': 'app-branding-logo'},{'name': 'ChatComponent', 'selector': ''},{'name': 'ChatListComponent', 'selector': 'app-chat-list'},{'name': 'ChatPreviewComponent', 'selector': 'chat-preview'},{'name': 'ChatRoomComponent', 'selector': 'app-chat-room'},{'name': 'ChatViewComponent', 'selector': 'app-chat-view'},{'name': 'CircleProgressComponent', 'selector': 'app-circle-progress'},{'name': 'ClickableItemComponent', 'selector': 'clickable-item'},{'name': 'ContactNumberFormComponent', 'selector': 'app-contact-number-form'},{'name': 'DescriptionComponent', 'selector': 'app-description'},{'name': 'DeviceInfoComponent', 'selector': ''},{'name': 'EventDetailComponent', 'selector': 'app-event-detail'},{'name': 'EventListComponent', 'selector': 'app-event-list'},{'name': 'EventsComponent', 'selector': 'app-events'},{'name': 'EventsRoutingComponent', 'selector': ''},{'name': 'FastFeedbackComponent', 'selector': 'app-fast-feedback'},{'name': 'FileComponent', 'selector': 'app-file'},{'name': 'FileDisplayComponent', 'selector': 'app-file-display'},{'name': 'FilestackComponent', 'selector': 'file-stack'},{'name': 'GoMobileComponent', 'selector': 'go-mobile'},{'name': 'HomeComponent', 'selector': 'app-home'},{'name': 'IconComponent', 'selector': 'icon-custom'},{'name': 'ImgComponent', 'selector': 'app-img'},{'name': 'ListItemComponent', 'selector': 'app-list-item'},{'name': 'LockTeamAssessmentPopUpComponent', 'selector': 'app-lock-team-assessment-pop-up'},{'name': 'MultipleComponent', 'selector': 'app-multiple'},{'name': 'OneofComponent', 'selector': 'app-oneof'},{'name': 'OverviewComponent', 'selector': 'app-overview'},{'name': 'PageNotFoundComponent', 'selector': 'app-page-not-found'},{'name': 'PopUpComponent', 'selector': 'app-pop-up'},{'name': 'PreviewComponent', 'selector': 'app-preview'},{'name': 'ProjectComponent', 'selector': 'app-project'},{'name': 'QuestionComponent', 'selector': 'question'},{'name': 'QuestionsComponent', 'selector': 'app-questions'},{'name': 'ReviewListComponent', 'selector': 'app-review-list'},{'name': 'ReviewRatingComponent', 'selector': 'app-review-rating'},{'name': 'ReviewsComponent', 'selector': 'app-reviews'},{'name': 'ReviewsRoutingComponent', 'selector': ''},{'name': 'SettingsComponent', 'selector': 'app-settings'},{'name': 'SettingsRoutingComponent', 'selector': ''},{'name': 'SlidableComponent', 'selector': 'app-slidable'},{'name': 'SwitcherComponent', 'selector': 'app-switcher'},{'name': 'SwitcherProgramComponent', 'selector': 'app-switcher-program'},{'name': 'TabsComponent', 'selector': 'app-tabs'},{'name': 'TasksComponent', 'selector': 'app-tasks'},{'name': 'TasksRoutingComponent', 'selector': ''},{'name': 'TeamMemberSelectorComponent', 'selector': 'app-team-member-selector'},{'name': 'TermsConditionsPreviewComponent', 'selector': 'app-terms-conditions-preview'},{'name': 'TextComponent', 'selector': 'app-text'},{'name': 'TodoCardComponent', 'selector': 'app-todo-card'},{'name': 'TopicComponent', 'selector': 'app-topic'},{'name': 'UnlockingComponent', 'selector': 'unlocking'}];
+    var DIRECTIVES = [{'name': 'AutoresizeDirective', 'selector': '[appAutoresize]'},{'name': 'DragAndDropDirective', 'selector': '[appDragAndDrop]'},{'name': 'FloatDirective', 'selector': '[appFloat]'}];
+    var ACTUAL_COMPONENT = {'name': 'UnlockingComponent'};
+</script>
+<script src="../js/tree.js"></script>
+
+
+
+
+
+
+
+
+
+
+                   
+
+
+
+
+                   </div><div class="search-results">
+    <div class="has-results">
+        <h1 class="search-results-title"><span class='search-results-count'></span> result-matching "<span class='search-query'></span>"</h1>
+        <ul class="search-results-list"></ul>
+    </div>
+    <div class="no-results">
+        <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+    </div>
+</div>
+</div>
+               <!-- END CONTENT -->
+           </div>
+       </div>
+
+       <script>
+            var COMPODOC_CURRENT_PAGE_DEPTH = 1;
+            var COMPODOC_CURRENT_PAGE_CONTEXT = 'component';
+            var COMPODOC_CURRENT_PAGE_URL = 'UnlockingComponent.html';
+            var MAX_SEARCH_RESULTS = 15;
+       </script>
+
+       <script src="../js/libs/custom-elements.min.js"></script>
+       <script src="../js/libs/lit-html.js"></script>
+       <!-- Required to polyfill modern browsers as code is ES5 for IE... -->
+       <script src="../js/libs/custom-elements-es5-adapter.js" charset="utf-8" defer></script>
+       <script src="../js/menu-wc.js" defer></script>
+
+       <script src="../js/libs/bootstrap-native.js"></script>
+
+       <script src="../js/libs/es6-shim.min.js"></script>
+       <script src="../js/libs/EventDispatcher.js"></script>
+       <script src="../js/libs/promise.min.js"></script>
+       <script src="../js/libs/zepto.min.js"></script>
+
+       <script src="../js/compodoc.js"></script>
+
+       <script src="../js/tabs.js"></script>
+       <script src="../js/menu.js"></script>
+       <script src="../js/libs/clipboard.min.js"></script>
+       <script src="../js/libs/prism.js"></script>
+       <script src="../js/sourceCode.js"></script>
+          <script src="../js/search/search.js"></script>
+          <script src="../js/search/lunr.min.js"></script>
+          <script src="../js/search/search-lunr.js"></script>
+          <script src="../js/search/search_index.js"></script>
+       <script src="../js/lazy-load-graphs.js"></script>
+
+
+    </body>
+</html>

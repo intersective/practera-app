@@ -1,0 +1,1478 @@
+<!doctype html>
+<html class="no-js" lang="">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title>practera-app-v2 documentation</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+	      <link rel="stylesheet" href="../styles/style.css">
+    </head>
+    <body>
+
+        <div class="navbar navbar-default navbar-fixed-top visible-xs">
+            <a href="../" class="navbar-brand">practera-app-v2 documentation</a>
+            <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
+        </div>
+
+        <div class="xs-menu menu" id="mobile-menu">
+                <div id="book-search-input" role="search"><input type="text" placeholder="Type to search"></div>            <compodoc-menu></compodoc-menu>
+        </div>
+
+        <div class="container-fluid main">
+           <div class="row main">
+               <div class="hidden-xs menu">
+                   <compodoc-menu mode="normal"></compodoc-menu>
+               </div>
+               <!-- START CONTENT -->
+               <div class="content component">
+                   <div class="content-data">
+
+
+
+
+<ol class="breadcrumb">
+  <li>Components</li>
+  <li>TextComponent</li>
+</ol>
+
+<ul class="nav nav-tabs" role="tablist">
+        <li class="active">
+            <a href="#info" role="tab" id="info-tab" data-toggle="tab" data-link="info">Info</a>
+        </li>
+        <li >
+            <a href="#source" role="tab" id="source-tab" data-toggle="tab" data-link="source">Source</a>
+        </li>
+        <li >
+            <a href="#templateData" role="tab" id="templateData-tab" data-toggle="tab" data-link="template">Template</a>
+        </li>
+        <li >
+            <a href="#styleData" role="tab" id="styleData-tab" data-toggle="tab" data-link="style">Styles</a>
+        </li>
+        <li >
+            <a href="#tree" role="tab" id="tree-tab" data-toggle="tab" data-link="dom-tree">DOM Tree</a>
+        </li>
+</ul>
+
+<div class="tab-content">
+    <div class="tab-pane fade active in" id="c-info"><p class="comment">
+    <h3>File</h3>
+</p>
+<p class="comment">
+    <code>src/app/questions/text/text.component.ts</code>
+</p>
+
+
+
+    <p class="comment">
+        <h3>Implements</h3>
+    </p>
+    <p class="comment">
+                    <code><a href="https://angular.io/api/forms/ControlValueAccessor" target="_blank" >ControlValueAccessor</a></code>
+                    <code><a href="https://angular.io/api/core/OnInit" target="_blank" >OnInit</a></code>
+    </p>
+
+
+<section>
+    <h3>Metadata</h3>
+    <table class="table table-sm table-hover">
+        <tbody>
+
+
+
+
+
+
+
+
+
+            <tr>
+                <td class="col-md-3">providers</td>
+                <td class="col-md-9">
+                                <code><a href="../components/TextComponent.html" target="_self" >{
+    provide: NG_VALUE_ACCESSOR, multi: true, useExisting: forwardRef(() &#x3D;&gt; TextComponent),
+}</a></code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-3">selector</td>
+                <td class="col-md-9"><code>app-text</code></td>
+            </tr>
+
+            <tr>
+                <td class="col-md-3">styleUrls</td>
+                <td class="col-md-9"><code>text.component.scss</code></td>
+            </tr>
+
+
+
+            <tr>
+                <td class="col-md-3">templateUrl</td>
+                <td class="col-md-9"><code>text.component.html</code></td>
+            </tr>
+
+
+
+
+
+
+
+
+        </tbody>
+    </table>
+</section>
+
+    <section>
+    <h3 id="index">Index</h3>
+    <table class="table table-sm table-bordered index-table">
+        <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Properties</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                <a href="#answer">answer</a>
+                            </li>
+                            <li>
+                                <a href="#answerRef">answerRef</a>
+                            </li>
+                            <li>
+                                <a href="#comment">comment</a>
+                            </li>
+                            <li>
+                                <a href="#commentRef">commentRef</a>
+                            </li>
+                            <li>
+                                <a href="#errors">errors</a>
+                            </li>
+                            <li>
+                                <a href="#innerValue">innerValue</a>
+                            </li>
+                            <li>
+                                <a href="#propagateChange">propagateChange</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Methods</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#_showSavedAnswers">_showSavedAnswers</a>
+                            </li>
+                            <li>
+                                <a href="#audienceContainReviewer">audienceContainReviewer</a>
+                            </li>
+                            <li>
+                                <a href="#ngOnInit">ngOnInit</a>
+                            </li>
+                            <li>
+                                <a href="#onChange">onChange</a>
+                            </li>
+                            <li>
+                                <a href="#onFocus">onFocus</a>
+                            </li>
+                            <li>
+                                <a href="#registerOnChange">registerOnChange</a>
+                            </li>
+                            <li>
+                                <a href="#registerOnTouched">registerOnTouched</a>
+                            </li>
+                            <li>
+                                <a href="#writeValue">writeValue</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Inputs</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                <a href="#control">control</a>
+                            </li>
+                            <li>
+                                <a href="#doAssessment">doAssessment</a>
+                            </li>
+                            <li>
+                                <a href="#doReview">doReview</a>
+                            </li>
+                            <li>
+                                <a href="#question">question</a>
+                            </li>
+                            <li>
+                                <a href="#review">review</a>
+                            </li>
+                            <li>
+                                <a href="#reviewStatus">reviewStatus</a>
+                            </li>
+                            <li>
+                                <a href="#submission">submission</a>
+                            </li>
+                            <li>
+                                <a href="#submissionStatus">submissionStatus</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Outputs</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                <a href="#saveProgress">saveProgress</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+
+
+        </tbody>
+    </table>
+</section>
+
+    <section>
+    <h3 id="constructor">Constructor</h3>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+<code>constructor()</code>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="43" class="link-to-prism">src/app/questions/text/text.component.ts:43</a></div>
+                            </td>
+                        </tr>
+
+            </tbody>
+        </table>
+</section>
+
+    <section>
+    <h3 id="inputs">Inputs</h3>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="control"></a>
+                        <b>control</b>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://angular.io/api/forms/FormControl" target="_blank" >FormControl</a></code>
+
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-2" colspan="2">
+                                    <div class="io-line">Defined in <a href="" data-line="30" class="link-to-prism">src/app/questions/text/text.component.ts:30</a></div>
+                            </td>
+                        </tr>
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="doAssessment"></a>
+                        <b>doAssessment</b>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean" target="_blank" >Boolean</a></code>
+
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-2" colspan="2">
+                                    <div class="io-line">Defined in <a href="" data-line="26" class="link-to-prism">src/app/questions/text/text.component.ts:26</a></div>
+                            </td>
+                        </tr>
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="doReview"></a>
+                        <b>doReview</b>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean" target="_blank" >Boolean</a></code>
+
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-2" colspan="2">
+                                    <div class="io-line">Defined in <a href="" data-line="28" class="link-to-prism">src/app/questions/text/text.component.ts:28</a></div>
+                            </td>
+                        </tr>
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="question"></a>
+                        <b>question</b>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-2" colspan="2">
+                                    <div class="io-line">Defined in <a href="" data-line="18" class="link-to-prism">src/app/questions/text/text.component.ts:18</a></div>
+                            </td>
+                        </tr>
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="review"></a>
+                        <b>review</b>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-2" colspan="2">
+                                    <div class="io-line">Defined in <a href="" data-line="20" class="link-to-prism">src/app/questions/text/text.component.ts:20</a></div>
+                            </td>
+                        </tr>
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="reviewStatus"></a>
+                        <b>reviewStatus</b>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-2" colspan="2">
+                                    <div class="io-line">Defined in <a href="" data-line="22" class="link-to-prism">src/app/questions/text/text.component.ts:22</a></div>
+                            </td>
+                        </tr>
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="submission"></a>
+                        <b>submission</b>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-2" colspan="2">
+                                    <div class="io-line">Defined in <a href="" data-line="19" class="link-to-prism">src/app/questions/text/text.component.ts:19</a></div>
+                            </td>
+                        </tr>
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="submissionStatus"></a>
+                        <b>submissionStatus</b>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-2" colspan="2">
+                                    <div class="io-line">Defined in <a href="" data-line="24" class="link-to-prism">src/app/questions/text/text.component.ts:24</a></div>
+                            </td>
+                        </tr>
+            </tbody>
+        </table>
+</section>
+    <section>
+    <h3 id="outputs">Outputs</h3>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="saveProgress"></a>
+                        <b>saveProgress</b>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../interfaces/Event.html" target="_self" >EventEmitter</a></code>
+
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-2" colspan="2">
+                                    <div class="io-line">Defined in <a href="" data-line="36" class="link-to-prism">src/app/questions/text/text.component.ts:36</a></div>
+                            </td>
+                        </tr>
+            </tbody>
+        </table>
+</section>
+
+
+    <section>
+    
+    <h3 id="methods">
+        Methods
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="_showSavedAnswers"></a>
+                    <span class="name">
+                        <b>
+                            <span class="modifier">Private</span>
+                            _showSavedAnswers
+                        </b>
+                        <a href="#_showSavedAnswers"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>_showSavedAnswers()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="129"
+                            class="link-to-prism">src/app/questions/text/text.component.ts:129</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="audienceContainReviewer"></a>
+                    <span class="name">
+                        <b>
+                            audienceContainReviewer
+                        </b>
+                        <a href="#audienceContainReviewer"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>audienceContainReviewer()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="151"
+                            class="link-to-prism">src/app/questions/text/text.component.ts:151</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="ngOnInit"></a>
+                    <span class="name">
+                        <b>
+                            ngOnInit
+                        </b>
+                        <a href="#ngOnInit"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>ngOnInit()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="47"
+                            class="link-to-prism">src/app/questions/text/text.component.ts:47</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="onChange"></a>
+                    <span class="name">
+                        <b>
+                            onChange
+                        </b>
+                        <a href="#onChange"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>onChange(type: null)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="75"
+                            class="link-to-prism">src/app/questions/text/text.component.ts:75</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                    <td>Default value</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>type</td>
+                                    <td>
+                                            <code>null</code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+                                    <td>
+                                        <code>null</code>
+                                    </td>
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="onFocus"></a>
+                    <span class="name">
+                        <b>
+                            onFocus
+                        </b>
+                        <a href="#onFocus"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>onFocus(event)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="55"
+                            class="link-to-prism">src/app/questions/text/text.component.ts:55</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>event</td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="registerOnChange"></a>
+                    <span class="name">
+                        <b>
+                            registerOnChange
+                        </b>
+                        <a href="#registerOnChange"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>registerOnChange(fn: <a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank">any</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="119"
+                            class="link-to-prism">src/app/questions/text/text.component.ts:119</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>fn</td>
+                                    <td>
+                                                <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="registerOnTouched"></a>
+                    <span class="name">
+                        <b>
+                            registerOnTouched
+                        </b>
+                        <a href="#registerOnTouched"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>registerOnTouched(fn: <a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank">any</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="124"
+                            class="link-to-prism">src/app/questions/text/text.component.ts:124</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>fn</td>
+                                    <td>
+                                                <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="writeValue"></a>
+                    <span class="name">
+                        <b>
+                            writeValue
+                        </b>
+                        <a href="#writeValue"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>writeValue(value: <a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank">any</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="112"
+                            class="link-to-prism">src/app/questions/text/text.component.ts:112</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>value</td>
+                                    <td>
+                                                <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>
+    <section>
+    
+        <h3 id="inputs">
+            Properties
+        </h3>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="answer"></a>
+                        <span class="name">
+                            <b>
+                            answer</b>
+                            <a href="#answer"><span class="icon ion-ios-link"></span></a>
+                        </span>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <i>Default value : </i><code>&#x27;&#x27;</code>
+                        </td>
+                    </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                    <div class="io-line">Defined in <a href="" data-line="40" class="link-to-prism">src/app/questions/text/text.component.ts:40</a></div>
+                            </td>
+                        </tr>
+
+
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="answerRef"></a>
+                        <span class="name">
+                            <b>
+                            answerRef</b>
+                            <a href="#answerRef"><span class="icon ion-ios-link"></span></a>
+                        </span>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <i>Type : </i>        <code><a href="https://angular.io/api/core/ElementRef" target="_blank" >ElementRef</a></code>
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <b>Decorators : </b>
+                            <br />
+                            <code>
+                                @ViewChild(&#x27;answerEle&#x27;)<br />
+                            </code>
+                        </td>
+                    </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                    <div class="io-line">Defined in <a href="" data-line="32" class="link-to-prism">src/app/questions/text/text.component.ts:32</a></div>
+                            </td>
+                        </tr>
+
+
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="comment"></a>
+                        <span class="name">
+                            <b>
+                            comment</b>
+                            <a href="#comment"><span class="icon ion-ios-link"></span></a>
+                        </span>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                        </td>
+                    </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                    <div class="io-line">Defined in <a href="" data-line="41" class="link-to-prism">src/app/questions/text/text.component.ts:41</a></div>
+                            </td>
+                        </tr>
+
+
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="commentRef"></a>
+                        <span class="name">
+                            <b>
+                            commentRef</b>
+                            <a href="#commentRef"><span class="icon ion-ios-link"></span></a>
+                        </span>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <i>Type : </i>        <code><a href="https://angular.io/api/core/ElementRef" target="_blank" >ElementRef</a></code>
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <b>Decorators : </b>
+                            <br />
+                            <code>
+                                @ViewChild(&#x27;commentEle&#x27;)<br />
+                            </code>
+                        </td>
+                    </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                    <div class="io-line">Defined in <a href="" data-line="34" class="link-to-prism">src/app/questions/text/text.component.ts:34</a></div>
+                            </td>
+                        </tr>
+
+
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="errors"></a>
+                        <span class="name">
+                            <b>
+                            errors</b>
+                            <a href="#errors"><span class="icon ion-ios-link"></span></a>
+                        </span>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <i>Type : </i>    <code>Array&lt;any&gt;</code>
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <i>Default value : </i><code>[]</code>
+                        </td>
+                    </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                    <div class="io-line">Defined in <a href="" data-line="43" class="link-to-prism">src/app/questions/text/text.component.ts:43</a></div>
+                            </td>
+                        </tr>
+
+
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="innerValue"></a>
+                        <span class="name">
+                            <b>
+                            innerValue</b>
+                            <a href="#innerValue"><span class="icon ion-ios-link"></span></a>
+                        </span>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <i>Type : </i>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                        </td>
+                    </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                    <div class="io-line">Defined in <a href="" data-line="39" class="link-to-prism">src/app/questions/text/text.component.ts:39</a></div>
+                            </td>
+                        </tr>
+
+
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="propagateChange"></a>
+                        <span class="name">
+                            <b>
+                            propagateChange</b>
+                            <a href="#propagateChange"><span class="icon ion-ios-link"></span></a>
+                        </span>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <i>Default value : </i><code>() &#x3D;&gt; {...}</code>
+                        </td>
+                    </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                    <div class="io-line">Defined in <a href="" data-line="52" class="link-to-prism">src/app/questions/text/text.component.ts:52</a></div>
+                            </td>
+                        </tr>
+
+
+            </tbody>
+        </table>
+</section>
+
+</div>
+
+
+    <div class="tab-pane fade  tab-source-code" id="c-source">
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Component, Input, Output, EventEmitter, forwardRef, ViewChild, ElementRef, OnInit } from &#x27;@angular/core&#x27;;
+import { NG_VALUE_ACCESSOR, ControlValueAccessor, FormControl } from &#x27;@angular/forms&#x27;;
+
+@Component({
+  selector: &#x27;app-text&#x27;,
+  templateUrl: &#x27;text.component.html&#x27;,
+  styleUrls: [&#x27;text.component.scss&#x27;],
+  providers: [
+    {
+      provide: NG_VALUE_ACCESSOR,
+      multi: true,
+      useExisting: forwardRef(() &#x3D;&gt; TextComponent),
+    }
+  ]
+})
+export class TextComponent implements ControlValueAccessor, OnInit {
+
+  @Input() question;
+  @Input() submission;
+  @Input() review;
+  // this is for review status
+  @Input() reviewStatus;
+  // this is for assessment status
+  @Input() submissionStatus;
+  // this is for doing an assessment or not
+  @Input() doAssessment: Boolean;
+  // this is for doing review or not
+  @Input() doReview: Boolean;
+  // FormControl that is passed in from parent component
+  @Input() control: FormControl;
+  // answer field for submitter &amp; reviewer
+  @ViewChild(&#x27;answerEle&#x27;) answerRef: ElementRef;
+  // comment field for reviewer
+  @ViewChild(&#x27;commentEle&#x27;) commentRef: ElementRef;
+  // call back for save changes
+  @Output() saveProgress &#x3D; new EventEmitter&lt;boolean&gt;();
+
+  // the value of answer &amp;| comment
+  innerValue: any;
+  answer &#x3D; &#x27;&#x27;;
+  comment: string;
+  // validation errors array
+  errors: Array&lt;any&gt; &#x3D; [];
+
+  constructor() {}
+
+  ngOnInit() {
+    this._showSavedAnswers();
+  }
+
+  // propagate changes into the form control
+  propagateChange &#x3D; (_: any) &#x3D;&gt; {};
+
+  // fix IE/Edge text reversal issue
+  onFocus(event) {
+    const isIEOrEdge &#x3D; /msie\s|trident\/|edge\//i.test(window.navigator.userAgent);
+    if (isIEOrEdge) {
+      const textarea: HTMLTextAreaElement &#x3D; event.target.firstChild;
+      const existingText &#x3D; textarea.value;
+      if (textarea.value.length &#x3D;&#x3D;&#x3D; 0) {
+        textarea.value &#x3D; &#x27;a&#x27;;
+        textarea.setSelectionRange(textarea.value.length, textarea.value.length);
+        textarea.value &#x3D; &#x27;&#x27;;
+      } else {
+        textarea.setSelectionRange(textarea.value.length, textarea.value.length);
+        textarea.value &#x3D; &#x27;&#x27;;
+        textarea.value &#x3D; existingText;
+      }
+    }
+  }
+
+
+  // event fired when input/textarea value is changed. propagate the change up to the form control using the custom value accessor interface
+  // if &#x27;type&#x27; is set, it means it comes from reviewer doing review, otherwise it comes from submitter doing assessment
+  onChange(type &#x3D; null) {
+    // set changed value (answer or comment)
+    if (type) {
+      // initialise innerValue if not set
+      if (!this.innerValue) {
+        this.innerValue &#x3D; {
+          answer: &#x27;&#x27;,
+          comment: &#x27;&#x27;
+        };
+      }
+      this.innerValue[type] &#x3D; this[type];
+    } else {
+      this.innerValue &#x3D; this.answer;
+    }
+
+    // propagate value into form control using control value accessor interface
+    this.propagateChange(this.innerValue);
+
+    this.saveProgress.emit(true);
+
+    // 05/02/2019
+    // Don&#x27;t check &quot;is required&quot; error for now, it has some error.
+    // Since we are checking required answer when submit, it&#x27;s OK to just return here.
+    return ;
+    // reset errors
+    // this.errors &#x3D; [];
+    // setting, resetting error messages into an array (to loop) and adding the validation messages to show below the answer area
+    // for (const key in this.control.errors) {
+    //   if (key &#x3D;&#x3D;&#x3D; &#x27;required&#x27;) {
+    //     this.errors.push(&#x27;This question is required&#x27;);
+    //   } else {
+    //     this.errors.push(this.control.errors[key]);
+    //   }
+    // }
+  }
+
+  // From ControlValueAccessor interface
+  writeValue(value: any) {
+    if (value) {
+      this.innerValue &#x3D; value;
+    }
+  }
+
+  // From ControlValueAccessor interface
+  registerOnChange(fn: any) {
+    this.propagateChange &#x3D; fn;
+  }
+
+  // From ControlValueAccessor interface
+  registerOnTouched(fn: any) {
+
+  }
+
+  // adding save values to from control
+  private _showSavedAnswers() {
+    if ((this.reviewStatus &#x3D;&#x3D;&#x3D; &#x27;in progress&#x27;) &amp;&amp; (this.doReview)) {
+      this.innerValue &#x3D; {
+        answer: [],
+        comment: &#x27;&#x27;
+      };
+      this.innerValue.comment &#x3D; this.review.comment;
+      this.comment &#x3D; this.review.comment;
+      this.innerValue.answer &#x3D; this.review.answer;
+      this.answer &#x3D; this.review.answer;
+    }
+    if ((this.submissionStatus &#x3D;&#x3D;&#x3D; &#x27;in progress&#x27;) &amp;&amp; (this.doAssessment)) {
+      this.innerValue &#x3D; this.submission.answer;
+      this.answer &#x3D; this.submission.answer;
+    }
+    this.propagateChange(this.innerValue);
+    this.control.setValue(this.innerValue);
+  }
+
+  // check question audience have more that one audience and is it includes reviewer as audience.
+  // then will identify it as a student and mentor answering in the same question and
+  // border need to add only for mentor section not for full question
+  audienceContainReviewer() {
+    return this.question.audience.length &gt; 1 &amp;&amp; this.question.audience.includes(&#x27;reviewer&#x27;);
+  }
+
+}
+</code></pre>
+    </div>
+
+    <div class="tab-pane fade " id="c-templateData">
+        <pre class="line-numbers"><code class="language-html">&lt;ng-container *ngIf&#x3D;&quot;submissionStatus !&#x3D;&#x3D; &#x27;in progress&#x27; &amp;&amp; submission.answer&quot;&gt;
+  &lt;div class&#x3D;&quot;ion-padding-horizontal ion-padding-bottom&quot;&gt;
+      &lt;p class&#x3D;&quot;paragraph body-2 gray-3&quot;&gt;{{ submission.answer }}&lt;/p&gt;
+  &lt;/div&gt;
+  &lt;/ng-container&gt;
+
+  &lt;div *ngIf&#x3D;&quot;reviewStatus !&#x3D;&#x3D; &#x27;in progress&#x27; &amp;&amp; (review.answer || review.comment)&quot; class&#x3D;&quot;ion-padding&quot;
+  [ngClass]&#x3D;&quot;{ &#x27;audience-mentor&#x27;: audienceContainReviewer()}&quot;&gt;
+    &lt;ion-label *ngIf&#x3D;&quot;audienceContainReviewer()&quot; class&#x3D;&quot;q-title subtitle-2 black ion-padding-vertical&quot;&gt;Reviewer’s feedback&lt;/ion-label&gt;
+    &lt;ng-container *ngIf&#x3D;&quot;review.answer&quot;&gt;
+      &lt;p class&#x3D;&quot;paragraph body-2 gray-3&quot;&gt;{{ review.answer }}&lt;/p&gt;
+    &lt;/ng-container&gt;
+    &lt;ng-container *ngIf&#x3D;&quot;review.comment&quot;&gt;
+      &lt;p class&#x3D;&quot;paragraph body-2 gray-3&quot;&gt;{{ review.comment }}&lt;/p&gt;
+    &lt;/ng-container&gt;
+  &lt;/div&gt;
+
+  &lt;ng-container *ngIf&#x3D;&quot;doAssessment&quot;&gt;
+    &lt;div class&#x3D;&quot;ion-padding-horizontal ion-padding-bottom&quot;&gt;
+        &lt;ion-textarea
+        class&#x3D;&quot;background-white ion-margin-top textarea&quot;
+        [(ngModel)]&#x3D;&quot;answer&quot;
+        #answerEle
+        rows&#x3D;&quot;4&quot;
+        (ionFocus)&#x3D;&quot;onFocus()&quot;
+        (ionChange)&#x3D;&quot;onChange()&quot;
+        [disabled]&#x3D;&quot;control.disabled&quot;&gt;&lt;/ion-textarea&gt;
+      &lt;ion-text *ngFor&#x3D;&quot;let error of errors&quot; color&#x3D;&quot;danger&quot;&gt;
+        &lt;p&gt;{{error}}&lt;/p&gt;
+      &lt;/ion-text&gt;
+    &lt;/div&gt;
+  &lt;/ng-container&gt;
+
+  &lt;ng-container *ngIf&#x3D;&quot;doReview&quot;&gt;
+    &lt;div class&#x3D;&quot;ion-padding&quot; [ngClass]&#x3D;&quot;{ &#x27;audience-mentor&#x27;: audienceContainReviewer()}&quot;&gt;
+        &lt;ion-textarea
+        *ngIf&#x3D;&quot;question.canAnswer&quot;
+        class&#x3D;&quot;textarea&quot;
+        rows&#x3D;&quot;4&quot;
+        [(ngModel)]&#x3D;&quot;answer&quot;
+        #answerEle
+        (ionFocus)&#x3D;&quot;onFocus()&quot;
+        (ionChange)&#x3D;&quot;onChange(&#x27;answer&#x27;)&quot;
+        placeholder&#x3D;&quot;Please put your answer here&quot;
+        [disabled]&#x3D;&quot;control.disabled&quot;&gt;&lt;/ion-textarea&gt;
+      &lt;ion-textarea
+        *ngIf&#x3D;&quot;question.canComment &amp;&amp; submission.answer&quot;
+        class&#x3D;&quot;textarea&quot;
+        [(ngModel)]&#x3D;&quot;comment&quot;
+        #commentEle
+        rows&#x3D;&quot;4&quot;
+        (ionFocus)&#x3D;&quot;onFocus()&quot;
+        (ionChange)&#x3D;&quot;onChange(&#x27;comment&#x27;)&quot;
+        placeholder&#x3D;&quot;Please put your feedback here&quot;
+        [disabled]&#x3D;&quot;control.disabled&quot;&gt;&lt;/ion-textarea&gt;
+    &lt;/div&gt;
+  &lt;/ng-container&gt;
+</code></pre>
+    </div>
+
+    <div class="tab-pane fade " id="c-styleData">
+                <p class="comment">
+                    <code>text.component.scss</code>
+                </p>
+                <pre class="line-numbers"><code class="language-scss">ion-textarea {
+    padding-left: 5px;
+    padding-right: 5px;
+}
+.audience-mentor {
+  border: 2px solid var(--practera-review-border-color);
+  border-bottom-left-radius : 12px;
+  border-bottom-right-radius: 12px;
+}
+</code></pre>
+    </div>
+
+    <div class="tab-pane fade " id="c-tree">
+        <div id="tree-container"></div>
+        <div class="tree-legend">
+            <div class="title">
+                <b>Legend</b>
+            </div>
+            <div>
+                <div class="color htmlelement"></div><span>Html element</span>
+            </div>
+            <div>
+                <div class="color component"></div><span>Component</span>
+            </div>
+            <div>
+                <div class="color directive"></div><span>Html element with directive</span>
+            </div>
+        </div>
+    </div>
+
+    
+</div>
+
+<script src="../js/libs/vis.min.js"></script>
+<script src="../js/libs/htmlparser.js"></script>
+<script src="../js/libs/deep-iterator.js"></script>
+<script>
+        var COMPONENT_TEMPLATE = '<div><ng-container *ngIf="submissionStatus !== \'in progress\' && submission.answer">  <div class="ion-padding-horizontal ion-padding-bottom">      <p class="paragraph body-2 gray-3">{{ submission.answer }}</p>  </div>  </ng-container>  <div *ngIf="reviewStatus !== \'in progress\' && (review.answer || review.comment)" class="ion-padding"  [ngClass]="{ \'audience-mentor\': audienceContainReviewer()}">    <ion-label *ngIf="audienceContainReviewer()" class="q-title subtitle-2 black ion-padding-vertical">Reviewer’s feedback</ion-label>    <ng-container *ngIf="review.answer">      <p class="paragraph body-2 gray-3">{{ review.answer }}</p>    </ng-container>    <ng-container *ngIf="review.comment">      <p class="paragraph body-2 gray-3">{{ review.comment }}</p>    </ng-container>  </div>  <ng-container *ngIf="doAssessment">    <div class="ion-padding-horizontal ion-padding-bottom">        <ion-textarea        class="background-white ion-margin-top textarea"        [(ngModel)]="answer"        #answerEle        rows="4"        (ionFocus)="onFocus()"        (ionChange)="onChange()"        [disabled]="control.disabled"></ion-textarea>      <ion-text *ngFor="let error of errors" color="danger">        <p>{{error}}</p>      </ion-text>    </div>  </ng-container>  <ng-container *ngIf="doReview">    <div class="ion-padding" [ngClass]="{ \'audience-mentor\': audienceContainReviewer()}">        <ion-textarea        *ngIf="question.canAnswer"        class="textarea"        rows="4"        [(ngModel)]="answer"        #answerEle        (ionFocus)="onFocus()"        (ionChange)="onChange(\'answer\')"        placeholder="Please put your answer here"        [disabled]="control.disabled"></ion-textarea>      <ion-textarea        *ngIf="question.canComment && submission.answer"        class="textarea"        [(ngModel)]="comment"        #commentEle        rows="4"        (ionFocus)="onFocus()"        (ionChange)="onChange(\'comment\')"        placeholder="Please put your feedback here"        [disabled]="control.disabled"></ion-textarea>    </div>  </ng-container></div>'
+    var COMPONENTS = [{'name': 'AchievementBadgeComponent', 'selector': 'achievement-badge'},{'name': 'AchievementPopUpComponent', 'selector': 'app-achievement-pop-up'},{'name': 'AchievementsComponent', 'selector': 'app-achievements'},{'name': 'ActivityCardComponent', 'selector': 'app-activity-card'},{'name': 'ActivityCompletePopUpComponent', 'selector': 'app-activity-complete-pop-up'},{'name': 'ActivityComponent', 'selector': 'app-activity'},{'name': 'ActivityRoutingComponent', 'selector': ''},{'name': 'AppComponent', 'selector': 'app-root'},{'name': 'AssessmentComponent', 'selector': 'app-assessment'},{'name': 'AuthComponent', 'selector': 'app-auth'},{'name': 'AuthDirectLoginComponent', 'selector': 'app-auth-direct-login'},{'name': 'AuthForgotPasswordComponent', 'selector': 'app-auth-forgot-password'},{'name': 'AuthLoginComponent', 'selector': 'app-auth-login'},{'name': 'AuthLogoutComponent', 'selector': 'app-auth-logout'},{'name': 'AuthRegistrationComponent', 'selector': 'app-auth-registration'},{'name': 'AuthResetPasswordComponent', 'selector': 'app-auth-reset-password'},{'name': 'BrandingLogoComponent', 'selector': 'app-branding-logo'},{'name': 'ChatComponent', 'selector': ''},{'name': 'ChatListComponent', 'selector': 'app-chat-list'},{'name': 'ChatPreviewComponent', 'selector': 'chat-preview'},{'name': 'ChatRoomComponent', 'selector': 'app-chat-room'},{'name': 'ChatViewComponent', 'selector': 'app-chat-view'},{'name': 'CircleProgressComponent', 'selector': 'app-circle-progress'},{'name': 'ClickableItemComponent', 'selector': 'clickable-item'},{'name': 'ContactNumberFormComponent', 'selector': 'app-contact-number-form'},{'name': 'DescriptionComponent', 'selector': 'app-description'},{'name': 'DeviceInfoComponent', 'selector': ''},{'name': 'EventDetailComponent', 'selector': 'app-event-detail'},{'name': 'EventListComponent', 'selector': 'app-event-list'},{'name': 'EventsComponent', 'selector': 'app-events'},{'name': 'EventsRoutingComponent', 'selector': ''},{'name': 'FastFeedbackComponent', 'selector': 'app-fast-feedback'},{'name': 'FileComponent', 'selector': 'app-file'},{'name': 'FileDisplayComponent', 'selector': 'app-file-display'},{'name': 'FilestackComponent', 'selector': 'file-stack'},{'name': 'GoMobileComponent', 'selector': 'go-mobile'},{'name': 'HomeComponent', 'selector': 'app-home'},{'name': 'IconComponent', 'selector': 'icon-custom'},{'name': 'ImgComponent', 'selector': 'app-img'},{'name': 'ListItemComponent', 'selector': 'app-list-item'},{'name': 'LockTeamAssessmentPopUpComponent', 'selector': 'app-lock-team-assessment-pop-up'},{'name': 'MultipleComponent', 'selector': 'app-multiple'},{'name': 'OneofComponent', 'selector': 'app-oneof'},{'name': 'OverviewComponent', 'selector': 'app-overview'},{'name': 'PageNotFoundComponent', 'selector': 'app-page-not-found'},{'name': 'PopUpComponent', 'selector': 'app-pop-up'},{'name': 'PreviewComponent', 'selector': 'app-preview'},{'name': 'ProjectComponent', 'selector': 'app-project'},{'name': 'QuestionComponent', 'selector': 'question'},{'name': 'QuestionsComponent', 'selector': 'app-questions'},{'name': 'ReviewListComponent', 'selector': 'app-review-list'},{'name': 'ReviewRatingComponent', 'selector': 'app-review-rating'},{'name': 'ReviewsComponent', 'selector': 'app-reviews'},{'name': 'ReviewsRoutingComponent', 'selector': ''},{'name': 'SettingsComponent', 'selector': 'app-settings'},{'name': 'SettingsRoutingComponent', 'selector': ''},{'name': 'SlidableComponent', 'selector': 'app-slidable'},{'name': 'SwitcherComponent', 'selector': 'app-switcher'},{'name': 'SwitcherProgramComponent', 'selector': 'app-switcher-program'},{'name': 'TabsComponent', 'selector': 'app-tabs'},{'name': 'TasksComponent', 'selector': 'app-tasks'},{'name': 'TasksRoutingComponent', 'selector': ''},{'name': 'TeamMemberSelectorComponent', 'selector': 'app-team-member-selector'},{'name': 'TermsConditionsPreviewComponent', 'selector': 'app-terms-conditions-preview'},{'name': 'TextComponent', 'selector': 'app-text'},{'name': 'TodoCardComponent', 'selector': 'app-todo-card'},{'name': 'TopicComponent', 'selector': 'app-topic'},{'name': 'UnlockingComponent', 'selector': 'unlocking'}];
+    var DIRECTIVES = [{'name': 'AutoresizeDirective', 'selector': '[appAutoresize]'},{'name': 'DragAndDropDirective', 'selector': '[appDragAndDrop]'},{'name': 'FloatDirective', 'selector': '[appFloat]'}];
+    var ACTUAL_COMPONENT = {'name': 'TextComponent'};
+</script>
+<script src="../js/tree.js"></script>
+
+
+
+
+
+
+
+
+
+
+                   
+
+
+
+
+                   </div><div class="search-results">
+    <div class="has-results">
+        <h1 class="search-results-title"><span class='search-results-count'></span> result-matching "<span class='search-query'></span>"</h1>
+        <ul class="search-results-list"></ul>
+    </div>
+    <div class="no-results">
+        <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+    </div>
+</div>
+</div>
+               <!-- END CONTENT -->
+           </div>
+       </div>
+
+       <script>
+            var COMPODOC_CURRENT_PAGE_DEPTH = 1;
+            var COMPODOC_CURRENT_PAGE_CONTEXT = 'component';
+            var COMPODOC_CURRENT_PAGE_URL = 'TextComponent.html';
+            var MAX_SEARCH_RESULTS = 15;
+       </script>
+
+       <script src="../js/libs/custom-elements.min.js"></script>
+       <script src="../js/libs/lit-html.js"></script>
+       <!-- Required to polyfill modern browsers as code is ES5 for IE... -->
+       <script src="../js/libs/custom-elements-es5-adapter.js" charset="utf-8" defer></script>
+       <script src="../js/menu-wc.js" defer></script>
+
+       <script src="../js/libs/bootstrap-native.js"></script>
+
+       <script src="../js/libs/es6-shim.min.js"></script>
+       <script src="../js/libs/EventDispatcher.js"></script>
+       <script src="../js/libs/promise.min.js"></script>
+       <script src="../js/libs/zepto.min.js"></script>
+
+       <script src="../js/compodoc.js"></script>
+
+       <script src="../js/tabs.js"></script>
+       <script src="../js/menu.js"></script>
+       <script src="../js/libs/clipboard.min.js"></script>
+       <script src="../js/libs/prism.js"></script>
+       <script src="../js/sourceCode.js"></script>
+          <script src="../js/search/search.js"></script>
+          <script src="../js/search/lunr.min.js"></script>
+          <script src="../js/search/search-lunr.js"></script>
+          <script src="../js/search/search_index.js"></script>
+       <script src="../js/lazy-load-graphs.js"></script>
+
+
+    </body>
+</html>
