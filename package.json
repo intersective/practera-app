@@ -22,7 +22,7 @@
     "e2e-dev": "ng e2e -c dev --port 4300",
     "e2e-sandbox": "ng e2e -c sandbox",
     "generate-version": "node ./hooks/post-build.js",
-    "gendocs": "npx compodoc -p tsconfig.json src && cp -R documentation/ www/ && ng deploy --base-href=/practera-app-v2/ --branch=compodoc-pages --no-build"
+    "pubdocs": "npx compodoc -p tsconfig.json src && cp -R documentation/ www/ && ng deploy --base-href=/practera-app-v2/ --branch=compodoc-pages --no-build"
   },
   "dependencies": {
     "@angular/animations": "^9.0.5",
