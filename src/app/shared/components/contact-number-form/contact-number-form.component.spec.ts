@@ -11,41 +11,66 @@ import { ContactNumberFormComponent } from './contact-number-form.component';
 import { CommonModule } from '@angular/common';
 import { UtilsService } from '@services/utils.service';
 import { NotificationService } from '@shared/notification/notification.service';
-import { BrowserStorageService } from '@services/storage.service';
+import { NativeStorageService } from '@services/native-storage.service';
 import { SettingService } from '@app/settings/setting.service';
-import { RouterModule, Router } from '@angular/router';
-import { MockRouter, BrowserStorageServiceMock } from '@testing/mocked.service';
+import { ActivatedRoute } from '@angular/router';
+import { NativeStorageServiceMock } from '@testing/mocked.service';
 import { of } from 'rxjs';
-import { Apollo } from 'apollo-angular';
+import * as _ from 'lodash';
 
 describe('ContactNumberFormComponent', () => {
   let component: ContactNumberFormComponent;
   let fixture: ComponentFixture<ContactNumberFormComponent>;
-  let storageSpy: BrowserStorageService;
+  let storageSpy: NativeStorageService;
   let notificationSpy: NotificationService;
   let settingSpy: SettingService;
+  let routesSpy: ActivatedRoute;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [ IonicModule, CommonModule, FormsModule, HttpClientTestingModule, RouterModule ],
+      imports: [ /*IonicModule, CommonModule, FormsModule,*/ HttpClientTestingModule ],
       declarations: [ ContactNumberFormComponent ],
       schemas: [ CUSTOM_ELEMENTS_SCHEMA ],
       providers: [
-        Apollo,
         {
-          provide: BrowserStorageService,
-          useClass: BrowserStorageServiceMock,
+          provide: UtilsService,
+          useValue: {
+            find: (collections, callback) => {
+              return _.find(collections, callback);
+            },
+            each: (collections, callback) => {
+              return _.each(collections, callback);
+            },
+            isMobile: () => true
+          }
         },
-        UtilsService,
-        SettingService,
+        {
+          provide: SettingService,
+          useValue: jasmine.createSpyObj('SettingService', {
+            updateProfile: of({
+              success: true
+            })
+          }),
+        },
         {
           provide: NotificationService,
           useValue: jasmine.createSpyObj('NotificationService', ['alert', 'presentToast', 'popUp'])
         },
         {
-          provide: Router,
-          useClass: MockRouter
-        }
+          provide: NativeStorageService,
+          useClass: NativeStorageServiceMock
+        },
+        {
+          provide: ActivatedRoute,
+          // useClass: MockRouter
+          useValue: {
+            data: of({
+              user: {
+                contactNumber: ''
+              }
+            })
+          }
+        },
       ]
     })
     .compileComponents();
@@ -54,9 +79,10 @@ describe('ContactNumberFormComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(ContactNumberFormComponent);
     component = fixture.componentInstance;
-    storageSpy = TestBed.inject(BrowserStorageService);
+    storageSpy = TestBed.inject(NativeStorageService);
     notificationSpy = TestBed.inject(NotificationService);
     settingSpy = TestBed.inject(SettingService);
+    routesSpy = TestBed.inject(ActivatedRoute);
     fixture.detectChanges();
   });
 
@@ -71,7 +97,7 @@ describe('ContactNumberFormComponent', () => {
 
     it('should check existing contact number format if available', () => {
       component.countryModel = 'AUS';
-      storageSpy.getUser = jasmine.createSpy('getUser').and.returnValue({
+      storageSpy.getObject = jasmine.createSpy('getObject').and.returnValue({
         contactNumber: '012345678912',
       });
       component.ngOnInit();
@@ -88,18 +114,36 @@ describe('ContactNumberFormComponent', () => {
       ];
       formats.forEach(format => {
         it(`should identify ${format.number} as ${format.locale} format`, () => {
+          routesSpy.data = of({
+            user: {
+              contactNumber: format.number
+            }
+          });
           const locale = format.locale;
-          storageSpy.getUser = jasmine.createSpy('getUser').and.returnValue({
+          // console.log('routesSpy.data', routesSpy.data.subscribe(data => {}));
+
+
+          /*routesSpy = jasmine.createSpyObj('ActivatedRoute', {
+            data: of({
+              user: {
+                contactNumber: format.number
+              }
+            })
+          })*/
+          storageSpy.getObject = jasmine.createSpy('getObject').and.returnValue({
             contactNumber: format.number,
           });
 
           component.ngOnInit();
 
-          expect(component.countryModel).toEqual(locale);
-          expect(component.activeCountryModelInfo.countryCode).toEqual(component.contactNumberFormat.masks[locale].format);
-          expect(component.activeCountryModelInfo.placeholder).toEqual(component.contactNumberFormat.masks[locale].placeholder);
-          expect(component.activeCountryModelInfo.pattern).toEqual(component.contactNumberFormat.masks[locale].pattern);
-          expect(component.activeCountryModelInfo.length).toEqual(component.contactNumberFormat.masks[locale].numberLength);
+          fixture.detectChanges();
+          fixture.whenStable().then(() => {
+            expect(component.countryModel).toEqual(locale);
+            expect(component.activeCountryModelInfo.countryCode).toEqual(component.contactNumberFormat.masks[locale].format);
+            expect(component.activeCountryModelInfo.placeholder).toEqual(component.contactNumberFormat.masks[locale].placeholder);
+            expect(component.activeCountryModelInfo.pattern).toEqual(component.contactNumberFormat.masks[locale].pattern);
+            expect(component.activeCountryModelInfo.length).toEqual(component.contactNumberFormat.masks[locale].numberLength);
+          });
         });
       });
 
@@ -161,9 +205,6 @@ describe('ContactNumberFormComponent', () => {
 
     it('should update contact number (US)', () => {
       let submitBtn, cancelBtn;
-      spyOn(settingSpy, 'updateProfile').and.returnValue(of({
-        success: true
-      }));
       notificationSpy.alert = jasmine.createSpy('alert').and.callFake(res => {
         [cancelBtn, submitBtn] = res.buttons;
 
@@ -180,9 +221,6 @@ describe('ContactNumberFormComponent', () => {
 
     it('should update contact number (AUS)', () => {
       let submitBtn, cancelBtn;
-      spyOn(settingSpy, 'updateProfile').and.returnValue(of({
-        success: true
-      }));
       notificationSpy.alert = jasmine.createSpy('alert').and.callFake(res => {
         [cancelBtn, submitBtn] = res.buttons;
 
@@ -199,7 +237,7 @@ describe('ContactNumberFormComponent', () => {
 
     it('should fail update contact number gracefully (notify user)', () => {
       let submitBtn, cancelBtn;
-      spyOn(settingSpy, 'updateProfile').and.returnValue(of({
+      settingSpy.updateProfile = jasmine.createSpy('updateProfile').and.returnValue(of({
         success: false
       }));
       notificationSpy.alert = jasmine.createSpy('alert').and.callFake(res => {
@@ -224,7 +262,7 @@ describe('ContactNumberFormComponent', () => {
 
       component.page = 'settings';
       component.countryModel = 'AUS';
-      storageSpy.getUser = jasmine.createSpy('getUser').and.returnValue({
+      storageSpy.getObject = jasmine.createSpy('getObject').and.returnValue({
         contactNumber: '012345678912',
       });
       component.ngOnInit();
