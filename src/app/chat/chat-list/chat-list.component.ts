@@ -118,6 +118,10 @@ export class ChatListComponent {
     this.navigate.emit(chatChannel);
   }
 
+  /**
+    * This is a method to transform a date object of a chate message
+    * @returns string formate of a date object
+    */
   getChatDate(date) {
     return this.utils.timeFormatter(date);
   }
