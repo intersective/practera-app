@@ -66,11 +66,19 @@ export class ChatListComponent {
     this.fastFeedbackService.pullFastFeedback().subscribe();
   }
 
+  /**
+    * This is an _initialise method
+    * @returns nothing
+    */
   private _initialise() {
     this.loadingChatList = true;
     this.chatList = [];
   }
 
+  /**
+    * This is a private load chat data method
+    * @returns nothing
+    */
   private _loadChatData(): void {
     this.chatService.getChatList().subscribe(chats => {
       this.chatList = chats;
@@ -79,6 +87,10 @@ export class ChatListComponent {
     });
   }
 
+  /**
+    * This is a method for chat room navigation
+    * @returns nothing
+    */
   goToChatRoom(chat: ChatChannel) {
     this.newrelic.addPageAction('selected chat room', {
       channelId: chat.channelId,
