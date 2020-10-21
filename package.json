@@ -24,7 +24,8 @@
     "generate-version": "node ./hooks/post-build.js",
     "native-icons": "cordova-res android --skip-config --copy && cordova-res ios --skip-config --copy",
     "native-build": "npx cap sync",
-    "prenative-build": "ng build -c alpha"
+    "prenative-build": "ng build -c alpha",
+    "gendocs": "npx compodoc -p tsconfig.json src && cp -R documentation/ www/ && ng deploy --base-href=/practera-app-v2/ --branch=compodoc-pages --no-build"
   },
   "dependencies": {
     "@angular/animations": "^9.0.5",
@@ -104,6 +105,7 @@
     "protractor-cucumber-framework": "^6.2.0",
     "ts-node": "~8.0.0",
     "tslint": "~5.12.0",
-    "typescript": "~3.7.5"
+    "typescript": "~3.7.5",
+    "angular-cli-ghpages": "^0.6.2"
   }
 }
