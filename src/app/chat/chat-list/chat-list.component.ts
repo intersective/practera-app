@@ -56,6 +56,10 @@ export class ChatListComponent {
     });
   }
 
+  /**
+    * This is an on enter method
+    * @returns nothing
+    */
   onEnter() {
     this._initialise();
     this._loadChatData();
