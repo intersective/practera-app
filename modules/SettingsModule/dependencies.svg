@@ -28,13 +28,13 @@
 <title>cluster_SettingsModule_imports</title>
 <polygon fill="none" stroke="black" points="356,-78 356,-130 920,-130 920,-78 356,-78"/>
 </g>
-<g id="clust2" class="cluster">
-<title>cluster_SettingsModule_declarations</title>
-<polygon fill="none" stroke="black" points="16,-78 16,-130 348,-130 348,-78 16,-78"/>
-</g>
 <g id="clust6" class="cluster">
 <title>cluster_SettingsModule_exports</title>
 <polygon fill="none" stroke="black" points="299,-208 299,-260 707,-260 707,-208 299,-208"/>
+</g>
+<g id="clust2" class="cluster">
+<title>cluster_SettingsModule_declarations</title>
+<polygon fill="none" stroke="black" points="16,-78 16,-130 348,-130 348,-78 16,-78"/>
 </g>
 <!-- SettingsComponent -->
 <g id="node1" class="node">

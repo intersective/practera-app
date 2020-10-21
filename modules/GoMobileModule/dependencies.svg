@@ -24,6 +24,10 @@
 <title>cluster_GoMobileModule</title>
 <polygon fill="none" stroke="black" stroke-dasharray="1,5" points="10,-70 10,-268 486,-268 486,-70 10,-70"/>
 </g>
+<g id="clust5" class="cluster">
+<title>cluster_GoMobileModule_exports</title>
+<polygon fill="none" stroke="black" points="138,-208 138,-260 296,-260 296,-208 138,-208"/>
+</g>
 <g id="clust7" class="cluster">
 <title>cluster_GoMobileModule_providers</title>
 <polygon fill="none" stroke="black" points="302,-78 302,-130 478,-130 478,-78 302,-78"/>
@@ -35,10 +39,6 @@
 <g id="clust4" class="cluster">
 <title>cluster_GoMobileModule_imports</title>
 <polygon fill="none" stroke="black" points="18,-78 18,-130 132,-130 132,-78 18,-78"/>
-</g>
-<g id="clust5" class="cluster">
-<title>cluster_GoMobileModule_exports</title>
-<polygon fill="none" stroke="black" points="138,-208 138,-260 296,-260 296,-208 138,-208"/>
 </g>
 <!-- GoMobileComponent -->
 <g id="node1" class="node">

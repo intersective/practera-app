@@ -24,6 +24,10 @@
 <title>cluster_ReviewListModule</title>
 <polygon fill="none" stroke="black" stroke-dasharray="1,5" points="8,-70 8,-268 502,-268 502,-70 8,-70"/>
 </g>
+<g id="clust5" class="cluster">
+<title>cluster_ReviewListModule_exports</title>
+<polygon fill="none" stroke="black" points="196,-208 196,-260 362,-260 362,-208 196,-208"/>
+</g>
 <g id="clust4" class="cluster">
 <title>cluster_ReviewListModule_imports</title>
 <polygon fill="none" stroke="black" points="380,-78 380,-130 494,-130 494,-78 380,-78"/>
@@ -31,10 +35,6 @@
 <g id="clust7" class="cluster">
 <title>cluster_ReviewListModule_providers</title>
 <polygon fill="none" stroke="black" points="186,-78 186,-130 372,-130 372,-78 186,-78"/>
-</g>
-<g id="clust5" class="cluster">
-<title>cluster_ReviewListModule_exports</title>
-<polygon fill="none" stroke="black" points="196,-208 196,-260 362,-260 362,-208 196,-208"/>
 </g>
 <g id="clust2" class="cluster">
 <title>cluster_ReviewListModule_declarations</title>

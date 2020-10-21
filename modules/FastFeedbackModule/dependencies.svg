@@ -24,10 +24,6 @@
 <title>cluster_FastFeedbackModule</title>
 <polygon fill="none" stroke="black" stroke-dasharray="1,5" points="8,-70 8,-268 558,-268 558,-70 8,-70"/>
 </g>
-<g id="clust6" class="cluster">
-<title>cluster_FastFeedbackModule_exports</title>
-<polygon fill="none" stroke="black" points="164,-208 164,-260 342,-260 342,-208 164,-208"/>
-</g>
 <g id="clust8" class="cluster">
 <title>cluster_FastFeedbackModule_providers</title>
 <polygon fill="none" stroke="black" points="348,-78 348,-130 550,-130 550,-78 348,-78"/>
@@ -35,6 +31,10 @@
 <g id="clust2" class="cluster">
 <title>cluster_FastFeedbackModule_declarations</title>
 <polygon fill="none" stroke="black" points="16,-78 16,-130 340,-130 340,-78 16,-78"/>
+</g>
+<g id="clust6" class="cluster">
+<title>cluster_FastFeedbackModule_exports</title>
+<polygon fill="none" stroke="black" points="164,-208 164,-260 342,-260 342,-208 164,-208"/>
 </g>
 <!-- FastFeedbackComponent -->
 <g id="node1" class="node">
