@@ -171,7 +171,8 @@ describe('ChatService', () => {
             expect(message.message).toEqual(messageListRequestResponse.data.channel.chatLogsConnection.chatLogs[i].message);
             expect(message.created).toEqual(messageListRequestResponse.data.channel.chatLogsConnection.chatLogs[i].created);
             expect(message.file).toEqual(messageListRequestResponse.data.channel.chatLogsConnection.chatLogs[i].file);
-            if ((typeof message.file) === 'string') {
+            expect(message.fileObject).toBeDefined();
+            if ((typeof messageListRequestResponse.data.channel.chatLogsConnection.chatLogs[i].file) === 'string') {
               expect(message.fileObject).toEqual(fileJson);
             } else {
               expect(message.fileObject).toEqual(messageListRequestResponse.data.channel.chatLogsConnection.chatLogs[i].file);
@@ -293,8 +294,7 @@ describe('ChatService', () => {
     });
 
     it('postAttachmentMessage() should call with correct data', () => {
-      requestSpy.chatGraphQLMutate.and.returnValue(of({}));
-      service.postAttachmentMessage({
+      const attachmentMessageParam = {
         message: 'test message',
         channelUuid: '10',
         file : JSON.stringify({
@@ -303,7 +303,46 @@ describe('ChatService', () => {
           url: 'https://cdn.filestackcontent.com/X8Cj0Y4QS2AmDUZX6LSq',
           status: 'Stored'
         })
-      }).subscribe();
+      };
+      const newMessageRes = {
+        data: {
+            createChatLog: {
+                uuid: '1',
+                senderUuid: '1',
+                isSender: true,
+                message: '',
+                file: JSON.stringify({
+                  filename: 'unnamed.jpg',
+                  mimetype: 'image/jpeg',
+                  url: 'https://cdn.filestackcontent.com/X8Cj0Y4QS2AmDUZX6LSq',
+                  status: 'Stored'
+                }),
+                created: '2020-10-22 12:34:16'
+            }
+        }
+      };
+      const fileJson = {
+        filename: 'unnamed.jpg',
+        mimetype: 'image/jpeg',
+        url: 'https://cdn.filestackcontent.com/X8Cj0Y4QS2AmDUZX6LSq',
+        status: 'Stored'
+      };
+      requestSpy.chatGraphQLMutate.and.returnValue(of(newMessageRes));
+      service.postAttachmentMessage(attachmentMessageParam).subscribe(
+        message => {
+          expect(message.uuid).toEqual(newMessageRes.data.createChatLog.uuid);
+          expect(message.isSender).toEqual(newMessageRes.data.createChatLog.isSender);
+          expect(message.message).toEqual(newMessageRes.data.createChatLog.message);
+          expect(message.created).toEqual(newMessageRes.data.createChatLog.created);
+          expect(message.file).toEqual(newMessageRes.data.createChatLog.file);
+          expect(message.fileObject).toBeDefined();
+          if ((typeof newMessageRes.data.createChatLog.file) === 'string') {
+            expect(message.fileObject).toEqual(fileJson);
+          } else {
+            expect(message.fileObject).toEqual(newMessageRes.data.createChatLog.file);
+          }
+        }
+      );
       expect(requestSpy.chatGraphQLMutate.calls.count()).toBe(1);
       expect(requestSpy.chatGraphQLMutate.calls.first().args[1]).toEqual(jasmine.objectContaining(
         {
