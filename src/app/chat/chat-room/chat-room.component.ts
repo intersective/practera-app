@@ -541,7 +541,7 @@ export class ChatRoomComponent extends RouterEnter {
           uuid: response.uuid,
           senderUuid: response.senderUuid,
           message: response.message,
-          file: response.file,
+          file: JSON.stringify(file),
           isSender: response.isSender,
           created: response.created
         });
