@@ -139,8 +139,8 @@ export class NativeStorageServiceMock extends SpyObject {
       contactNumber: '0123456789',
       projectId: 'test_project_id',
     };
-    this.getObject = this.spy('getObject').and.returnValue(USER);
-    this.setObject = this.spy('setObject').and.returnValue(USER);
+    this.getObject = this.spy('getObject').and.returnValue(new Promise(resolve => resolve(USER)));
+    this.setObject = this.spy('setObject').and.returnValue(new Promise(resolve => resolve(USER)));
     this.clear = this.spy('clear').and.returnValue(true);
   }
 }

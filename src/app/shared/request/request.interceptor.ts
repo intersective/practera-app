@@ -22,7 +22,6 @@ export class RequestInterceptor implements HttpInterceptor {
     if (req.url.includes('ipapi.co')) {
       return next.handle(req);
     }
-
     return fromPromise(this.nativeStorage.getObject('me')).pipe(switchMap((user: User) => {
       const {
         timelineId,
