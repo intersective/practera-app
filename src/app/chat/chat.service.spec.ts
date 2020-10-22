@@ -128,11 +128,11 @@ describe('ChatService', () => {
                   uuid: '2',
                   senderUuid: 'dvjn867',
                   message: 'test admin message 01',
-                  file: {
+                  file: JSON.stringify({
                     filename: 'Screen_Shot_2019-09-30_at_6.55.30_AM.png',
                     url: 'https://cdn.filestackcontent.com/hZh76R6TmmKr1qqFAd9C',
                     mimetype: 'image/png'
-                  },
+                  }),
                   created: '2020-01-30 06:18:45',
                   isSender: false
                 },
@@ -158,6 +158,11 @@ describe('ChatService', () => {
         size: 15,
       };
       requestSpy.chatGraphQLQuery.and.returnValue(of(messageListRequestResponse));
+      const fileJson = {
+        filename: 'Screen_Shot_2019-09-30_at_6.55.30_AM.png',
+        url: 'https://cdn.filestackcontent.com/hZh76R6TmmKr1qqFAd9C',
+        mimetype: 'image/png'
+      };
       service.getMessageList(chatData).subscribe(
         MessageListResult => {
           MessageListResult.messages.forEach((message, i) => {
@@ -166,6 +171,11 @@ describe('ChatService', () => {
             expect(message.message).toEqual(messageListRequestResponse.data.channel.chatLogsConnection.chatLogs[i].message);
             expect(message.created).toEqual(messageListRequestResponse.data.channel.chatLogsConnection.chatLogs[i].created);
             expect(message.file).toEqual(messageListRequestResponse.data.channel.chatLogsConnection.chatLogs[i].file);
+            if ((typeof message.file) === 'string') {
+              expect(message.fileObject).toEqual(fileJson);
+            } else {
+              expect(message.fileObject).toEqual(messageListRequestResponse.data.channel.chatLogsConnection.chatLogs[i].file);
+            }
           });
         }
       );

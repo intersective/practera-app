@@ -253,9 +253,6 @@ export class PusherService {
           .bind('event-reminder', data => {
             this.utils.broadcastEvent('event-reminder', data);
           })
-          .bind('chat', data => {
-            this.utils.broadcastEvent('chat:new-message', data);
-          })
           .bind('pusher:subscription_succeeded', data => {
           })
           .bind('pusher:subscription_error', data => {

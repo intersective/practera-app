@@ -6,16 +6,6 @@ import { UtilsService } from '@services/utils.service';
 import { PusherService } from '@shared/pusher/pusher.service';
 import { environment } from '@environments/environment';
 
-/**
- * @name api
- * @description list of api endpoint involved in this service
- * @type {Object}
- */
-const api = {
-  createMessage: 'api/v2/message/chat/create_message',
-  markAsSeen: 'api/v2/message/chat/edit_message'
-};
-
 export interface ChatChannel {
   uuid: string;
   name: string;
@@ -92,7 +82,7 @@ export class ChatService {
     return this.request.chatGraphQLQuery(
       `query getChannels {
         channels{
-          uuid name avatar isAnnouncement isDirectMessage readonly roles unreadMessageCount lastMessage lastMessageCreated
+          uuid name avatar isAnnouncement isDirectMessage readonly roles unreadMessageCount lastMessage lastMessageCreated pusherChannel
         }
       }`,
       {},
@@ -118,23 +108,7 @@ export class ChatService {
     if (result.length === 0) {
       return [];
     }
-    const chats = [];
-    result.forEach(chat => {
-      chats.push({
-        uuid: chat.uuid,
-        name: chat.name,
-        avatar: chat.avatar,
-        isAnnouncement: chat.isAnnouncement,
-        isDirectMessage: chat.isDirectMessage,
-        pusherChannel: chat.pusherChannel,
-        readonly: chat.readonly,
-        roles: chat.roles,
-        unreadMessageCount: chat.unreadMessageCount,
-        lastMessage: chat.lastMessage,
-        lastMessageCreated: chat.lastMessageCreated
-      });
-    });
-    return chats;
+    return result;
   }
 
   /**
@@ -167,7 +141,7 @@ export class ChatService {
       }
     ).pipe(map(response => {
       if (response.data) {
-        return this._normaliseMessageListResponse(response.data, data.channelUuid);
+        return this._normaliseMessageListResponse(response.data);
       }
     }));
   }
@@ -176,7 +150,7 @@ export class ChatService {
    * modify the message list response
    * @TODO need to find a way to save cursor or send to component and keep in that side.
    */
-  private _normaliseMessageListResponse(data, channelId): MessageListResult {
+  private _normaliseMessageListResponse(data): MessageListResult {
     const messages = JSON.parse(JSON.stringify(data.channel.chatLogsConnection.chatLogs));
     const cursor = JSON.parse(JSON.stringify(data.channel.chatLogsConnection.cursor));
     if (!Array.isArray(messages)) {
@@ -186,9 +160,27 @@ export class ChatService {
     if (messages.length === 0) {
       return null;
     }
+    const messageList = [];
+    messages.forEach(message => {
+      let fileObject = null;
+      if ((typeof message.file) === 'string') {
+        fileObject = JSON.parse(message.file);
+      } else {
+        fileObject = message.file;
+      }
+      messageList.push({
+        uuid: message.uuid,
+        senderUuid: message.senderUuid,
+        isSender: message.isSender,
+        message: message.message,
+        file: message.file,
+        fileObject: fileObject,
+        created: message.created
+      });
+    });
     return {
       cursor: cursor,
-      messages: messages
+      messages: messageList
     };
   }
 
@@ -314,13 +306,20 @@ export class ChatService {
       this.request.apiResponseFormatError('chat channel format error');
       return null;
     }
+    let fileObject = null;
+    if ((typeof result.file) === 'string') {
+      fileObject = JSON.parse(result.file);
+    } else {
+      fileObject = result.file;
+    }
     return {
       uuid: result.uuid,
       senderName: result.senderUuid,
       isSender: result.isSender,
       message: result.message,
       created: result.created,
-      file: result.file
+      file: result.file,
+      fileObject: fileObject
     };
   }
 
