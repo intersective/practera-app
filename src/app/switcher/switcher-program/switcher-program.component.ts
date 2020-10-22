@@ -5,7 +5,6 @@ import { RouterEnter } from '@services/router-enter.service';
 import { SwitcherService, ProgramObj } from '../switcher.service';
 import { LoadingController } from '@ionic/angular';
 import { environment } from '@environments/environment';
-import { PusherService } from '@shared/pusher/pusher.service';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
 import { NotificationService } from '@shared/notification/notification.service';
 import { UtilsService } from '@services/utils.service';
@@ -24,7 +23,6 @@ import { of } from 'rxjs/observable/of';
 })
 
 export class SwitcherProgramComponent extends RouterEnter {
-  private getPrograms$: Observable<any> = fromPromise(this.switcherService.getPrograms());
   routeUrl = '/switcher/switcher-program';
   programs: Array<ProgramObj>;
 
@@ -32,7 +30,6 @@ export class SwitcherProgramComponent extends RouterEnter {
     public loadingController: LoadingController,
     public router: Router,
     private activatedRoute: ActivatedRoute,
-    private pusherService: PusherService,
     private switcherService: SwitcherService,
     private newRelic: NewRelicService,
     private notificationService: NotificationService,
@@ -44,7 +41,7 @@ export class SwitcherProgramComponent extends RouterEnter {
   onEnter() {
     this.newRelic.setPageViewName('program switcher');
     this.activatedRoute.data.subscribe(() => {
-      this.subscription = this.getPrograms$.subscribe(programs => {
+      this.subscription = fromPromise(this.switcherService.getPrograms()).subscribe(programs => {
         programs.subscribe(programs => {
           this.programs = Object.values(programs);
           this._getProgresses(programs);

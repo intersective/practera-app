@@ -33,7 +33,7 @@ export class MockSwitcherService extends SpyObject {
 
   constructor() {
     super(SwitcherService);
-    this.getPrograms = this.spy('getPrograms').and.returnValue(of(ProgramFixture));
+    this.getPrograms = this.spy('getPrograms').and.returnValue(new Promise(resolve => of(ProgramFixture)));
     this.getProgresses = this.spy('getProgresses').and.returnValue(of(this.mockProgresses));
     this.switchProgramAndNavigate = this.spy('switchProgramAndNavigate');
   }
