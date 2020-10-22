@@ -176,8 +176,7 @@ export class ChatRoomComponent extends RouterEnter {
               }
               this.memberList = members;
               messages = messages.map(msg => {
-                if (msg.file) {
-                  msg.fileObject = JSON.parse(msg.file);
+                if (msg.file && msg.fileObject) {
                   msg.preview = this.attachmentPreview(msg.fileObject);
                 }
                 const sender = this.memberList.find(member => member.uuid === msg.senderUuid);
@@ -510,7 +509,7 @@ export class ChatRoomComponent extends RouterEnter {
   }
 
   previewFile(file) {
-    return this.filestackService.previewFile(JSON.parse(file));
+    return this.filestackService.previewFile(file);
   }
 
   private _postAttachment(file) {
@@ -521,7 +520,7 @@ export class ChatRoomComponent extends RouterEnter {
     this.chatService.postAttachmentMessage({
       channelUuid: this.channelUuid,
       message: this.message,
-      file
+      file: JSON.stringify(file)
     }).subscribe(
       response => {
         const newMessage = {
@@ -530,8 +529,8 @@ export class ChatRoomComponent extends RouterEnter {
           isSender: response.isSender,
           message: response.message,
           file: response.file,
-          fileObject: JSON.parse(file),
-          preview: this.attachmentPreview(JSON.parse(file)),
+          fileObject: response.fileObject,
+          preview: this.attachmentPreview(response.fileObject),
           created: response.created,
           senderName: '',
           senderRole: '',
