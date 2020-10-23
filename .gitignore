@@ -17,3 +17,4 @@ e2e/config/index.ts
 e2e/protractor-dev.conf.js
 src/environments/environment.ts
 documentation/**
+
