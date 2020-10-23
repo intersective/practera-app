@@ -3,7 +3,6 @@ import { ActivatedRoute } from '@angular/router';
 import { GoMobileService } from './go-mobile.service';
 import { UtilsService } from '@services/utils.service';
 import { NotificationService } from '@shared/notification/notification.service';
-import { BrowserStorageService } from '@services/storage.service';
 import { environment } from '@environments/environment';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
 
@@ -28,7 +27,6 @@ export class GoMobileComponent implements OnInit {
     private goMobileService: GoMobileService,
     private utils: UtilsService,
     private notification: NotificationService,
-    public storage: BrowserStorageService,
     private newRelic: NewRelicService,
     private routes: ActivatedRoute,
   ) {}

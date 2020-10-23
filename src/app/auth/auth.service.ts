@@ -116,6 +116,7 @@ export class AuthService {
       return this._login(body);
     } catch(err) {
       console.log('directLogin', err);
+      return err;
     }
   }
 

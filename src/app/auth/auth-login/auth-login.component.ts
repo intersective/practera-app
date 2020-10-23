@@ -7,7 +7,6 @@ import { NotificationService } from '@shared/notification/notification.service';
 import { UtilsService } from '@services/utils.service';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
 import { SwitcherService } from '../../switcher/switcher.service';
-import { PusherService } from '@shared/pusher/pusher.service';
 import { environment } from '@environments/environment';
 
 @Component({
@@ -30,7 +29,6 @@ export class AuthLoginComponent implements OnInit {
     private utils: UtilsService,
     private newRelic: NewRelicService,
     private switcherService: SwitcherService,
-    private pusherService: PusherService,
   ) {}
 
   ngOnInit() {

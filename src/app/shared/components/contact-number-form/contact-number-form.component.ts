@@ -109,7 +109,9 @@ export class ContactNumberFormComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.data$.unsubscribe();
+    if (this.data$ instanceof Subscription) {
+      this.data$.unsubscribe();
+    }
   }
 
   /**

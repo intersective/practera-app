@@ -1,6 +1,8 @@
 import { TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { of } from 'rxjs';
 import { RequestService } from '@shared/request/request.service';
+import { NativeStorageService } from '@services/native-storage.service';
+import { NativeStorageServiceMock } from '@testing/mocked.service';
 import { TabsService } from './tabs.service';
 import { Apollo } from 'apollo-angular';
 
@@ -17,6 +19,10 @@ describe('TabsService', () => {
           provide: RequestService,
           useValue: jasmine.createSpyObj('RequestService', ['get', 'post', 'apiResponseFormatError'])
         },
+        {
+          provide: NativeStorageService,
+          useClass: NativeStorageServiceMock
+        }
       ]
     });
     service = TestBed.inject(TabsService);
@@ -29,10 +35,11 @@ describe('TabsService', () => {
 
   describe('when testing getNoOfTodoItems()', () => {
     let response, expected = 0, error = false;
-    afterEach(fakeAsync(async () => {
+    afterEach(fakeAsync(() => {
       requestSpy.get.and.returnValue(of(response));
-      const getTodoItems = await service.getNoOfTodoItems();
-      getTodoItems.subscribe(res => expect(res).toEqual(expected));
+      service.getNoOfTodoItems().then(getTodoItems => {
+        getTodoItems.subscribe(res => expect(res).toEqual(expected));
+      });
       tick();
       if (error) {
         expect(requestSpy.apiResponseFormatError.calls.count()).toBe(1);
