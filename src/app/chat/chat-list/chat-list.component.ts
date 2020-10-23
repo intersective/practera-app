@@ -7,6 +7,9 @@ import { ChatService, ChatChannel } from '../chat.service';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
 import { PusherService } from '@shared/pusher/pusher.service';
 
+/**
+ * this is an app chat list component
+ */
 @Component({
   selector: 'app-chat-list',
   templateUrl: 'chat-list.component.html',
@@ -48,6 +51,10 @@ export class ChatListComponent {
     }
   }
 
+  /**
+    * This is an on enter method
+    * @returns nothing
+    */
   onEnter() {
     this._initialise();
     this._checkAndSubscribePusherChannels();
@@ -55,11 +62,19 @@ export class ChatListComponent {
     this.fastFeedbackService.pullFastFeedback().subscribe();
   }
 
+  /**
+    * This is an _initialise method
+    * @returns nothing
+    */
   private _initialise() {
     this.loadingChatList = true;
     this.chatList = [];
   }
 
+  /**
+    * This is a private load chat data method
+    * @returns nothing
+    */
   private _loadChatData(): void {
     this.chatService.getChatList().subscribe(chats => {
       this.chatList = chats;
@@ -110,6 +125,10 @@ export class ChatListComponent {
     this.navigate.emit(chatChannel);
   }
 
+  /**
+    * This is a method to transform a date object of a chate message
+    * @returns string formate of a date object
+    */
   getChatDate(date) {
     return this.utils.timeFormatter(date);
   }
