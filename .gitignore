@@ -28,4 +28,3 @@ e2e/protractor-dev.conf.js
 android/app/google-services.json
 src/environments/environment.alpha-native.ts
 src/environments/environment.ts
-documentation/**
