@@ -2,8 +2,8 @@ import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouteReuseStrategy } from '@angular/router';
 import { IonicModule, IonicRouteStrategy } from '@ionic/angular';
-import { HttpClientModule } from '@angular/common/http';
-import { ApolloModule, APOLLO_OPTIONS } from 'apollo-angular';
+import { HttpClientModule, HttpHeaders } from '@angular/common/http';
+import { ApolloModule, APOLLO_OPTIONS, Apollo } from 'apollo-angular';
 import { HttpLinkModule, HttpLink } from 'apollo-angular-link-http';
 import { InMemoryCache, defaultDataIdFromObject } from 'apollo-cache-inmemory';
 
@@ -97,4 +97,18 @@ import { DeviceInfoComponent } from './device-info/device-info.component';
   ],
   bootstrap: [AppComponent],
 })
-export class AppModule {}
+export class AppModule {
+  constructor(
+    private apollo: Apollo,
+    httpLink: HttpLink
+  ) {
+    this.apollo.create(
+      {
+        link: httpLink.create({
+          uri: environment.chatGraphQL
+        }),
+        cache: new InMemoryCache(),
+      },
+      'chat');
+  }
+}
