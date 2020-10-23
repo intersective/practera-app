@@ -160,7 +160,6 @@ describe('TasksComponent', () => {
         task_id: 11
       };
       routeSpy.snapshot.paramMap.get = jasmine.createSpy().and.callFake(key => {
-        console.log('key::', key);
         return params1[key];
       });
 

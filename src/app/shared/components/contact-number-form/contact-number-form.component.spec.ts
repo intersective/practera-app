@@ -120,16 +120,7 @@ describe('ContactNumberFormComponent', () => {
             }
           });
           const locale = format.locale;
-          // console.log('routesSpy.data', routesSpy.data.subscribe(data => {}));
 
-
-          /*routesSpy = jasmine.createSpyObj('ActivatedRoute', {
-            data: of({
-              user: {
-                contactNumber: format.number
-              }
-            })
-          })*/
           storageSpy.getObject = jasmine.createSpy('getObject').and.returnValue({
             contactNumber: format.number,
           });

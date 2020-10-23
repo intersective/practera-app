@@ -95,7 +95,6 @@ describe('AuthService', () => {
     expect(requestSpy.post.calls.first().args[1]).toContain('test%40test.com');
     expect(requestSpy.post.calls.first().args[1]).toContain('123');
 
-    console.log('nativeStorageSpy::', nativeStorageSpy.setObject.calls.all());
     tick();
     expect(nativeStorageSpy.setObject).toHaveBeenCalledWith('me', {apikey: '123456'});
     expect(nativeStorageSpy.setObject).toHaveBeenCalledWith('isLoggedIn', {isLoggedIn: true});
