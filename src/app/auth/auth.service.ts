@@ -114,7 +114,7 @@ export class AuthService {
     try {
       await this.logout({}, false);
       return this._login(body);
-    } catch(err) {
+    } catch (err) {
       console.log('directLogin', err);
       return err;
     }

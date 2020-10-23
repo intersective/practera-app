@@ -154,7 +154,7 @@ describe('TasksComponent', () => {
     }));
 
     it('should go to the topic if "tasks" parameter has value', fakeAsync(() => {
-      let params1 = {
+      const params1 = {
         id: 1,
         task: 'topic',
         task_id: 11

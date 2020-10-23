@@ -166,15 +166,13 @@ export class SwitcherService {
               !Array.isArray(response.data.Teams) ||
               !this.utils.has(response.data.Teams[0], 'id')
              ) {
-            const me = await this.nativeStorage.setObject('me', {
+            return await this.nativeStorage.setObject('me', {
               teamId: null
             });
-            return me;
           }
-          const me = await this.nativeStorage.setObject('me', {
+          return await this.nativeStorage.setObject('me', {
             teamId: response.data.Teams[0].id
           });
-          return me;
         }
       }));
   }

@@ -87,7 +87,7 @@ describe('SwitcherService', () => {
       service.getPrograms().then(res => {
         res.subscribe(programs => {
           expect(programs[0].project.lead_image).toContain('https://cdn.filestackcontent.com/resize=fit:crop,width:');
-        })
+        });
       });
 
       flushMicrotasks();
