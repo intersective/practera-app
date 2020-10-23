@@ -87,10 +87,7 @@ export class ChatListComponent {
     });
   }
 
-  /**
-    * This is a method for chat room navigation
-    * @returns nothing
-    */
+
   goToChatRoom(chat: ChatChannel) {
     this.newrelic.addPageAction('selected chat room', {
       channelId: chat.channelId,
