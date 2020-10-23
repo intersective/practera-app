@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { GoMobileService } from './go-mobile.service';
 import { UtilsService } from '@services/utils.service';
 import { NotificationService } from '@shared/notification/notification.service';
-import { BrowserStorageService } from '@services/storage.service';
 import { environment } from '@environments/environment';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
 
@@ -27,17 +27,22 @@ export class GoMobileComponent implements OnInit {
     private goMobileService: GoMobileService,
     private utils: UtilsService,
     private notification: NotificationService,
-    public storage: BrowserStorageService,
-    private newRelic: NewRelicService
+    private newRelic: NewRelicService,
+    private routes: ActivatedRoute,
   ) {}
 
   ngOnInit() {
     this.newRelic.setPageViewName('go-mobile');
-    this.profile.contactNumber = this.storage.getUser().contactNumber;
-    if (this.profile.contactNumber) {
-      this.saved = true;
-      this.invalidNumber = false;
-    }
+
+    this.routes.data.subscribe(data => {
+      const user = data.user;
+      this.profile.contactNumber = user.contactNumber;
+
+      if (this.profile.contactNumber) {
+        this.saved = true;
+        this.invalidNumber = false;
+      }
+    });
     // by default, set Mask in Australian format.
     /*
       user has no contact number, set the default mask

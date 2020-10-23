@@ -6,12 +6,16 @@ import { FastFeedbackComponent } from './fast-feedback/fast-feedback.component';
 import { DeviceInfoComponent } from './device-info/device-info.component';
 import { AuthGuard } from './auth/auth.guard';
 import { ProgramSelectedGuard } from './auth/program-selected.guard';
+import { UserResolverService } from '@services/user-resolver.service';
 
 const routes: Routes = [
   {
     path: 'go-mobile',
     component: GoMobileComponent,
     canLoad: [AuthGuard],
+    resolve: {
+      user: UserResolverService,
+    },
   },
   {
     path: 'switcher',

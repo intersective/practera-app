@@ -1,5 +1,5 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { async, ComponentFixture, TestBed, fakeAsync, flushMicrotasks, tick } from '@angular/core/testing';
+import { async, ComponentFixture, TestBed, fakeAsync, flush, flushMicrotasks, tick } from '@angular/core/testing';
 import { Observable, of, pipe, throwError } from 'rxjs';
 import { HttpTestingController, HttpClientTestingModule } from '@angular/common/http/testing';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
@@ -7,8 +7,7 @@ import { SwitcherProgramComponent } from './switcher-program.component';
 import { SwitcherService } from '../switcher.service';
 import { MockSwitcherService, MockRouter, MockNewRelicService } from '@testing/mocked.service';
 import { ProgramFixture } from '@testing/fixtures/programs';
-import { Router } from '@angular/router';
-import { PusherService } from '@shared/pusher/pusher.service';
+import { Router, ActivatedRoute } from '@angular/router';
 import { NotificationService } from '@shared/notification/notification.service';
 import { UtilsService } from '@services/utils.service';
 import { SharedModule } from '@shared/shared.module';
@@ -21,6 +20,7 @@ describe('SwitcherProgramComponent', () => {
   let newrelicSpy: jasmine.SpyObj<NewRelicService>;
   let switcherSpy: jasmine.SpyObj<SwitcherService>;
   let routerSpy: jasmine.SpyObj<Router>;
+  let routesSpy: jasmine.SpyObj<ActivatedRoute>;
   let loadingSpy: jasmine.SpyObj<LoadingController>;
   let notifySpy: jasmine.SpyObj<NotificationService>;
 
@@ -31,8 +31,10 @@ describe('SwitcherProgramComponent', () => {
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
       providers: [
         Apollo,
-        PusherService,
-        NotificationService,
+        {
+          provide: NotificationService,
+          useValue: jasmine.createSpyObj('NotificationService', ['alert'])
+        },
         UtilsService,
         LoadingController,
         {
@@ -42,6 +44,12 @@ describe('SwitcherProgramComponent', () => {
         {
           provide: Router,
           useClass: MockRouter,
+        },
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            data: of(true)
+          }
         },
         {
           provide: SwitcherService,
@@ -55,6 +63,7 @@ describe('SwitcherProgramComponent', () => {
     newrelicSpy = TestBed.inject(NewRelicService) as jasmine.SpyObj<NewRelicService>;
     switcherSpy = TestBed.inject(SwitcherService) as jasmine.SpyObj<SwitcherService>;
     routerSpy = TestBed.inject(Router) as jasmine.SpyObj<Router>;
+    routesSpy = TestBed.inject(ActivatedRoute) as jasmine.SpyObj<ActivatedRoute>;
     loadingSpy = TestBed.inject(LoadingController) as jasmine.SpyObj<LoadingController>;
     notifySpy = TestBed.inject(NotificationService) as jasmine.SpyObj<NotificationService>;
   }));
@@ -70,19 +79,29 @@ describe('SwitcherProgramComponent', () => {
   });
 
   describe('onEnter()', () => {
-    it('should instantiate with API program list', () => {
-      const programs = ProgramFixture;
-      programs.forEach((p, i) => {
-        programs[i].progress = (i + 1) / 10,
-        programs[i].todoItems = (i + 1);
-      });
-      switcherSpy.getPrograms.and.returnValue(of(programs));
-      component.onEnter();
-
-      expect(newrelicSpy.setPageViewName).toHaveBeenCalledWith('program switcher');
-      expect(switcherSpy.getPrograms).toHaveBeenCalled();
-      expect(component.programs).toEqual(programs);
+    const programs = ProgramFixture;
+    programs.forEach((p, i) => {
+      programs[i].progress = (i + 1) / 10,
+      programs[i].todoItems = (i + 1);
     });
+
+    beforeEach(() => {
+      switcherSpy.getPrograms.and.returnValue(new Promise(resolve => {
+        return resolve(of(programs));
+      }));
+    });
+
+    it('should instantiate with API program list', fakeAsync(() => {
+      component.onEnter();
+      flush();
+
+      fixture.detectChanges();
+      fixture.whenStable().then(() => {
+        expect(newrelicSpy.setPageViewName).toHaveBeenCalledWith('program switcher');
+        expect(switcherSpy.getPrograms).toHaveBeenCalled();
+        expect(component.programs).toEqual(programs);
+      });
+    }));
   });
 
   describe('switch()', () => {
@@ -115,7 +134,6 @@ describe('SwitcherProgramComponent', () => {
       };
       switcherSpy.switchProgramAndNavigate = jasmine.createSpy('switchProgramAndNavigate').and.returnValue(new Promise((res, reject) => reject(error)
       ));
-      spyOn(notifySpy, 'alert');
 
       component.switch(programIndex);
       flushMicrotasks();
@@ -137,7 +155,6 @@ describe('SwitcherProgramComponent', () => {
       };
       switcherSpy.switchProgramAndNavigate = jasmine.createSpy('switchProgramAndNavigate').and.returnValue(new Promise((res, reject) => reject(error)
       ));
-      spyOn(notifySpy, 'alert');
 
       component.switch(programIndex);
       flushMicrotasks();

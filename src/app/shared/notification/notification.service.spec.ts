@@ -82,14 +82,16 @@ describe('NotificationService', () => {
     expect(toastSpy.create.calls.count()).toBe(2);
   });
 
-  it('when testing achievementPopUp(), it should create the modal', () => {
+  it('when testing achievementPopUp(), it should create the modal', fakeAsync(() => {
     service.achievementPopUp('notification', {id: 1, name: 'achieve', 'description': ''});
+    tick();
     expect(modalCtrlSpy.create.calls.count()).toBe(2);
     expect(achievementSpy.markAchievementAsSeen.calls.count()).toBe(1);
     service.achievementPopUp('others', {id: 1, name: 'achieve', 'description': ''});
+    tick();
     expect(modalCtrlSpy.create.calls.count()).toBe(3);
     expect(achievementSpy.markAchievementAsSeen.calls.count()).toBe(1);
-  });
+  }));
 
   it('when testing lockTeamAssessmentPopUp(), it should create the modal', () => {
     service.lockTeamAssessmentPopUp({name: 'test', image: 'image'}, () => {});

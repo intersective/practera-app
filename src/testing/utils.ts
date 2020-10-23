@@ -9,6 +9,13 @@ export class TestUtils {
   }
 
   /**
+   * return random absolute number
+   */
+  static randomNumber(max = 100) {
+    return Math.floor(Math.random() * Math.floor(max));
+  }
+
+  /**
    * Get a date string
    * @param day  number of dates after today. if < 0, is number of days before today
    * @param minute number of minutes after the current minute. if < 0, is number of minutes before current minute
