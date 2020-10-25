@@ -162,9 +162,15 @@ export class ChatRoomComponent extends RouterEnter {
       })
       .subscribe(
         (messageListResult: MessageListResult) => {
+          if (!messageListResult) {
+            this.messagePageCursor = '';
+            this.loadingChatMessages = false;
+            return;
+          }
           let messages = messageListResult.messages;
           if (messages.length === 0) {
             this.messagePageCursor = '';
+            this.loadingChatMessages = false;
             return;
           }
           this.messagePageCursor = messageListResult.cursor;
