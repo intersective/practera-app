@@ -88,7 +88,7 @@ export class PusherService {
     }
 
     // subscribe to event only when pusher is available
-    const channels = await this.getChannels();
+    const channels = this.getChannels();
     return {
       pusher: this.pusher,
       channels
@@ -190,7 +190,11 @@ export class PusherService {
         channels {
           pusherChannel
         }
-      }`
+      }`,
+      {},
+      {
+        noCache: true
+      }
     ).pipe(map(response => {
       if (response.data && response.data.channels) {
         const result = JSON.parse(JSON.stringify(response.data.channels));
