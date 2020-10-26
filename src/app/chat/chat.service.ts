@@ -24,6 +24,7 @@ export interface ChannelMembers {
   uuid: string;
   name: string;
   role: string;
+  email: string;
   avatar: string;
 }
 
@@ -82,7 +83,17 @@ export class ChatService {
     return this.request.chatGraphQLQuery(
       `query getChannels {
         channels{
-          uuid name avatar isAnnouncement isDirectMessage readonly roles unreadMessageCount lastMessage lastMessageCreated pusherChannel
+          uuid
+          name
+          avatar
+          isAnnouncement
+          isDirectMessage
+          readonly
+          roles
+          unreadMessageCount
+          lastMessage
+          lastMessageCreated
+          pusherChannel
         }
       }`,
       {},
@@ -125,8 +136,19 @@ export class ChatService {
       `query getChannellogs($uuid:String!, $cursor:String!, $size:Int!) {
         channel(uuid:$uuid){
           chatLogsConnection(cursor:$cursor, size:$size){
-            cursor chatLogs{
-              uuid senderUuid isSender message file created
+            cursor
+            chatLogs{
+              uuid
+              isSender
+              message
+              file
+              created
+              sender {
+                uuid
+                name
+                role
+                avatar
+              }
             }
           }
         }
@@ -170,12 +192,15 @@ export class ChatService {
       }
       messageList.push({
         uuid: message.uuid,
-        senderUuid: message.senderUuid,
         isSender: message.isSender,
         message: message.message,
         file: message.file,
         fileObject: fileObject,
-        created: message.created
+        created: message.created,
+        senderUuid: message.sender.uuid,
+        senderName: message.sender.name,
+        senderRole: message.sender.role,
+        senderAvatar: message.sender.avatar
       });
     });
     return {
@@ -192,7 +217,11 @@ export class ChatService {
       `query getChannelmembers($uuid:String) {
         channel(uuid:$uuid){
           members{
-            uuid name role avatar
+            uuid
+            name
+            role
+            avatar
+            email
           }
         }
       }`,
@@ -275,7 +304,17 @@ export class ChatService {
     return this.request.chatGraphQLMutate(
       `mutation createChatLogs($channelUuid: String, $message: String, $file: String) {
         createChatLog(channelUuid: $channelUuid, message: $message, file: $file) {
-            uuid senderUuid isSender message file created
+            uuid
+            isSender
+            message
+            file
+            created
+            sender {
+              uuid
+              name
+              role
+              avatar
+          }
         }
       }`,
       {
@@ -298,7 +337,7 @@ export class ChatService {
   private _normalisePostMessageResponse(data): Message {
     const result = JSON.parse(JSON.stringify(data.createChatLog));
     if (!this.utils.has(result, 'uuid') ||
-        !this.utils.has(result, 'senderUuid') ||
+        !this.utils.has(result, 'sender.uuid') ||
         !this.utils.has(result, 'isSender') ||
         !this.utils.has(result, 'message') ||
         !this.utils.has(result, 'created') ||
@@ -314,12 +353,15 @@ export class ChatService {
     }
     return {
       uuid: result.uuid,
-      senderName: result.senderUuid,
       isSender: result.isSender,
       message: result.message,
-      created: result.created,
       file: result.file,
-      fileObject: fileObject
+      fileObject: fileObject,
+      created: result.created,
+      senderUuid: result.sender.uuid,
+      senderName: result.sender.name,
+      senderRole: result.sender.role,
+      senderAvatar: result.sender.avatar
     };
   }
 

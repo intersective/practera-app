@@ -108,21 +108,6 @@ describe('ChatRoomComponent', () => {
     component.content = MockIoncontent;
   });
 
-  const mockMembers = [
-    {
-      uuid: '8bee29d0-bf45',
-      name: 'student+02',
-      role: 'participant',
-      avatar: 'https://www.gravatar.com/avatar/db30b12260b2c589b1394b26390eab50?d=https://sandbox.practera.com/img/user-512.png&s=50'
-    },
-    {
-      uuid: '8d1f3cdf-d697',
-      name: 'student+01',
-      role: 'participant',
-      avatar: 'https://www.gravatar.com/avatar/21b7427270a606e8a3c4413a13bb47c6?d=https://sandbox.practera.com/img/user-512.png&s=50'
-    }
-  ];
-
   const mockChatMessages = {
     cursor: '32as4d654asd',
     messages: [
@@ -169,12 +154,10 @@ describe('ChatRoomComponent', () => {
         lastMessageCreated: null
       };
       component.loadingChatMessages = false;
-      chatServiceSpy.getChatMembers.and.returnValue(of(mockMembers));
       chatServiceSpy.getMessageList.and.returnValue(of(mockChatMessages));
       chatServiceSpy.markMessagesAsSeen.and.returnValue(of({}));
       component.onEnter();
       expect(chatServiceSpy.getMessageList.calls.count()).toBe(1);
-      expect(chatServiceSpy.getChatMembers.calls.count()).toBe(2);
     });
   });
 
@@ -182,21 +165,23 @@ describe('ChatRoomComponent', () => {
     it('should call with correct data', fakeAsync(() => {
       const pusherData = {
         uuid: '5d71c830',
-        senderUuid: '8bee29d0-bf45',
         isSender: false,
         message: '1',
         file: null,
         created: '2020-08-28 05:45:52',
-        channelUuid: 'c43vwsvc'
+        channelUuid: 'c43vwsvc',
+        senderUuid: '8bee29d0-bf45',
+        senderName: 'user01',
+        senderRole: 'participants',
+        senderAvatar: 'http://www.example.com/image.png'
       };
-      component.memberList = mockMembers;
       const receivedMessage = component.getMessageFromEvent(pusherData);
       tick();
       expect(receivedMessage).toEqual({
         uuid: pusherData.uuid,
-        senderName: mockMembers[0].name,
-        senderRole: mockMembers[0].role,
-        senderAvatar: mockMembers[0].avatar,
+        senderName: pusherData.senderName,
+        senderRole: pusherData.senderRole,
+        senderAvatar: pusherData.senderAvatar,
         isSender: pusherData.isSender,
         message: pusherData.message,
         created: pusherData.created,
@@ -212,26 +197,28 @@ describe('ChatRoomComponent', () => {
       component.channelUuid = '05';
       const saveMessageRes = {
         uuid: '0403b4d9',
-        senderUuid: '8bee29d0-bf45',
         isSender: false,
         message: '2',
         file: null,
-        created: '2020-08-28 05:45:50'
+        created: '2020-08-28 05:45:50',
+        senderUuid: '8bee29d0-bf45',
+        senderName: 'user01',
+        senderRole: 'participants',
+        senderAvatar: 'http://www.example.com/image.png'
       };
       chatServiceSpy.postNewMessage.and.returnValue(of(saveMessageRes));
       chatServiceSpy.getMessageList.and.returnValue(of(mockChatMessages));
       pusherSpy.triggerSendMessage.and.returnValue(of(true));
       component.messageList = mockChatMessages.messages;
-      component.memberList = mockMembers;
       spyOn(component.element.nativeElement, 'querySelector').and.returnValue(
         document.createElement('textarea')
       );
       component.sendMessage();
       expect(component.messageList[2]).toEqual({
         uuid: saveMessageRes.uuid,
-        senderName: mockMembers[0].name,
-        senderRole: mockMembers[0].role,
-        senderAvatar: mockMembers[0].avatar,
+        senderName: saveMessageRes.senderName,
+        senderRole: saveMessageRes.senderRole,
+        senderAvatar: saveMessageRes.senderAvatar,
         isSender: saveMessageRes.isSender,
         message: saveMessageRes.message,
         created: saveMessageRes.created,
