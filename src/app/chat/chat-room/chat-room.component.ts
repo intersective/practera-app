@@ -89,7 +89,6 @@ export class ChatRoomComponent extends RouterEnter {
   onEnter() {
     this._initialise();
     this._subscribeToTypingEvent();
-    this._loadMembers();
     this._loadMessages();
     this._scrollToBottom();
   }
@@ -118,32 +117,17 @@ export class ChatRoomComponent extends RouterEnter {
    * @description listen to pusher event for new message
    */
   getMessageFromEvent(data): Message {
-    const sender = this.memberList.find(member => member.uuid === data.senderUuid);
-    if (!sender) {
-      return;
-    }
     return {
       uuid: data.uuid,
-      senderName: sender.name,
-      senderRole: sender.role,
-      senderAvatar: sender.avatar,
+      senderName: data.senderName,
+      senderRole: data.senderRole,
+      senderAvatar: data.senderAvatar,
       isSender: data.isSender,
       message: data.message,
       created: data.created,
       file: data.file,
       channelUuid: data.channelUuid
     };
-  }
-
-  private _loadMembers() {
-    this.chatService.getChatMembers(this.channelUuid).subscribe(
-      members => {
-        if (!members) {
-          return;
-        }
-        this.memberList = members;
-      }
-    );
   }
 
   private _loadMessages() {
@@ -174,35 +158,21 @@ export class ChatRoomComponent extends RouterEnter {
             return;
           }
           this.messagePageCursor = messageListResult.cursor;
-          this.chatService.getChatMembers(this.channelUuid).subscribe(
-            members => {
-              this.loadingChatMessages = false;
-              if (!members) {
-                return;
-              }
-              this.memberList = members;
-              messages = messages.map(msg => {
-                if (msg.file && msg.fileObject) {
-                  msg.preview = this.attachmentPreview(msg.fileObject);
-                }
-                const sender = this.memberList.find(member => member.uuid === msg.senderUuid);
-                if (sender) {
-                  msg.senderName = sender.name;
-                  msg.senderRole = sender.role;
-                  msg.senderAvatar = sender.avatar;
-                }
-                return msg;
-              });
-              messages.reverse();
-              if (this.messageList.length > 0) {
-                this.messageList = messages.concat(this.messageList);
-              } else {
-                this.messageList = messages;
-                this._scrollToBottom();
-              }
-              this._markAsSeen();
+          this.loadingChatMessages = false;
+          messages = messages.map(msg => {
+            if (msg.file && msg.fileObject) {
+              msg.preview = this.attachmentPreview(msg.fileObject);
             }
-          );
+            return msg;
+          });
+          messages.reverse();
+          if (this.messageList.length > 0) {
+            this.messageList = messages.concat(this.messageList);
+          } else {
+            this.messageList = messages;
+            this._scrollToBottom();
+          }
+          this._markAsSeen();
         },
         error => {
           this.loadingChatMessages = false;
@@ -232,33 +202,31 @@ export class ChatRoomComponent extends RouterEnter {
       message: message
     }).subscribe(
       response => {
-        const newMessage = {
+        this.pusherService.triggerSendMessage(this.chatChannel.pusherChannel, {
+          channelUuid: this.channelUuid,
           uuid: response.uuid,
-          senderUuid: response.senderUuid,
           isSender: response.isSender,
           message: response.message,
           file: response.file,
           created: response.created,
-          senderName: '',
-          senderRole: '',
-          senderAvatar: ''
-        };
-        this.pusherService.triggerSendMessage(this.chatChannel.pusherChannel, {
-          channelUuid: this.channelUuid,
-          uuid: response.uuid,
           senderUuid: response.senderUuid,
-          message: response.message,
-          file: response.file,
-          isSender: response.isSender,
-          created: response.created
+          senderName: response.senderName,
+          senderRole: response.senderRole,
+          senderAvatar: response.senderAvatar
         });
-        const sender = this.memberList.find(member => member.uuid === response.senderUuid);
-        if (sender) {
-          newMessage.senderName = sender.name;
-          newMessage.senderRole = sender.role;
-          newMessage.senderAvatar = sender.avatar;
-        }
-        this.messageList.push(newMessage);
+        this.messageList.push(
+          {
+            uuid: response.uuid,
+            isSender: response.isSender,
+            message: response.message,
+            file: response.file,
+            created: response.created,
+            senderUuid: response.senderUuid,
+            senderName: response.senderName,
+            senderRole: response.senderRole,
+            senderAvatar: response.senderAvatar
+          }
+        );
         this.utils.broadcastEvent('chat:info-update', true);
         this._scrollToBottom();
         this._afterSendMessage();
@@ -529,35 +497,33 @@ export class ChatRoomComponent extends RouterEnter {
       file: JSON.stringify(file)
     }).subscribe(
       response => {
-        const newMessage = {
-          uuid: response.uuid,
-          senderUuid: response.senderUuid,
-          isSender: response.isSender,
-          message: response.message,
-          file: response.file,
-          fileObject: response.fileObject,
-          preview: this.attachmentPreview(response.fileObject),
-          created: response.created,
-          senderName: '',
-          senderRole: '',
-          senderAvatar: ''
-        };
         this.pusherService.triggerSendMessage(this.chatChannel.pusherChannel, {
           channelUuid: this.channelUuid,
           uuid: response.uuid,
-          senderUuid: response.senderUuid,
+          isSender: response.isSender,
           message: response.message,
           file: JSON.stringify(file),
-          isSender: response.isSender,
-          created: response.created
+          created: response.created,
+          senderUuid: response.senderUuid,
+          senderName: response.senderName,
+          senderRole: response.senderRole,
+          senderAvatar: response.senderAvatar
         });
-        const sender = this.memberList.find(member => member.uuid === response.senderUuid);
-        if (sender) {
-          newMessage.senderName = sender.name;
-          newMessage.senderRole = sender.role;
-          newMessage.senderAvatar = sender.avatar;
-        }
-        this.messageList.push(newMessage);
+        this.messageList.push(
+          {
+            uuid: response.uuid,
+            isSender: response.isSender,
+            message: response.message,
+            file: response.file,
+            fileObject: response.fileObject,
+            preview: this.attachmentPreview(response.fileObject),
+            created: response.created,
+            senderUuid: response.senderUuid,
+            senderName: response.senderName,
+            senderRole: response.senderRole,
+            senderAvatar: response.senderAvatar
+          }
+        );
         this.utils.broadcastEvent('chat:info-update', true);
         this._scrollToBottom();
         this._afterSendMessage();

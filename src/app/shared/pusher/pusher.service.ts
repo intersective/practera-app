@@ -20,13 +20,16 @@ export class PusherConfig {
 }
 
 export interface SendMessageParam {
-  channelUuid: number | string;
-  uuid: number | string;
-  senderUuid: string;
+  channelUuid:  string;
+  uuid: string;
   message: string;
   file: string;
   isSender: boolean;
   created: string;
+  senderUuid: string;
+  senderName: string;
+  senderRole: string;
+  senderAvatar: string;
 }
 
 class PusherChannel {
