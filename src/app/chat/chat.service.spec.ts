@@ -118,15 +118,19 @@ describe('ChatService', () => {
               chatLogs: [
                 {
                   uuid: '1',
-                  senderUuid: 'as108',
                   message: 'test message 01',
                   file: null,
                   created: '2020-02-27 01:48:28',
-                  isSender: true
+                  isSender: true,
+                  sender: {
+                    uuid: 'as108',
+                    name: 'user 1',
+                    role: 'admin',
+                    avatar: 'https://cdn.filestackcontent.com/X8Cj0Y4QS2AmDUZX6LSq'
+                  }
                 },
                 {
                   uuid: '2',
-                  senderUuid: 'dvjn867',
                   message: 'test admin message 01',
                   file: JSON.stringify({
                     filename: 'Screen_Shot_2019-09-30_at_6.55.30_AM.png',
@@ -134,15 +138,26 @@ describe('ChatService', () => {
                     mimetype: 'image/png'
                   }),
                   created: '2020-01-30 06:18:45',
-                  isSender: false
+                  isSender: false,
+                  sender: {
+                    uuid: 'dvjn867',
+                    name: 'user 1',
+                    role: 'admin',
+                    avatar: 'https://cdn.filestackcontent.com/X8Cj0Y4QS2AmDUZX6LSq'
+                  }
                 },
                 {
                   uuid: '3',
-                  senderUuid: 'dfbjkf3y',
                   message: 'test message 02',
                   file: null,
                   created: '2019-11-27 02:21:21',
-                  isSender: false
+                  isSender: false,
+                  sender: {
+                    uuid: 'dfbjkf3y',
+                    name: 'user 1',
+                    role: 'admin',
+                    avatar: 'https://cdn.filestackcontent.com/X8Cj0Y4QS2AmDUZX6LSq'
+                  }
                 }
               ]
             }
@@ -308,7 +323,6 @@ describe('ChatService', () => {
         data: {
             createChatLog: {
                 uuid: '1',
-                senderUuid: '1',
                 isSender: true,
                 message: '',
                 file: JSON.stringify({
@@ -317,7 +331,13 @@ describe('ChatService', () => {
                   url: 'https://cdn.filestackcontent.com/X8Cj0Y4QS2AmDUZX6LSq',
                   status: 'Stored'
                 }),
-                created: '2020-10-22 12:34:16'
+                created: '2020-10-22 12:34:16',
+                sender: {
+                  uuid: '1',
+                  name: 'user 1',
+                  role: 'admin',
+                  avatar: 'https://cdn.filestackcontent.com/X8Cj0Y4QS2AmDUZX6LSq'
+                }
             }
         }
       };
