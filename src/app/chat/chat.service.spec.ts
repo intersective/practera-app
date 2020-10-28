@@ -57,7 +57,8 @@ describe('ChatService', () => {
               readonly: false,
               unreadMessageCount: 2,
               lastMessageCreated: '2020-01-30 06:18:45',
-              lastMessage: 'test 1'
+              lastMessage: 'test 1',
+              canEdit: false
             },
             {
               uuid: '2',
@@ -70,7 +71,8 @@ describe('ChatService', () => {
               readonly: false,
               unreadMessageCount: 2,
               lastMessageCreated: '2020-01-30 06:18:45',
-              lastMessage: 'test 2'
+              lastMessage: 'test 2',
+              canEdit: false
             }
           ]
         }
@@ -100,6 +102,7 @@ describe('ChatService', () => {
             expect(chat.unreadMessageCount).toEqual(requestResponse.data.channels[i].unreadMessageCount);
             expect(chat.lastMessage).toEqual(requestResponse.data.channels[i].lastMessage);
             expect(chat.lastMessageCreated).toEqual(requestResponse.data.channels[i].lastMessageCreated);
+            expect(chat.canEdit).toEqual(requestResponse.data.channels[i].canEdit);
           });
         }
       );

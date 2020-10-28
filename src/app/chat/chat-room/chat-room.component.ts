@@ -28,7 +28,8 @@ export class ChatRoomComponent extends RouterEnter {
     roles: [],
     unreadMessageCount: 0,
     lastMessage: '',
-    lastMessageCreated: ''
+    lastMessageCreated: '',
+    canEdit: false
   };
 
   routeUrl = '/chat/chat-room';
