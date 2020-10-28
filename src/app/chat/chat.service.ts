@@ -18,6 +18,7 @@ export interface ChatChannel {
   unreadMessageCount: number;
   lastMessage: string;
   lastMessageCreated: string;
+  canEdit: boolean;
 }
 
 export interface ChannelMembers {
@@ -94,6 +95,7 @@ export class ChatService {
           lastMessage
           lastMessageCreated
           pusherChannel
+          canEdit
         }
       }`,
       {},
@@ -214,7 +216,7 @@ export class ChatService {
    */
   getChatMembers(channelId): Observable<ChannelMembers[]> {
     return this.request.chatGraphQLQuery(
-      `query getChannelmembers($uuid:String) {
+      `query getChannelmembers($uuid:String!) {
         channel(uuid:$uuid){
           members{
             uuid
@@ -285,7 +287,7 @@ export class ChatService {
 
   markMessagesAsSeen(uuids: string[]): Observable<any> {
     return this.request.chatGraphQLMutate(
-      `mutation markAsSeen($uuids: [String]) {
+      `mutation markAsSeen($uuids: [String]!) {
         readChatLogs(uuids: $uuids) {
           success
         }
@@ -302,7 +304,7 @@ export class ChatService {
    */
   postNewMessage(data: NewMessageParam): Observable<any> {
     return this.request.chatGraphQLMutate(
-      `mutation createChatLogs($channelUuid: String, $message: String, $file: String) {
+      `mutation createChatLogs($channelUuid: String!, $message: String, $file: String) {
         createChatLog(channelUuid: $channelUuid, message: $message, file: $file) {
             uuid
             isSender
