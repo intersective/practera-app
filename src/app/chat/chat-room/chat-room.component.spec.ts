@@ -151,7 +151,8 @@ describe('ChatRoomComponent', () => {
         ],
         unreadMessageCount: 0,
         lastMessage: null,
-        lastMessageCreated: null
+        lastMessageCreated: null,
+        canEdit: false
       };
       component.loadingChatMessages = false;
       chatServiceSpy.getMessageList.and.returnValue(of(mockChatMessages));
