@@ -11,6 +11,7 @@ import { FilestackModule } from '../shared/filestack/filestack.module';
 import { FastFeedbackModule } from '../fast-feedback/fast-feedback.module';
 import { AutoresizeDirective } from '../shared/directives/autoresize/autoresize.directive';
 import { ChatViewComponent } from './chat-view/chat-view.component';
+import { ChatInfoComponent } from './chat-info/chat-info.component';
 
 @NgModule({
   imports: [
@@ -25,9 +26,10 @@ import { ChatViewComponent } from './chat-view/chat-view.component';
     ChatPreviewComponent,
     ChatRoomComponent,
     AutoresizeDirective,
-    ChatViewComponent
+    ChatViewComponent,
+    ChatInfoComponent
   ],
-  entryComponents: [ChatPreviewComponent],
+  entryComponents: [ChatPreviewComponent, ChatInfoComponent],
   providers: [ChatService],
   exports: [
     SharedModule,

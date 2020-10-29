@@ -4,6 +4,9 @@
     <ion-title class="ion-text-center" [ngClass]="{
       'subtitle-2': !utils.isMobile()
     }">{{ chatChannel.name }}</ion-title>
+    <ion-button slot="end" fill="clear" size="small" (click)="openChatInfo()">
+      <ion-icon color="primary" slot="icon-only" name="information-circle"></ion-icon>
+    </ion-button>
   </ion-toolbar>
 </ion-header>
 <ion-content [ngClass]="{'ion-content-absolute-with-footer': !utils.isMobile()}" color="light" [scrollEvents]="true" (ionScroll)="loadMoreMessages($event)">
