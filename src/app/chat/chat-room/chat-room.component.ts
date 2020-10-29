@@ -9,6 +9,7 @@ import { FilestackService } from '@shared/filestack/filestack.service';
 import { ChatService, ChatChannel, Message, MessageListResult, ChannelMembers } from '../chat.service';
 import { ChatPreviewComponent } from '../chat-preview/chat-preview.component';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
+import { ChatInfoComponent } from '../chat-info/chat-info.component';
 
 @Component({
   selector: 'app-chat-room',
@@ -668,5 +669,21 @@ export class ChatRoomComponent extends RouterEnter {
     c.height = h;
     ctx.drawImage(video, 0, 0, w, h);            // draw in frame
     return c;                                    // return canvas
+  }
+
+  async openChatInfo() {
+    const modal = await this.modalController.create({
+      component: ChatInfoComponent,
+      cssClass: 'chat-info-page',
+      componentProps: {
+        selectedChat: this.chatChannel,
+      }
+    });
+    await modal.present();
+    modal.onWillDismiss().then((data) => {
+      if (data.data && (data.data.type === 'channelDeleted' || data.data.channelName !== this.chatChannel.name)) {
+        this.utils.broadcastEvent('chat:info-update', true);
+      }
+    });
   }
 }
