@@ -1,4 +1,4 @@
-import { Component, Input, ViewChild, NgZone, AfterContentInit, AfterViewInit, ElementRef } from '@angular/core';
+import { Component, Input, ViewChild, NgZone, AfterContentInit, AfterViewInit, ElementRef, Output, EventEmitter } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { IonContent, ModalController } from '@ionic/angular';
 import { BrowserStorageService } from '@services/storage.service';
@@ -32,6 +32,7 @@ export class ChatRoomComponent extends RouterEnter {
     lastMessageCreated: '',
     canEdit: false
   };
+  @Output() loadInfo = new EventEmitter();
 
   routeUrl = '/chat/chat-room';
   channelUuid: string;
@@ -92,6 +93,7 @@ export class ChatRoomComponent extends RouterEnter {
     this._initialise();
     this._subscribeToTypingEvent();
     this._loadMessages();
+    this._loadMembers();
     this._scrollToBottom();
   }
 
@@ -107,7 +109,7 @@ export class ChatRoomComponent extends RouterEnter {
   }
 
   private _subscribeToTypingEvent() {
-    if ( this.utils.isEmpty(this.chatChannel.uuid) && this.utils.isEmpty(this.chatChannel.name)) {
+    if ( this.utils.isMobile() ) {
       this.chatChannel = this.storage.getCurrentChatChannel();
     }
     this.channelUuid = this.chatChannel.uuid;
@@ -130,6 +132,20 @@ export class ChatRoomComponent extends RouterEnter {
       file: data.file,
       channelUuid: data.channelUuid
     };
+  }
+
+  private _loadMembers() {
+    this.chatService.getChatMembers(this.channelUuid).subscribe(
+      (response) => {
+        if (response.length === 0) {
+          return;
+        }
+        this.memberList = response;
+      },
+      error => {
+        console.log(error);
+      }
+    );
   }
 
   private _loadMessages() {
@@ -672,18 +688,17 @@ export class ChatRoomComponent extends RouterEnter {
   }
 
   async openChatInfo() {
-    const modal = await this.modalController.create({
-      component: ChatInfoComponent,
-      cssClass: 'chat-info-page',
-      componentProps: {
-        selectedChat: this.chatChannel,
-      }
-    });
-    await modal.present();
-    modal.onWillDismiss().then((data) => {
-      if (data.data && (data.data.type === 'channelDeleted' || data.data.channelName !== this.chatChannel.name)) {
-        this.utils.broadcastEvent('chat:info-update', true);
-      }
-    });
+    if (!this.utils.isMobile()) {
+      this.loadInfo.emit(true);
+    } else {
+      const modal = await this.modalController.create({
+        component: ChatInfoComponent,
+        cssClass: 'chat-info-page',
+        componentProps: {
+          selectedChat: this.chatChannel,
+        }
+      });
+      await modal.present();
+    }
   }
 }

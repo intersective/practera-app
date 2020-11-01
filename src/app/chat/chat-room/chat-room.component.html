@@ -3,7 +3,10 @@
     <ion-icon *ngIf="utils.isMobile()" name="arrow-back" (click)="back()" color="primary" slot="start" margin-start></ion-icon>
     <ion-title class="ion-text-center" [ngClass]="{
       'subtitle-2': !utils.isMobile()
-    }">{{ chatChannel.name }}</ion-title>
+    }">
+      {{ chatChannel.name }}
+      <div class="ion-text-center sub-title caption gray-1 saving-msg">{{ memberList.length }} members</div>
+    </ion-title>
     <ion-button slot="end" fill="clear" size="small" (click)="openChatInfo()">
       <ion-icon color="primary" slot="icon-only" name="information-circle"></ion-icon>
     </ion-button>
