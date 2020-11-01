@@ -14,6 +14,7 @@ import { NotificationService } from '@shared/notification/notification.service';
 export class ChatInfoComponent implements OnInit {
 
   @Input() selectedChat: ChatChannel;
+  @Output() navigate = new EventEmitter();
   channelName: string;
   enableSave: boolean;
   // channel member list
@@ -58,8 +59,12 @@ export class ChatInfoComponent implements OnInit {
   }
 
   close() {
-    this.modalController.dismiss({
-      channelName: this.channelName
-    });
+    if (!this.utils.isMobile()) {
+      this.navigate.emit(this.selectedChat);
+    } else {
+      this.modalController.dismiss({
+        channelName: this.channelName
+      });
+    }
   }
 }
