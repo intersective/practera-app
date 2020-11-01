@@ -13,6 +13,7 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { FastFeedbackService } from '../../fast-feedback/fast-feedback.service';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
+import { NotificationService } from '@shared/notification/notification.service';
 import { MockRouter } from '@testing/mocked.service';
 import { Apollo } from 'apollo-angular';
 
@@ -92,6 +93,10 @@ describe('ProjectComponent', () => {
             },
             queryParamMap: of(convertToParamMap({ activityId: 1 }))
           }
+        },
+        {
+          provide: NotificationService,
+          useValue: jasmine.createSpyObj('NotificationService', ['presentToast'])
         },
         {
           provide: Document,

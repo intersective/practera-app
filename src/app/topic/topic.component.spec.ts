@@ -38,6 +38,10 @@ describe('TopicComponent', () => {
       providers: [
         Apollo,
         {
+          provide: ActivityService,
+          useValue: activitySpy
+        },
+        {
           provide: TopicService,
           useValue: topicSpy
         },

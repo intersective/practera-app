@@ -1,13 +1,13 @@
 import { Component, OnInit, NgZone } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { AuthService } from '../auth.service';
-import { Observable, concat } from 'rxjs';
+import { Observable, forkJoin } from 'rxjs';
 import { NotificationService } from '@shared/notification/notification.service';
 import { SwitcherService } from '../../switcher/switcher.service';
 import { UtilsService } from '@services/utils.service';
 import { BrowserStorageService } from '@services/storage.service';
+import { NativeStorageService } from '@services/native-storage.service';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
-import { async } from '../../../../node_modules/@types/q';
 
 @Component({
   selector: 'app-auth-direct-login',
@@ -23,11 +23,12 @@ export class AuthDirectLoginComponent implements OnInit {
     public utils: UtilsService,
     private switcherService: SwitcherService,
     private storage: BrowserStorageService,
+    private nativeStorage: NativeStorageService,
     private ngZone: NgZone,
     private newRelic: NewRelicService
   ) {}
 
-  async ngOnInit() {
+  ngOnInit() {
     this.newRelic.setPageViewName('direct-login');
     const authToken = this.route.snapshot.paramMap.get('authToken');
     if (!authToken) {
@@ -36,16 +37,18 @@ export class AuthDirectLoginComponent implements OnInit {
 
     const nrDirectLoginTracer = this.newRelic.createTracer('Processing direct login');
     // move try catch inside to timeout, because if try catch is outside it not catch errors happen inside timeout.
-    setTimeout(
-      async () => {
-        try {
-          await this.authService.directLogin({ authToken }).toPromise();
+    setTimeout(async () => {
+      try {
+        const directLogin = await this.authService.directLogin({ authToken });
+        directLogin.subscribe(async res => {
+          await res;
           await this.switcherService.getMyInfo().toPromise();
           nrDirectLoginTracer();
           return this._redirect();
-        } catch (err) {
-          this._error(err);
-        }
+        });
+      } catch (err) {
+        this._error(err);
+      }
         // tslint:disable-next-line:align
       }, 50
     );
@@ -76,14 +79,15 @@ export class AuthDirectLoginComponent implements OnInit {
       // if there's no redirection or timeline id
       return this._saveOrRedirect(['switcher', 'switcher-program'], redirectLater);
     }
-    if ( this.route.snapshot.paramMap.has('return_url')) {
-      this.storage.setUser({
+    if (this.route.snapshot.paramMap.has('return_url')) {
+      await this.nativeStorage.setObject('me', {
         LtiReturnUrl: this.route.snapshot.paramMap.get('return_url')
       });
     }
     // switch parogram if user already registered
     if (!redirectLater) {
-      const program = this.utils.find(this.storage.get('programs'), value => {
+      const programs = await this.nativeStorage.getObject('programs');
+      const program = this.utils.find(Object.values(programs), value => {
         return value.timeline.id === timelineId;
       });
       if (this.utils.isEmpty(program)) {
@@ -91,7 +95,7 @@ export class AuthDirectLoginComponent implements OnInit {
         return this._saveOrRedirect(['switcher', 'switcher-program']);
       }
       // switch to the program
-      await this.switcherService.switchProgram(program).toPromise();
+      await (await this.switcherService.switchProgram(program)).toPromise();
     }
 
     switch (redirect) {
@@ -146,14 +150,21 @@ export class AuthDirectLoginComponent implements OnInit {
     return this.navigate(route);
   }
 
+  /**
+   * when param "res" is empty, just simply return with generic "expired" error
+   * @param  {any}       res
+   * @return {Promise<any>}
+   */
   private _error(res?): Promise<any> {
     this.newRelic.noticeError('failed direct login', res ? JSON.stringify(res) : undefined);
-    if (!this.utils.isEmpty(res) && res.status === 'forbidden' && [
+    if (!this.utils.isEmpty(res) && (res && res.status === 'forbidden') && [
       'User is not registered'
     ].includes(res.data.message)) {
       this._redirect(true);
+      this.storage.set('unRegisteredDirectLink', true);
       return this.navigate(['registration', res.data.user.email, res.data.user.key]);
     }
+
     return this.notificationService.alert({
       message: 'Your link is invalid or expired.',
       buttons: [

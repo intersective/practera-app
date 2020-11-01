@@ -34,8 +34,9 @@ import {
 import { RequestService, RequestConfig, DevModeService, QueryEncoder } from './request.service';
 import { Router } from '@angular/router';
 import { BrowserStorageService } from '@services/storage.service';
+import { NativeStorageService } from '@services/native-storage.service';
 import { TestUtils } from '@testing/utils';
-import { BrowserStorageServiceMock } from '@testing/mocked.service';
+import { BrowserStorageServiceMock, NativeStorageServiceMock } from '@testing/mocked.service';
 import { Apollo } from 'apollo-angular';
 
 describe('QueryEncoder', () => {
@@ -90,6 +91,7 @@ describe('RequestService', () => {
   let requestConfigSpy: RequestConfig;
   let devModeServiceSpy: DevModeService;
   let storageSpy: BrowserStorageService;
+  let nativeStorageSpy: NativeStorageService;
 
   beforeEach(async () => {
     TestBed.configureTestingModule({
@@ -112,6 +114,10 @@ describe('RequestService', () => {
         {
           provide: BrowserStorageService,
           useClass: BrowserStorageServiceMock
+        },
+        {
+          provide: NativeStorageService,
+          useClass: NativeStorageServiceMock
         }
       ]
     });
@@ -121,6 +127,7 @@ describe('RequestService', () => {
     requestConfigSpy = TestBed.inject(RequestConfig);
     devModeServiceSpy = TestBed.inject(DevModeService);
     storageSpy = TestBed.inject(BrowserStorageService);
+    nativeStorageSpy = TestBed.inject(NativeStorageService);
   });
 
   it('should be created', () => {

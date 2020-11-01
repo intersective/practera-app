@@ -24,6 +24,7 @@ export class AchievementsComponent extends RouterEnter {
     public router: Router,
     public achievementService: AchievementsService,
     public utils: UtilsService,
+    private routes: ActivatedRoute,
     private ngZone: NgZone,
     private newRelic: NewRelicService,
     public storage: BrowserStorageService,
@@ -32,10 +33,12 @@ export class AchievementsComponent extends RouterEnter {
   }
 
   onEnter() {
-    this.userInfo = {
-      image: this.storage.get('me').image,
-      name: this.storage.get('me').name
-    };
+    this.routes.data.subscribe(data => {
+      this.userInfo = {
+        image: data.user.image,
+        name: data.user.name,
+      };
+    });
     this.loadingAchievements = true;
     this.achievementService.getAchievements().subscribe(
       achievements => {

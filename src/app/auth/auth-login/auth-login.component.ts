@@ -7,7 +7,6 @@ import { NotificationService } from '@shared/notification/notification.service';
 import { UtilsService } from '@services/utils.service';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
 import { SwitcherService } from '../../switcher/switcher.service';
-import { PusherService } from '@shared/pusher/pusher.service';
 import { environment } from '@environments/environment';
 
 @Component({
@@ -30,14 +29,13 @@ export class AuthLoginComponent implements OnInit {
     private utils: UtilsService,
     private newRelic: NewRelicService,
     private switcherService: SwitcherService,
-    private pusherService: PusherService,
   ) {}
 
   ngOnInit() {
     this.newRelic.setPageViewName('login');
   }
 
-  login() {
+  async login() {
     if (this.utils.isEmpty(this.loginForm.value.email) || this.utils.isEmpty(this.loginForm.value.password)) {
       this.notificationService.alert({
         message: 'Your email or password is empty, please fill them in.',
@@ -59,14 +57,17 @@ export class AuthLoginComponent implements OnInit {
     const nrLoginTracer = this.newRelic.createTracer('login request started', (message) => {
       this.newRelic.setCustomAttribute('login status', message);
     });
+
     return this.authService.login({
       email: this.loginForm.value.email,
       password: this.loginForm.value.password,
     }).subscribe(
-      res => {
+      async res => {
+        const promiseRes = await res;
+
         nrLoginTracer('login successful');
         this.newRelic.actionText('login successful');
-        return this._handleNavigation(res.programs);
+        return this._handleNavigation(promiseRes.programs);
       },
       err => {
         nrLoginTracer(JSON.stringify(err));
