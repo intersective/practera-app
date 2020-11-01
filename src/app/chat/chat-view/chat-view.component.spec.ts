@@ -46,8 +46,16 @@ describe('ChatViewComponent', () => {
     spyOn(component.chatList, 'onEnter');
     component.onEnter();
     expect(component.chatChannel).toBeNull();
+    expect(component.loadInfo).toBeFalsy();
     tick();
     expect(component.chatList.onEnter).toHaveBeenCalled();
   }));
+
+  describe('when testing loadchannelInfo()', () => {
+    it(`should make loadInfo true to load info page`, () => {
+      component.loadchannelInfo(null);
+      expect(component.loadInfo).toBe(true);
+    });
+  });
 
 });
