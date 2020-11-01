@@ -4,7 +4,6 @@ import { BrowserStorageService } from '@services/storage.service';
 import { UtilsService } from '@services/utils.service';
 import { ChatService, ChatChannel, ChannelMembers } from '@app/chat/chat.service';
 import { ModalController } from '@ionic/angular';
-import { NotificationService } from '@shared/notification/notification.service';
 
 @Component({
   selector: 'app-chat-info',
@@ -26,8 +25,7 @@ export class ChatInfoComponent implements OnInit {
     public router: Router,
     public storage: BrowserStorageService,
     public utils: UtilsService,
-    public modalController: ModalController,
-    private notification: NotificationService
+    public modalController: ModalController
   ) {}
 
   ngOnInit() {
