@@ -581,15 +581,19 @@ describe('AssessmentComponent', () => {
   it('should pop up alert if required answer missing when submitting', fakeAsync(() => {
     component.doAssessment = true;
     fixture.detectChanges();
-    flush();
-    component.questionsForm = new FormGroup({
-      'q-123': new FormControl(null),
-      'q-124': new FormControl(null),
-      'q-125': new FormControl(null)
+    fixture.whenStable().then(() => {
+      component.questionsForm = new FormGroup({
+        'q-123': new FormControl(null),
+        'q-124': new FormControl(null),
+        'q-125': new FormControl(null)
+      });
+
+      component.submit(false).then(() => {
+        expect(component.submitting).toBe(false);
+        expect(notificationSpy.popUp.calls.count()).toBe(1);
+      });
     });
-    component.submit(false);
-    expect(component.submitting).toBe(false);
-    expect(notificationSpy.popUp.calls.count()).toBe(1);
+    flush();
   }));
 
   describe('submitting assessment submit(false)', () => {
@@ -615,18 +619,20 @@ describe('AssessmentComponent', () => {
       };
     });
 
-    it('should be called with correct assessment answer/action/activity status', () => {
-      component.submit(false);
-      expect(assessmentServiceSpy.saveAnswers).toHaveBeenCalled();
-      expect(assessmentServiceSpy.saveAnswers).toHaveBeenCalledWith(
-        {
-          id: activityId,
-          contextId: 2
-        },
-        emptyAnswers,
-        action
-      );
-    });
+    it('should be called with correct assessment answer/action/activity status', fakeAsync(() => {
+      component.submit(false).then(() => {
+        expect(assessmentServiceSpy.saveAnswers).toHaveBeenCalled();
+        expect(assessmentServiceSpy.saveAnswers).toHaveBeenCalledWith(
+          {
+            id: activityId,
+            contextId: 2
+          },
+          emptyAnswers,
+          action
+        );
+      });
+      flush();
+    }));
 
     it('should check fastfeedback availability as pulseCheck is \'true\'', () => {
       component.submit(false);
