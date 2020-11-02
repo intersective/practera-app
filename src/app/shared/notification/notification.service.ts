@@ -175,7 +175,7 @@ export class NotificationService {
   }
 
   async pushNotificationPermissionPopUp(message) {
-    let cssClass = 'practera-popup push-notification-popup';
+    const cssClass = 'practera-popup push-notification-popup';
     return await this.modal(
       PNPermissionModalComponent,
       { message },

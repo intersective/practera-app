@@ -37,7 +37,6 @@ describe('OverviewComponent', () => {
   let page: Page;
   let component: OverviewComponent;
   let fixture: ComponentFixture<OverviewComponent>;
-  let routerSpy: Router;
   let activatedRouteSpy: ActivatedRoute;
   let utils: UtilsService;
   let pushNotificationSpy: PushNotificationService;
