@@ -11,13 +11,13 @@ import { UtilsService } from '@services/utils.service';
 import { NotificationService } from '@shared/notification/notification.service';
 import { ActivityService } from '@app/activity/activity.service';
 import { FastFeedbackService } from '@app/fast-feedback/fast-feedback.service';
-import { BrowserStorageService } from '@services/storage.service';
 import { NativeStorageService } from '@services/native-storage.service';
 import { SharedService } from '@services/shared.service';
 import { FastFeedbackServiceMock } from '@testing/mocked.service';
 import { of } from 'rxjs';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
 import { MockRouter, MockNewRelicService, NativeStorageServiceMock } from '@testing/mocked.service';
+import { PushNotificationService, PermissionTypes } from '@services/push-notification.service';
 import { Apollo } from 'apollo-angular';
 
 class Page {
@@ -99,7 +99,6 @@ describe('AssessmentComponent', () => {
   let fastFeedbackSpy: jasmine.SpyObj<FastFeedbackService>;
   let routerSpy: jasmine.SpyObj<Router>;
   let routeStub: Partial<ActivatedRoute>;
-  let storageSpy: jasmine.SpyObj<BrowserStorageService>;
   let nativeStorageSpy: jasmine.SpyObj<NativeStorageService>;
   let shared: SharedService;
   let utils: UtilsService;
@@ -218,7 +217,14 @@ describe('AssessmentComponent', () => {
         },
         {
           provide: NotificationService,
-          useValue: jasmine.createSpyObj('NotificationService', ['alert', 'customToast', 'popUp', 'presentToast', 'modalOnly'])
+          useValue: jasmine.createSpyObj('NotificationService', [
+            'alert',
+            'customToast',
+            'popUp',
+            'presentToast',
+            'modalOnly',
+            'pushNotificationPermissionPopUp',
+          ])
         },
         {
           provide: ActivityService,
@@ -229,12 +235,14 @@ describe('AssessmentComponent', () => {
           useClass: FastFeedbackServiceMock
         },
         {
-          provide: BrowserStorageService,
-          useValue: jasmine.createSpyObj('BrowserStorageService', ['getUser'])
-        },
-        {
           provide: Router,
           useClass: MockRouter,
+        },
+        {
+          provide: PushNotificationService,
+          useValue: jasmine.createSpyObj('PushNotificationService', [
+            'promptForPermission',
+          ])
         },
       ]
     }).compileComponents();
@@ -252,7 +260,6 @@ describe('AssessmentComponent', () => {
     fastFeedbackSpy = TestBed.inject(FastFeedbackService) as jasmine.SpyObj<FastFeedbackService>;
     routeStub = TestBed.inject(ActivatedRoute);
     routerSpy = TestBed.inject(Router) as jasmine.SpyObj<Router>;
-    storageSpy = TestBed.inject(BrowserStorageService) as jasmine.SpyObj<BrowserStorageService>;
     nativeStorageSpy = TestBed.inject(NativeStorageService) as jasmine.SpyObj<NativeStorageService>;
     shared = TestBed.inject(SharedService);
     utils = TestBed.inject(UtilsService);
@@ -266,7 +273,6 @@ describe('AssessmentComponent', () => {
     assessmentServiceSpy.saveAnswers.and.returnValue(of(true));
     assessmentServiceSpy.saveFeedbackReviewed.and.returnValue(of({success: true}));
     activitySpy.gotoNextTask.and.returnValue(new Promise(() => {}));
-    storageSpy.getUser.and.returnValue(mockUser);
     component.routeUrl = '/test';
   });
 
@@ -528,15 +534,25 @@ describe('AssessmentComponent', () => {
       ]);
     });
 
-    it('saving in progress', () => {
-      component.submit(true);
-      assessment = assessmentServiceSpy.saveAnswers.calls.first().args[0];
-      answers = assessmentServiceSpy.saveAnswers.calls.first().args[1];
-      expect(component.submitting).toBeFalsy();
-      expect(component.savingMessage).toContain('Last saved');
-      expect(assessment.inProgress).toBe(true);
-      expect(assessment.unlock).toBeFalsy();
-    });
+    it('saving in progress', fakeAsync(() => {
+      component.savingButtonDisabled = false;
+      component.saving = false;
+
+      component.submit(true).then(() => {
+        assessment = assessmentServiceSpy.saveAnswers.calls.first().args[0];
+        answers = assessmentServiceSpy.saveAnswers.calls.first().args[1];
+
+        flush();
+
+        expect(assessmentServiceSpy.saveAnswers).toHaveBeenCalled();
+        expect(component.submitting).toBeFalsy();
+        expect(component.savingMessage).toContain('Last saved');
+        expect(assessment.inProgress).toBe(true);
+        expect(assessment.unlock).toBeFalsy();
+        expect(component.savingButtonDisabled).toBe(false);
+      });
+      flush();
+    }));
 
     it('saving in progress, and unlock the submission for team assessment', () => {
       component.submit(true, true);
@@ -545,14 +561,21 @@ describe('AssessmentComponent', () => {
       expect(assessment.unlock).toBe(true);
     });
 
-    it('submitting', () => {
+    it('submitting', fakeAsync(() => {
       savingButtonDisabled = true;
-      component.submit(false);
-      assessment = assessmentServiceSpy.saveAnswers.calls.first().args[0];
-      answers = assessmentServiceSpy.saveAnswers.calls.first().args[1];
-      expect(component.submitting).toEqual(false);
-      expect(component.saving).toBe(true);
-    });
+      component.submit(false).then(() => {
+        console.log('asdasdasd', assessmentServiceSpy.saveAnswers.calls.first());
+
+        expect(assessmentServiceSpy.saveAnswers).toHaveBeenCalled();
+        assessment = assessmentServiceSpy.saveAnswers.calls.first().args[0];
+        answers = assessmentServiceSpy.saveAnswers.calls.first().args[1];
+
+        console.log('saving?', component.saving);
+        expect(component.submitting).toEqual(false);
+        expect(component.saving).toBe(true);
+      });
+      flush();
+    }));
   });
 
   it('should pop up alert if required answer missing when submitting', fakeAsync(() => {
@@ -605,7 +628,7 @@ describe('AssessmentComponent', () => {
       );
     });
 
-    it(`should check fastfeedback availability as pulseCheck is 'true'`, () => {
+    it('should check fastfeedback availability as pulseCheck is \'true\'', () => {
       component.submit(false);
       const spy = spyOn(fastFeedbackSpy, 'pullFastFeedback').and.returnValue(of(fastFeedbackSpy.pullFastFeedback()));
       spyOn(component, 'goToNextTask');

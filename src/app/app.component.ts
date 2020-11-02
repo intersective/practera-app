@@ -44,7 +44,7 @@ export class AppComponent implements OnInit {
     private ngZone: NgZone,
     private newRelic: NewRelicService,
     public sanitizer: DomSanitizer,
-    private pushNotificationService: PushNotificationService
+    private pushNotificationService: PushNotificationService,
     @Inject(DOCUMENT) private readonly document: Document
     // private splashScreen: SplashScreen,
     // private statusBar: StatusBar

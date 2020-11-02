@@ -177,7 +177,7 @@ export class SettingsComponent extends RouterEnter {
     console.log(interests);
   }
 
-  async setInterests(interest: String[]) {
+  async setInterests(interest: string[]) {
     const subscribedInterests = await this.pushNotificationService.subscribeToInterests(interest);
     return subscribedInterests;
   }

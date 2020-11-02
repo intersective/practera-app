@@ -488,7 +488,7 @@ export class AssessmentComponent extends RouterEnter {
     }
   }
 
-  async checkPNPermission() {
+  async checkPNPermission(): Promise<void> {
     const promptForPermission = await this.pushNotificationService.promptForPermission(PermissionTypes.firstVisit, this.router.routerState.snapshot);
 
     if (promptForPermission && this.assessment.type === 'moderated') {
@@ -516,6 +516,7 @@ export class AssessmentComponent extends RouterEnter {
      *    - if this is not manual save or there is one save in progress
      *      - do nothing
      */
+
     if (saveInProgress) {
       if (isManualSave || !this.saving) {
         this.savingMessage = 'Saving...';
