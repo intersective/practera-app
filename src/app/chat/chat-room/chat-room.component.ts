@@ -1,4 +1,4 @@
-import { Component, Input, ViewChild, NgZone, AfterContentInit, AfterViewInit, ElementRef } from '@angular/core';
+import { Component, Input, ViewChild, NgZone, AfterContentInit, AfterViewInit, ElementRef, Output, EventEmitter } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { IonContent, ModalController } from '@ionic/angular';
 import { BrowserStorageService } from '@services/storage.service';
@@ -9,6 +9,7 @@ import { FilestackService } from '@shared/filestack/filestack.service';
 import { ChatService, ChatChannel, Message, MessageListResult, ChannelMembers } from '../chat.service';
 import { ChatPreviewComponent } from '../chat-preview/chat-preview.component';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
+import { ChatInfoComponent } from '../chat-info/chat-info.component';
 
 @Component({
   selector: 'app-chat-room',
@@ -31,6 +32,7 @@ export class ChatRoomComponent extends RouterEnter {
     lastMessageCreated: '',
     canEdit: false
   };
+  @Output() loadInfo = new EventEmitter();
 
   routeUrl = '/chat/chat-room';
   channelUuid: string;
@@ -91,6 +93,7 @@ export class ChatRoomComponent extends RouterEnter {
     this._initialise();
     this._subscribeToTypingEvent();
     this._loadMessages();
+    this._loadMembers();
     this._scrollToBottom();
   }
 
@@ -106,7 +109,7 @@ export class ChatRoomComponent extends RouterEnter {
   }
 
   private _subscribeToTypingEvent() {
-    if ( this.utils.isEmpty(this.chatChannel.uuid) && this.utils.isEmpty(this.chatChannel.name)) {
+    if ( this.utils.isMobile() ) {
       this.chatChannel = this.storage.getCurrentChatChannel();
     }
     this.channelUuid = this.chatChannel.uuid;
@@ -129,6 +132,20 @@ export class ChatRoomComponent extends RouterEnter {
       file: data.file,
       channelUuid: data.channelUuid
     };
+  }
+
+  private _loadMembers() {
+    this.chatService.getChatMembers(this.channelUuid).subscribe(
+      (response) => {
+        if (response.length === 0) {
+          return;
+        }
+        this.memberList = response;
+      },
+      error => {
+        console.log(error);
+      }
+    );
   }
 
   private _loadMessages() {
@@ -668,5 +685,20 @@ export class ChatRoomComponent extends RouterEnter {
     c.height = h;
     ctx.drawImage(video, 0, 0, w, h);            // draw in frame
     return c;                                    // return canvas
+  }
+
+  async openChatInfo() {
+    if (!this.utils.isMobile()) {
+      this.loadInfo.emit(true);
+    } else {
+      const modal = await this.modalController.create({
+        component: ChatInfoComponent,
+        cssClass: 'chat-info-page',
+        componentProps: {
+          selectedChat: this.chatChannel,
+        }
+      });
+      await modal.present();
+    }
   }
 }
