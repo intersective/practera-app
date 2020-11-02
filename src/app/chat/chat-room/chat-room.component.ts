@@ -126,7 +126,7 @@ export class ChatRoomComponent extends RouterEnter {
       senderName: data.senderName,
       senderRole: data.senderRole,
       senderAvatar: data.senderAvatar,
-      isSender: data.isSender,
+      isSender: false,
       message: data.message,
       created: data.created,
       file: data.file,
