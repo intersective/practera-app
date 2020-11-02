@@ -15,6 +15,7 @@ import { AuthService } from '../auth/auth.service';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
 import { MockRouter, NativeStorageServiceMock } from '@testing/mocked.service';
 import { NotificationService } from '@shared/notification/notification.service';
+import { PushNotificationService, PermissionTypes } from '@services/push-notification.service';
 import { Apollo } from 'apollo-angular';
 
 @Component({selector: 'app-contact-number-form', template: ''})
@@ -79,9 +80,19 @@ describe('SettingsComponent', () => {
         },
         {
           provide: ActivatedRoute,
-          useValue: jasmine.createSpyObj('ActivatedRoute', {
+          useValue: {
             data: of(true)
-          })
+          }
+        },
+        {
+          provide: PushNotificationService,
+          useValue: jasmine.createSpyObj('PushNotificationService', [
+            'promptForPermission',
+            'goToAppSetting',
+            'getSubscribedInterests',
+            'subscribeToInterests',
+            'associateDeviceToUser',
+          ])
         },
       ],
     })
