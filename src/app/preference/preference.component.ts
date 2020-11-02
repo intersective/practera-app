@@ -24,7 +24,6 @@ export class PreferenceComponent {
       }
 
       this.preferenceSubject$ = this.preferenceService.getPreference().subscribe(res => {
-        console.log(res);
         this.preferences = res;
       });
     });
