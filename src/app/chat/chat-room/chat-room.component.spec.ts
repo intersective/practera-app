@@ -130,6 +130,27 @@ describe('ChatRoomComponent', () => {
     ]
   };
 
+  const mockMembers = [
+    {
+      uuid: '1',
+      name: 'student+01',
+      role: 'participant',
+      avatar: 'https://www.gravatar.com/avatar/21b7427270a606e8a3c4413a13bb47c6?d=https://sandbox.practera.com/img/user-512.png&s=50'
+    },
+    {
+      uuid: '2',
+      name: 'student1',
+      role: 'participant',
+      avatar: 'https://www.gravatar.com/avatar/21b7427270a606e8a3c4413a13bb47c6?d=https://sandbox.practera.com/img/user-512.png&s=50'
+    },
+    {
+      uuid: '3',
+      name: 'student2',
+      role: 'participant',
+      avatar: 'https://www.gravatar.com/avatar/21b7427270a606e8a3c4413a13bb47c6?d=https://sandbox.practera.com/img/user-512.png&s=50'
+    }
+  ];
+
   it('should create', () => {
     expect(component).toBeTruthy();
   });
@@ -156,9 +177,11 @@ describe('ChatRoomComponent', () => {
       };
       component.loadingChatMessages = false;
       chatServiceSpy.getMessageList.and.returnValue(of(mockChatMessages));
+      chatServiceSpy.getChatMembers.and.returnValue(of(mockMembers));
       chatServiceSpy.markMessagesAsSeen.and.returnValue(of({}));
       component.onEnter();
       expect(chatServiceSpy.getMessageList.calls.count()).toBe(1);
+      expect(chatServiceSpy.getChatMembers.calls.count()).toBe(1);
     });
   });
 
@@ -407,6 +430,14 @@ describe('ChatRoomComponent', () => {
     it(`should return 'document' if mimetype contains powerpoint type`, () => {
       const fileType = component.getIconByMime('application/mspowerpoint');
       expect(fileType).toEqual('document');
+    });
+  });
+
+  describe('when testing openChatInfo()', () => {
+    it(`should call modal controller if app in mobile view`, () => {
+      spyOn(utils, 'isMobile').and.returnValue(true);
+      component.openChatInfo();
+      expect(modalCtrlSpy.create.calls.count()).toBe(2);
     });
   });
 
