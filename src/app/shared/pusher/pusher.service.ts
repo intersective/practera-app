@@ -277,7 +277,7 @@ export class PusherService {
         };
         channel.subscription
           .bind('client-chat-new-message', data => {
-            this.utils.broadcastEvent('chat:new-messag', data);
+            this.utils.broadcastEvent('chat:new-message', data);
           })
           .bind('client-typing-event', data => {
             this.utils.broadcastEvent('typing-' + channelName, data);
@@ -323,7 +323,7 @@ export class PusherService {
     if (!channel) {
       return;
     }
-    return channel.subscription.trigger('client-chat-new-message', data);
+    channel.subscription.trigger('client-chat-new-message', data);
   }
 
 }
