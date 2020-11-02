@@ -1,5 +1,5 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { async, ComponentFixture, TestBed, fakeAsync, flush } from '@angular/core/testing';
 import { HttpClientModule } from '@angular/common/http';
 import { ActivityComponent } from './activity.component';
 import { ActivityService } from './activity.service';
@@ -12,8 +12,9 @@ import { FastFeedbackService } from '@app/fast-feedback/fast-feedback.service';
 import { EventListService } from '@app/event-list/event-list.service';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { BrowserStorageService } from '@services/storage.service';
+import { NativeStorageService } from '@services/native-storage.service';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
-import { MockRouter } from '@testing/mocked.service';
+import { MockRouter, NativeStorageServiceMock } from '@testing/mocked.service';
 import { Apollo } from 'apollo-angular';
 
 class Page {
@@ -58,6 +59,7 @@ describe('ActivityComponent', () => {
   let eventSpy: jasmine.SpyObj<EventListService>;
   let utils: UtilsService;
   let storageSpy: jasmine.SpyObj<BrowserStorageService>;
+  let nativeStorageSpy: jasmine.SpyObj<NativeStorageService>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
@@ -79,6 +81,10 @@ describe('ActivityComponent', () => {
         {
           provide: BrowserStorageService,
           useValue: jasmine.createSpyObj('BrowserStorageService', ['getUser'])
+        },
+        {
+          provide: NativeStorageService,
+          useClass: NativeStorageServiceMock
         },
         {
           provide: Router,
@@ -121,6 +127,7 @@ describe('ActivityComponent', () => {
     fastFeedbackSpy = TestBed.inject(FastFeedbackService) as jasmine.SpyObj<FastFeedbackService>;
     eventSpy = TestBed.inject(EventListService) as jasmine.SpyObj<EventListService>;
     storageSpy = TestBed.inject(BrowserStorageService) as jasmine.SpyObj<BrowserStorageService>;
+    nativeStorageSpy = TestBed.inject(NativeStorageService) as jasmine.SpyObj<NativeStorageService>;
   });
 
   const mockActivity = {
@@ -270,7 +277,7 @@ describe('ActivityComponent', () => {
       });
     });
 
-    it('should pop up locked message', () => {
+    it('should pop up locked message', fakeAsync(() => {
       component.id = 1;
       component.goto({
         id: 2,
@@ -282,6 +289,9 @@ describe('ActivityComponent', () => {
           image: 'image'
         }
       });
+
+      flush();
+
       expect(notificationSpy.lockTeamAssessmentPopUp.calls.count()).toBe(1);
       expect(notificationSpy.lockTeamAssessmentPopUp.calls.first().args[0]).toEqual({
         name: 'sub',
@@ -295,10 +305,10 @@ describe('ActivityComponent', () => {
         })
       );
       notificationSpy.lockTeamAssessmentPopUp.calls.first().args[1]({data: true});
-    });
+    }));
 
-    it('should pop up not in team message', () => {
-      storageSpy.getUser.and.returnValue({
+    it('should pop up not in team message', fakeAsync(() => {
+      nativeStorageSpy.getObject.and.returnValue({
         teamId: null
       });
       component.goto({
@@ -307,10 +317,13 @@ describe('ActivityComponent', () => {
         isForTeam: true,
         isLocked: false
       });
+
+      flush();
+
       expect(notificationSpy.popUp.calls.count()).toBe(1);
       expect(notificationSpy.popUp.calls.first().args[1]).toEqual({message: 'To do this assessment, you have to be in a team.'});
       expect(routerSpy.navigate.calls.count()).toBe(0);
-    });
+    }));
 
     it('should navigate to correct topic page', () => {
       component.id = 1;

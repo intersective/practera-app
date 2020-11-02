@@ -2,7 +2,7 @@ import { Component, ViewChild } from '@angular/core';
 import { Router, ActivatedRoute, ParamMap } from '@angular/router';
 import { UtilsService } from '@services/utils.service';
 import { RouterEnter } from '@services/router-enter.service';
-import { BrowserStorageService } from '@services/storage.service';
+import { NativeStorageService } from '@services/native-storage.service';
 import { SharedService } from '@services/shared.service';
 
 @Component({
@@ -22,7 +22,7 @@ export class TasksComponent extends RouterEnter {
   constructor(
     public router: Router,
     private route: ActivatedRoute,
-    public storage: BrowserStorageService,
+    private nativeStorage: NativeStorageService,
     public utils: UtilsService,
     private sharedService: SharedService
   ) {
@@ -43,7 +43,7 @@ export class TasksComponent extends RouterEnter {
    * Go to the specific task based on parameters
    * Or go to the first unfinished task inside this activity
    */
-  goToFirstTask(tasks) {
+  async goToFirstTask(tasks) {
     // only go to a task if we don't have a current task yet
     if (this.topicId || this.assessmentId) {
       return ;
@@ -54,10 +54,11 @@ export class TasksComponent extends RouterEnter {
     }
     // find the first task that is not done or pending review
     // and is allowed to access for this user
+    const { teamId } = await this.nativeStorage.getObject('me');
     let firstTask = tasks.find(task => {
       return !['done', 'pending review'].includes(task.status) &&
         task.type !== 'Locked' &&
-        !(task.isForTeam && !this.storage.getUser().teamId) &&
+        !(task.isForTeam && !teamId) &&
         !task.isLocked;
     });
     if (!firstTask) {

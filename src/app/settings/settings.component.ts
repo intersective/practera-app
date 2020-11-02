@@ -3,6 +3,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { AuthService } from '../auth/auth.service';
 import { SettingService } from './setting.service';
 import { BrowserStorageService } from '@services/storage.service';
+import { NativeStorageService } from '@services/native-storage.service';
 import { UtilsService } from '@services/utils.service';
 import { NotificationService } from '@shared/notification/notification.service';
 import { RouterEnter } from '@services/router-enter.service';
@@ -11,6 +12,11 @@ import { FilestackService } from '@shared/filestack/filestack.service';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
 import { PushNotificationService, PermissionTypes } from '@services/push-notification.service';
 import { Capacitor } from '@capacitor/core';
+import { Observable } from 'rxjs/Observable';
+import { fromPromise } from 'rxjs/observable/fromPromise';
+import { Subject } from 'rxjs/Subject';
+import { flatMap, filter } from 'rxjs/operators';
+import { of } from 'rxjs/observable/of';
 
 @Component({
   selector: 'app-settings',
@@ -21,6 +27,7 @@ import { Capacitor } from '@capacitor/core';
 export class SettingsComponent extends RouterEnter {
   isNativeApp = Capacitor.isNative;
 
+  multiProgramsChecker$: Observable<any>;
   routeUrl = '/app/settings';
   profile = {
     contactNumber: '',
@@ -48,9 +55,11 @@ export class SettingsComponent extends RouterEnter {
   constructor (
     public router: Router,
     private activatedRoute: ActivatedRoute,
+    private routes: ActivatedRoute,
     private authService: AuthService,
     private settingService: SettingService,
     public storage: BrowserStorageService,
+    private nativeStorage: NativeStorageService,
     public utils: UtilsService,
     private notificationService: NotificationService,
     private filestackService: FilestackService,
@@ -63,22 +72,38 @@ export class SettingsComponent extends RouterEnter {
     activatedRoute.data.subscribe(fragment => {
       this.checkPermission();
     });
+    this.multiProgramsChecker$ = fromPromise(this.isInMultiplePrograms()).pipe(
+      res => of(res),
+      filter(res => res instanceof Object)
+    );
   }
 
   onEnter() {
     this.newRelic.setPageViewName('Setting');
 
-    // get contact number and email from local storage
-    this.profile.email = this.storage.getUser().email;
-    this.profile.contactNumber = this.storage.getUser().contactNumber;
-    this.profile.image = this.storage.getUser().image ? this.storage.getUser().image : 'https://my.practera.com/img/user-512.png';
-    this.profile.name = this.storage.getUser().name;
+    this.routes.data.subscribe(data => {
+      const {
+        email,
+        contactNumber,
+        image,
+        name,
+        programName,
+        LtiReturnUrl,
+      } = data.user;
+
+      // get contact number and email from local storage
+      this.profile.email = email;
+      this.profile.contactNumber = contactNumber;
+      this.profile.image = image ? image : 'https://my.practera.com/img/user-512.png';
+      this.profile.name = name;
+      this.currentProgramName = programName;
+      this.returnLtiUrl = LtiReturnUrl;
+    });
+
     this.acceptFileTypes = this.filestackService.getFileTypes('image');
     // also get program name
-    this.currentProgramName = this.storage.getUser().programName;
     this.currentProgramImage = this._getCurrentProgramImage();
     this.fastFeedbackService.pullFastFeedback().subscribe();
-    this.returnLtiUrl = this.storage.getUser().LtiReturnUrl;
   }
 
   /**
@@ -129,8 +154,9 @@ export class SettingsComponent extends RouterEnter {
     }
   }
 
-  isInMultiplePrograms() {
-    return this.storage.get('programs').length > 1;
+  async isInMultiplePrograms() {
+    const programs = await this.nativeStorage.getObject('programs');
+    return (programs || []).length > 1;
   }
 
   // send email to Help request
@@ -151,7 +177,7 @@ export class SettingsComponent extends RouterEnter {
     console.log(interests);
   }
 
-  async setInterests(interest: String[]) {
+  async setInterests(interest: string[]) {
     const subscribedInterests = await this.pushNotificationService.subscribeToInterests(interest);
     return subscribedInterests;
   }

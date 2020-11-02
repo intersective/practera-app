@@ -117,7 +117,7 @@ export class NotificationService {
       achievement
     };
     if (type === 'notification') {
-      this.achievementService.markAchievementAsSeen(achievement.id);
+      await this.achievementService.markAchievementAsSeen(achievement.id);
     }
     const modal = await this.modal(component, componentProps, {
       cssClass: this.utils.isMobile() ? 'practera-popup' : 'practera-popup desktop-view',
@@ -175,7 +175,7 @@ export class NotificationService {
   }
 
   async pushNotificationPermissionPopUp(message) {
-    let cssClass = 'practera-popup push-notification-popup';
+    const cssClass = 'practera-popup push-notification-popup';
     return await this.modal(
       PNPermissionModalComponent,
       { message },

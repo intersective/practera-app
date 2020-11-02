@@ -8,7 +8,7 @@ import { PusherService } from '@shared/pusher/pusher.service';
 import { environment } from '@environments/environment';
 import { Apollo } from 'apollo-angular';
 
-describe('ChatService', () => {
+xdescribe('ChatService', () => {
   let service: ChatService;
   let requestSpy: jasmine.SpyObj<RequestService>;
   let utils: UtilsService;

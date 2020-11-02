@@ -34,7 +34,7 @@ export class PushNotificationService {
   ) {}
 
   async initiatePushNotification(): Promise<void> {
-    await this.requestPermission()
+    await this.requestPermission();
     await this.registerToServer();
     await this.listenToError();
     await this.listenToReceiver();

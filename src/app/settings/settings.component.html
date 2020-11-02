@@ -27,7 +27,7 @@
     </ion-item>
     <app-contact-number-form [page]="'settings'"></app-contact-number-form>
 
-    <ion-item *ngIf="isInMultiplePrograms()" lines="none" class="exp-switch">
+    <ion-item *ngIf="multiProgramsChecker$ | async" lines="none" class="exp-switch">
       <ion-label class="subtitle-2 gray-2">Switch to another experience</ion-label>
       <ion-button class="practera-btn mobile-btn" slot="end" (click)="switchProgram()">SWITCH</ion-button>
     </ion-item>
@@ -100,8 +100,8 @@
         <ion-col class="content">
           <app-contact-number-form [page]="'settings'"></app-contact-number-form>
           <ion-item lines="none" class="no-bg">
-            <ion-label *ngIf="isInMultiplePrograms()" class="subtitle-2 gray-2">Switch to another experience</ion-label>
-            <ion-label *ngIf="!isInMultiplePrograms()" class="subtitle-2 gray-2">Your experience</ion-label>
+            <ion-label *ngIf="multiProgramsChecker$ | async" class="subtitle-2 gray-2">Switch to another experience</ion-label>
+            <ion-label *ngIf="!multiProgramsChecker$ | async" class="subtitle-2 gray-2">Your experience</ion-label>
           </ion-item>
           <ion-row class="experience-content">
             <ion-col size="7" class="ion-no-padding experience-card-container">
@@ -116,7 +116,7 @@
                 </ion-card-content>
               </ion-card>
             </ion-col>
-            <ion-col size="5" *ngIf="isInMultiplePrograms() || returnLtiUrl" class="ion-no-padding switch-card-container">
+            <ion-col size="5" *ngIf="multiProgramsChecker$ || returnLtiUrl | async" class="ion-no-padding switch-card-container">
               <ion-card class="practera-card experience-card" (click)="switchProgram()">
                 <div class="div-icon-swap">
                   <ion-icon name="swap-horizontal" color="primary"></ion-icon>

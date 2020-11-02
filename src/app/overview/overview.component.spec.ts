@@ -1,5 +1,5 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { ComponentFixture, TestBed, flushMicrotasks, fakeAsync, tick } from '@angular/core/testing';
+import { ComponentFixture, TestBed, flushMicrotasks, fakeAsync, tick, flush } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { OverviewComponent } from './overview.component';
@@ -37,7 +37,6 @@ describe('OverviewComponent', () => {
   let page: Page;
   let component: OverviewComponent;
   let fixture: ComponentFixture<OverviewComponent>;
-  let routerSpy: Router;
   let activatedRouteSpy: ActivatedRoute;
   let utils: UtilsService;
   let pushNotificationSpy: PushNotificationService;
@@ -160,5 +159,11 @@ describe('OverviewComponent', () => {
       fixture.detectChanges();
       expect(page.navbarTitle.textContent).toEqual(PROGRAM_NAME);
     });
+    it('should get program name and pull fastfeedback', fakeAsync(() => {
+      component.ngOnInit();
+      flush();
+      expect(component.programName).toEqual(PROGRAM_NAME);
+      expect(fastfeedbackSpy.pullFastFeedback).toHaveBeenCalled();
+    }));
   });
 });
