@@ -1,20 +1,18 @@
-import { Component } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { PreferenceService } from '@services/preference.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs/Subscription';
-import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 
 @Component({
   selector: 'app-preference',
   templateUrl: './preference.component.html',
   styleUrls: ['./preference.component.scss']
 })
-export class PreferenceComponent {
+export class PreferenceComponent implements OnDestroy, OnInit {
   preferences: {
     categories: any;
   };
   preferenceSubject$: Subscription;
-  query$: BehaviorSubject<any>;
 
   constructor(
     private preferenceService: PreferenceService,
@@ -24,16 +22,22 @@ export class PreferenceComponent {
     this.preferences = {
       categories: []
     };
+  }
 
-    activatedRoute.data.subscribe(() => {
-      if (this.preferenceSubject$ instanceof Subscription) {
-        this.preferenceSubject$.unsubscribe();
-      }
-
-      this.preferenceSubject$ = this.preferenceService.getPreference().subscribe(res => {
-        this.preferences = res;
-      });
+  ngOnInit() {
+    this.preferenceSubject$ = this.preferenceService.preference$.subscribe(res => {
+      this.preferences = res;
     });
+
+    this.activatedRoute.data.subscribe(() => {
+      this.preferenceService.getPreference();
+    });
+  }
+
+  ngOnDestroy() {
+    if (this.preferenceSubject$ instanceof Subscription) {
+      this.preferenceSubject$.unsubscribe();
+    }
   }
 
   goTo(direction) {

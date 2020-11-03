@@ -20,7 +20,7 @@ const routes: Routes = [
     ]*/
   },
   {
-    path: 'update',
+    path: 'update/:key',
     component: PreferenceUpdateComponent,
   }
 ];
