@@ -3,26 +3,25 @@ import { RouterModule, Routes } from '@angular/router';
 import { PreferenceComponent } from './preference.component';
 import { PreferenceUpdateComponent } from './preference-update/preference-update.component';
 import { PreferenceRoutingComponent } from './preference-routing.component';
+import { PreferenceResolverService } from './preference-resolver.service';
+// import {} from './preference-'
 
 const routes: Routes = [
-  {
+  /*{
     path: '',
-    component: PreferenceComponent,
-    /*children: [
+    component: PreferenceRoutingComponent,
+    children: [*/
       {
         path: '',
         component: PreferenceComponent,
       },
       {
-        path: 'update',
+        path: ':key',
         component: PreferenceUpdateComponent,
       }
-    ]*/
-  },
-  {
-    path: 'update/:key',
-    component: PreferenceUpdateComponent,
-  }
+    /*]
+  },*/
+
 ];
 
 @NgModule({

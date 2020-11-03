@@ -1,7 +1,9 @@
 <ion-header mode="ios">
   <ion-toolbar class="ion-toolbar-absolute">
     <ion-buttons slot="start">
-      <ion-back-button defaultHref="['app', 'settings']"></ion-back-button>
+      <ion-button (click)="goTo(['/app', 'settings'])">
+        <ion-icon class="icon-backward ion-margin-start" name="arrow-back" color="primary" slot="icon-only"></ion-icon>
+      </ion-button>
     </ion-buttons>
 
     <ion-title class="ion-text-center">Preferences</ion-title>
@@ -12,7 +14,7 @@
   <ion-list *ngFor="let cat of preferences.categories">
     <ion-list-header>{{cat.name}}</ion-list-header>
 
-    <ion-item *ngFor="let pref of cat.preferences" (click)="goTo(['preferences', 'update', pref.key])">
+    <ion-item *ngFor="let pref of cat.preferences" (click)="goTo(['preferences', pref.key])">
       <ion-label>
         <h3>{{pref.name}}</h3>
         <app-options [options]="pref.options"></app-options>

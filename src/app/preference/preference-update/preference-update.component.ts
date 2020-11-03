@@ -15,29 +15,32 @@ export class PreferenceUpdateComponent implements OnInit {
     categories: any;
   };
   preferenceSubject$: Subscription;
-  currentPreference: object;
+  currentPreference = {
+    name: '',
+    description: '',
+    options: '',
+    remarks: '',
+  };
+  private key: string;
 
   constructor(
     private preferenceService: PreferenceService,
     private activatedRoute: ActivatedRoute,
     private router: Router,
     private utilsService: UtilsService
-  ) { }
+  ) {
+    activatedRoute.params.subscribe((params: { key: string }) => {
+      const { key } = params;
+      this.key = key;
+    });
+    this.preferenceService.getPreference();
+    this.preferenceSubject$ = this.preferenceService.preference$.subscribe(res => {
+      this.preferences = res;
+      this.currentPreference = this.filterPreferences(this.preferences, this.key);
+    });
+  }
 
   ngOnInit() {
-    this.activatedRoute.params.subscribe((params: { key: string }) => {
-      const { key } = params;
-
-      this.preferenceSubject$ = this.preferenceService.preference$.subscribe(res => {
-        if (this.utilsService.isEmpty(res) && this.noHistoryStack === true) {
-          this.noHistoryStack = false;
-          this.preferenceService.getPreference();
-        } else {
-          this.preferences = res;
-          this.currentPreference = this.filterPreferences(this.preferences, key);
-        }
-      });
-    });
   }
 
   ngOnDestroy() {
@@ -58,9 +61,18 @@ export class PreferenceUpdateComponent implements OnInit {
         result = cat.preferences.find(pref => {
           return pref.key === key;
         });
+        return result;
       });
     }
 
     return result;
+  }
+
+  /**
+   * @name back
+   * @description manual back button to go back to a pre-structured routing (back to "/preference")
+   */
+  back() {
+    this.router.navigate(['/preferences']);
   }
 }
