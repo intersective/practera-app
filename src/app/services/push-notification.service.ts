@@ -32,6 +32,7 @@ export class PushNotificationService {
    * @return {Promise<boolean>} true = allowed, false = no permission granted
    */
   async hasPermission(): Promise<boolean> {
+    console.log('test from here');
     const result = await PushNotifications.requestPermission();
     return result.granted || false;
   }
