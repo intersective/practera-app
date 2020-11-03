@@ -98,7 +98,7 @@ export class PreferenceService {
   constructor(private request: RequestService) { }
 
   getPreference(): Observable<any> {
-    return of(DUMMY_DATA);
-    // return this.request.post(APIs.preference, {});
+    // return of(DUMMY_DATA);
+    return this.request.post(APIs.preference, {});
   }
 }

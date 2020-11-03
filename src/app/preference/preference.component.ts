@@ -1,7 +1,8 @@
 import { Component } from '@angular/core';
 import { PreferenceService } from '@services/preference.service';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs/Subscription';
+import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 
 @Component({
   selector: 'app-preference',
@@ -13,11 +14,17 @@ export class PreferenceComponent {
     categories: any;
   };
   preferenceSubject$: Subscription;
+  query$: BehaviorSubject<any>;
 
   constructor(
     private preferenceService: PreferenceService,
-    private activatedRoute: ActivatedRoute
+    private activatedRoute: ActivatedRoute,
+    private router: Router
   ) {
+    this.preferences = {
+      categories: []
+    };
+
     activatedRoute.data.subscribe(() => {
       if (this.preferenceSubject$ instanceof Subscription) {
         this.preferenceSubject$.unsubscribe();
@@ -27,5 +34,9 @@ export class PreferenceComponent {
         this.preferences = res;
       });
     });
+  }
+
+  goTo(direction) {
+    return this.router.navigate(direction);
   }
 }

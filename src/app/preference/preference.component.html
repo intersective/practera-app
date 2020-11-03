@@ -12,11 +12,12 @@
   <ion-list *ngFor="let cat of preferences.categories">
     <ion-list-header>{{cat.name}}</ion-list-header>
 
-    <ion-item *ngFor="let pref of cat.preferences">
+    <ion-item *ngFor="let pref of cat.preferences" (click)="goTo(['preferences', 'update'])">
       <ion-label>
         <h3>{{pref.name}}</h3>
         <app-options [options]="pref.options"></app-options>
       </ion-label>
+      <ion-icon name="arrow-forward" color="medium" slot="end"></ion-icon>
     </ion-item>
   </ion-list>
 </ion-content>
