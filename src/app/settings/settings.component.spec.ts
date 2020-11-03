@@ -21,6 +21,8 @@ import { Apollo } from 'apollo-angular';
 @Component({selector: 'app-contact-number-form', template: ''})
 class ContactNumberFormStubComponent {}
 
+const UNIVERSAL_IMAGE = 'image/*';
+
 describe('SettingsComponent', () => {
   let component: SettingsComponent;
   let fixture: ComponentFixture<SettingsComponent>;
@@ -44,7 +46,9 @@ describe('SettingsComponent', () => {
         UtilsService,
         {
           provide: FilestackService,
-          useValue: jasmine.createSpyObj('FilestackService', ['getFileTypes'])
+          useValue: jasmine.createSpyObj('FilestackService', {
+            getFileTypes: UNIVERSAL_IMAGE
+          })
         },
         {
           provide: NotificationService,
@@ -81,7 +85,15 @@ describe('SettingsComponent', () => {
         {
           provide: ActivatedRoute,
           useValue: {
-            data: of(true)
+            data: of({
+              user: {
+                email: 'test@test.com',
+                contactNumber: '1234455',
+                image: 'abc',
+                name: 'student',
+                programName: 'program'
+              }
+            })
           }
         },
         {
@@ -141,7 +153,7 @@ describe('SettingsComponent', () => {
         image: 'abc',
         name: 'student'
       });
-      expect(component.acceptFileTypes).toEqual('image/*');
+      expect(component.acceptFileTypes).toEqual(UNIVERSAL_IMAGE);
       expect(component.currentProgramName).toEqual('program');
       expect(fastFeedbackSpy.pullFastFeedback.calls.count()).toBe(1);
     });
