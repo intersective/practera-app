@@ -16,6 +16,10 @@ import { fromPromise } from 'rxjs/observable/fromPromise';
 import { Subject } from 'rxjs/Subject';
 import { flatMap, filter } from 'rxjs/operators';
 import { of } from 'rxjs/observable/of';
+import { Plugins } from '@capacitor/core';
+
+const { CustomNativePlugin } = Plugins;
+
 
 @Component({
   selector: 'app-settings',
@@ -203,5 +207,9 @@ export class SettingsComponent extends RouterEnter {
       });
     }
   }
-
+  goToSetting() {   
+    console.log("I am here"); 
+    CustomNativePlugin.goToAppSetting();
+    console.log('done');    
+  }
 }

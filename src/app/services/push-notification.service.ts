@@ -1,18 +1,14 @@
-import { Inject, Injectable, InjectionToken, NgZone } from '@angular/core';
-import { Observable, interval, pipe } from 'rxjs';
-import { switchMap, concatMap, tap, retryWhen, take, delay } from 'rxjs/operators';
-import { RequestService } from '@shared/request/request.service';
+import { Injectable } from '@angular/core';
 import { BrowserStorageService } from '@services/storage.service';
 import { environment } from '@environments/environment';
 import {
   Plugins,
   PushNotification,
   PushNotificationToken,
-  PushNotificationActionPerformed,
-  LocalNotificationEnabledResult
+  PushNotificationActionPerformed
 } from '@capacitor/core';
 
-const { PushNotifications, LocalNotifications, PusherBeams } = Plugins;
+const { PushNotifications, PusherBeams } = Plugins;
 
 @Injectable({
   providedIn: 'root'
@@ -20,8 +16,6 @@ const { PushNotifications, LocalNotifications, PusherBeams } = Plugins;
 
 export class PushNotificationService {
   constructor(
-    private requestService: RequestService,
-    private ngZone: NgZone,
     private storage: BrowserStorageService
   ) {}
 
@@ -38,6 +32,7 @@ export class PushNotificationService {
    * @return {Promise<boolean>} true = allowed, false = no permission granted
    */
   async hasPermission(): Promise<boolean> {
+    console.log('test from here');
     const result = await PushNotifications.requestPermission();
     return result.granted || false;
   }
@@ -46,18 +41,16 @@ export class PushNotificationService {
     // Request permission to use push notifications
     // iOS will prompt user and return if they granted permission or not
     // Android will just grant without prompting
-    PushNotifications.requestPermission().then(result => {
-      this.storage.set('pushnotifications', result);
-      if (result.granted) {
-        // Register with Apple / Google to receive push via APNS/FCM
-        return PushNotifications.register();
-      } else {
-        // Show some error
-        console.log('Unable get permission, prompt user again in future');
-
-        return;
-      }
-    });
+    const result = await PushNotifications.requestPermission();
+    this.storage.set('pushnotifications', result);
+    if (result.granted) {
+      // Register with Apple / Google to receive push via APNS/FCM
+      return PushNotifications.register();
+    } else {
+      // Show some error
+      console.log('Unable get permission, prompt user again in future');
+      return;
+    }
   }
 
   registerToServer(): any {
