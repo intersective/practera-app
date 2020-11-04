@@ -1,7 +1,7 @@
 import Capacitor
 
 
-@objc(NativePlugin)
+@objc(CustomNativePlugin)
 public class CustomNativePlugin: CAPPlugin {
     @objc func goToAppSetting(_ call: CAPPluginCall) {
         let value = call.getString("value") ?? ""
