@@ -9,27 +9,17 @@ import { Subscription } from 'rxjs/Subscription';
   styleUrls: ['./preference.component.scss']
 })
 export class PreferenceComponent implements OnDestroy, OnInit {
-  preferences: {
-    categories: any;
-  };
+  preferences$ = this.preferenceService.preference$;
   preferenceSubject$: Subscription;
 
   constructor(
     private preferenceService: PreferenceService,
     private activatedRoute: ActivatedRoute,
     private router: Router
-  ) {
-    this.preferences = {
-      categories: []
-    };
-  }
+  ) {}
 
   ngOnInit() {
-    this.preferenceSubject$ = this.preferenceService.preference$.subscribe(res => {
-      this.preferences = res;
-    });
-
-    this.activatedRoute.data.subscribe(() => {
+    this.preferenceSubject$ = this.activatedRoute.data.subscribe(() => {
       this.preferenceService.getPreference();
     });
   }

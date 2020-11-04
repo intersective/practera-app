@@ -29,14 +29,17 @@ export class PreferenceUpdateComponent implements OnInit {
     private router: Router,
     private utilsService: UtilsService
   ) {
+    this.preferenceService.getPreference();
     activatedRoute.params.subscribe((params: { key: string }) => {
       const { key } = params;
       this.key = key;
-    });
-    this.preferenceService.getPreference();
-    this.preferenceSubject$ = this.preferenceService.preference$.subscribe(res => {
-      this.preferences = res;
-      this.currentPreference = this.filterPreferences(this.preferences, this.key);
+
+      this.preferenceSubject$ = this.preferenceService.preference$.subscribe(res => {
+        this.preferences = res;
+        if (this.preferences && this.key) {
+          this.currentPreference = this.filterPreferences(this.preferences, this.key);
+        }
+      });
     });
   }
 

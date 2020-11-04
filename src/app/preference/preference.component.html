@@ -11,15 +11,23 @@
 </ion-header>
 
 <ion-content fullscreen>
-  <ion-list *ngFor="let cat of preferences.categories">
-    <ion-list-header>{{cat.name}}</ion-list-header>
+  <ng-container *ngIf="(preferences$ | async) as preferences; else noPreferenceAvailable">
+    <ion-list *ngFor="let cat of preferences.categories">
+      <ion-list-header>{{cat.name}}</ion-list-header>
 
-    <ion-item *ngFor="let pref of cat.preferences" (click)="goTo(['preferences', pref.key])">
-      <ion-label>
-        <h3>{{pref.name}}</h3>
-        <app-options [options]="pref.options"></app-options>
-      </ion-label>
-      <ion-icon name="arrow-forward" color="medium" slot="end"></ion-icon>
-    </ion-item>
-  </ion-list>
+      <ion-item *ngFor="let pref of cat.preferences" (click)="goTo(['preferences', pref.key])">
+        <ion-label>
+          <h3>{{pref.name}}</h3>
+          <app-options [options]="pref.options"></app-options>
+        </ion-label>
+        <ion-icon name="arrow-forward" color="medium" slot="end"></ion-icon>
+      </ion-item>
+    </ion-list>
+  </ng-container>
+
+  <ng-template #noPreferenceAvailable>
+    <div class="ion-text-center ion-margin-bottom">
+      <p>No preferences setting available.</p>
+    </div>
+  </ng-template>
 </ion-content>

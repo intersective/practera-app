@@ -27,8 +27,6 @@ export class PreferenceResolverService implements Resolve<{categories: Category[
 
   resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<any> {
     this.preferenceService.getPreference();
-    return this.preferenceService.preference$.pipe(map(res => {
-      return this.preferenceService.refresh(res);
-    }));
+    return this.preferenceService.preference$;
   }
 }

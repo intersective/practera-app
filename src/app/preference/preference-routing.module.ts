@@ -7,21 +7,14 @@ import { PreferenceResolverService } from './preference-resolver.service';
 // import {} from './preference-'
 
 const routes: Routes = [
-  /*{
+  {
     path: '',
-    component: PreferenceRoutingComponent,
-    children: [*/
-      {
-        path: '',
-        component: PreferenceComponent,
-      },
-      {
-        path: ':key',
-        component: PreferenceUpdateComponent,
-      }
-    /*]
-  },*/
-
+    component: PreferenceComponent,
+  },
+  {
+    path: ':key',
+    component: PreferenceUpdateComponent,
+  }
 ];
 
 @NgModule({
