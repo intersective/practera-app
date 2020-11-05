@@ -48,6 +48,11 @@ const routes: Routes = [
     canLoad: [AuthGuard]
   },
   {
+    path: 'preferences',
+    loadChildren: './preference/preference.module#PreferenceModule',
+    canLoad: [AuthGuard],
+  },
+  {
     path: 'device-info',
     component: DeviceInfoComponent,
   },
