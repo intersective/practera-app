@@ -12,6 +12,7 @@ import { FastFeedbackService } from '../fast-feedback/fast-feedback.service';
 import { interval, timer, Subscription } from 'rxjs';
 import { map, takeUntil } from 'rxjs/operators';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
+import { PushNotificationService, PermissionTypes } from '@services/push-notification.service';
 
 const SAVE_PROGRESS_TIMEOUT = 10000;
 
@@ -101,6 +102,7 @@ export class AssessmentComponent extends RouterEnter {
     private fastFeedbackService: FastFeedbackService,
     private ngZone: NgZone,
     private newRelic: NewRelicService,
+    private pushNotificationService: PushNotificationService
   ) {
     super(router);
   }
@@ -486,14 +488,21 @@ export class AssessmentComponent extends RouterEnter {
     }
   }
 
+  async checkPNPermission(): Promise<void> {
+    const promptForPermission = await this.pushNotificationService.promptForPermission(PermissionTypes.firstVisit, this.router.routerState.snapshot);
+
+    if (promptForPermission && this.assessment.type === 'moderated') {
+      await this.notificationService.pushNotificationPermissionPopUp('Would you like to be notified when you receive feedback for your assessment?');
+    }
+  }
+
   /**
    * handle submission and autosave
    * @param saveInProgress set true for autosaving or it treat the action as final submision
    * @param goBack use to unlock team assessment when leave assessment by clicking back button
    * @param isManualSave use to detect manual progress save
    */
-  submit(saveInProgress: boolean, goBack?: boolean, isManualSave?: boolean): Promise<any> {
-
+  async submit(saveInProgress: boolean, goBack?: boolean, isManualSave?: boolean): Promise<any> {
     /**
      * checking if this is a submission or progress save
      * - if it's a submission
@@ -507,6 +516,7 @@ export class AssessmentComponent extends RouterEnter {
      *    - if this is not manual save or there is one save in progress
      *      - do nothing
      */
+
     if (saveInProgress) {
       if (isManualSave || !this.saving) {
         this.savingMessage = 'Saving...';
@@ -515,6 +525,7 @@ export class AssessmentComponent extends RouterEnter {
         return;
       }
     } else {
+      await this.checkPNPermission();
       this.submitting = true;
     }
     this.saving = true;
