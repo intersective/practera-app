@@ -6,11 +6,12 @@ import { RequestService } from './request.service';
 import { RequestInterceptor } from './request.interceptor';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { asyncData } from '@testing/async-observable-helpers';
-import { BrowserStorageService } from '@services/storage.service';
+import { BrowserStorageService, User } from '@services/storage.service';
+import { NativeStorageService } from '@services/native-storage.service';
 
 import { Router } from '@angular/router';
 import { TestUtils } from '@testing/utils';
-import { BrowserStorageServiceMock } from '@testing/mocked.service';
+import { NativeStorageServiceMock, BrowserStorageServiceMock } from '@testing/mocked.service';
 import { Apollo } from 'apollo-angular';
 
 describe('RequestInterceptor', () => {
@@ -19,6 +20,7 @@ describe('RequestInterceptor', () => {
   let service: RequestService;
   let httpMock: HttpTestingController;
   let storageSpy: BrowserStorageService;
+  let nativeStorageSpy: NativeStorageService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -42,6 +44,10 @@ describe('RequestInterceptor', () => {
           multi: true,
         },
         {
+          provide: NativeStorageService,
+          useClass: NativeStorageServiceMock
+        },
+        {
           provide: BrowserStorageService,
           useClass: BrowserStorageServiceMock
         }
@@ -51,6 +57,7 @@ describe('RequestInterceptor', () => {
     service = TestBed.inject(RequestService);
     httpMock = TestBed.inject(HttpTestingController);
     storageSpy = TestBed.inject(BrowserStorageService);
+    nativeStorageSpy = TestBed.inject(NativeStorageService);
   });
 
   beforeEach(fakeAsync(() => {
@@ -79,7 +86,7 @@ describe('RequestInterceptor', () => {
     const req = httpMock.expectOne({ method: 'GET' });
     req.flush({});
 
-    expect(storageSpy.getUser).toHaveBeenCalled();
+    expect(nativeStorageSpy.getObject).toHaveBeenCalled();
     expect(req.request.url).not.toContain('/message/chat/list.json');
     expect(req.request.url).not.toContain('/message/chat/create_message');
     expect(req.request.url).not.toContain('/message/chat/edit_message');

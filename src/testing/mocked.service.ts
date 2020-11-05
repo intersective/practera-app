@@ -2,6 +2,7 @@ import { of, Observable } from 'rxjs';
 import { SpyObject } from './utils';
 import { SwitcherService } from '../app/switcher/switcher.service';
 import { BrowserStorageService } from '@services/storage.service';
+import { NativeStorageService } from '@services/native-storage.service';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
 import { RouterEnter } from '@services/router-enter.service';
 import { Router, NavigationEnd } from '@angular/router';
@@ -32,7 +33,7 @@ export class MockSwitcherService extends SpyObject {
 
   constructor() {
     super(SwitcherService);
-    this.getPrograms = this.spy('getPrograms').and.returnValue(of(ProgramFixture));
+    this.getPrograms = this.spy('getPrograms').and.returnValue(new Promise(resolve => of(ProgramFixture)));
     this.getProgresses = this.spy('getProgresses').and.returnValue(of(this.mockProgresses));
     this.switchProgramAndNavigate = this.spy('switchProgramAndNavigate');
   }
@@ -117,6 +118,30 @@ export class FastFeedbackServiceMock {
 
   getFastFeedback() {
     return;
+  }
+}
+
+export class NativeStorageServiceMock extends SpyObject {
+  getObject;
+  setObject;
+  clear;
+
+  constructor() {
+    super(NativeStorageService);
+    const USER = {
+      userHash: 'testuserhash',
+      enrolment: {
+        id: 1,
+      },
+      apikey: 'test',
+      timelineId: 'test',
+      teamId: 'test',
+      contactNumber: '0123456789',
+      projectId: 'test_project_id',
+    };
+    this.getObject = this.spy('getObject').and.returnValue(Promise.resolve(USER));
+    this.setObject = this.spy('setObject').and.returnValue(Promise.resolve(USER));
+    this.clear = this.spy('clear').and.returnValue(true);
   }
 }
 
