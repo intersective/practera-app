@@ -180,9 +180,9 @@ export class SettingsComponent extends RouterEnter {
       });
     }
   }
-  goToSetting() {   
-    console.log("I am here"); 
-     CustomNativePlugin.goToAppSetting();
-    console.log('done');    
+  goToSetting() {
+    console.log('I am here');
+    CustomNativePlugin.goToAppSetting();
+    console.log('done');
   }
 }

@@ -18,7 +18,7 @@ const { PushNotifications, LocalNotifications, PusherBeams } = Plugins;
 
 describe('PushNotificationService', () => {
   let service: PushNotificationService;
-  let pushNotificationsSpy : any = {
+  let pushNotificationsSpy: any = {
     requestPermission: () => true,
   };
 
@@ -35,26 +35,26 @@ describe('PushNotificationService', () => {
           useValue: pushNotificationsSpy
 
         },
-        
+
       ]
     });
     service = TestBed.inject(PushNotificationService) as jasmine.SpyObj<PushNotificationService>;
     pushNotificationsSpy = TestBed.inject(pushNotificationsSpy);
-    
+
   });
 
   it( 'should be created', () => {
     expect(service).toBeTruthy();
-  })
-
-  describe(' hasPermission ',() => {
-    it( 'should return true when permission is allowed', fakeAsync(() => {
-      service.hasPermission().then( res => { 
-        console.log('test')
-        //expect(res.granted).toBeTruthy();
-        expect(pushNotificationsSpy.requestPermission().toHaveBeenCalled())
-      })
-    }))
   });
-});  
-  
+
+  describe(' hasPermission ', () => {
+    it( 'should return true when permission is allowed', fakeAsync(() => {
+      service.hasPermission().then( res => {
+        console.log('test');
+        // expect(res.granted).toBeTruthy();
+        expect(pushNotificationsSpy.requestPermission().toHaveBeenCalled());
+      });
+    }));
+  });
+});
+
