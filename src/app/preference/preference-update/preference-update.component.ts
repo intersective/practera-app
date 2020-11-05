@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { PreferenceService, Category } from '@services/preference.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs/Subscription';
@@ -9,7 +9,7 @@ import { UtilsService } from '@services/utils.service';
   templateUrl: './preference-update.component.html',
   styleUrls: ['./preference-update.component.scss']
 })
-export class PreferenceUpdateComponent implements OnInit {
+export class PreferenceUpdateComponent implements OnInit, OnDestroy {
   noHistoryStack = true;
   preferences: {
     categories: any;

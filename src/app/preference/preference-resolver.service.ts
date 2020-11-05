@@ -15,7 +15,7 @@ import { UtilsService } from '@services/utils.service';
 @Injectable({
   providedIn: 'root'
 })
-export class PreferenceResolverService implements Resolve<{categories: Category[]}>{
+export class PreferenceResolverService implements Resolve<{categories: Category[]}> {
 
   constructor(
     private storage: BrowserStorageService,

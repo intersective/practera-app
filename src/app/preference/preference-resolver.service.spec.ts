@@ -6,7 +6,7 @@ describe('PreferenceResolverService', () => {
   beforeEach(() => TestBed.configureTestingModule({}));
 
   it('should be created', () => {
-    const service: PreferenceResolverService = TestBed.get(PreferenceResolverService);
+    const service: PreferenceResolverService = TestBed.inject(PreferenceResolverService);
     expect(service).toBeTruthy();
   });
 });
