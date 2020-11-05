@@ -15,12 +15,7 @@ export class PreferenceUpdateComponent implements OnInit {
     categories: any;
   };
   preferenceSubject$: Subscription;
-  currentPreference = {
-    name: '',
-    description: '',
-    options: '',
-    remarks: '',
-  };
+  currentPreference;
   private key: string;
 
   constructor(
@@ -29,21 +24,23 @@ export class PreferenceUpdateComponent implements OnInit {
     private router: Router,
     private utilsService: UtilsService
   ) {
-    this.preferenceService.getPreference();
-    activatedRoute.params.subscribe((params: { key: string }) => {
-      const { key } = params;
-      this.key = key;
-
-      this.preferenceSubject$ = this.preferenceService.preference$.subscribe(res => {
-        this.preferences = res;
-        if (this.preferences && this.key) {
-          this.currentPreference = this.filterPreferences(this.preferences, this.key);
-        }
-      });
+    preferenceService.getPreference();
+    const key = activatedRoute.snapshot.params.key;
+    this.preferenceSubject$ = preferenceService.preference$.subscribe(res => {
+      this.preferences = res;
+      if (this.preferences && key) {
+        this.currentPreference = this.filterPreferences(this.preferences, key);
+      }
     });
   }
 
   ngOnInit() {
+    this.currentPreference = {
+      name: '',
+      description: '',
+      options: '',
+      remarks: '',
+    };
   }
 
   ngOnDestroy() {
