@@ -16,7 +16,7 @@ import {
 const { PushNotifications, LocalNotifications, PusherBeams } = Plugins;
 
 
-describe('PushNotificationService', () => {
+xdescribe('PushNotificationService', () => {
   let service: PushNotificationService;
   let pushNotificationsSpy: any = {
     requestPermission: () => true,
