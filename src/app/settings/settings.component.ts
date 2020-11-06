@@ -10,7 +10,8 @@ import { RouterEnter } from '@services/router-enter.service';
 import { FastFeedbackService } from '../fast-feedback/fast-feedback.service';
 import { FilestackService } from '@shared/filestack/filestack.service';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
-import { PushNotificationService } from '@services/push-notification.service';
+import { PushNotificationService, PermissionTypes } from '@services/push-notification.service';
+import { Capacitor } from '@capacitor/core';
 import { Observable } from 'rxjs/Observable';
 import { fromPromise } from 'rxjs/observable/fromPromise';
 import { Subject } from 'rxjs/Subject';
@@ -28,6 +29,7 @@ const { CustomNativePlugin } = Plugins;
 })
 
 export class SettingsComponent extends RouterEnter {
+  isNativeApp = Capacitor.isNative;
 
   multiProgramsChecker$: Observable<any>;
   routeUrl = '/app/settings';
@@ -52,9 +54,11 @@ export class SettingsComponent extends RouterEnter {
   cdn = 'https://cdn.filestackcontent.com/resize=fit:crop,width:';
   interests: string;
   associated: any;
+  firstVisitPermission: any;
 
   constructor (
     public router: Router,
+    private activatedRoute: ActivatedRoute,
     private routes: ActivatedRoute,
     private authService: AuthService,
     private settingService: SettingService,
@@ -68,6 +72,10 @@ export class SettingsComponent extends RouterEnter {
     private pushNotificationService: PushNotificationService
   ) {
     super(router);
+    // forced "revisit" of this component whenever become reactivated
+    activatedRoute.data.subscribe(fragment => {
+      this.checkPermission();
+    });
     this.multiProgramsChecker$ = fromPromise(this.isInMultiplePrograms()).pipe(
       res => of(res),
       filter(res => res instanceof Object)
@@ -102,6 +110,24 @@ export class SettingsComponent extends RouterEnter {
     this.fastFeedbackService.pullFastFeedback().subscribe();
   }
 
+  /**
+   * check if current device has Push Notification permission allowed
+   * criterias:
+   *   - first visit of this page (nothing recording in localStorage)
+   *   - permission allowed
+   * @return {Promise<void>}
+   */
+  async checkPermission(): Promise<void> {
+    this.firstVisitPermission = await this.pushNotificationService.promptForPermission(
+      PermissionTypes.firstVisit,
+      this.router.routerState.snapshot
+    );
+    if (this.firstVisitPermission) {
+      await this.notificationService.pushNotificationPermissionPopUp('Would you like to be enable push notification?');
+    }
+    return;
+  }
+
   // loading pragram image to settings page by resizing it depend on device.
   // in mobile we are not showing card with image but in some mobile phones on landscape mode desktop view is loading.
   // because of that we load image also in mobile view.
@@ -121,6 +147,7 @@ export class SettingsComponent extends RouterEnter {
     this.newRelic.actionText('Open T&C link');
     window.open(this.termsUrl, '_system');
   }
+
   switchProgram() {
     if (this.returnLtiUrl) {
       this.newRelic.actionText('browse to LTI return link');
@@ -143,10 +170,20 @@ export class SettingsComponent extends RouterEnter {
     window.open(mailto, '_self');
   }
 
+  async goToSettingPermission() {
+    const goSettingStatus = await this.pushNotificationService.goToAppSetting();
+    return goSettingStatus;
+  }
+
   async getInterests() {
     const interests = await this.pushNotificationService.getSubscribedInterests();
     this.interests = interests;
     console.log(interests);
+  }
+
+  async setInterests(interest: string[]) {
+    const subscribedInterests = await this.pushNotificationService.subscribeToInterests(interest);
+    return subscribedInterests;
   }
 
   async linkUser() {
@@ -207,9 +244,10 @@ export class SettingsComponent extends RouterEnter {
       });
     }
   }
-  goToSetting() {   
-    console.log("I am here"); 
+
+  goToSetting() {
+    console.log('I am here');
     CustomNativePlugin.goToAppSetting();
-    console.log('done');    
+    console.log('done');
   }
 }

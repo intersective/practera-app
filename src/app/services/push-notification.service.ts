@@ -1,14 +1,26 @@
-import { Injectable } from '@angular/core';
+import { Inject, Injectable, InjectionToken, NgZone } from '@angular/core';
+import { Router, RouterStateSnapshot } from '@angular/router';
+import { Observable, interval, pipe } from 'rxjs';
+import { switchMap, concatMap, tap, retryWhen, take, delay } from 'rxjs/operators';
+import { RequestService } from '@shared/request/request.service';
 import { BrowserStorageService } from '@services/storage.service';
 import { environment } from '@environments/environment';
 import {
   Plugins,
   PushNotification,
   PushNotificationToken,
-  PushNotificationActionPerformed
+  PushNotificationActionPerformed,
+  LocalNotificationEnabledResult,
+  PermissionsOptions,
+  PermissionType
 } from '@capacitor/core';
 
-const { PushNotifications, PusherBeams } = Plugins;
+const { PushNotifications, LocalNotifications, PusherBeams, Permissions } = Plugins;
+const { Notifications } = PermissionType;
+
+export enum PermissionTypes {
+  firstVisit = 'isFirstVisit',
+}
 
 @Injectable({
   providedIn: 'root'
@@ -32,9 +44,13 @@ export class PushNotificationService {
    * @return {Promise<boolean>} true = allowed, false = no permission granted
    */
   async hasPermission(): Promise<boolean> {
-    console.log('test from here');
+    const getPermission = await Permissions.query({ name: Notifications });
     const result = await PushNotifications.requestPermission();
-    return result.granted || false;
+    if (result.granted === true && getPermission.state === 'granted') {
+      return true;
+    }
+
+    return false;
   }
 
   async requestPermission(): Promise<void> {
@@ -112,7 +128,7 @@ export class PushNotificationService {
     if (typeof interests === 'string') {
       return this.subscribeToInterest(interests);
     }
-    return PusherBeams.setDeviceInterests(interests);
+    return PusherBeams.setDeviceInterests({ interests });
   }
 
   clearInterest(): Promise<void> {
@@ -125,6 +141,49 @@ export class PushNotificationService {
 
   clearPusherBeams() {
     return PusherBeams.clearAllState();
+  }
+
+  private _visitedCache(): string[] {
+    const cache = this.storage.get('visited');
+    const visited = Array.isArray(cache) ? cache : [];
+    return visited;
+  }
+
+  /**
+   * @name promptForPermission
+   * @description check push notification permission by comparing visited page
+   *              & permission granted on device
+   * @param  {PermissionTypes}     type     Capacitor plugins's Permissions types
+   * @param  {RouterStateSnapshot} snapshot Router's state snapshot
+   * @return {Promise<boolean>}
+   *         true = request for permission
+   *         false = do not request for permission
+   */
+  async promptForPermission(type: PermissionTypes, snapshot: RouterStateSnapshot): Promise<boolean> {
+    let result = false;
+    const visited = this._visitedCache();
+    switch (type) {
+      case PermissionTypes.firstVisit:
+        const hasPermission = await this.hasPermission();
+        if (!visited.includes(snapshot.url) && !hasPermission) {
+          result = true;
+        }
+        break;
+    }
+
+    this.recordVisit(snapshot);
+    return result;
+  }
+
+  /**
+   * required to prompt user for allowing permission for Push notification
+   * this function would only store unique visit, duplicates get filtered out.
+   */
+  recordVisit(snapshot: RouterStateSnapshot): void {
+    const visited = this._visitedCache();
+    const newVisits = Array.from(new Set(visited.concat(snapshot.url)));
+    this.storage.set('visited', newVisits);
+    return;
   }
 
   // temporary place this function here (as it's part of the capacitor plugin)

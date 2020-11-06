@@ -5,15 +5,19 @@ import { Platform } from '@ionic/angular';
 import { UtilsService } from '@services/utils.service';
 import { SharedService } from '@services/shared.service';
 import { Observable } from 'rxjs';
+import { filter } from 'rxjs/operators';
 import { AuthService } from './auth/auth.service';
 import { BrowserStorageService } from '@services/storage.service';
 import { NativeStorageService } from '@services/native-storage.service';
 import { VersionCheckService } from '@services/version-check.service';
 import { environment } from '@environments/environment';
 import { PusherService } from '@shared/pusher/pusher.service';
+import { PushNotificationService } from '@services/push-notification.service';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
 import { DomSanitizer } from '@angular/platform-browser';
-import { forkJoin } from 'rxjs';
+import { Plugins, AppState, Capacitor } from '@capacitor/core';
+
+const { App, SplashScreen } = Plugins;
 import { fromPromise } from 'rxjs/observable/fromPromise';
 import { map } from 'rxjs/operators';
 
@@ -26,6 +30,7 @@ export class AppComponent implements OnInit {
   hasCustomHeader$: Observable<any>;
   hasCustomHeader: boolean;
   customHeader: string | any;
+
   constructor(
     private platform: Platform,
     private router: Router,
@@ -39,6 +44,7 @@ export class AppComponent implements OnInit {
     private ngZone: NgZone,
     private newRelic: NewRelicService,
     public sanitizer: DomSanitizer,
+    private pushNotificationService: PushNotificationService,
     @Inject(DOCUMENT) private readonly document: Document
     // private splashScreen: SplashScreen,
     // private statusBar: StatusBar
@@ -160,6 +166,18 @@ export class AppComponent implements OnInit {
       // initialise Pusher
       await this.pusherService.initialise();
     });
+
+
+    if (Capacitor.isNative) {
+      App.addListener('appStateChange', (state: AppState) => {
+        const pnPermission = this.storage.get('pushnotifications');
+        if (!pnPermission) {
+          this.pushNotificationService.requestPermission();
+        }
+        // state.isActive contains the active state
+        console.log('App state changed. Is active?', state.isActive);
+      });
+    }
   }
 
   /**

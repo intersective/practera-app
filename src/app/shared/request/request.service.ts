@@ -242,7 +242,8 @@ export class RequestService {
 
   private handleError(error: HttpErrorResponse | any) {
     if (this.devMode.isDevMode()) {
-      console.error(error); // log to console instead
+      const errorMessage = error.message || error;
+      console.error(errorMessage); // log to console instead
     }
 
     // log the user out if jwt expired

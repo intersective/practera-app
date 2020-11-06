@@ -15,10 +15,13 @@ import { AuthService } from '../auth/auth.service';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
 import { MockRouter, NativeStorageServiceMock } from '@testing/mocked.service';
 import { NotificationService } from '@shared/notification/notification.service';
+import { PushNotificationService, PermissionTypes } from '@services/push-notification.service';
 import { Apollo } from 'apollo-angular';
 
 @Component({selector: 'app-contact-number-form', template: ''})
 class ContactNumberFormStubComponent {}
+
+const UNIVERSAL_IMAGE = 'image/*';
 
 describe('SettingsComponent', () => {
   let component: SettingsComponent;
@@ -43,7 +46,9 @@ describe('SettingsComponent', () => {
         UtilsService,
         {
           provide: FilestackService,
-          useValue: jasmine.createSpyObj('FilestackService', ['getFileTypes'])
+          useValue: jasmine.createSpyObj('FilestackService', {
+            getFileTypes: UNIVERSAL_IMAGE
+          })
         },
         {
           provide: NotificationService,
@@ -79,9 +84,27 @@ describe('SettingsComponent', () => {
         },
         {
           provide: ActivatedRoute,
-          useValue: jasmine.createSpyObj('ActivatedRoute', {
-            data: of(true)
-          })
+          useValue: {
+            data: of({
+              user: {
+                email: 'test@test.com',
+                contactNumber: '1234455',
+                image: 'abc',
+                name: 'student',
+                programName: 'program'
+              }
+            })
+          }
+        },
+        {
+          provide: PushNotificationService,
+          useValue: jasmine.createSpyObj('PushNotificationService', [
+            'promptForPermission',
+            'goToAppSetting',
+            'getSubscribedInterests',
+            'subscribeToInterests',
+            'associateDeviceToUser',
+          ])
         },
       ],
     })
@@ -130,7 +153,7 @@ describe('SettingsComponent', () => {
         image: 'abc',
         name: 'student'
       });
-      expect(component.acceptFileTypes).toEqual('image/*');
+      expect(component.acceptFileTypes).toEqual(UNIVERSAL_IMAGE);
       expect(component.currentProgramName).toEqual('program');
       expect(fastFeedbackSpy.pullFastFeedback.calls.count()).toBe(1);
     });
