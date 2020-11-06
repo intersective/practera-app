@@ -1,4 +1,8 @@
+import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { of } from 'rxjs';
+import { PreferenceService } from '@services/preference.service';
+import { ActivatedRoute, Router } from '@angular/router';
 
 import { PreferenceComponent } from './preference.component';
 
@@ -8,7 +12,28 @@ describe('PreferenceComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ PreferenceComponent ]
+      declarations: [ PreferenceComponent ],
+      schemas: [ CUSTOM_ELEMENTS_SCHEMA ],
+      providers: [
+        {
+          provide: PreferenceService,
+          useValue: {
+            getPreference: () => true
+          }
+        },
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            data: of(true)
+          }
+        },
+        {
+          provide: Router,
+          useValue: {
+            navigate: () => true
+          }
+        },
+      ]
     })
     .compileComponents();
   }));

@@ -4,7 +4,7 @@ import { tap, distinctUntilChanged } from 'rxjs/operators';
 import { Observable } from 'rxjs/Observable';
 import { of, BehaviorSubject, Subscription } from 'rxjs';
 
-const APIs = {
+export const APIs = {
   preference: 'https://4d052q3ph6.execute-api.ap-southeast-2.amazonaws.com/notify',
 };
 
