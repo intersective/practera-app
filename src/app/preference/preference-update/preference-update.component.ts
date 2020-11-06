@@ -2,7 +2,6 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { PreferenceService, Category } from '@services/preference.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs/Subscription';
-import { UtilsService } from '@services/utils.service';
 
 @Component({
   selector: 'app-preference-update',
@@ -22,7 +21,6 @@ export class PreferenceUpdateComponent implements OnInit, OnDestroy {
     private preferenceService: PreferenceService,
     private activatedRoute: ActivatedRoute,
     private router: Router,
-    private utilsService: UtilsService
   ) {
     preferenceService.getPreference();
     const key = activatedRoute.snapshot.params.key;

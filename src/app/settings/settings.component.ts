@@ -249,5 +249,5 @@ export class SettingsComponent extends RouterEnter {
     console.log('I am here');
     CustomNativePlugin.goToAppSetting();
     console.log('done');
-
+  }
 }
