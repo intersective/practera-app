@@ -5,7 +5,7 @@ import { of } from 'rxjs';
 import { PreferenceService, APIs } from './preference.service';
 
 describe('PreferenceService', () => {
-  const TEST_DATA = "testdata";
+  const TEST_DATA = 'testdata';
   let service: PreferenceService;
   let requestSpy: RequestService;
 
