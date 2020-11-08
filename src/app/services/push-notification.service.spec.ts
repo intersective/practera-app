@@ -16,7 +16,6 @@ import {
 
 const { PushNotifications, LocalNotifications, PusherBeams, Permissions } = Plugins;
 
-
 describe('PushNotificationService', () => {
   let service: PushNotificationService;
   let storageSpy: BrowserStorageService;
@@ -32,18 +31,10 @@ describe('PushNotificationService', () => {
           provide: BrowserStorageService,
           useValue: jasmine.createSpyObj('BrowserStorageService', ['set'])
         },
-        /*{
-          provide: PushNotifications,
-          useValue: pushNotificationsSpy
-
-        },*/
-
       ]
     });
     service = TestBed.inject(PushNotificationService) as jasmine.SpyObj<PushNotificationService>;
     storageSpy = TestBed.inject(BrowserStorageService) as jasmine.SpyObj<BrowserStorageService>;
-    // pushNotificationsSpy = TestBed.inject(pushNotificationsSpy);
-
   });
 
   it( 'should be created', () => {
@@ -53,9 +44,7 @@ describe('PushNotificationService', () => {
   describe(' hasPermission ', () => {
     beforeEach(() => {
       Permissions.query = () => new Promise(resolve => resolve({ state: 'granted'}));
-    });
 
-    it( 'should return true when permission is allowed', fakeAsync(() => {
       /*PushNotifications.requestPermission = (): Promise<NotificationPermissionResponse> => {
         console.log('from spec?');
         return new Promise(resolve => {
@@ -63,7 +52,9 @@ describe('PushNotificationService', () => {
           return resolve({ granted: false });
         });
       };*/
+    });
 
+    it( 'should return true when permission is allowed', fakeAsync(() => {
       service = new PushNotificationService(storageSpy);
       service.hasPermission().then(hasPermission => {
         // jasmine is testing from Browser platform,
