@@ -13,14 +13,14 @@
 <ion-content fullscreen>
   <ng-container *ngIf="(preferences$ | async) as preferences; else noPreferenceAvailable">
     <ion-list *ngFor="let cat of preferences.categories">
-      <ion-list-header>{{cat.name}}</ion-list-header>
+      <ion-list-header class="no-bg notification-header-item">{{cat.name}}</ion-list-header>
 
       <ion-item *ngFor="let pref of cat.preferences" (click)="goTo(['preferences', pref.key])">
         <ion-label>
           <h3>{{pref.name}}</h3>
           <app-options [options]="pref.options"></app-options>
         </ion-label>
-        <ion-icon name="arrow-forward" color="medium" slot="end"></ion-icon>
+        <ion-icon name="chevron-forward-outline" color="medium" slot="end"></ion-icon>
       </ion-item>
     </ion-list>
   </ng-container>
