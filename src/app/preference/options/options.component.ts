@@ -2,7 +2,7 @@ import { Component, OnInit, Input } from '@angular/core';
 
 @Component({
   selector: 'app-options',
-  template: `<p>{{ result }}</p>`,
+  template: `<p class="color-medium">{{ result }}</p>`,
   styleUrls: ['./options.component.scss']
 })
 export class OptionsComponent implements OnInit {
