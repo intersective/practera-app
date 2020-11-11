@@ -12,7 +12,9 @@ import {
   PushNotificationActionPerformed,
   LocalNotificationEnabledResult,
   PermissionsOptions,
-  PermissionType
+  PermissionType,
+  Capacitor,
+  NotificationPermissionResponse
 } from '@capacitor/core';
 
 const { PushNotifications, LocalNotifications, PusherBeams, Permissions } = Plugins;
@@ -29,7 +31,20 @@ export enum PermissionTypes {
 export class PushNotificationService {
   constructor(
     private storage: BrowserStorageService
-  ) {}
+  ) {
+    const hasPlugin = Capacitor.isPluginAvailable('PushNotifications');
+    if (!hasPlugin) {
+      PushNotifications.requestPermission = (): Promise<NotificationPermissionResponse> => {
+        return new Promise(resolve => {
+          return resolve({ granted: false });
+        });
+      };
+
+      PushNotifications.register = (): Promise<void> => new Promise(resolve => resolve());
+      // PushNotifications.addListener =>
+      console.log('no plugins?');
+    }
+  }
 
   async initiatePushNotification(): Promise<void> {
     await this.requestPermission();
@@ -156,10 +171,16 @@ export class PushNotificationService {
    * @param  {PermissionTypes}     type     Capacitor plugins's Permissions types
    * @param  {RouterStateSnapshot} snapshot Router's state snapshot
    * @return {Promise<boolean>}
-   *         true = request for permission
-   *         false = do not request for permission
+   *         true = request for permission (show popup)
+   *         false = do not request for permission (do notshow popup)
    */
   async promptForPermission(type: PermissionTypes, snapshot: RouterStateSnapshot): Promise<boolean> {
+    const pluginAvailable = Capacitor.isPluginAvailable('PushNotifications');
+    // skip immediately if plugin N/A (especially on browser)
+    if (!pluginAvailable) {
+      return false;
+    }
+
     let result = false;
     const visited = this._visitedCache();
     switch (type) {
