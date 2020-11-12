@@ -22,6 +22,7 @@ src/well-known/assetlinks.json
 www
 e2e/config/index.ts
 e2e/protractor-dev.conf.js
+out-tsc
 
 src/environments/environment.alpha-native.ts
 .gitsecret/keys/random_seed
