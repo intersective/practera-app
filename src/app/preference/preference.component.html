@@ -11,7 +11,7 @@
 </ion-header>
 
 <ion-content fullscreen>
-  <ng-container *ngIf="(preferences$ | async) as preferences; else noPreferenceAvailable">
+  <ng-container *ngIf="(preferences$ ) as preferences; else noPreferenceAvailable">
     <ion-list *ngFor="let cat of preferences.categories">
       <ion-list-header class="no-bg preference-cat-item">{{cat.name}}</ion-list-header>
 
