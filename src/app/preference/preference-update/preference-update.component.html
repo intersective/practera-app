@@ -13,23 +13,23 @@
   <ion-list>
     <ion-item *ngIf="currentPreference.description" lines="none" color="light">
       <ion-label>
-        <h2 class="bold">{{ currentPreference.description }}</h2>
+        <h2 class="bold subtitle-1">{{ currentPreference.description }}</h2>
       </ion-label>
     </ion-item>
 
     <ion-item *ngFor="let option of currentPreference.options">
-      <ion-label>{{ option.name }}</ion-label>
+      <ion-label class="preference-option preference-header-item">{{ option.name }}</ion-label>
       <ng-container *ngIf="!option.locked; else locked">
         <ion-toggle slot="end" name="{{option.name}}" [attr.checked]="option.value"></ion-toggle>
       </ng-container>
 
       <ng-template #locked>
-        <ion-label slot="end">{{ option.locked_name }}</ion-label>
+        <ion-label slot="end" >{{ option.locked_name }}</ion-label>
       </ng-template>
     </ion-item>
     <ion-item *ngIf="currentPreference.remarks" lines="none" color="light">
       <ion-label>
-        <p>{{ currentPreference.remarks }}</p>
+        <p class="gray-2 subtitle-1 preference-option item-content">{{ currentPreference.remarks }}</p>
       </ion-label>
     </ion-item>
   </ion-list>

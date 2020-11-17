@@ -13,6 +13,8 @@ export class PreferenceUpdateComponent implements OnInit, OnDestroy {
   preferences: {
     categories: any;
   };
+
+
   preferenceSubject$: Subscription;
   currentPreference;
   private key: string;
@@ -27,7 +29,7 @@ export class PreferenceUpdateComponent implements OnInit, OnDestroy {
     this.preferenceSubject$ = preferenceService.preference$.subscribe(res => {
       this.preferences = res;
       if (this.preferences && key) {
-        this.currentPreference = this.filterPreferences(this.preferences, key);
+       this.currentPreference = this.filterPreferences(this.preferences, key);
       }
     });
   }
@@ -39,6 +41,7 @@ export class PreferenceUpdateComponent implements OnInit, OnDestroy {
       options: '',
       remarks: '',
     };
+
   }
 
   ngOnDestroy() {
