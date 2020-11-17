@@ -14,32 +14,9 @@ export class PreferenceUpdateComponent implements OnInit, OnDestroy {
     categories: any;
   };
 
-  currentPreference =
-    {
-      key: 'best key',
-      name: 'Chat messages',
-      description: 'When I receive chat messages',
-      remarks: 'Chat messages can be muted from within individual chat channels',
-      options: [
-        {
-          name: 'Email',
-          medium: 'email',
-          value: true,
-          locked: false,
-          locked_name: '',
-        },
-        {
-          name: 'SMS',
-          medium: 'sms',
-          value: false,
-          locked: false,
-          locked_name: '',
-        },
-      ],
-    };
 
   preferenceSubject$: Subscription;
-
+  currentPreference;
   private key: string;
 
   constructor(
@@ -47,23 +24,23 @@ export class PreferenceUpdateComponent implements OnInit, OnDestroy {
     private activatedRoute: ActivatedRoute,
     private router: Router,
   ) {
-    // preferenceService.getPreference();
-    // const key = activatedRoute.snapshot.params.key;
-    // this.preferenceSubject$ = preferenceService.preference$.subscribe(res => {
-      // this.preferences = res;
-      // if (this.preferences && key) {
-       // this.currentPreference = this.filterPreferences(this.preferences, key);
-      // }
-    // }//);
+    preferenceService.getPreference();
+    const key = activatedRoute.snapshot.params.key;
+    this.preferenceSubject$ = preferenceService.preference$.subscribe(res => {
+      this.preferences = res;
+      if (this.preferences && key) {
+       this.currentPreference = this.filterPreferences(this.preferences, key);
+      }
+    });
   }
 
   ngOnInit() {
-    // this.currentPreference = {
-    //   name: '',
-    //   description: '',
-    //   options: '',
-    //   remarks: '',
-    // };
+    this.currentPreference = {
+      name: '',
+      description: '',
+      options: '',
+      remarks: '',
+    };
 
   }
 
