@@ -123,7 +123,7 @@ export class SettingsComponent extends RouterEnter {
       this.router.routerState.snapshot
     );
     if (this.firstVisitPermission) {
-      await this.notificationService.pushNotificationPermissionPopUp('Would you like to be enable push notification?');
+      await this.notificationService.pushNotificationPermissionPopUp('Would you like to be enable push notification?','/assets/img/permissions off.svg');
     }
     return;
   }
