@@ -31,7 +31,6 @@ export class PreferenceComponent implements OnDestroy, OnInit {
   }
 
   goTo(direction) {
-    console.log(direction);
     return this.router.navigate(direction);
   }
 }
