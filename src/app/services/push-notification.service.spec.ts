@@ -11,17 +11,16 @@ import {
   LocalNotificationEnabledResult,
   PushNotificationsPlugin,
   PushNotificationDeliveredList,
-  NotificationPermissionResponse
+  NotificationPermissionResponse,
+  Capacitor,
 } from '@capacitor/core';
 
 const { PushNotifications, LocalNotifications, PusherBeams, Permissions } = Plugins;
 
+
 describe('PushNotificationService', () => {
   let service: PushNotificationService;
   let storageSpy: BrowserStorageService;
-  let pushNotificationsSpy: any = {
-    requestPermission: () => true,
-  };
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -37,13 +36,29 @@ describe('PushNotificationService', () => {
     storageSpy = TestBed.inject(BrowserStorageService) as jasmine.SpyObj<BrowserStorageService>;
   });
 
-  it( 'should be created', () => {
+  it('should be created', () => {
     expect(service).toBeTruthy();
   });
 
-  describe(' hasPermission ', () => {
+  it('should initialise some listener altogether', fakeAsync(() => {
+    service.requestPermission = jasmine.createSpy('requestPermission');
+    service.registerToServer = jasmine.createSpy('registerToServer');
+    service.listenToError = jasmine.createSpy('listenToError');
+    service.listenToReceiver = jasmine.createSpy('listenToReceiver');
+    service.listenToActionPerformed = jasmine.createSpy('listenToActionPerformed');
+    service.initiatePushNotification().then(() => {
+      expect(service.requestPermission).toHaveBeenCalled();
+      expect(service.registerToServer).toHaveBeenCalled();
+      expect(service.listenToError).toHaveBeenCalled();
+      expect(service.listenToReceiver).toHaveBeenCalled();
+      expect(service.listenToActionPerformed).toHaveBeenCalled();
+    });
+    flush();
+  }));
+
+  describe('hasPermission()', () => {
     beforeEach(() => {
-      Permissions.query = () => new Promise(resolve => resolve({ state: 'granted'}));
+      // Capacitor.isPluginAvailable = () => true;
 
       /*PushNotifications.requestPermission = (): Promise<NotificationPermissionResponse> => {
         console.log('from spec?');
@@ -54,12 +69,40 @@ describe('PushNotificationService', () => {
       };*/
     });
 
-    it( 'should return true when permission is allowed', fakeAsync(() => {
+    it('should return true when permission is allowed', fakeAsync(() => {
+
+      /*PushNotifications.requestPermission = jasmine.createSpy('requestPermission').and.returnValue(new Promise(resolve => resolve({
+        granted: true
+      })));*/
+      Permissions.query = () => new Promise(resolve => resolve({
+        state: 'granted'
+      }));
+      PushNotifications.requestPermission = () => new Promise(resolve => resolve({
+        granted: true
+      }));
       service = new PushNotificationService(storageSpy);
+      service['pushNotificationPlugin'] = PushNotifications;
+
       service.hasPermission().then(hasPermission => {
         // jasmine is testing from Browser platform,
         // and to the returned "permission" is certainly a "false"
         // capacitor's PushNotification plugin only available on device
+        expect(hasPermission).toBeTruthy();
+      });
+      flush();
+    }));
+
+    it('should return false when permission is disallowed', fakeAsync(() => {
+      Permissions.query = () => new Promise(resolve => resolve({
+        state: 'denied'
+      }));
+      PushNotifications.requestPermission = () => new Promise(resolve => resolve({
+        granted: false
+      }));
+      service = new PushNotificationService(storageSpy);
+      service['pushNotificationPlugin'] = PushNotifications;
+
+      service.hasPermission().then(hasPermission => {
         expect(hasPermission).toBeFalsy();
       });
       flush();

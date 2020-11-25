@@ -11,6 +11,7 @@ import {
   PushNotificationToken,
   PushNotificationActionPerformed,
   LocalNotificationEnabledResult,
+  PushNotificationsPlugin,
   PermissionsOptions,
   PermissionType,
   Capacitor,
@@ -29,20 +30,21 @@ export enum PermissionTypes {
 })
 
 export class PushNotificationService {
+  private pushNotificationPlugin: Partial<PushNotificationsPlugin> = PushNotifications;
+
   constructor(
     private storage: BrowserStorageService
   ) {
     const hasPlugin = Capacitor.isPluginAvailable('PushNotifications');
     if (!hasPlugin) {
-      PushNotifications.requestPermission = (): Promise<NotificationPermissionResponse> => {
-        return new Promise(resolve => {
-          return resolve({ granted: false });
-        });
+      this.pushNotificationPlugin = {
+        requestPermission: (): Promise<NotificationPermissionResponse> => {
+          return new Promise(resolve => {
+            return resolve({ granted: false });
+          });
+        },
+        register: (): Promise<void> => new Promise(resolve => resolve())
       };
-
-      PushNotifications.register = (): Promise<void> => new Promise(resolve => resolve());
-      // PushNotifications.addListener =>
-      console.log('no plugins?');
     }
   }
 
@@ -60,7 +62,7 @@ export class PushNotificationService {
    */
   async hasPermission(): Promise<boolean> {
     const getPermission = await Permissions.query({ name: Notifications });
-    const result = await PushNotifications.requestPermission();
+    const result = await this.pushNotificationPlugin.requestPermission();
     if (result.granted === true && getPermission.state === 'granted') {
       return true;
     }
@@ -72,11 +74,11 @@ export class PushNotificationService {
     // Request permission to use push notifications
     // iOS will prompt user and return if they granted permission or not
     // Android will just grant without prompting
-    const result = await PushNotifications.requestPermission();
+    const result = await this.pushNotificationPlugin.requestPermission();
     this.storage.set('pushnotifications', result);
     if (result.granted) {
       // Register with Apple / Google to receive push via APNS/FCM
-      return PushNotifications.register();
+      return this.pushNotificationPlugin.register();
     } else {
       // Show some error
       console.log('Unable get permission, prompt user again in future');
@@ -85,26 +87,26 @@ export class PushNotificationService {
   }
 
   registerToServer(): any {
-    return PushNotifications.addListener('registration', (token: PushNotificationToken) => {
+    return this.pushNotificationPlugin.addListener('registration', (token: PushNotificationToken) => {
       console.log('Token:', token.value);
       return token;
     });
   }
 
   listenToError(): void {
-    PushNotifications.addListener('registrationError', (error: any) => {
+    this.pushNotificationPlugin.addListener('registrationError', (error: any) => {
       console.log('Error on registration: ' + JSON.stringify(error));
     });
   }
 
   listenToReceiver() {
-    PushNotifications.addListener('pushNotificationReceived', (notification: PushNotification) => {
+    this.pushNotificationPlugin.addListener('pushNotificationReceived', (notification: PushNotification) => {
       console.log('Push received: ' + JSON.stringify(notification));
     });
   }
 
   listenToActionPerformed() {
-    PushNotifications.addListener('pushNotificationActionPerformed', (notification: PushNotificationActionPerformed) => {
+    this.pushNotificationPlugin.addListener('pushNotificationActionPerformed', (notification: PushNotificationActionPerformed) => {
         console.log('Push action performed: ' + JSON.stringify(notification));
       }
     );
