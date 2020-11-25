@@ -1,7 +1,9 @@
 import { TestBed, flush, fakeAsync } from '@angular/core/testing';
-import { PushNotificationService } from './push-notification.service';
+import { PushNotificationService, PermissionTypes } from './push-notification.service';
 import { RequestService } from '@shared/request/request.service';
+import { Router, RouterStateSnapshot } from '@angular/router';
 import { BrowserStorageService } from '@services/storage.service';
+import { environment } from '@environments/environment';
 
 import {
   Plugins,
@@ -11,17 +13,16 @@ import {
   LocalNotificationEnabledResult,
   PushNotificationsPlugin,
   PushNotificationDeliveredList,
-  NotificationPermissionResponse
+  NotificationPermissionResponse,
+  Capacitor,
 } from '@capacitor/core';
 
 const { PushNotifications, LocalNotifications, PusherBeams, Permissions } = Plugins;
 
+
 describe('PushNotificationService', () => {
   let service: PushNotificationService;
   let storageSpy: BrowserStorageService;
-  let pushNotificationsSpy: any = {
-    requestPermission: () => true,
-  };
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -37,13 +38,51 @@ describe('PushNotificationService', () => {
     storageSpy = TestBed.inject(BrowserStorageService) as jasmine.SpyObj<BrowserStorageService>;
   });
 
-  it( 'should be created', () => {
+  it('should be created', () => {
     expect(service).toBeTruthy();
   });
 
-  describe(' hasPermission ', () => {
+  it('should initialise some listener altogether', fakeAsync(() => {
+    service.requestPermission = jasmine.createSpy('requestPermission');
+    service.registerToServer = jasmine.createSpy('registerToServer');
+    service.listenToError = jasmine.createSpy('listenToError');
+    service.listenToReceiver = jasmine.createSpy('listenToReceiver');
+    service.listenToActionPerformed = jasmine.createSpy('listenToActionPerformed');
+    service.initiatePushNotification().then(() => {
+      expect(service.requestPermission).toHaveBeenCalled();
+      expect(service.registerToServer).toHaveBeenCalled();
+      expect(service.listenToError).toHaveBeenCalled();
+      expect(service.listenToReceiver).toHaveBeenCalled();
+      expect(service.listenToActionPerformed).toHaveBeenCalled();
+    });
+    flush();
+  }));
+
+  it('should initialise with incoming push notification traffic listener', () => {
+    PushNotifications.addListener = jasmine.createSpy('addListener').and.callFake((name, callback) => {
+      expect(typeof name).toEqual('string');
+      expect(typeof callback).toEqual('function');
+    });
+    const service = new PushNotificationService(storageSpy);
+    service['pushNotificationPlugin'] = PushNotifications;
+
+    service.registerToServer();
+    expect(PushNotifications.addListener).toHaveBeenCalled();
+
+    service.listenToError();
+    expect(PushNotifications.addListener).toHaveBeenCalled();
+
+    service.listenToReceiver();
+    expect(PushNotifications.addListener).toHaveBeenCalled();
+
+    service.listenToActionPerformed();
+    expect(PushNotifications.addListener).toHaveBeenCalled();
+
+  });
+
+  describe('hasPermission()', () => {
     beforeEach(() => {
-      Permissions.query = () => new Promise(resolve => resolve({ state: 'granted'}));
+      // Capacitor.isPluginAvailable = () => true;
 
       /*PushNotifications.requestPermission = (): Promise<NotificationPermissionResponse> => {
         console.log('from spec?');
@@ -54,16 +93,205 @@ describe('PushNotificationService', () => {
       };*/
     });
 
-    it( 'should return true when permission is allowed', fakeAsync(() => {
+    it('should return true when permission is allowed', fakeAsync(() => {
+
+      /*PushNotifications.requestPermission = jasmine.createSpy('requestPermission').and.returnValue(new Promise(resolve => resolve({
+        granted: true
+      })));*/
+      Permissions.query = () => new Promise(resolve => resolve({
+        state: 'granted'
+      }));
+      PushNotifications.requestPermission = () => new Promise(resolve => resolve({
+        granted: true
+      }));
       service = new PushNotificationService(storageSpy);
+      service['pushNotificationPlugin'] = PushNotifications;
+
       service.hasPermission().then(hasPermission => {
         // jasmine is testing from Browser platform,
         // and to the returned "permission" is certainly a "false"
         // capacitor's PushNotification plugin only available on device
+        expect(hasPermission).toBeTruthy();
+      });
+      flush();
+    }));
+
+    it('should return false when permission is disallowed', fakeAsync(() => {
+      Permissions.query = () => new Promise(resolve => resolve({
+        state: 'denied'
+      }));
+      PushNotifications.requestPermission = () => new Promise(resolve => resolve({
+        granted: false
+      }));
+      service = new PushNotificationService(storageSpy);
+      service['pushNotificationPlugin'] = PushNotifications;
+
+      service.hasPermission().then(hasPermission => {
         expect(hasPermission).toBeFalsy();
       });
       flush();
     }));
+  });
+
+  describe('requestPermission()', () => {
+    it('should register to push notification plugin when permission granted', fakeAsync(() => {
+
+      PushNotifications.requestPermission = jasmine.createSpy('requestPermission').and.returnValue(new Promise(resolve => resolve({
+        granted: true
+      })));
+      PushNotifications.register = jasmine.createSpy();
+
+      service = new PushNotificationService(storageSpy);
+      service['pushNotificationPlugin'] = PushNotifications;
+      service.requestPermission().then(() => {
+        expect(PushNotifications.requestPermission).toHaveBeenCalled();
+        expect(storageSpy.set).toHaveBeenCalled();
+        expect(PushNotifications.register).toHaveBeenCalled();
+      });
+      flush();
+    }));
+  });
+
+  describe('associateDeviceToUser()', () => {
+    it('should associate user to device', fakeAsync(() => {
+      const APPKEY = 'testAppkey';
+      const ID = 'testID';
+      const TOKEN = 'testToken';
+
+      PusherBeams.setUserID = jasmine.createSpy('setUserID').and.returnValue(new Promise(resolve => resolve(true)));
+
+      environment.appkey = APPKEY;
+      const service = new PushNotificationService(storageSpy);
+      service['pusherBeams'] = PusherBeams;
+
+      service.associateDeviceToUser(ID, TOKEN).then(res => {
+        expect(PusherBeams.setUserID).toHaveBeenCalledWith(jasmine.objectContaining({
+            userID: ID,
+            headers: {
+              appkey: APPKEY,
+              apikey: TOKEN,
+            },
+            beamsAuthURL: 'https://wchpiwp904.execute-api.us-east-2.amazonaws.com/beams'
+        }));
+        expect(res).toBeTruthy();
+      });
+    }));
+  });
+
+  describe('promptForPermission()', () => {
+    it('should return false if plugin not available', fakeAsync(() => {
+      Capacitor.isPluginAvailable = () => false;
+      const snapshot: Partial<RouterStateSnapshot> = {
+        url: 'doesNotMatter'
+      };
+      service.promptForPermission(PermissionTypes.firstVisit, snapshot).then(res => {
+        expect(res).toBeFalsy();
+      });
+      flush();
+    }));
+
+    it('should prompt user for push notification permission', fakeAsync(() => {
+      Capacitor.isPluginAvailable = () => true;
+      const visited = [
+        'url1',
+        'url2',
+      ];
+
+      storageSpy.get = jasmine.createSpy('get').and.returnValue(visited);
+
+      Permissions.query = () => new Promise(resolve => resolve({
+        state: 'granted'
+      }));
+
+      PushNotifications.requestPermission = () => new Promise(resolve => resolve({
+        granted: true
+      }));
+
+      const snapshot: Partial<RouterStateSnapshot> = {
+        url: 'url3'
+      };
+
+      const service = new PushNotificationService(storageSpy);
+      service['pushNotificationPlugin'] = PushNotifications;
+      service.promptForPermission(PermissionTypes.firstVisit, snapshot).then(() => {
+        expect(storageSpy.set).toHaveBeenCalledWith('visited', [...visited, 'url3']);
+      });
+      flush();
+    }));
+  });
+
+  describe('Subscribe to interest(s)', () => {
+    describe('subscribeToInterest()', () => {
+      it('should access to pusher beams interest subscription', fakeAsync(() => {
+        const INTEREST = 'test-interest';
+        PusherBeams.addDeviceInterest = jasmine.createSpy('addDeviceInterest');
+
+        const service = new PushNotificationService(storageSpy);
+        service['pusherBeams'] = PusherBeams;
+
+        service.subscribeToInterest(INTEREST);
+        expect(PusherBeams.addDeviceInterest).toHaveBeenCalledWith({ interest: INTEREST });
+
+        flush();
+      }));
+    });
+
+    describe('subscribeToInterests()', () => {
+      let service;
+      const INTERESTS = ['1', '2', '3'];
+
+      beforeEach(() => {
+        PusherBeams.addDeviceInterest = jasmine.createSpy('addDeviceInterest');
+        PusherBeams.setDeviceInterests = jasmine.createSpy('setDeviceInterests');
+        service = new PushNotificationService(storageSpy);
+        service['pusherBeams'] = PusherBeams;
+      });
+
+      it('should use back subscribeToInterest() to subcribe to interest', fakeAsync(() => {
+        service.subscribeToInterests(INTERESTS);
+        // expect(service.subscribeToInterest).toHaveBeenCalledTimes(2);
+        expect(PusherBeams.setDeviceInterests).toHaveBeenCalledWith({
+          interests: INTERESTS
+        });
+      }));
+
+      it('should accept single interest subscription', fakeAsync(() => {
+        service.subscribeToInterests('single-interest');
+        expect(PusherBeams.addDeviceInterest).toHaveBeenCalled();
+        expect(PusherBeams.setDeviceInterests).not.toHaveBeenCalled();
+      }));
+    });
+
+    describe('clearInterest()', () => {
+      it('should clearInterest', () => {
+        PusherBeams.clearDeviceInterests = jasmine.createSpy('clearDeviceInterests');
+        service = new PushNotificationService(storageSpy);
+        service['pusherBeams'] = PusherBeams;
+        service.clearInterest();
+        expect(PusherBeams.clearDeviceInterests).toHaveBeenCalled();
+      });
+    });
+
+    describe('getSubscribedInterests()', () => {
+      it('should getSubscribedInterests', () => {
+        PusherBeams.getDeviceInterests = jasmine.createSpy('getDeviceInterests');
+        service = new PushNotificationService(storageSpy);
+        service['pusherBeams'] = PusherBeams;
+        service.getSubscribedInterests();
+        expect(PusherBeams.getDeviceInterests).toHaveBeenCalled();
+      });
+    });
+
+    describe('clearPusherBeams()', () => {
+      it('should clearPusherBeams', () => {
+        PusherBeams.clearAllState = jasmine.createSpy('clearAllState');
+        service = new PushNotificationService(storageSpy);
+        service['pusherBeams'] = PusherBeams;
+        service.clearPusherBeams();
+        expect(PusherBeams.clearAllState).toHaveBeenCalled();
+      });
+    });
+
   });
 });
 
