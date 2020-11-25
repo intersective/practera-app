@@ -31,6 +31,7 @@ export enum PermissionTypes {
 
 export class PushNotificationService {
   private pushNotificationPlugin: Partial<PushNotificationsPlugin> = PushNotifications;
+  private pusherBeams = PusherBeams;
 
   constructor(
     private storage: BrowserStorageService
@@ -117,7 +118,7 @@ export class PushNotificationService {
    * @description link device to current user (we have native plugin code will)
    */
   async associateDeviceToUser(userID, token) {
-    const linkedUser = await PusherBeams.setUserID({
+    const linkedUser = await this.pusherBeams.setUserID({
       userID,
       headers: {
         appkey: environment.appkey,
@@ -129,7 +130,7 @@ export class PushNotificationService {
   }
 
   unsubscribeInterest(interest: string) {
-    return PusherBeams.removeDeviceInterest(interest);
+    return this.pusherBeams.removeDeviceInterest(interest);
   }
 
   /**
@@ -138,26 +139,26 @@ export class PushNotificationService {
    * @return {Promise<void>}
    */
   subscribeToInterest(interest): Promise<void> {
-    return PusherBeams.addDeviceInterest({ interest });
+    return this.pusherBeams.addDeviceInterest({ interest });
   }
 
   subscribeToInterests(interests: string[] | string): Promise<void> {
     if (typeof interests === 'string') {
       return this.subscribeToInterest(interests);
     }
-    return PusherBeams.setDeviceInterests({ interests });
+    return this.pusherBeams.setDeviceInterests({ interests });
   }
 
   clearInterest(): Promise<void> {
-    return PusherBeams.clearDeviceInterests();
+    return this.pusherBeams.clearDeviceInterests();
   }
 
   getSubscribedInterests(): Promise<any> {
-    return PusherBeams.getDeviceInterests();
+    return this.pusherBeams.getDeviceInterests();
   }
 
   clearPusherBeams() {
-    return PusherBeams.clearAllState();
+    return this.pusherBeams.clearAllState();
   }
 
   private _visitedCache(): string[] {
@@ -176,7 +177,7 @@ export class PushNotificationService {
    *         true = request for permission (show popup)
    *         false = do not request for permission (do notshow popup)
    */
-  async promptForPermission(type: PermissionTypes, snapshot: RouterStateSnapshot): Promise<boolean> {
+  async promptForPermission(type: PermissionTypes, snapshot: Partial<RouterStateSnapshot>): Promise<boolean> {
     const pluginAvailable = Capacitor.isPluginAvailable('PushNotifications');
     // skip immediately if plugin N/A (especially on browser)
     if (!pluginAvailable) {
@@ -202,7 +203,7 @@ export class PushNotificationService {
    * required to prompt user for allowing permission for Push notification
    * this function would only store unique visit, duplicates get filtered out.
    */
-  recordVisit(snapshot: RouterStateSnapshot): void {
+  recordVisit(snapshot: Partial<RouterStateSnapshot>): void {
     const visited = this._visitedCache();
     const newVisits = Array.from(new Set(visited.concat(snapshot.url)));
     this.storage.set('visited', newVisits);
@@ -212,6 +213,6 @@ export class PushNotificationService {
   // temporary place this function here (as it's part of the capacitor plugin)
   // ideally, should place at utility service
   goToAppSetting() {
-    return PusherBeams.goToAppSetting();
+    return this.pusherBeams.goToAppSetting();
   }
 }
