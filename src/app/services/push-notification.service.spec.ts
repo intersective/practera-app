@@ -58,6 +58,28 @@ describe('PushNotificationService', () => {
     flush();
   }));
 
+  it('should initialise with incoming push notification traffic listener', () => {
+    PushNotifications.addListener = jasmine.createSpy('addListener').and.callFake((name, callback) => {
+      expect(typeof name).toEqual('string');
+      expect(typeof callback).toEqual('function');
+    });
+    const service = new PushNotificationService(storageSpy);
+    service['pushNotificationPlugin'] = PushNotifications;
+
+    service.registerToServer();
+    expect(PushNotifications.addListener).toHaveBeenCalled();
+
+    service.listenToError();
+    expect(PushNotifications.addListener).toHaveBeenCalled();
+
+    service.listenToReceiver();
+    expect(PushNotifications.addListener).toHaveBeenCalled();
+
+    service.listenToActionPerformed();
+    expect(PushNotifications.addListener).toHaveBeenCalled();
+
+  });
+
   describe('hasPermission()', () => {
     beforeEach(() => {
       // Capacitor.isPluginAvailable = () => true;
