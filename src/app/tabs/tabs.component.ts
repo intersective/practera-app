@@ -9,6 +9,7 @@ import { Router } from '@angular/router';
 import { SharedService } from '@services/shared.service';
 import { EventListService } from '@app/event-list/event-list.service';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
+import { RequestService } from '@shared/request/request.service';
 
 @Component({
   selector: 'app-tabs',
@@ -34,6 +35,7 @@ export class TabsComponent extends RouterEnter {
     private sharedService: SharedService,
     private eventsService: EventListService,
     private newRelic: NewRelicService,
+    private requestService: RequestService
   ) {
     super(router);
     this.newRelic.setPageViewName('tab');
@@ -55,6 +57,7 @@ export class TabsComponent extends RouterEnter {
         this.noOfChats = noOfChats;
       });
     });
+
   }
 
   private _initialise() {
@@ -107,6 +110,7 @@ export class TabsComponent extends RouterEnter {
         this.showEvents = !this.utils.isEmpty(events);
       });
     }
+    this._hidingChatTab();
   }
 
   private _checkRoute() {
@@ -147,6 +151,13 @@ export class TabsComponent extends RouterEnter {
   private _topicStopReading() {
     // if user looking at topic mark it stop reading before go back.
     this.sharedService.markTopicStopOnNavigating();
+  }
+
+  private _hidingChatTab() {
+    const checkHideTab = this.requestService.hideChatTab();
+    if (checkHideTab) {
+      this.showChat = false;
+    }
   }
 
 }
