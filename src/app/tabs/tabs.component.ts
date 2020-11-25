@@ -110,7 +110,7 @@ export class TabsComponent extends RouterEnter {
         this.showEvents = !this.utils.isEmpty(events);
       });
     }
-    this._hidingChatTab();
+    this.hidingChatTab();
   }
 
   private _checkRoute() {
@@ -153,7 +153,7 @@ export class TabsComponent extends RouterEnter {
     this.sharedService.markTopicStopOnNavigating();
   }
 
-  private _hidingChatTab() {
+  hidingChatTab() {
     const checkHideTab = this.requestService.hideChatTab();
     if (checkHideTab) {
       this.showChat = false;
