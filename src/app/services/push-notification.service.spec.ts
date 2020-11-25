@@ -219,5 +219,79 @@ describe('PushNotificationService', () => {
       flush();
     }));
   });
+
+  describe('Subscribe to interest(s)', () => {
+    describe('subscribeToInterest()', () => {
+      it('should access to pusher beams interest subscription', fakeAsync(() => {
+        const INTEREST = 'test-interest';
+        PusherBeams.addDeviceInterest = jasmine.createSpy('addDeviceInterest');
+
+        const service = new PushNotificationService(storageSpy);
+        service['pusherBeams'] = PusherBeams;
+
+        service.subscribeToInterest(INTEREST);
+        expect(PusherBeams.addDeviceInterest).toHaveBeenCalledWith({ interest: INTEREST });
+
+        flush();
+      }));
+    });
+
+    describe('subscribeToInterests()', () => {
+      let service;
+      const INTERESTS = ['1', '2', '3'];
+
+      beforeEach(() => {
+        PusherBeams.addDeviceInterest = jasmine.createSpy('addDeviceInterest');
+        PusherBeams.setDeviceInterests = jasmine.createSpy('setDeviceInterests');
+        service = new PushNotificationService(storageSpy);
+        service['pusherBeams'] = PusherBeams;
+      });
+
+      it('should use back subscribeToInterest() to subcribe to interest', fakeAsync(() => {
+        service.subscribeToInterests(INTERESTS);
+        // expect(service.subscribeToInterest).toHaveBeenCalledTimes(2);
+        expect(PusherBeams.setDeviceInterests).toHaveBeenCalledWith({
+          interests: INTERESTS
+        });
+      }));
+
+      it('should accept single interest subscription', fakeAsync(() => {
+        service.subscribeToInterests('single-interest');
+        expect(PusherBeams.addDeviceInterest).toHaveBeenCalled();
+        expect(PusherBeams.setDeviceInterests).not.toHaveBeenCalled();
+      }));
+    });
+
+    describe('clearInterest()', () => {
+      it('should clearInterest', () => {
+        PusherBeams.clearDeviceInterests = jasmine.createSpy('clearDeviceInterests');
+        service = new PushNotificationService(storageSpy);
+        service['pusherBeams'] = PusherBeams;
+        service.clearInterest();
+        expect(PusherBeams.clearDeviceInterests).toHaveBeenCalled();
+      });
+    });
+
+    describe('getSubscribedInterests()', () => {
+      it('should getSubscribedInterests', () => {
+        PusherBeams.getDeviceInterests = jasmine.createSpy('getDeviceInterests');
+        service = new PushNotificationService(storageSpy);
+        service['pusherBeams'] = PusherBeams;
+        service.getSubscribedInterests();
+        expect(PusherBeams.getDeviceInterests).toHaveBeenCalled();
+      });
+    });
+
+    describe('clearPusherBeams()', () => {
+      it('should clearPusherBeams', () => {
+        PusherBeams.clearAllState = jasmine.createSpy('clearAllState');
+        service = new PushNotificationService(storageSpy);
+        service['pusherBeams'] = PusherBeams;
+        service.clearPusherBeams();
+        expect(PusherBeams.clearAllState).toHaveBeenCalled();
+      });
+    });
+
+  });
 });
 
