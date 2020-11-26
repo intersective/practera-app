@@ -7,6 +7,7 @@ import { Subscription } from 'rxjs';
 import { Platform } from '@ionic/angular';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
 import { NotificationService } from '@shared/notification/notification.service';
+import { BrowserStorageService } from '@services/storage.service';
 import { trigger, state, transition, style, animate, useAnimation } from '@angular/animations';
 import { fadeIn } from '../../animations';
 import { Observable } from 'rxjs';
@@ -57,6 +58,7 @@ export class ProjectComponent implements OnInit {
     public utils: UtilsService,
     private projectService: ProjectService,
     private platform: Platform,
+    private storage: BrowserStorageService,
     private newRelic: NewRelicService,
     private notificationService: NotificationService,
     @Inject(DOCUMENT) private readonly document: Document
@@ -105,7 +107,11 @@ export class ProjectComponent implements OnInit {
         }
         // show activity complete toast message
         if (this.activityCompleted) {
-          this.notificationService.presentToast(`&#127881; Congratulations. You've completed this activity.`, {
+          let activityCompleteMessage = `&#127881; Congratulations. You've completed this activity.`;
+          if (this.storage.getUser().activityCompleteMessage) {
+            activityCompleteMessage = this.storage.getUser().activityCompleteMessage;
+          }
+          this.notificationService.presentToast(activityCompleteMessage, {
             position: 'bottom',
             color: 'primary',
             duration: 5000
