@@ -18,5 +18,9 @@ export const ProgramFixture: ProgramObj[] = [1, 2, 3].map(num => {
     enrolment: {
       contact_number: `0${123456789 + num}`
     },
+    experience: {
+      id: num,
+      config: {}
+    }
   };
 });
