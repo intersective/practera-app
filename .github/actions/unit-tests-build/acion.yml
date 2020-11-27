@@ -1,5 +1,0 @@
-name: Unit tests
-runs:
-  using: docker
-  image: docker://${{ env.AWS_USER_ID }}.dkr.ecr.ap-southeast-2.amazonaws.com/practera/app-v2-unit-test:HeadlessChrome-85
-  args: [ "bash", "-c", "ng test --karmaConfig=src/karma.conf.aws.js --no-watch" ]
