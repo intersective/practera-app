@@ -34,7 +34,7 @@ jobs:
         run: |
           docker pull ${{ env.AWS_USER_ID }}.dkr.ecr.ap-southeast-2.amazonaws.com/practera/app-v2-unit-test:HeadlessChrome-85
           docker tag ${{ env.AWS_USER_ID }}.dkr.ecr.ap-southeast-2.amazonaws.com/practera/app-v2-unit-test:HeadlessChrome-85 practera/app-v2-unit-test:HeadlessChrome-85
-          cp src/environments/environment.sandbox.ts src/environments/environment.ts
+          test -f src/environments/environment.ts && echo "environment here" || cp src/environments/environment.local.ts src/environments/environment.ts
 
       - name: Unit tests
         uses: ./.github/actions/unit-tests-build
