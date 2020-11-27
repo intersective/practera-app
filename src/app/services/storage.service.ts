@@ -28,6 +28,7 @@ export interface User {
   hasReviewRating?: boolean;
   truncateDescription?: boolean;
   enrolment?: any;
+  activityCompleteMessage?: string;
   hasEvents?: boolean;
   hasReviews?: boolean;
   LtiReturnUrl?: string;

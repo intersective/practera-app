@@ -26,6 +26,7 @@ export interface ProgramObj {
   project: Project;
   timeline: Timeline;
   enrolment: Enrolment;
+  experience: Experience;
   progress?: number;
   todoItems?: number;
 }
@@ -51,6 +52,11 @@ export interface Project {
 
 export interface Timeline {
   id: number;
+}
+
+export interface Experience {
+  id: number;
+  config: any;
 }
 
 export interface Enrolment {
@@ -142,6 +148,7 @@ export class SwitcherService {
       themeColor: themeColor,
       activityCardImage: cardBackgroundImage,
       enrolment: programObj.enrolment,
+      activityCompleteMessage: programObj.experience.config.activity_complete_message || null,
       teamId: null,
       hasEvents: false,
       hasReviews: false
