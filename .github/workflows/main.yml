@@ -35,18 +35,11 @@ jobs:
 
       - name: Unit tests
         uses: ./.github/actions/unit-tests-build
-      
+
       - name: Copy files 1
-        run: ls -a
-
-      - name: Copy files 2
-        run: ls -a /home/runner/work/practera-app-v2-1/practera-app-v2-1
-
-      - name: Copy files 3
-        run: pwd
-
-      - name: Copy files 4
-        run: ls -a coverage
+        run: |
+          pwd
+          ls -a /home/runner/work/practera-app-v2-1/practera-app-v2-1/coverage
 
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@master
