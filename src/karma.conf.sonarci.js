@@ -19,7 +19,6 @@ module.exports = function(config) {
     autoWatch: false,
 
     ngHtml2JsPreprocessor: {
-      stripPrefix: __dirname + '/',
       moduleName: 'foo'
     },
 
