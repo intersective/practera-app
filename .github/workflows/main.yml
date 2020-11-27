@@ -27,19 +27,19 @@ jobs:
         with:
           fetch-depth: 0
 
-      # - name: ECR login
-      #   uses: aws-actions/amazon-ecr-login@v1
+      - name: ECR login
+        uses: aws-actions/amazon-ecr-login@v1
 
-      # - name: Docker pull
-      #   run: docker pull ${{ env.AWS_USER_ID }}.dkr.ecr.ap-southeast-2.amazonaws.com/practera/app-v2-unit-test:HeadlessChrome-85 && docker tag ${{ env.AWS_USER_ID }}.dkr.ecr.ap-southeast-2.amazonaws.com/practera/app-v2-unit-test:HeadlessChrome-85 practera/app-v2-unit-test:HeadlessChrome-85
+      - name: Docker pull
+        run: docker pull ${{ env.AWS_USER_ID }}.dkr.ecr.ap-southeast-2.amazonaws.com/practera/app-v2-unit-test:HeadlessChrome-85 && docker tag ${{ env.AWS_USER_ID }}.dkr.ecr.ap-southeast-2.amazonaws.com/practera/app-v2-unit-test:HeadlessChrome-85 practera/app-v2-unit-test:HeadlessChrome-85
 
-      # - name: Unit tests
-      #   uses: ./.github/actions/unit-tests-build
+      - name: Unit tests
+        uses: ./.github/actions/unit-tests-build
 
-      # - name: Copy files 1
-      #   run: |
-      #     pwd
-      #     ls -a /home/runner/work/practera-app-v2-1/practera-app-v2-1/coverage
+      - name: List files
+        run: |
+          pwd
+          ls -a /home/runner/work/practera-app-v2-1/practera-app-v2-1/coverage
 
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@master
