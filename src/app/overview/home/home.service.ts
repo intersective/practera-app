@@ -53,8 +53,6 @@ export interface TodoItem {
 
 export class HomeService {
 
-  currentActivityId = 0;
-
   constructor(
     private storage: BrowserStorageService,
     private request: RequestService,
@@ -269,71 +267,10 @@ export class HomeService {
       return 0;
     }
 
-    this._getCurrentActivityId(data);
-
     if (data.Project.progress > 1) {
       data.Project.progress = 1;
     }
     return Math.round(data.Project.progress * 100);
-  }
-
-  private _getCurrentActivityId(data) {
-    // initialise current activity id
-    this.currentActivityId = 0;
-    data.Project.Milestone.forEach(this._loopThroughMilestones, this);
-    // regard last activity as the current activity if all activities are finished
-    if (this.currentActivityId === 0) {
-      const milestones = data.Project.Milestone;
-      const activities = milestones[milestones.length - 1].Activity;
-      this.currentActivityId = activities[activities.length - 1].id;
-    }
-  }
-
-  private _loopThroughMilestones(milestone) {
-    if (this.currentActivityId > 0) {
-      return;
-    }
-    if (!this.utils.has(milestone, 'Activity') ||
-        !Array.isArray(milestone.Activity)) {
-      this.request.apiResponseFormatError('Progress.Milestone format error');
-      return ;
-    }
-    milestone.Activity.forEach(this._loopThroughActivities, this);
-  }
-
-  private _loopThroughActivities(activity) {
-    if (this.currentActivityId > 0) {
-      return;
-    }
-    if (!this.utils.has(activity, 'progress') ||
-        !this.utils.has(activity, 'id')) {
-      this.request.apiResponseFormatError('Progress.Milestone.Activity format error');
-      return ;
-    }
-    if (activity.progress < 1) {
-      this.currentActivityId = activity.id;
-    }
-  }
-
-  private _normaliseActivity(data): Activity {
-    if (!Array.isArray(data) ||
-        !this.utils.has(data[0], 'Activity.name') ||
-        !this.utils.has(data[0], 'Activity.is_locked')) {
-      this.request.apiResponseFormatError('Activity format error');
-      return {
-        id: null,
-        name: '',
-        isLocked: false,
-        leadImage: ''
-      };
-    }
-    const thisActivity = data[0];
-    return {
-      id: this.currentActivityId,
-      name: thisActivity.Activity.name,
-      isLocked: thisActivity.Activity.is_locked,
-      leadImage: (thisActivity.Activity.lead_image ? thisActivity.Activity.lead_image : '')
-    };
   }
 
   /**
