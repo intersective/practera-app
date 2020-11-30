@@ -15,6 +15,7 @@ import { TabsComponent } from './tabs.component';
 import { ModalController } from '@ionic/angular';
 import { MockRouter } from '@testing/mocked.service';
 import { Apollo } from 'apollo-angular';
+import { RequestService } from '@shared/request/request.service';
 
 describe('TabsComponent', () => {
   let component: TabsComponent;
@@ -27,6 +28,7 @@ describe('TabsComponent', () => {
   let reviewsSpy: jasmine.SpyObj<ReviewListService>;
   let eventsSpy: jasmine.SpyObj<EventListService>;
   let utils: UtilsService;
+  let requestSpy: jasmine.SpyObj<RequestService>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
@@ -77,6 +79,10 @@ describe('TabsComponent', () => {
           useValue: jasmine.createSpyObj('EventListService', ['getEvents'])
         },
         {
+          provide: RequestService,
+          useValue: jasmine.createSpyObj('RequestService', ['hideChatTab'])
+        },
+        {
           provide: Router,
           useClass: MockRouter
         },
@@ -96,12 +102,14 @@ describe('TabsComponent', () => {
     switcherSpy = TestBed.inject(SwitcherService) as jasmine.SpyObj<SwitcherService>;
     reviewsSpy = TestBed.inject(ReviewListService) as jasmine.SpyObj<ReviewListService>;
     eventsSpy = TestBed.inject(EventListService) as jasmine.SpyObj<EventListService>;
+    requestSpy = TestBed.inject(RequestService) as jasmine.SpyObj<RequestService>;
 
     switcherSpy.getTeamInfo.and.returnValue(of(''));
     reviewsSpy.getReviews.and.returnValue(of(['', '']));
     eventsSpy.getEvents.and.returnValue(of([{id: 1}]));
     tabsSpy.getNoOfChats.and.returnValue(of(4));
     tabsSpy.getNoOfTodoItems.and.returnValue(of(5));
+    requestSpy.hideChatTab.and.returnValue(of(false));
     component.routeUrl = '/test';
   });
 
@@ -127,12 +135,16 @@ describe('TabsComponent', () => {
   describe('when testing onEnter()', () => {
     it('should get correct data', () => {
       storageSpy.get.and.returnValue(0);
+      requestSpy.hideChatTab.and.returnValue(false);
       fixture.detectChanges();
       expect(component.noOfTodoItems).toBe(5);
       expect(component.noOfChats).toBe(4);
       expect(component.showChat).toBe(true);
       expect(component.showReview).toBe(true);
       expect(component.showEvents).toBe(true);
+      requestSpy.hideChatTab.and.returnValue(true);
+      fixture.detectChanges();
+      expect(component.showReview).toBe(false);
     });
 
     it('should get correct data without team id', () => {
@@ -145,6 +157,7 @@ describe('TabsComponent', () => {
       });
       reviewsSpy.getReviews.and.returnValue(of([]));
       eventsSpy.getEvents.and.returnValue(of([]));
+      requestSpy.hideChatTab.and.returnValue(of(''));
       fixture.detectChanges();
       expect(component.noOfChats).toBe(0);
       expect(component.showChat).toBe(false);
