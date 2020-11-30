@@ -27,3 +27,4 @@ src/environments/environment.alpha-native.ts
 .gitsecret/keys/random_seed
 !*.secret
 android/app/google-services.json
+src/environments/environment.ts
