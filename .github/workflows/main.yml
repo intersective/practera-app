@@ -43,7 +43,7 @@ jobs:
         if: ${{ always() }}
         run: |
           pwd
-          ls -a /home/runner/work/practera-app-v2-1/practera-app-v2-1/tests
+          ls -a /home/runner/work/practera-app-v2/practera-app-v2/tests
 
       - name: SonarCloud Scan
         if: ${{ always() }}
