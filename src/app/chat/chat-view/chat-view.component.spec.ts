@@ -7,7 +7,7 @@ import { UtilsService } from '@services/utils.service';
 import { MockRouter } from '@testing/mocked.service';
 import { Apollo } from 'apollo-angular';
 
-describe('ChatViewComponent', () => {
+xdescribe('ChatViewComponent', () => {
   let component: ChatViewComponent;
   let fixture: ComponentFixture<ChatViewComponent>;
   let routerSpy: jasmine.SpyObj<Router>;

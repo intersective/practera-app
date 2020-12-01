@@ -292,6 +292,12 @@ ion-skeleton-text {
       min-height: 200px;
     }
   }
+  &.push-notification-popup {
+    .modal-wrapper {
+      --max-height: 50%;
+      min-height: 200px;
+    }
+  }
   &.mobile-view {
     .modal-wrapper {
       position: fixed;

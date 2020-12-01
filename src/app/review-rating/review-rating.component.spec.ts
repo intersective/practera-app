@@ -6,6 +6,7 @@ import { Router } from '@angular/router';
 import { UtilsService } from '@services/utils.service';
 import { ReviewRatingComponent } from './review-rating.component';
 import { ReviewRatingService } from './review-rating.service';
+import { NotificationService } from '../shared/notification/notification.service';
 import { ModalController } from '@ionic/angular';
 import { Apollo } from 'apollo-angular';
 
@@ -39,6 +40,10 @@ describe('ReviewRatingComponent', () => {
           useValue: {
             dismiss: jasmine.createSpy('dismiss')
           }
+        },
+        {
+          provide: NotificationService,
+          useValue: jasmine.createSpyObj('NotificationService', ['alert'])
         },
       ]
     })

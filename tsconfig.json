@@ -26,5 +26,8 @@
       "@environments/*": ["environments/*"],
       "@testing/*": ["testing/*"]
     }
-  }
+  },
+  "exclude": [
+    "e2e/src/specs.old/**/*spec.ts"
+  ]
 }

@@ -17,6 +17,7 @@ import { SharedModule } from '@shared/shared.module';
   providers: [ GoMobileService ],
   exports: [
     GoMobileComponent,
+    SharedModule,
   ]
 })
 export class GoMobileModule {}

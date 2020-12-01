@@ -29,7 +29,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { UnlockingComponent } from '@components/unlocking/unlocking.component';
 import { IconComponent } from '@shared/components/icon/icon.component';
 import { DeviceInfoComponent } from './device-info/device-info.component';
-
+import { IonicStorageModule } from '@ionic/storage';
 
 @NgModule({
   declarations: [
@@ -51,6 +51,7 @@ import { DeviceInfoComponent } from './device-info/device-info.component';
       appkey: environment.appkey,
       prefixUrl: environment.APIEndpoint,
     }),
+    IonicStorageModule.forRoot(),
     AppRoutingModule,
     EmbedVideo.forRoot(),
     NewRelicModule.forRoot(),

@@ -1,0 +1,49 @@
+.modal-wrapper {
+  --max-height: 300px;
+}
+
+.pop-up-content {
+  background-color: transparent !important;
+  --ion-color-base: transparent !important;
+
+  .image-content {
+    margin-top: 5px;
+    margin-bottom: -45px;
+
+    .image {
+      padding: 12px;
+
+      img {
+        &.default {
+          filter: invert(.5);
+        }
+      }
+    }
+  }
+
+  .details-container {
+    padding: 20px;
+    border-radius: 12px;
+  }
+
+  .div-after-img {
+    margin: 0;
+    margin-bottom: 15px;
+  }
+
+}
+
+.pop-up-content {
+  &.desktop-view {
+    .details-container {
+      .div-after-img {
+        .title {
+          margin-top: 30px;
+        }
+        .points {
+          margin: 10px;
+        }
+      }
+    }
+  }
+}

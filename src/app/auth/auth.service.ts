@@ -5,6 +5,7 @@ import { map } from 'rxjs/operators';
 import { Observable, of } from 'rxjs';
 import { Router } from '@angular/router';
 import { BrowserStorageService } from '@services/storage.service';
+import { NativeStorageService } from '@services/native-storage.service';
 import { UtilsService } from '@services/utils.service';
 import { PusherService } from '@shared/pusher/pusher.service';
 
@@ -68,6 +69,7 @@ export class AuthService {
   constructor(
     private request: RequestService,
     private storage: BrowserStorageService,
+    private nativeStorage: NativeStorageService,
     private utils: UtilsService,
     private router: Router,
     private pusherService: PusherService
@@ -106,18 +108,24 @@ export class AuthService {
    *              so must convert them into compatible formdata before submission
    * @param {object} { authToken } in string
    */
-  directLogin({ authToken }): Observable<any> {
+  async directLogin({ authToken }): Promise<Observable<Promise<any>>> {
     const body = new HttpParams()
       .set('auth_token', authToken);
-    this.logout({}, false);
-    return this._login(body);
+    try {
+      await this.logout({}, false);
+      return this._login(body);
+    } catch (err) {
+      console.log('directLogin', err);
+      return err;
+    }
   }
 
-  private _handleLoginResponse(response): Observable<any> {
+  private async _handleLoginResponse(response): Promise<any> {
     const norm = this._normaliseAuth(response);
-    this.storage.setUser({apikey: norm.apikey});
-    this.storage.set('programs', norm.programs);
-    this.storage.set('isLoggedIn', true);
+
+    await this.nativeStorage.setObject('me', { apikey: norm.apikey });
+    await this.nativeStorage.setObject('isLoggedIn', {isLoggedIn: true});
+    await this.nativeStorage.setObject('programs', norm.programs);
     return norm;
   }
 
@@ -148,8 +156,9 @@ export class AuthService {
     };
   }
 
-  isAuthenticated(): boolean {
-    return this.storage.get('isLoggedIn');
+  async isAuthenticated(): Promise<boolean> {
+    const status = await this.nativeStorage.getObject('isLoggedIn');
+    return status.isLoggedIn;
   }
 
   /**
@@ -157,15 +166,16 @@ export class AuthService {
    * @param navigationParams the parameters needed when redirect
    * @param redirect         Whether redirect the user to login page or not
    */
-  logout(navigationParams = {}, redirect = true) {
+  async logout(navigationParams = {}, redirect = true) {
     // use the config color
-    this.utils.changeThemeColor(this.storage.getConfig().color || '#2bbfd4');
+    const config = await this.nativeStorage.getObject('config');
+    this.utils.changeThemeColor(config.color || '#2bbfd4');
     this.pusherService.unsubscribeChannels();
     this.pusherService.disconnect();
-    const config = this.storage.getConfig();
     this.storage.clear();
+    await this.nativeStorage.clear();
     // still store config info even logout
-    this.storage.setConfig(config);
+    await this.nativeStorage.setObject('config', config);
     if (redirect) {
       return this.router.navigate(['login'], navigationParams);
     }
@@ -204,23 +214,6 @@ export class AuthService {
   }
 
   /**
-   * check user linkedIn connection status
-   * @return {Boolean}
-   */
-  linkedinAuthenticated () {
-      return this.storage.getUser().linkedinConnected || false;
-  }
-
-  // Activity ID is no longer used as a parameter,
-  // but needs to be there so just pass in a 1
-  connectToLinkedIn () {
-    const url = '/api/auth_linkedin.json?apikey=' + this.storage.getUser().apikey + '&appkey=' + this.storage.get('appkey') + '&timeline_id=' + this.storage.getUser().timelineId;
-
-    this.utils.openUrl(url);
-    return;
-  }
-
-  /**
    * @name contactNumberLogin
    * @description fast/quick login with contact number
    * @param  {string}}        data [description]
@@ -229,11 +222,13 @@ export class AuthService {
   contactNumberLogin(data: { contactNumber: string }): Observable<any> {
     return this.request.post(api.login, {
       contact_number: data.contactNumber, // API accepts contact_numebr
-    }).pipe(map(response => {
+    }).pipe(map(async response => {
       if (response.data) {
         this.storage.setUser({apikey: response.data.apikey});
         this.storage.set('tutorial', response.data.tutorial);
-        this.storage.set('programs', response.data.timelines);
+
+        await this.nativeStorage.setObject('me', {apikey: response.data.apikey});
+        await this.nativeStorage.setObject('programs', response.data.timelines);
       }
 
       // @TODO: verify if safari browser localStorage store data above properly

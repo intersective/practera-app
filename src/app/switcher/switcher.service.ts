@@ -3,6 +3,7 @@ import { Observable, of, forkJoin } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { RequestService } from '@shared/request/request.service';
 import { UtilsService } from '@services/utils.service';
+import { NativeStorageService } from '@services/native-storage.service';
 import { BrowserStorageService } from '@services/storage.service';
 import { PusherService } from '@shared/pusher/pusher.service';
 import { SharedService } from '@services/shared.service';
@@ -77,13 +78,14 @@ export class SwitcherService {
     private pusherService: PusherService,
     private reviewsService: ReviewListService,
     private eventsService: EventListService,
+    private nativeStorage: NativeStorageService
   ) {}
 
-  getPrograms() {
-    const programs = this.storage.get('programs');
+  async getPrograms() {
+    const programs = await this.nativeStorage.getObject('programs');
     const cdn = 'https://cdn.filestackcontent.com/resize=fit:crop,width:';
     let imagewidth = 600;
-    programs.forEach(program => {
+    Object.values(programs).forEach((program: ProgramObj) => {
       if (program.project.lead_image) {
         const imageId = program.project.lead_image.split('/').pop();
         if (!this.utils.isMobile()) {
@@ -116,7 +118,7 @@ export class SwitcherService {
     )
     .pipe(map(res => {
       if (res.data && res.data.projects) {
-        return res.data.projects.map(v => {
+        return ((res.data || {}).projects || []).map(v => {
           return {
             id: +v.id,
             progress: v.progress,
@@ -129,18 +131,18 @@ export class SwitcherService {
     }));
   }
 
-  switchProgram(programObj: ProgramObj): Observable<any> {
+  async switchProgram(programObj: ProgramObj): Promise<Observable<any>> {
     const { program, project, experience, timeline, enrolment } = programObj;
 
     const themeColor = this.utils.has(programObj, 'program.config.theme_color') ? program.config.theme_color : '#2bbfd4';
+
     let cardBackgroundImage = '';
     if (this.utils.has(programObj, 'program.config.card_style')) {
       cardBackgroundImage = '/assets/' + program.config.card_style;
     }
 
     const experienceConfig = experience ? experience.config : {};
-
-    this.storage.setUser({
+    const user = {
       programId: program.id,
       programName: program.name,
       programImage: project.lead_image,
@@ -157,7 +159,10 @@ export class SwitcherService {
       teamId: null,
       hasEvents: false,
       hasReviews: false
-    });
+    };
+
+    await this.nativeStorage.setObject('me', user);
+    this.storage.setUser(user);
 
     this.sharedService.onPageLoad();
     return forkJoin([
@@ -171,17 +176,17 @@ export class SwitcherService {
 
   getTeamInfo(): Observable<any> {
     return this.request.get(api.teams)
-      .pipe(map(response => {
+      .pipe(map(async response => {
         if (response.success && response.data) {
           if (!this.utils.has(response.data, 'Teams') ||
               !Array.isArray(response.data.Teams) ||
               !this.utils.has(response.data.Teams[0], 'id')
              ) {
-            return this.storage.setUser({
+            return await this.nativeStorage.setObject('me', {
               teamId: null
             });
           }
-          return this.storage.setUser({
+          return await this.nativeStorage.setObject('me', {
             teamId: response.data.Teams[0].id
           });
         }
@@ -199,7 +204,7 @@ export class SwitcherService {
           return this.request.apiResponseFormatError('User format error');
         }
         const apiData = response.data.User;
-        this.storage.setUser({
+        const me = {
           name: apiData.name,
           contactNumber: apiData.contact_number,
           email: apiData.email,
@@ -209,7 +214,10 @@ export class SwitcherService {
           linkedinUrl: apiData.linkedin_url,
           userHash: apiData.userhash,
           maxAchievablePoints: this.utils.has(apiData, 'max_achievable_points') ? apiData.max_achievable_points : null
-        });
+        };
+
+        this.storage.setUser(me);
+        this.nativeStorage.setObject('me', me);
       }
       return response;
     }));
@@ -233,10 +241,10 @@ export class SwitcherService {
     }));
   }
 
-  checkIsOneProgram(programs?) {
+  async checkIsOneProgram(programs?) {
     let programList = programs;
     if (this.utils.isEmpty(programs)) {
-      programList = this.storage.get('programs');
+      programList = Object.values(await this.nativeStorage.getObject('programs'));
     }
     if (programList.length === 1) {
       return true;
@@ -259,15 +267,16 @@ export class SwitcherService {
    */
   async switchProgramAndNavigate(programs): Promise<any> {
     if (!this.utils.isEmpty(programs)) {
+      const isOneProgram = await this.checkIsOneProgram(programs);
       // Array with multiple program objects -> [{},{},{},{}]
-      if (Array.isArray(programs) && !this.checkIsOneProgram(programs)) {
+      if (Array.isArray(programs) && !isOneProgram) {
         return ['switcher', 'switcher-program'];
       // Array with one program object -> [{}]
-      } else if (Array.isArray(programs) && this.checkIsOneProgram(programs)) {
-        await this.switchProgram(programs[0]).toPromise();
+      } else if (Array.isArray(programs) && isOneProgram) {
+        await (await this.switchProgram(programs[0])).toPromise();
       } else {
       // one program object -> {}
-        await this.switchProgram(programs).toPromise();
+        await (await this.switchProgram(programs)).toPromise();
       }
 
       await this.pusherService.initialise({ unsubscribe: true });

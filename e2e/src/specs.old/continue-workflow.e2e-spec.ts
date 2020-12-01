@@ -1,6 +1,6 @@
 import { browser, by, element } from 'protractor';
 import { AppPage } from './app.po';
-import { PROGRAM, MENTOR, USER, CONTINUE_WORKFLOW_USER } from '../config';
+import { PROGRAM, MENTOR, USER, CONTINUE_WORKFLOW_USER } from '../../config';
 
 describe('AppV2 - Continue workflow', () => {
   let page: AppPage;

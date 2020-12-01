@@ -6,6 +6,7 @@ import { UtilsService } from '@services/utils.service';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { HomeService } from './home.service';
 import { NotificationService } from '@shared/notification/notification.service';
+import { SharedService } from '@services/shared.service';
 import { EventListService } from '@app/event-list/event-list.service';
 import * as moment from 'moment';
 import { Apollo } from 'apollo-angular';
@@ -24,6 +25,22 @@ describe('HomeService', () => {
         Apollo,
         HomeService,
         UtilsService,
+        {
+          provide: SharedService,
+          useValue: {
+            // exact same logic copied from "SharedService.dueDateFormatter"
+            dueDateFormatter: (dueDate: string) => {
+              if (!dueDate) {
+                return '';
+              }
+              const difference = utils.timeComparer(dueDate);
+              if (difference < 0) {
+                return 'Overdue ' + utils.utcToLocal(dueDate);
+              }
+              return 'Due ' + utils.utcToLocal(dueDate);
+            }
+          }
+        },
         {
           provide: NotificationService,
           useValue: jasmine.createSpyObj('NotificationService', ['achievementPopUp'])
@@ -59,7 +76,7 @@ describe('HomeService', () => {
   });
 
   describe('when testing getTodoItems()', () => {
-    it('should get correct todoItems', async() => {
+    it('should get correct todoItems', () => {
       const requestResponse = {
         success: true,
         data: [

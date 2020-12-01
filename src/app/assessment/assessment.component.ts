@@ -4,7 +4,7 @@ import { AssessmentService, Assessment, Submission, Review, AssessmentSubmitPara
 import { UtilsService } from '../services/utils.service';
 import { NotificationService } from '@shared/notification/notification.service';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
-import { BrowserStorageService } from '@services/storage.service';
+import { NativeStorageService } from '@services/native-storage.service';
 import { RouterEnter } from '@services/router-enter.service';
 import { SharedService } from '@services/shared.service';
 import { ActivityService } from '../activity/activity.service';
@@ -12,6 +12,7 @@ import { FastFeedbackService } from '../fast-feedback/fast-feedback.service';
 import { interval, timer, Subscription } from 'rxjs';
 import { map, takeUntil } from 'rxjs/operators';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
+import { PushNotificationService, PermissionTypes } from '@services/push-notification.service';
 
 const SAVE_PROGRESS_TIMEOUT = 10000;
 
@@ -95,12 +96,13 @@ export class AssessmentComponent extends RouterEnter {
     private assessmentService: AssessmentService,
     public utils: UtilsService,
     private notificationService: NotificationService,
-    public storage: BrowserStorageService,
     public sharedService: SharedService,
+    private nativeStorage: NativeStorageService,
     private activityService: ActivityService,
     private fastFeedbackService: FastFeedbackService,
     private ngZone: NgZone,
     private newRelic: NewRelicService,
+    private pushNotificationService: PushNotificationService
   ) {
     super(router);
   }
@@ -220,14 +222,16 @@ export class AssessmentComponent extends RouterEnter {
     // get assessment structure and populate the question form
     this.assessmentService.getAssessment(this.id, this.action, this.activityId, this.contextId, this.submissionId)
       .subscribe(
-        result => {
+        async res => {
+          const result = await res;
           this.assessment = result.assessment;
           this.newRelic.setPageViewName(`Assessment: ${this.assessment.name} ID: ${this.id}`);
           this.populateQuestionsForm();
           this.loadingAssessment = false;
           this._handleSubmissionData(result.submission);
           // display pop up if it is team assessment and user is not in team
-          if (this.doAssessment && this.assessment.isForTeam && !this.storage.getUser().teamId) {
+          const { teamId } = await this.nativeStorage.getObject('me');
+          if (this.doAssessment && this.assessment.isForTeam && !teamId) {
             return this.notificationService.alert({
               message: 'To do this assessment, you have to be in a team.',
               buttons: [
@@ -484,6 +488,14 @@ export class AssessmentComponent extends RouterEnter {
     }
   }
 
+  async checkPNPermission(): Promise<void> {
+    const promptForPermission = await this.pushNotificationService.promptForPermission(PermissionTypes.firstVisit, this.router.routerState.snapshot);
+
+    if (promptForPermission && this.assessment.type === 'moderated') {
+      await this.notificationService.pushNotificationPermissionPopUp('Would you like to be notified when you receive feedback for your assessment?');
+    }
+  }
+
   /**
    * handle submission and autosave
    * @param saveInProgress set true for autosaving or it treat the action as final submision
@@ -491,7 +503,6 @@ export class AssessmentComponent extends RouterEnter {
    * @param isManualSave use to detect manual progress save
    */
   async submit(saveInProgress: boolean, goBack?: boolean, isManualSave?: boolean): Promise<any> {
-
     /**
      * checking if this is a submission or progress save
      * - if it's a submission
@@ -505,6 +516,7 @@ export class AssessmentComponent extends RouterEnter {
      *    - if this is not manual save or there is one save in progress
      *      - do nothing
      */
+
     if (saveInProgress) {
       if (isManualSave || !this.saving) {
         this.savingMessage = 'Saving...';
@@ -513,6 +525,7 @@ export class AssessmentComponent extends RouterEnter {
         return;
       }
     } else {
+      await this.checkPNPermission();
       this.submitting = true;
     }
     this.saving = true;
@@ -577,6 +590,7 @@ export class AssessmentComponent extends RouterEnter {
     }
 
     // check if all required questions have answer when assessment done
+
     const requiredQuestions = this.compulsoryQuestionsAnswered(answers);
     if (!saveInProgress && requiredQuestions.length > 0) {
       this.submitting = false;
@@ -646,7 +660,7 @@ export class AssessmentComponent extends RouterEnter {
   /**
    * Mark review feedback as read
    */
-  async markReviewFeedbackAsRead(): Promise<void> {
+  private async markReviewFeedbackAsRead(): Promise<void> {
     // do nothing if feedback is already mark as read
     if (this.feedbackReviewed) {
       return;
@@ -656,7 +670,7 @@ export class AssessmentComponent extends RouterEnter {
     this.newRelic.actionText('Waiting for review feedback read.');
     // Mark feedback as read
     try {
-      result = await this.assessmentService.saveFeedbackReviewed(this.submission.id).toPromise();
+      result = await (await this.assessmentService.saveFeedbackReviewed(this.submission.id)).toPromise();
       this.feedbackReviewed = true;
       this.newRelic.actionText('Review feedback read.');
       this.continueBtnLoading = false;
@@ -672,7 +686,8 @@ export class AssessmentComponent extends RouterEnter {
     // After marking feedback as read, popup review rating modal if
     // 1. review is successfully marked as read (from above)
     // 2. hasReviewRating (activation): program configuration is set to enable review rating
-    if (!result.success || !this.storage.getUser().hasReviewRating) {
+    const { hasReviewRating } = await this.nativeStorage.getObject('me');
+    if (!result.success || !hasReviewRating) {
       return;
     }
     this.continueBtnLoading = true;

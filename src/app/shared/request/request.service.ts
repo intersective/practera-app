@@ -5,6 +5,7 @@ import { Observable, of, throwError, from } from 'rxjs';
 import { catchError, tap, concatMap, map } from 'rxjs/operators';
 import { UtilsService } from '@services/utils.service';
 import { BrowserStorageService } from '@services/storage.service';
+import { NativeStorageService } from '@services/native-storage.service';
 import { environment } from '@environments/environment';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
 import { Apollo } from 'apollo-angular';
@@ -52,6 +53,7 @@ export class RequestService {
     private http: HttpClient,
     private utils: UtilsService,
     private storage: BrowserStorageService,
+    private nativeStorage: NativeStorageService,
     private router: Router,
     @Optional() config: RequestConfig,
     private newrelic: NewRelicService,
@@ -246,7 +248,8 @@ export class RequestService {
 
   private handleError(error: HttpErrorResponse | any) {
     if (this.devMode.isDevMode()) {
-      console.error(error); // log to console instead
+      const errorMessage = error.message || error;
+      console.error(errorMessage); // log to console instead
       if (error.status === 500 && error.url.includes('chat')) {
         this.hideChatTab();
       }
@@ -289,6 +292,7 @@ export class RequestService {
   private _refreshApikey(response) {
     if (this.utils.has(response, 'apikey')) {
       this.storage.setUser({apikey: response.apikey});
+      this.nativeStorage.setObject('me', {apikey: response.apikey});
     }
   }
 }

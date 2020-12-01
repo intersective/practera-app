@@ -1,14 +1,16 @@
 import { Component } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { Injectable, Inject } from '@angular/core';
 import { RouterEnter } from '@services/router-enter.service';
 import { SwitcherService, ProgramObj } from '../switcher.service';
 import { LoadingController } from '@ionic/angular';
 import { environment } from '@environments/environment';
-import { PusherService } from '@shared/pusher/pusher.service';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
 import { NotificationService } from '@shared/notification/notification.service';
 import { UtilsService } from '@services/utils.service';
+import { Observable } from 'rxjs/Observable';
+import { fromPromise } from 'rxjs/observable/fromPromise';
+import { of } from 'rxjs/observable/of';
 
 @Injectable({
   providedIn: 'root'
@@ -27,24 +29,29 @@ export class SwitcherProgramComponent extends RouterEnter {
   constructor(
     public loadingController: LoadingController,
     public router: Router,
-    private pusherService: PusherService,
+    private activatedRoute: ActivatedRoute,
     private switcherService: SwitcherService,
     private newRelic: NewRelicService,
     private notificationService: NotificationService,
     private utils: UtilsService
-  ) { super(router); }
+  ) {
+    super(router);
+  }
 
   onEnter() {
     this.newRelic.setPageViewName('program switcher');
-    this.switcherService.getPrograms()
-      .subscribe(programs => {
-        this.programs = programs;
-        this._getProgresses(programs);
+    this.activatedRoute.data.subscribe(() => {
+      this.subscription = fromPromise(this.switcherService.getPrograms()).subscribe(res => {
+        res.subscribe(programs => {
+          this.programs = Object.values(programs);
+          this._getProgresses(programs);
+        });
       });
+    });
   }
 
   private _getProgresses(programs) {
-    const projectIds = programs.map(v => v.project.id);
+    const projectIds = Object.values(programs).map((v: ProgramObj) => v.project.id);
     this.switcherService.getProgresses(projectIds).subscribe(res => {
       res.forEach(progress => {
         const i = this.programs.findIndex(program => program.project.id === progress.id);

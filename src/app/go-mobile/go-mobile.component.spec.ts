@@ -10,18 +10,19 @@ import { GoMobileComponent } from './go-mobile.component';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
 import { UtilsService } from '@services/utils.service';
 import { NotificationService } from '@shared/notification/notification.service';
-import { BrowserStorageService } from '@services/storage.service';
-import { BrowserStorageServiceMock, MockNewRelicService, MockRouter } from '@testing/mocked.service';
+import { MockNewRelicService, MockRouter } from '@testing/mocked.service';
 import { SharedModule } from '@shared/shared.module';
 import { GoMobileService } from './go-mobile.service';
 import { ReactiveFormsModule } from '@angular/forms';
 import { TextMaskModule } from 'angular2-text-mask';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { environment } from 'environments/environment';
 import { of, throwError } from 'rxjs';
 import { Apollo } from 'apollo-angular';
 
 describe('GoMobileComponent', () => {
+  const testContactNumber = '0123456789'; // same as mocked user in testing/mocked.service;
+
   let component: GoMobileComponent;
   let fixture: ComponentFixture<GoMobileComponent>;
   let newRelicSpy: NewRelicService;
@@ -33,15 +34,17 @@ describe('GoMobileComponent', () => {
       declarations: [ GoMobileComponent ],
       imports: [
         IonicModule,
-        SharedModule,
-        // ReactiveFormsModule,
-        // TextMaskModule,
         HttpClientTestingModule
       ],
       schemas: [ CUSTOM_ELEMENTS_SCHEMA ],
       providers: [
         Apollo,
-        GoMobileService,
+        {
+          provide: GoMobileService,
+          useValue: jasmine.createSpyObj({
+            'submit': of(true)
+          })
+        },
         {
           provide: NotificationService,
           useValue: jasmine.createSpyObj(['alert', 'presentToast']),
@@ -56,8 +59,14 @@ describe('GoMobileComponent', () => {
           useClass: MockRouter,
         },
         {
-          provide: BrowserStorageService,
-          useClass: BrowserStorageServiceMock
+          provide: ActivatedRoute,
+          useValue: {
+            data: of({
+              user: {
+                contactNumber: testContactNumber
+              }
+            })
+          },
         }
       ]
     }).compileComponents();
@@ -77,14 +86,17 @@ describe('GoMobileComponent', () => {
 
   describe('ngOnInit()', () => {
     it('should pre-configure profile and locale standard', () => {
-      const testContactNumber = '0123456789'; // same as mocked user in testing/mocked.service;
       expect(component.profile.contactNumber).toEqual('');
 
       component.ngOnInit();
-      expect(newRelicSpy.setPageViewName).toHaveBeenCalledWith('go-mobile');
-      expect(component.profile.contactNumber).toEqual(testContactNumber);
-      expect(component.saved).toEqual(true);
-      expect(component.invalidNumber).toEqual(false);
+
+      fixture.detectChanges();
+      fixture.whenStable().then(() => {
+        expect(newRelicSpy.setPageViewName).toHaveBeenCalledWith('go-mobile');
+        expect(component.profile.contactNumber).toEqual(testContactNumber);
+        expect(component.saved).toEqual(true);
+        expect(component.invalidNumber).toEqual(false);
+      });
     });
 
     it('should set model to "US" if apiEndpoint has "us" in the string', () => {
@@ -99,7 +111,6 @@ describe('GoMobileComponent', () => {
   describe('submit()', () => {
     beforeEach(() => {
       component.countryModel = 'AUS';
-      spyOn(goMobileSpy, 'submit').and.returnValue(of(true));
       expect(component.sendingSMS).toBeFalsy();
     });
 

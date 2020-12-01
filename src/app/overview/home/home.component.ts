@@ -2,7 +2,8 @@ import { Component, OnDestroy, OnInit, Input } from '@angular/core';
 import { HomeService, TodoItem } from './home.service';
 import { Router, NavigationEnd } from '@angular/router';
 import { UtilsService } from '@services/utils.service';
-import { BrowserStorageService } from '@services/storage.service';
+import { User } from '@services/storage.service';
+import { NativeStorageService } from '@services/native-storage.service';
 import { Achievement, AchievementsService } from '@app/achievements/achievements.service';
 import { Event, EventListService } from '@app/event-list/event-list.service';
 import { Intercom } from 'ng-intercom';
@@ -10,6 +11,7 @@ import { environment } from '@environments/environment';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
 import { trigger, state, transition, style, animate, useAnimation } from '@angular/animations';
 import { fadeIn } from '../../animations';
+import { fromPromise } from 'rxjs/observable/fromPromise';
 import { Observable, Subscription } from 'rxjs';
 
 @Component({
@@ -48,12 +50,11 @@ export class HomeComponent implements OnDestroy, OnInit {
     public router: Router,
     private homeService: HomeService,
     public utils: UtilsService,
-    public storage: BrowserStorageService,
+    private nativeStorage: NativeStorageService,
     public achievementService: AchievementsService,
     private eventsService: EventListService,
     private newRelic: NewRelicService
   ) {
-    const role = this.storage.getUser().role;
     this.utils.getEvent('notification').subscribe(event => {
       const todoItem = this.homeService.getTodoItemFromEvent(event);
       if (!this.utils.isEmpty(todoItem)) {
@@ -98,34 +99,50 @@ export class HomeComponent implements OnDestroy, OnInit {
 
   onEnter() {
     this._initialise();
-    this.programInfo = {
-      image: this.storage.getUser().programImage,
-      name: this.storage.getUser().programName
-    };
     this.subscriptions.push(
       this.homeService.getTodoItems().subscribe(todoItems => {
         this.todoItems = this.todoItems.concat(todoItems);
         this.loadingTodoItems = false;
       })
     );
-    // only get the number of chats if user is in team
-    if (this.storage.getUser().teamId) {
+
+    fromPromise(this.nativeStorage.getObject('me')).subscribe((user: User) => {
+      this.programInfo = {
+        image: user.programImage,
+        name: user.programName
+      };
+      // only get the number of chats if user is in team
+      if (user.teamId) {
+        this.subscriptions.push(
+          this.homeService.getChatMessage().subscribe(chatMessage => {
+            if (!this.utils.isEmpty(chatMessage)) {
+              this._addChatTodoItem(chatMessage);
+            }
+            this.loadingTodoItems = false;
+          })
+        );
+      }
       this.subscriptions.push(
-        this.homeService.getChatMessage().subscribe(chatMessage => {
-          if (!this.utils.isEmpty(chatMessage)) {
-            this._addChatTodoItem(chatMessage);
-          }
-          this.loadingTodoItems = false;
+        this.homeService.getProgress().subscribe(progress => {
+          this.progress = progress;
+          this.progressConfig = {percent: progress};
+          this.loadingProgress = false;
         })
       );
-    }
-    this.subscriptions.push(
-      this.homeService.getProgress().subscribe(progress => {
-        this.progress = progress;
-        this.progressConfig = {percent: progress};
-        this.loadingProgress = false;
-      })
-    );
+
+      if (typeof environment.intercom !== 'undefined' && environment.intercom === true) {
+        this.intercom.boot({
+          app_id: environment.intercomAppId,
+          name: user.name, // Full name
+          email: user.email, // Email address
+          user_id: user.id, // current_user_id
+          // Supports all optional configuration.
+          widget: {
+            'activator': '#intercom'
+          }
+        });
+      }
+    });
 
     this.subscriptions.push(
       this.achievementService.getAchievements('desc').subscribe(achievements => {
@@ -157,19 +174,6 @@ export class HomeComponent implements OnDestroy, OnInit {
         this.loadingAchievements = false;
       })
     );
-
-    if (typeof environment.intercom !== 'undefined' && environment.intercom === true) {
-      this.intercom.boot({
-        app_id: environment.intercomAppId,
-        name: this.storage.getUser().name, // Full name
-        email: this.storage.getUser().email, // Email address
-        user_id: this.storage.getUser().id, // current_user_id
-        // Supports all optional configuration.
-        widget: {
-          'activator': '#intercom'
-        }
-      });
-    }
   }
 
   goTo(destination) {

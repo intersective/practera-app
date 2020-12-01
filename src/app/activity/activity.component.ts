@@ -5,7 +5,7 @@ import { catchError } from 'rxjs/operators';
 import { ActivityService, Activity, Task } from './activity.service';
 import { UtilsService } from '../services/utils.service';
 import { NotificationService } from '@shared/notification/notification.service';
-import { BrowserStorageService } from '@services/storage.service';
+import { NativeStorageService } from '@services/native-storage.service';
 import { Event, EventListService } from '@app/event-list/event-list.service';
 import { SharedService } from '@services/shared.service';
 import { FastFeedbackService } from '../fast-feedback/fast-feedback.service';
@@ -42,10 +42,10 @@ export class ActivityComponent {
     private activityService: ActivityService,
     public utils: UtilsService,
     private notificationService: NotificationService,
-    public storage: BrowserStorageService,
     public eventListService: EventListService,
     public sharedService: SharedService,
     public fastFeedbackService: FastFeedbackService,
+    private nativeStorage: NativeStorageService,
     private newRelic: NewRelicService,
     private ngZone: NgZone,
     private apollo: Apollo
@@ -147,12 +147,13 @@ export class ActivityComponent {
     this.newRelic.actionText('Back button pressed on Activities Page.');
   }
 
-  goto(task) {
+  async goto(task) {
     this.newRelic.actionText(`Selected Task (${task.type}): ID ${task.id}`);
 
     switch (task.type) {
       case 'Assessment':
-        if (task.isForTeam && !this.storage.getUser().teamId) {
+        const { teamId } = await this.nativeStorage.getObject('me');
+        if (task.isForTeam && !teamId) {
           this.notificationService.popUp('shortMessage', {message: 'To do this assessment, you have to be in a team.'});
           break;
         }

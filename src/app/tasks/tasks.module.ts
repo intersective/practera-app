@@ -19,6 +19,12 @@ import { AssessmentModule } from '../assessment/assessment.module';
     ActivityModule,
     TopicModule,
     AssessmentModule
+  ],
+  exports: [
+    SharedModule,
+    ActivityModule,
+    TopicModule,
+    AssessmentModule,
   ]
 })
 export class TasksModule { }

@@ -1,23 +1,36 @@
-import { Component, OnInit, NgZone } from '@angular/core';
+import { DOCUMENT } from '@angular/common';
+import { Component, OnInit, NgZone, Inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { Platform } from '@ionic/angular';
 import { UtilsService } from '@services/utils.service';
 import { SharedService } from '@services/shared.service';
 import { Observable } from 'rxjs';
+import { filter } from 'rxjs/operators';
 import { AuthService } from './auth/auth.service';
 import { BrowserStorageService } from '@services/storage.service';
+import { NativeStorageService } from '@services/native-storage.service';
 import { VersionCheckService } from '@services/version-check.service';
 import { environment } from '@environments/environment';
 import { PusherService } from '@shared/pusher/pusher.service';
+import { PushNotificationService } from '@services/push-notification.service';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
 import { DomSanitizer } from '@angular/platform-browser';
+import { Plugins, AppState, Capacitor } from '@capacitor/core';
+
+const { App, SplashScreen } = Plugins;
+import { fromPromise } from 'rxjs/observable/fromPromise';
+import { map } from 'rxjs/operators';
+
 
 @Component({
   selector: 'app-root',
   templateUrl: 'app.component.html'
 })
 export class AppComponent implements OnInit {
+  hasCustomHeader$: Observable<any>;
+  hasCustomHeader: boolean;
   customHeader: string | any;
+
   constructor(
     private platform: Platform,
     private router: Router,
@@ -25,11 +38,14 @@ export class AppComponent implements OnInit {
     private sharedService: SharedService,
     private authService: AuthService,
     private storage: BrowserStorageService,
+    private nativeStorage: NativeStorageService,
     private versionCheckService: VersionCheckService,
     private pusherService: PusherService,
     private ngZone: NgZone,
     private newRelic: NewRelicService,
     public sanitizer: DomSanitizer,
+    private pushNotificationService: PushNotificationService,
+    @Inject(DOCUMENT) private readonly document: Document
     // private splashScreen: SplashScreen,
     // private statusBar: StatusBar
   ) {
@@ -45,20 +61,21 @@ export class AppComponent implements OnInit {
   }
 
   private configVerification(): void {
-    if (this.storage.get('fastFeedbackOpening')) { // set default modal status
+    const hasOpened = this.storage.get('fastFeedbackOpening');
+    if (hasOpened) { // set default modal status
       this.storage.set('fastFeedbackOpening', false);
     }
   }
 
   ngOnInit() {
     this.configVerification();
-    this.sharedService.onPageLoad();
+    fromPromise(this.sharedService.onPageLoad()).subscribe();
 
     // @TODO: need to build a new micro service to get the config and serve the custom branding config from a microservice
     // Get the custom branding info and update the theme color if needed
-    const domain = window.location.hostname;
+    const domain = this.document.location.hostname;
     this.authService.getConfig({domain}).subscribe(
-      (response: any) => {
+      async (response: any) => {
         if (response !== null) {
           const expConfig = response.data;
           const numOfConfigs = expConfig.length;
@@ -75,15 +92,20 @@ export class AppComponent implements OnInit {
             if (!logo.includes('http') && !this.utils.isEmpty(logo)) {
               logo = environment.APIEndpoint + logo;
             }
-            this.storage.setConfig({
+            await this.nativeStorage.setObject('config', {
               'logo': logo,
               'color': themeColor
             });
             // use brand color if no theme color
-            if (!this.utils.has(this.storage.getUser(), 'themeColor') || !this.storage.getUser().themeColor) {
+            const user = await this.nativeStorage.getObject('me');
+            if (!this.utils.has(user, 'themeColor') || !user.themeColor) {
               this.utils.changeThemeColor(themeColor);
             }
           }
+
+          this.checkCustom('header').subscribe(hasHeader => {
+            this.hasCustomHeader = hasHeader;
+          });
         }
       },
       err => {
@@ -93,10 +115,10 @@ export class AppComponent implements OnInit {
 
     let searchParams = null;
     let queryString = '';
-    if (window.location.search) {
-      queryString =  window.location.search.substring(1);
-    } else if (window.location.hash) {
-      queryString = window.location.hash.substring(2);
+    if (this.document.location.search) {
+      queryString =  this.document.location.search.substring(1);
+    } else if (this.document.location.hash) {
+      queryString = this.document.location.hash.substring(2);
     }
     searchParams = new URLSearchParams(queryString);
 
@@ -144,17 +166,28 @@ export class AppComponent implements OnInit {
       // initialise Pusher
       await this.pusherService.initialise();
     });
+
+
+    if (Capacitor.isNative) {
+      App.addListener('appStateChange', (state: AppState) => {
+        const pnPermission = this.storage.get('pushnotifications');
+        if (!pnPermission) {
+          this.pushNotificationService.requestPermission();
+        }
+        // state.isActive contains the active state
+        console.log('App state changed. Is active?', state.isActive);
+      });
+    }
   }
 
   /**
    * checking conditions to show custom header
    * @param type header
    */
-  checkCustom(type: string): boolean {
-    if (type === 'header' && this.customHeader && this.authService.isAuthenticated()) {
-      return true;
-    }
-    return false;
+  checkCustom(type: string): Observable<any> {
+    return fromPromise(this.authService.isAuthenticated()).pipe(map(authenticated => {
+      return type === 'header' && this.customHeader && authenticated;
+    }));
   }
 
 }

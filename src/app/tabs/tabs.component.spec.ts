@@ -1,8 +1,9 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { async, ComponentFixture, TestBed, fakeAsync, flush } from '@angular/core/testing';
 import { TabsService } from './tabs.service';
 import { UtilsService } from '@services/utils.service';
 import { BrowserStorageService } from '@services/storage.service';
+import { NativeStorageService } from '@services/native-storage.service';
 import { SwitcherService } from '../switcher/switcher.service';
 import { ReviewListService } from '../review-list/review-list.service';
 import { EventListService } from '@app/event-list/event-list.service';
@@ -39,6 +40,10 @@ describe('TabsComponent', () => {
         Apollo,
         UtilsService,
         {
+          provide: SharedService,
+          useValue: jasmine.createSpyObj('SharedService', ['stopPlayingVideos', 'markTopicStopOnNavigating'])
+        },
+        {
           provide: ModalController,
           useValue: {
             dismiss: jasmine.createSpy('dismiss')
@@ -47,6 +52,18 @@ describe('TabsComponent', () => {
         {
           provide: TabsService,
           useValue: jasmine.createSpyObj('TabsService', ['getNoOfChats', 'getNoOfTodoItems'])
+        },
+        {
+          provide: NativeStorageService,
+          useValue: jasmine.createSpyObj('NativeStorageService', {
+            'getObject': new Promise(resolve => resolve({
+              role: 'participant',
+              teamId: 1,
+              name: 'Test User',
+              email: 'user@test.com',
+              id: 1
+            }))
+          })
         },
         {
           provide: BrowserStorageService,
@@ -108,8 +125,8 @@ describe('TabsComponent', () => {
     reviewsSpy.getReviews.and.returnValue(of(['', '']));
     eventsSpy.getEvents.and.returnValue(of([{id: 1}]));
     tabsSpy.getNoOfChats.and.returnValue(of(4));
-    tabsSpy.getNoOfTodoItems.and.returnValue(of(5));
     requestSpy.hideChatTab.and.returnValue(of(false));
+    tabsSpy.getNoOfTodoItems.and.returnValue(Promise.resolve(of(5)));
     component.routeUrl = '/test';
   });
 
@@ -133,19 +150,23 @@ describe('TabsComponent', () => {
   });
 
   describe('when testing onEnter()', () => {
-    it('should get correct data', () => {
+    it('should get correct data', fakeAsync(() => {
       storageSpy.get.and.returnValue(0);
+      flush();
+
       requestSpy.hideChatTab.and.returnValue(false);
       fixture.detectChanges();
-      expect(component.noOfTodoItems).toBe(5);
-      expect(component.noOfChats).toBe(4);
-      expect(component.showChat).toBe(true);
-      expect(component.showReview).toBe(true);
-      expect(component.showEvents).toBe(true);
-      requestSpy.hideChatTab.and.returnValue(true);
-      fixture.detectChanges();
-      expect(component.showReview).toBe(false);
-    });
+
+      flush();
+      fixture.whenStable().then(() => {
+        requestSpy.hideChatTab.and.returnValue(true);
+        expect(component.noOfTodoItems).toBe(5);
+        expect(component.noOfChats).toBe(4);
+        expect(component.showChat).toBe(true);
+        expect(component.showReview).toBe(true);
+        expect(component.showEvents).toBe(true);
+      });
+    }));
 
     it('should get correct data without team id', () => {
       storageSpy.getUser.and.returnValue({

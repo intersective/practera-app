@@ -1,5 +1,5 @@
 import { CUSTOM_ELEMENTS_SCHEMA, Directive } from '@angular/core';
-import { async, ComponentFixture, TestBed, fakeAsync } from '@angular/core/testing';
+import { async, ComponentFixture, TestBed, fakeAsync, flush } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Router } from '@angular/router';
 
@@ -10,12 +10,13 @@ import { FastFeedbackService } from '@app/fast-feedback/fast-feedback.service';
 import { AchievementsService } from '@app/achievements/achievements.service';
 import { EventListService } from '@app/event-list/event-list.service';
 import { BrowserStorageService } from '@services/storage.service';
+import { NativeStorageService } from '@services/native-storage.service';
 import { UtilsService } from '@services/utils.service';
 import { of } from 'rxjs';
 import { map, filter } from 'rxjs/operators';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
-import { MockRouter } from '@testing/mocked.service';
+import { MockRouter, NativeStorageServiceMock } from '@testing/mocked.service';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { Apollo } from 'apollo-angular';
 
@@ -68,6 +69,7 @@ describe('HomeComponent', () => {
   let achieventsServiceSpy: jasmine.SpyObj<AchievementsService>;
   let fastFeedbackServiceSpy: jasmine.SpyObj<FastFeedbackService>;
   let storageServiceSpy: jasmine.SpyObj<BrowserStorageService>;
+  let nativeStorageServiceSpy: jasmine.SpyObj<NativeStorageService>;
   let routerSpy: jasmine.SpyObj<Router>;
   let utils: UtilsService;
 
@@ -85,10 +87,14 @@ describe('HomeComponent', () => {
         UtilsService,
         NewRelicService,
         {
-          provide: Intercom
+          provide: Intercom,
+          useValue: {
+            boot: () => true
+          }
         },
         {
-          provide: IntercomConfig
+          provide: IntercomConfig,
+          useValue: {}
         },
         {
           provide: HomeService,
@@ -107,6 +113,18 @@ describe('HomeComponent', () => {
           useValue: jasmine.createSpyObj('FastFeedbackService', ['pullFastFeedback'])
         },
         {
+          provide: NativeStorageService,
+          useValue: jasmine.createSpyObj('NativeStorageService', {
+            'getObject': Promise.resolve({
+              role: 'participant',
+              teamId: 1,
+              name: 'Test User',
+              email: 'user@test.com',
+              id: 1
+            })
+          })
+        },
+        {
           provide: BrowserStorageService,
           // we've already used BrowserStorageService in the constructor(), so we have to mock the return data when defined
           useValue: jasmine.createSpyObj('BrowserStorageService', {
@@ -115,6 +133,8 @@ describe('HomeComponent', () => {
               teamId: 1,
               name: 'Test User',
               email: 'user@test.com',
+              programImage: 'TestProgramImage',
+              programName: 'TestProgramName',
               id: 1
             }
           })
@@ -136,6 +156,7 @@ describe('HomeComponent', () => {
     achieventsServiceSpy = TestBed.inject(AchievementsService) as jasmine.SpyObj<AchievementsService>;
     fastFeedbackServiceSpy = TestBed.inject(FastFeedbackService) as jasmine.SpyObj<FastFeedbackService>;
     storageServiceSpy = TestBed.inject(BrowserStorageService) as jasmine.SpyObj<BrowserStorageService>;
+    nativeStorageServiceSpy = TestBed.inject(NativeStorageService) as jasmine.SpyObj<NativeStorageService>;
     routerSpy = TestBed.inject(Router) as jasmine.SpyObj<Router>;
     utils = TestBed.inject(UtilsService);
   });
@@ -156,56 +177,107 @@ describe('HomeComponent', () => {
   });
 
   describe('when testing constructor()', () => {
-    it('should display correct todo card with notification/chat/event-reminder event(Pusher)', () => {
-      // mock getTodoItems()
-      homeServiceSpy.getTodoItems.and.returnValue(of([
-        {
+    describe('with notification/chat/event-reminder event(Pusher)', () => {
+      beforeEach(fakeAsync(() => {
+        // mock getTodoItems()
+        homeServiceSpy.getTodoItems.and.returnValue(of([
+          {
+            type: 'feedback_available'
+          },
+          {
+            type: 'review_submission'
+          }
+        ]));
+        flush();
+      }));
+
+      it('should begin with correct items', fakeAsync(() => {
+        flush();
+        fixture.detectChanges();
+        // before any events
+        // 2 todo items
+        expect(component.todoItems.length).toEqual(2);
+        expect(page.todoCards.length).toBe(2);
+      }));
+
+      it('should listen to "notification" event', fakeAsync(() => {
+        // mock getTodoItemFromEvent()
+        homeServiceSpy.getTodoItemFromEvent.and.returnValue({
           type: 'feedback_available'
-        },
-        {
-          type: 'review_submission'
-        }
-      ]));
-      fixture.detectChanges();
-      // before any events
-      // 2 todo items
-      expect(component.todoItems.length).toEqual(2);
-      expect(page.todoCards.length).toBe(2);
+        });
 
-      // mock getTodoItemFromEvent()
-      homeServiceSpy.getTodoItemFromEvent.and.returnValue({
-        type: 'feedback_available'
-      });
-      // after 'notification' triggers
-      utils.broadcastEvent('notification', {});
-      fixture.detectChanges();
-      expect(homeServiceSpy.getTodoItemFromEvent.calls.count()).toBe(1, 'one service call');
-      expect(component.todoItems.length).toEqual(3);
-      expect(page.todoCards.length).toBe(3);
+        flush();
+        fixture.detectChanges();
 
-      // mock getChatMessage()
-      homeServiceSpy.getChatMessage.and.returnValue(of({
-        type: 'chat'
+        // after 'notification' triggers
+        utils.broadcastEvent('notification', {});
+        fixture.detectChanges();
+        expect(homeServiceSpy.getTodoItemFromEvent.calls.count()).toBe(1, 'one service call');
+        expect(component.todoItems.length).toEqual(3);
+        expect(page.todoCards.length).toBe(3);
       }));
-      // after 'chat' triggers
-      utils.broadcastEvent('chat:new-message', {});
-      fixture.detectChanges();
-      // 2 calls, 1 from onEnter(), 1 from the event
-      expect(homeServiceSpy.getChatMessage.calls.count()).toBe(2, '2 service call');
-      // there're still 4 todo items instead of 5, because all chat messages are gathered to only 1 todo item
-      expect(component.todoItems.length).toEqual(4);
-      expect(page.todoCards.length).toBe(4);
 
-      // mock getReminderEvent()
-      homeServiceSpy.getReminderEvent.and.returnValue(of({
-        name: 'Test Event',
+      it('should listen to "chat:new-message" event', fakeAsync(() => {
+        // mock getTodoItemFromEvent()
+        homeServiceSpy.getTodoItemFromEvent.and.returnValue({
+          type: 'feedback_available'
+        });
+
+        // mock getChatMessage()
+        homeServiceSpy.getChatMessage.and.returnValue(of({
+          type: 'chat'
+        }));
+
+        flush();
+        fixture.detectChanges();
+
+        // after 'chat' triggers
+        utils.broadcastEvent('notification', {});
+        utils.broadcastEvent('chat:new-message', {});
+        flush();
+        fixture.detectChanges();
+        fixture.whenStable().then(() => {
+          // 2 calls, 1 from onEnter(), 1 from the event
+          expect(homeServiceSpy.getChatMessage.calls.count()).toBe(2, '2 service call');
+          // there're still 4 todo items instead of 5, because all chat messages are gathered to only 1 todo item
+          expect(component.todoItems.length).toEqual(4);
+          expect(page.todoCards.length).toBe(4);
+        });
       }));
-      // after 'event-reminder' triggers
-      utils.broadcastEvent('event-reminder', {});
-      fixture.detectChanges();
-      expect(homeServiceSpy.getReminderEvent.calls.count()).toBe(1, '1 service call');
-      expect(component.eventReminders.length).toEqual(1, '1 event reminder');
-      expect(page.todoCards.length).toBe(5);
+
+      it('should listen to "event-reminder" event', fakeAsync(() => {
+        // mock getTodoItemFromEvent()
+        homeServiceSpy.getTodoItemFromEvent.and.returnValue({
+          type: 'feedback_available'
+        });
+
+        // mock getChatMessage()
+        homeServiceSpy.getChatMessage.and.returnValue(of({
+          type: 'chat'
+        }));
+
+        // mock getReminderEvent()
+        homeServiceSpy.getReminderEvent.and.returnValue(of({
+          name: 'Test Event',
+        }));
+
+        flush();
+        fixture.detectChanges();
+
+        // after 'event-reminder' triggers
+        utils.broadcastEvent('notification', {});
+        utils.broadcastEvent('chat:new-message', {});
+        utils.broadcastEvent('event-reminder', {});
+
+        flush();
+        fixture.detectChanges();
+
+        fixture.whenStable().then(() => {
+          expect(homeServiceSpy.getReminderEvent.calls.count()).toBe(1, '1 service call');
+          expect(component.eventReminders.length).toEqual(1, '1 event reminder');
+          expect(page.todoCards.length).toBe(5);
+        });
+      }));
     });
   });
 
@@ -249,11 +321,14 @@ describe('HomeComponent', () => {
           time: '2019-03-02'
         }
       ));
+
       fixture.detectChanges();
-      expect(component.todoItems.length).toEqual(1, '1 todo item');
-      expect(component.loadingTodoItems).toBe(false, 'todo item loaded');
-      expect(homeServiceSpy.getChatMessage.calls.count()).toBe(1, 'one call');
-      expect(page.todoCards.length).toBe(1, '1 todo card');
+      fixture.whenStable().then(() => {
+        expect(component.todoItems.length).toEqual(1, '1 todo item');
+        expect(component.loadingTodoItems).toBe(false, 'todo item loaded');
+        expect(homeServiceSpy.getChatMessage.calls.count()).toBe(1, 'one call');
+        expect(page.todoCards.length).toBe(1, '1 todo card');
+      });
     });
 
     it('should not call getChatMessage if no team id', () => {
@@ -274,9 +349,11 @@ describe('HomeComponent', () => {
 
     it('should get the correct progress', () => {
       fixture.detectChanges();
-      expect(component.progressConfig).toEqual({percent: 10});
-      expect(homeServiceSpy.getProgress.calls.count()).toBe(1, 'one call');
-      expect(component.loadingProgress).toBe(false, 'progress loaded');
+      fixture.whenStable().then(() => {
+        expect(component.progressConfig).toEqual({percent: 10});
+        expect(homeServiceSpy.getProgress.calls.count()).toBe(1, 'one call');
+        expect(component.loadingProgress).toBe(false, 'progress loaded');
+      });
     });
 
     it('should not display achievement if there\'s no achievement', () => {

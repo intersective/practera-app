@@ -7,8 +7,9 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { UtilsService } from '@services/utils.service';
 import { NotificationService } from '@shared/notification/notification.service';
 import { TestUtils } from '@testing/utils';
-import { BrowserStorageServiceMock } from '@testing/mocked.service';
+import { BrowserStorageServiceMock, NativeStorageServiceMock} from '@testing/mocked.service';
 import { BrowserStorageService } from '@services/storage.service';
+import { NativeStorageService } from '@services/native-storage.service';
 import { EventListService } from '@app/event-list/event-list.service';
 import { ReviewListService } from '@app/review-list/review-list.service';
 import { environment } from '@environments/environment';
@@ -21,6 +22,7 @@ describe('SwitcherService', () => {
   let requestSpy: jasmine.SpyObj<RequestService>;
   let notificationSpy: jasmine.SpyObj<NotificationService>;
   let storageSpy: jasmine.SpyObj<BrowserStorageService>;
+  let nativeStorageSpy: jasmine.SpyObj<NativeStorageService>;
   let eventSpy: jasmine.SpyObj<EventListService>;
   let reviewSpy: jasmine.SpyObj<ReviewListService>;
   let pusherSpy: jasmine.SpyObj<PusherService>;
@@ -30,34 +32,39 @@ describe('SwitcherService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-        imports: [ HttpClientTestingModule ],
-        providers: [
-          Apollo,
-          SwitcherService,
-          UtilsService,
-          EventListService,
-          ReviewListService,
-          PusherService,
-          SharedService,
-          {
-            provide: BrowserStorageService,
-            useClass: BrowserStorageServiceMock
-          },
-          {
-            provide: RequestService,
-            useValue: jasmine.createSpyObj('RequestService', ['post', 'graphQLQuery', 'apiResponseFormatError'])
-          },
-          {
-            provide: NotificationService,
-            useValue: jasmine.createSpyObj('NotificationService', ['modal'])
-          },
-        ]
+      imports: [ HttpClientTestingModule ],
+      providers: [
+        Apollo,
+        SwitcherService,
+        UtilsService,
+        EventListService,
+        ReviewListService,
+        PusherService,
+        SharedService,
+        {
+          provide: BrowserStorageService,
+          useClass: BrowserStorageServiceMock
+        },
+        {
+          provide: NativeStorageService,
+          useClass: NativeStorageServiceMock
+        },
+        {
+          provide: RequestService,
+          useValue: jasmine.createSpyObj('RequestService', ['post', 'graphQLQuery', 'apiResponseFormatError'])
+        },
+        {
+          provide: NotificationService,
+          useValue: jasmine.createSpyObj('NotificationService', ['modal'])
+        },
+      ]
     });
     service = TestBed.inject(SwitcherService);
     requestSpy = TestBed.inject(RequestService) as jasmine.SpyObj<RequestService>;
     utils = TestBed.inject(UtilsService);
     notificationSpy = TestBed.inject(NotificationService) as jasmine.SpyObj<NotificationService>;
     storageSpy = TestBed.inject(BrowserStorageService) as jasmine.SpyObj<BrowserStorageService>;
+    nativeStorageSpy = TestBed.inject(NativeStorageService) as jasmine.SpyObj<NativeStorageService>;
     eventSpy = TestBed.inject(EventListService) as jasmine.SpyObj<EventListService>;
     reviewSpy = TestBed.inject(ReviewListService) as jasmine.SpyObj<ReviewListService>;
     pusherSpy = TestBed.inject(PusherService) as jasmine.SpyObj<PusherService>;
@@ -72,24 +79,30 @@ describe('SwitcherService', () => {
 
   describe('getPrograms()', () => {
     it('should get program list from storage/cache', fakeAsync(() => {
-      storageSpy.get.and.returnValue([
+      nativeStorageSpy.getObject.and.returnValue([
         {program: {}, timeline: {}, project: {lead_image: 'https://www.filepicker.io/api/file/DAsMaIUcQcSM3IFqalPN'}, enrolment: {}}
       ]);
-      service.getPrograms().subscribe(programs => {
-        expect(programs[0].project.lead_image).toContain('https://cdn.filestackcontent.com/resize=fit:crop,width:');
+      tick();
+
+      service.getPrograms().then(res => {
+        res.subscribe(programs => {
+          expect(programs[0].project.lead_image).toContain('https://cdn.filestackcontent.com/resize=fit:crop,width:');
+        });
       });
-      expect(storageSpy.get).toHaveBeenCalledWith('programs');
+
+      flushMicrotasks();
+      expect(nativeStorageSpy.getObject).toHaveBeenCalledWith('programs');
     }));
   });
 
   describe('when testing checkIsOneProgram()', () => {
-    it('should return true if got Array with one program object ', () => {
+    it('should return true if got Array with one program object ', async () => {
         spyOn(utils, 'isEmpty').and.returnValue(false);
-        expect(service.checkIsOneProgram([{}])).toBe(true);
+        expect(await service.checkIsOneProgram([{}])).toBe(true);
     });
-    it('should return false if got Array multiple program objects ', () => {
+    it('should return false if got Array multiple program objects ', async () => {
         spyOn(utils, 'isEmpty').and.returnValue(false);
-        expect(service.checkIsOneProgram([{}, {}, {}])).toBe(false);
+        expect(await service.checkIsOneProgram([{}, {}, {}])).toBe(false);
     });
   });
 
@@ -232,8 +245,9 @@ describe('SwitcherService', () => {
   });
 
   describe('switchProgram()', () => {
-    it('should collect related data based on selected program', () => {
-      service.switchProgram(ProgramFixture[0]).subscribe(() => {
+    it('should collect related data based on selected program', async () => {
+      const switcher = await service.switchProgram(ProgramFixture[0]);
+      switcher.subscribe(() => {
 
         spyOn(utils, 'has');
         spyOn(service, 'getNewJwt');

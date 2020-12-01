@@ -9,8 +9,9 @@ import { UtilsService } from '@services/utils.service';
 import { NotificationService } from '@shared/notification/notification.service';
 import { SwitcherService } from '../../switcher/switcher.service';
 import { BrowserStorageService } from '@services/storage.service';
+import { NativeStorageService } from '@services/native-storage.service';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
-import { BrowserStorageServiceMock } from '@testing/mocked.service';
+import { BrowserStorageServiceMock, NativeStorageServiceMock } from '@testing/mocked.service';
 import { Apollo } from 'apollo-angular';
 
 describe('AuthDirectLoginComponent', () => {
@@ -23,7 +24,7 @@ describe('AuthDirectLoginComponent', () => {
   let apolloSpy: jasmine.SpyObj<Apollo>;
   let notificationSpy: jasmine.SpyObj<NotificationService>;
   let switcherSpy: jasmine.SpyObj<SwitcherService>;
-  let storageSpy: jasmine.SpyObj<BrowserStorageService>;
+  let nativeStorageSpy: jasmine.SpyObj<NativeStorageService>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
@@ -31,16 +32,15 @@ describe('AuthDirectLoginComponent', () => {
       declarations: [ AuthDirectLoginComponent ],
       schemas: [ CUSTOM_ELEMENTS_SCHEMA ],
       providers: [
+        UtilsService,
+        NewRelicService,
         {
           provide: Apollo,
           useValue: jasmine.createSpyObj('Apollo', ['getClient'])
         },
-        UtilsService,
-        NewRelicService,
         {
-          provide: BrowserStorageService,
-          useClass: BrowserStorageServiceMock
-          // useValue: jasmine.createSpyObj('BrowserStorageService', ['get', 'getConfig', 'getUser'])
+          provide: NativeStorageService,
+          useClass: NativeStorageServiceMock
         },
         {
           provide: AuthService,
@@ -85,15 +85,14 @@ describe('AuthDirectLoginComponent', () => {
     apolloSpy = TestBed.inject(Apollo) as jasmine.SpyObj<Apollo>;
     notificationSpy = TestBed.inject(NotificationService) as jasmine.SpyObj<NotificationService>;
     switcherSpy = TestBed.inject(SwitcherService) as jasmine.SpyObj<SwitcherService>;
-    storageSpy = TestBed.inject(BrowserStorageService) as jasmine.SpyObj<BrowserStorageService>;
+    nativeStorageSpy = TestBed.inject(NativeStorageService) as jasmine.SpyObj<NativeStorageService>;
   });
 
   beforeEach(() => {
     serviceSpy.directLogin.and.returnValue(of({}));
     switcherSpy.getMyInfo.and.returnValue(of({}));
     switcherSpy.switchProgram.and.returnValue(of({}));
-    storageSpy.get.and.returnValue([{timeline: {id: 1}}]);
-    storageSpy.getConfig.and.returnValue({logo: null});
+    nativeStorageSpy.getObject.and.returnValue([{timeline: {id: 1}}]);
     apolloSpy.getClient.and.returnValue({clearStore: () => true});
   });
 
@@ -152,14 +151,17 @@ describe('AuthDirectLoginComponent', () => {
         switchProgram = false;
         redirect = ['switcher', 'switcher-program'];
       });
-      it('program switcher page if timeline id is not in programs', () => {
+
+      it('program switcher page if timeline id is not in programs', fakeAsync(() => {
         tmpParams.redirect = 'home';
-        storageSpy.get.and.returnValue([
+        nativeStorageSpy.getObject.and.returnValue([
           {timeline: {id: 2}}
         ]);
         switchProgram = false;
         redirect = ['switcher', 'switcher-program'];
-      });
+        tick();
+      }));
+
       it('home page', () => {
         tmpParams.redirect = 'home';
         redirect = ['app', 'home'];

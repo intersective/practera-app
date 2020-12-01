@@ -5,6 +5,7 @@ import { PopUpComponent } from './pop-up/pop-up.component';
 import { AchievementPopUpComponent } from './achievement-pop-up/achievement-pop-up.component';
 import { LockTeamAssessmentPopUpComponent } from './lock-team-assessment-pop-up/lock-team-assessment-pop-up.component';
 import { ActivityCompletePopUpComponent } from './activity-complete-pop-up/activity-complete-pop-up.component';
+import { PNPermissionModalComponent } from '@shared/components/pn-permission-modal/pn-permission-modal.component';
 import { Achievement, AchievementsService } from '@app/achievements/achievements.service';
 import { UtilsService } from '@services/utils.service';
 
@@ -116,7 +117,7 @@ export class NotificationService {
       achievement
     };
     if (type === 'notification') {
-      this.achievementService.markAchievementAsSeen(achievement.id);
+      await this.achievementService.markAchievementAsSeen(achievement.id);
     }
     const modal = await this.modal(component, componentProps, {
       cssClass: this.utils.isMobile() ? 'practera-popup' : 'practera-popup desktop-view',
@@ -165,6 +166,19 @@ export class NotificationService {
     return await this.modal(
       ActivityCompletePopUpComponent,
       { activityId, activityCompleted },
+      {
+        cssClass: cssClass,
+        keyboardClose: false,
+        backdropDismiss: false
+      }
+    );
+  }
+
+  async pushNotificationPermissionPopUp(message) {
+    const cssClass = 'practera-popup push-notification-popup';
+    return await this.modal(
+      PNPermissionModalComponent,
+      { message },
       {
         cssClass: cssClass,
         keyboardClose: false,

@@ -31,7 +31,10 @@ describe('ReviewListComponent', () => {
         Apollo,
         UtilsService,
         NewRelicService,
-        NotificationService,
+        {
+          provide: NotificationService,
+          useValue: jasmine.createSpyObj('NotificationService', ['alert'])
+        },
         {
           provide: ReviewListService,
           useValue: jasmine.createSpyObj('ReviewListService', ['getReviews'])

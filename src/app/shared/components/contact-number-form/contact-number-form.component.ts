@@ -1,19 +1,23 @@
-import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, OnDestroy, Input, Output, EventEmitter } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { UtilsService } from '@services/utils.service';
-import { BrowserStorageService } from '@services/storage.service';
+import { NativeStorageService } from '@services/native-storage.service';
 import { environment } from '@environments/environment';
 import { SettingService } from '@app/settings/setting.service';
 import { NotificationService } from '@shared/notification/notification.service';
+import { fromPromise } from 'rxjs/observable/fromPromise';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-contact-number-form',
   templateUrl: './contact-number-form.component.html',
   styleUrls: ['./contact-number-form.component.scss']
 })
-export class ContactNumberFormComponent implements OnInit {
+export class ContactNumberFormComponent implements OnInit, OnDestroy {
 
   @Input() page;
   @Output() updateNumber = new EventEmitter();
+  data$: Subscription;
 
   // use to pass data to api
   profile = {
@@ -91,33 +95,59 @@ export class ContactNumberFormComponent implements OnInit {
   };
 
   constructor(
-    public storage: BrowserStorageService,
     public utils: UtilsService,
+    private nativeStorage: NativeStorageService,
     private settingService: SettingService,
-    private notificationService: NotificationService
+    private notificationService: NotificationService,
+    private routes: ActivatedRoute
   ) { }
 
   ngOnInit() {
-    this._initcomponent();
+    this.data$ = this.routes.data.subscribe(data => {
+      this._initcomponent(data.user.contactNumber);
+    });
   }
 
-  private _initcomponent() {
+  ngOnDestroy() {
+    if (this.data$ instanceof Subscription) {
+      this.data$.unsubscribe();
+    }
+  }
+
+  /**
+   * component initialization
+   * @return {Promise<void>}
+   */
+  private _initcomponent(contactNumber: string): void {
     this.countryModel = environment.defaultCountryModel;
     this.activeCountryModelInfo.countryCode = this.contactNumberFormat.masks[this.countryModel].format;
     this.activeCountryModelInfo.placeholder = this.contactNumberFormat.masks[this.countryModel].placeholder;
     this.activeCountryModelInfo.pattern = this.contactNumberFormat.masks[this.countryModel].pattern;
     this.activeCountryModelInfo.length = this.contactNumberFormat.masks[this.countryModel].numberLength;
+
     // if user has the contact number
-    if (this.page === 'settings' && (this.storage.getUser().contactNumber && this.storage.getUser().contactNumber != null)) {
-      this._checkCurrentContactNumberOrigin();
+    if (this.page === 'settings' && (contactNumber && contactNumber != null)) {
+      this._checkCurrentContactNumberOrigin(contactNumber);
+    } else {
+      // without refresh page, we need to manually set to null (no pre-format needed)
+      this.contactNumber = null;
     }
   }
 
-  private _checkCurrentContactNumberOrigin() {
-    const contactNum = this.storage.getUser().contactNumber;
+  /**
+   * reformat contact number format
+   * @param {[type]} contactNumber [description]
+   * @param {number} prefixCode    [description]
+   */
+  private reformatNumber(contactNumber, prefixCode: number) {
+    const number = contactNumber.substring(prefixCode);
+    return this._separeteContactNumber(number);
+  }
+
+  private _checkCurrentContactNumberOrigin(contactNumber) {
+    const contactNum = contactNumber;
     let prefix = contactNum.substring(0, 3);
-    let number = contactNum.substring(3);
-    this.contactNumber = this._separeteContactNumber(number);
+    this.contactNumber = this.reformatNumber(contactNum, 3);
 
     switch (prefix) {
       case '+61':
@@ -135,8 +165,7 @@ export class ContactNumberFormComponent implements OnInit {
     }
 
     prefix = contactNum.substring(0, 2);
-    number = contactNum.substring(2);
-    this.contactNumber = this._separeteContactNumber(number);
+    this.contactNumber = this.reformatNumber(contactNum, 2);
     switch (prefix) {
       case '61':
       case '04':
@@ -148,8 +177,7 @@ export class ContactNumberFormComponent implements OnInit {
     }
 
     prefix = contactNum.substring(0, 1);
-    number = contactNum.substring(1);
-    this.contactNumber = this._separeteContactNumber(number);
+    this.contactNumber = this.reformatNumber(contactNum, 1);
     if (prefix === '1') {
       this._setCountry('US');
       return;
@@ -225,7 +253,7 @@ export class ContactNumberFormComponent implements OnInit {
     }
   }
 
-  updateContactNumber(): Promise<void> {
+  async updateContactNumber(): Promise<void> {
     this.profile.contactNumber = this.activeCountryModelInfo.countryCode + this.contactNumber;
     // strip out white spaces and underscores
     this.profile.contactNumber = this.profile.contactNumber.replace(/[^0-9+]+/ig, '');
@@ -251,20 +279,24 @@ export class ContactNumberFormComponent implements OnInit {
           handler: () => {
             this.settingService.updateProfile({
               contact_number: this.profile.contactNumber,
-            }).subscribe(result => {
+            }).subscribe(async result => {
               this.updating = false;
               if (result.success) {
                 // update contact number in user local storage data array.
-                this.storage.setUser({ contactNumber: this.profile.contactNumber });
+                await this.nativeStorage.setObject('me', {
+                  contactNumber: this.profile.contactNumber
+                });
                 const newContactNumber = this.profile.contactNumber;
                 // also update contact number in program object in local storage
-                const timelineId = this.storage.getUser().timelineId;  // get current timeline Id
-                const programsObj = this.utils.each(this.storage.get('programs'), function(program) {
+                const { timelineId } = await this.nativeStorage.getObject('me');  // get current timeline Id
+                const programs = await this.nativeStorage.getObject('programs');
+                const programsObj = this.utils.each(Object.values(programs), function(program) {
                     if (program.timeline.id === timelineId) {
                       program.enrolment.contact_number = newContactNumber;
                     }
                 });
-                this.storage.set('programs', programsObj);
+
+                this.nativeStorage.setObject('programs', programsObj);
                 return this.notificationService.popUp('shortMessage', { message: 'Profile successfully updated!'});
 
               } else {
