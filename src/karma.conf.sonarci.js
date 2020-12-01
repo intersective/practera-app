@@ -13,7 +13,7 @@ module.exports = function(config) {
     ],
 
     singleRun: true,
-	
+
     colors:    false,
 
     autoWatch: false,
@@ -65,7 +65,7 @@ module.exports = function(config) {
     },
 
     reporters: ['progress', 'sonarqubeUnit', 'coverage'],
-    
+
     preprocessors: {
       'src/**/*.js':   ['coverage'],
       'src/**/*.ts':   ['coverage']
