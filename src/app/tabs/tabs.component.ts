@@ -9,6 +9,7 @@ import { Router } from '@angular/router';
 import { SharedService } from '@services/shared.service';
 import { EventListService } from '@app/event-list/event-list.service';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
+import { RequestService } from '@shared/request/request.service';
 import { fromPromise } from 'rxjs/observable/fromPromise';
 
 @Component({
@@ -34,6 +35,7 @@ export class TabsComponent extends RouterEnter {
     private sharedService: SharedService,
     private eventsService: EventListService,
     private newRelic: NewRelicService,
+    private requestService: RequestService,
     private nativeStorage: NativeStorageService
   ) {
     super(router);
@@ -55,6 +57,7 @@ export class TabsComponent extends RouterEnter {
         this.noOfChats = noOfChats;
       });
     });
+
   }
 
   private _initialise() {
@@ -116,6 +119,8 @@ export class TabsComponent extends RouterEnter {
         });
       }
     });
+
+    this.hidingChatTab();
   }
 
   private _checkRoute() {
@@ -156,6 +161,13 @@ export class TabsComponent extends RouterEnter {
   private _topicStopReading() {
     // if user looking at topic mark it stop reading before go back.
     this.sharedService.markTopicStopOnNavigating();
+  }
+
+  hidingChatTab() {
+    const checkHideTab = this.requestService.hideChatTab();
+    if (checkHideTab) {
+      this.showChat = false;
+    }
   }
 
 }

@@ -24,7 +24,8 @@ e2e/config/index.ts
 e2e/protractor-dev.conf.js
 out-tsc
 
-src/environments/environment.alpha-native.ts
 .gitsecret/keys/random_seed
 !*.secret
 android/app/google-services.json
+src/environments/environment.alpha-native.ts
+src/environments/environment.ts

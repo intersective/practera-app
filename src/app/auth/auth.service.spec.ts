@@ -83,7 +83,8 @@ describe('AuthService', () => {
             },
             Enrolment: {},
             Project: {},
-            Timeline: {}
+            Timeline: {},
+            Experience: {}
           }
         ]
       }
@@ -96,13 +97,15 @@ describe('AuthService', () => {
     expect(requestSpy.post.calls.first().args[1]).toContain('123');
 
     tick();
+
     expect(nativeStorageSpy.setObject).toHaveBeenCalledWith('me', {apikey: '123456'});
     expect(nativeStorageSpy.setObject).toHaveBeenCalledWith('isLoggedIn', {isLoggedIn: true});
     expect(nativeStorageSpy.setObject).toHaveBeenCalledWith('programs', [ {
       enrolment: {  },
       program: { config: { theme_color: 'abc' } },
       project: {  },
-      timeline: {  }
+      timeline: {  },
+      experience: { }
     } ]);
   }));
 

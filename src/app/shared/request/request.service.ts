@@ -66,6 +66,8 @@ export class RequestService {
     }
   }
 
+  internalErrorCheck = false;
+
   /**
    *
    * @param {'Content-Type': string } header
@@ -240,10 +242,17 @@ export class RequestService {
     return;
   }
 
+  public hideChatTab () {
+    return !this.internalErrorCheck;
+  }
+
   private handleError(error: HttpErrorResponse | any) {
     if (this.devMode.isDevMode()) {
       const errorMessage = error.message || error;
       console.error(errorMessage); // log to console instead
+      if (error.status === 500 && error.url.includes('chat')) {
+        this.hideChatTab();
+      }
     }
 
     // log the user out if jwt expired

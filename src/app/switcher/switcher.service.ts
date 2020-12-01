@@ -27,6 +27,7 @@ export interface ProgramObj {
   project: Project;
   timeline: Timeline;
   enrolment: Enrolment;
+  experience?: Experience;
   progress?: number;
   todoItems?: number;
 }
@@ -52,6 +53,11 @@ export interface Project {
 
 export interface Timeline {
   id: number;
+}
+
+export interface Experience {
+  id: number;
+  config: any;
 }
 
 export interface Enrolment {
@@ -95,7 +101,7 @@ export class SwitcherService {
    * Get the progress and number of notifications for each project
    * @param projectIds Project ids
    */
-  getProgresses(projectIds: number[]) {
+  getProgresses(projectIds: number[]): Observable<any[]> {
     return this.request.graphQLQuery(
       `query getProjectList($ids: [Int]!) {
         projects(ids: $ids) {
@@ -111,40 +117,50 @@ export class SwitcherService {
       }
     )
     .pipe(map(res => {
-      return ((res.data || {}).projects || []).map(v => {
-        return {
-          id: +v.id,
-          progress: v.progress,
-          todoItems: v.todoItems.filter(ti => !ti.isDone).length
-        };
-      });
+      if (res.data && res.data.projects) {
+        return ((res.data || {}).projects || []).map(v => {
+          return {
+            id: +v.id,
+            progress: v.progress,
+            todoItems: v.todoItems.filter(ti => !ti.isDone).length
+          };
+        });
+      }
+
+      return [];
     }));
   }
 
   async switchProgram(programObj: ProgramObj): Promise<Observable<any>> {
-    const themeColor = this.utils.has(programObj, 'program.config.theme_color') ? programObj.program.config.theme_color : '#2bbfd4';
+    const { program, project, experience, timeline, enrolment } = programObj;
+
+    const themeColor = this.utils.has(programObj, 'program.config.theme_color') ? program.config.theme_color : '#2bbfd4';
+
     let cardBackgroundImage = '';
     if (this.utils.has(programObj, 'program.config.card_style')) {
-      cardBackgroundImage = '/assets/' + programObj.program.config.card_style;
+      cardBackgroundImage = '/assets/' + program.config.card_style;
     }
 
+    const experienceConfig = experience ? experience.config : {};
     const user = {
-      programId: programObj.program.id,
-      programName: programObj.program.name,
-      programImage: programObj.project.lead_image,
-      hasReviewRating: this.utils.has(programObj, 'program.config.review_rating') ? programObj.program.config.review_rating : false,
-      truncateDescription: this.utils.has(programObj, 'program.config.truncate_description') ? programObj.program.config.truncate_description : true,
-      experienceId: programObj.program.experience_id,
-      projectId: programObj.project.id,
-      timelineId: programObj.timeline.id,
-      contactNumber: programObj.enrolment.contact_number,
+      programId: program.id,
+      programName: program.name,
+      programImage: project.lead_image,
+      hasReviewRating: this.utils.has(programObj, 'program.config.review_rating') ? program.config.review_rating : false,
+      truncateDescription: this.utils.has(programObj, 'program.config.truncate_description') ? program.config.truncate_description : true,
+      experienceId: program.experience_id,
+      projectId: project.id,
+      timelineId: timeline.id,
+      contactNumber: enrolment.contact_number,
       themeColor: themeColor,
       activityCardImage: cardBackgroundImage,
-      enrolment: programObj.enrolment,
+      enrolment: enrolment,
+      activityCompleteMessage: (experienceConfig || {}).activity_complete_message || null,
       teamId: null,
       hasEvents: false,
       hasReviews: false
     };
+
     await this.nativeStorage.setObject('me', user);
     this.storage.setUser(user);
 

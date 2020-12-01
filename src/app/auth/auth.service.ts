@@ -145,7 +145,8 @@ export class AuthService {
             enrolment: timeline.Enrolment,
             program: timeline.Program,
             project: timeline.Project,
-            timeline: timeline.Timeline
+            timeline: timeline.Timeline,
+            experience: timeline.Experience,
           };
         },
         this
