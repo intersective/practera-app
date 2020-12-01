@@ -60,6 +60,7 @@
     "filestack-js": "^3.10.1",
     "graphql": "^15.3.0",
     "graphql-tag": "^2.10.4",
+    "ionic-plugin-deeplinks": "^1.0.20",
     "lodash": "^4.17.19",
     "moment": "^2.24.0",
     "newrelic": "^5.11.0",
