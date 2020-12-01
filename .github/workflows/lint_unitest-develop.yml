@@ -46,8 +46,8 @@ jobs:
         uses: satackey/action-docker-layer-caching@v0.0.8
         continue-on-error: true
         with:
-            key: practera-app-v2-unit-test-docker-cache-{hash}
-            restore-keys: |
+          key: practera-app-v2-unit-test-docker-cache-{hash}
+          restore-keys: |
             practera-app-v2-unit-test-docker-cache-
 
       # Perform AWS ECR Login 
