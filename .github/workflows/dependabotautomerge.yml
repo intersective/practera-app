@@ -4,7 +4,7 @@ on:
   pull_request:
 
 jobs:
-  worker:
+  Dependabot:
     runs-on: ubuntu-latest
 
     if: github.actor == 'dependabot[bot]'
@@ -28,17 +28,18 @@ jobs:
     
     # Run Slack Notification
       - name: Slack Notification
-        # if: always() # Pick up events even if the job fails or is canceled.
-        if: success() || failure() # Pick up events only if the job fails or is success.
+        if: success() || failure() # Pick up events even if the job fails or is canceled.
         uses: 8398a7/action-slack@v3
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          MATRIX_CONTEXT: ${{ toJson(matrix) }} # required
         with:
           status: ${{ job.status }}
-          author_name: GitHubAction Dependabotautomerge CI
+          author_name: GitHubAction CI for develop branch
           mention: 'here'
           if_mention: failure,cancelled
-          fields: repo,commit,eventName,ref,workflow,message
+          job_name: Dependabot # Match the name above.
+          fields: repo,commit,eventName,ref,workflow,message,author,job,took
           custom_payload: |
             {
             username: 'GitHub Action CI WorkFlow',
@@ -51,6 +52,9 @@ jobs:
               ${process.env.AS_EVENT_NAME}\n
               @${process.env.AS_REF}\n
               @${process.env.AS_WORKFLOW}\n
-              ${process.env.AS_MESSAGE}`,
+              ${process.env.AS_MESSAGE}\n
+              ${process.env.AS_AUTHOR}\n
+              ${process.env.AS_JOB}\n
+              ${process.env.AS_TOOK}`,
             }]
             }
