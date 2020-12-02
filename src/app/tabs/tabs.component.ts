@@ -64,7 +64,6 @@ export class TabsComponent extends RouterEnter {
     this.showChat = false;
     this.showReview = false;
     this.showEvents = false;
-
   }
 
   onEnter() {

@@ -141,6 +141,7 @@ export class SwitcherService {
     const experienceConfig = experience ? experience.config : {};
 
     this.storage.setUser({
+      enrolment,
       programId: program.id,
       programName: program.name,
       programImage: project.lead_image,
@@ -152,7 +153,6 @@ export class SwitcherService {
       contactNumber: enrolment.contact_number,
       themeColor: themeColor,
       activityCardImage: cardBackgroundImage,
-      enrolment: enrolment,
       activityCompleteMessage: (experienceConfig || {}).activity_complete_message || null,
       teamId: null,
       hasEvents: false,
