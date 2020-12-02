@@ -39,9 +39,9 @@ describe('OverviewComponent', () => {
   let fixture: ComponentFixture<OverviewComponent>;
   let activatedRouteSpy: ActivatedRoute;
   let utils: UtilsService;
-  let pushNotificationSpy: PushNotificationService;
   let notificationSpy: NotificationService;
   let fastfeedbackSpy: jasmine.SpyObj<FastFeedbackService>;
+  let pushNotificationSpy: jasmine.SpyObj<PushNotificationService>;
 
   beforeEach(() => {
 
@@ -111,9 +111,9 @@ describe('OverviewComponent', () => {
     component = fixture.componentInstance;
     activatedRouteSpy = TestBed.inject(ActivatedRoute);
     utils = TestBed.inject(UtilsService);
-    pushNotificationSpy = TestBed.inject(PushNotificationService);
     notificationSpy = TestBed.inject(NotificationService);
     fastfeedbackSpy = TestBed.inject(FastFeedbackService) as jasmine.SpyObj<FastFeedbackService>;
+    pushNotificationSpy = TestBed.inject(PushNotificationService) as jasmine.SpyObj<PushNotificationService>;
     fastfeedbackSpy.pullFastFeedback.and.returnValue(of(true));
     component.initiator$ = of({});
   });
@@ -146,6 +146,7 @@ describe('OverviewComponent', () => {
     it('should get program name and pull fastfeedback', () => {
       expect(component.programName).toEqual(PROGRAM_NAME);
       expect(fastfeedbackSpy.pullFastFeedback).toHaveBeenCalled();
+      expect(pushNotificationSpy.initiatePushNotification).toHaveBeenCalled();
     });
 
     it('should try to initiate Push Notification', () => {

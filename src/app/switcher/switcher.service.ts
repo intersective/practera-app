@@ -143,6 +143,8 @@ export class SwitcherService {
 
     const experienceConfig = experience ? experience.config : {};
     const user = {
+      enrolment,
+      themeColor,
       programId: program.id,
       programName: program.name,
       programImage: project.lead_image,
@@ -152,9 +154,7 @@ export class SwitcherService {
       projectId: project.id,
       timelineId: timeline.id,
       contactNumber: enrolment.contact_number,
-      themeColor: themeColor,
       activityCardImage: cardBackgroundImage,
-      enrolment: enrolment,
       activityCompleteMessage: (experienceConfig || {}).activity_complete_message || null,
       teamId: null,
       hasEvents: false,

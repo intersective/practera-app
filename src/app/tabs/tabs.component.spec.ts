@@ -156,8 +156,8 @@ describe('TabsComponent', () => {
 
       requestSpy.hideChatTab.and.returnValue(false);
       fixture.detectChanges();
-
       flush();
+
       fixture.whenStable().then(() => {
         requestSpy.hideChatTab.and.returnValue(true);
         expect(component.noOfTodoItems).toBe(5);
@@ -167,6 +167,12 @@ describe('TabsComponent', () => {
         expect(component.showEvents).toBe(true);
       });
     }));
+
+    it('should hide chat if requestService.hideChatTab is true', () => {
+      requestSpy.hideChatTab.and.returnValue(true);
+      fixture.detectChanges();
+      expect(component.showChat).toBe(false);
+    });
 
     it('should get correct data without team id', () => {
       storageSpy.getUser.and.returnValue({

@@ -268,6 +268,14 @@ describe('SwitcherService', () => {
     });
   });
 
+  describe('switchProgram() with null experience config', () => {
+    it('should collect related data based on selected program', () => {
+      service.switchProgram(ProgramFixture[2]).subscribe(() => {
+        spyOn(utils, 'has');
+      });
+    });
+  });
+
   describe('getTeamInfo()', () => {
     it('should make API request to `api/teams.json`', () => {
       requestSpy.get.and.returnValue(of({

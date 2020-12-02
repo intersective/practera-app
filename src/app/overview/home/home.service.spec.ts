@@ -274,7 +274,6 @@ describe('HomeService', () => {
       service.getProgress().subscribe(
         progress => expect(progress).toEqual(expected)
       );
-      expect(service.currentActivityId).toBe(2);
       expect(requestSpy.get.calls.count()).toBe(1);
     });
 
@@ -318,7 +317,6 @@ describe('HomeService', () => {
       service.getProgress().subscribe(
         progress => expect(progress).toEqual(expected)
       );
-      expect(service.currentActivityId).toBe(3);
       expect(requestSpy.get.calls.count()).toBe(1);
     });
   });
