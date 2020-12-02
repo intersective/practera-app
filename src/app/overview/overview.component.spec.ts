@@ -9,6 +9,7 @@ import { ActivatedRoute, convertToParamMap } from '@angular/router';
 import { Observable, of, pipe } from 'rxjs';
 import { BrowserStorageService } from '@services/storage.service';
 import { Apollo } from 'apollo-angular';
+import { PushNotificationService } from '@services/push-notification.service';
 
 describe('OverviewComponent', () => {
   const PROGRAM_NAME = 'Dummy Program name';
@@ -18,6 +19,7 @@ describe('OverviewComponent', () => {
   let routeSpy: ActivatedRoute;
   let utils: UtilsService;
   let fastfeedbackSpy: jasmine.SpyObj<FastFeedbackService>;
+  let pushNotificationSpy: jasmine.SpyObj<PushNotificationService>;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -47,6 +49,12 @@ describe('OverviewComponent', () => {
           provide: FastFeedbackService,
           useValue: jasmine.createSpyObj('FastFeedbackService', ['pullFastFeedback'])
         },
+        {
+          provide: PushNotificationService,
+          useValue: jasmine.createSpyObj('PushNotificationService', {
+            initiatePushNotification: Promise.resolve(true)
+          })
+        },
       ]
     });
   });
@@ -57,6 +65,7 @@ describe('OverviewComponent', () => {
     routeSpy = TestBed.inject(ActivatedRoute);
     utils = TestBed.inject(UtilsService);
     fastfeedbackSpy = TestBed.inject(FastFeedbackService) as jasmine.SpyObj<FastFeedbackService>;
+    pushNotificationSpy = TestBed.inject(PushNotificationService) as jasmine.SpyObj<PushNotificationService>;
     fastfeedbackSpy.pullFastFeedback.and.returnValue(of(true));
     component.initiator$ = of({});
   });
@@ -70,6 +79,7 @@ describe('OverviewComponent', () => {
       component.ngOnInit();
       expect(component.programName).toEqual(PROGRAM_NAME);
       expect(fastfeedbackSpy.pullFastFeedback).toHaveBeenCalled();
+      expect(pushNotificationSpy.initiatePushNotification).toHaveBeenCalled();
     });
   });
 });

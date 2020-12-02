@@ -142,9 +142,12 @@ describe('TabsComponent', () => {
       expect(component.showChat).toBe(true);
       expect(component.showReview).toBe(true);
       expect(component.showEvents).toBe(true);
+    });
+
+    it('should hide chat if requestService.hideChatTab is true', () => {
       requestSpy.hideChatTab.and.returnValue(true);
       fixture.detectChanges();
-      expect(component.showReview).toBe(false);
+      expect(component.showChat).toBe(false);
     });
 
     it('should get correct data without team id', () => {
