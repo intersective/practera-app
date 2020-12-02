@@ -7,6 +7,13 @@ name: SonarCloud CI - Feature Branch
 on:
   workflow_dispatch:
   push:
+    paths-ignore:
+      - 'docs/**'
+      - '**.md'
+      - '.gitignore'
+      - 'e2e/**'
+      - 'src/testing/**'
+      - 'src/assets/**'
     branches: [ 'feature/*' ]
 
 env:
@@ -62,19 +69,19 @@ jobs:
       - name: Unit tests
         uses: ./.github/actions/unit-tests-build
       
-      # Debug Purpose to check list of files
-      - name: Debug Purpose to check list of files
-        if: ${{ always() }}
-        run: |
-          pwd
-          ls -a /home/runner/work/practera-app-v2/practera-app-v2/tests
+      # # Debug Purpose to check list of files
+      # - name: Debug Purpose to check list of files
+      #   if: ${{ always() }}
+      #   run: |
+      #     pwd
+      #     ls -a /home/runner/work/practera-app-v2/practera-app-v2/tests
 
-      # Debug Purpose to check content of file
-      - name: Debug Purpose to check content of file
-        if: ${{ always() }}
-        run: |
-          pwd
-          cat /home/runner/work/practera-app-v2/practera-app-v2/tests/ut_report.xml
+      # # Debug Purpose to check content of file
+      # - name: Debug Purpose to check content of file
+      #   if: ${{ always() }}
+      #   run: |
+      #     pwd
+      #     cat /home/runner/work/practera-app-v2/practera-app-v2/tests/ut_report.xml
 
       # Run Sonarcloudscan
       - name: SonarCloud Scan
@@ -89,12 +96,14 @@ jobs:
         uses: 8398a7/action-slack@v3
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          MATRIX_CONTEXT: ${{ toJson(matrix) }} # required
         with:
           status: ${{ job.status }}
           author_name: GitHubAction CI for feature branch
           mention: 'here'
           if_mention: failure,cancelled
-          fields: repo,commit,eventName,ref,workflow,message
+          job_name: SonarCloud # Match the name above.
+          fields: repo,commit,eventName,ref,workflow,message,author,job,took
           custom_payload: |
             {
             username: 'GitHub Action CI WorkFlow',
@@ -107,6 +116,9 @@ jobs:
               ${process.env.AS_EVENT_NAME}\n
               @${process.env.AS_REF}\n
               @${process.env.AS_WORKFLOW}\n
-              ${process.env.AS_MESSAGE}`,
+              ${process.env.AS_MESSAGE}\n
+              ${process.env.AS_AUTHOR}\n
+              ${process.env.AS_JOB}\n
+              ${process.env.AS_TOOK}`,
             }]
             }
