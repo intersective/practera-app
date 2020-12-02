@@ -145,7 +145,7 @@ export class SwitcherService {
       themeColor: themeColor,
       activityCardImage: cardBackgroundImage,
       enrolment: programObj.enrolment,
-      activityCompleteMessage: programObj.experience.config && programObj.experience.config.activity_complete_message ? programObj.experience.config.activity_complete_message : null,
+      activityCompleteMessage: this.utils.has(programObj, 'experience.config.activity_complete_message') ? programObj.experience.config.activity_complete_message : null,
       teamId: null,
       hasEvents: false,
       hasReviews: false
