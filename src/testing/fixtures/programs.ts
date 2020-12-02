@@ -1,5 +1,5 @@
 import { ProgramObj } from '@app/switcher/switcher.service';
-const programObj : ProgramObj[] = [1, 2].map(num => {
+const programObj: ProgramObj[] = [1, 2].map(num => {
   return {
     program: {
       id: num,
