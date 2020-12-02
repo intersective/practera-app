@@ -38,3 +38,16 @@ jobs:
 
       - name: Unit tests
         uses: ./.github/actions/unit-tests-build
+
+      - name: List files
+        if: ${{ always() }}
+        run: |
+          pwd
+          ls -a /home/runner/work/practera-app-v2/practera-app-v2/tests
+
+      - name: SonarCloud Scan
+        if: ${{ always() }}
+        uses: SonarSource/sonarcloud-github-action@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
