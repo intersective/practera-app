@@ -32,6 +32,7 @@ jobs:
           fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
 
       - name: Cache node modules
+        id: cache-app-v2-modules
         uses: actions/cache@v2
         env:
           cache-name: practera-app-v2-cache-node-modules
@@ -46,29 +47,18 @@ jobs:
             ${{ runner.os }}-build-
             ${{ runner.os }}-
 
-      - name: Cache docker images
-        uses: satackey/action-docker-layer-caching@v0.0.8
-        continue-on-error: true
-        with:
-          key: practera-app-v2-unit-test-docker-cache-{hash}
-          restore-keys: |
-            practera-app-v2-unit-test-docker-cache-
-
-      # Perform AWS ECR Login 
-      - name: ECR login
-        uses: aws-actions/amazon-ecr-login@v1
-     
-      # Perform AWS ECR Login 
-      - name: Docker pull
+      - name: Install modules
+        if: steps.cache-app-v2-modules.outputs.cache-hit != 'true'
         run: |
-          docker pull ${{ env.AWS_USER_ID }}.dkr.ecr.ap-southeast-2.amazonaws.com/practera/app-v2-unit-test:HeadlessChrome-85
-          docker tag ${{ env.AWS_USER_ID }}.dkr.ecr.ap-southeast-2.amazonaws.com/practera/app-v2-unit-test:HeadlessChrome-85 practera/app-v2-unit-test:HeadlessChrome-85
-          test -f src/environments/environment.ts && echo "environment here" || cp src/environments/environment.local.ts src/environments/environment.ts
-      
+          npm install
+
       # Perform Unit test
       - name: Unit tests
-        uses: ./.github/actions/unit-tests-build
-      
+        run : |
+          test -f src/environments/environment.ts && echo "environment here" || cp src/environments/environment.local.ts src/environments/environment.ts
+          node_modules/.bin/ng build
+          node_modules/.bin/ng test --karmaConfig=src/karma.conf.sonarci.js --no-watch
+
       # # Debug Purpose to check list of files
       # - name: Debug Purpose to check list of files
       #   if: ${{ always() }}
