@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed, fakeAsync, tick, flushMicrotasks } from '@angular/core/testing';
+import { async, ComponentFixture, TestBed, fakeAsync, tick, flushMicrotasks, flush } from '@angular/core/testing';
 import { SwitcherService } from './switcher.service';
 import { of, Observable, pipe } from 'rxjs';
 import { RequestService } from '@shared/request/request.service';
@@ -40,7 +40,6 @@ describe('SwitcherService', () => {
         EventListService,
         ReviewListService,
         PusherService,
-        SharedService,
         {
           provide: BrowserStorageService,
           useClass: BrowserStorageServiceMock
@@ -48,6 +47,13 @@ describe('SwitcherService', () => {
         {
           provide: NativeStorageService,
           useClass: NativeStorageServiceMock
+        },
+        // SharedService,
+        {
+          provide: SharedService,
+          useValue: jasmine.createSpyObj('SharedService', {
+            onPageLoad: Promise.resolve(true)
+          }),
         },
         {
           provide: RequestService,
@@ -245,6 +251,14 @@ describe('SwitcherService', () => {
   });
 
   describe('switchProgram()', () => {
+    /*beforeEach(() => {
+      spyOn(service, 'getNewJwt');
+      spyOn(service, 'getTeamInfo');
+      spyOn(service, 'getMyInfo');
+      spyOn(service, 'getReviews');
+      spyOn(service, 'getEvents');
+    });*/
+
     it('should collect related data based on selected program', async () => {
       const switcher = await service.switchProgram(ProgramFixture[0]);
       switcher.subscribe(() => {
@@ -266,13 +280,58 @@ describe('SwitcherService', () => {
         expect(service.getEvents).toHaveBeenCalled();
       });
     });
-  });
 
-  describe('switchProgram() with null experience config', () => {
-    it('should collect related data based on selected program', () => {
-      service.switchProgram(ProgramFixture[2]).subscribe(() => {
-        spyOn(utils, 'has');
-      });
+    describe('with null experience config', () => {
+      it('should collect related data based on selected program', fakeAsync(() => {
+        const user = {
+          enrolment: {
+            contact_number: '0123456792'
+          },
+          themeColor: 'sample 3',
+          programId: 3,
+          programName: 'test program 3',
+          programImage: undefined,
+          hasReviewRating: false,
+          truncateDescription: true,
+          experienceId: 3,
+          projectId: 3,
+          timelineId: 3,
+          contactNumber: '0123456792',
+          activityCardImage: '',
+          activityCompleteMessage: null,
+          teamId: null,
+          hasEvents: false,
+          hasReviews: false
+        };
+
+        service.switchProgram(ProgramFixture[2]).then(switcher => {
+          spyOn(utils, 'has');
+          spyOn(service, 'getNewJwt');
+          spyOn(service, 'getTeamInfo');
+          spyOn(service, 'getMyInfo');
+          spyOn(service, 'getReviews');
+          spyOn(service, 'getEvents');
+
+          expect(nativeStorageSpy.setObject).toHaveBeenCalledWith('me', user);
+          flushMicrotasks();
+
+          expect(storageSpy.setUser).toHaveBeenCalledWith(user);
+          expect(sharedSpy.onPageLoad).toHaveBeenCalled();
+          flushMicrotasks();
+
+          switcher.toPromise().then(res => {
+            console.log('ding', res);
+
+            expect(service.getNewJwt).toHaveBeenCalled();
+            expect(service.getTeamInfo).toHaveBeenCalled();
+            expect(service.getMyInfo).toHaveBeenCalled();
+            expect(service.getReviews).toHaveBeenCalled();
+            expect(service.getEvents).toHaveBeenCalled();
+          });
+        });
+
+        flush();
+      }));
     });
   });
 

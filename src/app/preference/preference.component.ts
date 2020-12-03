@@ -21,7 +21,7 @@ export class PreferenceComponent implements OnDestroy, OnInit {
   ngOnInit() {
     this.preferenceSubject$ = this.activatedRoute.data.subscribe(() => {
       this.preferenceService.getPreference();
-     });
+    });
   }
 
   ngOnDestroy() {
