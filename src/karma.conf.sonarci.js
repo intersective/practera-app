@@ -1,6 +1,3 @@
-const puppeteer = require("puppeteer");
-process.env.CHROME_BIN = puppeteer.executablePath();
-
 var path = require('path');
 
 module.exports = function(config) {
@@ -30,13 +27,7 @@ module.exports = function(config) {
       whitelist: [path.join(__dirname, '/**/!(*.html|*.spec|*.mock).js')]
     },
 
-    browsers: ['ChromeHeadlessNoSandbox'],
-    customLaunchers: {
-        ChromeHeadlessNoSandbox: {
-            base: 'ChromeHeadless',
-            flags: ['--no-sandbox']
-        }
-    },
+    browsers: ['ChromeHeadless'],
 
     sonarQubeUnitReporter: {
       sonarQubeVersion: 'LATEST',
