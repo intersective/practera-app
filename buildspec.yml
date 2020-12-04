@@ -21,6 +21,7 @@ phases:
       # - while IFS='=' read -r name value ; do  if [[ $name == 'FILESTACK_'* ]]; then sed -i "s#<$name>#${!name}#g" src/environments/filestack.ts; fi; done < <(env)
       - ng build --configuration=$BUILD_CONFIG
       - npm run generate-version
+      - cp -R src/well-known www/
   post_build:
     commands:
       - aws s3 sync www/ s3://$S3_BUCKET/ --delete
