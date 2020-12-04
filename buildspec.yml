@@ -15,6 +15,7 @@ phases:
     commands:
       - echo Build started on `date`
       - sed -i "s/<CUSTOM_PIWIK_ENVIRONEMENT>/$CUSTOM_PIWIK_ENVIRONEMENT/" src/index.html
+      - sed -i "s/<SHA256_KEYSTORE_CERT_FINGERPRINTS>/$SHA256_KEYSTORE_CERT_FINGERPRINTS/" src/well-known/assetlinks.json
       - chmod +x ./env.sh
       - ./env.sh
       # - while IFS='=' read -r name value ; do  if [[ $name == 'FILESTACK_'* ]]; then sed -i "s#<$name>#${!name}#g" src/environments/filestack.ts; fi; done < <(env)
