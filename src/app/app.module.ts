@@ -30,7 +30,6 @@ import { UnlockingComponent } from '@components/unlocking/unlocking.component';
 import { IconComponent } from '@shared/components/icon/icon.component';
 import { DeviceInfoComponent } from './device-info/device-info.component';
 
-
 @NgModule({
   declarations: [
     AppComponent,
