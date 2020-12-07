@@ -49,5 +49,27 @@ programObj.push(...[3].map(num => {
     }
   };
 }));
+programObj.push(...[4].map(num => {
+  return {
+    program: {
+      id: num,
+      experience_id: num,
+      name: `test program ${num}`,
+      config: {
+        theme_color: `sample ${num}`
+      }
+    },
+    project: {
+      id: num,
+    },
+    timeline: {
+      id: num,
+    },
+    enrolment: {
+      contact_number: `0${123456789 + num}`
+    },
+    experience: null
+  };
+}));
 
 export const ProgramFixture: ProgramObj[] = programObj;
