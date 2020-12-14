@@ -10,6 +10,8 @@ import { PushNotificationService } from '@services/push-notification.service';
   styleUrls: ['./pn-permission-modal.component.scss']
 })
 export class PNPermissionModalComponent {
+  message;
+
   constructor(
     public modalController: ModalController,
     public utils: UtilsService,
