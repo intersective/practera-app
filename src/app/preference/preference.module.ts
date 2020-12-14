@@ -19,8 +19,8 @@ import { PreferenceUpdateComponent } from './preference-update/preference-update
     PreferenceRoutingModule,
   ],
   exports: [
-    RouterModule,
     SharedModule,
+    CommonModule,
   ],
 })
 export class PreferenceModule { }
