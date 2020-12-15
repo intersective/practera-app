@@ -1,5 +1,6 @@
 export const environment = {
   production: true,
+  skipGlobalLogin: false,
   appkey: '<CUSTOM_APPKEY>',
   pusherKey: '<CUSTOM_PUSHERKEY>',
   env: '<CUSTOM_ENVIRONMENT>',
