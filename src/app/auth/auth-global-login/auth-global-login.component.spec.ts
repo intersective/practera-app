@@ -97,7 +97,6 @@ describe('AuthGlobalLoginComponent', () => {
     }));
 
     describe('should navigate to', () => {
-      let redirect;
       const params = {
         apikey: 'abc'
       };
@@ -112,7 +111,6 @@ describe('AuthGlobalLoginComponent', () => {
         fixture.detectChanges();
         expect(serviceSpy.globalLogin.calls.count()).toBe(1);
         expect(switcherSpy.getMyInfo.calls.count()).toBe(1);
-        expect(routerSpy.navigate.calls.first().args[0]).toEqual(redirect);
       }));
     });
   });
