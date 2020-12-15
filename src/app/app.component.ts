@@ -100,6 +100,10 @@ export class AppComponent implements OnInit {
     }
     searchParams = new URLSearchParams(queryString);
 
+    if (searchParams.has('apikey')) {
+      return this.navigate(['global_login', searchParams.get('apikey')]);
+    }
+
     if (searchParams.has('do')) {
       switch (searchParams.get('do')) {
         case 'secure':
