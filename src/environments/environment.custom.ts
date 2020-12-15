@@ -6,6 +6,7 @@ export const environment = {
   APIEndpoint: '<CUSTOM_API_ENDPOINT>',
   graphQL: '<CUSTOM_GRAPH_QL>',
   chatGraphQL: '<CUSTOM_CHAT_GRAPH_QL>',
+  globalLoginUrl: '<CUSTOM_GLOBAL_LOGIN_URL>',
   intercomAppId: '<CUSTOM_INTERCOM>',
   filestack: {
     key: '<CUSTOM_FILESTACK_KEY>',
