@@ -4,8 +4,6 @@ import { AuthService } from '../auth.service';
 import { Observable, concat } from 'rxjs';
 import { NotificationService } from '@shared/notification/notification.service';
 import { SwitcherService } from '../../switcher/switcher.service';
-import { UtilsService } from '@services/utils.service';
-import { BrowserStorageService } from '@services/storage.service';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
 import { async } from '../../../../node_modules/@types/q';
 
@@ -19,9 +17,7 @@ export class AuthGlobalLoginComponent implements OnInit {
     private route: ActivatedRoute,
     private authService: AuthService,
     private notificationService: NotificationService,
-    public utils: UtilsService,
     private switcherService: SwitcherService,
-    private storage: BrowserStorageService,
     private ngZone: NgZone,
     private newRelic: NewRelicService
   ) {}
