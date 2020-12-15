@@ -7,7 +7,6 @@ import { SwitcherService } from '../../switcher/switcher.service';
 import { UtilsService } from '@services/utils.service';
 import { BrowserStorageService } from '@services/storage.service';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
-import { async } from '../../../../node_modules/@types/q';
 
 @Component({
   selector: 'app-auth-direct-login',
@@ -34,21 +33,14 @@ export class AuthDirectLoginComponent implements OnInit {
       return this._error();
     }
 
-    const nrDirectLoginTracer = this.newRelic.createTracer('Processing direct login');
-    // move try catch inside to timeout, because if try catch is outside it not catch errors happen inside timeout.
-    setTimeout(
-      async () => {
-        try {
-          await this.authService.directLogin({ authToken }).toPromise();
-          await this.switcherService.getMyInfo().toPromise();
-          nrDirectLoginTracer();
-          return this._redirect();
-        } catch (err) {
-          this._error(err);
-        }
-        // tslint:disable-next-line:align
-      }, 50
-    );
+    try {
+      await this.authService.directLogin({ authToken }).toPromise();
+      await this.switcherService.getMyInfo().toPromise();
+      this.newRelic.createTracer('Processing direct login');
+      return this._redirect();
+    } catch (err) {
+      this._error(err);
+    }
   }
 
   // force every navigation happen under radar of angular
