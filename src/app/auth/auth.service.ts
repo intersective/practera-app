@@ -113,6 +113,19 @@ export class AuthService {
     return this._login(body);
   }
 
+  /**
+   * @name globalLogin
+   * @description login API specifically only accept request data in encodedUrl formdata,
+   *              so must convert them into compatible formdata before submission
+   * @param {object} { apikey } in string
+   */
+  globalLogin({ apikey }): Observable<any> {
+    const body = new HttpParams()
+      .set('apikey', apikey);
+    this.logout({}, false);
+    return this._login(body);
+  }
+
   private _handleLoginResponse(response): Observable<any> {
     const norm = this._normaliseAuth(response);
     this.storage.setUser({apikey: norm.apikey});
