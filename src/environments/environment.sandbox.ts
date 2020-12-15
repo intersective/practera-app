@@ -4,6 +4,7 @@
 // The list of which env maps to which file can be found in configurations section of `angular.json`.
 export const environment = {
   production: false,
+  skipGlobalLogin: false,
   appkey: 'b11e7c189b',
   pusherKey: '255f010d210933ca7675',
   env: 'sandbox',
