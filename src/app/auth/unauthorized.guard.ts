@@ -24,7 +24,7 @@ export class UnauthorizedGuard implements CanActivate {
         return true;
       }
       // redirect to global login
-      this.utils.openUrl(environment.globalLoginUrl);
+      this.utils.openUrl(`${ environment.globalLoginUrl }?referrer=${ window.location.hostname }&stackUuid=${ environment.stackUuid }`);
       return false;
     }
 
