@@ -2,13 +2,13 @@
 
   <div class="image-content">
     <div class="image">
-      <img alt="push notification permission" src='/assets/img/permissions off@2x.png'>
+      <img alt="push notification permission" class="permission-icon" [src]="icon">
     </div>
   </div>
 
   <div class="details-container ion-text-center">
     <div class="div-after-img">
-      <app-description class="body-1" [content]="message" [isInPopup]="true"></app-description>
+      <app-description class="subtitle-1 pop-text" [content]="message" [isInPopup]="true"></app-description>
     </div>
 
     <ion-text color="medium" text-center>

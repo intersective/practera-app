@@ -6,6 +6,9 @@ import { map, filter } from 'rxjs/operators';
 import { Platform } from '@ionic/angular';
 import { Apollo } from 'apollo-angular';
 import * as moment from 'moment';
+import { Plugins } from '@capacitor/core';
+
+const { CustomNativePlugin } = Plugins;
 
 // @TODO: enhance Window reference later, we shouldn't refer directly to browser's window object like this
 declare var window: any;
@@ -377,5 +380,14 @@ export class UtilsService {
       }
       return time.toISOString();
     }
+  }
+
+  /**
+   * redirect user to system setting page (iOS and android only)
+   * This is not supported on web-based app (no web implementation)
+   */
+  async goToSystemSetting() {
+    const goSettingStatus = await CustomNativePlugin.goToAppSetting();
+    return goSettingStatus;
   }
 }
