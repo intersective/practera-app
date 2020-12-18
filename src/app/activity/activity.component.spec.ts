@@ -78,7 +78,7 @@ describe('ActivityComponent', () => {
         },
         {
           provide: BrowserStorageService,
-          useValue: jasmine.createSpyObj('BrowserStorageService', ['getUser'])
+          useValue: jasmine.createSpyObj('BrowserStorageService', ['getUser', 'getReferrer'])
         },
         {
           provide: Router,
@@ -210,6 +210,7 @@ describe('ActivityComponent', () => {
     storageSpy.getUser.and.returnValue({
       teamId: 1
     });
+    storageSpy.getReferrer.and.returnValue('');
   });
 
   it('should create', () => {
