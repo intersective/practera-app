@@ -92,7 +92,7 @@ export class SettingsComponent extends RouterEnter {
   switchProgram() {
     if (this.returnLtiUrl) {
       this.newRelic.actionText('browse to LTI return link');
-      window.location.href = 'https://' + this.returnLtiUrl;
+      this.utils.redirectToUrl(this.returnLtiUrl);
     } else {
       this.newRelic.actionText('browse to program switcher');
       this.router.navigate(['switcher', 'switcher-program']);
