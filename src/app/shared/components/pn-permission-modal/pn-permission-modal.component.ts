@@ -11,6 +11,7 @@ import { PushNotificationService } from '@services/push-notification.service';
 })
 export class PNPermissionModalComponent {
   message;
+  icon;
 
   constructor(
     public modalController: ModalController,

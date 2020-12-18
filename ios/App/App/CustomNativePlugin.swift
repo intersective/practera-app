@@ -7,13 +7,12 @@ public class CustomNativePlugin: CAPPlugin {
         let value = call.getString("value") ?? ""
         
         let alertController = UIAlertController (
-        	title: "Push Notification", 
-        	message: "Allow push notification permission on settings?", 
+        	title: "App Setting",
+        	message: "Please check and update permissions on system setting.",
         	preferredStyle: .alert
         )
 
         let settingsAction = UIAlertAction(title: "Settings", style: .default) { (_) -> Void in
-
             guard let settingsUrl = URL(string: UIApplication.openSettingsURLString) else {
                 return
             }
@@ -24,6 +23,7 @@ public class CustomNativePlugin: CAPPlugin {
                 })
             }
         }
+        
         alertController.addAction(settingsAction)
         let cancelAction = UIAlertAction(title: "Cancel", style: .default, handler: nil)
         alertController.addAction(cancelAction)
