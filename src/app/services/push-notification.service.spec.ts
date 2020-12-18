@@ -63,7 +63,7 @@ describe('PushNotificationService', () => {
       expect(typeof name).toEqual('string');
       expect(typeof callback).toEqual('function');
     });
-    const service = new PushNotificationService(storageSpy);
+    service = new PushNotificationService(storageSpy);
     service['pushNotificationPlugin'] = PushNotifications;
 
     service.registerToServer();
@@ -161,7 +161,7 @@ describe('PushNotificationService', () => {
       PusherBeams.setUserID = jasmine.createSpy('setUserID').and.returnValue(new Promise(resolve => resolve(true)));
 
       environment.appkey = APPKEY;
-      const service = new PushNotificationService(storageSpy);
+      service = new PushNotificationService(storageSpy);
       service['pusherBeams'] = PusherBeams;
 
       service.associateDeviceToUser(ID, TOKEN).then(res => {
@@ -211,7 +211,7 @@ describe('PushNotificationService', () => {
         url: 'url3'
       };
 
-      const service = new PushNotificationService(storageSpy);
+      service = new PushNotificationService(storageSpy);
       service['pushNotificationPlugin'] = PushNotifications;
       service.promptForPermission(PermissionTypes.firstVisit, snapshot).then(() => {
         expect(storageSpy.set).toHaveBeenCalledWith('visited', [...visited, 'url3']);
@@ -226,7 +226,7 @@ describe('PushNotificationService', () => {
         const INTEREST = 'test-interest';
         PusherBeams.addDeviceInterest = jasmine.createSpy('addDeviceInterest');
 
-        const service = new PushNotificationService(storageSpy);
+        service = new PushNotificationService(storageSpy);
         service['pusherBeams'] = PusherBeams;
 
         service.subscribeToInterest(INTEREST);
@@ -237,7 +237,6 @@ describe('PushNotificationService', () => {
     });
 
     describe('subscribeToInterests()', () => {
-      let service;
       const INTERESTS = ['1', '2', '3'];
 
       beforeEach(() => {
