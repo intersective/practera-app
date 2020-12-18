@@ -161,7 +161,7 @@ export class ActivityService {
 
     // check if we need to redirect user to external url
     const referrer = this.storage.getReferrer();
-    if (referrer.activityTaskUrl) {
+    if (this.utils.has(referrer, 'activityTaskUrl')) {
       this.newRelic.actionText('browse to Activity Task return link');
       this.utils.redirectToUrl(referrer.activityTaskUrl);
       return ;

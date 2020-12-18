@@ -251,6 +251,15 @@ describe('ActivityComponent', () => {
       component.back();
       expect(routerSpy.navigate.calls.first().args[0]).toEqual(['app', 'home']);
     });
+
+    it('should navigate to the external url', () => {
+      storageSpy.getReferrer.and.returnValue({
+        activityTaskUrl: 'abc',
+      });
+      const redirectToUrlSpy = spyOn(utils, 'redirectToUrl');
+      component.back();
+      expect(redirectToUrlSpy).toHaveBeenCalled();
+    });
   });
 
   describe('when testing goto()', () => {
