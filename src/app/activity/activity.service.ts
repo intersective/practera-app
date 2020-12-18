@@ -56,7 +56,7 @@ export class ActivityService {
     private utils: UtilsService,
     public storage: BrowserStorageService,
     private router: Router,
-    private newRelic: NewRelicService,
+    private readonly newRelic: NewRelicService,
     private notification: NotificationService
   ) {}
 
