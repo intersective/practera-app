@@ -158,17 +158,18 @@ export class ActivityService {
       }
       return route;
     }
-    if (res.task) {
-      // pop up activity completed modal
-      this.notification.activityCompletePopUp(activityId, justFinished);
-      return ;
-    }
 
     // check if we need to redirect user to external url
     const referrer = this.storage.getReferrer();
     if (referrer.activityTaskUrl) {
       this.newRelic.actionText('browse to Activity Task return link');
       this.utils.redirectToUrl(referrer.activityTaskUrl);
+      return ;
+    }
+
+    if (res.task) {
+      // pop up activity completed modal
+      this.notification.activityCompletePopUp(activityId, justFinished);
       return ;
     }
 
