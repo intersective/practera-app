@@ -143,6 +143,12 @@ export class ActivityComponent {
   }
 
   back() {
+    const referrer = this.storage.getReferrer();
+    if (referrer.activityTaskUrl) {
+      this.newRelic.actionText('browse to Activity Task return link');
+      this.utils.redirectToUrl(referrer.activityTaskUrl);
+      return ;
+    }
     this._navigate([ 'app', 'home' ]);
     this.newRelic.actionText('Back button pressed on Activities Page.');
   }
