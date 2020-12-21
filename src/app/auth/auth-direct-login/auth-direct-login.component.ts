@@ -96,6 +96,18 @@ export class AuthDirectLoginComponent implements OnInit {
           return this._saveOrRedirect(['app', 'home'], redirectLater);
         }
         return this._saveOrRedirect(['app', 'activity', activityId], redirectLater);
+      case 'activity_task':
+        if (!activityId) {
+          return this._saveOrRedirect(['app', 'home'], redirectLater);
+        }
+        const referrerUrl = this.route.snapshot.paramMap.get('activity_task_referrer_url');
+        if (referrerUrl) {
+          // save the referrer url so that we can redirect user later
+          this.storage.setReferrer({
+            activityTaskUrl: referrerUrl
+          });
+        }
+        return this._saveOrRedirect(['activity-task', activityId], redirectLater);
       case 'assessment':
         if (!activityId || !contextId || !assessmentId) {
           return this._saveOrRedirect(['app', 'home'], redirectLater);
