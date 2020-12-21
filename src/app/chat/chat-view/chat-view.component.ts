@@ -12,6 +12,7 @@ import { ChatChannel } from '../chat.service';
 export class ChatViewComponent extends RouterEnter {
   routeUrl = '/app/chat';
   chatChannel: ChatChannel;
+  loadInfo: boolean;
 
   @ViewChild('chatList') chatList;
   @ViewChild('chatRoom') chatRoom;
@@ -32,9 +33,11 @@ export class ChatViewComponent extends RouterEnter {
 
   private _initialise() {
     this.chatChannel = null;
+    this.loadInfo = false;
   }
 
   goto(event) {
+    this.loadInfo = false;
     this.chatChannel = event;
     setTimeout(() => {
       this.chatRoom.onEnter();
@@ -52,6 +55,10 @@ export class ChatViewComponent extends RouterEnter {
     }
     // navigate to the first chat
     this.goto(chats[0]);
+  }
+
+  loadchannelInfo(event) {
+    this.loadInfo = true;
   }
 
 }

@@ -14,6 +14,7 @@ phases:
   build:
     commands:
       - echo Build started on `date`
+      - cat /dev/null > src/environments/environment.ts
       - sed -i "s/<CUSTOM_PIWIK_ENVIRONEMENT>/$CUSTOM_PIWIK_ENVIRONEMENT/" src/index.html
       - sed -i "s/<SHA256_KEYSTORE_CERT_FINGERPRINTS>/$SHA256_KEYSTORE_CERT_FINGERPRINTS/" src/well-known/assetlinks.json
       - chmod +x ./env.sh
