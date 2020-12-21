@@ -8,6 +8,7 @@ import { AuthForgotPasswordComponent } from './auth-forgot-password/auth-forgot-
 import { AuthRegistrationComponent } from './auth-registration/auth-registration.component';
 import { AuthResetPasswordComponent } from './auth-reset-password/auth-reset-password.component';
 import { AuthDirectLoginComponent } from './auth-direct-login/auth-direct-login.component';
+import { AuthGlobalLoginComponent } from './auth-global-login/auth-global-login.component';
 import { UnauthorizedGuard } from './unauthorized.guard';
 
 const routes: Routes = [
@@ -47,6 +48,10 @@ const routes: Routes = [
       {
         path: 'secure/:authToken',
         component: AuthDirectLoginComponent,
+      },
+      {
+        path: 'global_login/:apikey',
+        component: AuthGlobalLoginComponent,
       }
     ]
   }
