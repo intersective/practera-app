@@ -34,6 +34,11 @@ const routes: Routes = [
     canLoad: [AuthGuard]
   },
   {
+    path: 'activity-task',
+    loadChildren: './tasks/tasks.module#TasksModule',
+    canLoad: [AuthGuard]
+  },
+  {
     path: 'fast-feedback',
     component: FastFeedbackComponent,
     canLoad: [AuthGuard]
