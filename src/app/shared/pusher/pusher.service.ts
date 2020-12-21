@@ -19,6 +19,19 @@ export class PusherConfig {
   apiurl = '';
 }
 
+export interface SendMessageParam {
+  channelUuid:  string;
+  uuid: string;
+  message: string;
+  file: string;
+  isSender: boolean;
+  created: string;
+  senderUuid: string;
+  senderName: string;
+  senderRole: string;
+  senderAvatar: string;
+}
+
 class PusherChannel {
   name: string;
   subscription?: Channel;
@@ -78,7 +91,7 @@ export class PusherService {
     }
 
     // subscribe to event only when pusher is available
-    const channels = await this.getChannels().toPromise();
+    const channels = this.getChannels();
     return {
       pusher: this.pusher,
       channels
@@ -156,7 +169,12 @@ export class PusherService {
    * get a list of channels from API request and subscribe every of them into
    * connected + authorised pusher
    */
-  getChannels(): Observable<any> {
+  async getChannels() {
+    await this.getNotificationChannel().toPromise();
+    await this.getChatChannels().toPromise();
+  }
+
+  getNotificationChannel(): Observable<any> {
     return this.request.get(api.channels, {
       params: {
         env: environment.env,
@@ -164,7 +182,28 @@ export class PusherService {
       }
     }).pipe(map(response => {
       if (response.data) {
-        return this.subscribeChannel('notification', response.data[0].channel);
+        this.subscribeChannel('notification', response.data[0].channel);
+      }
+    }));
+  }
+
+  getChatChannels(): Observable<any> {
+    return this.request.chatGraphQLQuery(
+      `query getPusherChannels {
+        channels {
+          pusherChannel
+        }
+      }`,
+      {},
+      {
+        noCache: true
+      }
+    ).pipe(map(response => {
+      if (response.data && response.data.channels) {
+        const result = JSON.parse(JSON.stringify(response.data.channels));
+        result.forEach(element => {
+          this.subscribeChannel('chat', element.pusherChannel);
+        });
       }
     }));
   }
@@ -221,9 +260,6 @@ export class PusherService {
           .bind('event-reminder', data => {
             this.utils.broadcastEvent('event-reminder', data);
           })
-          .bind('chat', data => {
-            this.utils.broadcastEvent('chat:new-message', data);
-          })
           .bind('pusher:subscription_succeeded', data => {
           })
           .bind('pusher:subscription_error', data => {
@@ -240,6 +276,9 @@ export class PusherService {
           subscription: this.pusher.subscribe(channelName)
         };
         channel.subscription
+          .bind('client-chat-new-message', data => {
+            this.utils.broadcastEvent('chat:new-message', data);
+          })
           .bind('client-typing-event', data => {
             this.utils.broadcastEvent('typing-' + channelName, data);
           })
@@ -271,6 +310,20 @@ export class PusherService {
     channel.subscription.trigger('client-typing-event', {
       user: this.storage.getUser().name
     });
+  }
+
+  /**
+   * This method triggering 'client-chat-new-message' event of a pusher channel to send message to other members
+   * that subscribe to the pusher channel.
+   * when user send message it will save in api first and then call this.
+   * @param data send message object
+   */
+  triggerSendMessage(channelName: string, data: SendMessageParam) {
+    const channel = this.channels.chat.find(c => c.name === channelName);
+    if (!channel) {
+      return;
+    }
+    channel.subscription.trigger('client-chat-new-message', data);
   }
 
 }

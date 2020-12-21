@@ -78,7 +78,7 @@ Run `npm run local` to start a development server on your local, and calling 127
 - `home` - redirect to home page
 - `project` - redirect to project page
 - `activity` - redirect to activity page with the following parameters
-  - `act` - activity id'
+  - `act` - activity id
 - `activity_task` - redirect to activity-task page(without menu) with the following parameters
   - `act` - activity id
   - `activity_task_referrer_url` - if this url is passed in, we will redirect the user to this url when user click back button on activity detail page, or click continue button of last task
@@ -140,3 +140,6 @@ Other variables that need to be passed to the codebuild project are:
 * CUSTOM_FILESTACK_POLICY - the filestack policy
 * CUSTOM_FILESTACK_VIRUS_DETECTION - the filestack virus detection policy
 * CUSTOM_FILESTACK_KEY - the filestack key
+
+
+###Read More [Documentation](./docs/docs.md)
