@@ -177,6 +177,15 @@ describe('AuthDirectLoginComponent', () => {
         tmpParams.redirect = 'activity';
         redirect = ['app', 'activity', tmpParams.act];
       });
+      it('activity-task page', () => {
+        tmpParams.redirect = 'activity_task';
+        redirect = ['activity-task', tmpParams.act];
+      });
+      it('home page if activity id miss', () => {
+        tmpParams.redirect = 'activity_task';
+        tmpParams.act = null;
+        redirect = ['app', 'home'];
+      });
       it('home page if activity id miss', () => {
         tmpParams.redirect = 'assessment';
         tmpParams.act = null;

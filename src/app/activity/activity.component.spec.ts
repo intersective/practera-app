@@ -78,7 +78,7 @@ describe('ActivityComponent', () => {
         },
         {
           provide: BrowserStorageService,
-          useValue: jasmine.createSpyObj('BrowserStorageService', ['getUser'])
+          useValue: jasmine.createSpyObj('BrowserStorageService', ['getUser', 'getReferrer'])
         },
         {
           provide: Router,
@@ -210,6 +210,7 @@ describe('ActivityComponent', () => {
     storageSpy.getUser.and.returnValue({
       teamId: 1
     });
+    storageSpy.getReferrer.and.returnValue('');
   });
 
   it('should create', () => {
@@ -249,6 +250,15 @@ describe('ActivityComponent', () => {
     it('should navigate to the project page', () => {
       component.back();
       expect(routerSpy.navigate.calls.first().args[0]).toEqual(['app', 'home']);
+    });
+
+    it('should navigate to the external url', () => {
+      storageSpy.getReferrer.and.returnValue({
+        activityTaskUrl: 'abc',
+      });
+      const redirectToUrlSpy = spyOn(utils, 'redirectToUrl');
+      component.back();
+      expect(redirectToUrlSpy).toHaveBeenCalled();
     });
   });
 

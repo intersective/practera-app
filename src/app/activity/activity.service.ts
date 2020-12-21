@@ -6,6 +6,7 @@ import { UtilsService } from '@services/utils.service';
 import { BrowserStorageService } from '@services/storage.service';
 import { NotificationService } from '@shared/notification/notification.service';
 import { Router } from '@angular/router';
+import { NewRelicService } from '@shared/new-relic/new-relic.service';
 
 /**
  * @name api
@@ -55,6 +56,7 @@ export class ActivityService {
     private utils: UtilsService,
     public storage: BrowserStorageService,
     private router: Router,
+    private readonly newRelic: NewRelicService,
     private notification: NotificationService
   ) {}
 
@@ -156,11 +158,21 @@ export class ActivityService {
       }
       return route;
     }
+
+    // check if we need to redirect user to external url
+    const referrer = this.storage.getReferrer();
+    if (this.utils.has(referrer, 'activityTaskUrl')) {
+      this.newRelic.actionText('browse to Activity Task return link');
+      this.utils.redirectToUrl(referrer.activityTaskUrl);
+      return ;
+    }
+
     if (res.task) {
       // pop up activity completed modal
       this.notification.activityCompletePopUp(activityId, justFinished);
       return ;
     }
+
     // go back to home page, and scroll to the activity
     if (justFinished) {
       // and display the toast
