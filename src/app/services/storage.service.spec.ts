@@ -70,6 +70,22 @@ describe('StorageService', function() {
     });
   });
 
+  describe('getReferrer()', function() {
+    it('should get referrer information', () => {
+      service.getReferrer();
+      expect(storage.getItem).toHaveBeenCalledWith('referrer');
+    });
+  });
+
+  describe('setReferrer()', function() {
+    it('should set referrer information', () => {
+      service.getReferrer = jasmine.createSpy('getUser').and.returnValue({});
+
+      service.setReferrer({ activityTaskUrl: 'tester' });
+      expect(storage.setItem).toHaveBeenCalledWith('referrer', '{"activityTaskUrl":"tester"}');
+    });
+  });
+
   describe('getConfig()', function() {
     it('should retrieve cached config', () => {
       service.getConfig();
