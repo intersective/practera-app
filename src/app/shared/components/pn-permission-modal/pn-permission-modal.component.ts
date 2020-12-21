@@ -24,7 +24,8 @@ export class PNPermissionModalComponent {
   }
 
   // go to Native App settings, so user can manually allow Push Notification there
-  goToSetting() {
-    return this.pushNotificationService.goToAppSetting();
+  async goToSystemSetting() {
+    const goToSetting = await this.utils.goToSystemSetting();
+    return goToSetting;
   }
 }
