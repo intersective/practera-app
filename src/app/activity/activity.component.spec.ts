@@ -121,7 +121,6 @@ describe('ActivityComponent', () => {
     fastFeedbackSpy = TestBed.inject(FastFeedbackService) as jasmine.SpyObj<FastFeedbackService>;
     eventSpy = TestBed.inject(EventListService) as jasmine.SpyObj<EventListService>;
     storageSpy = TestBed.inject(BrowserStorageService) as jasmine.SpyObj<BrowserStorageService>;
-    storageSpy.getReferrer.and.returnValue('');
   });
 
   const mockActivity = {
@@ -211,6 +210,7 @@ describe('ActivityComponent', () => {
     storageSpy.getUser.and.returnValue({
       teamId: 1
     });
+    storageSpy.getReferrer.and.returnValue('');
   });
 
   it('should create', () => {
