@@ -11,7 +11,7 @@ import { SharedService } from '@services/shared.service';
   styleUrls: ['./tasks.component.scss']
 })
 export class TasksComponent extends RouterEnter {
-  routeUrl = '/app/activity';
+  routeUrls = ['/app/activity', 'activity-task'];
   activityId: number;
   topicId: number;
   assessmentId: number;
