@@ -1,12 +1,15 @@
 import { Component, Output, EventEmitter, NgZone, Input } from '@angular/core';
 import { Router, NavigationExtras } from '@angular/router';
 import { BrowserStorageService } from '@services/storage.service';
-import { RouterEnter } from '@services/router-enter.service';
 import { UtilsService } from '@services/utils.service';
 import { FastFeedbackService } from '../../fast-feedback/fast-feedback.service';
 import { ChatService, ChatChannel } from '../chat.service';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
+import { PusherService } from '@shared/pusher/pusher.service';
 
+/**
+ * this is an app chat list component
+ */
 @Component({
   selector: 'app-chat-list',
   templateUrl: 'chat-list.component.html',
@@ -26,44 +29,52 @@ export class ChatListComponent {
     public utils: UtilsService,
     public fastFeedbackService: FastFeedbackService,
     private newrelic: NewRelicService,
-    private ngZone: NgZone
+    private ngZone: NgZone,
+    public pusherService: PusherService
   ) {
     this.newrelic.setPageViewName('Chat list');
     this.utils.getEvent('chat:new-message').subscribe(event => this._loadChatData());
     this.utils.getEvent('chat:info-update').subscribe(event => this._loadChatData());
     if (!this.utils.isMobile()) {
       this.utils.getEvent('chat-badge-update').subscribe(event => {
-        const chatIndex = this.chatList.findIndex(data => data.channelId === event.channelId);
+        const chatIndex = this.chatList.findIndex(data => data.uuid === event.channelUuid);
         if (chatIndex > -1) {
           // set time out because when this calling from pusher events it need a time out.
           setTimeout(() => {
-            this.chatList[chatIndex].unreadMessages -= event.readcount;
-            if (this.chatList[chatIndex].unreadMessages < 0) {
-              this.chatList[chatIndex].unreadMessages = 0;
+            this.chatList[chatIndex].unreadMessageCount -= event.readcount;
+            if (this.chatList[chatIndex].unreadMessageCount < 0) {
+              this.chatList[chatIndex].unreadMessageCount = 0;
             }
           });
         }
       });
     }
-    this.utils.getEvent('channel-id-update').subscribe(event => {
-      const channelIndex = this.chatList.findIndex(c => c.channelId === event.previousId);
-      if (channelIndex) {
-        this.chatList[channelIndex].channelId = event.currentId;
-      }
-    });
   }
 
+  /**
+    * This is an on enter method
+    * @returns nothing
+    */
   onEnter() {
     this._initialise();
+    this._checkAndSubscribePusherChannels();
     this._loadChatData();
     this.fastFeedbackService.pullFastFeedback().subscribe();
   }
 
+  /**
+    * This is an _initialise method
+    * @returns nothing
+    */
   private _initialise() {
     this.loadingChatList = true;
     this.chatList = [];
   }
 
+  /**
+    * This is a private load chat data method
+    * @returns nothing
+    */
   private _loadChatData(): void {
     this.chatService.getChatList().subscribe(chats => {
       this.chatList = chats;
@@ -72,9 +83,24 @@ export class ChatListComponent {
     });
   }
 
+  /**
+   * This method pusher service to subscribe to chat pusher channels
+   * - first it call chat service to get pusher channels.
+   * - then it call pusher service 'subscribeChannel' method to subscribe.
+   * - in pusher service it chaeck if we alrady subscribe or not.
+   *   if not it will subscribe to the pusher channel.
+   */
+  private _checkAndSubscribePusherChannels() {
+    this.chatService.getPusherChannels().subscribe(pusherChannels => {
+      pusherChannels.forEach(channel => {
+        this.pusherService.subscribeChannel('chat', channel.pusherChannel);
+      });
+    });
+  }
+
   goToChatRoom(chat: ChatChannel) {
     this.newrelic.addPageAction('selected chat room', {
-      channelId: chat.channelId,
+      channelId: chat.uuid,
       chat: chat,
     });
     this._navigate(
@@ -99,6 +125,10 @@ export class ChatListComponent {
     this.navigate.emit(chatChannel);
   }
 
+  /**
+    * This is a method to transform a date object of a chate message
+    * @returns string formate of a date object
+    */
   getChatDate(date) {
     return this.utils.timeFormatter(date);
   }

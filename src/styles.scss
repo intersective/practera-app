@@ -38,7 +38,7 @@
   max-width: 320px;
 
   &.registration {
-    margin-top: 7vh;
+    margin-top: 5vh;
   }
 }
 
@@ -506,4 +506,12 @@ use for custom header (*Study perth)
       padding: 9px !important;
     }
   }
+}
+
+// Chat info page
+.chat-info-page{
+  --max-height: 100%;
+  --max-width: 100%;
+  --min-width: 100%;
+  --min-height: 100%;
 }

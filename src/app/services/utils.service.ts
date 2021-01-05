@@ -378,4 +378,8 @@ export class UtilsService {
       return time.toISOString();
     }
   }
+
+  redirectToUrl(url: string) {
+    window.location.href = `${ url.match(/^https*:\/\//) ? '' : 'https://' }${ url }`;
+  }
 }

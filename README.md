@@ -77,8 +77,11 @@ Run `npm run local` to start a development server on your local, and calling 127
 #### Valid `redirect` values:
 - `home` - redirect to home page
 - `project` - redirect to project page
-- `activity` - redirect to project page with the following parameters
+- `activity` - redirect to activity page with the following parameters
   - `act` - activity id
+- `activity_task` - redirect to activity-task page(without menu) with the following parameters
+  - `act` - activity id
+  - `activity_task_referrer_url` - if this url is passed in, we will redirect the user to this url when user click back button on activity detail page, or click continue button of last task
 - `assessment` - redirect to assessment page with the following parameters
   - `act` - activity id
   - `ctxt` - context id
@@ -93,6 +96,9 @@ Run `npm run local` to start a development server on your local, and calling 127
   - `sm` - submission id
 - `chat` - redirect to chat list page
 - `settings` - redirect to settings page
+
+#### Optional parameters:
+- `return_url` - when user switch program, he/she will be redirect to this url
 
 #### Examples:
 
@@ -134,3 +140,6 @@ Other variables that need to be passed to the codebuild project are:
 * CUSTOM_FILESTACK_POLICY - the filestack policy
 * CUSTOM_FILESTACK_VIRUS_DETECTION - the filestack virus detection policy
 * CUSTOM_FILESTACK_KEY - the filestack key
+
+
+###Read More [Documentation](./docs/docs.md)
