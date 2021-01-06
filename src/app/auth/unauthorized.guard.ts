@@ -17,10 +17,12 @@ export class UnauthorizedGuard implements CanActivate {
 
   canActivate(next: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> | Promise<boolean> | boolean {
     const userIsAuthenticated = this.authService.isAuthenticated();
-
     if (userIsAuthenticated !== true) {
       // skip global login on local development
       if (environment.skipGlobalLogin) {
+        return true;
+      }
+      if (state.url.includes('registration')) {
         return true;
       }
       // redirect to global login
