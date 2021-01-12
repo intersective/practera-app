@@ -49,7 +49,7 @@
     "cordova-sqlite-storage": "^2.6.0",
     "core-js": "^2.5.4",
     "exif-js": "^2.3.0",
-    "filestack-js": "^3.10.1",
+    "filestack-js": "^3.20.0",
     "graphql": "^15.3.0",
     "graphql-tag": "^2.10.4",
     "lodash": "^4.17.19",
