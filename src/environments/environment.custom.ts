@@ -1,6 +1,6 @@
 export const environment = {
-  production: true,
-  skipGlobalLogin: false,
+  production: '<CUSTOMPLAIN_PRDMODEFLAG>',
+  skipGlobalLogin: '<CUSTOMPLAIN_SKIPGLOBALLOGINFLAG>',
   appkey: '<CUSTOM_APPKEY>',
   pusherKey: '<CUSTOM_PUSHERKEY>',
   env: '<CUSTOM_ENVIRONMENT>',
