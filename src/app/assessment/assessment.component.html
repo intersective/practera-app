@@ -31,7 +31,7 @@
       Submitted by {{ submission.submitterName }}
     </p>
   </div>
-  <div *ngIf="submission && submission.reviewerName && review" class="review-submitter ion-text-left">
+  <div *ngIf="submission && submission.reviewerName && review && submission.status === 'published'" class="review-submitter ion-text-left">
     <p class="subtitle-1 gray-3">
       Reviewed by {{ submission.reviewerName }}
     </p>
