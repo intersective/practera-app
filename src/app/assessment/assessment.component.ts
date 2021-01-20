@@ -721,6 +721,9 @@ export class AssessmentComponent extends RouterEnter {
         return 'submitting';
       }
       if (this.submitted) {
+        if (this.assessment.type === 'moderated') {
+          return 'pending review';
+        }
         return 'submitted';
       }
       // display the submit button, don't need the text in the footer
