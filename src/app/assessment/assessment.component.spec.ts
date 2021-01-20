@@ -638,6 +638,12 @@ describe('AssessmentComponent', () => {
       component.submitting = true;
       expect(component.footerText()).toEqual('submitting');
     });
+    it('should return pending review', () => {
+      component.doReview = true;
+      component.submitted = true;
+      component.assessment.type = 'moderated';
+      expect(component.footerText()).toEqual('pending review');
+    });
     it('should return submitted', () => {
       component.doReview = true;
       component.submitted = true;
