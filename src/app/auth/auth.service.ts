@@ -290,4 +290,25 @@ export class AuthService {
       headers: { 'Content-Type': 'application/json' }
     });
   }
+
+  /**
+   * @name getUUID
+   * @description retrieve user UUID of current requester (user)
+   * @return {Observable<string>} UUID in string
+   */
+  getUUID(): Observable<string> {
+    return this.request.graphQLQuery(
+      `query user {
+        user {
+          uuid
+        }
+      }`
+    )
+    .pipe(map(res => {
+      if (res.data) {
+        return res.data.user.uuid;
+      }
+      return null;
+    }));
+  }
 }
