@@ -256,9 +256,9 @@ describe('AuthService', () => {
         data: undefined
       }));
       service.getUUID().subscribe(result => {
-        expect(result).toBeNull;
+        expect(result).toBeNull();
       });
     });
-  })
+  });
 });
 
