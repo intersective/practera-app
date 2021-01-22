@@ -25,7 +25,7 @@ describe('AuthService', () => {
         AuthService,
         {
           provide: RequestService,
-          useValue: jasmine.createSpyObj('RequestService', ['delete', 'post', 'get'])
+          useValue: jasmine.createSpyObj('RequestService', ['delete', 'post', 'get', 'graphQLQuery'])
         },
         {
           provide: Router,
@@ -261,6 +261,31 @@ describe('AuthService', () => {
     requestSpy.post.and.returnValue(of(''));
     service.verifyResetPassword({ email: 'test@test.com', key: 'key' }).subscribe();
     expect(requestSpy.post.calls.count()).toBe(1);
+  });
+
+  describe('getUUID()', function () {
+    it('should get user uuid in string', () => {
+      const UUID = 'SAMPLE-UUID';
+      requestSpy.graphQLQuery.and.returnValue(of({
+        data: {
+          user: {
+            uuid: UUID
+          }
+        }
+      }));
+      service.getUUID().subscribe(result => {
+        expect(result).toBe(UUID);
+      });
+    });
+
+    it('should return null when data object is undefined', () => {
+      requestSpy.graphQLQuery.and.returnValue(of({
+        data: undefined
+      }));
+      service.getUUID().subscribe(result => {
+        expect(result).toBeNull();
+      });
+    });
   });
 });
 
