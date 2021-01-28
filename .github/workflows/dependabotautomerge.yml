@@ -1,0 +1,61 @@
+name: "Dependabot Automerge - Action"
+
+on:
+  pull_request:
+
+jobs:
+  Dependabot:
+    name : Dependabot
+    runs-on: ubuntu-latest
+
+    if: github.actor == 'dependabot[bot]'
+    steps:
+      - name: automerge
+        uses: actions/github-script@0.2.0
+        with:
+          script: |
+            github.pullRequests.createReview({
+              owner: context.payload.repository.owner.login,
+              repo: context.payload.repository.name,
+              pull_number: context.payload.pull_request.number,
+              event: 'APPROVE'
+            })
+            github.pullRequests.merge({
+              owner: context.payload.repository.owner.login,
+              repo: context.payload.repository.name,
+              pull_number: context.payload.pull_request.number
+            })
+          github-token: ${{github.token}}
+    
+    # Run Slack Notification
+      - name: Slack Notification
+        if: success() || failure() # Pick up events even if the job fails or is canceled.
+        uses: 8398a7/action-slack@v3
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          MATRIX_CONTEXT: ${{ toJson(matrix) }} # required
+        with:
+          status: ${{ job.status }}
+          author_name: GitHubAction CI for dependabot merge
+          mention: 'here'
+          if_mention: failure,cancelled
+          job_name: Dependabot # Match the name above.
+          fields: repo,commit,eventName,ref,workflow,message,author,job,took
+          custom_payload: |
+            {
+            username: 'GitHub Action CI WorkFlow',
+            icon_emoji: ':github:',
+            attachments: [{
+              color: '${{ job.status }}' === 'success' ? 'good' : ${{ job.status }}' === 'failure' ? 'danger' : 'warning',
+              text:
+             `${process.env.AS_REPO}\n
+              ${process.env.AS_COMMIT}\n 
+              ${process.env.AS_EVENT_NAME}\n
+              @${process.env.AS_REF}\n
+              @${process.env.AS_WORKFLOW}\n
+              ${process.env.AS_MESSAGE}\n
+              ${process.env.AS_AUTHOR}\n
+              ${process.env.AS_JOB}\n
+              ${process.env.AS_TOOK}`,
+            }]
+            }
