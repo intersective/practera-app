@@ -23,6 +23,7 @@ jobs:
       STACK_NAME: lf # Valid values are au,us,uk,p2,lf,nu,sandbox only
       DOMAIN: lf.practera.com
       SUBDOMAIN: app-v2
+      BUILD_CONFIG: custom
 
     # Steps to execute in this job
     steps:
@@ -67,7 +68,7 @@ jobs:
       - name: create ENV file
         run: |
           cat >> .env <<EOF
-          ${{ secrets.LF_APPv2_API_PROD_ENV }}
+          ${{ secrets.LF_APP_V2_PROD_ENV }}
           EOF
 
   
