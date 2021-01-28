@@ -2,7 +2,7 @@
 
 name: PULL REQUEST EVENT CHECK
 
-#Event Trigger for this Workflow
+#Event Trigger for this Workflow 
 
 on:
   workflow_dispatch:
