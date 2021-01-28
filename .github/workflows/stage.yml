@@ -63,28 +63,27 @@ jobs:
       - name: Install dependencies
         if: steps.cache-node-modules.outputs.cache-hit != 'true'
         run:  npm install
-
-      - name: create ENV file
-        run: |
-          cat >> .env <<EOF
-          ${{ secrets.P2_APP_V2_DEFAULT_ENV }}
-          EOF
-
+          
   
       - name: Run lint test if present only
         run:  npm run lint --if-present
-
+ 
       
       - name: Custom Environemnt variables
         run: |
-          ${{ secrets.UK_CUTIE_APP_PROD_CUSTOM_ENV }}
+          ${{ secrets.P2_APP_V2_STAGE_ENV }}
           chmod +x env.sh && ./env.sh
           cat src/environments/environment.custom.ts
 
 
-    
+      - name: Building web packages
+        run: |
+          printf '' > src/environments/environment.ts
+          ng build --configuration=${{ env.BUILD_CONFIG }}
+
+
       - name: Run unit test if present only
-        run:  npm run test --if-present
+        run:  node_modules/.bin/ng test --karmaConfig=karma.conf.sonarci.js --no-watch
 
 
       - name: SonarCloud Scan
@@ -107,11 +106,6 @@ jobs:
           serverless create-cert 
          
 
-      - name: Serverless create CDN distrubution for custom domain 
-        run: |
-          serverless create_domain
-         
-
       - name: Serverless Packaging
         run: |
           serverless package --package artifacts/${{ env.ENV }} --stage ${{ env.ENV }} --region ${{ env.REGION }} -v
@@ -120,6 +114,25 @@ jobs:
       - name: Serverless Deploy
         run: |
           serverless deploy --stage ${{ env.ENV }} --region ${{ env.REGION }} --package artifacts/${{ env.ENV }} -v
+
+      
+      - name: Cloudformation Environemnt variables
+        run: |
+          echo "Extracting Cloudformation output as environment variable"
+          export STACK_NAME=${{ env.STACK_NAME }}-${{ env.SUBDOMAIN }}-${{env.ENV}}
+          export S3Bucket=${{ env.STACK_NAME }}-AppV2S3Bucket-${{env.ENV}}
+          export CDN=${{env.prefix}}-AppV2CloudFrontDistributionID-${{env.ENV}}
+          echo "APP_V2_CDN="$(aws cloudformation list-exports --query "Exports[?Name==\`$CDN\`].Value" --no-paginate --output text) >> $GITHUB_ENV
+          echo "APP_V2_S3="$(aws cloudformation list-exports --query "Exports[?Name==\`$S3Bucket\`].Value" --no-paginate --output text) >> $GITHUB_ENV
+          echo "APP_V2_S3: "${{env.APP_V2_S3}}
+          echo "APP_V2_CDN: "${{env.APP_V2_CDN}}
+
+
+      - name: AWS S3 Sync operation
+        run: aws s3 sync www/ s3://${{env.APP_V2_S3}} --delete
+
+      - name: AWS Cloudfront Cache invalidation
+        run: aws cloudfront create-invalidation --distribution-id ${{env.APP_V2_CDN}} --paths "/*"
 
 
       - name: Slack Notification
@@ -133,7 +146,7 @@ jobs:
           author_name: ${{ env.SUBDOMAIN }} deployed to ${{ env.ENV }} environemnt in ${{ env.STACK_NAME }} AWS account
           mention: 'here'
           if_mention: failure,cancelled
-          job_name: stage # Match the name above.
+          job_name: sandbox # Match the name above.
           fields: repo,commit,eventName,ref,workflow,message,author,job,took
           custom_payload: |
             {
