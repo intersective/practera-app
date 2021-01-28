@@ -70,10 +70,10 @@ jobs:
       - name: Run unit test if present only
         run : |
           test -f src/environments/environment.ts && echo "environment here" || cp src/environments/environment.local.ts src/environments/environment.ts
-          npm run build
-          npm run sonar-test
+          node_modules/.bin/ng build
+          node_modules/.bin/ng test --karmaConfig=src/karma.conf.sonarci.js --no-watch
 
-          
+
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@master
         env:
