@@ -23,6 +23,7 @@ jobs:
       STACK_NAME: p2 # Valid values are au,us,uk,p2,lf,nu,sandbox only
       DOMAIN: p2.practera.com
       SUBDOMAIN: app-v2
+      BUILD_CONFIG: custom
 
     # Steps to execute in this job
     steps:
@@ -66,12 +67,20 @@ jobs:
       - name: create ENV file
         run: |
           cat >> .env <<EOF
-          ${{ secrets.P2_APPv2_API_DEFAULT_ENV }}
+          ${{ secrets.P2_APP_V2_DEFAULT_ENV }}
           EOF
 
   
       - name: Run lint test if present only
         run:  npm run lint --if-present
+
+      
+      - name: Custom Environemnt variables
+        run: |
+          ${{ secrets.UK_CUTIE_APP_PROD_CUSTOM_ENV }}
+          chmod +x env.sh && ./env.sh
+          cat src/environments/environment.custom.ts
+
 
     
       - name: Run unit test if present only

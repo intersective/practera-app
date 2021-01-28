@@ -23,6 +23,7 @@ jobs:
       STACK_NAME: uk # Valid values are au,us,uk,p2,lf,nu,sandbox only
       DOMAIN: uk.practera.com
       SUBDOMAIN: app-v2
+      BUILD_CONFIG: custom
 
     # Steps to execute in this job
     steps:
@@ -68,7 +69,7 @@ jobs:
       - name: create ENV file
         run: |
           cat >> .env <<EOF
-          ${{ secrets.UK_APPv2_API_PROD_ENV }}
+          ${{ secrets.UK_APP_V2_PROD_ENV }}
           EOF
 
 

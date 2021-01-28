@@ -9,7 +9,6 @@ on:
   push:
     branches: [ 'release/au' ]
     
-
 #Jobs to perform based on event occurred
 
 jobs:
@@ -24,6 +23,7 @@ jobs:
       STACK_NAME: au # Valid values are au,us,uk,p2,lf,nu,sandbox only
       DOMAIN: au.practera.com
       SUBDOMAIN: app-v2
+      BUILD_CONFIG: custom
 
     # Steps to execute in this job
     steps:
@@ -68,7 +68,7 @@ jobs:
       - name: create ENV file
         run: |
           cat >> .env <<EOF
-          ${{ secrets.P1_AU_APPv2_API_PROD_ENV }}
+          ${{ secrets.P1_AU_APP_V2_PROD_ENV }}
           EOF
 
 
