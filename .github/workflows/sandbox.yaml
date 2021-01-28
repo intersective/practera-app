@@ -23,6 +23,7 @@ jobs:
       STACK_NAME: p2 # Valid values are au,us,uk,p2,lf,nu,sandbox only
       DOMAIN: p2.practera.com
       SUBDOMAIN: app-v2
+      BUILD_CONFIG: custom
 
     # Steps to execute in this job
     steps:
@@ -62,19 +63,37 @@ jobs:
       - name: Install dependencies
         if: steps.cache-node-modules.outputs.cache-hit != 'true'
         run:  npm install
-
-     
-      - name: create ENV file
-        run: |
-          cat >> .env <<EOF
-          ${{ secrets.P2_APPv2_API_DEFAULT_ENV }}
-          EOF
           
   
       - name: Run lint test if present only
         run:  npm run lint --if-present
 
-    
+      
+      - name: Custom Environemnt variables
+        run: |
+          ${{ secrets.P2_APP_V2_SANDBOX_ENV }}
+          chmod +x env.sh && ./env.sh
+          cat src/environments/environment.custom.ts
+
+      - name: create ENV file
+        run: |
+          cat >> .env <<EOF
+          ${{ secrets.P2_APP_V2_DEFAULT_ENV }}
+          EOF
+          commands:
+      - echo Build started on `date`
+      - cat /dev/null > src/environments/environment.ts
+      - sed -i "s/<CUSTOM_PIWIK_ENVIRONEMENT>/$CUSTOM_PIWIK_ENVIRONEMENT/" src/index.html
+      - sed -i "s/<SHA256_KEYSTORE_CERT_FINGERPRINTS>/$SHA256_KEYSTORE_CERT_FINGERPRINTS/" src/well-known/assetlinks.json
+      - chmod +x ./env.sh
+      - ./env.sh
+      # - while IFS='=' read -r name value ; do  if [[ $name == 'FILESTACK_'* ]]; then sed -i "s#<$name>#${!name}#g" src/environments/filestack.ts; fi; done < <(env)
+      - ng build --configuration=$BUILD_CONFIG
+      - npm run generate-version
+      - cp -R src/well-known www/.well-known/
+
+
+
       - name: Run unit test if present only
         run:  npm run test --if-present
 

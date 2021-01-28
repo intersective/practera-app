@@ -23,6 +23,7 @@ jobs:
       STACK_NAME: sandbox # Valid values are au,us,uk,p2,lf,nu,sandbox only
       DOMAIN: practeraco.de
       SUBDOMAIN: app-v2
+      BUILD_CONFIG: custom
 
     # Steps to execute in this job
     steps:
@@ -67,7 +68,7 @@ jobs:
       - name: create ENV file
         run: |
           cat >> .env <<EOF
-          ${{ secrets.SANDBOX_APPv2_API_P1_STAGE_ENV }}
+          ${{ secrets.SANDBOX_APP_V2_P1_STAGE_ENV }}
           EOF
 
   
