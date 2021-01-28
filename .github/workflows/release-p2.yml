@@ -1,30 +1,28 @@
 # GitHub Actions WorkFlow Name
 
-name: PULL REQUEST EVENT CHECK
+name: Live environment P2
 
 #Event Trigger for this Workflow
 
 on:
   workflow_dispatch:
-  # pull_request:
-  #   branches:
-  #     - 'develop'
-  #     - 'trunk'
-  #     - 'release/**'
-  #   types: [opened, synchronize, reopened]
   push:
-    branches:
-      - "feature/devops"
+    branches: [ 'release/p2' ]
+    
 
 #Jobs to perform based on event occurred
 
 jobs:
-  pull-req-check:
-    name: pull-req-check
+  release-p2:
+    name: release-p2
     runs-on: ubuntu-latest
 
     #Global Env variables declare here
     env:
+      REGION : ap-southeast-2
+      ENV : live # Valid values are sandbox,stage,live only
+      STACK_NAME: p2 # Valid values are au,us,uk,p2,lf,nu,sandbox only
+      DOMAIN: p2.practera.com
       SUBDOMAIN: app-v2
 
     # Steps to execute in this job
@@ -37,7 +35,12 @@ jobs:
 
       - name: Setup Node.js environment
         uses: actions/setup-node@v1
-
+      
+  
+      - name: Install Serverless Framework
+        run: |
+          npm i -g serverless@2.17.0
+      
  
       - name: Cache node modules
         uses: actions/cache@v2
@@ -60,17 +63,21 @@ jobs:
       - name: Install dependencies
         if: steps.cache-node-modules.outputs.cache-hit != 'true'
         run:  npm install
-  
-  
+
+
+      - name: create ENV file
+        run: |
+          cat >> .env <<EOF
+          ${{ secrets.P2_APPv2_API_DEFAULT_ENV }}
+          EOF
+
+
       - name: Run lint test if present only
         run:  npm run lint --if-present
 
     
       - name: Run unit test if present only
-        run : |
-          test -f src/environments/environment.ts && echo "environment here" || cp src/environments/environment.local.ts src/environments/environment.ts
-          node_modules/.bin/ng build
-          node_modules/.bin/ng test --karmaConfig=karma.conf.sonarci.js --no-watch
+        run:  npm run test --if-present
 
 
       - name: SonarCloud Scan
@@ -79,6 +86,34 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
       
+  
+      - name: Configure AWS credentials from ${{ env.STACK_NAME }} account in ${{ env.REGION }} region
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.P2_AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.P2_AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.REGION }}
+
+
+
+      - name: Serverless create ACM certification for SSL/HTTPS
+        run: |
+          serverless create-cert 
+         
+
+      - name: Serverless create CDN distrubution for custom domain 
+        run: |
+          serverless create_domain
+         
+
+      - name: Serverless Packaging
+        run: |
+          serverless package --package artifacts/${{ env.ENV }} --stage ${{ env.ENV }} --region ${{ env.REGION }} -v
+
+
+      - name: Serverless Deploy
+        run: |
+          serverless deploy --stage ${{ env.ENV }} --region ${{ env.REGION }} --package artifacts/${{ env.ENV }} -v
 
       - name: Slack Notification
         if: always() # Pick up events even if the job fails or is canceled.
@@ -88,10 +123,10 @@ jobs:
           MATRIX_CONTEXT: ${{ toJson(matrix) }} # required
         with:
           status: ${{ job.status }}
-          author_name: ${{ env.SUBDOMAIN }} - pull req event check status
+          author_name: ${{ env.SUBDOMAIN }} deployed to ${{ env.ENV }} environemnt in ${{ env.STACK_NAME }} AWS account
           mention: 'here'
           if_mention: failure,cancelled
-          job_name: pull-req-check # Match the name above.
+          job_name: release-p2 # Match the name above.
           fields: repo,commit,eventName,ref,workflow,message,author,job,took
           custom_payload: |
             {
