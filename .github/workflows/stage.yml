@@ -122,7 +122,7 @@ jobs:
           echo "Extracting Cloudformation output as environment variable"
           export STACK_NAME=${{ env.STACK_NAME }}-${{ env.SUBDOMAIN }}-${{env.ENV}}
           export S3Bucket=${{ env.STACK_NAME }}-AppV2S3Bucket-${{env.ENV}}
-          export CDN=${{env.prefix}}-AppV2CloudFrontDistributionID-${{env.ENV}}
+          export CDN=${{env.STACK_NAME}}-AppV2CloudFrontDistributionID-${{env.ENV}}
           echo "APP_V2_CDN="$(aws cloudformation list-exports --query "Exports[?Name==\`$CDN\`].Value" --no-paginate --output text) >> $GITHUB_ENV
           echo "APP_V2_S3="$(aws cloudformation list-exports --query "Exports[?Name==\`$S3Bucket\`].Value" --no-paginate --output text) >> $GITHUB_ENV
           echo "APP_V2_S3: "${{env.APP_V2_S3}}
