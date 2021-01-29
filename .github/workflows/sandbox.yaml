@@ -138,8 +138,8 @@ jobs:
           aws s3 sync www/ s3://${{env.APP_V2_S3}} --delete
 
       - name: AWS Cloudfront Cache invalidation
-        # run: aws cloudfront create-invalidation --distribution-id ${{env.APP_V2_CDN}} --paths "/*"
-        run: for i in ${{env.APP_V2_CDN}};do aws cloudfront create-invalidation --distribution-id $i --paths "/*";done
+        run: aws cloudfront create-invalidation --distribution-id ${{env.APP_V2_CDN}} --paths "/*"
+        # run: for i in ${{env.APP_V2_CDN}};do aws cloudfront create-invalidation --distribution-id $i --paths "/*";done
 
       # - name: Slack Notification
       #   if: always() # Pick up events even if the job fails or is canceled.
