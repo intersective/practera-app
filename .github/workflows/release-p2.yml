@@ -23,7 +23,7 @@ jobs:
       ENV : live # Valid values are sandbox,stage,live only
       STACK_NAME: p2 # Valid values are au,us,uk,p2,lf,nu,sandbox only
       DOMAIN: p2.practera.com
-      SUBDOMAIN: app-v2
+      SUBDOMAIN: app
       BUILD_CONFIG: custom
 
     # Steps to execute in this job
@@ -84,7 +84,7 @@ jobs:
 
 
       - name: Run unit test if present only
-        run:  node_modules/.bin/ng test --karmaConfig=karma.conf.sonarci.js --no-watch
+        run:  node_modules/.bin/ng test --karmaConfig=src/karma.conf.sonarci.js --no-watch
 
 
       - name: SonarCloud Scan
@@ -145,7 +145,7 @@ jobs:
           MATRIX_CONTEXT: ${{ toJson(matrix) }} # required
         with:
           status: ${{ job.status }}
-          author_name: ${{ env.SUBDOMAIN }} deployed to ${{ env.ENV }} environemnt in ${{ env.STACK_NAME }} AWS account
+          author_name: app-v2  deployed to ${{ env.ENV }} environemnt in ${{ env.STACK_NAME }} AWS account
           mention: 'here'
           if_mention: failure,cancelled
           job_name: sandbox # Match the name above.
