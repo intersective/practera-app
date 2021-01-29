@@ -72,7 +72,7 @@ jobs:
         run : |
           test -f src/environments/environment.ts && echo "environment here" || cp src/environments/environment.local.ts src/environments/environment.ts
           node_modules/.bin/ng build
-          node_modules/.bin/ng test --karmaConfig=karma.conf.sonarci.js --no-watch
+          node_modules/.bin/ng test --karmaConfig=src/karma.conf.sonarci.js --no-watch
 
 
       - name: SonarCloud Scan
