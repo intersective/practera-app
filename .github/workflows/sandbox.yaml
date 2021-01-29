@@ -7,7 +7,8 @@ name: Sandbox environment
 on:
   workflow_dispatch:
   push:
-    branches: [ develop ]
+    # branches: [ develop ]
+    branches: [ 'feature/devops' ]
 
 #Jobs to perform based on event occurred
 
@@ -22,8 +23,9 @@ jobs:
       ENV : sandbox # Valid values are sandbox,stage,live only
       STACK_NAME: p2 # Valid values are au,us,uk,p2,lf,nu,sandbox only
       DOMAIN: p2.practera.com
-      SUBDOMAIN: app-v2
+      SUBDOMAIN: app
       BUILD_CONFIG: custom
+      HOSTEDZONEID: Z06923333Q5BRF2ANDFEG
 
     # Steps to execute in this job
     steps:
@@ -83,7 +85,7 @@ jobs:
 
 
       - name: Run unit test if present only
-        run:  node_modules/.bin/ng test --karmaConfig=karma.conf.sonarci.js --no-watch
+        run:  node_modules/.bin/ng test --karmaConfig=src/karma.conf.sonarci.js --no-watch
 
 
       - name: SonarCloud Scan
@@ -135,34 +137,34 @@ jobs:
         run: aws cloudfront create-invalidation --distribution-id ${{env.APP_V2_CDN}} --paths "/*"
 
 
-      - name: Slack Notification
-        if: always() # Pick up events even if the job fails or is canceled.
-        uses: 8398a7/action-slack@v3
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-          MATRIX_CONTEXT: ${{ toJson(matrix) }} # required
-        with:
-          status: ${{ job.status }}
-          author_name: ${{ env.SUBDOMAIN }} deployed to ${{ env.ENV }} environemnt in ${{ env.STACK_NAME }} AWS account
-          mention: 'here'
-          if_mention: failure,cancelled
-          job_name: sandbox # Match the name above.
-          fields: repo,commit,eventName,ref,workflow,message,author,job,took
-          custom_payload: |
-            {
-            username: 'GitHub Action CI WorkFlow',
-            icon_emoji: ':github:',
-            attachments: [{
-              color: '${{ job.status }}' === 'success' ? 'good' : ${{ job.status }}' === 'failure' ? 'danger' : 'warning',
-              text:
-             `${process.env.AS_REPO}\n
-              ${process.env.AS_COMMIT}\n
-              ${process.env.AS_EVENT_NAME}\n
-              @${process.env.AS_REF}\n
-              @${process.env.AS_WORKFLOW}\n
-              ${process.env.AS_MESSAGE}\n
-              ${process.env.AS_AUTHOR}\n
-              ${process.env.AS_JOB}\n
-              ${process.env.AS_TOOK}`,
-            }]
-            }
+      # - name: Slack Notification
+      #   if: always() # Pick up events even if the job fails or is canceled.
+      #   uses: 8398a7/action-slack@v3
+      #   env:
+      #     SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+      #     MATRIX_CONTEXT: ${{ toJson(matrix) }} # required
+      #   with:
+      #     status: ${{ job.status }}
+      #     author_name: app-v2 deployed to ${{ env.ENV }} environemnt in ${{ env.STACK_NAME }} AWS account
+      #     mention: 'here'
+      #     if_mention: failure,cancelled
+      #     job_name: sandbox # Match the name above.
+      #     fields: repo,commit,eventName,ref,workflow,message,author,job,took
+      #     custom_payload: |
+      #       {
+      #       username: 'GitHub Action CI WorkFlow',
+      #       icon_emoji: ':github:',
+      #       attachments: [{
+      #         color: '${{ job.status }}' === 'success' ? 'good' : ${{ job.status }}' === 'failure' ? 'danger' : 'warning',
+      #         text:
+      #        `${process.env.AS_REPO}\n
+      #         ${process.env.AS_COMMIT}\n
+      #         ${process.env.AS_EVENT_NAME}\n
+      #         @${process.env.AS_REF}\n
+      #         @${process.env.AS_WORKFLOW}\n
+      #         ${process.env.AS_MESSAGE}\n
+      #         ${process.env.AS_AUTHOR}\n
+      #         ${process.env.AS_JOB}\n
+      #         ${process.env.AS_TOOK}`,
+      #       }]
+      #       }
