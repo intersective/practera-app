@@ -96,49 +96,49 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
       
   
-      # - name: Configure AWS credentials from ${{ env.STACK_NAME }} account in ${{ env.REGION }} region
-      #   uses: aws-actions/configure-aws-credentials@v1
-      #   with:
-      #     aws-access-key-id: ${{ secrets.P2_AWS_ACCESS_KEY_ID }}
-      #     aws-secret-access-key: ${{ secrets.P2_AWS_SECRET_ACCESS_KEY }}
-      #     aws-region: ${{ env.REGION }}
+      - name: Configure AWS credentials from ${{ env.STACK_NAME }} account in ${{ env.REGION }} region
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.P2_AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.P2_AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.REGION }}
 
 
-      # - name: Serverless create ACM certification for SSL/HTTPS
-      #   run: |
-      #     serverless create-cert 
+      - name: Serverless create ACM certification for SSL/HTTPS
+        run: |
+          serverless create-cert 
          
 
-      # - name: Serverless Packaging
-      #   run: |
-      #     serverless package --package artifacts/${{ env.ENV }} --stage ${{ env.ENV }} --region ${{ env.REGION }} -v
+      - name: Serverless Packaging
+        run: |
+          serverless package --package artifacts/${{ env.ENV }} --stage ${{ env.ENV }} --region ${{ env.REGION }} -v
 
 
-      # - name: Serverless Deploy
-      #   run: |
-      #     serverless deploy --stage ${{ env.ENV }} --region ${{ env.REGION }} --package artifacts/${{ env.ENV }} -v
+      - name: Serverless Deploy
+        run: |
+          serverless deploy --stage ${{ env.ENV }} --region ${{ env.REGION }} --package artifacts/${{ env.ENV }} -v
 
       
-      # - name: Cloudformation Environemnt variables
-      #   run: |
-      #     echo "Extracting Cloudformation output as environment variable"
-      #     export STACK_NAME=${{ env.STACK_NAME }}-${{ env.SUBDOMAIN }}-${{env.ENV}}
-      #     export S3Bucket=${{ env.STACK_NAME }}-AppV2S3Bucket-${{env.ENV}}
-      #     export CDN=${{env.prefix}}-AppV2CloudFrontDistributionID-${{env.ENV}}
-      #     echo "APP_V2_CDN="$(aws cloudformation list-exports --query "Exports[?Name==\`$CDN\`].Value" --no-paginate --output text) >> $GITHUB_ENV
-      #     echo "APP_V2_S3="$(aws cloudformation list-exports --query "Exports[?Name==\`$S3Bucket\`].Value" --no-paginate --output text) >> $GITHUB_ENV
-      #     echo "APP_V2_S3: "${{env.APP_V2_S3}}
-      #     echo "APP_V2_CDN: "${{env.APP_V2_CDN}}
+      - name: Cloudformation Environemnt variables
+        run: |
+          echo "Extracting Cloudformation output as environment variable"
+          export STACK_NAME=${{ env.STACK_NAME }}-${{ env.SUBDOMAIN }}-${{env.ENV}}
+          export S3Bucket=${{ env.STACK_NAME }}-AppV2S3Bucket-${{env.ENV}}
+          export CDN=${{env.prefix}}-AppV2CloudFrontDistributionID-${{env.ENV}}
+          echo "APP_V2_CDN="$(aws cloudformation list-exports --query "Exports[?Name==\`$CDN\`].Value" --no-paginate --output text) >> $GITHUB_ENV
+          echo "APP_V2_S3="$(aws cloudformation list-exports --query "Exports[?Name==\`$S3Bucket\`].Value" --no-paginate --output text) >> $GITHUB_ENV
+          echo "APP_V2_S3: "${{env.APP_V2_S3}}
+          echo "APP_V2_CDN: "${{env.APP_V2_CDN}}
 
 
-      # - name: AWS S3 Sync operation
-      #   run: |
-      #     cp -R src/well-known www/.well-known/
-      #     aws s3 sync www/ s3://${{env.APP_V2_S3}} --delete
+      - name: AWS S3 Sync operation
+        run: |
+          cp -R src/well-known www/.well-known/
+          aws s3 sync www/ s3://${{env.APP_V2_S3}} --delete
 
-      # - name: AWS Cloudfront Cache invalidation
-      #   # run: aws cloudfront create-invalidation --distribution-id ${{env.APP_V2_CDN}} --paths "/*"
-      #   run: for i in ${{env.APP_V2_CDN}};do aws cloudfront create-invalidation --distribution-id $i --paths '/*';done
+      - name: AWS Cloudfront Cache invalidation
+        # run: aws cloudfront create-invalidation --distribution-id ${{env.APP_V2_CDN}} --paths "/*"
+        run: for i in ${{env.APP_V2_CDN}};do aws cloudfront create-invalidation --distribution-id $i --paths '/*';done
 
       # - name: Slack Notification
       #   if: always() # Pick up events even if the job fails or is canceled.
