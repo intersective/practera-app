@@ -7,7 +7,7 @@ name: PULL REQUEST EVENT CHECK
 on:
   workflow_dispatch:
   push:
-    branches: [ 'feature/devops' ]
+    branches: [ 'feature/devops-test' ]
 # on:
 #   workflow_dispatch:
 #   pull_request:
@@ -27,7 +27,7 @@ jobs:
 
     #Global Env variables declare here
     env:
-      SUBDOMAIN: app-v2
+      SUBDOMAIN: app
 
     # Steps to execute in this job
     steps:
@@ -90,7 +90,7 @@ jobs:
           MATRIX_CONTEXT: ${{ toJson(matrix) }} # required
         with:
           status: ${{ job.status }}
-          author_name: ${{ env.SUBDOMAIN }} - pull req event check status
+          author_name: app-v2  - pull req event check status
           mention: 'here'
           if_mention: failure,cancelled
           job_name: pull-req-check # Match the name above.

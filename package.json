@@ -17,7 +17,7 @@
     "deploy": "ng build --base-href '/practera-app-v2/' && git commit -am 'Build to Github Page' && git subtree push --prefix www origin gh-pages",
     "postdeploy": "npm run generate-version",
     "test": "ng test --no-watch",
-    "sonar-test": "ng test --no-watch --code-coverage --browsers ChromeHeadless --karmaConfig=karma.conf.sonarci.js",
+    "sonar-test": "ng test --no-watch --code-coverage --browsers ChromeHeadless --karmaConfig=src/karma.conf.sonarci.js",
     "lint": "ng lint",
     "e2e": "ng e2e --port 4300",
     "e2e-dev": "ng e2e -c dev --port 4300",
