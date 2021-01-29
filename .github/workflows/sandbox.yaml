@@ -81,7 +81,7 @@ jobs:
       - name: Building web packages
         run: |
           printf '' > src/environments/environment.ts
-          ng build --configuration=${{ env.BUILD_CONFIG }}
+          node_modules/.bin/ng build --configuration=${{ env.BUILD_CONFIG }}
 
 
       - name: Run unit test if present only
