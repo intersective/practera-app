@@ -30,12 +30,13 @@ custom:
     sandbox: ${env:SUBDOMAIN}.${env:ENV}.${env:DOMAIN}
     stage: ${env:SUBDOMAIN}.${env:ENV}.${env:DOMAIN}
   customCertificate:
-      certificateName: "${env:SUBDOMAIN}.${env:DOMAIN}"
+      certificateName: "${env:SUBDOMAIN}.sandbox.${env:DOMAIN}"
       hostedZoneName: "${env:DOMAIN}"
       hostedZoneId: "${env:HOSTEDZONEID}"
       subjectAlternativeNames :
           - "${env:SUBDOMAIN}.sandbox.${env:DOMAIN}"
           - "${env:SUBDOMAIN}.stage.${env:DOMAIN}"
+          - "${env:SUBDOMAIN}.${env:DOMAIN}"
       tags:
           Name: ${env:SUBDOMAIN}.${env:DOMAIN}
           Environment: ${env:ENV}
