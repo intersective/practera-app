@@ -1,21 +1,17 @@
 # GitHub Actions WorkFlow Name
 
-name: PULL REQUEST EVENT CHECK
+name: Pull request event check
 
 #Event Trigger for this Workflow   
 
 on:
   workflow_dispatch:
-  push:
-    branches: [ 'feature/devops-test' ]
-# on:
-#   workflow_dispatch:
-#   pull_request:
-#     branches:
-#       - 'develop'
-#       - 'trunk'
-#       - 'release/**'
-#     types: [opened, synchronize, reopened]
+  pull_request:
+    branches:
+      - 'develop'
+      - 'trunk'
+      - 'release/**'
+    types: [opened, synchronize, reopened]
  
 
 #Jobs to perform based on event occurred
