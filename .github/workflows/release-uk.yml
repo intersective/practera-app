@@ -85,7 +85,7 @@ jobs:
         run: |
           test -f src/environments/environment.ts && echo "environment here" || cp src/environments/environment.local.ts src/environments/environment.ts
           node_modules/.bin/ng build --configuration=${{ env.BUILD_CONFIG }}
-          npm run generate-version
+          # npm run generate-version
 
 
       - name: Run unit test if present only
