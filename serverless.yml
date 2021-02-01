@@ -29,17 +29,17 @@ custom:
     live: ${env:SUBDOMAIN}.${env:DOMAIN}
     sandbox: ${env:SUBDOMAIN}.${env:ENV}.${env:DOMAIN}
     stage: ${env:SUBDOMAIN}.${env:ENV}.${env:DOMAIN}
-  customCertificate:
-      certificateName: "${env:SUBDOMAIN}.${env:DOMAIN}"
-      hostedZoneName: "${env:DOMAIN}"
-      hostedZoneId: "${env:HOSTEDZONEID}"
-      subjectAlternativeNames :
-          - "${env:SUBDOMAIN}.sandbox.${env:DOMAIN}"
-          - "${env:SUBDOMAIN}.stage.${env:DOMAIN}"
-      tags:
-          Name: ${env:SUBDOMAIN}.${env:DOMAIN}
-          Environment: ${env:ENV}
-      rewriteRecords: false
+  # customCertificate:
+  #     certificateName: "${env:SUBDOMAIN}.${env:DOMAIN}"
+  #     hostedZoneName: "${env:DOMAIN}"
+  #     hostedZoneId: "${env:HOSTEDZONEID}"
+  #     subjectAlternativeNames :
+  #         - "${env:SUBDOMAIN}.sandbox.${env:DOMAIN}"
+  #         - "${env:SUBDOMAIN}.stage.${env:DOMAIN}"
+  #     tags:
+  #         Name: ${env:SUBDOMAIN}.${env:DOMAIN}
+  #         Environment: ${env:ENV}
+  #     rewriteRecords: false
 
 
 resources:
@@ -107,6 +107,8 @@ resources:
         DistributionConfig:
           Aliases:
             - ${self:custom.s3Bucket.${env:ENV}}
+            - ${env:CUSTOM_DOMAIN1}
+            - ${env:CUSTOM_DOMAIN2}
           Comment: !Sub "Cloudfront Origin identity for ${self:custom.s3Bucket.${env:ENV}}"
           DefaultCacheBehavior:
             AllowedMethods:
@@ -145,7 +147,7 @@ resources:
               OriginAccessIdentity: !Sub 'origin-access-identity/cloudfront/${AppV2CloudFrontOriginAccessIdentity}'
           PriceClass: 'PriceClass_All'
           ViewerCertificate:
-            AcmCertificateArn: ${certificate:${self:custom.customCertificate.certificateName}:CertificateArn}
+            AcmCertificateArn: ${env:ACM_CERT_ARN}
             MinimumProtocolVersion: 'TLSv1.2_2019'
             SslSupportMethod: 'sni-only'
           ## Uncomment the following section in case you want to enable logging for CloudFront requests
