@@ -7,8 +7,8 @@ name: Stage Environment
 on:
   workflow_dispatch:
   push:
-    # branches: [ trunk ]
-    branches: [ 'feature/devops' ]
+    branches: [ trunk ]
+    # branches: [ 'feature/devops' ]
 
 #Jobs to perform based on event occurred
 

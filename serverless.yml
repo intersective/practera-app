@@ -107,8 +107,8 @@ resources:
         DistributionConfig:
           Aliases:
             - ${self:custom.s3Bucket.${env:ENV}}
-            - ${env:CUSTOM_DOMAIN1}
-            - ${env:CUSTOM_DOMAIN2}
+            - ${env:ALIAS_DOMAIN1}
+            - ${env:ALIAS_DOMAIN2}
           Comment: !Sub "Cloudfront Origin identity for ${self:custom.s3Bucket.${env:ENV}}"
           DefaultCacheBehavior:
             AllowedMethods:
