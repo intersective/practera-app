@@ -24,8 +24,8 @@ jobs:
       STACK_NAME: uk # Valid values are au,us,uk,p2,lf,nu,sandbox only
       DOMAIN: uk.practera.com
       SUBDOMAIN: app
-      CUSTOM_DOMAIN1: "uk.practera.app"
-      CUSTOM_DOMAIN2: "*.uk.practera.app"
+      ALIAS_DOMAIN1: "uk.practera.app"
+      ALIAS_DOMAIN2: "*.uk.practera.app"
       BUILD_CONFIG: custom
       HOSTEDZONEID: Z0199742QRA83MNSFT4W
       ACM_CERT_ARN: arn:aws:acm:us-east-1:836884247349:certificate/fcbbe064-1051-4603-8c1b-aa17deafb79e
