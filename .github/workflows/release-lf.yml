@@ -24,6 +24,8 @@ jobs:
       DOMAIN: lf.practera.com
       SUBDOMAIN: app
       BUILD_CONFIG: custom
+      APP_V2_S3: app.lf.practera.com
+      APP_V2_CDN: E2Y52ZIUB4D6X
 
     # Steps to execute in this job
     steps:
@@ -78,8 +80,9 @@ jobs:
 
       - name: Building web packages
         run: |
-          printf '' > src/environments/environment.ts
-          ng build --configuration=${{ env.BUILD_CONFIG }}
+          test -f src/environments/environment.ts && echo "environment here" || cp src/environments/environment.local.ts src/environments/environment.ts
+          node_modules/.bin/ng build --configuration=${{ env.BUILD_CONFIG }}
+          npm run generate-version
 
 
       - name: Run unit test if present only
@@ -102,38 +105,13 @@ jobs:
       
 
 
-      - name: Serverless create ACM certification for SSL/HTTPS
-        run: |
-          serverless create-cert 
-         
-
-      - name: Serverless Packaging
-        run: |
-          serverless package --package artifacts/${{ env.ENV }} --stage ${{ env.ENV }} --region ${{ env.REGION }} -v
-
-
-      - name: Serverless Deploy
-        run: |
-          serverless deploy --stage ${{ env.ENV }} --region ${{ env.REGION }} --package artifacts/${{ env.ENV }} -v
-
-      
-      - name: Cloudformation Environemnt variables
-        run: |
-          echo "Extracting Cloudformation output as environment variable"
-          export STACK_NAME=${{ env.STACK_NAME }}-${{ env.SUBDOMAIN }}-${{env.ENV}}
-          export S3Bucket=${{ env.STACK_NAME }}-AppV2S3Bucket-${{env.ENV}}
-          export CDN=${{env.STACK_NAME}}-AppV2CloudFrontDistributionID-${{env.ENV}}
-          echo "APP_V2_CDN="$(aws cloudformation list-exports --query "Exports[?Name==\`$CDN\`].Value" --no-paginate --output text) >> $GITHUB_ENV
-          echo "APP_V2_S3="$(aws cloudformation list-exports --query "Exports[?Name==\`$S3Bucket\`].Value" --no-paginate --output text) >> $GITHUB_ENV
-          echo "APP_V2_S3: "${{env.APP_V2_S3}}
-          echo "APP_V2_CDN: "${{env.APP_V2_CDN}}
-
-
       - name: AWS S3 Sync operation
-        run: aws s3 sync www/ s3://${{env.APP_V2_S3}} --delete
+        run: |
+          cp -R src/well-known www/.well-known/
+          aws s3 sync www/ s3://${{env.APP_V2_S3}} --delete
 
       - name: AWS Cloudfront Cache invalidation
-        run: aws cloudfront create-invalidation --distribution-id ${{env.APP_V2_CDN}} --paths "/*"
+        run: for i in ${{env.APP_V2_CDN}};do aws cloudfront create-invalidation --distribution-id $i --paths "/*";done
 
 
       - name: Slack Notification
