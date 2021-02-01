@@ -24,11 +24,10 @@ jobs:
       STACK_NAME: uk # Valid values are au,us,uk,p2,lf,nu,sandbox only
       DOMAIN: uk.practera.com
       SUBDOMAIN: app
-      ALIAS_DOMAIN1: "uk.practera.app"
-      ALIAS_DOMAIN2: "*.uk.practera.app"
       BUILD_CONFIG: custom
-      HOSTEDZONEID: Z0199742QRA83MNSFT4W
-      ACM_CERT_ARN: arn:aws:acm:us-east-1:836884247349:certificate/fcbbe064-1051-4603-8c1b-aa17deafb79e
+      APP_V2_S3: app.uk.practera.com
+      APP_V2_CDN: EY1LYBJVF60J7
+
 
     # Steps to execute in this job
     steps:
@@ -76,7 +75,7 @@ jobs:
       
       - name: Custom Environemnt variables
         run: |
-          ${{ secrets.UK_CHAT_API_PROD_ENV }}
+          ${{ secrets.UK_APP_V2_PROD_ENV }}
           chmod +x env.sh && ./env.sh
           cat src/environments/environment.custom.ts
 
@@ -85,7 +84,7 @@ jobs:
         run: |
           test -f src/environments/environment.ts && echo "environment here" || cp src/environments/environment.local.ts src/environments/environment.ts
           node_modules/.bin/ng build --configuration=${{ env.BUILD_CONFIG }}
-          # npm run generate-version
+          npm run generate-version
 
 
       - name: Run unit test if present only
@@ -107,31 +106,6 @@ jobs:
           aws-region: ${{ env.REGION }}
 
 
-      # - name: Serverless create ACM certification for SSL/HTTPS
-      #   run: |
-      #     serverless create-cert 
-         
-
-      - name: Serverless Packaging
-        run: |
-          serverless package --package artifacts/${{ env.ENV }} --stage ${{ env.ENV }} --region ${{ env.REGION }} -v
-
-
-      - name: Serverless Deploy
-        run: |
-          serverless deploy --stage ${{ env.ENV }} --region ${{ env.REGION }} --package artifacts/${{ env.ENV }} -v
-
-      
-      - name: Cloudformation Environemnt variables
-        run: |
-          echo "Extracting Cloudformation output as environment variable"
-          export STACK_NAME=${{ env.STACK_NAME }}-${{ env.SUBDOMAIN }}-${{env.ENV}}
-          export S3Bucket=${{ env.STACK_NAME }}-AppV2S3Bucket-${{env.ENV}}
-          export CDN=${{env.STACK_NAME}}-AppV2CloudFrontDistributionID-${{env.ENV}}
-          echo "APP_V2_CDN="$(aws cloudformation list-exports --query "Exports[?Name==\`$CDN\`].Value" --no-paginate --output text) >> $GITHUB_ENV
-          echo "APP_V2_S3="$(aws cloudformation list-exports --query "Exports[?Name==\`$S3Bucket\`].Value" --no-paginate --output text) >> $GITHUB_ENV
-
-
       - name: AWS S3 Sync operation
         run: |
           cp -R src/well-known www/.well-known/
@@ -140,34 +114,35 @@ jobs:
       - name: AWS Cloudfront Cache invalidation
         run: for i in ${{env.APP_V2_CDN}};do aws cloudfront create-invalidation --distribution-id $i --paths "/*";done
 
-      # - name: Slack Notification
-      #   if: always() # Pick up events even if the job fails or is canceled.
-      #   uses: 8398a7/action-slack@v3
-      #   env:
-      #     SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-      #     MATRIX_CONTEXT: ${{ toJson(matrix) }} # required
-      #   with:
-      #     status: ${{ job.status }}
-      #     author_name: app-v2 deployed to ${{ env.ENV }} environemnt in ${{ env.STACK_NAME }} AWS account
-      #     mention: 'here'
-      #     if_mention: failure,cancelled
-      #     job_name: sandbox # Match the name above.
-      #     fields: repo,commit,eventName,ref,workflow,message,author,job,took
-      #     custom_payload: |
-      #       {
-      #       username: 'GitHub Action CI WorkFlow',
-      #       icon_emoji: ':github:',
-      #       attachments: [{
-      #         color: '${{ job.status }}' === 'success' ? 'good' : ${{ job.status }}' === 'failure' ? 'danger' : 'warning',
-      #         text:
-      #        `${process.env.AS_REPO}\n
-      #         ${process.env.AS_COMMIT}\n
-      #         ${process.env.AS_EVENT_NAME}\n
-      #         @${process.env.AS_REF}\n
-      #         @${process.env.AS_WORKFLOW}\n
-      #         ${process.env.AS_MESSAGE}\n
-      #         ${process.env.AS_AUTHOR}\n
-      #         ${process.env.AS_JOB}\n
-      #         ${process.env.AS_TOOK}`,
-      #       }]
-      #       }
+
+      - name: Slack Notification
+        if: always() # Pick up events even if the job fails or is canceled.
+        uses: 8398a7/action-slack@v3
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          MATRIX_CONTEXT: ${{ toJson(matrix) }} # required
+        with:
+          status: ${{ job.status }}
+          author_name: app-v2  deployed to ${{ env.ENV }} environemnt in ${{ env.STACK_NAME }} AWS account
+          mention: 'here'
+          if_mention: failure,cancelled
+          job_name: sandbox # Match the name above.
+          fields: repo,commit,eventName,ref,workflow,message,author,job,took
+          custom_payload: |
+            {
+            username: 'GitHub Action CI WorkFlow',
+            icon_emoji: ':github:',
+            attachments: [{
+              color: '${{ job.status }}' === 'success' ? 'good' : ${{ job.status }}' === 'failure' ? 'danger' : 'warning',
+              text:
+             `${process.env.AS_REPO}\n
+              ${process.env.AS_COMMIT}\n
+              ${process.env.AS_EVENT_NAME}\n
+              @${process.env.AS_REF}\n
+              @${process.env.AS_WORKFLOW}\n
+              ${process.env.AS_MESSAGE}\n
+              ${process.env.AS_AUTHOR}\n
+              ${process.env.AS_JOB}\n
+              ${process.env.AS_TOOK}`,
+            }]
+            }
