@@ -7,8 +7,7 @@ name: Live environment UK
 on:
   workflow_dispatch:
   push:
-    # branches: [ 'release/uk' ]
-    branches: [ 'feature/devops' ]
+    branches: [ 'release/uk' ]
 
 #Jobs to perform based on event occurred
 
