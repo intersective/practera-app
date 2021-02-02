@@ -5,6 +5,7 @@ on:
 
 jobs:
   Dependabot:
+    name : Dependabot
     runs-on: ubuntu-latest
 
     if: github.actor == 'dependabot[bot]'
@@ -35,7 +36,7 @@ jobs:
           MATRIX_CONTEXT: ${{ toJson(matrix) }} # required
         with:
           status: ${{ job.status }}
-          author_name: GitHubAction CI for develop branch
+          author_name: GitHubAction CI for dependabot merge
           mention: 'here'
           if_mention: failure,cancelled
           job_name: Dependabot # Match the name above.
