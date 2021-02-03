@@ -75,7 +75,7 @@ jobs:
         run: |
           ${{ secrets.LF_APP_V2_PROD_ENV }}
           chmod +x env.sh && ./env.sh
-          cat src/environments/environment.custom.ts
+          
 
 
       - name: Building web packages
