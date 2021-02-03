@@ -75,7 +75,7 @@ jobs:
         run: |
           ${{ secrets.SANDBOX_APP_V2_P1_STAGE_ENV }}
           chmod +x env.sh && ./env.sh
-          cat src/environments/environment.custom.ts
+          
 
 
       - name: Building web packages
