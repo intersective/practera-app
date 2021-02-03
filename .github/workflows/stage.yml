@@ -74,7 +74,7 @@ jobs:
         run: |
           ${{ secrets.P2_APP_V2_STAGE_ENV }}
           chmod +x env.sh && ./env.sh
-          cat src/environments/environment.custom.ts
+          
           rm serverless.yml && mv serverless-p2.yml serverless.yml
 
 
