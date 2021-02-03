@@ -74,7 +74,6 @@ jobs:
         run: |
           ${{ secrets.P2_APP_V2_SANDBOX_ENV }}
           chmod +x env.sh && ./env.sh
-          
           rm serverless.yml && mv serverless-p2.yml serverless.yml
 
 
