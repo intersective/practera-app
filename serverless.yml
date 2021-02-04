@@ -1,0 +1,224 @@
+service: ${env:STACK_NAME}-${env:SUBDOMAIN}
+
+frameworkVersion: ^2.17.0
+
+useDotenv: true
+
+plugins:
+  - serverless-certificate-creator
+
+package:
+  exclude:
+    - .github/**
+  include:
+    - artifacts/**/*
+    - serverless.yml
+    - .env
+    - package.json
+    - package-lock.json
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  region: ${env:REGION}
+  stage: ${env:ENV}
+  
+
+custom:
+  s3Bucket:
+    live: ${env:SUBDOMAIN}.${env:DOMAIN}
+    sandbox: ${env:SUBDOMAIN}.${env:ENV}.${env:DOMAIN}
+    stage: ${env:SUBDOMAIN}.${env:ENV}.${env:DOMAIN}
+  customCertificate:
+      certificateName: "${env:SUBDOMAIN}.${env:DOMAIN}"
+      hostedZoneName: "${env:DOMAIN}"
+      hostedZoneId: "${env:HOSTEDZONEID}"
+      subjectAlternativeNames :
+          - "${env:SUBDOMAIN}.sandbox.${env:DOMAIN}"
+          - "${env:SUBDOMAIN}.stage.${env:DOMAIN}"
+      tags:
+          Name: ${env:SUBDOMAIN}.${env:DOMAIN}
+          Environment: ${env:ENV}
+      rewriteRecords: false
+
+
+resources:
+
+  Resources:
+
+    ## Specifying the S3 Bucket
+    AppV2S3Bucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: ${self:custom.s3Bucket.${env:ENV}}
+        BucketEncryption: 
+          ServerSideEncryptionConfiguration: 
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+        # NotificationConfiguration:
+        #   TopicConfigurations:
+        #     - Event: s3:ObjectCreated:*
+        #       Topic:
+        #         Ref: !Ref SysAdminAlertSNSTopic
+        #       Filter:
+        #         S3Key:
+        #           Rules:
+        #             - Name: suffix
+        #               Value: ".html"
+
+
+    ## Specifying the policies to make sure all files inside the Bucket are avaialble to CloudFront
+    AppV2S3BucketPolicy:
+      DependsOn: [AppV2CloudFrontOriginAccessIdentity]
+      Type: AWS::S3::BucketPolicy
+      Properties:
+        Bucket:
+          Ref: AppV2S3Bucket
+        PolicyDocument:
+          Statement:
+          - Sid: S3-Bucket-Accesible via CDN OAI only
+            Action: 's3:GetObject'
+            Effect: Allow
+            Resource: !Sub 'arn:aws:s3:::${AppV2S3Bucket}/*'
+            Principal:
+              CanonicalUser: !GetAtt AppV2CloudFrontOriginAccessIdentity.S3CanonicalUserId 
+          - Sid: AllowSSLRequestsOnly # AWS Foundational Security Best Practices v1.0.0 S3.5
+            Effect: Deny
+            Principal: '*'
+            Action: 's3:*'
+            Resource:
+            - !GetAtt 'AppV2S3Bucket.Arn'
+            - !Sub '${AppV2S3Bucket.Arn}/*'
+            Condition:
+              Bool:
+                'aws:SecureTransport': false
+
+    ## Specifying the CloudFront Origin Access Identity CDN Distribution to server your Web Application
+    AppV2CloudFrontOriginAccessIdentity:
+      Type: 'AWS::CloudFront::CloudFrontOriginAccessIdentity'
+      Properties:
+        CloudFrontOriginAccessIdentityConfig:
+          Comment: !Sub "Cloudfront Origin identity for ${self:custom.s3Bucket.${env:ENV}}"
+
+    ## Specifying the CloudFront Distribution to server your Web Application
+    AppV2CloudFrontDistribution:
+      Type: AWS::CloudFront::Distribution
+      Properties:
+        DistributionConfig:
+          Aliases:
+            - ${self:custom.s3Bucket.${env:ENV}}
+          Comment: !Sub "Cloudfront Origin identity for ${self:custom.s3Bucket.${env:ENV}}"
+          DefaultCacheBehavior:
+            AllowedMethods:
+            - GET
+            - HEAD
+            - OPTIONS
+            CachedMethods:
+            - GET
+            - HEAD
+            - OPTIONS
+            Compress: true
+            DefaultTTL: 3600 # in seconds
+            ForwardedValues:
+              Cookies:
+                Forward: none
+              QueryString: false
+            MaxTTL: 86400 # in seconds
+            MinTTL: 60 # in seconds
+            TargetOriginId: ${self:custom.s3Bucket.${env:ENV}}
+            ViewerProtocolPolicy: 'redirect-to-https'
+          DefaultRootObject: index.html
+          CustomErrorResponses:
+            - ErrorCode: 404
+              ResponseCode: 200
+              ResponsePagePath: /index.html
+            - ErrorCode: 403
+              ResponseCode: 200
+              ResponsePagePath: /index.html
+          Enabled: true
+          HttpVersion: http2
+          IPV6Enabled: true
+          Origins:
+          - DomainName: !GetAtt 'AppV2S3Bucket.RegionalDomainName'
+            Id: ${self:custom.s3Bucket.${env:ENV}}
+            S3OriginConfig:
+              OriginAccessIdentity: !Sub 'origin-access-identity/cloudfront/${AppV2CloudFrontOriginAccessIdentity}'
+          PriceClass: 'PriceClass_All'
+          ViewerCertificate:
+            AcmCertificateArn: ${certificate:${self:custom.customCertificate.certificateName}:CertificateArn}
+            MinimumProtocolVersion: 'TLSv1.2_2019'
+            SslSupportMethod: 'sni-only'
+          ## Uncomment the following section in case you want to enable logging for CloudFront requests
+          # Logging:
+          #   IncludeCookies: 'false'
+          #   Bucket: mylogs.s3.amazonaws.com
+          #   Prefix: myprefix
+    
+    
+    Route53RecordV2:
+      Type: 'AWS::Route53::RecordSetGroup'
+      Properties:
+        HostedZoneId: "${env:HOSTEDZONEID}"
+        RecordSets:
+        - Name: ${self:custom.s3Bucket.${env:ENV}}
+          Type: A
+          AliasTarget:
+            HostedZoneId: Z2FDTNDATAQYW2 # Magic CloudFront number
+            DNSName: !GetAtt 'AppV2CloudFrontDistribution.DomainName'
+
+    Route53RecordIPv6:
+      Type: 'AWS::Route53::RecordSetGroup'
+      Properties:
+        HostedZoneId: "${env:HOSTEDZONEID}"
+        RecordSets:
+        - Name: ${self:custom.s3Bucket.${env:ENV}}
+          Type: AAAA
+          AliasTarget:
+            HostedZoneId: Z2FDTNDATAQYW2 # Magic CloudFront number
+            DNSName: !GetAtt 'AppV2CloudFrontDistribution.DomainName'
+    
+    # 5xxErrorRateTooHighAlarm:
+    #   Type: 'AWS::CloudWatch::Alarm'
+    #   Properties:
+    #     AlarmActions:
+    #     # - !Ref SysAdminAlertSNSTopic 
+    #     - !Sub 'arn:aws:sns:${AWS::Region}:${AWS::AccountId}:P2-AWSChatBotSNSService-Syd'
+    #     AlarmDescription: '${self:custom.s3Bucket.${env:ENV}}-5xx errors'
+    #     ComparisonOperator: GreaterThanThreshold
+    #     Dimensions:
+    #     - Name: Region
+    #       Value: Global
+    #     - Name: DistributionId
+    #       Value: !Ref AppV2CloudFrontDistribution
+    #     EvaluationPeriods: 1
+    #     MetricName: 5xxErrorRate
+    #     Namespace: 'AWS/CloudFront'
+    #     OKActions: 
+    #     # - !Ref SysAdminAlertSNSTopic
+    #     - !Sub 'arn:aws:sns:${AWS::Region}:${AWS::AccountId}:P2-AWSChatBotSNSService-Syd'
+    #     Period: 60
+    #     Statistic: Average
+    #     Threshold: 1
+    #     TreatMissingData: notBreaching
+
+  ## In order to print out the hosted domain via `serverless info` we need to define the DomainName output for CloudFormation
+  Outputs:
+    AppV2CloudFrontDistributionOutput:
+      Value:
+        'Fn::GetAtt': [ AppV2CloudFrontDistribution, DomainName ]
+    
+    AppV2S3Bucket:
+      Description: 'Name of the S3 bucket storing the static files.'
+      Value: !Ref AppV2S3Bucket
+      Export:
+        Name: ${env:STACK_NAME}-AppV2S3Bucket-${env:ENV}
+
+    AppV2S3BucketURL:
+      Description: 'URL to static website.'
+      Value: https://${self:custom.s3Bucket.${env:ENV}}
+
+    AppV2CloudFrontDistributionID:
+      Description: 'CloudFront distribution id'
+      Value: !Ref AppV2CloudFrontDistribution
+      Export:
+        Name: ${env:STACK_NAME}-AppV2CloudFrontDistributionID-${env:ENV}
