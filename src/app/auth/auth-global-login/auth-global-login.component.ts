@@ -24,12 +24,13 @@ export class AuthGlobalLoginComponent implements OnInit {
   async ngOnInit() {
     this.newRelic.setPageViewName('global-login');
     const apikey = this.route.snapshot.paramMap.get('apikey');
+    const service = this.route.snapshot.paramMap.get('service');
     if (!apikey) {
       return this._error();
     }
 
     try {
-      await this.authService.globalLogin({ apikey }).toPromise();
+      await this.authService.globalLogin({ apikey, service }).toPromise();
       await this.switcherService.getMyInfo().toPromise();
       this.newRelic.createTracer('Processing global login');
       return this.navigate(['switcher', 'switcher-program']);
