@@ -137,7 +137,7 @@ describe('AuthService', () => {
       }
     }));
     storageSpy.getConfig.and.returnValue(true);
-    service.globalLogin({ apikey: 'abcd' }).subscribe();
+    service.globalLogin({ apikey: 'abcd', service: 'LOGIN' }).subscribe();
     expect(requestSpy.post.calls.count()).toBe(1);
     expect(requestSpy.post.calls.first().args[1]).toContain('abcd');
     expect(storageSpy.setUser.calls.first().args[0]).toEqual({apikey: '123456'});
