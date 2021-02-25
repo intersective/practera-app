@@ -100,8 +100,8 @@ export class AppComponent implements OnInit {
     }
     searchParams = new URLSearchParams(queryString);
 
-    if (searchParams.has('apikey')) {
-      return this.navigate(['global_login', searchParams.get('apikey')]);
+    if (searchParams.has('apikey') && searchParams.has('service')) {
+      return this.navigate(['global_login', searchParams.get('apikey'), searchParams.get('service')]);
     }
 
     if (searchParams.has('do')) {
