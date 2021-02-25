@@ -77,9 +77,12 @@ export class AuthService {
     // do clear user cache here
   }
 
-  private _login(body: HttpParams) {
+  private _login(body: HttpParams, serviceHeader?: string) {
     return this.request.post(api.login, body.toString(), {
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        service: serviceHeader
+       }
     }).pipe(map(res => this._handleLoginResponse(res)));
   }
 
@@ -119,11 +122,11 @@ export class AuthService {
    *              so must convert them into compatible formdata before submission
    * @param {object} { apikey } in string
    */
-  globalLogin({ apikey }): Observable<any> {
+  globalLogin({ apikey, service }): Observable<any> {
     const body = new HttpParams()
       .set('apikey', apikey);
     this.logout({}, false);
-    return this._login(body);
+    return this._login(body, service);
   }
 
   private _handleLoginResponse(response): Observable<any> {
