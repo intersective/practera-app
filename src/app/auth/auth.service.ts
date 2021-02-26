@@ -78,11 +78,15 @@ export class AuthService {
   }
 
   private _login(body: HttpParams, serviceHeader?: string) {
+    const headers = {
+      'Content-Type': 'application/x-www-form-urlencoded',
+      service: serviceHeader
+     };
+    if (!serviceHeader) {
+      delete headers.service;
+    }
     return this.request.post(api.login, body.toString(), {
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-        service: serviceHeader
-       }
+      headers
     }).pipe(map(res => this._handleLoginResponse(res)));
   }
 
