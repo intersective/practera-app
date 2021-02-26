@@ -50,7 +50,7 @@ const routes: Routes = [
         component: AuthDirectLoginComponent,
       },
       {
-        path: 'global_login/:apikey/:service',
+        path: 'global_login/:apikey',
         component: AuthGlobalLoginComponent,
       }
     ]
