@@ -8,6 +8,7 @@ phases:
       - echo "Nothing to pre_build"
   build:
     commands:
+      - cp src/environments/environment.local.ts src/environments/environment.ts
       - ng build
       - ng test --karmaConfig=src/karma.conf.aws.js --no-watch
   post_build:

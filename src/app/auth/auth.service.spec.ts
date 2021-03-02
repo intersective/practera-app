@@ -25,7 +25,7 @@ describe('AuthService', () => {
         AuthService,
         {
           provide: RequestService,
-          useValue: jasmine.createSpyObj('RequestService', ['delete', 'post', 'get'])
+          useValue: jasmine.createSpyObj('RequestService', ['delete', 'post', 'get', 'graphQLQuery'])
         },
         {
           provide: Router,
@@ -111,6 +111,33 @@ describe('AuthService', () => {
     }));
     storageSpy.getConfig.and.returnValue(true);
     service.directLogin({ authToken: 'abcd' }).subscribe();
+    expect(requestSpy.post.calls.count()).toBe(1);
+    expect(requestSpy.post.calls.first().args[1]).toContain('abcd');
+    expect(storageSpy.setUser.calls.first().args[0]).toEqual({apikey: '123456'});
+  });
+
+  it('when testing globalLogin(), it should pass the correct data to API', () => {
+    requestSpy.post.and.returnValue(of({
+      success: true,
+      data: {
+        tutorial: null,
+        apikey: '123456',
+        Timelines: [
+          {
+            Program: {
+              config: {
+                theme_color: 'abc'
+              }
+            },
+            Enrolment: {},
+            Project: {},
+            Timeline: {}
+          }
+        ]
+      }
+    }));
+    storageSpy.getConfig.and.returnValue(true);
+    service.globalLogin({ apikey: 'abcd', service: 'LOGIN' }).subscribe();
     expect(requestSpy.post.calls.count()).toBe(1);
     expect(requestSpy.post.calls.first().args[1]).toContain('abcd');
     expect(storageSpy.setUser.calls.first().args[0]).toEqual({apikey: '123456'});
@@ -234,6 +261,31 @@ describe('AuthService', () => {
     requestSpy.post.and.returnValue(of(''));
     service.verifyResetPassword({ email: 'test@test.com', key: 'key' }).subscribe();
     expect(requestSpy.post.calls.count()).toBe(1);
+  });
+
+  describe('getUUID()', function () {
+    it('should get user uuid in string', () => {
+      const UUID = 'SAMPLE-UUID';
+      requestSpy.graphQLQuery.and.returnValue(of({
+        data: {
+          user: {
+            uuid: UUID
+          }
+        }
+      }));
+      service.getUUID().subscribe(result => {
+        expect(result).toBe(UUID);
+      });
+    });
+
+    it('should return null when data object is undefined', () => {
+      requestSpy.graphQLQuery.and.returnValue(of({
+        data: undefined
+      }));
+      service.getUUID().subscribe(result => {
+        expect(result).toBeNull();
+      });
+    });
   });
 });
 
