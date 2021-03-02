@@ -172,6 +172,7 @@ export class ActivityService {
       this.notification.activityCompletePopUp(activityId, justFinished);
       return ;
     }
+
     // go back to home page, and scroll to the activity
     if (justFinished) {
       // and display the toast
