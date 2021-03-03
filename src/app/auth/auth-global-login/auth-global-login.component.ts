@@ -5,6 +5,7 @@ import { Observable, concat } from 'rxjs';
 import { NotificationService } from '@shared/notification/notification.service';
 import { SwitcherService } from '../../switcher/switcher.service';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
+import { BrowserStorageService } from '@services/storage.service';
 
 @Component({
   selector: 'app-auth-global-login',
@@ -18,21 +19,25 @@ export class AuthGlobalLoginComponent implements OnInit {
     private notificationService: NotificationService,
     private switcherService: SwitcherService,
     private ngZone: NgZone,
-    private newRelic: NewRelicService
+    private newRelic: NewRelicService,
+    private storage: BrowserStorageService,
   ) {}
 
   async ngOnInit() {
     this.newRelic.setPageViewName('global-login');
     const apikey = this.route.snapshot.paramMap.get('apikey');
     const service = this.route.snapshot.paramMap.get('service');
+    const multipleStacks = this.route.snapshot.paramMap.get('multiple');
     if (!apikey) {
       return this._error();
     }
-
     try {
       await this.authService.globalLogin({ apikey, service }).toPromise();
       await this.switcherService.getMyInfo().toPromise();
       this.newRelic.createTracer('Processing global login');
+      if (multipleStacks) {
+        this.storage.set('isMultipleStacks', true);
+      }
       return this.navigate(['switcher', 'switcher-program']);
     } catch (err) {
       this._error(err);

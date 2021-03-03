@@ -25,6 +25,7 @@ export class SettingsComponent extends RouterEnter {
     image: '',
     name: ''
   };
+  isMultipleStacks = false;
   currentProgramName = '';
   currentProgramImage = '';
 
@@ -68,6 +69,9 @@ export class SettingsComponent extends RouterEnter {
     this.currentProgramImage = this._getCurrentProgramImage();
     this.fastFeedbackService.pullFastFeedback().subscribe();
     this.returnLtiUrl = this.storage.getUser().LtiReturnUrl;
+    if (this.storage.get('isMultipleStacks')) {
+      this.isMultipleStacks = this.storage.get('isMultipleStacks');
+    }
   }
 
   // loading pragram image to settings page by resizing it depend on device.
