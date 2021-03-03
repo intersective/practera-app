@@ -36,7 +36,7 @@ export class AuthGlobalLoginComponent implements OnInit {
       await this.switcherService.getMyInfo().toPromise();
       this.newRelic.createTracer('Processing global login');
       if (multipleStacks) {
-        this.storage.set('isMultipleStacks', true);
+        this.storage.set('hasMultipleStacks', true);
       }
       return this.navigate(['switcher', 'switcher-program']);
     } catch (err) {
