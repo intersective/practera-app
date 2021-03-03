@@ -25,7 +25,7 @@ export class SettingsComponent extends RouterEnter {
     image: '',
     name: ''
   };
-  isMultipleStacks = false;
+  hasMultipleStacks = false;
   currentProgramName = '';
   currentProgramImage = '';
 
@@ -69,8 +69,8 @@ export class SettingsComponent extends RouterEnter {
     this.currentProgramImage = this._getCurrentProgramImage();
     this.fastFeedbackService.pullFastFeedback().subscribe();
     this.returnLtiUrl = this.storage.getUser().LtiReturnUrl;
-    if (this.storage.get('isMultipleStacks')) {
-      this.isMultipleStacks = this.storage.get('isMultipleStacks');
+    if (this.storage.get('hasMultipleStacks')) {
+      this.hasMultipleStacks = this.storage.get('hasMultipleStacks');
     }
   }
 
