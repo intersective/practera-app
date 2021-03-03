@@ -19,8 +19,8 @@ export class AuthGlobalLoginComponent implements OnInit {
     private notificationService: NotificationService,
     private switcherService: SwitcherService,
     private ngZone: NgZone,
-    private newRelic: NewRelicService,
-    private storage: BrowserStorageService,
+    private readonly newRelic: NewRelicService,
+    private readonly storage: BrowserStorageService,
   ) {}
 
   async ngOnInit() {
