@@ -115,7 +115,7 @@ export class SettingsComponent extends RouterEnter {
   }
 
   logout() {
-    return this.authService.logout();
+    return this.authService.logout({}, true);
   }
 
   async uploadProfileImage(file, type = null) {
