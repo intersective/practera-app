@@ -1,5 +1,0 @@
-name: Unit tests
-runs:
-  using: docker
-  image: docker://practera/app-v2-unit-test:HeadlessChrome-85
-  args: [ "bash", "-c", "npm install && ng build && ng test --karmaConfig=src/karma.conf.sonarci.js --no-watch" ]

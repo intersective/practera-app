@@ -11,8 +11,7 @@ import { BrowserStorageService } from '@services/storage.service';
  * @type {Object}
  */
 const api = {
-  todoItem: 'api/v2/motivations/todo_item/list.json',
-  unreadMessages: 'api/v2/message/chat/list_messages.json',
+  todoItem: 'api/v2/motivations/todo_item/list.json'
 };
 
 @Injectable({
@@ -63,24 +62,34 @@ export class TabsService {
   }
 
   getNoOfChats() {
-    return this.request.get(api.unreadMessages, {
-      params: {
-        unread_count_for: 'all'
-      }
-    })
-      .pipe(map(response => {
-        if (response.success && response.data) {
-          return this._normaliseNoOfChats(response.data);
+    return this.request.chatGraphQLQuery(
+      `query getAllUnreadMessages {
+        channels {
+          unreadMessageCount
         }
-      }));
+      }`,
+      {
+        noCache: true
+      }
+    )
+    .pipe(map(response => {
+      if (response.data) {
+        return this._normaliseNoOfChats(response.data);
+      }
+    }));
   }
 
   private _normaliseNoOfChats(data) {
-    if (!this.utils.has(data, 'unread_message_count')) {
-      this.request.apiResponseFormatError('Chat unread count format error');
+    const result = JSON.parse(JSON.stringify(data.channels));
+    if (!Array.isArray(result)) {
+      this.request.apiResponseFormatError('Channel array format error');
       return 0;
     }
-    return data.unread_message_count;
+    let count = 0;
+    result.forEach((channel, i) => {
+      count += channel.unreadMessageCount;
+    });
+    return count;
   }
 
 }

@@ -55,7 +55,7 @@ describe('PusherConfig', () => {
   });
 });
 
-xdescribe('PusherService', async () => {
+describe('PusherService', async () => {
   const PUSHER_APIURL = 'APIURL';
   const PUSHERKEY = 'pusherKey';
   const APIURL = 'api/v2/message/notify/channels.json';
@@ -124,7 +124,8 @@ xdescribe('PusherService', async () => {
           provide: RequestService,
           useValue: jasmine.createSpyObj('RequestService', {
             get: of({ data: [] }),
-            apiResponseFormatError: 'ERROR'
+            apiResponseFormatError: 'ERROR',
+            chatGraphQLQuery: of({ data: [] }),
           }),
         }
       ],
@@ -141,25 +142,47 @@ xdescribe('PusherService', async () => {
     expect(service).toBeDefined();
   });
 
+  const notificationRes = {
+    data: [
+      {
+        channel: 'notification-channel'
+      }
+    ]
+  };
+
+  const pusherChatChannelRes = {
+    data: {
+      channels: [
+        {
+            pusherChannel: 'fgv34fg-34-8472354eb'
+        },
+        {
+            pusherChannel: 'k76i865-jyj-5f44eb4f'
+        }
+    ]
+    }
+  };
+
   describe('getChannels()', async () => {
 
-    it(`should make API request to ${APIURL}`, fakeAsync(() => {
-      requestSpy.get.and.returnValue(of({
-        data: [
-          {
-            channel: 'notification-channel'
-          }
-        ]
-      }));
-      service.getChannels().subscribe();
-      tick(300);
+    it(`should call getNotificationChannel() and make API request to ${APIURL}`, () => {
+      requestSpy.get.and.returnValue(of(notificationRes));
+      spyOn(service, 'isSubscribed').and.returnValue(true);
+      service.getNotificationChannel().subscribe();
       expect(requestSpy.get).toHaveBeenCalledWith(APIURL, {
-        params: { env: environment.env }
+        params: { env: environment.env, for: 'notification' }
       });
-    }));
+    });
+
+    it('should call getChatChannels() and make API request to chat GraphQL Server', () => {
+      requestSpy.chatGraphQLQuery.and.returnValue(of(pusherChatChannelRes));
+      spyOn(service, 'isSubscribed').and.returnValue(true);
+      service.getChatChannels().subscribe();
+      expect(requestSpy.chatGraphQLQuery.calls.count()).toBe(1);
+    });
   });
 
-  describe('unsubscribeChannels()', () => {
+  xdescribe('unsubscribeChannels()', () => {
     const channels = {
       notification: {
         name: 'TEST_VALUE',
@@ -179,6 +202,7 @@ xdescribe('PusherService', async () => {
 
     it('should unsubscribe', () => {
       service['channels'] = channels;
+      service['pusher'] = new PusherLib();
       service.unsubscribeChannels();
       expect(service['channels']).toEqual({
         notification: null,
@@ -229,7 +253,7 @@ xdescribe('PusherService', async () => {
         data: channels
       }));
 
-      service.getChannels().subscribe();
+      service.getChannels();
 
       flushMicrotasks();
 
@@ -240,14 +264,14 @@ xdescribe('PusherService', async () => {
   describe('initialise()', () => {
     beforeEach(() => {
       service['initialisePusher'] = jasmine.createSpy('initialisePusher').and.returnValue(new Promise(res => {
-
-          const thisPusher = new PusherLib();
-          service['pusher'] = thisPusher;
-          // spyOn(service['pusher'], 'connect').and.returnValue(true);
-          res(thisPusher);
-        }));
-
+        const thisPusher = new PusherLib();
+        service['pusher'] = thisPusher;
+        // spyOn(service['pusher'], 'connect').and.returnValue(true);
+        res(thisPusher);
+      }));
       service['pusher'] = undefined;
+      requestSpy.get.and.returnValue(of(notificationRes));
+      requestSpy.chatGraphQLQuery.and.returnValue(of(pusherChatChannelRes));
     });
 
     it('should initialise pusher', fakeAsync(() => {
@@ -326,7 +350,7 @@ xdescribe('PusherService', async () => {
     });
   });
 
-  describe('isSubscribed()', () => {
+  xdescribe('isSubscribed()', () => {
     let channels;
     const testChannel = null;
     beforeEach(() => {
