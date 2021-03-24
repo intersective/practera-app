@@ -92,7 +92,6 @@ $message-body-size: 60%;
         }
 
         &.video-attachment-container {
-          min-width: $message-body-size;
           min-height: 125px;
           background: #eaeaea !important;
           line-height: 0;
@@ -101,6 +100,8 @@ $message-body-size: 60%;
           position:relative;
           cursor: pointer;
           border: 1px #bbbbbb solid;
+          padding-left: 10px;
+          padding-right: 10px;
 
           #inner-box {
             border-radius: inherit;
@@ -108,6 +109,7 @@ $message-body-size: 60%;
             min-height: inherit;
             position: absolute;
             padding: 0;
+            width: 100%;
 
             p {
               color: var(--ion-color-primary);
@@ -280,4 +282,8 @@ $message-body-size: 60%;
       }
     }
   }
+}
+
+ion-toolbar {
+  --min-height: 60px;
 }

@@ -26,7 +26,7 @@ describe('ChatService', () => {
         },
         {
           provide: RequestService,
-          useValue: jasmine.createSpyObj('RequestService', ['get', 'post', 'apiResponseFormatError'])
+          useValue: jasmine.createSpyObj('RequestService', ['get', 'post', 'apiResponseFormatError', 'chatGraphQLQuery', 'chatGraphQLMutate'])
         },
       ]
     });
@@ -44,244 +44,339 @@ describe('ChatService', () => {
     let requestResponse;
     beforeEach(() => {
       requestResponse = {
-        success: true,
-        data: [
-          {
-            channel_id: 1,
-            channel_name: 'Team 1',
-            channel_avatar: 'https://cdn.filestackcontent.com/uYQuauwNRdD43PfCQ4iW',
-            pusher_channel_name: 'pusher-channel-name',
-            roles: ['participant'],
-            readonly: false,
-            unread_messages: 2,
-            last_message_created: '2020-01-30 06:18:45',
-            last_message: 'test 1',
-            members: [
-              {
-                name: 'student1',
-                role: 'participant',
-                avatar: ''
-              },
-              {
-                name: 'student2',
-                role: 'participant',
-                avatar: ''
-              }
-            ]
-          },
-          {
-            channel_id: 2,
-            channel_name: 'Team 2',
-            channel_avatar: 'https://cdn.filestackcontent.com/uYQuauwNRdD43PfCQ4iW',
-            pusher_channel_name: 'pusher-channel-name',
-            roles: ['participant'],
-            readonly: false,
-            unread_messages: 2,
-            last_message_created: '2020-01-30 06:18:45',
-            last_message: 'test 2',
-            members: [
-              {
-                name: 'student1',
-                role: 'participant',
-                avatar: ''
-              },
-              {
-                name: 'student2',
-                role: 'participant',
-                avatar: ''
-              }
-            ]
-          }
-        ]
+        data: {
+          channels: [
+            {
+              uuid: '1',
+              name: 'Team 1',
+              avatar: 'https://cdn.filestackcontent.com/uYQuauwNRdD43PfCQ4iW',
+              pusherChannel: 'pusher-channel-name',
+              roles: ['participant'],
+              isAnnouncement: false,
+              isDirectMessage: false,
+              readonly: false,
+              unreadMessageCount: 2,
+              lastMessageCreated: '2020-01-30 06:18:45',
+              lastMessage: 'test 1',
+              canEdit: false
+            },
+            {
+              uuid: '2',
+              name: 'Team 2',
+              avatar: 'https://cdn.filestackcontent.com/uYQuauwNRdD43PfCQ4iW',
+              pusherChannel: 'pusher-channel-name',
+              roles: ['participant'],
+              isAnnouncement: false,
+              isDirectMessage: false,
+              readonly: false,
+              unreadMessageCount: 2,
+              lastMessageCreated: '2020-01-30 06:18:45',
+              lastMessage: 'test 2',
+              canEdit: false
+            }
+          ]
+        }
       };
     });
     it('should throw Chat format error, if data format not match', () => {
       const tmpRes = JSON.parse(JSON.stringify(requestResponse));
-      tmpRes.data = {};
-      requestSpy.get.and.returnValue(of(tmpRes));
+      tmpRes.data.channels = {};
+      requestSpy.chatGraphQLQuery.and.returnValue(of(tmpRes));
       service.getChatList().subscribe();
       expect(requestSpy.apiResponseFormatError.calls.count()).toBe(1);
     });
 
     it('should get correct chat list data', () => {
-      requestSpy.get.and.returnValue(of(requestResponse));
+      requestSpy.chatGraphQLQuery.and.returnValue(of(requestResponse));
       service.getChatList().subscribe(
         chatList => {
           chatList.forEach((chat, i) => {
-            expect(chat.channelId).toEqual(requestResponse.data[i].channel_id);
-            expect(chat.channelName).toEqual(requestResponse.data[i].channel_name);
-            expect(chat.channelAvatar).toEqual(requestResponse.data[i].channel_avatar);
-            expect(chat.pusherChannelName).toEqual(requestResponse.data[i].pusher_channel_name);
-            expect(chat.readonly).toEqual(requestResponse.data[i].readonly);
-            expect(chat.roles).toEqual(requestResponse.data[i].roles);
-            expect(chat.members).toEqual(requestResponse.data[i].members);
-            expect(chat.unreadMessages).toEqual(requestResponse.data[i].unread_messages);
-            expect(chat.lastMessage).toEqual(requestResponse.data[i].last_message);
-            expect(chat.lastMessageCreated).toEqual(requestResponse.data[i].last_message_created);
+            expect(chat.uuid).toEqual(requestResponse.data.channels[i].uuid);
+            expect(chat.name).toEqual(requestResponse.data.channels[i].name);
+            expect(chat.avatar).toEqual(requestResponse.data.channels[i].avatar);
+            expect(chat.pusherChannel).toEqual(requestResponse.data.channels[i].pusherChannel);
+            expect(chat.isAnnouncement).toEqual(requestResponse.data.channels[i].isAnnouncement);
+            expect(chat.isDirectMessage).toEqual(requestResponse.data.channels[i].isDirectMessage);
+            expect(chat.readonly).toEqual(requestResponse.data.channels[i].readonly);
+            expect(chat.roles).toEqual(requestResponse.data.channels[i].roles);
+            expect(chat.unreadMessageCount).toEqual(requestResponse.data.channels[i].unreadMessageCount);
+            expect(chat.lastMessage).toEqual(requestResponse.data.channels[i].lastMessage);
+            expect(chat.lastMessageCreated).toEqual(requestResponse.data.channels[i].lastMessageCreated);
+            expect(chat.canEdit).toEqual(requestResponse.data.channels[i].canEdit);
           });
         }
       );
-      expect(requestSpy.get.calls.count()).toBe(1);
+      expect(requestSpy.chatGraphQLQuery.calls.count()).toBe(1);
     });
   });
 
   describe('when testing getMessageList()', () => {
-    let requestResponse;
+    let messageListRequestResponse;
     beforeEach(() => {
-      requestResponse = {
-        success: true,
-        data: [
-          {
-            id: 1,
-            sender: {
-              name: 'user_1',
-              avatar: 'https://www.gravatar.com/avatar/3ee6ef0c6f1ec24418680ce71e8b06f1?d=https%3A%2F%2Fmy.practera.com%2Fimg%2Fuser-512.png&s=50',
-              role: 'participant'
-            },
-            message: 'test message 01',
-            file: null,
-            sent_time: '2020-02-27 01:48:28',
-            is_sender: true
-          },
-          {
-            id: 2,
-            sender: {
-              name: 'admin_1',
-              avatar: 'https://www.gravatar.com/avatar/3ee6ef0c6f1ec24418680ce71e8b06f1?d=https%3A%2F%2Fmy.practera.com%2Fimg%2Fuser-512.png&s=50',
-              role: 'participant'
-            },
-            message: 'test admin message 01',
-            file: {
-              filename: 'Screen_Shot_2019-09-30_at_6.55.30_AM.png',
-              url: 'https://cdn.filestackcontent.com/hZh76R6TmmKr1qqFAd9C',
-              mimetype: 'image/png'
-            },
-            sent_time: '2020-01-30 06:18:45',
-            is_sender: false
-          },
-          {
-            id: 3,
-            sender: {
-              name: 'user_2',
-              avatar: 'https://www.gravatar.com/avatar/3ee6ef0c6f1ec24418680ce71e8b06f1?d=https%3A%2F%2Fmy.practera.com%2Fimg%2Fuser-512.png&s=50',
-              role: 'participant'
-            },
-            message: 'test message 02',
-            file: null,
-            sent_time: '2019-11-27 02:21:21',
-            is_sender: false
+      messageListRequestResponse = {
+        data: {
+          channel: {
+            chatLogsConnection: {
+              cursor: 'ajnafb83434',
+              chatLogs: [
+                {
+                  uuid: '1',
+                  message: 'test message 01',
+                  file: null,
+                  created: '2020-02-27 01:48:28',
+                  isSender: true,
+                  sender: {
+                    uuid: 'as108',
+                    name: 'user 1',
+                    role: 'admin',
+                    avatar: 'https://cdn.filestackcontent.com/X8Cj0Y4QS2AmDUZX6LSq'
+                  }
+                },
+                {
+                  uuid: '2',
+                  message: 'test admin message 01',
+                  file: JSON.stringify({
+                    filename: 'Screen_Shot_2019-09-30_at_6.55.30_AM.png',
+                    url: 'https://cdn.filestackcontent.com/hZh76R6TmmKr1qqFAd9C',
+                    mimetype: 'image/png'
+                  }),
+                  created: '2020-01-30 06:18:45',
+                  isSender: false,
+                  sender: {
+                    uuid: 'dvjn867',
+                    name: 'user 1',
+                    role: 'admin',
+                    avatar: 'https://cdn.filestackcontent.com/X8Cj0Y4QS2AmDUZX6LSq'
+                  }
+                },
+                {
+                  uuid: '3',
+                  message: 'test message 02',
+                  file: null,
+                  created: '2019-11-27 02:21:21',
+                  isSender: false,
+                  sender: {
+                    uuid: 'dfbjkf3y',
+                    name: 'user 1',
+                    role: 'admin',
+                    avatar: 'https://cdn.filestackcontent.com/X8Cj0Y4QS2AmDUZX6LSq'
+                  }
+                }
+              ]
+            }
           }
-        ]
+        }
       };
     });
 
     it('should get correct message list data for team chat', () => {
       const chatData = {
-        channel_id: 1,
-        page: 1,
+        channelUuid: '1',
+        cursor: '1',
         size: 15,
       };
-      requestSpy.get.and.returnValue(of(requestResponse));
+      requestSpy.chatGraphQLQuery.and.returnValue(of(messageListRequestResponse));
+      const fileJson = {
+        filename: 'Screen_Shot_2019-09-30_at_6.55.30_AM.png',
+        url: 'https://cdn.filestackcontent.com/hZh76R6TmmKr1qqFAd9C',
+        mimetype: 'image/png'
+      };
       service.getMessageList(chatData).subscribe(
-        chatList => {
-          chatList.forEach((chat, i) => {
-            expect(chat.id).toEqual(requestResponse.data[i].id);
-            expect(chat.senderName).toEqual(requestResponse.data[i].sender.name);
-            expect(chat.senderRole).toEqual(requestResponse.data[i].sender.role);
-            expect(chat.senderAvatar).toEqual(requestResponse.data[i].sender.avatar);
-            expect(chat.isSender).toEqual(requestResponse.data[i].is_sender);
-            expect(chat.message).toEqual(requestResponse.data[i].message);
-            expect(chat.sentTime).toEqual(requestResponse.data[i].sent_time);
-            expect(chat.file).toEqual(requestResponse.data[i].file);
+        MessageListResult => {
+          MessageListResult.messages.forEach((message, i) => {
+            expect(message.uuid).toEqual(messageListRequestResponse.data.channel.chatLogsConnection.chatLogs[i].uuid);
+            expect(message.isSender).toEqual(messageListRequestResponse.data.channel.chatLogsConnection.chatLogs[i].isSender);
+            expect(message.message).toEqual(messageListRequestResponse.data.channel.chatLogsConnection.chatLogs[i].message);
+            expect(message.created).toEqual(messageListRequestResponse.data.channel.chatLogsConnection.chatLogs[i].created);
+            expect(message.file).toEqual(messageListRequestResponse.data.channel.chatLogsConnection.chatLogs[i].file);
+            expect(message.fileObject).toBeDefined();
+            if ((typeof messageListRequestResponse.data.channel.chatLogsConnection.chatLogs[i].file) === 'string') {
+              expect(message.fileObject).toEqual(fileJson);
+            } else {
+              expect(message.fileObject).toEqual(messageListRequestResponse.data.channel.chatLogsConnection.chatLogs[i].file);
+            }
           });
         }
       );
-      expect(requestSpy.get.calls.count()).toBe(1);
+      expect(requestSpy.chatGraphQLQuery.calls.count()).toBe(1);
+    });
+
+  });
+
+  describe('when testing getChatMembers()', () => {
+    let requestResponse;
+    beforeEach(() => {
+      requestResponse = {
+        data: {
+          channel: {
+            members: [
+              {
+                  uuid: '8bee29d0-bf45-af7d-0927-19a73a7e1840',
+                  name: 'student+02',
+                  role: 'participant',
+                  avatar: 'https://www.gravatar.com/avatar/db30b12260b2c589b1394b26390eab50?d=https://sandbox.practera.com/img/user-512.png&s=50'
+              },
+              {
+                  uuid: '8d1f3cdf-d697-e957-7120-b5568159a978',
+                  name: 'student+01',
+                  role: 'participant',
+                  avatar: 'https://www.gravatar.com/avatar/21b7427270a606e8a3c4413a13bb47c6?d=https://sandbox.practera.com/img/user-512.png&s=50'
+              }
+            ]
+          }
+        }
+      };
+    });
+
+    it('should get correct member list data of chat channel', () => {
+      requestSpy.chatGraphQLQuery.and.returnValue(of(requestResponse));
+      service.getChatMembers('1').subscribe(
+        members => {
+          members.forEach((member, i) => {
+            expect(member.uuid).toEqual(requestResponse.data.channel.members[i].uuid);
+            expect(member.name).toEqual(requestResponse.data.channel.members[i].name);
+            expect(member.role).toEqual(requestResponse.data.channel.members[i].role);
+            expect(member.avatar).toEqual(requestResponse.data.channel.members[i].avatar);
+          });
+        }
+      );
+      expect(requestSpy.chatGraphQLQuery.calls.count()).toBe(1);
+    });
+
+  });
+
+  describe('when testing getPusherChannels()', () => {
+    let requestResponse;
+    beforeEach(() => {
+      requestResponse = {
+        data: {
+          channels: [
+            {
+                pusherChannel: 'fgv34fg-34-8472354eb'
+            },
+            {
+                pusherChannel: 'k76i865-jyj-5f44eb4f'
+            }
+        ]
+        }
+      };
+    });
+
+    it('should get correct pusher channels', () => {
+      requestSpy.chatGraphQLQuery.and.returnValue(of(requestResponse));
+      service.getPusherChannels().subscribe(
+        members => {
+          members.forEach((member, i) => {
+            expect(member.pusherChannel).toEqual(requestResponse.data.channels[i].pusherChannel);
+          });
+        }
+      );
+      expect(requestSpy.chatGraphQLQuery.calls.count()).toBe(1);
     });
 
   });
 
   describe('when testing markMessagesAsSeen()', () => {
     const requestResponse = {
-      success: true,
-      data: {
-        msg: 'Messages successfuly mark as seen.'
-      }
+      success: true
     };
     const expectedBody = {
-      channel_id: 1,
-      id: [1],
-      action: 'mark_seen'
+      uuids: ['1', '2']
     };
 
     it('should call with correct data', () => {
-      const pram = {
-        channel_id: 1,
-        ids: [1]
-      };
-      requestSpy.post.and.returnValue(of(requestResponse));
-      service.markMessagesAsSeen(pram);
-      expect(requestSpy.post.calls.count()).toBe(1);
-      expect(requestSpy.post.calls.first().args[1]).toEqual(expectedBody);
+      const pram = ['1', '2'];
+      requestSpy.chatGraphQLMutate.and.returnValue(of(requestResponse));
+      service.markMessagesAsSeen(pram).subscribe();
+      expect(requestSpy.chatGraphQLMutate.calls.count()).toBe(1);
+      expect(requestSpy.chatGraphQLMutate.calls.first().args[1]).toEqual(expectedBody);
     });
 
   });
 
   describe('when testing postNewMessage(), postAttachmentMessage()', () => {
     it('should call with correct data', () => {
-      requestSpy.post.and.returnValue(of({}));
+      requestSpy.chatGraphQLMutate.and.returnValue(of({}));
       service.postNewMessage({
         message: 'test message',
-        channelId: 10,
-        env: environment.env,
-        file : {
-          filename: 'unnamed.jpg',
-          mimetype: 'image/jpeg',
-          url: 'https://cdn.filestackcontent.com/X8Cj0Y4QS2AmDUZX6LSq',
-          status: 'Stored'
-        }
+        channelUuid: '10'
       }).subscribe();
-      expect(requestSpy.post.calls.count()).toBe(1);
-      expect(requestSpy.post.calls.first().args[1]).toEqual(jasmine.objectContaining(
+      expect(requestSpy.chatGraphQLMutate.calls.count()).toBe(1);
+      expect(requestSpy.chatGraphQLMutate.calls.first().args[1]).toEqual(jasmine.objectContaining(
         {
           message: 'test message',
-          channel_id: 10,
-          env: environment.env,
-          file : {
-            filename: 'unnamed.jpg',
-            mimetype: 'image/jpeg',
-            url: 'https://cdn.filestackcontent.com/X8Cj0Y4QS2AmDUZX6LSq',
-            status: 'Stored'
-          }
+          channelUuid: '10',
+          file : undefined
         }
       ));
     });
 
     it('postAttachmentMessage() should call with correct data', () => {
-      requestSpy.post.and.returnValue(of({}));
-      service.postAttachmentMessage({
+      const attachmentMessageParam = {
         message: 'test message',
-        channelId: 10,
-        env: environment.env,
-        file : {
+        channelUuid: '10',
+        file : JSON.stringify({
           filename: 'unnamed.jpg',
           mimetype: 'image/jpeg',
           url: 'https://cdn.filestackcontent.com/X8Cj0Y4QS2AmDUZX6LSq',
           status: 'Stored'
+        })
+      };
+      const newMessageRes = {
+        data: {
+            createChatLog: {
+                uuid: '1',
+                isSender: true,
+                message: '',
+                file: JSON.stringify({
+                  filename: 'unnamed.jpg',
+                  mimetype: 'image/jpeg',
+                  url: 'https://cdn.filestackcontent.com/X8Cj0Y4QS2AmDUZX6LSq',
+                  status: 'Stored'
+                }),
+                created: '2020-10-22 12:34:16',
+                sender: {
+                  uuid: '1',
+                  name: 'user 1',
+                  role: 'admin',
+                  avatar: 'https://cdn.filestackcontent.com/X8Cj0Y4QS2AmDUZX6LSq'
+                }
+            }
         }
-      }).subscribe();
-      expect(requestSpy.post.calls.count()).toBe(1);
-      expect(requestSpy.post.calls.first().args[1]).toEqual(jasmine.objectContaining(
+      };
+      const fileJson = {
+        filename: 'unnamed.jpg',
+        mimetype: 'image/jpeg',
+        url: 'https://cdn.filestackcontent.com/X8Cj0Y4QS2AmDUZX6LSq',
+        status: 'Stored'
+      };
+      requestSpy.chatGraphQLMutate.and.returnValue(of(newMessageRes));
+      service.postAttachmentMessage(attachmentMessageParam).subscribe(
+        message => {
+          expect(message.uuid).toEqual(newMessageRes.data.createChatLog.uuid);
+          expect(message.isSender).toEqual(newMessageRes.data.createChatLog.isSender);
+          expect(message.message).toEqual(newMessageRes.data.createChatLog.message);
+          expect(message.created).toEqual(newMessageRes.data.createChatLog.created);
+          expect(message.file).toEqual(newMessageRes.data.createChatLog.file);
+          expect(message.fileObject).toBeDefined();
+          if ((typeof newMessageRes.data.createChatLog.file) === 'string') {
+            expect(message.fileObject).toEqual(fileJson);
+          } else {
+            expect(message.fileObject).toEqual(newMessageRes.data.createChatLog.file);
+          }
+        }
+      );
+      expect(requestSpy.chatGraphQLMutate.calls.count()).toBe(1);
+      expect(requestSpy.chatGraphQLMutate.calls.first().args[1]).toEqual(jasmine.objectContaining(
         {
           message: 'test message',
-          channel_id: 10,
-          env: environment.env,
-          file : {
+          channelUuid: '10',
+          file : JSON.stringify({
             filename: 'unnamed.jpg',
             mimetype: 'image/jpeg',
             url: 'https://cdn.filestackcontent.com/X8Cj0Y4QS2AmDUZX6LSq',
             status: 'Stored'
-          }
+          })
         }
       ));
     });

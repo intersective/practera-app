@@ -17,6 +17,7 @@
     "deploy": "ng build --base-href '/practera-app-v2/' && git commit -am 'Build to Github Page' && git subtree push --prefix www origin gh-pages",
     "postdeploy": "npm run generate-version",
     "test": "ng test --no-watch",
+    "sonar-test": "ng test --no-watch --code-coverage --browsers ChromeHeadless --karmaConfig=src/karma.conf.sonarci.js",
     "lint": "ng lint",
     "e2e": "ng e2e --port 4300",
     "e2e-dev": "ng e2e -c dev --port 4300",
@@ -49,7 +50,7 @@
     "cordova-sqlite-storage": "^2.6.0",
     "core-js": "^2.5.4",
     "exif-js": "^2.3.0",
-    "filestack-js": "^3.10.1",
+    "filestack-js": "^3.20.0",
     "graphql": "^15.3.0",
     "graphql-tag": "^2.10.4",
     "lodash": "^4.17.19",
@@ -103,6 +104,8 @@
     "protractor-cucumber-framework": "^6.2.0",
     "ts-node": "~8.0.0",
     "tslint": "~5.12.0",
-    "typescript": "~3.7.5"
+    "typescript": "~3.7.5",
+    "serverless": "^2.16.1",
+    "serverless-certificate-creator": "^1.4.0"
   }
 }
