@@ -1,96 +1,83 @@
-# GitHub Actions WorkFlow
+# GitHub Actions WorkFlow Name
 
-name: SonarCloud CI - Develop Branch
+name: Pull request event check
 
-# Controls when the action will run. Triggers the workflow on push or pull request
-# events but only for the develop branch
+#Event Trigger for this Workflow   
+
 on:
   workflow_dispatch:
   pull_request:
-    paths-ignore:
-      - 'docs/**'
-      - '**.md'
-      - 'e2e/**'
-      - '.gitignore'
-      - 'src/testing/**'
-      - 'src/assets/**'
-    branches: [ develop ]
+    branches:
+      - 'develop'
+      - 'trunk'
+      - 'release/**'
     types: [opened, synchronize, reopened]
-  push:
-    paths-ignore:
-      - 'docs/**'
-      - '**.md'
-      - 'e2e/**'
-      - 'src/testing/**'
-      - 'src/assets/**'
-    branches: [ develop ]
-    
+ 
 
-env:
-  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-  AWS_REGION: ap-southeast-2
-  AWS_USER_ID: ${{ secrets.AWS_ACCESS_USER_ID }}
+#Jobs to perform based on event occurred
 
 jobs:
-  sonarcloud:
-    name: SonarCloud
+  pull-req-check:
+    name: pull-req-check
     runs-on: ubuntu-latest
+
+    #Global Env variables declare here
+    env:
+      SUBDOMAIN: app
+
+    # Steps to execute in this job
     steps:
+
       - uses: actions/checkout@v2
         with:
           fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
 
+
+      - name: Setup Node.js environment
+        uses: actions/setup-node@v1
+
+ 
       - name: Cache node modules
-        id: cache-app-v2-modules
         uses: actions/cache@v2
+        id: cache-node-modules
         env:
-          cache-name: practera-app-v2-cache-node-modules
+          cache-name: cache
         with:
+          # npm cache files are stored in `~/.npm` on Linux/macOS
           path: |
             ~/.npm
             node_modules
             */*/node_modules
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package.json') }}
           restore-keys: |
             ${{ runner.os }}-build-${{ env.cache-name }}-
             ${{ runner.os }}-build-
             ${{ runner.os }}-
 
-      - name: Install modules
-        if: steps.cache-app-v2-modules.outputs.cache-hit != 'true'
-        run: |
-          npm install
 
-      # Perform Unit test
-      - name: Unit tests
+      - name: Install dependencies
+        if: steps.cache-node-modules.outputs.cache-hit != 'true'
+        run:  npm install
+  
+  
+      - name: Run lint test if present only
+        run:  npm run lint --if-present
+
+    
+      - name: Run unit test if present only
         run : |
           test -f src/environments/environment.ts && echo "environment here" || cp src/environments/environment.local.ts src/environments/environment.ts
           node_modules/.bin/ng build
           node_modules/.bin/ng test --karmaConfig=src/karma.conf.sonarci.js --no-watch
 
-      # # Debug Purpose to check list of files
-      # - name: Debug Purpose to check list of files
-      #   if: ${{ always() }}
-      #   run: |
-      #     pwd
-      #     ls -a /home/runner/work/practera-app-v2/practera-app-v2/tests
 
-      # # Debug Purpose to check content of file
-      # - name: Debug Purpose to check content of file
-      #   if: ${{ always() }}
-      #   run: |
-      #     pwd
-      #     cat /home/runner/work/practera-app-v2/practera-app-v2/tests/ut_report.xml
-
-      # Run Sonarcloudscan
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@master
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-       
-      # Run Slack Notification
+      
+
       - name: Slack Notification
         if: always() # Pick up events even if the job fails or is canceled.
         uses: 8398a7/action-slack@v3
@@ -99,10 +86,10 @@ jobs:
           MATRIX_CONTEXT: ${{ toJson(matrix) }} # required
         with:
           status: ${{ job.status }}
-          author_name: GitHubAction CI for develop branch
+          author_name: app-v2  - pull req event check status
           mention: 'here'
           if_mention: failure,cancelled
-          job_name: SonarCloud # Match the name above.
+          job_name: pull-req-check # Match the name above.
           fields: repo,commit,eventName,ref,workflow,message,author,job,took
           custom_payload: |
             {
@@ -112,7 +99,7 @@ jobs:
               color: '${{ job.status }}' === 'success' ? 'good' : ${{ job.status }}' === 'failure' ? 'danger' : 'warning',
               text:
              `${process.env.AS_REPO}\n
-              ${process.env.AS_COMMIT}\n 
+              ${process.env.AS_COMMIT}\n
               ${process.env.AS_EVENT_NAME}\n
               @${process.env.AS_REF}\n
               @${process.env.AS_WORKFLOW}\n

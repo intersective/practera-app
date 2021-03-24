@@ -6,12 +6,18 @@
     (navigate)="goto($event)"
     (chatListReady)="selectFirstChat($event)">
   </app-chat-list>
-  <ion-content color="light" id="main">
+  <ion-content color="light" id="main" [class]="{'info-page': loadInfo}">
     <app-chat-room
       #chatRoom
-      *ngIf="chatChannel"
+      *ngIf="chatChannel && !loadInfo"
       [chatChannel]="chatChannel"
+      (loadInfo)="loadchannelInfo($event)"
     ></app-chat-room>
+    <app-chat-info
+      *ngIf="loadInfo"
+      [selectedChat]="chatChannel"
+      (navigate)="goto($event)"
+    ></app-chat-info>
   </ion-content>
 </ion-split-pane>
 
