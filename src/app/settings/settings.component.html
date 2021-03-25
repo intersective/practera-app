@@ -5,8 +5,8 @@
 </ion-header>
 <ion-content class="ion-padding" color="light">
   <ng-container *ngIf="utils.isMobile()">
-    <ion-item class="profile-info no-bg" lines="none">
-      <ion-avatar class="profile-image" slot="start">
+    <ion-item class="profile-info no-bg" lines="none" tabindex="0">
+      <ion-avatar class="profile-image" slot="start" >
         <img *ngIf="!imageUpdating" [src]="profile.image">
         <p *ngIf="imageUpdating" class="loading-icon"><ion-spinner name="bubbles"></ion-spinner></p>
         <file-stack
@@ -56,7 +56,7 @@
     <ion-grid>
       <ion-row>
         <ion-col size="3" class="support">
-          <div class="profile-info">
+          <div class="profile-info" tabindex="0">
             <ion-avatar class="profile-image" slot="start">
               <img *ngIf="!imageUpdating" [src]="profile.image">
               <p *ngIf="imageUpdating" class="loading-icon"><ion-spinner name="bubbles"></ion-spinner></p>
