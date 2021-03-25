@@ -178,7 +178,7 @@ export class ContactNumberFormComponent implements OnInit {
    * @return {boolean}             true: key accepted, false: key skipped
    */
   disableArrowKeys(event: KeyboardEvent): boolean {
-    if (['ArrowLeft', 'ArrowRight', 'Backspace', 'Delete'].indexOf(event.code) !== -1) {
+    if (['ArrowLeft', 'ArrowRight', 'Backspace', 'Delete', 'Tab'].indexOf(event.code) !== -1) {
       return true;
     }
 
