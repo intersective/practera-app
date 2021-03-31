@@ -1,6 +1,6 @@
 <ion-header mode="ios">
   <ion-toolbar>
-    <ion-title>Select an experience</ion-title>
+    <ion-title aria-label="select an experience" role="title" tabindex="0">Select an experience</ion-title>
   </ion-toolbar>
 </ion-header>
 
@@ -14,7 +14,7 @@
           </div>
           <ion-card-content>
             <clickable-item color="light" [lines]="'none'" [backgroundColor]="program.program.config.theme_color" [isSwitcherCard]="true">
-              <ion-label class="subtitle-1">
+              <ion-label class="subtitle-1" tabindex="0" role="link" aria-label="program name" (keydown)="disableArrowKeys($event) && switch(i)"  >
                 {{ program.program.name }}
                 <!-- <ion-progress-bar *ngIf="program.progress !== undefined" [value]="program.progress"></ion-progress-bar> -->
               </ion-label>
