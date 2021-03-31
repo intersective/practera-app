@@ -19,7 +19,7 @@
   'ion-content-absolute-with-footer': hasFooter(),
   'ion-content-absolute': !hasFooter()
 }" appFloat>
-  <h1 class="headline-4">{{ assessment.name }}</h1>
+  <h1 class="headline-4" aria-label="assessment name" role="title" tabindex="0">{{ assessment.name }}</h1>
   <ion-text class="ion-text-left">
     <app-description *ngIf="assessment.description" [content]="assessment.description" id="asmt-des" class="body-1 black"></app-description>
   </ion-text>
@@ -27,12 +27,12 @@
     {{ this.sharedService.dueDateFormatter(assessment.dueDate) }}
   </p>
   <div *ngIf="!doAssessment && submission && submission.submitterName && !submission.isLocked" class="review-submitter ion-text-left">
-    <p class="subtitle-1">
+    <p class="subtitle-1" aria-label="submitted by" role="text" tabindex="0">
       Submitted by {{ submission.submitterName }}
     </p>
   </div>
   <div *ngIf="submission && submission.reviewerName && review && submission.status === 'published'" class="review-submitter ion-text-left">
-    <p class="subtitle-1 gray-3">
+    <p class="subtitle-1 gray-3" aria-label="Reviewed by" role="text" tabindex="0">
       Reviewed by {{ submission.reviewerName }}
     </p>
   </div>
