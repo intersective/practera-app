@@ -14,7 +14,7 @@
           </div>
           <ion-card-content>
             <clickable-item color="light" [lines]="'none'" [backgroundColor]="program.program.config.theme_color" [isSwitcherCard]="true">
-              <ion-label class="subtitle-1" tabindex="0" role="link" aria-label="program name" (keydown)="disableArrowKeys($event) && switch(i)"  >
+              <ion-label class="subtitle-1" tabindex="0" role="link" aria-label="program name">
                 {{ program.program.name }}
                 <!-- <ion-progress-bar *ngIf="program.progress !== undefined" [value]="program.progress"></ion-progress-bar> -->
               </ion-label>

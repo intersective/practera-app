@@ -80,7 +80,4 @@ export class SwitcherProgramComponent extends RouterEnter {
     }
     return;
   }
-  disableArrowKeys(event: KeyboardEvent): boolean {
-    return ['Enter'].indexOf(event.code) !== -1;
-  }
 }
