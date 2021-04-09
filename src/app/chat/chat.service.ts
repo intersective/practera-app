@@ -121,7 +121,7 @@ export class ChatService {
     if (result.length === 0) {
       return [];
     }
-    return result;
+    return result.filter(c => c.name);
   }
 
   /**
