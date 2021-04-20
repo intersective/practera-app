@@ -117,6 +117,7 @@ jobs:
           S3VERSIONING: true 
           NONCURRENTVERSION_EXPIREINDAYS: 0
           DEFAULT_EXPIREINDAYS: 0 # Mandatory to disable
+          SLS_DEBUG: '*'
 
 
 ##########################################################
