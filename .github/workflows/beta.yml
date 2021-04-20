@@ -113,7 +113,7 @@ jobs:
           rm serverless.yml
         env:
           APPV2S3BUCKET: app.${{ env.PUBLICZONENAME }}
-          FILESS3BUCKET: files.$PUBLICZONENAME
+          FILESS3BUCKET: files.${{ env.PUBLICZONENAME }}
           S3VERSIONING: true 
           NONCURRENTVERSION_EXPIREINDAYS: 0
           DEFAULT_EXPIREINDAYS: 0 # Mandatory to disable
