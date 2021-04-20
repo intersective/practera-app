@@ -78,7 +78,7 @@ resources:
             Action: 's3:*'
             Resource:
             - !GetAtt 'AppV2S3Bucket.Arn'
-            # - !Sub '${AppV2S3Bucket.Arn}/*'
+            - !Join [ '', [ !GetAtt 'AppV2S3Bucket.Arn', '/*' ] ]
             Condition:
               Bool:
                 'aws:SecureTransport': false
