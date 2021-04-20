@@ -142,7 +142,7 @@ resources:
     Route53RecordV2:
       Type: 'AWS::Route53::RecordSetGroup'
       Properties:
-        HostedZoneId: {'Fn::ImportValue': !Sub '${StackName}-PublicHostedZoneId-${Env}'}
+        HostedZoneId: {'Fn::ImportValue': !Sub '${env:STACK_NAME}-PublicHostedZoneId-${env:Env}'}
         RecordSets:
         - Name: ${env:APPV2S3BUCKET}
           Type: A
@@ -153,7 +153,7 @@ resources:
     Route53RecordIPv6:
       Type: 'AWS::Route53::RecordSetGroup'
       Properties:
-        HostedZoneId: {'Fn::ImportValue': !Sub '${StackName}-PublicHostedZoneId-${Env}'}
+        HostedZoneId: {'Fn::ImportValue': !Sub '${env:STACK_NAME}-PublicHostedZoneId-${env:Env}'}
         RecordSets:
         - Name: ${env:APPV2S3BUCKET}
           Type: AAAA
@@ -173,7 +173,7 @@ resources:
         ComparisonOperator: GreaterThanThreshold
         Threshold: 0
         AlarmActions:
-        - {'Fn::ImportValue': !Sub '${StackName}-ChatBotSNSTopicARN-${Env}'}
+        - {'Fn::ImportValue': !Sub '${env:STACK_NAME}-ChatBotSNSTopicARN-${env:Env}'}
         Dimensions:
         - Name: Region
           Value: Global
