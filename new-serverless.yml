@@ -29,18 +29,18 @@ provider:
 resources:
 
   Conditions:
-    HasAPPv2BucketName: !Not [!Equals ['${env:APPV2S3BUCKET}', '']]
-    HasVersioning: !Equals ['${env:S3VERSIONING}', true]
-    HadVersioning: !Equals ['${env:S3VERSIONING}', 'false-but-was-true']
-    HasNoncurrentVersionExpirationInDays: !Not [!Equals ['${env:NONCURRENTVERSION_EXPIREINDAYS}', 0]]
-    HasExpirationInDays: !Not [!Equals ['${env:DEFAULT_EXPIREINDAYS}', 0]]
+    HasAPPv2BucketName: !Not [!Equals [!Sub '${env:APPV2S3BUCKET}', '']]
+    HasVersioning: !Equals [!Sub '${env:S3VERSIONING}', true]
+    HadVersioning: !Equals [!Sub '${env:S3VERSIONING}', 'false-but-was-true']
+    HasNoncurrentVersionExpirationInDays: !Not [!Equals [!Sub '${env:NONCURRENTVERSION_EXPIREINDAYS}', 0]]
+    HasExpirationInDays: !Not [!Equals [!Sub '${env:DEFAULT_EXPIREINDAYS}', 0]]
     
   Resources:
     ## Specifying the S3 Bucket
     AppV2S3Bucket:
       Type: AWS::S3::Bucket
       Properties:
-        BucketName: !If [HasAPPv2BucketName, '${env:APPV2S3BUCKET}', !Ref 'AWS::NoValue']
+        BucketName: !If [HasAPPv2BucketName, !Sub '${env:APPV2S3BUCKET}', !Ref 'AWS::NoValue']
         BucketEncryption: 
           ServerSideEncryptionConfiguration: 
           - ServerSideEncryptionByDefault:
@@ -50,9 +50,9 @@ resources:
           - AbortIncompleteMultipartUpload:
               DaysAfterInitiation: 7
             Status: Enabled
-          - NoncurrentVersionExpirationInDays: !If [HasNoncurrentVersionExpirationInDays, '${env:NONCURRENTVERSION_EXPIREINDAYS}', 1]
+          - NoncurrentVersionExpirationInDays: !If [HasNoncurrentVersionExpirationInDays,!Sub '${env:NONCURRENTVERSION_EXPIREINDAYS}', 1]
             Status: !If [HasNoncurrentVersionExpirationInDays, Enabled, Disabled]
-          - ExpirationInDays: !If [HasExpirationInDays, '${env:DEFAULT_EXPIREINDAYS}', 1]
+          - ExpirationInDays: !If [HasExpirationInDays,!Sub '${env:DEFAULT_EXPIREINDAYS}', 1]
             Status: !If [HasExpirationInDays, Enabled, Disabled]
         VersioningConfiguration: !If [HasVersioning, {Status: Enabled}, !If [HadVersioning, {Status: Suspended}, !Ref 'AWS::NoValue']]
 
