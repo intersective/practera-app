@@ -112,7 +112,7 @@ jobs:
           node_modules/.bin/serverless deploy
           rm serverless.yml
         env:
-          APPV2S3BUCKET: app.$PUBLICZONENAME
+          APPV2S3BUCKET: app.${{ env.PUBLICZONENAME }}
           FILESS3BUCKET: files.$PUBLICZONENAME
           S3VERSIONING: true 
           NONCURRENTVERSION_EXPIREINDAYS: 0
