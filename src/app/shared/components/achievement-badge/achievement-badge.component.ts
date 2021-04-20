@@ -15,7 +15,7 @@ export class AchievementBadgeComponent {
 
   @Input() achievement: Achievement;
   @Input() showName: Boolean = false;
-  
+
   /**
     * @param {NotificationService} notificationService  the notification object
     * @param {UtilsService} utils  the utils object
