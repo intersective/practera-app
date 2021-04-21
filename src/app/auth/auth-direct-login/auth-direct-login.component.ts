@@ -7,7 +7,6 @@ import { SwitcherService } from '../../switcher/switcher.service';
 import { UtilsService } from '@services/utils.service';
 import { BrowserStorageService } from '@services/storage.service';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
-import { async } from '../../../../node_modules/@types/q';
 
 @Component({
   selector: 'app-auth-direct-login',
@@ -34,21 +33,14 @@ export class AuthDirectLoginComponent implements OnInit {
       return this._error();
     }
 
-    const nrDirectLoginTracer = this.newRelic.createTracer('Processing direct login');
-    // move try catch inside to timeout, because if try catch is outside it not catch errors happen inside timeout.
-    setTimeout(
-      async () => {
-        try {
-          await this.authService.directLogin({ authToken }).toPromise();
-          await this.switcherService.getMyInfo().toPromise();
-          nrDirectLoginTracer();
-          return this._redirect();
-        } catch (err) {
-          this._error(err);
-        }
-        // tslint:disable-next-line:align
-      }, 50
-    );
+    try {
+      await this.authService.directLogin({ authToken }).toPromise();
+      await this.switcherService.getMyInfo().toPromise();
+      this.newRelic.createTracer('Processing direct login');
+      return this._redirect();
+    } catch (err) {
+      this._error(err);
+    }
   }
 
   // force every navigation happen under radar of angular
@@ -104,6 +96,18 @@ export class AuthDirectLoginComponent implements OnInit {
           return this._saveOrRedirect(['app', 'home'], redirectLater);
         }
         return this._saveOrRedirect(['app', 'activity', activityId], redirectLater);
+      case 'activity_task':
+        if (!activityId) {
+          return this._saveOrRedirect(['app', 'home'], redirectLater);
+        }
+        const referrerUrl = this.route.snapshot.paramMap.get('activity_task_referrer_url');
+        if (referrerUrl) {
+          // save the referrer url so that we can redirect user later
+          this.storage.setReferrer({
+            activityTaskUrl: referrerUrl
+          });
+        }
+        return this._saveOrRedirect(['activity-task', activityId], redirectLater);
       case 'assessment':
         if (!activityId || !contextId || !assessmentId) {
           return this._saveOrRedirect(['app', 'home'], redirectLater);
@@ -152,6 +156,7 @@ export class AuthDirectLoginComponent implements OnInit {
       'User is not registered'
     ].includes(res.data.message)) {
       this._redirect(true);
+      this.storage.set('unRegisteredDirectLink', true);
       return this.navigate(['registration', res.data.user.email, res.data.user.key]);
     }
     return this.notificationService.alert({

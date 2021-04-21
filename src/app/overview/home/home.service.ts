@@ -19,7 +19,6 @@ const api = {
   get: {
     activity: 'api/activities.json',
     todoItem: 'api/v2/motivations/todo_item/list.json',
-    chat: 'api/v2/message/chat/list.json',
     progress: 'api/v2/motivations/progress/list.json',
     events: 'api/v2/act/event/list.json',
   },
@@ -52,8 +51,6 @@ export interface TodoItem {
 })
 
 export class HomeService {
-
-  currentActivityId = 0;
 
   constructor(
     private storage: BrowserStorageService,
@@ -201,41 +198,52 @@ export class HomeService {
   }
 
   getChatMessage() {
-    return this.request.get(api.get.chat)
-      .pipe(map(response => {
-        if (response.success && response.data) {
-          return this._normaliseChatMessage(response.data);
+    return this.request.chatGraphQLQuery(
+      `query getChannels {
+        channels{
+          name unreadMessageCount lastMessage lastMessageCreated
         }
-      }));
+      }`,
+      {},
+      {
+        noCache: true
+      }
+    )
+    .pipe(map(response => {
+      if (response.data) {
+        return this._normaliseChatMessage(response.data);
+      }
+    }));
   }
 
-  private _normaliseChatMessage(chatMessages): TodoItem {
-    if (!Array.isArray(chatMessages)) {
+  private _normaliseChatMessage(data): TodoItem {
+    const result = JSON.parse(JSON.stringify(data.channels));
+    if (!Array.isArray(result)) {
       this.request.apiResponseFormatError('Chat array format error');
       return {};
     }
     let unreadMessages = 0;
     let noOfChats = 0;
     let todoItem: TodoItem;
-    chatMessages.forEach(data => {
-      if (!this.utils.has(data, 'unread_messages') ||
-          !this.utils.has(data, 'channel_name') ||
-          !this.utils.has(data, 'last_message') ||
-          !this.utils.has(data, 'last_message_created')) {
+    result.forEach(message => {
+      if (!this.utils.has(message, 'unreadMessageCount') ||
+          !this.utils.has(message, 'name') ||
+          !this.utils.has(message, 'lastMessage') ||
+          !this.utils.has(message, 'lastMessageCreated')) {
         return this.request.apiResponseFormatError('Chat object format error');
       }
-      if (data.unread_messages > 0) {
+      if (message.unreadMessageCount > 0) {
         todoItem = {
           type: 'chat',
           name: '',
           description: '',
           time: '',
         };
-        unreadMessages += data.unread_messages;
+        unreadMessages += message.unreadMessageCount;
         noOfChats ++;
-        todoItem.name = data.channel_name;
-        todoItem.description = data.last_message;
-        todoItem.time = this.utils.timeFormatter(data.last_message_created);
+        todoItem.name = message.name;
+        todoItem.description = message.lastMessage;
+        todoItem.time = this.utils.timeFormatter(message.lastMessageCreated);
       }
     });
     if (unreadMessages > 1) {
@@ -269,71 +277,10 @@ export class HomeService {
       return 0;
     }
 
-    this._getCurrentActivityId(data);
-
     if (data.Project.progress > 1) {
       data.Project.progress = 1;
     }
     return Math.round(data.Project.progress * 100);
-  }
-
-  private _getCurrentActivityId(data) {
-    // initialise current activity id
-    this.currentActivityId = 0;
-    data.Project.Milestone.forEach(this._loopThroughMilestones, this);
-    // regard last activity as the current activity if all activities are finished
-    if (this.currentActivityId === 0) {
-      const milestones = data.Project.Milestone;
-      const activities = milestones[milestones.length - 1].Activity;
-      this.currentActivityId = activities[activities.length - 1].id;
-    }
-  }
-
-  private _loopThroughMilestones(milestone) {
-    if (this.currentActivityId > 0) {
-      return;
-    }
-    if (!this.utils.has(milestone, 'Activity') ||
-        !Array.isArray(milestone.Activity)) {
-      this.request.apiResponseFormatError('Progress.Milestone format error');
-      return ;
-    }
-    milestone.Activity.forEach(this._loopThroughActivities, this);
-  }
-
-  private _loopThroughActivities(activity) {
-    if (this.currentActivityId > 0) {
-      return;
-    }
-    if (!this.utils.has(activity, 'progress') ||
-        !this.utils.has(activity, 'id')) {
-      this.request.apiResponseFormatError('Progress.Milestone.Activity format error');
-      return ;
-    }
-    if (activity.progress < 1) {
-      this.currentActivityId = activity.id;
-    }
-  }
-
-  private _normaliseActivity(data): Activity {
-    if (!Array.isArray(data) ||
-        !this.utils.has(data[0], 'Activity.name') ||
-        !this.utils.has(data[0], 'Activity.is_locked')) {
-      this.request.apiResponseFormatError('Activity format error');
-      return {
-        id: null,
-        name: '',
-        isLocked: false,
-        leadImage: ''
-      };
-    }
-    const thisActivity = data[0];
-    return {
-      id: this.currentActivityId,
-      name: thisActivity.Activity.name,
-      isLocked: thisActivity.Activity.is_locked,
-      leadImage: (thisActivity.Activity.lead_image ? thisActivity.Activity.lead_image : '')
-    };
   }
 
   /**

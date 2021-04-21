@@ -4,11 +4,37 @@
   margin: auto;
   margin-top: 16px;
   max-width: 480px;
+
   ion-checkbox {
     vertical-align: middle;
     margin-right: 16px;
   }
+
   a {
     cursor: pointer;
   }
+}
+
+.title {
+  .headline-6 {
+    font-size: 19px !important;
+  }
+}
+
+.div-after-logo {
+  &.directlink {
+    margin: 0 16px 0px !important;
+
+    .continue-btn {
+      max-width: 470px;
+      margin: auto;
+    }
+  }
+}
+
+.tc-container{
+  margin-bottom: 65px !important;
+}
+.password-container {
+  margin-bottom: 50px !important;
 }

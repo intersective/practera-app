@@ -6,6 +6,7 @@ export class RouterEnter implements OnInit, OnDestroy {
   subscription: Subscription;
   subscriptions: Subscription[] = [];
   routeUrl: string; // static (partial/prefix) url defined in child class
+  routeUrls: string[];
 
   constructor (
     public router: Router
@@ -42,7 +43,7 @@ export class RouterEnter implements OnInit, OnDestroy {
   ngOnInit() {
     this.subscription = this.router.events.subscribe(event => {
       // invoke the onEnter() function of the component if the routing match current page view and stacked components' routeUrl
-      if (event instanceof NavigationEnd && event.url.includes(this.routeUrl)) {
+      if (event instanceof NavigationEnd && this._itIsMyRoute(event.url)) {
         // always unsubscribe previously subscribed Observables to prevent duplication subscription
         if (this.subscriptions) {
           this.subscriptions.forEach(sub => sub.unsubscribe());
@@ -51,6 +52,20 @@ export class RouterEnter implements OnInit, OnDestroy {
         this.onEnter();
       }
     });
+  }
+
+  private _itIsMyRoute(eventUrl: string) {
+    if (this.routeUrl && eventUrl.includes(this.routeUrl)) {
+      return true;
+    }
+    if (this.routeUrls) {
+      for (const routeUrl of this.routeUrls) {
+        if (eventUrl.includes(routeUrl)) {
+          return true;
+        }
+      }
+    }
+    return false;
   }
 
   ngOnDestroy(): void {
