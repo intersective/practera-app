@@ -1,4 +1,4 @@
-import { Component, Input, NgZone, Output, EventEmitter, AfterContentChecked } from '@angular/core';
+import { Component, Input, NgZone, Output, EventEmitter } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { EventListService, Event, EventGroup, Activity } from './event-list.service';
 import { UtilsService } from '@services/utils.service';
@@ -10,7 +10,7 @@ import { NewRelicService } from '@shared/new-relic/new-relic.service';
   styleUrls: ['event-list.component.scss']
 })
 
-export class EventListComponent implements AfterContentChecked {
+export class EventListComponent {
   @Output() navigate = new EventEmitter();
   // activity id that is filtered by default
   @Input() activityId;
@@ -43,9 +43,6 @@ export class EventListComponent implements AfterContentChecked {
     this.utils.getEvent('update-event').subscribe(event => {
       this.onEnter();
     });
-  }
-  ngAfterContentChecked() {
-    document.getElementById('events').focus();
   }
 
   private _initialise() {
