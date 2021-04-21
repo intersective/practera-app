@@ -1,0 +1,147 @@
+# GitHub Actions WorkFlow Name
+
+name: Live environment LF
+
+#Event Trigger for this Workflow
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ 'release/lf' ]
+ 
+#Jobs to perform based on event occurred
+
+jobs:
+  release-lf:
+    name: release-lf
+    runs-on: ubuntu-latest
+
+    #Global Env variables declare here
+    env:
+      REGION : us-east-2
+      ENV : live # Valid values are sandbox,stage,live only
+      STACK_NAME: lf # Valid values are au,us,uk,p2,lf,nu,sandbox only
+      DOMAIN: lf.practera.com
+      SUBDOMAIN: app
+      BUILD_CONFIG: custom
+      APP_V2_S3: app.lf.practera.com
+      APP_V2_CDN: E2Y52ZIUB4D6X
+
+    # Steps to execute in this job
+    steps:
+
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
+
+
+      - name: Setup Node.js environment
+        uses: actions/setup-node@v1
+      
+  
+      - name: Install Serverless Framework
+        run: |
+          npm i -g serverless@2.17.0
+      
+ 
+      - name: Cache node modules
+        uses: actions/cache@v2
+        id: cache-node-modules
+        env:
+          cache-name: cache
+        with:
+          # npm cache files are stored in `~/.npm` on Linux/macOS
+          path: |
+            ~/.npm
+            node_modules
+            */*/node_modules
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package.json') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+            ${{ runner.os }}-build-
+            ${{ runner.os }}-
+
+
+      - name: Install dependencies
+        if: steps.cache-node-modules.outputs.cache-hit != 'true'
+        run:  npm install
+          
+  
+      - name: Run lint test if present only
+        run:  npm run lint --if-present
+ 
+      
+      - name: Custom Environemnt variables
+        run: |
+          ${{ secrets.LF_APP_V2_PROD_ENV }}
+          chmod +x env.sh && ./env.sh
+          
+
+
+      - name: Building web packages
+        run: |
+          test -f src/environments/environment.ts && echo "environment here" || cp src/environments/environment.local.ts src/environments/environment.ts
+          node_modules/.bin/ng build --configuration=${{ env.BUILD_CONFIG }}
+          npm run generate-version
+
+
+      - name: Run unit test if present only
+        run:  node_modules/.bin/ng test --karmaConfig=src/karma.conf.sonarci.js --no-watch
+
+
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarcloud-github-action@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      
+  
+      - name: Configure AWS credentials from ${{ env.STACK_NAME }} account in ${{ env.REGION }} region
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.LF_AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.LF_AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.REGION }}
+      
+
+
+      - name: AWS S3 Sync operation
+        run: |
+          cp -R src/well-known www/.well-known/
+          aws s3 sync www/ s3://${{env.APP_V2_S3}} --delete
+
+      - name: AWS Cloudfront Cache invalidation
+        run: for i in ${{env.APP_V2_CDN}};do aws cloudfront create-invalidation --distribution-id $i --paths "/*";done
+
+
+      - name: Slack Notification
+        if: always() # Pick up events even if the job fails or is canceled.
+        uses: 8398a7/action-slack@v3
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          MATRIX_CONTEXT: ${{ toJson(matrix) }} # required
+        with:
+          status: ${{ job.status }}
+          author_name: app-v2  deployed to ${{ env.ENV }} environemnt in ${{ env.STACK_NAME }} AWS account
+          mention: 'here'
+          if_mention: failure,cancelled
+          job_name: sandbox # Match the name above.
+          fields: repo,commit,eventName,ref,workflow,message,author,job,took
+          custom_payload: |
+            {
+            username: 'GitHub Action CI WorkFlow',
+            icon_emoji: ':github:',
+            attachments: [{
+              color: '${{ job.status }}' === 'success' ? 'good' : ${{ job.status }}' === 'failure' ? 'danger' : 'warning',
+              text:
+             `${process.env.AS_REPO}\n
+              ${process.env.AS_COMMIT}\n
+              ${process.env.AS_EVENT_NAME}\n
+              @${process.env.AS_REF}\n
+              @${process.env.AS_WORKFLOW}\n
+              ${process.env.AS_MESSAGE}\n
+              ${process.env.AS_AUTHOR}\n
+              ${process.env.AS_JOB}\n
+              ${process.env.AS_TOOK}`,
+            }]
+            }

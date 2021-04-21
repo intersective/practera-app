@@ -3,9 +3,10 @@ version: 0.2
 phases:
   install:
     runtime-versions:
-      nodejs: 10
+      nodejs: 12
     commands:
       - echo Installing source NPM dependencies...
+      - curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
       - apt-get update -y
       - apt-get install -y apt-transport-https
       - npm install forever -g
@@ -14,12 +15,15 @@ phases:
   build:
     commands:
       - echo Build started on `date`
+      - cat /dev/null > src/environments/environment.ts
       - sed -i "s/<CUSTOM_PIWIK_ENVIRONEMENT>/$CUSTOM_PIWIK_ENVIRONEMENT/" src/index.html
+      - sed -i "s/<SHA256_KEYSTORE_CERT_FINGERPRINTS>/$SHA256_KEYSTORE_CERT_FINGERPRINTS/" src/well-known/assetlinks.json
       - chmod +x ./env.sh
       - ./env.sh
       # - while IFS='=' read -r name value ; do  if [[ $name == 'FILESTACK_'* ]]; then sed -i "s#<$name>#${!name}#g" src/environments/filestack.ts; fi; done < <(env)
       - ng build --configuration=$BUILD_CONFIG
       - npm run generate-version
+      - cp -R src/well-known www/.well-known/
   post_build:
     commands:
       - aws s3 sync www/ s3://$S3_BUCKET/ --delete

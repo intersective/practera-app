@@ -30,7 +30,7 @@ describe('HomeService', () => {
         },
         {
           provide: RequestService,
-          useValue: jasmine.createSpyObj('RequestService', ['get', 'post', 'apiResponseFormatError'])
+          useValue: jasmine.createSpyObj('RequestService', ['get', 'post', 'apiResponseFormatError', 'chatGraphQLQuery'])
         },
         {
           provide: BrowserStorageService,
@@ -172,59 +172,61 @@ describe('HomeService', () => {
   describe('when testing getChatMessage()', () => {
     it('should get correct 1 chat message', async() => {
       const requestResponse = {
-        success: true,
-        data: [
-          {
-            unread_messages: 1,
-            channel_name: 'name',
-            last_message: 'last',
-            last_message_created: '2019-02-02'
-          }
-        ]
+        data: {
+          channels: [
+            {
+                name: 'Team 1',
+                unreadMessageCount: 1,
+                lastMessage: 'last',
+                lastMessageCreated: '2019-02-02'
+            }
+          ]
+        }
       };
       const expected = {
         type: 'chat',
-        name: requestResponse.data[0].channel_name,
-        description: requestResponse.data[0].last_message,
+        name: requestResponse.data.channels[0].name,
+        description: requestResponse.data.channels[0].lastMessage,
         time: '2 Feb'
       };
-      requestSpy.get.and.returnValue(of(requestResponse));
+      requestSpy.chatGraphQLQuery.and.returnValue(of(requestResponse));
       service.getChatMessage().subscribe(
         todoItem => expect(todoItem).toEqual(expected)
       );
-      expect(requestSpy.get.calls.count()).toBe(1);
+      expect(requestSpy.chatGraphQLQuery.calls.count()).toBe(1);
     });
 
     it('should get correct multiple chat messages', async() => {
       const requestResponse = {
-        success: true,
-        data: [
-          {
-            unread_messages: 1,
-            channel_name: 'name',
-            last_message: 'last 1',
-            last_message_created: '2019-02-02',
-          },
-          {
-            unread_messages: 2,
-            channel_name: 'name',
-            last_message: 'last 2',
-            last_message_created: '2019-02-02',
-          }
-        ]
+        data: {
+          channels: [
+            {
+              unreadMessageCount: 1,
+              name: 'name',
+              lastMessage: 'last 1',
+              lastMessageCreated: '2019-02-02',
+            },
+            {
+              unreadMessageCount: 2,
+              name: 'name',
+              lastMessage: 'last 2',
+              lastMessageCreated: '2019-02-02',
+            }
+          ]
+        }
       };
       const expected = {
         type: 'chat',
         name: '3 messages from 2 chats',
-        description: requestResponse.data[1].last_message,
+        description: requestResponse.data.channels[1].lastMessage,
         time: '2 Feb',
         meta: {}
       };
-      requestSpy.get.and.returnValue(of(requestResponse));
+      requestSpy.chatGraphQLQuery.and.returnValue(of(requestResponse));
       service.getChatMessage().subscribe(
         todoItem => expect(todoItem).toEqual(expected)
       );
-      expect(requestSpy.get.calls.count()).toBe(1);
+      expect(requestSpy.chatGraphQLQuery.calls.count()).toBe(1);
     });
   });
 
@@ -257,7 +259,6 @@ describe('HomeService', () => {
       service.getProgress().subscribe(
         progress => expect(progress).toEqual(expected)
       );
-      expect(service.currentActivityId).toBe(2);
       expect(requestSpy.get.calls.count()).toBe(1);
     });
 
@@ -301,7 +302,6 @@ describe('HomeService', () => {
       service.getProgress().subscribe(
         progress => expect(progress).toEqual(expected)
       );
-      expect(service.currentActivityId).toBe(3);
       expect(requestSpy.get.calls.count()).toBe(1);
     });
   });

@@ -77,9 +77,16 @@ export class AuthService {
     // do clear user cache here
   }
 
-  private _login(body: HttpParams) {
+  private _login(body: HttpParams, serviceHeader?: string) {
+    const headers = {
+      'Content-Type': 'application/x-www-form-urlencoded',
+      service: serviceHeader
+     };
+    if (!serviceHeader) {
+      delete headers.service;
+    }
     return this.request.post(api.login, body.toString(), {
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+      headers
     }).pipe(map(res => this._handleLoginResponse(res)));
   }
 
@@ -113,6 +120,19 @@ export class AuthService {
     return this._login(body);
   }
 
+  /**
+   * @name globalLogin
+   * @description login API specifically only accept request data in encodedUrl formdata,
+   *              so must convert them into compatible formdata before submission
+   * @param {object} { apikey } in string
+   */
+  globalLogin({ apikey, service }): Observable<any> {
+    const body = new HttpParams()
+      .set('apikey', apikey);
+    this.logout({}, false);
+    return this._login(body, service);
+  }
+
   private _handleLoginResponse(response): Observable<any> {
     const norm = this._normaliseAuth(response);
     this.storage.setUser({apikey: norm.apikey});
@@ -137,7 +157,8 @@ export class AuthService {
             enrolment: timeline.Enrolment,
             program: timeline.Program,
             project: timeline.Project,
-            timeline: timeline.Timeline
+            timeline: timeline.Timeline,
+            experience: timeline.Experience,
           };
         },
         this
@@ -288,5 +309,26 @@ export class AuthService {
     .post(api.verifyResetPassword, data, {
       headers: { 'Content-Type': 'application/json' }
     });
+  }
+
+  /**
+   * @name getUUID
+   * @description retrieve user UUID of current requester (user)
+   * @return {Observable<string>} UUID in string
+   */
+  getUUID(): Observable<string> {
+    return this.request.graphQLQuery(
+      `query user {
+        user {
+          uuid
+        }
+      }`
+    )
+    .pipe(map(res => {
+      if (res.data) {
+        return res.data.user.uuid;
+      }
+      return null;
+    }));
   }
 }

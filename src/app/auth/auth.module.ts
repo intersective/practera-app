@@ -16,6 +16,8 @@ import { AuthForgotPasswordComponent } from './auth-forgot-password/auth-forgot-
 import { AuthRegistrationComponent } from './auth-registration/auth-registration.component';
 import { AuthResetPasswordComponent } from './auth-reset-password/auth-reset-password.component';
 import { AuthDirectLoginComponent } from './auth-direct-login/auth-direct-login.component';
+import { AuthGlobalLoginComponent } from './auth-global-login/auth-global-login.component';
+import { TermsConditionsPreviewComponent } from './terms-conditions-preview/terms-conditions-preview.component';
 
 @NgModule({
   imports: [
@@ -30,10 +32,13 @@ import { AuthDirectLoginComponent } from './auth-direct-login/auth-direct-login.
     AuthForgotPasswordComponent,
     AuthRegistrationComponent,
     AuthResetPasswordComponent,
-    AuthDirectLoginComponent
+    AuthDirectLoginComponent,
+    AuthGlobalLoginComponent,
+    TermsConditionsPreviewComponent
   ],
   entryComponents: [
-    AuthComponent
+    AuthComponent,
+    TermsConditionsPreviewComponent
   ],
   providers: [
     AuthService,

@@ -28,9 +28,17 @@ export interface User {
   hasReviewRating?: boolean;
   truncateDescription?: boolean;
   enrolment?: any;
+  activityCompleteMessage?: string;
   hasEvents?: boolean;
   hasReviews?: boolean;
   LtiReturnUrl?: string;
+}
+
+export interface Referrer {
+  // redirect user to this url when
+  // 1. user click back button of activity detail page
+  // 2. user click continue button of last task
+  activityTaskUrl: string;
 }
 
 export interface Config {
@@ -81,6 +89,15 @@ export class BrowserStorageService {
 
   setUser(user: User) {
     this.set('me', Object.assign(this.getUser(), user));
+    return true;
+  }
+
+  getReferrer() {
+    return this.get('referrer') || {};
+  }
+
+  setReferrer(referrer: Referrer) {
+    this.set('referrer', {...this.getReferrer(), ...referrer});
     return true;
   }
 

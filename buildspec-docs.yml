@@ -1,0 +1,18 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      nodejs: 10
+    commands:
+      - npm install
+      - git config credential.helper 'cache --timeout=90'
+      - git config user.email "$USER_EMAIL"
+      - git config github.token $GITHUB_TOKEN
+      - git config user.name "Deployment Bot"
+  build:
+    commands:
+      - npm run pubdocs
+  post_build:
+    commands:
+      - echo "success"
