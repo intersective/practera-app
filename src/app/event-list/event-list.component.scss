@@ -10,4 +10,8 @@
     width: calc(36% - 4px);
   }
 }
+.btn-focused {
+  --background-focused: var(--ion-color-primary-tint) !important;
+  --background-focused-opacity: 0.44;
 
+}
