@@ -293,4 +293,4 @@ resources:
       Description: 'Name of the S3 bucket storing the static files.'
       Value: !Ref FileV2S3Bucket
       Export:
-        Name: ${env:STACK_NAME}-AppV2S3Bucket-${env:ENV}
+        Name: ${env:STACK_NAME}-FileV2S3Bucket-${env:ENV}
