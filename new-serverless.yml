@@ -136,7 +136,7 @@ resources:
               OriginAccessIdentity: !Sub 'origin-access-identity/cloudfront/${AppV2CloudFrontOriginAccessIdentity}'
           PriceClass: 'PriceClass_All'
           ViewerCertificate:
-            AcmCertificateArn: {'Fn::ImportValue': '${env:STACK_NAME}-APISharedACMCertificateArn-${env:ENV}'}
+            AcmCertificateArn: {'Fn::ImportValue': '${env:STACK_NAME}-CDNSharedACMCertificateArn-${env:ENV}'}
             MinimumProtocolVersion: 'TLSv1.2_2019'
             SslSupportMethod: 'sni-only'
     
