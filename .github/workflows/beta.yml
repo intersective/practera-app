@@ -155,14 +155,14 @@ jobs:
         run: |
           printf "Creating required secret variables for angular environment variable creation\n\n"
 
-          CUSTOM_APPKEY=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-AppKeySecret-$ENV| jq --raw-output '.SecretString' | jq -r .appkey) 
-          CUSTOM_FILESTACK_SIGNATURE=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-FilestackSecret-$ENV| jq --raw-output '.SecretString' | jq -r .signature) 
-          CUSTOM_FILESTACK_VIRUS_DETECTION=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-FilestackSecret-$ENV| jq --raw-output '.SecretString' | jq -r .virusdetection) 
-          CUSTOM_FILESTACK_KEY=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-FilestackSecret-$ENV| jq --raw-output '.SecretString' | jq -r .apikey)
-          CUSTOM_FILESTACK_POLICY=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-FilestackSecret-$ENV| jq --raw-output '.SecretString' | jq -r .policy)
-          CUSTOM_STACK_UUID=NA #TODO create uuid
-          CUSTOM_PUSHERKEY=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-PusherSecret-$ENV| jq --raw-output '.SecretString' | jq -r .key) 
-          CUSTOM_INTERCOM=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-IntercomSecret-$ENV| jq --raw-output '.SecretString' | jq -r .app_id) 
+          export CUSTOM_APPKEY=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-AppKeySecret-$ENV| jq --raw-output '.SecretString' | jq -r .appkey) 
+          export CUSTOM_FILESTACK_SIGNATURE=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-FilestackSecret-$ENV| jq --raw-output '.SecretString' | jq -r .signature) 
+          export CUSTOM_FILESTACK_VIRUS_DETECTION=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-FilestackSecret-$ENV| jq --raw-output '.SecretString' | jq -r .virusdetection) 
+          export CUSTOM_FILESTACK_KEY=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-FilestackSecret-$ENV| jq --raw-output '.SecretString' | jq -r .apikey)
+          export CUSTOM_FILESTACK_POLICY=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-FilestackSecret-$ENV| jq --raw-output '.SecretString' | jq -r .policy)
+          export CUSTOM_STACK_UUID=NA #TODO create uuid
+          export CUSTOM_PUSHERKEY=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-PusherSecret-$ENV| jq --raw-output '.SecretString' | jq -r .key) 
+          export CUSTOM_INTERCOM=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-IntercomSecret-$ENV| jq --raw-output '.SecretString' | jq -r .app_id) 
 
           printf "Angular environment variable creation  complete\n\n"
           printf "Executing env.sh script\n\n"
