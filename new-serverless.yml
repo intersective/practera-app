@@ -30,10 +30,11 @@ resources:
 
   Conditions:
     HasAPPv2BucketName: !Not [!Equals [ '${env:APPV2S3BUCKET}', '']]
+    HasFilev2BucketName: !Not [!Equals [ '${env:FILESS3BUCKET}', '']]
     HasVersioning: !Equals [ '${env:S3VERSIONING}', true]
     HadVersioning: !Equals [ '${env:S3VERSIONING}', 'false-but-was-true']
     HasNoncurrentVersionExpirationInDays: !Not [!Equals [ '${env:NONCURRENTVERSION_EXPIREINDAYS}', 0]]
-    HasExpirationInDays: !Not [!Equals [ '${env:DEFAULT_EXPIREINDAYS}', 0]]
+    # HasExpirationInDays: !Not [!Equals [ '${env:DEFAULT_EXPIREINDAYS}', 0]]
     
   Resources:
     ## Specifying the S3 Bucket
@@ -52,8 +53,8 @@ resources:
             Status: Enabled
           - NoncurrentVersionExpirationInDays: !If [HasNoncurrentVersionExpirationInDays, '${env:NONCURRENTVERSION_EXPIREINDAYS}', 1]
             Status: !If [HasNoncurrentVersionExpirationInDays, Enabled, Disabled]
-          - ExpirationInDays: !If [HasExpirationInDays, '${env:DEFAULT_EXPIREINDAYS}', 1]
-            Status: !If [HasExpirationInDays, Enabled, Disabled]
+          # - ExpirationInDays: !If [HasExpirationInDays, '${env:DEFAULT_EXPIREINDAYS}', 1]
+          #   Status: !If [HasExpirationInDays, Enabled, Disabled]
         VersioningConfiguration: !If [HasVersioning, {Status: Enabled}, !If [HadVersioning, {Status: Suspended}, !Ref 'AWS::NoValue']]
 
 
@@ -77,8 +78,8 @@ resources:
             Principal: '*'
             Action: 's3:*'
             Resource:
-            - !GetAtt 'AppV2S3Bucket.Arn'
-            - !Join [ '', [ !GetAtt 'AppV2S3Bucket.Arn', '/*' ] ]
+            - !Sub 'arn:aws:s3:::${AppV2S3Bucket}'
+            - !Sub 'arn:aws:s3:::${AppV2S3Bucket}/*'
             Condition:
               Bool:
                 'aws:SecureTransport': false
@@ -181,6 +182,87 @@ resources:
           Value: !Ref AppV2CloudFrontDistribution
         TreatMissingData: notBreaching
 
+
+  # FILE storage Bucket 
+    FileV2S3Bucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: !If [HasFilev2BucketName, '${env:FILESS3BUCKET}', !Ref 'AWS::NoValue']
+        BucketEncryption: 
+          ServerSideEncryptionConfiguration: 
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+        LifecycleConfiguration:
+          Rules:
+          - AbortIncompleteMultipartUpload:
+              DaysAfterInitiation: 7
+            Status: Enabled
+          - NoncurrentVersionExpirationInDays: !If [HasNoncurrentVersionExpirationInDays, '${env:NONCURRENTVERSION_EXPIREINDAYS}', 1]
+            Status: !If [HasNoncurrentVersionExpirationInDays, Enabled, Disabled]
+          # - ExpirationInDays: !If [HasExpirationInDays, '${env:DEFAULT_EXPIREINDAYS}', 1]
+          #   Status: !If [HasExpirationInDays, Enabled, Disabled]
+        VersioningConfiguration: !If [HasVersioning, {Status: Enabled}, !If [HadVersioning, {Status: Suspended}, !Ref 'AWS::NoValue']]
+        CorsConfiguration:
+          CorsRules:
+            -
+              AllowedOrigins: 
+                - 'https://*.practera.app'
+              AllowedMethods: 
+                - POST
+                - GET
+                - PUT
+              AllowedHeaders: 
+                - '*'
+              Id: CORSRule1
+              MaxAge: 3000
+              ExposedHeaders: [ETag]
+            -
+              AllowedOrigins: 
+                - 'https://*.practera.com'
+              AllowedMethods: 
+                - POST
+                - GET
+                - PUT
+              AllowedHeaders: 
+                - '*'
+              Id: CORSRule2
+              MaxAge: 3000
+              ExposedHeaders: [ETag]
+
+    ## Specifying the policies to make sure all files inside the Bucket are avaialble to CloudFront
+    FileV2S3BucketPolicy:
+      Type: AWS::S3::BucketPolicy
+      Properties:
+        Bucket:
+          Ref: FileV2S3Bucket
+        PolicyDocument:
+          Statement:
+          - Sid: S3-Bucket-Accesible to filestack uploads
+            Action: 
+              - 's3:PutObjectAcl'
+              - 's3:PutObject'
+              - 's3:GetObject'
+            Effect: Allow
+            Resource: 
+            - !Sub 'arn:aws:s3:::${FileV2S3Bucket}'
+            - !Sub 'arn:aws:s3:::${FileV2S3Bucket}/*'
+            Principal:
+              AWS: 
+                - 'arn:aws:iam::${env:FILESTACKAWSID}:user/filestack-uploads'
+          - Sid: S3-Bucket-Accesible to main practera account
+            Action: 
+              - 's3:PutObjectAcl'
+              - 's3:PutObject'
+              - 's3:GetObject'
+            Effect: Allow
+            Resource: 
+            - !Sub 'arn:aws:s3:::${FileV2S3Bucket}'
+            - !Sub 'arn:aws:s3:::${FileV2S3Bucket}/*'
+            Principal:
+              AWS: 
+                - 'arn:aws:iam::${env:P1STACKAWSID}:user/practera'
+          
+
   Outputs:
     AppV2CloudFrontDistributionOutput:
       Value:
@@ -205,3 +287,10 @@ resources:
       Value: !Ref AppV2CloudFrontDistribution
       Export:
         Name: ${env:STACK_NAME}-AppV2CloudFrontDistributionID-${env:ENV}
+
+
+    FileV2S3Bucket:
+      Description: 'Name of the S3 bucket storing the static files.'
+      Value: !Ref FileV2S3Bucket
+      Export:
+        Name: ${env:STACK_NAME}-AppV2S3Bucket-${env:ENV}
