@@ -155,8 +155,8 @@ jobs:
         run: |
           printf "Creating required secret variables for angular environment variable creation\n\n"
 
-          CUSTOM_APPKEY=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-AppKeySecret-$ENV| jq --raw-output '.SecretString' | jq -r .appkey) 
-          CUSTOM_STACK_UUID=NA #TODO create uuid
+          export CUSTOM_APPKEY=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-AppKeySecret-$ENV| jq --raw-output '.SecretString' | jq -r .appkey) 
+          export CUSTOM_STACK_UUID=NA #TODO create uuid
           printf "Angular environment variable creation  complete\n\n"
           printf "Executing env.sh script\n\n"
           chmod +x env.sh && ./env.sh
