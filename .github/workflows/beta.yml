@@ -99,7 +99,7 @@ jobs:
 ###############################################################
 #  SERVERLESS DEPLOYMENT VARIABLES FROM SHARED ACCOUNT
 ##############################################################
-      - name: Serverless deployment
+      - name: Serverless deployment variables created from shared account
         run: |
           cat >> .env <<EOF
           FILESTACKAWSID=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-DEPLOY-$ENV| jq --raw-output '.SecretString' | jq -r .FILESTACKID) 
