@@ -1,4 +1,4 @@
-service: ${env:STACK_NAME}-${env:ROOTSTACK}-appv2
+service: ${env:STACK_NAME}-appv2
 frameworkVersion: '2'
 useDotenv: true
 enableLocalInstallationFallback: true
