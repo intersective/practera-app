@@ -146,21 +146,11 @@ resources:
         HostedZoneId: {'Fn::ImportValue': '${env:STACK_NAME}-PublicHostedZoneId-${env:ENV}'}
         RecordSets:
         - Name: ${env:APPV2S3BUCKET}
-          Type: A
-          AliasTarget:
-            HostedZoneId: Z2FDTNDATAQYW2 # Magic CloudFront number
-            DNSName: !GetAtt 'AppV2CloudFrontDistribution.DomainName'
+          Type: CNAME
+          TTL: '3200'
+          ResourceRecords:
+            - !GetAtt 'AppV2CloudFrontDistribution.DomainName'
 
-    Route53RecordIPv6:
-      Type: 'AWS::Route53::RecordSetGroup'
-      Properties:
-        HostedZoneId: {'Fn::ImportValue': '${env:STACK_NAME}-PublicHostedZoneId-${env:ENV}'}
-        RecordSets:
-        - Name: ${env:APPV2S3BUCKET}
-          Type: AAAA
-          AliasTarget:
-            HostedZoneId: Z2FDTNDATAQYW2 # Magic CloudFront number
-            DNSName: !GetAtt 'AppV2CloudFrontDistribution.DomainName'
 
     HTTPCodeTarget5XXTooHighAlarm:
       Type: 'AWS::CloudWatch::Alarm'
