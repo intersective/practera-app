@@ -115,11 +115,12 @@
 ion-button.practera-btn {
   --border-radius: 8px;
   --box-shadow: none;
+  --background-focused: rgb(245, 66, 108) !important;
   text-transform: uppercase;
   &.mobile-btn {
     height: 32px;
     width: 94px;
-  }
+  } 
 }
 @media (max-width: 768px) {
   ion-button.btn-cta {
