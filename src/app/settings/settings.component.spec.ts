@@ -112,33 +112,33 @@ describe('SettingsComponent', () => {
   });
 
   it('should navigate to switcher page', () => {
-    component.switchProgram();
+    component.switchProgram('Enter');
     expect(routerSpy.navigate.calls.first().args[0]).toEqual(['switcher', 'switcher-program']);
   });
 
   it('should navigate to outside url', () => {
     const redirectToUrlSpy = spyOn(utils, 'redirectToUrl');
     component.returnLtiUrl = 'https://test.practera.com';
-    component.switchProgram();
+    component.switchProgram('Enter');
     expect(redirectToUrlSpy).toHaveBeenCalled();
   });
 
   it('should allow access to T&C file', () => {
     spyOn(window, 'open');
-    component.openLink();
+    component.openLink('Enter');
     expect(component.termsUrl).toEqual('https://images.practera.com/terms_and_conditions/practera_terms_conditions.pdf');
     expect(window.open).toHaveBeenCalledWith(component.termsUrl, '_system');
   });
 
   it('should initiate support email event', () => {
     spyOn(window, 'open');
-    component.mailTo();
+    component.mailTo('Enter');
     expect(component.helpline).toEqual('help@practera.com');
     expect(window.open).toHaveBeenCalledWith(`mailto:${component.helpline}?subject=${component.currentProgramName}`, '_self');
   });
 
   it('when testing logout(), it should call auth service logout', () => {
-    component.logout();
+    component.logout('Enter');
     authSpy.logout.and.returnValue({});
     expect(authSpy.logout.calls.count()).toBe(1);
   });

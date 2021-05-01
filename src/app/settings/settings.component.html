@@ -1,11 +1,11 @@
 <ion-header mode="ios">
   <ion-toolbar>
-    <ion-title class="ion-text-center" tabindex="0">Settings</ion-title>
+    <ion-title class="ion-text-center" tabindex="0" id="setting-title">Settings</ion-title>
   </ion-toolbar>
 </ion-header>
 <ion-content class="ion-padding" color="light">
   <ng-container *ngIf="utils.isMobile()">
-    <ion-item class="profile-info no-bg" lines="none" tabindex="1">
+    <ion-item class="profile-info no-bg" lines="none" tabindex="0">
       <ion-avatar class="profile-image" slot="start">
         <img *ngIf="!imageUpdating" [src]="profile.image">
         <p *ngIf="imageUpdating" class="loading-icon"><ion-spinner name="bubbles"></ion-spinner></p>
@@ -29,26 +29,24 @@
 
     <ion-item *ngIf="isInMultiplePrograms()" lines="none" class="exp-switch" tabindex="0">
       <ion-label class="subtitle-2 gray-2">Switch to another experience</ion-label>
-      <ion-button class="practera-btn mobile-btn" slot="end" (click)="switchProgram()" role="button" (keyDown)="switchProgram()">SWITCH</ion-button>
+      <ion-button class="practera-btn mobile-btn" slot="end" (click)="switchProgram($event)" role="button" (keydown)="switchProgram($event)">SWITCH</ion-button>
     </ion-item>
 
     <div class="ion-margin-top support-mobile subtitle-1">
       <ion-label class="subtitle-2 gray-2">Support</ion-label>
-      <ion-item class="no-bg" (click)="mailTo()" lines="none" tabindex="0" role="link" (keyDown)="mailTo()">
+      <ion-button class="accessible-btn" role="button" aria-label="Email help button" tabindex="0" (click)="mailTo($event)" (keydown)="mailTo($event)">
         <ion-icon class="ion-padding-end" color="primary" name="mail-outline"></ion-icon>
-        Email Help
-        <ion-icon name="arrow-forward" color="medium" slot="end"></ion-icon>
-      </ion-item>
-      <ion-item class="no-bg" (click)="openLink()" lines="none" tabindex="0" role="link" (keyDown)="openLink()">
+        <ion-label class="subtitle-1"> Email Help </ion-label>
+      </ion-button>  
+      <ion-button class="accessible-btn" role="button" aria-label="Term of use" (click)="openLink($event)" (keydown)="openLink($event)" tabindex="0">
         <ion-icon class="ion-padding-end" color="primary" name="clipboard-outline"></ion-icon>
-        Terms of Use
-        <ion-icon name="arrow-forward" color="medium" slot="end"></ion-icon>
-      </ion-item>
-      <ion-item id="item-logout" class="no-bg" (click)="logout()" lines="none" tabindex="0" role="button" (keyDown)="logout()">
+        <ion-label class="subtitle-1">Terms of Use</ion-label>
+      </ion-button>
+      <ion-button class="accessible-btn" role="button" aria-label="logout" (click)="logout($event)" (keydown)="logout($event)" tabindex="0">
         <ion-icon class="ion-padding-end" color="primary" name="log-out-outline"></ion-icon>
-        <p *ngIf="hasMultipleStacks">Logout or Switch Environment</p>
-        <p *ngIf="!hasMultipleStacks">Logout</p>
-      </ion-item>
+        <ion-label *ngIf="hasMultipleStacks" class="subtitle-1 ">Logout or Switch Environment</ion-label>
+        <ion-label *ngIf="!hasMultipleStacks" class="subtitle-1 ">Logout</ion-label>
+      </ion-button> 
     </div>
   </ng-container>
 
@@ -56,7 +54,7 @@
     <ion-grid>
       <ion-row>
         <ion-col size="3" class="support">
-          <div class="profile-info" tabindex="1">
+          <div class="profile-info" tabindex="0">
             <ion-avatar class="profile-image" slot="start">
               <img *ngIf="!imageUpdating" [src]="profile.image">
               <p *ngIf="imageUpdating" class="loading-icon"><ion-spinner name="bubbles"></ion-spinner></p>
@@ -74,20 +72,20 @@
               {{profile.email}}
             </ion-label>
           </div>
-          <div class="ion-margin-top subtitle-1">
-            <ion-item class="no-bg" (click)="mailTo()" lines="none" tabindex="2" role="link" (keyDown)="mailTo()">
+          <div class="ion-margin-top subtitle-1 support-wrapper" >
+            <ion-button class="accessible-btn" role="button" aria-label="Email help button" tabindex="0" (click)="mailTo($event)" (keydown)="mailTo($event)">
               <ion-icon class="ion-padding-end" color="primary" name="mail-outline"></ion-icon>
-              Email Help
-            </ion-item>
-            <ion-item class="no-bg" (click)="openLink()" lines="none" tabindex="3" role="link" (keyDown)="openLink()">
+              <ion-label class="subtitle-1"> Email Help </ion-label>
+            </ion-button>
+            <ion-button class="accessible-btn" role="button" aria-label="Term of use" (click)="openLink($event)" (keydown)="openLink($event)" tabindex="0">
               <ion-icon class="ion-padding-end" color="primary" name="clipboard-outline"></ion-icon>
-              Terms of Use
-            </ion-item>
-            <ion-item id="item-logout" class="no-bg" (click)="logout()" lines="none" tabindex="4" role="button" (keyDown)="logout()">
+              <ion-label class="subtitle-1">Terms of Use</ion-label>
+            </ion-button>
+            <ion-button class="accessible-btn" role="button" aria-label="logout" (click)="logout($event)" (keydown)="logout($event)" tabindex="0">
               <ion-icon class="ion-padding-end" color="primary" name="log-out-outline"></ion-icon>
-              <p *ngIf="hasMultipleStacks">Logout or Switch Environment</p>
-              <p *ngIf="!hasMultipleStacks">Logout</p>
-            </ion-item>
+              <ion-label *ngIf="hasMultipleStacks" class="subtitle-1 ">Logout or Switch Environment</ion-label>
+              <ion-label *ngIf="!hasMultipleStacks" class="subtitle-1 ">Logout</ion-label>
+            </ion-button>  
           </div>
         </ion-col>
         <ion-col class="content">
@@ -110,7 +108,7 @@
               </ion-card>
             </ion-col>
             <ion-col size="5" *ngIf="isInMultiplePrograms() || returnLtiUrl" class="ion-no-padding switch-card-container">
-              <ion-card class="practera-card experience-card" (click)="switchProgram()" tabindex="0" role="link">
+              <ion-card class="practera-card experience-card" (click)="switchProgram($event)" tabindex="0" role="button" (keydown)="switchProgram($event)">
                 <div class="div-icon-swap">
                   <ion-icon name="swap-horizontal" color="primary"></ion-icon>
                 </div>
