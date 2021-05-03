@@ -270,6 +270,7 @@ export class HomeComponent implements OnDestroy, OnInit {
   }
   triggerClick(event: KeyboardEvent) {
     if (['Enter', 'Space'].indexOf(event.code) !== -1) {
+
        this.router.navigate(['achievements']);
     }
   }
