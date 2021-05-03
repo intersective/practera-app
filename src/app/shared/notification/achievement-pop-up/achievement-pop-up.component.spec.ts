@@ -41,7 +41,7 @@ describe('AchievementPopUpComponent', () => {
       description: ''
     };
     fixture.detectChanges();
-    component.confirmed();
+    component.confirmed('Enter');
     expect(modalCtrlSpy.dismiss.calls.count()).toBe(1);
   });
 });

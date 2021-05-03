@@ -50,7 +50,7 @@
 <ng-template #badges>
   <ng-container @newLoaded *ngIf="achievements && achievements.length > 0">
 
-    <ion-label class="subtitle-2 gray-2 achievement ion-padding-start" aria-label="My badges" tabindex="0">My Badges</ion-label>
+    <ion-label class="subtitle-2 gray-2 achievement ion-padding-start" aria-label="My badges" tabindex="0" >My Badges</ion-label>
     <ion-label class="float-right" *ngIf="achievements.length > 1">
       <a color="primary" class="button ion-padding-end" (click)='goTo(["achievements"])' aria-label="view all achievements"
        role="link" (keydown)='triggerClick($event)' tabindex="0">VIEW ALL</a>
