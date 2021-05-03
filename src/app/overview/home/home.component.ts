@@ -273,5 +273,4 @@ export class HomeComponent implements OnDestroy, OnInit {
        this.router.navigate(['achievements']);
     }
   }
-
 }
