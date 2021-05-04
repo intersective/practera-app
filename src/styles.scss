@@ -524,3 +524,12 @@ use for custom header (*Study perth)
   --background-focused-opacity: 0;
   --color: var(--ion-item-color,var(--ion-text-color,#000));
 }
+.accessible-item {
+  height: auto;
+  width: auto;
+  text-align: left;
+  margin: 0;
+}
+.accessible-chat {
+
+}
