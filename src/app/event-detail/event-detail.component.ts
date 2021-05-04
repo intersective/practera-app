@@ -38,7 +38,7 @@ export class EventDetailComponent implements OnInit {
     if (event instanceof KeyboardEvent && event.key !== 'Enter' && event.key !== ' ') {
       return;
     }
-    
+
     this.newRelic.addPageAction(`Action: ${this.buttonText()}`);
     this.ctaIsActing = true;
     switch (this.buttonText()) {
