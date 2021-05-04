@@ -175,6 +175,11 @@ export class PusherService {
   }
 
   getNotificationChannel(): Observable<any> {
+    // if apikey not exist, we don't need to call API to get channel
+    const { apikey } = this.storage.getUser();
+    if (!apikey) {
+      return of();
+    }
     return this.request.get(api.channels, {
       params: {
         env: environment.env,
