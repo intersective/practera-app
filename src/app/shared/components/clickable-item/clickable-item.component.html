@@ -2,7 +2,7 @@
   'switcher-card-item': isSwitcherCard,
   'active': active
 }"  aria-label="clickable item" >
-  <ion-button class="accessible-btn" aria-label="switcher card" role="button">
+  <ion-button class="accessible-btn" [ngClass]="{'accessible-item': isCustomizedCard, 'accessible-chat': isChatCard}" aria-label="switcher card" role="button">
     <ion-text color="primary" [ngStyle]="{'color': backgroundColor}">
       <ion-ripple-effect></ion-ripple-effect>
     </ion-text>
