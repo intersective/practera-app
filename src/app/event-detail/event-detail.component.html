@@ -50,12 +50,13 @@
   <div class="ion-margin-top ion-text-center" *ngIf="buttonText()">
     <ion-button
       class="btn-cta"
-      (click)="confirmed()"
+      (click)="confirmed($event)"
       [disabled]="(event.isPast && !event.isBooked) || ctaIsActing"
       shape="round"
       [color]="event.isPast && !event.isBooked ? 'medium' : 'primary'"
       tabindex="0"
-      role="button">
+      role="button"
+      (keydown)="confirmed($event)">
       {{ buttonText() }}
       
     </ion-button>
