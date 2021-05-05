@@ -195,7 +195,7 @@ describe('EventDetailComponent', () => {
         component.event = tmpEvent;
         fixture.detectChanges();
         component.event = tmpEvent;
-        component.confirmed();
+        component.confirmed('Enter');
         expected = 'Cancel Booking';
         expect(notificationSpy.alert.calls.count()).toBe(1);
         expect(serviceSpy.bookEvent.calls.count()).toBe(0);
@@ -209,7 +209,7 @@ describe('EventDetailComponent', () => {
         tmpEvent.activityId = 3;
         component.event = tmpEvent;
         fixture.detectChanges();
-        component.confirmed();
+        component.confirmed('Enter');
         expected = 'Cancel Booking';
         expect(notificationSpy.alert.calls.count()).toBe(1);
         expect(serviceSpy.bookEvent.calls.count()).toBe(1);
@@ -220,7 +220,7 @@ describe('EventDetailComponent', () => {
         tmpEvent.singleBooking = false;
         component.event = tmpEvent;
         fixture.detectChanges();
-        component.confirmed();
+        component.confirmed('Enter');
         expected = 'Cancel Booking';
         expect(notificationSpy.alert.calls.count()).toBe(1);
         expect(serviceSpy.bookEvent.calls.count()).toBe(1);
@@ -248,7 +248,7 @@ describe('EventDetailComponent', () => {
       it(`should cancel booking if confirmed`, () => {
         component.event = tmpEvent;
         fixture.detectChanges();
-        component.confirmed();
+        component.confirmed('Enter');
         expected = 'Book';
         expect(notificationSpy.alert.calls.count()).toBe(1);
         expect(serviceSpy.cancelEvent.calls.count()).toBe(1);
@@ -282,7 +282,7 @@ describe('EventDetailComponent', () => {
           contextId: 2
         })
       );
-      component.confirmed();
+      component.confirmed('Enter');
       // expect(routerSpy.navigate.calls.first().args[0]).toEqual(['assessment', 'event', 2, 1]);
       // expect(modalSpy.dismiss.calls.count()).toEqual(1);
     });
@@ -306,7 +306,7 @@ describe('EventDetailComponent', () => {
           contextId: 2
         })
       );
-      component.confirmed();
+      component.confirmed('Enter');
       // expect(routerSpy.navigate.calls.first().args[0]).toEqual(['assessment', 'event', 2, 1]);
       // expect(modalSpy.dismiss.calls.count()).toEqual(1);
     });
