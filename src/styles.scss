@@ -526,10 +526,10 @@ use for custom header (*Study perth)
 }
 .accessible-item {
   height: auto;
-  width: auto;
+  width: 100%;
   text-align: left;
   margin: 0;
 }
-.accessible-chat {
-
+.customTodoCard {
+  width: auto !important;
 }
