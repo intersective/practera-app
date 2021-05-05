@@ -10,5 +10,8 @@ export class ClickableItemComponent {
   @Input() backgroundColor;
   @Input() isSwitcherCard?;
   @Input() active;
+  @Input() isCustomizedCard?;
+  @Input() isChatCard?;
+  @Input() isTodoCard?;
   constructor() {}
 }

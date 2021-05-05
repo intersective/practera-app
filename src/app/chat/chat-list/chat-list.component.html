@@ -16,7 +16,9 @@
       (click)="goToChatRoom(chat)"
       [active]="currentChat && currentChat.uuid == chat.uuid"
       [ngClass]="{'unread': chat.unreadMessageCount > 0}"
-      [lines]="'none'">
+      [lines]="'none'"
+      [isCustomizedCard]="true"
+      [isChatCard]="true">
       <ion-avatar slot="start" text-center><img [src]="chat.avatar"></ion-avatar>
       <ion-label>
         <div class="chat-name-container caption">
