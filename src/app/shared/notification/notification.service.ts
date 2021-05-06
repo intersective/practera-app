@@ -109,7 +109,7 @@ export class NotificationService {
    *    description: "qwert yuiop asdfg asdff"
    * });
    */
-  async achievementPopUp(type: string, achievement: Achievement) {
+  async achievementPopUp(type: string, achievement: Achievement, options?) {
     const component = AchievementPopUpComponent;
     const componentProps = {
       type,
@@ -122,7 +122,13 @@ export class NotificationService {
       cssClass: this.utils.isMobile() ? 'practera-popup' : 'practera-popup desktop-view',
       keyboardClose: false,
       backdropDismiss: false
+    }, () => {
+      // Added to support accessibility - https://www.w3.org/TR/WCAG21/#no-keyboard-trap
+      if (options && options.activeElement && options.activeElement.focus) {
+        options.activeElement.focus();
+      }
     });
+
     return modal;
   }
 
