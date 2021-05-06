@@ -1,4 +1,5 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, Inject } from '@angular/core';
+import { DOCUMENT } from '@angular/common';
 import { AchievementsService, Achievement } from '@app/achievements/achievements.service';
 import { NotificationService } from '@shared/notification/notification.service';
 import { UtilsService } from '@services/utils.service';
@@ -20,16 +21,22 @@ export class AchievementBadgeComponent {
     * @param {UtilsService} utils  the utils object
     */
   constructor(
+    @Inject(DOCUMENT) private document: Document,
     private notificationService: NotificationService,
     public utils: UtilsService,
   ) {}
 
+  currentActiveElement() {
+    return this.document.activeElement;
+  }
 
   /**
     * This is to pop up the achievement message box
     * @returns nothing
     */
   showAchievementDetails() {
-    this.notificationService.achievementPopUp('', this.achievement);
+    this.notificationService.achievementPopUp('', this.achievement, {
+      activeElement: this.currentActiveElement()
+    });
   }
 }

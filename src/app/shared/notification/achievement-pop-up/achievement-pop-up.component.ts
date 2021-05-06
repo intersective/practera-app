@@ -8,7 +8,7 @@ import { UtilsService } from '@services/utils.service';
   templateUrl: 'achievement-pop-up.component.html',
   styleUrls: ['achievement-pop-up.component.scss']
 })
-export class AchievementPopUpComponent implements AfterContentChecked {
+export class AchievementPopUpComponent {
   type = '';
   achievement: Achievement;
 
@@ -17,9 +17,6 @@ export class AchievementPopUpComponent implements AfterContentChecked {
     public utils: UtilsService
   ) {}
 
-  ngAfterContentChecked() {
-    document.getElementById('achievement-image').focus();
-  }
   confirmed(event) {
     if (event instanceof KeyboardEvent && event.key !== 'Enter' && event.key !== ' ') {
       return;
