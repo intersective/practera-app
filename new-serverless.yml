@@ -24,6 +24,8 @@ provider:
     StackName: ${env:STACK_NAME}
     Env: ${env:ENV}
     RootStack: ${env:ROOTSTACK}
+  notificationArns:
+    - ${env:ChatBotSNSTopicARN}
 
 
 resources:
