@@ -172,6 +172,10 @@ jobs:
           printf "Angular environment variable creation  complete\n\n"
           printf "Executing env.sh script\n\n"
           chmod +x env.sh && ./env.sh
+
+          echo "Extracting chatbotSNStopicARN to send stack update"
+          echo "ChatBotSNSTopicARN="$(aws cloudformation list-exports --query "Exports[?Name==\`$STACK_NAME-ChatBotSNSTopicARN-$ENV\`].Value" --no-paginate --output text) >> $GITHUB_ENV
+          
         env:
           CUSTOM_PATH_IMAGE: /images
           CUSTOM_PATH_VIDEO: /videos
