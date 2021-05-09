@@ -1,7 +1,7 @@
 ################################################
 #  GITHUB ACTION WORKFLOW NAME
 ################################################
-name: Release to alpha/sandbox/dev environment
+name: Deploy to p1-stage environment
 
 
 ################################################
@@ -17,8 +17,8 @@ on:
 #  GITHUB ACTION JOBS
 ################################################
 jobs:
-  release-sandbox:
-    name: release-sandbox
+  deploy-p1-stage:
+    name: deploy-p1-stage
     runs-on: ubuntu-latest
 
 
@@ -27,13 +27,17 @@ jobs:
 ################################################
     env:
       REGION : ap-southeast-2
-      ENV : sandbox # Valid values are sandbox,stage,live only
-      STACK_NAME: alpha # Valid values are au,us,uk,p2,lf,nu,alpha,beta,shared only
+      ENV : test # Valid values are dev,test,live only
+      STACK_NAME: p1-stage # Valid values are au,us,uk,p2,lf,nu,p1-sandbox,p1-stage,p2-sandbox,shared only
       ROOTSTACK: app-v2
       CFNS3BucketName: devops-cfn-templates
       PRIVATES3BucketName: devops-shared-private
-      PUBLICZONENAME: alpha.practera.com
+      PUBLICZONENAME: p1-stage.practera.com
       BUILD_CONFIG: custom
+      STATUSREPORTS3Bucket: deployment-status.practera.com
+      STATUS: DEPLOYED
+      ENDPOINT: NA
+      SLEEPTIMER: 5 #Mandatory inorder to other ci to update
 
 
 
@@ -107,7 +111,7 @@ jobs:
          
           EOF
         env:  #TODO: Update once manually to new stack accordingly
-          STACK_NAME: shared # Valid values are au,us,uk,p2,lf,nu,alpha,beta,shared only
+          STACK_NAME: shared # Valid values are au,us,uk,p2,lf,nu,p1-sandbox,p1-stage,p2-sandbox,shared only
           ENV: live # Valid values are sandbox,stage,live only
 
 
@@ -122,30 +126,30 @@ jobs:
           echo "::add-mask::$SLACK_WEBHOOK_URL"
           echo "::set-output name=SLACK_WEBHOOK_URL::$SLACK_WEBHOOK_URL"
     
-          echo "Enable ALPHA ACCOUNT CLI Login"
-          ALPHA_AWS_ACCESS_KEY_ID=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-DEPLOY-$ENV| jq --raw-output '.SecretString' | jq -r .ALPHA_AWS_ACCESS_KEY_ID)
-          ALPHA_AWS_SECRET_ACCESS_KEY=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-DEPLOY-$ENV| jq --raw-output '.SecretString' | jq -r .ALPHA_AWS_SECRET_ACCESS_KEY)
-          echo "::add-mask::$ALPHA_AWS_ACCESS_KEY_ID"
-          echo "::add-mask::$ALPHA_AWS_SECRET_ACCESS_KEY"
-          echo "::set-output name=ALPHA_AWS_ACCESS_KEY_ID::$ALPHA_AWS_ACCESS_KEY_ID"
-          echo "::set-output name=ALPHA_AWS_SECRET_ACCESS_KEY::$ALPHA_AWS_SECRET_ACCESS_KEY"
-
+          echo "Enable P1 Stage ACCOUNT CLI Login"
+          P1_STAGE_AWS_ACCESS_KEY_ID=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-DEPLOY-$ENV| jq --raw-output '.SecretString' | jq -r .P1_STAGE_AWS_ACCESS_KEY_ID)
+          P1_STAGE_AWS_SECRET_ACCESS_KEY=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-DEPLOY-$ENV| jq --raw-output '.SecretString' | jq -r .P1_STAGE_AWS_SECRET_ACCESS_KEY)
+          echo "::add-mask::$P1_STAGE_AWS_ACCESS_KEY_ID"
+          echo "::add-mask::$P1_STAGE_AWS_SECRET_ACCESS_KEY"
+          echo "::set-output name=P1_STAGE_AWS_ACCESS_KEY_ID::$P1_STAGE_AWS_ACCESS_KEY_ID"
+          echo "::set-output name=P1_STAGE_AWS_SECRET_ACCESS_KEY::$P1_STAGE_AWS_SECRET_ACCESS_KEY"
+        
         env:  #TODO: Update once manually to new stack accordingly
-          STACK_NAME: shared # Valid values are au,us,uk,p2,lf,nu,alpha,beta,shared only
+          STACK_NAME: shared # Valid values are au,us,uk,p2,lf,nu,p1-sandbox,p1-stage,p2-sandbox,shared only
           ENV: live # Valid values are sandbox,stage,live only
 
-################################################
-#  AWS CLI CONFIGURATION  - ALPHA
-################################################ 
+##########################################################
+#  AWS P1 STAGE ACCOUNT STEPS BELOW
+##########################################################
       - name: Configure AWS credentials from $STACK_NAME account in $REGION region
         uses: aws-actions/configure-aws-credentials@v1
         with:
-          aws-access-key-id: ${{ steps.DeploySecret.outputs.ALPHA_AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ steps.DeploySecret.outputs.ALPHA_AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ env.REGION }}
+          aws-access-key-id: ${{ steps.DeploySecret.outputs.P1_STAGE_AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ steps.DeploySecret.outputs.P1_STAGE_AWS_SECRET_ACCESS_KEY }}
+          aws-region: ap-southeast-2 #TODO: Update once manually to new stack accordingly
         env:
-          AWS_ACCESS_KEY_ID: ${{ steps.DeploySecret.outputs.ALPHA_AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ steps.DeploySecret.outputs.ALPHA_AWS_SECRET_ACCESS_KEY }}
+          AWS_ACCESS_KEY_ID: ${{ steps.DeploySecret.outputs.P1_STAGE_AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ steps.DeploySecret.outputs.P1_STAGE_AWS_SECRET_ACCESS_KEY }}
 
 
 ###############################################################
@@ -272,7 +276,7 @@ jobs:
       #     author_name: ${{ env.ROOTSTACK }} deployed to ${{ env.ENV }} environemnt in ${{ env.STACK_NAME }} AWS account
       #     mention: 'here'
       #     if_mention: failure,cancelled
-      #     job_name: release-sandbox # Match the name above.
+      #     job_name: deploy-p1-stage # Match the name above.
       #     fields: repo,commit,eventName,ref,workflow,message,author,job,took
       #     custom_payload: |
       #       {
@@ -292,3 +296,59 @@ jobs:
       #         ${process.env.AS_TOOK}`,
       #       }]
       #       }
+
+
+# ################################################
+# #  STATUS VARIABLE UPDATE
+# ################################################ 
+      - name: Deployment status variable update
+        if: ${{ failure() }}
+        run: |
+          echo "STATUS=FAILURE" >> $GITHUB_ENV
+
+# ################################################
+# #  DEVOPS-DEPLOYMENT REPORT
+# ################################################ 
+      - name: DevOps Deployment Reporting
+        if: always()
+        run: |
+          pip install --upgrade pip
+          pip install --upgrade csvtotable
+          sleep $SLEEPTIMER 
+          aws s3 cp s3://$STATUSREPORTS3Bucket/deploy-reporting.sh deploy-reporting.sh
+          chmod +x deploy-reporting.sh && ./deploy-reporting.sh
+          echo "LINK="${GITHUB_REPOSITORY##*/}.html >> $GITHUB_ENV
+        env:
+          ENDPOINT: app.${{env.PUBLICZONENAME}}
+
+# ##########################################################
+# #  DEPLOYMENT NOTIFICATION
+# ##########################################################  
+      - name: Slack Notification
+        if: always() # Pick up events even if the job fails or is canceled.
+        uses: 8398a7/action-slack@v3
+        with:
+          status: custom
+          custom_payload: |
+            {
+              text: "Deployment Notification",
+              attachments: [{
+                "author_name": `${process.env.AS_REPO}`, // json
+                fallback: 'fallback',
+                color: 'good',
+                title: 'Deployment status report for ${{ env.ROOTSTACK }} deployed to ${{ env.ENV }} environemnt in ${{ env.STACK_NAME }} AWS account',
+                text: 'http://deployment-status.practera.com.s3-website-ap-southeast-2.amazonaws.com/${{env.LINK}}',
+                fields: [
+                  {
+                    title: 'All Practera repo deployment status overview',
+                    value: 'http://deployment-status.practera.com.s3-website-ap-southeast-2.amazonaws.com'
+                  }],
+                "image_url": "https://practera.com/wp-content/uploads/2020/11/Practera-logo-2.svg",
+                "thumb_url": "https://practera.com/wp-content/uploads/2020/11/Practera-logo-2.svg",
+                actions: [{
+                }]
+              }]
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }} # required
+          
