@@ -268,5 +268,10 @@ export class HomeComponent implements OnDestroy, OnInit {
       this.router.navigate(['app', 'events', {event_id: event.id}]);
     }
   }
+  triggerClick(event: KeyboardEvent) {
+    if (['Enter', 'Space'].indexOf(event.code) !== -1) {
 
+       this.router.navigate(['achievements']);
+    }
+  }
 }

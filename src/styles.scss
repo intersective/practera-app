@@ -115,11 +115,12 @@
 ion-button.practera-btn {
   --border-radius: 8px;
   --box-shadow: none;
+  --background-focused: rgb(245, 66, 108) !important;
   text-transform: uppercase;
   &.mobile-btn {
     height: 32px;
     width: 94px;
-  }
+  } 
 }
 @media (max-width: 768px) {
   ion-button.btn-cta {
@@ -514,4 +515,21 @@ use for custom header (*Study perth)
   --max-width: 100%;
   --min-width: 100%;
   --min-height: 100%;
+}
+.accessible-btn {
+  align-items: flex-start;
+  --background: transparent;
+  text-transform: capitalize;
+  --box-shadow: 0 !important;
+  --background-focused-opacity: 0;
+  --color: var(--ion-item-color,var(--ion-text-color,#000));
+}
+.accessible-item {
+  height: auto;
+  width: 100%;
+  text-align: left;
+  margin: 0;
+}
+.customTodoCard {
+  width: auto !important;
 }

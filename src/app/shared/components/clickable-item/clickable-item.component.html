@@ -1,9 +1,11 @@
 <ion-item class="ion-activatable" [lines]="lines" [ngClass]="{
   'switcher-card-item': isSwitcherCard,
   'active': active
-}" tabindex="0" aria-label="clickable item" role="link">
-  <ion-text color="primary" [ngStyle]="{'color': backgroundColor}">
-    <ion-ripple-effect></ion-ripple-effect>
-  </ion-text>
-  <ng-content></ng-content>
+}"  aria-label="clickable item" >
+  <ion-button class="accessible-btn" [ngClass]="{'accessible-item': isCustomizedCard, 'customTodoCard': isTodoCard }" aria-label="switcher card" role="button">
+    <ion-text color="primary" [ngStyle]="{'color': backgroundColor}">
+      <ion-ripple-effect></ion-ripple-effect>
+    </ion-text>
+    <ng-content></ng-content>
+  </ion-button>  
 </ion-item>
