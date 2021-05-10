@@ -533,3 +533,24 @@ use for custom header (*Study perth)
 .customTodoCard {
   width: auto !important;
 }
+.accessibile-ChatItem {
+  width: auto !important;
+  white-space: nowrap;
+  overflow: hidden;
+  .access-avatar {
+    width: 40px !important;
+    height: 40px !important;
+    margin-inline-end: 16px;
+    img {
+      width: 40px;
+      max-width: inherit;
+    }
+  }
+  .chat-item-label {
+    white-space: nowrap;
+    overflow: hidden;
+    .chat-name {
+      max-width: 100% !important;
+    }
+  }
+}
