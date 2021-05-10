@@ -15,7 +15,6 @@ export class AchievementBadgeComponent {
 
   @Input() achievement: Achievement;
   @Input() showName: Boolean = false;
-
   /**
     * @param {NotificationService} notificationService  the notification object
     * @param {UtilsService} utils  the utils object
@@ -25,6 +24,7 @@ export class AchievementBadgeComponent {
     public utils: UtilsService,
   ) {}
 
+
   /**
     * This is to pop up the achievement message box
     * @returns nothing
@@ -32,5 +32,4 @@ export class AchievementBadgeComponent {
   showAchievementDetails() {
     this.notificationService.achievementPopUp('', this.achievement);
   }
-
 }

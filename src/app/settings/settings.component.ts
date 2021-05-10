@@ -89,11 +89,18 @@ export class SettingsComponent extends RouterEnter {
     return '';
   }
 
-  openLink() {
+  openLink(event) {
+    if (event instanceof KeyboardEvent && event.key !== 'Enter' && event.key !== ' ') {
+      return;
+    }
     this.newRelic.actionText('Open T&C link');
     window.open(this.termsUrl, '_system');
   }
-  switchProgram() {
+
+  switchProgram(event) {
+    if (event instanceof KeyboardEvent && event.key !== 'Enter' && event.key !== ' ') {
+      return;
+    }
     if (this.returnLtiUrl) {
       this.newRelic.actionText('browse to LTI return link');
       this.utils.redirectToUrl(this.returnLtiUrl);
@@ -108,13 +115,18 @@ export class SettingsComponent extends RouterEnter {
   }
 
   // send email to Help request
-  mailTo() {
+  mailTo(event) {
+    if (event instanceof KeyboardEvent && event.key !== 'Enter' && event.key !== ' ') {
+      return;
+    }
     this.newRelic.actionText('mail to helpline');
     const mailto = 'mailto:' + this.helpline + '?subject=' + this.currentProgramName;
     window.open(mailto, '_self');
-  }
-
-  logout() {
+}
+  logout(event) {
+    if (event instanceof KeyboardEvent && event.key !== 'Enter' && event.key !== ' ') {
+      return;
+    }
     return this.authService.logout({}, true);
   }
 
