@@ -11,7 +11,7 @@
 
   <app-list-item *ngIf="loading" loading="true" lines="none"></app-list-item>
 
-  <clickable-item *ngIf="!todoItem.type && !loading" lines="none">
+  <clickable-item *ngIf="!todoItem.type && !loading" lines="none" isCustomizedCard="true" isTodoCard="true">
     <ion-icon name="notifications-outline" slot="start" color="primary"></ion-icon>
     <div>
       <ion-text color="medium">You have no new notifications.</ion-text>

@@ -524,3 +524,33 @@ use for custom header (*Study perth)
   --background-focused-opacity: 0;
   --color: var(--ion-item-color,var(--ion-text-color,#000));
 }
+.accessible-item {
+  height: auto;
+  width: 100%;
+  text-align: left;
+  margin: 0;
+}
+.customTodoCard {
+  width: auto !important;
+}
+.accessibile-ChatItem {
+  width: auto !important;
+  white-space: nowrap;
+  overflow: hidden;
+  .access-avatar {
+    width: 40px !important;
+    height: 40px !important;
+    margin-inline-end: 16px;
+    img {
+      width: 40px;
+      max-width: inherit;
+    }
+  }
+  .chat-item-label {
+    white-space: nowrap;
+    overflow: hidden;
+    .chat-name {
+      max-width: 100% !important;
+    }
+  }
+}
