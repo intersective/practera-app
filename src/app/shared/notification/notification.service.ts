@@ -123,7 +123,7 @@ export class NotificationService {
       keyboardClose: false,
       backdropDismiss: false
     },
-    () => { // Added to support accessibility - https://www.w3.org/TR/WCAG21/#no-keyboard-trap
+                                   () => { // Added to support accessibility - https://www.w3.org/TR/WCAG21/#no-keyboard-trap
       if (options && options.activeElement && options.activeElement.focus) {
         options.activeElement.focus();
       }

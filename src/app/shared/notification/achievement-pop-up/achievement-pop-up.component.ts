@@ -40,7 +40,7 @@ export class AchievementPopUpComponent {
       if (event.keyCode === 9) {
         event.preventDefault();
         if (focusPosition < interactiveEl.length - 1) {
-          focusPosition+=1;
+          focusPosition += 1;
         } else {
           focusPosition = 0;
         }
