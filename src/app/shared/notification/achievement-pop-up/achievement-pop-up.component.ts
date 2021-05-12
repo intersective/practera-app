@@ -1,5 +1,4 @@
 import { Component, ViewChild, Inject } from '@angular/core';
-import { DOCUMENT } from '@angular/common';
 import { ModalController } from '@ionic/angular';
 import { Achievement } from '@app/achievements/achievements.service';
 import { UtilsService } from '@services/utils.service';
@@ -16,16 +15,11 @@ export class AchievementPopUpComponent {
   @ViewChild('badgeImage') badgeImage;
   @ViewChild('achievementName') achievementName;
   @ViewChild('dismissButton') dismissButton;
-  private currentFocus;
-  private _self: AchievementPopUpComponent;
 
   constructor(
-    @Inject(DOCUMENT) private document: Document,
     public modalController: ModalController,
     public utils: UtilsService
-  ) {
-    this._self = this;
-  }
+  ) {}
 
   ionViewDidEnter() {
     const interactiveEl = [
