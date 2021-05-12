@@ -1,4 +1,5 @@
-import { Component, AfterContentChecked } from '@angular/core';
+import { Component, ViewChild, Inject } from '@angular/core';
+import { DOCUMENT } from '@angular/common';
 import { ModalController } from '@ionic/angular';
 import { Achievement } from '@app/achievements/achievements.service';
 import { UtilsService } from '@services/utils.service';
@@ -11,11 +12,42 @@ import { UtilsService } from '@services/utils.service';
 export class AchievementPopUpComponent {
   type = '';
   achievement: Achievement;
+  @ViewChild('achievementBadgePopup') achievementBadgePopup;
+  @ViewChild('badgeImage') badgeImage;
+  @ViewChild('achievementName') achievementName;
+  @ViewChild('dismissButton') dismissButton;
+  private currentFocus;
+  private _self: AchievementPopUpComponent;
 
   constructor(
+    @Inject(DOCUMENT) private document: Document,
     public modalController: ModalController,
     public utils: UtilsService
-  ) {}
+  ) {
+    this._self = this;
+  }
+
+  ionViewDidEnter() {
+    const interactiveEl = [
+      this.badgeImage.nativeElement,
+      this.achievementName.nativeElement,
+      this.dismissButton.el,
+    ];
+
+    let focusPosition = 0;
+    interactiveEl[focusPosition].focus();
+    this.achievementBadgePopup.el.addEventListener('keydown', event => {
+      if (event.keyCode === 9) {
+        event.preventDefault();
+        if (focusPosition < interactiveEl.length - 1) {
+          focusPosition+=1;
+        } else {
+          focusPosition = 0;
+        }
+        interactiveEl[focusPosition].focus();
+      }
+    });
+  }
 
   confirmed(event) {
     if (event instanceof KeyboardEvent && event.key !== 'Enter' && event.key !== ' ') {
