@@ -10,7 +10,7 @@ name: Deploy to p1-stage environment
 on:
   workflow_dispatch:
   push:
-    branches: [ 'feature/new-stack' ]
+    branches: [ 'trunk' ]
     
 
 ################################################
@@ -37,7 +37,6 @@ jobs:
       STATUSREPORTS3Bucket: deployment-status.practera.com
       STATUS: DEPLOYED
       ENDPOINT: NA
-      SLEEPTIMER: 5 #Mandatory inorder to other ci to update
 
 
 
