@@ -7,7 +7,7 @@ name: Stage LF APP Environment
 on:
   workflow_dispatch:
   push:
-    branches: [ feature/new-stack  ]
+    branches: [ stage/lf  ]
 
 #Jobs to perform based on event occurred
 
