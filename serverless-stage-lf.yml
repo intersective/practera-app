@@ -1,0 +1,155 @@
+service: ${env:STACK_NAME}-${env:SUBDOMAIN}
+
+frameworkVersion: '2'
+useDotenv: true
+
+
+package:
+  exclude:
+    - .github/**
+  include:
+    - artifacts/**/*
+    - serverless.yml
+    - .env
+    - package.json
+    - package-lock.json
+
+provider:
+  name: aws
+  runtime: nodejs14.x
+  region: ${env:REGION}
+  stage: ${env:ENV}
+  
+
+resources:
+
+  Resources:
+
+    ## Specifying the S3 Bucket
+    AppV2S3Bucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: app-stage.lf.practera.com
+        BucketEncryption: 
+          ServerSideEncryptionConfiguration: 
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+
+
+    ## Specifying the policies to make sure all files inside the Bucket are avaialble to CloudFront
+    AppV2S3BucketPolicy:
+      DependsOn: [AppV2CloudFrontOriginAccessIdentity]
+      Type: AWS::S3::BucketPolicy
+      Properties:
+        Bucket:
+          Ref: AppV2S3Bucket
+        PolicyDocument:
+          Statement:
+          - Sid: S3-Bucket-Accesible via CDN OAI only
+            Action: 's3:GetObject'
+            Effect: Allow
+            Resource: !Sub 'arn:aws:s3:::${AppV2S3Bucket}/*'
+            Principal:
+              CanonicalUser: !GetAtt AppV2CloudFrontOriginAccessIdentity.S3CanonicalUserId 
+          - Sid: AllowSSLRequestsOnly # AWS Foundational Security Best Practices v1.0.0 S3.5
+            Effect: Deny
+            Principal: '*'
+            Action: 's3:*'
+            Resource:
+            - !GetAtt 'AppV2S3Bucket.Arn'
+            - !Sub '${AppV2S3Bucket.Arn}/*'
+            Condition:
+              Bool:
+                'aws:SecureTransport': false
+
+    ## Specifying the CloudFront Origin Access Identity CDN Distribution to server your Web Application
+    AppV2CloudFrontOriginAccessIdentity:
+      Type: 'AWS::CloudFront::CloudFrontOriginAccessIdentity'
+      Properties:
+        CloudFrontOriginAccessIdentityConfig:
+          Comment: !Sub "Cloudfront Origin identity for ${self:custom.s3Bucket.${env:ENV}}"
+
+    ## Specifying the CloudFront Distribution to server your Web Application
+    AppV2CloudFrontDistribution:
+      Type: AWS::CloudFront::Distribution
+      Properties:
+        DistributionConfig:
+          Aliases:
+            - 'app-stage.lf.practera.com'
+          Comment: !Sub "Cloudfront Origin identity for ${self:custom.s3Bucket.${env:ENV}}"
+          DefaultCacheBehavior:
+            AllowedMethods:
+            - GET
+            - HEAD
+            - OPTIONS
+            CachedMethods:
+            - GET
+            - HEAD
+            - OPTIONS
+            Compress: true
+            DefaultTTL: 3600 # in seconds
+            ForwardedValues:
+              Cookies:
+                Forward: none
+              QueryString: false
+            MaxTTL: 86400 # in seconds
+            MinTTL: 60 # in seconds
+            TargetOriginId: ${self:custom.s3Bucket.${env:ENV}}
+            ViewerProtocolPolicy: 'redirect-to-https'
+          DefaultRootObject: index.html
+          CustomErrorResponses:
+            - ErrorCode: 404
+              ResponseCode: 200
+              ResponsePagePath: /index.html
+            - ErrorCode: 403
+              ResponseCode: 200
+              ResponsePagePath: /index.html
+          Enabled: true
+          HttpVersion: http2
+          IPV6Enabled: true
+          Origins:
+          - DomainName: !GetAtt 'AppV2S3Bucket.RegionalDomainName'
+            Id: ${self:custom.s3Bucket.${env:ENV}}
+            S3OriginConfig:
+              OriginAccessIdentity: !Sub 'origin-access-identity/cloudfront/${AppV2CloudFrontOriginAccessIdentity}'
+          PriceClass: 'PriceClass_All'
+          ViewerCertificate:
+            AcmCertificateArn: arn:aws:acm:us-east-1:640571660357:certificate/cd186eaf-0867-4754-9d39-7a0c03255a23
+            MinimumProtocolVersion: 'TLSv1.2_2019'
+            SslSupportMethod: 'sni-only'
+       
+    
+    
+    Route53RecordV2:
+      Type: 'AWS::Route53::RecordSetGroup'
+      Properties:
+        HostedZoneId: '${env:HOSTEDZONEID}'
+        RecordSets:
+        - Name: 'app-stage.lf.practera.com'
+          Type: CNAME
+          TTL: '3200'
+          ResourceRecords:
+            - !GetAtt 'AppV2CloudFrontDistribution.DomainName'
+    
+
+  ## In order to print out the hosted domain via `serverless info` we need to define the DomainName output for CloudFormation
+  Outputs:
+    AppV2CloudFrontDistributionOutput:
+      Value:
+        'Fn::GetAtt': [ AppV2CloudFrontDistribution, DomainName ]
+    
+    AppV2S3Bucket:
+      Description: 'Name of the S3 bucket storing the static files.'
+      Value: !Ref AppV2S3Bucket
+      Export:
+        Name: ${env:STACK_NAME}-AppV2S3Bucket-${env:ENV}
+
+    AppV2S3BucketURL:
+      Description: 'URL to static website.'
+      Value: https://app-stage.lf.practera.com
+
+    AppV2CloudFrontDistributionID:
+      Description: 'CloudFront distribution id'
+      Value: !Ref AppV2CloudFrontDistribution
+      Export:
+        Name: ${env:STACK_NAME}-AppV2CloudFrontDistributionID-${env:ENV}
