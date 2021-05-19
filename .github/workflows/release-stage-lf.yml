@@ -24,6 +24,7 @@ jobs:
       DOMAIN: lf.practera.com
       SUBDOMAIN: app
       BUILD_CONFIG: custom
+      HOSTEDZONEID: Z056240347P0HGTYTPEW
 
 
     # Steps to execute in this job
