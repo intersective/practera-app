@@ -67,7 +67,7 @@ resources:
       Type: 'AWS::CloudFront::CloudFrontOriginAccessIdentity'
       Properties:
         CloudFrontOriginAccessIdentityConfig:
-          Comment: !Sub "Cloudfront Origin identity for ${self:custom.s3Bucket.${env:ENV}}"
+          Comment: "Cloudfront Origin identity for app-stage.lf.practera.com"
 
     ## Specifying the CloudFront Distribution to server your Web Application
     AppV2CloudFrontDistribution:
@@ -76,7 +76,7 @@ resources:
         DistributionConfig:
           Aliases:
             - 'app-stage.lf.practera.com'
-          Comment: !Sub "Cloudfront Origin identity for ${self:custom.s3Bucket.${env:ENV}}"
+          Comment: "Cloudfront Origin identity for app-stage.lf.practera.com"
           DefaultCacheBehavior:
             AllowedMethods:
             - GET
@@ -94,7 +94,7 @@ resources:
               QueryString: false
             MaxTTL: 86400 # in seconds
             MinTTL: 60 # in seconds
-            TargetOriginId: ${self:custom.s3Bucket.${env:ENV}}
+            TargetOriginId: "app-stage.lf.practera.com"
             ViewerProtocolPolicy: 'redirect-to-https'
           DefaultRootObject: index.html
           CustomErrorResponses:
@@ -109,7 +109,7 @@ resources:
           IPV6Enabled: true
           Origins:
           - DomainName: !GetAtt 'AppV2S3Bucket.RegionalDomainName'
-            Id: ${self:custom.s3Bucket.${env:ENV}}
+            Id: "app-stage.lf.practera.com"
             S3OriginConfig:
               OriginAccessIdentity: !Sub 'origin-access-identity/cloudfront/${AppV2CloudFrontOriginAccessIdentity}'
           PriceClass: 'PriceClass_All'
