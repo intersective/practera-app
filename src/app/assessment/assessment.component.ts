@@ -66,7 +66,7 @@ export class AssessmentComponent extends RouterEnter {
     status: '',
     modified: ''
   };
-
+  pageTitle = 'Assessment';
   // action == 'assessment' is for user to do assessment, including seeing the submission or seeing the feedback. This actually means the current user is the user who should "do" this assessment
   // action == 'reivew' is for user to do review for this assessment. This means the current user is the user who should "review" this assessment
   action: string;
@@ -270,6 +270,7 @@ export class AssessmentComponent extends RouterEnter {
     // - submission is empty or
     // - submission.status is 'in progress'
     if (this.utils.isEmpty(this.submission) || this.submission.status === 'in progress') {
+      this.pageTitle = 'Submit your work';
       this.doAssessment = true;
       this.doReview = false;
       if (this.submission && this.submission.status === 'in progress') {
@@ -279,13 +280,22 @@ export class AssessmentComponent extends RouterEnter {
       return;
     }
 
-    // this component become a page for doing review, if
-    // - the submission status is 'pending review' and
-    // - this.action is review
-    if (this.submission.status === 'pending review' && this.action === 'review') {
-      this.doReview = true;
+    if (this.assessment.type === 'moderated') {
+      // this component become a page for doing review, if
+      // - the submission status is 'pending review' and
+      // - this.action is review
+      if (this.submission.status === 'pending review' && this.action === 'review') {
+        this.pageTitle = 'Provide feedback';
+        this.doReview = true;
+      }
+    
+      if (this.submission.status === 'published') {
+        this.pageTitle = 'View feedback';
+      }
     }
 
+    this.pageTitle = 'View submission';
+  
     this.feedbackReviewed = this.submission.completed;
   }
 
@@ -353,6 +363,12 @@ export class AssessmentComponent extends RouterEnter {
    * Navigate back to the previous page
    */
   navigateBack(): Promise<boolean> {
+    const referrer = this.storage.getReferrer();
+    if (this.utils.has(referrer, 'activityTaskUrl')) {
+      this.newRelic.actionText('Navigating to external return URL from Assessment');
+      this.utils.redirectToUrl(referrer.activityTaskUrl);
+      return ;
+    }
     if (this.fromPage && this.fromPage === 'reviews') {
       return this._navigate(['app', 'reviews']);
     }

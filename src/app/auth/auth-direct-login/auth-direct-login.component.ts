@@ -85,6 +85,13 @@ export class AuthDirectLoginComponent implements OnInit {
       // switch to the program
       await this.switcherService.switchProgram(program).toPromise();
     }
+    const referrerUrl = this.route.snapshot.paramMap.get('activity_task_referrer_url');
+    if (referrerUrl) {
+      // save the referrer url so that we can redirect user later
+      this.storage.setReferrer({
+        activityTaskUrl: referrerUrl
+      });
+    }
 
     switch (redirect) {
       case 'home':
@@ -99,13 +106,6 @@ export class AuthDirectLoginComponent implements OnInit {
       case 'activity_task':
         if (!activityId) {
           return this._saveOrRedirect(['app', 'home'], redirectLater);
-        }
-        const referrerUrl = this.route.snapshot.paramMap.get('activity_task_referrer_url');
-        if (referrerUrl) {
-          // save the referrer url so that we can redirect user later
-          this.storage.setReferrer({
-            activityTaskUrl: referrerUrl
-          });
         }
         return this._saveOrRedirect(['activity-task', activityId], redirectLater);
       case 'assessment':
@@ -137,6 +137,8 @@ export class AuthDirectLoginComponent implements OnInit {
         return this._saveOrRedirect(['app', 'chat'], redirectLater);
       case 'settings':
         return this._saveOrRedirect(['app', 'settings'], redirectLater);
+      case 'settings-embed':
+        return this._saveOrRedirect(['settings-embed'], redirectLater);
       default:
       return this._saveOrRedirect(['app', 'home'], redirectLater);
     }

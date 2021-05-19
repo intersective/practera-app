@@ -39,6 +39,11 @@ const routes: Routes = [
     canLoad: [AuthGuard]
   },
   {
+    path: 'settings-embed',
+    loadChildren: './settings-embed/settings-embed.module#SettingsEmbedModule',
+    canLoad: [AuthGuard]
+  },
+  {
     path: 'fast-feedback',
     component: FastFeedbackComponent,
     canLoad: [AuthGuard]
