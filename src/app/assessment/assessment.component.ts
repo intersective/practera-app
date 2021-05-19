@@ -288,14 +288,14 @@ export class AssessmentComponent extends RouterEnter {
         this.pageTitle = 'Provide feedback';
         this.doReview = true;
       }
-    
+
       if (this.submission.status === 'published') {
         this.pageTitle = 'View feedback';
       }
     }
 
     this.pageTitle = 'View submission';
-  
+
     this.feedbackReviewed = this.submission.completed;
   }
 

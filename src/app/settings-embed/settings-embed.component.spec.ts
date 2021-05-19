@@ -111,7 +111,7 @@ describe('SettingsEmbedComponent', () => {
     expect(fastFeedbackSpy.pullFastFeedback.calls.count()).toBe(1);
   });
 
- 
+
   it('should allow access to T&C file', () => {
     spyOn(window, 'open');
     component.openLink();
