@@ -130,7 +130,8 @@ describe('AuthDirectLoginComponent', () => {
         act: 2,
         ctxt: 3,
         asmt: 4,
-        sm: 5
+        sm: 5,
+        top: 6,
       };
       let tmpParams;
       let doAuthentication;
@@ -227,6 +228,23 @@ describe('AuthDirectLoginComponent', () => {
           }
         ];
         // redirect = ['assessment', 'assessment', tmpParams.act, tmpParams.ctxt, tmpParams.asmt];
+      });
+      it('topic page', () => {
+        tmpParams.redirect = 'topic';
+        redirect = [
+          'app',
+          'activity',
+          tmpParams.act,
+          {
+            task: 'topic',
+            task_id: tmpParams.top
+          }
+        ];
+      });
+      it('home page if topic id miss', () => {
+        tmpParams.redirect = 'topic';
+        tmpParams.top = null;
+        redirect = ['app', 'home'];
       });
       it('reviews page', () => {
         tmpParams.redirect = 'reviews';

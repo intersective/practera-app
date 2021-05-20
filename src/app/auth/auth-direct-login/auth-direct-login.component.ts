@@ -144,9 +144,8 @@ export class AuthDirectLoginComponent implements OnInit {
       case 'settings':
         return this._saveOrRedirect(['app', 'settings'], redirectLater);
       default:
-      return this._saveOrRedirect(['app', 'home'], redirectLater);
+        return this._saveOrRedirect(['app', 'home'], redirectLater);
     }
-    return this._saveOrRedirect(['app', 'home'], redirectLater);
   }
 
   private _saveOrRedirect(route: Array<String | number | object>, save = false) {
