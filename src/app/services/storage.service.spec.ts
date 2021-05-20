@@ -81,8 +81,8 @@ describe('StorageService', function() {
     it('should set referrer information', () => {
       service.getReferrer = jasmine.createSpy('getUser').and.returnValue({});
 
-      service.setReferrer({ activityTaskUrl: 'tester' });
-      expect(storage.setItem).toHaveBeenCalledWith('referrer', '{"activityTaskUrl":"tester"}');
+      service.setReferrer({ route: 'activity-task', url: 'tester' });
+      expect(storage.setItem).toHaveBeenCalledWith('referrer', '{"route": "activity-task", "url":"tester"}');
     });
   });
 
