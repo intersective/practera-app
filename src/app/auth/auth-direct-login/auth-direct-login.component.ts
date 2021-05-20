@@ -34,11 +34,17 @@ export class AuthDirectLoginComponent implements OnInit {
     }
 
     try {
-      await this.authService.directLogin({ authToken }).toPromise();
-      await this.switcherService.getMyInfo().toPromise();
+      // skip the authentication if the same auth token has been used before
+      if (this.storage.get('authToken') !== authToken) {
+        await this.authService.directLogin({ authToken }).toPromise();
+        await this.switcherService.getMyInfo().toPromise();
+        // save the auth token to compare with future use
+        this.storage.set('authToken', authToken);
+      }
       this.newRelic.createTracer('Processing direct login');
       return this._redirect();
     } catch (err) {
+      console.error(err);
       this._error(err);
     }
   }
