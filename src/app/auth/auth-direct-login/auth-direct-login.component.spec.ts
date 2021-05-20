@@ -133,21 +133,34 @@ describe('AuthDirectLoginComponent', () => {
         sm: 5
       };
       let tmpParams;
+      let doAuthentication;
       beforeEach(() => {
         tmpParams = JSON.parse(JSON.stringify(params));
+        doAuthentication = true;
       });
       afterEach(fakeAsync(() => {
         routeSpy.snapshot.paramMap.get = jasmine.createSpy().and.callFake(key => tmpParams[key]);
         fixture.detectChanges();
         tick(50);
         fixture.detectChanges();
-        expect(serviceSpy.directLogin.calls.count()).toBe(1);
-        expect(switcherSpy.getMyInfo.calls.count()).toBe(1);
+        if (doAuthentication) {
+          expect(serviceSpy.directLogin.calls.count()).toBe(1);
+          expect(switcherSpy.getMyInfo.calls.count()).toBe(1);
+        } else {
+          expect(serviceSpy.directLogin.calls.count()).toBe(0);
+          expect(switcherSpy.getMyInfo.calls.count()).toBe(0);
+        }
         if (switchProgram) {
           expect(switcherSpy.switchProgram.calls.count()).toBe(1);
         }
         expect(routerSpy.navigate.calls.first().args[0]).toEqual(redirect);
       }));
+      it('skip authentication if auth token match', () => {
+        switchProgram = false;
+        redirect = ['switcher', 'switcher-program'];
+        storageSpy.get.and.returnValue('abc');
+        doAuthentication = false;
+      });
       it('program switcher page if timeline id is not passed in', () => {
         switchProgram = false;
         redirect = ['switcher', 'switcher-program'];
