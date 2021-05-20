@@ -21,7 +21,7 @@ export class AchievementBadgeComponent {
     * @param {UtilsService} utils  the utils object
     */
   constructor(
-    @Inject(DOCUMENT) private document: Document,
+    @Inject(DOCUMENT) readonly document: Document,
     private notificationService: NotificationService,
     public utils: UtilsService,
   ) {}
