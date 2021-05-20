@@ -364,9 +364,9 @@ export class AssessmentComponent extends RouterEnter {
    */
   navigateBack(): Promise<boolean> {
     const referrer = this.storage.getReferrer();
-    if (this.utils.has(referrer, 'activityTaskUrl')) {
+    if (this.utils.has(referrer, 'url') && referrer.route === 'assessment') {
       this.newRelic.actionText('Navigating to external return URL from Assessment');
-      this.utils.redirectToUrl(referrer.activityTaskUrl);
+      this.utils.redirectToUrl(referrer.url);
       return ;
     }
     if (this.fromPage && this.fromPage === 'reviews') {

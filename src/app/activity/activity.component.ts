@@ -144,9 +144,9 @@ export class ActivityComponent {
 
   back() {
     const referrer = this.storage.getReferrer();
-    if (this.utils.has(referrer, 'activityTaskUrl')) {
+    if (this.utils.has(referrer, 'url') && referrer.route === 'activity-task') {
       this.newRelic.actionText('Navigating to external return URL from Activity');
-      this.utils.redirectToUrl(referrer.activityTaskUrl);
+      this.utils.redirectToUrl(referrer.url);
       return ;
     }
     this._navigate([ 'app', 'home' ]);
