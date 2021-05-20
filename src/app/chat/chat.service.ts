@@ -113,7 +113,7 @@ export class ChatService {
    * modify the Chat list response
    */
   private _normaliseChatListResponse(data): ChatChannel[] {
-    const result = JSON.parse(JSON.stringify(data.channels));
+    let result = JSON.parse(JSON.stringify(data.channels));
     if (!Array.isArray(result)) {
       this.request.apiResponseFormatError('Chat format error');
       return [];
@@ -121,7 +121,20 @@ export class ChatService {
     if (result.length === 0) {
       return [];
     }
+    result = this._sortChatList(result);
     return result.filter(c => c.name);
+  }
+
+  /**
+   * Sort chat channel list to show latest chat to on top.
+   * @param chatList Array of chat channels.
+   * @returns ChatChannel[]
+   */
+  private _sortChatList(chatList: ChatChannel[]) {
+    chatList.sort(function(a, b) {
+      return b.lastMessageCreated.localeCompare(a.lastMessageCreated);
+    });
+    return chatList;
   }
 
   /**
