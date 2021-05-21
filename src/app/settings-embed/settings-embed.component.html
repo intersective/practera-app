@@ -5,10 +5,10 @@
 </ion-header>
 <ion-content class="ion-padding" color="light">
   <ng-container>
-   
+
     <ion-item class="profile-info no-bg" lines="none">
       <ion-avatar class="profile-image">
-        <img *ngIf="!imageUpdating" [src]="profile.image">
+        <img *ngIf="!imageUpdating" [src]="profile.image" alt="profile image">
         <p *ngIf="imageUpdating" class="loading-icon"><ion-spinner name="bubbles"></ion-spinner></p>
         <file-stack
           [accept]="acceptFileTypes"
@@ -27,7 +27,7 @@
       </ion-label>
     </ion-item>
     <app-contact-number-form [page]="'settings'"></app-contact-number-form>
- 
+
   </ng-container>
 
 </ion-content>

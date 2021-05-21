@@ -367,7 +367,7 @@ export class AssessmentComponent extends RouterEnter {
     if (this.utils.has(referrer, 'url') && referrer.route === 'assessment') {
       this.newRelic.actionText('Navigating to external return URL from Assessment');
       this.utils.redirectToUrl(referrer.url);
-      return ;
+      return Promise.resolve(true);
     }
     if (this.fromPage && this.fromPage === 'reviews') {
       return this._navigate(['app', 'reviews']);
