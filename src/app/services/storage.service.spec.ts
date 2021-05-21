@@ -82,7 +82,7 @@ describe('StorageService', function() {
       service.getReferrer = jasmine.createSpy('getUser').and.returnValue({});
 
       service.setReferrer({ route: 'activity-task', url: 'tester' });
-      expect(storage.setItem).toHaveBeenCalledWith('referrer', '{"route": "activity-task", "url":"tester"}');
+      expect(storage.setItem).toHaveBeenCalledWith('referrer', '{"route":"activity-task","url":"tester"}');
     });
   });
 
