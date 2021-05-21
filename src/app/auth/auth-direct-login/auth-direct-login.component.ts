@@ -85,7 +85,7 @@ export class AuthDirectLoginComponent implements OnInit {
       // switch to the program
       await this.switcherService.switchProgram(program).toPromise();
     }
-    var referrerUrl = '';
+    let referrerUrl = '';
     switch (redirect) {
       case 'home':
         return this._saveOrRedirect(['app', 'home'], redirectLater);
@@ -121,7 +121,7 @@ export class AuthDirectLoginComponent implements OnInit {
             url: referrerUrl
           });
         }
-    
+
         if (this.utils.isMobile()) {
           return this._saveOrRedirect(['assessment', 'assessment', activityId, contextId, assessmentId], redirectLater);
         } else {
