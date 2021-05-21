@@ -44,6 +44,7 @@ export interface Referrer {
 export interface Config {
   logo?: string;
   color?: string;
+  hasChat?: boolean;
 }
 
 @Injectable({
