@@ -64,6 +64,11 @@ export class AppComponent implements OnInit {
           const numOfConfigs = expConfig.length;
           if (numOfConfigs > 0 && numOfConfigs < 2) {
             let logo = expConfig[0].logo;
+            // allow experience to disable chat interface (for use in embedding and integrations)
+            let hasChat = true;
+            if (typeof expConfig[0]['chat_enable'] !== 'undefined') {
+              hasChat = expConfig[0]['chat_enable'];
+            }; 
             const themeColor = expConfig[0].config.theme_color;
             if (expConfig[0].config.html_branding && expConfig[0].config.html_branding.header) {
               this.customHeader = expConfig[0].config.html_branding.header;
@@ -77,7 +82,8 @@ export class AppComponent implements OnInit {
             }
             this.storage.setConfig({
               'logo': logo,
-              'color': themeColor
+              'color': themeColor,
+              'hasChat': hasChat
             });
             // use brand color if no theme color
             if (!this.utils.has(this.storage.getUser(), 'themeColor') || !this.storage.getUser().themeColor) {
