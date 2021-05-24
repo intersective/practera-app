@@ -179,7 +179,7 @@ jobs:
           CUSTOM_PATH_IMAGE: /images
           CUSTOM_PATH_VIDEO: /videos
           CUSTOM_GRAPH_QL: https://core-graphql-api.${{ env.PUBLICZONENAME }}
-          CUSTOM_API_ENDPOINT: https://admin.${{ env.PUBLICZONENAME }}
+          CUSTOM_API_ENDPOINT: https://admin.${{ env.PUBLICZONENAME }}/
           CUSTOM_S3_BUCKET: files.${{ env.PUBLICZONENAME }}
           CUSTOM_ENVIRONMENT: ${{ env.ENV }}
           CUSTOM_CHAT_GRAPH_QL: https://chat-api.${{ env.PUBLICZONENAME }}
