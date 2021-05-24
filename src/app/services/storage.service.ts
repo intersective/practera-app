@@ -29,6 +29,7 @@ export interface User {
   truncateDescription?: boolean;
   enrolment?: any;
   activityCompleteMessage?: string;
+  chatEnabled?: boolean;
   hasEvents?: boolean;
   hasReviews?: boolean;
   LtiReturnUrl?: string;
@@ -44,7 +45,6 @@ export interface Referrer {
 export interface Config {
   logo?: string;
   color?: string;
-  hasChat?: boolean;
 }
 
 @Injectable({
