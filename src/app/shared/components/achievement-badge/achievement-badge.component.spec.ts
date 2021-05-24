@@ -12,7 +12,7 @@ describe('AchievementBadgeComponent', () => {
   let component: AchievementBadgeComponent;
   let fixture: ComponentFixture<AchievementBadgeComponent>;
   let documentSpy: Document;
-  let notificationSpy: jasmine.SpyObj<NotificationService>
+  let notificationSpy: jasmine.SpyObj<NotificationService>;
 
   beforeEach(async () => {
     TestBed.configureTestingModule({
