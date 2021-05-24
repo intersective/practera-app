@@ -63,8 +63,8 @@ export class AppComponent implements OnInit {
           const expConfig = response.data;
           const numOfConfigs = expConfig.length;
           if (numOfConfigs > 0 && numOfConfigs < 2) {
-            let logo: string = expConfig[0].logo;
-            const themeColor: string = expConfig[0].config.theme_color;
+            let logo = expConfig[0].logo;
+            const themeColor = expConfig[0].config.theme_color;
             if (expConfig[0].config.html_branding && expConfig[0].config.html_branding.header) {
               this.customHeader = expConfig[0].config.html_branding.header;
             }
@@ -77,8 +77,7 @@ export class AppComponent implements OnInit {
             }
             this.storage.setConfig({
               logo,
-              color: themeColor,
-              hasChat,
+              color: themeColor
             });
             // use brand color if no theme color
             if (!this.utils.has(this.storage.getUser(), 'themeColor') || !this.storage.getUser().themeColor) {
