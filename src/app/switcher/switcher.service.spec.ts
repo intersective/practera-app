@@ -288,7 +288,7 @@ describe('SwitcherService', () => {
       programObj.experience.config = {
         activity_complete_message: 'completed',
         chat_enable: false,
-      }
+      };
       service.switchProgram(programObj).subscribe();
       expect(storageSpy.setUser).toHaveBeenCalledWith({
         programId: ProgramFixture[2].program.id,
