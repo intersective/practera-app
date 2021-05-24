@@ -64,11 +64,6 @@ export class AppComponent implements OnInit {
           const numOfConfigs = expConfig.length;
           if (numOfConfigs > 0 && numOfConfigs < 2) {
             let logo: string = expConfig[0].logo;
-            // allow experience to disable chat interface (for use in embedding and integrations)
-            let hasChat = true;
-            if (typeof expConfig[0].chat_enable !== 'undefined') {
-              hasChat = expConfig[0].chat_enable;
-            }
             const themeColor: string = expConfig[0].config.theme_color;
             if (expConfig[0].config.html_branding && expConfig[0].config.html_branding.header) {
               this.customHeader = expConfig[0].config.html_branding.header;
