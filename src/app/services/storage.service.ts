@@ -84,7 +84,7 @@ export class BrowserStorageService {
     this.storage.clear();
   }
 
-  getUser() {
+  getUser(): User {
     return this.get('me') || {};
   }
 
