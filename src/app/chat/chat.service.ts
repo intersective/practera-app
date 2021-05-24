@@ -132,7 +132,7 @@ export class ChatService {
    */
   private _sortChatList(chatList: ChatChannel[]) {
     chatList.sort(function(a, b) {
-      return b.lastMessageCreated.localeCompare(a.lastMessageCreated);
+      return new Date(b.lastMessageCreated).getTime() - new Date(a.lastMessageCreated).getTime();
     });
     return chatList;
   }
