@@ -14,6 +14,7 @@
     <clickable-item
       *ngFor="let chat of chatList; let i = index"
       (click)="goToChatRoom(chat)"
+      (keyup.enter)="goToChatRoom(chat)"
       [active]="currentChat && currentChat.uuid == chat.uuid"
       [ngClass]="{'unread': chat.unreadMessageCount > 0}"
       [lines]="'none'"
