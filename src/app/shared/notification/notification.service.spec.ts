@@ -82,13 +82,26 @@ describe('NotificationService', () => {
     expect(toastSpy.create.calls.count()).toBe(2);
   });
 
-  it('when testing achievementPopUp(), it should create the modal', () => {
-    service.achievementPopUp('notification', {id: 1, name: 'achieve', 'description': ''});
-    expect(modalCtrlSpy.create.calls.count()).toBe(2);
-    expect(achievementSpy.markAchievementAsSeen.calls.count()).toBe(1);
-    service.achievementPopUp('others', {id: 1, name: 'achieve', 'description': ''});
-    expect(modalCtrlSpy.create.calls.count()).toBe(3);
-    expect(achievementSpy.markAchievementAsSeen.calls.count()).toBe(1);
+  describe('achievementPopUp()', () => {
+    it('it should create the modal', () => {
+      service.achievementPopUp('notification', {id: 1, name: 'achieve', 'description': ''});
+      expect(modalCtrlSpy.create.calls.count()).toBe(2);
+      expect(achievementSpy.markAchievementAsSeen.calls.count()).toBe(1);
+      service.achievementPopUp('others', {id: 1, name: 'achieve', 'description': ''});
+      expect(modalCtrlSpy.create.calls.count()).toBe(3);
+      expect(achievementSpy.markAchievementAsSeen.calls.count()).toBe(1);
+    });
+
+    it('should focus nativeElement when provided', () => {
+      const options = {
+        nativeElement: {
+          focus: jasmine.createSpy('focus').and.returnValue(true)
+        }
+      };
+
+      service.achievementPopUp('others', {id: 1, name: 'achieve', 'description': ''}, options);
+      expect(options.nativeElement.focus).toHaveBeenCalled();
+    });
   });
 
   it('when testing lockTeamAssessmentPopUp(), it should create the modal', () => {
