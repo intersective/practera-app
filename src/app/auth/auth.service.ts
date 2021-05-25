@@ -151,7 +151,7 @@ export class AuthService {
         timeline => {
           // make sure 'Program.config.theme_color' exist
           if (!this.utils.has(timeline, 'Program.config.theme_color')) {
-            if (!this.utils.has(timeline, 'Program.config')) {
+            if (!this.utils.has(timeline.Program, 'config')) {
               timeline.Program.config = {
                 theme_color: 'var(--ion-color-primary)'
               };
