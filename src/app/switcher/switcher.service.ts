@@ -149,6 +149,7 @@ export class SwitcherService {
       activityCardImage: cardBackgroundImage,
       enrolment: programObj.enrolment,
       activityCompleteMessage: this.utils.has(programObj, 'experience.config.activity_complete_message') ? programObj.experience.config.activity_complete_message : null,
+      chatEnabled: this.utils.has(programObj, 'experience.config.chat_enable') ? programObj.experience.config.chat_enable : true,
       teamId: null,
       hasEvents: false,
       hasReviews: false
