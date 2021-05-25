@@ -4,12 +4,17 @@ import { Observable, of, pipe } from 'rxjs';
 import { NotificationService } from '@shared/notification/notification.service';
 import { ModalController, AlertController, ToastController, LoadingController } from '@ionic/angular';
 import { AchievementsService } from '@app/achievements/achievements.service';
-import { Apollo } from 'apollo-angular';
+import { UtilsService } from '@services/utils.service';
 
 describe('NotificationService', () => {
   let service: NotificationService;
   const modalSpy = jasmine.createSpyObj('Modal', ['present', 'onDidDismiss']);
-  modalSpy.onDidDismiss.and.returnValue(new Promise(() => {}));
+  modalSpy.onDidDismiss.and.returnValue(new Promise((test: any): Promise<void> => {
+    if (test) {
+      test();
+    }
+    return;
+  }));
   const modalCtrlSpy = jasmine.createSpyObj('ModalController', ['dismiss', 'create']);
   modalCtrlSpy.create.and.returnValue(modalSpy);
   const alertSpy = jasmine.createSpyObj('AlertController', ['create']);
@@ -19,12 +24,18 @@ describe('NotificationService', () => {
   const loadingSpy = jasmine.createSpyObj('LoadingController', ['create']);
   loadingSpy.create.and.returnValue(modalSpy);
   const achievementSpy = jasmine.createSpyObj('AchievementsService', ['markAchievementAsSeen']);
+  let utilSpy: UtilsService;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       providers: [
-        Apollo,
         NotificationService,
+        {
+          provide: UtilsService,
+          useValue: jasmine.createSpyObj('UtilsService', {
+            isMobile: () => false
+          })
+        },
         {
           provide: ModalController,
           useValue: modalCtrlSpy
@@ -47,6 +58,7 @@ describe('NotificationService', () => {
         },
       ],
     }).compileComponents();
+    utilSpy = TestBed.inject(UtilsService);
   }));
 
   beforeEach(() => {
@@ -92,21 +104,25 @@ describe('NotificationService', () => {
       expect(achievementSpy.markAchievementAsSeen.calls.count()).toBe(1);
     });
 
-    it('should focus nativeElement when provided', () => {
+    it('should focus activeElement when provided', fakeAsync(() => {
       const options = {
-        nativeElement: {
+        activeElement: {
           focus: jasmine.createSpy('focus').and.returnValue(true)
         }
       };
 
       service.achievementPopUp('others', {id: 1, name: 'achieve', 'description': ''}, options);
-      expect(options.nativeElement.focus).toHaveBeenCalled();
-    });
+      tick();
+      expect(options.activeElement.focus).toHaveBeenCalled();
+    }));
   });
 
-  it('when testing lockTeamAssessmentPopUp(), it should create the modal', () => {
-    service.lockTeamAssessmentPopUp({name: 'test', image: 'image'}, () => {});
-    expect(modalCtrlSpy.create.calls.count()).toBe(4);
+  describe('lockTeamAssessmentPopUp()', () => {
+    it('should create the modal', () => {
+      service.lockTeamAssessmentPopUp({name: 'test', image: 'image'}, () => {});
+      expect(modalCtrlSpy.create.calls.count()).toBe(5);
+    });
+
   });
 
   it('when testing loading(), it should create the modal', () => {
