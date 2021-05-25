@@ -58,7 +58,7 @@ describe('AchievementPopUpComponent', () => {
   });
 
   xdescribe('ionViewDidEnter()', () => {
-    it('should prepare accessibility controls', () => {
+    xit('should prepare accessibility controls', () => {
       component.ionViewDidEnter();
 
     });
