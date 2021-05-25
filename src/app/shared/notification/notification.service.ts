@@ -163,7 +163,7 @@ export class NotificationService {
    * sample call for activity complete popup
    * NotificationService.activityCompletePopUp(3);
    */
-  async activityCompletePopUp(activityId: number, activityCompleted: boolean) {
+  async activityCompletePopUp(activityId: number, activityCompleted: boolean): Promise<void> {
     let cssClass = 'practera-popup activity-complete-popup';
     if (this.utils.isMobile()) {
       cssClass += ' mobile-view';
