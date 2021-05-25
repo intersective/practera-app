@@ -7,7 +7,7 @@
   <ng-container *ngIf="utils.isMobile()">
     <ion-item class="profile-info no-bg" lines="none" tabindex="0">
       <ion-avatar class="profile-image" slot="start">
-        <img *ngIf="!imageUpdating" [src]="profile.image">
+        <img *ngIf="!imageUpdating" [src]="profile.image" alt="Profile Image">
         <p *ngIf="imageUpdating" class="loading-icon"><ion-spinner name="bubbles"></ion-spinner></p>
         <file-stack
           [accept]="acceptFileTypes"
@@ -22,7 +22,7 @@
         </ion-label>
         <ion-label class="subtitle-1 gray-2" *ngIf="profile.email">
           {{profile.email}}
-        </ion-label>  
+        </ion-label>
       </ion-label>
     </ion-item>
     <app-contact-number-form [page]="'settings'"></app-contact-number-form>
@@ -33,20 +33,7 @@
     </ion-item>
 
     <div class="ion-margin-top support-mobile subtitle-1">
-      <ion-label class="subtitle-2 gray-2">Support</ion-label>
-      <ion-button class="accessible-btn" role="button" aria-label="Email help button" tabindex="0" (click)="mailTo($event)" (keydown)="mailTo($event)">
-        <ion-icon class="ion-padding-end" color="primary" name="mail-outline"></ion-icon>
-        <ion-label class="subtitle-1"> Email Help </ion-label>
-      </ion-button>  
-      <ion-button class="accessible-btn" role="button" aria-label="Term of use" (click)="openLink($event)" (keydown)="openLink($event)" tabindex="0">
-        <ion-icon class="ion-padding-end" color="primary" name="clipboard-outline"></ion-icon>
-        <ion-label class="subtitle-1">Terms of Use</ion-label>
-      </ion-button>
-      <ion-button class="accessible-btn" role="button" aria-label="logout" (click)="logout($event)" (keydown)="logout($event)" tabindex="0">
-        <ion-icon class="ion-padding-end" color="primary" name="log-out-outline"></ion-icon>
-        <ion-label *ngIf="hasMultipleStacks" class="subtitle-1 ">Logout or Switch Environment</ion-label>
-        <ion-label *ngIf="!hasMultipleStacks" class="subtitle-1 ">Logout</ion-label>
-      </ion-button> 
+      <ng-container *ngTemplateOutlet="supportContentTpl"></ng-container>
     </div>
   </ng-container>
 
@@ -56,7 +43,7 @@
         <ion-col size="3" class="support">
           <div class="profile-info" tabindex="0">
             <ion-avatar class="profile-image" slot="start">
-              <img *ngIf="!imageUpdating" [src]="profile.image">
+              <img *ngIf="!imageUpdating" [src]="profile.image" alt="Profile Image">
               <p *ngIf="imageUpdating" class="loading-icon"><ion-spinner name="bubbles"></ion-spinner></p>
               <file-stack
                 [accept]="acceptFileTypes"
@@ -73,19 +60,7 @@
             </ion-label>
           </div>
           <div class="ion-margin-top subtitle-1 support-wrapper" >
-            <ion-button class="accessible-btn" role="button" aria-label="Email help button" tabindex="0" (click)="mailTo($event)" (keydown)="mailTo($event)">
-              <ion-icon class="ion-padding-end" color="primary" name="mail-outline"></ion-icon>
-              <ion-label class="subtitle-1"> Email Help </ion-label>
-            </ion-button>
-            <ion-button class="accessible-btn" role="button" aria-label="Term of use" (click)="openLink($event)" (keydown)="openLink($event)" tabindex="0">
-              <ion-icon class="ion-padding-end" color="primary" name="clipboard-outline"></ion-icon>
-              <ion-label class="subtitle-1">Terms of Use</ion-label>
-            </ion-button>
-            <ion-button class="accessible-btn" role="button" aria-label="logout" (click)="logout($event)" (keydown)="logout($event)" tabindex="0">
-              <ion-icon class="ion-padding-end" color="primary" name="log-out-outline"></ion-icon>
-              <ion-label *ngIf="hasMultipleStacks" class="subtitle-1 ">Logout or Switch Environment</ion-label>
-              <ion-label *ngIf="!hasMultipleStacks" class="subtitle-1 ">Logout</ion-label>
-            </ion-button>  
+            <ng-container *ngTemplateOutlet="supportContentTpl"></ng-container>
           </div>
         </ion-col>
         <ion-col class="content">
@@ -125,3 +100,20 @@
     </ion-grid>
   </ng-container>
 </ion-content>
+
+<ng-template #supportContentTpl>
+  <ion-label class="subtitle-2 gray-2">Support</ion-label>
+  <ion-button class="accessible-btn" role="button" aria-label="Email help button" tabindex="0" (click)="mailTo($event)" (keydown)="mailTo($event)">
+    <ion-icon class="ion-padding-end" color="primary" name="mail-outline"></ion-icon>
+    <ion-label class="subtitle-1"> Email Help </ion-label>
+  </ion-button>
+  <ion-button class="accessible-btn" role="button" aria-label="Term of use" (click)="openLink($event)" (keydown)="openLink($event)" tabindex="0">
+    <ion-icon class="ion-padding-end" color="primary" name="clipboard-outline"></ion-icon>
+    <ion-label class="subtitle-1">Terms of Use</ion-label>
+  </ion-button>
+  <ion-button class="accessible-btn" role="button" aria-label="logout" (click)="logout($event)" (keydown)="logout($event)" tabindex="0">
+    <ion-icon class="ion-padding-end" color="primary" name="log-out-outline"></ion-icon>
+    <ion-label *ngIf="hasMultipleStacks" class="subtitle-1 ">Logout or Switch Environment</ion-label>
+    <ion-label *ngIf="!hasMultipleStacks" class="subtitle-1 ">Logout</ion-label>
+  </ion-button>
+</ng-template>
