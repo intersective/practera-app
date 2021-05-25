@@ -1,5 +1,5 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { async, ComponentFixture, TestBed, tick, fakeAsync } from '@angular/core/testing';
+import { async, ComponentFixture, TestBed, tick, flushMicrotasks, fakeAsync } from '@angular/core/testing';
 import { Observable, of, pipe } from 'rxjs';
 import { NotificationService } from '@shared/notification/notification.service';
 import { ModalController, AlertController, ToastController, LoadingController } from '@ionic/angular';
@@ -24,7 +24,7 @@ describe('NotificationService', () => {
   const loadingSpy = jasmine.createSpyObj('LoadingController', ['create']);
   loadingSpy.create.and.returnValue(modalSpy);
   const achievementSpy = jasmine.createSpyObj('AchievementsService', ['markAchievementAsSeen']);
-  let utilSpy: UtilsService;
+  let utilSpy: jasmine.SpyObj<UtilsService>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
@@ -58,12 +58,9 @@ describe('NotificationService', () => {
         },
       ],
     }).compileComponents();
-    utilSpy = TestBed.inject(UtilsService);
-  }));
-
-  beforeEach(() => {
     service = TestBed.inject(NotificationService);
-  });
+    utilSpy = TestBed.inject(UtilsService) as jasmine.SpyObj<UtilsService>;
+  }));
 
   it('should create', () => {
     expect(service).toBeDefined();
@@ -122,13 +119,24 @@ describe('NotificationService', () => {
       service.lockTeamAssessmentPopUp({name: 'test', image: 'image'}, () => {});
       expect(modalCtrlSpy.create.calls.count()).toBe(5);
     });
+  });
 
+  describe('activityCompletePopUp()', () => {
+    it('should show activity completed popup overlay view', () => {
+      service.activityCompletePopUp(12345, true);
+      expect(modalCtrlSpy.create).toHaveBeenCalled();
+    });
+
+    it('should be same when "isMobile" is true', fakeAsync(() => {
+      utilSpy.isMobile.and.returnValue(true);
+      service.activityCompletePopUp(12345, true);
+      expect(modalCtrlSpy.create).toHaveBeenCalled();
+    }));
   });
 
   it('when testing loading(), it should create the modal', () => {
     service.loading();
     expect(loadingSpy.create.calls.count()).toBe(1);
   });
-
 });
 
