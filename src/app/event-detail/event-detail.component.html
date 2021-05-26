@@ -21,7 +21,7 @@
     </ion-item>
     <ion-item>
       <ion-icon class="leading-icon gray-2" name="time-outline"></ion-icon>
-      <div id="time" class="subtitle-1">{{ utils.utcToLocal(event.startTime, 'time') }} - {{ utils.utcToLocal(event.endTime, 'time') }}</div>
+      <div id="time" class="subtitle-1">{{ utils.utcToLocal(event.startTime, 'time') }} - {{ utils.utcToLocal(event.endTime, 'time') }} {{utils.localTimezone()}} </div>
     </ion-item>
     <ng-container *ngIf="event.videoConference">
       <ion-item *ngIf="!event.isBooked" class="zoom-meeting">
