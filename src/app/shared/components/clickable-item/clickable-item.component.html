@@ -1,11 +1,32 @@
-<ion-item class="ion-activatable" [lines]="lines" [ngClass]="{
+<!-- for chat list -->
+<!-- ion-item need tabindex and role here -->
+<!-- accessibility keyboard click action done in chat list component -->
+<ion-item  *ngIf="isChatCard; else elseblock" class="ion-activatable" [lines]="lines" [ngClass]="{
   'switcher-card-item': isSwitcherCard,
   'active': active
-}"  aria-label="clickable item" >
-  <ion-button class="accessible-btn" [ngClass]="{'accessible-item': isCustomizedCard, 'customTodoCard': isTodoCard, 'accessibile-ChatItem': isChatCard }"  role="button">
-    <ion-text color="primary" [ngStyle]="{'color': backgroundColor}">
-      <ion-ripple-effect></ion-ripple-effect>
-    </ion-text>
-    <ng-content></ng-content>
-  </ion-button>  
+}"  aria-label="clickable item" role="button" tabindex="0">
+<ion-text color="primary" [ngStyle]="{'color': backgroundColor}">
+  <ion-ripple-effect></ion-ripple-effect>
+</ion-text>
+<ng-container *ngTemplateOutlet="contentTpl"></ng-container>
 </ion-item>
+
+<!-- for every other place that clickable-item component used -->
+<!-- ion-item can't have tabindex and role here -->
+<!-- accessibility keyboard click action done by ion-botton -->
+<ng-template #elseblock>
+  <ion-item class="ion-activatable" [lines]="lines" [ngClass]="{
+    'switcher-card-item': isSwitcherCard,
+    'active': active
+  }"  aria-label="clickable item">
+    <ion-button expand="full" class="accessible-btn" [ngClass]="{'accessible-item': isCustomizedCard, 'customTodoCard': isTodoCard, 'accessibile-ChatItem': isChatCard }"  role="button">
+      <ion-text color="primary" [ngStyle]="{'color': backgroundColor}">
+        <ion-ripple-effect></ion-ripple-effect>
+      </ion-text>
+      <ng-container *ngTemplateOutlet="contentTpl"></ng-container>
+    </ion-button>
+  </ion-item>
+</ng-template>
+
+<!-- ng content - one component can have one ng-content -->
+<ng-template #contentTpl><ng-content></ng-content></ng-template>

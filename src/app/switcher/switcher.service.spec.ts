@@ -232,40 +232,82 @@ describe('SwitcherService', () => {
   });
 
   describe('switchProgram()', () => {
+    beforeEach(() => {
+      spyOn(service, 'getNewJwt').and.returnValue(of());
+      spyOn(service, 'getTeamInfo').and.returnValue(of());
+      spyOn(service, 'getMyInfo').and.returnValue(of());
+      spyOn(service, 'getReviews').and.returnValue(of());
+      spyOn(service, 'getEvents').and.returnValue(of());
+      spyOn(sharedSpy, 'onPageLoad').and.returnValue(of());
+    });
+
     it('should collect related data based on selected program', () => {
-      service.switchProgram(ProgramFixture[0]).subscribe(() => {
+      service.switchProgram(ProgramFixture[0]).subscribe();
+      expect(storageSpy.setUser).toHaveBeenCalled();
+      expect(sharedSpy.onPageLoad).toHaveBeenCalled();
+      expect(service.getNewJwt).toHaveBeenCalled();
+      expect(service.getTeamInfo).toHaveBeenCalled();
+      expect(service.getMyInfo).toHaveBeenCalled();
+      expect(service.getReviews).toHaveBeenCalled();
+      expect(service.getEvents).toHaveBeenCalled();
+    });
 
-        spyOn(utils, 'has');
-        spyOn(service, 'getNewJwt');
-        spyOn(service, 'getTeamInfo');
-        spyOn(service, 'getMyInfo');
-        spyOn(service, 'getReviews');
-        spyOn(service, 'getEvents');
-
-        expect(utils.has).toHaveBeenCalled();
-        expect(storageSpy.setUser).toHaveBeenCalled();
-        expect(sharedSpy.onPageLoad).toHaveBeenCalled();
-        expect(service.getNewJwt).toHaveBeenCalled();
-        expect(service.getTeamInfo).toHaveBeenCalled();
-        expect(service.getMyInfo).toHaveBeenCalled();
-        expect(service.getReviews).toHaveBeenCalled();
-        expect(service.getEvents).toHaveBeenCalled();
+    it('should set the correct user data', () => {
+      const programObj = ProgramFixture[3];
+      delete programObj.program.config.theme_color;
+      service.switchProgram(programObj).subscribe();
+      expect(storageSpy.setUser).toHaveBeenCalledWith({
+        programId: ProgramFixture[3].program.id,
+        programName: ProgramFixture[3].program.name,
+        programImage: ProgramFixture[3].project.lead_image,
+        hasReviewRating: false,
+        truncateDescription: true,
+        experienceId: ProgramFixture[3].program.experience_id,
+        projectId: ProgramFixture[3].project.id,
+        timelineId: ProgramFixture[3].timeline.id,
+        contactNumber: ProgramFixture[3].enrolment.contact_number,
+        themeColor: '#2bbfd4',
+        activityCardImage: '',
+        enrolment: ProgramFixture[3].enrolment,
+        activityCompleteMessage: null,
+        chatEnabled: true,
+        teamId: null,
+        hasEvents: false,
+        hasReviews: false
       });
     });
-  });
 
-  describe('switchProgram() with null experience config', () => {
-    it('should collect related data based on selected program', () => {
-      service.switchProgram(ProgramFixture[2]).subscribe(() => {
-        spyOn(utils, 'has');
-      });
-    });
-  });
-
-  describe('switchProgram() with null experience', () => {
-    it('should collect related data based on selected program', () => {
-      service.switchProgram(ProgramFixture[3]).subscribe(() => {
-        spyOn(utils, 'has');
+    it('should set the correct user data', () => {
+      const programObj = ProgramFixture[2];
+      programObj.program.config = {
+        theme_color: 'none',
+        card_style: 'style',
+        review_rating: true,
+        truncate_description: false,
+      };
+      programObj.experience.config = {
+        activity_complete_message: 'completed',
+        chat_enable: false,
+      };
+      service.switchProgram(programObj).subscribe();
+      expect(storageSpy.setUser).toHaveBeenCalledWith({
+        programId: ProgramFixture[2].program.id,
+        programName: ProgramFixture[2].program.name,
+        programImage: ProgramFixture[2].project.lead_image,
+        hasReviewRating: true,
+        truncateDescription: false,
+        experienceId: ProgramFixture[2].program.experience_id,
+        projectId: ProgramFixture[2].project.id,
+        timelineId: ProgramFixture[2].timeline.id,
+        contactNumber: ProgramFixture[2].enrolment.contact_number,
+        themeColor: 'none',
+        activityCardImage: '/assets/style',
+        enrolment: ProgramFixture[2].enrolment,
+        activityCompleteMessage: 'completed',
+        chatEnabled: false,
+        teamId: null,
+        hasEvents: false,
+        hasReviews: false
       });
     });
   });
