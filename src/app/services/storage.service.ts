@@ -29,6 +29,7 @@ export interface User {
   truncateDescription?: boolean;
   enrolment?: any;
   activityCompleteMessage?: string;
+  chatEnabled?: boolean;
   hasEvents?: boolean;
   hasReviews?: boolean;
   LtiReturnUrl?: string;
@@ -83,7 +84,7 @@ export class BrowserStorageService {
     this.storage.clear();
   }
 
-  getUser() {
+  getUser(): User {
     return this.get('me') || {};
   }
 

@@ -130,24 +130,38 @@ describe('AuthDirectLoginComponent', () => {
         act: 2,
         ctxt: 3,
         asmt: 4,
-        sm: 5
+        sm: 5,
+        top: 6,
       };
       let tmpParams;
+      let doAuthentication;
       beforeEach(() => {
         tmpParams = JSON.parse(JSON.stringify(params));
+        doAuthentication = true;
       });
       afterEach(fakeAsync(() => {
         routeSpy.snapshot.paramMap.get = jasmine.createSpy().and.callFake(key => tmpParams[key]);
         fixture.detectChanges();
         tick(50);
         fixture.detectChanges();
-        expect(serviceSpy.directLogin.calls.count()).toBe(1);
-        expect(switcherSpy.getMyInfo.calls.count()).toBe(1);
+        if (doAuthentication) {
+          expect(serviceSpy.directLogin.calls.count()).toBe(1);
+          expect(switcherSpy.getMyInfo.calls.count()).toBe(1);
+        } else {
+          expect(serviceSpy.directLogin.calls.count()).toBe(0);
+          expect(switcherSpy.getMyInfo.calls.count()).toBe(0);
+        }
         if (switchProgram) {
           expect(switcherSpy.switchProgram.calls.count()).toBe(1);
         }
         expect(routerSpy.navigate.calls.first().args[0]).toEqual(redirect);
       }));
+      it('skip authentication if auth token match', () => {
+        switchProgram = false;
+        redirect = ['switcher', 'switcher-program'];
+        storageSpy.get.and.returnValue('abc');
+        doAuthentication = false;
+      });
       it('program switcher page if timeline id is not passed in', () => {
         switchProgram = false;
         redirect = ['switcher', 'switcher-program'];
@@ -214,6 +228,23 @@ describe('AuthDirectLoginComponent', () => {
           }
         ];
         // redirect = ['assessment', 'assessment', tmpParams.act, tmpParams.ctxt, tmpParams.asmt];
+      });
+      it('topic page', () => {
+        tmpParams.redirect = 'topic';
+        redirect = [
+          'app',
+          'activity',
+          tmpParams.act,
+          {
+            task: 'topic',
+            task_id: tmpParams.top
+          }
+        ];
+      });
+      it('home page if topic id miss', () => {
+        tmpParams.redirect = 'topic';
+        tmpParams.top = null;
+        redirect = ['app', 'home'];
       });
       it('reviews page', () => {
         tmpParams.redirect = 'reviews';

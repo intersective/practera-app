@@ -37,7 +37,6 @@ jobs:
       STATUSREPORTS3Bucket: deployment-status.practera.com
       STATUS: DEPLOYED
       ENDPOINT: NA
-      SLEEPTIMER: 10 #Mandatory inorder to other ci to update
 
 
 
@@ -180,13 +179,13 @@ jobs:
           CUSTOM_PATH_IMAGE: /images
           CUSTOM_PATH_VIDEO: /videos
           CUSTOM_GRAPH_QL: https://core-graphql-api.${{ env.PUBLICZONENAME }}
-          CUSTOM_API_ENDPOINT: https://admin.${{ env.PUBLICZONENAME }}
+          CUSTOM_API_ENDPOINT: https://admin.${{ env.PUBLICZONENAME }}/
           CUSTOM_S3_BUCKET: files.${{ env.PUBLICZONENAME }}
           CUSTOM_ENVIRONMENT: ${{ env.ENV }}
           CUSTOM_CHAT_GRAPH_QL: https://chat-api.${{ env.PUBLICZONENAME }}
-          CUSTOM_GLOBAL_LOGIN_URL: https://login-app.${{ env.PUBLICZONENAME }}
+          CUSTOM_GLOBAL_LOGIN_URL: https://app.login-stage.practera.com
           CUSTOM_COUNTRY: AUS #TODO CHECK
-          CUSTOMPLAIN_SKIPGLOBALLOGINFLAG: true
+          CUSTOMPLAIN_SKIPGLOBALLOGINFLAG: false
           CUSTOM_PATH_ANY: /any
           CUSTOM_AWS_REGION: ${{ env.REGION }}
           CUSTOM_JS_ENVIRONEMENT: dev #TODO CHECK
@@ -267,9 +266,9 @@ jobs:
 
 
 
-#########################################################
-# SLACK NOTIFICATION
-#########################################################  
+# #########################################################
+# # SLACK NOTIFICATION
+# #########################################################  
       - name: Slack Notification
         if: always() # Pick up events even if the job fails or is canceled.
         uses: 8398a7/action-slack@v3
@@ -303,57 +302,3 @@ jobs:
             }
 
 
-# ################################################
-# #  STATUS VARIABLE UPDATE
-# ################################################ 
-      - name: Deployment status variable update
-        if: ${{ failure() }}
-        run: |
-          echo "STATUS=FAILURE" >> $GITHUB_ENV
-
-# ################################################
-# #  DEVOPS-DEPLOYMENT REPORT
-# ################################################ 
-      - name: DevOps Deployment Reporting
-        if: always()
-        run: |
-          pip install --upgrade pip
-          pip install --upgrade csvtotable
-          sleep $SLEEPTIMER 
-          aws s3 cp s3://$STATUSREPORTS3Bucket/deploy-reporting.sh deploy-reporting.sh
-          chmod +x deploy-reporting.sh && ./deploy-reporting.sh
-          echo "LINK="${GITHUB_REPOSITORY##*/}.html >> $GITHUB_ENV
-        env:
-          ENDPOINT: app.${{env.PUBLICZONENAME}}
-
-# ##########################################################
-# #  DEPLOYMENT NOTIFICATION
-# ##########################################################  
-      - name: Slack Notification
-        if: always() # Pick up events even if the job fails or is canceled.
-        uses: 8398a7/action-slack@v3
-        with:
-          status: custom
-          custom_payload: |
-            {
-              text: "Deployment Notification",
-              attachments: [{
-                "author_name": `${process.env.AS_REPO}`, // json
-                fallback: 'fallback',
-                color: 'good',
-                title: 'Deployment status report for ${{ env.ROOTSTACK }} deployed to ${{ env.ENV }} environemnt in ${{ env.STACK_NAME }} AWS account',
-                text: 'http://deployment-status.practera.com.s3-website-ap-southeast-2.amazonaws.com/${{env.LINK}}',
-                fields: [
-                  {
-                    title: 'All Practera repo deployment status overview',
-                    value: 'http://deployment-status.practera.com.s3-website-ap-southeast-2.amazonaws.com'
-                  }],
-                "image_url": "https://practera.com/wp-content/uploads/2020/11/Practera-logo-2.svg",
-                "thumb_url": "https://practera.com/wp-content/uploads/2020/11/Practera-logo-2.svg",
-                actions: [{
-                }]
-              }]
-            }
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }} # required
-          
