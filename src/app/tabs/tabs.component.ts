@@ -79,7 +79,9 @@ export class TabsComponent extends RouterEnter {
       });
     }
     // display the chat tab if the user is in team
-    if (this.storage.getUser().teamId && this.storage.getUser().chatEnabled) {
+    if (!this.storage.getUser().chatEnabled) {
+      this.showChat = false;
+    } else if (this.storage.getUser().teamId) {
       this.showChat = true;
     } else {
       this.showChat = false;
