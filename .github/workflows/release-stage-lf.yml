@@ -1,31 +1,31 @@
 # GitHub Actions WorkFlow Name
 
-name: Live environment LF
+name: Stage LF APP Environment
 
 #Event Trigger for this Workflow
 
 on:
   workflow_dispatch:
   push:
-    branches: [ 'release/lf' ]
- 
+    branches: [ stage/lf  ]
+
 #Jobs to perform based on event occurred
 
 jobs:
-  release-lf:
-    name: release-lf
+  stage:
+    name: stage
     runs-on: ubuntu-latest
 
     #Global Env variables declare here
     env:
       REGION : us-east-2
-      ENV : live # Valid values are sandbox,stage,live only
+      ENV : stage # Valid values are sandbox,stage,live only
       STACK_NAME: lf # Valid values are au,us,uk,p2,lf,nu,sandbox only
       DOMAIN: lf.practera.com
       SUBDOMAIN: app
       BUILD_CONFIG: custom
-      APP_V2_S3: app.lf.practera.com
-      APP_V2_CDN: E2Y52ZIUB4D6X
+      HOSTEDZONEID: Z056240347P0HGTYTPEW
+
 
     # Steps to execute in this job
     steps:
@@ -36,12 +36,14 @@ jobs:
 
 
       - name: Setup Node.js environment
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14'
       
   
       - name: Install Serverless Framework
         run: |
-          npm i -g serverless@2.17.0
+          npm i -g serverless
       
  
       - name: Cache node modules
@@ -75,7 +77,7 @@ jobs:
         run: |
           ${{ secrets.LF_APP_V2_PROD_ENV }}
           chmod +x env.sh && ./env.sh
-          
+          rm serverless.yml && mv serverless-stage-lf.yml serverless.yml
 
 
       - name: Building web packages
@@ -102,7 +104,26 @@ jobs:
           aws-access-key-id: ${{ secrets.LF_AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.LF_AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.REGION }}
+         
+
+      - name: Serverless Packaging
+        run: |
+          serverless package --package artifacts/${{ env.ENV }} --stage ${{ env.ENV }} --region ${{ env.REGION }} -v
+
+
+      - name: Serverless Deploy
+        run: |
+          serverless deploy --stage ${{ env.ENV }} --region ${{ env.REGION }} --package artifacts/${{ env.ENV }} -v
+
       
+      - name: Cloudformation Environemnt variables
+        run: |
+          echo "Extracting Cloudformation output as environment variable"
+          export STACK_NAME=${{ env.STACK_NAME }}-${{ env.SUBDOMAIN }}-${{env.ENV}}
+          export S3Bucket=${{ env.STACK_NAME }}-AppV2S3Bucket-${{env.ENV}}
+          export CDN=${{env.STACK_NAME}}-AppV2CloudFrontDistributionID-${{env.ENV}}
+          echo "APP_V2_CDN="$(aws cloudformation list-exports --query "Exports[?Name==\`$CDN\`].Value" --no-paginate --output text) >> $GITHUB_ENV
+          echo "APP_V2_S3="$(aws cloudformation list-exports --query "Exports[?Name==\`$S3Bucket\`].Value" --no-paginate --output text) >> $GITHUB_ENV
 
 
       - name: AWS S3 Sync operation
@@ -113,35 +134,34 @@ jobs:
       - name: AWS Cloudfront Cache invalidation
         run: for i in ${{env.APP_V2_CDN}};do aws cloudfront create-invalidation --distribution-id $i --paths "/*";done
 
-
-      - name: Slack Notification
-        if: always() # Pick up events even if the job fails or is canceled.
-        uses: 8398a7/action-slack@v3
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-          MATRIX_CONTEXT: ${{ toJson(matrix) }} # required
-        with:
-          status: ${{ job.status }}
-          author_name: app-v2  deployed to ${{ env.ENV }} environemnt in ${{ env.STACK_NAME }} AWS account
-          mention: 'here'
-          if_mention: failure,cancelled
-          job_name: sandbox # Match the name above.
-          fields: repo,commit,eventName,ref,workflow,message,author,job,took
-          custom_payload: |
-            {
-            username: 'GitHub Action CI WorkFlow',
-            icon_emoji: ':github:',
-            attachments: [{
-              color: '${{ job.status }}' === 'success' ? 'good' : ${{ job.status }}' === 'failure' ? 'danger' : 'warning',
-              text:
-             `${process.env.AS_REPO}\n
-              ${process.env.AS_COMMIT}\n
-              ${process.env.AS_EVENT_NAME}\n
-              @${process.env.AS_REF}\n
-              @${process.env.AS_WORKFLOW}\n
-              ${process.env.AS_MESSAGE}\n
-              ${process.env.AS_AUTHOR}\n
-              ${process.env.AS_JOB}\n
-              ${process.env.AS_TOOK}`,
-            }]
-            }
+      # - name: Slack Notification
+      #   if: always() # Pick up events even if the job fails or is canceled.
+      #   uses: 8398a7/action-slack@v3
+      #   env:
+      #     SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+      #     MATRIX_CONTEXT: ${{ toJson(matrix) }} # required
+      #   with:
+      #     status: ${{ job.status }}
+      #     author_name: app-v2 deployed to ${{ env.ENV }} environemnt in ${{ env.STACK_NAME }} AWS account
+      #     mention: 'here'
+      #     if_mention: failure,cancelled
+      #     job_name: sandbox # Match the name above.
+      #     fields: repo,commit,eventName,ref,workflow,message,author,job,took
+      #     custom_payload: |
+      #       {
+      #       username: 'GitHub Action CI WorkFlow',
+      #       icon_emoji: ':github:',
+      #       attachments: [{
+      #         color: '${{ job.status }}' === 'success' ? 'good' : ${{ job.status }}' === 'failure' ? 'danger' : 'warning',
+      #         text:
+      #        `${process.env.AS_REPO}\n
+      #         ${process.env.AS_COMMIT}\n
+      #         ${process.env.AS_EVENT_NAME}\n
+      #         @${process.env.AS_REF}\n
+      #         @${process.env.AS_WORKFLOW}\n
+      #         ${process.env.AS_MESSAGE}\n
+      #         ${process.env.AS_AUTHOR}\n
+      #         ${process.env.AS_JOB}\n
+      #         ${process.env.AS_TOOK}`,
+      #       }]
+      #       }
