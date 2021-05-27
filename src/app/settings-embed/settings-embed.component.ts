@@ -1,24 +1,22 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '../auth/auth.service';
-import { SettingService } from './setting.service';
+import { SettingService } from '../settings/setting.service';
 import { BrowserStorageService } from '@services/storage.service';
 import { UtilsService } from '@services/utils.service';
 import { NotificationService } from '@shared/notification/notification.service';
 import { RouterEnter } from '@services/router-enter.service';
-import { FastFeedbackService } from '../fast-feedback/fast-feedback.service';
 import { FilestackService } from '@shared/filestack/filestack.service';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
 
 @Component({
-  selector: 'app-settings',
-  templateUrl: 'settings.component.html',
-  styleUrls: ['settings.component.scss']
+  selector: 'app-settings-embed',
+  templateUrl: 'settings-embed.component.html',
+  styleUrls: ['settings-embed.component.scss']
 })
 
-export class SettingsComponent extends RouterEnter {
-
-  routeUrl = '/app/settings';
+export class SettingsEmbedComponent extends RouterEnter {
+  routeUrls = ['/app/settings-embed', 'settings-embed'];
   profile = {
     contactNumber: '',
     email: '',
@@ -47,7 +45,6 @@ export class SettingsComponent extends RouterEnter {
     public utils: UtilsService,
     private notificationService: NotificationService,
     private filestackService: FilestackService,
-    public fastFeedbackService: FastFeedbackService,
     private newRelic: NewRelicService,
 
   ) {
@@ -66,7 +63,6 @@ export class SettingsComponent extends RouterEnter {
     // also get program name
     this.currentProgramName = this.storage.getUser().programName;
     this.currentProgramImage = this._getCurrentProgramImage();
-    this.fastFeedbackService.pullFastFeedback().subscribe();
     this.returnLtiUrl = this.storage.getUser().LtiReturnUrl;
   }
 
@@ -89,19 +85,8 @@ export class SettingsComponent extends RouterEnter {
     this.newRelic.actionText('Open T&C link');
     window.open(this.termsUrl, '_system');
   }
-  switchProgram() {
-    if (this.returnLtiUrl) {
-      this.newRelic.actionText('browse to LTI return link');
-      this.utils.redirectToUrl(this.returnLtiUrl);
-    } else {
-      this.newRelic.actionText('browse to program switcher');
-      this.router.navigate(['switcher', 'switcher-program']);
-    }
-  }
 
-  isInMultiplePrograms() {
-    return this.storage.get('programs').length > 1;
-  }
+
 
   // send email to Help request
   mailTo() {

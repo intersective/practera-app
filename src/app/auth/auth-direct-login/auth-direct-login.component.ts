@@ -85,7 +85,7 @@ export class AuthDirectLoginComponent implements OnInit {
       // switch to the program
       await this.switcherService.switchProgram(program).toPromise();
     }
-
+    let referrerUrl = '';
     switch (redirect) {
       case 'home':
         return this._saveOrRedirect(['app', 'home'], redirectLater);
@@ -100,11 +100,12 @@ export class AuthDirectLoginComponent implements OnInit {
         if (!activityId) {
           return this._saveOrRedirect(['app', 'home'], redirectLater);
         }
-        const referrerUrl = this.route.snapshot.paramMap.get('activity_task_referrer_url');
+        referrerUrl = this.route.snapshot.paramMap.get('activity_task_referrer_url');
         if (referrerUrl) {
           // save the referrer url so that we can redirect user later
           this.storage.setReferrer({
-            activityTaskUrl: referrerUrl
+            route: 'activity-task',
+            url: referrerUrl
           });
         }
         return this._saveOrRedirect(['activity-task', activityId], redirectLater);
@@ -112,6 +113,15 @@ export class AuthDirectLoginComponent implements OnInit {
         if (!activityId || !contextId || !assessmentId) {
           return this._saveOrRedirect(['app', 'home'], redirectLater);
         }
+        referrerUrl = this.route.snapshot.paramMap.get('assessment_referrer_url');
+        if (referrerUrl) {
+          // save the referrer url so that we can redirect user later
+          this.storage.setReferrer({
+            route: 'assessment',
+            url: referrerUrl
+          });
+        }
+
         if (this.utils.isMobile()) {
           return this._saveOrRedirect(['assessment', 'assessment', activityId, contextId, assessmentId], redirectLater);
         } else {
@@ -132,11 +142,21 @@ export class AuthDirectLoginComponent implements OnInit {
         if (!contextId || !assessmentId || !submissionId) {
           return this._saveOrRedirect(['app', 'home'], redirectLater);
         }
+        referrerUrl = this.route.snapshot.paramMap.get('assessment_referrer_url');
+        if (referrerUrl) {
+          // save the referrer url so that we can redirect user later
+          this.storage.setReferrer({
+            route: 'assessment',
+            url: referrerUrl
+          });
+        }
         return this._saveOrRedirect(['assessment', 'review', contextId, assessmentId, submissionId], redirectLater);
       case 'chat':
         return this._saveOrRedirect(['app', 'chat'], redirectLater);
       case 'settings':
         return this._saveOrRedirect(['app', 'settings'], redirectLater);
+      case 'settings-embed':
+        return this._saveOrRedirect(['settings-embed'], redirectLater);
       default:
       return this._saveOrRedirect(['app', 'home'], redirectLater);
     }
