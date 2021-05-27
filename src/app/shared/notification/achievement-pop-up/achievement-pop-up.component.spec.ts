@@ -11,6 +11,17 @@ class AchievementModalPage {
   constructor(fixture: ComponentFixture<AchievementPopUpComponent>) {
     this.fixture = fixture;
   }
+
+  get badge() {
+    return this.query<HTMLElement>('#achievementBadgePopup');
+  }
+  //// query helpers ////
+  private query<T>(selector: string): T {
+    return this.fixture.nativeElement.querySelector(selector);
+  }
+  private queryAll<T>(selector: string): T[] {
+    return this.fixture.nativeElement.querySelectorAll(selector);
+  }
 }
 
 describe('AchievementPopUpComponent', () => {
@@ -39,6 +50,7 @@ describe('AchievementPopUpComponent', () => {
 
     fixture = TestBed.createComponent(AchievementPopUpComponent);
     component = fixture.componentInstance;
+
     page = new AchievementModalPage(fixture);
   }));
 
@@ -57,16 +69,34 @@ describe('AchievementPopUpComponent', () => {
     expect(modalCtrlSpy.dismiss.calls.count()).toBe(1);
   });
 
-  xdescribe('ionViewDidEnter()', () => {
-    xit('should prepare accessibility controls', () => {
-      component.ionViewDidEnter();
+  describe('ionViewDidEnter()', () => {
+    it('should prepare accessibility controls', () => {
+      component.achievement = {
+        id: 1,
+        name: 'achieve',
+        description: ''
+      };
 
+      fixture.detectChanges();
+      component.badgeImage = page.badge;
+      console.log(page.badge);
+      component.ionViewDidEnter();
     });
   });
 
   describe('confirm()', () => {
     it('should dismiss', () => {
+      component.achievement = {
+        id: 1,
+        name: 'achieve',
+        description: ''
+      };
       component.confirmed(null);
+      expect(modalCtrlSpy.dismiss).toHaveBeenCalled();
+    });
+    it('should dismiss with keyboardEvent', () => {
+      const keyboardEvent = new KeyboardEvent('keydown');
+      component.confirmed(keyboardEvent);
       expect(modalCtrlSpy.dismiss).toHaveBeenCalled();
     });
   });
