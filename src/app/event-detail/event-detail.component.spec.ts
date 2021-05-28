@@ -317,5 +317,12 @@ describe('EventDetailComponent', () => {
     // expect(modalSpy.dismiss.calls.count()).toEqual(1);
   });
 
+  it('when testing confirmed(), it should not do anything if keyboard event key is not enter or space', () => {
+    const keyEvent = new KeyboardEvent('keydown', { code: 'Digit0' });
+    component.confirmed(keyEvent);
+    expect(routerSpy.navigate).not.toHaveBeenCalled();
+    expect(notificationSpy.alert).not.toHaveBeenCalled();
+  });
+
 });
 
