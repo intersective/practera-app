@@ -79,8 +79,9 @@ describe('AchievementPopUpComponent', () => {
 
       fixture.detectChanges();
       component.badgeImage = page.badge;
-      console.log(page.badge);
-      component.ionViewDidEnter();
+      fixture.whenStable().then(() => {
+        component.ionViewDidEnter();
+      });
     });
   });
 
