@@ -78,9 +78,25 @@ describe('AchievementPopUpComponent', () => {
       };
 
       fixture.detectChanges();
-      component.badgeImage = page.badge;
       fixture.whenStable().then(() => {
         component.ionViewDidEnter();
+        const event = new KeyboardEvent('keydown', {
+          code: 'Tab',
+          key: '9',
+        });
+
+        spyOn(component.achievementName.nativeElement, 'focus');
+        spyOn(component.badgeImage.nativeElement, 'focus');
+        spyOn(component.dismissButton.el, 'focus');
+
+        component.achievementBadgePopup.el.dispatchEvent(event);
+        expect(component.achievementName.nativeElement.focus).toHaveBeenCalled();
+
+        component.achievementBadgePopup.el.dispatchEvent(event);
+        expect(component.dismissButton.el.focus).toHaveBeenCalled();
+
+        component.achievementBadgePopup.el.dispatchEvent(event);
+        expect(component.badgeImage.nativeElement.focus).toHaveBeenCalled();
       });
     });
   });
