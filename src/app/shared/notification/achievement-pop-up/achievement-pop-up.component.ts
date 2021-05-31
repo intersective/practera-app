@@ -30,23 +30,21 @@ export class AchievementPopUpComponent {
 
     let focusPosition = 0;
     interactiveEl[focusPosition].focus();
-    if (this.achievementBadgePopup && this.achievementBadgePopup.el) {
-      this.achievementBadgePopup.el.addEventListener('keydown', event => {
-        if (event.defaultPrevented) {
-          return;
-        }
+    this.achievementBadgePopup.el.addEventListener('keydown', event => {
+      if (event.defaultPrevented) {
+        return;
+      }
 
-        if (event.key === 'Tab') {
-          event.preventDefault();
-          if (focusPosition < interactiveEl.length - 1) {
-            focusPosition += 1;
-          } else {
-            focusPosition = 0;
-          }
-          interactiveEl[focusPosition].focus();
+      if (event.key === 'Tab') {
+        event.preventDefault();
+        if (focusPosition < interactiveEl.length - 1) {
+          focusPosition += 1;
+        } else {
+          focusPosition = 0;
         }
-      });
-    }
+        interactiveEl[focusPosition].focus();
+      }
+    });
   }
 
   confirmed(event) {
