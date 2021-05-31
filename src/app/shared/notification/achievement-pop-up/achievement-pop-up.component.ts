@@ -30,17 +30,25 @@ export class AchievementPopUpComponent {
 
     let focusPosition = 0;
     interactiveEl[focusPosition].focus();
-    this.achievementBadgePopup.el.addEventListener('keydown', event => {
-      if (event.keyCode === 9) {
-        event.preventDefault();
-        if (focusPosition < interactiveEl.length - 1) {
-          focusPosition += 1;
-        } else {
-          focusPosition = 0;
+    if (this.achievementBadgePopup && this.achievementBadgePopup.el) {
+      this.achievementBadgePopup.el.addEventListener('keydown', event => {
+        if (event.defaultPrevented) {
+          return;
         }
-        interactiveEl[focusPosition].focus();
-      }
-    });
+
+        const key = event.key || event.keyCode;
+        if (event.key === '9') {
+          event.preventDefault();
+          if (focusPosition < interactiveEl.length - 1) {
+            focusPosition += 1;
+          } else {
+            focusPosition = 0;
+          }
+          interactiveEl[focusPosition].focus();
+        }
+        return;
+      });
+    }
   }
 
   confirmed(event) {
