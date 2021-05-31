@@ -82,6 +82,9 @@
     --padding-end: 0px;
     --inner-padding-start:0px;
     --inner-padding-end: 0px;
+    &.ion-color-light {
+      --ion-color-contrast: transparent !important;
+    }
   }
 
   .project-card {
@@ -103,7 +106,7 @@
 
       &.lock {
         padding-bottom: 16px;
-      }
+      }        
     }
     .milestone-description {
       color: var(--practera-label-color);
@@ -125,7 +128,7 @@
     &.highlighted {
       border: 1px solid var(--ion-color-primary);
       border-radius: 1em;
-    }
+    } 
   }
   :last-child {
     --inner-border-width: 0px !important;
@@ -191,10 +194,13 @@
 
 .activity-card {
   width: 100%;
+  --background-focused-opacity: 0 !important;
 }
 
 ion-spinner {
   display: block;
   margin: auto;
 }
-
+.chevron-btn {
+  background: transparent;
+}

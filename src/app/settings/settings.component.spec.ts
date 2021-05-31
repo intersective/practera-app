@@ -112,35 +112,62 @@ describe('SettingsComponent', () => {
   });
 
   it('should navigate to switcher page', () => {
-    component.switchProgram();
+    component.switchProgram('Enter');
     expect(routerSpy.navigate.calls.first().args[0]).toEqual(['switcher', 'switcher-program']);
   });
 
   it('should navigate to outside url', () => {
     const redirectToUrlSpy = spyOn(utils, 'redirectToUrl');
     component.returnLtiUrl = 'https://test.practera.com';
-    component.switchProgram();
+    component.switchProgram('Enter');
     expect(redirectToUrlSpy).toHaveBeenCalled();
   });
 
   it('should allow access to T&C file', () => {
     spyOn(window, 'open');
-    component.openLink();
+    component.openLink('Enter');
     expect(component.termsUrl).toEqual('https://images.practera.com/terms_and_conditions/practera_terms_conditions.pdf');
     expect(window.open).toHaveBeenCalledWith(component.termsUrl, '_system');
   });
 
+  it('should not open T&C file if keyboard event key nor enter or space', () => {
+    const keyEvent = new KeyboardEvent('keydown', { code: 'Digit0' });
+    spyOn(window, 'open');
+    component.openLink(keyEvent);
+    expect(window.open).not.toHaveBeenCalled();
+  });
+
+  it('should not naviagte to switcher page if keyboard event key nor enter or space', () => {
+    const keyEvent = new KeyboardEvent('keydown', { code: 'Digit0' });
+    component.switchProgram(keyEvent);
+    expect(routerSpy.navigate).not.toHaveBeenCalled();
+  });
+
   it('should initiate support email event', () => {
     spyOn(window, 'open');
-    component.mailTo();
+    component.mailTo('Enter');
     expect(component.helpline).toEqual('help@practera.com');
     expect(window.open).toHaveBeenCalledWith(`mailto:${component.helpline}?subject=${component.currentProgramName}`, '_self');
   });
 
+  it('should not mail window if keyboard event key nor enter or space', () => {
+    const keyEvent = new KeyboardEvent('keydown', { code: 'Digit0' });
+    spyOn(window, 'open');
+    component.mailTo(keyEvent);
+    expect(window.open).not.toHaveBeenCalled();
+  });
+
   it('when testing logout(), it should call auth service logout', () => {
-    component.logout();
+    component.logout('Enter');
     authSpy.logout.and.returnValue({});
     expect(authSpy.logout.calls.count()).toBe(1);
+  });
+
+  it('should not call logout() if keyboard event key nor enter or space', () => {
+    const keyEvent = new KeyboardEvent('keydown', { code: 'Digit0' });
+    spyOn(window, 'open');
+    component.logout(keyEvent);
+    expect(authSpy.logout).not.toHaveBeenCalled();
   });
 
   describe('when testing uploadProfileImage()', () => {

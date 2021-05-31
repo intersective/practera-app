@@ -6,10 +6,10 @@
 
 **Checklist:**
 
-- [ x ] Unit test completed?: (Y/N)
-- [ x ] Docs folder up to date?: (Y/N)
-- [ x ] Add if anything missed: (Y/N)
+- [x] Unit test completed?: (Y/N)
+- [x] Docs folder up to date?: (Y/N)
+- [x] Add if anything missed: (Y/N)
 
-All Checklist are okay.
+All checklists are okay.
 
 This PR looks great - it's ready to merge! Please review and let's ship it. :)
