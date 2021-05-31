@@ -70,13 +70,15 @@ describe('AchievementPopUpComponent', () => {
   });
 
   describe('ionViewDidEnter()', () => {
-    it('should prepare accessibility controls', () => {
+    beforeEach(() => {
       component.achievement = {
         id: 1,
         name: 'achieve',
         description: ''
       };
+    });
 
+    it('should prepare accessibility controls', () => {
       fixture.detectChanges();
       fixture.whenStable().then(() => {
         component.ionViewDidEnter();
@@ -97,6 +99,26 @@ describe('AchievementPopUpComponent', () => {
 
         component.achievementBadgePopup.el.dispatchEvent(event);
         expect(component.badgeImage.nativeElement.focus).toHaveBeenCalled();
+      });
+    });
+
+    it('should not trigger "navigation" if no tab pressed', () => {
+      fixture.detectChanges();
+      fixture.whenStable().then(() => {
+        component.ionViewDidEnter();
+        const event = new KeyboardEvent('keydown', {
+          code: 'Shift',
+          key: 'Shift',
+        });
+
+        spyOn(component.achievementName.nativeElement, 'focus');
+        spyOn(component.badgeImage.nativeElement, 'focus');
+        spyOn(component.dismissButton.el, 'focus');
+
+        component.achievementBadgePopup.el.dispatchEvent(event);
+        expect(component.achievementName.nativeElement.focus).not.toHaveBeenCalled();
+        expect(component.badgeImage.nativeElement.focus).not.toHaveBeenCalled();
+        expect(component.dismissButton.el.focus).not.toHaveBeenCalled();
       });
     });
   });
