@@ -36,8 +36,7 @@ export class AchievementPopUpComponent {
           return;
         }
 
-        const key = event.key || event.keyCode;
-        if (key === '9') {
+        if (event.key === 'Tab') {
           event.preventDefault();
           if (focusPosition < interactiveEl.length - 1) {
             focusPosition += 1;
