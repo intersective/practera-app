@@ -20,7 +20,7 @@
 
   <ng-container *ngIf="utils.isMobile(); else notificationsDesktop">
     <ion-item lines="none" color="transparent" class="ion-no-padding">
-      <ion-label class="subtitle-2 gray-2 ion-padding-start ion-padding-end">Notifications</ion-label>
+      <ion-label class="subtitle-2 gray-2 ion-padding-start ion-padding-end" tabindex="0" aria-lable="notifications">Notifications</ion-label>
     </ion-item>
 
     <ng-container *ngIf="loadingTodoItems; else doneLoading">
@@ -50,9 +50,12 @@
 <ng-template #badges>
   <ng-container @newLoaded *ngIf="achievements && achievements.length > 0">
 
-    <ion-label class="subtitle-2 gray-2 achievement ion-padding-start">My Badges</ion-label>
+    <ion-label class="subtitle-2 gray-2 achievement ion-padding-start" aria-label="My badges" tabindex="0" >My Badges</ion-label>
     <ion-label class="float-right" *ngIf="achievements.length > 1">
-      <a color="primary" class="button ion-padding-end" (click)='goTo(["achievements"])'>VIEW ALL</a>
+
+      <a color="primary" class="button ion-padding-end" (click)='goTo(["achievements"])' aria-label="view all achievements"
+       role="link" (keydown)='triggerClick($event)' tabindex="0">VIEW ALL</a>
+
     </ion-label>
 
     <ion-grid class="ion-no-padding">
@@ -66,7 +69,7 @@
 </ng-template>
 
 <ng-template #notificationsDesktop>
-  <ion-label class="subtitle-2 gray-2 ion-padding-start ion-padding-end">Notifications</ion-label>
+  <ion-label class="subtitle-2 gray-2 ion-padding-start ion-padding-end" tabindex="0" aria-lable="notifications">Notifications</ion-label>
   <ion-list class="todo-list" lines="none">
     <ng-container *ngIf="loadingTodoItems; else todoItemsTpl">
       <app-todo-card class="ion-padding-bottom" [loading]="true" [todoItem]="false"></app-todo-card>

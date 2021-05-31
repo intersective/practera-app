@@ -65,8 +65,11 @@ ion-item.no-bg {
   margin-left: calc(calc(2 / var(--ion-grid-columns, 12)) * 100%);
   margin-right: 16px;
 }
-
+.support-wrapper {
+  max-width: 100px;
+}
 .support-mobile {
+  max-width: 100px;
   ion-item {
     --inner-padding-end: 0;
     ion-icon{
@@ -106,3 +109,4 @@ ion-item.no-bg {
     }
   }
 }
+
