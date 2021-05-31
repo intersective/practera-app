@@ -82,7 +82,7 @@ describe('AchievementPopUpComponent', () => {
         component.ionViewDidEnter();
         const event = new KeyboardEvent('keydown', {
           code: 'Tab',
-          key: '9',
+          key: 'Tab',
         });
 
         spyOn(component.achievementName.nativeElement, 'focus');
