@@ -23,8 +23,8 @@ export class NotificationService {
     private alertController: AlertController,
     private toastController: ToastController,
     private loadingController: LoadingController,
-    private achievementService: AchievementsService,
-    private utils: UtilsService,
+    readonly achievementService: AchievementsService,
+    readonly utils: UtilsService,
   ) {}
 
   dismiss() {

@@ -37,7 +37,7 @@ export class AchievementPopUpComponent {
         }
 
         const key = event.key || event.keyCode;
-        if (event.key === '9') {
+        if (key === '9') {
           event.preventDefault();
           if (focusPosition < interactiveEl.length - 1) {
             focusPosition += 1;
@@ -46,7 +46,6 @@ export class AchievementPopUpComponent {
           }
           interactiveEl[focusPosition].focus();
         }
-        return;
       });
     }
   }
