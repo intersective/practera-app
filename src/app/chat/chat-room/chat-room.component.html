@@ -21,7 +21,7 @@
   </div>
 
   <div *ngIf="!messageList.length && !loadingChatMessages" class="ion-text-center not-started-empty-status">
-    <img class="image" [ngClass]="{'desktop': !utils.isMobile()}" src="/assets/icon-epmty-chat.svg">
+    <img class="image" [ngClass]="{'desktop': !utils.isMobile()}" src="/assets/icon-epmty-chat.svg" alt="empty chat">
     <p class="head-text headline-5 gray-3">Type your first message!</p>
     <p class="sub-text subtitle-1 gray-1">It's time to start a chat</p>
   </div>
@@ -30,7 +30,7 @@
     <ion-item *ngFor="let message of messageList" color="light">
       <ng-container *ngIf="isLastMessage(message)">
         <ion-avatar [ngClass]="getAvatarClass(message)" slot="start">
-          <img [src]="message.senderAvatar">
+          <img [src]="message.senderAvatar" alt="sender avatar">
         </ion-avatar>
       </ng-container>
 
