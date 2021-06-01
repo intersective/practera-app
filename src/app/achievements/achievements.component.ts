@@ -22,8 +22,8 @@ export class AchievementsComponent extends RouterEnter implements AfterContentCh
 
   constructor (
     public router: Router,
-    public achievementService: AchievementsService,
     public utils: UtilsService,
+    private achievementService: AchievementsService,
     private ngZone: NgZone,
     private newRelic: NewRelicService,
     public storage: BrowserStorageService,
@@ -48,9 +48,22 @@ export class AchievementsComponent extends RouterEnter implements AfterContentCh
     );
   }
 
+  get isMobile() {
+    return this.utils.isMobile();
+  }
+
+  get getIsPointsConfigured() {
+    return this.achievementService.getIsPointsConfigured();
+  }
+
+  get getEarnedPoints() {
+    return this.achievementService.getEarnedPoints();
+  }
+
   back() {
     return this.ngZone.run(() => this.router.navigate(['app', 'home']));
   }
+
   ngAfterContentChecked() {
     document.getElementById('badges').focus();
   }
