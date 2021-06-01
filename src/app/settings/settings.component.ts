@@ -25,6 +25,7 @@ export class SettingsComponent extends RouterEnter {
     image: '',
     name: ''
   };
+  hasMultipleStacks = false;
   currentProgramName = '';
   currentProgramImage = '';
 
@@ -68,6 +69,9 @@ export class SettingsComponent extends RouterEnter {
     this.currentProgramImage = this._getCurrentProgramImage();
     this.fastFeedbackService.pullFastFeedback().subscribe();
     this.returnLtiUrl = this.storage.getUser().LtiReturnUrl;
+    if (this.storage.get('hasMultipleStacks')) {
+      this.hasMultipleStacks = this.storage.get('hasMultipleStacks');
+    }
   }
 
   // loading pragram image to settings page by resizing it depend on device.
@@ -85,11 +89,18 @@ export class SettingsComponent extends RouterEnter {
     return '';
   }
 
-  openLink() {
+  openLink(event) {
+    if (event instanceof KeyboardEvent && event.key !== 'Enter' && event.key !== ' ') {
+      return;
+    }
     this.newRelic.actionText('Open T&C link');
     window.open(this.termsUrl, '_system');
   }
-  switchProgram() {
+
+  switchProgram(event) {
+    if (event instanceof KeyboardEvent && event.key !== 'Enter' && event.key !== ' ') {
+      return;
+    }
     if (this.returnLtiUrl) {
       this.newRelic.actionText('browse to LTI return link');
       this.utils.redirectToUrl(this.returnLtiUrl);
@@ -104,14 +115,19 @@ export class SettingsComponent extends RouterEnter {
   }
 
   // send email to Help request
-  mailTo() {
+  mailTo(event) {
+    if (event instanceof KeyboardEvent && event.key !== 'Enter' && event.key !== ' ') {
+      return;
+    }
     this.newRelic.actionText('mail to helpline');
     const mailto = 'mailto:' + this.helpline + '?subject=' + this.currentProgramName;
     window.open(mailto, '_self');
-  }
-
-  logout() {
-    return this.authService.logout();
+}
+  logout(event) {
+    if (event instanceof KeyboardEvent && event.key !== 'Enter' && event.key !== ' ') {
+      return;
+    }
+    return this.authService.logout({}, true);
   }
 
   async uploadProfileImage(file, type = null) {

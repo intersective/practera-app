@@ -1,6 +1,6 @@
 <ion-header mode="ios">
   <ion-toolbar [ngClass]="{'ion-toolbar-absolute': !utils.isMobile()}">
-    <ion-title>Chat</ion-title>
+    <ion-title tabindex="0">Chat</ion-title>
   </ion-toolbar>
 </ion-header>
 
@@ -14,11 +14,14 @@
     <clickable-item
       *ngFor="let chat of chatList; let i = index"
       (click)="goToChatRoom(chat)"
+      (keyup.enter)="goToChatRoom(chat)"
       [active]="currentChat && currentChat.uuid == chat.uuid"
       [ngClass]="{'unread': chat.unreadMessageCount > 0}"
-      [lines]="'none'">
-      <ion-avatar slot="start" text-center><img [src]="chat.avatar"></ion-avatar>
-      <ion-label>
+      [lines]="'none'"
+      [isCustomizedCard]="true"
+      [isChatCard]="true">
+      <ion-avatar slot="start" text-center class="access-avatar"><img [src]="chat.avatar" alt="chat avatar img"></ion-avatar>
+      <ion-label class="chat-item-label">
         <div class="chat-name-container caption">
           <p class="chat-name subtitle-1" [ngClass]="{'bold': chat.unreadMessageCount > 0}">{{ chat.name }}</p>
           <ng-container *ngIf="(chat.roles.length === 1) && (chat.roles.includes('mentor'))">

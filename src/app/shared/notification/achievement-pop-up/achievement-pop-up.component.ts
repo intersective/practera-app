@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, AfterContentChecked } from '@angular/core';
 import { ModalController } from '@ionic/angular';
 import { Achievement } from '@app/achievements/achievements.service';
 import { UtilsService } from '@services/utils.service';
@@ -8,7 +8,7 @@ import { UtilsService } from '@services/utils.service';
   templateUrl: 'achievement-pop-up.component.html',
   styleUrls: ['achievement-pop-up.component.scss']
 })
-export class AchievementPopUpComponent {
+export class AchievementPopUpComponent implements AfterContentChecked {
   type = '';
   achievement: Achievement;
 
@@ -17,7 +17,13 @@ export class AchievementPopUpComponent {
     public utils: UtilsService
   ) {}
 
-  confirmed() {
+  ngAfterContentChecked() {
+    document.getElementById('achievement-image').focus();
+  }
+  confirmed(event) {
+    if (event instanceof KeyboardEvent && event.key !== 'Enter' && event.key !== ' ') {
+      return;
+    }
     this.modalController.dismiss();
   }
 }

@@ -127,6 +127,10 @@ describe('TabsComponent', () => {
   describe('when testing onEnter()', () => {
     it('should get correct data', () => {
       storageSpy.get.and.returnValue(0);
+      storageSpy.getUser.and.returnValue({
+        chatEnabled: true,
+        teamId: 'SAMPLE_ID'
+      });
       fixture.detectChanges();
       expect(component.noOfTodoItems).toBe(5);
       expect(component.noOfChats).toBe(4);
