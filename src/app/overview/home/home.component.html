@@ -18,9 +18,9 @@
 
   <ng-container *ngTemplateOutlet="badges"></ng-container>
 
-  <ng-container *ngIf="utils.isMobile(); else notificationsDesktop">
+  <ng-container *ngIf="utils.isMobile(); else notificationsDesktop" aria-labelledby="notifications">
     <ion-item lines="none" color="transparent" class="ion-no-padding">
-      <ion-label class="subtitle-2 gray-2 ion-padding-start ion-padding-end" tabindex="0" aria-lable="notifications">Notifications</ion-label>
+      <ion-label class="subtitle-2 gray-2 ion-padding-start ion-padding-end" tabindex="0" aria-label="notifications" id="notifications">Notifications</ion-label>
     </ion-item>
 
     <ng-container *ngIf="loadingTodoItems; else doneLoading">

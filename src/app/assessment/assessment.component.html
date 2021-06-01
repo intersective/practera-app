@@ -19,7 +19,7 @@
   'ion-content-absolute-with-footer': hasFooter(),
   'ion-content-absolute': !hasFooter()
 }" appFloat>
-  <h1 class="headline-4" aria-label="assessment name" role="title" tabindex="0">{{ assessment.name }}</h1>
+  <h1 class="headline-4" [attr.aria-label]="assessment.name" role="title" tabindex="0">{{ assessment.name }}</h1>
   <ion-text class="ion-text-left">
     <app-description *ngIf="assessment.description" [content]="assessment.description" id="asmt-des" class="body-1 black"></app-description>
   </ion-text>
@@ -27,12 +27,12 @@
     {{ this.sharedService.dueDateFormatter(assessment.dueDate) }}
   </p>
   <div *ngIf="!doAssessment && submission && submission.submitterName && !submission.isLocked" class="review-submitter ion-text-left">
-    <p class="subtitle-1" aria-label="submitted by" role="text" tabindex="0">
+    <p class="subtitle-1" aria-label="submitted by {{ submission.submitterName }}" role="text" tabindex="0">
       Submitted by {{ submission.submitterName }}
     </p>
   </div>
   <div *ngIf="submission && submission.reviewerName && review && submission.status === 'published'" class="review-submitter ion-text-left">
-    <p class="subtitle-1 gray-3" aria-label="Reviewed by" role="text" tabindex="0">
+    <p class="subtitle-1 gray-3" aria-label="Reviewed by {{ submission.reviewerName }}" role="text" tabindex="0">
       Reviewed by {{ submission.reviewerName }}
     </p>
   </div>
@@ -40,7 +40,7 @@
   <ion-list *ngIf="submission && submission.isLocked" class="member-detail-container no-bg" lines="none">
     <ion-item lines="none">
       <ion-avatar slot="start">
-        <img [src]="submission.submitterImage ? submission.submitterImage : 'https://my.practera.com/img/user-512.png'">
+        <img [src]="submission.submitterImage ? submission.submitterImage : 'https://my.practera.com/img/user-512.png'" alt="submitter indicator">
       </ion-avatar>
       <ion-label>
         <p class="subtitle-1">Locked by {{ submission.submitterName }}</p>
@@ -54,7 +54,7 @@
       <ion-spinner></ion-spinner>
     </ng-container>
     <ng-container *ngFor="let group of assessment.groups">
-      <h3 class="headline-6" aria-label="group name" tabindex="0">{{ group.name }}</h3>
+      <h3 class="headline-6" tabindex="0">{{ group.name }}</h3>
       <ion-text color="dark" class="ion-text-left">
         <app-description class="g-description" *ngIf="group.description" [content]="group.description"></app-description>
       </ion-text>
@@ -188,7 +188,7 @@
 
       <ng-container *ngIf="footerText()">
         <span class="footer-text ion-float-left">{{ footerText() }}</span>
-        <img *ngIf="continueBtnLoading || submitting; else continueTmp" class="footer-action ion-float-right" src="/assets/loading.gif">
+        <img *ngIf="continueBtnLoading || submitting; else continueTmp" class="footer-action ion-float-right" src="/assets/loading.gif" alt="loading">
         <ng-template #continueTmp>
           <ion-button
             (click)="clickBtnContinue()"
