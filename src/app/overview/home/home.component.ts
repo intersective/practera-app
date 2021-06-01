@@ -163,7 +163,7 @@ export class HomeComponent implements OnDestroy, OnInit {
         app_id: environment.intercomAppId,
         name: this.storage.getUser().name, // Full name
         email: this.storage.getUser().email, // Email address
-        user_id: this.storage.getUser().id, // current_user_id
+        apikey: this.storage.getUser().apikey, // user's apikey
         // Supports all optional configuration.
         widget: {
           'activator': '#intercom'
@@ -268,5 +268,10 @@ export class HomeComponent implements OnDestroy, OnInit {
       this.router.navigate(['app', 'events', {event_id: event.id}]);
     }
   }
+  triggerClick(event: KeyboardEvent) {
+    if (['Enter', 'Space'].indexOf(event.code) !== -1) {
 
+       this.router.navigate(['achievements']);
+    }
+  }
 }

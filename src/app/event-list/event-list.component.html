@@ -1,6 +1,6 @@
 <ion-header mode="ios">
   <ion-toolbar [ngClass]="{'ion-toolbar-absolute': !utils.isMobile()}">
-    <ion-title class="ion-text-center">Events</ion-title>
+    <ion-title class="ion-text-center" aria-label="events" tabindex="0" id="events">Events</ion-title>
   </ion-toolbar>
 </ion-header>
 <ion-content color="light" class="ion-text-center ion-padding" [ngClass]="{
@@ -10,30 +10,33 @@
 
   <div class="btn-filter">
     <ion-button
-      class="btn-left-half"
+      class="btn-left-half btn-focused"
       [ngClass]="{'btn-activated': activated == 'browse'}"
-      (click)="showBrowse()">
+      (click)="showBrowse()"
+      aria-label="Browse">
       <ion-ripple-effect type="unbounded"></ion-ripple-effect>
       Browse
     </ion-button>
     <ion-button
-      class="btn-middle"
+      class="btn-middle btn-focused"
       [ngClass]="{'btn-activated': activated == 'booked'}"
-      (click)="showBooked()">
+      (click)="showBooked()"
+      aria-label="booked">
       <ion-ripple-effect type="unbounded"></ion-ripple-effect>
       Booked
     </ion-button>
     <ion-button
-      class="btn-right-half"
+      class="btn-right-half btn-focused"
       [ngClass]="{'btn-activated': activated == 'attended'}"
-      (click)="showAttended()">
+      (click)="showAttended()"
+      aria-label="attended">
       <ion-ripple-effect type="unbounded"></ion-ripple-effect>
       Attended
     </ion-button>
   </div>
 
   <ion-item lines="none" color="light" class="ion-margin-top item-filter">
-    <ion-label id="activity-filter" class="subtitle-1" [ngClass]="!events.length ? 'gray-0' : 'gray-2'">Filter by Activity</ion-label>
+    <ion-label id="activity-filter" class="subtitle-1" [ngClass]="!events.length ? 'gray-0' : 'gray-2'" id="filter">Filter by Activity</ion-label>
     <ion-select
       multiple="true"
       aria-labelledby="activity-filter"

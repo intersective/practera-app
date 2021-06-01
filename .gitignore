@@ -2,6 +2,7 @@
 .sourcemaps/
 .sass-cache/
 .tmp/
+.sonarlint
 
 assets/newrelic.js
 coverage/

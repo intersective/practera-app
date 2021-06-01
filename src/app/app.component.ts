@@ -76,8 +76,8 @@ export class AppComponent implements OnInit {
               logo = environment.APIEndpoint + logo;
             }
             this.storage.setConfig({
-              'logo': logo,
-              'color': themeColor
+              logo,
+              color: themeColor
             });
             // use brand color if no theme color
             if (!this.utils.has(this.storage.getUser(), 'themeColor') || !this.storage.getUser().themeColor) {

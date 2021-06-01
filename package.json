@@ -19,6 +19,7 @@
     "test": "ng test --no-watch",
     "sonar-test": "ng test --no-watch --code-coverage --browsers ChromeHeadless --karmaConfig=src/karma.conf.sonarci.js",
     "lint": "ng lint",
+    "lint-fix": "ng lint --fix",
     "e2e": "ng e2e --port 4300",
     "e2e-dev": "ng e2e -c dev --port 4300",
     "e2e-sandbox": "ng e2e -c sandbox",
@@ -102,10 +103,10 @@
     "karma-sonarqube-unit-reporter": "0.0.23",
     "protractor": "^5.4.3",
     "protractor-cucumber-framework": "^6.2.0",
+    "serverless": "^2.35.0",
+    "serverless-certificate-creator": "^1.4.0",
     "ts-node": "~8.0.0",
     "tslint": "~5.12.0",
-    "typescript": "~3.7.5",
-    "serverless": "^2.16.1",
-    "serverless-certificate-creator": "^1.4.0"
+    "typescript": "~3.7.5"
   }
 }
