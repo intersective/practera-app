@@ -58,7 +58,7 @@
       class="vertical-middle text-center"
     ></ion-spinner>
 
-    <img *ngIf="redirecting" class="footer-action" src="/assets/loading.gif">
+    <img *ngIf="redirecting" class="footer-action" src="/assets/loading.gif" alt="loading" />
 
     <ion-button *ngIf="!loadingMarkedDone && !loadingTopic && !redirecting"
       (click)="continue()"
