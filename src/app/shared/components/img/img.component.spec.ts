@@ -32,7 +32,7 @@ describe('ImgComponent', () => {
     });
 
     it('should accept "alt" value', () => {
-      const TEST_ALT = 'test'
+      const TEST_ALT = 'test';
       component.alt = TEST_ALT;
       fixture.detectChanges();
       fixture.whenStable().then(() => {
