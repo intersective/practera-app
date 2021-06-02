@@ -89,11 +89,13 @@ export class AssessmentComponent extends RouterEnter {
   saving: boolean;
   continueBtnLoading: boolean;
 
+  elIdentities = {}; // virtual element id for accessibility "aria-describedby" purpose
+
   constructor (
     public router: Router,
     private route: ActivatedRoute,
     private assessmentService: AssessmentService,
-    public utils: UtilsService,
+    private utils: UtilsService,
     private notificationService: NotificationService,
     public storage: BrowserStorageService,
     public sharedService: SharedService,
@@ -103,6 +105,18 @@ export class AssessmentComponent extends RouterEnter {
     private newRelic: NewRelicService,
   ) {
     super(router);
+  }
+
+  get isMobile() {
+    return this.utils.isMobile();
+  }
+
+  randomCode(type) {
+    if (!this.elIdentities[type]) {
+      this.elIdentities[type] = this.utils.randomInteger();
+    }
+
+    return this.elIdentities[type];
   }
 
   // force every navigation happen under radar of angular
