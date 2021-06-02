@@ -15,7 +15,7 @@
   <div class="ion-text-center ion-margin-top" *ngIf="loadingTopic">
     <ion-spinner></ion-spinner>
   </div>
-  <h3 class="headline-4 ion-text-center" aria-label="topic title" tabindex="0">{{topic.title}}</h3>
+  <h3 class="headline-4 ion-text-center" tabindex="0">{{topic.title}}</h3>
   <div *ngIf="topic.videolink && topic.videolink !=='magiclink'" class="text-center">
     <label class="subtitle-2 gray-2">Video</label>
     <div class="video-embed" [innerHtml]="iframeHtml"></div>
