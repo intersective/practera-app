@@ -23,7 +23,7 @@
       </ion-grid>
     </ion-item>
   </ion-card>
-  <ion-button class="practera-btn" [ngClass]="{'mobile-btn': utils.isMobile()}" [disabled]="updating" (click)="updateContactNumber()" aria-label="update" role="button">
+  <ion-button class="practera-btn" [ngClass]="{'mobile-btn': utils.isMobile()}" [disabled]="updating" (click)="updateContactNumber()" aria-label="update contact number" role="button">
     <ng-container *ngIf="!updating">Update</ng-container>
     <ng-container *ngIf="updating">Updating..</ng-container>
   </ion-button>

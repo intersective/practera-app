@@ -8,8 +8,8 @@
 </ion-header>
 <ion-content color="light" [ngClass]="{ 'ion-content-absolute': !utils.isMobile() }">
   <div class="ion-text-center ion-margin">
-    <h1 class="headline-4" aria-label="event name" tabindex="0">{{ event.name }}</h1>
-    <div class="div-activity-name subtitle-1 gray-2" tabindex="0" aria-label="activity name">{{ event.activityName }}</div>
+    <h1 class="headline-4" tabindex="0">{{ event.name }}</h1>
+    <div class="div-activity-name subtitle-1 gray-2" tabindex="0" aria-label="{{ event.activityName }}">{{ event.activityName }}</div>
     <app-description *ngIf="event.description" class="body-1" [content]="event.description"></app-description>
   </div>
   <p *ngIf="event.isPast && !event.isBooked" class="expired-text ion-margin-horizontal subtitle-2 gray-2">Event Expired</p>

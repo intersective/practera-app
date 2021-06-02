@@ -17,13 +17,13 @@
 
   <div class="details-container ion-text-center">
     <div class="div-after-img" *ngIf="type === 'notification'">
-      <p class="headline-6" aria-labelledby="Congratulations">Congratulations</p>
+      <p class="headline-6">Congratulations</p>
       <p class="body-1">You have earned a new badge</p>
       <div class="description subtitle-1 gray-2" *ngIf="achievement.name" tabindex="0" #achievementName>{{achievement.name}}</div>
     </div>
 
     <div class="div-after-img" *ngIf="type !== 'notification'">
-      <p class="headline-6" *ngIf="achievement.name" tabindex="0" aria-label="achievement-name" #achievementName>{{achievement.name}}</p>
+      <p class="headline-6" *ngIf="achievement.name" tabindex="0" aria-label="{{achievement.name}}" #achievementName>{{achievement.name}}</p>
       <p class="body-1" *ngIf="achievement.points && type !== 'notification'">{{achievement.points}} points!</p>
     </div>
 
@@ -32,7 +32,7 @@
     </ion-text>
 
     <div class="div-after-img button-container">
-      <ion-button (click)="confirmed($event)" shape="round" color="primary" expand="full" tabindex="0" id="confirm" role="button" (keydown)=confirmed($event) aria-label="confirm button" #dismissButton>OK</ion-button>
+      <ion-button (click)="confirmed($event)" shape="round" color="primary" expand="full" tabindex="0" id="confirm" role="button" (keydown)=confirmed($event) aria-label="confirm" #dismissButton>OK</ion-button>
     </div>
   </div>
 
