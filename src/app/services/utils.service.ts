@@ -382,4 +382,8 @@ export class UtilsService {
   redirectToUrl(url: string) {
     window.location.href = `${ url.match(/^https*:\/\//) ? '' : 'https://' }${ url }`;
   }
+
+  randomInteger(max = 1000) {
+    return Math.floor(Math.random() * max);
+  }
 }
