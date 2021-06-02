@@ -113,7 +113,7 @@ export class AssessmentComponent extends RouterEnter {
 
   randomCode(type) {
     if (!this.elIdentities[type]) {
-      this.elIdentities[type] = this.utils.randomInteger();
+      this.elIdentities[type] = this.utils.randomNumber();
     }
 
     return this.elIdentities[type];

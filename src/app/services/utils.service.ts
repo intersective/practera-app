@@ -383,7 +383,13 @@ export class UtilsService {
     window.location.href = `${ url.match(/^https*:\/\//) ? '' : 'https://' }${ url }`;
   }
 
-  randomInteger(max = 1000) {
-    return Math.floor(Math.random() * max);
+  /**
+   * generate secure and totally randomised number
+   * @return {number} single random number
+   */
+  randomNumber(): number {
+    const { crypto } = window;
+    const slugs = crypto.getRandomValues(new Uint32Array(1));
+    return slugs[0];
   }
 }
