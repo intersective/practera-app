@@ -163,7 +163,7 @@ export class HomeComponent implements OnDestroy, OnInit {
         app_id: environment.intercomAppId,
         name: this.storage.getUser().name, // Full name
         email: this.storage.getUser().email, // Email address
-        user_id: this.storage.getUser().id, // current_user_id
+        apikey: this.storage.getUser().apikey, // current_user apikey
         // Supports all optional configuration.
         widget: {
           'activator': '#intercom'
