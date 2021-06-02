@@ -95,7 +95,7 @@ export class AssessmentComponent extends RouterEnter {
     public router: Router,
     private route: ActivatedRoute,
     private assessmentService: AssessmentService,
-    private utils: UtilsService,
+    readonly utils: UtilsService,
     private notificationService: NotificationService,
     public storage: BrowserStorageService,
     public sharedService: SharedService,
