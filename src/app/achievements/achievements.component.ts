@@ -22,8 +22,8 @@ export class AchievementsComponent extends RouterEnter implements AfterContentCh
 
   constructor (
     public router: Router,
-    public utils: UtilsService,
-    private achievementService: AchievementsService,
+    readonly utils: UtilsService,
+    readonly achievementService: AchievementsService,
     private ngZone: NgZone,
     private newRelic: NewRelicService,
     public storage: BrowserStorageService,
