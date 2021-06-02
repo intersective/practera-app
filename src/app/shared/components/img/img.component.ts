@@ -38,7 +38,7 @@ export class ImgComponent {
 
   constructor() {
     if (!this.alt) {
-      this.alt = "";
+      this.alt = '';
     }
   }
 
