@@ -27,6 +27,7 @@ export class DescriptionComponent implements AfterViewInit, OnChanges {
   heightExceeded = false;
   elementHeight: number;
 
+  @Input() name; // unique identity of parent element
   @Input() content;
   @Input() isInPopup;
   @ViewChild('description') descriptionRef: ElementRef;

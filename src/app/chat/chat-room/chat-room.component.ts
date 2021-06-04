@@ -474,7 +474,7 @@ export class ChatRoomComponent extends RouterEnter {
     if (filestackRes.mimetype.includes('image')) {
       const attachmentURL = `https://cdn.filestackcontent.com/quality=value:70/resize=w:${dimension},h:${dimension},fit:crop/${filestackRes.handle}`;
       // preview = `<p>Uploaded ${filestackRes.filename}</p><img src=${attachmentURL}>`;
-      preview = `<img src=${attachmentURL}>`;
+      preview = `<img src="${attachmentURL}" alt="filestack attachment">`;
     } else if (filestackRes.mimetype.includes('video')) {
       // we'll need to identify filetype for 'any' type fileupload
       preview = `<app-file-display [file]="submission.answer" [fileType]="question.fileType"></app-file-display>`;
