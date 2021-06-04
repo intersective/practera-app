@@ -1,13 +1,13 @@
 <ion-header mode="ios">
   <ion-toolbar class="ion-toolbar-absolute">
-    <ion-buttons slot="start" *ngIf="utils.isMobile()">
+    <ion-buttons slot="start" *ngIf="isMobile">
       <ion-button (click)="back()" id="btn-back">
         <ion-icon class="icon-backward ion-margin-start" name="arrow-back" color="primary" slot="icon-only" ></ion-icon>
       </ion-button>
     </ion-buttons>
 
     <ion-title class="ion-text-center" [ngClass]="{
-      'subtitle-2': !utils.isMobile()
+      'subtitle-2': !isMobile
     }">Assessment</ion-title>
     <ng-container *ngIf="doAssessment || doReview">
       <div class="ion-text-center sub-title caption gray-2 saving-msg">{{savingMessage}}</div>
@@ -19,20 +19,20 @@
   'ion-content-absolute-with-footer': hasFooter(),
   'ion-content-absolute': !hasFooter()
 }" appFloat>
-  <h1 class="headline-4" aria-label="assessment name" role="title" tabindex="0">{{ assessment.name }}</h1>
+  <h1 class="headline-4" [attr.aria-describedby]="randomCode(assessment.name)" role="title" tabindex="0">{{ assessment.name }}</h1>
   <ion-text class="ion-text-left">
-    <app-description *ngIf="assessment.description" [content]="assessment.description" id="asmt-des" class="body-1 black"></app-description>
+    <app-description [name]="randomCode(assessment.name)" *ngIf="assessment.description" [content]="assessment.description" id="asmt-des" class="body-1 black"></app-description>
   </ion-text>
   <p class="due-date assessment subtitle-1 gray-2 ion-text-center" [ngClass]="{'over': assessment.isOverdue}" *ngIf="doAssessment">
     {{ this.sharedService.dueDateFormatter(assessment.dueDate) }}
   </p>
   <div *ngIf="!doAssessment && submission && submission.submitterName && !submission.isLocked" class="review-submitter ion-text-left">
-    <p class="subtitle-1" aria-label="submitted by" role="text" tabindex="0">
+    <p class="subtitle-1" aria-label="submitted by {{ submission.submitterName }}" role="text" tabindex="0">
       Submitted by {{ submission.submitterName }}
     </p>
   </div>
   <div *ngIf="submission && submission.reviewerName && review && submission.status === 'published'" class="review-submitter ion-text-left">
-    <p class="subtitle-1 gray-3" aria-label="Reviewed by" role="text" tabindex="0">
+    <p class="subtitle-1 gray-3" aria-label="Reviewed by {{ submission.reviewerName }}" role="text" tabindex="0">
       Reviewed by {{ submission.reviewerName }}
     </p>
   </div>
@@ -40,7 +40,7 @@
   <ion-list *ngIf="submission && submission.isLocked" class="member-detail-container no-bg" lines="none">
     <ion-item lines="none">
       <ion-avatar slot="start">
-        <img [src]="submission.submitterImage ? submission.submitterImage : 'https://my.practera.com/img/user-512.png'">
+        <img [src]="submission.submitterImage ? submission.submitterImage : 'https://my.practera.com/img/user-512.png'" alt="submitter indicator">
       </ion-avatar>
       <ion-label>
         <p class="subtitle-1">Locked by {{ submission.submitterName }}</p>
@@ -54,24 +54,24 @@
       <ion-spinner></ion-spinner>
     </ng-container>
     <ng-container *ngFor="let group of assessment.groups">
-      <h3 class="headline-6" aria-label="group name" tabindex="0">{{ group.name }}</h3>
+      <h3 class="headline-6" tabindex="0" [aria-describedby]="randomCode(group.name)">{{ group.name }}</h3>
       <ion-text color="dark" class="ion-text-left">
-        <app-description class="g-description" *ngIf="group.description" [content]="group.description"></app-description>
+        <app-description [name]="randomCode(group.name)" class="g-description" *ngIf="group.description" [content]="group.description"></app-description>
       </ion-text>
       <ng-container *ngFor="let question of group.questions">
         <ion-card class="practera-card question-card ion-text-left" [ngClass]="{
           'audience-mentor-question-card': question.reviewerOnly}">
           <ion-card-header class="q-title">
-            <ion-card-subtitle *ngIf="(review && review.status === 'done') && question.reviewerOnly" class="caption gray-2">
+            <ion-card-subtitle *ngIf="(review && review.status === 'done') && question.reviewerOnly" class="caption gray-2" aria-label="Reviewer’s feedback">
               Reviewer’s feedback
             </ion-card-subtitle>
-            <ion-card-title class="body-1 black">
+            <ion-card-title class="body-1 black" aria-label="{{ question.name }}" aria-describedby="randomCode('reviewer-' + question.name)">
               {{ question.name }}
               <ion-text class="required-indicator" color="danger" *ngIf="question.isRequired">*</ion-text>
             </ion-card-title>
             <ion-icon *ngIf="question.info" color="primary" class="icon-info vertical-middle" (click)="showQuestionInfo(question.info)" name="information-circle-outline"></ion-icon>
             <ion-text class="paragraph ion-text-left gray-2">
-              <app-description class="q-description" *ngIf="question.description" [content]="question.description"></app-description>
+              <app-description [name]="randomCode('reviewer-' + question.name)" class="q-description" *ngIf="question.description" [content]="question.description"></app-description>
             </ion-text>
           </ion-card-header>
           <div class="ion-text-center ion-margin-bottom" *ngIf="loadingAssessment; else submissionTpl">
@@ -188,7 +188,7 @@
 
       <ng-container *ngIf="footerText()">
         <span class="footer-text ion-float-left">{{ footerText() }}</span>
-        <img *ngIf="continueBtnLoading || submitting; else continueTmp" class="footer-action ion-float-right" src="/assets/loading.gif">
+        <img *ngIf="continueBtnLoading || submitting; else continueTmp" class="footer-action ion-float-right" src="/assets/loading.gif" alt="loading">
         <ng-template #continueTmp>
           <ion-button
             (click)="clickBtnContinue()"

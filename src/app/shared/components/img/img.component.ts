@@ -33,8 +33,14 @@ const swapWidthAndHeight = img => {
   styleUrls: ['./img.component.scss']
 })
 export class ImgComponent {
-
+  @Input() alt: any;
   @Input() imgSrc: any;
+
+  constructor() {
+    if (!this.alt) {
+      this.alt = '';
+    }
+  }
 
   imageLoaded(e) {
     exif.getData(e.target, function () {
