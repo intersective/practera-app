@@ -4,7 +4,7 @@
     <ion-title class="ion-text-center"
       [ngClass]="{ 'subtitle-2': !utils.isMobile() }"
       tabindex="0"
-      aria-label="{{chatChannel.name}} {{ memberList.length }} members">
+      [attr.aria-label]="chatChannel.name + ' ' + memberList.length + ' members'">
       {{ chatChannel.name }}
       <div class="ion-text-center sub-title caption gray-1 saving-msg">{{ memberList.length }} members</div>
     </ion-title>
