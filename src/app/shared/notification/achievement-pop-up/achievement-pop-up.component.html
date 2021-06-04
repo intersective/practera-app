@@ -23,7 +23,7 @@
     </div>
 
     <div class="div-after-img" *ngIf="type !== 'notification'">
-      <p class="headline-6" *ngIf="achievement.name" tabindex="0" aria-label="{{achievement.name}}" #achievementName>{{achievement.name}}</p>
+      <p class="headline-6" *ngIf="achievement.name" tabindex="0" [attr.aria-label]="achievement.name" #achievementName>{{achievement.name}}</p>
       <p class="body-1" *ngIf="achievement.points && type !== 'notification'">{{achievement.points}} points!</p>
     </div>
 
