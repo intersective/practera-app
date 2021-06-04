@@ -65,7 +65,7 @@
             <ion-card-subtitle *ngIf="(review && review.status === 'done') && question.reviewerOnly" class="caption gray-2" aria-label="Reviewer’s feedback">
               Reviewer’s feedback
             </ion-card-subtitle>
-            <ion-card-title class="body-1 black" aria-label="{{ question.name }}" aria-describedby="randomCode('reviewer-' + question.name)">
+            <ion-card-title class="body-1 black" [attr.aria-label]="question.name" aria-describedby="randomCode('reviewer-' + question.name)">
               {{ question.name }}
               <ion-text class="required-indicator" color="danger" *ngIf="question.isRequired">*</ion-text>
             </ion-card-title>

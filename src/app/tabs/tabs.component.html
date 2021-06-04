@@ -35,7 +35,7 @@
 
     <ion-tab-button layout="icon-top" tab="home" [class.selected]="selectedTab == 'overview'" aria-labelledby="home-label">
       <ion-icon class="gray-2" name="home-outline"></ion-icon>
-      <ion-badge color="danger" *ngIf="noOfTodoItems > 0" aria-label="{{ noOfTodoItems }} new notifications">{{ noOfTodoItems }}</ion-badge>
+      <ion-badge color="danger" *ngIf="noOfTodoItems > 0" [attr.aria-label]="noOfTodoItems + ' new notifications'">{{ noOfTodoItems }}</ion-badge>
       <ion-label class="gray-2" id="home-label">Home</ion-label>
     </ion-tab-button>
 
