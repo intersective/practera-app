@@ -14,7 +14,7 @@
 
               <ion-label
                 class="milestone-title headline-6"
-                [ngClass]="{'locked': milestone.isLocked}" tabindex="0" aria-label="{{ milestone.name }}">{{ milestone.name }}</ion-label>
+                [ngClass]="{'locked': milestone.isLocked}" tabindex="0" [attr.aria-label]="milestone.name">{{ milestone.name }}</ion-label>
               <button aria-label="show / hide" class="chevron-btn">
                 <ion-icon *ngIf="!milestone.isLocked && (milestone.Activity && milestone.Activity.length > 0)"
                   slot="end"
