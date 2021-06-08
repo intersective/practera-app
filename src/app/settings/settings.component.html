@@ -4,7 +4,7 @@
   </ion-toolbar>
 </ion-header>
 <ion-content class="ion-padding" color="light">
-  <ng-container *ngIf="utils.isMobile()">
+  <ng-container *ngIf="utils.isMobile() || mode === 'embed'">
     <ion-item class="profile-info no-bg" lines="none" tabindex="0">
       <ion-avatar class="profile-image" slot="start">
         <img *ngIf="!imageUpdating" [src]="profile.image" alt="Profile Image">
@@ -27,17 +27,19 @@
     </ion-item>
     <app-contact-number-form [page]="'settings'"></app-contact-number-form>
 
-    <ion-item *ngIf="isInMultiplePrograms()" lines="none" class="exp-switch" tabindex="0">
-      <ion-label class="subtitle-2 gray-2">Switch to another experience</ion-label>
-      <ion-button class="practera-btn mobile-btn" slot="end" (click)="switchProgram($event)" role="button" (keydown)="switchProgram($event)">SWITCH</ion-button>
-    </ion-item>
+    <ng-container *ngIf="mode !== 'embed'">
+      <ion-item *ngIf="isInMultiplePrograms()" lines="none" class="exp-switch" tabindex="0">
+        <ion-label class="subtitle-2 gray-2">Switch to another experience</ion-label>
+        <ion-button class="practera-btn mobile-btn" slot="end" (click)="switchProgram($event)" role="button" (keydown)="switchProgram($event)">SWITCH</ion-button>
+      </ion-item>
 
-    <div class="ion-margin-top support-mobile subtitle-1">
-      <ng-container *ngTemplateOutlet="supportContentTpl"></ng-container>
-    </div>
+      <div class="ion-margin-top support-mobile subtitle-1">
+        <ng-container *ngTemplateOutlet="supportContentTpl"></ng-container>
+      </div>
+    </ng-container>
   </ng-container>
 
-  <ng-container *ngIf="!utils.isMobile()">
+  <ng-container *ngIf="!utils.isMobile() && mode !== 'embed'">
     <ion-grid>
       <ion-row>
         <ion-col size="3" class="support">
