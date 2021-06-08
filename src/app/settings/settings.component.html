@@ -105,17 +105,17 @@
 
 <ng-template #supportContentTpl>
   <ion-label class="subtitle-2 gray-2">Support</ion-label>
-  <ion-button class="accessible-btn" role="button" aria-label="Email help button" tabindex="0" (click)="mailTo($event)" (keydown)="mailTo($event)">
+  <ion-button class="accessible-btn" role="button" aria-label="Email help" tabindex="0" (click)="mailTo($event)" (keydown)="mailTo($event)">
     <ion-icon class="ion-padding-end" color="primary" name="mail-outline"></ion-icon>
     <ion-label class="subtitle-1"> Email Help </ion-label>
   </ion-button>
-  <ion-button class="accessible-btn" role="button" aria-label="Term of use" (click)="openLink($event)" (keydown)="openLink($event)" tabindex="0">
+  <ion-button class="accessible-btn" role="button" aria-label="Terms of use" (click)="openLink($event)" (keydown)="openLink($event)" tabindex="0">
     <ion-icon class="ion-padding-end" color="primary" name="clipboard-outline"></ion-icon>
     <ion-label class="subtitle-1">Terms of Use</ion-label>
   </ion-button>
-  <ion-button class="accessible-btn" role="button" aria-label="logout" (click)="logout($event)" (keydown)="logout($event)" tabindex="0">
+  <ion-button class="accessible-btn" role="button" [attr.aria-label]="hasMultipleStacks ? 'Logout or Switch Environment' : 'logout'" (click)="logout($event)" (keydown)="logout($event)" tabindex="0">
     <ion-icon class="ion-padding-end" color="primary" name="log-out-outline"></ion-icon>
-    <ion-label *ngIf="hasMultipleStacks" class="subtitle-1 ">Logout or Switch Environment</ion-label>
-    <ion-label *ngIf="!hasMultipleStacks" class="subtitle-1 ">Logout</ion-label>
+    <ion-label *ngIf="hasMultipleStacks" class="subtitle-1">Logout or Switch Environment</ion-label>
+    <ion-label *ngIf="!hasMultipleStacks" class="subtitle-1">Logout</ion-label>
   </ion-button>
 </ng-template>

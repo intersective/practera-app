@@ -1,4 +1,8 @@
-<clickable-item *ngIf="!loading" [active]="active" [lines]="lines" [isCustomizedCard]="true">
+<clickable-item *ngIf="!loading"
+  [active]="active"
+  [lines]="lines"
+  [isCustomizedCard]="true"
+  aria-label="new notification item">
 
   <ion-icon [name]="leadingIcon" slot="start" [color]="leadingIconColor || 'primary'" class="leading-icon" [ngClass]="{'pulsing': leadingIconPulsing}"></ion-icon>
 

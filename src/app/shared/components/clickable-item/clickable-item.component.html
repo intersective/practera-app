@@ -4,7 +4,7 @@
 <ion-item  *ngIf="isChatCard; else elseblock" class="ion-activatable" [lines]="lines" [ngClass]="{
   'switcher-card-item': isSwitcherCard,
   'active': active
-}"  aria-label="clickable item" role="button" tabindex="0">
+}" role="button" tabindex="0">
 <ion-text color="primary" [ngStyle]="{'color': backgroundColor}">
   <ion-ripple-effect></ion-ripple-effect>
 </ion-text>
@@ -18,7 +18,7 @@
   <ion-item class="ion-activatable" [lines]="lines" [ngClass]="{
     'switcher-card-item': isSwitcherCard,
     'active': active
-  }"  aria-label="clickable item">
+  }">
     <ion-button expand="full" class="accessible-btn" [ngClass]="{'accessible-item': isCustomizedCard, 'customTodoCard': isTodoCard, 'accessibile-ChatItem': isChatCard }"  role="button">
       <ion-text color="primary" [ngStyle]="{'color': backgroundColor}">
         <ion-ripple-effect></ion-ripple-effect>

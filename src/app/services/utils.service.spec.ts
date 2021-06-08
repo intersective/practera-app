@@ -439,4 +439,12 @@ describe('UtilsService', () => {
       expect(result).toEqual('2010-01-01T00:00:00.000Z');
     });
   });
+
+  describe('randomNumber()', () => {
+    it('should generate random number', () => {
+      const randomNumber = service.randomNumber();
+      expect(randomNumber).not.toEqual(123456);
+      expect(typeof randomNumber === 'number').toBeTruthy();
+    });
+  });
 });

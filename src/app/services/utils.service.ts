@@ -382,4 +382,14 @@ export class UtilsService {
   redirectToUrl(url: string) {
     window.location.href = `${ url.match(/^https*:\/\//) ? '' : 'https://' }${ url }`;
   }
+
+  /**
+   * generate secure and totally randomised number
+   * @return {number} single random number
+   */
+  randomNumber(): number {
+    const { crypto } = window;
+    const slugs = crypto.getRandomValues(new Uint32Array(1));
+    return slugs[0];
+  }
 }

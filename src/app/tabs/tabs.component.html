@@ -33,29 +33,29 @@
 
   <ion-tab-bar *ngIf="!utils.isMobile()" slot="top">
 
-    <ion-tab-button layout="icon-top" tab="home" [class.selected]="selectedTab == 'overview'">
+    <ion-tab-button layout="icon-top" tab="home" [class.selected]="selectedTab == 'overview'" aria-labelledby="home-label">
       <ion-icon class="gray-2" name="home-outline"></ion-icon>
-      <ion-badge color="danger" *ngIf="noOfTodoItems > 0">{{ noOfTodoItems }}</ion-badge>
-      <ion-label class="gray-2">Home</ion-label>
+      <ion-badge color="danger" *ngIf="noOfTodoItems > 0" [attr.aria-label]="noOfTodoItems + ' new notifications'">{{ noOfTodoItems }}</ion-badge>
+      <ion-label class="gray-2" id="home-label">Home</ion-label>
     </ion-tab-button>
 
-    <ion-tab-button layout="icon-top" *ngIf="showEvents" tab="events" [class.selected]="selectedTab == 'events'">
+    <ion-tab-button layout="icon-top" *ngIf="showEvents" tab="events" [class.selected]="selectedTab == 'events'" aria-labelledby="event-label">
       <ion-icon class="gray-2" name="calendar-outline"></ion-icon>
-      <ion-label class="gray-2">Events</ion-label>
+      <ion-label class="gray-2" id="event-label">Events</ion-label>
     </ion-tab-button>
 
-    <ion-tab-button layout="icon-top" *ngIf="showReview" tab="reviews" [class.selected]="selectedTab == 'reviews'">
+    <ion-tab-button layout="icon-top" *ngIf="showReview" tab="reviews" [class.selected]="selectedTab == 'reviews'" aria-label="review tab">
       <ion-icon class="gray-2" name="clipboard-outline"></ion-icon>
       <ion-label class="gray-2">Review</ion-label>
     </ion-tab-button>
 
-    <ion-tab-button layout="icon-top" *ngIf="showChat" tab="chat" [class.selected]="selectedTab == 'chat'">
+    <ion-tab-button layout="icon-top" *ngIf="showChat" tab="chat" [class.selected]="selectedTab == 'chat'" aria-label="Chat tab, {{ noOfChats }} new messages">
       <ion-icon class="gray-2" name="chatbubbles-outline"></ion-icon>
       <ion-badge color="danger" *ngIf="noOfChats > 0">{{ noOfChats }}</ion-badge>
       <ion-label class="gray-2">Chat</ion-label>
     </ion-tab-button>
 
-    <ion-tab-button layout="icon-top" tab="settings" [class.selected]="selectedTab == 'settings'">
+    <ion-tab-button layout="icon-top" tab="settings" [class.selected]="selectedTab == 'settings'" aria-label="settings tab">
       <ion-icon class="gray-2" name="settings-outline"></ion-icon>
       <ion-label class="gray-2">Settings</ion-label>
     </ion-tab-button>
