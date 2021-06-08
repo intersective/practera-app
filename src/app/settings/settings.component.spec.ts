@@ -21,7 +21,7 @@ describe('SettingsComponent', () => {
   let fixture: ComponentFixture<SettingsComponent>;
   let settingsSpy: jasmine.SpyObj<SettingService>;
   let routerSpy: jasmine.SpyObj<Router>;
-  let routeStub: Partial<ActivatedRoute>;
+  const routeStub: Partial<ActivatedRoute>;
   let fastFeedbackSpy: jasmine.SpyObj<FastFeedbackService>;
   let storageSpy: jasmine.SpyObj<BrowserStorageService>;
   let authSpy: jasmine.SpyObj<AuthService>;
