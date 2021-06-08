@@ -3,6 +3,7 @@
     <div class="badge">
       <img [src]="achievement.image ? achievement.image : '/assets/achievement.svg'"
         [ngClass]="{'black-white-image': !achievement.isEarned}"
+        alt="{{achievement.name}} badge"
         >
       <ion-icon *ngIf="achievement.isEarned" name="checkmark-circle" color="primary"></ion-icon>
       <ion-icon *ngIf="!achievement.isEarned" name="lock-closed" color="medium"></ion-icon>  

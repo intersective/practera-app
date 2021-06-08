@@ -4,10 +4,13 @@ name: Live environment US
 
 #Event Trigger for this Workflow
 
-on:
+on: 
   workflow_dispatch:
-  push:
-    branches: [ 'release/us' ]
+    inputs:
+      BRANCH_TAG_NAME:
+        description: 'New tag version based on create-release-tag workflow'     
+        required: true
+        default: ''
 
 #Jobs to perform based on event occurred
 
@@ -33,15 +36,21 @@ jobs:
       - uses: actions/checkout@v2
         with:
           fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
+          ref: ${{ github.event.inputs.BRANCH_TAG_NAME }}
 
 
+################################################
+#  NODE ENV
+################################################    
       - name: Setup Node.js environment
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14'
       
   
-      - name: Install Serverless Framework
-        run: |
-          npm i -g serverless@2.17.0
+      # - name: Install Serverless Framework
+      #   run: |
+      #     npm i -g serverless
       
  
       - name: Cache node modules
