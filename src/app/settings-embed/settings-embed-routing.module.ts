@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
 import { SettingsEmbedRoutingComponent } from './settings-embed-routing.component';
-import { SettingsEmbedComponent } from './settings-embed.component';
+import { SettingsComponent } from '../settings/settings.component';
 
 const routes: Routes = [
   {
@@ -11,7 +11,10 @@ const routes: Routes = [
     children: [
       {
         path: '',
-        component: SettingsEmbedComponent
+        component: SettingsComponent,
+        data: {
+          mode: 'embed'
+        }
       }
     ]
   }
