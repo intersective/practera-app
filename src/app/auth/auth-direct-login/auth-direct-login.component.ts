@@ -90,7 +90,7 @@ export class AuthDirectLoginComponent implements OnInit {
       });
     }
 
-    this.singlePageRestriction();
+    const singlePageOnly = this.singlePageRestriction();
 
     // switch program directly if user already registered
     if (!redirectLater) {
@@ -131,7 +131,7 @@ export class AuthDirectLoginComponent implements OnInit {
         if (!activityId || !contextId || !assessmentId) {
           return this._saveOrRedirect(['app', 'home'], redirectLater);
         }
-        if (this.utils.isMobile()) {
+        if (this.utils.isMobile() || singlePageOnly) {
           return this._saveOrRedirect(['assessment', 'assessment', activityId, contextId, assessmentId], redirectLater);
         } else {
           return this._saveOrRedirect(['app', 'activity', activityId, { task: 'assessment', task_id: assessmentId, context_id: contextId }], redirectLater);
@@ -140,7 +140,7 @@ export class AuthDirectLoginComponent implements OnInit {
         if (!activityId || !topicId) {
           return this._saveOrRedirect(['app', 'home'], redirectLater);
         }
-        if (this.utils.isMobile()) {
+        if (this.utils.isMobile() || singlePageOnly) {
           return this._saveOrRedirect(['topic', activityId, topicId], redirectLater);
         } else {
           return this._saveOrRedirect(['app', 'activity', activityId, { task: 'topic', task_id: topicId }], redirectLater);
@@ -191,7 +191,7 @@ export class AuthDirectLoginComponent implements OnInit {
     });
   }
 
-  singlePageRestriction(): void {
+  singlePageRestriction(): boolean {
     // one_page_only: display app limited to one single screen and no other view access are allowed
     const onePageOnly: string = this.route.snapshot.paramMap.get('one_page_only');
 
@@ -199,5 +199,7 @@ export class AuthDirectLoginComponent implements OnInit {
     if (onePageOnly) {
       this.storage.set('singlePageAccess', (onePageOnly === 'true') ? true : false);
     }
+
+    return this.storage.get('singlePageAccess');
   }
 }

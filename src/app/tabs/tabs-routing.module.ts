@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { AuthGuard } from '../auth/auth.guard';
 import { TabsComponent } from './tabs.component';
+import { SinglePageDeactivateGuard } from "../single-page-deactivate.guard";
 
 const routes: Routes = [
   {
@@ -61,7 +62,8 @@ const routes: Routes = [
             path: '',
             loadChildren: '../settings/settings.module#SettingsModule'
           }
-        ]
+        ],
+        canDeactivate: [SinglePageDeactivateGuard]
       },
       {
         path: '',
