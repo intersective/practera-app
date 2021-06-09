@@ -44,7 +44,7 @@ export class AuthDirectLoginComponent implements OnInit {
       this.newRelic.createTracer('Processing direct login');
       return this._redirect();
     } catch (err) {
-      console.error(err);
+      console.error(new Error(err));
       this._error(err);
     }
   }
@@ -59,27 +59,40 @@ export class AuthDirectLoginComponent implements OnInit {
 
   /**
    * Redirect user to a specific page if data is passed in, otherwise redirect to program switcher page
+   *
+   * @param {boolean}   redirectLater
+   * @returns {Promise<boolean | void>}
    */
   private async _redirect(redirectLater?: boolean): Promise<boolean | void> {
     const redirect = this.route.snapshot.paramMap.get('redirect');
-    const timelineId = +this.route.snapshot.paramMap.get('tl');
     const activityId = +this.route.snapshot.paramMap.get('act');
     const contextId = +this.route.snapshot.paramMap.get('ctxt');
     const assessmentId = +this.route.snapshot.paramMap.get('asmt');
     const submissionId = +this.route.snapshot.paramMap.get('sm');
     const topicId = +this.route.snapshot.paramMap.get('top');
+    let timelineId = +this.route.snapshot.paramMap.get('tl');
+
     // clear the cached data
     this.utils.clearCache();
+
+    // if timelineId "0", then try get cached timelineId
+    timelineId = (timelineId > 0) ? timelineId : this.storage.getUser().timelineId;
     if (!redirect || !timelineId) {
       // if there's no redirection or timeline id
       return this._saveOrRedirect(['switcher', 'switcher-program'], redirectLater);
     }
-    if ( this.route.snapshot.paramMap.has('return_url')) {
+
+    // purpose of return_url
+    // - when user switch program, he/she will be redirect to this url
+    if (this.route.snapshot.paramMap.has('return_url')) {
       this.storage.setUser({
         LtiReturnUrl: this.route.snapshot.paramMap.get('return_url')
       });
     }
-    // switch parogram if user already registered
+
+    this.singlePageRestriction();
+
+    // switch program directly if user already registered
     if (!redirectLater) {
       const program = this.utils.find(this.storage.get('programs'), value => {
         return value.timeline.id === timelineId;
@@ -178,4 +191,13 @@ export class AuthDirectLoginComponent implements OnInit {
     });
   }
 
+  singlePageRestriction(): void {
+    // one_page_only: display app limited to one single screen and no other view access are allowed
+    const onePageOnly: string = this.route.snapshot.paramMap.get('one_page_only');
+
+    // extract single page restriction flag from url
+    if (onePageOnly) {
+      this.storage.set('singlePageAccess', (onePageOnly === 'true') ? true : false);
+    }
+  }
 }
