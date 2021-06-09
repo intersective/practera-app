@@ -139,16 +139,16 @@ resources:
             MinimumProtocolVersion: 'TLSv1.2_2019'
             SslSupportMethod: 'sni-only'
     
-    # Route53RecordV2:
-    #   Type: 'AWS::Route53::RecordSetGroup'
-    #   Properties:
-    #     HostedZoneId: {'Fn::ImportValue': '${env:STACK_NAME}-PublicHostedZoneId-${env:ENV}'}
-    #     RecordSets:
-    #     - Name: ${env:APPV2S3BUCKET}
-    #       Type: CNAME
-    #       TTL: '3200'
-    #       ResourceRecords:
-    #         - !GetAtt 'AppV2CloudFrontDistribution.DomainName'
+    Route53RecordV2:
+      Type: 'AWS::Route53::RecordSetGroup'
+      Properties:
+        HostedZoneId: {'Fn::ImportValue': '${env:STACK_NAME}-PublicHostedZoneId-${env:ENV}'}
+        RecordSets:
+        - Name: ${env:APPV2S3BUCKET}
+          Type: CNAME
+          TTL: '3200'
+          ResourceRecords:
+            - !GetAtt 'AppV2CloudFrontDistribution.DomainName'
 
 
     HTTPCodeTarget5XXTooHighAlarm:
