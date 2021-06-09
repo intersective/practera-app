@@ -90,7 +90,7 @@ export class AuthDirectLoginComponent implements OnInit {
       });
     }
 
-    const singlePageOnly = this.singlePageRestriction();
+    const onePageOnly = this.singlePageRestriction();
 
     // switch program directly if user already registered
     if (!redirectLater) {
@@ -131,7 +131,7 @@ export class AuthDirectLoginComponent implements OnInit {
         if (!activityId || !contextId || !assessmentId) {
           return this._saveOrRedirect(['app', 'home'], redirectLater);
         }
-        if (this.utils.isMobile() || singlePageOnly) {
+        if (this.utils.isMobile() || onePageOnly) {
           return this._saveOrRedirect(['assessment', 'assessment', activityId, contextId, assessmentId], redirectLater);
         } else {
           return this._saveOrRedirect(['app', 'activity', activityId, { task: 'assessment', task_id: assessmentId, context_id: contextId }], redirectLater);
@@ -140,7 +140,7 @@ export class AuthDirectLoginComponent implements OnInit {
         if (!activityId || !topicId) {
           return this._saveOrRedirect(['app', 'home'], redirectLater);
         }
-        if (this.utils.isMobile() || singlePageOnly) {
+        if (this.utils.isMobile() || onePageOnly) {
           return this._saveOrRedirect(['topic', activityId, topicId], redirectLater);
         } else {
           return this._saveOrRedirect(['app', 'activity', activityId, { task: 'topic', task_id: topicId }], redirectLater);
