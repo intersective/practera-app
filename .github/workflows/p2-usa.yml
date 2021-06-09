@@ -257,7 +257,7 @@ jobs:
           node_modules/.bin/serverless deploy
           rm serverless.yml .env
         env:
-          APPV2S3BUCKET: ${{ env.APPPUBLICZONENAME }}
+          APPV2S3BUCKET: app.${{ env.PUBLICZONENAME }}
           FILESS3BUCKET: files.${{ env.PUBLICZONENAME }}
           S3VERSIONING: true 
           NONCURRENTVERSION_EXPIREINDAYS: 30
@@ -319,16 +319,6 @@ jobs:
               ${process.env.AS_TOOK}`,
             }]
             }
-
-
-
-# ################################################
-# #  PYTHON ENV  
-# ################################################
-#       - name: Set up Python 3.7
-#         uses: actions/setup-python@v2
-#         with:
-#           python-version: 3.7
 
           
 # ################################################
