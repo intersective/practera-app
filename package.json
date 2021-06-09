@@ -1,6 +1,6 @@
 {
   "name": "practera-app-v2",
-  "version": "0.0.1",
+  "version": "2.6.0",
   "author": "Practera",
   "repository": "https://github.com/intersective/practera-app-v2",
   "homepage": "https://github.com/intersective/practera-app-v2",
@@ -54,7 +54,7 @@
     "filestack-js": "^3.20.0",
     "graphql": "^15.3.0",
     "graphql-tag": "^2.10.4",
-    "lodash": "^4.17.19",
+    "lodash": "^4.17.21",
     "moment": "^2.24.0",
     "newrelic": "^5.11.0",
     "ng-circle-progress": "^1.3.0",

@@ -36,7 +36,8 @@ jobs:
       BUILD_CONFIG: custom
       STATUSREPORTS3Bucket: deployment-status.practera.com
       STATUS: DEPLOYED
-      ENDPOINT: NA
+      ENDPOINT: app.p1-stage.practera.com
+      BRANCH_TAG_NAME: trunk
 
 
 
@@ -145,7 +146,7 @@ jobs:
         with:
           aws-access-key-id: ${{ steps.DeploySecret.outputs.P1_STAGE_AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ steps.DeploySecret.outputs.P1_STAGE_AWS_SECRET_ACCESS_KEY }}
-          aws-region: ap-southeast-2 #TODO: Update once manually to new stack accordingly
+          aws-region: ${{env.REGION}} 
         env:
           AWS_ACCESS_KEY_ID: ${{ steps.DeploySecret.outputs.P1_STAGE_AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ steps.DeploySecret.outputs.P1_STAGE_AWS_SECRET_ACCESS_KEY }}
@@ -228,6 +229,18 @@ jobs:
           aws s3 cp serverless.yml s3://$CFNS3BucketName/$STACK_NAME/$REGION/$ROOTSTACK/sls-templates/serverless.yml
 
 
+##########################################################
+#  CLOUDFORMATION EXPORT VARIABLES
+##########################################################
+      - name: Cloudformation Export variables
+        run: |
+          cat >> .env <<EOF
+          CDNSharedACMCertificateArn=$(aws cloudformation list-exports --query "Exports[?Name==\`$STACK_NAME-CDNSharedACMCertificateArn-$ENV\`].Value" --no-paginate --output text)
+          ChatBotSNSTopicARN=$(aws cloudformation list-exports --query "Exports[?Name==\`$STACK_NAME-ChatBotSNSTopicARN-$ENV\`].Value" --no-paginate --output text)
+          
+          
+          EOF
+          
 ###############################################################
 #  SERVERLESS DEPLOYMENT
 ##############################################################
@@ -300,4 +313,23 @@ jobs:
             }]
             }
 
+          
+# ################################################
+# #  STATUS VARIABLE UPDATE
+# ################################################ 
+      - name: Deployment status variable update
+        if: ${{ failure() }}
+        run: |
+          echo "STATUS=FAILURE" >> $GITHUB_ENV
 
+# ################################################
+# #  DEVOPS-DEPLOYMENT REPORT
+# ################################################ 
+      - name: DevOps Deployment Reporting
+        if: always()
+        run: |
+          pip install --upgrade pip
+          pip install --upgrade csvtotable
+          aws s3 cp s3://$STATUSREPORTS3Bucket/deploy-reporting.sh deploy-reporting.sh
+          chmod +x deploy-reporting.sh && ./deploy-reporting.sh
+          echo "LINK="${GITHUB_REPOSITORY##*/}.html >> $GITHUB_ENV
