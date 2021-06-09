@@ -111,6 +111,15 @@ export class AssessmentComponent extends RouterEnter {
     return this.utils.isMobile();
   }
 
+  /**
+   * status of access restriction
+   *
+   * @return  {boolean}  cached singlePageOnly in localstorage
+   */
+  get onePageOnly() {
+    return this.storage.get('singlePageOnly');
+  }
+
   randomCode(type) {
     if (!this.elIdentities[type]) {
       this.elIdentities[type] = this.utils.randomNumber();

@@ -10,9 +10,9 @@ const routes: Routes = [
     children: [
       {
         path: ':id',
-        component: TasksComponent
+        component: TasksComponent,
       }
-    ]
+    ],
   }
 ];
 @NgModule({

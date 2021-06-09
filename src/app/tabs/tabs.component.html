@@ -1,6 +1,6 @@
 <ion-tabs>
 
-  <ion-tab-bar *ngIf="utils.isMobile()" slot="bottom">
+  <ion-tab-bar *ngIf="utils.isMobile() && !singlePageOnly" slot="bottom">
 
     <ion-tab-button layout="icon-top" tab="home" [class.selected]="selectedTab == 'overview'">
       <ion-icon class="gray-2" name="home-outline"></ion-icon>
@@ -31,7 +31,7 @@
 
   </ion-tab-bar>
 
-  <ion-tab-bar *ngIf="!utils.isMobile()" slot="top">
+  <ion-tab-bar *ngIf="!utils.isMobile() && !singlePageOnly" slot="top">
 
     <ion-tab-button layout="icon-top" tab="home" [class.selected]="selectedTab == 'overview'" aria-labelledby="home-label">
       <ion-icon class="gray-2" name="home-outline"></ion-icon>
