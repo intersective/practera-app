@@ -47,6 +47,12 @@ export interface Config {
   color?: string;
 }
 
+export interface General {
+  me?: User;
+  singlePageAccess?: boolean; // restrict user access to one designated page only
+  directLinkRoute?: string; // redirect url, used for deferred page redirection
+}
+
 @Injectable({
   providedIn: 'root'
 })
