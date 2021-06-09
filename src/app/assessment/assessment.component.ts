@@ -316,7 +316,7 @@ export class AssessmentComponent extends RouterEnter {
     this.review = review;
     if (!review && this.action === 'review' && !this.doReview) {
       return this.notificationService.alert({
-        message: 'There is no Assessment to review.',
+        message: 'There are no assessments to review.',
         buttons: [
           {
             text: 'OK',
