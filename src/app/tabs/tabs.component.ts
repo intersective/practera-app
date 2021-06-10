@@ -26,10 +26,10 @@ export class TabsComponent extends RouterEnter {
   restrictedAccess: boolean;
 
   constructor(
+    readonly utils: UtilsService,
+    readonly storage: BrowserStorageService,
     public router: Router,
     private tabsService: TabsService,
-    private storage: BrowserStorageService,
-    public utils: UtilsService,
     private switcherService: SwitcherService,
     private reviewsService: ReviewListService,
     private sharedService: SharedService,
