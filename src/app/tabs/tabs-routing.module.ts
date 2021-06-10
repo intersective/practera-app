@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { AuthGuard } from '../auth/auth.guard';
 import { TabsComponent } from './tabs.component';
-import { SinglePageDeactivateGuard } from "../single-page-deactivate.guard";
+import { SinglePageDeactivateGuard } from '../single-page-deactivate.guard';
 
 const routes: Routes = [
   {

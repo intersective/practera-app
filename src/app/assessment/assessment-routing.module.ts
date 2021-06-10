@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { AssessmentComponent } from './assessment.component';
-import { SinglePageDeactivateGuard } from "../single-page-deactivate.guard";
+import { SinglePageDeactivateGuard } from '../single-page-deactivate.guard';
 
 const routes: Routes = [
   {
