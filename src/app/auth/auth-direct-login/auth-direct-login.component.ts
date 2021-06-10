@@ -90,7 +90,7 @@ export class AuthDirectLoginComponent implements OnInit {
       });
     }
 
-    const onePageOnly = this.singlePageRestriction();
+    const restrictedAccess = this.singlePageRestriction();
 
     // switch program directly if user already registered
     if (!redirectLater) {
@@ -131,7 +131,7 @@ export class AuthDirectLoginComponent implements OnInit {
         if (!activityId || !contextId || !assessmentId) {
           return this._saveOrRedirect(['app', 'home'], redirectLater);
         }
-        if (this.utils.isMobile() || onePageOnly) {
+        if (this.utils.isMobile() || restrictedAccess) {
           return this._saveOrRedirect(['assessment', 'assessment', activityId, contextId, assessmentId], redirectLater);
         } else {
           return this._saveOrRedirect(['app', 'activity', activityId, { task: 'assessment', task_id: assessmentId, context_id: contextId }], redirectLater);
@@ -140,7 +140,7 @@ export class AuthDirectLoginComponent implements OnInit {
         if (!activityId || !topicId) {
           return this._saveOrRedirect(['app', 'home'], redirectLater);
         }
-        if (this.utils.isMobile() || onePageOnly) {
+        if (this.utils.isMobile() || restrictedAccess) {
           return this._saveOrRedirect(['topic', activityId, topicId], redirectLater);
         } else {
           return this._saveOrRedirect(['app', 'activity', activityId, { task: 'topic', task_id: topicId }], redirectLater);
@@ -193,11 +193,11 @@ export class AuthDirectLoginComponent implements OnInit {
 
   singlePageRestriction(): boolean {
     // one_page_only: display app limited to one single screen and no other view access are allowed
-    const onePageOnly: string = this.route.snapshot.paramMap.get('one_page_only');
+    const restrictedAccess: string = this.route.snapshot.paramMap.get('one_page_only');
 
     // extract single page restriction flag from url
-    if (onePageOnly) {
-      this.storage.set('singlePageAccess', (onePageOnly === 'true') ? true : false);
+    if (restrictedAccess) {
+      this.storage.set('singlePageAccess', (restrictedAccess === 'true') ? true : false);
     }
 
     return this.storage.get('singlePageAccess');

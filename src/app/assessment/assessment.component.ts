@@ -116,7 +116,7 @@ export class AssessmentComponent extends RouterEnter {
    *
    * @return  {boolean}  cached singlePageAccess in localstorage
    */
-  get onePageOnly() {
+  get restrictedAccess() {
     return this.storage.get('singlePageAccess');
   }
 

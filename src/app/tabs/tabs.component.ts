@@ -23,7 +23,7 @@ export class TabsComponent extends RouterEnter {
   noOfTodoItems = 0;
   noOfChats = 0;
   selectedTab = '';
-  onePageOnly: boolean;
+  restrictedAccess: boolean;
 
   constructor(
     public router: Router,
@@ -39,9 +39,9 @@ export class TabsComponent extends RouterEnter {
     super(router);
     this.newRelic.setPageViewName('tab');
 
-    this.onePageOnly = storage.get('singlePageAccess');
+    this.restrictedAccess = storage.get('singlePageAccess');
 
-    if (this.onePageOnly === false) {
+    if (this.restrictedAccess === false) {
       this.utils.getEvent('notification').subscribe(event => {
         this.noOfTodoItems++;
       });
