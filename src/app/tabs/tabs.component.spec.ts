@@ -57,7 +57,7 @@ describe('TabsComponent', () => {
               email: 'user@test.com',
               id: 1
             },
-            get: ''
+            get: false
           })
         },
         {
@@ -109,8 +109,9 @@ describe('TabsComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  describe('when testing constructor()', () => {
+  describe('constructor() (without onePageOnly restriction)', () => {
     it('should get correct event data', () => {
+      storageSpy.get.and.returnValue(false);
       expect(component.noOfTodoItems).toBe(0);
       expect(component.noOfChats).toBe(0);
       utils.broadcastEvent('notification', '');
