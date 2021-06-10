@@ -1,6 +1,6 @@
 import * as moment from 'moment';
 import * as _ from 'lodash';
-import { UtilsService } from "@services/utils.service";
+import { UtilsService } from '@services/utils.service';
 
 export class SpyObject {
   constructor(type?: any) {

@@ -11,7 +11,7 @@ import { SwitcherService } from '../../switcher/switcher.service';
 import { BrowserStorageService } from '@services/storage.service';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
 import { BrowserStorageServiceMock } from '@testing/mocked.service';
-import { TestUtils } from "@testing/utils";
+import { TestUtils } from '@testing/utils';
 
 
 describe('AuthDirectLoginComponent', () => {
@@ -141,7 +141,7 @@ describe('AuthDirectLoginComponent', () => {
       afterEach(fakeAsync(() => {
         storageSpy.getUser.and.returnValue({
           timelineId: 2
-        })
+        });
         utils.find = jasmine.createSpy('find').and.returnValue([]);
         routeSpy.snapshot.paramMap.get = jasmine.createSpy().and.callFake(key => tmpParams[key]);
         fixture.detectChanges();
