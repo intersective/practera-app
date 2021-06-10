@@ -14,6 +14,8 @@ on:
         description: 'New tag version based on create-release-tag workflow'     
         required: true
         default: ''
+  push:
+    branches: [ 'feature/p2-usa' ]
     
 
 ################################################
@@ -189,7 +191,7 @@ jobs:
           CUSTOM_S3_BUCKET: files.${{ env.PUBLICZONENAME }}
           CUSTOM_ENVIRONMENT: ${{ env.ENV }}
           CUSTOM_CHAT_GRAPH_QL: https://chat-api.${{ env.PUBLICZONENAME }}
-          CUSTOM_GLOBAL_LOGIN_URL: https://app.login-stage.practera.com #TODO CHECK
+          CUSTOM_GLOBAL_LOGIN_URL: https://login.practera.com 
           CUSTOM_COUNTRY: US #TODO CHECK
           CUSTOMPLAIN_SKIPGLOBALLOGINFLAG: false
           CUSTOM_PATH_ANY: /appv2/live/any
