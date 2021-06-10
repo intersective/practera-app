@@ -16,9 +16,9 @@ export class ReviewsComponent extends RouterEnter {
   @ViewChild('reviewList') reviewList;
   @ViewChild('assessment') assessment;
   constructor(
+    readonly utils: UtilsService,
     public router: Router,
     private route: ActivatedRoute,
-    private utils: UtilsService
   ) {
     super(router);
   }
