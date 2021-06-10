@@ -13,11 +13,11 @@ import { NewRelicService } from '@shared/new-relic/new-relic.service';
 })
 export class AuthDirectLoginComponent implements OnInit {
   constructor(
+    readonly utils: UtilsService,
     private router: Router,
     private route: ActivatedRoute,
     private authService: AuthService,
     private notificationService: NotificationService,
-    private utils: UtilsService,
     private switcherService: SwitcherService,
     private storage: BrowserStorageService,
     private ngZone: NgZone,
