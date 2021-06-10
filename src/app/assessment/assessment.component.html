@@ -191,6 +191,7 @@
         <img *ngIf="continueBtnLoading || submitting; else continueTmp" class="footer-action ion-float-right" src="/assets/loading.gif" alt="loading">
         <ng-template #continueTmp>
           <ion-button
+            *ngIf="!restrictedAccess"
             (click)="clickBtnContinue()"
             shape="round"
             fill="clear"
