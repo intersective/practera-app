@@ -1,5 +1,5 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { async, ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
+import { async, ComponentFixture, TestBed, fakeAsync, tick, flushMicrotasks } from '@angular/core/testing';
 import { AuthDirectLoginComponent } from './auth-direct-login.component';
 import { AuthService } from '../auth.service';
 import { of } from 'rxjs';
@@ -347,6 +347,23 @@ describe('AuthDirectLoginComponent', () => {
         tmpParams.redirect = 'default';
         redirect = ['app', 'home'];
       });
+
+    });
+  });
+
+  describe('singlePageRestriction()', () => {
+    it('should cache "onePageOnly" as singlePageRestriction on localStorage', () => {
+      routeSpy.snapshot.paramMap.get = jasmine.createSpy().and.returnValue('true');
+      component.singlePageRestriction();
+      expect(storageSpy.set).toHaveBeenCalledWith('singlePageAccess', true);
+      expect(storageSpy.get).toHaveBeenCalledWith('singlePageAccess');
+    });
+
+    it('should not cache anything if no "onePageOnly" param provided in url', () => {
+      routeSpy.snapshot.paramMap.get = jasmine.createSpy().and.returnValue(null);
+      component.singlePageRestriction();
+      expect(storageSpy.set).not.toHaveBeenCalled();
+      expect(storageSpy.get).toHaveBeenCalled();
     });
   });
 });
