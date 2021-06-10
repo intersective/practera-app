@@ -1,7 +1,6 @@
 import { Component, OnInit, NgZone } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { AuthService } from '../auth.service';
-import { Observable, concat } from 'rxjs';
 import { NotificationService } from '@shared/notification/notification.service';
 import { SwitcherService } from '../../switcher/switcher.service';
 import { UtilsService } from '@services/utils.service';
@@ -11,7 +10,6 @@ import { NewRelicService } from '@shared/new-relic/new-relic.service';
 @Component({
   selector: 'app-auth-direct-login',
   templateUrl: 'auth-direct-login.component.html',
-  // styles: ['']
 })
 export class AuthDirectLoginComponent implements OnInit {
   constructor(
@@ -19,7 +17,7 @@ export class AuthDirectLoginComponent implements OnInit {
     private route: ActivatedRoute,
     private authService: AuthService,
     private notificationService: NotificationService,
-    public utils: UtilsService,
+    private utils: UtilsService,
     private switcherService: SwitcherService,
     private storage: BrowserStorageService,
     private ngZone: NgZone,
@@ -44,7 +42,7 @@ export class AuthDirectLoginComponent implements OnInit {
       this.newRelic.createTracer('Processing direct login');
       return this._redirect();
     } catch (err) {
-      console.error(new Error(err));
+      console.error(err);
       this._error(err);
     }
   }
