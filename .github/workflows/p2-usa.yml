@@ -40,7 +40,7 @@ jobs:
       BUILD_CONFIG: custom
       STATUSREPORTS3Bucket: deployment-status.practera.com
       STATUS: DEPLOYED
-      ENDPOINT: usa.practera.app
+      ENDPOINT: app.usa.practera.com
       BRANCH_TAG_NAME: ${{ github.event.inputs.BRANCH_TAG_NAME }}
 
 
