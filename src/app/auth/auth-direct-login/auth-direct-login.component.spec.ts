@@ -223,7 +223,7 @@ describe('AuthDirectLoginComponent', () => {
       });
       it('assessment page', () => {
         utils.isMobile = jasmine.createSpy('isMobile').and.returnValues(false);
-        storageSpy.get.and.returnValue(false);
+        storageSpy.singlePageAccess = false;
 
         tmpParams.redirect = 'assessment';
         redirect = [
@@ -253,7 +253,7 @@ describe('AuthDirectLoginComponent', () => {
       });
 
       it('assessment page (onePageOnly restriction)', () => {
-        storageSpy.get.and.returnValue(true); // singlePageRestriction
+        storageSpy.singlePageAccess = true; // singlePageRestriction
 
         tmpParams.redirect = 'assessment';
         redirect = [
@@ -269,7 +269,7 @@ describe('AuthDirectLoginComponent', () => {
         utils.isMobile = jasmine.createSpy('isMobile').and.callFake(() => {
           return false;
         });
-        storageSpy.get.and.returnValue(false); // singlePageRestriction
+        storageSpy.singlePageAccess = false; // singlePageRestriction
 
         tmpParams.redirect = 'topic';
         redirect = [
@@ -354,16 +354,16 @@ describe('AuthDirectLoginComponent', () => {
   describe('singlePageRestriction()', () => {
     it('should cache "onePageOnly" as singlePageRestriction on localStorage', () => {
       routeSpy.snapshot.paramMap.get = jasmine.createSpy().and.returnValue('true');
-      component.singlePageRestriction();
-      expect(storageSpy.set).toHaveBeenCalledWith('singlePageAccess', true);
-      expect(storageSpy.get).toHaveBeenCalledWith('singlePageAccess');
+      const result = component.singlePageRestriction();
+      expect(storageSpy.singlePageAccess).toEqual(true);
+      expect(result).toEqual(true);
     });
 
     it('should not cache anything if no "onePageOnly" param provided in url', () => {
-      routeSpy.snapshot.paramMap.get = jasmine.createSpy().and.returnValue(null);
-      component.singlePageRestriction();
-      expect(storageSpy.set).not.toHaveBeenCalled();
-      expect(storageSpy.get).toHaveBeenCalled();
+      routeSpy.snapshot.paramMap.get = jasmine.createSpy().and.returnValue('anything else');
+      const result = component.singlePageRestriction();
+      expect(storageSpy.singlePageAccess).toEqual(false);
+      expect(result).toBeFalsy();
     });
   });
 });

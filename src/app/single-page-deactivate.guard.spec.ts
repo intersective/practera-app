@@ -12,7 +12,8 @@ describe('SinglePageDeactivateGuard', () => {
         {
           provide: BrowserStorageService,
           useValue: jasmine.createSpyObj('BrowserStorageService', {
-            get: false
+            get: false,
+            singlePageAccess: jasmine.createSpy('singlePageAccess')
           })
         },
       ],
@@ -26,11 +27,12 @@ describe('SinglePageDeactivateGuard', () => {
 
   describe('canDeactivate()', () => {
     it('should be true', inject([SinglePageDeactivateGuard], (guard: SinglePageDeactivateGuard) => {
+      storageSpy.singlePageAccess = true;
       expect(guard.canDeactivate()).toBeTruthy();
     }));
 
-    it('should be false if storage has singePageRestriction set as false', inject([SinglePageDeactivateGuard], (guard: SinglePageDeactivateGuard) => {
-      storageSpy.get.and.returnValue(true);
+    it('should be false if storage has singePageAccess set as false', inject([SinglePageDeactivateGuard], (guard: SinglePageDeactivateGuard) => {
+      storageSpy.singlePageAccess = false;
       expect(guard.canDeactivate()).toBeFalsy();
     }));
   });
