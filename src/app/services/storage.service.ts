@@ -47,12 +47,6 @@ export interface Config {
   color?: string;
 }
 
-export interface General {
-  me?: User;
-  singlePageAccess?: boolean; // restrict user access to one designated page only
-  directLinkRoute?: string; // redirect url, used for deferred page redirection
-}
-
 @Injectable({
   providedIn: 'root'
 })
@@ -163,5 +157,14 @@ export class BrowserStorageService {
 
   getCurrentChatChannel() {
     return this.get('chatChannel');
+  }
+
+  get singlePageAccess() {
+    const result = this.get('singlePageAccess');
+    return result || false;
+  }
+
+  set singlePageAccess(val) {
+    this.set('singlePageAccess', val);
   }
 }

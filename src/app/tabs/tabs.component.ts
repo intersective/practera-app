@@ -41,7 +41,7 @@ export class TabsComponent extends RouterEnter {
 
     this.restrictedAccess = storage.get('singlePageAccess');
 
-    if (this.restrictedAccess === false) {
+    if (this.restrictedAccess === false || this.utils.isEmpty(this.restrictedAccess)) {
       this.utils.getEvent('notification').subscribe(event => {
         this.noOfTodoItems++;
       });

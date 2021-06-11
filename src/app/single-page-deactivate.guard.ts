@@ -8,7 +8,7 @@ export class SinglePageDeactivateGuard {
   constructor(readonly storage: BrowserStorageService) {}
 
   canDeactivate() {
-    if (this.storage.get('singlePageAccess')) {
+    if (this.storage.singlePageAccess) {
       return false;
     }
     return true;

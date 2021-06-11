@@ -68,13 +68,11 @@ export class AuthDirectLoginComponent implements OnInit {
     const assessmentId = +this.route.snapshot.paramMap.get('asmt');
     const submissionId = +this.route.snapshot.paramMap.get('sm');
     const topicId = +this.route.snapshot.paramMap.get('top');
-    let timelineId = +this.route.snapshot.paramMap.get('tl');
+    const timelineId = +this.route.snapshot.paramMap.get('tl');
 
     // clear the cached data
     this.utils.clearCache();
 
-    // if timelineId "0", then try get cached timelineId
-    timelineId = (timelineId > 0) ? timelineId : this.storage.getUser().timelineId;
     if (!redirect || !timelineId) {
       // if there's no redirection or timeline id
       return this._saveOrRedirect(['switcher', 'switcher-program'], redirectLater);
@@ -195,9 +193,9 @@ export class AuthDirectLoginComponent implements OnInit {
 
     // extract single page restriction flag from url
     if (restrictedAccess) {
-      this.storage.set('singlePageAccess', (restrictedAccess === 'true') ? true : false);
+      this.storage.singlePageAccess = (restrictedAccess === 'true') ? true : false;
     }
 
-    return this.storage.get('singlePageAccess');
+    return this.storage.singlePageAccess;
   }
 }
