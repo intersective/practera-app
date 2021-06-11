@@ -193,9 +193,7 @@ export class AuthDirectLoginComponent implements OnInit {
 
     // extract single page restriction flag from url
     if (restrictedAccess) {
-      console.log(restrictedAccess);
       this.storage.singlePageAccess = (restrictedAccess === 'true') ? true : false;
-      console.log(this.storage.singlePageAccess);
     }
 
     return this.storage.singlePageAccess;
