@@ -29,7 +29,7 @@ describe('TabsComponent', () => {
   let utils: UtilsService;
 
   // preset value that must happen before constructor excuted
-  let preset = {
+  const preset = {
     singlePageAccess: false,
   };
 
