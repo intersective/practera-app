@@ -28,7 +28,6 @@ describe('TabsComponent', () => {
   let eventsSpy: jasmine.SpyObj<EventListService>;
   let utils: UtilsService;
 
-  // preset value that must happen before constructor excuted
   const preset = {
     singlePageAccess: false,
   };
@@ -115,7 +114,6 @@ describe('TabsComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
-
 
   describe('constructor() (without onePageOnly restriction)', () => {
     preset.singlePageAccess = false;
