@@ -117,7 +117,7 @@ export class AssessmentComponent extends RouterEnter {
    * @return  {boolean}  cached singlePageAccess in localstorage
    */
   get restrictedAccess() {
-    return this.storage.get('singlePageAccess');
+    return this.storage.singlePageAccess;
   }
 
   randomCode(type) {
