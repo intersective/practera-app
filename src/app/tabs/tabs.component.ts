@@ -39,7 +39,7 @@ export class TabsComponent extends RouterEnter {
     super(router);
     this.newRelic.setPageViewName('tab');
 
-    this.restrictedAccess = storage.get('singlePageAccess');
+    this.restrictedAccess = this.storage.get('singlePageAccess');
 
     if (this.restrictedAccess === false || this.utils.isEmpty(this.restrictedAccess)) {
       this.utils.getEvent('notification').subscribe(event => {
