@@ -120,7 +120,7 @@ ion-button.practera-btn {
   &.mobile-btn {
     height: 32px;
     width: 94px;
-  } 
+  }
 }
 @media (max-width: 768px) {
   ion-button.btn-cta {
@@ -553,4 +553,15 @@ use for custom header (*Study perth)
       max-width: 100% !important;
     }
   }
+}
+
+.for-accessibility {
+  border: 0;
+  clip: rect(1px, 1px, 1px, 1px);
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  padding: 0;
+  position: absolute;
+  width: 1px;
 }

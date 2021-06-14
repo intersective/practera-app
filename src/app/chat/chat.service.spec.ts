@@ -56,7 +56,7 @@ describe('ChatService', () => {
               isDirectMessage: false,
               readonly: false,
               unreadMessageCount: 2,
-              lastMessageCreated: '2020-01-30 06:18:45',
+              lastMessageCreated: '2020-01-25 06:18:45',
               lastMessage: 'test 1',
               canEdit: false
             },
@@ -70,10 +70,38 @@ describe('ChatService', () => {
               isDirectMessage: false,
               readonly: false,
               unreadMessageCount: 2,
-              lastMessageCreated: '2020-01-30 06:18:45',
+              lastMessageCreated: '2020-01-30 04:18:45',
               lastMessage: 'test 2',
               canEdit: false
-            }
+            },
+            {
+              uuid: '3',
+              name: 'Team 3',
+              avatar: 'https://cdn.filestackcontent.com/uYQuauwNRdD43PfCQ4iW',
+              pusherChannel: 'pusher-channel-name',
+              roles: ['participant'],
+              isAnnouncement: false,
+              isDirectMessage: false,
+              readonly: false,
+              unreadMessageCount: 2,
+              lastMessageCreated: null,
+              lastMessage: null,
+              canEdit: false
+            },
+            {
+              uuid: '4',
+              name: 'Team 4',
+              avatar: 'https://cdn.filestackcontent.com/uYQuauwNRdD43PfCQ4iW',
+              pusherChannel: 'pusher-channel-name',
+              roles: ['participant'],
+              isAnnouncement: false,
+              isDirectMessage: false,
+              readonly: false,
+              unreadMessageCount: 2,
+              lastMessageCreated: '2020-05-30 04:18:45',
+              lastMessage: 'test 4',
+              canEdit: false
+            },
           ]
         }
       };
@@ -87,22 +115,27 @@ describe('ChatService', () => {
     });
 
     it('should get correct chat list data', () => {
+      const sortedList = [];
+      sortedList.push(requestResponse.data.channels[3]);
+      sortedList.push(requestResponse.data.channels[1]);
+      sortedList.push(requestResponse.data.channels[0]);
+      sortedList.push(requestResponse.data.channels[2]);
       requestSpy.chatGraphQLQuery.and.returnValue(of(requestResponse));
       service.getChatList().subscribe(
         chatList => {
           chatList.forEach((chat, i) => {
-            expect(chat.uuid).toEqual(requestResponse.data.channels[i].uuid);
-            expect(chat.name).toEqual(requestResponse.data.channels[i].name);
-            expect(chat.avatar).toEqual(requestResponse.data.channels[i].avatar);
-            expect(chat.pusherChannel).toEqual(requestResponse.data.channels[i].pusherChannel);
-            expect(chat.isAnnouncement).toEqual(requestResponse.data.channels[i].isAnnouncement);
-            expect(chat.isDirectMessage).toEqual(requestResponse.data.channels[i].isDirectMessage);
-            expect(chat.readonly).toEqual(requestResponse.data.channels[i].readonly);
-            expect(chat.roles).toEqual(requestResponse.data.channels[i].roles);
-            expect(chat.unreadMessageCount).toEqual(requestResponse.data.channels[i].unreadMessageCount);
-            expect(chat.lastMessage).toEqual(requestResponse.data.channels[i].lastMessage);
-            expect(chat.lastMessageCreated).toEqual(requestResponse.data.channels[i].lastMessageCreated);
-            expect(chat.canEdit).toEqual(requestResponse.data.channels[i].canEdit);
+            expect(chat.uuid).toEqual(sortedList[i].uuid);
+            expect(chat.name).toEqual(sortedList[i].name);
+            expect(chat.avatar).toEqual(sortedList[i].avatar);
+            expect(chat.pusherChannel).toEqual(sortedList[i].pusherChannel);
+            expect(chat.isAnnouncement).toEqual(sortedList[i].isAnnouncement);
+            expect(chat.isDirectMessage).toEqual(sortedList[i].isDirectMessage);
+            expect(chat.readonly).toEqual(sortedList[i].readonly);
+            expect(chat.roles).toEqual(sortedList[i].roles);
+            expect(chat.unreadMessageCount).toEqual(sortedList[i].unreadMessageCount);
+            expect(chat.lastMessage).toEqual(sortedList[i].lastMessage);
+            expect(chat.lastMessageCreated).toEqual(sortedList[i].lastMessageCreated);
+            expect(chat.canEdit).toEqual(sortedList[i].canEdit);
           });
         }
       );

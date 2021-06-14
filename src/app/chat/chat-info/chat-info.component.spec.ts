@@ -111,4 +111,39 @@ describe('ChatInfoComponent', () => {
     });
   });
 
+  describe('when testing close()', () => {
+    it('should call router navigate if keybord event enter', () => {
+      component.selectedChat = {
+        uuid: '35326928',
+        name: 'Team 1',
+        avatar: 'https://sandbox.practera.com/img/team-white.png',
+        pusherChannel: 'sdb746-93r7dc-5f44eb4f',
+        isAnnouncement: false,
+        isDirectMessage: false,
+        readonly: false,
+        roles: [
+          'participant',
+          'coordinator',
+          'admin'
+        ],
+        unreadMessageCount: 0,
+        lastMessage: null,
+        lastMessageCreated: null,
+        canEdit: false
+      };
+      const keyEvent = new KeyboardEvent('keydown', { key: 'Enter' });
+      spyOn(component.navigate, 'emit');
+      spyOn(utils, 'isMobile').and.returnValue(false);
+      component.close(keyEvent);
+      expect(component.navigate.emit).toHaveBeenCalled();
+    });
+    xit('should not do anything if keybord event not enter or space', () => {
+      const keyEvent = new KeyboardEvent('keydown', { key: 'A' });
+      spyOn(component.navigate, 'emit');
+      spyOn(utils, 'isMobile').and.returnValue(false);
+      component.close(keyEvent);
+      expect(component.navigate.emit).not.toHaveBeenCalled();
+    });
+  });
+
 });

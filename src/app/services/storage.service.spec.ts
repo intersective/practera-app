@@ -129,4 +129,15 @@ describe('StorageService', function() {
       expect(storage.removeItem).toHaveBeenCalledWith('bookedEventActivityIds');
     });
   });
+
+  describe('singlePageAccess', () => {
+    it('should be false if null or none cached', () => {
+      storage.getItem = jasmine.createSpy('getItem').and.returnValue(null);
+      expect(service.singlePageAccess).toBeFalsy();
+    });
+    it('should be true if true cached under singlePageAccess', () => {
+      storage.getItem = jasmine.createSpy('getItem').and.returnValue(true);
+      expect(service.singlePageAccess).toBeTruthy();
+    });
+  });
 });

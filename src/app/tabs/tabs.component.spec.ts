@@ -28,6 +28,10 @@ describe('TabsComponent', () => {
   let eventsSpy: jasmine.SpyObj<EventListService>;
   let utils: UtilsService;
 
+  const preset = {
+    singlePageAccess: false,
+  };
+
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       imports: [ HttpClientModule ],
@@ -57,7 +61,7 @@ describe('TabsComponent', () => {
               email: 'user@test.com',
               id: 1
             },
-            get: ''
+            get: false,
           })
         },
         {
@@ -86,12 +90,14 @@ describe('TabsComponent', () => {
   }));
 
   beforeEach(() => {
+    storageSpy = TestBed.inject(BrowserStorageService) as jasmine.SpyObj<BrowserStorageService>;
+    storageSpy.singlePageAccess = preset.singlePageAccess;
+
     fixture = TestBed.createComponent(TabsComponent);
     component = fixture.componentInstance;
     tabsSpy = TestBed.inject(TabsService) as jasmine.SpyObj<TabsService>;
     routerSpy = TestBed.inject(Router) as jasmine.SpyObj<Router>;
     utils = TestBed.inject(UtilsService);
-    storageSpy = TestBed.inject(BrowserStorageService) as jasmine.SpyObj<BrowserStorageService>;
     newRelicSpy = TestBed.inject(NewRelicService) as jasmine.SpyObj<NewRelicService>;
     switcherSpy = TestBed.inject(SwitcherService) as jasmine.SpyObj<SwitcherService>;
     reviewsSpy = TestBed.inject(ReviewListService) as jasmine.SpyObj<ReviewListService>;
@@ -109,7 +115,9 @@ describe('TabsComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  describe('when testing constructor()', () => {
+  describe('constructor() (without onePageOnly restriction)', () => {
+    preset.singlePageAccess = false;
+
     it('should get correct event data', () => {
       expect(component.noOfTodoItems).toBe(0);
       expect(component.noOfChats).toBe(0);
@@ -127,6 +135,10 @@ describe('TabsComponent', () => {
   describe('when testing onEnter()', () => {
     it('should get correct data', () => {
       storageSpy.get.and.returnValue(0);
+      storageSpy.getUser.and.returnValue({
+        chatEnabled: true,
+        teamId: 'SAMPLE_ID'
+      });
       fixture.detectChanges();
       expect(component.noOfTodoItems).toBe(5);
       expect(component.noOfChats).toBe(4);
