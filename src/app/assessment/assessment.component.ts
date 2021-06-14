@@ -89,11 +89,13 @@ export class AssessmentComponent extends RouterEnter {
   saving: boolean;
   continueBtnLoading: boolean;
 
+  elIdentities = {}; // virtual element id for accessibility "aria-describedby" purpose
+
   constructor (
     public router: Router,
     private route: ActivatedRoute,
     private assessmentService: AssessmentService,
-    public utils: UtilsService,
+    readonly utils: UtilsService,
     private notificationService: NotificationService,
     public storage: BrowserStorageService,
     public sharedService: SharedService,
@@ -103,6 +105,27 @@ export class AssessmentComponent extends RouterEnter {
     private newRelic: NewRelicService,
   ) {
     super(router);
+  }
+
+  get isMobile() {
+    return this.utils.isMobile();
+  }
+
+  /**
+   * status of access restriction
+   *
+   * @return  {boolean}  cached singlePageAccess in localstorage
+   */
+  get restrictedAccess() {
+    return this.storage.singlePageAccess;
+  }
+
+  randomCode(type) {
+    if (!this.elIdentities[type]) {
+      this.elIdentities[type] = this.utils.randomNumber();
+    }
+
+    return this.elIdentities[type];
   }
 
   // force every navigation happen under radar of angular
@@ -293,7 +316,7 @@ export class AssessmentComponent extends RouterEnter {
     this.review = review;
     if (!review && this.action === 'review' && !this.doReview) {
       return this.notificationService.alert({
-        message: 'There is no Assessment to review.',
+        message: 'There are no assessments to review.',
         buttons: [
           {
             text: 'OK',

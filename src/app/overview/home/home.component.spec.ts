@@ -530,4 +530,43 @@ describe('HomeComponent', () => {
       expect(routerSpy.navigate.calls.first().args[0]).toEqual(['app', 'chat']);
     });
   });
+
+  describe('when testing goTo()', () => {
+    it('should call router navigate with passed data', () => {
+      component.goTo(['app', 'chat']);
+      expect(routerSpy.navigate.calls.first().args[0]).toEqual(['app', 'chat']);
+    });
+  });
+
+  describe('when testing triggerClick()', () => {
+    it('should call router navigate if keybord event enter', () => {
+      const keyEvent = new KeyboardEvent('keydown', { code: 'Enter' });
+      component.triggerClick(keyEvent);
+      expect(routerSpy.navigate.calls.first().args[0]).toEqual(['achievements']);
+    });
+    it('should call router navigate if keybord event space', () => {
+      const keyEvent = new KeyboardEvent('keydown', { code: 'Space' });
+      component.triggerClick(keyEvent);
+      expect(routerSpy.navigate.calls.first().args[0]).toEqual(['achievements']);
+    });
+    it('should not call router navigate if keybord event is not enter or space', () => {
+      const keyEvent = new KeyboardEvent('keydown', { code: 'Digit0' });
+      component.triggerClick(keyEvent);
+      expect(routerSpy.navigate).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('when testing showEventDetail()', () => {
+    it('should call eventsService eventDetailPopUp if isMobile true', () => {
+      spyOn(utils, 'isMobile').and.returnValue(true);
+      component.showEventDetail({});
+      expect(eventsServiceSpy.eventDetailPopUp).toHaveBeenCalled();
+    });
+    it('should call router navigate if isMobile false', () => {
+      spyOn(utils, 'isMobile').and.returnValue(false);
+      component.showEventDetail({id: 1234});
+      expect(routerSpy.navigate.calls.first().args[0]).toEqual(['app', 'events', {event_id: 1234}]);
+    });
+  });
+
 });

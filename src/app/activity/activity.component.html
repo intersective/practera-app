@@ -29,9 +29,9 @@
   </ng-container>
 
   <ng-container *ngIf="!loadingActivity">
-    <h1 class="headline-4" aria-label="activity name" tabindex="0">{{ activity.name }}</h1>
+    <h1 class="headline-4" tabindex="0" [attr.aria-describedby]="activity.id">{{ activity.name }}</h1>
     <div class="ion-text-left">
-      <app-description *ngIf="activity.description" [content]="activity.description" class="body-1"></app-description>
+      <app-description [name]="activity.id" *ngIf="activity.description" [content]="activity.description" class="body-1"></app-description>
     </div>
     <div class="ion-text-left ion-margin-top">
       <ion-label color="medium" class="subtitle-2 gray-2" aria-label="tasks" tabindex="0">Tasks</ion-label>
@@ -86,10 +86,10 @@
           *ngIf="events.length > 2"
           lines="none"
           (click)="gotoEvent()"
-          aria-label="events"
+          aria-labelledby="showMore"
           [isCustomizedCard]="true">
           <ion-icon name="ellipsis-vertical" color="primary" class="ion-margin-end"></ion-icon>
-          <p>Show More</p>
+          <p id="showMore">Show More</p>
         </clickable-item>
       </ion-list>
     </ion-card>

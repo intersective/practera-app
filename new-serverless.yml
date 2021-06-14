@@ -36,10 +36,9 @@ resources:
     HasVersioning: !Equals [ '${env:S3VERSIONING}', true]
     HadVersioning: !Equals [ '${env:S3VERSIONING}', 'false-but-was-true']
     HasNoncurrentVersionExpirationInDays: !Not [!Equals [ '${env:NONCURRENTVERSION_EXPIREINDAYS}', 0]]
-    # HasExpirationInDays: !Not [!Equals [ '${env:DEFAULT_EXPIREINDAYS}', 0]]
+   
     
   Resources:
-    ## Specifying the S3 Bucket
     AppV2S3Bucket:
       Type: AWS::S3::Bucket
       Properties:
@@ -55,8 +54,6 @@ resources:
             Status: Enabled
           - NoncurrentVersionExpirationInDays: !If [HasNoncurrentVersionExpirationInDays, '${env:NONCURRENTVERSION_EXPIREINDAYS}', 1]
             Status: !If [HasNoncurrentVersionExpirationInDays, Enabled, Disabled]
-          # - ExpirationInDays: !If [HasExpirationInDays, '${env:DEFAULT_EXPIREINDAYS}', 1]
-          #   Status: !If [HasExpirationInDays, Enabled, Disabled]
         VersioningConfiguration: !If [HasVersioning, {Status: Enabled}, !If [HadVersioning, {Status: Suspended}, !Ref 'AWS::NoValue']]
 
 
@@ -138,7 +135,7 @@ resources:
               OriginAccessIdentity: !Sub 'origin-access-identity/cloudfront/${AppV2CloudFrontOriginAccessIdentity}'
           PriceClass: 'PriceClass_All'
           ViewerCertificate:
-            AcmCertificateArn: {'Fn::ImportValue': '${env:STACK_NAME}-CDNSharedACMCertificateArn-${env:ENV}'}
+            AcmCertificateArn: '${env:CDNSharedACMCertificateArn}'
             MinimumProtocolVersion: 'TLSv1.2_2019'
             SslSupportMethod: 'sni-only'
     
@@ -191,8 +188,6 @@ resources:
             Status: Enabled
           - NoncurrentVersionExpirationInDays: !If [HasNoncurrentVersionExpirationInDays, '${env:NONCURRENTVERSION_EXPIREINDAYS}', 1]
             Status: !If [HasNoncurrentVersionExpirationInDays, Enabled, Disabled]
-          # - ExpirationInDays: !If [HasExpirationInDays, '${env:DEFAULT_EXPIREINDAYS}', 1]
-          #   Status: !If [HasExpirationInDays, Enabled, Disabled]
         VersioningConfiguration: !If [HasVersioning, {Status: Enabled}, !If [HadVersioning, {Status: Suspended}, !Ref 'AWS::NoValue']]
         CorsConfiguration:
           CorsRules:
