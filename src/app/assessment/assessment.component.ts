@@ -111,6 +111,15 @@ export class AssessmentComponent extends RouterEnter {
     return this.utils.isMobile();
   }
 
+  /**
+   * status of access restriction
+   *
+   * @return  {boolean}  cached singlePageAccess in localstorage
+   */
+  get restrictedAccess() {
+    return this.storage.singlePageAccess;
+  }
+
   randomCode(type) {
     if (!this.elIdentities[type]) {
       this.elIdentities[type] = this.utils.randomNumber();
@@ -307,7 +316,7 @@ export class AssessmentComponent extends RouterEnter {
     this.review = review;
     if (!review && this.action === 'review' && !this.doReview) {
       return this.notificationService.alert({
-        message: 'There is no Assessment to review.',
+        message: 'There are no assessments to review.',
         buttons: [
           {
             text: 'OK',

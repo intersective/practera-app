@@ -1,7 +1,6 @@
 import { Component, OnInit, NgZone } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { AuthService } from '../auth.service';
-import { Observable, concat } from 'rxjs';
 import { NotificationService } from '@shared/notification/notification.service';
 import { SwitcherService } from '../../switcher/switcher.service';
 import { UtilsService } from '@services/utils.service';
@@ -11,15 +10,14 @@ import { NewRelicService } from '@shared/new-relic/new-relic.service';
 @Component({
   selector: 'app-auth-direct-login',
   templateUrl: 'auth-direct-login.component.html',
-  // styles: ['']
 })
 export class AuthDirectLoginComponent implements OnInit {
   constructor(
+    readonly utils: UtilsService,
     private router: Router,
     private route: ActivatedRoute,
     private authService: AuthService,
     private notificationService: NotificationService,
-    public utils: UtilsService,
     private switcherService: SwitcherService,
     private storage: BrowserStorageService,
     private ngZone: NgZone,
@@ -59,27 +57,38 @@ export class AuthDirectLoginComponent implements OnInit {
 
   /**
    * Redirect user to a specific page if data is passed in, otherwise redirect to program switcher page
+   *
+   * @param {boolean}   redirectLater
+   * @returns {Promise<boolean | void>}
    */
   private async _redirect(redirectLater?: boolean): Promise<boolean | void> {
     const redirect = this.route.snapshot.paramMap.get('redirect');
-    const timelineId = +this.route.snapshot.paramMap.get('tl');
     const activityId = +this.route.snapshot.paramMap.get('act');
     const contextId = +this.route.snapshot.paramMap.get('ctxt');
     const assessmentId = +this.route.snapshot.paramMap.get('asmt');
     const submissionId = +this.route.snapshot.paramMap.get('sm');
     const topicId = +this.route.snapshot.paramMap.get('top');
+    const timelineId = +this.route.snapshot.paramMap.get('tl');
+
     // clear the cached data
     this.utils.clearCache();
+
     if (!redirect || !timelineId) {
       // if there's no redirection or timeline id
       return this._saveOrRedirect(['switcher', 'switcher-program'], redirectLater);
     }
-    if ( this.route.snapshot.paramMap.has('return_url')) {
+
+    // purpose of return_url
+    // - when user switch program, he/she will be redirect to this url
+    if (this.route.snapshot.paramMap.has('return_url')) {
       this.storage.setUser({
         LtiReturnUrl: this.route.snapshot.paramMap.get('return_url')
       });
     }
-    // switch parogram if user already registered
+
+    const restrictedAccess = this.singlePageRestriction();
+
+    // switch program directly if user already registered
     if (!redirectLater) {
       const program = this.utils.find(this.storage.get('programs'), value => {
         return value.timeline.id === timelineId;
@@ -118,7 +127,7 @@ export class AuthDirectLoginComponent implements OnInit {
         if (!activityId || !contextId || !assessmentId) {
           return this._saveOrRedirect(['app', 'home'], redirectLater);
         }
-        if (this.utils.isMobile()) {
+        if (this.utils.isMobile() || restrictedAccess) {
           return this._saveOrRedirect(['assessment', 'assessment', activityId, contextId, assessmentId], redirectLater);
         } else {
           return this._saveOrRedirect(['app', 'activity', activityId, { task: 'assessment', task_id: assessmentId, context_id: contextId }], redirectLater);
@@ -127,7 +136,7 @@ export class AuthDirectLoginComponent implements OnInit {
         if (!activityId || !topicId) {
           return this._saveOrRedirect(['app', 'home'], redirectLater);
         }
-        if (this.utils.isMobile()) {
+        if (this.utils.isMobile() || restrictedAccess) {
           return this._saveOrRedirect(['topic', activityId, topicId], redirectLater);
         } else {
           return this._saveOrRedirect(['app', 'activity', activityId, { task: 'topic', task_id: topicId }], redirectLater);
@@ -178,4 +187,15 @@ export class AuthDirectLoginComponent implements OnInit {
     });
   }
 
+  singlePageRestriction(): boolean {
+    // one_page_only: display app limited to one single screen and no other view access are allowed
+    const restrictedAccess: string = this.route.snapshot.paramMap.get('one_page_only');
+
+    // extract single page restriction flag from url
+    if (restrictedAccess) {
+      this.storage.singlePageAccess = (restrictedAccess === 'true') ? true : false;
+    }
+
+    return this.storage.singlePageAccess;
+  }
 }

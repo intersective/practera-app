@@ -158,4 +158,13 @@ export class BrowserStorageService {
   getCurrentChatChannel() {
     return this.get('chatChannel');
   }
+
+  get singlePageAccess() {
+    const result = this.get('singlePageAccess');
+    return result || false;
+  }
+
+  set singlePageAccess(val) {
+    this.set('singlePageAccess', val);
+  }
 }
