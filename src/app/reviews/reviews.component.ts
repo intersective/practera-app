@@ -2,7 +2,6 @@ import { Component, ViewChild } from '@angular/core';
 import { Router, ActivatedRoute, ParamMap } from '@angular/router';
 import { UtilsService } from '@services/utils.service';
 import { RouterEnter } from '@services/router-enter.service';
-import { BrowserStorageService } from '@services/storage.service';
 
 @Component({
   selector: 'app-reviews',
@@ -17,12 +16,15 @@ export class ReviewsComponent extends RouterEnter {
   @ViewChild('reviewList') reviewList;
   @ViewChild('assessment') assessment;
   constructor(
+    readonly utils: UtilsService,
     public router: Router,
     private route: ActivatedRoute,
-    public storage: BrowserStorageService,
-    public utils: UtilsService
   ) {
     super(router);
+  }
+
+  get isMobile() {
+    return this.utils.isMobile();
   }
 
   onEnter() {
