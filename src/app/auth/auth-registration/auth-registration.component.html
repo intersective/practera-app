@@ -25,34 +25,36 @@
           <ion-item *ngIf="!hide_password">
             <ion-input name="password" [(ngModel)]="password" inputmode="password" formControlName="password"
               autocomplete="on" required [type]="showPassword ? 'text' : 'password'"
-              placeholder="Set up Practera password*" aria-label="setup Practera password"></ion-input>
+              placeholder="Set up Practera password*">
+              <p id="setup-password" class="for-accessibility">setup practera password</p>
+            </ion-input>
             <ion-button (click)="showPassword = !showPassword" fill="clear">
               <ion-icon slot="end" [name]="showPassword ? 'eye' : 'eye-off'" [attr.aria-label]="showPassword ? 'Password shown in plaintext' : 'Password hidden'"></ion-icon>
             </ion-button>
           </ion-item>
           <ion-item *ngIf="!hide_password" lines="none">
             <ion-input name="confirmPassword"
-              aria-label="confirm password"
               [(ngModel)]="confirmPassword"
               inputmode="password"
               formControlName="confirmPassword"
               [type]="showPassword ? 'text' : 'password'"
               placeholder="Confirm password*"
               autocomplete="on"
-              required></ion-input>
+              required>
+              <p id="confirm-password" class="for-accessibility">confirm password</p>
+            </ion-input>
           </ion-item>
         </ion-list>
         <div class="list-terms">
-          <ion-checkbox id="registrationAgreement" color="primary" slot="start" [(ngModel)]="isAgreed" [ngModelOptions]="{standalone: true}"
-            name="isAgreed" aria-labelledby="registrationAgreement" [attr.aria-label]="isAgreed ? 'I agree to the terms & conditions' : 'I disagree to the terms & conditions'">
-          </ion-checkbox>
+          <ion-checkbox id="registerAgreement" color="primary" slot="start" [(ngModel)]="isAgreed" [ngModelOptions]="{standalone: true}"
+            name="isAgreed" aria-labelledby="registerAgreement" [attr.aria-label]="isAgreed ? 'Agree to the terms & conditions' : 'Disagree to the terms & conditions'"></ion-checkbox>
           <ion-label class="body-2" aria-label="I agree to the terms & conditions">
-            I agree to the <a class="subtitle-2" (click)="openLink()">Terms & Conditions</a>
+            I agree to the <a class="subtitle-2" (click)="openLink()" tabindex="0" aria-label="terms & conditions">Terms & Conditions</a>
           </ion-label>
         </div>
 
         <ion-text *ngFor="let error of errors" color="danger">
-          <p class="text-error">{{error}}</p>
+          <p class="text-error" aria-live="polite">{{error}}</p>
         </ion-text>
         <ion-button id="btn-register" shape="round" expand="full" (click)="register()" color="primary">REGISTER</ion-button>
       </form>
@@ -96,7 +98,7 @@
       </div>
       <div class="div-after-logo directlink">
         <ion-text *ngFor="let error of errors" color="danger">
-          <p class="text-error">{{error}}</p>
+          <p class="text-error" aria-live="polite">{{error}}</p>
         </ion-text>
         <ion-button class="continue-btn" id="btn-register" shape="round" expand="full" (click)="register()"
           [disabled]="!isAgreed" color="primary">CONTINUE
