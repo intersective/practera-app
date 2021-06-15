@@ -1,4 +1,4 @@
-<ion-split-pane *ngIf="!utils.isMobile()" contentId="main-reviews" when="xs">
+<ion-split-pane *ngIf="!isMobile" contentId="main-reviews" when="xs">
   <app-review-list
     #reviewList
     style="display: flex"
@@ -29,6 +29,6 @@
   </ion-content>
 </ion-split-pane>
 
-<ion-content *ngIf="utils.isMobile()">
+<ion-content *ngIf="isMobile">
   <app-review-list #reviewList></app-review-list>
 </ion-content>

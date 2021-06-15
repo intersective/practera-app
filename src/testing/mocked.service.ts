@@ -133,6 +133,7 @@ export class BrowserStorageServiceMock extends SpyObject {
   storage;
   setConfig;
   getCountry;
+  singlePageAccess;
 
   constructor() {
     super(BrowserStorageService);
@@ -155,6 +156,7 @@ export class BrowserStorageServiceMock extends SpyObject {
     this.getConfig = this.spy('getConfig').and.returnValue({
       logo: '',
     });
+    this.singlePageAccess = this.spy('singlePageAccess');
   }
 
   getProviders(): Array<any> {
