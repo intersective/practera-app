@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { AuthService } from '../auth/auth.service';
 import { SettingService } from './setting.service';
 import { BrowserStorageService } from '@services/storage.service';
@@ -18,7 +18,8 @@ import { NewRelicService } from '@shared/new-relic/new-relic.service';
 
 export class SettingsComponent extends RouterEnter {
 
-  routeUrl = '/app/settings';
+  routeUrl = '/settings';
+  mode: string;
   profile = {
     contactNumber: '',
     email: '',
@@ -42,6 +43,7 @@ export class SettingsComponent extends RouterEnter {
 
   constructor (
     public router: Router,
+    private readonly route: ActivatedRoute,
     private authService: AuthService,
     private settingService: SettingService,
     public storage: BrowserStorageService,
@@ -56,8 +58,8 @@ export class SettingsComponent extends RouterEnter {
   }
 
   onEnter() {
-    this.newRelic.setPageViewName('Setting');
-
+    this.newRelic.setPageViewName('Settings');
+    this.mode = this.route.snapshot.data.mode;
     // get contact number and email from local storage
     this.profile.email = this.storage.getUser().email;
     this.profile.contactNumber = this.storage.getUser().contactNumber;
