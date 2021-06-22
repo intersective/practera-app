@@ -1,5 +1,5 @@
 <ion-header mode="ios">
-  <ion-toolbar class="ion-toolbar-absolute">
+  <ion-toolbar [ngClass]="{'ion-toolbar-absolute': !isMobile}">
     <ion-buttons slot="start" *ngIf="!restrictedAccess && isMobile">
       <ion-button (click)="back()" id="btn-back">
         <ion-icon class="icon-backward ion-margin-start" name="arrow-back" color="primary" slot="icon-only" ></ion-icon>
@@ -8,7 +8,7 @@
 
     <ion-title class="ion-text-center" [ngClass]="{
       'subtitle-2': !isMobile
-    }">Assessment</ion-title>
+    }">{{pageTitle}}</ion-title>
     <ng-container *ngIf="doAssessment || doReview">
       <div class="ion-text-center sub-title caption gray-2 saving-msg">{{savingMessage}}</div>
       <ion-button [disabled]="savingButtonDisabled || submitted" (click)="submit(true, false, true)" class="text-button subtitle-1" color="primary" slot="end" fill="clear" size="small">Save</ion-button>
