@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { AssessmentComponent } from './assessment.component';
+import { SinglePageDeactivateGuard } from '../single-page-deactivate.guard';
 
 const routes: Routes = [
   {
@@ -8,14 +9,16 @@ const routes: Routes = [
     component: AssessmentComponent,
     data: {
       action: 'assessment'
-    }
+    },
+    canDeactivate: [SinglePageDeactivateGuard],
   },
   {
     path: 'review/:contextId/:id/:submissionId',
     component: AssessmentComponent,
     data: {
       action: 'review'
-    }
+    },
+    canDeactivate: [SinglePageDeactivateGuard],
   },
   {
     path: 'event/:contextId/:id',
@@ -23,7 +26,7 @@ const routes: Routes = [
     data: {
       action: 'assessment',
       from: 'events'
-    }
+    },
   }
 ];
 
