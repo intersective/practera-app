@@ -86,6 +86,7 @@ Run `npm run local` to start a development server on your local, and calling 127
   - `act` - activity id
   - `ctxt` - context id
   - `asmt` - assessment id
+  - `assessment_referrer_url` - if this url is passed in, we will redirect the user to this url when user click back button or continue button on assessment page
 - `topic` - redirect to topic page with the following parameters
   - `act` - activity id
   - `top` - topic id
@@ -94,8 +95,10 @@ Run `npm run local` to start a development server on your local, and calling 127
   - `ctxt` - context id
   - `asmt` - assessment id
   - `sm` - submission id
+  - `assessment_referrer_url` - if this url is passed in, we will redirect the user to this url when user click back button or continue button on review page
 - `chat` - redirect to chat list page
 - `settings` - redirect to settings page
+- `settings-embed` - redirect to settings embed page
 
 #### Optional parameters:
 - `return_url` - when user switch program, he/she will be redirect to this url
