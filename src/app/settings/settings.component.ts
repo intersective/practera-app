@@ -43,7 +43,7 @@ export class SettingsComponent extends RouterEnter {
 
   constructor (
     public router: Router,
-    private route: ActivatedRoute,
+    private readonly route: ActivatedRoute,
     private authService: AuthService,
     private settingService: SettingService,
     public storage: BrowserStorageService,
