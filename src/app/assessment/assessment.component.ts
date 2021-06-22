@@ -303,6 +303,8 @@ export class AssessmentComponent extends RouterEnter {
       return;
     }
 
+    this.pageTitle = 'View submission';
+
     if (this.assessment.type === 'moderated') {
       // this component become a page for doing review, if
       // - the submission status is 'pending review' and
@@ -316,8 +318,6 @@ export class AssessmentComponent extends RouterEnter {
         this.pageTitle = 'View feedback';
       }
     }
-
-    this.pageTitle = 'View submission';
 
     this.feedbackReviewed = this.submission.completed;
   }
