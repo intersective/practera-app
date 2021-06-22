@@ -124,7 +124,8 @@ export class SettingsComponent extends RouterEnter {
     this.newRelic.actionText('mail to helpline');
     const mailto = 'mailto:' + this.helpline + '?subject=' + this.currentProgramName;
     window.open(mailto, '_self');
-}
+  }
+
   logout(event) {
     if (event instanceof KeyboardEvent && event.key !== 'Enter' && event.key !== ' ') {
       return;
