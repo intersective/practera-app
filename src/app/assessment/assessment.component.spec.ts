@@ -224,7 +224,7 @@ describe('AssessmentComponent', () => {
         },
         {
           provide: BrowserStorageService,
-          useValue: jasmine.createSpyObj('BrowserStorageService', ['getUser', 'getReferrer'])
+          useValue: jasmine.createSpyObj('BrowserStorageService', ['getUser', 'getReferrer', 'get'])
         },
         {
           provide: Router,

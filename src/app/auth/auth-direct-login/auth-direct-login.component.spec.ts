@@ -1,8 +1,8 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { async, ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
+import { async, ComponentFixture, TestBed, fakeAsync, tick, flushMicrotasks } from '@angular/core/testing';
 import { AuthDirectLoginComponent } from './auth-direct-login.component';
 import { AuthService } from '../auth.service';
-import { Observable, of, pipe } from 'rxjs';
+import { of } from 'rxjs';
 import { Router, ActivatedRoute, convertToParamMap } from '@angular/router';
 import { SharedModule } from '@shared/shared.module';
 import { UtilsService } from '@services/utils.service';
@@ -11,7 +11,8 @@ import { SwitcherService } from '../../switcher/switcher.service';
 import { BrowserStorageService } from '@services/storage.service';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
 import { BrowserStorageServiceMock } from '@testing/mocked.service';
-import { Apollo } from 'apollo-angular';
+import { TestUtils } from '@testing/utils';
+
 
 describe('AuthDirectLoginComponent', () => {
   let component: AuthDirectLoginComponent;
@@ -20,7 +21,6 @@ describe('AuthDirectLoginComponent', () => {
   let routerSpy: jasmine.SpyObj<Router>;
   let routeSpy: ActivatedRoute;
   let utils: UtilsService;
-  let apolloSpy: jasmine.SpyObj<Apollo>;
   let notificationSpy: jasmine.SpyObj<NotificationService>;
   let switcherSpy: jasmine.SpyObj<SwitcherService>;
   let storageSpy: jasmine.SpyObj<BrowserStorageService>;
@@ -31,16 +31,14 @@ describe('AuthDirectLoginComponent', () => {
       declarations: [ AuthDirectLoginComponent ],
       schemas: [ CUSTOM_ELEMENTS_SCHEMA ],
       providers: [
-        {
-          provide: Apollo,
-          useValue: jasmine.createSpyObj('Apollo', ['getClient'])
-        },
-        UtilsService,
         NewRelicService,
+        {
+          provide: UtilsService,
+          useClass: TestUtils,
+        },
         {
           provide: BrowserStorageService,
           useClass: BrowserStorageServiceMock
-          // useValue: jasmine.createSpyObj('BrowserStorageService', ['get', 'getConfig', 'getUser'])
         },
         {
           provide: AuthService,
@@ -81,8 +79,7 @@ describe('AuthDirectLoginComponent', () => {
     serviceSpy = TestBed.inject(AuthService) as jasmine.SpyObj<AuthService>;
     routerSpy = TestBed.inject(Router) as jasmine.SpyObj<Router>;
     routeSpy = TestBed.inject(ActivatedRoute);
-    utils = TestBed.inject(UtilsService);
-    apolloSpy = TestBed.inject(Apollo) as jasmine.SpyObj<Apollo>;
+    utils = TestBed.inject(UtilsService) as jasmine.SpyObj<UtilsService>;
     notificationSpy = TestBed.inject(NotificationService) as jasmine.SpyObj<NotificationService>;
     switcherSpy = TestBed.inject(SwitcherService) as jasmine.SpyObj<SwitcherService>;
     storageSpy = TestBed.inject(BrowserStorageService) as jasmine.SpyObj<BrowserStorageService>;
@@ -94,13 +91,14 @@ describe('AuthDirectLoginComponent', () => {
     switcherSpy.switchProgram.and.returnValue(of({}));
     storageSpy.get.and.returnValue([{timeline: {id: 1}}]);
     storageSpy.getConfig.and.returnValue({logo: null});
-    apolloSpy.getClient.and.returnValue({clearStore: () => true});
   });
 
   describe('when testing ngOnInit()', () => {
     it('should pop up alert if auth token is not provided', fakeAsync(() => {
       const params = { authToken: null };
       routeSpy.snapshot.paramMap.get = jasmine.createSpy().and.callFake(key => params[key]);
+      utils.isEmpty = jasmine.createSpy('isEmpty').and.returnValue(true);
+
       tick(50);
       fixture.detectChanges();
       fixture.whenStable().then(() => {
@@ -139,11 +137,17 @@ describe('AuthDirectLoginComponent', () => {
         tmpParams = JSON.parse(JSON.stringify(params));
         doAuthentication = true;
       });
+
       afterEach(fakeAsync(() => {
+        storageSpy.getUser.and.returnValue({
+          timelineId: 2
+        });
+        utils.find = jasmine.createSpy('find').and.returnValue([]);
         routeSpy.snapshot.paramMap.get = jasmine.createSpy().and.callFake(key => tmpParams[key]);
         fixture.detectChanges();
         tick(50);
         fixture.detectChanges();
+
         if (doAuthentication) {
           expect(serviceSpy.directLogin.calls.count()).toBe(1);
           expect(switcherSpy.getMyInfo.calls.count()).toBe(1);
@@ -151,11 +155,14 @@ describe('AuthDirectLoginComponent', () => {
           expect(serviceSpy.directLogin.calls.count()).toBe(0);
           expect(switcherSpy.getMyInfo.calls.count()).toBe(0);
         }
+
         if (switchProgram) {
           expect(switcherSpy.switchProgram.calls.count()).toBe(1);
         }
+
         expect(routerSpy.navigate.calls.first().args[0]).toEqual(redirect);
       }));
+
       it('skip authentication if auth token match', () => {
         switchProgram = false;
         redirect = ['switcher', 'switcher-program'];
@@ -167,10 +174,9 @@ describe('AuthDirectLoginComponent', () => {
         redirect = ['switcher', 'switcher-program'];
       });
       it('program switcher page if timeline id is not in programs', () => {
+        utils.isEmpty = jasmine.createSpy('isEmpty').and.returnValue(true);
+
         tmpParams.redirect = 'home';
-        storageSpy.get.and.returnValue([
-          {timeline: {id: 2}}
-        ]);
         switchProgram = false;
         redirect = ['switcher', 'switcher-program'];
       });
@@ -216,6 +222,9 @@ describe('AuthDirectLoginComponent', () => {
         redirect = ['app', 'home'];
       });
       it('assessment page', () => {
+        utils.isMobile = jasmine.createSpy('isMobile').and.returnValues(false);
+        storageSpy.singlePageAccess = false;
+
         tmpParams.redirect = 'assessment';
         redirect = [
           'app',
@@ -229,7 +238,39 @@ describe('AuthDirectLoginComponent', () => {
         ];
         // redirect = ['assessment', 'assessment', tmpParams.act, tmpParams.ctxt, tmpParams.asmt];
       });
+
+      it('assessment page (mobile)', () => {
+        utils.isMobile = jasmine.createSpy('isMobile').and.returnValues(true);
+
+        tmpParams.redirect = 'assessment';
+        redirect = [
+          'assessment',
+          'assessment',
+          tmpParams.act,
+          tmpParams.ctxt,
+          tmpParams.asmt,
+        ];
+      });
+
+      it('assessment page (onePageOnly restriction)', () => {
+        storageSpy.singlePageAccess = true; // singlePageRestriction
+
+        tmpParams.redirect = 'assessment';
+        redirect = [
+          'assessment',
+          'assessment',
+          tmpParams.act,
+          tmpParams.ctxt,
+          tmpParams.asmt,
+        ];
+      });
+
       it('topic page', () => {
+        utils.isMobile = jasmine.createSpy('isMobile').and.callFake(() => {
+          return false;
+        });
+        storageSpy.singlePageAccess = false; // singlePageRestriction
+
         tmpParams.redirect = 'topic';
         redirect = [
           'app',
@@ -241,6 +282,31 @@ describe('AuthDirectLoginComponent', () => {
           }
         ];
       });
+
+      it('topic page (mobile)', () => {
+        utils.isMobile = jasmine.createSpy('isMobile').and.callFake(() => {
+          return true;
+        });
+
+        tmpParams.redirect = 'topic';
+        redirect = [
+          'topic',
+          tmpParams.act,
+          tmpParams.top
+        ];
+      });
+
+      it('topic page (onePageOnly restriction)', () => {
+        storageSpy.get.and.returnValue(true); // singlePageRestriction
+
+        tmpParams.redirect = 'topic';
+        redirect = [
+          'topic',
+          tmpParams.act,
+          tmpParams.top
+        ];
+      });
+
       it('home page if topic id miss', () => {
         tmpParams.redirect = 'topic';
         tmpParams.top = null;
@@ -281,6 +347,23 @@ describe('AuthDirectLoginComponent', () => {
         tmpParams.redirect = 'default';
         redirect = ['app', 'home'];
       });
+
+    });
+  });
+
+  describe('singlePageRestriction()', () => {
+    it('should cache "onePageOnly" as singlePageRestriction on localStorage', () => {
+      routeSpy.snapshot.paramMap.get = jasmine.createSpy().and.returnValue('true');
+      const result = component.singlePageRestriction();
+      expect(storageSpy.singlePageAccess).toEqual(true);
+      expect(result).toEqual(true);
+    });
+
+    it('should not cache anything if no "onePageOnly" param provided in url', () => {
+      routeSpy.snapshot.paramMap.get = jasmine.createSpy().and.returnValue('anything else');
+      const result = component.singlePageRestriction();
+      expect(storageSpy.singlePageAccess).toEqual(false);
+      expect(result).toBeFalsy();
     });
   });
 });

@@ -25,10 +25,10 @@ export class TabsComponent extends RouterEnter {
   selectedTab = '';
 
   constructor(
+    readonly utils: UtilsService,
+    readonly storage: BrowserStorageService,
     public router: Router,
     private tabsService: TabsService,
-    public storage: BrowserStorageService,
-    public utils: UtilsService,
     private switcherService: SwitcherService,
     private reviewsService: ReviewListService,
     private sharedService: SharedService,
@@ -38,23 +38,28 @@ export class TabsComponent extends RouterEnter {
     super(router);
     this.newRelic.setPageViewName('tab');
 
-    const role = this.storage.getUser().role;
-    this.utils.getEvent('notification').subscribe(event => {
-      this.noOfTodoItems++;
-    });
-    this.utils.getEvent('event-reminder').subscribe(event => {
-      this.noOfTodoItems++;
-    });
-    this.utils.getEvent('chat:new-message').subscribe(event => {
-      this.tabsService.getNoOfChats().subscribe(noOfChats => {
-        this.noOfChats = noOfChats;
+    if (this.restrictedAccess === false) {
+      this.utils.getEvent('notification').subscribe(event => {
+        this.noOfTodoItems++;
       });
-    });
-    this.utils.getEvent('chat-badge-update').subscribe(event => {
-      this.tabsService.getNoOfChats().subscribe(noOfChats => {
-        this.noOfChats = noOfChats;
+      this.utils.getEvent('event-reminder').subscribe(event => {
+        this.noOfTodoItems++;
       });
-    });
+      this.utils.getEvent('chat:new-message').subscribe(event => {
+        this.tabsService.getNoOfChats().subscribe(noOfChats => {
+          this.noOfChats = noOfChats;
+        });
+      });
+      this.utils.getEvent('chat-badge-update').subscribe(event => {
+        this.tabsService.getNoOfChats().subscribe(noOfChats => {
+          this.noOfChats = noOfChats;
+        });
+      });
+    }
+  }
+
+  get restrictedAccess() {
+    return this.storage.singlePageAccess;
   }
 
   private _initialise() {
