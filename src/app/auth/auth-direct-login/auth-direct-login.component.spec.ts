@@ -133,9 +133,11 @@ describe('AuthDirectLoginComponent', () => {
       };
       let tmpParams;
       let doAuthentication;
+      let setReferrerCalled = false;
       beforeEach(() => {
         tmpParams = JSON.parse(JSON.stringify(params));
         doAuthentication = true;
+        setReferrerCalled = false;
       });
 
       afterEach(fakeAsync(() => {
@@ -158,6 +160,9 @@ describe('AuthDirectLoginComponent', () => {
 
         if (switchProgram) {
           expect(switcherSpy.switchProgram.calls.count()).toBe(1);
+        }
+        if (setReferrerCalled) {
+          expect(storageSpy.setReferrer.calls.count()).toBe(1);
         }
 
         expect(routerSpy.navigate.calls.first().args[0]).toEqual(redirect);
@@ -200,6 +205,12 @@ describe('AuthDirectLoginComponent', () => {
       it('activity-task page', () => {
         tmpParams.redirect = 'activity_task';
         redirect = ['activity-task', tmpParams.act];
+      });
+      it('activity-task page with referrer url', () => {
+        tmpParams.redirect = 'activity_task';
+        tmpParams.activity_task_referrer_url = 'https://referrer.practera.com';
+        redirect = ['activity-task', tmpParams.act];
+        setReferrerCalled = true;
       });
       it('home page if activity id miss', () => {
         tmpParams.redirect = 'activity_task';
@@ -263,6 +274,24 @@ describe('AuthDirectLoginComponent', () => {
           tmpParams.ctxt,
           tmpParams.asmt,
         ];
+      });
+
+      it('assessment page with referrer', () => {
+        utils.isMobile = jasmine.createSpy('isMobile').and.returnValues(false);
+        storageSpy.singlePageAccess = false;
+        tmpParams.assessment_referrer_url = 'https://referrer.practera.com';
+        tmpParams.redirect = 'assessment';
+        redirect = [
+          'app',
+          'activity',
+          tmpParams.act,
+          {
+            task: 'assessment',
+            task_id: tmpParams.asmt,
+            context_id: tmpParams.ctxt
+          }
+        ];
+        setReferrerCalled = true;
       });
 
       it('topic page', () => {
@@ -335,6 +364,12 @@ describe('AuthDirectLoginComponent', () => {
         tmpParams.redirect = 'review';
         redirect = ['assessment', 'review', tmpParams.ctxt, tmpParams.asmt, tmpParams.sm];
       });
+      it('review page with referrer', () => {
+        tmpParams.redirect = 'review';
+        tmpParams.assessment_referrer_url = 'https://referrer.practera.com';
+        redirect = ['assessment', 'review', tmpParams.ctxt, tmpParams.asmt, tmpParams.sm];
+        setReferrerCalled = true;
+      });
       it('chat page', () => {
         tmpParams.redirect = 'chat';
         redirect = ['app', 'chat'];
@@ -342,6 +377,10 @@ describe('AuthDirectLoginComponent', () => {
       it('settings page', () => {
         tmpParams.redirect = 'settings';
         redirect = ['app', 'settings'];
+      });
+      it('settings embed page', () => {
+        tmpParams.redirect = 'settings-embed';
+        redirect = ['settings-embed'];
       });
       it('home page', () => {
         tmpParams.redirect = 'default';
