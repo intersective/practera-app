@@ -26,14 +26,17 @@ describe('SinglePageDeactivateGuard', () => {
   }));
 
   describe('canDeactivate()', () => {
-    it('should be true', inject([SinglePageDeactivateGuard], (guard: SinglePageDeactivateGuard) => {
+    it('should be false if storage has singePageAccess set as true', inject([SinglePageDeactivateGuard], (guard: SinglePageDeactivateGuard) => {
       storageSpy.singlePageAccess = true;
-      expect(guard.canDeactivate()).toBeTruthy();
+      expect(guard.canDeactivate()).toBeFalsy();
     }));
 
-    it('should be false if storage has singePageAccess set as false', inject([SinglePageDeactivateGuard], (guard: SinglePageDeactivateGuard) => {
+    it('should be able to deactivated if storage has singePageAccess is false/null', inject([SinglePageDeactivateGuard], (guard: SinglePageDeactivateGuard) => {
       storageSpy.singlePageAccess = false;
-      expect(guard.canDeactivate()).toBeFalsy();
+      expect(guard.canDeactivate()).toBeTruthy();
+
+      storageSpy.singlePageAccess = null;
+      expect(guard.canDeactivate()).toBeTruthy();
     }));
   });
 });
