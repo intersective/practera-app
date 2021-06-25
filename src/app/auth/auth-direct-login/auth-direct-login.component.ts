@@ -187,6 +187,11 @@ export class AuthDirectLoginComponent implements OnInit {
     });
   }
 
+  /**
+   * find "one_page_only" parameter in URL to determine user navigation permission in the app
+   *
+   * @return  {boolean} true = has restriction; false = no restriction
+   */
   singlePageRestriction(): boolean {
     // one_page_only: display app limited to one single screen and no other view access are allowed
     const restrictedAccess: string = this.route.snapshot.paramMap.get('one_page_only');
@@ -197,5 +202,35 @@ export class AuthDirectLoginComponent implements OnInit {
     }
 
     return this.storage.singlePageAccess;
+  }
+
+  extractStackInfo() {
+    const stackUuid: string = this.route.snapshot.paramMap.get('stack_uuid');
+    let stack: any;
+    if (stackUuid) {
+      // @TODO: make request to API endpoint to retrieve stack info
+      stack = {
+        uuid: 'f4f85069-ca3b-4044-905a-e366b724af6b',
+        name: 'Practera App (Local APPV2)',
+        description: 'Participate in an experience or coach as a mentor - Local',
+        image: 'https://media.intersective.com/img/global-login-practera-black-logo.png',
+        url: 'http://127.0.0.1:4200/',
+        api: 'http://127.0.0.1:8080/',
+        appkey: 'b11e7c189b',
+        type: 'app',
+        coreApi: 'http://127.0.0.1:8080',
+        coreGraphQLApi: 'http://127.0.0.1:8000',
+        chatApi: 'http://localhost:3000/local/graphql',
+        filestack: {
+          s3Config: {
+            container: 'practera-aus',
+            region: 'ap-southeast-2'
+          },
+        },
+        defaultCountryModel: 'AUS'
+      };
+    }
+
+    return stack;
   }
 }
