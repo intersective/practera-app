@@ -22,8 +22,12 @@ const api = {
   register: 'api/registration_details.json',
   forgotPassword: 'api/auths.json?action=forgot_password',
   verifyResetPassword: 'api/auths.json?action=verify_reset_password',
-  resetPassword: 'api/auths.json?action=reset_password'
+  resetPassword: 'api/auths.json?action=reset_password',
 };
+
+const LOGIN_API = {
+  stackInfo: 'https://login.practera.com/stack',
+}
 
 interface VerifyParams {
   email: string;
@@ -58,6 +62,17 @@ interface ExperienceConfig {
     achievement_in_app_participant?: boolean;
   };
   logo: string;
+}
+
+interface StackConfig {
+  uuid: string;
+  name: string;
+  description: string;
+  image: string;
+  url: string;
+  api: string;
+  appkey: string;
+  type: string;
 }
 
 @Injectable({
@@ -333,6 +348,22 @@ export class AuthService {
     .pipe(map(res => {
       if (res.data) {
         return res.data.user.uuid;
+      }
+      return null;
+    }));
+  }
+
+  /**
+   * get stack information by uuid through LoginAPI
+   *
+   * @param   {string<StackConfig>}      uuid
+   *
+   * @return  {Observable<StackConfig>}        observable response of stack endpont
+   */
+  getStackConfig(uuid: string): Observable<StackConfig> {
+    return this.request.get(LOGIN_API.stackInfo, { uuid }).pipe(map(res => {
+      if (res.data) {
+        return res.data;
       }
       return null;
     }));

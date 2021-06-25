@@ -30,8 +30,6 @@ export class AppComponent implements OnInit {
     private ngZone: NgZone,
     private newRelic: NewRelicService,
     public sanitizer: DomSanitizer,
-    // private splashScreen: SplashScreen,
-    // private statusBar: StatusBar
   ) {
     this.customHeader = null;
     this.initializeApp();
@@ -138,6 +136,14 @@ export class AppComponent implements OnInit {
           break;
       }
     }
+
+    const stackUuid = searchParams.get('stack_uuid');
+    console.log('stackUuid:', stackUuid);
+
+
+    if (stackUuid) {
+      this.retrieveStackConfig(stackUuid);
+    }
   }
 
   initializeApp() {
@@ -162,4 +168,24 @@ export class AppComponent implements OnInit {
     return false;
   }
 
+  /**
+   * retrieve stack config information: api endpoint url, and then store it into
+   * localStorage + inject to every request (RequestModule)
+   *
+   * @param   {string}  stackUuid  uuid in string
+   * @return  {void}
+   */
+  retrieveStackConfig(stackUuid: string): void {
+    let stack: any;
+    if (stackUuid) {
+  console.log('asdasdasd::', stackUuid);
+      this.authService.getStackConfig(stackUuid).subscribe(res => {
+        console.log(res);
+
+        this.storage.stackConfig = res;
+      });
+    }
+
+    return stack;
+  }
 }
