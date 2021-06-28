@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { RequestService, QueryEncoder } from '@shared/request/request.service';
 import { HttpParams } from '@angular/common/http';
 import { map } from 'rxjs/operators';
-import { Observable, of } from 'rxjs';
+import { Observable } from 'rxjs';
 import { Router } from '@angular/router';
 import { BrowserStorageService } from '@services/storage.service';
 import { UtilsService } from '@services/utils.service';
@@ -346,7 +346,7 @@ export class AuthService {
       }`
     )
     .pipe(map(res => {
-      if (res.data) {
+      if (res && res.data) {
         return res.data.user.uuid;
       }
       return null;
@@ -362,7 +362,7 @@ export class AuthService {
    */
   getStackConfig(uuid: string): Observable<StackConfig> {
     return this.request.get(LOGIN_API.stackInfo, { uuid }).pipe(map(res => {
-      if (res.data) {
+      if (res && res.data) {
         return res.data;
       }
       return null;
