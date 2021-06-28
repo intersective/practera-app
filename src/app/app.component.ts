@@ -173,7 +173,6 @@ export class AppComponent implements OnInit {
    * @return  {void}
    */
   retrieveStackConfig(stackUuid: string): void {
-    let stack: any;
     if (stackUuid) {
       this.authService.getStackConfig(stackUuid).subscribe(res => {
         this.storage.stackConfig = res;
