@@ -372,7 +372,7 @@ describe('RequestService', () => {
     let errRes: any;
     let request: any;
     beforeEach(fakeAsync(() => {
-      request = service.get('test.com').subscribe(
+      request = service.get('https://test.com').subscribe(
         _res => _res,
         _err => {
           errRes = _err;
@@ -402,7 +402,7 @@ describe('RequestService', () => {
 
     it('should throw error if static file retrival fail', fakeAsync(() => {
       mockBackend.expectOne({ method: 'GET'}).flush('<!DOCTYPE html>', err);
-      expect(errRes).toEqual('Http failure response for test.comtest.com: 400 Bad Request');
+      expect(errRes).toEqual('Http failure response for https://test.com: 400 Bad Request');
     }));
   });
 });

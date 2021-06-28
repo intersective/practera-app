@@ -32,7 +32,7 @@ describe('AuthLoginComponent', () => {
         Apollo,
         {
           provide: AuthService,
-          useValue: jasmine.createSpyObj('AuthService', ['login'])
+          useValue: jasmine.createSpyObj('AuthService', ['login', 'globalLogin'])
         },
         {
           provide: NotificationService,
@@ -86,6 +86,7 @@ describe('AuthLoginComponent', () => {
       switcherServiceSpy.switchProgramAndNavigate.and.returnValue(['app', 'home']);
       component.loginForm.setValue({username: 'test@test.com', password: 'abc'});
       serviceSpy.login.and.returnValue(of({}));
+      serviceSpy.globalLogin.and.returnValue(of({}));
       component.login();
       tick();
       expect(serviceSpy.login.calls.count()).toBe(1);
@@ -93,12 +94,28 @@ describe('AuthLoginComponent', () => {
       expect(routerSpy.navigate.calls.first().args[0]).toEqual(['app', 'home']);
     }));
 
-    it('should pop up password compromised alert if login failed', fakeAsync(() => {
+    it('should pop up password compromised alert if LOGIN API login failed', fakeAsync(() => {
       component.loginForm.setValue({username: 'test@test.com', password: 'abc'});
-      serviceSpy.login.and.returnValue(throwError({data: {type: 'password_compromised'}}));
+      serviceSpy.login.and.returnValue(throwError({
+        status: 400,
+        error: {passwordCompromised: true}
+      }));
       component.login();
       tick();
       expect(serviceSpy.login.calls.count()).toBe(1);
+      expect(component.isLoggingIn).toBe(false);
+      expect(notificationSpy.alert.calls.count()).toBe(1);
+      expect(notificationSpy.alert.calls.first().args[0].message).toContain('insecure passwords');
+    }));
+
+    it('should pop up password compromised alert if CORE API login failed', fakeAsync(() => {
+      component.loginForm.setValue({username: 'test@test.com', password: 'abc'});
+      serviceSpy.login.and.returnValue(of({}));
+      serviceSpy.globalLogin.and.returnValue(throwError({data: {type: 'password_compromised'}}));
+      component.login();
+      tick();
+      expect(serviceSpy.login.calls.count()).toBe(1);
+      expect(serviceSpy.globalLogin.calls.count()).toBe(1);
       expect(component.isLoggingIn).toBe(false);
       expect(notificationSpy.alert.calls.count()).toBe(1);
       expect(notificationSpy.alert.calls.first().args[0].message).toContain('insecure passwords');
@@ -110,7 +127,6 @@ describe('AuthLoginComponent', () => {
       component.login();
       tick();
       expect(serviceSpy.login.calls.count()).toBe(1);
-      expect(component.isLoggingIn).toBe(true);
       expect(notificationSpy.alert.calls.count()).toBe(1);
       expect(notificationSpy.alert.calls.first().args[0].message).toContain('password is incorrect');
       notificationSpy.alert.calls.first().args[0].buttons[0].handler();

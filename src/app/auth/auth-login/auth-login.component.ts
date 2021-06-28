@@ -75,28 +75,30 @@ export class AuthLoginComponent implements OnInit {
         },
         err => {
           nrLoginTracer(JSON.stringify(err));
-          this._handleError(err);
+          this._handleError(err, false);
         });
       },
       err => {
         nrLoginTracer(JSON.stringify(err));
-        this._handleError(err);
+        this._handleError(err, true);
       }
     );
   }
 
-  private _handleError(err) {
+  private _handleError(err, isLoginApi: boolean) {
     this.newRelic.noticeError(`${JSON.stringify(err)}`);
     const statusCode = err.status;
-    let msg = 'Internal error, please try again.';
+    let msg = 'Your username or password is incorrect, please try again.';
+    const passwordCompromisedMSG = `We’ve checked this password against a global database of insecure passwords and your password was on it. <br>
+    Please try again. <br>
+    You can learn more about how we check that <a href="https://haveibeenpwned.com/Passwords">database</a>`;
     // credential issue
-    if (statusCode === 400 && err.error && err.error.passwordCompromised) {
-      msg = `We’ve checked this password against a global database of insecure passwords and your password was on it. <br>
-      Please try again. <br>
-      You can learn more about how we check that <a href="https://haveibeenpwned.com/Passwords">database</a>`;
-    } else if (statusCode === 400) {
-      msg = 'Your username or password is incorrect, please try again.';
+    if (isLoginApi && (statusCode === 400 && err.error && err.error.passwordCompromised)) {
+      msg = passwordCompromisedMSG;
+    } else if (!isLoginApi && (this.utils.has(err, 'data.type') && err.data.type === 'password_compromised')) {
+      msg = passwordCompromisedMSG;
     }
+    this.isLoggingIn = false;
     this.notificationService.alert({
       message: msg,
       buttons: [

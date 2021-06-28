@@ -146,37 +146,15 @@ describe('AuthService', () => {
   ];
 
   it('when testing login(), it should pass the correct data to API', () => {
-    requestSpy.post.and.returnValue(of({
-      success: true,
-      data: {
-        tutorial: null,
-        apikey: '123456',
-        Timelines: [
-          {
-            Program: {
-              config: {
-                theme_color: 'abc'
-              }
-            },
-            Enrolment: {},
-            Project: {},
-            Timeline: {}
-          }
-        ]
-      }
-    }));
     requestSpy.loginAPIPost.and.returnValue(of({
       apikey: '123456',
       stacks: mockStacks
     }));
-    storageSpy.getConfig.and.returnValue(true);
-    utilsSpy.has.and.returnValue(true);
     service.login({ username: 'test@test.com', password: '123' }).subscribe();
     expect(requestSpy.loginAPIPost.calls.count()).toBe(1);
     expect(requestSpy.loginAPIPost.calls.first().args[1].username).toEqual('test@test.com');
     expect(requestSpy.loginAPIPost.calls.first().args[1].password).toEqual('123');
     expect(requestSpy.loginAPIPost.calls.first().args[1].from).toEqual('App');
-    expect(storageSpy.setUser.calls.first().args[0]).toEqual({apikey: '123456'});
   });
 
   it('when testing directLogin(), it should pass the correct data to API', () => {
