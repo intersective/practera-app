@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
-import { RequestService, QueryEncoder } from '@shared/request/request.service';
+import { RequestService } from '@shared/request/request.service';
 import { HttpParams } from '@angular/common/http';
-import { map } from 'rxjs/operators';
+import { map, tap } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import { Router } from '@angular/router';
 import { BrowserStorageService } from '@services/storage.service';
@@ -26,7 +26,7 @@ const API = {
   loginAPI: {
     login: 'login',
     stackInfo: 'https://login.practera.com/stack',
-  }
+  },
 };
 
 interface VerifyParams {
@@ -142,7 +142,9 @@ export class AuthService {
       username,
       password
     };
-    return this._loginAPILogin(body);
+    return this._loginAPILogin(body).pipe(tap(res => {
+      this.storage.stackConfig = res;
+    }));
   }
 
   /**
