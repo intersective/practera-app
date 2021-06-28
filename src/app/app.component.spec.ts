@@ -112,7 +112,7 @@ describe('AppComponent', () => {
 
   describe('retrieveStackConfig()', () => {
     it('should make use of AuthService.getStackConfig to get stack info', () => {
-      const SAMPLE_UUID = "44ef5e45-5aac-44d3-94ed-b0e1cd0a45d4";
+      const SAMPLE_UUID = "4455ee45-5aac-44d3-94ed-b0e1cd0a45d4";
       const RESULT = {
         "uuid": SAMPLE_UUID,
         "name": "Sandbox Stack",
