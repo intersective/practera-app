@@ -308,7 +308,7 @@ describe('AuthService', () => {
       requestSpy.get.and.returnValue(throwError('error!'));
       service.getStackConfig(sample_uuid).subscribe(result => {
         expect(result).toBeFalsy();
-      }, error => {
+      },                                            error => {
         expect(error).toEqual('error!');
         expect(requestSpy.get).toHaveBeenCalledWith('https://login.practera.com/stack', { uuid: sample_uuid });
       });
