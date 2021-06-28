@@ -114,14 +114,24 @@ describe('AppComponent', () => {
     it('should make use of AuthService.getStackConfig to get stack info', () => {
       const SAMPLE_UUID = '4455ee45-5aac-44d3-94ed-b0e1cd0a45d4';
       const RESULT = {
-        'uuid': SAMPLE_UUID,
-        'name': 'Sandbox Stack',
-        'description': 'This is a sandbox stack',
-        'image': 'https://image.com',
-        'url': 'https://practera.com',
-        'api': 'http://127.0.0.1:8080/',
-        'appkey': 'b11e7c189b',
-        'type': 'core'
+        uuid: SAMPLE_UUID,
+        name: 'Practera App (Local APPV2)',
+        description: 'Participate in an experience or coach as a mentor - Local',
+        image: 'https://media.intersective.com/img/global-login-practera-black-logo.png',
+        url: 'http://127.0.0.1:4200/',
+        api: 'http://127.0.0.1:8080/',
+        appkey: 'b11e7c189b',
+        type: 'app',
+        coreApi: 'http://127.0.0.1:8080',
+        coreGraphQLApi: 'http://127.0.0.1:8000',
+        chatApi: 'http://localhost:3000/local/graphql',
+        filestack: {
+          s3Config: {
+            container: 'practera-aus',
+            region: 'ap-southeast-2'
+          },
+        },
+        defaultCountryModel: 'AUS'
       };
       authServiceSpy.getStackConfig.and.returnValue(of(RESULT));
 

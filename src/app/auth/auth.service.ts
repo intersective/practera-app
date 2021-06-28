@@ -63,7 +63,13 @@ interface ExperienceConfig {
   };
   logo: string;
 }
-
+interface S3Config {
+  container: string;
+  region: string;
+}
+interface FilestackConfig {
+  s3Config: S3Config;
+}
 interface StackConfig {
   uuid: string;
   name: string;
@@ -73,6 +79,13 @@ interface StackConfig {
   api: string;
   appkey: string;
   type: string;
+
+  coreApi: string;
+  coreGraphQLApi: string;
+  chatApi: string;
+
+  filestack: FilestackConfig;
+  defaultCountryModel: string;
 }
 
 @Injectable({
