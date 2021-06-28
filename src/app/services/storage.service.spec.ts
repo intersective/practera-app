@@ -140,4 +140,15 @@ describe('StorageService', function() {
       expect(service.singlePageAccess).toBeTruthy();
     });
   });
+
+  describe('stackConfig', () => {
+    it('should be false if null or none cached', () => {
+      storage.getItem = jasmine.createSpy('getItem').and.returnValue(null);
+      expect(service.stackConfig).toBeFalsy();
+    });
+    it('should be true if true cached under stackConfig', () => {
+      storage.getItem = jasmine.createSpy('getItem').and.returnValue(true);
+      expect(service.stackConfig).toBeTruthy();
+    });
+  });
 });

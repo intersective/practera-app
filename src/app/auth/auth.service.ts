@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { RequestService, QueryEncoder } from '@shared/request/request.service';
 import { HttpParams } from '@angular/common/http';
 import { map } from 'rxjs/operators';
-import { Observable, of } from 'rxjs';
+import { Observable } from 'rxjs';
 import { Router } from '@angular/router';
 import { BrowserStorageService } from '@services/storage.service';
 import { UtilsService } from '@services/utils.service';
@@ -13,7 +13,7 @@ import { PusherService } from '@shared/pusher/pusher.service';
  * @description list of api endpoint involved in this service
  * @type {Object}
  */
-const api = {
+const API = {
   getConfig: 'api/v2/plan/experience/list',
   linkedin: 'api/auth_linkedin.json',
   login: 'api/auths.json',
@@ -24,7 +24,8 @@ const api = {
   verifyResetPassword: 'api/auths.json?action=verify_reset_password',
   resetPassword: 'api/auths.json?action=reset_password',
   loginAPI: {
-    login: 'login'
+    login: 'login',
+    stackInfo: 'https://login.practera.com/stack',
   }
 };
 
@@ -62,6 +63,30 @@ interface ExperienceConfig {
   };
   logo: string;
 }
+interface S3Config {
+  container: string;
+  region: string;
+}
+interface FilestackConfig {
+  s3Config: S3Config;
+}
+interface StackConfig {
+  uuid: string;
+  name: string;
+  description: string;
+  image: string;
+  url: string;
+  api: string;
+  appkey: string;
+  type: string;
+
+  coreApi: string;
+  coreGraphQLApi: string;
+  chatApi: string;
+
+  filestack: FilestackConfig;
+  defaultCountryModel: string;
+}
 
 interface LoginRequParams {
   username?: string;
@@ -90,7 +115,7 @@ export class AuthService {
 
   private _loginAPILogin(body: LoginRequParams) {
     body.from = 'App';
-    return this.request.loginAPIPost(api.loginAPI.login, body);
+    return this.request.loginAPIPost(API.loginAPI.login, body);
   }
 
   private _login(body: HttpParams, serviceHeader?: string) {
@@ -101,7 +126,7 @@ export class AuthService {
     if (!serviceHeader) {
       delete headers.service;
     }
-    return this.request.post(api.login, body.toString(), {
+    return this.request.post(API.login, body.toString(), {
       headers
     }).pipe(map(res => this._handleLoginResponse(res)));
   }
@@ -216,7 +241,7 @@ export class AuthService {
    * @return {Observable<any>}      [description]
    */
   forgotPassword(email: string): Observable<any>  {
-    return this.request.post(api.forgotPassword, {
+    return this.request.post(API.forgotPassword, {
       email: email,
       domain: this.getDomain()
     });
@@ -239,7 +264,7 @@ export class AuthService {
    * @return {Observable<any>}      [description]
    */
   resetPassword(data): Observable<any> {
-    return this.request.post(api.resetPassword, data);
+    return this.request.post(API.resetPassword, data);
   }
 
   /**
@@ -266,7 +291,7 @@ export class AuthService {
    * @return {Observable<any>}      [description]
    */
   contactNumberLogin(data: { contactNumber: string }): Observable<any> {
-    return this.request.post(api.login, {
+    return this.request.post(API.login, {
       contact_number: data.contactNumber, // API accepts contact_numebr
     }).pipe(map(response => {
       if (response.data) {
@@ -281,7 +306,7 @@ export class AuthService {
   }
 
   getConfig(data: ConfigParams): Observable<{data: ExperienceConfig[]}> {
-    return this.request.get(api.getConfig, {
+    return this.request.get(API.getConfig, {
       params: data
     });
   }
@@ -300,19 +325,19 @@ export class AuthService {
   }
 
   updateProfile(data: UserProfile): Observable<any> {
-    return this.request.post(api.setProfile, data);
+    return this.request.post(API.setProfile, data);
   }
 
   saveRegistration(data: RegisterData): Observable<any> {
     return this.request
-    .post(api.register, data, {
+    .post(API.register, data, {
       headers: { 'Content-Type': 'application/json' }
     });
   }
 
   verifyRegistration(data: VerifyParams): Observable<any> {
     return this.request
-    .post(api.verifyRegistration, data, {
+    .post(API.verifyRegistration, data, {
       headers: { 'Content-Type': 'application/json' }
     });
   }
@@ -325,7 +350,7 @@ export class AuthService {
   */
   verifyResetPassword(data: VerifyParams): Observable<any> {
     return this.request
-    .post(api.verifyResetPassword, data, {
+    .post(API.verifyResetPassword, data, {
       headers: { 'Content-Type': 'application/json' }
     });
   }
@@ -344,8 +369,24 @@ export class AuthService {
       }`
     )
     .pipe(map(res => {
-      if (res.data) {
+      if (res && res.data) {
         return res.data.user.uuid;
+      }
+      return null;
+    }));
+  }
+
+  /**
+   * get stack information by uuid through LoginAPI
+   *
+   * @param   {string<StackConfig>}      uuid
+   *
+   * @return  {Observable<StackConfig>}        observable response of stack endpont
+   */
+  getStackConfig(uuid: string): Observable<StackConfig> {
+    return this.request.get(API.loginAPI.stackInfo, { uuid }).pipe(map(res => {
+      if (res && res.data) {
+        return res.data;
       }
       return null;
     }));
