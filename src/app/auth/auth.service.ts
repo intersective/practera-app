@@ -27,7 +27,7 @@ const api = {
 
 const LOGIN_API = {
   stackInfo: 'https://login.practera.com/stack',
-}
+};
 
 interface VerifyParams {
   email: string;

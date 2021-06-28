@@ -112,16 +112,16 @@ describe('AppComponent', () => {
 
   describe('retrieveStackConfig()', () => {
     it('should make use of AuthService.getStackConfig to get stack info', () => {
-      const SAMPLE_UUID = "4455ee45-5aac-44d3-94ed-b0e1cd0a45d4";
+      const SAMPLE_UUID = '4455ee45-5aac-44d3-94ed-b0e1cd0a45d4';
       const RESULT = {
-        "uuid": SAMPLE_UUID,
-        "name": "Sandbox Stack",
-        "description": "This is a sandbox stack",
-        "image": "https://image.com",
-        "url": "https://practera.com",
-        "api": "http://127.0.0.1:8080/",
-        "appkey": "b11e7c189b",
-        "type": "core"
+        'uuid': SAMPLE_UUID,
+        'name': 'Sandbox Stack',
+        'description': 'This is a sandbox stack',
+        'image': 'https://image.com',
+        'url': 'https://practera.com',
+        'api': 'http://127.0.0.1:8080/',
+        'appkey': 'b11e7c189b',
+        'type': 'core'
       };
       authServiceSpy.getStackConfig.and.returnValue(of(RESULT));
 
@@ -129,7 +129,7 @@ describe('AppComponent', () => {
       fixture.detectChanges();
       fixture.whenStable().then(() => {
         expect(storage.stackConfig).toEqual(RESULT);
-      })
+      });
     });
   });
 });
