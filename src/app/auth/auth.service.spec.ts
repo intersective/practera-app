@@ -25,7 +25,7 @@ describe('AuthService', () => {
         AuthService,
         {
           provide: RequestService,
-          useValue: jasmine.createSpyObj('RequestService', ['delete', 'post', 'get', 'graphQLQuery'])
+          useValue: jasmine.createSpyObj('RequestService', ['delete', 'post', 'get', 'graphQLQuery', 'loginAPIPost'])
         },
         {
           provide: Router,
@@ -60,6 +60,91 @@ describe('AuthService', () => {
     expect(service).toBeTruthy();
   });
 
+  const mockStacks = [
+    {
+      uuid: 'b0f6328e-379c-4cd2-9e96-1363a49ab001',
+      name: 'Practera Classic App - Stage',
+      description: 'Participate in an experience as a learner or reviewer - Testing',
+      image: 'https://media.intersective.com/img/learners_reviewers.png',
+      url: 'https://app.p1-stage.practera.com',
+      api: 'https://admin.p1-stage.practera.com',
+      appkey: 'b11e7c189b',
+      type: 'app',
+      coreApi: 'https://admin.p1-stage.practera.com',
+      coreGraphQLApi: 'https://core-graphql-api.p1-stage.practera.com',
+      chatApi: 'https://chat-api.p1-stage.practera.com',
+      filestack: {
+        s3Config: {
+          container: 'files.p1-stage.practera.com',
+          region: 'ap-southeast-2'
+        },
+      },
+      defaultCountryModel: 'AUS'
+    },
+    {
+      uuid: '9c31655d-fb73-4ea7-8315-aa4c725b367e',
+      name: 'Practera Classic App - Sandbox',
+      description: 'Participate in an experience as a learner or reviewer - Testing',
+      image: 'https://media.intersective.com/img/learners_reviewers.png',
+      url: 'https://app.p1-sandbox.practera.com',
+      api: 'https://admin.p1-sandbox.practera.com',
+      appkey: 'b11e7c189b',
+      type: 'app',
+      coreApi: 'https://admin.p1-sandbox.practera.com',
+      coreGraphQLApi: 'https://core-graphql-api.p1-sandbox.practera.com',
+      chatApi: 'https://chat-api.p1-sandbox.practera.com',
+      filestack: {
+        s3Config: {
+          container: 'files.p1-sandbox.practera.com',
+          region: 'ap-southeast-2'
+        },
+      },
+      defaultCountryModel: 'AUS'
+    },
+    {
+      uuid: 'f4f85069-ca3b-4044-905a-e366b724af6b',
+      name: 'Practera App - Local Development',
+      description: 'Participate in an experience as a learner or reviewer - Local',
+      image: 'https://media.intersective.com/img/learners_reviewers.png',
+      url: 'http://127.0.0.1:4200/',
+      api: 'http://127.0.0.1:8080/',
+      appkey: 'b11e7c189b',
+      type: 'app',
+      coreApi: 'http://127.0.0.1:8080',
+      coreGraphQLApi: 'http://127.0.0.1:8000',
+      chatApi: 'http://localhost:3000/local/graphql',
+      filestack: {
+        s3Config: {
+          container: 'practera-aus',
+          region: 'ap-southeast-2'
+        },
+      },
+      defaultCountryModel: 'AUS'
+    }
+  ];
+  const mockOneStack = [
+    {
+      uuid: 'b0f6328e-379c-4cd2-9e96-1363a49ab001',
+      name: 'Practera Classic App - Stage',
+      description: 'Participate in an experience as a learner or reviewer - Testing',
+      image: 'https://media.intersective.com/img/learners_reviewers.png',
+      url: 'https://app.p1-stage.practera.com',
+      api: 'https://admin.p1-stage.practera.com',
+      appkey: 'b11e7c189b',
+      type: 'app',
+      coreApi: 'https://admin.p1-stage.practera.com',
+      coreGraphQLApi: 'https://core-graphql-api.p1-stage.practera.com',
+      chatApi: 'https://chat-api.p1-stage.practera.com',
+      filestack: {
+        s3Config: {
+          container: 'files.p1-stage.practera.com',
+          region: 'ap-southeast-2'
+        },
+      },
+      defaultCountryModel: 'AUS'
+    }
+  ];
+
   it('when testing login(), it should pass the correct data to API', () => {
     requestSpy.post.and.returnValue(of({
       success: true,
@@ -80,12 +165,17 @@ describe('AuthService', () => {
         ]
       }
     }));
+    requestSpy.loginAPIPost.and.returnValue(of({
+      apikey: '123456',
+      stacks: mockStacks
+    }));
     storageSpy.getConfig.and.returnValue(true);
     utilsSpy.has.and.returnValue(true);
-    service.login({ email: 'test@test.com', password: '123' }).subscribe();
-    expect(requestSpy.post.calls.count()).toBe(1);
-    expect(requestSpy.post.calls.first().args[1]).toContain('test%40test.com');
-    expect(requestSpy.post.calls.first().args[1]).toContain('123');
+    service.login({ username: 'test@test.com', password: '123' }).subscribe();
+    expect(requestSpy.loginAPIPost.calls.count()).toBe(1);
+    expect(requestSpy.loginAPIPost.calls.first().args[1].username).toEqual('test@test.com');
+    expect(requestSpy.loginAPIPost.calls.first().args[1].password).toEqual('123');
+    expect(requestSpy.loginAPIPost.calls.first().args[1].from).toEqual('App');
     expect(storageSpy.setUser.calls.first().args[0]).toEqual({apikey: '123456'});
   });
 

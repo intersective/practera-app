@@ -48,6 +48,7 @@ import { DeviceInfoComponent } from './device-info/device-info.component';
     RequestModule.forRoot({
       appkey: environment.appkey,
       prefixUrl: environment.APIEndpoint,
+      loginApi: environment.loginAPIUrl
     }),
     AppRoutingModule,
     EmbedVideo.forRoot(),

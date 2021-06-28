@@ -22,7 +22,10 @@ const api = {
   register: 'api/registration_details.json',
   forgotPassword: 'api/auths.json?action=forgot_password',
   verifyResetPassword: 'api/auths.json?action=verify_reset_password',
-  resetPassword: 'api/auths.json?action=reset_password'
+  resetPassword: 'api/auths.json?action=reset_password',
+  loginAPI: {
+    login: 'login'
+  }
 };
 
 interface VerifyParams {
@@ -60,6 +63,14 @@ interface ExperienceConfig {
   logo: string;
 }
 
+interface LoginRequParams {
+  username?: string;
+  password?: string;
+  auth_token?: string;
+  apikey?: string;
+  from?: string;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -75,6 +86,11 @@ export class AuthService {
 
   private _clearCache(): any {
     // do clear user cache here
+  }
+
+  private _loginAPILogin(body: LoginRequParams) {
+    body.from = 'App';
+    return this.request.loginAPIPost(api.loginAPI.login, body);
   }
 
   private _login(body: HttpParams, serviceHeader?: string) {
@@ -96,15 +112,12 @@ export class AuthService {
    *              so must convert them into compatible formdata before submission
    * @param {object} { email, password } in string for each of the value
    */
-  login({ email, password }): Observable<any> {
-    const body = new HttpParams({
-        encoder: new QueryEncoder()
-      })
-      .set('data[User][email]', email)
-      .set('data[User][password]', password)
-      .set('domain', this.getDomain());
-
-    return this._login(body);
+  login({ username, password }): Observable<any> {
+    const body = {
+      username,
+      password
+    };
+    return this._loginAPILogin(body);
   }
 
   /**

@@ -73,8 +73,8 @@ describe('AuthLoginComponent', () => {
   });
 
   describe('when testing login()', () => {
-    it('should pop up alert if email is empty', () => {
-      component.loginForm.setValue({email: '', password: 'abc'});
+    it('should pop up alert if username is empty', () => {
+      component.loginForm.setValue({username: '', password: 'abc'});
       notificationSpy.alert.and.returnValue(true);
       component.login();
       expect(notificationSpy.alert.calls.count()).toBe(1);
@@ -84,7 +84,7 @@ describe('AuthLoginComponent', () => {
 
     it('should navigate to dashboard if have one program after successfully login', fakeAsync(() => {
       switcherServiceSpy.switchProgramAndNavigate.and.returnValue(['app', 'home']);
-      component.loginForm.setValue({email: 'test@test.com', password: 'abc'});
+      component.loginForm.setValue({username: 'test@test.com', password: 'abc'});
       serviceSpy.login.and.returnValue(of({}));
       component.login();
       tick();
@@ -94,7 +94,7 @@ describe('AuthLoginComponent', () => {
     }));
 
     it('should pop up password compromised alert if login failed', fakeAsync(() => {
-      component.loginForm.setValue({email: 'test@test.com', password: 'abc'});
+      component.loginForm.setValue({username: 'test@test.com', password: 'abc'});
       serviceSpy.login.and.returnValue(throwError({data: {type: 'password_compromised'}}));
       component.login();
       tick();
@@ -105,7 +105,7 @@ describe('AuthLoginComponent', () => {
     }));
 
     it(`should pop up 'incorrect' alert if login failed`, fakeAsync(() => {
-      component.loginForm.setValue({email: 'test@test.com', password: 'abc'});
+      component.loginForm.setValue({username: 'test@test.com', password: 'abc'});
       serviceSpy.login.and.returnValue(throwError({}));
       component.login();
       tick();

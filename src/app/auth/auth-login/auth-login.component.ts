@@ -17,7 +17,7 @@ import { environment } from '@environments/environment';
 })
 export class AuthLoginComponent implements OnInit {
   loginForm = new FormGroup({
-    email: new FormControl('', [Validators.required]),
+    username: new FormControl('', [Validators.required]),
     password: new FormControl('', [Validators.required]),
   });
   isLoggingIn = false;
@@ -38,9 +38,9 @@ export class AuthLoginComponent implements OnInit {
   }
 
   login() {
-    if (this.utils.isEmpty(this.loginForm.value.email) || this.utils.isEmpty(this.loginForm.value.password)) {
+    if (this.utils.isEmpty(this.loginForm.value.username) || this.utils.isEmpty(this.loginForm.value.password)) {
       this.notificationService.alert({
-        message: 'Your email or password is empty, please fill them in.',
+        message: 'Your username or password is empty, please fill them in.',
         buttons: [
           {
             text: 'OK',
@@ -60,52 +60,55 @@ export class AuthLoginComponent implements OnInit {
       this.newRelic.setCustomAttribute('login status', message);
     });
     return this.authService.login({
-      email: this.loginForm.value.email,
+      username: this.loginForm.value.username,
       password: this.loginForm.value.password,
     }).subscribe(
-      res => {
-        nrLoginTracer('login successful');
-        this.newRelic.actionText('login successful');
-        return this._handleNavigation(res.programs);
+      globalRes => {
+        return this.authService.globalLogin({
+          apikey: globalRes.apikey,
+          service: 'LOGIN'
+        }).subscribe(
+        res => {
+          nrLoginTracer('login successful');
+          this.newRelic.actionText('login successful');
+          return this._handleNavigation(res.programs);
+        },
+        err => {
+          nrLoginTracer(JSON.stringify(err));
+          this._handleError(err);
+        });
       },
       err => {
         nrLoginTracer(JSON.stringify(err));
-        this.newRelic.noticeError(`${JSON.stringify(err)}`);
-
-        // notify user about weak password
-        if (this.utils.has(err, 'data.type')) {
-          if (err.data.type === 'password_compromised') {
-            this.isLoggingIn = false;
-            return this.notificationService.alert({
-              message: `We’ve checked this password against a global database of insecure passwords and your password was on it. <br>
-                We have sent you an email with a link to reset your password. <br>
-                You can learn more about how we check that <a href="https://haveibeenpwned.com/Passwords">database</a>`,
-              buttons: [
-                {
-                  text: 'OK',
-                  role: 'cancel'
-                }
-              ],
-            });
-          }
-        }
-
-        // credential issue
-        this.notificationService.alert({
-          message: 'Your email or password is incorrect, please try again.',
-          buttons: [
-            {
-              text: 'OK',
-              role: 'cancel',
-              handler: () => {
-                this.isLoggingIn = false;
-                return;
-              },
-            },
-          ],
-        });
+        this._handleError(err);
       }
     );
+  }
+
+  private _handleError(err) {
+    this.newRelic.noticeError(`${JSON.stringify(err)}`);
+    const statusCode = err.status;
+    let msg = 'Internal error, please try again.';
+    // credential issue
+    if (statusCode === 400 && err.error && err.error.passwordCompromised) {
+      msg = `We’ve checked this password against a global database of insecure passwords and your password was on it. <br>
+      Please try again. <br>
+      You can learn more about how we check that <a href="https://haveibeenpwned.com/Passwords">database</a>`;
+    } else if (statusCode === 400) {
+      msg = 'Your username or password is incorrect, please try again.';
+    }
+    this.notificationService.alert({
+      message: msg,
+      buttons: [
+        {
+          text: 'OK',
+          role: 'cancel',
+          handler: () => {
+            this.isLoggingIn = false;
+          },
+        },
+      ],
+    });
   }
 
   private async _handleNavigation(programs) {

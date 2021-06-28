@@ -48,6 +48,10 @@ export class RequestInterceptor implements HttpInterceptor {
       headers['teamId'] = teamId.toString();
     }
 
+    if (req.url.includes('/login')) {
+      delete headers['appkey'];
+    }
+
     return next.handle(req.clone({
       headers: new HttpHeaders(headers),
       params: paramsInject,

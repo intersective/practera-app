@@ -11,6 +11,7 @@ import { Apollo } from 'apollo-angular';
 import { HttpLink } from 'apollo-angular-link-http';
 import { InMemoryCache } from 'apollo-cache-inmemory';
 import gql from 'graphql-tag';
+import { urlFormatter } from 'helper';
 
 @Injectable({ providedIn: 'root' })
 export class DevModeService {
@@ -22,6 +23,7 @@ export class DevModeService {
 export class RequestConfig {
   appkey = '';
   prefixUrl = '';
+  loginApi = '';
 }
 
 export class QueryEncoder implements HttpParameterCodec {
@@ -48,6 +50,7 @@ export class QueryEncoder implements HttpParameterCodec {
 export class RequestService {
   private appkey: string;
   private prefixUrl: string;
+  private loginApiUrl: string;
   private loggedOut: boolean;
 
   constructor(
@@ -63,6 +66,7 @@ export class RequestService {
     if (config) {
       this.appkey = config.appkey;
       this.prefixUrl = config.prefixUrl;
+      this.loginApiUrl = config.loginApi;
     }
   }
 
@@ -92,13 +96,15 @@ export class RequestService {
     return params;
   }
 
-  private getEndpointUrl(endpoint) {
+  private getEndpointUrl(endpoint, apiType?) {
     let endpointUrl = this.prefixUrl + endpoint;
+    if (apiType === 'login') {
+      endpointUrl = this.loginApiUrl + endpoint;
+    }
     if (endpoint.includes('https://') || endpoint.includes('http://')) {
       endpointUrl = endpoint;
     }
-
-    return endpointUrl;
+    return urlFormatter(endpointUrl);
   }
 
   /**
@@ -146,6 +152,31 @@ export class RequestService {
     }
 
     return this.http.post<any>(this.getEndpointUrl(endPoint), data, {
+      headers: this.appendHeaders(httpOptions.headers),
+      params: this.setParams(httpOptions.params)
+    })
+      .pipe(concatMap(response => {
+        this._refreshApikey(response);
+        return of(response);
+      }))
+      .pipe(
+        catchError((error) => this.handleError(error))
+      );
+  }
+
+  loginAPIPost(endPoint: string = '', data, httpOptions?: any): Observable<any> {
+    if (!httpOptions) {
+      httpOptions = {};
+    }
+
+    if (!this.utils.has(httpOptions, 'headers')) {
+      httpOptions.headers = '';
+    }
+    if (!this.utils.has(httpOptions, 'params')) {
+      httpOptions.params = '';
+    }
+
+    return this.http.post<any>(this.getEndpointUrl(endPoint, 'login'), data, {
       headers: this.appendHeaders(httpOptions.headers),
       params: this.setParams(httpOptions.params)
     })

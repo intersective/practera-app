@@ -26,7 +26,8 @@ describe('RequestInterceptor', () => {
         HttpClientTestingModule,
         RequestModule.forRoot({
           appkey: APPKEY,
-          prefixUrl: 'test.com'
+          prefixUrl: 'test.com',
+          loginApi: 'login.com'
         })
       ],
       providers: [
