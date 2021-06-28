@@ -131,5 +131,13 @@ describe('AppComponent', () => {
         expect(storage.stackConfig).toEqual(RESULT);
       });
     });
+
+    it('should not fun AuthService.getStackConfig when STACK_UUID not provided', () => {
+      app.retrieveStackConfig(null);
+      fixture.detectChanges();
+      fixture.whenStable().then(() => {
+        expect(authServiceSpy.getStackConfig).not.toHaveBeenCalled();
+      });
+    });
   });
 });

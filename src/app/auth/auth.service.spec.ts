@@ -8,6 +8,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { BrowserStorageService } from '@services/storage.service';
 import { PusherService } from '@shared/pusher/pusher.service';
 import { UtilsService } from '@services/utils.service';
+import { request } from 'http';
 
 describe('AuthService', () => {
   let service: AuthService;
@@ -284,6 +285,22 @@ describe('AuthService', () => {
       }));
       service.getUUID().subscribe(result => {
         expect(result).toBeNull();
+      });
+    });
+  });
+
+  describe('getStackConfig()', () => {
+    it('should make GET request to LoginAPI', () => {
+      const sample_uuid = 'abcdefg_hijklmn_opqrstu_vwxyz';
+      const sample_result: any = {
+        data: {
+          sample_result: sample_uuid
+        }
+      };
+      requestSpy.get.and.returnValue(of(sample_result));
+      service.getStackConfig(sample_uuid).subscribe(result => {
+        expect(result).toEqual(sample_result.data);
+        expect(requestSpy.get).toHaveBeenCalledWith('https://login.practera.com/stack', { uuid: sample_uuid });
       });
     });
   });
