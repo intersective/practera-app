@@ -138,9 +138,6 @@ export class AppComponent implements OnInit {
     }
 
     const stackUuid = searchParams.get('stack_uuid');
-    console.log('stackUuid:', stackUuid);
-
-
     if (stackUuid) {
       this.retrieveStackConfig(stackUuid);
     }
@@ -178,14 +175,11 @@ export class AppComponent implements OnInit {
   retrieveStackConfig(stackUuid: string): void {
     let stack: any;
     if (stackUuid) {
-  console.log('asdasdasd::', stackUuid);
       this.authService.getStackConfig(stackUuid).subscribe(res => {
-        console.log(res);
-
         this.storage.stackConfig = res;
       });
     }
 
-    return stack;
+    return this.storage.stackConfig;
   }
 }
