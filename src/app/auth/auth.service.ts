@@ -143,12 +143,13 @@ export class AuthService {
   }
 
   /**
-   * @name globalLogin
-   * @description login API specifically only accept request data in encodedUrl formdata,
-   *              so must convert them into compatible formdata before submission
-   * @param {object} { apikey } in string
+   * @name directLoginWithApikey
+   * @description need to login user to core API if user by using apikey that login API return.
+   *              if user came from global login or after user login to login API,
+   *              there is apikey login API return, we need to use that to login to core API.
+   * @param {object} { apikey, service } in string
    */
-  globalLogin({ apikey, service }): Observable<any> {
+  directLoginWithApikey({ apikey, service }): Observable<any> {
     const body = new HttpParams()
       .set('apikey', apikey);
     this.logout({}, false);

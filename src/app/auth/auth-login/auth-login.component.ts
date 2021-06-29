@@ -37,6 +37,15 @@ export class AuthLoginComponent implements OnInit {
     this.newRelic.setPageViewName('login');
   }
 
+  /**
+   * This method will log user in to the system.
+   * - first it check for validation of username an password. if it invalid will show an alert.
+   * - Then it calling 'Login API' through 'authService.login' by passing username and password.
+   * - If API call success 'Lgoin API' will return 'apikey'.
+   * - Then method calling 'Core API' through 'authService.directLoginWithApikey' by passing 'apikey' got from response of 'authService.login'
+   * - If API call success 'Core API' will return programs and other things related to login user.
+   * to read more about flow check documentation (./docs/workflows/auth-workflows.md)
+   */
   login() {
     if (this.utils.isEmpty(this.loginForm.value.username) || this.utils.isEmpty(this.loginForm.value.password)) {
       this.notificationService.alert({
@@ -64,7 +73,7 @@ export class AuthLoginComponent implements OnInit {
       password: this.loginForm.value.password,
     }).subscribe(
       globalRes => {
-        return this.authService.globalLogin({
+        return this.authService.directLoginWithApikey({
           apikey: globalRes.apikey,
           service: 'LOGIN'
         }).subscribe(

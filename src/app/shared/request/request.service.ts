@@ -11,7 +11,6 @@ import { Apollo } from 'apollo-angular';
 import { HttpLink } from 'apollo-angular-link-http';
 import { InMemoryCache } from 'apollo-cache-inmemory';
 import gql from 'graphql-tag';
-import { urlFormatter } from 'helper';
 
 @Injectable({ providedIn: 'root' })
 export class DevModeService {
@@ -104,7 +103,7 @@ export class RequestService {
     if (endpoint.includes('https://') || endpoint.includes('http://')) {
       endpointUrl = endpoint;
     }
-    return urlFormatter(endpointUrl);
+    return this.utils.urlFormatter(endpointUrl);
   }
 
   /**

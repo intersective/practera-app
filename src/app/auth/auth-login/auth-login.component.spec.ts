@@ -32,7 +32,7 @@ describe('AuthLoginComponent', () => {
         Apollo,
         {
           provide: AuthService,
-          useValue: jasmine.createSpyObj('AuthService', ['login', 'globalLogin'])
+          useValue: jasmine.createSpyObj('AuthService', ['login', 'directLoginWithApikey'])
         },
         {
           provide: NotificationService,
@@ -86,7 +86,7 @@ describe('AuthLoginComponent', () => {
       switcherServiceSpy.switchProgramAndNavigate.and.returnValue(['app', 'home']);
       component.loginForm.setValue({username: 'test@test.com', password: 'abc'});
       serviceSpy.login.and.returnValue(of({}));
-      serviceSpy.globalLogin.and.returnValue(of({}));
+      serviceSpy.directLoginWithApikey.and.returnValue(of({}));
       component.login();
       tick();
       expect(serviceSpy.login.calls.count()).toBe(1);
@@ -111,11 +111,11 @@ describe('AuthLoginComponent', () => {
     it('should pop up password compromised alert if CORE API login failed', fakeAsync(() => {
       component.loginForm.setValue({username: 'test@test.com', password: 'abc'});
       serviceSpy.login.and.returnValue(of({}));
-      serviceSpy.globalLogin.and.returnValue(throwError({data: {type: 'password_compromised'}}));
+      serviceSpy.directLoginWithApikey.and.returnValue(throwError({data: {type: 'password_compromised'}}));
       component.login();
       tick();
       expect(serviceSpy.login.calls.count()).toBe(1);
-      expect(serviceSpy.globalLogin.calls.count()).toBe(1);
+      expect(serviceSpy.directLoginWithApikey.calls.count()).toBe(1);
       expect(component.isLoggingIn).toBe(false);
       expect(notificationSpy.alert.calls.count()).toBe(1);
       expect(notificationSpy.alert.calls.first().args[0].message).toContain('insecure passwords');
