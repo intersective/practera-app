@@ -2,10 +2,7 @@ import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouteReuseStrategy } from '@angular/router';
 import { IonicModule, IonicRouteStrategy } from '@ionic/angular';
-import { HttpClientModule, HttpHeaders } from '@angular/common/http';
-import { ApolloModule, APOLLO_OPTIONS, Apollo } from 'apollo-angular';
-import { HttpLinkModule, HttpLink } from 'apollo-angular-link-http';
-import { InMemoryCache, defaultDataIdFromObject } from 'apollo-cache-inmemory';
+import { HttpClientModule } from '@angular/common/http';
 
 import { AppRoutingModule } from './app-routing.module';
 import { RequestModule } from '@shared/request/request.module';
@@ -16,6 +13,7 @@ import { FastFeedbackModule } from './fast-feedback/fast-feedback.module';
 import { ReviewRatingModule } from './review-rating/review-rating.module';
 import { EventDetailModule } from './event-detail/event-detail.module';
 import { GoMobileModule } from './go-mobile/go-mobile.module';
+import { ApolloModule } from '@shared/apollo/apollo.module';
 
 import { AppComponent } from './app.component';
 import { UtilsService } from './services/utils.service';
@@ -38,11 +36,10 @@ import { DeviceInfoComponent } from './device-info/device-info.component';
     DeviceInfoComponent,
   ],
   imports: [
+    ApolloModule,
     BrowserModule,
     BrowserAnimationsModule,
     HttpClientModule,
-    ApolloModule,
-    HttpLinkModule,
     IonicModule.forRoot(),
     AuthModule,
     RequestModule.forRoot({
@@ -68,27 +65,6 @@ import { DeviceInfoComponent } from './device-info/device-info.component';
     })
   ],
   providers: [
-    {
-      provide: APOLLO_OPTIONS,
-      useFactory: (httpLink: HttpLink) => {
-        return {
-          cache: new InMemoryCache({
-            dataIdFromObject: object => {
-              switch (object.__typename) {
-                case 'Task':
-                  return `Task:${object['type']}${object.id}`;
-                default:
-                  return defaultDataIdFromObject(object);
-              }
-            }
-          }),
-          link: httpLink.create({
-            uri: environment.graphQL
-          })
-        };
-      },
-      deps: [HttpLink]
-    },
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
     // Custom
     UtilsService,
@@ -96,18 +72,4 @@ import { DeviceInfoComponent } from './device-info/device-info.component';
   ],
   bootstrap: [AppComponent],
 })
-export class AppModule {
-  constructor(
-    private apollo: Apollo,
-    httpLink: HttpLink
-  ) {
-    this.apollo.create(
-      {
-        link: httpLink.create({
-          uri: environment.chatGraphQL
-        }),
-        cache: new InMemoryCache(),
-      },
-      'chat');
-  }
-}
+export class AppModule {}
