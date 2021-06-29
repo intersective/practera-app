@@ -75,17 +75,17 @@ export class AuthLoginComponent implements OnInit {
         },
         err => {
           nrLoginTracer(JSON.stringify(err));
-          this._handleError(err, false);
+          this._handleError(err);
         });
       },
       err => {
         nrLoginTracer(JSON.stringify(err));
-        this._handleError(err, true);
+        this._handleError(err);
       }
     );
   }
 
-  private _handleError(err, isLoginApi: boolean) {
+  private _handleError(err) {
     this.newRelic.noticeError(`${JSON.stringify(err)}`);
     const statusCode = err.status;
     let msg = 'Your username or password is incorrect, please try again.';
@@ -93,9 +93,7 @@ export class AuthLoginComponent implements OnInit {
     Please try again. <br>
     You can learn more about how we check that <a href="https://haveibeenpwned.com/Passwords">database</a>`;
     // credential issue
-    if (isLoginApi && (statusCode === 400 && err.error && err.error.passwordCompromised)) {
-      msg = passwordCompromisedMSG;
-    } else if (!isLoginApi && (this.utils.has(err, 'data.type') && err.data.type === 'password_compromised')) {
+    if ((statusCode === 400 && err.error && err.error.passwordCompromised) || (this.utils.has(err, 'data.type') && err.data.type === 'password_compromised')) {
       msg = passwordCompromisedMSG;
     }
     this.isLoggingIn = false;

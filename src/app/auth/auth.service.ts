@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
-import { RequestService, QueryEncoder } from '@shared/request/request.service';
+import { RequestService } from '@shared/request/request.service';
 import { HttpParams } from '@angular/common/http';
 import { map } from 'rxjs/operators';
-import { Observable, of } from 'rxjs';
+import { Observable } from 'rxjs';
 import { Router } from '@angular/router';
 import { BrowserStorageService } from '@services/storage.service';
 import { UtilsService } from '@services/utils.service';
@@ -66,8 +66,6 @@ interface ExperienceConfig {
 interface LoginRequParams {
   username?: string;
   password?: string;
-  auth_token?: string;
-  apikey?: string;
   from?: string;
 }
 
@@ -88,12 +86,23 @@ export class AuthService {
     // do clear user cache here
   }
 
-  private _loginAPILogin(body: LoginRequParams) {
+  /**
+   * @name _loginAPILogin
+   * @description Calling login API to login the user.
+   * @param body Json Object - request parameter need to pass to login api.
+   */
+  private _loginAPILogin(body: LoginRequParams): Observable<any> {
     body.from = 'App';
-    return this.request.loginAPIPost(api.loginAPI.login, body);
+    return this.request.post(api.loginAPI.login, body, {}, true);
   }
 
-  private _login(body: HttpParams, serviceHeader?: string) {
+  /**
+   * @name _login
+   * @description Calling core API to login the user.
+   * @param body HttpParams Onject - request parameter need to pass to core api.
+   * @param serviceHeader header to pass to core API to mention data comming from Login API.
+   */
+  private _login(body: HttpParams, serviceHeader?: string): Observable<any> {
     const headers = {
       'Content-Type': 'application/x-www-form-urlencoded',
       service: serviceHeader

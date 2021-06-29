@@ -239,52 +239,6 @@ describe('RequestService', () => {
     }));
   });
 
-  describe('loginAPIPost()', () => {
-    const testURL = 'https://www.post-test.com';
-    const sampleData = {
-      sample: 'data'
-    };
-
-    it('should perform a POST request based on provided URL', fakeAsync(() => {
-      let res = { body: true };
-
-      service.loginAPIPost(testURL, sampleData).subscribe(_res => {
-        res = _res;
-      });
-      const req = mockBackend.expectOne({ method: 'POST' });
-      req.flush(res);
-
-      tick();
-
-      const { body } = res;
-      expect(req.request.url).toBe(testURL);
-      expect(body).toBe(true);
-
-      mockBackend.verify();
-    }));
-
-    it('should perform error handling when fail', fakeAsync(() => {
-      spyOn(devModeServiceSpy, 'isDevMode').and.returnValue(false);
-
-      const ERR_MESSAGE = 'Invalid POST Request';
-      const err = { success: false, status: 400, statusText: 'Bad Request' };
-      let res: any;
-      let errRes: any;
-      service.loginAPIPost(testURL, sampleData).subscribe(
-        _res => {
-          res = _res;
-        },
-        _err => {
-          errRes = _err;
-        }
-      );
-      const req = mockBackend.expectOne({ url: testURL, method: 'POST'}).flush(ERR_MESSAGE, err);
-
-      expect(res).toBeUndefined();
-      expect(errRes).toEqual(ERR_MESSAGE);
-    }));
-  });
-
   describe('delete()', () => {
     const testURL = 'https://www.delete-test.com';
 

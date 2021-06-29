@@ -96,9 +96,9 @@ export class RequestService {
     return params;
   }
 
-  private getEndpointUrl(endpoint, apiType?) {
+  private getEndpointUrl(endpoint, isLoginAPI?: boolean) {
     let endpointUrl = this.prefixUrl + endpoint;
-    if (apiType === 'login') {
+    if (isLoginAPI) {
       endpointUrl = this.loginApiUrl + endpoint;
     }
     if (endpoint.includes('https://') || endpoint.includes('http://')) {
@@ -139,7 +139,7 @@ export class RequestService {
       );
   }
 
-  post(endPoint: string = '', data, httpOptions?: any): Observable<any> {
+  post(endPoint: string = '', data, httpOptions?: any, isLoginAPI?: boolean): Observable<any> {
     if (!httpOptions) {
       httpOptions = {};
     }
@@ -151,32 +151,13 @@ export class RequestService {
       httpOptions.params = '';
     }
 
-    return this.http.post<any>(this.getEndpointUrl(endPoint), data, {
-      headers: this.appendHeaders(httpOptions.headers),
-      params: this.setParams(httpOptions.params)
-    })
-      .pipe(concatMap(response => {
-        this._refreshApikey(response);
-        return of(response);
-      }))
-      .pipe(
-        catchError((error) => this.handleError(error))
-      );
-  }
-
-  loginAPIPost(endPoint: string = '', data, httpOptions?: any): Observable<any> {
-    if (!httpOptions) {
-      httpOptions = {};
+    let apiEndpoint = this.getEndpointUrl(endPoint);
+    // get login API endpoint if need to call login API.
+    if (isLoginAPI) {
+      apiEndpoint = this.getEndpointUrl(endPoint, true);
     }
 
-    if (!this.utils.has(httpOptions, 'headers')) {
-      httpOptions.headers = '';
-    }
-    if (!this.utils.has(httpOptions, 'params')) {
-      httpOptions.params = '';
-    }
-
-    return this.http.post<any>(this.getEndpointUrl(endPoint, 'login'), data, {
+    return this.http.post<any>(apiEndpoint, data, {
       headers: this.appendHeaders(httpOptions.headers),
       params: this.setParams(httpOptions.params)
     })
