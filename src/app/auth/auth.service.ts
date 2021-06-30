@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { RequestService, QueryEncoder } from '@shared/request/request.service';
 import { HttpParams } from '@angular/common/http';
 import { map } from 'rxjs/operators';
-import { Observable, of } from 'rxjs';
+import { Observable } from 'rxjs';
 import { Router } from '@angular/router';
 import { BrowserStorageService } from '@services/storage.service';
 import { UtilsService } from '@services/utils.service';
@@ -22,7 +22,11 @@ const api = {
   register: 'api/registration_details.json',
   forgotPassword: 'api/auths.json?action=forgot_password',
   verifyResetPassword: 'api/auths.json?action=verify_reset_password',
-  resetPassword: 'api/auths.json?action=reset_password'
+  resetPassword: 'api/auths.json?action=reset_password',
+};
+
+const LOGIN_API = {
+  stackInfo: 'https://login.practera.com/stack',
 };
 
 interface VerifyParams {
@@ -58,6 +62,30 @@ interface ExperienceConfig {
     achievement_in_app_participant?: boolean;
   };
   logo: string;
+}
+interface S3Config {
+  container: string;
+  region: string;
+}
+interface FilestackConfig {
+  s3Config: S3Config;
+}
+interface StackConfig {
+  uuid: string;
+  name: string;
+  description: string;
+  image: string;
+  url: string;
+  api: string;
+  appkey: string;
+  type: string;
+
+  coreApi: string;
+  coreGraphQLApi: string;
+  chatApi: string;
+
+  filestack: FilestackConfig;
+  defaultCountryModel: string;
 }
 
 @Injectable({
@@ -331,8 +359,24 @@ export class AuthService {
       }`
     )
     .pipe(map(res => {
-      if (res.data) {
+      if (res && res.data) {
         return res.data.user.uuid;
+      }
+      return null;
+    }));
+  }
+
+  /**
+   * get stack information by uuid through LoginAPI
+   *
+   * @param   {string<StackConfig>}      uuid
+   *
+   * @return  {Observable<StackConfig>}        observable response of stack endpont
+   */
+  getStackConfig(uuid: string): Observable<StackConfig> {
+    return this.request.get(LOGIN_API.stackInfo, { uuid }).pipe(map(res => {
+      if (res && res.data) {
+        return res.data;
       }
       return null;
     }));
