@@ -1,6 +1,6 @@
 import { AuthService } from './auth.service';
 import { TestBed } from '@angular/core/testing';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 import { RequestService } from '@shared/request/request.service';
 import { TestUtils } from '@testing/utils';
 import { Router } from '@angular/router';
@@ -8,6 +8,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { BrowserStorageService } from '@services/storage.service';
 import { PusherService } from '@shared/pusher/pusher.service';
 import { UtilsService } from '@services/utils.service';
+import { request } from 'http';
 
 describe('AuthService', () => {
   let service: AuthService;
@@ -352,6 +353,30 @@ describe('AuthService', () => {
       }));
       service.getUUID().subscribe(result => {
         expect(result).toBeNull();
+      });
+    });
+  });
+
+  describe('getStackConfig()', () => {
+    const sample_uuid = 'abcdefg_hijklmn_opqrstu_vwxyz';
+    it('should make GET request to LoginAPI', () => {
+      const sample_result: any = {
+        data: {
+          sample_result: sample_uuid
+        }
+      };
+      requestSpy.get.and.returnValue(of(sample_result));
+      service.getStackConfig(sample_uuid).subscribe(result => {
+        expect(result).toEqual(sample_result.data);
+        expect(requestSpy.get).toHaveBeenCalledWith('https://login.practera.com/stack', { uuid: sample_uuid });
+      });
+    });
+
+    it('should fail with returning null', () => {
+      requestSpy.get.and.returnValue(of(null));
+      service.getStackConfig(sample_uuid).subscribe(result => {
+        expect(result).toBeFalsy();
+        expect(requestSpy.get).toHaveBeenCalledWith('https://login.practera.com/stack', { uuid: sample_uuid });
       });
     });
   });

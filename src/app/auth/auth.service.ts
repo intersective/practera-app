@@ -23,9 +23,11 @@ const api = {
   forgotPassword: 'api/auths.json?action=forgot_password',
   verifyResetPassword: 'api/auths.json?action=verify_reset_password',
   resetPassword: 'api/auths.json?action=reset_password',
-  loginAPI: {
-    login: 'login'
-  }
+};
+
+const LOGIN_API = {
+  stackInfo: 'https://login.practera.com/stack',
+  login: 'login'
 };
 
 interface VerifyParams {
@@ -62,6 +64,30 @@ interface ExperienceConfig {
   };
   logo: string;
 }
+interface S3Config {
+  container: string;
+  region: string;
+}
+interface FilestackConfig {
+  s3Config: S3Config;
+}
+interface StackConfig {
+  uuid: string;
+  name: string;
+  description: string;
+  image: string;
+  url: string;
+  api: string;
+  appkey: string;
+  type: string;
+
+  coreApi: string;
+  coreGraphQLApi: string;
+  chatApi: string;
+
+  filestack: FilestackConfig;
+  defaultCountryModel: string;
+}
 
 interface LoginRequParams {
   username?: string;
@@ -93,7 +119,7 @@ export class AuthService {
    */
   private _loginAPILogin(body: LoginRequParams): Observable<any> {
     body.from = 'App';
-    return this.request.post(api.loginAPI.login, body, {}, true);
+    return this.request.post(LOGIN_API.login, body, {}, true);
   }
 
   /**
@@ -354,8 +380,24 @@ export class AuthService {
       }`
     )
     .pipe(map(res => {
-      if (res.data) {
+      if (res && res.data) {
         return res.data.user.uuid;
+      }
+      return null;
+    }));
+  }
+
+  /**
+   * get stack information by uuid through LoginAPI
+   *
+   * @param   {string<StackConfig>}      uuid
+   *
+   * @return  {Observable<StackConfig>}        observable response of stack endpont
+   */
+  getStackConfig(uuid: string): Observable<StackConfig> {
+    return this.request.get(LOGIN_API.stackInfo, { uuid }).pipe(map(res => {
+      if (res && res.data) {
+        return res.data;
       }
       return null;
     }));

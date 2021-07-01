@@ -208,6 +208,11 @@ export class AuthDirectLoginComponent implements OnInit {
     });
   }
 
+  /**
+   * find "one_page_only" parameter in URL to determine user navigation permission in the app
+   *
+   * @return  {boolean} true = has restriction; false = no restriction
+   */
   singlePageRestriction(): boolean {
     // one_page_only: display app limited to one single screen and no other view access are allowed
     const restrictedAccess: string = this.route.snapshot.paramMap.get('one_page_only');

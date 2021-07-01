@@ -168,4 +168,13 @@ export class BrowserStorageService {
   set singlePageAccess(val) {
     this.set('singlePageAccess', val);
   }
+
+  get stackConfig() {
+    const result = this.get('stackConfig');
+    return result || false;
+  }
+
+  set stackConfig(val) {
+    this.set('stackConfig', val);
+  }
 }
