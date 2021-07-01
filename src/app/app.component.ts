@@ -1,11 +1,9 @@
 import { Component, OnInit, NgZone } from '@angular/core';
-import { Location } from '@angular/common';
-import { Router, ActivatedRoute } from '@angular/router';
+import { Router, ActivatedRoute, convertToParamMap } from '@angular/router';
 import { Platform } from '@ionic/angular';
 import { UtilsService } from '@services/utils.service';
 import { SharedService } from '@services/shared.service';
 import { Observable } from 'rxjs';
-import { tap } from 'rxjs/operators';
 import { AuthService } from './auth/auth.service';
 import { BrowserStorageService } from '@services/storage.service';
 import { VersionCheckService } from '@services/version-check.service';
@@ -33,22 +31,15 @@ export class AppComponent implements OnInit {
     private ngZone: NgZone,
     private newRelic: NewRelicService,
     public sanitizer: DomSanitizer,
-    private $location: Location
   ) {
     this.customHeader = null;
-    $location.subscribe(res => {
-      console.log('lol', res);
-    });
-    this.activatedRoute.params.subscribe(res => {
-      console.log('asdasdasd', res);
+    this.activatedRoute.queryParams.subscribe(async res => {
+      const query = this.getQueryParams();
+      if (query.has('stack_uuid')) {
+        await this.retrieveStackConfig(query.get('stack_uuid'));
+      }
     });
 
-
-/*    const stackUuid = searchParams.get('stack_uuid');
-    if (stackUuid) {
-      this.retrieveStackConfig(stackUuid);
-    }
-*/
     this.initializeApp();
   }
 
@@ -66,20 +57,6 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.activatedRoute.url.subscribe(res => {
-      console.log('asd:url', res);
-    });
-    this.activatedRoute.queryParamMap.subscribe(res => {
-      console.log('asd', res);
-    });
-    this.activatedRoute.queryParams.subscribe(res => {
-      console.log('@:',res);
-      /*const stackUuid = res.get('stack_uuid');
-      if (stackUuid) {
-        this.retrieveStackConfig(stackUuid);
-      }*/
-    });
-
     this.configVerification();
     this.sharedService.onPageLoad();
 
@@ -120,57 +97,11 @@ export class AppComponent implements OnInit {
       }
     );
 
-    let searchParams = null;
-    let queryString = '';
-    if (window.location.search) {
-      queryString =  window.location.search.substring(1);
-    } else if (window.location.hash) {
-      queryString = window.location.hash.substring(2);
-    }
-    searchParams = new URLSearchParams(queryString);
-
-    if (searchParams.has('apikey')) {
-      const queries = this.utils.urlQueryToObject(queryString);
-      return this.navigate(['global_login', searchParams.get('apikey'), queries]);
-    }
-
-    if (searchParams.has('do')) {
-      switch (searchParams.get('do')) {
-        case 'secure':
-          if (searchParams.has('auth_token')) {
-            const queries = this.utils.urlQueryToObject(queryString);
-            this.navigate([
-              'secure',
-              searchParams.get('auth_token'),
-              queries
-            ]);
-          }
-          break;
-        case 'resetpassword':
-          if (searchParams.has('key') && searchParams.has('email')) {
-            this.navigate([
-              'reset_password',
-              searchParams.get('key'),
-              searchParams.get('email')
-            ]);
-          }
-          break;
-
-        case 'registration':
-          if (searchParams.has('key') && searchParams.has('email')) {
-            this.navigate([
-              'registration',
-              searchParams.get('email'),
-              searchParams.get('key')
-            ]);
-          }
-          break;
-      }
-    }
+    this.executeQueryParams();
   }
 
-  initializeApp() {
-    this.platform.ready().then(async () => {
+  initializeApp(): Promise<any> {
+    return this.platform.ready().then(async () => {
       if (environment.production) {
         // watch version update
         this.versionCheckService.initiateVersionCheck();
@@ -198,13 +129,69 @@ export class AppComponent implements OnInit {
    * @param   {string}  stackUuid  uuid in string
    * @return  {void}
    */
-  retrieveStackConfig(stackUuid: string): void {
+  async retrieveStackConfig(stackUuid: string): Promise<void> {
     if (stackUuid) {
-      this.authService.getStackConfig(stackUuid).subscribe(res => {
-        this.storage.stackConfig = res;
-      });
+      const res = await this.authService.getStackConfig(stackUuid).toPromise();
+      this.storage.stackConfig = res;
     }
 
-    return this.storage.stackConfig;
+    return;
+  }
+
+  executeQueryParams(): Promise<any> {
+    const searchParams = this.getQueryParams();
+    if (searchParams.has('apikey')) {
+      const queries = this.utils.urlQueryToObject(searchParams.toString());
+      return this.navigate(['global_login', searchParams.get('apikey'), queries]);
+    }
+
+    if (searchParams.has('do')) {
+      switch (searchParams.get('do')) {
+        case 'secure':
+          if (searchParams.has('auth_token')) {
+            const queries = this.utils.urlQueryToObject(searchParams.toString());
+            return this.navigate([
+              'secure',
+              searchParams.get('auth_token'),
+              queries
+            ]);
+          }
+          break;
+        case 'resetpassword':
+          if (searchParams.has('key') && searchParams.has('email')) {
+            return this.navigate([
+              'reset_password',
+              searchParams.get('key'),
+              searchParams.get('email')
+            ]);
+          }
+          break;
+
+        case 'registration':
+          if (searchParams.has('key') && searchParams.has('email')) {
+            return this.navigate([
+              'registration',
+              searchParams.get('email'),
+              searchParams.get('key')
+            ]);
+          }
+          break;
+      }
+    }
+  }
+
+  /**
+   * extra query parameters from URL (window.location)
+   *
+   * @return  {URLSearchParams}
+   */
+  getQueryParams(): URLSearchParams {
+    let queryString = '';
+    if (window.location.search) {
+      queryString = window.location.search.substring(1);
+    } else if (window.location.hash) {
+      queryString = window.location.hash.substring(2);
+    }
+    return new URLSearchParams(queryString);
   }
 }
