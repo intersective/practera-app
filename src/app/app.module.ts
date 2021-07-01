@@ -2,7 +2,7 @@ import { NgModule, APP_INITIALIZER } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouteReuseStrategy } from '@angular/router';
 import { IonicModule, IonicRouteStrategy } from '@ionic/angular';
-import { HttpClientModule, HttpHeaders } from '@angular/common/http';
+import { HttpClientModule, HttpClient } from '@angular/common/http';
 import { ApolloModule, APOLLO_OPTIONS, Apollo } from 'apollo-angular';
 import { HttpLinkModule, HttpLink } from 'apollo-angular-link-http';
 import { InMemoryCache, defaultDataIdFromObject } from 'apollo-cache-inmemory';
@@ -28,14 +28,35 @@ import { PusherModule } from '@shared/pusher/pusher.module';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { UnlockingComponent } from '@components/unlocking/unlocking.component';
 import { DeviceInfoComponent } from './device-info/device-info.component';
+import { BrowserStorageService } from '@services/storage.service';
+import { Observable, of } from 'rxjs';
+import { tap } from 'rxjs/operators';
 
-function initializeApp(private utils: UtilsService) {
+function initializeApp(
+  utils: UtilsService,
+  storage: BrowserStorageService,
+  httpClient: HttpClient
+) {
+
   return () => new Promise((resolve, reject) => {
     // Do some asynchronous stuff
-    console.log('initiaasdasd::', location);
-    utils.getQueryParams();
-    resolve(true);
+    const query = utils.getQueryParams();
+    if (query.has('stack_uuid')) {
+      return httpClient.get(`https://login.practera.com/stack/${query.get('stack_uuid')}`).pipe(tap(stack => {
+        storage.stackConfig = stack;
+        console.log('stack::', stack);
+
+      })).subscribe(res => {
+
+        console.log('res::', res);
+        resolve(true);
+      }, err => {
+        storage.stackConfig = {stack: true};
+        console.log('err::', err);
+      });
+    }
   });
+
 }
 
 @NgModule({
@@ -78,7 +99,7 @@ function initializeApp(private utils: UtilsService) {
     {
       provide: APP_INITIALIZER,
       useFactory: initializeApp,
-      deps: [UtilsService],
+      deps: [UtilsService, BrowserStorageService, HttpClient],
       multi: true,
     },
     {
