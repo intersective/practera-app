@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { NgModule, APP_INITIALIZER } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouteReuseStrategy } from '@angular/router';
 import { IonicModule, IonicRouteStrategy } from '@ionic/angular';
@@ -29,6 +29,14 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { UnlockingComponent } from '@components/unlocking/unlocking.component';
 import { DeviceInfoComponent } from './device-info/device-info.component';
 
+function initializeApp(private utils: UtilsService) {
+  return () => new Promise((resolve, reject) => {
+    // Do some asynchronous stuff
+    console.log('initiaasdasd::', location);
+    utils.getQueryParams();
+    resolve(true);
+  });
+}
 
 @NgModule({
   declarations: [
@@ -67,6 +75,12 @@ import { DeviceInfoComponent } from './device-info/device-info.component';
     })
   ],
   providers: [
+    {
+      provide: APP_INITIALIZER,
+      useFactory: initializeApp,
+      deps: [UtilsService],
+      multi: true,
+    },
     {
       provide: APOLLO_OPTIONS,
       useFactory: (httpLink: HttpLink) => {

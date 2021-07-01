@@ -34,7 +34,7 @@ export class AppComponent implements OnInit {
   ) {
     this.customHeader = null;
     this.activatedRoute.queryParams.subscribe(async res => {
-      const query = this.getQueryParams();
+      const query = this.utils.getQueryParams();
       if (query.has('stack_uuid')) {
         await this.retrieveStackConfig(query.get('stack_uuid'));
       }
@@ -139,7 +139,7 @@ export class AppComponent implements OnInit {
   }
 
   executeQueryParams(): Promise<any> {
-    const searchParams = this.getQueryParams();
+    const searchParams = this.utils.getQueryParams();
     if (searchParams.has('apikey')) {
       const queries = this.utils.urlQueryToObject(searchParams.toString());
       return this.navigate(['global_login', searchParams.get('apikey'), queries]);
@@ -178,20 +178,5 @@ export class AppComponent implements OnInit {
           break;
       }
     }
-  }
-
-  /**
-   * extra query parameters from URL (window.location)
-   *
-   * @return  {URLSearchParams}
-   */
-  getQueryParams(): URLSearchParams {
-    let queryString = '';
-    if (window.location.search) {
-      queryString = window.location.search.substring(1);
-    } else if (window.location.hash) {
-      queryString = window.location.hash.substring(2);
-    }
-    return new URLSearchParams(queryString);
   }
 }
