@@ -113,12 +113,16 @@ export class AuthService {
 
   /**
    * @name _loginAPILogin
-   * @description Calling login API to login the user.
+   * @description Calling login API to login the user and save stacks in local storage.
    * @param body Json Object - request parameter need to pass to login api.
    */
   private _loginAPILogin(body: LoginRequParams): Observable<any> {
     body.from = 'App';
-    return this.request.post(LOGIN_API.login, body, {}, true);
+    return this.request.post(LOGIN_API.login, body, {}, true)
+    .pipe(map(res => {
+      this.storage.set('stacks', res.stacks);
+      return res;
+    }));
   }
 
   /**

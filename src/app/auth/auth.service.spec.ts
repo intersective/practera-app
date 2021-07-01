@@ -151,11 +151,14 @@ describe('AuthService', () => {
       apikey: '123456',
       stacks: mockStacks
     }));
+    storageSpy.set.and.returnValue(true);
     service.login({ username: 'test@test.com', password: '123' }).subscribe();
     expect(requestSpy.post.calls.count()).toBe(1);
     expect(requestSpy.post.calls.first().args[1].username).toEqual('test@test.com');
     expect(requestSpy.post.calls.first().args[1].password).toEqual('123');
     expect(requestSpy.post.calls.first().args[1].from).toEqual('App');
+    expect(storageSpy.set.calls.count()).toBe(1);
+    expect(storageSpy.set.calls.first().args[1]).toEqual(mockStacks);
   });
 
   it('when testing directLogin(), it should pass the correct data to API', () => {

@@ -1,4 +1,4 @@
-import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { CUSTOM_ELEMENTS_SCHEMA, EventEmitter } from '@angular/core';
 import { async, ComponentFixture, TestBed, tick, fakeAsync } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Apollo } from 'apollo-angular';
@@ -163,6 +163,34 @@ describe('ChatListComponent', () => {
       expect(component.chatList).toBeDefined();
       expect(chatSeviceSpy.getChatList.calls.count()).toBe(1);
       expect(chatSeviceSpy.getPusherChannels.calls.count()).toBe(1);
+    });
+  });
+
+  describe('when testing goToChatRoom()', () => {
+    it('should emit the navigate with chat channel', () => {
+      spyOn(component.navigate, 'emit');
+      spyOn(utils, 'isMobile').and.returnValue(false);
+      component.goToChatRoom(
+        {
+          uuid: '35326928',
+          name: 'Team 1',
+          avatar: 'https://sandbox.practera.com/img/team-white.png',
+          pusherChannel: 'sdb746-93r7dc-5f44eb4f',
+          isAnnouncement: false,
+          isDirectMessage: false,
+          readonly: false,
+          roles: [
+            'participant',
+            'coordinator',
+            'admin'
+          ],
+          unreadMessageCount: 0,
+          lastMessage: null,
+          lastMessageCreated: null,
+          canEdit: true
+        }
+      );
+      expect(component.navigate.emit).toHaveBeenCalled();
     });
   });
 
