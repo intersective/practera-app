@@ -1,9 +1,11 @@
 import { Component, OnInit, NgZone } from '@angular/core';
-import { Router } from '@angular/router';
+import { Location } from '@angular/common';
+import { Router, ActivatedRoute } from '@angular/router';
 import { Platform } from '@ionic/angular';
 import { UtilsService } from '@services/utils.service';
 import { SharedService } from '@services/shared.service';
 import { Observable } from 'rxjs';
+import { tap } from 'rxjs/operators';
 import { AuthService } from './auth/auth.service';
 import { BrowserStorageService } from '@services/storage.service';
 import { VersionCheckService } from '@services/version-check.service';
@@ -21,6 +23,7 @@ export class AppComponent implements OnInit {
   constructor(
     private platform: Platform,
     private router: Router,
+    private activatedRoute: ActivatedRoute,
     public utils: UtilsService,
     private sharedService: SharedService,
     private authService: AuthService,
@@ -30,8 +33,22 @@ export class AppComponent implements OnInit {
     private ngZone: NgZone,
     private newRelic: NewRelicService,
     public sanitizer: DomSanitizer,
+    private $location: Location
   ) {
     this.customHeader = null;
+    $location.subscribe(res => {
+      console.log('lol', res);
+    });
+    this.activatedRoute.params.subscribe(res => {
+      console.log('asdasdasd', res);
+    });
+
+
+/*    const stackUuid = searchParams.get('stack_uuid');
+    if (stackUuid) {
+      this.retrieveStackConfig(stackUuid);
+    }
+*/
     this.initializeApp();
   }
 
@@ -49,6 +66,20 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.activatedRoute.url.subscribe(res => {
+      console.log('asd:url', res);
+    });
+    this.activatedRoute.queryParamMap.subscribe(res => {
+      console.log('asd', res);
+    });
+    this.activatedRoute.queryParams.subscribe(res => {
+      console.log('@:',res);
+      /*const stackUuid = res.get('stack_uuid');
+      if (stackUuid) {
+        this.retrieveStackConfig(stackUuid);
+      }*/
+    });
+
     this.configVerification();
     this.sharedService.onPageLoad();
 
@@ -135,11 +166,6 @@ export class AppComponent implements OnInit {
           }
           break;
       }
-    }
-
-    const stackUuid = searchParams.get('stack_uuid');
-    if (stackUuid) {
-      this.retrieveStackConfig(stackUuid);
     }
   }
 
