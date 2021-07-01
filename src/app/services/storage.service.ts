@@ -37,9 +37,10 @@ export interface User {
 
 export interface Referrer {
   // redirect user to this url when
-  // 1. user click back button of activity detail page
-  // 2. user click continue button of last task
-  activityTaskUrl: string;
+  // 1. user click back button of <route> page
+  // 2. user clicks any other "navigate away" button on that page
+  route: string;
+  url: string;
 }
 
 export interface Config {

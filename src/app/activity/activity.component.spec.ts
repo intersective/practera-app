@@ -253,7 +253,8 @@ describe('ActivityComponent', () => {
     });
     it('should navigate to the external url', () => {
       storageSpy.getReferrer.and.returnValue({
-        activityTaskUrl: 'abc',
+        route: 'activity-task',
+        url: 'abc',
       });
       const redirectToUrlSpy = spyOn(utils, 'redirectToUrl');
       component.back();
