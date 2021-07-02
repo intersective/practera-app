@@ -14,8 +14,7 @@ on:
         description: 'New tag version based on create-release-tag workflow'     
         required: true
         default: ''
-  push:
-    branches: [ 'feature/uk_release_fix' ] 
+
 
 ################################################
 #  GITHUB ACTION JOBS
@@ -197,6 +196,7 @@ jobs:
           CUSTOM_AWS_REGION: ${{ env.REGION }}
           CUSTOM_JS_ENVIRONEMENT: dev #TODO CHECK
 
+
 ###############################################################
 #  BUILD WEB PACKAGES
 ##############################################################
@@ -265,40 +265,40 @@ jobs:
 
 
 
-# # #########################################################
-# # # SLACK NOTIFICATION
-# # #########################################################  
-#       - name: Slack Notification
-#         if: always() # Pick up events even if the job fails or is canceled.
-#         uses: 8398a7/action-slack@v3
-#         env:
-#           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-#           MATRIX_CONTEXT: ${{ toJson(matrix) }} # required
-#         with:
-#           status: ${{ job.status }}
-#           author_name: ${{ env.ROOTSTACK }} deployed to ${{ env.ENV }} environemnt in ${{ env.STACK_NAME }} AWS account
-#           mention: 'here'
-#           if_mention: failure,cancelled
-#           job_name: deploy-p1-uk-live # Match the name above.
-#           fields: repo,commit,eventName,ref,workflow,message,author,job,took
-#           custom_payload: |
-#             {
-#             username: 'GitHub Action CI WorkFlow',
-#             icon_emoji: ':github:',
-#             attachments: [{
-#               color: '${{ job.status }}' === 'success' ? 'good' : ${{ job.status }}' === 'failure' ? 'danger' : 'warning',
-#               text:
-#              `${process.env.AS_REPO}\n
-#               ${process.env.AS_COMMIT}\n
-#               ${process.env.AS_EVENT_NAME}\n
-#               @${process.env.AS_REF}\n
-#               @${process.env.AS_WORKFLOW}\n
-#               ${process.env.AS_MESSAGE}\n
-#               ${process.env.AS_AUTHOR}\n
-#               ${process.env.AS_JOB}\n
-#               ${process.env.AS_TOOK}`,
-#             }]
-#             }
+# #########################################################
+# # SLACK NOTIFICATION
+# #########################################################  
+      - name: Slack Notification
+        if: always() # Pick up events even if the job fails or is canceled.
+        uses: 8398a7/action-slack@v3
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          MATRIX_CONTEXT: ${{ toJson(matrix) }} # required
+        with:
+          status: ${{ job.status }}
+          author_name: ${{ env.BRANCH_TAG_NAME }} - ${{ env.ROOTSTACK }} deployed to ${{ env.ENV }} environemnt in ${{ env.STACK_NAME }} AWS account
+          mention: 'here'
+          if_mention: failure,cancelled
+          job_name: deploy-p1-uk-live # Match the name above.
+          fields: repo,commit,eventName,ref,workflow,message,author,job,took
+          custom_payload: |
+            {
+            username: 'GitHub Action CI WorkFlow',
+            icon_emoji: ':github:',
+            attachments: [{
+              color: '${{ job.status }}' === 'success' ? 'good' : ${{ job.status }}' === 'failure' ? 'danger' : 'warning',
+              text:
+             `${process.env.AS_REPO}\n
+              ${process.env.AS_COMMIT}\n
+              ${process.env.AS_EVENT_NAME}\n
+              @${process.env.AS_REF}\n
+              @${process.env.AS_WORKFLOW}\n
+              ${process.env.AS_MESSAGE}\n
+              ${process.env.AS_AUTHOR}\n
+              ${process.env.AS_JOB}\n
+              ${process.env.AS_TOOK}`,
+            }]
+            }
 
           
 # ################################################
@@ -308,6 +308,7 @@ jobs:
         if: ${{ failure() }}
         run: |
           echo "STATUS=FAILURE" >> $GITHUB_ENV
+
 
 # ################################################
 # #  DEVOPS-DEPLOYMENT REPORT

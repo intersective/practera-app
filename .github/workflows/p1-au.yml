@@ -1,8 +1,8 @@
-# GitHub Actions WorkFlow Name
+################################################
+#  GITHUB ACTION WORKFLOW NAME
+################################################
+name: Deploy to p1-au live environment
 
-name: Live environment AU
-
-#Event Trigger for this Workflow
 
 ################################################
 #  GITHUB ACTION EVENT TRIGGER
@@ -56,7 +56,7 @@ jobs:
   
       - name: Install Serverless Framework
         run: |
-          npm i -g serverless@2.17.0
+          npm i -g serverless
       
  
       - name: Cache node modules
@@ -80,22 +80,50 @@ jobs:
       - name: Install dependencies
         if: steps.cache-node-modules.outputs.cache-hit != 'true'
         run:  npm install
-          
-  
-      # - name: Run lint test if present only
-      #   run:  npm run lint --if-present
  
       
-      - name: Custom Environemnt variables
+
+###############################################################
+#  ANGULAR ENVIRONMENT CREATION
+##############################################################
+      - name: Angular Environment creation
         run: |
-          
-          ${{ secrets.P1_AU_APP_V2_PROD_ENV }}
-          export CUSTOM_GRAPH_QL=https://core-graphql-api.au.practera.com/
-          export CUSTOMPLAIN_SKIPGLOBALLOGINFLAG=true
+          printf "Creating required secret variables for angular environment variable creation\n\n"
+
+          export CUSTOM_APPKEY=$(aws secretsmanager get-secret-value --secret-id live/api/appkey | jq --raw-output '.SecretString' | jq -r .appkey)
+          export CUSTOM_FILESTACK_SIGNATURE=$(aws secretsmanager get-secret-value --secret-id live/api/filestack | jq --raw-output '.SecretString' | jq -r .signature)
+          export CUSTOM_FILESTACK_VIRUS_DETECTION=$(aws secretsmanager get-secret-value --secret-id live/api/filestack | jq --raw-output '.SecretString' | jq -r .virusdetection)
+          export CUSTOM_FILESTACK_KEY=$(aws secretsmanager get-secret-value --secret-id live/api/filestack | jq --raw-output '.SecretString' | jq -r .apikey)
+          export CUSTOM_FILESTACK_POLICY=$(aws secretsmanager get-secret-value --secret-id live/api/filestack | jq --raw-output '.SecretString' | jq -r .policy)
+          export CUSTOM_STACK_UUID=
+          export CUSTOM_PUSHERKEY=$(aws secretsmanager get-secret-value --secret-id live/api/pusher | jq --raw-output '.SecretString' | jq -r .key)
+          export CUSTOM_INTERCOM=$(aws secretsmanager get-secret-value --secret-id live/api/intercom | jq --raw-output '.SecretString' | jq -r .app_id)
+          export SHA256_KEYSTORE_CERT_FINGERPRINTS=$(aws secretsmanager get-secret-value --secret-id live/api/filestack | jq --raw-output '.SecretString' | jq -r .SHA256_KEYSTORE_CERT_FINGERPRINTS)
+
+          printf "Angular environment variable creation  complete\n\n"
+          printf "Executing env.sh script\n\n"
           sed -i "s/<CUSTOM_PIWIK_ENVIRONEMENT>/$CUSTOM_PIWIK_ENVIRONEMENT/" src/index.html
           sed -i "s/<SHA256_KEYSTORE_CERT_FINGERPRINTS>/$SHA256_KEYSTORE_CERT_FINGERPRINTS/" src/well-known/assetlinks.json
           chmod +x env.sh && ./env.sh
           
+        env:
+          CUSTOM_PATH_IMAGE: /appv2/live/uploads/
+          CUSTOM_PATH_VIDEO: /media/fpvideo/upload/
+          CUSTOM_GRAPH_QL: https://core-graphql-api.au.practera.com/
+          CUSTOM_API_ENDPOINT: https://api.practera.com/
+          CUSTOM_S3_BUCKET: practera-aus
+          CUSTOM_ENVIRONMENT: live
+          CUSTOM_CHAT_GRAPH_QL: https://chat-api.au.practera.com/graphql
+          CUSTOM_GLOBAL_LOGIN_URL: https://login.practera.com 
+          CUSTOM_COUNTRY: AUS
+          CUSTOMPLAIN_SKIPGLOBALLOGINFLAG: true
+          CUSTOM_PATH_ANY: /appv2/live/uploads/
+          CUSTOM_AWS_REGION: ap-southeast-2
+          CUSTOM_AWS_REGION_CHINA: ap-northeast-2
+          CUSTOM_S3_BUCKET_CHINA: practera-seoul-1
+          CUSTOM_JS_ENVIRONEMENT: prod #TODO CHECK
+          CUSTOM_PIWIK_ENVIRONEMENT: 11
+
 
 
       - name: Building web packages
@@ -104,17 +132,6 @@ jobs:
           node_modules/.bin/ng build --configuration=${{ env.BUILD_CONFIG }}
           npm run generate-version
 
-
-      # - name: Run unit test if present only
-      #   run:  node_modules/.bin/ng test --karmaConfig=src/karma.conf.sonarci.js --no-watch
-
-
-      # - name: SonarCloud Scan
-      #   uses: SonarSource/sonarcloud-github-action@master
-      #   env:
-      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
-      #     SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-      
   
       - name: Configure AWS credentials from ${{ env.STACK_NAME }} account in ${{ env.REGION }} region
         uses: aws-actions/configure-aws-credentials@v1
@@ -142,7 +159,7 @@ jobs:
           MATRIX_CONTEXT: ${{ toJson(matrix) }} # required
         with:
           status: ${{ job.status }}
-          author_name: app-v2  deployed to ${{ env.ENV }} environemnt in ${{ env.STACK_NAME }} AWS account
+          author_name: ${{ env.BRANCH_TAG_NAME }} - app-v2  deployed to ${{ env.ENV }} environemnt in ${{ env.STACK_NAME }} AWS account
           mention: 'here'
           if_mention: failure,cancelled
           job_name: sandbox # Match the name above.

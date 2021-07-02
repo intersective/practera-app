@@ -67,8 +67,7 @@ jobs:
         run:  npm install
           
   
-      - name: Run lint test if present only
-        run:  npm run lint --if-present
+
  
       
       - name: Custom Environemnt variables
