@@ -280,6 +280,6 @@ resources:
 
     FileV2S3Bucket:
       Description: 'Name of the S3 bucket storing the static files.'
-      Value: !Ref FileV2S3Bucket
+      Value: '${env:FILESS3BUCKET}'
       Export:
         Name: ${env:STACK_NAME}-FileV2S3Bucket-${env:ENV}
