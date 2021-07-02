@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
   push:
     branches: [ 'release/lf' ]
- 
+
 #Jobs to perform based on event occurred
 
 jobs:
@@ -37,13 +37,13 @@ jobs:
 
       - name: Setup Node.js environment
         uses: actions/setup-node@v1
-      
-  
+
+
       - name: Install Serverless Framework
         run: |
           npm i -g serverless@2.17.0
-      
- 
+
+
       - name: Cache node modules
         uses: actions/cache@v2
         id: cache-node-modules
@@ -65,17 +65,17 @@ jobs:
       - name: Install dependencies
         if: steps.cache-node-modules.outputs.cache-hit != 'true'
         run:  npm install
-          
-  
+
+
       - name: Run lint test if present only
         run:  npm run lint --if-present
- 
-      
+
+
       - name: Custom Environemnt variables
         run: |
           ${{ secrets.LF_APP_V2_PROD_ENV }}
           chmod +x env.sh && ./env.sh
-          
+
 
 
       - name: Building web packages
@@ -92,17 +92,17 @@ jobs:
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@master
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-      
-  
+
+
       - name: Configure AWS credentials from ${{ env.STACK_NAME }} account in ${{ env.REGION }} region
         uses: aws-actions/configure-aws-credentials@v1
         with:
           aws-access-key-id: ${{ secrets.LF_AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.LF_AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.REGION }}
-      
+
 
 
       - name: AWS S3 Sync operation
