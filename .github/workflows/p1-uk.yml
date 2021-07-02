@@ -239,6 +239,7 @@ jobs:
         env:
           APPV2S3BUCKET: app.${{ env.PUBLICZONENAME }}
           FILESS3BUCKET: files.${{ env.PUBLICZONENAME }}
+          FILESS3BUCKETEXIST: true
           S3VERSIONING: true 
           NONCURRENTVERSION_EXPIREINDAYS: 30
           
