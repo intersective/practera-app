@@ -85,8 +85,6 @@ jobs:
 
 
 
-
-
       - name: Configure AWS credentials from ${{ env.STACK_NAME }} account in ${{ env.REGION }} region
         uses: aws-actions/configure-aws-credentials@v1
         with:
