@@ -38,24 +38,23 @@ To log user in, we use both login API and core API.
    - request body - `username` and `password` and `from`.
    - sample
 
-  ```ts
-  this.request.post(api.loginAPI.login, body, {}, true);
-  ```
+   ```ts
+   this.request.post(api.loginAPI.login, body, {}, true);
+   ```
 
-1. After login api return success response. login component will save `Stacks` and `apikey` in local storage and redirect user to switcher page
-
+1. After login api return success response. login component will save `Stacks` and `apikey` in local storage and redirect user to switcher page.
 1. After switcher page load call Auth service directLoginWithApikey method for each stack to get expreance list of stack. `authService.directLoginWithApikey`.
 
    - `authService.directLoginWithApikey` call core API to login user with `apikey` and `service`.
    - `apikey` is from the response of `authService.login`.
    - sample
 
-  ```ts
-  this.authService.directLoginWithApikey({
+   ```ts
+   this.authService.directLoginWithApikey({
     apikey: globalRes.apikey,
     service: "LOGIN",
-  });
-  ```
+   });
+   ```
 
 1. Auth service invokes the `post()` from request service `request.post`.
 
@@ -63,11 +62,11 @@ To log user in, we use both login API and core API.
    - serviceHeader - `LOGIN` indicates that the apikey is generated from the Login API.
    - sample
 
-  ```ts
-  this.request.post(api.login, body.toString(), {
+   ```ts
+   this.request.post(api.login, body.toString(), {
     headers,
-  });
-  ```
+   });
+   ```
 
 1. core API will return timeline, programs related to login user.
 
@@ -79,6 +78,8 @@ To rester a new user, we use both login API and core API. After user registered 
 
 ### General logic
 
+- Get stack infomation when naviagte to app from url.
+- Save stack information in local storage.
 - Use Core API to validate registration link.
 - Use Core API to Register the new user to the system.
 - Use Login API to authenticate user.
@@ -95,22 +96,22 @@ To rester a new user, we use both login API and core API. After user registered 
    - `authService.verifyRegistration` make Core API call with `email` and `key`.
    - sample
 
-  ``` ts
-  this.authService.verifyRegistration({
+   ``` ts
+   this.authService.verifyRegistration({
     email: this.user.email,
     key: this.user.key
-  })
-  ```
+   })
+   ```
 
 1. Auth service invokes the `post()` from request service `request.post`.
    - request body - `email` and `key`.
    - sample
 
-  ```ts
-  this.request.post(api.verifyRegistration, data, {
+   ```ts
+   this.request.post(api.verifyRegistration, data, {
     headers: { 'Content-Type': 'application/json' }
-  });
-  ```
+   });
+   ```
 
 1. User enter password and confirm the password and clicks on register button.
 1. In `auth-regitration.component.ts` `register()` method get call.
@@ -119,59 +120,59 @@ To rester a new user, we use both login API and core API. After user registered 
    - `authService.saveRegistration` make Core API call with `password` and `user_id` and `key`.
    - sample
 
-  ```ts
-  this.authService.saveRegistration({
+   ```ts
+   this.authService.saveRegistration({
     password: this.confirmPassword,
     user_id: this.user.id,
     key: this.user.key,
-  });
-  ```
+   });
+   ```
 
 1. Auth service invokes the `post()` from request service `request.post`.
    - request body - `password` and `user_id` and `key`.
    - sample
 
-  ```ts
-  this.request.post(api.register, data, {
+   ```ts
+   this.request.post(api.register, data, {
     headers: { 'Content-Type': 'application/json' }
-  });
-  ```
+   });
+   ```
 
 1. After registration request return success response. `auth-regitration.component.ts` start auto login process.
    - Make API request to auth service login method. `authService.login`.
    - `authService.login` make login API call with `username` and `password`.
    - Sample
 
-  ```ts
-  this.authService.login({
+   ```ts
+   this.authService.login({
     username: this.loginForm.value.username,
     password: this.loginForm.value.password,
-  });
-  ```
+   });
+   ```
 
 1. Auth service invokes the `post()` from request service `request.post`.
 
    - request body - `username` and `password` and `from`.
    - sample
 
-  ```ts
-  this.request.post(api.loginAPI.login, body, {}, true);
-  ```
+   ```ts
+   this.request.post(api.loginAPI.login, body, {}, true);
+   ```
 
 1. After login api return success response. login component will save `Stacks` and `apikey` in local storage and redirect user to switcher page
 
-2. After switcher page load call Auth service directLoginWithApikey method for each stack to get expreance list of stack. `authService.directLoginWithApikey`.
+1. After switcher page load call Auth service directLoginWithApikey method for each stack to get expreance list of stack. `authService.directLoginWithApikey`.
 
    - `authService.directLoginWithApikey` make core API call with `apikey` and `service`.
    - request body - `apikey` is from the response of `authService.login`.
    - sample
 
-  ```ts
-  this.authService.directLoginWithApikey({
+   ```ts
+   this.authService.directLoginWithApikey({
     apikey: globalRes.apikey,
     service: "LOGIN",
-  });
-  ```
+   });
+   ```
 
 1. Auth service invokes the `post()` from request service `request.post`.
 
@@ -179,10 +180,10 @@ To rester a new user, we use both login API and core API. After user registered 
    - serviceHeader - `LOGIN` indicates that the apikey is generated from the Login API.
    - sample
 
-  ```ts
-  this.request.post(api.login, body.toString(), {
+   ```ts
+   this.request.post(api.login, body.toString(), {
     headers,
-  });
-  ```
+   });
+   ```
 
 1. core API will return timeline, programs related to login user.

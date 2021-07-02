@@ -96,7 +96,7 @@ export class RequestService {
   }
 
   private getEndpointUrl(endpoint, isLoginAPI?: boolean) {
-    let endpointUrl = this.prefixUrl + endpoint;
+    let endpointUrl = this.storage.stackConfig.coreApi + endpoint;
     if (isLoginAPI) {
       endpointUrl = this.loginApiUrl + endpoint;
     }
@@ -113,7 +113,7 @@ export class RequestService {
    * @param headers
    * @returns {Observable<any>}
    */
-  get(endPoint: string = '', httpOptions?: any): Observable<any> {
+  get(endPoint: string = '', httpOptions?: any, isLoginAPI?: boolean): Observable<any> {
     if (!httpOptions) {
       httpOptions = {};
     }
@@ -125,7 +125,13 @@ export class RequestService {
       httpOptions.params = '';
     }
 
-    return this.http.get<any>(this.getEndpointUrl(endPoint), {
+    let apiEndpoint = this.getEndpointUrl(endPoint);
+    // get login API endpoint if need to call login API.
+    if (isLoginAPI) {
+      apiEndpoint = this.getEndpointUrl(endPoint, true);
+    }
+
+    return this.http.get<any>(apiEndpoint, {
       headers: this.appendHeaders(httpOptions.headers),
       params: this.setParams(httpOptions.params)
     })
