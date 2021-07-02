@@ -202,10 +202,6 @@ jobs:
           npm run generate-version
 
 
-
-
-
-
 ##########################################################
 #  AWS S3 SYNC - SERVERLESS TEMPLATES 
 ##########################################################
@@ -276,7 +272,7 @@ jobs:
           MATRIX_CONTEXT: ${{ toJson(matrix) }} # required
         with:
           status: ${{ job.status }}
-          author_name: ${{ env.ROOTSTACK }} deployed to ${{ env.ENV }} environemnt in ${{ env.STACK_NAME }} AWS account
+          author_name: ${{ env.BRANCH_TAG_NAME }} - ${{ env.ROOTSTACK }} deployed to ${{ env.ENV }} environemnt in ${{ env.STACK_NAME }} AWS account
           mention: 'here'
           if_mention: failure,cancelled
           job_name: deploy-p2-sandbox # Match the name above.
