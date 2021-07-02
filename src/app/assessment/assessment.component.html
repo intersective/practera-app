@@ -1,5 +1,5 @@
 <ion-header mode="ios">
-  <ion-toolbar class="ion-toolbar-absolute">
+  <ion-toolbar [ngClass]="{'ion-toolbar-absolute': !isMobile}">
     <ion-buttons slot="start" *ngIf="!restrictedAccess && isMobile">
       <ion-button (click)="back()" id="btn-back">
         <ion-icon class="icon-backward ion-margin-start" name="arrow-back" color="primary" slot="icon-only" ></ion-icon>
@@ -8,7 +8,7 @@
 
     <ion-title class="ion-text-center" [ngClass]="{
       'subtitle-2': !isMobile
-    }">Assessment</ion-title>
+    }">{{pageTitle}}</ion-title>
     <ng-container *ngIf="doAssessment || doReview">
       <div class="ion-text-center sub-title caption gray-2 saving-msg">{{savingMessage}}</div>
       <ion-button [disabled]="savingButtonDisabled || submitted" (click)="submit(true, false, true)" class="text-button subtitle-1" color="primary" slot="end" fill="clear" size="small">Save</ion-button>
@@ -27,12 +27,12 @@
     {{ this.sharedService.dueDateFormatter(assessment.dueDate) }}
   </p>
   <div *ngIf="!doAssessment && submission && submission.submitterName && !submission.isLocked" class="review-submitter ion-text-left">
-    <p class="subtitle-1" aria-label="submitted by {{ submission.submitterName }}" role="text" tabindex="0">
+    <p class="subtitle-1">
       Submitted by {{ submission.submitterName }}
     </p>
   </div>
   <div *ngIf="submission && submission.reviewerName && review && submission.status === 'published'" class="review-submitter ion-text-left">
-    <p class="subtitle-1 gray-3" aria-label="Reviewed by {{ submission.reviewerName }}" role="text" tabindex="0">
+    <p class="subtitle-1 gray-3">
       Reviewed by {{ submission.reviewerName }}
     </p>
   </div>
@@ -62,7 +62,7 @@
         <ion-card class="practera-card question-card ion-text-left" [ngClass]="{
           'audience-mentor-question-card': question.reviewerOnly}">
           <ion-card-header class="q-title">
-            <ion-card-subtitle *ngIf="(review && review.status === 'done') && question.reviewerOnly" class="caption gray-2" aria-label="Reviewer’s feedback">
+            <ion-card-subtitle *ngIf="(review && review.status === 'done') && question.reviewerOnly" class="caption gray-2">
               Reviewer’s feedback
             </ion-card-subtitle>
             <ion-card-title class="body-1 black" [attr.aria-label]="question.name" aria-describedby="randomCode('reviewer-' + question.name)">
