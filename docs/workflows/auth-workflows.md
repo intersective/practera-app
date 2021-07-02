@@ -42,7 +42,9 @@ To log user in, we use both login API and core API.
   this.request.post(api.loginAPI.login, body, {}, true);
   ```
 
-1. After login api return success response. login component call Auth service directLoginWithApikey method. `authService.directLoginWithApikey`.
+1. After login api return success response. login component will save `Stacks` and `apikey` in local storage and redirect user to switcher page
+
+1. After switcher page load call Auth service directLoginWithApikey method for each stack to get expreance list of stack. `authService.directLoginWithApikey`.
 
    - `authService.directLoginWithApikey` call core API to login user with `apikey` and `service`.
    - `apikey` is from the response of `authService.login`.
@@ -156,7 +158,9 @@ To rester a new user, we use both login API and core API. After user registered 
   this.request.post(api.loginAPI.login, body, {}, true);
   ```
 
-1. After login api return success response. login component call Auth service directLoginWithApikey method. `authService.directLoginWithApikey`.
+1. After login api return success response. login component will save `Stacks` and `apikey` in local storage and redirect user to switcher page
+
+2. After switcher page load call Auth service directLoginWithApikey method for each stack to get expreance list of stack. `authService.directLoginWithApikey`.
 
    - `authService.directLoginWithApikey` make core API call with `apikey` and `service`.
    - request body - `apikey` is from the response of `authService.login`.

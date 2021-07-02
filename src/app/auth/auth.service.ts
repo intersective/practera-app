@@ -4,7 +4,7 @@ import { HttpParams } from '@angular/common/http';
 import { map } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import { Router } from '@angular/router';
-import { BrowserStorageService } from '@services/storage.service';
+import { BrowserStorageService, Stack } from '@services/storage.service';
 import { UtilsService } from '@services/utils.service';
 import { PusherService } from '@shared/pusher/pusher.service';
 
@@ -63,30 +63,6 @@ interface ExperienceConfig {
   };
   logo: string;
 }
-interface S3Config {
-  container: string;
-  region: string;
-}
-interface FilestackConfig {
-  s3Config: S3Config;
-}
-interface StackConfig {
-  uuid: string;
-  name: string;
-  description: string;
-  image: string;
-  url: string;
-  api: string;
-  appkey: string;
-  type: string;
-
-  coreApi: string;
-  coreGraphQLApi: string;
-  chatApi: string;
-
-  filestack: FilestackConfig;
-  defaultCountryModel: string;
-}
 
 interface LoginRequParams {
   username?: string;
@@ -118,11 +94,7 @@ export class AuthService {
    */
   private _loginAPILogin(body: LoginRequParams): Observable<any> {
     body.from = 'App';
-    return this.request.post(LOGIN_API.login, body, {}, true)
-    .pipe(map(res => {
-      this.storage.set('stacks', res.stacks);
-      return res;
-    }));
+    return this.request.post(LOGIN_API.login, body, {}, true);
   }
 
   /**
@@ -393,11 +365,11 @@ export class AuthService {
   /**
    * get stack information by uuid through LoginAPI
    *
-   * @param   {string<StackConfig>}      uuid
+   * @param   {string}      uuid
    *
-   * @return  {Observable<StackConfig>}        observable response of stack endpont
+   * @return  {Observable<Stack>}        observable response of stack endpont
    */
-  getStackConfig(uuid: string): Observable<StackConfig> {
+  getStackConfig(uuid: string): Observable<Stack> {
     return this.request.get(LOGIN_API.stackInfo, { uuid }).pipe(map(res => {
       if (res && res.data) {
         return res.data;

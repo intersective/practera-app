@@ -48,6 +48,34 @@ export interface Config {
   color?: string;
 }
 
+export interface S3Config {
+  container: string;
+  region: string;
+  paths: {
+    any: string;
+    image: string;
+    video: string;
+  };
+}
+export interface FilestackConfig {
+  s3Config: S3Config;
+}
+
+export interface Stack {
+  uuid: string;
+  name: string;
+  description: string;
+  image: string;
+  url: string;
+  type: string;
+  coreApi: string;
+  coreGraphQLApi: string;
+  chatApi: string;
+  filestack: FilestackConfig;
+  defaultCountryModel: string;
+  lastLogin: number;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -174,7 +202,27 @@ export class BrowserStorageService {
     return result || false;
   }
 
-  set stackConfig(val) {
+  set stackConfig(val: Stack) {
     this.set('stackConfig', val);
+  }
+
+  // methods to store and get stacks that user have access.
+  get stacks() {
+    const result = this.get('stacks');
+    return result || false;
+  }
+
+  set stacks(val: Array<Stack>) {
+    this.set('stacks', val);
+  }
+
+  // methods to store and get apikey that login API return after login.
+  get loginApiKey() {
+    const result = this.get('loginApiKey');
+    return result || false;
+  }
+
+  set loginApiKey(val: string) {
+    this.set('loginApiKey', val);
   }
 }

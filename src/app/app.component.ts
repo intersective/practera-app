@@ -3,9 +3,8 @@ import { Router } from '@angular/router';
 import { Platform } from '@ionic/angular';
 import { UtilsService } from '@services/utils.service';
 import { SharedService } from '@services/shared.service';
-import { Observable } from 'rxjs';
 import { AuthService } from './auth/auth.service';
-import { BrowserStorageService } from '@services/storage.service';
+import { BrowserStorageService, Stack } from '@services/storage.service';
 import { VersionCheckService } from '@services/version-check.service';
 import { environment } from '@environments/environment';
 import { PusherService } from '@shared/pusher/pusher.service';
@@ -170,9 +169,9 @@ export class AppComponent implements OnInit {
    * localStorage + inject to every request (RequestModule)
    *
    * @param   {string}  stackUuid  uuid in string
-   * @return  {void}
+   * @return  {Stack} details of one stack
    */
-  retrieveStackConfig(stackUuid: string): void {
+  retrieveStackConfig(stackUuid: string): Stack {
     if (stackUuid) {
       this.authService.getStackConfig(stackUuid).subscribe(res => {
         this.storage.stackConfig = res;

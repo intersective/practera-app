@@ -196,22 +196,12 @@ export class AuthRegistrationComponent implements OnInit {
                 password: this.confirmPassword
               })
               .subscribe(
-                async globalRes => {
-                  this.authService.directLoginWithApikey({
-                    apikey: globalRes.apikey,
-                    service: 'LOGIN'
-                  }).subscribe(
-                  async res => {
-                    nrAutoLoginTracer();
-                    this.storage.remove('unRegisteredDirectLink');
-                    const route = await this.switcherService.switchProgramAndNavigate(res.programs);
-                    this.showPopupMessages('shortMessage', 'Registration success!', route);
-                  },
-                  err => {
-                    nrAutoLoginTracer();
-                    this.newRelic.noticeError('auto login failed', JSON.stringify(err));
-                    this.showPopupMessages('shortMessage', 'Registration not complete!');
-                  });
+                async res => {
+                  this.storage.set('isLoggedIn', true);
+                  this.storage.stacks = res.stacks;
+                  this.storage.loginApiKey = res.apikey;
+                  this.storage.remove('unRegisteredDirectLink');
+                  this.showPopupMessages('shortMessage', 'Registration success!', ['switcher', 'switcher-program']);
                 },
                 err => {
                   nrAutoLoginTracer();
