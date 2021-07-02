@@ -244,24 +244,24 @@ jobs:
           NONCURRENTVERSION_EXPIREINDAYS: 30
           
 
-# ##########################################################
-# #  AWS S3 SYNC OPERATIONS
-# ##########################################################
-#       - name: AWS S3 Sync Operations
-#         run: |
-#           cp -R src/well-known www/.well-known/
-#           APP_V2_S3=$(aws cloudformation list-exports --query "Exports[?Name==\`$STACK_NAME-AppV2S3Bucket-$ENV\`].Value" --no-paginate --output text)
-#           aws s3 sync www/ s3://$APP_V2_S3 --delete
+##########################################################
+#  AWS S3 SYNC OPERATIONS
+##########################################################
+      - name: AWS S3 Sync Operations
+        run: |
+          cp -R src/well-known www/.well-known/
+          APP_V2_S3=$(aws cloudformation list-exports --query "Exports[?Name==\`$STACK_NAME-AppV2S3Bucket-$ENV\`].Value" --no-paginate --output text)
+          aws s3 sync www/ s3://$APP_V2_S3 --delete
 
 
 
-# ##########################################################
-# #  AWS CDN CACHE INVALIDATION
-# ##########################################################
-#       - name: AWS Cloudfront Cache invalidation
-#         run: |
-#           APP_V2_CDN=$(aws cloudformation list-exports --query "Exports[?Name==\`$STACK_NAME-AppV2CloudFrontDistributionID-$ENV\`].Value" --no-paginate --output text)
-#           for i in $APP_V2_CDN;do aws cloudfront create-invalidation --distribution-id $i --paths "/*";done
+##########################################################
+#  AWS CDN CACHE INVALIDATION
+##########################################################
+      - name: AWS Cloudfront Cache invalidation
+        run: |
+          APP_V2_CDN=$(aws cloudformation list-exports --query "Exports[?Name==\`$STACK_NAME-AppV2CloudFrontDistributionID-$ENV\`].Value" --no-paginate --output text)
+          for i in $APP_V2_CDN;do aws cloudfront create-invalidation --distribution-id $i --paths "/*";done
 
 
 
