@@ -183,8 +183,8 @@ jobs:
           echo "ChatBotSNSTopicARN="$(aws cloudformation list-exports --query "Exports[?Name==\`$STACK_NAME-ChatBotSNSTopicARN-$ENV\`].Value" --no-paginate --output text) >> $GITHUB_ENV
           
         env:
-          CUSTOM_PATH_IMAGE: /appv2/live/images/
-          CUSTOM_PATH_VIDEO: /appv2/live/videos/
+          CUSTOM_PATH_IMAGE: /images
+          CUSTOM_PATH_VIDEO: /videos
           CUSTOM_GRAPH_QL: https://core-graphql-api.${{ env.PUBLICZONENAME }}
           CUSTOM_API_ENDPOINT: https://${{ env.PUBLICZONENAME }}/
           CUSTOM_S3_BUCKET: files.${{ env.PUBLICZONENAME }}
@@ -193,7 +193,7 @@ jobs:
           CUSTOM_GLOBAL_LOGIN_URL: https://login.practera.com 
           CUSTOM_COUNTRY: UK #TODO CHECK
           CUSTOMPLAIN_SKIPGLOBALLOGINFLAG: true
-          CUSTOM_PATH_ANY: /appv2/live/any/
+          CUSTOM_PATH_ANY: /any
           CUSTOM_AWS_REGION: ${{ env.REGION }}
           CUSTOM_JS_ENVIRONEMENT: dev #TODO CHECK
 
