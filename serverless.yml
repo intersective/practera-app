@@ -1,70 +1,61 @@
-service: ${env:STACK_NAME}-${env:SUBDOMAIN}
-
-frameworkVersion: ^2.17.0
-
+service: ${env:STACK_NAME}-appv2
+frameworkVersion: '2'
 useDotenv: true
+enableLocalInstallationFallback: true
 
-plugins:
-  - serverless-certificate-creator
-
-package:
-  exclude:
-    - .github/**
-  include:
-    - artifacts/**/*
-    - serverless.yml
-    - .env
-    - package.json
-    - package-lock.json
 
 provider:
   name: aws
-  runtime: nodejs12.x
+  runtime: nodejs14.x
   region: ${env:REGION}
   stage: ${env:ENV}
-  
-
-custom:
-  s3Bucket:
-    live: ${env:SUBDOMAIN}.${env:DOMAIN}
-    sandbox: ${env:SUBDOMAIN}.${env:ENV}.${env:DOMAIN}
-    stage: ${env:SUBDOMAIN}.${env:ENV}.${env:DOMAIN}
-  customCertificate:
-      certificateName: "${env:SUBDOMAIN}.${env:DOMAIN}"
-      hostedZoneName: "${env:DOMAIN}"
-      hostedZoneId: "${env:HOSTEDZONEID}"
-      subjectAlternativeNames :
-          - "${env:SUBDOMAIN}.sandbox.${env:DOMAIN}"
-          - "${env:SUBDOMAIN}.stage.${env:DOMAIN}"
-      tags:
-          Name: ${env:SUBDOMAIN}.${env:DOMAIN}
-          Environment: ${env:ENV}
-      rewriteRecords: false
+  deploymentBucket:
+    blockPublicAccess: true 
+    serverSideEncryption: AES256 
+    tags: 
+      StackName: ${env:STACK_NAME}
+      Env: ${env:ENV}
+      RootStack: ${env:ROOTSTACK}
+  stackTags: # Optional CF stack tags
+    StackName: ${env:STACK_NAME}
+    Env: ${env:ENV}
+    RootStack: ${env:ROOTSTACK}
+  tags: # Optional service wide function tags
+    StackName: ${env:STACK_NAME}
+    Env: ${env:ENV}
+    RootStack: ${env:ROOTSTACK}
+  notificationArns:
+    - ${env:ChatBotSNSTopicARN}
 
 
 resources:
 
+  Conditions:
+    HasAPPv2BucketName: !Not [!Equals [ '${env:APPV2S3BUCKET}', '']]
+    HasFilev2BucketName: !Not [!Equals [ '${env:FILESS3BUCKET}', '']]
+    HasFilev2BucketAlreadyExist: !Equals [ '${env:FILESS3BUCKETEXIST}', false]
+    HasVersioning: !Equals [ '${env:S3VERSIONING}', true]
+    HadVersioning: !Equals [ '${env:S3VERSIONING}', 'false-but-was-true']
+    HasNoncurrentVersionExpirationInDays: !Not [!Equals [ '${env:NONCURRENTVERSION_EXPIREINDAYS}', 0]]
+   
+    
   Resources:
-
-    ## Specifying the S3 Bucket
     AppV2S3Bucket:
       Type: AWS::S3::Bucket
       Properties:
-        BucketName: ${self:custom.s3Bucket.${env:ENV}}
+        BucketName: !If [HasAPPv2BucketName, '${env:APPV2S3BUCKET}', !Ref 'AWS::NoValue']
         BucketEncryption: 
           ServerSideEncryptionConfiguration: 
           - ServerSideEncryptionByDefault:
               SSEAlgorithm: AES256
-        # NotificationConfiguration:
-        #   TopicConfigurations:
-        #     - Event: s3:ObjectCreated:*
-        #       Topic:
-        #         Ref: !Ref SysAdminAlertSNSTopic
-        #       Filter:
-        #         S3Key:
-        #           Rules:
-        #             - Name: suffix
-        #               Value: ".html"
+        LifecycleConfiguration:
+          Rules:
+          - AbortIncompleteMultipartUpload:
+              DaysAfterInitiation: 7
+            Status: Enabled
+          - NoncurrentVersionExpirationInDays: !If [HasNoncurrentVersionExpirationInDays, '${env:NONCURRENTVERSION_EXPIREINDAYS}', 1]
+            Status: !If [HasNoncurrentVersionExpirationInDays, Enabled, Disabled]
+        VersioningConfiguration: !If [HasVersioning, {Status: Enabled}, !If [HadVersioning, {Status: Suspended}, !Ref 'AWS::NoValue']]
 
 
     ## Specifying the policies to make sure all files inside the Bucket are avaialble to CloudFront
@@ -87,8 +78,8 @@ resources:
             Principal: '*'
             Action: 's3:*'
             Resource:
-            - !GetAtt 'AppV2S3Bucket.Arn'
-            - !Sub '${AppV2S3Bucket.Arn}/*'
+            - !Sub 'arn:aws:s3:::${AppV2S3Bucket}'
+            - !Sub 'arn:aws:s3:::${AppV2S3Bucket}/*'
             Condition:
               Bool:
                 'aws:SecureTransport': false
@@ -98,7 +89,7 @@ resources:
       Type: 'AWS::CloudFront::CloudFrontOriginAccessIdentity'
       Properties:
         CloudFrontOriginAccessIdentityConfig:
-          Comment: !Sub "Cloudfront Origin identity for ${self:custom.s3Bucket.${env:ENV}}"
+          Comment: "Cloudfront Origin identity for ${env:APPV2S3BUCKET}"
 
     ## Specifying the CloudFront Distribution to server your Web Application
     AppV2CloudFrontDistribution:
@@ -106,8 +97,8 @@ resources:
       Properties:
         DistributionConfig:
           Aliases:
-            - ${self:custom.s3Bucket.${env:ENV}}
-          Comment: !Sub "Cloudfront Origin identity for ${self:custom.s3Bucket.${env:ENV}}"
+            - ${env:APPV2S3BUCKET}
+          Comment: "Cloudfront Origin identity for ${env:APPV2S3BUCKET}"
           DefaultCacheBehavior:
             AllowedMethods:
             - GET
@@ -125,7 +116,7 @@ resources:
               QueryString: false
             MaxTTL: 86400 # in seconds
             MinTTL: 60 # in seconds
-            TargetOriginId: ${self:custom.s3Bucket.${env:ENV}}
+            TargetOriginId: ${env:APPV2S3BUCKET}
             ViewerProtocolPolicy: 'redirect-to-https'
           DefaultRootObject: index.html
           CustomErrorResponses:
@@ -140,72 +131,133 @@ resources:
           IPV6Enabled: true
           Origins:
           - DomainName: !GetAtt 'AppV2S3Bucket.RegionalDomainName'
-            Id: ${self:custom.s3Bucket.${env:ENV}}
+            Id: ${env:APPV2S3BUCKET}
             S3OriginConfig:
               OriginAccessIdentity: !Sub 'origin-access-identity/cloudfront/${AppV2CloudFrontOriginAccessIdentity}'
           PriceClass: 'PriceClass_All'
           ViewerCertificate:
-            AcmCertificateArn: ${certificate:${self:custom.customCertificate.certificateName}:CertificateArn}
+            AcmCertificateArn: '${env:CDNSharedACMCertificateArn}'
             MinimumProtocolVersion: 'TLSv1.2_2019'
             SslSupportMethod: 'sni-only'
-          ## Uncomment the following section in case you want to enable logging for CloudFront requests
-          # Logging:
-          #   IncludeCookies: 'false'
-          #   Bucket: mylogs.s3.amazonaws.com
-          #   Prefix: myprefix
-    
     
     Route53RecordV2:
       Type: 'AWS::Route53::RecordSetGroup'
       Properties:
-        HostedZoneId: "${env:HOSTEDZONEID}"
+        HostedZoneId: {'Fn::ImportValue': '${env:STACK_NAME}-PublicHostedZoneId-${env:ENV}'}
         RecordSets:
-        - Name: ${self:custom.s3Bucket.${env:ENV}}
-          Type: A
-          AliasTarget:
-            HostedZoneId: Z2FDTNDATAQYW2 # Magic CloudFront number
-            DNSName: !GetAtt 'AppV2CloudFrontDistribution.DomainName'
+        - Name: ${env:APPV2S3BUCKET}
+          Type: CNAME
+          TTL: '3200'
+          ResourceRecords:
+            - !GetAtt 'AppV2CloudFrontDistribution.DomainName'
 
-    Route53RecordIPv6:
-      Type: 'AWS::Route53::RecordSetGroup'
+
+    HTTPCodeTarget5XXTooHighAlarm:
+      Type: 'AWS::CloudWatch::Alarm'
       Properties:
-        HostedZoneId: "${env:HOSTEDZONEID}"
-        RecordSets:
-        - Name: ${self:custom.s3Bucket.${env:ENV}}
-          Type: AAAA
-          AliasTarget:
-            HostedZoneId: Z2FDTNDATAQYW2 # Magic CloudFront number
-            DNSName: !GetAtt 'AppV2CloudFrontDistribution.DomainName'
-    
-    # 5xxErrorRateTooHighAlarm:
-    #   Type: 'AWS::CloudWatch::Alarm'
-    #   Properties:
-    #     AlarmActions:
-    #     # - !Ref SysAdminAlertSNSTopic 
-    #     - !Sub 'arn:aws:sns:${AWS::Region}:${AWS::AccountId}:P2-AWSChatBotSNSService-Syd'
-    #     AlarmDescription: '${self:custom.s3Bucket.${env:ENV}}-5xx errors'
-    #     ComparisonOperator: GreaterThanThreshold
-    #     Dimensions:
-    #     - Name: Region
-    #       Value: Global
-    #     - Name: DistributionId
-    #       Value: !Ref AppV2CloudFrontDistribution
-    #     EvaluationPeriods: 1
-    #     MetricName: 5xxErrorRate
-    #     Namespace: 'AWS/CloudFront'
-    #     OKActions: 
-    #     # - !Ref SysAdminAlertSNSTopic
-    #     - !Sub 'arn:aws:sns:${AWS::Region}:${AWS::AccountId}:P2-AWSChatBotSNSService-Syd'
-    #     Period: 60
-    #     Statistic: Average
-    #     Threshold: 1
-    #     TreatMissingData: notBreaching
+        AlarmDescription: '${env:APPV2S3BUCKET} - receives 5XX HTTP status codes from targets'
+        Namespace: 'AWS/CloudFront'
+        MetricName: HTTPCode_Target_5XX_Count
+        Statistic: Sum
+        Period: 60
+        EvaluationPeriods: 1
+        ComparisonOperator: GreaterThanThreshold
+        Threshold: 0
+        AlarmActions:
+        - {'Fn::ImportValue': '${env:STACK_NAME}-ChatBotSNSTopicARN-${env:ENV}'}
+        Dimensions:
+        - Name: Region
+          Value: Global
+        - Name: DistributionId
+          Value: !Ref AppV2CloudFrontDistribution
+        TreatMissingData: notBreaching
 
-  ## In order to print out the hosted domain via `serverless info` we need to define the DomainName output for CloudFormation
+
+  # FILE storage Bucket 
+    FileV2S3Bucket:
+      Condition: HasFilev2BucketAlreadyExist
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: !If [HasFilev2BucketName, '${env:FILESS3BUCKET}', !Ref 'AWS::NoValue']
+        BucketEncryption: 
+          ServerSideEncryptionConfiguration: 
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+        LifecycleConfiguration:
+          Rules:
+          - AbortIncompleteMultipartUpload:
+              DaysAfterInitiation: 7
+            Status: Enabled
+          - NoncurrentVersionExpirationInDays: !If [HasNoncurrentVersionExpirationInDays, '${env:NONCURRENTVERSION_EXPIREINDAYS}', 1]
+            Status: !If [HasNoncurrentVersionExpirationInDays, Enabled, Disabled]
+        VersioningConfiguration: !If [HasVersioning, {Status: Enabled}, !If [HadVersioning, {Status: Suspended}, !Ref 'AWS::NoValue']]
+        CorsConfiguration:
+          CorsRules:
+            -
+              AllowedOrigins: 
+                - 'https://*.practera.app'
+              AllowedMethods: 
+                - POST
+                - GET
+                - PUT
+              AllowedHeaders: 
+                - '*'
+              Id: CORSRule1
+              MaxAge: 3000
+              ExposedHeaders: [ETag]
+            -
+              AllowedOrigins: 
+                - 'https://*.practera.com'
+              AllowedMethods: 
+                - POST
+                - GET
+                - PUT
+              AllowedHeaders: 
+                - '*'
+              Id: CORSRule2
+              MaxAge: 3000
+              ExposedHeaders: [ETag]
+
+    ## Specifying the policies to make sure all files inside the Bucket are avaialble to CloudFront
+    FileV2S3BucketPolicy:
+      Condition: HasFilev2BucketAlreadyExist
+      Type: AWS::S3::BucketPolicy
+      Properties:
+        Bucket: '${env:FILESS3BUCKET}'
+        PolicyDocument:
+          Statement:
+          - Sid: S3-Bucket-Accesible to filestack uploads
+            Action: 
+              - 's3:PutObjectAcl'
+              - 's3:PutObject'
+              - 's3:GetObject'
+            Effect: Allow
+            Resource: 
+            - !Sub 'arn:aws:s3:::${FileV2S3Bucket}'
+            - !Sub 'arn:aws:s3:::${FileV2S3Bucket}/*'
+            Principal:
+              AWS: 
+                - 'arn:aws:iam::${env:FILESTACKAWSID}:user/filestack-uploads'
+          - Sid: S3-Bucket-Accesible to main practera account
+            Action: 
+              - 's3:PutObjectAcl'
+              - 's3:PutObject'
+              - 's3:GetObject'
+            Effect: Allow
+            Resource: 
+            - !Sub 'arn:aws:s3:::${FileV2S3Bucket}'
+            - !Sub 'arn:aws:s3:::${FileV2S3Bucket}/*'
+            Principal:
+              AWS: 
+                - 'arn:aws:iam::${env:P1STACKAWSID}:user/practera'
+          
+
   Outputs:
     AppV2CloudFrontDistributionOutput:
       Value:
         'Fn::GetAtt': [ AppV2CloudFrontDistribution, DomainName ]
+      Export:
+        Name: ${env:STACK_NAME}-AppV2CloudFrontDistributionOutput-${env:ENV}
     
     AppV2S3Bucket:
       Description: 'Name of the S3 bucket storing the static files.'
@@ -215,10 +267,19 @@ resources:
 
     AppV2S3BucketURL:
       Description: 'URL to static website.'
-      Value: https://${self:custom.s3Bucket.${env:ENV}}
+      Value: https://${env:APPV2S3BUCKET}
+      Export:
+        Name: ${env:STACK_NAME}-AppV2S3BucketURL-${env:ENV}
 
     AppV2CloudFrontDistributionID:
       Description: 'CloudFront distribution id'
       Value: !Ref AppV2CloudFrontDistribution
       Export:
         Name: ${env:STACK_NAME}-AppV2CloudFrontDistributionID-${env:ENV}
+
+
+    FileV2S3Bucket:
+      Description: 'Name of the S3 bucket storing the static files.'
+      Value: '${env:FILESS3BUCKET}'
+      Export:
+        Name: ${env:STACK_NAME}-FileV2S3Bucket-${env:ENV}
