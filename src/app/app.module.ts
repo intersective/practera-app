@@ -2,7 +2,7 @@ import { NgModule, APP_INITIALIZER } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouteReuseStrategy } from '@angular/router';
 import { IonicModule, IonicRouteStrategy } from '@ionic/angular';
-import { HttpClientModule, HttpClient } from '@angular/common/http';
+import { HttpClientModule } from '@angular/common/http';
 import { ApolloModule, APOLLO_OPTIONS, Apollo } from 'apollo-angular';
 import { HttpLinkModule, HttpLink } from 'apollo-angular-link-http';
 import { InMemoryCache, defaultDataIdFromObject } from 'apollo-cache-inmemory';
@@ -29,6 +29,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { UnlockingComponent } from '@components/unlocking/unlocking.component';
 import { DeviceInfoComponent } from './device-info/device-info.component';
 import { BrowserStorageService } from '@services/storage.service';
+import { AuthService } from './auth/auth.service';
 
 /**
  * Prerequisites before webapp initiated in browser
@@ -38,7 +39,7 @@ import { BrowserStorageService } from '@services/storage.service';
 function initializeApp(
   utils: UtilsService,
   storage: BrowserStorageService,
-  httpClient: HttpClient
+  authService: AuthService
 ): Function {
 
   /**
@@ -51,10 +52,10 @@ function initializeApp(
   *                                  resolved, the result doesn't matter
    */
   return (): Promise<any> => new Promise(async (resolve: Function): Promise<any> => {
-    const query = utils.getQueryParams();
+    const query: URLSearchParams = utils.getQueryParams();
     try {
       if (query.has('stack_uuid')) {
-        const res = await httpClient.get(`https://login.practera.com/stack/${query.get('stack_uuid')}`);
+        const res = await authService.getStackConfig(query.get('stack_uuid')).toPromise();
         storage.stackConfig = res;
         return resolve(res);
       }
@@ -107,7 +108,7 @@ function initializeApp(
     {
       provide: APP_INITIALIZER,
       useFactory: initializeApp,
-      deps: [UtilsService, BrowserStorageService, HttpClient],
+      deps: [UtilsService, BrowserStorageService, AuthService],
       multi: true,
     },
     {
