@@ -20,7 +20,7 @@ on:
 #  GITHUB ACTION JOBS
 ################################################
 jobs:
-  release-us:
+  deploy-p1-us-live:
     name: release-us
     runs-on: ubuntu-latest
 
@@ -222,7 +222,7 @@ jobs:
           author_name: ${{ env.BRANCH_TAG_NAME }} - app-v2  deployed to ${{ env.ENV }} environemnt in ${{ env.STACK_NAME }} AWS account
           mention: 'here'
           if_mention: failure,cancelled
-          job_name: sandbox # Match the name above.
+          job_name: deploy-p1-us-live # Match the name above.
           fields: repo,commit,eventName,ref,workflow,message,author,job,took
           custom_payload: |
             {
