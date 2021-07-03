@@ -21,7 +21,6 @@ export class AppComponent implements OnInit {
   constructor(
     private platform: Platform,
     private router: Router,
-    private activatedRoute: ActivatedRoute,
     public utils: UtilsService,
     private sharedService: SharedService,
     private authService: AuthService,
@@ -33,13 +32,6 @@ export class AppComponent implements OnInit {
     public sanitizer: DomSanitizer,
   ) {
     this.customHeader = null;
-    this.activatedRoute.queryParams.subscribe(async res => {
-      const query = this.utils.getQueryParams();
-      if (query.has('stack_uuid')) {
-        await this.retrieveStackConfig(query.get('stack_uuid'));
-      }
-    });
-
     this.initializeApp();
   }
 
@@ -97,7 +89,7 @@ export class AppComponent implements OnInit {
       }
     );
 
-    this.executeQueryParams();
+    this.analyseQueryParams();
   }
 
   initializeApp(): Promise<any> {
@@ -123,22 +115,12 @@ export class AppComponent implements OnInit {
   }
 
   /**
-   * retrieve stack config information: api endpoint url, and then store it into
-   * localStorage + inject to every request (RequestModule)
+   * find specific URL parameters in URL and act on them
    *
-   * @param   {string}  stackUuid  uuid in string
-   * @return  {void}
+   * @return  {Promise<any>} deferred navigation to other page based on
+   *                          value available in URL
    */
-  async retrieveStackConfig(stackUuid: string): Promise<void> {
-    if (stackUuid) {
-      const res = await this.authService.getStackConfig(stackUuid).toPromise();
-      this.storage.stackConfig = res;
-    }
-
-    return;
-  }
-
-  executeQueryParams(): Promise<any> {
+  analyseQueryParams(): Promise<any> {
     const searchParams = this.utils.getQueryParams();
     if (searchParams.has('apikey')) {
       const queries = this.utils.urlQueryToObject(searchParams.toString());
@@ -157,6 +139,7 @@ export class AppComponent implements OnInit {
             ]);
           }
           break;
+
         case 'resetpassword':
           if (searchParams.has('key') && searchParams.has('email')) {
             return this.navigate([

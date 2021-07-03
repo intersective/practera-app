@@ -37,23 +37,17 @@ function initializeApp(
   storage: BrowserStorageService,
   httpClient: HttpClient
 ) {
-
-  return () => new Promise((resolve, reject) => {
-    // Do some asynchronous stuff
+  return () => new Promise(async (resolve) => {
     const query = utils.getQueryParams();
-    if (query.has('stack_uuid')) {
-      return httpClient.get(`https://login.practera.com/stack/${query.get('stack_uuid')}`).pipe(tap(stack => {
-        storage.stackConfig = stack;
-        console.log('stack::', stack);
-
-      })).subscribe(res => {
-
-        console.log('res::', res);
-        resolve(true);
-      }, err => {
-        storage.stackConfig = {stack: true};
-        console.log('err::', err);
-      });
+    try {
+      if (query.has('stack_uuid')) {
+        const res = await httpClient.get(`https://login.practera.com/stack/${query.get('stack_uuid')}`);
+        storage.stackConfig = res;
+        return resolve(res);
+      }
+      return resolve(true);
+    } catch (err) {
+      return resolve(err);
     }
   });
 
