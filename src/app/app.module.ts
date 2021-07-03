@@ -29,15 +29,28 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { UnlockingComponent } from '@components/unlocking/unlocking.component';
 import { DeviceInfoComponent } from './device-info/device-info.component';
 import { BrowserStorageService } from '@services/storage.service';
-import { Observable, of } from 'rxjs';
-import { tap } from 'rxjs/operators';
 
+/**
+ * Prerequisites before webapp initiated in browser
+ *
+ * @return  {Function}  return a deferred function
+ */
 function initializeApp(
   utils: UtilsService,
   storage: BrowserStorageService,
   httpClient: HttpClient
-) {
-  return () => new Promise(async (resolve) => {
+): Function {
+
+  /**
+   * retrieve stack info first before everything else, so then all API
+   * request URL can start using endpoint sourced from dynamic domain
+   *
+   * @param   {Function}  resolve  async function = Promise.resolve
+   *
+   * @return  {Promise<any>}         as long as deferred get
+  *                                  resolved, the result doesn't matter
+   */
+  return (): Promise<any> => new Promise(async (resolve: Function): Promise<any> => {
     const query = utils.getQueryParams();
     try {
       if (query.has('stack_uuid')) {
@@ -45,12 +58,13 @@ function initializeApp(
         storage.stackConfig = res;
         return resolve(res);
       }
+      // if nothing happen, just let it continue
+      // with "true" which won't be used anywhere
       return resolve(true);
     } catch (err) {
       return resolve(err);
     }
   });
-
 }
 
 @NgModule({
