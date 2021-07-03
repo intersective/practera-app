@@ -10,15 +10,11 @@ import { AuthResetPasswordComponent } from './auth-reset-password/auth-reset-pas
 import { AuthDirectLoginComponent } from './auth-direct-login/auth-direct-login.component';
 import { AuthGlobalLoginComponent } from './auth-global-login/auth-global-login.component';
 import { UnauthorizedGuard } from './unauthorized.guard';
-import { AuthResolver } from './auth.resolver';
 
 const routes: Routes = [
   {
     path: '',
     component: AuthComponent,
-    resolve: {
-      auth: AuthResolver
-    },
     children: [
       {
         path: '',

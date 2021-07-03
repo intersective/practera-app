@@ -6,7 +6,6 @@ import { FastFeedbackComponent } from './fast-feedback/fast-feedback.component';
 import { DeviceInfoComponent } from './device-info/device-info.component';
 import { AuthGuard } from './auth/auth.guard';
 import { ProgramSelectedGuard } from './auth/program-selected.guard';
-import { AuthResolver } from './auth/auth.resolver';
 
 const routes: Routes = [
   {
