@@ -7,6 +7,7 @@ import { Router } from '@angular/router';
 import { BrowserStorageService } from '@services/storage.service';
 import { UtilsService } from '@services/utils.service';
 import { PusherService } from '@shared/pusher/pusher.service';
+import { environment } from '@environments/environment';
 
 /**
  * @name api
@@ -25,7 +26,7 @@ const API = {
   resetPassword: 'api/auths.json?action=reset_password',
   loginAPI: {
     login: 'login',
-    stackInfo: 'https://login.practera.com/stack',
+    stackInfo: `${environment.globalLoginUrl}/stack`,
   },
 };
 
@@ -386,7 +387,7 @@ export class AuthService {
    * @return  {Observable<StackConfig>}        observable response of stack endpont
    */
   getStackConfig(uuid: string): Observable<StackConfig> {
-    return this.request.get(API.loginAPI.stackInfo, { uuid }).pipe(map(res => {
+    return this.request.get(`${API.loginAPI.stackInfo}/${uuid}`).pipe(map(res => {
       if (res && res.data) {
         return res.data;
       }
