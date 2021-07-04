@@ -4,7 +4,7 @@ import { HttpParams } from '@angular/common/http';
 import { map, tap } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import { Router } from '@angular/router';
-import { BrowserStorageService } from '@services/storage.service';
+import { BrowserStorageService, StackConfig } from '@services/storage.service';
 import { UtilsService } from '@services/utils.service';
 import { PusherService } from '@shared/pusher/pusher.service';
 import { environment } from '@environments/environment';
@@ -62,30 +62,6 @@ interface ExperienceConfig {
     achievement_in_app_participant?: boolean;
   };
   logo: string;
-}
-interface S3Config {
-  container: string;
-  region: string;
-}
-interface FilestackConfig {
-  s3Config: S3Config;
-}
-interface StackConfig {
-  uuid: string;
-  name: string;
-  description: string;
-  image: string;
-  url: string;
-  api: string;
-  appkey: string;
-  type: string;
-
-  coreApi: string;
-  coreGraphQLApi: string;
-  chatApi: string;
-
-  filestack: FilestackConfig;
-  defaultCountryModel: string;
 }
 
 interface LoginRequParams {

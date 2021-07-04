@@ -5,7 +5,6 @@ import { Observable, of, throwError, from } from 'rxjs';
 import { catchError, tap, concatMap, map } from 'rxjs/operators';
 import { UtilsService } from '@services/utils.service';
 import { BrowserStorageService } from '@services/storage.service';
-import { environment } from '@environments/environment';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
 import { urlFormatter } from 'helper';
 import { ApolloService } from '@shared/apollo/apollo.service';
@@ -236,12 +235,12 @@ export class RequestService {
 
   chatGraphQLMutate(query: string, variables = {}): Observable<any> {
     return this.apolloService.chatGraphQLMutate(query, variables).pipe(
-        concatMap(response => {
-          // this._refreshApikey(response);
-          return of(response);
-        }),
-        catchError((error) => this.handleError(error))
-      );
+      concatMap(response => {
+        // this._refreshApikey(response);
+        return of(response);
+      }),
+      catchError((error) => this.handleError(error))
+    );
   }
 
   delete(endPoint: string = '', httpOptions?: any): Observable<any> {

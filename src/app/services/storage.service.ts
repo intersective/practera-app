@@ -35,6 +35,33 @@ export interface User {
   LtiReturnUrl?: string;
 }
 
+export interface S3Config {
+  container: string;
+  region: string;
+}
+
+export interface FilestackConfig {
+  s3Config: S3Config;
+}
+
+export interface StackConfig {
+  uuid: string;
+  name: string;
+  description: string;
+  image: string;
+  url: string;
+  api: string;
+  appkey: string;
+  type: string;
+
+  coreApi: string;
+  coreGraphQLApi: string;
+  chatApi: string;
+
+  filestack: FilestackConfig;
+  defaultCountryModel: string;
+}
+
 export interface Referrer {
   // redirect user to this url when
   // 1. user click back button of <route> page
@@ -169,7 +196,7 @@ export class BrowserStorageService {
     this.set('singlePageAccess', val);
   }
 
-  get stackConfig() {
+  get stackConfig(): StackConfig {
     const result = this.get('stackConfig');
     return result || false;
   }

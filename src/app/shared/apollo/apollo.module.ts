@@ -3,6 +3,7 @@ import { environment } from '@environments/environment';import { NgModule } from
 import { ApolloModule as ApolloAngular, APOLLO_OPTIONS, Apollo } from 'apollo-angular';
 import { HttpLinkModule, HttpLink } from 'apollo-angular-link-http';
 import { InMemoryCache, defaultDataIdFromObject } from 'apollo-cache-inmemory';
+import { BrowserStorageService } from '@services/storage.service';
 
 @NgModule({
   declarations: [],
@@ -14,7 +15,9 @@ import { InMemoryCache, defaultDataIdFromObject } from 'apollo-cache-inmemory';
   providers: [
     {
       provide: APOLLO_OPTIONS,
-      useFactory: (httpLink: HttpLink) => {
+      useFactory: (httpLink: HttpLink, storage: BrowserStorageService) => {
+        const config = storage.stackConfig;
+
         return {
           cache: new InMemoryCache({
             dataIdFromObject: object => {
@@ -27,23 +30,24 @@ import { InMemoryCache, defaultDataIdFromObject } from 'apollo-cache-inmemory';
             }
           }),
           link: httpLink.create({
-            uri: environment.graphQL
+            uri: config.coreGraphQLApi
           })
         };
       },
-      deps: [HttpLink]
+      deps: [HttpLink, BrowserStorageService]
     },
   ]
 })
 export class ApolloModule {
   constructor(
     private apollo: Apollo,
-    httpLink: HttpLink
+    private httpLink: HttpLink,
+    private storage: BrowserStorageService,
   ) {
     this.apollo.create(
       {
         link: httpLink.create({
-          uri: environment.chatGraphQL
+          uri: storage.stackConfig.chatApi
         }),
         cache: new InMemoryCache(),
       },
