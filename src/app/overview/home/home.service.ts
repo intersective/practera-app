@@ -17,7 +17,6 @@ import { SharedService } from '@services/shared.service';
  */
 const api = {
   get: {
-    activity: 'api/activities.json',
     todoItem: 'api/v2/motivations/todo_item/list.json',
     progress: 'api/v2/motivations/progress/list.json',
     events: 'api/v2/act/event/list.json',

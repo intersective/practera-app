@@ -16,7 +16,6 @@ import { environment } from '@environments/environment';
  */
 const API = {
   getConfig: 'api/v2/plan/experience/list',
-  linkedin: 'api/auth_linkedin.json',
   login: 'api/auths.json',
   setProfile: 'api/v2/user/enrolment/edit.json',
   verifyRegistration: 'api/verification_codes.json',
