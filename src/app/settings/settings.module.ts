@@ -22,7 +22,8 @@ import { FastFeedbackModule } from '../fast-feedback/fast-feedback.module';
   exports: [
     SharedModule,
     FilestackModule,
-    FastFeedbackModule
+    FastFeedbackModule,
+    SettingsComponent
   ]
 })
 export class SettingsModule {}
