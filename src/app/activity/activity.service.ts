@@ -14,9 +14,6 @@ import { NewRelicService } from '@shared/new-relic/new-relic.service';
  * @type {Object}
  */
 const api = {
-  activity: 'api/activities.json',
-  submissions: 'api/submissions.json',
-  progress: 'api/v2/motivations/progress/list.json',
   nextTask: 'api/v2/plans/activity/next_task'
 };
 
