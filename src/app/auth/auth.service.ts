@@ -7,6 +7,7 @@ import { Router } from '@angular/router';
 import { BrowserStorageService } from '@services/storage.service';
 import { UtilsService } from '@services/utils.service';
 import { PusherService } from '@shared/pusher/pusher.service';
+import { environment } from '@environments/environment';
 
 /**
  * @name api
@@ -25,7 +26,7 @@ const api = {
 };
 
 const LOGIN_API = {
-  stackInfo: 'https://login.practera.com/stack',
+  stackInfo: `${environment.globalLoginUrl}/stack`,
 };
 
 interface VerifyParams {
@@ -373,7 +374,7 @@ export class AuthService {
    * @return  {Observable<StackConfig>}        observable response of stack endpont
    */
   getStackConfig(uuid: string): Observable<StackConfig> {
-    return this.request.get(LOGIN_API.stackInfo, { uuid }).pipe(map(res => {
+    return this.request.get(`${LOGIN_API.stackInfo}/${uuid}`).pipe(map(res => {
       if (res && res.data) {
         return res.data;
       }

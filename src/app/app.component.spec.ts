@@ -110,7 +110,7 @@ describe('AppComponent', () => {
     expect(platformSpy.ready).toHaveBeenCalled();
   });
 
-  describe('retrieveStackConfig()', () => {
+  xdescribe('removed retrieveStackConfig()', () => {
     it('should make use of AuthService.getStackConfig to get stack info', () => {
       const SAMPLE_UUID = '4455ee45-5aac-44d3-94ed-b0e1cd0a45d4';
       const RESULT = {
@@ -134,16 +134,9 @@ describe('AppComponent', () => {
         defaultCountryModel: 'AUS'
       };
       authServiceSpy.getStackConfig.and.returnValue(of(RESULT));
-
-      app.retrieveStackConfig(SAMPLE_UUID);
-      fixture.detectChanges();
-      fixture.whenStable().then(() => {
-        expect(storage.stackConfig).toEqual(RESULT);
-      });
     });
 
     it('should not fun AuthService.getStackConfig when STACK_UUID not provided', () => {
-      app.retrieveStackConfig(null);
       fixture.detectChanges();
       fixture.whenStable().then(() => {
         expect(authServiceSpy.getStackConfig).not.toHaveBeenCalled();
