@@ -67,8 +67,6 @@ describe('AuthService', () => {
       description: 'Participate in an experience as a learner or reviewer - Testing',
       image: 'https://media.intersective.com/img/learners_reviewers.png',
       url: 'https://app.p1-stage.practera.com',
-      api: 'https://admin.p1-stage.practera.com',
-      appkey: 'b11e7c189b',
       type: 'app',
       coreApi: 'https://admin.p1-stage.practera.com',
       coreGraphQLApi: 'https://core-graphql-api.p1-stage.practera.com',
@@ -76,10 +74,16 @@ describe('AuthService', () => {
       filestack: {
         s3Config: {
           container: 'files.p1-stage.practera.com',
-          region: 'ap-southeast-2'
+          region: 'ap-southeast-2',
+          paths: {
+            any: '/appv2/sandbox/uploads',
+            image: '/appv2/sandbox/uploads',
+            video: '/appv2/sandbox/video/uploads'
+          }
         },
       },
-      defaultCountryModel: 'AUS'
+      defaultCountryModel: 'AUS',
+      lastLogin: 1619660600368
     },
     {
       uuid: '9c31655d-fb73-4ea7-8315-aa4c725b367e',
@@ -87,8 +91,6 @@ describe('AuthService', () => {
       description: 'Participate in an experience as a learner or reviewer - Testing',
       image: 'https://media.intersective.com/img/learners_reviewers.png',
       url: 'https://app.p1-sandbox.practera.com',
-      api: 'https://admin.p1-sandbox.practera.com',
-      appkey: 'b11e7c189b',
       type: 'app',
       coreApi: 'https://admin.p1-sandbox.practera.com',
       coreGraphQLApi: 'https://core-graphql-api.p1-sandbox.practera.com',
@@ -96,10 +98,16 @@ describe('AuthService', () => {
       filestack: {
         s3Config: {
           container: 'files.p1-sandbox.practera.com',
-          region: 'ap-southeast-2'
+          region: 'ap-southeast-2',
+          paths: {
+            any: '/appv2/sandbox/uploads',
+            image: '/appv2/sandbox/uploads',
+            video: '/appv2/sandbox/video/uploads'
+          }
         },
       },
-      defaultCountryModel: 'AUS'
+      defaultCountryModel: 'AUS',
+      lastLogin: 1619660600368
     },
     {
       uuid: 'f4f85069-ca3b-4044-905a-e366b724af6b',
@@ -107,8 +115,6 @@ describe('AuthService', () => {
       description: 'Participate in an experience as a learner or reviewer - Local',
       image: 'https://media.intersective.com/img/learners_reviewers.png',
       url: 'http://127.0.0.1:4200/',
-      api: 'http://127.0.0.1:8080/',
-      appkey: 'b11e7c189b',
       type: 'app',
       coreApi: 'http://127.0.0.1:8080',
       coreGraphQLApi: 'http://127.0.0.1:8000',
@@ -116,21 +122,24 @@ describe('AuthService', () => {
       filestack: {
         s3Config: {
           container: 'practera-aus',
-          region: 'ap-southeast-2'
+          region: 'ap-southeast-2',
+          paths: {
+            any: '/appv2/sandbox/uploads',
+            image: '/appv2/sandbox/uploads',
+            video: '/appv2/sandbox/video/uploads'
+          }
         },
       },
-      defaultCountryModel: 'AUS'
+      defaultCountryModel: 'AUS',
+      lastLogin: 1619660600368
     }
   ];
-  const mockOneStack = [
-    {
+  const mockOneStack = {
       uuid: 'b0f6328e-379c-4cd2-9e96-1363a49ab001',
       name: 'Practera Classic App - Stage',
       description: 'Participate in an experience as a learner or reviewer - Testing',
       image: 'https://media.intersective.com/img/learners_reviewers.png',
       url: 'https://app.p1-stage.practera.com',
-      api: 'https://admin.p1-stage.practera.com',
-      appkey: 'b11e7c189b',
       type: 'app',
       coreApi: 'https://admin.p1-stage.practera.com',
       coreGraphQLApi: 'https://core-graphql-api.p1-stage.practera.com',
@@ -138,12 +147,17 @@ describe('AuthService', () => {
       filestack: {
         s3Config: {
           container: 'files.p1-stage.practera.com',
-          region: 'ap-southeast-2'
+          region: 'ap-southeast-2',
+          paths: {
+            any: '/appv2/sandbox/uploads',
+            image: '/appv2/sandbox/uploads',
+            video: '/appv2/sandbox/video/uploads'
+          }
         },
       },
-      defaultCountryModel: 'AUS'
-    }
-  ];
+      defaultCountryModel: 'AUS',
+      lastLogin: 1619660600368
+    };
 
   it('when testing login(), it should pass the correct data to API', () => {
     requestSpy.post.and.returnValue(of({

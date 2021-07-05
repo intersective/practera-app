@@ -19,14 +19,14 @@ const api = {
   setProfile: 'api/v2/user/enrolment/edit.json',
   verifyRegistration: 'api/verification_codes.json',
   register: 'api/registration_details.json',
-  forgotPassword: 'api/auths.json?action=forgot_password',
   verifyResetPassword: 'api/auths.json?action=verify_reset_password',
   resetPassword: 'api/auths.json?action=reset_password',
 };
 
 const LOGIN_API = {
   stackInfo: 'stack',
-  login: 'login'
+  login: 'login',
+  forgotPassword: 'forgotPassword'
 };
 
 interface VerifyParams {
@@ -227,10 +227,23 @@ export class AuthService {
    * @return {Observable<any>}      [description]
    */
   forgotPassword(email: string): Observable<any>  {
-    return this.request.post(api.forgotPassword, {
-      email: email,
-      domain: this.getDomain()
-    });
+    const body = {
+      email,
+      resetLink: this._createResetDirectLinks(),
+      directLink: this._createResetDirectLinks('direct')
+    };
+    return this.request.post(LOGIN_API.forgotPassword, body, {}, true);
+  }
+
+  private _createResetDirectLinks(type?) {
+    switch (type) {
+      case 'reset':
+        return `${this.getDomain()}?action=resetpassword&apiKey=`;
+      case 'direct':
+        return `${this.getDomain()}?action=direct&apiKey=`;
+      default:
+        return `${this.getDomain()}?action=resetpassword&apiKey=`;
+    }
   }
 
   getDomain() {
