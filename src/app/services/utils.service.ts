@@ -413,4 +413,18 @@ export class UtilsService {
     theEndpoint = theEndpoint.replace(/\/$/, '');
     return `${theDomain}${theEndpoint}`;
   }
+
+  /* extra query parameters from URL (window.location)
+   *
+   * @return  {URLSearchParams}
+   */
+  getQueryParams(): URLSearchParams {
+    let queryString = '';
+    if (window.location.search) {
+      queryString = window.location.search.substring(1);
+    } else if (window.location.hash) {
+      queryString = window.location.hash.substring(2);
+    }
+    return new URLSearchParams(queryString);
+  }
 }
