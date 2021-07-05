@@ -1,5 +1,11 @@
 import { Injectable, Optional, isDevMode } from '@angular/core';
-import { HttpClient, HttpHeaders, HttpParams, HttpErrorResponse, HttpParameterCodec } from '@angular/common/http';
+import {
+  HttpClient,
+  HttpHeaders,
+  HttpParams,
+  HttpErrorResponse,
+  HttpParameterCodec,
+} from '@angular/common/http';
 import { Router } from '@angular/router';
 import { Observable, of, throwError, from } from 'rxjs';
 import { catchError, tap, concatMap, map } from 'rxjs/operators';
@@ -8,6 +14,11 @@ import { BrowserStorageService } from '@services/storage.service';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
 import { urlFormatter } from 'helper';
 import { ApolloService } from '@shared/apollo/apollo.service';
+
+interface RequestOptions {
+  headers?: string;
+  params?: string;
+}
 
 @Injectable({ providedIn: 'root' })
 export class DevModeService {
@@ -110,7 +121,7 @@ export class RequestService {
    * @param headers
    * @returns {Observable<any>}
    */
-  get(endPoint: string = '', httpOptions?: any): Observable<any> {
+  get(endPoint: string = '', httpOptions?: RequestOptions): Observable<any> {
     if (!httpOptions) {
       httpOptions = {};
     }
@@ -135,7 +146,7 @@ export class RequestService {
       );
   }
 
-  post(endPoint: string = '', data, httpOptions?: any): Observable<any> {
+  post(endPoint: string = '', data, httpOptions?: RequestOptions): Observable<any> {
     if (!httpOptions) {
       httpOptions = {};
     }
@@ -160,7 +171,7 @@ export class RequestService {
       );
   }
 
-  loginAPIPost(endPoint: string = '', data, httpOptions?: any): Observable<any> {
+  loginAPIPost(endPoint: string = '', data, httpOptions?: RequestOptions): Observable<any> {
     if (!httpOptions) {
       httpOptions = {};
     }
@@ -243,7 +254,7 @@ export class RequestService {
     );
   }
 
-  delete(endPoint: string = '', httpOptions?: any): Observable<any> {
+  delete(endPoint: string = '', httpOptions?: RequestOptions): Observable<any> {
     if (!httpOptions) {
       httpOptions = {};
     }
