@@ -1,14 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '../auth.service';
-import { Observable, concat } from 'rxjs';
 import { Validators, FormGroup, FormControl } from '@angular/forms';
 import { NotificationService } from '@shared/notification/notification.service';
 import { UtilsService } from '@services/utils.service';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
-import { SwitcherService } from '../../switcher/switcher.service';
-import { PusherService } from '@shared/pusher/pusher.service';
-import { environment } from '@environments/environment';
+import { BrowserStorageService } from '@services/storage.service';
 
 @Component({
   selector: 'app-auth-login',
@@ -17,7 +14,7 @@ import { environment } from '@environments/environment';
 })
 export class AuthLoginComponent implements OnInit {
   loginForm = new FormGroup({
-    email: new FormControl('', [Validators.required]),
+    username: new FormControl('', [Validators.required]),
     password: new FormControl('', [Validators.required]),
   });
   isLoggingIn = false;
@@ -29,18 +26,26 @@ export class AuthLoginComponent implements OnInit {
     private notificationService: NotificationService,
     private utils: UtilsService,
     private newRelic: NewRelicService,
-    private switcherService: SwitcherService,
-    private pusherService: PusherService,
+    private storage: BrowserStorageService
   ) {}
 
   ngOnInit() {
     this.newRelic.setPageViewName('login');
   }
 
+  /**
+   * This method will log user in to the system.
+   * - first it check for validation of username an password. if it invalid will show an alert.
+   * - Then it calling 'Login API' through 'authService.login' by passing username and password.
+   * - If API call success 'Lgoin API' will return 'apikey' and stack list.
+   * - Then save those return values in local storage as 'stacks' and 'loginApiKey'.
+   * - Redirect user to the experience switcher page. as experience switcher page we use program swtcher page.
+   * to read more about flow check documentation (./docs/workflows/auth-workflows.md)
+   */
   login() {
-    if (this.utils.isEmpty(this.loginForm.value.email) || this.utils.isEmpty(this.loginForm.value.password)) {
+    if (this.utils.isEmpty(this.loginForm.value.username) || this.utils.isEmpty(this.loginForm.value.password)) {
       this.notificationService.alert({
-        message: 'Your email or password is empty, please fill them in.',
+        message: 'Your username or password is empty, please fill them in.',
         buttons: [
           {
             text: 'OK',
@@ -60,57 +65,45 @@ export class AuthLoginComponent implements OnInit {
       this.newRelic.setCustomAttribute('login status', message);
     });
     return this.authService.login({
-      email: this.loginForm.value.email,
+      username: this.loginForm.value.username,
       password: this.loginForm.value.password,
     }).subscribe(
       res => {
-        nrLoginTracer('login successful');
-        this.newRelic.actionText('login successful');
-        return this._handleNavigation(res.programs);
+        this.storage.set('isLoggedIn', true);
+        this.storage.stacks = res.stacks;
+        this.storage.loginApiKey = res.apikey;
+        this.isLoggingIn = false;
+        return this.router.navigate(['switcher', 'switcher-program']);
       },
       err => {
         nrLoginTracer(JSON.stringify(err));
-        this.newRelic.noticeError(`${JSON.stringify(err)}`);
-
-        // notify user about weak password
-        if (this.utils.has(err, 'data.type')) {
-          if (err.data.type === 'password_compromised') {
-            this.isLoggingIn = false;
-            return this.notificationService.alert({
-              message: `We’ve checked this password against a global database of insecure passwords and your password was on it. <br>
-                We have sent you an email with a link to reset your password. <br>
-                You can learn more about how we check that <a href="https://haveibeenpwned.com/Passwords">database</a>`,
-              buttons: [
-                {
-                  text: 'OK',
-                  role: 'cancel'
-                }
-              ],
-            });
-          }
-        }
-
-        // credential issue
-        this.notificationService.alert({
-          message: 'Your email or password is incorrect, please try again.',
-          buttons: [
-            {
-              text: 'OK',
-              role: 'cancel',
-              handler: () => {
-                this.isLoggingIn = false;
-                return;
-              },
-            },
-          ],
-        });
+        this._handleError(err);
       }
     );
   }
 
-  private async _handleNavigation(programs) {
-    const route = await this.switcherService.switchProgramAndNavigate(programs);
+  private _handleError(err) {
+    this.newRelic.noticeError(`${JSON.stringify(err)}`);
+    const statusCode = err.status;
+    let msg = 'Your username or password is incorrect, please try again.';
+    // credential issue
+    if (statusCode === 400 && err.error && err.error.passwordCompromised) {
+      msg = `We’ve checked this password against a global database of insecure passwords and your password was on it. <br>
+      Please try again. <br>
+      You can learn more about how we check that <a href="https://haveibeenpwned.com/Passwords">database</a>`;
+    }
     this.isLoggingIn = false;
-    return this.router.navigate(route);
+    this.notificationService.alert({
+      message: msg,
+      buttons: [
+        {
+          text: 'OK',
+          role: 'cancel',
+          handler: () => {
+            this.isLoggingIn = false;
+          },
+        },
+      ],
+    });
   }
 }
