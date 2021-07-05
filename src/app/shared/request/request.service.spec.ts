@@ -85,6 +85,7 @@ describe('RequestConfig', () => {
 
 describe('RequestService', () => {
   const PREFIX_URL = 'test.com';
+  const LOGINAPI = 'login.com';
   const APPKEY = 'TESTAPPKEY';
   const routerSpy = TestUtils.createRouterSpy();
 
@@ -108,6 +109,7 @@ describe('RequestService', () => {
           useValue: {
             appkey: APPKEY,
             prefixUrl: PREFIX_URL,
+            loginApi: LOGINAPI
           }
         },
         {
@@ -194,15 +196,35 @@ describe('RequestService', () => {
   });
 
   describe('post()', () => {
-    const testURL = 'https://www.post-test.com';
+    let testURL = 'https://www.post-test.com';
     const sampleData = {
       sample: 'data'
     };
 
-    it('should perform a GET request based on provided URL', fakeAsync(() => {
+    it('should perform a POST request based on Login API URL', fakeAsync(() => {
       let res = { body: true };
 
-      service.post(testURL, sampleData).subscribe(_res => {
+      service.post(testURL, sampleData, {}, true).subscribe(_res => {
+        res = _res;
+      });
+      const req = mockBackend.expectOne({ method: 'POST' });
+      req.flush(res);
+
+      tick();
+
+      const { body } = res;
+      expect(req.request.url).toBe(testURL);
+      expect(body).toBe(true);
+
+      mockBackend.verify();
+    }));
+
+    it('should perform a POST request based on provided URL', fakeAsync(() => {
+      testURL = 'https://login.com/login';
+
+      let res = { body: true };
+
+      service.post(testURL, sampleData, {}, true).subscribe(_res => {
         res = _res;
       });
       const req = mockBackend.expectOne({ method: 'POST' });
@@ -225,52 +247,6 @@ describe('RequestService', () => {
       let res: any;
       let errRes: any;
       service.post(testURL, sampleData).subscribe(
-        _res => {
-          res = _res;
-        },
-        _err => {
-          errRes = _err;
-        }
-      );
-      const req = mockBackend.expectOne({ url: testURL, method: 'POST'}).flush(ERR_MESSAGE, err);
-
-      expect(res).toBeUndefined();
-      expect(errRes).toEqual(ERR_MESSAGE);
-    }));
-  });
-
-  describe('loginAPIPost()', () => {
-    const testURL = 'https://www.post-test.com';
-    const sampleData = {
-      sample: 'data'
-    };
-
-    it('should perform a POST request based on provided URL', fakeAsync(() => {
-      let res = { body: true };
-
-      service.loginAPIPost(testURL, sampleData).subscribe(_res => {
-        res = _res;
-      });
-      const req = mockBackend.expectOne({ method: 'POST' });
-      req.flush(res);
-
-      tick();
-
-      const { body } = res;
-      expect(req.request.url).toBe(testURL);
-      expect(body).toBe(true);
-
-      mockBackend.verify();
-    }));
-
-    it('should perform error handling when fail', fakeAsync(() => {
-      spyOn(devModeServiceSpy, 'isDevMode').and.returnValue(false);
-
-      const ERR_MESSAGE = 'Invalid POST Request';
-      const err = { success: false, status: 400, statusText: 'Bad Request' };
-      let res: any;
-      let errRes: any;
-      service.loginAPIPost(testURL, sampleData).subscribe(
         _res => {
           res = _res;
         },

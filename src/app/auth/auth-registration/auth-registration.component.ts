@@ -163,6 +163,16 @@ export class AuthRegistrationComponent implements OnInit {
     window.open(fileURL, '_system');
   }
 
+   /**
+   * This method will log user in to the system.
+   * - first it check for validation of password. if it invalid will show an error in UI.
+   * - Then it call 'Core API' to register the new user by passing 'password', 'user_id', and 'key'.
+   * - After API call success. Then it calling 'Login API' through 'authService.login' by passing 'username' and 'password'.
+   * - If API call success 'Lgoin API' will return 'apikey'.
+   * - Then method calling 'Core API' through 'authService.directLoginWithApikey' by passing 'apikey' got from response of 'authService.login'
+   * - If API call success 'Core API' will return programs and other things related to login user.
+   * to read more about flow check documentation (./docs/workflows/auth-workflows.md)
+   */
   register() {
     if (this.validateRegistration()) {
       const nrRegisterTracer = this.newRelic.createTracer('registering');
@@ -186,22 +196,12 @@ export class AuthRegistrationComponent implements OnInit {
                 password: this.confirmPassword
               })
               .subscribe(
-                async globalRes => {
-                  this.authService.globalLogin({
-                    apikey: globalRes.apikey,
-                    service: 'LOGIN'
-                  }).subscribe(
-                  async res => {
-                    nrAutoLoginTracer();
-                    this.storage.remove('unRegisteredDirectLink');
-                    const route = await this.switcherService.switchProgramAndNavigate(res.programs);
-                    this.showPopupMessages('shortMessage', 'Registration success!', route);
-                  },
-                  err => {
-                    nrAutoLoginTracer();
-                    this.newRelic.noticeError('auto login failed', JSON.stringify(err));
-                    this.showPopupMessages('shortMessage', 'Registration not complete!');
-                  });
+                async res => {
+                  this.storage.set('isLoggedIn', true);
+                  this.storage.stacks = res.stacks;
+                  this.storage.loginApiKey = res.apikey;
+                  this.storage.remove('unRegisteredDirectLink');
+                  this.showPopupMessages('shortMessage', 'Registration success!', ['switcher', 'switcher-program']);
                 },
                 err => {
                   nrAutoLoginTracer();

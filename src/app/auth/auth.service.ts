@@ -4,10 +4,9 @@ import { HttpParams } from '@angular/common/http';
 import { map, tap } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import { Router } from '@angular/router';
-import { BrowserStorageService, StackConfig } from '@services/storage.service';
+import { BrowserStorageService, Stack } from '@services/storage.service';
 import { UtilsService } from '@services/utils.service';
 import { PusherService } from '@shared/pusher/pusher.service';
-import { environment } from '@environments/environment';
 
 /**
  * @name api
@@ -23,10 +22,11 @@ const API = {
   forgotPassword: 'api/auths.json?action=forgot_password',
   verifyResetPassword: 'api/auths.json?action=verify_reset_password',
   resetPassword: 'api/auths.json?action=reset_password',
-  loginAPI: {
-    login: 'login',
-    stackInfo: `${environment.globalLoginUrl}/stack`,
-  },
+};
+
+const LOGIN_API = {
+  stackInfo: 'stack',
+  login: 'login'
 };
 
 interface VerifyParams {
@@ -67,8 +67,6 @@ interface ExperienceConfig {
 interface LoginRequParams {
   username?: string;
   password?: string;
-  auth_token?: string;
-  apikey?: string;
   from?: string;
 }
 
@@ -89,12 +87,23 @@ export class AuthService {
     // do clear user cache here
   }
 
-  private _loginAPILogin(body: LoginRequParams) {
+  /**
+   * @name _loginAPILogin
+   * @description Calling login API to login the user and save stacks in local storage.
+   * @param body Json Object - request parameter need to pass to login api.
+   */
+  private _loginAPILogin(body: LoginRequParams): Observable<any> {
     body.from = 'App';
-    return this.request.loginAPIPost(API.loginAPI.login, body);
+    return this.request.post(LOGIN_API.login, body, {}, true);
   }
 
-  private _login(body: HttpParams, serviceHeader?: string) {
+  /**
+   * @name _login
+   * @description Calling core API to login the user.
+   * @param body HttpParams Onject - request parameter need to pass to core api.
+   * @param serviceHeader header to pass to core API to mention data comming from Login API.
+   */
+  private _login(body: HttpParams, serviceHeader?: string): Observable<any> {
     const headers = {
       'Content-Type': 'application/x-www-form-urlencoded',
       service: serviceHeader
@@ -137,12 +146,13 @@ export class AuthService {
   }
 
   /**
-   * @name globalLogin
-   * @description login API specifically only accept request data in encodedUrl formdata,
-   *              so must convert them into compatible formdata before submission
-   * @param {object} { apikey } in string
+   * @name directLoginWithApikey
+   * @description need to login user to core API if user by using apikey that login API return.
+   *              if user came from global login or after user login to login API,
+   *              there is apikey login API return, we need to use that to login to core API.
+   * @param {object} { apikey, service } in string
    */
-  globalLogin({ apikey, service }): Observable<any> {
+  directLoginWithApikey({ apikey, service }): Observable<any> {
     const body = new HttpParams()
       .set('apikey', apikey);
     this.logout({}, false);
@@ -356,13 +366,13 @@ export class AuthService {
 
   /**
    * get stack information by uuid through LoginAPI
-   *
-   * @param   {string<StackConfig>}      uuid
-   *
-   * @return  {Observable<StackConfig>}        observable response of stack endpont
+   * according postman and swagger file need to pass uuid as query param
+   * also need to call login API.
+   * @param   {string}      uuid
+   * @return  {Observable<Stack>}        observable response of stack endpont
    */
-  getStackConfig(uuid: string): Observable<StackConfig> {
-    return this.request.get(`${API.loginAPI.stackInfo}/${uuid}`).pipe(map(res => {
+  getStackConfig(uuid: string): Observable<Stack> {
+    return this.request.get(LOGIN_API.stackInfo, {params: {uuid}}, true).pipe(map(res => {
       if (res && res.data) {
         return res.data;
       }

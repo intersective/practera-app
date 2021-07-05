@@ -12,7 +12,6 @@ import { catchError, tap, concatMap, map } from 'rxjs/operators';
 import { UtilsService } from '@services/utils.service';
 import { BrowserStorageService } from '@services/storage.service';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
-import { urlFormatter } from 'helper';
 import { ApolloService } from '@shared/apollo/apollo.service';
 
 interface RequestOptions {
@@ -103,15 +102,15 @@ export class RequestService {
     return params;
   }
 
-  private getEndpointUrl(endpoint, apiType?) {
+  private getEndpointUrl(endpoint, isLoginAPI?: boolean) {
     let endpointUrl = this.prefixUrl + endpoint;
-    if (apiType === 'login') {
+    if (isLoginAPI) {
       endpointUrl = this.loginApiUrl + endpoint;
     }
     if (endpoint.includes('https://') || endpoint.includes('http://')) {
       endpointUrl = endpoint;
     }
-    return urlFormatter(endpointUrl);
+    return this.utils.urlFormatter(endpointUrl);
   }
 
   /**
@@ -121,7 +120,7 @@ export class RequestService {
    * @param headers
    * @returns {Observable<any>}
    */
-  get(endPoint: string = '', httpOptions?: RequestOptions): Observable<any> {
+  get(endPoint: string = '', httpOptions?: RequestOptions, isLoginAPI?: boolean): Observable<any> {
     if (!httpOptions) {
       httpOptions = {};
     }
@@ -133,7 +132,13 @@ export class RequestService {
       httpOptions.params = '';
     }
 
-    return this.http.get<any>(this.getEndpointUrl(endPoint), {
+    let apiEndpoint = this.getEndpointUrl(endPoint);
+    // get login API endpoint if need to call login API.
+    if (isLoginAPI) {
+      apiEndpoint = this.getEndpointUrl(endPoint, true);
+    }
+
+    return this.http.get<any>(apiEndpoint, {
       headers: this.appendHeaders(httpOptions.headers),
       params: this.setParams(httpOptions.params)
     })
@@ -146,7 +151,7 @@ export class RequestService {
       );
   }
 
-  post(endPoint: string = '', data, httpOptions?: RequestOptions): Observable<any> {
+  post(endPoint: string = '', data, httpOptions?: RequestOptions, isLoginAPI?: boolean): Observable<any> {
     if (!httpOptions) {
       httpOptions = {};
     }
@@ -158,32 +163,13 @@ export class RequestService {
       httpOptions.params = '';
     }
 
-    return this.http.post<any>(this.getEndpointUrl(endPoint), data, {
-      headers: this.appendHeaders(httpOptions.headers),
-      params: this.setParams(httpOptions.params)
-    })
-      .pipe(concatMap(response => {
-        this._refreshApikey(response);
-        return of(response);
-      }))
-      .pipe(
-        catchError((error) => this.handleError(error))
-      );
-  }
-
-  loginAPIPost(endPoint: string = '', data, httpOptions?: RequestOptions): Observable<any> {
-    if (!httpOptions) {
-      httpOptions = {};
+    let apiEndpoint = this.getEndpointUrl(endPoint);
+    // get login API endpoint if need to call login API.
+    if (isLoginAPI) {
+      apiEndpoint = this.getEndpointUrl(endPoint, true);
     }
 
-    if (!this.utils.has(httpOptions, 'headers')) {
-      httpOptions.headers = '';
-    }
-    if (!this.utils.has(httpOptions, 'params')) {
-      httpOptions.params = '';
-    }
-
-    return this.http.post<any>(this.getEndpointUrl(endPoint, 'login'), data, {
+    return this.http.post<any>(apiEndpoint, data, {
       headers: this.appendHeaders(httpOptions.headers),
       params: this.setParams(httpOptions.params)
     })

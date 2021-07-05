@@ -183,6 +183,66 @@ describe('ChatRoomComponent', () => {
       expect(chatServiceSpy.getMessageList.calls.count()).toBe(1);
       expect(chatServiceSpy.getChatMembers.calls.count()).toBe(1);
     });
+
+    it('should stop loading if no response got', () => {
+      component.chatChannel = {
+        uuid: '35326928',
+        name: 'Team 1',
+        avatar: 'https://sandbox.practera.com/img/team-white.png',
+        pusherChannel: 'sdb746-93r7dc-5f44eb4f',
+        isAnnouncement: false,
+        isDirectMessage: false,
+        readonly: false,
+        roles: [
+          'participant',
+          'coordinator',
+          'admin'
+        ],
+        unreadMessageCount: 0,
+        lastMessage: null,
+        lastMessageCreated: null,
+        canEdit: false
+      };
+      component.loadingChatMessages = false;
+      chatServiceSpy.getMessageList.and.returnValue(of(null));
+      chatServiceSpy.getChatMembers.and.returnValue(of(mockMembers));
+      chatServiceSpy.markMessagesAsSeen.and.returnValue(of({}));
+      component.onEnter();
+      expect(chatServiceSpy.getMessageList.calls.count()).toBe(1);
+      expect(component.messagePageCursor).toEqual('');
+      expect(component.loadingChatMessages).toEqual(false);
+    });
+
+    it('should stop loading if no messages got', () => {
+      component.chatChannel = {
+        uuid: '35326928',
+        name: 'Team 1',
+        avatar: 'https://sandbox.practera.com/img/team-white.png',
+        pusherChannel: 'sdb746-93r7dc-5f44eb4f',
+        isAnnouncement: false,
+        isDirectMessage: false,
+        readonly: false,
+        roles: [
+          'participant',
+          'coordinator',
+          'admin'
+        ],
+        unreadMessageCount: 0,
+        lastMessage: null,
+        lastMessageCreated: null,
+        canEdit: false
+      };
+      component.loadingChatMessages = false;
+      chatServiceSpy.getMessageList.and.returnValue(of({
+        cursor: '32as4d654asd',
+        messages: []}));
+      chatServiceSpy.getChatMembers.and.returnValue(of(mockMembers));
+      chatServiceSpy.markMessagesAsSeen.and.returnValue(of({}));
+      component.onEnter();
+      expect(chatServiceSpy.getMessageList.calls.count()).toBe(1);
+      expect(component.messagePageCursor).toEqual('');
+      expect(component.loadingChatMessages).toEqual(false);
+    });
   });
 
   describe('when testing getMessageFromEvent()', () => {
@@ -438,6 +498,50 @@ describe('ChatRoomComponent', () => {
       spyOn(utils, 'isMobile').and.returnValue(true);
       component.openChatInfo();
       expect(modalCtrlSpy.create.calls.count()).toBe(2);
+    });
+  });
+
+  describe('when testing back()', () => {
+    it(`should navigate to 'chat' page`, () => {
+      component.back();
+      expect(routerSpy.navigate).toHaveBeenCalledWith(['app', 'chat']);
+    });
+  });
+
+  describe('when testing loadMoreMessages()', () => {
+    it(`should call loadMessages if scroll position in 0`, () => {
+      component.chatChannel = {
+        uuid: '35326928',
+        name: 'Team 1',
+        avatar: 'https://sandbox.practera.com/img/team-white.png',
+        pusherChannel: 'sdb746-93r7dc-5f44eb4f',
+        isAnnouncement: false,
+        isDirectMessage: false,
+        readonly: false,
+        roles: [
+          'participant',
+          'coordinator',
+          'admin'
+        ],
+        unreadMessageCount: 0,
+        lastMessage: null,
+        lastMessageCreated: null,
+        canEdit: false
+      };
+      component.loadingChatMessages = false;
+      chatServiceSpy.getMessageList.and.returnValue(of(mockChatMessages));
+      chatServiceSpy.getChatMembers.and.returnValue(of(mockMembers));
+      chatServiceSpy.markMessagesAsSeen.and.returnValue(of({}));
+      component.loadMoreMessages({detail: {scrollTop: 0}});
+      expect(chatServiceSpy.getMessageList.calls.count()).toBe(1);
+    });
+  });
+
+  describe('when testing isLastMessage()', () => {
+    it(`should assign correct value for 'noAvatar' variable`, () => {
+      component.messageList = mockChatMessages.messages;
+      component.isLastMessage(mockChatMessages.messages[1]);
+      expect(component.messageList[1].noAvatar).toEqual(false);
     });
   });
 

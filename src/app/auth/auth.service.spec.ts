@@ -8,7 +8,6 @@ import { HttpClientModule } from '@angular/common/http';
 import { BrowserStorageService } from '@services/storage.service';
 import { PusherService } from '@shared/pusher/pusher.service';
 import { UtilsService } from '@services/utils.service';
-import { environment } from 'environments/environment.sandbox';
 
 describe('AuthService', () => {
   let service: AuthService;
@@ -26,7 +25,7 @@ describe('AuthService', () => {
         AuthService,
         {
           provide: RequestService,
-          useValue: jasmine.createSpyObj('RequestService', ['delete', 'post', 'get', 'graphQLQuery', 'loginAPIPost'])
+          useValue: jasmine.createSpyObj('RequestService', ['delete', 'post', 'get', 'graphQLQuery'])
         },
         {
           provide: Router,
@@ -147,15 +146,16 @@ describe('AuthService', () => {
   ];
 
   it('when testing login(), it should pass the correct data to API', () => {
-    requestSpy.loginAPIPost.and.returnValue(of({
+    requestSpy.post.and.returnValue(of({
       apikey: '123456',
       stacks: mockStacks
     }));
+    storageSpy.set.and.returnValue(true);
     service.login({ username: 'test@test.com', password: '123' }).subscribe();
-    expect(requestSpy.loginAPIPost.calls.count()).toBe(1);
-    expect(requestSpy.loginAPIPost.calls.first().args[1].username).toEqual('test@test.com');
-    expect(requestSpy.loginAPIPost.calls.first().args[1].password).toEqual('123');
-    expect(requestSpy.loginAPIPost.calls.first().args[1].from).toEqual('App');
+    expect(requestSpy.post.calls.count()).toBe(1);
+    expect(requestSpy.post.calls.first().args[1].username).toEqual('test@test.com');
+    expect(requestSpy.post.calls.first().args[1].password).toEqual('123');
+    expect(requestSpy.post.calls.first().args[1].from).toEqual('App');
   });
 
   it('when testing directLogin(), it should pass the correct data to API', () => {
@@ -185,7 +185,7 @@ describe('AuthService', () => {
     expect(storageSpy.setUser.calls.first().args[0]).toEqual({apikey: '123456'});
   });
 
-  it('when testing globalLogin(), it should pass the correct data to API', () => {
+  it('when testing directLoginWithApikey(), it should pass the correct data to API', () => {
     requestSpy.post.and.returnValue(of({
       success: true,
       data: {
@@ -206,7 +206,7 @@ describe('AuthService', () => {
       }
     }));
     storageSpy.getConfig.and.returnValue(true);
-    service.globalLogin({ apikey: 'abcd', service: 'LOGIN' }).subscribe();
+    service.directLoginWithApikey({ apikey: 'abcd', service: 'LOGIN' }).subscribe();
     expect(requestSpy.post.calls.count()).toBe(1);
     expect(requestSpy.post.calls.first().args[1]).toContain('abcd');
     expect(storageSpy.setUser.calls.first().args[0]).toEqual({apikey: '123456'});
@@ -368,7 +368,7 @@ describe('AuthService', () => {
       requestSpy.get.and.returnValue(of(sample_result));
       service.getStackConfig(sample_uuid).subscribe(result => {
         expect(result).toEqual(sample_result.data);
-        expect(requestSpy.get).toHaveBeenCalledWith(`${environment.globalLoginUrl}/stack/${sample_uuid}`);
+        expect(requestSpy.get).toHaveBeenCalledWith('stack', {params: {uuid: sample_uuid}}, true);
       });
     });
 
@@ -376,7 +376,7 @@ describe('AuthService', () => {
       requestSpy.get.and.returnValue(of(null));
       service.getStackConfig(sample_uuid).subscribe(result => {
         expect(result).toBeFalsy();
-        expect(requestSpy.get).toHaveBeenCalledWith(`${environment.globalLoginUrl}/stack/${sample_uuid}`);
+        expect(requestSpy.get).toHaveBeenCalledWith('stack', {params: {uuid: sample_uuid}}, true);
       });
     });
   });
