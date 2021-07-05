@@ -7,7 +7,6 @@ import { Router } from '@angular/router';
 import { BrowserStorageService, Stack } from '@services/storage.service';
 import { UtilsService } from '@services/utils.service';
 import { PusherService } from '@shared/pusher/pusher.service';
-import { environment } from '@environments/environment';
 
 /**
  * @name api
@@ -26,7 +25,7 @@ const api = {
 };
 
 const LOGIN_API = {
-  stackInfo: `${environment.globalLoginUrl}/stack`,
+  stackInfo: 'stack',
   login: 'login'
 };
 
@@ -365,13 +364,13 @@ export class AuthService {
 
   /**
    * get stack information by uuid through LoginAPI
-   *
+   * according postman and swagger file need to pass uuid as query param
+   * also need to call login API.
    * @param   {string}      uuid
-   *
    * @return  {Observable<Stack>}        observable response of stack endpont
    */
   getStackConfig(uuid: string): Observable<Stack> {
-    return this.request.get(`${LOGIN_API.stackInfo}/${uuid}`).pipe(map(res => {
+    return this.request.get(LOGIN_API.stackInfo, {params: {uuid}}, true).pipe(map(res => {
       if (res && res.data) {
         return res.data;
       }

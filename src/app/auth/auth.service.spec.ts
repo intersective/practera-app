@@ -8,7 +8,6 @@ import { HttpClientModule } from '@angular/common/http';
 import { BrowserStorageService } from '@services/storage.service';
 import { PusherService } from '@shared/pusher/pusher.service';
 import { UtilsService } from '@services/utils.service';
-import { environment } from 'environments/environment.sandbox';
 
 describe('AuthService', () => {
   let service: AuthService;
@@ -369,7 +368,7 @@ describe('AuthService', () => {
       requestSpy.get.and.returnValue(of(sample_result));
       service.getStackConfig(sample_uuid).subscribe(result => {
         expect(result).toEqual(sample_result.data);
-        expect(requestSpy.get).toHaveBeenCalledWith(`${environment.globalLoginUrl}/stack/${sample_uuid}`);
+        expect(requestSpy.get).toHaveBeenCalledWith('stack', {params: {uuid: sample_uuid}}, true);
       });
     });
 
@@ -377,7 +376,7 @@ describe('AuthService', () => {
       requestSpy.get.and.returnValue(of(null));
       service.getStackConfig(sample_uuid).subscribe(result => {
         expect(result).toBeFalsy();
-        expect(requestSpy.get).toHaveBeenCalledWith(`${environment.globalLoginUrl}/stack/${sample_uuid}`);
+        expect(requestSpy.get).toHaveBeenCalledWith('stack', {params: {uuid: sample_uuid}}, true);
       });
     });
   });
