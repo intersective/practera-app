@@ -15,8 +15,8 @@ import { NewRelicService } from '@shared/new-relic/new-relic.service';
 import { ApolloService } from '@shared/apollo/apollo.service';
 
 interface RequestOptions {
-  headers?: string;
-  params?: string;
+  headers?: any;
+  params?: any;
 }
 
 @Injectable({ providedIn: 'root' })
