@@ -103,6 +103,12 @@ function initializeApp(
     })
   ],
   providers: [
+    {
+      provide: APP_INITIALIZER,
+      useFactory: initializeApp,
+      deps: [UtilsService, BrowserStorageService, AuthService],
+      multi: true,
+    },
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
     // Custom
     UtilsService,
