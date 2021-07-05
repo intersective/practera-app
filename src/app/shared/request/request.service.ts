@@ -200,7 +200,7 @@ export class RequestService {
   }
 
   /**
-   *
+   * @todo: graphQLMutate docsblocks
    */
   graphQLMutate(query: string, variables = {}): Observable<any> {
     return this.apolloService.graphQLMutate(query, variables)
@@ -230,6 +230,9 @@ export class RequestService {
       );
   }
 
+  /**
+   *
+   */
   chatGraphQLMutate(query: string, variables = {}): Observable<any> {
     return this.apolloService.chatGraphQLMutate(query, variables).pipe(
       concatMap(response => {
@@ -240,6 +243,9 @@ export class RequestService {
     );
   }
 
+  /**
+   *
+   */
   delete(endPoint: string = '', httpOptions?: RequestOptions): Observable<any> {
     if (!httpOptions) {
       httpOptions = {};

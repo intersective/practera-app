@@ -44,20 +44,7 @@ export class AuthLoginComponent implements OnInit {
    */
   login() {
     if (this.utils.isEmpty(this.loginForm.value.username) || this.utils.isEmpty(this.loginForm.value.password)) {
-      this.notificationService.alert({
-        message: 'Your username or password is empty, please fill them in.',
-        buttons: [
-          {
-            text: 'OK',
-            role: 'cancel',
-            handler: () => {
-              this.isLoggingIn = false;
-              return;
-            }
-          }
-        ]
-      });
-      return;
+      return this.notificationFormat('Your username or password is empty, please fill them in.');
     }
     this.isLoggingIn = true;
 
@@ -69,6 +56,10 @@ export class AuthLoginComponent implements OnInit {
       password: this.loginForm.value.password,
     }).subscribe(
       res => {
+        if (res.stacks && res.stacks.length === 0) {
+          return this.notificationFormat('No stacks available for this user.');
+        }
+
         this.storage.set('isLoggedIn', true);
         this.storage.stacks = res.stacks;
         this.storage.loginApiKey = res.apikey;
@@ -82,6 +73,28 @@ export class AuthLoginComponent implements OnInit {
     );
   }
 
+  /**
+   * reusable format for popup notification
+   *
+   * @param   {string}  message
+   *
+   * @return  {Promise<void>}
+   */
+  private notificationFormat(message): Promise<void> {
+    return this.notificationService.alert({
+      message: message,
+      buttons: [
+        {
+          text: 'OK',
+          role: 'cancel',
+          handler: () => {
+            this.isLoggingIn = false;
+          },
+        },
+      ],
+    });
+  }
+
   private _handleError(err) {
     this.newRelic.noticeError(`${JSON.stringify(err)}`);
     const statusCode = err.status;
@@ -93,17 +106,6 @@ export class AuthLoginComponent implements OnInit {
       You can learn more about how we check that <a href="https://haveibeenpwned.com/Passwords">database</a>`;
     }
     this.isLoggingIn = false;
-    this.notificationService.alert({
-      message: msg,
-      buttons: [
-        {
-          text: 'OK',
-          role: 'cancel',
-          handler: () => {
-            this.isLoggingIn = false;
-          },
-        },
-      ],
-    });
+    this.notificationFormat(msg);
   }
 }

@@ -15,7 +15,7 @@ export class ApolloService {
    * Valid options:
    * noCache: Boolean default false. If set to false, will not cache the result
    */
-  graphQLQuery(query: string, variables?: any, options?: any): Observable<any> {
+  graphQLQuery(query: string, variables?: any, options?: any) {
     options = { ...{ noCache: false }, ...options };
     const watch = this.apollo.watchQuery({
       query: gql(query),
@@ -39,7 +39,7 @@ export class ApolloService {
    * Valid options:
    * noCache: Boolean default false. If set to false, will not cache the result
    */
-  chatGraphQLQuery(query: string, variables?: any, options?: any): Observable<any> {
+  chatGraphQLQuery(query: string, variables?: any, options?: any) {
     options = { ...{ noCache: false }, ...options };
     const watch = this.apollo.use('chat').watchQuery({
       query: gql(query),
