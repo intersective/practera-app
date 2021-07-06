@@ -17,6 +17,8 @@ import { BrowserStorageService } from '@services/storage.service';
       provide: APOLLO_OPTIONS,
       useFactory: (httpLink: HttpLink, storage: BrowserStorageService) => {
         const config = storage.stackConfig;
+        console.log('apollo::config::', config);
+
 
         return {
           cache: new InMemoryCache({

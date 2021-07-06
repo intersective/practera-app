@@ -7,9 +7,10 @@ import {
   HttpParameterCodec,
 } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { Observable, of, throwError, from } from 'rxjs';
-import { catchError, tap, concatMap, map } from 'rxjs/operators';
+import { Observable, of, throwError } from 'rxjs';
+import { catchError, concatMap, map } from 'rxjs/operators';
 import { UtilsService } from '@services/utils.service';
+import { environment } from '@environments/environment';
 import { BrowserStorageService } from '@services/storage.service';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
 import { ApolloService } from '@shared/apollo/apollo.service';
@@ -28,8 +29,6 @@ export class DevModeService {
 
 export class RequestConfig {
   appkey = '';
-  prefixUrl = '';
-  loginApi = '';
 }
 
 export class QueryEncoder implements HttpParameterCodec {
@@ -71,9 +70,10 @@ export class RequestService {
   ) {
     if (config) {
       this.appkey = config.appkey;
-      this.prefixUrl = config.prefixUrl;
-      this.loginApiUrl = config.loginApi;
     }
+
+    this.prefixUrl = storage.stackConfig.coreApi;
+    this.loginApiUrl = environment.loginAPIUrl;
   }
 
   /**

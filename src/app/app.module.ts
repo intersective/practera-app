@@ -74,16 +74,13 @@ function initializeApp(
     DeviceInfoComponent,
   ],
   imports: [
-    ApolloModule,
     BrowserModule,
     BrowserAnimationsModule,
     HttpClientModule,
     IonicModule.forRoot(),
     AuthModule,
     RequestModule.forRoot({
-      appkey: environment.appkey,
-      prefixUrl: environment.APIEndpoint,
-      loginApi: environment.loginAPIUrl
+      appkey: environment.appkey
     }),
     AppRoutingModule,
     EmbedVideo.forRoot(),
@@ -100,7 +97,8 @@ function initializeApp(
     IntercomModule.forRoot({
       appId: environment.intercomAppId,
       updateOnRouterChange: true // will automatically run `update` on router event changes. Default: `false`
-    })
+    }),
+    ApolloModule,
   ],
   providers: [
     {
