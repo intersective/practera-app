@@ -74,12 +74,7 @@ describe('AuthService', () => {
       filestack: {
         s3Config: {
           container: 'files.p1-stage.practera.com',
-          region: 'ap-southeast-2',
-          paths: {
-            any: '/appv2/sandbox/uploads',
-            image: '/appv2/sandbox/uploads',
-            video: '/appv2/sandbox/video/uploads'
-          }
+          region: 'ap-southeast-2'
         },
       },
       defaultCountryModel: 'AUS',
@@ -98,12 +93,7 @@ describe('AuthService', () => {
       filestack: {
         s3Config: {
           container: 'files.p1-sandbox.practera.com',
-          region: 'ap-southeast-2',
-          paths: {
-            any: '/appv2/sandbox/uploads',
-            image: '/appv2/sandbox/uploads',
-            video: '/appv2/sandbox/video/uploads'
-          }
+          region: 'ap-southeast-2'
         },
       },
       defaultCountryModel: 'AUS',
@@ -122,12 +112,7 @@ describe('AuthService', () => {
       filestack: {
         s3Config: {
           container: 'practera-aus',
-          region: 'ap-southeast-2',
-          paths: {
-            any: '/appv2/sandbox/uploads',
-            image: '/appv2/sandbox/uploads',
-            video: '/appv2/sandbox/video/uploads'
-          }
+          region: 'ap-southeast-2'
         },
       },
       defaultCountryModel: 'AUS',
@@ -147,12 +132,7 @@ describe('AuthService', () => {
       filestack: {
         s3Config: {
           container: 'files.p1-stage.practera.com',
-          region: 'ap-southeast-2',
-          paths: {
-            any: '/appv2/sandbox/uploads',
-            image: '/appv2/sandbox/uploads',
-            video: '/appv2/sandbox/video/uploads'
-          }
+          region: 'ap-southeast-2'
         },
       },
       defaultCountryModel: 'AUS',

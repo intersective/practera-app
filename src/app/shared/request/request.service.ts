@@ -96,7 +96,7 @@ export class RequestService {
   }
 
   private getEndpointUrl(endpoint, isLoginAPI?: boolean) {
-    let endpointUrl = this.prefixUrl + endpoint;
+    let endpointUrl = ( this.storage.stackConfig ? this.storage.stackConfig.coreApi : this.prefixUrl ) + endpoint;
     if (isLoginAPI) {
       endpointUrl = this.loginApiUrl + endpoint;
     }
