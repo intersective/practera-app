@@ -29,6 +29,8 @@ export class DevModeService {
 
 export class RequestConfig {
   appkey = '';
+  prefixUrl = '';
+  loginApi = '';
 }
 
 export class QueryEncoder implements HttpParameterCodec {
@@ -70,10 +72,9 @@ export class RequestService {
   ) {
     if (config) {
       this.appkey = config.appkey;
+      this.prefixUrl = config.prefixUrl;
+      this.loginApiUrl = config.loginApiUrl;
     }
-
-    this.prefixUrl = storage.stackConfig.coreApi;
-    this.loginApiUrl = environment.loginAPIUrl;
   }
 
   /**
