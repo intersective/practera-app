@@ -80,7 +80,7 @@ export class SwitcherService {
   ) {}
 
   getPrograms() {
-    const programs = this.storage.get('programs');
+    const programs = this.storage.get('programs') || [];
     const cdn = 'https://cdn.filestackcontent.com/resize=fit:crop,width:';
     let imagewidth = 600;
     programs.forEach(program => {

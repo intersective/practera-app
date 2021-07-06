@@ -73,7 +73,7 @@ export class RequestService {
     if (config) {
       this.appkey = config.appkey;
       this.prefixUrl = config.prefixUrl;
-      this.loginApiUrl = config.loginApiUrl;
+      this.loginApiUrl = config.loginApi;
     }
   }
 

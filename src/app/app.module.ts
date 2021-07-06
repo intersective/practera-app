@@ -34,37 +34,40 @@ import { AuthService } from './auth/auth.service';
  *
  * @return  {Function}  return a deferred function
  */
-function initializeApp(
-  utils: UtilsService,
-  storage: BrowserStorageService,
-  authService: AuthService
-): Function {
+// function initializeApp(
+//   utils: UtilsService,
+//   storage: BrowserStorageService,
+//   authService: AuthService
+// ): Function {
 
-  /**
-   * retrieve stack info first before everything else, so then all API
-   * request URL can start using endpoint sourced from dynamic domain
-   *
-   * @param   {Function}  resolve  async function = Promise.resolve
-   *
-   * @return  {Promise<any>}         as long as deferred get
-  *                                  resolved, the result doesn't matter
-   */
-  return (): Promise<any> => new Promise(async (resolve: Function): Promise<any> => {
-    const query: URLSearchParams = utils.getQueryParams();
-    try {
-      if (query.has('stack_uuid')) {
-        const res = await authService.getStackConfig(query.get('stack_uuid')).toPromise();
-        storage.stackConfig = res;
-        return resolve(res);
-      }
-      // if nothing happen, just let it continue
-      // with "true" which won't be used anywhere
-      return resolve(true);
-    } catch (err) {
-      return resolve(err);
-    }
-  });
-}
+//   /**
+//    * retrieve stack info first before everything else, so then all API
+//    * request URL can start using endpoint sourced from dynamic domain
+//    *
+//    * @param   {Function}  resolve  async function = Promise.resolve
+//    *
+//    * @return  {Promise<any>}         as long as deferred get
+//   *                                  resolved, the result doesn't matter
+//    */
+//   return (): Promise<any> => new Promise(async (resolve: Function): Promise<any> => {
+//     const query: URLSearchParams = utils.getQueryParams();
+//     try {
+//       if (query.has('stack_uuid')) {
+//         const res: {
+//           apikey: string;
+//           stacks: any[];
+//         } = await authService.getStackConfig(query.get('stack_uuid')).toPromise();
+//         storage.stackConfig = (res.stacks && res.stacks.length > 0) ? res.stacks[0] : [];
+//         return resolve(res);
+//       }
+//       // if nothing happen, just let it continue
+//       // with "true" which won't be used anywhere
+//       return resolve(true);
+//     } catch (err) {
+//       return resolve(err);
+//     }
+//   });
+// }
 
 @NgModule({
   declarations: [
@@ -74,13 +77,16 @@ function initializeApp(
     DeviceInfoComponent,
   ],
   imports: [
+    ApolloModule,
+    AuthModule,
     BrowserModule,
     BrowserAnimationsModule,
     HttpClientModule,
     IonicModule.forRoot(),
-    AuthModule,
     RequestModule.forRoot({
-      appkey: environment.appkey
+      appkey: environment.appkey,
+      prefixUrl: environment.APIEndpoint,
+      loginApi: environment.loginAPIUrl,
     }),
     AppRoutingModule,
     EmbedVideo.forRoot(),
@@ -98,15 +104,14 @@ function initializeApp(
       appId: environment.intercomAppId,
       updateOnRouterChange: true // will automatically run `update` on router event changes. Default: `false`
     }),
-    ApolloModule,
   ],
   providers: [
-    {
+    /* {
       provide: APP_INITIALIZER,
       useFactory: initializeApp,
       deps: [UtilsService, BrowserStorageService, AuthService],
       multi: true,
-    },
+    }, */
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
     // Custom
     UtilsService,
