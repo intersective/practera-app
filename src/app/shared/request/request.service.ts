@@ -96,9 +96,13 @@ export class RequestService {
   }
 
   private getEndpointUrl(endpoint, isLoginAPI?: boolean) {
-    let endpointUrl = this.prefixUrl + endpoint;
+    let endpointUrl = '';
     if (isLoginAPI) {
       endpointUrl = this.loginApiUrl + endpoint;
+    } else if (this.storage.stackConfig && this.storage.stackConfig.coreApi) {
+      endpointUrl = this.storage.stackConfig.coreApi + endpoint;
+    } else {
+      throw new Error('Can not find API URL.');
     }
     if (endpoint.includes('https://') || endpoint.includes('http://')) {
       endpointUrl = endpoint;

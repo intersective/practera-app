@@ -51,11 +51,6 @@ export interface Config {
 export interface S3Config {
   container: string;
   region: string;
-  paths: {
-    any: string;
-    image: string;
-    video: string;
-  };
 }
 export interface FilestackConfig {
   s3Config: S3Config;
@@ -207,9 +202,9 @@ export class BrowserStorageService {
   }
 
   // methods to store and get stacks that user have access.
-  get stacks() {
+  get stacks(): Array<Stack> {
     const result = this.get('stacks');
-    return result || false;
+    return result || null;
   }
 
   set stacks(val: Array<Stack>) {
@@ -217,9 +212,9 @@ export class BrowserStorageService {
   }
 
   // methods to store and get apikey that login API return after login.
-  get loginApiKey() {
+  get loginApiKey(): string {
     const result = this.get('loginApiKey');
-    return result || false;
+    return result || null;
   }
 
   set loginApiKey(val: string) {
