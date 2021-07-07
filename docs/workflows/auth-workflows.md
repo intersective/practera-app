@@ -72,6 +72,15 @@ To log user in, we use both login API and core API.
 
 1. core API will return timeline, programs related to login user.
 
+## Direct link/deep link Workflow
+
+- Global App V2 uses the Global Login API for authentication.
+- Direct link/deep link need to contain stack_uuid as a parameter
+- Global App V2 will use the stack_uuid to get stack information from Global Login API
+- Once get the stack information, store those info in local storage 
+- Use the urls from the stack for normal direct link/deep link checks and actions
+
+
 ## Registration Flow
 
 This conatains information about new user registration process.
@@ -91,6 +100,8 @@ To rester a new user, we use both login API and core API. After user registered 
 - Redirect the user to the experience switcher page.
 - Send requests to core url for each stack to get the list of experiences for the user.
 - Once user selected an experience, store the related stack info in local storage for future requests.
+
+![Direct/Registration link Workflow](direct-registration-link-workflow.drawio.svg)
 
 ### code execute steps
 
