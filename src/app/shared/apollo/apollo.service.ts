@@ -17,6 +17,35 @@ export class ApolloService {
     private httpLink: HttpLink,
   ) { }
 
+  initiateCoreClient() {
+    this.apollo.create({
+      cache: new InMemoryCache({
+        dataIdFromObject: object => {
+          switch (object.__typename) {
+            case 'Task':
+              return `Task:${object['type']}${object.id}`;
+            default:
+              return defaultDataIdFromObject(object);
+          }
+        }
+      }),
+      link: this.httpLink.create({
+        uri: this.storage.stackConfig.coreGraphQLApi
+      })
+    });
+  }
+
+  initiateChatClient() {
+    this.apollo.create(
+      {
+        link: this.httpLink.create({
+          uri: this.storage.stackConfig.chatApi
+        }),
+        cache: new InMemoryCache(),
+      },
+      'chat');
+  }
+
   /**
    * Valid options:
    * noCache: Boolean default false. If set to false, will not cache the result
@@ -60,37 +89,5 @@ export class ApolloService {
       mutation: gql(query),
       variables: variables
     });
-  }
-
-  initiateChatClient() {
-    this.apollo.create(
-      {
-        link: this.httpLink.create({
-          uri: this.storage.stackConfig.chatApi
-        }),
-        cache: new InMemoryCache(),
-      },
-      'chat');
-  }
-
-  initiateCoreClient() {
-    this.apollo.create(
-      {
-        cache: new InMemoryCache({
-          dataIdFromObject: object => {
-            switch (object.__typename) {
-              case 'Task':
-                return `Task:${object['type']}${object.id}`;
-              default:
-                return defaultDataIdFromObject(object);
-            }
-          }
-        }),
-        link: this.httpLink.create({
-          uri: this.storage.stackConfig.coreGraphQLApi
-        })
-      },
-      'chat'
-    );
   }
 }

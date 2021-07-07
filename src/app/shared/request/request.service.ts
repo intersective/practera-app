@@ -237,7 +237,6 @@ export class RequestService {
   chatGraphQLMutate(query: string, variables = {}): Observable<any> {
     return this.apolloService.chatGraphQLMutate(query, variables).pipe(
       concatMap(response => {
-        // this._refreshApikey(response);
         return of(response);
       }),
       catchError((error) => this.handleError(error))

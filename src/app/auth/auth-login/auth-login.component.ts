@@ -64,30 +64,6 @@ export class AuthLoginComponent implements OnInit {
         }
 
         // this.storage.stackConfig = res.stacks[0] ? res.stacks[0] : null;
-        this.storage.stackConfig = {
-          "uuid": "9c31655d-fb73-4ea7-8315-aa4c725b367e",
-          "name": "Practera Classic App - Sandbox",
-          "description": "Participate in an experience as a learner or reviewer - Testing",
-          "image": "https://media.intersective.com/img/learners_reviewers.png",
-          "url": "https://app.p1-sandbox.practera.com",
-          "type": "app",
-          "coreApi": "https://admin.p1-sandbox.practera.com",
-          "coreGraphQLApi": "https://kixs5acl6j.execute-api.ap-southeast-2.amazonaws.com/sandbox/",
-          "chatApi": "https://antkrqcqa6.execute-api.ap-southeast-2.amazonaws.com/dev/graphql",
-          "filestack": {
-            "s3Config": {
-              "paths": {
-                "any": "",
-                "image": "",
-                "video": "",
-              },
-              "container": "files.p1-sandbox.practera.com",
-              "region": "ap-southeast-2"
-            }
-          },
-          "defaultCountryModel": "AUS",
-          "lastLogin": 1625542957105
-        };
 
         this.storage.set('isLoggedIn', true);
         this.storage.stacks = res.stacks;

@@ -101,8 +101,8 @@ export class AppComponent implements OnInit {
       }
       // initialise Pusher
       await this.pusherService.initialise();
-      this.apolloService.initiateChatClient();
       this.apolloService.initiateCoreClient();
+      this.apolloService.initiateChatClient();
     });
   }
 
