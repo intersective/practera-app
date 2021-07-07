@@ -18,6 +18,8 @@ To log user in, we use both login API and core API.
 - Send requests to core url for each stack to get the list of experiences for the user.
 - Once user selected an experience, store the related stack info in local storage for future requests.
 
+![Login Workflow](login.drawio.svg)
+
 ### code execute steps
 
 1. User enter username and password and clicks on login button.
