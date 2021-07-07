@@ -10,6 +10,7 @@ import { environment } from '@environments/environment';
 import { PusherService } from '@shared/pusher/pusher.service';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
 import { DomSanitizer } from '@angular/platform-browser';
+import { ApolloService } from '@shared/apollo/apollo.service';
 
 @Component({
   selector: 'app-root',
@@ -29,6 +30,7 @@ export class AppComponent implements OnInit {
     private ngZone: NgZone,
     private newRelic: NewRelicService,
     public sanitizer: DomSanitizer,
+    private apolloService: ApolloService,
   ) {
     this.customHeader = null;
     this.initializeApp();
@@ -99,6 +101,8 @@ export class AppComponent implements OnInit {
       }
       // initialise Pusher
       await this.pusherService.initialise();
+      this.apolloService.initiateChatClient();
+      this.apolloService.initiateCoreClient();
     });
   }
 

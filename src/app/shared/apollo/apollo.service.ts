@@ -1,15 +1,21 @@
 import { Injectable } from '@angular/core';
+import { HttpLink } from 'apollo-angular-link-http';
 import { BrowserStorageService } from '@services/storage.service';
 import gql from 'graphql-tag';
 import { Apollo } from 'apollo-angular';
 import { Observable } from 'rxjs';
+import { InMemoryCache, defaultDataIdFromObject } from 'apollo-cache-inmemory';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ApolloService {
 
-  constructor(private storage: BrowserStorageService, private apollo: Apollo) { }
+  constructor(
+    private storage: BrowserStorageService,
+    private apollo: Apollo,
+    private httpLink: HttpLink,
+  ) { }
 
   /**
    * Valid options:
@@ -54,5 +60,37 @@ export class ApolloService {
       mutation: gql(query),
       variables: variables
     });
+  }
+
+  initiateChatClient() {
+    this.apollo.create(
+      {
+        link: this.httpLink.create({
+          uri: this.storage.stackConfig.chatApi
+        }),
+        cache: new InMemoryCache(),
+      },
+      'chat');
+  }
+
+  initiateCoreClient() {
+    this.apollo.create(
+      {
+        cache: new InMemoryCache({
+          dataIdFromObject: object => {
+            switch (object.__typename) {
+              case 'Task':
+                return `Task:${object['type']}${object.id}`;
+              default:
+                return defaultDataIdFromObject(object);
+            }
+          }
+        }),
+        link: this.httpLink.create({
+          uri: this.storage.stackConfig.coreGraphQLApi
+        })
+      },
+      'chat'
+    );
   }
 }

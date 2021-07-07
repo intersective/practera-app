@@ -5,7 +5,7 @@ import { Validators, FormGroup, FormControl } from '@angular/forms';
 import { NotificationService } from '@shared/notification/notification.service';
 import { UtilsService } from '@services/utils.service';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
-import { BrowserStorageService } from '@services/storage.service';
+import { BrowserStorageService, Stack } from '@services/storage.service';
 
 @Component({
   selector: 'app-auth-login',
@@ -55,10 +55,39 @@ export class AuthLoginComponent implements OnInit {
       username: this.loginForm.value.username,
       password: this.loginForm.value.password,
     }).subscribe(
-      res => {
+      (res: {
+        apikey: string;
+        stacks: Stack[];
+      }) => {
         if (res.stacks && res.stacks.length === 0) {
           return this.notificationFormat('No stacks available for this user.');
         }
+
+        // this.storage.stackConfig = res.stacks[0] ? res.stacks[0] : null;
+        this.storage.stackConfig = {
+          "uuid": "9c31655d-fb73-4ea7-8315-aa4c725b367e",
+          "name": "Practera Classic App - Sandbox",
+          "description": "Participate in an experience as a learner or reviewer - Testing",
+          "image": "https://media.intersective.com/img/learners_reviewers.png",
+          "url": "https://app.p1-sandbox.practera.com",
+          "type": "app",
+          "coreApi": "https://admin.p1-sandbox.practera.com",
+          "coreGraphQLApi": "https://kixs5acl6j.execute-api.ap-southeast-2.amazonaws.com/sandbox/",
+          "chatApi": "https://antkrqcqa6.execute-api.ap-southeast-2.amazonaws.com/dev/graphql",
+          "filestack": {
+            "s3Config": {
+              "paths": {
+                "any": "",
+                "image": "",
+                "video": "",
+              },
+              "container": "files.p1-sandbox.practera.com",
+              "region": "ap-southeast-2"
+            }
+          },
+          "defaultCountryModel": "AUS",
+          "lastLogin": 1625542957105
+        };
 
         this.storage.set('isLoggedIn', true);
         this.storage.stacks = res.stacks;
