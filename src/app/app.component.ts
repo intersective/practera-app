@@ -51,43 +51,7 @@ export class AppComponent implements OnInit {
     this.configVerification();
     this.sharedService.onPageLoad();
 
-    // @TODO: need to build a new micro service to get the config and serve the custom branding config from a microservice
-    // Get the custom branding info and update the theme color if needed
-    const domain = window.location.hostname;
-    this.authService.getConfig({domain}).subscribe(
-      (response: any) => {
-        if (response !== null) {
-          const expConfig = response.data;
-          const numOfConfigs = expConfig.length;
-          if (numOfConfigs > 0 && numOfConfigs < 2) {
-            let logo = expConfig[0].logo;
-            const themeColor = expConfig[0].config.theme_color;
-            if (expConfig[0].config.html_branding && expConfig[0].config.html_branding.header) {
-              this.customHeader = expConfig[0].config.html_branding.header;
-            }
-            if (this.customHeader) {
-              this.customHeader = this.sanitizer.bypassSecurityTrustHtml(this.customHeader);
-            }
-            // add the domain if the logo url is not a full url
-            if (!logo.includes('http') && !this.utils.isEmpty(logo)) {
-              logo = environment.APIEndpoint + logo;
-            }
-            this.storage.setConfig({
-              logo,
-              color: themeColor
-            });
-            // use brand color if no theme color
-            if (!this.utils.has(this.storage.getUser(), 'themeColor') || !this.storage.getUser().themeColor) {
-              this.utils.changeThemeColor(themeColor);
-            }
-          }
-        }
-      },
-      err => {
-        this.newRelic.noticeError(`${JSON.stringify(err)}`);
-      }
-    );
-
+    this.getCustomConfigurations();
     this.analyseQueryParams();
   }
 
@@ -159,6 +123,50 @@ export class AppComponent implements OnInit {
     if (searchParams.has('apikey')) {
       const queries = this.utils.urlQueryToObject(searchParams.toString());
       return this.navigate(['global_login', searchParams.get('apikey'), queries]);
+    }
+  }
+
+  // @TODO: need to build a new micro service to get the config and serve the custom branding config from a microservice
+  /**
+   * this will call core API to get custom branding and will update branding info.
+   */
+  getCustomConfigurations() {
+    const queryParams = this.utils.getQueryParams();
+    if (queryParams.has('stack_uuid') || this.storage.stackConfig) {
+      const domain = window.location.hostname;
+      this.authService.getConfig({domain}).subscribe(
+        (response: any) => {
+          if (response !== null) {
+            const expConfig = response.data;
+            const numOfConfigs = expConfig.length;
+            if (numOfConfigs > 0 && numOfConfigs < 2) {
+              let logo = expConfig[0].logo;
+              const themeColor = expConfig[0].config.theme_color;
+              if (expConfig[0].config.html_branding && expConfig[0].config.html_branding.header) {
+                this.customHeader = expConfig[0].config.html_branding.header;
+              }
+              if (this.customHeader) {
+                this.customHeader = this.sanitizer.bypassSecurityTrustHtml(this.customHeader);
+              }
+              // add the domain if the logo url is not a full url
+              if (!logo.includes('http') && !this.utils.isEmpty(logo)) {
+                logo = environment.APIEndpoint + logo;
+              }
+              this.storage.setConfig({
+                logo,
+                color: themeColor
+              });
+              // use brand color if no theme color
+              if (!this.utils.has(this.storage.getUser(), 'themeColor') || !this.storage.getUser().themeColor) {
+                this.utils.changeThemeColor(themeColor);
+              }
+            }
+          }
+        },
+        err => {
+          this.newRelic.noticeError(`${JSON.stringify(err)}`);
+        }
+      );
     }
   }
 }
