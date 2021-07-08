@@ -98,16 +98,16 @@ export class RequestService {
   private getEndpointUrl(endpoint, isLoginAPI?: boolean) {
     let endpointUrl = '';
     if (isLoginAPI) {
-      endpointUrl = this.loginApiUrl + endpoint;
+      endpointUrl = this.utils.urlFormatter(this.loginApiUrl, endpoint);
     } else if (this.storage.stackConfig && this.storage.stackConfig.coreApi) {
-      endpointUrl = this.storage.stackConfig.coreApi + endpoint;
+      endpointUrl = this.utils.urlFormatter(this.storage.stackConfig.coreApi, endpoint);
     } else {
       throw new Error('Can not find API URL.');
     }
     if (endpoint.includes('https://') || endpoint.includes('http://')) {
-      endpointUrl = endpoint;
+      endpointUrl = this.utils.urlFormatter(endpoint);
     }
-    return this.utils.urlFormatter(endpointUrl);
+    return endpointUrl;
   }
 
   /**
@@ -129,12 +129,13 @@ export class RequestService {
       httpOptions.params = '';
     }
 
-    let apiEndpoint = this.getEndpointUrl(endPoint);
+    let apiEndpoint = '';
     // get login API endpoint if need to call login API.
     if (isLoginAPI) {
       apiEndpoint = this.getEndpointUrl(endPoint, true);
+    } else {
+      apiEndpoint = this.getEndpointUrl(endPoint);
     }
-
     return this.http.get<any>(apiEndpoint, {
       headers: this.appendHeaders(httpOptions.headers),
       params: this.setParams(httpOptions.params)
@@ -160,10 +161,12 @@ export class RequestService {
       httpOptions.params = '';
     }
 
-    let apiEndpoint = this.getEndpointUrl(endPoint);
+    let apiEndpoint = '';
     // get login API endpoint if need to call login API.
     if (isLoginAPI) {
       apiEndpoint = this.getEndpointUrl(endPoint, true);
+    } else {
+      apiEndpoint = this.getEndpointUrl(endPoint);
     }
 
     return this.http.post<any>(apiEndpoint, data, {
@@ -191,10 +194,12 @@ export class RequestService {
       httpOptions.params = '';
     }
 
-    let apiEndpoint = this.getEndpointUrl(endPoint);
+    let apiEndpoint = '';
     // get login API endpoint if need to call login API.
     if (isLoginAPI) {
       apiEndpoint = this.getEndpointUrl(endPoint, true);
+    } else {
+      apiEndpoint = this.getEndpointUrl(endPoint);
     }
 
     return this.http.put<any>(apiEndpoint, data, {
