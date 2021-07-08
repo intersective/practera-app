@@ -38,7 +38,7 @@ function initializeApp(
   utils: UtilsService,
   storage: BrowserStorageService,
   authService: AuthService
-): Function {
+) {
 
   /**
    * retrieve stack info first before everything else, so then all API
@@ -49,7 +49,7 @@ function initializeApp(
    * @return  {Promise<any>}         as long as deferred get
   *                                  resolved, the result doesn't matter
    */
-  return (): Promise<any> => new Promise(async (resolve: Function): Promise<any> => {
+  return () => new Promise(async (resolve: Function): Promise<any> => {
     const query: URLSearchParams = utils.getQueryParams();
     try {
       if (query.has('stack_uuid')) {
@@ -57,11 +57,13 @@ function initializeApp(
         if (res) {
           storage.stackConfig = res;
         }
+        storage.stackConfig.coreGraphQLApi = 'https://kixs5acl6j.execute-api.ap-southeast-2.amazonaws.com/sandbox/';
+        storage.stackConfig.chatApi = 'https://antkrqcqa6.execute-api.ap-southeast-2.amazonaws.com/dev/graphql';
 
         return resolve(res);
       }
       // if nothing happen, just let it move on (don't block)
-      return resolve();
+      return resolve(true);
     } catch (err) {
       return resolve(err);
     }
