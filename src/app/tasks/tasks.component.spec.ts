@@ -35,7 +35,7 @@ describe('TasksComponent', () => {
         },
         {
           provide: BrowserStorageService,
-          useValue: jasmine.createSpyObj('BrowserStorageService', ['getUser', 'get'])
+          useValue: jasmine.createSpyObj('BrowserStorageService', ['getUser', 'get', 'stackConfig'])
         },
       ]
     })
@@ -91,6 +91,25 @@ describe('TasksComponent', () => {
       expectedContextId = null;
       params = null;
       storageSpy.get.and.returnValue({});
+      storageSpy.stackConfig = {
+        uuid: '12345',
+        name: 'Practera Classic App - Stage',
+        description: 'Participate in an experience as a learner or reviewer - Testing',
+        image: 'https://media.intersective.com/img/learners_reviewers.png',
+        url: 'https://test.com',
+        type: 'app',
+        coreApi: 'https://test.com',
+        coreGraphQLApi: 'https://test.com',
+        chatApi: 'https://test.com',
+        filestack: {
+          s3Config: {
+            container: 'files.p1-stage.practera.com',
+            region: 'ap-southeast-2'
+          },
+        },
+        defaultCountryModel: 'AUS',
+        lastLogin: 1619660600368
+      };
     });
     afterEach(() => {
       // do the test

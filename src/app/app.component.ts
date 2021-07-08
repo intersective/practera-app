@@ -125,10 +125,6 @@ export class AppComponent implements OnInit {
    */
   analyseQueryParams(): Promise<any> {
     const searchParams = this.utils.getQueryParams();
-    if (searchParams.has('apikey')) {
-      const queries = this.utils.urlQueryToObject(searchParams.toString());
-      return this.navigate(['global_login', searchParams.get('apikey'), queries]);
-    }
 
     if (searchParams.has('do')) {
       switch (searchParams.get('do')) {
@@ -144,11 +140,10 @@ export class AppComponent implements OnInit {
           break;
 
         case 'resetpassword':
-          if (searchParams.has('key') && searchParams.has('email')) {
+          if (searchParams.has('apikey')) {
             return this.navigate([
               'reset_password',
-              searchParams.get('key'),
-              searchParams.get('email')
+              searchParams.get('apikey')
             ]);
           }
           break;
@@ -163,6 +158,11 @@ export class AppComponent implements OnInit {
           }
           break;
       }
+    }
+
+    if (searchParams.has('apikey')) {
+      const queries = this.utils.urlQueryToObject(searchParams.toString());
+      return this.navigate(['global_login', searchParams.get('apikey'), queries]);
     }
   }
 }
