@@ -129,6 +129,7 @@ export class AppComponent implements OnInit {
   // @TODO: need to build a new micro service to get the config and serve the custom branding config from a microservice
   /**
    * this will call core API to get custom branding and will update branding info.
+   * it will only call core API if url have stack_uuid or storage have stackConfig.
    */
   getCustomConfigurations() {
     const queryParams = this.utils.getQueryParams();
