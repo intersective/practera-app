@@ -61,9 +61,10 @@ function initializeApp(
         storage.stackConfig.chatApi = 'https://antkrqcqa6.execute-api.ap-southeast-2.amazonaws.com/dev/graphql';
 
         return resolve(res);
+      } else {
+        // if nothing happen, just let it move on (don't block)
+        return resolve(true);
       }
-      // if nothing happen, just let it move on (don't block)
-      return resolve(true);
     } catch (err) {
       return resolve(err);
     }
@@ -78,17 +79,16 @@ function initializeApp(
     DeviceInfoComponent,
   ],
   imports: [
+    RequestModule.forRoot({
+      appkey: environment.appkey,
+      loginApiUrl: environment.loginAPIUrl,
+    }),
     ApolloModule,
     AuthModule,
     BrowserModule,
     BrowserAnimationsModule,
     HttpClientModule,
     IonicModule.forRoot(),
-    RequestModule.forRoot({
-      appkey: environment.appkey,
-      prefixUrl: environment.APIEndpoint,
-      loginApi: environment.loginAPIUrl,
-    }),
     AppRoutingModule,
     EmbedVideo.forRoot(),
     NewRelicModule.forRoot(),

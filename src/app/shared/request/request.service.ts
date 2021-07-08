@@ -29,8 +29,7 @@ export class DevModeService {
 
 export class RequestConfig {
   appkey = '';
-  prefixUrl = '';
-  loginApi = '';
+  loginApiUrl = '';
 }
 
 export class QueryEncoder implements HttpParameterCodec {
@@ -56,7 +55,6 @@ export class QueryEncoder implements HttpParameterCodec {
 })
 export class RequestService {
   private appkey: string;
-  private prefixUrl: string;
   private loginApiUrl: string;
   private loggedOut: boolean;
 
@@ -72,8 +70,7 @@ export class RequestService {
   ) {
     if (config) {
       this.appkey = config.appkey;
-      this.prefixUrl = config.prefixUrl;
-      this.loginApiUrl = config.loginApi;
+      this.loginApiUrl = config.loginApiUrl;
     }
   }
 
@@ -307,14 +304,6 @@ export class RequestService {
       .pipe(
         catchError((error) => this.handleError(error))
       );
-  }
-
-  /**
-   *
-   * @returns {string}
-   */
-  public getPrefixUrl() {
-    return this.prefixUrl;
   }
 
   /**
