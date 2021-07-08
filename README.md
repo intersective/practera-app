@@ -151,4 +151,4 @@ Other variables that need to be passed to the codebuild project are:
 * CUSTOM_FILESTACK_KEY - the filestack key
 
 
-###Read More [Documentation](./docs/docs.md)
+### Read More [Documentation](./docs/docs.md)

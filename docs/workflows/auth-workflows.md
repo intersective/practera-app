@@ -2,13 +2,7 @@
 
 This documentation explains the workflow related to authentication process. Including the code execute steps, and the APIs that are used etc.
 
-## Login Flow
-
-This conatains information about how login works inside App.
-
-To log user in, we use both login API and core API.
-
-### General logic
+## Login Workflow
 
 - Use Login API to authenticate user.
   - Login API will return a list of App stacks that the user is in.
@@ -17,6 +11,8 @@ To log user in, we use both login API and core API.
 - Redirect the user to the experience switcher page.
 - Send requests to core url for each stack to get the list of experiences for the user.
 - Once user selected an experience, store the related stack info in local storage for future requests.
+
+![Login Workflow](login.drawio.svg)
 
 ### code execute steps
 
@@ -70,15 +66,34 @@ To log user in, we use both login API and core API.
 
 1. core API will return timeline, programs related to login user.
 
-## Registration Flow
+## Direct link Workflow
+
+- Direct link need to contain stack_uuid as a parameter
+- Global App V2 will use the stack_uuid to get stack information from Global Login API
+- Once get the stack information, store those info in local storage
+- Use the CORE-API url to do authentication
+- Once authenticated, redirect user to experience switcher page
+- On experience switcher page, send request to Global Login API to get user’s stacks
+
+![Direct link Workflow](direct-link.drawio.svg)
+
+## Deep link Workflow
+
+- Global App V2 uses the Global Login API for authentication.
+- Direct link/deep link need to contain stack_uuid as a parameter
+- Global App V2 will use the stack_uuid to get stack information from Global Login API
+- Once get the stack information, store those info in local storage
+- Use the urls from the stack for normal deep link checks and actions
+
+![Deep link Workflow](deep-link.drawio.svg)
+
+## Registration Workflow
 
 This conatains information about new user registration process.
 
-To rester a new user, we use both login API and core API. After user registered successfully, user will automatically login to the app.
+To register a new user, we use both login API and core API. After user registered successfully, user will automatically login to the app.
 
-### General logic
-
-- Get stack infomation when naviagte to app from url.
+- Get stack infomation from Login API when naviagte to app from url.
 - Save stack information in local storage.
 - Use Core API to validate registration link.
 - Use Core API to Register the new user to the system.
@@ -89,6 +104,8 @@ To rester a new user, we use both login API and core API. After user registered 
 - Redirect the user to the experience switcher page.
 - Send requests to core url for each stack to get the list of experiences for the user.
 - Once user selected an experience, store the related stack info in local storage for future requests.
+
+![Registration link Workflow](registration-link.drawio.svg)
 
 ### code execute steps
 

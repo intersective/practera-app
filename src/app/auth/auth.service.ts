@@ -19,14 +19,14 @@ const API = {
   setProfile: 'api/v2/user/enrolment/edit.json',
   verifyRegistration: 'api/verification_codes.json',
   register: 'api/registration_details.json',
-  forgotPassword: 'api/auths.json?action=forgot_password',
   verifyResetPassword: 'api/auths.json?action=verify_reset_password',
   resetPassword: 'api/auths.json?action=reset_password',
 };
 
 const LOGIN_API = {
   stackInfo: 'stack',
-  login: 'login'
+  login: 'login',
+  forgotPassword: 'forgotPassword'
 };
 
 interface VerifyParams {
@@ -88,23 +88,23 @@ export class AuthService {
   }
 
   /**
-   * @name _loginAPILogin
+   * @name _loginFromLoginAPI
    * @description Calling login API to login the user and save stacks in local storage.
    * @param body Json Object - request parameter need to pass to login api.
    */
-  private _loginAPILogin(body: LoginRequParams): Observable<any> {
+  private _loginFromLoginAPI(body: LoginRequParams): Observable<any> {
     body.from = 'App';
     return this.request.post(LOGIN_API.login, body, {}, true);
     // return this.request.post(LOGIN_API.login, body, {}, true);
   }
 
   /**
-   * @name _login
+   * @name _loginFromCore
    * @description Calling core API to login the user.
    * @param body HttpParams Onject - request parameter need to pass to core api.
    * @param serviceHeader header to pass to core API to mention data comming from Login API.
    */
-  private _login(body: HttpParams, serviceHeader?: string): Observable<any> {
+  private _loginFromCore(body: HttpParams, serviceHeader?: string): Observable<any> {
     const headers = {
       'Content-Type': 'application/x-www-form-urlencoded',
       service: serviceHeader
@@ -128,9 +128,7 @@ export class AuthService {
       username,
       password
     };
-    return this._loginAPILogin(body).pipe(tap(res => {
-      this.storage.stackConfig = res;
-    }));
+    return this._loginFromLoginAPI(body);
   }
 
   /**
@@ -143,7 +141,7 @@ export class AuthService {
     const body = new HttpParams()
       .set('auth_token', authToken);
     this.logout({}, false);
-    return this._login(body);
+    return this._loginFromCore(body);
   }
 
   /**
@@ -157,7 +155,7 @@ export class AuthService {
     const body = new HttpParams()
       .set('apikey', apikey);
     this.logout({}, false);
-    return this._login(body, service);
+    return this._loginFromCore(body, service);
   }
 
   private _handleLoginResponse(response): Observable<any> {
@@ -230,10 +228,21 @@ export class AuthService {
    * @return {Observable<any>}      [description]
    */
   forgotPassword(email: string): Observable<any>  {
-    return this.request.post(API.forgotPassword, {
-      email: email,
-      domain: this.getDomain()
-    });
+    const body = {
+      email,
+      resetLink: this._createLinks('reset'),
+      directLink: this._createLinks('direct')
+    };
+    return this.request.post(LOGIN_API.forgotPassword, body, {}, true);
+  }
+
+  private _createLinks(type?) {
+    switch (type) {
+      case 'reset':
+        return `${this.getDomain()}?action=resetpassword&apiKey=`;
+      case 'direct':
+        return `${this.getDomain()}?action=direct&apiKey=`;
+    }
   }
 
   getDomain() {
