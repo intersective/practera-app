@@ -25,7 +25,7 @@ describe('AuthService', () => {
         AuthService,
         {
           provide: RequestService,
-          useValue: jasmine.createSpyObj('RequestService', ['delete', 'post', 'get', 'graphQLQuery'])
+          useValue: jasmine.createSpyObj('RequestService', ['delete', 'post', 'get', 'put', 'graphQLQuery'])
         },
         {
           provide: Router,
@@ -251,9 +251,9 @@ describe('AuthService', () => {
   });
 
   it('when testing resetPassword()', () => {
-    requestSpy.post.and.returnValue(of(''));
-    service.resetPassword({}).subscribe();
-    expect(requestSpy.post.calls.count()).toBe(1);
+    requestSpy.put.and.returnValue(of(''));
+    service.resetPassword({ password: 'abc' }, { apikey: '1234' }).subscribe();
+    expect(requestSpy.put.calls.count()).toBe(1);
   });
 
   describe('when testing linkedinAuthenticated()', () => {

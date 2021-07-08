@@ -179,6 +179,37 @@ export class RequestService {
       );
   }
 
+  put(endPoint: string = '', data, httpOptions?: any, isLoginAPI?: boolean): Observable<any> {
+    if (!httpOptions) {
+      httpOptions = {};
+    }
+
+    if (!this.utils.has(httpOptions, 'headers')) {
+      httpOptions.headers = '';
+    }
+    if (!this.utils.has(httpOptions, 'params')) {
+      httpOptions.params = '';
+    }
+
+    let apiEndpoint = this.getEndpointUrl(endPoint);
+    // get login API endpoint if need to call login API.
+    if (isLoginAPI) {
+      apiEndpoint = this.getEndpointUrl(endPoint, true);
+    }
+
+    return this.http.put<any>(apiEndpoint, data, {
+      headers: this.appendHeaders(httpOptions.headers),
+      params: this.setParams(httpOptions.params)
+    })
+      .pipe(concatMap(response => {
+        this._refreshApikey(response);
+        return of(response);
+      }))
+      .pipe(
+        catchError((error) => this.handleError(error))
+      );
+  }
+
   /**
    * Valid options:
    * noCache: Boolean default false. If set to false, will not cache the result
