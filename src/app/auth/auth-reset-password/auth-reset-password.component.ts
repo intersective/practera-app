@@ -13,7 +13,6 @@ import { NewRelicService } from '@shared/new-relic/new-relic.service';
 export class AuthResetPasswordComponent implements OnInit {
   apikey: string;
 
-  verifySuccess = false;
   isResetting = false;
   showPassword = false;
 
@@ -48,7 +47,7 @@ export class AuthResetPasswordComponent implements OnInit {
         password: this.resetPasswordForm.controls.password.value
       },
       {
-        apikey: this.resetPasswordForm.controls.password.value
+        apikey: this.apikey
       }).subscribe(
       res => {
         nrResetPasswordTracer();
