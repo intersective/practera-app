@@ -1,7 +1,7 @@
 import { Resolve, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
 import { Injectable } from '@angular/core';
 import { AuthService } from '@app/auth/auth.service';
-import { BrowserStorageService } from '@app/services/storage.service';
+import { BrowserStorageService, Stack } from '@app/services/storage.service';
 import { Observable } from 'rxjs';
 import { UtilsService } from '@app/services/utils.service';
 
@@ -18,7 +18,7 @@ export class SwitcherResolverService implements Resolve<any> {
   async resolve(
     route: ActivatedRouteSnapshot,
     state: RouterStateSnapshot
-  ): Promise<any> {
+  ): Promise<Stack> {
     if (!this.storage.stackConfig) {
       const queryParams = this.utils.getQueryParams();
       if (queryParams.has('stack_uuid')) {
@@ -32,5 +32,6 @@ export class SwitcherResolverService implements Resolve<any> {
         }
       }
     }
+    return this.storage.stackConfig;
   }
 }

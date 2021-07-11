@@ -1,5 +1,5 @@
 import { Component, AfterContentChecked } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { Injectable, Inject } from '@angular/core';
 import { RouterEnter } from '@services/router-enter.service';
 import { SwitcherService, ProgramObj } from '../switcher.service';
@@ -9,6 +9,7 @@ import { PusherService } from '@shared/pusher/pusher.service';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
 import { NotificationService } from '@shared/notification/notification.service';
 import { UtilsService } from '@services/utils.service';
+import { Stack } from '@app/services/storage.service';
 
 @Injectable({
   providedIn: 'root'
@@ -23,6 +24,8 @@ import { UtilsService } from '@services/utils.service';
 export class SwitcherProgramComponent extends RouterEnter implements AfterContentChecked {
   routeUrl = '/switcher/switcher-program';
   programs: Array<ProgramObj>;
+  currentStack: Stack;
+
   constructor(
     public loadingController: LoadingController,
     public router: Router,
@@ -30,8 +33,14 @@ export class SwitcherProgramComponent extends RouterEnter implements AfterConten
     private switcherService: SwitcherService,
     private newRelic: NewRelicService,
     private notificationService: NotificationService,
-    private utils: UtilsService
-  ) { super(router); }
+    private utils: UtilsService,
+    private activatedRoute: ActivatedRoute,
+  ) {
+    super(router);
+    activatedRoute.data.subscribe(data => {
+      this.currentStack = data.stack;
+    });
+  }
 
   onEnter() {
     this.newRelic.setPageViewName('program switcher');

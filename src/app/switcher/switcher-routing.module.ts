@@ -18,7 +18,9 @@ const routes: Routes = [
       {
         path: 'switcher-program',
         component: SwitcherProgramComponent,
-        resolve: [ SwitcherResolverService ]
+        resolve: {
+          stack: SwitcherResolverService
+        },
       }
     ]
   }
