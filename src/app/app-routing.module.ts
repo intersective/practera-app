@@ -40,7 +40,7 @@ const routes: Routes = [
   },
   {
     path: 'settings-embed',
-    loadChildren: () => import('./settings-embed/settingsd).then(m => m.embe).module#SettingsEmbedModule',
+    loadChildren: () => import('./settings-embed/settings-embed.module').then(m => m.SettingsEmbedModule),
     canLoad: [AuthGuard]
   },
   {

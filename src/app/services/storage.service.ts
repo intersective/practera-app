@@ -194,7 +194,7 @@ export class BrowserStorageService {
 
   get stackConfig(): Stack {
     const result = this.get('stackConfig');
-    return result || false;
+    return result || null;
   }
 
   set stackConfig(val: Stack) {

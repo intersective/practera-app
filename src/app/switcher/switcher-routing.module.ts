@@ -4,6 +4,8 @@ import { RouterModule, Routes } from '@angular/router';
 import { SwitcherComponent } from './switcher.component';
 import { SwitcherProgramComponent } from './switcher-program/switcher-program.component';
 
+import { SwitcherResolverService } from './switcher-resolver.service';
+
 const routes: Routes = [
   {
     path: '',
@@ -15,7 +17,8 @@ const routes: Routes = [
       },
       {
         path: 'switcher-program',
-        component: SwitcherProgramComponent
+        component: SwitcherProgramComponent,
+        resolve: [ SwitcherResolverService ]
       }
     ]
   }
