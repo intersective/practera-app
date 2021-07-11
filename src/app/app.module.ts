@@ -57,8 +57,6 @@ function initializeApp(
         if (res) {
           storage.stackConfig = res;
         }
-        storage.stackConfig.coreGraphQLApi = 'https://kixs5acl6j.execute-api.ap-southeast-2.amazonaws.com/sandbox/';
-        storage.stackConfig.chatApi = 'https://antkrqcqa6.execute-api.ap-southeast-2.amazonaws.com/dev/graphql';
 
         return resolve(res);
       } else {
