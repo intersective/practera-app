@@ -56,7 +56,10 @@ function initializeApp(
     try {
       if (query.has('stack_uuid')) {
         const res = await authService.getStackConfig(query.get('stack_uuid')).toPromise();
-        storage.stackConfig = res;
+        if (res) {
+          storage.stackConfig = res;
+        }
+
         return resolve(res);
       }
       // if nothing happen, just let it continue
