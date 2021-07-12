@@ -104,9 +104,6 @@ export class RequestService {
     } else {
       throw new Error('Can not find API URL.');
     }
-    if (endpoint.includes('https://') || endpoint.includes('http://')) {
-      endpointUrl = this.utils.urlFormatter(endpoint);
-    }
     return endpointUrl;
   }
 
