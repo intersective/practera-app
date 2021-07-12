@@ -320,12 +320,6 @@ describe('AuthService', () => {
     expect(requestSpy.post.calls.count()).toBe(1);
   });
 
-  it('when testing verifyResetPassword()', () => {
-    requestSpy.post.and.returnValue(of(''));
-    service.verifyResetPassword({ email: 'test@test.com', key: 'key' }).subscribe();
-    expect(requestSpy.post.calls.count()).toBe(1);
-  });
-
   describe('getUUID()', function () {
     it('should get user uuid in string', () => {
       const UUID = 'SAMPLE-UUID';
