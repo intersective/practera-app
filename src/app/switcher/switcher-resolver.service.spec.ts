@@ -6,7 +6,7 @@ describe('SwitcherResolverService', () => {
   beforeEach(() => TestBed.configureTestingModule({}));
 
   it('should be created', () => {
-    const service: SwitcherResolverService = TestBed.get(SwitcherResolverService);
+    const service: SwitcherResolverService = TestBed.inject(SwitcherResolverService);
     expect(service).toBeTruthy();
   });
 });

@@ -6,7 +6,7 @@ describe('ApolloOptionsService', () => {
   beforeEach(() => TestBed.configureTestingModule({}));
 
   it('should be created', () => {
-    const service: ApolloOptionsService = TestBed.get(ApolloOptionsService);
+    const service: ApolloOptionsService = TestBed.inject(ApolloOptionsService);
     expect(service).toBeTruthy();
   });
 });
