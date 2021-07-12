@@ -19,14 +19,13 @@ const api = {
   setProfile: 'api/v2/user/enrolment/edit.json',
   verifyRegistration: 'api/verification_codes.json',
   register: 'api/registration_details.json',
-  verifyResetPassword: 'api/auths.json?action=verify_reset_password',
-  resetPassword: 'api/auths.json?action=reset_password',
 };
 
 const LOGIN_API = {
   stackInfo: 'stack',
   login: 'login',
-  forgotPassword: 'forgotPassword'
+  forgotPassword: 'forgotPassword',
+  resetPassword: 'user'
 };
 
 interface VerifyParams {
@@ -235,12 +234,22 @@ export class AuthService {
     return this.request.post(LOGIN_API.forgotPassword, body, {}, true);
   }
 
+  /**
+   * method will create direct and rest links need for forget password.
+   * for reset password, follow the same format all the appv2 links follows.
+   *  *.com?do=resetpassword&apikey=
+   * for direct link, follow the format of link that use to redirect users from global login app to appv2.
+   * with this can use same auth global login component to login in user to stack my apikey.
+   *  *.com?service=LOGIN&apikey=
+   * @param type string - 'direct' to create direct link or 'reset' for password reset link
+   * @returns string
+   */
   private _createLinks(type?) {
     switch (type) {
       case 'reset':
-        return `${this.getDomain()}?action=resetpassword&apiKey=`;
+        return `${this.getDomain()}?do=resetpassword&apikey=`;
       case 'direct':
-        return `${this.getDomain()}?action=direct&apiKey=`;
+        return `${this.getDomain()}?service=LOGIN&apikey=`;
     }
   }
 
@@ -260,8 +269,8 @@ export class AuthService {
    * @param {[type]} data [description]
    * @return {Observable<any>}      [description]
    */
-  resetPassword(data): Observable<any> {
-    return this.request.post(api.resetPassword, data);
+  resetPassword(data: { password: string }, header: { apikey: string } ): Observable<any> {
+    return this.request.put(LOGIN_API.resetPassword, data, { headers: header}, true);
   }
 
   /**
@@ -340,19 +349,6 @@ export class AuthService {
   }
 
   /**
-   * @name verifyResetPassword
-   * @description make request to server to verity that user's email and key are valid
-   * @param {[type]} data [description]
-   * @return {Observable<any>}      [description]
-  */
-  verifyResetPassword(data: VerifyParams): Observable<any> {
-    return this.request
-    .post(api.verifyResetPassword, data, {
-      headers: { 'Content-Type': 'application/json' }
-    });
-  }
-
-  /**
    * @name getUUID
    * @description retrieve user UUID of current requester (user)
    * @return {Observable<string>} UUID in string
@@ -382,8 +378,8 @@ export class AuthService {
    */
   getStackConfig(uuid: string): Observable<Stack> {
     return this.request.get(LOGIN_API.stackInfo, {params: {uuid}}, true).pipe(map(res => {
-      if (res && res.data) {
-        return res.data;
+      if (res) {
+        return res;
       }
       return null;
     }));

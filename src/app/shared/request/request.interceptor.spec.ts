@@ -55,6 +55,25 @@ describe('RequestInterceptor', () => {
   });
 
   beforeEach(fakeAsync(() => {
+    storageSpy.stackConfig = {
+      uuid: '12345',
+      name: 'Practera Classic App - Stage',
+      description: 'Participate in an experience as a learner or reviewer - Testing',
+      image: 'https://media.intersective.com/img/learners_reviewers.png',
+      url: 'https://test.com',
+      type: 'app',
+      coreApi: 'https://test.com',
+      coreGraphQLApi: 'https://test.com',
+      chatApi: 'https://test.com',
+      filestack: {
+        s3Config: {
+          container: 'files.p1-stage.practera.com',
+          region: 'ap-southeast-2'
+        },
+      },
+      defaultCountryModel: 'AUS',
+      lastLogin: 1619660600368
+    };
     service.get('/test').subscribe(_res => {
       expect(_res).toBeTruthy();
     });
