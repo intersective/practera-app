@@ -19,6 +19,12 @@ Run `npm run start` to start a development server on your local, and call stage-
 
 Run `npm run local` to start a development server on your local, and call 127.0.0.1:8080 for API
 
+### Auth Related Workflows
+
+will explain work flows related to authentication process. what are the code execute steps, what are the API endpoints calling. etc.
+
+[Read More](./docs/workflows/auth-workflows.md)
+
 ### Release Processes
 
 1. Merge `develop` branch to `master` (if we are releasing develop branch)

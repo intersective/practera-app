@@ -3,7 +3,6 @@ import { Router } from '@angular/router';
 import { Platform } from '@ionic/angular';
 import { UtilsService } from '@services/utils.service';
 import { SharedService } from '@services/shared.service';
-import { Observable } from 'rxjs';
 import { AuthService } from './auth/auth.service';
 import { BrowserStorageService } from '@services/storage.service';
 import { VersionCheckService } from '@services/version-check.service';
@@ -89,62 +88,11 @@ export class AppComponent implements OnInit {
       }
     );
 
-    let searchParams = null;
-    let queryString = '';
-    if (window.location.search) {
-      queryString =  window.location.search.substring(1);
-    } else if (window.location.hash) {
-      queryString = window.location.hash.substring(2);
-    }
-    searchParams = new URLSearchParams(queryString);
-
-    if (searchParams.has('apikey')) {
-      const queries = this.utils.urlQueryToObject(queryString);
-      return this.navigate(['global_login', searchParams.get('apikey'), queries]);
-    }
-
-    if (searchParams.has('do')) {
-      switch (searchParams.get('do')) {
-        case 'secure':
-          if (searchParams.has('auth_token')) {
-            const queries = this.utils.urlQueryToObject(queryString);
-            this.navigate([
-              'secure',
-              searchParams.get('auth_token'),
-              queries
-            ]);
-          }
-          break;
-        case 'resetpassword':
-          if (searchParams.has('key') && searchParams.has('email')) {
-            this.navigate([
-              'reset_password',
-              searchParams.get('key'),
-              searchParams.get('email')
-            ]);
-          }
-          break;
-
-        case 'registration':
-          if (searchParams.has('key') && searchParams.has('email')) {
-            this.navigate([
-              'registration',
-              searchParams.get('email'),
-              searchParams.get('key')
-            ]);
-          }
-          break;
-      }
-    }
-
-    const stackUuid = searchParams.get('stack_uuid');
-    if (stackUuid) {
-      this.retrieveStackConfig(stackUuid);
-    }
+    this.analyseQueryParams();
   }
 
-  initializeApp() {
-    this.platform.ready().then(async () => {
+  initializeApp(): Promise<any> {
+    return this.platform.ready().then(async () => {
       if (environment.production) {
         // watch version update
         this.versionCheckService.initiateVersionCheck();
@@ -166,19 +114,51 @@ export class AppComponent implements OnInit {
   }
 
   /**
-   * retrieve stack config information: api endpoint url, and then store it into
-   * localStorage + inject to every request (RequestModule)
+   * find specific URL parameters in URL and act on them
    *
-   * @param   {string}  stackUuid  uuid in string
-   * @return  {void}
+   * @return  {Promise<any>} deferred navigation to other page based on
+   *                          value available in URL
    */
-  retrieveStackConfig(stackUuid: string): void {
-    if (stackUuid) {
-      this.authService.getStackConfig(stackUuid).subscribe(res => {
-        this.storage.stackConfig = res;
-      });
+  analyseQueryParams(): Promise<any> {
+    const searchParams = this.utils.getQueryParams();
+    if (searchParams.has('apikey')) {
+      const queries = this.utils.urlQueryToObject(searchParams.toString());
+      return this.navigate(['global_login', searchParams.get('apikey'), queries]);
     }
 
-    return this.storage.stackConfig;
+    if (searchParams.has('do')) {
+      switch (searchParams.get('do')) {
+        case 'secure':
+          if (searchParams.has('auth_token')) {
+            const queries = this.utils.urlQueryToObject(searchParams.toString());
+            return this.navigate([
+              'secure',
+              searchParams.get('auth_token'),
+              queries
+            ]);
+          }
+          break;
+
+        case 'resetpassword':
+          if (searchParams.has('key') && searchParams.has('email')) {
+            return this.navigate([
+              'reset_password',
+              searchParams.get('key'),
+              searchParams.get('email')
+            ]);
+          }
+          break;
+
+        case 'registration':
+          if (searchParams.has('key') && searchParams.has('email')) {
+            return this.navigate([
+              'registration',
+              searchParams.get('email'),
+              searchParams.get('key')
+            ]);
+          }
+          break;
+      }
+    }
   }
 }

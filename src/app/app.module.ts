@@ -1,8 +1,8 @@
-import { NgModule } from '@angular/core';
+import { NgModule, APP_INITIALIZER } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouteReuseStrategy } from '@angular/router';
 import { IonicModule, IonicRouteStrategy } from '@ionic/angular';
-import { HttpClientModule, HttpHeaders } from '@angular/common/http';
+import { HttpClientModule } from '@angular/common/http';
 import { ApolloModule, APOLLO_OPTIONS, Apollo } from 'apollo-angular';
 import { HttpLinkModule, HttpLink } from 'apollo-angular-link-http';
 import { InMemoryCache, defaultDataIdFromObject } from 'apollo-cache-inmemory';
@@ -28,7 +28,45 @@ import { PusherModule } from '@shared/pusher/pusher.module';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { UnlockingComponent } from '@components/unlocking/unlocking.component';
 import { DeviceInfoComponent } from './device-info/device-info.component';
+import { BrowserStorageService } from '@services/storage.service';
+import { AuthService } from './auth/auth.service';
 
+/**
+ * Prerequisites before webapp initiated in browser
+ *
+ * @return  {Function}  return a deferred function
+ */
+function initializeApp(
+  utils: UtilsService,
+  storage: BrowserStorageService,
+  authService: AuthService
+): Function {
+
+  /**
+   * retrieve stack info first before everything else, so then all API
+   * request URL can start using endpoint sourced from dynamic domain
+   *
+   * @param   {Function}  resolve  async function = Promise.resolve
+   *
+   * @return  {Promise<any>}         as long as deferred get
+  *                                  resolved, the result doesn't matter
+   */
+  return (): Promise<any> => new Promise(async (resolve: Function): Promise<any> => {
+    const query: URLSearchParams = utils.getQueryParams();
+    try {
+      if (query.has('stack_uuid')) {
+        const res = await authService.getStackConfig(query.get('stack_uuid')).toPromise();
+        storage.stackConfig = res;
+        return resolve(res);
+      }
+      // if nothing happen, just let it continue
+      // with "true" which won't be used anywhere
+      return resolve(true);
+    } catch (err) {
+      return resolve(err);
+    }
+  });
+}
 
 @NgModule({
   declarations: [
@@ -48,6 +86,7 @@ import { DeviceInfoComponent } from './device-info/device-info.component';
     RequestModule.forRoot({
       appkey: environment.appkey,
       prefixUrl: environment.APIEndpoint,
+      loginApi: environment.loginAPIUrl
     }),
     AppRoutingModule,
     EmbedVideo.forRoot(),
@@ -67,6 +106,12 @@ import { DeviceInfoComponent } from './device-info/device-info.component';
     })
   ],
   providers: [
+    {
+      provide: APP_INITIALIZER,
+      useFactory: initializeApp,
+      deps: [UtilsService, BrowserStorageService, AuthService],
+      multi: true,
+    },
     {
       provide: APOLLO_OPTIONS,
       useFactory: (httpLink: HttpLink) => {

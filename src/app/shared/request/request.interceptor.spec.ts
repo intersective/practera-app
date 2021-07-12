@@ -26,7 +26,8 @@ describe('RequestInterceptor', () => {
         HttpClientTestingModule,
         RequestModule.forRoot({
           appkey: APPKEY,
-          prefixUrl: 'test.com'
+          prefixUrl: 'test.com',
+          loginApi: 'login.com'
         })
       ],
       providers: [
@@ -89,17 +90,33 @@ describe('RequestInterceptor', () => {
   }));
 
   it('should not return teamId when url contains teams.json', fakeAsync(() => {
-      service.get('/teams.json').subscribe(_res => {
-        expect(_res).toBeTruthy();
-      });
-      tick();
+    service.get('/teams.json').subscribe(_res => {
+      expect(_res).toBeTruthy();
+    });
+    tick();
 
-      const req = httpMock.expectOne({
-        url: 'test.com/teams.json',
-        method: 'GET'
-      });
+    const req = httpMock.expectOne({
+      url: 'https://test.com/teams.json',
+      method: 'GET'
+    });
 
-      expect(req.request.url).toContain('/teams.json');
-      expect(req.request.headers.get('teamId')).toBe(null);
-    }));
+    expect(req.request.url).toContain('/teams.json');
+    expect(req.request.headers.get('teamId')).toBe(null);
+  }));
+
+  it('should not return appkey when url contains /login (login API Url)', fakeAsync(() => {
+    service.get('/login').subscribe(_res => {
+      expect(_res).toBeTruthy();
+    });
+    tick();
+
+    const req = httpMock.expectOne({
+      url: 'https://test.com/login',
+      method: 'GET'
+    });
+
+    expect(req.request.url).toContain('/login');
+    expect(req.request.headers.get('appkey')).toBe(null);
+  }));
+
 });

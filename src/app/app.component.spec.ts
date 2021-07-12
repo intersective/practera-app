@@ -110,7 +110,7 @@ describe('AppComponent', () => {
     expect(platformSpy.ready).toHaveBeenCalled();
   });
 
-  describe('retrieveStackConfig()', () => {
+  xdescribe('removed retrieveStackConfig()', () => {
     it('should make use of AuthService.getStackConfig to get stack info', () => {
       const SAMPLE_UUID = '4455ee45-5aac-44d3-94ed-b0e1cd0a45d4';
       const RESULT = {
@@ -119,8 +119,6 @@ describe('AppComponent', () => {
         description: 'Participate in an experience or coach as a mentor - Local',
         image: 'https://media.intersective.com/img/global-login-practera-black-logo.png',
         url: 'http://127.0.0.1:4200/',
-        api: 'http://127.0.0.1:8080/',
-        appkey: 'b11e7c189b',
         type: 'app',
         coreApi: 'http://127.0.0.1:8080',
         coreGraphQLApi: 'http://127.0.0.1:8000',
@@ -128,22 +126,21 @@ describe('AppComponent', () => {
         filestack: {
           s3Config: {
             container: 'practera-aus',
-            region: 'ap-southeast-2'
+            region: 'ap-southeast-2',
+            paths: {
+              any: '/appv2/sandbox/uploads',
+              image: '/appv2/sandbox/uploads',
+              video: '/appv2/sandbox/video/uploads'
+            }
           },
         },
-        defaultCountryModel: 'AUS'
+        defaultCountryModel: 'AUS',
+        lastLogin: 1619660600368
       };
       authServiceSpy.getStackConfig.and.returnValue(of(RESULT));
-
-      app.retrieveStackConfig(SAMPLE_UUID);
-      fixture.detectChanges();
-      fixture.whenStable().then(() => {
-        expect(storage.stackConfig).toEqual(RESULT);
-      });
     });
 
     it('should not fun AuthService.getStackConfig when STACK_UUID not provided', () => {
-      app.retrieveStackConfig(null);
       fixture.detectChanges();
       fixture.whenStable().then(() => {
         expect(authServiceSpy.getStackConfig).not.toHaveBeenCalled();

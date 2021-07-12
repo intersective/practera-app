@@ -85,6 +85,7 @@ describe('RequestConfig', () => {
 
 describe('RequestService', () => {
   const PREFIX_URL = 'test.com';
+  const LOGINAPI = 'login.com';
   const APPKEY = 'TESTAPPKEY';
   const routerSpy = TestUtils.createRouterSpy();
 
@@ -108,6 +109,7 @@ describe('RequestService', () => {
           useValue: {
             appkey: APPKEY,
             prefixUrl: PREFIX_URL,
+            loginApi: LOGINAPI
           }
         },
         {
@@ -194,15 +196,35 @@ describe('RequestService', () => {
   });
 
   describe('post()', () => {
-    const testURL = 'https://www.post-test.com';
+    let testURL = 'https://www.post-test.com';
     const sampleData = {
       sample: 'data'
     };
 
-    it('should perform a GET request based on provided URL', fakeAsync(() => {
+    it('should perform a POST request based on Login API URL', fakeAsync(() => {
       let res = { body: true };
 
-      service.post(testURL, sampleData).subscribe(_res => {
+      service.post(testURL, sampleData, {}, true).subscribe(_res => {
+        res = _res;
+      });
+      const req = mockBackend.expectOne({ method: 'POST' });
+      req.flush(res);
+
+      tick();
+
+      const { body } = res;
+      expect(req.request.url).toBe(testURL);
+      expect(body).toBe(true);
+
+      mockBackend.verify();
+    }));
+
+    it('should perform a POST request based on provided URL', fakeAsync(() => {
+      testURL = 'https://login.com/login';
+
+      let res = { body: true };
+
+      service.post(testURL, sampleData, {}, true).subscribe(_res => {
         res = _res;
       });
       const req = mockBackend.expectOne({ method: 'POST' });
@@ -326,7 +348,7 @@ describe('RequestService', () => {
     let errRes: any;
     let request: any;
     beforeEach(fakeAsync(() => {
-      request = service.get('test.com').subscribe(
+      request = service.get('https://test.com').subscribe(
         _res => _res,
         _err => {
           errRes = _err;
@@ -356,7 +378,7 @@ describe('RequestService', () => {
 
     it('should throw error if static file retrival fail', fakeAsync(() => {
       mockBackend.expectOne({ method: 'GET'}).flush('<!DOCTYPE html>', err);
-      expect(errRes).toEqual('Http failure response for test.comtest.com: 400 Bad Request');
+      expect(errRes).toEqual('Http failure response for https://test.com: 400 Bad Request');
     }));
   });
 });

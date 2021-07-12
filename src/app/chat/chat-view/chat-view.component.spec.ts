@@ -42,6 +42,50 @@ describe('ChatViewComponent', () => {
     expect(component).toBeTruthy();
   });
 
+  const mockChats = {
+    data: {
+      channels: [
+        {
+          uuid: '35326928',
+          name: 'Team 1',
+          avatar: 'https://sandbox.practera.com/img/team-white.png',
+          pusherChannel: 'sdb746-93r7dc-5f44eb4f',
+          isAnnouncement: false,
+          isDirectMessage: false,
+          readonly: false,
+          roles: [
+            'participant',
+            'coordinator',
+            'admin'
+          ],
+          unreadMessageCount: 0,
+          lastMessage: null,
+          lastMessageCreated: null,
+          canEdit: false
+        },
+        {
+          uuid: 'ced963c1',
+          name: 'Team 1 + Mentor',
+          avatar: 'https://sandbox.practera.com/img/team-white.png',
+          pusherChannel: 'kb5gt-9nfbj-5f45eb4g',
+          isAnnouncement: false,
+          isDirectMessage: false,
+          readonly: false,
+          roles: [
+            'participant',
+            'mentor',
+            'coordinator',
+            'admin'
+          ],
+          unreadMessageCount: 0,
+          lastMessage: null,
+          lastMessageCreated: null,
+          canEdit: false
+        }
+      ]
+    }
+  };
+
   it('should get correct activity id', fakeAsync(() => {
     spyOn(component.chatList, 'onEnter');
     component.onEnter();
@@ -56,6 +100,18 @@ describe('ChatViewComponent', () => {
       component.loadchannelInfo(null);
       expect(component.loadInfo).toBe(true);
     });
+  });
+
+  describe('when testing selectFirstChat()', () => {
+    it(`should load chat room`, fakeAsync(() => {
+      spyOn(component.chatRoom, 'onEnter');
+      component.chatChannel = null;
+      component.selectFirstChat(mockChats.data.channels);
+      expect(component.loadInfo).toBe(false);
+      expect(component.chatChannel).toBe(mockChats.data.channels[0]);
+      tick();
+      expect(component.chatRoom.onEnter).toHaveBeenCalled();
+    }));
   });
 
 });

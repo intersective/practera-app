@@ -32,7 +32,7 @@ export class AuthGlobalLoginComponent implements OnInit {
       return this._error();
     }
     try {
-      await this.authService.globalLogin({ apikey, service }).toPromise();
+      await this.authService.directLoginWithApikey({ apikey, service }).toPromise();
       await this.switcherService.getMyInfo().toPromise();
       this.newRelic.createTracer('Processing global login');
       if (multipleStacks) {

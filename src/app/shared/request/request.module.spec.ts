@@ -11,6 +11,7 @@ describe('RequestModule', () => {
         RequestModule.forRoot({
           appkey: 'TEST',
           prefixUrl: 'TEST',
+          loginApi: 'TEST'
         }),
       ],
     });
