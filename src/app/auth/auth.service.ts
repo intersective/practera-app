@@ -153,7 +153,9 @@ export class AuthService {
   directLoginWithApikey({ apikey, service }): Observable<any> {
     const body = new HttpParams()
       .set('apikey', apikey);
+    const cachedStack = this.storage.stackConfig;
     this.logout({}, false);
+    this.storage.stackConfig = cachedStack;
     return this._loginFromCore(body, service);
   }
 
