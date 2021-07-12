@@ -1,20 +1,20 @@
 # Authentication Workflow
 
-This documentation explains the workflow related to authentication process. Including the code execute steps, and the APIs that are used etc.
+This documentation explains the workflow of the authentication process.
 
 ## Login Workflow
 
 - Use Login API to authenticate user.
   - Login API will return a list of App stacks that the user is in.
   - Each stack includes url for core, graphql, chat-api etc.
-  - Store stacks info in to the local storage to use in experience switcher page.
+- Store stacks info into the local storage to use in experience switcher page.
 - Redirect the user to the experience switcher page.
 - Send requests to core url for each stack to get the list of experiences for the user.
 - Once user selected an experience, store the related stack info in local storage for future requests.
 
 ![Login Workflow](login.drawio.svg)
 
-### code execute steps
+### Code logic
 
 1. User enter username and password and clicks on login button.
 1. Make API request to Auth service login method. `authService.login`.
@@ -68,8 +68,8 @@ This documentation explains the workflow related to authentication process. Incl
 
 ## Direct link Workflow
 
-- Direct link need to contain stack_uuid as a parameter
-- Global App V2 will use the stack_uuid to get stack information from Global Login API
+- Direct link need to contain `stack_uuid` as a parameter
+- Global App V2 will use the `stack_uuid` to get stack information from Global Login API
 - Once get the stack information, store those info in local storage
 - Use the CORE-API url to do authentication
 - Once authenticated, redirect user to experience switcher page
@@ -80,8 +80,8 @@ This documentation explains the workflow related to authentication process. Incl
 ## Deep link Workflow
 
 - Global App V2 uses the Global Login API for authentication.
-- Direct link/deep link need to contain stack_uuid as a parameter
-- Global App V2 will use the stack_uuid to get stack information from Global Login API
+- Deep link need to contain `stack_uuid` as a parameter
+- Global App V2 will use the `stack_uuid` to get stack information from Global Login API
 - Once get the stack information, store those info in local storage
 - Use the urls from the stack for normal deep link checks and actions
 
@@ -93,7 +93,8 @@ This conatains information about new user registration process.
 
 To register a new user, we use both login API and core API. After user registered successfully, user will automatically login to the app.
 
-- Get stack infomation from Login API when naviagte to app from url.
+- Registration link need to contain `stack_uuid` as a parameter
+- Global App V2 will use the `stack_uuid` to get stack information from Global Login API
 - Save stack information in local storage.
 - Use Core API to validate registration link.
 - Use Core API to Register the new user to the system.
@@ -107,7 +108,7 @@ To register a new user, we use both login API and core API. After user registere
 
 ![Registration link Workflow](registration-link.drawio.svg)
 
-### code execute steps
+### Code logic
 
 1. When page locading Make API request to auth service verifyRegistration method. `authService.verifyRegistration`.
    - `authService.verifyRegistration` make Core API call with `email` and `key`.

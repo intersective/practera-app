@@ -4,36 +4,30 @@
 
 ## Requirements
 
-- Ionic 4 
+- Ionic 4
 - Angular 7
 
 ## Development Notes
 
 Run `npm install` to install necessary packages
 
-### Starting a development server calling the stage environment
+### Starting a development server with the stage environment
 
+Run `npm run start` to start a development server on your local, and call stage-test.practera.com for API
 
-Run `npm run start` to start a development server on your local, and calling stage-test.practera.com for API
+### Starting a development server with the local environment
 
-### Starting a development server on the local environment
-
-Run `npm run local` to start a development server on your local, and calling 127.0.0.1:8080 for API
-
-### Auth Related Workflows
-
-will explain work flows related to authentication process. what are the code execute steps, what are the API endpoints calling. etc.
-
-[Read More](./docs/workflows/auth-workflows.md)
+Run `npm run local` to start a development server on your local, and call 127.0.0.1:8080 for API
 
 ### Release Processes
 
 1. Merge `develop` branch to `master` (if we are releasing develop branch)
-1. Merge `master` branch to `release/eos` 
+1. Merge `master` branch to `release/eos`
 1. Create a new release in [Github](https://github.com/intersective/practera-app-v2/releases) with the release pull request link as the description
-1. Change the version number on Slack `team-dev` channel 
-  - `master` is always + 0.01 version ahead of `live`
-  - `develop` is always + 0.1 version ahead of `live`
+1. Change the version number on Slack `team-dev` channel
+
+- `master` is always + 0.01 version ahead of `live`
+- `develop` is always + 0.1 version ahead of `live`
 
 ### New Relics Setup
 
@@ -65,9 +59,15 @@ will explain work flows related to authentication process. what are the code exe
 - If you need to develop automation test for mobile, uncomment the `chromeOptions->mobileEmulation` part inside `e2e/protractor-dev.conf.js`
 - run `npm run e2e-dev` to see the result
 
-## External link format
+## Authentication
 
-### 1. Direct link login 
+This app is an Global App so that we use Global Login API for authentication.
+
+[Read More](./docs/workflows/auth-workflows.md)
+
+## Direct/Deep link
+
+### 1. Direct link login
 
 `*.com?do=secure&auth_token=*`
 
@@ -75,12 +75,14 @@ will explain work flows related to authentication process. what are the code exe
 
 `*.com?do=secure&auth_token=*&redirect=*&tl=*`
 
-#### Required parameters:
+#### Required parameters
+
 - `auth_token` - the auth token used to authenticate user
-- `redirect` - the page you will be redirect to 
+- `redirect` - the page you will be redirect to
 - `tl` - timeline id of the program you are in
 
-#### Valid `redirect` values:
+#### Valid `redirect` values
+
 - `home` - redirect to home page
 - `project` - redirect to project page
 - `activity` - redirect to activity page with the following parameters
@@ -106,10 +108,11 @@ will explain work flows related to authentication process. what are the code exe
 - `settings` - redirect to settings page
 - `settings-embed` - redirect to settings embed page
 
-#### Optional parameters:
+#### Optional parameters
+
 - `return_url` - when user switch program, he/she will be redirect to this url
 
-#### Examples:
+#### Examples
 
 1. `*.com?do=secure&auth_token=abcdefg&redirect=project&tl=312` will redirect you to the project page
 1. `*.com?do=secure&auth_token=abcdefg&redirect=assessment&tl=312&act=231&ctxt=393&asmt=928` will redirect you to the assessment page
@@ -132,23 +135,22 @@ Any variables that will be passed with the prefix CUSTOM_ will be merged into th
 
 Other variables that need to be passed to the codebuild project are:
 
-* S3_BUCKET - the S3 bucket where the code will be deployed.
-* CF_DIST_ID - the CF distribution that will be invalidated when a deploy happens
-* CUSTOM_COUNTRY - country for the installation, supported values - `AUS`, `US`
-* CUSTOM_JS_ENVIRONEMENT - used in [angular.json](./angular.json) for new relic, possible values `prod`,  `dev`
-* CUSTOM_ENVIRONMENT - the env variable used in the [src/environments/environment.custom.ts](./src/environments/environment.custom.ts). Possible values `develop`, `sandbox`, `stage`, `live`
-* CUSTOM_S3_BUCKET - the bucket used for the filestack uploads
-* CUSTOM_API_ENDPOINT - the API endpoint
-* CUSTOM_APP - the name of the app, used to prefix the file uploads, needed for multi tenancy
-* CUSTOM_AWS_REGION - the region the app will work in
-* CUSTOM_GRAPH_QL - the graph QL endpoint
-* CUSTOM_INTERCOM - intercom details
-* CUSTOM_APPKEY - Appkey used to talk to the API
-* CUSTOM_PUSHERKEY - pusherKey used
-* CUSTOM_FILESTACK_SIGNATURE - the filestack signature
-* CUSTOM_FILESTACK_POLICY - the filestack policy
-* CUSTOM_FILESTACK_VIRUS_DETECTION - the filestack virus detection policy
-* CUSTOM_FILESTACK_KEY - the filestack key
-
+- S3_BUCKET - the S3 bucket where the code will be deployed.
+- CF_DIST_ID - the CF distribution that will be invalidated when a deploy happens
+- CUSTOM_COUNTRY - country for the installation, supported values - `AUS`, `US`
+- CUSTOM_JS_ENVIRONEMENT - used in [angular.json](./angular.json) for new relic, possible values `prod`,  `dev`
+- CUSTOM_ENVIRONMENT - the env variable used in the [src/environments/environment.custom.ts](./src/environments/environment.custom.ts). Possible values `develop`, `sandbox`, `stage`, `live`
+- CUSTOM_S3_BUCKET - the bucket used for the filestack uploads
+- CUSTOM_API_ENDPOINT - the API endpoint
+- CUSTOM_APP - the name of the app, used to prefix the file uploads, needed for multi tenancy
+- CUSTOM_AWS_REGION - the region the app will work in
+- CUSTOM_GRAPH_QL - the graph QL endpoint
+- CUSTOM_INTERCOM - intercom details
+- CUSTOM_APPKEY - Appkey used to talk to the API
+- CUSTOM_PUSHERKEY - pusherKey used
+- CUSTOM_FILESTACK_SIGNATURE - the filestack signature
+- CUSTOM_FILESTACK_POLICY - the filestack policy
+- CUSTOM_FILESTACK_VIRUS_DETECTION - the filestack virus detection policy
+- CUSTOM_FILESTACK_KEY - the filestack key
 
 ### Read More [Documentation](./docs/docs.md)

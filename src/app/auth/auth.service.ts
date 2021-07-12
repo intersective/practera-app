@@ -19,7 +19,6 @@ const API = {
   setProfile: 'api/v2/user/enrolment/edit.json',
   verifyRegistration: 'api/verification_codes.json',
   register: 'api/registration_details.json',
-  verifyResetPassword: 'api/auths.json?action=verify_reset_password',
 };
 
 const LOGIN_API = {
@@ -346,19 +345,6 @@ export class AuthService {
   verifyRegistration(data: VerifyParams): Observable<any> {
     return this.request
     .post(API.verifyRegistration, data, {
-      headers: { 'Content-Type': 'application/json' }
-    });
-  }
-
-  /**
-   * @name verifyResetPassword
-   * @description make request to server to verity that user's email and key are valid
-   * @param {[type]} data [description]
-   * @return {Observable<any>}      [description]
-  */
-  verifyResetPassword(data: VerifyParams): Observable<any> {
-    return this.request
-    .post(API.verifyResetPassword, data, {
       headers: { 'Content-Type': 'application/json' }
     });
   }
