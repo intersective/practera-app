@@ -759,9 +759,15 @@ export class AssessmentComponent extends RouterEnter {
       if (this.submitting) {
         return 'submitting';
       }
+
       if (this.submitted) {
         if (this.assessment.type === 'moderated') {
-          return 'pending review';
+          if (this.doAssessment) {
+            return 'pending review';
+          }
+          if (this.doReview) {
+            return 'review submitted';
+          }
         }
         return 'submitted';
       }
