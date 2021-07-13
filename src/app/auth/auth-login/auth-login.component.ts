@@ -60,7 +60,7 @@ export class AuthLoginComponent implements OnInit {
         stacks: Stack[];
       }) => {
         if (res.stacks && res.stacks.length === 0) {
-          return this.notificationFormat('No stacks available for this user.');
+          return this.notificationFormat('Invalid user account.');
         }
 
         this.storage.set('isLoggedIn', true);
