@@ -79,7 +79,7 @@ describe('RequestConfig', () => {
 
   it('should readily accept both appkey & prefixUrl value', () => {
     expect(requestConfig.appkey).toBe('');
-    expect(requestConfig.prefixUrl).toBe('');
+    expect(requestConfig.loginApiUrl).toBe('');
   });
 });
 
@@ -169,7 +169,7 @@ describe('RequestService', () => {
         con.mockRespond(new Response(response));
       });
 */
-      service.get(testURL, {param: {justFor: 'test'}}).subscribe(_res => {
+      service.get(testURL, {params: {justFor: 'test'}}).subscribe(_res => {
         res = _res;
       });
       const req = mockBackend.expectOne({ method: 'GET' });
@@ -186,7 +186,7 @@ describe('RequestService', () => {
 
     it('should perform a GET request based on provided URL', fakeAsync(() => {
       let res = { body: true };
-      service.get(testURL, {param: {justFor: 'test'}}, true).subscribe(_res => {
+      service.get(testURL, {params: {justFor: 'test'}}, true).subscribe(_res => {
         res = _res;
       });
       const req = mockBackend.expectOne({ method: 'GET' });
@@ -203,7 +203,7 @@ describe('RequestService', () => {
 
     it('should update apikey if new apikey exist', () => {
       let res = { body: true, apikey: 'testapikey' };
-      service.get(testURL, {header: {some: 'keys'}}).subscribe(_res => {
+      service.get(testURL, {headers: {some: 'keys'}}).subscribe(_res => {
         res = _res;
       });
       const req = mockBackend.expectOne({ method: 'GET' });

@@ -2,36 +2,27 @@ import { Resolve, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/r
 import { Injectable } from '@angular/core';
 import { AuthService } from '@app/auth/auth.service';
 import { BrowserStorageService, Stack } from '@app/services/storage.service';
-import { Observable } from 'rxjs';
-import { UtilsService } from '@app/services/utils.service';
 
 @Injectable({
   providedIn: 'root'
 })
-export class SwitcherResolverService implements Resolve<any> {
+export class SwitcherResolverService implements Resolve<Stack[]> {
   constructor(
     private service: AuthService,
     private storage: BrowserStorageService,
-    readonly utils: UtilsService,
   ) { }
 
-  async resolve(
-    route: ActivatedRouteSnapshot,
-    state: RouterStateSnapshot
-  ): Promise<Stack> {
-    if (!this.storage.stackConfig) {
-      const queryParams = this.utils.getQueryParams();
-      if (queryParams.has('stack_uuid')) {
-        try {
-          const res = await this.service.getStackConfig(queryParams.get('stack_uuid')).toPromise();
-          this.storage.stackConfig = res;
-          return res;
-        } catch (err) {
-          console.error('Unable to retrieve stack info', err.toString());
-          return;
-        }
+  async resolve(): Promise<Stack[]> {
+    const stacks = this.storage.stacks;
+    if (stacks && stacks.length === 0) {
+      try {
+        await this.service.getStacks().toPromise();
+      } catch (err) {
+        // @TODO: have a plan to gracefully throw this error
+        console.error('Fail to retrieve stacks info', err.toString());
+        throw err;
       }
     }
-    return this.storage.stackConfig;
+    return stacks;
   }
 }

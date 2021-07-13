@@ -24,7 +24,7 @@ import { Stack } from '@app/services/storage.service';
 export class SwitcherProgramComponent extends RouterEnter implements AfterContentChecked {
   routeUrl = '/switcher/switcher-program';
   programs: Array<ProgramObj>;
-  currentStack: Stack;
+  stacks: Stack[];
 
   constructor(
     public loadingController: LoadingController,
@@ -38,7 +38,7 @@ export class SwitcherProgramComponent extends RouterEnter implements AfterConten
   ) {
     super(router);
     activatedRoute.data.subscribe(data => {
-      this.currentStack = data.stack;
+      this.stacks = data.stacks;
     });
   }
 

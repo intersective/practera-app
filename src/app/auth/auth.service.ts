@@ -23,6 +23,7 @@ const API = {
 
 const LOGIN_API = {
   stackInfo: 'stack',
+  multipleStacks: 'stacks',
   login: 'login',
   forgotPassword: 'forgotPassword',
   resetPassword: 'user'
@@ -385,5 +386,32 @@ export class AuthService {
       }
       return null;
     }));
+  }
+
+  /**
+   * get multiple stacks from endpoint
+   * Purpose: allow user to switching from one stack to another stack
+   *
+   * @return  {Observable<Stack>[]} multiple stacks
+   */
+  getStacks(): Observable<Stack[]> {
+    return this.request.get(LOGIN_API.multipleStacks, {
+      params: {
+        type: 'app'
+      }
+    }, true).pipe(
+      tap(res => {
+        if (res) {
+          this.storage.stacks = res;
+        }
+        return res;
+      }),
+      map(res => {
+        if (res) {
+          return res;
+        }
+        return [];
+      })
+    );
   }
 }
