@@ -10,7 +10,6 @@ import { Router } from '@angular/router';
 import { Observable, of, throwError } from 'rxjs';
 import { catchError, concatMap, map } from 'rxjs/operators';
 import { UtilsService } from '@services/utils.service';
-import { environment } from '@environments/environment';
 import { BrowserStorageService } from '@services/storage.service';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
 import { ApolloService } from '@shared/apollo/apollo.service';

@@ -63,8 +63,6 @@ export class AuthLoginComponent implements OnInit {
           return this.notificationFormat('No stacks available for this user.');
         }
 
-        // this.storage.stackConfig = res.stacks[0] ? res.stacks[0] : null;
-
         this.storage.set('isLoggedIn', true);
         this.storage.stacks = res.stacks;
         this.storage.loginApiKey = res.apikey;
