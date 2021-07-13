@@ -204,7 +204,7 @@ export class BrowserStorageService {
   // methods to store and get stacks that user have access.
   get stacks(): Array<Stack> {
     const result = this.get('stacks');
-    return result || null;
+    return result || [];
   }
 
   set stacks(val: Array<Stack>) {

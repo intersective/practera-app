@@ -13,10 +13,11 @@ export class SwitcherResolverService implements Resolve<Stack[]> {
   ) { }
 
   async resolve(): Promise<Stack[]> {
-    const stacks = this.storage.stacks;
+    let stacks = this.storage.stacks;
     if (stacks && stacks.length === 0) {
       try {
-        await this.service.getStacks().toPromise();
+        stacks = await this.service.getStacks().toPromise();
+        return stacks;
       } catch (err) {
         // @TODO: have a plan to gracefully throw this error
         console.error('Fail to retrieve stacks info', err.toString());

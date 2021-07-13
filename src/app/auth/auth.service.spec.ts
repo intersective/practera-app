@@ -120,24 +120,24 @@ describe('AuthService', () => {
     }
   ];
   const mockOneStack = {
-      uuid: 'b0f6328e-379c-4cd2-9e96-1363a49ab001',
-      name: 'Practera Classic App - Stage',
-      description: 'Participate in an experience as a learner or reviewer - Testing',
-      image: 'https://media.intersective.com/img/learners_reviewers.png',
-      url: 'https://app.p1-stage.practera.com',
-      type: 'app',
-      coreApi: 'https://admin.p1-stage.practera.com',
-      coreGraphQLApi: 'https://core-graphql-api.p1-stage.practera.com',
-      chatApi: 'https://chat-api.p1-stage.practera.com',
-      filestack: {
-        s3Config: {
-          container: 'files.p1-stage.practera.com',
-          region: 'ap-southeast-2'
-        },
+    uuid: 'b0f6328e-379c-4cd2-9e96-1363a49ab001',
+    name: 'Practera Classic App - Stage',
+    description: 'Participate in an experience as a learner or reviewer - Testing',
+    image: 'https://media.intersective.com/img/learners_reviewers.png',
+    url: 'https://app.p1-stage.practera.com',
+    type: 'app',
+    coreApi: 'https://admin.p1-stage.practera.com',
+    coreGraphQLApi: 'https://core-graphql-api.p1-stage.practera.com',
+    chatApi: 'https://chat-api.p1-stage.practera.com',
+    filestack: {
+      s3Config: {
+        container: 'files.p1-stage.practera.com',
+        region: 'ap-southeast-2'
       },
-      defaultCountryModel: 'AUS',
-      lastLogin: 1619660600368
-    };
+    },
+    defaultCountryModel: 'AUS',
+    lastLogin: 1619660600368
+  };
 
   it('when testing login(), it should pass the correct data to API', () => {
     requestSpy.post.and.returnValue(of({
