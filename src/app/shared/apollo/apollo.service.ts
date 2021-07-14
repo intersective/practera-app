@@ -46,6 +46,26 @@ export class ApolloService {
       'chat');
   }
 
+  getClient() {
+    return this.apollo.getClient();
+  }
+
+  updateCache(taskName:string, { data }): void {
+    this.apollo.getClient().writeFragment({
+      id: taskName,
+      fragment: gql`
+        fragment task on Task {
+          status {
+            status
+            __typename
+          }
+          __typename
+        }
+      `,
+      data
+    });
+  }
+
   /**
    * Valid options:
    * noCache: Boolean default false. If set to false, will not cache the result

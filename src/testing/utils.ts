@@ -1,5 +1,7 @@
 import * as moment from 'moment';
 import { UtilsService } from '@services/utils.service';
+import * as _ from 'lodash';
+import { of } from 'rxjs';
 
 export class SpyObject {
   constructor(type?: any) {
@@ -39,12 +41,16 @@ export class TestUtils extends SpyObject {
   isMobile;
   clearCache;
   find;
+  getEvent;
+  broadcastEvent;
 
   constructor() {
-    super(UtilsService);
+    const thisOne = super(UtilsService);
     this.isEmpty = this.spy('isEmpty');
     this.isMobile = this.spy('isMobile');
     this.find = this.spy('find');
+    this.broadcastEvent = this.spy('broadcastEvent');
+    this.getEvent = this.spy('getEvent').and.returnValue(of(true));
     this.clearCache = this.spy('clearCache').and.returnValue(true);
   }
 
@@ -52,6 +58,10 @@ export class TestUtils extends SpyObject {
     return {
       navigate: jasmine.createSpy('navigate'),
     };
+  }
+
+  has(object, path) {
+    return _.has(object, path);
   }
 
   /**

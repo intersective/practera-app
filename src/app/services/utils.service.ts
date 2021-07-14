@@ -1,10 +1,10 @@
 import { Injectable, Inject } from '@angular/core';
-import * as _ from 'lodash';
 import { DOCUMENT } from '@angular/common';
 import { Observable, Subject } from 'rxjs';
 import { map, filter } from 'rxjs/operators';
 import { Platform } from '@ionic/angular';
-import { Apollo } from 'apollo-angular';
+import { ApolloService } from '@shared/apollo/apollo.service';
+import * as _ from 'lodash';
 import * as moment from 'moment';
 
 // @TODO: enhance Window reference later, we shouldn't refer directly to browser's window object like this
@@ -27,7 +27,7 @@ export class UtilsService {
   constructor(
     @Inject(DOCUMENT) private document: Document,
     private platform: Platform,
-    private apollo: Apollo
+    private apolloService: ApolloService
   ) {
     if (_) {
       this.lodash = _;
@@ -173,7 +173,7 @@ export class UtilsService {
 
   // need to clear all Subject for cache
   clearCache() {
-    this.apollo.getClient().clearStore();
+    this.apolloService.getClient().clearStore();
   //   // initialise the Subject for caches
   //   this.projectSubject.next(null);
   //   this.each(this.activitySubjects, (subject, key) => {

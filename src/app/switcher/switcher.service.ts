@@ -253,7 +253,9 @@ export class SwitcherService {
    * if method got 'one program object', switch to that program object and navigate to dashboard.
    * if method got 'empty value', do nothing.
    */
-  async switchProgramAndNavigate(programs): Promise<any> {
+  async switchProgramAndNavigate(selectedStack, programs): Promise<any> {
+    this.storage.stackConfig = selectedStack;
+
     if (!this.utils.isEmpty(programs)) {
       // Array with multiple program objects -> [{},{},{},{}]
       if (Array.isArray(programs) && !this.checkIsOneProgram(programs)) {

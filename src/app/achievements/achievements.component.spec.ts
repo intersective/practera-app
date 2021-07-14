@@ -10,7 +10,7 @@ import {
   HttpClientTestingModule
 } from '@angular/common/http/testing';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
-import { Apollo } from 'apollo-angular';
+import { UtilsService } from '@app/services/utils.service';
 
 class Page {
   get totalPoints() {
@@ -51,8 +51,11 @@ describe('AchievementsComponent', () => {
       declarations: [ AchievementsComponent ],
       schemas: [ CUSTOM_ELEMENTS_SCHEMA ],
       providers: [
-        Apollo,
         NewRelicService,
+        {
+          provide: UtilsService,
+          useValue: jasmine.createSpyObj('UtilsService', ['isMobile']),
+        },
         {
           provide: AchievementsService,
           useValue: jasmine.createSpyObj('AchievementsService', [

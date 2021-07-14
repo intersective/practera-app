@@ -3,7 +3,7 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { HttpClientModule } from '@angular/common/http';
 import { ActivityComponent } from './activity.component';
 import { ActivityService } from './activity.service';
-import { Observable, of, pipe } from 'rxjs';
+import { of } from 'rxjs';
 import { Router, ActivatedRoute, convertToParamMap } from '@angular/router';
 import { UtilsService } from '@services/utils.service';
 import { NotificationService } from '@shared/notification/notification.service';
@@ -14,7 +14,8 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { BrowserStorageService } from '@services/storage.service';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
 import { MockRouter } from '@testing/mocked.service';
-import { Apollo } from 'apollo-angular';
+import { ApolloService } from '@app/shared/apollo/apollo.service';
+import { TestUtils } from '@testing/utils';
 
 class Page {
   get activityName() {
@@ -65,9 +66,15 @@ describe('ActivityComponent', () => {
       declarations: [ ActivityComponent ],
       schemas: [ CUSTOM_ELEMENTS_SCHEMA ],
       providers: [
-        Apollo,
         NewRelicService,
-        UtilsService,
+        {
+          provide: UtilsService,
+          useClass: TestUtils,
+        },
+        {
+          provide: ApolloService,
+          useValue: jasmine.createSpyObj('ApolloService', ['updateCache']),
+        },
         {
           provide: ActivityService,
           useValue: jasmine.createSpyObj('ActivityService', ['getActivity'])
@@ -83,10 +90,6 @@ describe('ActivityComponent', () => {
         {
           provide: Router,
           useClass: MockRouter,
-          /*useValue: {
-            navigate: jasmine.createSpy('navigate'),
-            events: of()
-          }*/
         },
         {
           provide: ActivatedRoute,
