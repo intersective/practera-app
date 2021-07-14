@@ -765,9 +765,7 @@ export class AssessmentComponent extends RouterEnter {
           if (this.doAssessment) {
             return 'pending review';
           }
-          if (this.doReview) {
-            return 'review submitted';
-          }
+          return 'review submitted';
         }
         return 'submitted';
       }
