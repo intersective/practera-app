@@ -660,6 +660,20 @@ describe('AssessmentComponent', () => {
       component.submitted = true;
       expect(component.footerText()).toEqual('review submitted');
     });
+    it('should return "submitted" (Assessment type != moderated, doReview & doAssessment = true)', () => {
+      component.assessment.type = 'not moderated';
+      component.doAssessment = true;
+      component.doReview = true;
+      component.submitted = true;
+      expect(component.footerText()).toEqual('submitted');
+    });
+    it('should return "submitted" (doReview & doAssessment = false)', () => {
+      component.assessment.type = 'not moderated';
+      component.doAssessment = false;
+      component.doReview = false;
+      component.submitted = true;
+      expect(component.footerText()).toEqual('');
+    });
     it('should return "review submitted"', () => {
       component.assessment.type = 'moderated';
       component.doReview = true;
