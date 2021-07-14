@@ -653,6 +653,13 @@ describe('AssessmentComponent', () => {
       component.submitted = true;
       expect(component.footerText()).toEqual('pending review');
     });
+    it('should return "review submitted" (both doReview = true & doAssessment = false)', () => {
+      component.assessment.type = 'moderated';
+      component.doAssessment = false;
+      component.doReview = true;
+      component.submitted = true;
+      expect(component.footerText()).toEqual('review submitted');
+    });
     it('should return "review submitted"', () => {
       component.assessment.type = 'moderated';
       component.doReview = true;
@@ -689,6 +696,25 @@ describe('AssessmentComponent', () => {
     it('should return pending review', () => {
       component.submission.status = 'pending review';
       expect(component.footerText()).toEqual('pending review');
+    });
+    it('should return false - if not submitted & action = review', () => {
+      component.doAssessment = false;
+      component.doReview = false;
+      component.action = 'review';
+      expect(component.footerText()).toBeFalsy();
+    });
+    it('should return false - if not submitted & action = review', () => {
+      component.doAssessment = false;
+      component.doReview = false;
+      component.action = 'review';
+      expect(component.footerText()).toBeFalsy();
+    });
+    it('should return false - if this.submission = false', () => {
+      component.doAssessment = false;
+      component.doReview = false;
+      component.action = '';
+      component.submission = null;
+      expect(component.footerText()).toBeFalsy();
     });
   });
 
