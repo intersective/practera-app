@@ -771,23 +771,20 @@ export class AssessmentComponent extends RouterEnter {
       }
       // display the submit button, don't need the text in the footer
       return false;
-    }
-    if (this.action === 'review') {
+    } else if (this.action === 'review' || !this.submission) {
       return false;
-    }
-    if (!this.submission) {
-      return false;
-    }
-    switch (this.submission.status) {
-      case 'published':
-        if (this.feedbackReviewed) {
-          return 'done';
-        }
-        return 'feedback available';
-      case 'pending approval':
-        return 'pending review';
-      default:
-        return this.submission.status;
+    } else {
+      switch (this.submission.status) {
+        case 'published':
+          if (this.feedbackReviewed) {
+            return 'done';
+          }
+          return 'feedback available';
+        case 'pending approval':
+          return 'pending review';
+        default:
+          return this.submission.status;
+      }
     }
   }
 
