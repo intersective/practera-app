@@ -749,6 +749,38 @@ export class AssessmentComponent extends RouterEnter {
     return this.doAssessment || this.doReview || this.footerText();
   }
 
+  submissionStatus() {
+    switch (this.submission.status) {
+      case 'published':
+        if (this.feedbackReviewed) {
+          return 'done';
+        }
+        return 'feedback available';
+      case 'pending approval':
+        return 'pending review';
+      default:
+        return this.submission.status;
+    }
+  }
+
+  doAssessmentDoReview() {
+    if (this.submitting) {
+      return 'submitting';
+    }
+
+    if (this.submitted) {
+      if (this.assessment.type === 'moderated') {
+        if (this.doAssessment) {
+          return 'pending review';
+        }
+        return 'review submitted';
+      }
+      return 'submitted';
+    }
+    // display the submit button, don't need the text in the footer
+    return false;
+  }
+
   /**
    * Get the text on the left of the footer.
    * Return false if it shouldn't be displayed
@@ -756,35 +788,11 @@ export class AssessmentComponent extends RouterEnter {
   footerText(): string | boolean {
     // if it is to do assessment or do review
     if (this.doAssessment || this.doReview) {
-      if (this.submitting) {
-        return 'submitting';
-      }
-
-      if (this.submitted) {
-        if (this.assessment.type === 'moderated') {
-          if (this.doAssessment) {
-            return 'pending review';
-          }
-          return 'review submitted';
-        }
-        return 'submitted';
-      }
-      // display the submit button, don't need the text in the footer
-      return false;
+      return this.doAssessmentDoReview();
     } else if (this.action === 'review' || !this.submission) {
       return false;
     } else {
-      switch (this.submission.status) {
-        case 'published':
-          if (this.feedbackReviewed) {
-            return 'done';
-          }
-          return 'feedback available';
-        case 'pending approval':
-          return 'pending review';
-        default:
-          return this.submission.status;
-      }
+      return this.submissionStatus();
     }
   }
 
