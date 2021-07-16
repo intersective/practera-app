@@ -64,14 +64,17 @@ export class AppComponent implements OnInit {
           const numOfConfigs = expConfig.length;
           if (numOfConfigs > 0 && numOfConfigs < 2) {
             let logo = expConfig[0].logo;
+
             const config = expConfig[0].config || {}; // let it fail gracefully
-            const themeColor = config.theme_color;
+            const themeColor = config.theme_color || '#2bbfd4';
+
             if (config.html_branding && config.html_branding.header) {
               this.customHeader = config.html_branding.header;
             }
             if (this.customHeader) {
               this.customHeader = this.sanitizer.bypassSecurityTrustHtml(this.customHeader);
             }
+
             // add the domain if the logo url is not a full url
             if (!logo.includes('http') && !this.utils.isEmpty(logo)) {
               logo = environment.APIEndpoint + logo;
@@ -80,6 +83,7 @@ export class AppComponent implements OnInit {
               logo,
               color: themeColor
             });
+
             // use brand color if no theme color
             if (!this.utils.has(this.storage.getUser(), 'themeColor') || !this.storage.getUser().themeColor) {
               this.utils.changeThemeColor(themeColor);
