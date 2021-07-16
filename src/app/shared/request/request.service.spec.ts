@@ -25,9 +25,6 @@ import {
 
 import {
   Http,
-  ConnectionBackend,
-  BaseRequestOptions,
-  Response,
   ResponseOptions
 } from '@angular/http';
 
@@ -37,6 +34,7 @@ import { BrowserStorageService } from '@services/storage.service';
 import { TestUtils } from '@testing/utils';
 import { BrowserStorageServiceMock } from '@testing/mocked.service';
 import { ApolloService } from '../apollo/apollo.service';
+import { UtilsService } from '@app/services/utils.service';
 
 describe('QueryEncoder', () => {
   const encodedTest = 'https://test.com?test=true';
@@ -96,6 +94,10 @@ describe('RequestService', () => {
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule],
       providers: [
+        {
+          provide: UtilsService,
+          useClass: TestUtils,
+        },
         RequestService,
         DevModeService,
         {

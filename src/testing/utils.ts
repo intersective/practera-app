@@ -43,6 +43,9 @@ export class TestUtils extends SpyObject {
   find;
   getEvent;
   broadcastEvent;
+  redirectToUrl;
+  timeComparer;
+  utcToLocal;
 
   constructor() {
     const thisOne = super(UtilsService);
@@ -50,6 +53,9 @@ export class TestUtils extends SpyObject {
     this.isMobile = this.spy('isMobile');
     this.find = this.spy('find');
     this.broadcastEvent = this.spy('broadcastEvent');
+    this.redirectToUrl = this.spy('redirectToUrl');
+    this.timeComparer = this.spy('timeComparer');
+    this.utcToLocal = this.spy('utcToLocal');
     this.getEvent = this.spy('getEvent').and.returnValue(of(true));
     this.clearCache = this.spy('clearCache').and.returnValue(true);
   }

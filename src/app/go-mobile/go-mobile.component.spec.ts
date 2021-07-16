@@ -19,7 +19,7 @@ import { TextMaskModule } from 'angular2-text-mask';
 import { Router } from '@angular/router';
 import { environment } from 'environments/environment';
 import { of, throwError } from 'rxjs';
-import { Apollo } from 'apollo-angular';
+import { TestUtils } from '@testing/utils';
 
 describe('GoMobileComponent', () => {
   let component: GoMobileComponent;
@@ -40,7 +40,6 @@ describe('GoMobileComponent', () => {
       ],
       schemas: [ CUSTOM_ELEMENTS_SCHEMA ],
       providers: [
-        Apollo,
         GoMobileService,
         {
           provide: NotificationService,
@@ -50,7 +49,10 @@ describe('GoMobileComponent', () => {
           provide: NewRelicService,
           useClass: MockNewRelicService
         },
-        UtilsService,
+        {
+          provide: UtilsService,
+          useClass: TestUtils,
+        },
         {
           provide: Router,
           useClass: MockRouter,

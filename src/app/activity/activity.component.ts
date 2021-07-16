@@ -9,6 +9,7 @@ import { Event, EventListService } from '@app/event-list/event-list.service';
 import { FastFeedbackService } from '../fast-feedback/fast-feedback.service';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
 import { ApolloService } from '@shared/apollo/apollo.service';
+import { SharedService } from '@app/services/shared.service';
 
 @Component({
   selector: 'app-activity',
@@ -37,14 +38,15 @@ export class ActivityComponent {
   constructor(
     public router: Router,
     private activityService: ActivityService,
-    public utils: UtilsService,
     private notificationService: NotificationService,
     public storage: BrowserStorageService,
     public eventListService: EventListService,
     public fastFeedbackService: FastFeedbackService,
     private newRelic: NewRelicService,
     private ngZone: NgZone,
-    private apolloService: ApolloService
+    private apolloService: ApolloService,
+    readonly sharedService: SharedService,
+    readonly utils: UtilsService,
   ) {
 
     // update event list after book/cancel an event
@@ -87,6 +89,10 @@ export class ActivityComponent {
           });
       }
     }
+  }
+
+  dueDateFormatter(dueDate) {
+    return this.sharedService.dueDateFormatter(dueDate);
   }
 
   onEnter() {

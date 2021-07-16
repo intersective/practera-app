@@ -13,6 +13,7 @@ import { MockRouter } from '@testing/mocked.service';
 import { Router, ActivatedRoute, convertToParamMap } from '@angular/router';
 import { FastFeedbackServiceMock } from '@testing/mocked.service';
 import { FastFeedbackService } from '@app/fast-feedback/fast-feedback.service';
+import { TestUtils } from '@testing/utils';
 
 describe('ChatListComponent', () => {
   let component: ChatListComponent;
@@ -31,8 +32,10 @@ describe('ChatListComponent', () => {
       declarations: [ChatListComponent],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
       providers: [
-        Apollo,
-        UtilsService,
+        {
+          provide: UtilsService,
+          useClass: TestUtils,
+        },
         NewRelicService,
         {
           provide: ChatService,

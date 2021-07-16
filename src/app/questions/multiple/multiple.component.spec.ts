@@ -5,7 +5,7 @@ import { Observable, of, pipe } from 'rxjs';
 import { SharedModule } from '@shared/shared.module';
 import { ReactiveFormsModule, FormControl } from '@angular/forms';
 import { UtilsService } from '@services/utils.service';
-import { Apollo } from 'apollo-angular';
+import { TestUtils } from '@testing/utils';
 
 describe('MultipleComponent', () => {
   let component: MultipleComponent;
@@ -17,8 +17,10 @@ describe('MultipleComponent', () => {
       declarations: [ MultipleComponent ],
       schemas: [ CUSTOM_ELEMENTS_SCHEMA ],
       providers: [
-        Apollo,
-        UtilsService
+        {
+          provide: UtilsService,
+          useClass: TestUtils,
+        },
       ],
     })
     .compileComponents();

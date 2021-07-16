@@ -16,7 +16,7 @@ import { SettingService } from '@app/settings/setting.service';
 import { RouterModule, Router } from '@angular/router';
 import { MockRouter, BrowserStorageServiceMock } from '@testing/mocked.service';
 import { of } from 'rxjs';
-import { Apollo } from 'apollo-angular';
+import { TestUtils } from '@testing/utils';
 
 describe('ContactNumberFormComponent', () => {
   let component: ContactNumberFormComponent;
@@ -31,12 +31,14 @@ describe('ContactNumberFormComponent', () => {
       declarations: [ ContactNumberFormComponent ],
       schemas: [ CUSTOM_ELEMENTS_SCHEMA ],
       providers: [
-        Apollo,
         {
           provide: BrowserStorageService,
           useClass: BrowserStorageServiceMock,
         },
-        UtilsService,
+        {
+          provide: UtilsService,
+          useClass: TestUtils,
+        },
         SettingService,
         {
           provide: NotificationService,
