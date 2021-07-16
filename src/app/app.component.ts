@@ -66,7 +66,7 @@ export class AppComponent implements OnInit {
             let logo = expConfig[0].logo;
 
             const config = expConfig[0].config || {}; // let it fail gracefully
-            const themeColor = config.theme_color || "#2bbfd4";
+            const themeColor = config.theme_color || '#2bbfd4';
 
             if (config.html_branding && config.html_branding.header) {
               this.customHeader = config.html_branding.header;
