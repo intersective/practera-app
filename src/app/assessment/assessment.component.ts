@@ -763,7 +763,7 @@ export class AssessmentComponent extends RouterEnter {
     }
   }
 
-  doAssessmentDoReview() {
+  doAssessmentDoReviewStatus() {
     if (this.submitting) {
       return 'submitting';
     }
@@ -788,7 +788,7 @@ export class AssessmentComponent extends RouterEnter {
   footerText(): string | boolean {
     // if it is to do assessment or do review
     if (this.doAssessment || this.doReview) {
-      return this.doAssessmentDoReview();
+      return this.doAssessmentDoReviewStatus();
     } else if (this.action === 'review' || !this.submission) {
       return false;
     } else {
