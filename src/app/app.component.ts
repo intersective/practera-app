@@ -64,9 +64,10 @@ export class AppComponent implements OnInit {
           const numOfConfigs = expConfig.length;
           if (numOfConfigs > 0 && numOfConfigs < 2) {
             let logo = expConfig[0].logo;
-            const themeColor = expConfig[0].config.theme_color;
-            if (expConfig[0].config.html_branding && expConfig[0].config.html_branding.header) {
-              this.customHeader = expConfig[0].config.html_branding.header;
+            const config = expConfig[0].config || {}; // let it fail gracefully
+            const themeColor = config.theme_color;
+            if (config.html_branding && config.html_branding.header) {
+              this.customHeader = config.html_branding.header;
             }
             if (this.customHeader) {
               this.customHeader = this.sanitizer.bypassSecurityTrustHtml(this.customHeader);
