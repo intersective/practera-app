@@ -13,7 +13,7 @@ import { NotificationService } from '@shared/notification/notification.service';
 import { UtilsService } from '@services/utils.service';
 import { SharedModule } from '@shared/shared.module';
 import { LoadingController } from '@ionic/angular';
-import { Apollo } from 'apollo-angular';
+import { TestUtils } from '@testing/utils';
 
 describe('SwitcherProgramComponent', () => {
   let component: SwitcherProgramComponent;
@@ -30,11 +30,13 @@ describe('SwitcherProgramComponent', () => {
       declarations: [SwitcherProgramComponent],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
       providers: [
-        Apollo,
         PusherService,
         NotificationService,
-        UtilsService,
         LoadingController,
+        {
+          provide: UtilsService,
+          useClass: TestUtils,
+        },
         {
           provide: NewRelicService,
           useClass: MockNewRelicService

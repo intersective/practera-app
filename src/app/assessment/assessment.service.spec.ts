@@ -5,7 +5,7 @@ import { BrowserStorageService } from '@services/storage.service';
 import { UtilsService } from '@services/utils.service';
 import { NotificationService } from '@shared/notification/notification.service';
 import { AssessmentService, AssessmentSubmitParams } from './assessment.service';
-import { Apollo } from 'apollo-angular';
+import { TestUtils } from '@testing/utils';
 
 describe('AssessmentService', () => {
   let service: AssessmentService;
@@ -16,9 +16,11 @@ describe('AssessmentService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
-        Apollo,
         AssessmentService,
-        UtilsService,
+        {
+          provide: UtilsService,
+          useClass: TestUtils,
+        },
         {
           provide: NotificationService,
           useValue: jasmine.createSpyObj('NotificationService', ['modal'])

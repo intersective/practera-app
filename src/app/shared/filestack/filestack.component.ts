@@ -46,6 +46,10 @@ export class FilestackComponent {
     private utils: UtilsService
   ) { }
 
+  get isMobile() {
+    return this.utils.isMobile();
+  }
+
   async uploadFile() {
     const s3Config = this.filestackService.getS3Config(this.fileType);
     const pickerOptions = {

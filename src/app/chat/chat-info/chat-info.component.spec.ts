@@ -5,11 +5,11 @@ import { Router } from '@angular/router';
 import { ChatInfoComponent } from './chat-info.component';
 import { UtilsService } from '@services/utils.service';
 import { MockRouter } from '@testing/mocked.service';
-import { Apollo } from 'apollo-angular';
 import { ModalController } from '@ionic/angular';
 import { BrowserStorageService } from '@services/storage.service';
 import { ChatService } from '../chat.service';
 import { of } from 'rxjs';
+import { TestUtils } from '@testing/utils';
 
 describe('ChatInfoComponent', () => {
   let component: ChatInfoComponent;
@@ -28,8 +28,10 @@ describe('ChatInfoComponent', () => {
       declarations: [ ChatInfoComponent],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
       providers: [
-        Apollo,
-        UtilsService,
+        {
+          provide: UtilsService,
+          useClass: TestUtils,
+        },
         {
           provide: Router,
           useClass: MockRouter

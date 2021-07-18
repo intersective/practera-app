@@ -15,6 +15,7 @@ import { BrowserStorageService } from '@services/storage.service';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
 import { MockRouter } from '@testing/mocked.service';
 import { Apollo } from 'apollo-angular';
+import { TestUtils } from '@testing/utils';
 
 class Page {
   get activityName() {
@@ -67,7 +68,10 @@ describe('ActivityComponent', () => {
       providers: [
         Apollo,
         NewRelicService,
-        UtilsService,
+        UtilsService, {
+          provide: UtilsService,
+          useClass: TestUtils,
+        },
         {
           provide: ActivityService,
           useValue: jasmine.createSpyObj('ActivityService', ['getActivity'])

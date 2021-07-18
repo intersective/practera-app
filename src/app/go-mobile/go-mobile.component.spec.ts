@@ -14,12 +14,10 @@ import { BrowserStorageService } from '@services/storage.service';
 import { BrowserStorageServiceMock, MockNewRelicService, MockRouter } from '@testing/mocked.service';
 import { SharedModule } from '@shared/shared.module';
 import { GoMobileService } from './go-mobile.service';
-import { ReactiveFormsModule } from '@angular/forms';
-import { TextMaskModule } from 'angular2-text-mask';
 import { Router } from '@angular/router';
 import { environment } from 'environments/environment';
 import { of, throwError } from 'rxjs';
-import { Apollo } from 'apollo-angular';
+import { TestUtils } from '@testing/utils';
 
 describe('GoMobileComponent', () => {
   let component: GoMobileComponent;
@@ -34,13 +32,10 @@ describe('GoMobileComponent', () => {
       imports: [
         IonicModule,
         SharedModule,
-        // ReactiveFormsModule,
-        // TextMaskModule,
         HttpClientTestingModule
       ],
       schemas: [ CUSTOM_ELEMENTS_SCHEMA ],
       providers: [
-        Apollo,
         GoMobileService,
         {
           provide: NotificationService,
@@ -50,7 +45,10 @@ describe('GoMobileComponent', () => {
           provide: NewRelicService,
           useClass: MockNewRelicService
         },
-        UtilsService,
+        {
+          provide: UtilsService,
+          useClass: TestUtils,
+        },
         {
           provide: Router,
           useClass: MockRouter,

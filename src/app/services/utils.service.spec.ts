@@ -4,6 +4,7 @@ import { Observable, Subject, BehaviorSubject } from 'rxjs';
 import * as _ from 'lodash';
 import * as moment from 'moment';
 import { Apollo } from 'apollo-angular';
+import { TestUtils } from '@testing/utils';
 
 describe('UtilsService', () => {
   const NOW = new Date();
@@ -14,8 +15,10 @@ describe('UtilsService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
-        Apollo,
-        UtilsService,
+        {
+          provide: UtilsService,
+          useClass: TestUtils,
+        },
       ]
     });
 

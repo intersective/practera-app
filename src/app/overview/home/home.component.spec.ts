@@ -12,12 +12,11 @@ import { EventListService } from '@app/event-list/event-list.service';
 import { BrowserStorageService } from '@services/storage.service';
 import { UtilsService } from '@services/utils.service';
 import { of } from 'rxjs';
-import { map, filter } from 'rxjs/operators';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
 import { MockRouter } from '@testing/mocked.service';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
-import { Apollo } from 'apollo-angular';
+import { TestUtils } from '@testing/utils';
 
 @Directive({
   selector: '[routerLink], [routerLinkActive]'
@@ -81,9 +80,11 @@ describe('HomeComponent', () => {
       declarations: [HomeComponent, DummyRouterLinkDirective],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
       providers: [
-        Apollo,
-        UtilsService,
         NewRelicService,
+        {
+          provide: UtilsService,
+          useClass: TestUtils,
+        },
         {
           provide: Intercom
         },
