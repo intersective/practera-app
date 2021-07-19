@@ -94,15 +94,12 @@ describe('RequestService', () => {
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule],
       providers: [
-        {
-          provide: UtilsService,
-          useClass: TestUtils,
-        },
+        ApolloService,
         RequestService,
         DevModeService,
         {
-          provide: ApolloService,
-          useValue: jasmine.createSpyObj('ApolloService', []),
+          provide: UtilsService,
+          useClass: TestUtils,
         },
         {
           provide: RequestConfig,

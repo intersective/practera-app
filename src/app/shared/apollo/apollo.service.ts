@@ -110,4 +110,12 @@ export class ApolloService {
       variables: variables
     });
   }
+
+  writeFragment({ id, fragment, data }) {
+    return this.apollo.getClient().writeFragment({
+      id,
+      data,
+      fragment: gql`${fragment}`,
+    });
+  }
 }

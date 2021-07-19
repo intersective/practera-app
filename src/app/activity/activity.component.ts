@@ -216,8 +216,17 @@ export class ActivityComponent {
     }
     this.activity.tasks[index].status = status;
     // update the cache
-    this.apolloService.updateCache(`Task:${this.activity.tasks[index].type.toLowerCase()}${this.activity.tasks[index].id}`,
-    {
+    this.apolloService.writeFragment({
+      id: `Task:${this.activity.tasks[index].type.toLowerCase()}${this.activity.tasks[index].id}`,
+      fragment: `
+        fragment task on Task {
+          status {
+            status
+            __typename
+          }
+          __typename
+        }
+      `,
       data: {
         status: {
           status: status,
