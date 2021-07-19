@@ -17,7 +17,7 @@ import { FastFeedbackServiceMock } from '@testing/mocked.service';
 import { of } from 'rxjs';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
 import { MockRouter, MockNewRelicService } from '@testing/mocked.service';
-import { Apollo } from 'apollo-angular';
+import { TestUtils } from '@testing/utils';
 
 class Page {
   get savingMessage() {
@@ -181,7 +181,6 @@ describe('AssessmentComponent', () => {
       declarations: [AssessmentComponent],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
       providers: [
-        Apollo,
         {
           provide: ActivatedRoute,
           useValue: {
@@ -200,7 +199,10 @@ describe('AssessmentComponent', () => {
             params: of(true),
           }
         },
-        UtilsService,
+        {
+          provide: UtilsService,
+          useClass: TestUtils,
+        },
         SharedService,
         {
           provide: NewRelicService,

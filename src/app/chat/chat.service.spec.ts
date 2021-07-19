@@ -6,7 +6,7 @@ import { Observable, of } from 'rxjs';
 import { UtilsService } from '@services/utils.service';
 import { PusherService } from '@shared/pusher/pusher.service';
 import { environment } from '@environments/environment';
-import { Apollo } from 'apollo-angular';
+import { TestUtils } from '@testing/utils';
 
 describe('ChatService', () => {
   let service: ChatService;
@@ -17,9 +17,11 @@ describe('ChatService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
-        Apollo,
         ChatService,
-        UtilsService,
+        {
+          provide: UtilsService,
+          useClass: TestUtils,
+        },
         {
           provide: PusherService,
           useValue: jasmine.createSpyObj('PusherService', ['getMyPresenceChannelId'])

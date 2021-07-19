@@ -11,7 +11,6 @@ import { NewRelicService } from '@shared/new-relic/new-relic.service';
 import { ReactiveFormsModule } from '@angular/forms';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { MockNewRelicService } from '@testing/mocked.service';
-import { Apollo } from 'apollo-angular';
 import { BrowserStorageService } from '@services/storage.service';
 import { UtilsService } from '@app/services/utils.service';
 import { TestUtils } from '@testing/utils';

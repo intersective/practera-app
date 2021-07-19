@@ -1,7 +1,6 @@
 import { CUSTOM_ELEMENTS_SCHEMA, EventEmitter } from '@angular/core';
 import { async, ComponentFixture, TestBed, tick, fakeAsync } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
-import { Apollo } from 'apollo-angular';
 import { ChatListComponent } from './chat-list.component';
 import { ChatService } from '../chat.service';
 import { of } from 'rxjs';
@@ -13,6 +12,7 @@ import { MockRouter } from '@testing/mocked.service';
 import { Router, ActivatedRoute, convertToParamMap } from '@angular/router';
 import { FastFeedbackServiceMock } from '@testing/mocked.service';
 import { FastFeedbackService } from '@app/fast-feedback/fast-feedback.service';
+import { TestUtils } from '@testing/utils';
 
 describe('ChatListComponent', () => {
   let component: ChatListComponent;
@@ -31,9 +31,11 @@ describe('ChatListComponent', () => {
       declarations: [ChatListComponent],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
       providers: [
-        Apollo,
-        UtilsService,
         NewRelicService,
+        {
+          provide: UtilsService,
+          useClass: TestUtils,
+        },
         {
           provide: ChatService,
           useValue: jasmine.createSpyObj('ChatService', ['getChatList', 'getPusherChannels'])

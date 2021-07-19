@@ -4,7 +4,7 @@ import { TestBed, ComponentFixture, async } from '@angular/core/testing';
 import { ElementRef, Component, DebugElement } from '@angular/core';
 import { UtilsService } from '@services/utils.service';
 import { FloatDirective } from './float.directive';
-import { Apollo } from 'apollo-angular';
+import { TestUtils } from '@testing/utils';
 
 // @NOTE: keep this for future elements debugging (unit testing purpose only)
 function cardListingHelper(debugElement) {
@@ -109,8 +109,10 @@ describe('FloatDirective', () => {
         imports: [ IonicModule ],
         declarations: [ TestScrollComponent, FloatDirective ],
         providers: [
-          Apollo,
-          UtilsService,
+          {
+            provide: UtilsService,
+            useClass: TestUtils,
+          },
           // ElementRef
         ]
       });
@@ -159,7 +161,6 @@ describe('FloatDirective', () => {
         imports: [ IonicModule ],
         declarations: [ FloatDirective, TestAppFloatIsActivityCardComponent ],
         providers: [
-          Apollo,
           UtilsService,
         ]
       });

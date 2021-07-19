@@ -3,11 +3,11 @@ import { TasksComponent } from './tasks.component';
 import { ActivityModule } from '../activity/activity.module';
 import { TopicModule } from '../topic/topic.module';
 import { AssessmentModule } from '../assessment/assessment.module';
-import { Observable, of, pipe } from 'rxjs';
 import { Router, ActivatedRoute, convertToParamMap } from '@angular/router';
 import { MockRouter } from '@testing/mocked.service';
 import { BrowserStorageService } from '@services/storage.service';
-import { Apollo } from 'apollo-angular';
+import { UtilsService } from '@app/services/utils.service';
+import { TestUtils } from '@testing/utils';
 
 describe('TasksComponent', () => {
   let component: TasksComponent;
@@ -20,7 +20,10 @@ describe('TasksComponent', () => {
       imports: [ ActivityModule, TopicModule, AssessmentModule ],
       declarations: [ TasksComponent ],
       providers: [
-        Apollo,
+        {
+          provide: UtilsService,
+          useClass: TestUtils,
+        },
         {
           provide: Router,
           useClass: MockRouter

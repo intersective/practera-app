@@ -11,7 +11,6 @@ import { BrowserStorageService } from '@services/storage.service';
 import { Router } from '@angular/router';
 import { TestUtils } from '@testing/utils';
 import { BrowserStorageServiceMock } from '@testing/mocked.service';
-import { Apollo } from 'apollo-angular';
 
 describe('RequestInterceptor', () => {
   const APPKEY = 'TEST';
@@ -30,7 +29,6 @@ describe('RequestInterceptor', () => {
         })
       ],
       providers: [
-        Apollo,
         RequestService,
         {
           provide: Router,
