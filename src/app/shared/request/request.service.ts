@@ -43,6 +43,14 @@ export class QueryEncoder implements HttpParameterCodec {
   }
 }
 
+interface POSTParams {
+  endPoint: string;
+  data: any;
+  httpOptions?: any;
+  isLoginAPI?: boolean;
+  isFullUrl?: boolean;
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -146,29 +154,31 @@ export class RequestService {
       );
   }
 
-  post(endPoint: string = '', data, httpOptions?: any, isLoginAPI?: boolean): Observable<any> {
-    if (!httpOptions) {
-      httpOptions = {};
+  post(params: POSTParams): Observable<any> {
+    if (!params.httpOptions) {
+      params.httpOptions = {};
     }
 
-    if (!this.utils.has(httpOptions, 'headers')) {
-      httpOptions.headers = '';
+    if (!this.utils.has(params.httpOptions, 'headers')) {
+      params.httpOptions.headers = '';
     }
-    if (!this.utils.has(httpOptions, 'params')) {
-      httpOptions.params = '';
+    if (!this.utils.has(params.httpOptions, 'params')) {
+      params.httpOptions.params = '';
     }
 
     let apiEndpoint = '';
     // get login API endpoint if need to call login API.
-    if (isLoginAPI) {
-      apiEndpoint = this.getEndpointUrl(endPoint, true);
+    if (params.isFullUrl) {
+      apiEndpoint = params.endPoint;
+    } else if (params.isLoginAPI) {
+      apiEndpoint = this.getEndpointUrl(params.endPoint, true);
     } else {
-      apiEndpoint = this.getEndpointUrl(endPoint);
+      apiEndpoint = this.getEndpointUrl(params.endPoint);
     }
 
-    return this.http.post<any>(apiEndpoint, data, {
-      headers: this.appendHeaders(httpOptions.headers),
-      params: this.setParams(httpOptions.params)
+    return this.http.post<any>(apiEndpoint, params.data, {
+      headers: this.appendHeaders(params.httpOptions.headers),
+      params: this.setParams(params.httpOptions.params)
     })
       .pipe(concatMap(response => {
         this._refreshApikey(response);

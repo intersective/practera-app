@@ -69,7 +69,11 @@ export class SharedService {
   }
 
   updateProfile(data: Profile) {
-    return this.request.post(api.post.profile, data);
+    return this.request.post(
+      {
+        endPoint: api.post.profile,
+        data
+      });
   }
 
   /**

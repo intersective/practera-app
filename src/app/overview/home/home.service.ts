@@ -400,11 +400,15 @@ export class HomeService {
   }
 
   postEventReminder(event) {
-    return this.request.post(api.post.todoItem, {
-      project_id: this.storage.getUser().projectId,
-      identifier: 'EventReminder-' + event.id,
-      is_done: true
-    }).subscribe();
+    return this.request.post(
+      {
+        endPoint: api.post.todoItem,
+        data: {
+          project_id: this.storage.getUser().projectId,
+          identifier: 'EventReminder-' + event.id,
+          is_done: true
+        }
+      }).subscribe();
   }
 
 }

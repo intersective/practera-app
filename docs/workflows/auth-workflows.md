@@ -35,7 +35,12 @@ This documentation explains the workflow of the authentication process.
    - sample
 
    ```ts
-   this.request.post(api.loginAPI.login, body, {}, true);
+   this.request.post(
+     {
+       endPoint: LOGIN_API.login,
+       data: body,
+       isLoginAPI: true
+     });
    ```
 
 1. After login api return success response. login component will save `Stacks` and `apikey` in local storage and redirect user to switcher page.
@@ -59,9 +64,14 @@ This documentation explains the workflow of the authentication process.
    - sample
 
    ```ts
-   this.request.post(api.login, body.toString(), {
-    headers,
-   });
+   this.request.post(
+     {
+       endPoint: api.login,
+       data: body.toString(),
+       httpOptions: {
+        headers,
+       }
+     });
    ```
 
 1. core API will return timeline, programs related to login user.
@@ -126,9 +136,15 @@ To register a new user, we use both login API and core API. After user registere
    - sample
 
    ```ts
-   this.request.post(api.verifyRegistration, data, {
-    headers: { 'Content-Type': 'application/json' }
-   });
+   this.request.post(
+     {
+        endPoint: api.verifyRegistration,
+        data,
+        httpOptions: {
+          headers: { 'Content-Type': 'application/json' }
+        }
+      }
+   );
    ```
 
 1. User enter password and confirm the password and clicks on register button.
@@ -151,9 +167,15 @@ To register a new user, we use both login API and core API. After user registere
    - sample
 
    ```ts
-   this.request.post(api.register, data, {
-    headers: { 'Content-Type': 'application/json' }
-   });
+   this.request.post(
+     {
+        endPoint: api.register,
+        data,
+        httpOptions: {
+          headers: { 'Content-Type': 'application/json' }
+        }
+     }
+   );
    ```
 
 1. After registration request return success response. `auth-regitration.component.ts` start auto login process.
@@ -174,7 +196,13 @@ To register a new user, we use both login API and core API. After user registere
    - sample
 
    ```ts
-   this.request.post(api.loginAPI.login, body, {}, true);
+   this.request.post(
+     {
+        endPoint: LOGIN_API.login,
+        data: body,
+        isLoginAPI: true
+     }
+   );
    ```
 
 1. After login api return success response. login component will save `Stacks` and `apikey` in local storage and redirect user to switcher page
@@ -199,9 +227,15 @@ To register a new user, we use both login API and core API. After user registere
    - sample
 
    ```ts
-   this.request.post(api.login, body.toString(), {
-    headers,
-   });
+   this.request.post(
+     {
+        endPoint: api.login,
+        data: body.toString(),
+        httpOptions: {
+          headers
+        }
+     }
+   );
    ```
 
 1. core API will return timeline, programs related to login user.

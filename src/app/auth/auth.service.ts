@@ -93,7 +93,12 @@ export class AuthService {
    */
   private _loginFromLoginAPI(body: LoginRequParams): Observable<any> {
     body.from = 'App';
-    return this.request.post(LOGIN_API.login, body, {}, true);
+    return this.request.post(
+      {
+        endPoint: LOGIN_API.login,
+        data: body,
+        isLoginAPI: true
+      });
   }
 
   /**
@@ -110,9 +115,14 @@ export class AuthService {
     if (!serviceHeader) {
       delete headers.service;
     }
-    return this.request.post(api.login, body.toString(), {
-      headers
-    }).pipe(map(res => this._handleLoginResponse(res)));
+    return this.request.post(
+      {
+        endPoint: api.login,
+        data: body.toString(),
+        httpOptions: {
+          headers
+        }
+      }).pipe(map(res => this._handleLoginResponse(res)));
   }
 
   /**
@@ -231,7 +241,12 @@ export class AuthService {
       resetLink: this._createLinks('reset'),
       directLink: this._createLinks('direct')
     };
-    return this.request.post(LOGIN_API.forgotPassword, body, {}, true);
+    return this.request.post(
+      {
+        endPoint: LOGIN_API.forgotPassword,
+        data: body,
+        isLoginAPI: true
+      });
   }
 
   /**
@@ -297,9 +312,13 @@ export class AuthService {
    * @return {Observable<any>}      [description]
    */
   contactNumberLogin(data: { contactNumber: string }): Observable<any> {
-    return this.request.post(api.login, {
-      contact_number: data.contactNumber, // API accepts contact_numebr
-    }).pipe(map(response => {
+    return this.request.post(
+      {
+        endPoint: api.login,
+        data: {
+          contact_number: data.contactNumber,
+        }
+      }).pipe(map(response => {
       if (response.data) {
         this.storage.setUser({apikey: response.data.apikey});
         this.storage.set('tutorial', response.data.tutorial);
@@ -331,21 +350,34 @@ export class AuthService {
   }
 
   updateProfile(data: UserProfile): Observable<any> {
-    return this.request.post(api.setProfile, data);
+    return this.request.post(
+      {
+        endPoint: api.setProfile,
+        data
+      }
+    );
   }
 
   saveRegistration(data: RegisterData): Observable<any> {
-    return this.request
-    .post(api.register, data, {
-      headers: { 'Content-Type': 'application/json' }
-    });
+    return this.request.post(
+      {
+        endPoint: api.register,
+        data,
+        httpOptions: {
+          headers: { 'Content-Type': 'application/json' }
+        }
+      });
   }
 
   verifyRegistration(data: VerifyParams): Observable<any> {
-    return this.request
-    .post(api.verifyRegistration, data, {
-      headers: { 'Content-Type': 'application/json' }
-    });
+    return this.request.post(
+      {
+        endPoint: api.verifyRegistration,
+        data,
+        httpOptions: {
+          headers: { 'Content-Type': 'application/json' }
+        }
+      });
   }
 
   /**
