@@ -24,3 +24,12 @@ ion-col {
 ion-progress-bar {
   margin-top: 5px;
 }
+
+ion-skeleton-text {
+  margin: 0 !important;
+}
+
+.skeleton-img {
+  border-bottom-left-radius: 0 !important;
+  border-bottom-right-radius: 0 !important;
+}

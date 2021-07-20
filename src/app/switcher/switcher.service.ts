@@ -9,6 +9,7 @@ import { SharedService } from '@services/shared.service';
 import { ReviewListService } from '@app/review-list/review-list.service';
 import { EventListService } from '@app/event-list/event-list.service';
 import { environment } from '@environments/environment';
+import { HttpParams } from '@angular/common/http';
 
 /**
  * @name api
@@ -18,7 +19,8 @@ import { environment } from '@environments/environment';
 const api = {
   me: 'api/users.json',
   teams: 'api/teams.json',
-  jwt: 'api/v2/users/jwt/refresh.json'
+  jwt: 'api/v2/users/jwt/refresh.json',
+  login: 'api/auths.json'
 };
 
 export interface ProgramObj {
@@ -76,23 +78,75 @@ export class SwitcherService {
     private sharedService: SharedService,
     private pusherService: PusherService,
     private reviewsService: ReviewListService,
-    private eventsService: EventListService,
+    private eventsService: EventListService
   ) {}
 
-  getPrograms() {
-    const programs = this.storage.get('programs');
+  getExpreances() {
+    if (!this.storage.stacks || this.storage.stacks.length < 1) {
+      throw Error('');
+    }
+    const stackList = this.storage.stacks;
+    const stackRequests = [];
+    const apikeyFromLoginAPI = this.storage.loginApiKey;
+    const body = new HttpParams()
+      .set('apikey', apikeyFromLoginAPI);
+    const headers = {
+      'Content-Type': 'application/x-www-form-urlencoded',
+      service: 'LOGIN'
+    };
+    stackList.forEach(stack => {
+      stackRequests.push(this.request.post(
+        {
+          endPoint: this.utils.urlFormatter(stack.coreApi, api.login),
+          data: body,
+          httpOptions: { headers },
+          isFullUrl: true
+        }));
+    });
+    return forkJoin(stackRequests).pipe(map(res => this._normaliseAuthResults(res)));
+  }
+
+  private _normaliseAuthResults(apiResults: any[]): any {
     const cdn = 'https://cdn.filestackcontent.com/resize=fit:crop,width:';
     let imagewidth = 600;
-    programs.forEach(program => {
-      if (program.project.lead_image) {
-        const imageId = program.project.lead_image.split('/').pop();
-        if (!this.utils.isMobile()) {
-          imagewidth = 1024;
-        }
-        program.project.lead_image = `${cdn}${imagewidth}/${imageId}`;
-      }
+    let expreancesList;
+    apiResults.forEach(result => {
+      const data = result.data;
+      expreancesList =  {
+        apikey: data.apikey,
+        programs: data.Timelines.map(
+          timeline => {
+            if (!this.utils.has(timeline, 'Program.config.theme_color')) {
+              if (!this.utils.has(timeline.Program, 'config')) {
+                timeline.Program.config = {
+                  theme_color: 'var(--ion-color-primary)'
+                };
+              } else {
+                timeline.Program.config.theme_color = 'var(--ion-color-primary)';
+              }
+            }
+            if (timeline.Project.lead_image) {
+              const imageId = timeline.Project.lead_image.split('/').pop();
+              if (!this.utils.isMobile()) {
+                imagewidth = 1024;
+              }
+              timeline.Project.lead_image = `${cdn}${imagewidth}/${imageId}`;
+            }
+            return {
+              enrolment: timeline.Enrolment,
+              program: timeline.Program,
+              project: timeline.Project,
+              timeline: timeline.Timeline,
+              experience: timeline.Experience,
+            };
+          },
+          this
+        ),
+        config: (data.Experience || {}).config || {},
+        _raw: result
+      };
     });
-    return of(programs);
+    return expreancesList;
   }
 
   /**
