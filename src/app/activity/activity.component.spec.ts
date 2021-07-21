@@ -69,10 +69,6 @@ describe('ActivityComponent', () => {
       providers: [
         NewRelicService,
         {
-          provide: SharedService,
-          useValue: jasmine.createSpyObj('SharedService', ['dueDateFormatter'])
-        },
-        {
           provide: UtilsService,
           useClass: TestUtils,
         },

@@ -427,4 +427,24 @@ export class UtilsService {
     }
     return new URLSearchParams(queryString);
   }
+
+  /**
+   * This method check due dates of assessment or activity.
+   * - Check due date is today, tomorrow, upcoming date or overdue date.
+   * - If due date is upcoming one this will returns 'Due (date)' ex: 'Due 06-30-2019'.
+   * - If due date is overdue one this will returns 'Overdue (date)' ex: 'Overdue 01-10-2019'.
+   * - If due date is today this will return 'Due Today'.
+   * - If due date is tomorrow this will return 'Due Tomorrow'.
+   * @param dueDate - due date of assessment or activity.
+   */
+  dueDateFormatter(dueDate: string) {
+    if (!dueDate) {
+      return '';
+    }
+    const difference = this.timeComparer(dueDate);
+    if (difference < 0) {
+      return 'Overdue ' + this.utcToLocal(dueDate);
+    }
+    return 'Due ' + this.utcToLocal(dueDate);
+  }
 }

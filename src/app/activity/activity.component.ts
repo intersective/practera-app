@@ -92,7 +92,7 @@ export class ActivityComponent {
   }
 
   dueDateFormatter(dueDate) {
-    return this.sharedService.dueDateFormatter(dueDate);
+    return this.utils.dueDateFormatter(dueDate);
   }
 
   onEnter() {

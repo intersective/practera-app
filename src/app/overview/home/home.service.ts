@@ -189,7 +189,7 @@ export class HomeService {
       return todoItems;
     }
     item.name = todoItem.meta.assessment_name;
-    item.description = this.sharedService.dueDateFormatter(todoItem.meta.due_date);
+    item.description = this.utils.dueDateFormatter(todoItem.meta.due_date);
     item.time = this.utils.timeFormatter(todoItem.created);
     item.meta = todoItem.meta;
     todoItems.push(item);
@@ -357,7 +357,7 @@ export class HomeService {
         return {
           type: 'assessment_submission_reminder',
           name: event.meta.AssessmentSubmissionReminder.assessment_name,
-          description: this.sharedService.dueDateFormatter(event.meta.AssessmentSubmissionReminder.due_date),
+          description: this.utils.dueDateFormatter(event.meta.AssessmentSubmissionReminder.due_date),
           time: this.utils.timeFormatter(event.meta.AssessmentSubmissionReminder.reminded_date),
           meta: {
             context_id: event.meta.AssessmentSubmissionReminder.context_id,
