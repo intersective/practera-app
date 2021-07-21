@@ -2,6 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { NewRelicService } from './new-relic.service';
 import { BrowserStorageService } from '@services/storage.service';
 // import { Mock } from '@testing/mocked.service';
+import { environment } from '@environments/environment';
 
 describe('NewRelicService', () => {
   let service: NewRelicService;
@@ -18,6 +19,7 @@ describe('NewRelicService', () => {
     });
     service = TestBed.inject(NewRelicService);
     storageSpy = TestBed.inject(BrowserStorageService);
+    environment.newrelic = true;
   });
 
   it('should has setPageViewName', () => {
