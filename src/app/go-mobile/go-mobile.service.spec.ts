@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { GoMobileService } from './go-mobile.service';
 import { SharedModule } from '@shared/shared.module';
-import { SharedService, Profile } from '@services/shared.service';
+import { SharedService } from '@services/shared.service';
 import { RouterModule, Router } from '@angular/router';
 import {
   HttpTestingController,
@@ -9,7 +9,6 @@ import {
 } from '@angular/common/http/testing';
 
 import { MockRouter } from '@testing/mocked.service';
-import { Apollo } from 'apollo-angular';
 
 describe('GoMobileService', () => {
   let service: GoMobileService;
@@ -19,9 +18,11 @@ describe('GoMobileService', () => {
     TestBed.configureTestingModule({
       imports: [ SharedModule, HttpClientTestingModule, RouterModule ],
       providers: [
-        Apollo,
         GoMobileService,
-        SharedService,
+        {
+          provide: SharedService,
+          useValue: jasmine.createSpyObj('SharedService', ['updateProfile']),
+        },
         {
           provide: Router,
           useClass: MockRouter

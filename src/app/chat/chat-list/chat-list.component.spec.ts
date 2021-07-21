@@ -172,7 +172,7 @@ describe('ChatListComponent', () => {
   describe('when testing goToChatRoom()', () => {
     it('should emit the navigate with chat channel', () => {
       spyOn(component.navigate, 'emit');
-      spyOn(utils, 'isMobile').and.returnValue(false);
+      utils.isMobile = jasmine.createSpy('utils.isMobile').and.returnValue(false);
       component.goToChatRoom(
         {
           uuid: '35326928',
