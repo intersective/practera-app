@@ -110,7 +110,11 @@ describe('ActivityComponent', () => {
         },
         {
           provide: EventListService,
-          useValue: jasmine.createSpyObj('EventListService', ['getEvents', 'isNotActionable', 'timeDisplayed'])
+          useValue: jasmine.createSpyObj('EventListService', {
+            getEvents: of(true),
+            'isNotActionable': () => true,
+            'timeDisplayed': () => '',
+          })
         },
       ],
     })
@@ -247,7 +251,7 @@ describe('ActivityComponent', () => {
       page.taskNames.forEach((tN, i) => expect(tN.innerHTML).toEqual(mockActivity.tasks[i].name));
       expect(fastFeedbackSpy.pullFastFeedback.calls.count()).toBe(1);
       expect(component.events).toEqual(mockEvents);
-      expect(eventSpy.getEvents.calls.count()).toBe(1);
+      expect(eventSpy.getEvents).toHaveBeenCalledTimes(2); // constructor() + onEnter()
       // always display 2 events and a "show more"
       expect(page.eventItems.length).toBe(3);
       expect(component.loadingEvents).toBe(false);
@@ -264,9 +268,8 @@ describe('ActivityComponent', () => {
         route: 'activity-task',
         url: 'abc',
       });
-      const redirectToUrlSpy = spyOn(utils, 'redirectToUrl');
       component.back();
-      expect(redirectToUrlSpy).toHaveBeenCalled();
+      expect(utils.redirectToUrl).toHaveBeenCalled();
     });
   });
 
