@@ -11,7 +11,7 @@ import { BrowserStorageService } from '@services/storage.service';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
 import { MockNewRelicService } from '@testing/mocked.service';
-import { Apollo } from 'apollo-angular';
+import { TestUtils } from '@testing/utils';
 
 describe('AuthForgotPasswordComponent', () => {
   let component: AuthForgotPasswordComponent;
@@ -27,8 +27,10 @@ describe('AuthForgotPasswordComponent', () => {
       declarations: [ AuthForgotPasswordComponent ],
       schemas: [ CUSTOM_ELEMENTS_SCHEMA ],
       providers: [
-        Apollo,
-        UtilsService,
+        {
+          provide: UtilsService,
+          useClass: TestUtils,
+        },
         {
           provide: AuthService,
           useValue: jasmine.createSpyObj('AuthService', ['forgotPassword'])
