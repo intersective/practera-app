@@ -16,6 +16,7 @@ import { NewRelicService } from '@shared/new-relic/new-relic.service';
 import { MockRouter } from '@testing/mocked.service';
 import { ApolloService } from '@app/shared/apollo/apollo.service';
 import { TestUtils } from '@testing/utils';
+import { SharedService } from '@app/services/shared.service';
 
 class Page {
   get activityName() {
@@ -67,6 +68,10 @@ describe('ActivityComponent', () => {
       schemas: [ CUSTOM_ELEMENTS_SCHEMA ],
       providers: [
         NewRelicService,
+        {
+          provide: SharedService,
+          useValue: jasmine.createSpyObj('SharedService', ['dueDateFormatter'])
+        },
         {
           provide: UtilsService,
           useClass: TestUtils,

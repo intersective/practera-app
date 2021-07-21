@@ -198,10 +198,9 @@ describe('ActivityService', () => {
       storageSpy.getReferrer.and.returnValue({
         activityTaskUrl: 'abc',
       });
-      const redirectToUrlSpy = spyOn(utils, 'redirectToUrl');
       service.gotoNextTask(1, 'assessment', 2);
       tick();
-      expect(redirectToUrlSpy).toHaveBeenCalled();
+      expect(utils.redirectToUrl).toHaveBeenCalled();
     }));
     it('should pop up modal', fakeAsync(() => {
       requestSpy.get.and.returnValue(of({
