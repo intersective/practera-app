@@ -8,7 +8,6 @@ import { BrowserStorageService } from '@services/storage.service';
 import { Router } from '@angular/router';
 import { MockRouter } from '@testing/mocked.service';
 import { TestUtils } from '@testing/utils';
-import { catchError } from 'rxjs/operators';
 
 describe('ActivityService', () => {
   let service: ActivityService;

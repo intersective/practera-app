@@ -6,10 +6,10 @@
   </ng-container>
 
   <ng-container *ngSwitchDefault>
-    <ng-container *ngIf="utils.isMobile()">
+    <ng-container *ngIf="isMobile">
       <ion-button size="small" class="upload-button" shape="round" (click)="uploadFile()" [disabled]="disabled">UPLOAD FILE</ion-button>
     </ng-container>
-    <ng-container *ngIf="!utils.isMobile()">
+    <ng-container *ngIf="!isMobile">
       <div *ngIf="!isDroped" class="drop-zone" appDragAndDrop (fileDropped)="dragAndDropUpload($event)"
         [acceptFileType]="fileType" [disabled]="disabled">
         <p class="gray-2 subtitle-1">

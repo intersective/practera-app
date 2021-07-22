@@ -13,11 +13,11 @@ describe('AchievementsService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
-        AchievementsService,
         {
           provide: UtilsService,
-          useClass: TestUtils
+          useClass: TestUtils,
         },
+        AchievementsService,
         {
           provide: RequestService,
           useValue: jasmine.createSpyObj('RequestService', ['get', 'post', 'apiResponseFormatError'])

@@ -62,11 +62,11 @@ describe('ProjectComponent', () => {
       declarations: [ ProjectComponent ],
       schemas: [ CUSTOM_ELEMENTS_SCHEMA ],
       providers: [
+        NewRelicService,
         {
           provide: UtilsService,
           useClass: TestUtils,
         },
-        NewRelicService,
         {
           provide: ElementRef,
           useClass: MockElementRef

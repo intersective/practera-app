@@ -11,6 +11,7 @@ import {
 } from '@angular/common/http/testing';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
 import { UtilsService } from '@app/services/utils.service';
+import { TestUtils } from '@testing/utils';
 
 class Page {
   get totalPoints() {
@@ -51,11 +52,11 @@ describe('AchievementsComponent', () => {
       declarations: [ AchievementsComponent ],
       schemas: [ CUSTOM_ELEMENTS_SCHEMA ],
       providers: [
-        NewRelicService,
         {
           provide: UtilsService,
-          useValue: jasmine.createSpyObj('UtilsService', ['isMobile']),
+          useClass: TestUtils,
         },
+        NewRelicService,
         {
           provide: AchievementsService,
           useValue: jasmine.createSpyObj('AchievementsService', [

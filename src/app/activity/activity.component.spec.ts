@@ -16,7 +16,6 @@ import { NewRelicService } from '@shared/new-relic/new-relic.service';
 import { MockRouter } from '@testing/mocked.service';
 import { ApolloService } from '@app/shared/apollo/apollo.service';
 import { TestUtils } from '@testing/utils';
-import { SharedService } from '@app/services/shared.service';
 
 class Page {
   get activityName() {

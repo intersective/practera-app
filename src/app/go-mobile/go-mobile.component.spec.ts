@@ -14,8 +14,6 @@ import { BrowserStorageService } from '@services/storage.service';
 import { BrowserStorageServiceMock, MockNewRelicService, MockRouter } from '@testing/mocked.service';
 import { SharedModule } from '@shared/shared.module';
 import { GoMobileService } from './go-mobile.service';
-import { ReactiveFormsModule } from '@angular/forms';
-import { TextMaskModule } from 'angular2-text-mask';
 import { Router } from '@angular/router';
 import { environment } from 'environments/environment';
 import { of, throwError } from 'rxjs';
@@ -34,8 +32,6 @@ describe('GoMobileComponent', () => {
       imports: [
         IonicModule,
         SharedModule,
-        // ReactiveFormsModule,
-        // TextMaskModule,
         HttpClientTestingModule
       ],
       schemas: [ CUSTOM_ELEMENTS_SCHEMA ],

@@ -4,7 +4,6 @@ import { SharedModule } from '@shared/shared.module';
 import { SharedService } from '@services/shared.service';
 import { RouterModule, Router } from '@angular/router';
 import {
-  HttpTestingController,
   HttpClientTestingModule
 } from '@angular/common/http/testing';
 

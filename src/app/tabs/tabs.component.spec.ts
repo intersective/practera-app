@@ -14,7 +14,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { TabsComponent } from './tabs.component';
 import { ModalController } from '@ionic/angular';
 import { MockRouter } from '@testing/mocked.service';
-import { Apollo } from 'apollo-angular';
+import { TestUtils } from '@testing/utils';
 
 describe('TabsComponent', () => {
   let component: TabsComponent;
@@ -38,8 +38,10 @@ describe('TabsComponent', () => {
       declarations: [ TabsComponent ],
       schemas: [ CUSTOM_ELEMENTS_SCHEMA ],
       providers: [
-        Apollo,
-        UtilsService,
+        {
+          provide: UtilsService,
+          useClass: TestUtils,
+        },
         {
           provide: ModalController,
           useValue: {

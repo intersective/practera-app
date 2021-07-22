@@ -1,7 +1,7 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed, tick, fakeAsync } from '@angular/core/testing';
 import { ReviewsComponent } from './reviews.component';
-import { RouterModule, Router, ActivatedRoute } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { MockRouter } from '@testing/mocked.service';
 import { ActivatedRouteStub } from '@testing/activated-route-stub';
 import { UtilsService } from '@app/services/utils.service';

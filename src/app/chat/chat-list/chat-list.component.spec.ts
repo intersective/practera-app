@@ -1,7 +1,6 @@
 import { CUSTOM_ELEMENTS_SCHEMA, EventEmitter } from '@angular/core';
 import { async, ComponentFixture, TestBed, tick, fakeAsync } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
-import { Apollo } from 'apollo-angular';
 import { ChatListComponent } from './chat-list.component';
 import { ChatService } from '../chat.service';
 import { of } from 'rxjs';
@@ -32,11 +31,11 @@ describe('ChatListComponent', () => {
       declarations: [ChatListComponent],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
       providers: [
+        NewRelicService,
         {
           provide: UtilsService,
           useClass: TestUtils,
         },
-        NewRelicService,
         {
           provide: ChatService,
           useValue: jasmine.createSpyObj('ChatService', ['getChatList', 'getPusherChannels'])
