@@ -14,6 +14,7 @@ import { AuthService } from '../auth/auth.service';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
 import { MockRouter } from '@testing/mocked.service';
 import { TestUtils } from '@testing/utils';
+import { NotificationService } from '@app/shared/notification/notification.service';
 
 describe('SettingsComponent', () => {
   let component: SettingsComponent;
@@ -72,6 +73,10 @@ describe('SettingsComponent', () => {
           provide: Router,
           useClass: MockRouter
         },
+        {
+          provide: NotificationService,
+          useValue: jasmine.createSpyObj('NotificationService', ['alert'])
+        }
       ],
     })
     .compileComponents();

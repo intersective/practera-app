@@ -60,7 +60,7 @@ export class HomeService {
     public sharedService: SharedService
   ) {}
 
-  getTodoItems() {
+  getTodoItems(): Observable<any> {
     return this.request.get(api.get.todoItem, {
         params: {
           project_id: this.storage.getUser().projectId

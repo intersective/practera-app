@@ -77,6 +77,8 @@ export class ChatListComponent {
     */
   private _loadChatData(): void {
     this.chatService.getChatList().subscribe(chats => {
+console.log('asdasdasd::chats', chats);
+
       this.chatList = chats;
       this.loadingChatList = false;
       this.chatListReady.emit(this.chatList);

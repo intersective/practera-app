@@ -156,10 +156,11 @@ describe('StorageService', function() {
     it('should be false if null or none cached', () => {
       storage.getItem = jasmine.createSpy('getItem').and.returnValue(null);
       expect(service.stacks).toEqual([]);
+      expect(service.stacks).not.toEqual(null);
     });
     it('should be true if true cached under stacks', () => {
-      storage.getItem = jasmine.createSpy('getItem').and.returnValue(true);
-      expect(service.stacks.length).toBeGreaterThan(0);
+      storage.getItem = jasmine.createSpy('getItem').and.returnValue([true]);
+      expect(service.stacks).toBeGreaterThan(0);
     });
   });
 

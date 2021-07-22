@@ -1,7 +1,7 @@
 import * as moment from 'moment';
 import { UtilsService } from '@services/utils.service';
 import * as _ from 'lodash';
-import { of } from 'rxjs';
+import { of, Subject } from 'rxjs';
 
 export class SpyObject {
   constructor(type?: any) {
@@ -42,6 +42,7 @@ export class TestUtils extends SpyObject {
   clearCache;
   each;
   find;
+  indexOf;
   getEvent;
   broadcastEvent;
   redirectToUrl;
@@ -54,6 +55,8 @@ export class TestUtils extends SpyObject {
   dateFormatter;
   dueDateFormatter;
 
+  protected _eventsSubject = new Subject<{ key: string, value: any }>();
+
   constructor() {
     super(UtilsService);
     this.lodash = _;
@@ -62,6 +65,9 @@ export class TestUtils extends SpyObject {
     this.isMobile = this.spy('isMobile');
     this.each = this.spy('each').and.callFake(UtilsService.prototype.each);
     this.find = this.spy('find');
+    this.indexOf = this.spy('indexOf').and.callFake(UtilsService.prototype.indexOf);
+    this.broadcastEvent = this.spy('broadcastEvent').and.callFake(UtilsService.prototype.broadcastEvent);
+    this.getEvent = this.spy('getEvent').and.callFake(UtilsService.prototype.getEvent);
     this.broadcastEvent = this.spy('broadcastEvent');
     this.redirectToUrl = this.spy('redirectToUrl');
     this.timeComparer = this.spy('timeComparer').and.callFake(UtilsService.prototype.timeComparer);
@@ -72,7 +78,6 @@ export class TestUtils extends SpyObject {
     this.dateFormatter = this.spy('dateFormatter').and.callFake(UtilsService.prototype.dateFormatter);
     this.dueDateFormatter = this.spy('dueDateFormatter').and.callFake(UtilsService.prototype.dueDateFormatter);
     this.addOrRemove = this.spy('addOrRemove').and.callFake(UtilsService.prototype.addOrRemove);
-    this.getEvent = this.spy('getEvent').and.returnValue(of(true));
     this.clearCache = this.spy('clearCache').and.returnValue(true);
   }
 
