@@ -1,32 +1,16 @@
 import { isDevMode, enableProdMode } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 import {
-  inject,
   fakeAsync,
   tick,
   TestBed,
-  async,
 } from '@angular/core/testing';
 
-import {
-  MockBackend,
-} from '@angular/http/testing';
-
-import {
-  HttpClient,
-  HttpRequest,
-  HttpHeaders
-} from '@angular/common/http';
 
 import {
   HttpTestingController,
   HttpClientTestingModule
 } from '@angular/common/http/testing';
-
-import {
-  Http,
-  ResponseOptions
-} from '@angular/http';
 
 import { RequestService, RequestConfig, DevModeService, QueryEncoder } from './request.service';
 import { Router } from '@angular/router';
@@ -94,7 +78,15 @@ describe('RequestService', () => {
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule],
       providers: [
-        ApolloService,
+        {
+          provide: ApolloService,
+          useValue: jasmine.createSpyObj('ApolloService', [
+            'graphQLQuery',
+            'graphQLMutate',
+            'chatGraphQLQuery',
+            'chatGraphQLMutate',
+          ]),
+        },
         RequestService,
         DevModeService,
         {

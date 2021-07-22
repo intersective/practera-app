@@ -97,7 +97,6 @@ describe('SwitcherService', () => {
   describe('when testing switchProgramAndNavigate()', () => {
     beforeEach(() => {
       spyOn(pusherSpy, 'initialise');
-      spyOn(utils, 'clearCache');
       // by default test normal flow (non-direct link)
       storageSpy.get = jasmine.createSpy('get').and.returnValue(false);
     });
