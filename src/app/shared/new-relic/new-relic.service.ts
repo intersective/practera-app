@@ -35,28 +35,28 @@ export class NewRelicService {
 
   setPageViewName(name) {
     if (!environment.newrelic) {
-      return;
+      return null;
     }
     return newrelic.setPageViewName(name);
   }
 
   addPageAction(name, customAttr?) {
     if (!environment.newrelic) {
-      return;
+      return null;
     }
     return newrelic.addPageAction(name, customAttr);
   }
 
   setCustomAttribute(name, value) {
     if (!environment.newrelic) {
-      return;
+      return null;
     }
     return newrelic.setCustomAttribute(name, value);
   }
 
   noticeError(error, customAttr?) {
     if (!environment.newrelic) {
-      return;
+      return null;
     }
     const { userHash, enrolment } = this.storage.getUser();
     if (userHash) {
@@ -70,7 +70,7 @@ export class NewRelicService {
 
   createTracer(name, callback?) {
     if (!environment.newrelic) {
-      return;
+      return null;
     }
     const newInteraction = newrelic.interaction();
     return newInteraction.createTracer(name, callback);
@@ -78,21 +78,21 @@ export class NewRelicService {
 
   getContext() {
     if (!environment.newrelic) {
-      return;
+      return null;
     }
     return this.newrelic.getContext().save();
   }
 
   actionText(name) {
     if (!environment.newrelic) {
-      return;
+      return null;
     }
     return this.newrelic.actionText(name).save();
   }
 
   setAttribute(name, value) {
     if (!environment.newrelic) {
-      return;
+      return null;
     }
     return this.newrelic.setAttribute(name, value).save();
   }

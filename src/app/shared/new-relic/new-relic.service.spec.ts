@@ -50,6 +50,17 @@ describe('NewRelicService', () => {
     expect(service.setAttribute).toBeTruthy();
   });
 
+  it('should not trigger newrelic if set to false', () => {
+    environment.newrelic = false;
+    expect(service.setPageViewName('')).toBeNull();
+    expect(service.addPageAction('')).toBeNull();
+    expect(service.setCustomAttribute('', '')).toBeNull();
+    expect(service.noticeError('')).toBeNull();
+    expect(service.getContext()).toBeNull();
+    expect(service.actionText('')).toBeNull();
+    expect(service.setAttribute('', '')).toBeNull();
+  });
+
   describe('noticeError()', () => {
     const TEST1 = {
       userHash: 'testuserhash',
