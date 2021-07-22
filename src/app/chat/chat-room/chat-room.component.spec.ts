@@ -497,7 +497,7 @@ describe('ChatRoomComponent', () => {
 
   describe('when testing openChatInfo()', () => {
     it(`should call modal controller if app in mobile view`, () => {
-      spyOn(utils, 'isMobile').and.returnValue(true);
+      utils.isMobile = jasmine.createSpy('utils.isMobile').and.returnValue(true);
       component.openChatInfo();
       expect(modalCtrlSpy.create.calls.count()).toBe(2);
     });

@@ -84,7 +84,7 @@ describe('ReviewListComponent', () => {
     const assessmentId = 2;
     const submissionId = 3;
 
-    spyOn(utils, 'isMobile').and.returnValue(false);
+    utils.isMobile = jasmine.createSpy('utils.isMobile').and.returnValue(false);
     spyOn(component.navigate, 'emit');
     component.gotoReview(contextId, assessmentId, submissionId);
 
@@ -97,7 +97,7 @@ describe('ReviewListComponent', () => {
   });
 
   it('should navigate to the correct page gotoReview() (mobile)', () => {
-    spyOn(utils, 'isMobile').and.returnValue(true);
+    utils.isMobile = jasmine.createSpy('utils.isMobile').and.returnValue(true);
     component.gotoReview(1, 2, 3);
     expect(routerSpy.navigate).toHaveBeenCalledWith(['assessment', 'review', 1, 2, 3, {from: 'reviews'}]);
   });

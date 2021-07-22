@@ -3,7 +3,6 @@ import { UtilsService } from './utils.service';
 import { Observable, Subject, BehaviorSubject } from 'rxjs';
 import * as _ from 'lodash';
 import * as moment from 'moment';
-import { Apollo } from 'apollo-angular';
 import { TestUtils } from '@testing/utils';
 
 describe('UtilsService', () => {
