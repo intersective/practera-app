@@ -33,3 +33,36 @@ ion-skeleton-text {
   border-bottom-left-radius: 0 !important;
   border-bottom-right-radius: 0 !important;
 }
+
+.status-slot {
+  display: flex;
+  margin-inline-start: 16px;
+  align-items: center !important;
+  ion-icon {
+    width: 16px !important;
+    height: 16px !important;
+  }
+  p {
+    margin: 0;
+    margin-left: 3px;
+  }
+  &.not-live {
+    ion-icon, p {
+      color: var(--practera-exp-not-live);
+    }
+  }
+  &.live {
+    ion-icon, p {
+      color: var(--practera-exp-live);
+    }
+    ion-icon {
+      width: 10px !important;
+      height: 10px !important;
+    }
+  }
+  &.done {
+    ion-icon, p {
+      color: var(--practera-exp-done);
+    }
+  }
+}

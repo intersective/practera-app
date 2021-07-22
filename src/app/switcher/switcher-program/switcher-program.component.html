@@ -13,13 +13,21 @@
             <img [src]="program.project.lead_image ? program.project.lead_image : '../../../assets/default-experience-image.svg'" alt="{{ program.program.name }}"/>
           </div>
           <ion-card-content>
-            <clickable-item color="light" [lines]="'none'" [backgroundColor]="program.program.config.theme_color" [isSwitcherCard]="true">
+            <clickable-item color="light" [lines]="'none'" (keyup.enter)="switch(i)" [backgroundColor]="program.program.config.theme_color" [isSwitcherCard]="true">
               <ion-label class="subtitle-1">
                 {{ program.program.name }}
-                <!-- <ion-progress-bar *ngIf="program.progress !== undefined" [value]="program.progress"></ion-progress-bar> -->
               </ion-label>
-              <!-- <ion-badge *ngIf="program.todoItems !== undefined" slot="end">{{ program.todoItems }}</ion-badge> -->
-              <ion-icon name="chevron-forward" slot="end"></ion-icon>
+              <!-- @TODO need to change element depend on experience status after it added to api response. -->
+              <div slot="end" class="status-slot live">
+                <!-- <ion-icon name="time-outline"></ion-icon>
+                <p class="subtitle-2">NOT LIVE</p> -->
+
+                <ion-icon name="ellipse"></ion-icon>
+                <p class="subtitle-2">LIVE</p>
+
+                <!-- <ion-icon name="checkmark-outline"></ion-icon>
+                <p class="subtitle-2">DONE</p> -->
+              </div>
             </clickable-item>
           </ion-card-content>
         </ion-card>
@@ -32,7 +40,7 @@
       <ion-col size="12" size-sm="12" size-md="6" size-lg="4" size-xl="3" *ngFor="let program of [1,1,1,1]">
         <ion-card class="practera-card experience-card"  role="link">
           <div class="image-container">
-            <ion-skeleton-text animated class="skeleton-img"></ion-skeleton-text>
+            <img [src]="'../../../assets/skeleton-experience-image.svg'" alt="skeleton Image"/>
           </div>
           <ion-card-content>
             <ion-item [lines]="'none'" >
