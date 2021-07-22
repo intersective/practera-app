@@ -182,6 +182,7 @@ jobs:
           CUSTOM_S3_BUCKET_CHINA: practera-seoul-1
           CUSTOM_JS_ENVIRONEMENT: prod #TODO CHECK
           CUSTOM_PIWIK_ENVIRONEMENT: 11
+          CUSTOM_NEWRELIC: false
 
 
 ###############################################################
