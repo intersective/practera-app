@@ -12,6 +12,7 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
 import { MockRouter } from '@testing/mocked.service';
+import { NotificationService } from '@app/shared/notification/notification.service';
 
 export class MockElementRef extends ElementRef {
   constructor() { super(null); }
@@ -95,6 +96,10 @@ describe('ProjectComponent', () => {
         {
           provide: Document,
           useClass: MockDocument
+        },
+        {
+          provide: NotificationService,
+          useValue: jasmine.createSpyObj('NotificationService', ['presentToast'])
         }
       ],
     })

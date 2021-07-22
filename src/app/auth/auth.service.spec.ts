@@ -355,8 +355,13 @@ describe('AuthService', () => {
       };
       requestSpy.get.and.returnValue(of(sample_result));
       service.getStackConfig(sample_uuid).subscribe(result => {
-        expect(result).toEqual(sample_result.data);
-        expect(requestSpy.get).toHaveBeenCalledWith('stack', {params: {uuid: sample_uuid}}, true);
+
+        expect(result).toEqual(sample_result);
+        expect(requestSpy.get).toHaveBeenCalledWith('stack', {
+          params: {
+            uuid: sample_uuid
+          }
+        }, true);
       });
     });
 

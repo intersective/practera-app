@@ -29,7 +29,10 @@ describe('ReviewListComponent', () => {
       schemas: [ CUSTOM_ELEMENTS_SCHEMA ],
       providers: [
         NewRelicService,
-        NotificationService,
+        {
+          provide: NotificationService,
+          useValue: jasmine.createSpyObj('NotificationService', ['alert']),
+        },
         {
           provide: UtilsService,
           useClass: TestUtils,
@@ -63,7 +66,7 @@ describe('ReviewListComponent', () => {
         isDone: i > 3,
         name: 'Assessment' + i,
         submitterName: 'Submitter' + i,
-        date: utils.timeFormatter('2019-02-01'),
+        date: UtilsService.prototype.timeFormatter('2019-02-01'),
         teamName: '',
         contextId: i + 3
       };

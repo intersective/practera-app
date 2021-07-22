@@ -45,7 +45,6 @@ describe('GoMobileService', () => {
         sendsms: true,
       };
 
-      spyOn(sharedService, 'updateProfile');
       service.submit(profile);
       expect(sharedService.updateProfile).toHaveBeenCalledWith(jasmine.objectContaining(profile));
     });

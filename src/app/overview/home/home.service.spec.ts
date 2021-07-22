@@ -47,6 +47,10 @@ describe('HomeService', () => {
           provide: EventListService,
           useValue: jasmine.createSpyObj('EventListService', ['normaliseEvents'])
         },
+        {
+          provide: HomeService,
+          useValue: jasmine.createSpyObj('HomeService', ['getReminderEvent']),
+        },
       ]
     });
     service = TestBed.inject(HomeService);

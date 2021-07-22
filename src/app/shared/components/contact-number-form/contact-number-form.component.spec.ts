@@ -39,7 +39,12 @@ describe('ContactNumberFormComponent', () => {
           provide: UtilsService,
           useClass: TestUtils,
         },
-        SettingService,
+        {
+          provide: SettingService,
+          useValue: jasmine.createSpyObj('SettingService', {
+            updateProfile: of(true)
+          }),
+        },
         {
           provide: NotificationService,
           useValue: jasmine.createSpyObj('NotificationService', ['alert', 'presentToast', 'popUp'])

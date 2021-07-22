@@ -49,6 +49,7 @@ export class TestUtils extends SpyObject {
   iso8601Formatter;
   utcToLocal;
   randomNumber;
+  addOrRemove;
   timeFormatter;
   dateFormatter;
   dueDateFormatter;
@@ -70,6 +71,7 @@ export class TestUtils extends SpyObject {
     this.timeFormatter = this.spy('timeFormatter').and.callFake(UtilsService.prototype.timeFormatter);
     this.dateFormatter = this.spy('dateFormatter').and.callFake(UtilsService.prototype.dateFormatter);
     this.dueDateFormatter = this.spy('dueDateFormatter').and.callFake(UtilsService.prototype.dueDateFormatter);
+    this.addOrRemove = this.spy('addOrRemove').and.callFake(UtilsService.prototype.addOrRemove);
     this.getEvent = this.spy('getEvent').and.returnValue(of(true));
     this.clearCache = this.spy('clearCache').and.returnValue(true);
   }
