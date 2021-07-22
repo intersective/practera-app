@@ -7,6 +7,7 @@ import { LoadingController } from '@ionic/angular';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
 import { NotificationService } from '@shared/notification/notification.service';
 import { BrowserStorageService, Stack } from '@services/storage.service';
+import { UtilsService } from '@app/services/utils.service';
 
 @Injectable({
   providedIn: 'root'
@@ -31,6 +32,7 @@ export class SwitcherProgramComponent extends RouterEnter implements AfterConten
     private notificationService: NotificationService,
     private activatedRoute: ActivatedRoute,
     readonly storage: BrowserStorageService,
+    readonly utils: UtilsService,
   ) {
     super(router);
     this.activatedRoute.data.subscribe(data => {
@@ -79,7 +81,7 @@ export class SwitcherProgramComponent extends RouterEnter implements AfterConten
     await loading.present();
 
     try {
-      if (stackIndex) {
+      if (!this.utils.isEmpty(stackIndex)) {
         this.storage.stackConfig = this.stacks[stackIndex];
       }
 

@@ -14,6 +14,8 @@ import { UtilsService } from '@services/utils.service';
 import { SharedModule } from '@shared/shared.module';
 import { LoadingController } from '@ionic/angular';
 import { TestUtils } from '@testing/utils';
+import { BrowserStorageService } from '@app/services/storage.service';
+import { MockStacks } from '@testing/fixtures/stacks';
 
 describe('SwitcherProgramComponent', () => {
   let component: SwitcherProgramComponent;
@@ -23,6 +25,7 @@ describe('SwitcherProgramComponent', () => {
   let routerSpy: jasmine.SpyObj<Router>;
   let loadingSpy: jasmine.SpyObj<LoadingController>;
   let notifySpy: jasmine.SpyObj<NotificationService>;
+  let storageSpy: jasmine.SpyObj<BrowserStorageService>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
@@ -57,7 +60,14 @@ describe('SwitcherProgramComponent', () => {
           useValue: {
             data: of(true)
           }
-        }
+        },
+        BrowserStorageService
+        /* {
+          provide: BrowserStorageService,
+          useValue: jasmine.createSpyObj('BrowserStorageService', [
+            'stackConfig'
+          ]),
+        } */
       ]
     }).compileComponents();
 
@@ -68,6 +78,7 @@ describe('SwitcherProgramComponent', () => {
     routerSpy = TestBed.inject(Router) as jasmine.SpyObj<Router>;
     loadingSpy = TestBed.inject(LoadingController) as jasmine.SpyObj<LoadingController>;
     notifySpy = TestBed.inject(NotificationService) as jasmine.SpyObj<NotificationService>;
+    storageSpy = TestBed.inject(BrowserStorageService) as jasmine.SpyObj<BrowserStorageService>;
   }));
 
   beforeEach(() => {
@@ -118,6 +129,20 @@ describe('SwitcherProgramComponent', () => {
       expect(newrelicSpy.actionText).toHaveBeenCalled();
       expect(switcherSpy.switchProgramAndNavigate).toHaveBeenCalledWith(ProgramFixture[programIndex]);
       expect(routerSpy.navigate).toHaveBeenCalledWith(testRoute);
+    }));
+
+    it('should store selected stack & program based on programmatic index', fakeAsync(() => {
+      switcherSpy.switchProgramAndNavigate = jasmine.createSpy('switchProgramAndNavigate').and.returnValue(new Promise(res => res(testRoute)));
+      component.stacks = MockStacks;
+      const stackIndex = 0;
+      component.switch(programIndex, stackIndex);
+      flushMicrotasks();
+
+      expect(newrelicSpy.createTracer).toHaveBeenCalled();
+      expect(newrelicSpy.actionText).toHaveBeenCalled();
+      expect(switcherSpy.switchProgramAndNavigate).toHaveBeenCalledWith(ProgramFixture[programIndex]);
+      expect(routerSpy.navigate).toHaveBeenCalledWith(testRoute);
+      expect(storageSpy.stackConfig).toEqual(MockStacks[stackIndex]);
     }));
 
     it('should popup error at failed program switching', fakeAsync(() => {

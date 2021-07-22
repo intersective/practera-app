@@ -14,6 +14,61 @@ import { FastFeedbackServiceMock } from '@testing/mocked.service';
 import { FastFeedbackService } from '@app/fast-feedback/fast-feedback.service';
 import { TestUtils } from '@testing/utils';
 
+const mockChats = {
+  data: {
+    channels: [
+      {
+        uuid: '35326928',
+        name: 'Team 1',
+        avatar: 'https://sandbox.practera.com/img/team-white.png',
+        pusherChannel: 'sdb746-93r7dc-5f44eb4f',
+        isAnnouncement: false,
+        isDirectMessag: false,
+        readonly: false,
+        roles: [
+          'participant',
+          'coordinator',
+          'admin'
+        ],
+        unreadMessageCount: 0,
+        lastMessage: null,
+        lastMessageCreated: null
+      },
+      {
+        uuid: 'ced963c1',
+        name: 'Team 1 + Mentor',
+        avatar: 'https://sandbox.practera.com/img/team-white.png',
+        pusherChannel: 'kb5gt-9nfbj-5f45eb4g',
+        isAnnouncement: false,
+        isDirectMessage: false,
+        readonly: false,
+        roles: [
+          'participant',
+          'mentor',
+          'coordinator',
+          'admin'
+        ],
+        unreadMessageCount: 0,
+        lastMessage: null,
+        lastMessageCreated: null
+      }
+    ]
+  }
+};
+
+const mockPusherChannels = {
+  data: {
+    channels: [
+      {
+        pusherChannel: 'sdb746-93r7dc-5f44eb4f'
+      },
+      {
+        pusherChannel: 'kb5gt-9nfbj-5f45eb4g'
+      }
+    ]
+  }
+};
+
 describe('ChatListComponent', () => {
   let component: ChatListComponent;
   let fixture: ComponentFixture<ChatListComponent>;
@@ -87,61 +142,6 @@ describe('ChatListComponent', () => {
     pusherSpy = TestBed.inject(PusherService) as jasmine.SpyObj<PusherService>;
     fastFeedbackSpy = TestBed.inject(FastFeedbackService) as jasmine.SpyObj<FastFeedbackService>;
   });
-
-  const mockChats = {
-    data: {
-      channels: [
-        {
-          uuid: '35326928',
-          name: 'Team 1',
-          avatar: 'https://sandbox.practera.com/img/team-white.png',
-          pusherChannel: 'sdb746-93r7dc-5f44eb4f',
-          isAnnouncement: false,
-          isDirectMessag: false,
-          readonly: false,
-          roles: [
-            'participant',
-            'coordinator',
-            'admin'
-          ],
-          unreadMessageCount: 0,
-          lastMessage: null,
-          lastMessageCreated: null
-        },
-        {
-          uuid: 'ced963c1',
-          name: 'Team 1 + Mentor',
-          avatar: 'https://sandbox.practera.com/img/team-white.png',
-          pusherChannel: 'kb5gt-9nfbj-5f45eb4g',
-          isAnnouncement: false,
-          isDirectMessage: false,
-          readonly: false,
-          roles: [
-            'participant',
-            'mentor',
-            'coordinator',
-            'admin'
-          ],
-          unreadMessageCount: 0,
-          lastMessage: null,
-          lastMessageCreated: null
-        }
-      ]
-    }
-  };
-
-  const mockPusherChannels = {
-    data: {
-      channels: [
-        {
-          pusherChannel: 'sdb746-93r7dc-5f44eb4f'
-        },
-        {
-          pusherChannel: 'kb5gt-9nfbj-5f45eb4g'
-        }
-      ]
-    }
-  };
 
   it('should create', () => {
     expect(component).toBeTruthy();

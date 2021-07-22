@@ -399,7 +399,7 @@ export class AuthService {
       params: {
         type: 'app'
       }
-    }, true).pipe(
+    },                      true).pipe(
       tap(res => {
         if (res) {
           this.storage.stacks = res;
