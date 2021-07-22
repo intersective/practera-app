@@ -168,7 +168,7 @@ describe('ContactNumberFormComponent', () => {
 
     it('should update contact number (US)', () => {
       let submitBtn, cancelBtn;
-      spyOn(settingSpy, 'updateProfile').and.returnValue(of({
+      settingSpy.updateProfile = jasmine.createSpy('settingSpy.updateProfile').and.returnValue(of({
         success: true
       }));
       notificationSpy.alert = jasmine.createSpy('alert').and.callFake(res => {
@@ -187,7 +187,7 @@ describe('ContactNumberFormComponent', () => {
 
     it('should update contact number (AUS)', () => {
       let submitBtn, cancelBtn;
-      spyOn(settingSpy, 'updateProfile').and.returnValue(of({
+      settingSpy.updateProfile = jasmine.createSpy('settingSpy.updateProfile').and.returnValue(of({
         success: true
       }));
       notificationSpy.alert = jasmine.createSpy('alert').and.callFake(res => {
@@ -206,7 +206,7 @@ describe('ContactNumberFormComponent', () => {
 
     it('should fail update contact number gracefully (notify user)', () => {
       let submitBtn, cancelBtn;
-      spyOn(settingSpy, 'updateProfile').and.returnValue(of({
+      settingSpy.updateProfile = jasmine.createSpy('settingSpy.updateProfile').and.returnValue(of({
         success: false
       }));
       notificationSpy.alert = jasmine.createSpy('alert').and.callFake(res => {

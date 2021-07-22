@@ -135,10 +135,9 @@ describe('SettingsComponent', () => {
   });
 
   it('should navigate to outside url', () => {
-    const redirectToUrlSpy = spyOn(utils, 'redirectToUrl');
     component.returnLtiUrl = 'https://test.practera.com';
     component.switchProgram('Enter');
-    expect(redirectToUrlSpy).toHaveBeenCalled();
+    expect(utils.redirectToUrl).toHaveBeenCalled();
   });
 
   it('should allow access to T&C file', () => {
