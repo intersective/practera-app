@@ -70,7 +70,7 @@ export class NewRelicService {
 
   createTracer(name, callback?) {
     if (!environment.newrelic) {
-      return () => {};
+      return () => ({ });
     }
     const newInteraction = newrelic.interaction();
     return newInteraction.createTracer(name, callback);
