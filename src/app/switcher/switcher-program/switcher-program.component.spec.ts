@@ -54,9 +54,9 @@ describe('SwitcherProgramComponent', () => {
         },
         {
           provide: ActivatedRoute,
-          useValue: jasmine.createSpyObj('ActivatedRoute', {
+          useValue: {
             data: of(true)
-          })
+          }
         }
       ]
     }).compileComponents();
@@ -126,7 +126,6 @@ describe('SwitcherProgramComponent', () => {
       };
       switcherSpy.switchProgramAndNavigate = jasmine.createSpy('switchProgramAndNavigate').and.returnValue(new Promise((res, reject) => reject(error)
       ));
-      spyOn(notifySpy, 'alert');
 
       component.switch(programIndex);
       flushMicrotasks();
@@ -148,7 +147,6 @@ describe('SwitcherProgramComponent', () => {
       };
       switcherSpy.switchProgramAndNavigate = jasmine.createSpy('switchProgramAndNavigate').and.returnValue(new Promise((res, reject) => reject(error)
       ));
-      spyOn(notifySpy, 'alert');
 
       component.switch(programIndex);
       flushMicrotasks();

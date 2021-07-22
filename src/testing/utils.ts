@@ -46,6 +46,7 @@ export class TestUtils extends SpyObject {
   getEvent;
   broadcastEvent;
   redirectToUrl;
+  urlFormatter;
   timeComparer;
   iso8601Formatter;
   utcToLocal;
@@ -69,7 +70,8 @@ export class TestUtils extends SpyObject {
     this.broadcastEvent = this.spy('broadcastEvent').and.callFake(UtilsService.prototype.broadcastEvent);
     this.getEvent = this.spy('getEvent').and.callFake(UtilsService.prototype.getEvent);
     this.broadcastEvent = this.spy('broadcastEvent');
-    this.redirectToUrl = this.spy('redirectToUrl').and.callFake(UtilsService.prototype.urlFormatter);
+    this.redirectToUrl = this.spy('redirectToUrl')/* .and.callFake(UtilsService.prototype.redirectToUrl) */;
+    this.urlFormatter = this.spy('urlFormatter').and.callFake(UtilsService.prototype.urlFormatter);
     this.timeComparer = this.spy('timeComparer').and.callFake(UtilsService.prototype.timeComparer);
     this.iso8601Formatter = this.spy('iso8601Formatter').and.callFake(UtilsService.prototype.iso8601Formatter);
     this.utcToLocal = this.spy('utcToLocal').and.callFake(UtilsService.prototype.utcToLocal);

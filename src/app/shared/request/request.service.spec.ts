@@ -64,6 +64,7 @@ describe('RequestConfig', () => {
 
 describe('RequestService', () => {
   const PREFIX_URL = 'test.com';
+  const SCHEME_DOMAIN = 'https://test.com';
   const LOGINAPI = 'login.com';
   const APPKEY = 'TESTAPPKEY';
   const routerSpy = TestUtils.createRouterSpy();
@@ -146,7 +147,7 @@ describe('RequestService', () => {
   });
 
   describe('get()', () => {
-    const testURL = 'https://www.test.com';
+    const testURL = 'https://test.com';
 
     it('should perform a GET request based on provided URL', fakeAsync(() => {
       let res = { body: true };
@@ -157,7 +158,7 @@ describe('RequestService', () => {
         con.mockRespond(new Response(response));
       });
 */
-      service.get(testURL, {params: {justFor: 'test'}}).subscribe(_res => {
+      service.get('', {params: {justFor: 'test'}}).subscribe(_res => {
         res = _res;
       });
       const req = mockBackend.expectOne({ method: 'GET' });
@@ -289,7 +290,7 @@ describe('RequestService', () => {
   });
 
   describe('put()', () => {
-    let testURL = 'https://www.put-test.com';
+    let testURL = 'put-test';
     const sampleData = {
       sample: 'data'
     };
@@ -306,7 +307,7 @@ describe('RequestService', () => {
       tick();
 
       const { body } = res;
-      expect(req.request.url).toBe(testURL);
+      expect(req.request.url).toBe(`${SCHEME_DOMAIN}/${testURL}`);
       expect(body).toBe(true);
 
       mockBackend.verify();
@@ -326,7 +327,7 @@ describe('RequestService', () => {
       tick();
 
       const { body } = res;
-      expect(req.request.url).toBe(testURL);
+      expect(req.request.url).toBe(`${SCHEME_DOMAIN}/${testURL}`);
       expect(body).toBe(true);
 
       mockBackend.verify();
@@ -355,12 +356,12 @@ describe('RequestService', () => {
   });
 
   describe('delete()', () => {
-    const testURL = 'https://www.delete-test.com';
+    const testURL = 'delete-test';
 
     it('should perform a GET request based on provided URL', fakeAsync(() => {
       let res = { body: true };
 
-      service.delete(testURL).subscribe(_res => {
+      service.delete(`${testURL}`).subscribe(_res => {
         res = _res;
       });
       const req = mockBackend.expectOne({ method: 'DELETE' });
@@ -369,7 +370,7 @@ describe('RequestService', () => {
       tick();
 
       const { body } = res;
-      expect(req.request.url).toBe(testURL);
+      expect(req.request.url).toBe(`${SCHEME_DOMAIN}/${testURL}`);
       expect(body).toBe(true);
 
       mockBackend.verify();
@@ -391,7 +392,7 @@ describe('RequestService', () => {
           errRes = _err;
         }
       );
-      const req = mockBackend.expectOne({ url: testURL, method: 'DELETE'}).flush(ERR_MESSAGE, err);
+      const req = mockBackend.expectOne({ url: `${SCHEME_DOMAIN}/${testURL}`, method: 'DELETE'}).flush(ERR_MESSAGE, err);
 
       expect(res).toBeUndefined();
       expect(console.error).not.toHaveBeenCalled();
@@ -433,7 +434,7 @@ describe('RequestService', () => {
     let errRes: any;
     let request: any;
     beforeEach(fakeAsync(() => {
-      request = service.get('https://test.com').subscribe(
+      request = service.get().subscribe(
         _res => _res,
         _err => {
           errRes = _err;

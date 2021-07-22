@@ -1,7 +1,7 @@
 import { By } from '@angular/platform-browser';
 import { IonicModule } from '@ionic/angular';
 import { TestBed, ComponentFixture, async } from '@angular/core/testing';
-import { ElementRef, Component, DebugElement } from '@angular/core';
+import { ElementRef, Component, DebugElement, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { UtilsService } from '@services/utils.service';
 import { FloatDirective } from './float.directive';
 import { TestUtils } from '@testing/utils';
@@ -108,6 +108,7 @@ describe('FloatDirective', () => {
       TestBed.configureTestingModule({
         imports: [ IonicModule ],
         declarations: [ TestScrollComponent, FloatDirective ],
+        schemas: [ CUSTOM_ELEMENTS_SCHEMA ],
         providers: [
           {
             provide: UtilsService,
@@ -118,6 +119,7 @@ describe('FloatDirective', () => {
       });
 
       fixture = TestBed.createComponent(TestScrollComponent);
+      fixture.detectChanges(); // initial binding
       component = fixture.componentInstance;
       debugElement = fixture.debugElement.query(By.css('ion-content'));
     });
