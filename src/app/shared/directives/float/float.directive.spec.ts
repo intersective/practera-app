@@ -163,7 +163,10 @@ describe('FloatDirective', () => {
         imports: [ IonicModule ],
         declarations: [ FloatDirective, TestAppFloatIsActivityCardComponent ],
         providers: [
-          UtilsService,
+          {
+            provide: UtilsService,
+            useClass: TestUtils
+          },
         ]
       });
 
