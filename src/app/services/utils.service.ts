@@ -1,10 +1,10 @@
 import { Injectable, Inject } from '@angular/core';
-import * as _ from 'lodash';
 import { DOCUMENT } from '@angular/common';
 import { Observable, Subject } from 'rxjs';
 import { map, filter } from 'rxjs/operators';
 import { Platform } from '@ionic/angular';
-import { Apollo } from 'apollo-angular';
+import { ApolloService } from '@shared/apollo/apollo.service';
+import * as _ from 'lodash';
 import * as moment from 'moment';
 
 // @TODO: enhance Window reference later, we shouldn't refer directly to browser's window object like this
@@ -27,7 +27,7 @@ export class UtilsService {
   constructor(
     @Inject(DOCUMENT) private document: Document,
     private platform: Platform,
-    private apollo: Apollo
+    private apolloService: ApolloService
   ) {
     if (_) {
       this.lodash = _;
@@ -173,7 +173,7 @@ export class UtilsService {
 
   // need to clear all Subject for cache
   clearCache() {
-    this.apollo.getClient().clearStore();
+    this.apolloService.getClient().clearStore();
   //   // initialise the Subject for caches
   //   this.projectSubject.next(null);
   //   this.each(this.activitySubjects, (subject, key) => {
@@ -426,5 +426,25 @@ export class UtilsService {
       queryString = window.location.hash.substring(2);
     }
     return new URLSearchParams(queryString);
+  }
+
+  /**
+   * This method check due dates of assessment or activity.
+   * - Check due date is today, tomorrow, upcoming date or overdue date.
+   * - If due date is upcoming one this will returns 'Due (date)' ex: 'Due 06-30-2019'.
+   * - If due date is overdue one this will returns 'Overdue (date)' ex: 'Overdue 01-10-2019'.
+   * - If due date is today this will return 'Due Today'.
+   * - If due date is tomorrow this will return 'Due Tomorrow'.
+   * @param dueDate - due date of assessment or activity.
+   */
+  dueDateFormatter(dueDate: string) {
+    if (!dueDate) {
+      return '';
+    }
+    const difference = this.timeComparer(dueDate);
+    if (difference < 0) {
+      return 'Overdue ' + this.utcToLocal(dueDate);
+    }
+    return 'Due ' + this.utcToLocal(dueDate);
   }
 }

@@ -12,10 +12,12 @@ describe('SlidableComponent', () => {
     TestBed.configureTestingModule({
       declarations: [ SlidableComponent ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
-      providers: [{
-        provide: UtilsService,
-        useClass: TestUtils,
-      }, ]
+      providers: [
+        {
+          provide: UtilsService,
+          useClass: TestUtils,
+        }
+      ]
     })
     .compileComponents();
   }));

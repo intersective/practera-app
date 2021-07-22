@@ -135,14 +135,14 @@ describe('ChatInfoComponent', () => {
       };
       const keyEvent = new KeyboardEvent('keydown', { key: 'Enter' });
       spyOn(component.navigate, 'emit');
-      spyOn(utils, 'isMobile').and.returnValue(false);
+      utils.isMobile = jasmine.createSpy('utils.isMobile').and.returnValue(false);
       component.close(keyEvent);
       expect(component.navigate.emit).toHaveBeenCalled();
     });
     xit('should not do anything if keybord event not enter or space', () => {
       const keyEvent = new KeyboardEvent('keydown', { key: 'A' });
       spyOn(component.navigate, 'emit');
-      spyOn(utils, 'isMobile').and.returnValue(false);
+      utils.isMobile = jasmine.createSpy('utils.isMobile').and.returnValue(false);
       component.close(keyEvent);
       expect(component.navigate.emit).not.toHaveBeenCalled();
     });

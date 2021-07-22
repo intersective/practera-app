@@ -46,12 +46,12 @@ describe('FastFeedbackComponent', () => {
       schemas: [ CUSTOM_ELEMENTS_SCHEMA ],
       providers: [
         {
-          provide: UtilsService,
-          useClass: TestUtils,
-        },
-        {
           provide: FastFeedbackSubmitterService,
           useValue: jasmine.createSpyObj('FastFeedbackSubmitterService', ['submit'])
+        },
+        {
+          provide: UtilsService,
+          useClass: TestUtils,
         },
         {
           provide: NotificationService,

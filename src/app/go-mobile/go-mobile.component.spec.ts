@@ -36,7 +36,12 @@ describe('GoMobileComponent', () => {
       ],
       schemas: [ CUSTOM_ELEMENTS_SCHEMA ],
       providers: [
-        GoMobileService,
+        {
+          provide: GoMobileService,
+          useValue: jasmine.createSpyObj('GoMobileService', {
+            'submit': of(true)
+          }),
+        },
         {
           provide: NotificationService,
           useValue: jasmine.createSpyObj(['alert', 'presentToast']),
@@ -97,7 +102,7 @@ describe('GoMobileComponent', () => {
   describe('submit()', () => {
     beforeEach(() => {
       component.countryModel = 'AUS';
-      spyOn(goMobileSpy, 'submit').and.returnValue(of(true));
+      goMobileSpy.submit = jasmine.createSpy('goMobileSpy.submit').and.returnValue(of(true));
       expect(component.sendingSMS).toBeFalsy();
     });
 

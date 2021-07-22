@@ -86,6 +86,13 @@ describe('TabsComponent', () => {
           provide: Router,
           useClass: MockRouter
         },
+        {
+          provide: SharedService,
+          useValue: jasmine.createSpyObj('SharedService', [
+            'stopPlayingVideos',
+            'markTopicStopOnNavigating',
+          ])
+        }
       ],
     })
     .compileComponents();

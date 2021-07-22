@@ -11,11 +11,11 @@ import { NotificationService } from '@shared/notification/notification.service';
 import { BrowserStorageService } from '@services/storage.service';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
 import { SharedService } from '@services/shared.service';
-import { ActivityService } from '../activity/activity.service';
 import { of, throwError } from 'rxjs';
 import { MockRouter } from '@testing/mocked.service';
 import { UtilsService } from '@app/services/utils.service';
 import { TestUtils } from '@testing/utils';
+import { ActivityService } from '@app/activity/activity.service';
 
 describe('TopicComponent', () => {
   let component: TopicComponent;
@@ -76,7 +76,11 @@ describe('TopicComponent', () => {
         {
           provide: NewRelicService,
           useValue: newRelicSpy
-        }
+        },
+        {
+          provide: ActivityService,
+          useValue: activitySpy,
+        },
       ]
     })
     .compileComponents();

@@ -6,7 +6,7 @@ import { SwitcherService, ProgramObj } from '../switcher.service';
 import { LoadingController } from '@ionic/angular';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
 import { NotificationService } from '@shared/notification/notification.service';
-import { BrowserStorageService } from '@services/storage.service';
+import { BrowserStorageService, Stack } from '@services/storage.service';
 
 @Injectable({
   providedIn: 'root'
@@ -69,7 +69,7 @@ export class SwitcherProgramComponent extends RouterEnter implements AfterConten
    * @param   {number}  stackIndex stack number of stacks
    * @return  {Promise<void>}
    */
-  async switch(programIndex: number, stackIndex: number): Promise<void> {
+  async switch(programIndex: number, stackIndex?: number): Promise<void> {
     const nrSwitchedProgramTracer = this.newRelic.createTracer('switching program');
     const loading = await this.loadingController.create({
       message: 'loading...'
@@ -79,7 +79,9 @@ export class SwitcherProgramComponent extends RouterEnter implements AfterConten
     await loading.present();
 
     try {
-      this.storage.stackConfig = this.stacks[stackIndex];
+      if (stackIndex) {
+        this.storage.stackConfig = this.stacks[stackIndex];
+      }
 
       const route = await this.switcherService.switchProgramAndNavigate(this.programs[programIndex]);
       loading.dismiss().then(() => {

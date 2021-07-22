@@ -61,7 +61,7 @@ describe('HomeService', () => {
   });
 
   describe('when testing getTodoItems()', () => {
-    it('should get correct todoItems', async() => {
+    it('should get correct todoItems', () => {
       const requestResponse = {
         success: true,
         data: [
@@ -160,9 +160,6 @@ describe('HomeService', () => {
       ];
       requestSpy.get.and.returnValue(of(requestResponse));
 
-      utils.getEvent('event-reminder').subscribe(
-        event => expect(event).toEqual({meta: requestResponse.data[4].meta})
-      );
       service.getTodoItems().subscribe(
         todoItems => expect(todoItems).toEqual(expected)
       );

@@ -38,7 +38,10 @@ describe('ChatListComponent', () => {
         },
         {
           provide: ChatService,
-          useValue: jasmine.createSpyObj('ChatService', ['getChatList', 'getPusherChannels'])
+          useValue: jasmine.createSpyObj('ChatService', {
+            'getChatList': of(mockChats.data.channels),
+            'getPusherChannels': of(true),
+          })
         },
         {
           provide: BrowserStorageService,
@@ -146,12 +149,11 @@ describe('ChatListComponent', () => {
 
   describe('when testing constructor()', () => {
     it(`should call getChatList once more if an 'chat:new-message' event triggered`, () => {
-      chatSeviceSpy.getChatList.and.returnValue(of(mockChats.data.channels));
       utils.broadcastEvent('chat:new-message', {});
       expect(chatSeviceSpy.getChatList.calls.count()).toBe(1);
     });
+
     it(`should call getChatList once more if an 'chat:info-update' event triggered`, () => {
-      chatSeviceSpy.getChatList.and.returnValue(of(mockChats.data.channels));
       utils.broadcastEvent('chat:info-update', {});
       expect(chatSeviceSpy.getChatList.calls.count()).toBe(1);
     });
@@ -171,7 +173,7 @@ describe('ChatListComponent', () => {
   describe('when testing goToChatRoom()', () => {
     it('should emit the navigate with chat channel', () => {
       spyOn(component.navigate, 'emit');
-      spyOn(utils, 'isMobile').and.returnValue(false);
+      utils.isMobile = jasmine.createSpy('utils.isMobile').and.returnValue(false);
       component.goToChatRoom(
         {
           uuid: '35326928',

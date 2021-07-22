@@ -7,7 +7,7 @@ import { SwitcherProgramComponent } from './switcher-program.component';
 import { SwitcherService } from '../switcher.service';
 import { MockSwitcherService, MockRouter, MockNewRelicService } from '@testing/mocked.service';
 import { ProgramFixture } from '@testing/fixtures/programs';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { PusherService } from '@shared/pusher/pusher.service';
 import { NotificationService } from '@shared/notification/notification.service';
 import { UtilsService } from '@services/utils.service';
@@ -31,8 +31,11 @@ describe('SwitcherProgramComponent', () => {
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
       providers: [
         PusherService,
-        NotificationService,
         LoadingController,
+        {
+          provide: NotificationService,
+          useValue: jasmine.createSpyObj('NotificationService', ['alert'])
+        },
         {
           provide: UtilsService,
           useClass: TestUtils,
@@ -48,6 +51,12 @@ describe('SwitcherProgramComponent', () => {
         {
           provide: SwitcherService,
           useClass: MockSwitcherService,
+        },
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            data: of(true)
+          }
         }
       ]
     }).compileComponents();
@@ -117,7 +126,6 @@ describe('SwitcherProgramComponent', () => {
       };
       switcherSpy.switchProgramAndNavigate = jasmine.createSpy('switchProgramAndNavigate').and.returnValue(new Promise((res, reject) => reject(error)
       ));
-      spyOn(notifySpy, 'alert');
 
       component.switch(programIndex);
       flushMicrotasks();
@@ -139,7 +147,6 @@ describe('SwitcherProgramComponent', () => {
       };
       switcherSpy.switchProgramAndNavigate = jasmine.createSpy('switchProgramAndNavigate').and.returnValue(new Promise((res, reject) => reject(error)
       ));
-      spyOn(notifySpy, 'alert');
 
       component.switch(programIndex);
       flushMicrotasks();

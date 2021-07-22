@@ -8,6 +8,7 @@ import { MockRouter } from '@testing/mocked.service';
 import { BrowserStorageService } from '@services/storage.service';
 import { UtilsService } from '@app/services/utils.service';
 import { TestUtils } from '@testing/utils';
+import { SharedService } from '@app/services/shared.service';
 
 describe('TasksComponent', () => {
   let component: TasksComponent;
@@ -20,6 +21,10 @@ describe('TasksComponent', () => {
       imports: [ ActivityModule, TopicModule, AssessmentModule ],
       declarations: [ TasksComponent ],
       providers: [
+        {
+          provide: SharedService,
+          useValue: jasmine.createSpyObj('SharedService', ['markTopicStopOnNavigating'])
+        },
         {
           provide: UtilsService,
           useClass: TestUtils,

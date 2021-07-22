@@ -13,8 +13,8 @@ import { BrowserStorageService } from '@services/storage.service';
 import { AuthService } from '../auth/auth.service';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
 import { MockRouter } from '@testing/mocked.service';
-import { Apollo } from 'apollo-angular';
-
+import { TestUtils } from '@testing/utils';
+import { NotificationService } from '@app/shared/notification/notification.service';
 
 describe('SettingsComponent', () => {
   let component: SettingsComponent;
@@ -34,7 +34,6 @@ describe('SettingsComponent', () => {
       declarations: [ SettingsComponent ],
       schemas: [ CUSTOM_ELEMENTS_SCHEMA ],
       providers: [
-        Apollo,
         {
           provide: ActivatedRoute,
           useValue: {
@@ -45,7 +44,10 @@ describe('SettingsComponent', () => {
             }
           }
         },
-        UtilsService,
+        {
+          provide: UtilsService,
+          useClass: TestUtils,
+        },
         FilestackService,
         {
           provide: SettingService,
@@ -71,6 +73,10 @@ describe('SettingsComponent', () => {
           provide: Router,
           useClass: MockRouter
         },
+        {
+          provide: NotificationService,
+          useValue: jasmine.createSpyObj('NotificationService', ['alert'])
+        }
       ],
     })
     .compileComponents();
@@ -129,10 +135,9 @@ describe('SettingsComponent', () => {
   });
 
   it('should navigate to outside url', () => {
-    const redirectToUrlSpy = spyOn(utils, 'redirectToUrl');
     component.returnLtiUrl = 'https://test.practera.com';
     component.switchProgram('Enter');
-    expect(redirectToUrlSpy).toHaveBeenCalled();
+    expect(utils.redirectToUrl).toHaveBeenCalled();
   });
 
   it('should allow access to T&C file', () => {
