@@ -31,5 +31,6 @@ export const environment = {
   },
   defaultCountryModel: 'US',
   intercom: false,
+  newrelic: false,
   goMobile: true,
 };

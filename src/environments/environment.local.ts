@@ -39,6 +39,7 @@ export const environment = {
   },
   defaultCountryModel: 'AUS',
   intercom: false,
+  newrelic: true,
   goMobile: false,
 };
 
