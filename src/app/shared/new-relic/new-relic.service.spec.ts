@@ -2,6 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { NewRelicService } from './new-relic.service';
 import { BrowserStorageService } from '@services/storage.service';
 // import { Mock } from '@testing/mocked.service';
+import { environment } from '@environments/environment';
 
 describe('NewRelicService', () => {
   let service: NewRelicService;
@@ -18,6 +19,7 @@ describe('NewRelicService', () => {
     });
     service = TestBed.inject(NewRelicService);
     storageSpy = TestBed.inject(BrowserStorageService);
+    environment.newrelic = true;
   });
 
   it('should has setPageViewName', () => {
@@ -46,6 +48,17 @@ describe('NewRelicService', () => {
 
   it('should has setAttribute', () => {
     expect(service.setAttribute).toBeTruthy();
+  });
+
+  it('should not trigger newrelic if set to false', () => {
+    environment.newrelic = false;
+    expect(service.setPageViewName('')).toBeNull();
+    expect(service.addPageAction('')).toBeNull();
+    expect(service.setCustomAttribute('', '')).toBeNull();
+    expect(service.noticeError('')).toBeNull();
+    expect(service.getContext()).toBeNull();
+    expect(service.actionText('')).toBeNull();
+    expect(service.setAttribute('', '')).toBeNull();
   });
 
   describe('noticeError()', () => {
