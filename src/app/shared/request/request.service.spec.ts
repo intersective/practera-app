@@ -6,7 +6,6 @@ import {
   TestBed,
 } from '@angular/core/testing';
 
-
 import {
   HttpTestingController,
   HttpClientTestingModule
@@ -99,7 +98,7 @@ describe('RequestService', () => {
           useValue: {
             appkey: APPKEY,
             prefixUrl: PREFIX_URL,
-            loginApi: LOGINAPI
+            loginApiUrl: LOGINAPI
           }
         },
         {
@@ -147,7 +146,7 @@ describe('RequestService', () => {
   });
 
   describe('get()', () => {
-    const testURL = 'https://test.com';
+    const testURL = 'https://login.com';
 
     it('should perform a GET request based on provided URL', fakeAsync(() => {
       let res = { body: true };
@@ -158,7 +157,7 @@ describe('RequestService', () => {
         con.mockRespond(new Response(response));
       });
 */
-      service.get('', {params: {justFor: 'test'}}).subscribe(_res => {
+      service.get(null, {params: {justFor: 'test'}}, true).subscribe(_res => {
         res = _res;
       });
       const req = mockBackend.expectOne({ method: 'GET' });
@@ -175,7 +174,7 @@ describe('RequestService', () => {
 
     it('should perform a GET request based on provided URL', fakeAsync(() => {
       let res = { body: true };
-      service.get(testURL, {params: {justFor: 'test'}}, true).subscribe(_res => {
+      service.get('', {params: {justFor: 'test'}}, true).subscribe(_res => {
         res = _res;
       });
       const req = mockBackend.expectOne({ method: 'GET' });
@@ -208,7 +207,7 @@ describe('RequestService', () => {
       const err = { success: false, status: 400, statusText: 'Bad Request' };
       let res: any;
       let errRes: any;
-      service.get(testURL).subscribe(
+      service.get(null, {}, true).subscribe(
         _res => {
           res = _res;
         },
@@ -224,7 +223,7 @@ describe('RequestService', () => {
   });
 
   describe('post()', () => {
-    let testURL = 'https://www.post-test.com';
+    let testURL = 'post-test';
     const sampleData = {
       sample: 'data'
     };
@@ -241,14 +240,14 @@ describe('RequestService', () => {
       tick();
 
       const { body } = res;
-      expect(req.request.url).toBe(testURL);
+      expect(req.request.url).toBe(`https://login.com/${testURL}`);
       expect(body).toBe(true);
 
       mockBackend.verify();
     }));
 
     it('should perform a POST request based on provided URL', fakeAsync(() => {
-      testURL = 'https://login.com/login';
+      testURL = 'login';
 
       let res = { body: true };
 
@@ -261,7 +260,7 @@ describe('RequestService', () => {
       tick();
 
       const { body } = res;
-      expect(req.request.url).toBe(testURL);
+      expect(req.request.url).toBe(`https://login.com/${testURL}`);
       expect(body).toBe(true);
 
       mockBackend.verify();
@@ -274,7 +273,7 @@ describe('RequestService', () => {
       const err = { success: false, status: 400, statusText: 'Bad Request' };
       let res: any;
       let errRes: any;
-      service.post(testURL, sampleData).subscribe(
+      service.post(testURL, sampleData, {}, true).subscribe(
         _res => {
           res = _res;
         },
@@ -282,7 +281,7 @@ describe('RequestService', () => {
           errRes = _err;
         }
       );
-      const req = mockBackend.expectOne({ url: testURL, method: 'POST'}).flush(ERR_MESSAGE, err);
+      const req = mockBackend.expectOne({ url: `https://login.com/${testURL}`, method: 'POST'}).flush(ERR_MESSAGE, err);
 
       expect(res).toBeUndefined();
       expect(errRes).toEqual(ERR_MESSAGE);
@@ -307,14 +306,14 @@ describe('RequestService', () => {
       tick();
 
       const { body } = res;
-      expect(req.request.url).toBe(`${SCHEME_DOMAIN}/${testURL}`);
+      expect(req.request.url).toBe(`https://login.com/${testURL}`);
       expect(body).toBe(true);
 
       mockBackend.verify();
     }));
 
     it('should perform a PUT request based on provided URL', fakeAsync(() => {
-      testURL = 'https://login.com/login';
+      testURL = 'login';
 
       let res = { body: true };
 
@@ -327,7 +326,7 @@ describe('RequestService', () => {
       tick();
 
       const { body } = res;
-      expect(req.request.url).toBe(`${SCHEME_DOMAIN}/${testURL}`);
+      expect(req.request.url).toBe(`https://login.com/${testURL}`);
       expect(body).toBe(true);
 
       mockBackend.verify();
@@ -340,7 +339,7 @@ describe('RequestService', () => {
       const err = { success: false, status: 400, statusText: 'Bad Request' };
       let res: any;
       let errRes: any;
-      service.put(testURL, sampleData).subscribe(
+      service.put(testURL, sampleData, {}, true).subscribe(
         _res => {
           res = _res;
         },
@@ -348,7 +347,7 @@ describe('RequestService', () => {
           errRes = _err;
         }
       );
-      const req = mockBackend.expectOne({ url: testURL, method: 'PUT'}).flush(ERR_MESSAGE, err);
+      const req = mockBackend.expectOne({ url: `https://login.com/${testURL}`, method: 'PUT'}).flush(ERR_MESSAGE, err);
 
       expect(res).toBeUndefined();
       expect(errRes).toEqual(ERR_MESSAGE);
