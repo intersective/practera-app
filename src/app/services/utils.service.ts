@@ -7,6 +7,17 @@ import { Platform } from '@ionic/angular';
 import { Apollo } from 'apollo-angular';
 import * as moment from 'moment';
 
+
+enum ThemeColor {
+  primary = 'primary',
+  secondary = 'secondary',
+}
+
+interface Colors {
+  primary?: string;
+  secondary?: string;
+}
+
 // @TODO: enhance Window reference later, we shouldn't refer directly to browser's window object like this
 declare var window: any;
 
@@ -123,18 +134,43 @@ export class UtilsService {
     return query.replace(/(\r\n|\n|\r) */gm, ' ');
   }
 
-  changeThemeColor(color): void {
-    this.document.documentElement.style.setProperty('--ion-color-primary', color);
-    this.document.documentElement.style.setProperty('--ion-color-primary-shade', color);
+  /**
+   * accept multiple colors for customized setting
+   *
+   * @param   {Colors}  colors accept colors
+   * @return  {void}
+   */
+  changeThemeColor(colors: Colors): void {
+    if (colors && colors.primary) {
+      this.setColor(colors.primary, ThemeColor.primary);
+    }
+
+    if (colors && colors.secondary) {
+      this.setColor(colors.secondary, ThemeColor.secondary);
+    }
+  }
+
+  /**
+   * set color according to provided type (refer ThemeColor enum)
+   *
+   * @param   {string}      color  color code value
+   * @param   {ThemeColor}  type   refer to ThemeColor enum
+   *
+   * @return  {void}               action happen in the framework level
+   */
+  setColor(color, type: ThemeColor): void {
+    this.document.documentElement.style.setProperty(`--ion-color-${type}`, color);
+    this.document.documentElement.style.setProperty(`--ion-color-${type}-shade`, color);
     // get the tint version of the color(20% opacity)
-    this.document.documentElement.style.setProperty('--ion-color-primary-tint', color + '33');
+    this.document.documentElement.style.setProperty(`--ion-color-${type}-tint`, color + '33');
+
     // convert hex color to rgb and update css variable
     const hex = color.replace('#', '');
     const red = parseInt(hex.substring(0, 2), 16);
     const green = parseInt(hex.substring(2, 4), 16);
     const blue = parseInt(hex.substring(4, 6), 16);
 
-    this.document.documentElement.style.setProperty('--ion-color-primary-rgb', red + ',' + green + ',' + blue);
+    this.document.documentElement.style.setProperty(`--ion-color-${type}-rgb`, red + ',' + green + ',' + blue);
   }
 
   changeCardBackgroundImage(image) {

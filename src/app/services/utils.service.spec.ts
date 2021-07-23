@@ -106,7 +106,9 @@ describe('UtilsService', () => {
     it('should access to window.document style properties and update value', () => {
       spyOn(service['document'].documentElement.style, 'setProperty');
       const COLOR = '#000000';
-      service.changeThemeColor(COLOR);
+      service.changeThemeColor({
+        primary: COLOR
+      });
 
       expect(service['document'].documentElement.style.setProperty).toHaveBeenCalledWith('--ion-color-primary', COLOR);
       expect(service['document'].documentElement.style.setProperty).toHaveBeenCalledWith('--ion-color-primary-shade', COLOR);
