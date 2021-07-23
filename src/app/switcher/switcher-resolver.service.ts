@@ -2,6 +2,7 @@ import { Resolve, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/r
 import { Injectable } from '@angular/core';
 import { AuthService } from '@app/auth/auth.service';
 import { BrowserStorageService, Stack } from '@app/services/storage.service';
+import { UtilsService } from '@app/services/utils.service';
 
 @Injectable({
   providedIn: 'root'
@@ -10,11 +11,12 @@ export class SwitcherResolverService implements Resolve<Stack[]> {
   constructor(
     private service: AuthService,
     private storage: BrowserStorageService,
+    readonly utils: UtilsService,
   ) { }
 
   async resolve(): Promise<Stack[]> {
     let stacks = this.storage.stacks;
-    if (stacks && stacks.length === 0) {
+    if (this.utils.isEmpty(stacks)) {
       try {
         stacks = await this.service.getStacks().toPromise();
         return stacks;
