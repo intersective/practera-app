@@ -400,14 +400,9 @@ export class AuthService {
         type: 'app'
       }
     },                      true).pipe(
-      tap(res => {
-        if (res) {
-          this.storage.stacks = res;
-        }
-        return res;
-      }),
       map(res => {
         if (res) {
+          this.storage.stacks = res;
           return res;
         }
         return [];
