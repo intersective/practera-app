@@ -16,6 +16,7 @@ enum ThemeColor {
 interface Colors {
   primary?: string;
   secondary?: string;
+  theme_color?: string;
 }
 
 // @TODO: enhance Window reference later, we shouldn't refer directly to browser's window object like this
@@ -141,7 +142,7 @@ export class UtilsService {
    * @return  {void}
    */
   changeThemeColor(colors: Colors): void {
-    if (colors && colors.primary) {
+    if (colors && (colors.primary || colors.theme_color)) {
       this.setColor(colors.primary, ThemeColor.primary);
     }
 
