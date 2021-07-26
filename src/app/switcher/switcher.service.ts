@@ -129,8 +129,8 @@ export class SwitcherService {
   }
 
   extractColors(programObj: ProgramObj) {
-    const experienceConfig = programObj.experience.config;
-    const programConfig = programObj.program.config;
+    const experienceConfig = (programObj.experience || {}).config;
+    const programConfig = (programObj.program || {}).config;
 
     const primary = (experienceConfig || {}).primary_color;
     const secondary = (experienceConfig || {}).secondary_color;

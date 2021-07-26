@@ -252,7 +252,7 @@ describe('SwitcherService', () => {
       expect(service.getEvents).toHaveBeenCalled();
     });
 
-    it('should set the correct user data', () => {
+    it('should set the correct user data (1)', () => {
       const programObj = ProgramFixture[3];
       delete programObj.program.config.theme_color;
       service.switchProgram(programObj).subscribe();
@@ -267,7 +267,9 @@ describe('SwitcherService', () => {
         timelineId: ProgramFixture[3].timeline.id,
         contactNumber: ProgramFixture[3].enrolment.contact_number,
         colors: {
-          theme: '#2bbfd4',
+          theme: undefined,
+          primary: undefined,
+          secondary: undefined,
         },
         activityCardImage: '',
         enrolment: ProgramFixture[3].enrolment,
@@ -279,7 +281,7 @@ describe('SwitcherService', () => {
       });
     });
 
-    it('should set the correct user data', () => {
+    it('should set the correct user data (2)', () => {
       const programObj = ProgramFixture[2];
       programObj.program.config = {
         theme_color: 'none',
@@ -302,7 +304,11 @@ describe('SwitcherService', () => {
         projectId: ProgramFixture[2].project.id,
         timelineId: ProgramFixture[2].timeline.id,
         contactNumber: ProgramFixture[2].enrolment.contact_number,
-        themeColor: 'none',
+        colors: {
+          theme: 'none',
+          primary: undefined,
+          secondary: undefined,
+        },
         activityCardImage: '/assets/style',
         enrolment: ProgramFixture[2].enrolment,
         activityCompleteMessage: 'completed',

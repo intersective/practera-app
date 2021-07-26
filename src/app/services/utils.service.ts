@@ -8,7 +8,7 @@ import { Apollo } from 'apollo-angular';
 import * as moment from 'moment';
 import { Colors } from '@services/storage.service';
 
-enum ThemeColor {
+export enum ThemeColor {
   primary = 'primary',
   secondary = 'secondary',
 }
@@ -151,7 +151,6 @@ export class UtilsService {
         this.setColor(colors.secondary, ThemeColor.secondary);
       }
     } else {
-      // default
       this.setColor(defaultColor, ThemeColor.primary);
     }
   }
