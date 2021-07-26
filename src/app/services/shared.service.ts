@@ -40,16 +40,21 @@ export class SharedService {
   // call this function on every page refresh and after switch program
   onPageLoad() {
     this.getIpLocation();
+    const {
+      timelineId,
+      colors,
+      activityCardImage,
+    } = this.storage.getUser();
+
     // only do these if a timeline is choosen
-    if (!this.storage.getUser().timelineId) {
+    if (!timelineId) {
       return;
     }
     // check and change theme color on every page refresh
-    const color = this.storage.getUser().themeColor;
-    if (color) {
-      this.utils.changeThemeColor(color);
+    if (colors) {
+      this.utils.changeThemeColor(colors);
     }
-    const image = this.storage.getUser().activityCardImage;
+    const image = activityCardImage;
     if (image) {
       this.utils.changeCardBackgroundImage(image);
     }

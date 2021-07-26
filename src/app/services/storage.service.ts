@@ -23,7 +23,14 @@ export interface User {
   teamId?: number;
   userHash?: string;
   maxAchievablePoints?: number;
-  themeColor?: string;
+
+  // colors (custom branding)
+  colors?: {
+    theme?: string;
+    primary?: string;
+    secondary?: string;
+  };
+
   activityCardImage?: string;
   hasReviewRating?: boolean;
   truncateDescription?: boolean;
@@ -43,9 +50,15 @@ export interface Referrer {
   url: string;
 }
 
+export interface Colors {
+  theme?: string;
+  primary?: string;
+  secondary?: string;
+}
+
 export interface Config {
   logo?: string;
-  color?: string;
+  colors?: Colors;
 }
 
 @Injectable({
