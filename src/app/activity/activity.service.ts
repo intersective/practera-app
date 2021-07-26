@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Observable, of, forkJoin } from 'rxjs';
+import { Observable, of, forkJoin, throwError } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { RequestService } from '@shared/request/request.service';
 import { UtilsService } from '@services/utils.service';
@@ -78,6 +78,7 @@ export class ActivityService {
     if (!data) {
       return null;
     }
+
     // clone the return data, instead of modifying it
     const result = JSON.parse(JSON.stringify(data.activity));
     result.tasks = result.tasks.map(task => {
@@ -139,44 +140,56 @@ export class ActivityService {
    * @param justFinished Whether the current task is just finished or not
    */
   async gotoNextTask(activityId: number, taskType: string, taskId: number, justFinished = true): Promise<string[]> {
-    const res = await this.getNextTask(activityId, taskType, taskId).toPromise();
-    // go to next task
-    if (!res.isLast) {
-      // go to the next task
-      let route = ['app', 'home'];
-      switch (res.task.type) {
-        case 'assessment':
-          route = ['assessment', 'assessment', activityId.toString(), res.task.contextId.toString(), res.task.id.toString()];
-          break;
 
-        case 'topic':
-          route = ['topic', activityId.toString(), res.task.id.toString()];
-          break;
+    try {
+      const res = await this.getNextTask(activityId, taskType, taskId).toPromise();
+
+      // go to next task
+      if (!res.isLast) {
+        // go to the next task
+        let route = ['app', 'home'];
+
+        // res.task is nullable object (refer: this.getNextTask())
+        if (res.task) {
+          switch (res.task.type) {
+            case 'assessment':
+              route = ['assessment', 'assessment', activityId.toString(), res.task.contextId.toString(), res.task.id.toString()];
+              break;
+
+              case 'topic':
+                route = ['topic', activityId.toString(), res.task.id.toString()];
+                break;
+          }
+        }
+        return route;
       }
-      return route;
-    }
 
-    // check if we need to redirect user to external url
-    const referrer = this.storage.getReferrer();
-    if (this.utils.has(referrer, 'activityTaskUrl')) {
-      this.newRelic.actionText('browse to Activity Task return link');
-      this.utils.redirectToUrl(referrer.activityTaskUrl);
-      return ;
-    }
+      // check if we need to redirect user to external url
+      const referrer = this.storage.getReferrer();
+      if (this.utils.has(referrer, 'activityTaskUrl')) {
+        this.newRelic.actionText('browse to Activity Task return link');
+        this.utils.redirectToUrl(referrer.activityTaskUrl);
+        return ;
+      }
 
-    if (res.task) {
-      // pop up activity completed modal
-      this.notification.activityCompletePopUp(activityId, justFinished);
-      return ;
-    }
+      if (res.task) {
+        // pop up activity completed modal
+        this.notification.activityCompletePopUp(activityId, justFinished);
+        return ;
+      }
 
-    // go back to home page, and scroll to the activity
-    if (justFinished) {
-      // and display the toast
-      this.router.navigate(['app', 'home'], { queryParams: { activityId: activityId, activityCompleted: true } });
-    } else {
-      // and don't display the toast
-      this.router.navigate(['app', 'home'], { queryParams: { activityId: activityId } });
+      // go back to home page, and scroll to the activity
+      if (justFinished) {
+        // and display the toast
+        this.router.navigate(['app', 'home'], { queryParams: { activityId: activityId, activityCompleted: true } });
+      } else {
+        // and don't display the toast
+        this.router.navigate(['app', 'home'], { queryParams: { activityId: activityId } });
+      }
+    } catch (err) {
+      console.log('sadsasdsds', err);
+
+      throw err;
     }
   }
 
@@ -196,14 +209,13 @@ export class ActivityService {
       }).pipe(map(res => {
         return {
           isLast: res.data.is_last,
-          task: !this.utils.isEmpty(res.data.task) ? {
+          task: this.utils.isEmpty(res.data.task) ? null : {
             id: res.data.task.id,
             name: res.data.task.name,
             type: res.data.task.type,
             contextId: res.data.task.context_id || null
-          } : null
+          }
         };
-      })
-    );
+      }));
   }
 }

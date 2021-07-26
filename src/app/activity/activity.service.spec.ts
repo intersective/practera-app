@@ -1,13 +1,13 @@
 import { TestBed, fakeAsync, tick, flushMicrotasks } from '@angular/core/testing';
 import { ActivityService } from './activity.service';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 import { RequestService } from '@shared/request/request.service';
 import { UtilsService } from '@services/utils.service';
 import { NotificationService } from '@shared/notification/notification.service';
 import { BrowserStorageService } from '@services/storage.service';
 import { Router } from '@angular/router';
 import { MockRouter } from '@testing/mocked.service';
-import { Apollo } from 'apollo-angular';
+import { TestUtils } from '@testing/utils';
 
 describe('ActivityService', () => {
   let service: ActivityService;
@@ -20,15 +20,17 @@ describe('ActivityService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
-        Apollo,
         ActivityService,
-        UtilsService,
+        {
+          provide: UtilsService,
+          useClass: TestUtils,
+        },
         {
           provide: RequestService,
           useValue: jasmine.createSpyObj('RequestService', [
             'get',
             'post',
-            'graphQLQuery'
+            'graphQLQuery',
           ])
         },
         {
@@ -173,6 +175,30 @@ describe('ActivityService', () => {
     service.getActivity(1).subscribe(res => expect(res).toEqual(expected));
   });
 
+  describe('getNextTask()', () => {
+    it('should return in format: { is_last, task }', () => {
+      const data = {
+        is_last: true,
+        task: null
+      };
+      const expected = {
+        isLast: true,
+        task: null,
+      };
+
+      requestSpy.get.and.returnValue(of({
+        data
+      }));
+
+      service.getNextTask(1, '', 1).subscribe(res => {
+        expect(res).toEqual(expected);
+      },                                      err => {
+        console.log('ERR123::', err);
+        expect(err).toBeFalsy();
+      });
+    });
+  });
+
   describe('when testing gotoNextTask()', () => {
     it('should go to home page', fakeAsync(() => {
       requestSpy.get.and.returnValue(of({
@@ -184,8 +210,14 @@ describe('ActivityService', () => {
       service.gotoNextTask(1, 'assessment', 2);
       tick();
       expect(routerSpy.navigate.calls.first().args[0]).toEqual(['app', 'home']);
-      expect(routerSpy.navigate.calls.first().args[1]).toEqual({ queryParams: { activityId: 1, activityCompleted: true }});
+      expect(routerSpy.navigate.calls.first().args[1]).toEqual({
+        queryParams: {
+          activityId: 1,
+          activityCompleted: true,
+        }
+      });
     }));
+
     it('should go to external url', fakeAsync(() => {
       requestSpy.get.and.returnValue(of({
         data: {
@@ -196,11 +228,11 @@ describe('ActivityService', () => {
       storageSpy.getReferrer.and.returnValue({
         activityTaskUrl: 'abc',
       });
-      const redirectToUrlSpy = spyOn(utils, 'redirectToUrl');
       service.gotoNextTask(1, 'assessment', 2);
       tick();
-      expect(redirectToUrlSpy).toHaveBeenCalled();
+      expect(utils.redirectToUrl).toHaveBeenCalled();
     }));
+
     it('should pop up modal', fakeAsync(() => {
       requestSpy.get.and.returnValue(of({
         data: {
@@ -217,6 +249,7 @@ describe('ActivityService', () => {
       tick();
       expect(notificationSpy.activityCompletePopUp.calls.count()).toBe(1);
     }));
+
     it('should go to assessment page', fakeAsync(() => {
       requestSpy.get.and.returnValue(of({
         data: {

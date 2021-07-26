@@ -12,7 +12,7 @@ import { QuestionComponent } from './question/question.component';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
 import { MockNewRelicService } from '@testing/mocked.service';
-import { Apollo } from 'apollo-angular';
+import { TestUtils } from '@testing/utils';
 
 class Page {
   get questions() {
@@ -45,12 +45,14 @@ describe('FastFeedbackComponent', () => {
       declarations: [ FastFeedbackComponent, QuestionComponent ],
       schemas: [ CUSTOM_ELEMENTS_SCHEMA ],
       providers: [
-        Apollo,
         {
           provide: FastFeedbackSubmitterService,
           useValue: jasmine.createSpyObj('FastFeedbackSubmitterService', ['submit'])
         },
-        UtilsService,
+        {
+          provide: UtilsService,
+          useClass: TestUtils,
+        },
         {
           provide: NotificationService,
           useValue: jasmine.createSpyObj('NotificationService', ['alert'])

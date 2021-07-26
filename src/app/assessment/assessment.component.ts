@@ -107,6 +107,10 @@ export class AssessmentComponent extends RouterEnter {
     super(router);
   }
 
+  dueDateFormatter(date) {
+    return this.utils.dueDateFormatter(date);
+  }
+
   get isMobile() {
     return this.utils.isMobile();
   }
@@ -343,7 +347,6 @@ export class AssessmentComponent extends RouterEnter {
       this.savingButtonDisabled = false;
     }
   }
-
 
   ionViewWillLeave() {
     this.sharedService.stopPlayingVideos();

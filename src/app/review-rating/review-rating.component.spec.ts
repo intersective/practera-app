@@ -7,7 +7,8 @@ import { UtilsService } from '@services/utils.service';
 import { ReviewRatingComponent } from './review-rating.component';
 import { ReviewRatingService } from './review-rating.service';
 import { ModalController } from '@ionic/angular';
-import { Apollo } from 'apollo-angular';
+import { TestUtils } from '@testing/utils';
+import { NotificationService } from '@app/shared/notification/notification.service';
 
 describe('ReviewRatingComponent', () => {
   let component: ReviewRatingComponent;
@@ -21,8 +22,14 @@ describe('ReviewRatingComponent', () => {
       declarations: [ ReviewRatingComponent ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
       providers: [
-        Apollo,
-        UtilsService,
+        {
+          provide: UtilsService,
+          useClass: TestUtils,
+        },
+        {
+          provide: NotificationService,
+          useValue: jasmine.createSpyObj('NotificationService', [ 'alert' ]),
+        },
         {
           provide: ReviewRatingService,
           useValue: jasmine.createSpyObj('ReviewRatingService', ['submitRating'])

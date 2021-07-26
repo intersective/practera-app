@@ -5,7 +5,6 @@ import { FilestackService } from '@shared/filestack/filestack.service';
 import { Observable, of, pipe } from 'rxjs';
 import { SharedModule } from '@shared/shared.module';
 import { ReactiveFormsModule, FormControl } from '@angular/forms';
-import { Apollo } from 'apollo-angular';
 
 describe('FileComponent', () => {
   let component: FileComponent;
@@ -18,7 +17,6 @@ describe('FileComponent', () => {
       declarations: [ FileComponent ],
       schemas: [ CUSTOM_ELEMENTS_SCHEMA ],
       providers: [
-        Apollo,
         {
           provide: FilestackService,
           useValue: jasmine.createSpyObj('FilestackService', ['getFileTypes'])

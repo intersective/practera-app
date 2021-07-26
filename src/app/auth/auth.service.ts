@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { RequestService } from '@shared/request/request.service';
 import { HttpParams } from '@angular/common/http';
-import { map } from 'rxjs/operators';
+import { map, tap } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import { Router } from '@angular/router';
 import { BrowserStorageService, Stack } from '@services/storage.service';
@@ -13,7 +13,7 @@ import { PusherService } from '@shared/pusher/pusher.service';
  * @description list of api endpoint involved in this service
  * @type {Object}
  */
-const api = {
+const API = {
   getConfig: 'api/v2/plan/experience/list',
   login: 'api/auths.json',
   setProfile: 'api/v2/user/enrolment/edit.json',
@@ -23,6 +23,7 @@ const api = {
 
 const LOGIN_API = {
   stackInfo: 'stack',
+  multipleStacks: 'stacks',
   login: 'login',
   forgotPassword: 'forgotPassword',
   resetPassword: 'user'
@@ -117,7 +118,7 @@ export class AuthService {
     }
     return this.request.post(
       {
-        endPoint: api.login,
+        endPoint: API.login,
         data: body.toString(),
         httpOptions: {
           headers
@@ -162,7 +163,9 @@ export class AuthService {
   directLoginWithApikey({ apikey, service }): Observable<any> {
     const body = new HttpParams()
       .set('apikey', apikey);
+    const cachedStack = this.storage.stackConfig;
     this.logout({}, false);
+    this.storage.stackConfig = cachedStack;
     return this._loginFromCore(body, service);
   }
 
@@ -314,7 +317,7 @@ export class AuthService {
   contactNumberLogin(data: { contactNumber: string }): Observable<any> {
     return this.request.post(
       {
-        endPoint: api.login,
+        endPoint: API.login,
         data: {
           contact_number: data.contactNumber,
         }
@@ -331,7 +334,7 @@ export class AuthService {
   }
 
   getConfig(data: ConfigParams): Observable<{data: ExperienceConfig[]}> {
-    return this.request.get(api.getConfig, {
+    return this.request.get(API.getConfig, {
       params: data
     });
   }
@@ -352,7 +355,7 @@ export class AuthService {
   updateProfile(data: UserProfile): Observable<any> {
     return this.request.post(
       {
-        endPoint: api.setProfile,
+        endPoint: API.setProfile,
         data
       }
     );
@@ -361,7 +364,7 @@ export class AuthService {
   saveRegistration(data: RegisterData): Observable<any> {
     return this.request.post(
       {
-        endPoint: api.register,
+        endPoint: API.register,
         data,
         httpOptions: {
           headers: { 'Content-Type': 'application/json' }
@@ -372,7 +375,7 @@ export class AuthService {
   verifyRegistration(data: VerifyParams): Observable<any> {
     return this.request.post(
       {
-        endPoint: api.verifyRegistration,
+        endPoint: API.verifyRegistration,
         data,
         httpOptions: {
           headers: { 'Content-Type': 'application/json' }
@@ -415,5 +418,27 @@ export class AuthService {
       }
       return null;
     }));
+  }
+
+  /**
+   * get multiple stacks from endpoint
+   * Purpose: allow user to switching from one stack to another stack
+   *
+   * @return  {Observable<Stack>[]} multiple stacks
+   */
+  getStacks(): Observable<Stack[]> {
+    return this.request.get(LOGIN_API.multipleStacks, {
+      params: {
+        type: 'app'
+      }
+    },                      true).pipe(
+      map(res => {
+        if (res) {
+          this.storage.stacks = res;
+          return res;
+        }
+        return [];
+      })
+    );
   }
 }

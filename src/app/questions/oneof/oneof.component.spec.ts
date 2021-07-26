@@ -1,11 +1,10 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { OneofComponent } from './oneof.component';
-import { Observable, of, pipe } from 'rxjs';
 import { SharedModule } from '@shared/shared.module';
 import { ReactiveFormsModule, FormControl } from '@angular/forms';
 import { UtilsService } from '@services/utils.service';
-import { Apollo } from 'apollo-angular';
+import { TestUtils } from '@testing/utils';
 
 describe('OneofComponent', () => {
   let component: OneofComponent;
@@ -17,8 +16,10 @@ describe('OneofComponent', () => {
       declarations: [ OneofComponent ],
       schemas: [ CUSTOM_ELEMENTS_SCHEMA ],
       providers: [
-        Apollo,
-        UtilsService
+        {
+          provide: UtilsService,
+          useClass: TestUtils,
+        },
       ],
     })
     .compileComponents();

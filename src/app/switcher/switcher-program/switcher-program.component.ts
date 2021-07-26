@@ -1,14 +1,13 @@
 import { Component, AfterContentChecked } from '@angular/core';
-import { Router } from '@angular/router';
-import { Injectable, Inject } from '@angular/core';
+import { Router, ActivatedRoute } from '@angular/router';
+import { Injectable } from '@angular/core';
 import { RouterEnter } from '@services/router-enter.service';
 import { SwitcherService, ProgramObj } from '../switcher.service';
 import { LoadingController } from '@ionic/angular';
-import { environment } from '@environments/environment';
-import { PusherService } from '@shared/pusher/pusher.service';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
 import { NotificationService } from '@shared/notification/notification.service';
-import { UtilsService } from '@services/utils.service';
+import { BrowserStorageService, Stack } from '@services/storage.service';
+import { UtilsService } from '@app/services/utils.service';
 
 @Injectable({
   providedIn: 'root'
@@ -27,12 +26,18 @@ export class SwitcherProgramComponent extends RouterEnter implements AfterConten
   constructor(
     public loadingController: LoadingController,
     public router: Router,
-    private pusherService: PusherService,
     private switcherService: SwitcherService,
     private newRelic: NewRelicService,
     private notificationService: NotificationService,
-    private utils: UtilsService
-  ) { super(router); }
+    private activatedRoute: ActivatedRoute,
+    readonly storage: BrowserStorageService,
+    readonly utils: UtilsService,
+  ) {
+    super(router);
+    this.activatedRoute.data.subscribe(data => {
+      this.stacks = data.stacks;
+    });
+  }
 
   onEnter() {
     this.newRelic.setPageViewName('program switcher');
@@ -55,12 +60,16 @@ export class SwitcherProgramComponent extends RouterEnter implements AfterConten
     const loading = await this.loadingController.create({
       message: 'loading...'
     });
-    this.newRelic.actionText(`selected ${this.programs[index].program.name}`);
+    this.newRelic.actionText(`selected ${this.programs[programIndex].program.name}`);
 
     await loading.present();
 
     try {
-      const route = await this.switcherService.switchProgramAndNavigate(this.programs[index]);
+      if (!this.utils.isEmpty(stackIndex)) {
+        this.storage.stackConfig = this.stacks[stackIndex];
+      }
+
+      const route = await this.switcherService.switchProgramAndNavigate(this.programs[programIndex]);
       loading.dismiss().then(() => {
         nrSwitchedProgramTracer();
         this.router.navigate(route);

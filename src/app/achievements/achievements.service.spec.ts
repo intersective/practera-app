@@ -3,7 +3,8 @@ import { AchievementsService } from './achievements.service';
 import { of } from 'rxjs';
 import { RequestService } from '@shared/request/request.service';
 import { BrowserStorageService } from '@services/storage.service';
-import { Apollo } from 'apollo-angular';
+import { UtilsService } from '@app/services/utils.service';
+import { TestUtils } from '@testing/utils';
 
 describe('AchievementsService', () => {
   let service: AchievementsService;
@@ -12,7 +13,10 @@ describe('AchievementsService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
-        Apollo,
+        {
+          provide: UtilsService,
+          useClass: TestUtils,
+        },
         AchievementsService,
         {
           provide: RequestService,
