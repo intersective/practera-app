@@ -1,7 +1,6 @@
 import { CUSTOM_ELEMENTS_SCHEMA, ElementRef } from '@angular/core';
 import { async, ComponentFixture, TestBed, tick, fakeAsync } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
-import { Apollo } from 'apollo-angular';
 import { ChatRoomComponent } from './chat-room.component';
 import { ChatService } from '../chat.service';
 import { of } from 'rxjs';
@@ -13,6 +12,7 @@ import { FilestackService } from '@shared/filestack/filestack.service';
 import { MockRouter } from '@testing/mocked.service';
 import { Router, ActivatedRoute, convertToParamMap } from '@angular/router';
 import { IonContent, ModalController } from '@ionic/angular';
+import { TestUtils } from '@testing/utils';
 
 export class MockElementRef extends ElementRef {
   constructor() { super(null); }
@@ -41,8 +41,10 @@ describe('ChatRoomComponent', () => {
       declarations: [ChatRoomComponent],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
       providers: [
-        Apollo,
-        UtilsService,
+        {
+          provide: UtilsService,
+          useClass: TestUtils,
+        },
         NewRelicService,
         {
           provide: ElementRef,
@@ -495,7 +497,7 @@ describe('ChatRoomComponent', () => {
 
   describe('when testing openChatInfo()', () => {
     it(`should call modal controller if app in mobile view`, () => {
-      spyOn(utils, 'isMobile').and.returnValue(true);
+      utils.isMobile = jasmine.createSpy('utils.isMobile').and.returnValue(true);
       component.openChatInfo();
       expect(modalCtrlSpy.create.calls.count()).toBe(2);
     });

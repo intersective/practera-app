@@ -1,16 +1,23 @@
 import { Injectable, Optional, isDevMode } from '@angular/core';
-import { HttpClient, HttpHeaders, HttpParams, HttpErrorResponse, HttpParameterCodec } from '@angular/common/http';
+import {
+  HttpClient,
+  HttpHeaders,
+  HttpParams,
+  HttpErrorResponse,
+  HttpParameterCodec,
+} from '@angular/common/http';
 import { Router } from '@angular/router';
-import { Observable, of, throwError, from } from 'rxjs';
-import { catchError, tap, concatMap, map } from 'rxjs/operators';
+import { Observable, of, throwError } from 'rxjs';
+import { catchError, concatMap, map } from 'rxjs/operators';
 import { UtilsService } from '@services/utils.service';
 import { BrowserStorageService } from '@services/storage.service';
-import { environment } from '@environments/environment';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
-import { Apollo } from 'apollo-angular';
-import { HttpLink } from 'apollo-angular-link-http';
-import { InMemoryCache } from 'apollo-cache-inmemory';
-import gql from 'graphql-tag';
+import { ApolloService } from '@shared/apollo/apollo.service';
+
+interface RequestOptions {
+  headers?: any;
+  params?: any;
+}
 
 @Injectable({ providedIn: 'root' })
 export class DevModeService {
@@ -21,8 +28,7 @@ export class DevModeService {
 
 export class RequestConfig {
   appkey = '';
-  prefixUrl = '';
-  loginApi = '';
+  loginApiUrl = '';
 }
 
 export class QueryEncoder implements HttpParameterCodec {
@@ -48,7 +54,6 @@ export class QueryEncoder implements HttpParameterCodec {
 })
 export class RequestService {
   private appkey: string;
-  private prefixUrl: string;
   private loginApiUrl: string;
   private loggedOut: boolean;
 
@@ -60,12 +65,11 @@ export class RequestService {
     @Optional() config: RequestConfig,
     private newrelic: NewRelicService,
     private devMode: DevModeService,
-    private apollo: Apollo
+    private apolloService: ApolloService
   ) {
     if (config) {
       this.appkey = config.appkey;
-      this.prefixUrl = config.prefixUrl;
-      this.loginApiUrl = config.loginApi;
+      this.loginApiUrl = config.loginApiUrl;
     }
   }
 
@@ -114,7 +118,7 @@ export class RequestService {
    * @param headers
    * @returns {Observable<any>}
    */
-  get(endPoint: string = '', httpOptions?: any, isLoginAPI?: boolean): Observable<any> {
+  get(endPoint: string = '', httpOptions?: RequestOptions, isLoginAPI?: boolean): Observable<any> {
     if (!httpOptions) {
       httpOptions = {};
     }
@@ -146,7 +150,7 @@ export class RequestService {
       );
   }
 
-  post(endPoint: string = '', data, httpOptions?: any, isLoginAPI?: boolean): Observable<any> {
+  post(endPoint: string = '', data, httpOptions?: RequestOptions, isLoginAPI?: boolean): Observable<any> {
     if (!httpOptions) {
       httpOptions = {};
     }
@@ -218,11 +222,7 @@ export class RequestService {
    */
   graphQLQuery(query: string, variables?: any, options?: any): Observable<any> {
     options = {...{ noCache: false }, ...options};
-    const watch = this.apollo.watchQuery({
-      query: gql(query),
-      variables: variables || {},
-      fetchPolicy: options.noCache ? 'no-cache' : 'cache-and-network'
-    });
+    const watch = this.apolloService.graphQLQuery(query, variables, options);
     return watch.valueChanges
       .pipe(map(response => {
         this._refreshApikey(response);
@@ -234,13 +234,10 @@ export class RequestService {
   }
 
   /**
-   *
+   * @todo: graphQLMutate docsblocks
    */
   graphQLMutate(query: string, variables = {}): Observable<any> {
-    return this.apollo.mutate({
-      mutation: gql(query),
-      variables: variables
-    })
+    return this.apolloService.graphQLMutate(query, variables)
       .pipe(
         concatMap(response => {
           this._refreshApikey(response);
@@ -256,11 +253,7 @@ export class RequestService {
    */
   chatGraphQLQuery(query: string, variables?: any, options?: any): Observable<any> {
     options = {...{ noCache: false }, ...options};
-    const watch = this.apollo.use('chat').watchQuery({
-      query: gql(query),
-      variables: variables || {},
-      fetchPolicy: options.noCache ? 'no-cache' : 'cache-and-network'
-    });
+    const watch = this.apolloService.chatGraphQLQuery(query, variables, options);
     return watch.valueChanges
       .pipe(map(response => {
         this._refreshApikey(response);
@@ -271,21 +264,22 @@ export class RequestService {
       );
   }
 
+  /**
+   *
+   */
   chatGraphQLMutate(query: string, variables = {}): Observable<any> {
-    return this.apollo.use('chat').mutate({
-      mutation: gql(query),
-      variables: variables
-    })
-      .pipe(
-        concatMap(response => {
-          // this._refreshApikey(response);
-          return of(response);
-        }),
-        catchError((error) => this.handleError(error))
-      );
+    return this.apolloService.chatGraphQLMutate(query, variables).pipe(
+      concatMap(response => {
+        return of(response);
+      }),
+      catchError((error) => this.handleError(error))
+    );
   }
 
-  delete(endPoint: string = '', httpOptions?: any): Observable<any> {
+  /**
+   *
+   */
+  delete(endPoint: string = '', httpOptions?: RequestOptions): Observable<any> {
     if (!httpOptions) {
       httpOptions = {};
     }
@@ -312,15 +306,7 @@ export class RequestService {
    *
    * @returns {string}
    */
-  public getPrefixUrl() {
-    return this.prefixUrl;
-  }
-
-  /**
-   *
-   * @returns {string}
-   */
-  public getAppkey() {
+  public getAppkey(): string {
     return this.appkey;
   }
 

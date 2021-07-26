@@ -14,7 +14,6 @@ import { ReviewListService } from '@app/review-list/review-list.service';
 import { environment } from '@environments/environment';
 import { ProgramFixture } from '@testing/fixtures/programs';
 import { PusherService } from '@shared/pusher/pusher.service';
-import { Apollo } from 'apollo-angular';
 
 describe('SwitcherService', () => {
   let service: SwitcherService;
@@ -32,13 +31,15 @@ describe('SwitcherService', () => {
     TestBed.configureTestingModule({
         imports: [ HttpClientTestingModule ],
         providers: [
-          Apollo,
           SwitcherService,
-          UtilsService,
           EventListService,
           ReviewListService,
           PusherService,
           SharedService,
+          {
+            provide: UtilsService,
+            useClass: TestUtils,
+          },
           {
             provide: BrowserStorageService,
             useClass: BrowserStorageServiceMock
@@ -96,7 +97,6 @@ describe('SwitcherService', () => {
   describe('when testing switchProgramAndNavigate()', () => {
     beforeEach(() => {
       spyOn(pusherSpy, 'initialise');
-      spyOn(utils, 'clearCache');
       // by default test normal flow (non-direct link)
       storageSpy.get = jasmine.createSpy('get').and.returnValue(false);
     });

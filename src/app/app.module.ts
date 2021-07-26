@@ -3,9 +3,6 @@ import { BrowserModule } from '@angular/platform-browser';
 import { RouteReuseStrategy } from '@angular/router';
 import { IonicModule, IonicRouteStrategy } from '@ionic/angular';
 import { HttpClientModule } from '@angular/common/http';
-import { ApolloModule, APOLLO_OPTIONS, Apollo } from 'apollo-angular';
-import { HttpLinkModule, HttpLink } from 'apollo-angular-link-http';
-import { InMemoryCache, defaultDataIdFromObject } from 'apollo-cache-inmemory';
 
 import { AppRoutingModule } from './app-routing.module';
 import { RequestModule } from '@shared/request/request.module';
@@ -16,6 +13,7 @@ import { FastFeedbackModule } from './fast-feedback/fast-feedback.module';
 import { ReviewRatingModule } from './review-rating/review-rating.module';
 import { EventDetailModule } from './event-detail/event-detail.module';
 import { GoMobileModule } from './go-mobile/go-mobile.module';
+import { ApolloModule } from '@shared/apollo/apollo.module';
 
 import { AppComponent } from './app.component';
 import { UtilsService } from './services/utils.service';
@@ -40,7 +38,7 @@ function initializeApp(
   utils: UtilsService,
   storage: BrowserStorageService,
   authService: AuthService
-): Function {
+) {
 
   /**
    * retrieve stack info first before everything else, so then all API
@@ -51,17 +49,20 @@ function initializeApp(
    * @return  {Promise<any>}         as long as deferred get
   *                                  resolved, the result doesn't matter
    */
-  return (): Promise<any> => new Promise(async (resolve: Function): Promise<any> => {
+  return () => new Promise(async (resolve: Function): Promise<any> => {
     const query: URLSearchParams = utils.getQueryParams();
     try {
       if (query.has('stack_uuid')) {
         const res = await authService.getStackConfig(query.get('stack_uuid')).toPromise();
-        storage.stackConfig = res;
+        if (res) {
+          storage.stackConfig = res;
+        }
+
         return resolve(res);
+      } else {
+        // if nothing happen, just let it move on (don't block)
+        return resolve(true);
       }
-      // if nothing happen, just let it continue
-      // with "true" which won't be used anywhere
-      return resolve(true);
     } catch (err) {
       return resolve(err);
     }
@@ -76,18 +77,16 @@ function initializeApp(
     DeviceInfoComponent,
   ],
   imports: [
+    RequestModule.forRoot({
+      appkey: environment.appkey,
+      loginApiUrl: environment.loginAPIUrl,
+    }),
+    ApolloModule,
+    AuthModule,
     BrowserModule,
     BrowserAnimationsModule,
     HttpClientModule,
-    ApolloModule,
-    HttpLinkModule,
     IonicModule.forRoot(),
-    AuthModule,
-    RequestModule.forRoot({
-      appkey: environment.appkey,
-      prefixUrl: environment.APIEndpoint,
-      loginApi: environment.loginAPIUrl
-    }),
     AppRoutingModule,
     EmbedVideo.forRoot(),
     NewRelicModule.forRoot(),
@@ -103,7 +102,7 @@ function initializeApp(
     IntercomModule.forRoot({
       appId: environment.intercomAppId,
       updateOnRouterChange: true // will automatically run `update` on router event changes. Default: `false`
-    })
+    }),
   ],
   providers: [
     {
@@ -112,27 +111,6 @@ function initializeApp(
       deps: [UtilsService, BrowserStorageService, AuthService],
       multi: true,
     },
-    {
-      provide: APOLLO_OPTIONS,
-      useFactory: (httpLink: HttpLink) => {
-        return {
-          cache: new InMemoryCache({
-            dataIdFromObject: object => {
-              switch (object.__typename) {
-                case 'Task':
-                  return `Task:${object['type']}${object.id}`;
-                default:
-                  return defaultDataIdFromObject(object);
-              }
-            }
-          }),
-          link: httpLink.create({
-            uri: environment.graphQL
-          })
-        };
-      },
-      deps: [HttpLink]
-    },
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
     // Custom
     UtilsService,
@@ -140,18 +118,4 @@ function initializeApp(
   ],
   bootstrap: [AppComponent],
 })
-export class AppModule {
-  constructor(
-    private apollo: Apollo,
-    httpLink: HttpLink
-  ) {
-    this.apollo.create(
-      {
-        link: httpLink.create({
-          uri: environment.chatGraphQL
-        }),
-        cache: new InMemoryCache(),
-      },
-      'chat');
-  }
-}
+export class AppModule {}

@@ -3,6 +3,7 @@ import { HttpEvent, HttpHeaders, HttpInterceptor, HttpHandler, HttpRequest, Http
 import { Observable } from 'rxjs/Observable';
 import { RequestConfig } from './request.service';
 import { BrowserStorageService } from '@services/storage.service';
+import { environment } from '@environments/environment';
 
 @Injectable()
 export class RequestInterceptor implements HttpInterceptor {
@@ -28,7 +29,7 @@ export class RequestInterceptor implements HttpInterceptor {
     const paramsInject = req.params;
 
     // inject appkey
-    if (this.currenConfig.appkey) {
+    if (!this.isLoginAPIURL(req) && this.currenConfig.appkey) {
       const appkey = this.currenConfig.appkey;
       headers['appkey'] = appkey;
     }
@@ -56,5 +57,19 @@ export class RequestInterceptor implements HttpInterceptor {
       headers: new HttpHeaders(headers),
       params: paramsInject,
     }));
+  }
+
+  /**
+   * sometimes we don't need the automated injected headers/params in the
+   *
+   * @param   {HttpRequest<any>}  req  [req description]
+   *
+   * @return  {<any>}                  [return description]
+   */
+  isLoginAPIURL(req: HttpRequest<any>) {
+    if (req.url.includes(environment.loginAPIUrl)) {
+      return true;
+    }
+    return false;
   }
 }

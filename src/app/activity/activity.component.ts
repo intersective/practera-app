@@ -1,17 +1,15 @@
 import { Component, Input, NgZone, Output, EventEmitter } from '@angular/core';
 import { Router } from '@angular/router';
-import { Observable, of, forkJoin, Subscription } from 'rxjs';
-import { catchError } from 'rxjs/operators';
-import { ActivityService, Activity, Task } from './activity.service';
+import { Subscription } from 'rxjs';
+import { ActivityService, Activity } from './activity.service';
 import { UtilsService } from '../services/utils.service';
 import { NotificationService } from '@shared/notification/notification.service';
 import { BrowserStorageService } from '@services/storage.service';
 import { Event, EventListService } from '@app/event-list/event-list.service';
-import { SharedService } from '@services/shared.service';
 import { FastFeedbackService } from '../fast-feedback/fast-feedback.service';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
-import { Apollo } from 'apollo-angular';
-import gql from 'graphql-tag';
+import { ApolloService } from '@shared/apollo/apollo.service';
+import { SharedService } from '@app/services/shared.service';
 
 @Component({
   selector: 'app-activity',
@@ -40,15 +38,15 @@ export class ActivityComponent {
   constructor(
     public router: Router,
     private activityService: ActivityService,
-    public utils: UtilsService,
     private notificationService: NotificationService,
     public storage: BrowserStorageService,
     public eventListService: EventListService,
-    public sharedService: SharedService,
     public fastFeedbackService: FastFeedbackService,
     private newRelic: NewRelicService,
     private ngZone: NgZone,
-    private apollo: Apollo
+    private apolloService: ApolloService,
+    readonly sharedService: SharedService,
+    readonly utils: UtilsService,
   ) {
 
     // update event list after book/cancel an event
@@ -91,6 +89,10 @@ export class ActivityComponent {
           });
       }
     }
+  }
+
+  dueDateFormatter(dueDate) {
+    return this.utils.dueDateFormatter(dueDate);
   }
 
   onEnter() {
@@ -214,9 +216,9 @@ export class ActivityComponent {
     }
     this.activity.tasks[index].status = status;
     // update the cache
-    this.apollo.getClient().writeFragment({
+    this.apolloService.writeFragment({
       id: `Task:${this.activity.tasks[index].type.toLowerCase()}${this.activity.tasks[index].id}`,
-      fragment: gql`
+      fragment: `
         fragment task on Task {
           status {
             status

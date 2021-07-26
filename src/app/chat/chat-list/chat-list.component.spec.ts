@@ -1,7 +1,6 @@
 import { CUSTOM_ELEMENTS_SCHEMA, EventEmitter } from '@angular/core';
 import { async, ComponentFixture, TestBed, tick, fakeAsync } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
-import { Apollo } from 'apollo-angular';
 import { ChatListComponent } from './chat-list.component';
 import { ChatService } from '../chat.service';
 import { of } from 'rxjs';
@@ -13,6 +12,62 @@ import { MockRouter } from '@testing/mocked.service';
 import { Router, ActivatedRoute, convertToParamMap } from '@angular/router';
 import { FastFeedbackServiceMock } from '@testing/mocked.service';
 import { FastFeedbackService } from '@app/fast-feedback/fast-feedback.service';
+import { TestUtils } from '@testing/utils';
+
+const mockChats = {
+  data: {
+    channels: [
+      {
+        uuid: '35326928',
+        name: 'Team 1',
+        avatar: 'https://sandbox.practera.com/img/team-white.png',
+        pusherChannel: 'sdb746-93r7dc-5f44eb4f',
+        isAnnouncement: false,
+        isDirectMessag: false,
+        readonly: false,
+        roles: [
+          'participant',
+          'coordinator',
+          'admin'
+        ],
+        unreadMessageCount: 0,
+        lastMessage: null,
+        lastMessageCreated: null
+      },
+      {
+        uuid: 'ced963c1',
+        name: 'Team 1 + Mentor',
+        avatar: 'https://sandbox.practera.com/img/team-white.png',
+        pusherChannel: 'kb5gt-9nfbj-5f45eb4g',
+        isAnnouncement: false,
+        isDirectMessage: false,
+        readonly: false,
+        roles: [
+          'participant',
+          'mentor',
+          'coordinator',
+          'admin'
+        ],
+        unreadMessageCount: 0,
+        lastMessage: null,
+        lastMessageCreated: null
+      }
+    ]
+  }
+};
+
+const mockPusherChannels = {
+  data: {
+    channels: [
+      {
+        pusherChannel: 'sdb746-93r7dc-5f44eb4f'
+      },
+      {
+        pusherChannel: 'kb5gt-9nfbj-5f45eb4g'
+      }
+    ]
+  }
+};
 
 describe('ChatListComponent', () => {
   let component: ChatListComponent;
@@ -31,12 +86,17 @@ describe('ChatListComponent', () => {
       declarations: [ChatListComponent],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
       providers: [
-        Apollo,
-        UtilsService,
         NewRelicService,
         {
+          provide: UtilsService,
+          useClass: TestUtils,
+        },
+        {
           provide: ChatService,
-          useValue: jasmine.createSpyObj('ChatService', ['getChatList', 'getPusherChannels'])
+          useValue: jasmine.createSpyObj('ChatService', {
+            'getChatList': of(mockChats.data.channels),
+            'getPusherChannels': of(true),
+          })
         },
         {
           provide: BrowserStorageService,
@@ -83,73 +143,17 @@ describe('ChatListComponent', () => {
     fastFeedbackSpy = TestBed.inject(FastFeedbackService) as jasmine.SpyObj<FastFeedbackService>;
   });
 
-  const mockChats = {
-    data: {
-      channels: [
-        {
-          uuid: '35326928',
-          name: 'Team 1',
-          avatar: 'https://sandbox.practera.com/img/team-white.png',
-          pusherChannel: 'sdb746-93r7dc-5f44eb4f',
-          isAnnouncement: false,
-          isDirectMessag: false,
-          readonly: false,
-          roles: [
-            'participant',
-            'coordinator',
-            'admin'
-          ],
-          unreadMessageCount: 0,
-          lastMessage: null,
-          lastMessageCreated: null
-        },
-        {
-          uuid: 'ced963c1',
-          name: 'Team 1 + Mentor',
-          avatar: 'https://sandbox.practera.com/img/team-white.png',
-          pusherChannel: 'kb5gt-9nfbj-5f45eb4g',
-          isAnnouncement: false,
-          isDirectMessage: false,
-          readonly: false,
-          roles: [
-            'participant',
-            'mentor',
-            'coordinator',
-            'admin'
-          ],
-          unreadMessageCount: 0,
-          lastMessage: null,
-          lastMessageCreated: null
-        }
-      ]
-    }
-  };
-
-  const mockPusherChannels = {
-    data: {
-      channels: [
-        {
-          pusherChannel: 'sdb746-93r7dc-5f44eb4f'
-        },
-        {
-          pusherChannel: 'kb5gt-9nfbj-5f45eb4g'
-        }
-      ]
-    }
-  };
-
   it('should create', () => {
     expect(component).toBeTruthy();
   });
 
   describe('when testing constructor()', () => {
     it(`should call getChatList once more if an 'chat:new-message' event triggered`, () => {
-      chatSeviceSpy.getChatList.and.returnValue(of(mockChats.data.channels));
       utils.broadcastEvent('chat:new-message', {});
       expect(chatSeviceSpy.getChatList.calls.count()).toBe(1);
     });
+
     it(`should call getChatList once more if an 'chat:info-update' event triggered`, () => {
-      chatSeviceSpy.getChatList.and.returnValue(of(mockChats.data.channels));
       utils.broadcastEvent('chat:info-update', {});
       expect(chatSeviceSpy.getChatList.calls.count()).toBe(1);
     });
@@ -169,7 +173,7 @@ describe('ChatListComponent', () => {
   describe('when testing goToChatRoom()', () => {
     it('should emit the navigate with chat channel', () => {
       spyOn(component.navigate, 'emit');
-      spyOn(utils, 'isMobile').and.returnValue(false);
+      utils.isMobile = jasmine.createSpy('utils.isMobile').and.returnValue(false);
       component.goToChatRoom(
         {
           uuid: '35326928',

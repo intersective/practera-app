@@ -6,7 +6,7 @@ import { Observable, of, pipe } from 'rxjs';
 import { SharedModule } from '@shared/shared.module';
 import { ReactiveFormsModule, FormControl } from '@angular/forms';
 import { UtilsService } from '@services/utils.service';
-import { Apollo } from 'apollo-angular';
+import { TestUtils } from '@testing/utils';
 
 class OnChangedValues extends SimpleChange {
   constructor(older, latest) {
@@ -25,8 +25,10 @@ describe('FileDisplayComponent', () => {
       declarations: [ FileDisplayComponent ],
       schemas: [ CUSTOM_ELEMENTS_SCHEMA ],
       providers: [
-        Apollo,
-        UtilsService,
+        {
+          provide: UtilsService,
+          useClass: TestUtils,
+        },
         {
           provide: FilestackService,
           useValue: jasmine.createSpyObj('FilestackService', [

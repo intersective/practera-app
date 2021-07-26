@@ -10,7 +10,6 @@ import { ActivatedRouteStub } from '@testing/activated-route-stub';
 import { TestUtils } from '@testing/utils';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
 import { MockRouter } from '@testing/mocked.service';
-import { Apollo } from 'apollo-angular';
 
 class Page {
   get eventItems() {
@@ -44,8 +43,10 @@ describe('EventListComponent', () => {
       declarations: [ EventListComponent ],
       schemas: [ CUSTOM_ELEMENTS_SCHEMA ],
       providers: [
-        Apollo,
-        UtilsService,
+        {
+          provide: UtilsService,
+          useClass: TestUtils,
+        },
         NewRelicService,
         {
           provide: EventListService,

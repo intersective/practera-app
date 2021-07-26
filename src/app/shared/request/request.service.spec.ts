@@ -1,45 +1,23 @@
 import { isDevMode, enableProdMode } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 import {
-  inject,
   fakeAsync,
   tick,
   TestBed,
-  async,
 } from '@angular/core/testing';
-
-import {
-  MockBackend,
-} from '@angular/http/testing';
-
-import {
-  HttpClient,
-  HttpRequest,
-  HttpHeaders
-} from '@angular/common/http';
 
 import {
   HttpTestingController,
   HttpClientTestingModule
 } from '@angular/common/http/testing';
 
-import {
-  Http,
-  ConnectionBackend,
-  BaseRequestOptions,
-  Response,
-  ResponseOptions
-} from '@angular/http';
-
 import { RequestService, RequestConfig, DevModeService, QueryEncoder } from './request.service';
 import { Router } from '@angular/router';
 import { BrowserStorageService } from '@services/storage.service';
 import { TestUtils } from '@testing/utils';
 import { BrowserStorageServiceMock } from '@testing/mocked.service';
-import { Apollo } from 'apollo-angular';
-import { HttpLink } from 'apollo-angular-link-http';
-import { InMemoryCache } from 'apollo-cache-inmemory';
-import gql from 'graphql-tag';
+import { ApolloService } from '../apollo/apollo.service';
+import { UtilsService } from '@app/services/utils.service';
 
 describe('QueryEncoder', () => {
   const encodedTest = 'https://test.com?test=true';
@@ -79,12 +57,13 @@ describe('RequestConfig', () => {
 
   it('should readily accept both appkey & prefixUrl value', () => {
     expect(requestConfig.appkey).toBe('');
-    expect(requestConfig.prefixUrl).toBe('');
+    expect(requestConfig.loginApiUrl).toBe('');
   });
 });
 
 describe('RequestService', () => {
   const PREFIX_URL = 'test.com';
+  const SCHEME_DOMAIN = 'https://test.com';
   const LOGINAPI = 'login.com';
   const APPKEY = 'TESTAPPKEY';
   const routerSpy = TestUtils.createRouterSpy();
@@ -94,22 +73,32 @@ describe('RequestService', () => {
   let requestConfigSpy: RequestConfig;
   let devModeServiceSpy: DevModeService;
   let storageSpy: BrowserStorageService;
-  let httpLink: HttpLink;
 
   beforeEach(async () => {
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule],
       providers: [
-        Apollo,
-        HttpLink,
+        {
+          provide: ApolloService,
+          useValue: jasmine.createSpyObj('ApolloService', [
+            'graphQLQuery',
+            'graphQLMutate',
+            'chatGraphQLQuery',
+            'chatGraphQLMutate',
+          ]),
+        },
         RequestService,
         DevModeService,
+        {
+          provide: UtilsService,
+          useClass: TestUtils,
+        },
         {
           provide: RequestConfig,
           useValue: {
             appkey: APPKEY,
             prefixUrl: PREFIX_URL,
-            loginApi: LOGINAPI
+            loginApiUrl: LOGINAPI
           }
         },
         {
@@ -128,7 +117,6 @@ describe('RequestService', () => {
     requestConfigSpy = TestBed.inject(RequestConfig);
     devModeServiceSpy = TestBed.inject(DevModeService);
     storageSpy = TestBed.inject(BrowserStorageService);
-    httpLink = TestBed.inject(HttpLink);
   });
 
   it('should be created', () => {
@@ -158,7 +146,7 @@ describe('RequestService', () => {
   });
 
   describe('get()', () => {
-    const testURL = 'https://www.test.com';
+    const testURL = 'https://login.com';
 
     it('should perform a GET request based on provided URL', fakeAsync(() => {
       let res = { body: true };
@@ -169,7 +157,7 @@ describe('RequestService', () => {
         con.mockRespond(new Response(response));
       });
 */
-      service.get(testURL, {param: {justFor: 'test'}}).subscribe(_res => {
+      service.get(null, {params: {justFor: 'test'}}, true).subscribe(_res => {
         res = _res;
       });
       const req = mockBackend.expectOne({ method: 'GET' });
@@ -186,7 +174,7 @@ describe('RequestService', () => {
 
     it('should perform a GET request based on provided URL', fakeAsync(() => {
       let res = { body: true };
-      service.get(testURL, {param: {justFor: 'test'}}, true).subscribe(_res => {
+      service.get('', {params: {justFor: 'test'}}, true).subscribe(_res => {
         res = _res;
       });
       const req = mockBackend.expectOne({ method: 'GET' });
@@ -203,7 +191,7 @@ describe('RequestService', () => {
 
     it('should update apikey if new apikey exist', () => {
       let res = { body: true, apikey: 'testapikey' };
-      service.get(testURL, {header: {some: 'keys'}}).subscribe(_res => {
+      service.get(testURL, {headers: {some: 'keys'}}).subscribe(_res => {
         res = _res;
       });
       const req = mockBackend.expectOne({ method: 'GET' });
@@ -219,7 +207,7 @@ describe('RequestService', () => {
       const err = { success: false, status: 400, statusText: 'Bad Request' };
       let res: any;
       let errRes: any;
-      service.get(testURL).subscribe(
+      service.get(null, {}, true).subscribe(
         _res => {
           res = _res;
         },
@@ -235,7 +223,7 @@ describe('RequestService', () => {
   });
 
   describe('post()', () => {
-    let testURL = 'https://www.post-test.com';
+    let testURL = 'post-test';
     const sampleData = {
       sample: 'data'
     };
@@ -252,14 +240,14 @@ describe('RequestService', () => {
       tick();
 
       const { body } = res;
-      expect(req.request.url).toBe(testURL);
+      expect(req.request.url).toBe(`https://login.com/${testURL}`);
       expect(body).toBe(true);
 
       mockBackend.verify();
     }));
 
     it('should perform a POST request based on provided URL', fakeAsync(() => {
-      testURL = 'https://login.com/login';
+      testURL = 'login';
 
       let res = { body: true };
 
@@ -272,7 +260,7 @@ describe('RequestService', () => {
       tick();
 
       const { body } = res;
-      expect(req.request.url).toBe(testURL);
+      expect(req.request.url).toBe(`https://login.com/${testURL}`);
       expect(body).toBe(true);
 
       mockBackend.verify();
@@ -285,7 +273,7 @@ describe('RequestService', () => {
       const err = { success: false, status: 400, statusText: 'Bad Request' };
       let res: any;
       let errRes: any;
-      service.post(testURL, sampleData).subscribe(
+      service.post(testURL, sampleData, {}, true).subscribe(
         _res => {
           res = _res;
         },
@@ -293,7 +281,7 @@ describe('RequestService', () => {
           errRes = _err;
         }
       );
-      const req = mockBackend.expectOne({ url: testURL, method: 'POST'}).flush(ERR_MESSAGE, err);
+      const req = mockBackend.expectOne({ url: `https://login.com/${testURL}`, method: 'POST'}).flush(ERR_MESSAGE, err);
 
       expect(res).toBeUndefined();
       expect(errRes).toEqual(ERR_MESSAGE);
@@ -301,7 +289,7 @@ describe('RequestService', () => {
   });
 
   describe('put()', () => {
-    let testURL = 'https://www.put-test.com';
+    let testURL = 'put-test';
     const sampleData = {
       sample: 'data'
     };
@@ -318,14 +306,14 @@ describe('RequestService', () => {
       tick();
 
       const { body } = res;
-      expect(req.request.url).toBe(testURL);
+      expect(req.request.url).toBe(`https://login.com/${testURL}`);
       expect(body).toBe(true);
 
       mockBackend.verify();
     }));
 
     it('should perform a PUT request based on provided URL', fakeAsync(() => {
-      testURL = 'https://login.com/login';
+      testURL = 'login';
 
       let res = { body: true };
 
@@ -338,7 +326,7 @@ describe('RequestService', () => {
       tick();
 
       const { body } = res;
-      expect(req.request.url).toBe(testURL);
+      expect(req.request.url).toBe(`https://login.com/${testURL}`);
       expect(body).toBe(true);
 
       mockBackend.verify();
@@ -351,7 +339,7 @@ describe('RequestService', () => {
       const err = { success: false, status: 400, statusText: 'Bad Request' };
       let res: any;
       let errRes: any;
-      service.put(testURL, sampleData).subscribe(
+      service.put(testURL, sampleData, {}, true).subscribe(
         _res => {
           res = _res;
         },
@@ -359,7 +347,7 @@ describe('RequestService', () => {
           errRes = _err;
         }
       );
-      const req = mockBackend.expectOne({ url: testURL, method: 'PUT'}).flush(ERR_MESSAGE, err);
+      const req = mockBackend.expectOne({ url: `https://login.com/${testURL}`, method: 'PUT'}).flush(ERR_MESSAGE, err);
 
       expect(res).toBeUndefined();
       expect(errRes).toEqual(ERR_MESSAGE);
@@ -367,12 +355,12 @@ describe('RequestService', () => {
   });
 
   describe('delete()', () => {
-    const testURL = 'https://www.delete-test.com';
+    const testURL = 'delete-test';
 
     it('should perform a GET request based on provided URL', fakeAsync(() => {
       let res = { body: true };
 
-      service.delete(testURL).subscribe(_res => {
+      service.delete(`${testURL}`).subscribe(_res => {
         res = _res;
       });
       const req = mockBackend.expectOne({ method: 'DELETE' });
@@ -381,7 +369,7 @@ describe('RequestService', () => {
       tick();
 
       const { body } = res;
-      expect(req.request.url).toBe(testURL);
+      expect(req.request.url).toBe(`${SCHEME_DOMAIN}/${testURL}`);
       expect(body).toBe(true);
 
       mockBackend.verify();
@@ -403,7 +391,7 @@ describe('RequestService', () => {
           errRes = _err;
         }
       );
-      const req = mockBackend.expectOne({ url: testURL, method: 'DELETE'}).flush(ERR_MESSAGE, err);
+      const req = mockBackend.expectOne({ url: `${SCHEME_DOMAIN}/${testURL}`, method: 'DELETE'}).flush(ERR_MESSAGE, err);
 
       expect(res).toBeUndefined();
       expect(console.error).not.toHaveBeenCalled();
@@ -419,14 +407,6 @@ describe('RequestService', () => {
         two: 2,
       });
       expect(httpParam.toString()).toEqual('test=true&one=1&two=2');
-    });
-  });
-
-  describe('getPrefixUrl()', () => {
-    it('should return prefixUrl from RequestConfig class', () => {
-      const result = service.getPrefixUrl();
-      expect(result).toEqual(PREFIX_URL);
-      expect(result).toEqual(requestConfigSpy.prefixUrl);
     });
   });
 
@@ -453,7 +433,7 @@ describe('RequestService', () => {
     let errRes: any;
     let request: any;
     beforeEach(fakeAsync(() => {
-      request = service.get('https://test.com').subscribe(
+      request = service.get().subscribe(
         _res => _res,
         _err => {
           errRes = _err;

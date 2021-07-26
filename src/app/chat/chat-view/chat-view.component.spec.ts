@@ -5,7 +5,7 @@ import { Router } from '@angular/router';
 import { ChatViewComponent } from './chat-view.component';
 import { UtilsService } from '@services/utils.service';
 import { MockRouter } from '@testing/mocked.service';
-import { Apollo } from 'apollo-angular';
+import { TestUtils } from '@testing/utils';
 
 describe('ChatViewComponent', () => {
   let component: ChatViewComponent;
@@ -18,8 +18,10 @@ describe('ChatViewComponent', () => {
       declarations: [ ChatViewComponent],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
       providers: [
-        Apollo,
-        UtilsService,
+        {
+          provide: UtilsService,
+          useClass: TestUtils,
+        },
         {
           provide: Router,
           useClass: MockRouter

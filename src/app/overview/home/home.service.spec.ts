@@ -8,7 +8,7 @@ import { HomeService } from './home.service';
 import { NotificationService } from '@shared/notification/notification.service';
 import { EventListService } from '@app/event-list/event-list.service';
 import * as moment from 'moment';
-import { Apollo } from 'apollo-angular';
+import { TestUtils } from '@testing/utils';
 
 describe('HomeService', () => {
   let service: HomeService;
@@ -21,9 +21,11 @@ describe('HomeService', () => {
     TestBed.configureTestingModule({
       imports: [ HttpClientTestingModule ],
       providers: [
-        Apollo,
         HomeService,
-        UtilsService,
+        {
+          provide: UtilsService,
+          useClass: TestUtils,
+        },
         {
           provide: NotificationService,
           useValue: jasmine.createSpyObj('NotificationService', ['achievementPopUp'])
@@ -59,7 +61,7 @@ describe('HomeService', () => {
   });
 
   describe('when testing getTodoItems()', () => {
-    it('should get correct todoItems', async() => {
+    it('should get correct todoItems', () => {
       const requestResponse = {
         success: true,
         data: [
@@ -158,9 +160,6 @@ describe('HomeService', () => {
       ];
       requestSpy.get.and.returnValue(of(requestResponse));
 
-      utils.getEvent('event-reminder').subscribe(
-        event => expect(event).toEqual({meta: requestResponse.data[4].meta})
-      );
       service.getTodoItems().subscribe(
         todoItems => expect(todoItems).toEqual(expected)
       );

@@ -11,7 +11,6 @@ import { NotificationService } from '@shared/notification/notification.service';
 import { BrowserStorageService } from '@services/storage.service';
 import { ReactiveFormsModule } from '@angular/forms';
 import { BrowserStorageServiceMock } from '@testing/mocked.service';
-import { Apollo } from 'apollo-angular';
 
 describe('AuthResetPasswordComponent', () => {
   let component: AuthResetPasswordComponent;
@@ -27,7 +26,6 @@ describe('AuthResetPasswordComponent', () => {
       declarations: [ AuthResetPasswordComponent ],
       schemas: [ CUSTOM_ELEMENTS_SCHEMA ],
       providers: [
-        Apollo,
         Location,
         {
           provide: LocationStrategy,

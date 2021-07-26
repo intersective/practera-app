@@ -3,7 +3,8 @@ import { UtilsService } from './utils.service';
 import { Observable, Subject, BehaviorSubject } from 'rxjs';
 import * as _ from 'lodash';
 import * as moment from 'moment';
-import { Apollo } from 'apollo-angular';
+import { TestUtils } from '@testing/utils';
+import { ApolloService } from '@app/shared/apollo/apollo.service';
 
 describe('UtilsService', () => {
   const NOW = new Date();
@@ -14,8 +15,15 @@ describe('UtilsService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
-        Apollo,
         UtilsService,
+        {
+          provide: ApolloService,
+          useValue: jasmine.createSpyObj('ApolloService', {
+            'getClient': {
+              clearStore: jasmine.createSpy('clearStore')
+            }
+          })
+        }
       ]
     });
 

@@ -21,6 +21,7 @@ import { of } from 'rxjs';
 // import { StatusBar } from '@ionic-native/status-bar/ngx';
 
 import { AppComponent } from './app.component';
+import { ApolloService } from './shared/apollo/apollo.service';
 
 describe('AppComponent', () => {
   let app: AppComponent;
@@ -40,6 +41,13 @@ describe('AppComponent', () => {
       declarations: [AppComponent],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
       providers: [
+        {
+          provide: ApolloService,
+          useValue: jasmine.createSpyObj('ApolloService', [
+            'initiateChatClient',
+            'initiateCoreClient',
+          ]),
+        },
         {
           provide: Router,
           useClass: MockRouter,

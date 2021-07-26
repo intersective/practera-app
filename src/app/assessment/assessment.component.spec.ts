@@ -1,7 +1,7 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { ReactiveFormsModule, FormGroup, FormControl } from '@angular/forms';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { async, ComponentFixture, TestBed, fakeAsync, tick, inject } from '@angular/core/testing';
+import { async, ComponentFixture, TestBed, fakeAsync, tick, inject, flushMicrotasks, flush } from '@angular/core/testing';
 import { QuestionsModule } from '@app/questions/questions.module';
 
 import { Router, ActivatedRoute, convertToParamMap } from '@angular/router';
@@ -17,7 +17,7 @@ import { FastFeedbackServiceMock } from '@testing/mocked.service';
 import { of } from 'rxjs';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
 import { MockRouter, MockNewRelicService } from '@testing/mocked.service';
-import { Apollo } from 'apollo-angular';
+import { TestUtils } from '@testing/utils';
 
 class Page {
   get savingMessage() {
@@ -181,7 +181,6 @@ describe('AssessmentComponent', () => {
       declarations: [AssessmentComponent],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
       providers: [
-        Apollo,
         {
           provide: ActivatedRoute,
           useValue: {
@@ -200,8 +199,14 @@ describe('AssessmentComponent', () => {
             params: of(true),
           }
         },
-        UtilsService,
-        SharedService,
+        {
+          provide: UtilsService,
+          useClass: TestUtils,
+        },
+        {
+          provide: SharedService,
+          useValue: jasmine.createSpyObj('SharedService', ['stopPlayingVideos'])
+        },
         {
           provide: NewRelicService,
           useClass: MockNewRelicService,
@@ -301,7 +306,7 @@ describe('AssessmentComponent', () => {
         expect(page.assessmentName.innerHTML).toEqual(mockAssessment.name);
         expect(page.assessmentDescription).toBeTruthy();
         expect(page.overDueMsg).toBeFalsy();
-        expect(page.dueMsg.innerHTML.trim()).toEqual(shared.dueDateFormatter(mockAssessment.dueDate));
+        expect(page.dueMsg.innerHTML.trim()).toEqual(utils.dueDateFormatter(mockAssessment.dueDate));
         mockAssessment.groups.forEach((group, groupIndex) => {
           expect(page.groupNames[groupIndex].innerHTML).toEqual(group.name);
           expect(page.groupDescriptions[groupIndex]).toBeTruthy();
@@ -433,11 +438,12 @@ describe('AssessmentComponent', () => {
     expect(routerSpy.navigate.calls.count()).toBe(0);
   });
 
-  it('should save in progress and navigate to other page when going back', () => {
+  it('should save in progress and navigate to other page when going back', fakeAsync(() => {
     component.back();
+    flush();
     expect(component.savingMessage).toContain('Last saved');
     expect(routerSpy.navigate.calls.first().args[0]).toEqual(['app', 'home']);
-  });
+  }));
 
   it('should list unanswered required questions from compulsoryQuestionsAnswered()', () => {
     expect(component.compulsoryQuestionsAnswered).toBeDefined();
