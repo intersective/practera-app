@@ -63,10 +63,9 @@ export class AppComponent implements OnInit {
         // watch version update
         this.versionCheckService.initiateVersionCheck();
       }
-      // initialise Pusher
-      await this.pusherService.initialise();
-      this.apolloService.initiateCoreClient();
-      this.apolloService.initiateChatClient();
+
+      // initialise Pusher/ apollo when app loading if there stack info in storage
+      this.sharedService.initPusherApollo();
     });
   }
 

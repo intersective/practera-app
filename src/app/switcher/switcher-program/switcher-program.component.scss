@@ -46,9 +46,9 @@ ion-skeleton-text {
     margin: 0;
     margin-left: 3px;
   }
-  &.not-live {
+  &.draft {
     ion-icon, p {
-      color: var(--practera-exp-not-live);
+      color: var(--practera-exp-draft);
     }
   }
   &.live {
@@ -60,9 +60,9 @@ ion-skeleton-text {
       height: 10px !important;
     }
   }
-  &.done {
+  &.completed {
     ion-icon, p {
-      color: var(--practera-exp-done);
+      color: var(--practera-exp-completed);
     }
   }
 }

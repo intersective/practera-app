@@ -96,7 +96,6 @@ function initializeApp(
     ReviewRatingModule,
     EventDetailModule,
     PusherModule.forRoot({
-      apiurl: environment.APIEndpoint,
       pusherKey: environment.pusherKey,
     }),
     IntercomModule.forRoot({

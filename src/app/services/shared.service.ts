@@ -7,6 +7,8 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
 import { TopicService } from '../topic/topic.service';
+import { ApolloService } from '@shared/apollo/apollo.service';
+import { PusherService } from '@shared/pusher/pusher.service';
 
 export interface Profile {
   contact_number: string;
@@ -34,7 +36,9 @@ export class SharedService {
     private request: RequestService,
     private http: HttpClient,
     private newrelic: NewRelicService,
-    private topicService: TopicService
+    private topicService: TopicService,
+    private apolloService: ApolloService,
+    private pusherService: PusherService
   ) {}
 
   // call this function on every page refresh and after switch program
@@ -121,6 +125,17 @@ export class SharedService {
           console.log('error in mark Topic Stop On Navigating - ', err);
         }
       );
+    }
+  }
+
+  /**
+   * Initialise Pusher/ apollo if there stack info in storage
+   */
+  async initPusherApollo() {
+    if (this.storage.stackConfig) {
+      await this.pusherService.initialise();
+      this.apolloService.initiateCoreClient();
+      this.apolloService.initiateChatClient();
     }
   }
 

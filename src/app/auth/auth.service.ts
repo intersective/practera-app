@@ -427,11 +427,14 @@ export class AuthService {
    * @return  {Observable<Stack>[]} multiple stacks
    */
   getStacks(): Observable<Stack[]> {
-    return this.request.get(LOGIN_API.multipleStacks, {
-      params: {
-        type: 'app'
-      }
-    },                      true).pipe(
+    return this.request.get(
+      LOGIN_API.multipleStacks,
+      {
+        params: {
+          type: 'app'
+        }
+      },
+      true).pipe(
       map(res => {
         if (res) {
           this.storage.stacks = res;

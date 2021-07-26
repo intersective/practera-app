@@ -17,16 +17,19 @@
               <ion-label class="subtitle-1">
                 {{ program.program.name }}
               </ion-label>
-              <!-- @TODO need to change element depend on experience status after it added to api response. -->
-              <div slot="end" class="status-slot live">
-                <!-- <ion-icon name="time-outline"></ion-icon>
-                <p class="subtitle-2">NOT LIVE</p> -->
-
-                <ion-icon name="ellipse"></ion-icon>
-                <p class="subtitle-2">LIVE</p>
-
-                <!-- <ion-icon name="checkmark-outline"></ion-icon>
-                <p class="subtitle-2">DONE</p> -->
+              <div slot="end" class="status-slot" [ngClass]="program.experience.status ? program.experience.status: ''">
+                <ng-container *ngIf="program.experience.status === 'draft'">
+                  <ion-icon name="time-outline"></ion-icon>
+                  <p class="subtitle-2">NOT LIVE</p>
+                </ng-container>
+                <ng-container *ngIf="program.experience.status === 'live'">
+                  <ion-icon name="ellipse"></ion-icon>
+                  <p class="subtitle-2">LIVE</p>
+                </ng-container>
+                <ng-container *ngIf="program.experience.status === 'completed'">
+                  <ion-icon name="checkmark-outline"></ion-icon>
+                  <p class="subtitle-2">DONE</p>
+                </ng-container>
               </div>
             </clickable-item>
           </ion-card-content>

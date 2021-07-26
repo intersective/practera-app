@@ -19,6 +19,9 @@ export class SwitcherResolverService implements Resolve<Stack[]> {
     if (this.utils.isEmpty(stacks)) {
       try {
         stacks = await this.service.getStacks().toPromise();
+        if (stacks && stacks.length > 0) {
+          this.storage.stacks = stacks;
+        }
         return stacks;
       } catch (err) {
         // @TODO: have a plan to gracefully throw this error

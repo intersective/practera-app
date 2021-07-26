@@ -23,6 +23,8 @@ export class SwitcherProgramComponent extends RouterEnter implements AfterConten
   routeUrl = '/switcher/switcher-program';
   programs: Array<ProgramObj>;
   isExperiencesLoading = true;
+  stacks: Stack[];
+
   constructor(
     public loadingController: LoadingController,
     public router: Router,
@@ -41,10 +43,10 @@ export class SwitcherProgramComponent extends RouterEnter implements AfterConten
 
   onEnter() {
     this.newRelic.setPageViewName('program switcher');
-    this.switcherService.getExpreances().subscribe(
-      expreances => {
+    this.switcherService.getExperience(this.stacks).subscribe(
+      experiences => {
         this.isExperiencesLoading = false;
-        this.programs = expreances.programs;
+        this.programs = experiences;
       },
       error => {
         this.isExperiencesLoading = false;
@@ -60,16 +62,17 @@ export class SwitcherProgramComponent extends RouterEnter implements AfterConten
     const loading = await this.loadingController.create({
       message: 'loading...'
     });
-    this.newRelic.actionText(`selected ${this.programs[programIndex].program.name}`);
+    this.newRelic.actionText(`selected ${this.programs[index].program.name}`);
 
     await loading.present();
 
     try {
-      if (!this.utils.isEmpty(stackIndex)) {
-        this.storage.stackConfig = this.stacks[stackIndex];
-      }
+      this.storage.setUser({apikey: this.programs[index].apikey});
+      this.storage.set('programs', this.programs);
+      this.storage.set('isLoggedIn', true);
+      this.storage.stackConfig = this.programs[index].stack;
 
-      const route = await this.switcherService.switchProgramAndNavigate(this.programs[programIndex]);
+      const route = await this.switcherService.switchProgramAndNavigate(this.programs[index]);
       loading.dismiss().then(() => {
         nrSwitchedProgramTracer();
         this.router.navigate(route);

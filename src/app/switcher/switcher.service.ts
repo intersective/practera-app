@@ -3,7 +3,7 @@ import { Observable, of, forkJoin } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { RequestService } from '@shared/request/request.service';
 import { UtilsService } from '@services/utils.service';
-import { BrowserStorageService } from '@services/storage.service';
+import { BrowserStorageService, Stack } from '@services/storage.service';
 import { PusherService } from '@shared/pusher/pusher.service';
 import { SharedService } from '@services/shared.service';
 import { ReviewListService } from '@app/review-list/review-list.service';
@@ -31,6 +31,8 @@ export interface ProgramObj {
   experience: Experience;
   progress?: number;
   todoItems?: number;
+  apikey: string;
+  stack: Stack;
 }
 
 export interface Program {
@@ -81,11 +83,10 @@ export class SwitcherService {
     private eventsService: EventListService
   ) {}
 
-  getExpreances() {
+  getExperience(stackList: Stack[]) {
     if (!this.storage.stacks || this.storage.stacks.length < 1) {
-      throw Error('');
+      throw Error('Fail to retrieve stacks info');
     }
-    const stackList = this.storage.stacks;
     const stackRequests = [];
     const apikeyFromLoginAPI = this.storage.loginApiKey;
     const body = new HttpParams()
@@ -101,7 +102,10 @@ export class SwitcherService {
           data: body,
           httpOptions: { headers },
           isFullUrl: true
-        }));
+        }).pipe(map(res => {
+          res.stack = stack;
+          return res;
+        })));
     });
     return forkJoin(stackRequests).pipe(map(res => this._normaliseAuthResults(res)));
   }
@@ -109,42 +113,43 @@ export class SwitcherService {
   private _normaliseAuthResults(apiResults: any[]): any {
     const cdn = 'https://cdn.filestackcontent.com/resize=fit:crop,width:';
     let imagewidth = 600;
-    let expreancesList;
+    const expreancesList = [];
     apiResults.forEach(result => {
       const data = result.data;
-      expreancesList =  {
-        apikey: data.apikey,
-        programs: data.Timelines.map(
-          timeline => {
-            if (!this.utils.has(timeline, 'Program.config.theme_color')) {
-              if (!this.utils.has(timeline.Program, 'config')) {
-                timeline.Program.config = {
-                  theme_color: 'var(--ion-color-primary)'
-                };
-              } else {
-                timeline.Program.config.theme_color = 'var(--ion-color-primary)';
-              }
+      data.Timelines.map(
+        timeline => {
+          if (!this.utils.has(timeline, 'Program.config.theme_color')) {
+            if (!this.utils.has(timeline.Program, 'config')) {
+              timeline.Program.config = {
+                theme_color: 'var(--ion-color-primary)'
+              };
+            } else {
+              timeline.Program.config.theme_color = 'var(--ion-color-primary)';
             }
-            if (timeline.Project.lead_image) {
-              const imageId = timeline.Project.lead_image.split('/').pop();
-              if (!this.utils.isMobile()) {
-                imagewidth = 1024;
-              }
-              timeline.Project.lead_image = `${cdn}${imagewidth}/${imageId}`;
+          }
+          if (timeline.Project.lead_image) {
+            const imageId = timeline.Project.lead_image.split('/').pop();
+            if (!this.utils.isMobile()) {
+              imagewidth = 1024;
             }
-            return {
-              enrolment: timeline.Enrolment,
-              program: timeline.Program,
-              project: timeline.Project,
-              timeline: timeline.Timeline,
-              experience: timeline.Experience,
-            };
-          },
-          this
-        ),
-        config: (data.Experience || {}).config || {},
-        _raw: result
-      };
+            timeline.Project.lead_image = `${cdn}${imagewidth}/${imageId}`;
+          }
+          expreancesList.push({
+            enrolment: timeline.Enrolment,
+            program: timeline.Program,
+            project: timeline.Project,
+            timeline: timeline.Timeline,
+            experience: timeline.Experience,
+            stack: result.stack,
+            apikey: data.apikey
+          });
+        }
+      );
+    });
+    expreancesList.sort((a, b) => {
+      a = new Date(a.enrolment.created.date);
+      b = new Date(b.enrolment.created.date);
+      return a.date - a.date;
     });
     return expreancesList;
   }
@@ -183,6 +188,9 @@ export class SwitcherService {
   }
 
   switchProgram(programObj: ProgramObj): Observable<any> {
+    // initialise Pusher and apollo here if there stack info in storage
+    this.sharedService.initPusherApollo();
+
     const themeColor = this.utils.has(programObj, 'program.config.theme_color') ? programObj.program.config.theme_color : '#2bbfd4';
     let cardBackgroundImage = '';
     if (this.utils.has(programObj, 'program.config.card_style')) {
@@ -316,7 +324,7 @@ export class SwitcherService {
       } else if (Array.isArray(programs) && this.checkIsOneProgram(programs)) {
         await this.switchProgram(programs[0]).toPromise();
       } else {
-      // one program object -> {}
+        // one program object -> {}
         await this.switchProgram(programs).toPromise();
       }
 
