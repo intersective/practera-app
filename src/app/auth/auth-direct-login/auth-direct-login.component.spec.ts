@@ -254,6 +254,7 @@ describe('AuthDirectLoginComponent', () => {
         utils.isMobile = jasmine.createSpy('isMobile').and.returnValues(true);
 
         tmpParams.redirect = 'assessment';
+        tmpParams.sm = undefined;
         redirect = [
           'assessment',
           'assessment',
@@ -263,10 +264,25 @@ describe('AuthDirectLoginComponent', () => {
         ];
       });
 
+      it('assessment page with submission id (mobile)', () => {
+        utils.isMobile = jasmine.createSpy('isMobile').and.returnValues(true);
+
+        tmpParams.redirect = 'assessment';
+        redirect = [
+          'assessment',
+          'assessment',
+          tmpParams.act,
+          tmpParams.ctxt,
+          tmpParams.asmt,
+          tmpParams.sm
+        ];
+      });
+
       it('assessment page (onePageOnly restriction)', () => {
         storageSpy.singlePageAccess = true; // singlePageRestriction
 
         tmpParams.redirect = 'assessment';
+        tmpParams.sm = undefined;
         redirect = [
           'assessment',
           'assessment',
