@@ -139,6 +139,9 @@ export class AuthDirectLoginComponent implements OnInit {
         }
 
         if (this.utils.isMobile() || restrictedAccess) {
+          if (submissionId) {
+            return this._saveOrRedirect(['assessment', 'assessment', activityId, contextId, assessmentId, submissionId], redirectLater);
+          }
           return this._saveOrRedirect(['assessment', 'assessment', activityId, contextId, assessmentId], redirectLater);
         } else {
           return this._saveOrRedirect(['app', 'activity', activityId, { task: 'assessment', task_id: assessmentId, context_id: contextId }], redirectLater);
