@@ -6,17 +6,11 @@ import { map, filter } from 'rxjs/operators';
 import { Platform } from '@ionic/angular';
 import { Apollo } from 'apollo-angular';
 import * as moment from 'moment';
-
+import { Colors } from '@services/storage.service';
 
 enum ThemeColor {
   primary = 'primary',
   secondary = 'secondary',
-}
-
-interface Colors {
-  primary?: string;
-  secondary?: string;
-  theme_color?: string;
 }
 
 // @TODO: enhance Window reference later, we shouldn't refer directly to browser's window object like this
@@ -136,18 +130,29 @@ export class UtilsService {
   }
 
   /**
-   * accept multiple colors for customized setting
+   * accept multiple colors for customized setting,
+   * if both "primary" & "theme" colors are provided, only "primary" is accepted
+   * if both "primary" & "secondary" provided, both colors will be reflected
+   * according to ionic's application of the primary/secondary color in the theme
    *
    * @param   {Colors}  colors accept colors
    * @return  {void}
    */
-  changeThemeColor(colors: Colors): void {
-    if (colors && (colors.primary || colors.theme_color)) {
-      this.setColor(colors.primary, ThemeColor.primary);
-    }
+  changeThemeColor(colors?: Colors): void {
+    const defaultColor = '#2bbfd4';
+    if (colors) {
+      if (colors.primary || colors.theme) {
+        this.setColor(colors.primary || colors.theme, ThemeColor.primary);
+      } else {
+        this.setColor(defaultColor, ThemeColor.primary);
+      }
 
-    if (colors && colors.secondary) {
-      this.setColor(colors.secondary, ThemeColor.secondary);
+      if (colors.secondary) {
+        this.setColor(colors.secondary, ThemeColor.secondary);
+      }
+    } else {
+      // default
+      this.setColor(defaultColor, ThemeColor.primary);
     }
   }
 
@@ -159,7 +164,7 @@ export class UtilsService {
    *
    * @return  {void}               action happen in the framework level
    */
-  setColor(color, type: ThemeColor): void {
+  setColor(color: string, type: ThemeColor): void {
     this.document.documentElement.style.setProperty(`--ion-color-${type}`, color);
     this.document.documentElement.style.setProperty(`--ion-color-${type}-shade`, color);
     // get the tint version of the color(20% opacity)

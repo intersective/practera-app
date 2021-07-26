@@ -266,7 +266,9 @@ describe('SwitcherService', () => {
         projectId: ProgramFixture[3].project.id,
         timelineId: ProgramFixture[3].timeline.id,
         contactNumber: ProgramFixture[3].enrolment.contact_number,
-        themeColor: '#2bbfd4',
+        colors: {
+          theme: '#2bbfd4',
+        },
         activityCardImage: '',
         enrolment: ProgramFixture[3].enrolment,
         activityCompleteMessage: null,
