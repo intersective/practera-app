@@ -120,7 +120,7 @@ describe('UtilsService', () => {
     });
 
     it('should set default color when primary & theme are undefined', () => {
-      const COLOR = '#2bbfd4'; //default color
+      const COLOR = '#2bbfd4'; // default color
       service.changeThemeColor({
         primary: undefined,
         theme: undefined,
