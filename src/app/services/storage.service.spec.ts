@@ -3,7 +3,7 @@ import { BrowserStorageService, BROWSER_STORAGE } from './storage.service';
 
 describe('StorageService', () => {
   let service: BrowserStorageService;
-  let storage; // : BROWSER_STORAGE;
+  let storageSpy; // : BROWSER_STORAGE;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -11,7 +11,7 @@ describe('StorageService', () => {
         BrowserStorageService,
         {
           provide: BROWSER_STORAGE,
-          useValue: jasmine.createSpyObj([
+          useValue: jasmine.createSpyObj('BROWSER_STORAGE', [
             'getItem',
             'setItem',
             'removeItem',
@@ -21,7 +21,7 @@ describe('StorageService', () => {
       ]
     });
     service = TestBed.inject(BrowserStorageService);
-    storage = TestBed.inject(BROWSER_STORAGE);
+    storageSpy = TestBed.inject(BROWSER_STORAGE);
   });
 
   it('should created', () => {
@@ -31,7 +31,7 @@ describe('StorageService', () => {
   describe('set()', () => {
     it('should set value into cache', () => {
       service.set('test', 'value');
-      expect(storage.setItem).toHaveBeenCalled();
+      expect(storageSpy.setItem).toHaveBeenCalled();
     });
   });
 
@@ -42,22 +42,22 @@ describe('StorageService', () => {
       service.set(key, {'text': 'value1'});
       const result = service.append(key, {'text2': 'value2'});
 
-      expect(storage.getItem).toHaveBeenCalledWith(key);
-      expect(storage.setItem).toHaveBeenCalledTimes(2);
+      expect(storageSpy.getItem).toHaveBeenCalledWith(key);
+      expect(storageSpy.setItem).toHaveBeenCalledTimes(2);
     });
   });
 
   describe('clear()', () => {
     it('should clear cache', () => {
       service.clear();
-      expect(storage.clear).toHaveBeenCalled();
+      expect(storageSpy.clear).toHaveBeenCalled();
     });
   });
 
   describe('getUser()', () => {
     it('should get user information ("me" item)', () => {
       service.getUser();
-      expect(storage.getItem).toHaveBeenCalledWith('me');
+      expect(storageSpy.getItem).toHaveBeenCalledWith('me');
     });
   });
 
@@ -66,14 +66,14 @@ describe('StorageService', () => {
       service.getUser = jasmine.createSpy('getUser').and.returnValue({});
 
       service.setUser({ name: 'tester' });
-      expect(storage.setItem).toHaveBeenCalledWith('me', '{"name":"tester"}');
+      expect(storageSpy.setItem).toHaveBeenCalledWith('me', '{"name":"tester"}');
     });
   });
 
   describe('getReferrer()', () => {
     it('should get referrer information', () => {
       service.getReferrer();
-      expect(storage.getItem).toHaveBeenCalledWith('referrer');
+      expect(storageSpy.getItem).toHaveBeenCalledWith('referrer');
     });
   });
 
@@ -82,14 +82,14 @@ describe('StorageService', () => {
       service.getReferrer = jasmine.createSpy('getUser').and.returnValue({});
 
       service.setReferrer({ route: 'activity-task', url: 'tester' });
-      expect(storage.setItem).toHaveBeenCalledWith('referrer', '{"route":"activity-task","url":"tester"}');
+      expect(storageSpy.setItem).toHaveBeenCalledWith('referrer', '{"route":"activity-task","url":"tester"}');
     });
   });
 
   describe('getConfig()', () => {
     it('should retrieve cached config', () => {
       service.getConfig();
-      expect(storage.getItem).toHaveBeenCalledWith('config');
+      expect(storageSpy.getItem).toHaveBeenCalledWith('config');
     });
   });
 
@@ -98,45 +98,45 @@ describe('StorageService', () => {
       service.getConfig = jasmine.createSpy('getConfig').and.returnValue({});
 
       service.setConfig({ logo: 'image' });
-      expect(storage.setItem).toHaveBeenCalledWith('config', '{"logo":"image"}');
+      expect(storageSpy.setItem).toHaveBeenCalledWith('config', '{"logo":"image"}');
     });
   });
 
   describe('setBookedEventActivityIds()', () => {
     it('should cache booked event & activity ids', () => {
-      storage.getItem = jasmine.createSpy('getItem').and.returnValue(JSON.stringify([1, 2, 3, 4, 5, 6]));
+      storageSpy.getItem = jasmine.createSpy('getItem').and.returnValue(JSON.stringify([1, 2, 3, 4, 5, 6]));
       service.setBookedEventActivityIds(7);
-      expect(storage.getItem).toHaveBeenCalledWith('bookedEventActivityIds');
-      expect(storage.setItem).toHaveBeenCalledWith('bookedEventActivityIds', '[1,2,3,4,5,6,7]');
+      expect(storageSpy.getItem).toHaveBeenCalledWith('bookedEventActivityIds');
+      expect(storageSpy.setItem).toHaveBeenCalledWith('bookedEventActivityIds', '[1,2,3,4,5,6,7]');
     });
   });
 
   describe('removeBookedEventActivityIds()', () => {
     beforeEach(() => {
-      storage.getItem = jasmine.createSpy('getItem').and.returnValue(JSON.stringify([1, 2, 3, 4, 5, 6]));
+      storageSpy.getItem = jasmine.createSpy('getItem').and.returnValue(JSON.stringify([1, 2, 3, 4, 5, 6]));
     });
 
     it('should remove cached event & activity', () => {
       service.removeBookedEventActivityIds(2);
-      expect(storage.getItem).toHaveBeenCalledWith('bookedEventActivityIds');
-      expect(storage.setItem).toHaveBeenCalledWith('bookedEventActivityIds', '[1,3,4,5,6]');
+      expect(storageSpy.getItem).toHaveBeenCalledWith('bookedEventActivityIds');
+      expect(storageSpy.setItem).toHaveBeenCalledWith('bookedEventActivityIds', '[1,3,4,5,6]');
     });
   });
 
   describe('initBookedEventActivityIds()', () => {
     it('should remove cache with key "bookedEventActivityIds"', () => {
       service.initBookedEventActivityIds();
-      expect(storage.removeItem).toHaveBeenCalledWith('bookedEventActivityIds');
+      expect(storageSpy.removeItem).toHaveBeenCalledWith('bookedEventActivityIds');
     });
   });
 
   describe('singlePageAccess', () => {
     it('should be false if null or none cached', () => {
-      storage.getItem = jasmine.createSpy('getItem').and.returnValue(null);
+      storageSpy.getItem = jasmine.createSpy('getItem').and.returnValue(null);
       expect(service.singlePageAccess).toBeFalsy();
     });
     it('should be true if true cached under singlePageAccess', () => {
-      storage.getItem = jasmine.createSpy('getItem').and.returnValue(true);
+      storageSpy.getItem = jasmine.createSpy('getItem').and.returnValue(true);
       expect(service.singlePageAccess).toBeTruthy();
     });
   });
