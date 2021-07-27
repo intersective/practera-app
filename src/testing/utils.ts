@@ -1,5 +1,6 @@
 import * as moment from 'moment';
 import { UtilsService } from '@services/utils.service';
+import { of } from 'rxjs';
 
 export class SpyObject {
   constructor(type?: any) {
@@ -39,13 +40,19 @@ export class TestUtils extends SpyObject {
   isMobile;
   clearCache;
   find;
+  getEvent;
+  changeThemeColor;
+  changeCardBackgroundImage;
 
   constructor() {
     super(UtilsService);
     this.isEmpty = this.spy('isEmpty');
     this.isMobile = this.spy('isMobile');
     this.find = this.spy('find');
+    this.getEvent = this.spy('getEvent').and.returnValue(of(true));
     this.clearCache = this.spy('clearCache').and.returnValue(true);
+    this.changeThemeColor = this.spy('changeThemeColor').and.returnValue(true);
+    this.changeCardBackgroundImage = this.spy('changeCardBackgroundImage').and.returnValue(true);
   }
 
   static createRouterSpy() {

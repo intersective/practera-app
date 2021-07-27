@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { BrowserStorageService, BROWSER_STORAGE } from './storage.service';
 
-describe('StorageService', function() {
+describe('StorageService', () => {
   let service: BrowserStorageService;
   let storage; // : BROWSER_STORAGE;
 
@@ -28,14 +28,14 @@ describe('StorageService', function() {
     expect(service).toBeTruthy();
   });
 
-  describe('set()', function() {
+  describe('set()', () => {
     it('should set value into cache', () => {
       service.set('test', 'value');
       expect(storage.setItem).toHaveBeenCalled();
     });
   });
 
-  describe('append()', function() {
+  describe('append()', () => {
     it('should append value into cached key', () => {
       const key = 'test';
 
@@ -47,21 +47,21 @@ describe('StorageService', function() {
     });
   });
 
-  describe('clear()', function() {
+  describe('clear()', () => {
     it('should clear cache', () => {
       service.clear();
       expect(storage.clear).toHaveBeenCalled();
     });
   });
 
-  describe('getUser()', function() {
+  describe('getUser()', () => {
     it('should get user information ("me" item)', () => {
       service.getUser();
       expect(storage.getItem).toHaveBeenCalledWith('me');
     });
   });
 
-  describe('setUser()', function() {
+  describe('setUser()', () => {
     it('should set user information to ("me" item)', () => {
       service.getUser = jasmine.createSpy('getUser').and.returnValue({});
 
@@ -70,14 +70,14 @@ describe('StorageService', function() {
     });
   });
 
-  describe('getReferrer()', function() {
+  describe('getReferrer()', () => {
     it('should get referrer information', () => {
       service.getReferrer();
       expect(storage.getItem).toHaveBeenCalledWith('referrer');
     });
   });
 
-  describe('setReferrer()', function() {
+  describe('setReferrer()', () => {
     it('should set referrer information', () => {
       service.getReferrer = jasmine.createSpy('getUser').and.returnValue({});
 
@@ -86,14 +86,14 @@ describe('StorageService', function() {
     });
   });
 
-  describe('getConfig()', function() {
+  describe('getConfig()', () => {
     it('should retrieve cached config', () => {
       service.getConfig();
       expect(storage.getItem).toHaveBeenCalledWith('config');
     });
   });
 
-  describe('setConfig()', function() {
+  describe('setConfig()', () => {
     it('should set configuration to ("config" item)', () => {
       service.getConfig = jasmine.createSpy('getConfig').and.returnValue({});
 
@@ -102,7 +102,7 @@ describe('StorageService', function() {
     });
   });
 
-  describe('setBookedEventActivityIds()', function() {
+  describe('setBookedEventActivityIds()', () => {
     it('should cache booked event & activity ids', () => {
       storage.getItem = jasmine.createSpy('getItem').and.returnValue(JSON.stringify([1, 2, 3, 4, 5, 6]));
       service.setBookedEventActivityIds(7);
@@ -111,7 +111,7 @@ describe('StorageService', function() {
     });
   });
 
-  describe('removeBookedEventActivityIds()', function() {
+  describe('removeBookedEventActivityIds()', () => {
     beforeEach(() => {
       storage.getItem = jasmine.createSpy('getItem').and.returnValue(JSON.stringify([1, 2, 3, 4, 5, 6]));
     });
@@ -123,7 +123,7 @@ describe('StorageService', function() {
     });
   });
 
-  describe('initBookedEventActivityIds()', function() {
+  describe('initBookedEventActivityIds()', () => {
     it('should remove cache with key "bookedEventActivityIds"', () => {
       service.initBookedEventActivityIds();
       expect(storage.removeItem).toHaveBeenCalledWith('bookedEventActivityIds');
