@@ -4,7 +4,7 @@
 
 ## Requirements
 
-- Ionic 4 
+- Ionic 4
 - Angular 7
 
 ## Development Notes
@@ -23,9 +23,9 @@ Run `npm run local` to start a development server on your local, and calling 127
 ### Release Processes
 
 1. Merge `develop` branch to `master` (if we are releasing develop branch)
-1. Merge `master` branch to `release/eos` 
+1. Merge `master` branch to `release/eos`
 1. Create a new release in [Github](https://github.com/intersective/practera-app-v2/releases) with the release pull request link as the description
-1. Change the version number on Slack `team-dev` channel 
+1. Change the version number on Slack `team-dev` channel
   - `master` is always + 0.01 version ahead of `live`
   - `develop` is always + 0.1 version ahead of `live`
 
@@ -61,7 +61,7 @@ Run `npm run local` to start a development server on your local, and calling 127
 
 ## External link format
 
-### 1. Direct link login 
+### 1. Direct link login
 
 `*.com?do=secure&auth_token=*`
 
@@ -71,7 +71,7 @@ Run `npm run local` to start a development server on your local, and calling 127
 
 #### Required parameters:
 - `auth_token` - the auth token used to authenticate user
-- `redirect` - the page you will be redirect to 
+- `redirect` - the page you will be redirect to
 - `tl` - timeline id of the program you are in
 
 #### Valid `redirect` values:
@@ -86,6 +86,7 @@ Run `npm run local` to start a development server on your local, and calling 127
   - `act` - activity id
   - `ctxt` - context id
   - `asmt` - assessment id
+  - `sm` - submission id - [optional] if provide, will redirect user to `assessment/:activityId/:contextId/:id/:submissionId`
   - `assessment_referrer_url` - if this url is passed in, we will redirect the user to this url when user click back button or continue button on assessment page
 - `topic` - redirect to topic page with the following parameters
   - `act` - activity id
