@@ -129,18 +129,19 @@ describe('SwitcherService', () => {
         expect(result).toEqual(['switcher', 'switcher-program']);
     }));
 
-    it('should return [app, home] if programs is Array with multiple program objects ', fakeAsync(() => {
+    it('should return [app, home] if programs is Array with multiple program objects', fakeAsync(() => {
+      environment.goMobile = false;
       const [firstProgram] = ProgramFixture;
       spyOn(service, 'checkIsOneProgram').and.returnValue(true);
       spyOn(Array, 'isArray').and.returnValue(true);
       spyOn(service, 'switchProgram').and.returnValue({
-          toPromise: () => new Promise(res => res(true))
-        });
+        toPromise: () => new Promise(res => res(true))
+      });
 
       let result;
       service.switchProgramAndNavigate([firstProgram]).then(data => {
-          result = data;
-        });
+        result = data;
+      });
       flushMicrotasks();
       expect(result).toEqual(['app', 'home']);
       expect(pusherSpy.initialise).toHaveBeenCalled();
