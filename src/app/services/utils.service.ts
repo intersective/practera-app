@@ -175,7 +175,7 @@ export class UtilsService {
     const green = parseInt(hex.substring(2, 4), 16);
     const blue = parseInt(hex.substring(4, 6), 16);
 
-    this.document.documentElement.style.setProperty(`--ion-color-${type}-rgb`, red + ',' + green + ',' + blue);
+    this.document.documentElement.style.setProperty(`--ion-color-${type}-rgb`, `${red}, ${green}, ${blue}`);
   }
 
   changeCardBackgroundImage(image) {
