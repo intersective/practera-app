@@ -23,14 +23,7 @@ export interface User {
   teamId?: number;
   userHash?: string;
   maxAchievablePoints?: number;
-
-  // colors (custom branding)
-  colors?: {
-    theme?: string;
-    primary?: string;
-    secondary?: string;
-  };
-
+  colors?: Colors;
   activityCardImage?: string;
   hasReviewRating?: boolean;
   truncateDescription?: boolean;
@@ -50,6 +43,7 @@ export interface Referrer {
   url: string;
 }
 
+// colors (custom branding)
 export interface Colors {
   theme?: string;
   primary?: string;
