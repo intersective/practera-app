@@ -62,12 +62,13 @@ export class SharedService {
     // subscribe to the achievement event if it is not subscribed
     if (!this.achievementEvent) {
       this.achievementEvent = this.utils.getEvent('achievement').subscribe(event => {
+        const { id, name, description, points, badge } = event.meta.Achievement;
         this.notification.achievementPopUp('notification', {
-          id: event.meta.Achievement.id,
-          name: event.meta.Achievement.name,
-          description: event.meta.Achievement.description,
-          points: event.meta.Achievement.points,
-          image: event.meta.Achievement.badge
+          id,
+          name,
+          description,
+          points,
+          image: badge
         });
       });
     }
