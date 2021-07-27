@@ -92,9 +92,11 @@ describe('SwitcherService', () => {
         expect(service.checkIsOneProgram([{}, {}, {}])).toBe(false);
     });
     it('should get cached program when programs params is empty', () => {
-        spyOn(utils, 'isEmpty').and.returnValue(true);
-        expect(service.checkIsOneProgram([{}])).toBe(true);
-        expect(storageSpy.get).toHaveBeenCalledWith('programs');
+      const SAMPLE = [{}];
+      spyOn(utils, 'isEmpty').and.returnValue(true);
+      storageSpy.get = jasmine.createSpy('storageSpy.get').and.returnValue(SAMPLE);
+      expect(service.checkIsOneProgram(SAMPLE)).toBe(true);
+      expect(storageSpy.get).toHaveBeenCalledWith('programs');
     });
   });
 
