@@ -28,7 +28,7 @@ describe('StorageService', () => {
     expect(service).toBeTruthy();
   });
 
-  describe('set()', () => {
+  xdescribe('set()', () => {
     it('should set value into cache', () => {
       service.set('test', 'value');
       expect(storageSpy.setItem).toHaveBeenCalled();
