@@ -91,6 +91,13 @@ describe('SwitcherService', () => {
         spyOn(utils, 'isEmpty').and.returnValue(false);
         expect(service.checkIsOneProgram([{}, {}, {}])).toBe(false);
     });
+    it('should get cached program when programs params is empty', () => {
+      const SAMPLE = [{}];
+      spyOn(utils, 'isEmpty').and.returnValue(true);
+      storageSpy.get = jasmine.createSpy('storageSpy.get').and.returnValue(SAMPLE);
+      expect(service.checkIsOneProgram(SAMPLE)).toBe(true);
+      expect(storageSpy.get).toHaveBeenCalledWith('programs');
+    });
   });
 
   describe('when testing switchProgramAndNavigate()', () => {
@@ -252,7 +259,7 @@ describe('SwitcherService', () => {
       expect(service.getEvents).toHaveBeenCalled();
     });
 
-    it('should set the correct user data', () => {
+    it('should set the correct user data (1)', () => {
       const programObj = ProgramFixture[3];
       delete programObj.program.config.theme_color;
       service.switchProgram(programObj).subscribe();
@@ -266,7 +273,11 @@ describe('SwitcherService', () => {
         projectId: ProgramFixture[3].project.id,
         timelineId: ProgramFixture[3].timeline.id,
         contactNumber: ProgramFixture[3].enrolment.contact_number,
-        themeColor: '#2bbfd4',
+        colors: {
+          theme: undefined,
+          primary: undefined,
+          secondary: undefined,
+        },
         activityCardImage: '',
         enrolment: ProgramFixture[3].enrolment,
         activityCompleteMessage: null,
@@ -277,7 +288,7 @@ describe('SwitcherService', () => {
       });
     });
 
-    it('should set the correct user data', () => {
+    it('should set the correct user data (2)', () => {
       const programObj = ProgramFixture[2];
       programObj.program.config = {
         theme_color: 'none',
@@ -300,7 +311,11 @@ describe('SwitcherService', () => {
         projectId: ProgramFixture[2].project.id,
         timelineId: ProgramFixture[2].timeline.id,
         contactNumber: ProgramFixture[2].enrolment.contact_number,
-        themeColor: 'none',
+        colors: {
+          theme: 'none',
+          primary: undefined,
+          secondary: undefined,
+        },
         activityCardImage: '/assets/style',
         enrolment: ProgramFixture[2].enrolment,
         activityCompleteMessage: 'completed',
