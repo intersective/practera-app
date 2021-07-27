@@ -1,5 +1,5 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { Location, LocationStrategy, PathLocationStrategy } from '@angular/common';
+import { APP_BASE_HREF, Location, LocationStrategy, PathLocationStrategy } from '@angular/common';
 import { async, ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { AuthResetPasswordComponent } from './auth-reset-password.component';
@@ -30,6 +30,7 @@ describe('AuthResetPasswordComponent', () => {
       declarations: [ AuthResetPasswordComponent ],
       schemas: [ CUSTOM_ELEMENTS_SCHEMA ],
       providers: [
+        { provide: APP_BASE_HREF, useValue: '/' },
         Apollo,
         Location,
         {
@@ -96,7 +97,9 @@ describe('AuthResetPasswordComponent', () => {
     });
     it('should verify success', () => {
       fixture.detectChanges();
-      expect(component.verifySuccess).toBe(true);
+      fixture.whenStable().then(() => {
+        expect(component.verifySuccess).toBe(true);
+      });
     });
     it('should pop up alert and redirect if verify resetpassword failed', () => {
       serviceSpy.verifyResetPassword.and.returnValue(throwError(''));
