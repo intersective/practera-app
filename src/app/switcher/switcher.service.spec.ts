@@ -91,6 +91,11 @@ describe('SwitcherService', () => {
         spyOn(utils, 'isEmpty').and.returnValue(false);
         expect(service.checkIsOneProgram([{}, {}, {}])).toBe(false);
     });
+    it('should get cached program when programs params is empty', () => {
+        spyOn(utils, 'isEmpty').and.returnValue(true);
+        expect(service.checkIsOneProgram([{}])).toBe(true);
+        expect(storageSpy.get).toHaveBeenCalledWith('programs');
+    });
   });
 
   describe('when testing switchProgramAndNavigate()', () => {

@@ -134,12 +134,12 @@ export class SwitcherService {
 
     const primary = (experienceConfig || {}).primary_color;
     const secondary = (experienceConfig || {}).secondary_color;
-    const theme_color = (programConfig || {}).theme_color;
+    const themeColor = (programConfig || {}).theme_color;
 
     return {
       primary,
       secondary,
-      theme_color,
+      themeColor,
     };
   }
 
@@ -153,7 +153,7 @@ export class SwitcherService {
 
     this.storage.setUser({
       colors: {
-        theme: colors.theme_color,
+        theme: colors.themeColor,
         primary: colors.primary,
         secondary: colors.secondary,
       },
