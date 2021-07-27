@@ -49,7 +49,9 @@ describe('SharedService', () => {
         },
         {
           provide: TopicService,
-          useValue: jasmine.createSpyObj('TopicService', ['updateTopicProgress']),
+          useValue: jasmine.createSpyObj('TopicService', {
+            updateTopicProgress: of(true)
+          }),
         },
       ]
     });
