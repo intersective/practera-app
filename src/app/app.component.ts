@@ -66,7 +66,6 @@ export class AppComponent implements OnInit {
             let logo = expConfig[0].logo;
 
             const config = expConfig[0].config || {}; // let it fail gracefully
-            const themeColor = config.theme_color || '#2bbfd4';
 
             if (config.html_branding && config.html_branding.header) {
               this.customHeader = config.html_branding.header;
@@ -79,14 +78,18 @@ export class AppComponent implements OnInit {
             if (!logo.includes('http') && !this.utils.isEmpty(logo)) {
               logo = environment.APIEndpoint + logo;
             }
+            const colors = {
+              theme: config.theme_color,
+            };
             this.storage.setConfig({
               logo,
-              color: themeColor
+              colors,
             });
 
-            // use brand color if no theme color
-            if (!this.utils.has(this.storage.getUser(), 'themeColor') || !this.storage.getUser().themeColor) {
-              this.utils.changeThemeColor(themeColor);
+            // use brand color from getConfig API if no cached color available
+            // in storage.getUser()
+            if (!this.utils.has(this.storage.getUser(), 'colors') || !this.storage.getUser().colors) {
+              this.utils.changeThemeColor(colors);
             }
           }
         }
