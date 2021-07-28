@@ -145,7 +145,7 @@ describe('AchievementsService', () => {
     requestSpy.post.and.returnValue(of({}));
     service.markAchievementAsSeen(11);
     expect(requestSpy.post.calls.count()).toBe(1);
-    expect(requestSpy.post.calls.first().args[1]).toEqual({
+    expect(requestSpy.post.calls.first().args[0].data).toEqual({
       project_id: 1,
       identifier: 'Achievement-11',
       is_done: true

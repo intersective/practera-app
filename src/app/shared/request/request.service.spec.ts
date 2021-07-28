@@ -231,7 +231,13 @@ describe('RequestService', () => {
     it('should perform a POST request based on Login API URL', fakeAsync(() => {
       let res = { body: true };
 
-      service.post(testURL, sampleData, {}, true).subscribe(_res => {
+      service.post(
+        {
+          endPoint: testURL,
+          data: sampleData,
+          isLoginAPI: true
+        }
+      ).subscribe(_res => {
         res = _res;
       });
       const req = mockBackend.expectOne({ method: 'POST' });
@@ -251,7 +257,12 @@ describe('RequestService', () => {
 
       let res = { body: true };
 
-      service.post(testURL, sampleData, {}, true).subscribe(_res => {
+      service.post(
+        {
+          endPoint: testURL,
+          data: sampleData,
+          isLoginAPI: true
+        }).subscribe(_res => {
         res = _res;
       });
       const req = mockBackend.expectOne({ method: 'POST' });
@@ -273,7 +284,13 @@ describe('RequestService', () => {
       const err = { success: false, status: 400, statusText: 'Bad Request' };
       let res: any;
       let errRes: any;
-      service.post(testURL, sampleData, {}, true).subscribe(
+      service.post(
+        {
+          endPoint: testURL,
+          data: sampleData,
+          isLoginAPI: true
+        }
+      ).subscribe(
         _res => {
           res = _res;
         },

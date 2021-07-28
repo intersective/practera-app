@@ -12,7 +12,6 @@ import { SharedService } from '@services/shared.service';
 import { AuthService } from './auth/auth.service';
 import { BrowserStorageService } from '@services/storage.service';
 import { VersionCheckService } from '@services/version-check.service';
-import { PusherService } from '@shared/pusher/pusher.service';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
 import { DomSanitizer } from '@angular/platform-browser';
 import { Platform } from '@ionic/angular';
@@ -21,7 +20,6 @@ import { of } from 'rxjs';
 // import { StatusBar } from '@ionic-native/status-bar/ngx';
 
 import { AppComponent } from './app.component';
-import { ApolloService } from './shared/apollo/apollo.service';
 
 describe('AppComponent', () => {
   let app: AppComponent;
@@ -42,13 +40,6 @@ describe('AppComponent', () => {
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
       providers: [
         {
-          provide: ApolloService,
-          useValue: jasmine.createSpyObj('ApolloService', [
-            'initiateChatClient',
-            'initiateCoreClient',
-          ]),
-        },
-        {
           provide: Router,
           useClass: MockRouter,
         },
@@ -58,7 +49,7 @@ describe('AppComponent', () => {
         },
         {
           provide: SharedService,
-          useValue: jasmine.createSpyObj('SharedService', ['onPageLoad']),
+          useValue: jasmine.createSpyObj('SharedService', ['onPageLoad', 'initPusherApollo']),
         },
         {
           provide: AuthService,
@@ -87,12 +78,6 @@ describe('AppComponent', () => {
         {
           provide: VersionCheckService,
           useValue: jasmine.createSpyObj('VersionCheckService', ['initiateVersionCheck'])
-        },
-        {
-          provide: PusherService,
-          useValue: jasmine.createSpyObj('PusherService', {
-            'initialise': Promise.resolve(true)
-          })
         },
         {
           provide: NewRelicService,

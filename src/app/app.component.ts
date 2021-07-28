@@ -7,10 +7,8 @@ import { AuthService } from './auth/auth.service';
 import { BrowserStorageService } from '@services/storage.service';
 import { VersionCheckService } from '@services/version-check.service';
 import { environment } from '@environments/environment';
-import { PusherService } from '@shared/pusher/pusher.service';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
 import { DomSanitizer } from '@angular/platform-browser';
-import { ApolloService } from '@shared/apollo/apollo.service';
 
 @Component({
   selector: 'app-root',
@@ -26,11 +24,9 @@ export class AppComponent implements OnInit {
     private authService: AuthService,
     private storage: BrowserStorageService,
     private versionCheckService: VersionCheckService,
-    private pusherService: PusherService,
     private ngZone: NgZone,
     private newRelic: NewRelicService,
-    public sanitizer: DomSanitizer,
-    private apolloService: ApolloService,
+    public sanitizer: DomSanitizer
   ) {
     this.customHeader = null;
     this.initializeApp();

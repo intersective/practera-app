@@ -537,7 +537,7 @@ describe('AssessmentService', () => {
     it('should post correct data', () => {
       service.saveFeedbackReviewed(11);
       expect(requestSpy.post.calls.count()).toBe(1);
-      expect(requestSpy.post.calls.first().args[1]).toEqual({
+      expect(requestSpy.post.calls.first().args[0].data).toEqual({
         project_id: 1,
         identifier: 'AssessmentSubmission-11',
         is_done: true

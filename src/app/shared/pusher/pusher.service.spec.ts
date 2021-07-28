@@ -51,7 +51,6 @@ describe('PusherConfig', () => {
 
   it('should have pusherKey & apiurl', () => {
     expect(config.pusherKey).toEqual('');
-    expect(config.apiurl).toEqual('');
   });
 });
 
@@ -118,8 +117,7 @@ describe('PusherService', async () => {
         {
           provide: PusherConfig,
           useValue: {
-            pusherKey: PUSHERKEY,
-            apiurl: PUSHER_APIURL
+            pusherKey: PUSHERKEY
           }
         },
         {
@@ -278,7 +276,6 @@ describe('PusherService', async () => {
 
     it('should initialise pusher', fakeAsync(() => {
       expect(service['pusher']).not.toBeTruthy();
-      expect(service['apiurl']).toBe(PUSHER_APIURL);
 
       service.initialise().then();
       flushMicrotasks();
