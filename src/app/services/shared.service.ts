@@ -129,9 +129,9 @@ export class SharedService {
   }
 
   /**
-   * Initialise Pusher/ apollo if there stack info in storage
+   * Initialise web services like Pusher/ apollo if there stack info in storage
    */
-  async initPusherApollo() {
+  async initWebServices() {
     if (this.storage.stackConfig) {
       await this.pusherService.initialise();
       this.apolloService.initiateCoreClient();

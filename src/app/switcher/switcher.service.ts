@@ -189,7 +189,7 @@ export class SwitcherService {
 
   switchProgram(programObj: ProgramObj): Observable<any> {
     // initialise Pusher and apollo here if there stack info in storage
-    this.sharedService.initPusherApollo();
+    this.sharedService.initWebServices();
 
     const themeColor = this.utils.has(programObj, 'program.config.theme_color') ? programObj.program.config.theme_color : '#2bbfd4';
     let cardBackgroundImage = '';

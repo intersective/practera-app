@@ -65,7 +65,7 @@ export class AppComponent implements OnInit {
       }
 
       // initialise Pusher/ apollo when app loading if there stack info in storage
-      this.sharedService.initPusherApollo();
+      this.sharedService.initWebServices();
     });
   }
 
