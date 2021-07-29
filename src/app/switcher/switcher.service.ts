@@ -83,7 +83,7 @@ export class SwitcherService {
     private eventsService: EventListService
   ) {}
 
-  getExperience(stackList: Stack[]) {
+  getPrograms(stackList: Stack[]) {
     if (!this.storage.stacks || this.storage.stacks.length < 1) {
       throw Error('Fail to retrieve stacks info');
     }
@@ -113,7 +113,7 @@ export class SwitcherService {
   private _normaliseAuthResults(apiResults: any[]): any {
     const cdn = 'https://cdn.filestackcontent.com/resize=fit:crop,width:';
     let imagewidth = 600;
-    const expreancesList = [];
+    const programsList = [];
     apiResults.forEach(result => {
       const data = result.data;
       data.Timelines.map(
@@ -134,7 +134,7 @@ export class SwitcherService {
             }
             timeline.Project.lead_image = `${cdn}${imagewidth}/${imageId}`;
           }
-          expreancesList.push({
+          programsList.push({
             enrolment: timeline.Enrolment,
             program: timeline.Program,
             project: timeline.Project,
@@ -146,12 +146,12 @@ export class SwitcherService {
         }
       );
     });
-    expreancesList.sort((a, b) => {
+    programsList.sort((a, b) => {
       a = new Date(a.enrolment.created.date);
       b = new Date(b.enrolment.created.date);
       return a.date - a.date;
     });
-    return expreancesList;
+    return programsList;
   }
 
   /**

@@ -22,7 +22,7 @@ import { UtilsService } from '@app/services/utils.service';
 export class SwitcherProgramComponent extends RouterEnter implements AfterContentChecked {
   routeUrl = '/switcher/switcher-program';
   programs: Array<ProgramObj>;
-  isExperiencesLoading = true;
+  isProgramsLoading = true;
   stacks: Stack[];
 
   constructor(
@@ -43,13 +43,13 @@ export class SwitcherProgramComponent extends RouterEnter implements AfterConten
 
   onEnter() {
     this.newRelic.setPageViewName('program switcher');
-    this.switcherService.getExperience(this.stacks).subscribe(
-      experiences => {
-        this.isExperiencesLoading = false;
-        this.programs = experiences;
+    this.switcherService.getPrograms(this.stacks).subscribe(
+      programs => {
+        this.isProgramsLoading = false;
+        this.programs = programs;
       },
       error => {
-        this.isExperiencesLoading = false;
+        this.isProgramsLoading = false;
       });
   }
 

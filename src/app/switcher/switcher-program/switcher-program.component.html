@@ -5,7 +5,7 @@
 </ion-header>
 
 <ion-content class="ion-padding" color="light" appFloat>
-  <ion-grid *ngIf="!isExperiencesLoading">
+  <ion-grid *ngIf="!isProgramsLoading">
     <ion-row>
       <ion-col size="12" size-sm="12" size-md="6" size-lg="4" size-xl="3" *ngFor="let program of programs; let i = index">
         <ion-card class="practera-card experience-card" (click)="switch(i)"  role="link" [attr.aria-label]="program.program.name">
@@ -38,7 +38,7 @@
     </ion-row>
   </ion-grid>
 
-  <ion-grid *ngIf="isExperiencesLoading" class="skeleton">
+  <ion-grid *ngIf="isProgramsLoading" class="skeleton">
     <ion-row>
       <ion-col size="12" size-sm="12" size-md="6" size-lg="4" size-xl="3" *ngFor="let program of [1,1,1,1]">
         <ion-card class="practera-card experience-card"  role="link">
