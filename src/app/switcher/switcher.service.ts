@@ -111,47 +111,62 @@ export class SwitcherService {
   }
 
   private _normaliseAuthResults(apiResults: any[]): any {
-    const cdn = 'https://cdn.filestackcontent.com/resize=fit:crop,width:';
-    let imagewidth = 600;
     const programsList = [];
     apiResults.forEach(result => {
       const data = result.data;
-      data.Timelines.map(
-        timeline => {
-          if (!this.utils.has(timeline, 'Program.config.theme_color')) {
-            if (!this.utils.has(timeline.Program, 'config')) {
-              timeline.Program.config = {
-                theme_color: 'var(--ion-color-primary)'
-              };
-            } else {
-              timeline.Program.config.theme_color = 'var(--ion-color-primary)';
+      if (Array.isArray(data.Timelines) && data.Timelines.length > 0) {
+        data.Timelines.map(
+          timeline => {
+            if (!this.utils.has(timeline, 'Program.config.theme_color')) {
+              if (!this.utils.has(timeline.Program, 'config')) {
+                timeline.Program.config = {
+                  theme_color: 'var(--ion-color-primary)'
+                };
+              } else {
+                timeline.Program.config.theme_color = 'var(--ion-color-primary)';
+              }
             }
+            // Update lead image if project have one.
+            timeline.Project.lead_image = this.getLeadImage(timeline.Project);
+
+            programsList.push({
+              enrolment: timeline.Enrolment,
+              program: timeline.Program,
+              project: timeline.Project,
+              timeline: timeline.Timeline,
+              experience: timeline.Experience,
+              stack: result.stack,
+              apikey: data.apikey
+            });
           }
-          if (timeline.Project.lead_image) {
-            const imageId = timeline.Project.lead_image.split('/').pop();
-            if (!this.utils.isMobile()) {
-              imagewidth = 1024;
-            }
-            timeline.Project.lead_image = `${cdn}${imagewidth}/${imageId}`;
-          }
-          programsList.push({
-            enrolment: timeline.Enrolment,
-            program: timeline.Program,
-            project: timeline.Project,
-            timeline: timeline.Timeline,
-            experience: timeline.Experience,
-            stack: result.stack,
-            apikey: data.apikey
-          });
-        }
-      );
+        );
+      }
     });
+    // sort program list before return by enrolment date
     programsList.sort((a, b) => {
       a = new Date(a.enrolment.created.date);
       b = new Date(b.enrolment.created.date);
       return a.date - a.date;
     });
     return programsList;
+  }
+
+  /**
+   * update lead image url to file stack resize url depend on device.
+   * @param project project object
+   * @returns string - lead imahe url
+   */
+  getLeadImage(project: any) {
+    const cdn = 'https://cdn.filestackcontent.com/resize=fit:crop,width:';
+    let imagewidth = 600;
+    if (project.lead_image) {
+      const imageId = project.lead_image.split('/').pop();
+      if (!this.utils.isMobile()) {
+        imagewidth = 1024;
+      }
+      return `${cdn}${imagewidth}/${imageId}`;
+    }
+    return null;
   }
 
   /**
