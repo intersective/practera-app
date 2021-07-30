@@ -221,7 +221,7 @@ export class AuthService {
    */
   logout(navigationParams = {}, redirect = true) {
     // use the config color
-    this.utils.changeThemeColor(this.storage.getConfig().color || '#2bbfd4');
+    this.utils.changeThemeColor(this.storage.getConfig().colors);
     this.pusherService.unsubscribeChannels();
     this.pusherService.disconnect();
     const config = this.storage.getConfig();

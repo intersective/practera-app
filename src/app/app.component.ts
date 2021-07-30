@@ -145,24 +145,32 @@ export class AppComponent implements OnInit {
             const numOfConfigs = expConfig.length;
             if (numOfConfigs > 0 && numOfConfigs < 2) {
               let logo = expConfig[0].logo;
-              const themeColor = expConfig[0].config.theme_color;
-              if (expConfig[0].config.html_branding && expConfig[0].config.html_branding.header) {
-                this.customHeader = expConfig[0].config.html_branding.header;
+
+              const config = expConfig[0].config || {}; // let it fail gracefully
+
+              if (config.html_branding && config.html_branding.header) {
+                this.customHeader = config.html_branding.header;
               }
               if (this.customHeader) {
                 this.customHeader = this.sanitizer.bypassSecurityTrustHtml(this.customHeader);
               }
+
               // add the domain if the logo url is not a full url
               if (!logo.includes('http') && !this.utils.isEmpty(logo)) {
                 logo = environment.APIEndpoint + logo;
               }
+              const colors = {
+                theme: config.theme_color,
+              };
               this.storage.setConfig({
                 logo,
-                color: themeColor
+                colors,
               });
-              // use brand color if no theme color
-              if (!this.utils.has(this.storage.getUser(), 'themeColor') || !this.storage.getUser().themeColor) {
-                this.utils.changeThemeColor(themeColor);
+
+              // use brand color from getConfig API if no cached color available
+              // in storage.getUser()
+              if (!this.utils.has(this.storage.getUser(), 'colors') || !this.storage.getUser().colors) {
+                this.utils.changeThemeColor(colors);
               }
             }
           }

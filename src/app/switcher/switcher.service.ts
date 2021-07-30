@@ -202,17 +202,39 @@ export class SwitcherService {
     }));
   }
 
+  extractColors(programObj: ProgramObj) {
+    const experienceConfig = (programObj.experience || {}).config;
+    const programConfig = (programObj.program || {}).config;
+
+    const primary = (experienceConfig || {}).primary_color;
+    const secondary = (experienceConfig || {}).secondary_color;
+    const themeColor = (programConfig || {}).theme_color;
+
+    return {
+      primary,
+      secondary,
+      themeColor,
+    };
+  }
+
   switchProgram(programObj: ProgramObj): Observable<any> {
     // initialise Pusher and apollo here if there stack info in storage
     this.sharedService.initWebServices();
 
-    const themeColor = this.utils.has(programObj, 'program.config.theme_color') ? programObj.program.config.theme_color : '#2bbfd4';
+    const colors = this.extractColors(programObj);
+
     let cardBackgroundImage = '';
     if (this.utils.has(programObj, 'program.config.card_style')) {
       cardBackgroundImage = '/assets/' + programObj.program.config.card_style;
     }
 
     this.storage.setUser({
+      colors: {
+        theme: colors.themeColor,
+        primary: colors.primary,
+        secondary: colors.secondary,
+      },
+
       programId: programObj.program.id,
       programName: programObj.program.name,
       programImage: programObj.project.lead_image,
@@ -222,7 +244,6 @@ export class SwitcherService {
       projectId: programObj.project.id,
       timelineId: programObj.timeline.id,
       contactNumber: programObj.enrolment.contact_number,
-      themeColor: themeColor,
       activityCardImage: cardBackgroundImage,
       enrolment: programObj.enrolment,
       activityCompleteMessage: this.utils.has(programObj, 'experience.config.activity_complete_message') ? programObj.experience.config.activity_complete_message : null,

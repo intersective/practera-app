@@ -25,9 +25,8 @@ Run `npm run local` to start a development server on your local, and call 127.0.
 1. Merge `master` branch to `release/eos`
 1. Create a new release in [Github](https://github.com/intersective/practera-app-v2/releases) with the release pull request link as the description
 1. Change the version number on Slack `team-dev` channel
-
-- `master` is always + 0.01 version ahead of `live`
-- `develop` is always + 0.1 version ahead of `live`
+  - `master` is always + 0.01 version ahead of `live`
+  - `develop` is always + 0.1 version ahead of `live`
 
 ### New Relics Setup
 
@@ -65,8 +64,6 @@ This app is an Global App so that we use Global Login API for authentication.
 
 [Read More](./docs/workflows/auth-workflows.md)
 
-## Direct/Deep link
-
 ### 1. Direct link login
 
 `*.com?do=secure&auth_token=*`
@@ -94,6 +91,7 @@ This app is an Global App so that we use Global Login API for authentication.
   - `act` - activity id
   - `ctxt` - context id
   - `asmt` - assessment id
+  - `sm` - submission id - [optional] if provide, will redirect user to `assessment/:activityId/:contextId/:id/:submissionId`
   - `assessment_referrer_url` - if this url is passed in, we will redirect the user to this url when user click back button or continue button on assessment page
 - `topic` - redirect to topic page with the following parameters
   - `act` - activity id
