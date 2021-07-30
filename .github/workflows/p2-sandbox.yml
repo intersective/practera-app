@@ -177,8 +177,8 @@ jobs:
           echo "ChatBotSNSTopicARN="$(aws cloudformation list-exports --query "Exports[?Name==\`$STACK_NAME-ChatBotSNSTopicARN-$ENV\`].Value" --no-paginate --output text) >> $GITHUB_ENV
           
         env:
-          CUSTOM_PATH_IMAGE: /images
-          CUSTOM_PATH_VIDEO: /videos
+          CUSTOM_PATH_IMAGE: /appv2/dev/images/
+          CUSTOM_PATH_VIDEO: /appv2/dev/videos/
           CUSTOM_GRAPH_QL: https://core-graphql-api.${{ env.PUBLICZONENAME }}
           CUSTOM_API_ENDPOINT: https://admin.${{ env.PUBLICZONENAME }}/
           CUSTOM_S3_BUCKET: files.${{ env.PUBLICZONENAME }}
@@ -187,9 +187,10 @@ jobs:
           CUSTOM_GLOBAL_LOGIN_URL: https://app.login-stage.practera.com
           CUSTOM_COUNTRY: AUS #TODO CHECK
           CUSTOMPLAIN_SKIPGLOBALLOGINFLAG: false
-          CUSTOM_PATH_ANY: /any
+          CUSTOM_PATH_ANY: /appv2/dev/any/
           CUSTOM_AWS_REGION: ${{ env.REGION }}
           CUSTOM_JS_ENVIRONEMENT: dev #TODO CHECK
+          CUSTOM_NEWRELIC: true
 
 
 ###############################################################
@@ -202,31 +203,12 @@ jobs:
           npm run generate-version
 
 
-
-###############################################################
-#  PERFORM UNIT TEST
-##############################################################
-      - name: Performing Unit test
-        run: |
-          node_modules/.bin/ng test --karmaConfig=src/karma.conf.sonarci.js --no-watch
-
-
-###############################################################
-#  SONARCLOUD SCANNER
-##############################################################
-      - name: Performing Sonarcloud Scanner
-        uses: SonarSource/sonarcloud-github-action@master
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-
-
 ##########################################################
 #  AWS S3 SYNC - SERVERLESS TEMPLATES 
 ##########################################################
       - name: AWS S3 Sync operation
         run: |
-          rm serverless.yml && mv new-serverless.yml serverless.yml
+          
           aws s3 cp serverless.yml s3://$CFNS3BucketName/$STACK_NAME/$REGION/$ROOTSTACK/sls-templates/serverless.yml
 
 
@@ -253,9 +235,10 @@ jobs:
         env:
           APPV2S3BUCKET: app.${{ env.PUBLICZONENAME }}
           FILESS3BUCKET: files.${{ env.PUBLICZONENAME }}
+          FILESS3BUCKETEXIST: false
           S3VERSIONING: true 
           NONCURRENTVERSION_EXPIREINDAYS: 30
-          # DEFAULT_EXPIREINDAYS: 0 # Mandatory to disable
+          
 
 
 ##########################################################
@@ -290,7 +273,7 @@ jobs:
           MATRIX_CONTEXT: ${{ toJson(matrix) }} # required
         with:
           status: ${{ job.status }}
-          author_name: ${{ env.ROOTSTACK }} deployed to ${{ env.ENV }} environemnt in ${{ env.STACK_NAME }} AWS account
+          author_name: ${{ env.BRANCH_TAG_NAME }} - ${{ env.ROOTSTACK }} deployed to ${{ env.ENV }} environemnt in ${{ env.STACK_NAME }} AWS account
           mention: 'here'
           if_mention: failure,cancelled
           job_name: deploy-p2-sandbox # Match the name above.

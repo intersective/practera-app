@@ -23,7 +23,7 @@ export interface User {
   teamId?: number;
   userHash?: string;
   maxAchievablePoints?: number;
-  themeColor?: string;
+  colors?: Colors;
   activityCardImage?: string;
   hasReviewRating?: boolean;
   truncateDescription?: boolean;
@@ -43,9 +43,16 @@ export interface Referrer {
   url: string;
 }
 
+// colors (custom branding)
+export interface Colors {
+  theme?: string;
+  primary?: string;
+  secondary?: string;
+}
+
 export interface Config {
   logo?: string;
-  color?: string;
+  colors?: Colors;
 }
 
 export interface S3Config {

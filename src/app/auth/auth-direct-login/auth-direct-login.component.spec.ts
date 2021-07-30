@@ -17,7 +17,7 @@ import { TestUtils } from '@testing/utils';
 describe('AuthDirectLoginComponent', () => {
   let component: AuthDirectLoginComponent;
   let fixture: ComponentFixture<AuthDirectLoginComponent>;
-  let serviceSpy: jasmine.SpyObj<AuthService>;
+  let authServiceSpy: jasmine.SpyObj<AuthService>;
   let routerSpy: jasmine.SpyObj<Router>;
   let routeSpy: ActivatedRoute;
   let utils: UtilsService;
@@ -81,7 +81,7 @@ describe('AuthDirectLoginComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(AuthDirectLoginComponent);
     component = fixture.componentInstance;
-    serviceSpy = TestBed.inject(AuthService) as jasmine.SpyObj<AuthService>;
+    authServiceSpy = TestBed.inject(AuthService) as jasmine.SpyObj<AuthService>;
     routerSpy = TestBed.inject(Router) as jasmine.SpyObj<Router>;
     routeSpy = TestBed.inject(ActivatedRoute);
     utils = TestBed.inject(UtilsService) as jasmine.SpyObj<UtilsService>;
@@ -91,7 +91,7 @@ describe('AuthDirectLoginComponent', () => {
   });
 
   beforeEach(() => {
-    serviceSpy.directLogin.and.returnValue(of({}));
+    authServiceSpy.directLogin.and.returnValue(of({}));
     switcherSpy.getMyInfo.and.returnValue(of({}));
     switcherSpy.switchProgram.and.returnValue(of({}));
     storageSpy.get.and.returnValue([{timeline: {id: 1}}]);
@@ -114,7 +114,7 @@ describe('AuthDirectLoginComponent', () => {
     it('should pop up alert if direct login service throw error', fakeAsync(() => {
       const params = { authToken: 'abc' };
       routeSpy.snapshot.paramMap.get = jasmine.createSpy().and.callFake(key => params[key]);
-      serviceSpy.directLogin.and.throwError('');
+      authServiceSpy.directLogin.and.throwError('');
       fixture.detectChanges();
       tick(50);
       fixture.detectChanges();
@@ -157,10 +157,10 @@ describe('AuthDirectLoginComponent', () => {
         fixture.detectChanges();
 
         if (doAuthentication) {
-          expect(serviceSpy.directLogin.calls.count()).toBe(1);
+          expect(authServiceSpy.directLogin.calls.count()).toBe(1);
           expect(switcherSpy.getMyInfo.calls.count()).toBe(1);
         } else {
-          expect(serviceSpy.directLogin.calls.count()).toBe(0);
+          expect(authServiceSpy.directLogin.calls.count()).toBe(0);
           expect(switcherSpy.getMyInfo.calls.count()).toBe(0);
         }
 
@@ -259,6 +259,7 @@ describe('AuthDirectLoginComponent', () => {
         utils.isMobile = jasmine.createSpy('isMobile').and.returnValues(true);
 
         tmpParams.redirect = 'assessment';
+        tmpParams.sm = undefined;
         redirect = [
           'assessment',
           'assessment',
@@ -268,10 +269,25 @@ describe('AuthDirectLoginComponent', () => {
         ];
       });
 
+      it('assessment page with submission id (mobile)', () => {
+        utils.isMobile = jasmine.createSpy('isMobile').and.returnValues(true);
+
+        tmpParams.redirect = 'assessment';
+        redirect = [
+          'assessment',
+          'assessment',
+          tmpParams.act,
+          tmpParams.ctxt,
+          tmpParams.asmt,
+          tmpParams.sm
+        ];
+      });
+
       it('assessment page (onePageOnly restriction)', () => {
         storageSpy.singlePageAccess = true; // singlePageRestriction
 
         tmpParams.redirect = 'assessment';
+        tmpParams.sm = undefined;
         redirect = [
           'assessment',
           'assessment',

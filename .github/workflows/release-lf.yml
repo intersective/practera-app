@@ -27,23 +27,29 @@ jobs:
       APP_V2_S3: app.lf.practera.com
       APP_V2_CDN: E2Y52ZIUB4D6X
 
-    # Steps to execute in this job
-    steps:
 
+################################################
+#  GITHUB REPO CHECKOUT 
+################################################
+    steps:
       - uses: actions/checkout@v2
         with:
           fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
 
 
+
+################################################
+#  NODE ENV
+################################################    
       - name: Setup Node.js environment
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14'
+      
 
-
-      - name: Install Serverless Framework
-        run: |
-          npm i -g serverless@2.17.0
-
-
+################################################
+#  NODE MODULES CACHE  
+################################################
       - name: Cache node modules
         uses: actions/cache@v2
         id: cache-node-modules
@@ -62,13 +68,14 @@ jobs:
             ${{ runner.os }}-
 
 
+################################################
+#  NODE MODULES INSTALL  
+################################################
       - name: Install dependencies
         if: steps.cache-node-modules.outputs.cache-hit != 'true'
         run:  npm install
 
 
-      - name: Run lint test if present only
-        run:  npm run lint --if-present
 
 
       - name: Custom Environemnt variables
@@ -84,16 +91,6 @@ jobs:
           node_modules/.bin/ng build --configuration=${{ env.BUILD_CONFIG }}
           npm run generate-version
 
-
-      - name: Run unit test if present only
-        run:  node_modules/.bin/ng test --karmaConfig=src/karma.conf.sonarci.js --no-watch
-
-
-      - name: SonarCloud Scan
-        uses: SonarSource/sonarcloud-github-action@master
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
 
       - name: Configure AWS credentials from ${{ env.STACK_NAME }} account in ${{ env.REGION }} region

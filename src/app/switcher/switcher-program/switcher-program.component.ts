@@ -22,7 +22,7 @@ import { UtilsService } from '@app/services/utils.service';
 export class SwitcherProgramComponent extends RouterEnter implements AfterContentChecked {
   routeUrl = '/switcher/switcher-program';
   programs: Array<ProgramObj>;
-  isExperiencesLoading = true;
+  isProgramsLoading = true;
   stacks: Stack[];
 
   constructor(
@@ -43,13 +43,30 @@ export class SwitcherProgramComponent extends RouterEnter implements AfterConten
 
   onEnter() {
     this.newRelic.setPageViewName('program switcher');
-    this.switcherService.getExperience(this.stacks).subscribe(
-      experiences => {
-        this.isExperiencesLoading = false;
-        this.programs = experiences;
+    this.switcherService.getPrograms(this.stacks).subscribe(
+      programs => {
+        // redirect user back to login if didn't found any program for the user.
+        if (programs.length <= 0) {
+          return this.notificationService.alert({
+            header: 'Error in accessing parograms',
+            message: `Didn't found programs user have access to enter. Please Login using another valid account.`,
+            buttons: [
+              {
+                text: 'OK',
+                role: 'cancel',
+                handler: () => {
+                  this.isProgramsLoading = false;
+                  this.router.navigate(['logout']);
+                },
+              },
+            ],
+          });
+        }
+        this.isProgramsLoading = false;
+        this.programs = programs;
       },
       error => {
-        this.isExperiencesLoading = false;
+        this.isProgramsLoading = false;
       });
   }
 

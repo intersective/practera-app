@@ -55,6 +55,8 @@ export class TestUtils extends SpyObject {
   timeFormatter;
   dateFormatter;
   dueDateFormatter;
+  changeThemeColor;
+  changeCardBackgroundImage;
 
   protected _eventsSubject = new Subject<{ key: string, value: any }>();
 
@@ -81,6 +83,8 @@ export class TestUtils extends SpyObject {
     this.dueDateFormatter = this.spy('dueDateFormatter').and.callFake(UtilsService.prototype.dueDateFormatter);
     this.addOrRemove = this.spy('addOrRemove').and.callFake(UtilsService.prototype.addOrRemove);
     this.clearCache = this.spy('clearCache').and.returnValue(true);
+    this.changeThemeColor = this.spy('changeThemeColor').and.returnValue(true);
+    this.changeCardBackgroundImage = this.spy('changeCardBackgroundImage').and.returnValue(true);
   }
 
   static createRouterSpy() {
