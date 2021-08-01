@@ -9,7 +9,7 @@ import { NgZone } from '@angular/core';
 import { ProgramFixture } from '@testing/fixtures/programs';
 
 export class MockSwitcherService extends SpyObject {
-  getExperience;
+  getPrograms;
   getProgresses;
   switchProgramAndNavigate;
   mockProgresses = [
@@ -32,7 +32,7 @@ export class MockSwitcherService extends SpyObject {
 
   constructor() {
     super(SwitcherService);
-    this.getExperience = this.spy('getExperience').and.returnValue(of(ProgramFixture));
+    this.getPrograms = this.spy('getPrograms').and.returnValue(of(ProgramFixture));
     this.getProgresses = this.spy('getProgresses').and.returnValue(of(this.mockProgresses));
     this.switchProgramAndNavigate = this.spy('switchProgramAndNavigate');
   }

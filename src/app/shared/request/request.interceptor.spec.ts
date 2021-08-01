@@ -119,8 +119,8 @@ describe('RequestInterceptor', () => {
     expect(req.request.headers.get('teamId')).toBe(null);
   }));
 
-  it('should not return appkey when url contains /login (login API Url)', fakeAsync(() => {
-    const URL = 'https://test.com/login';
+  it('should not return apikey when url contains /auths.json', fakeAsync(() => {
+    const URL = 'https://test.com/auths.json';
     http.get(URL).subscribe(_res => {
       expect(_res).toBeTruthy();
     });
@@ -131,8 +131,8 @@ describe('RequestInterceptor', () => {
       method: 'GET'
     });
 
-    expect(req.request.url).toContain('/login');
-    expect(req.request.headers.get('appkey')).toBe(null);
+    expect(req.request.url).toContain('/auths.json');
+    expect(req.request.headers.get('apikey')).toBe(null);
   }));
 
 });

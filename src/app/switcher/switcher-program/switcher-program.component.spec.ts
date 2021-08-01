@@ -61,13 +61,14 @@ describe('SwitcherProgramComponent', () => {
             data: of(true)
           }
         },
-        BrowserStorageService
-        /* {
+        {
           provide: BrowserStorageService,
           useValue: jasmine.createSpyObj('BrowserStorageService', [
-            'stackConfig'
+            'stackConfig',
+            'setUser',
+            'set'
           ]),
-        } */
+        }
       ]
     }).compileComponents();
 
@@ -98,12 +99,23 @@ describe('SwitcherProgramComponent', () => {
         programs[i].progress = (i + 1) / 10,
         programs[i].todoItems = (i + 1);
       });
-      switcherSpy.getExperience.and.returnValue(of(programs));
+      switcherSpy.getPrograms.and.returnValue(of(programs));
       component.onEnter();
 
       expect(newrelicSpy.setPageViewName).toHaveBeenCalledWith('program switcher');
-      expect(switcherSpy.getExperience).toHaveBeenCalled();
+      expect(switcherSpy.getPrograms).toHaveBeenCalled();
       expect(component.programs).toEqual(programs);
+    });
+    it('should allert if no programs found', () => {
+      const programs = [];
+      programs.forEach((p, i) => {
+        programs[i].progress = (i + 1) / 10,
+        programs[i].todoItems = (i + 1);
+      });
+      switcherSpy.getPrograms.and.returnValue(of(programs));
+      component.onEnter();
+
+      expect(notifySpy.alert).toHaveBeenCalled();
     });
   });
 
@@ -134,7 +146,6 @@ describe('SwitcherProgramComponent', () => {
     it('should store selected stack & program based on programmatic index', fakeAsync(() => {
       switcherSpy.switchProgramAndNavigate = jasmine.createSpy('switchProgramAndNavigate').and.returnValue(new Promise(res => res(testRoute)));
       component.stacks = MockStacks;
-      const stackIndex = 0;
       component.switch(index);
       flushMicrotasks();
 
@@ -143,6 +154,9 @@ describe('SwitcherProgramComponent', () => {
       expect(switcherSpy.switchProgramAndNavigate).toHaveBeenCalledWith(ProgramFixture[index]);
       expect(routerSpy.navigate).toHaveBeenCalledWith(testRoute);
       expect(storageSpy.stackConfig).toEqual(ProgramFixture[index].stack);
+      expect(storageSpy.setUser).toHaveBeenCalledWith({apikey: ProgramFixture[index].apikey});
+      expect(storageSpy.set).toHaveBeenCalledWith('programs', ProgramFixture);
+      expect(storageSpy.set).toHaveBeenCalledWith('isLoggedIn', true);
     }));
 
     it('should popup error at failed program switching', fakeAsync(() => {

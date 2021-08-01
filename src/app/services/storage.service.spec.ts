@@ -143,34 +143,34 @@ describe('StorageService', () => {
 
   describe('stackConfig', () => {
     it('should be false if null or none cached', () => {
-      storage.getItem = jasmine.createSpy('getItem').and.returnValue(null);
+      storageSpy.getItem = jasmine.createSpy('getItem').and.returnValue(null);
       expect(service.stackConfig).toBeFalsy();
     });
     it('should be true if true cached under stackConfig', () => {
-      storage.getItem = jasmine.createSpy('getItem').and.returnValue(true);
+      storageSpy.getItem = jasmine.createSpy('getItem').and.returnValue(true);
       expect(service.stackConfig).toBeTruthy();
     });
   });
 
   describe('stacks', () => {
     it('should be false if null or none cached', () => {
-      storage.getItem = jasmine.createSpy('getItem').and.returnValue(null);
+      storageSpy.getItem = jasmine.createSpy('getItem').and.returnValue(null);
       expect(service.stacks).toEqual([]);
       expect(service.stacks).not.toEqual(null);
     });
     it('should be true if true cached under stacks', () => {
-      storage.getItem = jasmine.createSpy('getItem').and.returnValue([true]);
+      storageSpy.getItem = jasmine.createSpy('getItem').and.returnValue([true]);
       expect(service.stacks).toBeGreaterThan(0);
     });
   });
 
   describe('loginApiKey', () => {
     it('should be false if null or none cached', () => {
-      storage.getItem = jasmine.createSpy('getItem').and.returnValue(null);
+      storageSpy.getItem = jasmine.createSpy('getItem').and.returnValue(null);
       expect(service.loginApiKey).toBeFalsy();
     });
     it('should be true if true cached under loginApiKey', () => {
-      storage.getItem = jasmine.createSpy('getItem').and.returnValue(true);
+      storageSpy.getItem = jasmine.createSpy('getItem').and.returnValue(true);
       expect(service.loginApiKey).toBeTruthy();
     });
   });

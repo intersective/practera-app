@@ -37,7 +37,7 @@ describe('SwitcherService', () => {
           PusherService,
           {
             provide: SharedService,
-            useValue: jasmine.createSpyObj('SharedService', ['onPageLoad', 'initPusherApollo']),
+            useValue: jasmine.createSpyObj('SharedService', ['onPageLoad', 'initWebServices']),
           },
           {
             provide: UtilsService,
@@ -76,37 +76,18 @@ describe('SwitcherService', () => {
 
   const mockStacks = [
     {
-      uuid: 'b0f6328e-379c-4cd2-9e96-1363a49ab001',
-      name: 'Practera Classic App - Stage',
-      description: 'Participate in an experience as a learner or reviewer - Testing',
-      image: 'https://media.intersective.com/img/learners_reviewers.png',
-      url: 'https://app.p1-stage.practera.com',
-      type: 'app',
-      coreApi: 'https://admin.p1-stage.practera.com',
-      coreGraphQLApi: 'https://core-graphql-api.p1-stage.practera.com',
-      chatApi: 'https://chat-api.p1-stage.practera.com',
-      filestack: {
-        s3Config: {
-          container: 'files.p1-stage.practera.com',
-          region: 'ap-southeast-2'
-        },
-      },
-      defaultCountryModel: 'AUS',
-      lastLogin: 1619660600368
-    },
-    {
-      uuid: '9c31655d-fb73-4ea7-8315-aa4c725b367e',
+      uuid: '0001',
       name: 'Practera Classic App - Sandbox',
       description: 'Participate in an experience as a learner or reviewer - Testing',
-      image: 'https://media.intersective.com/img/learners_reviewers.png',
-      url: 'https://app.p1-sandbox.practera.com',
+      image: 'https://asd/img/learners_reviewers.png',
+      url: 'https://app.sandbox.practera.com',
       type: 'app',
-      coreApi: 'https://admin.p1-sandbox.practera.com',
-      coreGraphQLApi: 'https://core-graphql-api.p1-sandbox.practera.com',
-      chatApi: 'https://chat-api.p1-sandbox.practera.com',
+      coreApi: 'https://admin.sandbox.practera.com',
+      coreGraphQLApi: 'https://core-graphql-api.sandbox.practera.com',
+      chatApi: 'https://chat-api.sandbox.practera.com',
       filestack: {
         s3Config: {
-          container: 'files.p1-sandbox.practera.com',
+          container: 'files.sandbox.practera.com',
           region: 'ap-southeast-2'
         },
       },
@@ -114,7 +95,7 @@ describe('SwitcherService', () => {
       lastLogin: 1619660600368
     },
     {
-      uuid: 'f4f85069-ca3b-4044-905a-e366b724af6b',
+      uuid: '002',
       name: 'Practera App - Local Development',
       description: 'Participate in an experience as a learner or reviewer - Local',
       image: 'https://media.intersective.com/img/learners_reviewers.png',
@@ -135,15 +116,87 @@ describe('SwitcherService', () => {
   ];
 
   describe('getExperience()', () => {
-    it('should get program list from each stack', fakeAsync(() => {
-      storageSpy.get.and.returnValue([
-        {program: {}, timeline: {}, project: {lead_image: 'https://www.filepicker.io/api/file/DAsMaIUcQcSM3IFqalPN'}, enrolment: {}}
-      ]);
-      service.getExperience(mockStacks).subscribe(programs => {
+    it('should call each stack and get return peograms', fakeAsync(() => {
+      requestSpy.post.and.returnValue(of({
+        success: true,
+        data: {
+          tutorial: null,
+          apikey: '123456',
+          Timelines: [
+            {
+              Program: {
+                config: {
+                  theme_color: 'abc'
+                }
+              },
+              Enrolment: {
+                created: '2020-01-05'
+              },
+              Project: {
+                lead_image: 'https://www.filepicker.io/api/file/DAsMaIUcQcSM3IFqalPN'
+              },
+              Timeline: {}
+            },
+            {
+              Program: {
+                config: {
+                  theme_color: 'xzs'
+                }
+              },
+              Enrolment: {
+                created: '2021-01-05'
+              },
+              Project: {
+                lead_image: 'https://www.filepicker.io/api/file/DAsMaIUcQcSM3IFqalPN'
+              },
+              Timeline: {}
+            }
+          ]
+        }
+      }));
+      storageSpy.loginApiKey = '456812';
+      service.getPrograms(mockStacks).subscribe(programs => {
         expect(programs[0].project.lead_image).toContain('https://cdn.filestackcontent.com/resize=fit:crop,width:');
+        expect(programs[0].stack).not.toBeNull();
+        expect(programs[0].apikey).toContain('123456');
       });
-      expect(storageSpy.get).toHaveBeenCalledWith('programs');
     }));
+
+    it(`should not call method or run code if timeline didn't have programs `, fakeAsync(() => {
+      spyOn(service, 'getLeadImage');
+      requestSpy.post.and.returnValue(of({
+        success: true,
+        data: {
+          tutorial: null,
+          apikey: '123456',
+          Timelines: []
+        }
+      }));
+      storageSpy.loginApiKey = '456812';
+      service.getPrograms(mockStacks);
+      tick();
+      expect(service.getLeadImage).not.toHaveBeenCalled();
+    }));
+  });
+
+  describe('when testing getLeadImage()', () => {
+    it(`should null if project didn't have lead image `, () => {
+        expect(service.getLeadImage({})).toBe(null);
+    });
+    it('should URL if project have lead image ', () => {
+      const imageUrl = service.getLeadImage({lead_image: 'https://www.filepicker.io/api/file/DAsMaIUcQcSM3IFqalPN'});
+      expect(imageUrl).toContain('https://cdn.filestackcontent.com/resize=fit:crop,width:');
+    });
+    it('should return resized image url for mobile ', () => {
+      utils.isMobile = jasmine.createSpy('isMobile').and.returnValues(true);
+      const imageUrl = service.getLeadImage({lead_image: 'https://www.filepicker.io/api/file/DAsMaIUcQcSM3IFqalPN'});
+      expect(imageUrl).toContain('width:600');
+    });
+    it('should return resized image url for web ', () => {
+      utils.isMobile = jasmine.createSpy('isMobile').and.returnValues(false);
+      const imageUrl = service.getLeadImage({lead_image: 'https://www.filepicker.io/api/file/DAsMaIUcQcSM3IFqalPN'});
+      expect(imageUrl).toContain('width:1024');
+    });
   });
 
   describe('when testing checkIsOneProgram()', () => {
