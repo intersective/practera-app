@@ -4,6 +4,8 @@ import { BrowserStorageService, Stack } from '@app/services/storage.service';
 import { of } from 'rxjs';
 
 import { SwitcherResolverService } from './switcher-resolver.service';
+import { UtilsService } from '@app/services/utils.service';
+import { TestUtils } from '@testing/utils';
 
 describe('SwitcherResolverService', () => {
   const mockOneStack: Stack = {
@@ -31,6 +33,10 @@ describe('SwitcherResolverService', () => {
 
   beforeEach(() => TestBed.configureTestingModule({
     providers: [
+      {
+        provide: UtilsService,
+        useClass: TestUtils,
+      },
       {
         provide: AuthService,
         useValue: jasmine.createSpyObj('AuthService', {
@@ -63,6 +69,7 @@ describe('SwitcherResolverService', () => {
     });
 
     it('should be return stacks from localStorage', fakeAsync(() => {
+      storageSpy.stacks = [];
       service.resolve();
       flushMicrotasks();
 

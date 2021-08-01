@@ -8,8 +8,7 @@ describe('PusherModule', () => {
     TestBed.configureTestingModule({
       imports: [
         PusherModule.forRoot({
-          pusherKey: 'TEST',
-          apiurl: 'TEST',
+          pusherKey: 'TEST'
         }),
       ],
     });

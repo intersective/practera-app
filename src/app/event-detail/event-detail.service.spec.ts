@@ -48,7 +48,7 @@ describe('EventDetailService', () => {
   it('should pass correct parameter to bookEvent()', () => {
     requestSpy.post.and.returnValue(of({}));
     service.bookEvent(mockEvent).subscribe();
-    expect(requestSpy.post.calls.first().args[1]).toEqual({
+    expect(requestSpy.post.calls.first().args[0].data).toEqual({
       event_id: mockEvent.id,
       delete_previous: mockEvent.singleBooking
     });

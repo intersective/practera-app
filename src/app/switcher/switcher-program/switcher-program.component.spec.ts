@@ -61,13 +61,14 @@ describe('SwitcherProgramComponent', () => {
             data: of(true)
           }
         },
-        BrowserStorageService
-        /* {
+        {
           provide: BrowserStorageService,
           useValue: jasmine.createSpyObj('BrowserStorageService', [
-            'stackConfig'
+            'stackConfig',
+            'setUser',
+            'set'
           ]),
-        } */
+        }
       ]
     }).compileComponents();
 
@@ -105,11 +106,22 @@ describe('SwitcherProgramComponent', () => {
       expect(switcherSpy.getPrograms).toHaveBeenCalled();
       expect(component.programs).toEqual(programs);
     });
+    it('should allert if no programs found', () => {
+      const programs = [];
+      programs.forEach((p, i) => {
+        programs[i].progress = (i + 1) / 10,
+        programs[i].todoItems = (i + 1);
+      });
+      switcherSpy.getPrograms.and.returnValue(of(programs));
+      component.onEnter();
+
+      expect(notifySpy.alert).toHaveBeenCalled();
+    });
   });
 
   describe('switch()', () => {
     const testRoute = ['test', 'path'];
-    const programIndex = 0;
+    const index = 0;
 
     beforeEach(() => {
       component.programs = ProgramFixture; // load fixture
@@ -122,27 +134,29 @@ describe('SwitcherProgramComponent', () => {
     it('should switch to selected program based on provided programmatic index', fakeAsync(() => {
       switcherSpy.switchProgramAndNavigate = jasmine.createSpy('switchProgramAndNavigate').and.returnValue(new Promise(res => res(testRoute)));
 
-      component.switch(programIndex);
+      component.switch(index);
       flushMicrotasks();
 
       expect(newrelicSpy.createTracer).toHaveBeenCalled();
       expect(newrelicSpy.actionText).toHaveBeenCalled();
-      expect(switcherSpy.switchProgramAndNavigate).toHaveBeenCalledWith(ProgramFixture[programIndex]);
+      expect(switcherSpy.switchProgramAndNavigate).toHaveBeenCalledWith(ProgramFixture[index]);
       expect(routerSpy.navigate).toHaveBeenCalledWith(testRoute);
     }));
 
     it('should store selected stack & program based on programmatic index', fakeAsync(() => {
       switcherSpy.switchProgramAndNavigate = jasmine.createSpy('switchProgramAndNavigate').and.returnValue(new Promise(res => res(testRoute)));
       component.stacks = MockStacks;
-      const stackIndex = 0;
-      component.switch(programIndex, stackIndex);
+      component.switch(index);
       flushMicrotasks();
 
       expect(newrelicSpy.createTracer).toHaveBeenCalled();
       expect(newrelicSpy.actionText).toHaveBeenCalled();
-      expect(switcherSpy.switchProgramAndNavigate).toHaveBeenCalledWith(ProgramFixture[programIndex]);
+      expect(switcherSpy.switchProgramAndNavigate).toHaveBeenCalledWith(ProgramFixture[index]);
       expect(routerSpy.navigate).toHaveBeenCalledWith(testRoute);
-      expect(storageSpy.stackConfig).toEqual(MockStacks[stackIndex]);
+      expect(storageSpy.stackConfig).toEqual(ProgramFixture[index].stack);
+      expect(storageSpy.setUser).toHaveBeenCalledWith({apikey: ProgramFixture[index].apikey});
+      expect(storageSpy.set).toHaveBeenCalledWith('programs', ProgramFixture);
+      expect(storageSpy.set).toHaveBeenCalledWith('isLoggedIn', true);
     }));
 
     it('should popup error at failed program switching', fakeAsync(() => {
@@ -152,12 +166,12 @@ describe('SwitcherProgramComponent', () => {
       switcherSpy.switchProgramAndNavigate = jasmine.createSpy('switchProgramAndNavigate').and.returnValue(new Promise((res, reject) => reject(error)
       ));
 
-      component.switch(programIndex);
+      component.switch(index);
       flushMicrotasks();
 
       expect(newrelicSpy.createTracer).toHaveBeenCalled();
       expect(newrelicSpy.actionText).toHaveBeenCalled();
-      expect(switcherSpy.switchProgramAndNavigate).toHaveBeenCalledWith(ProgramFixture[programIndex]);
+      expect(switcherSpy.switchProgramAndNavigate).toHaveBeenCalledWith(ProgramFixture[index]);
       expect(routerSpy.navigate).not.toHaveBeenCalled();
       expect(notifySpy.alert).toHaveBeenCalledWith({
         header: 'Error switching program',
@@ -173,12 +187,12 @@ describe('SwitcherProgramComponent', () => {
       switcherSpy.switchProgramAndNavigate = jasmine.createSpy('switchProgramAndNavigate').and.returnValue(new Promise((res, reject) => reject(error)
       ));
 
-      component.switch(programIndex);
+      component.switch(index);
       flushMicrotasks();
 
       expect(newrelicSpy.createTracer).toHaveBeenCalled();
       expect(newrelicSpy.actionText).toHaveBeenCalled();
-      expect(switcherSpy.switchProgramAndNavigate).toHaveBeenCalledWith(ProgramFixture[programIndex]);
+      expect(switcherSpy.switchProgramAndNavigate).toHaveBeenCalledWith(ProgramFixture[index]);
       expect(routerSpy.navigate).not.toHaveBeenCalled();
       expect(notifySpy.alert).toHaveBeenCalledWith({
         header: 'Error switching program',

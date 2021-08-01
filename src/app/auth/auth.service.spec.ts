@@ -90,9 +90,9 @@ describe('AuthService', () => {
     storageSpy.set.and.returnValue(true);
     service.login({ username: 'test@test.com', password: '123' }).subscribe();
     expect(requestSpy.post.calls.count()).toBe(1);
-    expect(requestSpy.post.calls.first().args[1].username).toEqual('test@test.com');
-    expect(requestSpy.post.calls.first().args[1].password).toEqual('123');
-    expect(requestSpy.post.calls.first().args[1].from).toEqual('App');
+    expect(requestSpy.post.calls.first().args[0].data.username).toEqual('test@test.com');
+    expect(requestSpy.post.calls.first().args[0].data.password).toEqual('123');
+    expect(requestSpy.post.calls.first().args[0].data.from).toEqual('App');
   });
 
   it('when testing directLogin(), it should pass the correct data to API', () => {
@@ -118,7 +118,7 @@ describe('AuthService', () => {
     storageSpy.getConfig.and.returnValue(true);
     service.directLogin({ authToken: 'abcd' }).subscribe();
     expect(requestSpy.post.calls.count()).toBe(1);
-    expect(requestSpy.post.calls.first().args[1]).toContain('abcd');
+    expect(requestSpy.post.calls.first().args[0].data).toContain('abcd');
     expect(storageSpy.setUser.calls.first().args[0]).toEqual({apikey: '123456'});
   });
 
@@ -145,7 +145,7 @@ describe('AuthService', () => {
     storageSpy.getConfig.and.returnValue(true);
     service.directLoginWithApikey({ apikey: 'abcd', service: 'LOGIN' }).subscribe();
     expect(requestSpy.post.calls.count()).toBe(1);
-    expect(requestSpy.post.calls.first().args[1]).toContain('abcd');
+    expect(requestSpy.post.calls.first().args[0].data).toContain('abcd');
     expect(storageSpy.setUser.calls.first().args[0]).toEqual({apikey: '123456'});
   });
 
@@ -190,7 +190,7 @@ describe('AuthService', () => {
     requestSpy.post.and.returnValue(of(''));
     service.forgotPassword('test@test.com').subscribe();
     expect(requestSpy.post.calls.count()).toBe(1);
-    expect(requestSpy.post.calls.first().args[1].email).toEqual('test@test.com');
+    expect(requestSpy.post.calls.first().args[0].data.email).toEqual('test@test.com');
   });
 
   it('when testing resetPassword()', () => {

@@ -84,7 +84,7 @@ export class SwitcherService {
   ) {}
 
   getPrograms(stackList: Stack[]) {
-    if (!this.storage.stacks || this.storage.stacks.length < 1) {
+    if (!stackList || stackList.length < 1) {
       throw Error('Fail to retrieve stacks info');
     }
     const stackRequests = [];
@@ -144,8 +144,8 @@ export class SwitcherService {
     });
     // sort program list before return by enrolment date
     programsList.sort((a, b) => {
-      a = new Date(a.enrolment.created.date);
-      b = new Date(b.enrolment.created.date);
+      a = new Date(a.enrolment.created);
+      b = new Date(b.enrolment.created);
       return a.date - a.date;
     });
     return programsList;
