@@ -17,7 +17,10 @@
               <ion-label class="subtitle-1">
                 {{ program.program.name }}
               </ion-label>
-              <div slot="end" class="status-slot" [ngClass]="program.experience.status ? program.experience.status: ''">
+              <!-- Show forward arrow if exprience didn't have status -->
+              <ion-icon *ngIf="!program.experience.status" name="chevron-forward" slot="end"></ion-icon>
+              <!-- Only show status if  exprience have it-->
+              <div *ngIf="program.experience.status" slot="end" class="status-slot" [ngClass]="program.experience.status ? program.experience.status: ''">
                 <ng-container *ngIf="program.experience.status === 'draft'">
                   <ion-icon name="time-outline"></ion-icon>
                   <p class="subtitle-2">NOT LIVE</p>
