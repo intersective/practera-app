@@ -22,6 +22,7 @@ import { UtilsService } from '@app/services/utils.service';
 export class SwitcherProgramComponent extends RouterEnter implements AfterContentChecked {
   routeUrl = '/switcher/switcher-program';
   programs: Array<ProgramObj>;
+  isProgramsLoading = true;
   stacks: Stack[];
 
   constructor(
@@ -42,10 +43,30 @@ export class SwitcherProgramComponent extends RouterEnter implements AfterConten
 
   onEnter() {
     this.newRelic.setPageViewName('program switcher');
-    this.switcherService.getPrograms()
-      .subscribe(programs => {
+    this.switcherService.getPrograms(this.stacks).subscribe(
+      programs => {
+        // redirect user back to login if didn't found any program for the user.
+        if (programs.length <= 0) {
+          return this.notificationService.alert({
+            header: 'Error in accessing parograms',
+            message: `Didn't found programs user have access to enter. Please Login using another valid account.`,
+            buttons: [
+              {
+                text: 'OK',
+                role: 'cancel',
+                handler: () => {
+                  this.isProgramsLoading = false;
+                  this.router.navigate(['logout']);
+                },
+              },
+            ],
+          });
+        }
+        this.isProgramsLoading = false;
         this.programs = programs;
-        this._getProgresses(programs);
+      },
+      error => {
+        this.isProgramsLoading = false;
       });
   }
 
@@ -53,39 +74,22 @@ export class SwitcherProgramComponent extends RouterEnter implements AfterConten
     document.getElementById('page-title').focus();
   }
 
-  private _getProgresses(programs) {
-    const projectIds = programs.map(v => v.project.id);
-    this.switcherService.getProgresses(projectIds).subscribe(res => {
-      res.forEach(progress => {
-        const i = this.programs.findIndex(program => program.project.id === progress.id);
-        this.programs[i].progress = progress.progress;
-        this.programs[i].todoItems = progress.todoItems;
-      });
-    });
-  }
-
-  /**
-   * set and switch to provided stack and program
-   *
-   * @param   {number}  programIndex index number of programs
-   * @param   {number}  stackIndex stack number of stacks
-   * @return  {Promise<void>}
-   */
-  async switch(programIndex: number, stackIndex?: number): Promise<void> {
+  async switch(index): Promise<void> {
     const nrSwitchedProgramTracer = this.newRelic.createTracer('switching program');
     const loading = await this.loadingController.create({
       message: 'loading...'
     });
-    this.newRelic.actionText(`selected ${this.programs[programIndex].program.name}`);
+    this.newRelic.actionText(`selected ${this.programs[index].program.name}`);
 
     await loading.present();
 
     try {
-      if (!this.utils.isEmpty(stackIndex)) {
-        this.storage.stackConfig = this.stacks[stackIndex];
-      }
+      this.storage.setUser({apikey: this.programs[index].apikey});
+      this.storage.set('programs', this.programs);
+      this.storage.set('isLoggedIn', true);
+      this.storage.stackConfig = this.programs[index].stack;
 
-      const route = await this.switcherService.switchProgramAndNavigate(this.programs[programIndex]);
+      const route = await this.switcherService.switchProgramAndNavigate(this.programs[index]);
       loading.dismiss().then(() => {
         nrSwitchedProgramTracer();
         this.router.navigate(route);

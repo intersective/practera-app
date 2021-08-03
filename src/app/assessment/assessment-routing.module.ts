@@ -13,6 +13,14 @@ const routes: Routes = [
     canDeactivate: [SinglePageDeactivateGuard],
   },
   {
+    path: 'assessment/:activityId/:contextId/:id/:submissionId',
+    component: AssessmentComponent,
+    data: {
+      action: 'assessment'
+    },
+    canDeactivate: [SinglePageDeactivateGuard],
+  },
+  {
     path: 'review/:contextId/:id/:submissionId',
     component: AssessmentComponent,
     data: {

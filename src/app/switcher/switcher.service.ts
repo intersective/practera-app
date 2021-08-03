@@ -3,12 +3,13 @@ import { Observable, of, forkJoin } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { RequestService } from '@shared/request/request.service';
 import { UtilsService } from '@services/utils.service';
-import { BrowserStorageService } from '@services/storage.service';
+import { BrowserStorageService, Stack } from '@services/storage.service';
 import { PusherService } from '@shared/pusher/pusher.service';
 import { SharedService } from '@services/shared.service';
 import { ReviewListService } from '@app/review-list/review-list.service';
 import { EventListService } from '@app/event-list/event-list.service';
 import { environment } from '@environments/environment';
+import { HttpParams } from '@angular/common/http';
 
 /**
  * @name api
@@ -18,7 +19,8 @@ import { environment } from '@environments/environment';
 const api = {
   me: 'api/users.json',
   teams: 'api/teams.json',
-  jwt: 'api/v2/users/jwt/refresh.json'
+  jwt: 'api/v2/users/jwt/refresh.json',
+  login: 'api/auths.json'
 };
 
 export interface ProgramObj {
@@ -29,6 +31,8 @@ export interface ProgramObj {
   experience: Experience;
   progress?: number;
   todoItems?: number;
+  apikey: string;
+  stack: Stack;
 }
 
 export interface Program {
@@ -76,23 +80,93 @@ export class SwitcherService {
     private sharedService: SharedService,
     private pusherService: PusherService,
     private reviewsService: ReviewListService,
-    private eventsService: EventListService,
+    private eventsService: EventListService
   ) {}
 
-  getPrograms() {
-    const programs = this.storage.get('programs') || [];
-    const cdn = 'https://cdn.filestackcontent.com/resize=fit:crop,width:';
-    let imagewidth = 600;
-    programs.forEach(program => {
-      if (program.project.lead_image) {
-        const imageId = program.project.lead_image.split('/').pop();
-        if (!this.utils.isMobile()) {
-          imagewidth = 1024;
-        }
-        program.project.lead_image = `${cdn}${imagewidth}/${imageId}`;
+  getPrograms(stackList: Stack[]) {
+    if (!stackList || stackList.length < 1) {
+      throw Error('Fail to retrieve stacks info');
+    }
+    const stackRequests = [];
+    const apikeyFromLoginAPI = this.storage.loginApiKey;
+    const body = new HttpParams()
+      .set('apikey', apikeyFromLoginAPI);
+    const headers = {
+      'Content-Type': 'application/x-www-form-urlencoded',
+      service: 'LOGIN'
+    };
+    stackList.forEach(stack => {
+      stackRequests.push(this.request.post(
+        {
+          endPoint: this.utils.urlFormatter(stack.coreApi, api.login),
+          data: body,
+          httpOptions: { headers },
+          isFullUrl: true
+        }).pipe(map(res => {
+          res.stack = stack;
+          return res;
+        })));
+    });
+    return forkJoin(stackRequests).pipe(map(res => this._normaliseAuthResults(res)));
+  }
+
+  private _normaliseAuthResults(apiResults: any[]): any {
+    const programsList = [];
+    apiResults.forEach(result => {
+      const data = result.data;
+      if (Array.isArray(data.Timelines) && data.Timelines.length > 0) {
+        data.Timelines.map(
+          timeline => {
+            if (!this.utils.has(timeline, 'Program.config.theme_color')) {
+              if (!this.utils.has(timeline.Program, 'config')) {
+                timeline.Program.config = {
+                  theme_color: 'var(--ion-color-primary)'
+                };
+              } else {
+                timeline.Program.config.theme_color = 'var(--ion-color-primary)';
+              }
+            }
+            // Update lead image if project have one.
+            timeline.Project.lead_image = this.getLeadImage(timeline.Project);
+
+            programsList.push({
+              enrolment: timeline.Enrolment,
+              program: timeline.Program,
+              project: timeline.Project,
+              timeline: timeline.Timeline,
+              experience: timeline.Experience,
+              stack: result.stack,
+              apikey: data.apikey
+            });
+          }
+        );
       }
     });
-    return of(programs);
+    // sort program list before return by enrolment date
+    programsList.sort((a, b) => {
+      a = new Date(a.enrolment.created);
+      b = new Date(b.enrolment.created);
+      return a.date - a.date;
+    });
+    return programsList;
+  }
+
+  /**
+   * update lead image url to file stack resize url depend on device.
+   * @param project project object
+   * @returns string - lead imahe url
+   */
+  getLeadImage(project: any) {
+    const cdn = 'https://cdn.filestackcontent.com/resize=fit:crop,width:';
+    let imagewidth = 600;
+    if (project.lead_image) {
+      const imageId = project.lead_image.split('/').pop();
+      if (!this.utils.isMobile()) {
+        imagewidth = 1024;
+      }
+      return `${cdn}${imagewidth}/${imageId}`;
+    }
+    return null;
   }
 
   /**
@@ -128,14 +202,39 @@ export class SwitcherService {
     }));
   }
 
+  extractColors(programObj: ProgramObj) {
+    const experienceConfig = (programObj.experience || {}).config;
+    const programConfig = (programObj.program || {}).config;
+
+    const primary = (experienceConfig || {}).primary_color;
+    const secondary = (experienceConfig || {}).secondary_color;
+    const themeColor = (programConfig || {}).theme_color;
+
+    return {
+      primary,
+      secondary,
+      themeColor,
+    };
+  }
+
   switchProgram(programObj: ProgramObj): Observable<any> {
-    const themeColor = this.utils.has(programObj, 'program.config.theme_color') ? programObj.program.config.theme_color : '#2bbfd4';
+    // initialise Pusher and apollo here if there stack info in storage
+    this.sharedService.initWebServices();
+
+    const colors = this.extractColors(programObj);
+
     let cardBackgroundImage = '';
     if (this.utils.has(programObj, 'program.config.card_style')) {
       cardBackgroundImage = '/assets/' + programObj.program.config.card_style;
     }
 
     this.storage.setUser({
+      colors: {
+        theme: colors.themeColor,
+        primary: colors.primary,
+        secondary: colors.secondary,
+      },
+
       programId: programObj.program.id,
       programName: programObj.program.name,
       programImage: programObj.project.lead_image,
@@ -145,7 +244,6 @@ export class SwitcherService {
       projectId: programObj.project.id,
       timelineId: programObj.timeline.id,
       contactNumber: programObj.enrolment.contact_number,
-      themeColor: themeColor,
       activityCardImage: cardBackgroundImage,
       enrolment: programObj.enrolment,
       activityCompleteMessage: this.utils.has(programObj, 'experience.config.activity_complete_message') ? programObj.experience.config.activity_complete_message : null,
@@ -262,7 +360,7 @@ export class SwitcherService {
       } else if (Array.isArray(programs) && this.checkIsOneProgram(programs)) {
         await this.switchProgram(programs[0]).toPromise();
       } else {
-      // one program object -> {}
+        // one program object -> {}
         await this.switchProgram(programs).toPromise();
       }
 

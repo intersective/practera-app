@@ -24,3 +24,45 @@ ion-col {
 ion-progress-bar {
   margin-top: 5px;
 }
+
+ion-skeleton-text {
+  margin: 0 !important;
+}
+
+.skeleton-img {
+  border-bottom-left-radius: 0 !important;
+  border-bottom-right-radius: 0 !important;
+}
+
+.status-slot {
+  display: flex;
+  margin-inline-start: 16px;
+  align-items: center !important;
+  ion-icon {
+    width: 16px !important;
+    height: 16px !important;
+  }
+  p {
+    margin: 0;
+    margin-left: 3px;
+  }
+  &.draft {
+    ion-icon, p {
+      color: var(--practera-exp-draft);
+    }
+  }
+  &.live {
+    ion-icon, p {
+      color: var(--practera-exp-live);
+    }
+    ion-icon {
+      width: 10px !important;
+      height: 10px !important;
+    }
+  }
+  &.completed {
+    ion-icon, p {
+      color: var(--practera-exp-completed);
+    }
+  }
+}

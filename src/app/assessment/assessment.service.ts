@@ -418,7 +418,11 @@ export class AssessmentService {
       identifier: 'AssessmentSubmission-' + submissionId,
       is_done: true
     };
-    return this.request.post(api.post.todoitem, postData);
+    return this.request.post(
+      {
+        endPoint: api.post.todoitem,
+        data: postData
+      });
   }
 
   popUpReviewRating(reviewId, redirect): Promise<void> {

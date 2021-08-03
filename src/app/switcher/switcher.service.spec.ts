@@ -35,7 +35,10 @@ describe('SwitcherService', () => {
           EventListService,
           ReviewListService,
           PusherService,
-          SharedService,
+          {
+            provide: SharedService,
+            useValue: jasmine.createSpyObj('SharedService', ['onPageLoad', 'initWebServices']),
+          },
           {
             provide: UtilsService,
             useClass: TestUtils,
@@ -71,16 +74,129 @@ describe('SwitcherService', () => {
       expect(service).toBeTruthy();
   });
 
-  describe('getPrograms()', () => {
-    it('should get program list from storage/cache', fakeAsync(() => {
-      storageSpy.get.and.returnValue([
-        {program: {}, timeline: {}, project: {lead_image: 'https://www.filepicker.io/api/file/DAsMaIUcQcSM3IFqalPN'}, enrolment: {}}
-      ]);
-      service.getPrograms().subscribe(programs => {
+  const mockStacks = [
+    {
+      uuid: '0001',
+      name: 'Practera Classic App - Sandbox',
+      description: 'Participate in an experience as a learner or reviewer - Testing',
+      image: 'https://asd/img/learners_reviewers.png',
+      url: 'https://app.sandbox.practera.com',
+      type: 'app',
+      coreApi: 'https://admin.sandbox.practera.com',
+      coreGraphQLApi: 'https://core-graphql-api.sandbox.practera.com',
+      chatApi: 'https://chat-api.sandbox.practera.com',
+      filestack: {
+        s3Config: {
+          container: 'files.sandbox.practera.com',
+          region: 'ap-southeast-2'
+        },
+      },
+      defaultCountryModel: 'AUS',
+      lastLogin: 1619660600368
+    },
+    {
+      uuid: '002',
+      name: 'Practera App - Local Development',
+      description: 'Participate in an experience as a learner or reviewer - Local',
+      image: 'https://media.intersective.com/img/learners_reviewers.png',
+      url: 'http://127.0.0.1:4200/',
+      type: 'app',
+      coreApi: 'http://127.0.0.1:8080',
+      coreGraphQLApi: 'http://127.0.0.1:8000',
+      chatApi: 'http://localhost:3000/local/graphql',
+      filestack: {
+        s3Config: {
+          container: 'practera-aus',
+          region: 'ap-southeast-2'
+        },
+      },
+      defaultCountryModel: 'AUS',
+      lastLogin: 1619660600368
+    }
+  ];
+
+  describe('getExperience()', () => {
+    it('should call each stack and get return peograms', fakeAsync(() => {
+      requestSpy.post.and.returnValue(of({
+        success: true,
+        data: {
+          tutorial: null,
+          apikey: '123456',
+          Timelines: [
+            {
+              Program: {
+                config: {
+                  theme_color: 'abc'
+                }
+              },
+              Enrolment: {
+                created: '2020-01-05'
+              },
+              Project: {
+                lead_image: 'https://www.filepicker.io/api/file/DAsMaIUcQcSM3IFqalPN'
+              },
+              Timeline: {}
+            },
+            {
+              Program: {
+                config: {
+                  theme_color: 'xzs'
+                }
+              },
+              Enrolment: {
+                created: '2021-01-05'
+              },
+              Project: {
+                lead_image: 'https://www.filepicker.io/api/file/DAsMaIUcQcSM3IFqalPN'
+              },
+              Timeline: {}
+            }
+          ]
+        }
+      }));
+      storageSpy.loginApiKey = '456812';
+      service.getPrograms(mockStacks).subscribe(programs => {
         expect(programs[0].project.lead_image).toContain('https://cdn.filestackcontent.com/resize=fit:crop,width:');
+        expect(programs[0].stack).not.toBeNull();
+        expect(programs[0].apikey).toContain('123456');
       });
-      expect(storageSpy.get).toHaveBeenCalledWith('programs');
     }));
+
+    it(`should not call method or run code if timeline didn't have programs `, fakeAsync(() => {
+      spyOn(service, 'getLeadImage');
+      requestSpy.post.and.returnValue(of({
+        success: true,
+        data: {
+          tutorial: null,
+          apikey: '123456',
+          Timelines: []
+        }
+      }));
+      storageSpy.loginApiKey = '456812';
+      service.getPrograms(mockStacks);
+      tick();
+      expect(service.getLeadImage).not.toHaveBeenCalled();
+    }));
+  });
+
+  describe('when testing getLeadImage()', () => {
+    it(`should null if project didn't have lead image `, () => {
+        expect(service.getLeadImage({})).toBe(null);
+    });
+    it('should URL if project have lead image ', () => {
+      const imageUrl = service.getLeadImage({lead_image: 'https://www.filepicker.io/api/file/DAsMaIUcQcSM3IFqalPN'});
+      expect(imageUrl).toContain('https://cdn.filestackcontent.com/resize=fit:crop,width:');
+    });
+    it('should return resized image url for mobile ', () => {
+      utils.isMobile = jasmine.createSpy('isMobile').and.returnValues(true);
+      const imageUrl = service.getLeadImage({lead_image: 'https://www.filepicker.io/api/file/DAsMaIUcQcSM3IFqalPN'});
+      expect(imageUrl).toContain('width:600');
+    });
+    it('should return resized image url for web ', () => {
+      utils.isMobile = jasmine.createSpy('isMobile').and.returnValues(false);
+      const imageUrl = service.getLeadImage({lead_image: 'https://www.filepicker.io/api/file/DAsMaIUcQcSM3IFqalPN'});
+      expect(imageUrl).toContain('width:1024');
+    });
   });
 
   describe('when testing checkIsOneProgram()', () => {
@@ -91,6 +207,13 @@ describe('SwitcherService', () => {
     it('should return false if got Array multiple program objects ', () => {
         spyOn(utils, 'isEmpty').and.returnValue(false);
         expect(service.checkIsOneProgram([{}, {}, {}])).toBe(false);
+    });
+    it('should get cached program when programs params is empty', () => {
+      const SAMPLE = [{}];
+      spyOn(utils, 'isEmpty').and.returnValue(true);
+      storageSpy.get = jasmine.createSpy('storageSpy.get').and.returnValue(SAMPLE);
+      expect(service.checkIsOneProgram(SAMPLE)).toBe(true);
+      expect(storageSpy.get).toHaveBeenCalledWith('programs');
     });
   });
 
@@ -122,18 +245,19 @@ describe('SwitcherService', () => {
         expect(result).toEqual(['switcher', 'switcher-program']);
     }));
 
-    it('should return [app, home] if programs is Array with multiple program objects ', fakeAsync(() => {
+    it('should return [app, home] if programs is Array with multiple program objects', fakeAsync(() => {
+      environment.goMobile = false;
       const [firstProgram] = ProgramFixture;
       spyOn(service, 'checkIsOneProgram').and.returnValue(true);
       spyOn(Array, 'isArray').and.returnValue(true);
       spyOn(service, 'switchProgram').and.returnValue({
-          toPromise: () => new Promise(res => res(true))
-        });
+        toPromise: () => new Promise(res => res(true))
+      });
 
       let result;
       service.switchProgramAndNavigate([firstProgram]).then(data => {
-          result = data;
-        });
+        result = data;
+      });
       flushMicrotasks();
       expect(result).toEqual(['app', 'home']);
       expect(pusherSpy.initialise).toHaveBeenCalled();
@@ -238,7 +362,6 @@ describe('SwitcherService', () => {
       spyOn(service, 'getMyInfo').and.returnValue(of());
       spyOn(service, 'getReviews').and.returnValue(of());
       spyOn(service, 'getEvents').and.returnValue(of());
-      spyOn(sharedSpy, 'onPageLoad').and.returnValue(of());
     });
 
     it('should collect related data based on selected program', () => {
@@ -252,7 +375,7 @@ describe('SwitcherService', () => {
       expect(service.getEvents).toHaveBeenCalled();
     });
 
-    it('should set the correct user data', () => {
+    it('should set the correct user data (1)', () => {
       const programObj = ProgramFixture[3];
       delete programObj.program.config.theme_color;
       service.switchProgram(programObj).subscribe();
@@ -266,7 +389,11 @@ describe('SwitcherService', () => {
         projectId: ProgramFixture[3].project.id,
         timelineId: ProgramFixture[3].timeline.id,
         contactNumber: ProgramFixture[3].enrolment.contact_number,
-        themeColor: '#2bbfd4',
+        colors: {
+          theme: undefined,
+          primary: undefined,
+          secondary: undefined,
+        },
         activityCardImage: '',
         enrolment: ProgramFixture[3].enrolment,
         activityCompleteMessage: null,
@@ -277,7 +404,7 @@ describe('SwitcherService', () => {
       });
     });
 
-    it('should set the correct user data', () => {
+    it('should set the correct user data (2)', () => {
       const programObj = ProgramFixture[2];
       programObj.program.config = {
         theme_color: 'none',
@@ -300,7 +427,11 @@ describe('SwitcherService', () => {
         projectId: ProgramFixture[2].project.id,
         timelineId: ProgramFixture[2].timeline.id,
         contactNumber: ProgramFixture[2].enrolment.contact_number,
-        themeColor: 'none',
+        colors: {
+          theme: 'none',
+          primary: undefined,
+          secondary: undefined,
+        },
         activityCardImage: '/assets/style',
         enrolment: ProgramFixture[2].enrolment,
         activityCompleteMessage: 'completed',

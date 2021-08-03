@@ -1,5 +1,5 @@
 import { TestBed, flushMicrotasks, fakeAsync } from '@angular/core/testing';
-import { UtilsService } from './utils.service';
+import { UtilsService, ThemeColor } from './utils.service';
 import { Observable, Subject, BehaviorSubject } from 'rxjs';
 import * as _ from 'lodash';
 import * as moment from 'moment';
@@ -111,15 +111,70 @@ describe('UtilsService', () => {
   });
 
   describe('changeThemeColor()', () => {
-    it('should access to window.document style properties and update value', () => {
+    beforeEach(() => {
       spyOn(service['document'].documentElement.style, 'setProperty');
+    });
+
+    it('should access to window.document style properties and update value', () => {
       const COLOR = '#000000';
-      service.changeThemeColor(COLOR);
+      service.changeThemeColor({
+        primary: COLOR
+      });
 
       expect(service['document'].documentElement.style.setProperty).toHaveBeenCalledWith('--ion-color-primary', COLOR);
       expect(service['document'].documentElement.style.setProperty).toHaveBeenCalledWith('--ion-color-primary-shade', COLOR);
       expect(service['document'].documentElement.style.setProperty).toHaveBeenCalledWith('--ion-color-primary-tint', COLOR + '33');
-      expect(service['document'].documentElement.style.setProperty).toHaveBeenCalledWith('--ion-color-primary-rgb', '0,0,0');
+      expect(service['document'].documentElement.style.setProperty).toHaveBeenCalledWith('--ion-color-primary-rgb', '0, 0, 0');
+    });
+
+    it('should set default color when primary & theme are undefined', () => {
+      const COLOR = '#2bbfd4'; // default color
+      service.changeThemeColor({
+        primary: undefined,
+        theme: undefined,
+      });
+
+      expect(service['document'].documentElement.style.setProperty).toHaveBeenCalledWith('--ion-color-primary', COLOR);
+      expect(service['document'].documentElement.style.setProperty).toHaveBeenCalledWith('--ion-color-primary-shade', COLOR);
+      expect(service['document'].documentElement.style.setProperty).toHaveBeenCalledWith('--ion-color-primary-tint', COLOR + '33');
+      expect(service['document'].documentElement.style.setProperty).toHaveBeenCalledWith('--ion-color-primary-rgb', '43, 191, 212');
+    });
+
+    it('should set theme (when available) color when primary is undefined', () => {
+      const COLOR = '#111111';
+      service.changeThemeColor({
+        primary: undefined,
+        theme: COLOR,
+      });
+
+      expect(service['document'].documentElement.style.setProperty).toHaveBeenCalledWith('--ion-color-primary', COLOR);
+      expect(service['document'].documentElement.style.setProperty).toHaveBeenCalledWith('--ion-color-primary-shade', COLOR);
+      expect(service['document'].documentElement.style.setProperty).toHaveBeenCalledWith('--ion-color-primary-tint', COLOR + '33');
+      expect(service['document'].documentElement.style.setProperty).toHaveBeenCalledWith('--ion-color-primary-rgb', '17, 17, 17');
+    });
+
+    it('should set default color when no colors provided', () => {
+      const COLOR = '#2bbfd4'; // default color
+      service.changeThemeColor();
+
+      expect(service['document'].documentElement.style.setProperty).toHaveBeenCalledWith('--ion-color-primary', COLOR);
+      expect(service['document'].documentElement.style.setProperty).toHaveBeenCalledWith('--ion-color-primary-shade', COLOR);
+      expect(service['document'].documentElement.style.setProperty).toHaveBeenCalledWith('--ion-color-primary-tint', COLOR + '33');
+      expect(service['document'].documentElement.style.setProperty).toHaveBeenCalledWith('--ion-color-primary-rgb', '43, 191, 212');
+    });
+
+    it('should set secondary color', () => {
+      const COLOR2 = '#000000';
+      service.changeThemeColor({
+        primary: undefined,
+        theme: undefined,
+        secondary: COLOR2,
+      });
+
+      expect(service['document'].documentElement.style.setProperty).toHaveBeenCalledWith(`--ion-color-${ThemeColor.secondary}`, COLOR2);
+      expect(service['document'].documentElement.style.setProperty).toHaveBeenCalledWith(`--ion-color-${ThemeColor.secondary}-shade`, COLOR2);
+      expect(service['document'].documentElement.style.setProperty).toHaveBeenCalledWith(`--ion-color-${ThemeColor.secondary}-tint`, COLOR2 + '33');
+      expect(service['document'].documentElement.style.setProperty).toHaveBeenCalledWith(`--ion-color-${ThemeColor.secondary}-rgb`, '0, 0, 0');
     });
   });
 

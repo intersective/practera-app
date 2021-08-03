@@ -1,7 +1,7 @@
-<!-- for chat list -->
+<!-- for chat list/ switcher page -->
 <!-- ion-item need tabindex and role here -->
-<!-- accessibility keyboard click action done in chat list component -->
-<ion-item  *ngIf="isChatCard; else elseblock" class="ion-activatable" [lines]="lines" [ngClass]="{
+<!-- accessibility keyboard click action done in chat list component or switcher page -->
+<ion-item  *ngIf="isChatCard || isSwitcherCard; else elseblock" class="ion-activatable" [lines]="lines" [ngClass]="{
   'switcher-card-item': isSwitcherCard,
   'active': active
 }" role="button" tabindex="0">
@@ -16,7 +16,6 @@
 <!-- accessibility keyboard click action done by ion-botton -->
 <ng-template #elseblock>
   <ion-item class="ion-activatable" [lines]="lines" [ngClass]="{
-    'switcher-card-item': isSwitcherCard,
     'active': active
   }">
     <ion-button expand="full" class="accessible-btn" [ngClass]="{'accessible-item': isCustomizedCard, 'customTodoCard': isTodoCard, 'accessibile-ChatItem': isChatCard }"  role="button">

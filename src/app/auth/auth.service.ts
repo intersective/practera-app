@@ -94,7 +94,12 @@ export class AuthService {
    */
   private _loginFromLoginAPI(body: LoginRequParams): Observable<any> {
     body.from = 'App';
-    return this.request.post(LOGIN_API.login, body, {}, true);
+    return this.request.post(
+      {
+        endPoint: LOGIN_API.login,
+        data: body,
+        isLoginAPI: true
+      });
   }
 
   /**
@@ -111,9 +116,14 @@ export class AuthService {
     if (!serviceHeader) {
       delete headers.service;
     }
-    return this.request.post(API.login, body.toString(), {
-      headers
-    }).pipe(map(res => this._handleLoginResponse(res)));
+    return this.request.post(
+      {
+        endPoint: API.login,
+        data: body.toString(),
+        httpOptions: {
+          headers
+        }
+      }).pipe(map(res => this._handleLoginResponse(res)));
   }
 
   /**
@@ -211,7 +221,7 @@ export class AuthService {
    */
   logout(navigationParams = {}, redirect = true) {
     // use the config color
-    this.utils.changeThemeColor(this.storage.getConfig().color || '#2bbfd4');
+    this.utils.changeThemeColor(this.storage.getConfig().colors);
     this.pusherService.unsubscribeChannels();
     this.pusherService.disconnect();
     const config = this.storage.getConfig();
@@ -234,7 +244,12 @@ export class AuthService {
       resetLink: this._createLinks('reset'),
       directLink: this._createLinks('direct')
     };
-    return this.request.post(LOGIN_API.forgotPassword, body, {}, true);
+    return this.request.post(
+      {
+        endPoint: LOGIN_API.forgotPassword,
+        data: body,
+        isLoginAPI: true
+      });
   }
 
   /**
@@ -300,9 +315,13 @@ export class AuthService {
    * @return {Observable<any>}      [description]
    */
   contactNumberLogin(data: { contactNumber: string }): Observable<any> {
-    return this.request.post(API.login, {
-      contact_number: data.contactNumber, // API accepts contact_numebr
-    }).pipe(map(response => {
+    return this.request.post(
+      {
+        endPoint: API.login,
+        data: {
+          contact_number: data.contactNumber,
+        }
+      }).pipe(map(response => {
       if (response.data) {
         this.storage.setUser({apikey: response.data.apikey});
         this.storage.set('tutorial', response.data.tutorial);
@@ -334,21 +353,34 @@ export class AuthService {
   }
 
   updateProfile(data: UserProfile): Observable<any> {
-    return this.request.post(API.setProfile, data);
+    return this.request.post(
+      {
+        endPoint: API.setProfile,
+        data
+      }
+    );
   }
 
   saveRegistration(data: RegisterData): Observable<any> {
-    return this.request
-    .post(API.register, data, {
-      headers: { 'Content-Type': 'application/json' }
-    });
+    return this.request.post(
+      {
+        endPoint: API.register,
+        data,
+        httpOptions: {
+          headers: { 'Content-Type': 'application/json' }
+        }
+      });
   }
 
   verifyRegistration(data: VerifyParams): Observable<any> {
-    return this.request
-    .post(API.verifyRegistration, data, {
-      headers: { 'Content-Type': 'application/json' }
-    });
+    return this.request.post(
+      {
+        endPoint: API.verifyRegistration,
+        data,
+        httpOptions: {
+          headers: { 'Content-Type': 'application/json' }
+        }
+      });
   }
 
   /**
@@ -395,11 +427,14 @@ export class AuthService {
    * @return  {Observable<Stack>[]} multiple stacks
    */
   getStacks(): Observable<Stack[]> {
-    return this.request.get(LOGIN_API.multipleStacks, {
-      params: {
-        type: 'app'
-      }
-    },                      true).pipe(
+    return this.request.get(
+      LOGIN_API.multipleStacks,
+      {
+        params: {
+          type: 'app'
+        }
+      },
+      true).pipe(
       map(res => {
         if (res) {
           this.storage.stacks = res;

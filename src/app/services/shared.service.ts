@@ -7,6 +7,8 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
 import { TopicService } from '../topic/topic.service';
+import { ApolloService } from '@shared/apollo/apollo.service';
+import { PusherService } from '@shared/pusher/pusher.service';
 
 export interface Profile {
   contact_number: string;
@@ -34,22 +36,29 @@ export class SharedService {
     private request: RequestService,
     private http: HttpClient,
     private newrelic: NewRelicService,
-    private topicService: TopicService
+    private topicService: TopicService,
+    private apolloService: ApolloService,
+    private pusherService: PusherService
   ) {}
 
   // call this function on every page refresh and after switch program
   onPageLoad() {
     this.getIpLocation();
+    const {
+      timelineId,
+      colors,
+      activityCardImage,
+    } = this.storage.getUser();
+
     // only do these if a timeline is choosen
-    if (!this.storage.getUser().timelineId) {
+    if (!timelineId) {
       return;
     }
     // check and change theme color on every page refresh
-    const color = this.storage.getUser().themeColor;
-    if (color) {
-      this.utils.changeThemeColor(color);
+    if (colors) {
+      this.utils.changeThemeColor(colors);
     }
-    const image = this.storage.getUser().activityCardImage;
+    const image = activityCardImage;
     if (image) {
       this.utils.changeCardBackgroundImage(image);
     }
@@ -57,19 +66,24 @@ export class SharedService {
     // subscribe to the achievement event if it is not subscribed
     if (!this.achievementEvent) {
       this.achievementEvent = this.utils.getEvent('achievement').subscribe(event => {
+        const { id, name, description, points, badge } = event.meta.Achievement;
         this.notification.achievementPopUp('notification', {
-          id: event.meta.Achievement.id,
-          name: event.meta.Achievement.name,
-          description: event.meta.Achievement.description,
-          points: event.meta.Achievement.points,
-          image: event.meta.Achievement.badge
+          id,
+          name,
+          description,
+          points,
+          image: badge
         });
       });
     }
   }
 
   updateProfile(data: Profile) {
-    return this.request.post(api.post.profile, data);
+    return this.request.post(
+      {
+        endPoint: api.post.profile,
+        data
+      });
   }
 
   /**
@@ -117,6 +131,17 @@ export class SharedService {
           console.log('error in mark Topic Stop On Navigating - ', err);
         }
       );
+    }
+  }
+
+  /**
+   * Initialise web services like Pusher/ apollo if there stack info in storage
+   */
+  async initWebServices() {
+    if (this.storage.stackConfig) {
+      await this.pusherService.initialise();
+      this.apolloService.initiateCoreClient();
+      this.apolloService.initiateChatClient();
     }
   }
 

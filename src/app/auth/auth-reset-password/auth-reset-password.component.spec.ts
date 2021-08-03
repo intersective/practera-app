@@ -1,5 +1,5 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { Location, LocationStrategy, PathLocationStrategy } from '@angular/common';
+import { APP_BASE_HREF, Location, LocationStrategy, PathLocationStrategy } from '@angular/common';
 import { async, ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { AuthResetPasswordComponent } from './auth-reset-password.component';
 import { AuthService } from '../auth.service';
@@ -26,6 +26,7 @@ describe('AuthResetPasswordComponent', () => {
       declarations: [ AuthResetPasswordComponent ],
       schemas: [ CUSTOM_ELEMENTS_SCHEMA ],
       providers: [
+        { provide: APP_BASE_HREF, useValue: '/' },
         Location,
         {
           provide: LocationStrategy,

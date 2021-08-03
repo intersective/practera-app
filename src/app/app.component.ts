@@ -7,10 +7,8 @@ import { AuthService } from './auth/auth.service';
 import { BrowserStorageService } from '@services/storage.service';
 import { VersionCheckService } from '@services/version-check.service';
 import { environment } from '@environments/environment';
-import { PusherService } from '@shared/pusher/pusher.service';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
 import { DomSanitizer } from '@angular/platform-browser';
-import { ApolloService } from '@shared/apollo/apollo.service';
 
 @Component({
   selector: 'app-root',
@@ -26,11 +24,9 @@ export class AppComponent implements OnInit {
     private authService: AuthService,
     private storage: BrowserStorageService,
     private versionCheckService: VersionCheckService,
-    private pusherService: PusherService,
     private ngZone: NgZone,
     private newRelic: NewRelicService,
-    public sanitizer: DomSanitizer,
-    private apolloService: ApolloService,
+    public sanitizer: DomSanitizer
   ) {
     this.customHeader = null;
     this.initializeApp();
@@ -63,10 +59,9 @@ export class AppComponent implements OnInit {
         // watch version update
         this.versionCheckService.initiateVersionCheck();
       }
-      // initialise Pusher
-      await this.pusherService.initialise();
-      this.apolloService.initiateCoreClient();
-      this.apolloService.initiateChatClient();
+
+      // initialise Pusher/ apollo when app loading if there stack info in storage
+      this.sharedService.initWebServices();
     });
   }
 
@@ -146,24 +141,32 @@ export class AppComponent implements OnInit {
             const numOfConfigs = expConfig.length;
             if (numOfConfigs > 0 && numOfConfigs < 2) {
               let logo = expConfig[0].logo;
-              const themeColor = expConfig[0].config.theme_color;
-              if (expConfig[0].config.html_branding && expConfig[0].config.html_branding.header) {
-                this.customHeader = expConfig[0].config.html_branding.header;
+
+              const config = expConfig[0].config || {}; // let it fail gracefully
+
+              if (config.html_branding && config.html_branding.header) {
+                this.customHeader = config.html_branding.header;
               }
               if (this.customHeader) {
                 this.customHeader = this.sanitizer.bypassSecurityTrustHtml(this.customHeader);
               }
+
               // add the domain if the logo url is not a full url
               if (!logo.includes('http') && !this.utils.isEmpty(logo)) {
                 logo = environment.APIEndpoint + logo;
               }
+              const colors = {
+                theme: config.theme_color,
+              };
               this.storage.setConfig({
                 logo,
-                color: themeColor
+                colors,
               });
-              // use brand color if no theme color
-              if (!this.utils.has(this.storage.getUser(), 'themeColor') || !this.storage.getUser().themeColor) {
-                this.utils.changeThemeColor(themeColor);
+
+              // use brand color from getConfig API if no cached color available
+              // in storage.getUser()
+              if (!this.utils.has(this.storage.getUser(), 'colors') || !this.storage.getUser().colors) {
+                this.utils.changeThemeColor(colors);
               }
             }
           }
