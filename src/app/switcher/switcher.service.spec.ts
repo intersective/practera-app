@@ -129,6 +129,9 @@ describe('SwitcherService', () => {
                   theme_color: 'abc'
                 }
               },
+              Experience: {
+                status: 'done'
+              },
               Enrolment: {
                 created: '2020-01-05'
               },
@@ -142,6 +145,9 @@ describe('SwitcherService', () => {
                 config: {
                   theme_color: 'xzs'
                 }
+              },
+              Experience: {
+                status: 'draft'
               },
               Enrolment: {
                 created: '2021-01-05'
