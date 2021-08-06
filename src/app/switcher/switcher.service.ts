@@ -129,15 +129,18 @@ export class SwitcherService {
             // Update lead image if project have one.
             timeline.Project.lead_image = this.getLeadImage(timeline.Project);
 
-            programsList.push({
-              enrolment: timeline.Enrolment,
-              program: timeline.Program,
-              project: timeline.Project,
-              timeline: timeline.Timeline,
-              experience: timeline.Experience,
-              stack: result.stack,
-              apikey: data.apikey
-            });
+            // Not showing draft experiences in experience switcher page
+            if (timeline.Experience.status !== 'draft') {
+              programsList.push({
+                enrolment: timeline.Enrolment,
+                program: timeline.Program,
+                project: timeline.Project,
+                timeline: timeline.Timeline,
+                experience: timeline.Experience,
+                stack: result.stack,
+                apikey: data.apikey
+              });
+            }
           }
         );
       }

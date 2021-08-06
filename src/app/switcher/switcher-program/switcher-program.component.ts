@@ -44,7 +44,7 @@ export class SwitcherProgramComponent extends RouterEnter implements AfterConten
   onEnter() {
     this.newRelic.setPageViewName('program switcher');
     this.switcherService.getPrograms(this.stacks).subscribe(
-      programs => {
+      async programs => {
         // redirect user back to login if didn't found any program for the user.
         if (programs.length <= 0) {
           return this.notificationService.alert({
@@ -62,8 +62,15 @@ export class SwitcherProgramComponent extends RouterEnter implements AfterConten
             ],
           });
         }
-        this.isProgramsLoading = false;
+
         this.programs = programs;
+
+        // IF user have access to only one program then switch to it
+        if (programs.length === 1) {
+          await this.switch(0);
+        } else {
+          this.isProgramsLoading = false;
+        }
       },
       error => {
         this.isProgramsLoading = false;
@@ -91,6 +98,7 @@ export class SwitcherProgramComponent extends RouterEnter implements AfterConten
 
       const route = await this.switcherService.switchProgramAndNavigate(this.programs[index]);
       loading.dismiss().then(() => {
+        this.isProgramsLoading = false;
         nrSwitchedProgramTracer();
         this.router.navigate(route);
       });
