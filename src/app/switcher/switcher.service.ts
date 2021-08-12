@@ -129,15 +129,19 @@ export class SwitcherService {
             // Update lead image if project have one.
             timeline.Project.lead_image = this.getLeadImage(timeline.Project);
 
-            programsList.push({
-              enrolment: timeline.Enrolment,
-              program: timeline.Program,
-              project: timeline.Project,
-              timeline: timeline.Timeline,
-              experience: timeline.Experience,
-              stack: result.stack,
-              apikey: data.apikey
-            });
+            // Not showing draft experiences in experience switcher page
+            // If there are no status that means it's a P1 experience so we need to show it.
+            if (!this.utils.has(timeline.Experience, 'status') || timeline.Experience.status !== 'draft') {
+              programsList.push({
+                enrolment: timeline.Enrolment,
+                program: timeline.Program,
+                project: timeline.Project,
+                timeline: timeline.Timeline,
+                experience: timeline.Experience,
+                stack: result.stack,
+                apikey: data.apikey
+              });
+            }
           }
         );
       }

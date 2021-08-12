@@ -8,7 +8,8 @@
   <ion-grid *ngIf="!isProgramsLoading">
     <ion-row>
       <ion-col size="12" size-sm="12" size-md="6" size-lg="4" size-xl="3" *ngFor="let program of programs; let i = index">
-        <ion-card class="practera-card experience-card" (click)="switch(i)"  role="link" [attr.aria-label]="program.program.name">
+        <!-- Not showing draft experiences in experience switcher page -->
+        <ion-card *ngIf="program.experience.status !== 'draft'" class="practera-card experience-card" (click)="switch(i)"  role="link" [attr.aria-label]="program.program.name">
           <div class="image-container">
             <img [src]="program.project.lead_image ? program.project.lead_image : '../../../assets/default-experience-image.svg'" alt="{{ program.program.name }}"/>
           </div>
@@ -21,10 +22,6 @@
               <ion-icon *ngIf="!program.experience.status" name="chevron-forward" slot="end"></ion-icon>
               <!-- Only show status if  exprience have it-->
               <div *ngIf="program.experience.status" slot="end" class="status-slot" [ngClass]="program.experience.status ? program.experience.status: ''">
-                <ng-container *ngIf="program.experience.status === 'draft'">
-                  <ion-icon name="time-outline"></ion-icon>
-                  <p class="subtitle-2">NOT LIVE</p>
-                </ng-container>
                 <ng-container *ngIf="program.experience.status === 'live'">
                   <ion-icon name="ellipse"></ion-icon>
                   <p class="subtitle-2">LIVE</p>
