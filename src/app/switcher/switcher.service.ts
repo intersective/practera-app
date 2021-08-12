@@ -130,7 +130,8 @@ export class SwitcherService {
             timeline.Project.lead_image = this.getLeadImage(timeline.Project);
 
             // Not showing draft experiences in experience switcher page
-            if (timeline.Experience.status !== 'draft') {
+            // If there are no status that means it's a P1 experience so we need to show it.
+            if (!this.utils.has(timeline.Experience, 'status') || timeline.Experience.status !== 'draft') {
               programsList.push({
                 enrolment: timeline.Enrolment,
                 program: timeline.Program,
