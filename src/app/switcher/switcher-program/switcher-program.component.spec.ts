@@ -34,7 +34,10 @@ describe('SwitcherProgramComponent', () => {
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
       providers: [
         PusherService,
-        LoadingController,
+        {
+          provide: LoadingController,
+          useValue: jasmine.createSpyObj('LoadingController', ['create'])
+        },
         {
           provide: NotificationService,
           useValue: jasmine.createSpyObj('NotificationService', ['alert'])
@@ -126,7 +129,7 @@ describe('SwitcherProgramComponent', () => {
     beforeEach(() => {
       component.programs = ProgramFixture; // load fixture
       spyOn(loadingSpy, 'create').and.returnValue({
-        present: () => new Promise(res => res('test')),
+        present: Promise.resolve(res => res('test')),
         dismiss: () => new Promise(res => res(true))
       });
     });
