@@ -1,4 +1,4 @@
-import { ModuleWithProviders, NgModule } from '@angular/core';
+import { NgModule } from '@angular/core';
 import { FilestackService } from './filestack.service';
 import { SharedModule } from '@shared/shared.module';
 import { FilestackComponent } from './filestack.component';

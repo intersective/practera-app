@@ -30,8 +30,8 @@
     </ng-container>
 
     <ng-template #doneLoading>
-      <ng-container @newLoaded *ngIf="(eventReminders || []).concat(todoItems) as notices">
-        <app-slidable
+      <ng-container *ngIf="(eventReminders || []).concat(todoItems) as notices">
+        <app-slidable @newLoaded
           *ngIf="notices.length > 0; else noNotices"
           [notifications]="notices"
           (goto)="clickTodoItem($event)"
@@ -48,18 +48,18 @@
 </div>
 
 <ng-template #badges>
-  <ng-container @newLoaded *ngIf="achievements && achievements.length > 0">
+  <ng-container *ngIf="achievements && achievements.length > 0">
 
-    <ion-label class="subtitle-2 gray-2 achievement ion-padding-start"
+    <ion-label @newLoaded class="subtitle-2 gray-2 achievement ion-padding-start"
       aria-label="My badges"
       tabindex="0"
     >My Badges</ion-label>
-    <ion-label class="float-right" *ngIf="achievements.length > 1">
+    <ion-label @newLoaded class="float-right" *ngIf="achievements.length > 1">
       <a color="primary" class="button ion-padding-end" (click)='goTo(["achievements"])' aria-label="view all"
        role="link" (keydown)='triggerClick($event)' tabindex="0">VIEW ALL</a>
     </ion-label>
 
-    <ion-grid class="ion-no-padding">
+    <ion-grid @newLoaded class="ion-no-padding">
       <ion-row class="ion-text-center ion-margin-bottom">
         <ion-col *ngFor="let achievement of achievements; let i = index;" size="4" @newLoaded>
           <achievement-badge [achievement]="achievement"></achievement-badge>
@@ -79,8 +79,9 @@
 </ng-template>
 
 <ng-template #todoItemsTpl>
-  <ng-container *ngFor="let event of eventReminders" @newLoaded>
+  <ng-container *ngFor="let event of eventReminders">
     <app-todo-card
+      @newLoaded
       [todoItem]="{
         name: event.name,
         description: '',
