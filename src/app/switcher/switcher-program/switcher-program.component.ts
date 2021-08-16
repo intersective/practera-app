@@ -87,7 +87,6 @@ export class SwitcherProgramComponent extends RouterEnter implements AfterConten
       message: 'loading...'
     });
     this.newRelic.actionText(`selected ${this.programs[index].program.name}`);
-
     await loading.present();
 
     try {
@@ -103,6 +102,8 @@ export class SwitcherProgramComponent extends RouterEnter implements AfterConten
         this.router.navigate(route);
       });
     } catch (err) {
+console.log('err::', err);
+
       await this.notificationService.alert({
         header: 'Error switching program',
         message: err.msg || JSON.stringify(err)

@@ -37,8 +37,14 @@ describe('SwitcherProgramComponent', () => {
         {
           provide: LoadingController,
           useValue: jasmine.createSpyObj('LoadingController', {
-            present: Promise.resolve(res => res('test')),
-            dismiss: () => new Promise(res => res(true))
+            create: Promise.resolve({
+              present: () => new Promise(res => {
+                console.log('fromsepc');
+
+                res('test');
+              }),
+              dismiss: () => new Promise(res => res(true)),
+            })
           })
         },
         {
