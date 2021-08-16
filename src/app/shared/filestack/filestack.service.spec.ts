@@ -233,7 +233,7 @@ describe('FilestackService', () => {
     it('should pop up modal for provided filestack link', fakeAsync(() => {
       const apiRes = { passed: true };
       let result;
-      spyOn(modalctrlSpy, 'create').and.returnValue({
+      modalctrlSpy.create.and.returnValue({
         present: () => Promise.resolve(apiRes),
       });
 

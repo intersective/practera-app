@@ -27,7 +27,7 @@ describe('SwitcherProgramComponent', () => {
   let notifySpy: jasmine.SpyObj<NotificationService>;
   let storageSpy: jasmine.SpyObj<BrowserStorageService>;
 
-  beforeEach(async(() => {
+  beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [SharedModule, HttpClientTestingModule],
       declarations: [SwitcherProgramComponent],
@@ -36,7 +36,10 @@ describe('SwitcherProgramComponent', () => {
         PusherService,
         {
           provide: LoadingController,
-          useValue: jasmine.createSpyObj('LoadingController', ['create'])
+          useValue: jasmine.createSpyObj('LoadingController', {
+            present: Promise.resolve(res => res('test')),
+            dismiss: () => new Promise(res => res(true))
+          })
         },
         {
           provide: NotificationService,
@@ -83,7 +86,7 @@ describe('SwitcherProgramComponent', () => {
     loadingSpy = TestBed.inject(LoadingController) as jasmine.SpyObj<LoadingController>;
     notifySpy = TestBed.inject(NotificationService) as jasmine.SpyObj<NotificationService>;
     storageSpy = TestBed.inject(BrowserStorageService) as jasmine.SpyObj<BrowserStorageService>;
-  }));
+  });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(SwitcherProgramComponent);
@@ -128,10 +131,6 @@ describe('SwitcherProgramComponent', () => {
 
     beforeEach(() => {
       component.programs = ProgramFixture; // load fixture
-      spyOn(loadingSpy, 'create').and.returnValue({
-        present: Promise.resolve(res => res('test')),
-        dismiss: () => new Promise(res => res(true))
-      });
     });
 
     it('should switch to selected program based on provided programmatic index', fakeAsync(() => {

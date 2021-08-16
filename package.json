@@ -103,11 +103,12 @@
     "karma-junit-reporter": "~1.2.0",
     "karma-ng-html2js-preprocessor": "^1.0.0",
     "karma-sonarqube-unit-reporter": "0.0.23",
+    "ng-mocks": "^12.4.0",
     "protractor": "~7.0.0",
-    "ts-node": "~8.3.0",
     "protractor-cucumber-framework": "^6.2.0",
     "serverless": "^2.50.0",
     "serverless-certificate-creator": "^1.4.0",
+    "ts-node": "~8.3.0",
     "tslint": "~5.12.0",
     "typescript": "~4.2.4"
   }
