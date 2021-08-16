@@ -146,7 +146,10 @@ describe('AuthLoginComponent', () => {
       notificationSpy.alert.and.returnValue(Promise.resolve());
       component.login();
       expect(notificationSpy.alert.calls.count()).toBe(1);
-      notificationSpy.alert.calls.first().args[0].buttons[0].handler();
+
+      const button = notificationSpy.alert.calls.first().args[0].buttons[0];
+      (typeof button == 'string') ? button : button.handler(true);
+
       expect(component.isLoggingIn).toBe(false);
     });
 
@@ -186,7 +189,10 @@ describe('AuthLoginComponent', () => {
       expect(serviceSpy.login.calls.count()).toBe(1);
       expect(notificationSpy.alert.calls.count()).toBe(1);
       expect(notificationSpy.alert.calls.first().args[0].message).toContain('password is incorrect');
-      notificationSpy.alert.calls.first().args[0].buttons[0].handler();
+
+      const button = notificationSpy.alert.calls.first().args[0].buttons[0];
+      (typeof button == 'string') ? button : button.handler(true);
+
       expect(component.isLoggingIn).toBe(false);
     }));
   });

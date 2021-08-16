@@ -2,7 +2,7 @@ import { CUSTOM_ELEMENTS_SCHEMA, EventEmitter } from '@angular/core';
 import { async, ComponentFixture, TestBed, tick, fakeAsync } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { ChatListComponent } from './chat-list.component';
-import { ChatService } from '../chat.service';
+import { ChatChannel, ChatService } from '../chat.service';
 import { of } from 'rxjs';
 import { BrowserStorageService } from '@services/storage.service';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
@@ -13,50 +13,7 @@ import { Router, ActivatedRoute, convertToParamMap } from '@angular/router';
 import { FastFeedbackServiceMock } from '@testing/mocked.service';
 import { FastFeedbackService } from '@app/fast-feedback/fast-feedback.service';
 import { TestUtils } from '@testing/utils';
-
-const mockChats = {
-  data: {
-    channels: [
-      {
-        uuid: '35326928',
-        name: 'Team 1',
-        avatar: 'https://sandbox.practera.com/img/team-white.png',
-        pusherChannel: 'sdb746-93r7dc-5f44eb4f',
-        isAnnouncement: false,
-        isDirectMessag: false,
-        readonly: false,
-        roles: [
-          'participant',
-          'coordinator',
-          'admin'
-        ],
-        unreadMessageCount: 0,
-        lastMessage: null,
-        lastMessageCreated: null,
-        canEdit: true,
-      },
-      {
-        uuid: 'ced963c1',
-        name: 'Team 1 + Mentor',
-        avatar: 'https://sandbox.practera.com/img/team-white.png',
-        pusherChannel: 'kb5gt-9nfbj-5f45eb4g',
-        isAnnouncement: false,
-        isDirectMessage: false,
-        readonly: false,
-        roles: [
-          'participant',
-          'mentor',
-          'coordinator',
-          'admin'
-        ],
-        unreadMessageCount: 0,
-        lastMessage: null,
-        lastMessageCreated: null,
-        canEdit: true,
-      }
-    ]
-  }
-};
+import { mockChats } from '@testing/fixtures';
 
 const mockPusherChannels = {
   data: {

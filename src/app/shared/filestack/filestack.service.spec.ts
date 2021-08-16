@@ -231,9 +231,7 @@ describe('FilestackService', () => {
     it('should pop up modal for provided filestack link', fakeAsync(() => {
       const apiRes = { passed: true };
       let result;
-      modalctrlSpy.create.and.returnValue(new Promise((resolve) => resolve({
-        present: new Promise(resolve => resolve(Promise.resolve(apiRes))),
-      })));
+      // modalctrlSpy.create.and.returnValue(new Promise((resolve, reject) => resolve(Promise.resolve(apiRes))));
 
       service.previewModal('test.com').then(res => {
         result = res;
