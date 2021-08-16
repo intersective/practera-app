@@ -42,14 +42,15 @@ export class SwitcherProgramComponent extends RouterEnter implements AfterConten
   }
 
   onEnter() {
+    this.programs = [];
     this.newRelic.setPageViewName('program switcher');
     this.switcherService.getPrograms(this.stacks).subscribe(
       async programs => {
         // redirect user back to login if didn't found any program for the user.
         if (programs.length <= 0) {
           return this.notificationService.alert({
-            header: 'Error in accessing parograms',
-            message: `Didn't found programs user have access to enter. Please Login using another valid account.`,
+            header: 'Error in accessing experiences',
+            message: `Didn't find any experience user has access to enter. Please Login using another valid account.`,
             buttons: [
               {
                 text: 'OK',

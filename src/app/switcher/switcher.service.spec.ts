@@ -138,7 +138,10 @@ describe('SwitcherService', () => {
               Project: {
                 lead_image: 'https://www.filepicker.io/api/file/DAsMaIUcQcSM3IFqalPN'
               },
-              Timeline: {}
+              Timeline: {},
+              License: {
+                role: 'participant'
+              }
             },
             {
               Program: {
@@ -155,7 +158,10 @@ describe('SwitcherService', () => {
               Project: {
                 lead_image: 'https://www.filepicker.io/api/file/DAsMaIUcQcSM3IFqalPN'
               },
-              Timeline: {}
+              Timeline: {},
+              License: {
+                role: 'mentor'
+              }
             }
           ]
         }
