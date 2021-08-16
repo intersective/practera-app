@@ -73,7 +73,7 @@ describe('AuthForgotPasswordComponent', () => {
     });
 
     it('should pop up toast message if email is empty', fakeAsync(() => {
-      notificationSpy.presentToast.and.returnValue(true);
+      notificationSpy.presentToast.and.returnValue(Promise.resolve());
       component.email = '';
       component.send();
       expect(notificationSpy.presentToast.calls.count()).toBe(1);

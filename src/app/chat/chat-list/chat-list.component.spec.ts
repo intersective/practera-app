@@ -32,7 +32,8 @@ const mockChats = {
         ],
         unreadMessageCount: 0,
         lastMessage: null,
-        lastMessageCreated: null
+        lastMessageCreated: null,
+        canEdit: true,
       },
       {
         uuid: 'ced963c1',
@@ -50,7 +51,8 @@ const mockChats = {
         ],
         unreadMessageCount: 0,
         lastMessage: null,
-        lastMessageCreated: null
+        lastMessageCreated: null,
+        canEdit: true,
       }
     ]
   }

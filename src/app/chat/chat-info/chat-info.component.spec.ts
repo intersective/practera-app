@@ -10,6 +10,7 @@ import { BrowserStorageService } from '@services/storage.service';
 import { ChatService } from '../chat.service';
 import { of } from 'rxjs';
 import { TestUtils } from '@testing/utils';
+import { mockMembers } from '@testing/fixtures';
 
 describe('ChatInfoComponent', () => {
   let component: ChatInfoComponent;
@@ -62,27 +63,6 @@ describe('ChatInfoComponent', () => {
     storageSpy = TestBed.inject(BrowserStorageService) as jasmine.SpyObj<BrowserStorageService>;
   });
 
-  const mockMembers = [
-    {
-      uuid: '1',
-      name: 'student+01',
-      role: 'participant',
-      avatar: 'https://www.gravatar.com/avatar/21b7427270a606e8a3c4413a13bb47c6?d=https://sandbox.practera.com/img/user-512.png&s=50'
-    },
-    {
-      uuid: '2',
-      name: 'student1',
-      role: 'participant',
-      avatar: 'https://www.gravatar.com/avatar/21b7427270a606e8a3c4413a13bb47c6?d=https://sandbox.practera.com/img/user-512.png&s=50'
-    },
-    {
-      uuid: '3',
-      name: 'student2',
-      role: 'participant',
-      avatar: 'https://www.gravatar.com/avatar/21b7427270a606e8a3c4413a13bb47c6?d=https://sandbox.practera.com/img/user-512.png&s=50'
-    }
-  ];
-
   it('should create', () => {
     expect(component).toBeTruthy();
   });
@@ -106,7 +86,7 @@ describe('ChatInfoComponent', () => {
         unreadMessageCount: 0,
         lastMessage: null,
         lastMessageCreated: null,
-        canEdit: false
+        canEdit: false,
       };
       component.ngOnInit();
       expect(chatServiceSpy.getChatMembers.calls.count()).toBe(1);

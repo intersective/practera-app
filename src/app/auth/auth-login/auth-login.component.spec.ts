@@ -143,7 +143,7 @@ describe('AuthLoginComponent', () => {
   describe('when testing login()', () => {
     it('should pop up alert if username is empty', () => {
       component.loginForm.setValue({username: '', password: 'abc'});
-      notificationSpy.alert.and.returnValue(true);
+      notificationSpy.alert.and.returnValue(Promise.resolve());
       component.login();
       expect(notificationSpy.alert.calls.count()).toBe(1);
       notificationSpy.alert.calls.first().args[0].buttons[0].handler();
