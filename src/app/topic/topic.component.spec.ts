@@ -1,6 +1,6 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { async, ComponentFixture, TestBed, fakeAsync, tick, inject, flushMicrotasks, flush } from '@angular/core/testing';
+import { ComponentFixture, TestBed, fakeAsync, tick, inject, flushMicrotasks, flush } from '@angular/core/testing';
 import { Router, ActivatedRoute, convertToParamMap } from '@angular/router';
 import { TopicComponent } from './topic.component';
 import { TopicService } from './topic.service';
@@ -27,7 +27,17 @@ describe('TopicComponent', () => {
   });
   const filestackSpy = jasmine.createSpyObj('FilestackService', ['previewFile']);
   const embedSpy = jasmine.createSpyObj('EmbedVideoService', ['embed']);
-  const newRelicSpy = jasmine.createSpyObj('NewRelicService', ['noticeError', 'addPageAction', 'setPageViewName']);
+  const newRelicSpy = jasmine.createSpyObj('NewRelicService', {
+    'noticeError': data => {
+      console.log(data);
+    },
+    'addPageAction': data => {
+      console.log(data);
+    },
+    'setPageViewName': data => {
+      console.log(data);
+    }
+  });
   const sharedSpy = jasmine.createSpyObj('SharedService', ['stopPlayingVideos']);
   const activitySpy = jasmine.createSpyObj('ActivityService', {
     'gotoNextTask': new Promise(() => { })
@@ -41,7 +51,7 @@ describe('TopicComponent', () => {
   });
   const storageSpy = jasmine.createSpyObj('BrowserStorageService', ['getUser', 'get', 'remove']);
 
-  beforeEach(async(() => {
+  beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule],
       declarations: [ TopicComponent ],
@@ -103,7 +113,7 @@ describe('TopicComponent', () => {
       projectId: 2
     });
     storageSpy.get.and.returnValue({});
-  }));
+  });
 
   it('should create', () => {
     expect(component).toBeTruthy();
@@ -130,6 +140,7 @@ describe('TopicComponent', () => {
       expect(component.topic).toEqual(topic);
       expect(component.topicProgress).toBe(1);
       expect(component.btnToggleTopicIsDone).toBe(true);
+      expect(component.askForMarkAsDone).toBeTrue();
     }));
 
     it('should get correct data #2', fakeAsync(() => {
@@ -152,6 +163,7 @@ describe('TopicComponent', () => {
       expect(component.topic).toEqual(topic);
       expect(component.topicProgress).toBe(null);
       expect(component.btnToggleTopicIsDone).toBe(false);
+      expect(component.askForMarkAsDone).toBeTrue();
     }));
 
     it('should get correct data #3', fakeAsync(() => {
@@ -174,16 +186,20 @@ describe('TopicComponent', () => {
       expect(component.topic).toEqual(topic);
       expect(component.topicProgress).toBe(0);
       expect(component.btnToggleTopicIsDone).toBe(false);
+      expect(component.askForMarkAsDone).toBeTrue();
     }));
 
     it('should throw error to newRelic', fakeAsync(() => {
-      topicSpy.getTopic = jasmine.createSpy().and.returnValue(throwError(''));
-      topicSpy.getTopicProgress = jasmine.createSpy().and.returnValue(throwError(''));
+      topicSpy.getTopic = jasmine.createSpy().and.returnValue(throwError('SAMPLE_ERROR::getTopic'));
+      topicSpy.getTopicProgress = jasmine.createSpy().and.returnValue(throwError('SAMPLE_ERROR::getTopicProgress'));
       fixture.detectChanges();
       component.onEnter();
       tick(20000);
       flush();
-      expect(newRelicSpy.noticeError).toHaveBeenCalledTimes(2);
+      fixture.whenStable().then(() => {
+        expect(newRelicSpy.noticeError).toHaveBeenCalledTimes(2);
+        expect(component.askForMarkAsDone).toBeTrue();
+      })
     }));
   });
 
@@ -194,10 +210,15 @@ describe('TopicComponent', () => {
   });
 
   it('should mark topic as done', () => {
+    const SAMPLE_ID = 12345;
+    component.id = SAMPLE_ID;
+    component.changeStatus.emit = jasmine.createSpy();
+    topicSpy.updateTopicProgress = jasmine.createSpy('updateTopicProgress').and.returnValue(of(''));
     component.markAsDone().subscribe();
 
-    expect(topicSpy.updateTopicProgress).toHaveBeenCalledTimes(5);
+    expect(topicSpy.updateTopicProgress).toHaveBeenCalledWith(SAMPLE_ID, 'completed');
     expect(component.btnToggleTopicIsDone).toBe(true);
+    expect(component.changeStatus.emit).toHaveBeenCalled();
   });
   describe('when testing continue()', () => {
     it('should go to the next task #1', () => {
@@ -218,11 +239,11 @@ describe('TopicComponent', () => {
       let result;
       component.isLoadingPreview = false;
       filestackSpy.previewFile.and.returnValue(Promise.resolve(SAMPLE_RESULT));
+      fixture.detectChanges();
       component.previewFile('').then(filestack => {
         result = filestack;
       });
       expect(component.isLoadingPreview).toBe(true);
-      fixture.detectChanges();
       flushMicrotasks();
       expect(result).toEqual(SAMPLE_RESULT);
       expect(component.isLoadingPreview).toBe(false);
@@ -234,10 +255,11 @@ describe('TopicComponent', () => {
       notificationSpy.alert.and.returnValue(Promise.resolve(SAMPLE_RESULT));
       filestackSpy.previewFile.and.rejectWith(new Error('File preview test error'));
       component.isLoadingPreview = false;
+      fixture.detectChanges();
+
       component.previewFile('').then(filestack => {
         result = filestack;
       });
-      fixture.detectChanges();
       flushMicrotasks();
 
       expect(result).toEqual(SAMPLE_RESULT);
@@ -258,6 +280,8 @@ describe('TopicComponent', () => {
       component.btnToggleTopicIsDone = true;
       component.activityId = 1;
       let result;
+      fixture.detectChanges();
+
       component.back().then((res) => {
         result = res;
       });
@@ -267,8 +291,17 @@ describe('TopicComponent', () => {
     }));
 
     it('should navigate to activity page #2', fakeAsync(() => {
+      let handlers;
+      notificationSpy.alert = jasmine.createSpy().and.callFake(data => {
+        handlers = data;
+        return Promise.resolve(SAMPLE_NOTIFICATION);
+      });
+      notificationSpy.presentToast = jasmine.createSpy().and.callFake(data => {
+        return Promise.resolve(true);
+      });
       topicSpy.updateTopicProgress = jasmine.createSpy('updateTopicProgress').and.returnValue(of(''));
       component['_markAsStartStop'] = jasmine.createSpy('_markAsStartStop');
+
       component.btnToggleTopicIsDone = false;
       component.askForMarkAsDone = true;
       component.activityId = 1;
@@ -276,35 +309,30 @@ describe('TopicComponent', () => {
 
       let result;
       component.back().then(res => {
-        console.log('#nativegate2-result::', res);
         result = res;
       });
 
       flush();
 
-      expect(component['_markAsStartStop']).toHaveBeenCalled();
-      expect(result).toEqual(SAMPLE_NOTIFICATION);
-      // Times:
-      // 1. confirm submission
-      // 2. ???
-      expect(notificationSpy.alert).toHaveBeenCalledTimes(2);
+      fixture.whenStable().then(() => {
+        expect(component['_markAsStartStop']).toHaveBeenCalled();
+        expect(result).toEqual(SAMPLE_NOTIFICATION);
 
+        const first = handlers;
+        first.buttons[0].handler();
+        flushMicrotasks();
+        expect(routerSpy.navigate).toHaveBeenCalledWith(['app', 'activity', 1]);
 
-      console.log('ABC::', JSON.stringify(notificationSpy.alert.calls.first()));
+        first.buttons[1].handler();
+        flushMicrotasks();
+        expect(routerSpy.navigate).toHaveBeenCalledWith(['app', 'activity', 1]);
+        expect(notificationSpy.presentToast).toHaveBeenCalled();
 
-      let button = notificationSpy.alert.calls.first().args[0].buttons[0];
-      (typeof button == 'string') ? button : button.handler(true);
-      expect(routerSpy.navigate).toHaveBeenCalledWith(['app', 'activity', 1]);
-
-      button = notificationSpy.alert.calls.first().args[0].buttons[1];
-      (typeof button == 'string') ? button : button.handler(true);
-      expect(routerSpy.navigate).toHaveBeenCalledWith(['app', 'activity', 1]);
-
-      topicSpy.updateTopicProgress.and.returnValue(throwError(''));
-      button = notificationSpy.alert.calls.first().args[0].buttons[1];
-      (typeof button == 'string') ? button : button.handler(true);
-
-      expect(newRelicSpy.noticeError).toHaveBeenCalledTimes(4);
+        topicSpy.updateTopicProgress.and.returnValue(throwError('SAMPLE_ERROR'));
+        first.buttons[1].handler();
+        flushMicrotasks();
+        expect(newRelicSpy.noticeError).toHaveBeenCalledTimes(2);
+      });
     }));
   });
 });

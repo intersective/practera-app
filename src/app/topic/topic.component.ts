@@ -233,10 +233,10 @@ export class TopicComponent extends RouterEnter {
     }
 
     this.redirecting = true;
-    this.activityService.gotoNextTask(this.activityId, 'topic', this.topic.id, markAsDone).then(redirect => {
+    this.activityService.gotoNextTask(this.activityId, 'topic', this.topic.id, markAsDone).then(async redirect => {
       this.redirecting = false;
       if (redirect) {
-        this._navigate(redirect);
+        return await this._navigate(redirect);
       }
     });
   }
@@ -256,8 +256,6 @@ export class TopicComponent extends RouterEnter {
         this.isLoadingPreview = false;
         return filestack;
       } catch (err) {
-console.log('rejected-err::', JSON.stringify(err));
-
         const toasted = await this.notificationService.alert({
           header: 'Error Previewing file',
           message: err.msg || JSON.stringify(err)
@@ -270,7 +268,7 @@ console.log('rejected-err::', JSON.stringify(err));
   }
 
   // force every navigation happen under radar of angular
-  private _navigate(direction): Promise<boolean> {
+  private async _navigate(direction): Promise<boolean> {
     if (!direction) {
       return;
     }
@@ -306,7 +304,7 @@ console.log('rejected-err::', JSON.stringify(err));
 
   async back(): Promise<void | boolean> {
     if (this.btnToggleTopicIsDone || !this.askForMarkAsDone) {
-      return this._navigate([
+      return await this._navigate([
         'app',
         'activity',
         this.activityId
