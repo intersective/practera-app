@@ -12,7 +12,6 @@ import { environment } from '@environments/environment';
 import { Channel } from 'pusher-js';
 import * as Pusher from 'pusher-js';
 import { TestUtils } from '@testing/utils';
-import { ngMocks, MockModule, MockInstance } from 'ng-mocks';
 
 class PusherLib extends Pusher {
   connection;
