@@ -55,7 +55,7 @@ export class TabsService {
       // only count following todo items
       if (todoItem.identifier.includes('AssessmentReview') ||
           todoItem.identifier.includes('AssessmentSubmission')) {
-        noOfTodoItems ++;
+        noOfTodoItems++;
       }
     });
     return noOfTodoItems;

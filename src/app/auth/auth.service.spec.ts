@@ -174,7 +174,7 @@ describe('AuthService', () => {
       expect(pusherSpy.unsubscribeChannels.calls.count()).toBe(1);
       expect(pusherSpy.disconnect.calls.count()).toBe(1);
       expect(storageSpy.clear.calls.count()).toBe(1);
-      expect(routerSpy.navigate).toHaveBeenCalledWith(['login', { data: 'data' }]);
+      expect(routerSpy.navigate.calls.first().args[0]).toEqual(['login'], { data: 'data' });
     });
 
     it('should not navigate to login when it is called with redirect = false', () => {

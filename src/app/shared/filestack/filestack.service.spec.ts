@@ -21,6 +21,7 @@ describe('FilestackService', () => {
   let utils: UtilsService;
   let mockBackend: HttpTestingController;
   let modalctrlSpy: jasmine.SpyObj<ModalController>;
+  const MODAL_SAMPLE = 'test';
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -32,7 +33,7 @@ describe('FilestackService', () => {
             useValue: jasmine.createSpyObj('ModalController', {
               create: Promise.resolve({
                 present: () => new Promise(res => {
-                  res('test');
+                  res(MODAL_SAMPLE);
                 }),
                 dismiss: () => new Promise(res => res(true)),
               })
@@ -239,17 +240,14 @@ describe('FilestackService', () => {
 
   describe('previewModal()', () => {
     it('should pop up modal for provided filestack link', fakeAsync(() => {
-      const apiRes = { passed: true };
       let result;
-      // modalctrlSpy.create.and.returnValue(new Promise((resolve, reject) => resolve(Promise.resolve(apiRes))));
-
       service.previewModal('test.com').then(res => {
         result = res;
       });
       flushMicrotasks();
 
       expect(modalctrlSpy.create).toHaveBeenCalled();
-      expect(result).toEqual(apiRes);
+      expect(result).toEqual(MODAL_SAMPLE);
     }));
   });
 
