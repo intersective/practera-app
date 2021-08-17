@@ -10,7 +10,7 @@ name: Deploy to p2-sandbox environment
 on:
   workflow_dispatch:
   push:
-    branches: [ 'develop' ]
+    branches: [ 'global-appv2' ]
     
 
 ################################################
@@ -190,7 +190,9 @@ jobs:
           CUSTOM_PATH_ANY: /appv2/dev/any/
           CUSTOM_AWS_REGION: ${{ env.REGION }}
           CUSTOM_JS_ENVIRONEMENT: dev #TODO CHECK
+          CUSTOM_LOGIN_API_URL: https://api.login-stage.practera.com
           CUSTOM_NEWRELIC: true
+
 
 
 ###############################################################
