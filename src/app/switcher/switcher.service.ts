@@ -384,7 +384,7 @@ export class SwitcherService {
         } else {
           return ['go-mobile'];
         }
-      } catch(err) {
+      } catch (err) {
         throw err;
       }
     }

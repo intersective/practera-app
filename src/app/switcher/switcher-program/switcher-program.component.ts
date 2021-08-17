@@ -102,8 +102,6 @@ export class SwitcherProgramComponent extends RouterEnter implements AfterConten
         this.router.navigate(route);
       });
     } catch (err) {
-console.log('err::', err);
-
       await this.notificationService.alert({
         header: 'Error switching program',
         message: err.msg || JSON.stringify(err)

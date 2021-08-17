@@ -130,7 +130,7 @@ describe('TopicComponent', () => {
       fixture.whenStable().then(() => {
         expect(newRelicSpy.noticeError).toHaveBeenCalled();
         expect(component.askForMarkAsDone).toBeTrue();
-      })
+      });
     }));
 
     it('should get correct data #1', fakeAsync(() => {
