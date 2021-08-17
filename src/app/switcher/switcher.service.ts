@@ -117,30 +117,33 @@ export class SwitcherService {
       if (Array.isArray(data.Timelines) && data.Timelines.length > 0) {
         data.Timelines.map(
           timeline => {
-            if (!this.utils.has(timeline, 'Program.config.theme_color')) {
-              if (!this.utils.has(timeline.Program, 'config')) {
-                timeline.Program.config = {
-                  theme_color: 'var(--ion-color-primary)'
-                };
-              } else {
-                timeline.Program.config.theme_color = 'var(--ion-color-primary)';
+            // Only show the experiences that user have license as participant or mentor
+            if (this.utils.has(timeline, 'License.role') && (timeline.License.role === 'participant' || timeline.License.role === 'mentor')) {
+              if (!this.utils.has(timeline, 'Program.config.theme_color')) {
+                if (!this.utils.has(timeline.Program, 'config')) {
+                  timeline.Program.config = {
+                    theme_color: 'var(--ion-color-primary)'
+                  };
+                } else {
+                  timeline.Program.config.theme_color = 'var(--ion-color-primary)';
+                }
               }
-            }
-            // Update lead image if project have one.
-            timeline.Project.lead_image = this.getLeadImage(timeline.Project);
+              // Update lead image if project have one.
+              timeline.Project.lead_image = this.getLeadImage(timeline.Project);
 
-            // Not showing draft experiences in experience switcher page
-            // If there are no status that means it's a P1 experience so we need to show it.
-            if (!this.utils.has(timeline.Experience, 'status') || timeline.Experience.status !== 'draft') {
-              programsList.push({
-                enrolment: timeline.Enrolment,
-                program: timeline.Program,
-                project: timeline.Project,
-                timeline: timeline.Timeline,
-                experience: timeline.Experience,
-                stack: result.stack,
-                apikey: data.apikey
-              });
+              // Not showing draft experiences in experience switcher page
+              // If there are no status that means it's a P1 experience so we need to show it.
+              if (!this.utils.has(timeline.Experience, 'status') || timeline.Experience.status !== 'draft') {
+                programsList.push({
+                  enrolment: timeline.Enrolment,
+                  program: timeline.Program,
+                  project: timeline.Project,
+                  timeline: timeline.Timeline,
+                  experience: timeline.Experience,
+                  stack: result.stack,
+                  apikey: data.apikey
+                });
+              }
             }
           }
         );
