@@ -190,6 +190,7 @@ jobs:
           CUSTOM_PATH_ANY: /appv2/dev/any/
           CUSTOM_AWS_REGION: ${{ env.REGION }}
           CUSTOM_JS_ENVIRONEMENT: dev #TODO CHECK
+          CUSTOM_LOGIN_API: https://api.login-stage.practera.com
 
 
 ###############################################################
