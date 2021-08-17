@@ -120,6 +120,19 @@ describe('TopicComponent', () => {
   });
 
   describe('when testing onEnter()', () => {
+    it('should throw error to newRelic', fakeAsync(() => {
+      topicSpy.getTopic = jasmine.createSpy().and.returnValue(throwError('SAMPLE_ERROR::getTopic'));
+      topicSpy.getTopicProgress = jasmine.createSpy().and.returnValue(throwError('SAMPLE_ERROR::getTopicProgress'));
+      fixture.detectChanges();
+      component.onEnter();
+      flush();
+      tick(15000);
+      fixture.whenStable().then(() => {
+        expect(newRelicSpy.noticeError).toHaveBeenCalled();
+        expect(component.askForMarkAsDone).toBeTrue();
+      })
+    }));
+
     it('should get correct data #1', fakeAsync(() => {
       const topic = {
         id: 1,
@@ -188,19 +201,6 @@ describe('TopicComponent', () => {
       expect(component.btnToggleTopicIsDone).toBe(false);
       expect(component.askForMarkAsDone).toBeTrue();
     }));
-
-    it('should throw error to newRelic', fakeAsync(() => {
-      topicSpy.getTopic = jasmine.createSpy().and.returnValue(throwError('SAMPLE_ERROR::getTopic'));
-      topicSpy.getTopicProgress = jasmine.createSpy().and.returnValue(throwError('SAMPLE_ERROR::getTopicProgress'));
-      fixture.detectChanges();
-      component.onEnter();
-      tick(20000);
-      flush();
-      fixture.whenStable().then(() => {
-        expect(newRelicSpy.noticeError).toHaveBeenCalledTimes(2);
-        expect(component.askForMarkAsDone).toBeTrue();
-      })
-    }));
   });
 
   it('should stop playing videos when leave the page', () => {
@@ -264,6 +264,7 @@ describe('TopicComponent', () => {
 
       expect(result).toEqual(SAMPLE_RESULT);
       expect(notificationSpy.alert).toHaveBeenCalledWith({ header: 'Error Previewing file', message: '{}' });
+      expect(newRelicSpy.noticeError).toHaveBeenCalled();
     }));
   });
 
@@ -328,10 +329,10 @@ describe('TopicComponent', () => {
         expect(routerSpy.navigate).toHaveBeenCalledWith(['app', 'activity', 1]);
         expect(notificationSpy.presentToast).toHaveBeenCalled();
 
-        topicSpy.updateTopicProgress.and.returnValue(throwError('SAMPLE_ERROR'));
+        topicSpy.updateTopicProgress.and.returnValue(throwError('SAMPLE_ERROR::back()'));
         first.buttons[1].handler();
         flushMicrotasks();
-        expect(newRelicSpy.noticeError).toHaveBeenCalledTimes(2);
+        expect(newRelicSpy.noticeError).toHaveBeenCalledWith('"SAMPLE_ERROR::back()"');
       });
     }));
   });
