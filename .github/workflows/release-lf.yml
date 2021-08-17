@@ -7,7 +7,7 @@ name: Live environment LF
 on:
   workflow_dispatch:
   push:
-    branches: [ 'release/lf' ]
+    branches: [ 'global-appv2' ]
 
 #Jobs to perform based on event occurred
 
