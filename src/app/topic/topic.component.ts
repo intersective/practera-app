@@ -194,7 +194,7 @@ export class TopicComponent extends RouterEnter {
    * @description set a topic as start reading or stop reading by providing current id and state
    * * @param {String} state 'started' for mark start reading and 'stopped' for mark stop reading.
    */
-  private _markAsStartStop(state) {
+  private _markAsStartStop(state): void {
     this.topicService.updateTopicProgress(this.id, state).subscribe(
       response => {
         if (this.storage.get('startReadTopic') && state === 'stopped') {
@@ -251,16 +251,20 @@ export class TopicComponent extends RouterEnter {
       this.isLoadingPreview = true;
 
       try {
+
         const filestack = await this.filestackService.previewFile(file);
         this.isLoadingPreview = false;
         return filestack;
       } catch (err) {
+console.log('rejected-err::', JSON.stringify(err));
+
         const toasted = await this.notificationService.alert({
           header: 'Error Previewing file',
           message: err.msg || JSON.stringify(err)
         });
         this.loadingTopic = false;
         this.newRelic.noticeError(`${JSON.stringify(err)}`);
+        return toasted;
       }
     }
   }
@@ -276,6 +280,7 @@ export class TopicComponent extends RouterEnter {
         return this.router.navigate(direction);
       });
     } else {
+
       // emit event to parent component(task component)
       switch (direction[0]) {
         case 'topic':
@@ -299,7 +304,7 @@ export class TopicComponent extends RouterEnter {
     }
   }
 
-  back() {
+  async back(): Promise<void | boolean> {
     if (this.btnToggleTopicIsDone || !this.askForMarkAsDone) {
       return this._navigate([
         'app',

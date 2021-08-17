@@ -27,7 +27,17 @@ describe('FilestackService', () => {
         imports: [ HttpClientTestingModule, IonicModule ],
         providers: [
           FilestackService,
-          ModalController,
+          {
+            provide: ModalController,
+            useValue: jasmine.createSpyObj('ModalController', {
+              create: Promise.resolve({
+                present: () => new Promise(res => {
+                  res('test');
+                }),
+                dismiss: () => new Promise(res => res(true)),
+              })
+            })
+          },
           {
             provide: UtilsService,
             useClass: TestUtils,
