@@ -191,6 +191,8 @@ jobs:
           CUSTOM_AWS_REGION: ${{ env.REGION }}
           CUSTOM_JS_ENVIRONEMENT: dev #TODO CHECK
           CUSTOM_LOGIN_API_URL: https://api.login-stage.practera.com
+          CUSTOM_NEWRELIC: true
+
 
 
 ###############################################################
