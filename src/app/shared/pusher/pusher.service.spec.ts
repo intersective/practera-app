@@ -218,6 +218,14 @@ describe('PusherService', async () => {
       // spyOn(service, 'initialise').and.returnValue(Promise.resolve(service['pusher']));
       const subscribed = [];
 
+      MockInstance(Pusher, () => ({
+        subscribe: name => {
+          subscribed.push(name);
+          return binder;
+        },
+        method1: jasmine.createSpy(),
+        method2: jasmine.createSpy(),
+      }));
       function subscribedEvent(title) {
 
         return jasmine.createSpy('bind').and.returnValue(true);
@@ -235,7 +243,7 @@ describe('PusherService', async () => {
         });
       };
 
-      spyOn(service['pusher'], 'subscribe').and.callFake(name => {
+      service['pusher'].subscribe = jasmine.createSpy().and.callFake(name => {
         subscribed.push(name);
         return binder;
       });

@@ -144,7 +144,7 @@ describe('HomeComponent', () => {
   beforeEach(() => {
     component.refresh = of(true);
     homeServiceSpy.getTodoItems.and.returnValue(of([]));
-    homeServiceSpy.getChatMessage.and.returnValue(of([]));
+    homeServiceSpy.getChatMessage.and.returnValue(of());
     // homeServiceSpy.getProgramName.and.returnValue(of('Test Program'));
     homeServiceSpy.getProgress.and.returnValue(of(10));
     achieventsServiceSpy.getAchievements.and.returnValue(of([]));
@@ -264,7 +264,6 @@ describe('HomeComponent', () => {
           teamId: null,
           name: 'Test User',
           email: 'user@test.com',
-          id: 1
         }
       );
       fixture.detectChanges();

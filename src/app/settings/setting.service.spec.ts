@@ -33,7 +33,7 @@ describe('SettingService', () => {
   });
 
   it('should upload profile', () => {
-    sharedSpy.updateProfile.and.returnValue({});
+    sharedSpy.updateProfile.and.returnValue(of({}));
     service.updateProfile({contact_number: '231'});
     expect(sharedSpy.updateProfile.calls.count()).toBe(1);
   });

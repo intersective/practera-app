@@ -194,7 +194,7 @@ export class TopicComponent extends RouterEnter {
    * @description set a topic as start reading or stop reading by providing current id and state
    * * @param {String} state 'started' for mark start reading and 'stopped' for mark stop reading.
    */
-  private _markAsStartStop(state) {
+  private _markAsStartStop(state): void {
     this.topicService.updateTopicProgress(this.id, state).subscribe(
       response => {
         if (this.storage.get('startReadTopic') && state === 'stopped') {
@@ -233,10 +233,10 @@ export class TopicComponent extends RouterEnter {
     }
 
     this.redirecting = true;
-    this.activityService.gotoNextTask(this.activityId, 'topic', this.topic.id, markAsDone).then(redirect => {
+    this.activityService.gotoNextTask(this.activityId, 'topic', this.topic.id, markAsDone).then(async redirect => {
       this.redirecting = false;
       if (redirect) {
-        this._navigate(redirect);
+        return await this._navigate(redirect);
       }
     });
   }
@@ -251,6 +251,7 @@ export class TopicComponent extends RouterEnter {
       this.isLoadingPreview = true;
 
       try {
+
         const filestack = await this.filestackService.previewFile(file);
         this.isLoadingPreview = false;
         return filestack;
@@ -261,12 +262,13 @@ export class TopicComponent extends RouterEnter {
         });
         this.loadingTopic = false;
         this.newRelic.noticeError(`${JSON.stringify(err)}`);
+        return toasted;
       }
     }
   }
 
   // force every navigation happen under radar of angular
-  private _navigate(direction): Promise<boolean> {
+  private async _navigate(direction): Promise<boolean> {
     if (!direction) {
       return;
     }
@@ -276,6 +278,7 @@ export class TopicComponent extends RouterEnter {
         return this.router.navigate(direction);
       });
     } else {
+
       // emit event to parent component(task component)
       switch (direction[0]) {
         case 'topic':
@@ -299,9 +302,9 @@ export class TopicComponent extends RouterEnter {
     }
   }
 
-  back() {
+  async back(): Promise<void | boolean> {
     if (this.btnToggleTopicIsDone || !this.askForMarkAsDone) {
-      return this._navigate([
+      return await this._navigate([
         'app',
         'activity',
         this.activityId
