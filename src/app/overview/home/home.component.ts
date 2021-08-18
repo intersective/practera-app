@@ -23,9 +23,6 @@ import { Observable, Subscription } from 'rxjs';
           params: { time: '250ms' }
         })
       ]),
-      transition(':leave', [
-        animate('100ms', style({ opacity: 0 }))
-      ])
     ]),
   ]
 })

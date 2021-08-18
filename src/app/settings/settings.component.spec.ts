@@ -176,7 +176,7 @@ describe('SettingsComponent', () => {
 
   it('when testing logout(), it should call auth service logout', () => {
     component.logout('Enter');
-    authSpy.logout.and.returnValue(Promise.resolve(true));
+    authSpy.logout.and.returnValue({});
     expect(authSpy.logout.calls.count()).toBe(1);
   });
 

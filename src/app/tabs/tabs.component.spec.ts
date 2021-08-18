@@ -146,7 +146,7 @@ describe('TabsComponent', () => {
       storageSpy.get.and.returnValue(0);
       storageSpy.getUser.and.returnValue({
         chatEnabled: true,
-        teamId: 999
+        teamId: 'SAMPLE_ID'
       });
       fixture.detectChanges();
       expect(component.noOfTodoItems).toBe(5);
@@ -162,6 +162,7 @@ describe('TabsComponent', () => {
         teamId: null,
         name: 'Test User',
         email: 'user@test.com',
+        id: 1
       });
       reviewsSpy.getReviews.and.returnValue(of([]));
       eventsSpy.getEvents.and.returnValue(of([]));

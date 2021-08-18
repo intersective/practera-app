@@ -1,5 +1,7 @@
 import { TestBed, fakeAsync, flushMicrotasks } from '@angular/core/testing';
 
+import { MockBackend } from '@angular/http/testing';
+
 import {
   HttpTestingController,
   HttpClientTestingModule
@@ -21,24 +23,13 @@ describe('FilestackService', () => {
   let utils: UtilsService;
   let mockBackend: HttpTestingController;
   let modalctrlSpy: jasmine.SpyObj<ModalController>;
-  const MODAL_SAMPLE = 'test';
 
   beforeEach(() => {
     TestBed.configureTestingModule({
         imports: [ HttpClientTestingModule, IonicModule ],
         providers: [
           FilestackService,
-          {
-            provide: ModalController,
-            useValue: jasmine.createSpyObj('ModalController', {
-              create: Promise.resolve({
-                present: () => new Promise(res => {
-                  res(MODAL_SAMPLE);
-                }),
-                dismiss: () => new Promise(res => res(true)),
-              })
-            })
-          },
+          ModalController,
           {
             provide: UtilsService,
             useClass: TestUtils,
@@ -118,7 +109,7 @@ describe('FilestackService', () => {
 
   describe('previewFile()', () => {
     beforeEach(() => {
-      spyOn(service, 'previewModal').and.returnValue(Promise.resolve());
+      spyOn(service, 'previewModal').and.returnValue(Promise.resolve(true));
     });
 
     afterEach(() => {
@@ -126,7 +117,7 @@ describe('FilestackService', () => {
     });
 
     it('should popup file preview', fakeAsync(() => {
-      spyOn(service, 'metadata').and.returnValue(Promise.resolve({ mimetype: 'testing/format' }));
+      spyOn(service, 'metadata').and.returnValue({ mimetype: 'testing/format' });
       service.previewFile({
         handle: 'testingHandleValue'
       }).then();
@@ -135,7 +126,7 @@ describe('FilestackService', () => {
     }));
 
     it('should popup file preview (support older URL format)', fakeAsync(() => {
-      spyOn(service, 'metadata').and.returnValue(Promise.resolve({ mimetype: 'testing/format' }));
+      spyOn(service, 'metadata').and.returnValue({ mimetype: 'testing/format' });
       service.previewFile({
         url: 'www.filepicker.io/api/file',
         handle: 'testingHandleValue'
@@ -145,7 +136,7 @@ describe('FilestackService', () => {
     }));
 
     it('should popup file preview (support older URL format 2)', fakeAsync(() => {
-      spyOn(service, 'metadata').and.returnValue(Promise.resolve({ mimetype: 'testing/format' }));
+      spyOn(service, 'metadata').and.returnValue({ mimetype: 'testing/format' });
       service.previewFile({
         url: 'filestackcontent.com',
         handle: 'testingHandleValue'
@@ -155,10 +146,10 @@ describe('FilestackService', () => {
     }));
 
     it('should alert instead of popup preview when file size too large', fakeAsync(() => {
-      spyOn(service, 'metadata').and.returnValue(Promise.resolve({
+      spyOn(service, 'metadata').and.returnValue({
         mimetype: 'application/testType',
         size: 11 * 1000 * 1000 // 11mb
-      }));
+      });
 
       service.previewFile({
         url: 'filestackcontent.com',
@@ -195,7 +186,7 @@ describe('FilestackService', () => {
         open: () => Promise.resolve(true)
       });
       spyOn(service, 'getFileTypes');
-      spyOn(service, 'getS3Config');
+      spyOn(service, 'getS3Config').and.returnValue(true);
     });
 
     it('should instantiate filestack and trigger open fileupload popup', fakeAsync(() => {
@@ -240,14 +231,19 @@ describe('FilestackService', () => {
 
   describe('previewModal()', () => {
     it('should pop up modal for provided filestack link', fakeAsync(() => {
+      const apiRes = { passed: true };
       let result;
+      spyOn(modalctrlSpy, 'create').and.returnValue({
+        present: () => Promise.resolve(apiRes),
+      });
+
       service.previewModal('test.com').then(res => {
         result = res;
       });
       flushMicrotasks();
 
       expect(modalctrlSpy.create).toHaveBeenCalled();
-      expect(result).toEqual(MODAL_SAMPLE);
+      expect(result).toEqual(apiRes);
     }));
   });
 

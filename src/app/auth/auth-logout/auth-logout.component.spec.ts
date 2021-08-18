@@ -61,7 +61,7 @@ describe('AuthLogoutComponent', () => {
         fixture.detectChanges();
         component.onEnter();
         expect(newRelicSpy.setPageViewName).toHaveBeenCalledWith('logout');
-        authSpy.logout.and.returnValue(Promise.resolve(true));
+        authSpy.logout.and.returnValue({});
         expect(authSpy.logout.calls.count()).toBe(1);
     }));
 });

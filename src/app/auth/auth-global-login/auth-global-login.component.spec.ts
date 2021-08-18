@@ -92,8 +92,7 @@ describe('AuthGlobalLoginComponent', () => {
       tick(50);
       fixture.detectChanges();
       expect(notificationSpy.alert.calls.count()).toBe(1);
-      const button = notificationSpy.alert.calls.first().args[0].buttons[0];
-      (typeof button == 'string') ? button : button.handler(true);
+      notificationSpy.alert.calls.first().args[0].buttons[0].handler();
       expect(routerSpy.navigate.calls.first().args[0]).toEqual(['login']);
     }));
 

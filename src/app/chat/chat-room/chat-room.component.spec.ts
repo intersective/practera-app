@@ -2,7 +2,7 @@ import { CUSTOM_ELEMENTS_SCHEMA, ElementRef } from '@angular/core';
 import { async, ComponentFixture, TestBed, tick, fakeAsync } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { ChatRoomComponent } from './chat-room.component';
-import { ChannelMembers, ChatService } from '../chat.service';
+import { ChatService } from '../chat.service';
 import { of } from 'rxjs';
 import { BrowserStorageService } from '@services/storage.service';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
@@ -13,7 +13,6 @@ import { MockRouter } from '@testing/mocked.service';
 import { Router, ActivatedRoute, convertToParamMap } from '@angular/router';
 import { IonContent, ModalController } from '@ionic/angular';
 import { TestUtils } from '@testing/utils';
-import { mockMembers } from '@testing/fixtures';
 
 export class MockElementRef extends ElementRef {
   constructor() { super(null); }
@@ -132,6 +131,27 @@ describe('ChatRoomComponent', () => {
       }
     ]
   };
+
+  const mockMembers = [
+    {
+      uuid: '1',
+      name: 'student+01',
+      role: 'participant',
+      avatar: 'https://www.gravatar.com/avatar/21b7427270a606e8a3c4413a13bb47c6?d=https://sandbox.practera.com/img/user-512.png&s=50'
+    },
+    {
+      uuid: '2',
+      name: 'student1',
+      role: 'participant',
+      avatar: 'https://www.gravatar.com/avatar/21b7427270a606e8a3c4413a13bb47c6?d=https://sandbox.practera.com/img/user-512.png&s=50'
+    },
+    {
+      uuid: '3',
+      name: 'student2',
+      role: 'participant',
+      avatar: 'https://www.gravatar.com/avatar/21b7427270a606e8a3c4413a13bb47c6?d=https://sandbox.practera.com/img/user-512.png&s=50'
+    }
+  ];
 
   it('should create', () => {
     expect(component).toBeTruthy();
@@ -274,7 +294,7 @@ describe('ChatRoomComponent', () => {
       };
       chatServiceSpy.postNewMessage.and.returnValue(of(saveMessageRes));
       chatServiceSpy.getMessageList.and.returnValue(of(mockChatMessages));
-      pusherSpy.triggerSendMessage.and.returnValue();
+      pusherSpy.triggerSendMessage.and.returnValue(of(true));
       component.messageList = mockChatMessages.messages;
       spyOn(component.element.nativeElement, 'querySelector').and.returnValue(
         document.createElement('textarea')
@@ -358,7 +378,7 @@ describe('ChatRoomComponent', () => {
     it(`should trigger Typing of pusher service with correst channel name`, () => {
       spyOn(utils, 'isEmpty').and.returnValue(true);
       component.chatChannel.pusherChannel = '123';
-      pusherSpy.triggerTyping.and.returnValue();
+      pusherSpy.triggerTyping.and.returnValue(of(true));
       component.typing();
       expect(pusherSpy.triggerTyping.calls.count()).toBe(1);
       expect(pusherSpy.triggerTyping.calls.first().args[0]).toEqual('123');
@@ -373,7 +393,7 @@ describe('ChatRoomComponent', () => {
         url: 'https://cdn.filestackcontent.com/X8Cj0Y4QS2AmDUZX6LSq',
         status: 'Stored'
       };
-      filestackSpy.previewFile.and.returnValue(Promise.resolve({}));
+      filestackSpy.previewFile.and.returnValue({});
       component.preview(file);
       expect(filestackSpy.previewFile.calls.count()).toBe(1);
     });

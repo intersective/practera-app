@@ -83,10 +83,7 @@ describe('AuthResetPasswordComponent', () => {
       fixture.detectChanges();
       expect(notificationSpy.alert.calls.count()).toBe(1);
       expect(notificationSpy.alert.calls.first().args[0].message).toContain('Invalid');
-
-      const button = notificationSpy.alert.calls.first().args[0].buttons[0];
-      (typeof button == 'string') ? button : button.handler(true);
-
+      notificationSpy.alert.calls.first().args[0].buttons[0].handler();
       expect(routerSpy.navigate.calls.first().args[0]).toEqual(['login']);
     });
   });
@@ -100,10 +97,7 @@ describe('AuthResetPasswordComponent', () => {
       component.resetPassword();
       expect(notificationSpy.alert.calls.count()).toBe(1);
       expect(notificationSpy.alert.calls.first().args[0].message).toContain('successfully');
-
-      const button = notificationSpy.alert.calls.first().args[0].buttons[0];
-      (typeof button == 'string') ? button : button.handler(true);
-
+      notificationSpy.alert.calls.first().args[0].buttons[0].handler();
       expect(routerSpy.navigate.calls.first().args[0]).toEqual(['login']);
     });
     it('should pop up alert if password compromised', fakeAsync(() => {
