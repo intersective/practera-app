@@ -1,4 +1,6 @@
-import { ComponentFixture, TestBed, tick, flushMicrotasks, fakeAsync } from '@angular/core/testing';
+import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { async, ComponentFixture, TestBed, tick, flushMicrotasks, fakeAsync } from '@angular/core/testing';
+import { Observable, of, pipe } from 'rxjs';
 import { NotificationService } from '@shared/notification/notification.service';
 import { ModalController, AlertController, ToastController, LoadingController } from '@ionic/angular';
 import { AchievementsService } from '@app/achievements/achievements.service';
@@ -24,7 +26,7 @@ describe('NotificationService', () => {
   const achievementSpy = jasmine.createSpyObj('AchievementsService', ['markAchievementAsSeen']);
   let utilSpy: jasmine.SpyObj<UtilsService>;
 
-  beforeEach(async () => {
+  beforeEach(async(() => {
     TestBed.configureTestingModule({
       providers: [
         NotificationService,
@@ -58,23 +60,21 @@ describe('NotificationService', () => {
     }).compileComponents();
     service = TestBed.inject(NotificationService);
     utilSpy = TestBed.inject(UtilsService) as jasmine.SpyObj<UtilsService>;
-  });
+  }));
 
   it('should create', () => {
     expect(service).toBeDefined();
   });
 
-  it('when testing dismiss(), it should dismiss modal', fakeAsync(() => {
+  it('when testing dismiss(), it should dismiss modal', () => {
     service.dismiss();
-    flushMicrotasks();
     expect(modalCtrlSpy.dismiss.calls.count()).toBe(1);
-  }));
+  });
 
-  it('when testing popUp(), it should create the modal', fakeAsync(() => {
+  it('when testing popUp(), it should create the modal', () => {
     service.popUp('type', 'data');
-    flushMicrotasks();
-    expect(modalCtrlSpy.create.calls.count()).toEqual(1);
-  }));
+    expect(modalCtrlSpy.create.calls.count()).toBe(1);
+  });
 
   it('when testing alert(), it should create the modal', () => {
     service.alert({});
@@ -92,16 +92,14 @@ describe('NotificationService', () => {
   });
 
   describe('achievementPopUp()', () => {
-    it('it should create the modal', fakeAsync(() => {
-      service.achievementPopUp('notification', { id: 1, name: 'achieve', 'description': '' });
-      flushMicrotasks();
+    it('it should create the modal', () => {
+      service.achievementPopUp('notification', {id: 1, name: 'achieve', 'description': ''});
       expect(modalCtrlSpy.create.calls.count()).toBe(2);
       expect(achievementSpy.markAchievementAsSeen.calls.count()).toBe(1);
-      service.achievementPopUp('others', { id: 1, name: 'achieve', 'description': '' });
-      flushMicrotasks();
+      service.achievementPopUp('others', {id: 1, name: 'achieve', 'description': ''});
       expect(modalCtrlSpy.create.calls.count()).toBe(3);
       expect(achievementSpy.markAchievementAsSeen.calls.count()).toBe(1);
-    }));
+    });
 
     it('should focus activeElement when provided', fakeAsync(() => {
       const options = {
@@ -117,11 +115,10 @@ describe('NotificationService', () => {
   });
 
   describe('lockTeamAssessmentPopUp()', () => {
-    it('should create the modal', fakeAsync(() => {
-      service.lockTeamAssessmentPopUp({ name: 'test', image: 'image' }, () => { });
-      flushMicrotasks();
+    it('should create the modal', () => {
+      service.lockTeamAssessmentPopUp({name: 'test', image: 'image'}, () => {});
       expect(modalCtrlSpy.create.calls.count()).toBe(5);
-    }));
+    });
   });
 
   describe('activityCompletePopUp()', () => {

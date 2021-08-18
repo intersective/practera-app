@@ -143,13 +143,10 @@ describe('AuthLoginComponent', () => {
   describe('when testing login()', () => {
     it('should pop up alert if username is empty', () => {
       component.loginForm.setValue({username: '', password: 'abc'});
-      notificationSpy.alert.and.returnValue(Promise.resolve());
+      notificationSpy.alert.and.returnValue(true);
       component.login();
       expect(notificationSpy.alert.calls.count()).toBe(1);
-
-      const button = notificationSpy.alert.calls.first().args[0].buttons[0];
-      (typeof button == 'string') ? button : button.handler(true);
-
+      notificationSpy.alert.calls.first().args[0].buttons[0].handler();
       expect(component.isLoggingIn).toBe(false);
     });
 
@@ -189,10 +186,7 @@ describe('AuthLoginComponent', () => {
       expect(serviceSpy.login.calls.count()).toBe(1);
       expect(notificationSpy.alert.calls.count()).toBe(1);
       expect(notificationSpy.alert.calls.first().args[0].message).toContain('password is incorrect');
-
-      const button = notificationSpy.alert.calls.first().args[0].buttons[0];
-      (typeof button == 'string') ? button : button.handler(true);
-
+      notificationSpy.alert.calls.first().args[0].buttons[0].handler();
       expect(component.isLoggingIn).toBe(false);
     }));
   });

@@ -360,35 +360,30 @@ export class SwitcherService {
    */
   async switchProgramAndNavigate(programs): Promise<any> {
     if (!this.utils.isEmpty(programs)) {
-      try {
+      // Array with multiple program objects -> [{},{},{},{}]
+      if (Array.isArray(programs) && !this.checkIsOneProgram(programs)) {
+        return ['switcher', 'switcher-program'];
+      // Array with one program object -> [{}]
+      } else if (Array.isArray(programs) && this.checkIsOneProgram(programs)) {
+        await this.switchProgram(programs[0]).toPromise();
+      } else {
+        // one program object -> {}
+        await this.switchProgram(programs).toPromise();
+      }
 
-        // Array with multiple program objects -> [{},{},{},{}]
-        if (Array.isArray(programs) && !this.checkIsOneProgram(programs)) {
-          return ['switcher', 'switcher-program'];
-        // Array with one program object -> [{}]
-        } else if (Array.isArray(programs) && this.checkIsOneProgram(programs)) {
-          await this.switchProgram(programs[0]).toPromise();
-        } else {
-          // one program object -> {}
-          await this.switchProgram(programs).toPromise();
-        }
-
-        await this.pusherService.initialise({ unsubscribe: true });
-        // clear the cached data
-        this.utils.clearCache();
-        if ((typeof environment.goMobile !== 'undefined' && environment.goMobile === false)
-          || /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
-            if (this.storage.get('directLinkRoute')) {
-              const route = this.storage.get('directLinkRoute');
-              this.storage.remove('directLinkRoute');
-              return route;
-            }
-            return ['app', 'home'];
-        } else {
-          return ['go-mobile'];
-        }
-      } catch (err) {
-        throw err;
+      await this.pusherService.initialise({ unsubscribe: true });
+      // clear the cached data
+      this.utils.clearCache();
+      if ((typeof environment.goMobile !== 'undefined' && environment.goMobile === false)
+        || /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
+          if (this.storage.get('directLinkRoute')) {
+            const route = this.storage.get('directLinkRoute');
+            this.storage.remove('directLinkRoute');
+            return route;
+          }
+          return ['app', 'home'];
+      } else {
+        return ['go-mobile'];
       }
     }
     return;

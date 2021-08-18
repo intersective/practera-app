@@ -18,7 +18,7 @@ export class NewRelicModule {
     }
   }
 
-  static forRoot(): ModuleWithProviders<NewRelicModule> {
+  static forRoot(): ModuleWithProviders {
     return {
       ngModule: NewRelicModule,
     };

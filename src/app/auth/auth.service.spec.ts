@@ -87,6 +87,7 @@ describe('AuthService', () => {
       apikey: '123456',
       stacks: mockStacks
     }));
+    storageSpy.set.and.returnValue(true);
     service.login({ username: 'test@test.com', password: '123' }).subscribe();
     expect(requestSpy.post.calls.count()).toBe(1);
     expect(requestSpy.post.calls.first().args[0].data.username).toEqual('test@test.com');
@@ -174,7 +175,8 @@ describe('AuthService', () => {
       expect(pusherSpy.unsubscribeChannels.calls.count()).toBe(1);
       expect(pusherSpy.disconnect.calls.count()).toBe(1);
       expect(storageSpy.clear.calls.count()).toBe(1);
-      expect(routerSpy.navigate.calls.first().args[0]).toEqual(['login'], { data: 'data' });
+      expect(routerSpy.navigate.calls.first().args[0]).toEqual(['login']);
+      expect(routerSpy.navigate.calls.first().args[1]).toEqual({data: 'data'});
     });
 
     it('should not navigate to login when it is called with redirect = false', () => {

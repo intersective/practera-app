@@ -46,7 +46,6 @@ describe('TabsService', () => {
          data: {}
        };
        error = true;
-       expected = 0;
     });
     it('should throw error #2', () => {
        response = {
@@ -54,7 +53,6 @@ describe('TabsService', () => {
          data: [{}]
        };
        error = true;
-       expected = 0;
     });
     it('should get correct data', () => {
       response = {
@@ -98,7 +96,6 @@ describe('TabsService', () => {
          }
        };
        error = true;
-       expected = 0;
     });
     it('should get correct data', () => {
       response = {

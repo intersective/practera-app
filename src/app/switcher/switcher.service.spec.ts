@@ -262,7 +262,9 @@ describe('SwitcherService', () => {
       const [firstProgram] = ProgramFixture;
       spyOn(service, 'checkIsOneProgram').and.returnValue(true);
       spyOn(Array, 'isArray').and.returnValue(true);
-      spyOn(service, 'switchProgram').and.returnValue(of(res => res(true)));
+      spyOn(service, 'switchProgram').and.returnValue({
+        toPromise: () => new Promise(res => res(true))
+      });
 
       let result;
       service.switchProgramAndNavigate([firstProgram]).then(data => {

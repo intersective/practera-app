@@ -200,10 +200,7 @@ describe('EventDetailComponent', () => {
         expected = 'Cancel Booking';
         expect(notificationSpy.alert.calls.count()).toBe(1);
         expect(serviceSpy.bookEvent.calls.count()).toBe(0);
-
-        const button = notificationSpy.alert.calls.first().args[0].buttons[0];
-        (typeof button == 'string') ? button : button.handler(true);
-
+        notificationSpy.alert.calls.first().args[0].buttons[0].handler();
         expect(serviceSpy.bookEvent.calls.count()).toBe(1);
         // expect(modalSpy.dismiss.calls.count()).toEqual(1);
       });
