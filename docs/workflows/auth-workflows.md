@@ -78,7 +78,7 @@ This documentation explains the workflow of the authentication process.
 
 ## Direct link Workflow
 
-- Direct link need to contain `stack_uuid` as a parameter
+- Direct link need to contain `stack_uuid` of the App as a parameter
 - Global App V2 will use the `stack_uuid` to get stack information from Global Login API
 - Once get the stack information, store those info in local storage
 - Use the CORE-API url to do authentication
@@ -90,7 +90,7 @@ This documentation explains the workflow of the authentication process.
 ## Deep link Workflow
 
 - Global App V2 uses the Global Login API for authentication.
-- Deep link need to contain `stack_uuid` as a parameter
+- Deep link need to contain `stack_uuid` of the App as a parameter
 - Global App V2 will use the `stack_uuid` to get stack information from Global Login API
 - Once get the stack information, store those info in local storage
 - Use the urls from the stack for normal deep link checks and actions
@@ -103,7 +103,7 @@ This conatains information about new user registration process.
 
 To register a new user, we use both login API and core API. After user registered successfully, user will automatically login to the app.
 
-- Registration link need to contain `stack_uuid` as a parameter
+- Registration link need to contain `stack_uuid` of the App as a parameter
 - Global App V2 will use the `stack_uuid` to get stack information from Global Login API
 - Save stack information in local storage.
 - Use Core API to validate registration link.
