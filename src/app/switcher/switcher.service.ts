@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Observable, of, forkJoin } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { RequestService } from '@shared/request/request.service';
+import { RequestService, DevModeService } from '@shared/request/request.service';
 import { UtilsService } from '@services/utils.service';
 import { BrowserStorageService, Stack } from '@services/storage.service';
 import { PusherService } from '@shared/pusher/pusher.service';
@@ -80,7 +80,8 @@ export class SwitcherService {
     private sharedService: SharedService,
     private pusherService: PusherService,
     private reviewsService: ReviewListService,
-    private eventsService: EventListService
+    private eventsService: EventListService,
+    private devModeService: DevModeService
   ) {}
 
   getPrograms(stackList: Stack[]) {
@@ -118,7 +119,7 @@ export class SwitcherService {
         data.Timelines.map(
           timeline => {
             // Only show the experiences that user have license as participant or mentor
-            if (this.utils.has(timeline, 'License.role') && (timeline.License.role === 'participant' || timeline.License.role === 'mentor')) {
+            if (this.devModeService.isDevMode() || this.utils.has(timeline, 'License.role') && (timeline.License.role === 'participant' || timeline.License.role === 'mentor')) {
               if (!this.utils.has(timeline, 'Program.config.theme_color')) {
                 if (!this.utils.has(timeline.Program, 'config')) {
                   timeline.Program.config = {
