@@ -25,7 +25,7 @@ export class SwitcherResolverService implements Resolve<Stack[]> {
         return stacks;
       } catch (err) {
         // @TODO: have a plan to gracefully throw this error
-        console.error('Fail to retrieve stacks info', err.toString());
+        console.error('Fail to retrieve stacks info: ', err.message || JSON.stringify(err));
         throw err;
       }
     }
