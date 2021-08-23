@@ -149,8 +149,18 @@ export class AuthService {
   directLogin({ authToken }): Observable<any> {
     const body = new HttpParams()
       .set('auth_token', authToken);
-    this.logout({}, false);
+    this._logoutButRetainCachedStack();
     return this._loginFromCore(body);
+  }
+
+  /**
+   * Inherited Logout() but retain app stack cache, so global-app login still work
+   * @return  {void}
+   */
+  private _logoutButRetainCachedStack(): void {
+    const cachedStack = this.storage.stackConfig;
+    this.logout({}, false);
+    this.storage.stackConfig = cachedStack;
   }
 
   /**
