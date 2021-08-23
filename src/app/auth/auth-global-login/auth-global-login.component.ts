@@ -38,6 +38,8 @@ export class AuthGlobalLoginComponent implements OnInit {
       if (multipleStacks) {
         this.storage.set('hasMultipleStacks', true);
       }
+      // save that user came from global login for use in log out
+      this.storage.set('fromGlobalLogin', true);
       return this.navigate(['switcher', 'switcher-program']);
     } catch (err) {
       this._error(err);
