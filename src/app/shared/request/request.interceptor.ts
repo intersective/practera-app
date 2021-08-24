@@ -33,7 +33,8 @@ export class RequestInterceptor implements HttpInterceptor {
       const appkey = this.currenConfig.appkey;
       headers['appkey'] = appkey;
     }
-    if (apikey) {
+
+    if (apikey && !headers['apikey']) {
       headers['apikey'] = apikey;
     }
     if (timelineId) {
