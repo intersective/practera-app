@@ -3,7 +3,6 @@ import { Injectable } from '@angular/core';
 import { CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot, Router, Route } from '@angular/router';
 import { Observable } from 'rxjs';
 import { UtilsService } from '@services/utils.service';
-import { environment } from '@environments/environment';
 
 @Injectable()
 export class UnauthorizedGuard implements CanActivate {
@@ -18,13 +17,7 @@ export class UnauthorizedGuard implements CanActivate {
   canActivate(next: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> | Promise<boolean> | boolean {
     const userIsAuthenticated = this.authService.isAuthenticated();
     if (userIsAuthenticated !== true) {
-      // skip global login on local development and on registration
-      if (environment.skipGlobalLogin || state.url.includes('registration')) {
-        return true;
-      }
-      // redirect to global login
-      this.utils.openUrl(`${ environment.globalLoginUrl }?referrer=${ window.location.hostname }&stackUuid=${ environment.stackUuid }`);
-      return false;
+      return true;
     }
 
     // navigate to not found page
