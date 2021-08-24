@@ -8,6 +8,12 @@ import { BrowserStorageService, Stack } from '@services/storage.service';
 import { UtilsService } from '@services/utils.service';
 import { PusherService } from '@shared/pusher/pusher.service';
 
+// Available flags to identify which origin of API call is from
+enum SERVICES {
+  practera='PRACTERA',
+  login='LOGIN',
+};
+
 /**
  * @name api
  * @description list of api endpoint involved in this service
@@ -454,6 +460,12 @@ export class AuthService {
     if (apikey) {
       parameters.headers = {
         apikey
+      };
+    } else {
+      // if no apikey set, inform API server the origin of API call, so
+      // that server can process apikey according to the origin standard
+      parameters.headers = {
+        service: SERVICES.practera
       };
     }
 

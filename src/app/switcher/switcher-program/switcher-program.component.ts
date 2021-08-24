@@ -8,6 +8,7 @@ import { NewRelicService } from '@shared/new-relic/new-relic.service';
 import { NotificationService } from '@shared/notification/notification.service';
 import { BrowserStorageService, Stack } from '@services/storage.service';
 import { UtilsService } from '@app/services/utils.service';
+import { AuthService } from '@app/auth/auth.service';
 
 @Injectable({
   providedIn: 'root'
@@ -22,7 +23,7 @@ import { UtilsService } from '@app/services/utils.service';
 export class SwitcherProgramComponent extends RouterEnter implements AfterContentChecked {
   routeUrl = '/switcher/switcher-program';
   programs: Array<ProgramObj>;
-  isProgramsLoading = true;
+  isProgramsLoading: boolean;
   stacks: Stack[];
 
   constructor(
@@ -32,11 +33,13 @@ export class SwitcherProgramComponent extends RouterEnter implements AfterConten
     private newRelic: NewRelicService,
     private notificationService: NotificationService,
     private activatedRoute: ActivatedRoute,
+    private authService: AuthService,
     readonly storage: BrowserStorageService,
     readonly utils: UtilsService,
   ) {
     super(router);
     this.activatedRoute.data.subscribe(data => {
+      this.isProgramsLoading = true;
       this.stacks = data.stacks;
     });
   }
@@ -113,5 +116,9 @@ export class SwitcherProgramComponent extends RouterEnter implements AfterConten
       this.newRelic.noticeError('switch program failed', JSON.stringify(err));
     }
     return;
+  }
+
+  logout() {
+    return this.authService.logout();
   }
 }
