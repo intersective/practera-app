@@ -16,6 +16,7 @@ import { LoadingController } from '@ionic/angular';
 import { TestUtils } from '@testing/utils';
 import { BrowserStorageService } from '@app/services/storage.service';
 import { MockStacks } from '@testing/fixtures/stacks';
+import { AuthService } from '@app/auth/auth.service';
 
 describe('SwitcherProgramComponent', () => {
   let component: SwitcherProgramComponent;
@@ -26,6 +27,7 @@ describe('SwitcherProgramComponent', () => {
   let loadingSpy: jasmine.SpyObj<LoadingController>;
   let notifySpy: jasmine.SpyObj<NotificationService>;
   let storageSpy: jasmine.SpyObj<BrowserStorageService>;
+  let authSpy: jasmine.SpyObj<AuthService>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
@@ -62,6 +64,10 @@ describe('SwitcherProgramComponent', () => {
           }
         },
         {
+          provide: AuthService,
+          useValue: jasmine.createSpyObj('AuthService', ['logout']),
+        },
+        {
           provide: BrowserStorageService,
           useValue: jasmine.createSpyObj('BrowserStorageService', [
             'stackConfig',
@@ -80,6 +86,7 @@ describe('SwitcherProgramComponent', () => {
     loadingSpy = TestBed.inject(LoadingController) as jasmine.SpyObj<LoadingController>;
     notifySpy = TestBed.inject(NotificationService) as jasmine.SpyObj<NotificationService>;
     storageSpy = TestBed.inject(BrowserStorageService) as jasmine.SpyObj<BrowserStorageService>;
+    authSpy = TestBed.inject(AuthService) as jasmine.SpyObj<AuthService>;
   }));
 
   beforeEach(() => {
@@ -116,6 +123,14 @@ describe('SwitcherProgramComponent', () => {
       component.onEnter();
 
       expect(notifySpy.alert).toHaveBeenCalled();
+    });
+    it('should throw error when no stack available', () => {
+      const SAMPLE_ERROR = 'SAMPLE ERROR';
+      switcherSpy.getPrograms.and.returnValue(throwError(SAMPLE_ERROR));
+      component.onEnter();
+
+      expect(component.isProgramsLoading).toBeFalsy();
+      expect(component.programs).toEqual([]);
     });
   });
 
@@ -199,6 +214,13 @@ describe('SwitcherProgramComponent', () => {
         message: JSON.stringify(error)
       });
       expect(newrelicSpy.noticeError).toHaveBeenCalled();
+    }));
+  });
+  describe('logout()', () => {
+    it('should logout with authService.logout', fakeAsync(() => {
+      component.logout();
+      flushMicrotasks();
+      expect(authSpy.logout).toHaveBeenCalled();
     }));
   });
 });

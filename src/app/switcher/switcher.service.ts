@@ -86,7 +86,7 @@ export class SwitcherService {
 
   getPrograms(stackList: Stack[]): Observable<any> {
     if (!stackList || stackList.length < 1) {
-      return throwError('No stacks available or fail to retrieve stacks.');
+      return throwError('No stacks available.');
     }
     const stackRequests = [];
     const apikeyFromLoginAPI = this.storage.loginApiKey;

@@ -10,9 +10,9 @@ import { PusherService } from '@shared/pusher/pusher.service';
 
 // Available flags to identify which origin of API call is from
 enum SERVICES {
-  practera='PRACTERA',
-  login='LOGIN',
-};
+  practera= 'PRACTERA',
+  login= 'LOGIN',
+}
 
 /**
  * @name api
