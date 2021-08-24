@@ -149,8 +149,18 @@ export class AuthService {
   directLogin({ authToken }): Observable<any> {
     const body = new HttpParams()
       .set('auth_token', authToken);
-    this.logout({}, false);
+    this._logoutButRetainCachedStack();
     return this._loginFromCore(body);
+  }
+
+  /**
+   * Inherited Logout() but retain app stack cache, so global-app login still work
+   * @return  {void}
+   */
+  private _logoutButRetainCachedStack(): void {
+    const cachedStack = this.storage.stackConfig;
+    this.logout({}, false);
+    this.storage.stackConfig = cachedStack;
   }
 
   /**
@@ -426,15 +436,21 @@ export class AuthService {
    *
    * @return  {Observable<Stack>[]} multiple stacks
    */
-  getStacks(): Observable<Stack[]> {
-    return this.request.get(
-      LOGIN_API.multipleStacks,
-      {
-        params: {
-          type: 'app'
-        }
+  getStacks(apikey?: string): Observable<Stack[]> {
+    const parameters = {
+      params: {
+        type: 'app'
       },
-      true).pipe(
+      headers: {}
+    };
+
+    if (apikey) {
+      parameters.headers = {
+        apikey
+      };
+    }
+
+    return this.request.get(LOGIN_API.multipleStacks, parameters, true).pipe(
       map(res => {
         if (res) {
           this.storage.stacks = res;

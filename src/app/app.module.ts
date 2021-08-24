@@ -38,7 +38,7 @@ function initializeApp(
   utils: UtilsService,
   storage: BrowserStorageService,
   authService: AuthService
-) {
+): Function {
 
   /**
    * retrieve stack info first before everything else, so then all API
@@ -47,9 +47,9 @@ function initializeApp(
    * @param   {Function}  resolve  async function = Promise.resolve
    *
    * @return  {Promise<any>}         as long as deferred get
-  *                                  resolved, the result doesn't matter
+   *                                 resolved, the result doesn't matter
    */
-  return () => new Promise(async (resolve: Function): Promise<any> => {
+  return (): Promise<any> => new Promise(async (resolve: Function): Promise<any> => {
     const query: URLSearchParams = utils.getQueryParams();
     try {
       if (query.has('stack_uuid')) {

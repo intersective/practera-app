@@ -114,7 +114,7 @@ export class RequestService {
     } else if (this.storage.stackConfig && this.storage.stackConfig.coreApi) {
       endpointUrl = this.utils.urlFormatter(this.storage.stackConfig.coreApi, endpoint);
     } else {
-      throw new Error('Can not find API URL.');
+      throw new Error('Cannot find API URL.');
     }
     return endpointUrl;
   }
