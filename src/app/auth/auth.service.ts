@@ -174,8 +174,15 @@ export class AuthService {
     const body = new HttpParams()
       .set('apikey', apikey);
     const cachedStack = this.storage.stackConfig;
+    const cachedLoginApiKey = this.storage.loginApiKey;
     this.logout({}, false);
-    this.storage.stackConfig = cachedStack;
+    if (cachedStack) {
+      this.storage.stackConfig = cachedStack;
+    }
+
+    if (cachedLoginApiKey) {
+      this.storage.loginApiKey = cachedLoginApiKey;
+    }
     return this._loginFromCore(body, service);
   }
 

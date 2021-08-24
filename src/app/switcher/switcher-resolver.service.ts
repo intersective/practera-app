@@ -23,8 +23,6 @@ export class SwitcherResolverService implements Resolve<Stack[]> {
         if (stacks && stacks.length > 0) {
           this.storage.stacks = stacks;
         }
-        // removing loginApiKey - needed at login only
-        this.storage.remove('loginApiKey');
 
         return stacks;
       } catch (err) {
