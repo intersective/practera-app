@@ -7,6 +7,7 @@ import { Router } from '@angular/router';
 import { BrowserStorageService, Stack } from '@services/storage.service';
 import { UtilsService } from '@services/utils.service';
 import { PusherService } from '@shared/pusher/pusher.service';
+import { environment } from '@environments/environment';
 
 /**
  * @name api
@@ -242,9 +243,17 @@ export class AuthService {
     this.pusherService.unsubscribeChannels();
     this.pusherService.disconnect();
     const config = this.storage.getConfig();
+
+    const fromGlobalLogin = this.storage.get('fromGlobalLogin');
+
     this.storage.clear();
     // still store config info even logout
     this.storage.setConfig(config);
+
+    // redirect user to global login if user came from it.
+    if (fromGlobalLogin) {
+      return this.utils.openUrl(`${ environment.globalLoginUrl }?referrer=${ window.location.hostname }&stackUuid=${ environment.stackUuid }`);
+    }
     if (redirect) {
       return this.router.navigate(['login'], navigationParams);
     }
