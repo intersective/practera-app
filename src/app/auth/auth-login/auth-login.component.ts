@@ -70,7 +70,7 @@ export class AuthLoginComponent implements OnInit {
         return this.router.navigate(['switcher', 'switcher-program']);
       },
       err => {
-        nrLoginTracer(JSON.stringify(err));
+        nrLoginTracer();
         this._handleError(err);
       }
     );
