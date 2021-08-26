@@ -5,11 +5,21 @@ import gql from 'graphql-tag';
 import { Apollo } from 'apollo-angular';
 import { Observable } from 'rxjs';
 import { InMemoryCache, defaultDataIdFromObject } from 'apollo-cache-inmemory';
+import ApolloClient from 'apollo-client';
+
+enum ClientType {
+  core = 'CORE',
+  chat = 'CHAT'
+}
 
 @Injectable({
   providedIn: 'root'
 })
 export class ApolloService {
+  private _url = {
+    core: '',
+    chat: '',
+  };
 
   constructor(
     private storage: BrowserStorageService,
@@ -18,6 +28,10 @@ export class ApolloService {
   ) { }
 
   initiateCoreClient() {
+    if (this._hasInitiated(this.storage.stackConfig.coreGraphQLApi, ClientType.core)) {
+      return;
+    }
+
     this.apollo.create({
       cache: new InMemoryCache({
         dataIdFromObject: object => {
@@ -33,9 +47,38 @@ export class ApolloService {
         uri: this.storage.stackConfig.coreGraphQLApi
       })
     });
+
+    this._url.core = this.storage.stackConfig.coreGraphQLApi;
+  }
+
+  /**
+   * skip if apollo already created for an URI
+   * pairing conditions: URL & ClientType
+   * - core grahpql domain & 'core'
+   * - chat grahpql domain & 'chat'
+   *
+   * @param url {string}
+   * @param type {ClientType}
+   * @returns boolean
+   */
+  private _hasInitiated(url: string, type: ClientType = ClientType.core): boolean {
+    if (type === ClientType.core
+      && this.apollo.getClient()
+      && this._url.core === this.storage.stackConfig.coreGraphQLApi) {
+      return true;
+    } else if (type === ClientType.chat
+      && this.apollo.use('chat')
+      && this._url.chat === this.storage.stackConfig.chatApi) {
+        return true;
+    }
+    return false;
   }
 
   initiateChatClient() {
+    if (this._hasInitiated(this.storage.stackConfig.chatApi, ClientType.chat)) {
+      return;
+    }
+
     this.apollo.create(
       {
         link: this.httpLink.create({
@@ -44,6 +87,8 @@ export class ApolloService {
         cache: new InMemoryCache(),
       },
       'chat');
+
+    this._url.chat = this.storage.stackConfig.chatApi;
   }
 
   getClient() {
