@@ -66,21 +66,32 @@ ion-item.no-bg {
   margin-right: 16px;
 }
 .support-wrapper {
-  max-width: 100px;
+  max-width: 100%;
+  ion-item {
+    --padding-start: 8px;
+    --inner-padding-end: 0;
+    --inner-padding-start: 0;
+    ion-icon{
+      margin-right: 8px;
+      font-size: 1.4em;
+    }
+    ion-label {
+      margin-right: 0;
+    }
+  }
 }
 .support-mobile {
-  max-width: 100px;
   ion-item {
     --inner-padding-end: 0;
     ion-icon{
-      margin-right: 0;
+      margin-right: 6px;
     }
   }
 }
 
 @media screen and (max-width: 1020px) {
   .support {
-    margin-left: 47px !important;
+    margin-left: 40px !important;
   }
 }
 .content {
