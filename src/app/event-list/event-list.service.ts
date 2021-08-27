@@ -70,18 +70,19 @@ export class EventListService {
     private notificationService: NotificationService
   ) {}
 
+  /**
+   *
+   * @param activityId {number[]}
+   * @returns {Observable}
+   */
   getEvents(activityId?): Observable<any> {
-    let params = {};
+    let params: any = {
+      types: ['activity_session', 'other']
+    };
     if (activityId) {
-      params = {
-        type: 'activity_session',
-        activity_id: activityId
-      };
-    } else {
-      params = {
-        type: 'activity_session'
-      };
+      params.activity_id = activityId
     }
+
     return this.request.get(api.get.events, {params: params})
       .pipe(map(response => {
         return this.normaliseEvents(response.data);
