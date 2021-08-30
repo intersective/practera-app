@@ -71,6 +71,7 @@ export class TopicComponent extends RouterEnter {
       files: [],
       hasComments: false
     };
+    this.iframeHtml = null;
     this.loadingMarkedDone = true;
     this.loadingTopic = true;
     this.redirecting = false;
@@ -110,7 +111,7 @@ export class TopicComponent extends RouterEnter {
           this.topic = topic;
           this.loadingTopic = false;
           if ( topic.videolink ) {
-            this.iframeHtml = this.embedService.embed(this.topic.videolink, { attr: { class: !this.utils.isMobile() ? 'topic-video desktop-view' : 'topic-video' }});
+            this._setVideoUrlElelemts();
           }
           // mark topic as started after topic load
           this._markAsStartStop('started');
@@ -121,6 +122,12 @@ export class TopicComponent extends RouterEnter {
           this.newRelic.noticeError(`${JSON.stringify(err)}`);
         }
       );
+  }
+
+  private _setVideoUrlElelemts() {
+    if (this.topic.videolink.includes('vimeo') || this.topic.videolink.includes('youtube')) {
+      this.iframeHtml = this.embedService.embed(this.topic.videolink, { attr: { class: !this.utils.isMobile() ? 'topic-video desktop-view' : 'topic-video' }});
+    }
   }
 
   // convert other brand video players to custom player.
