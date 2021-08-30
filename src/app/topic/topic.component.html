@@ -18,7 +18,8 @@
   <h3 class="headline-4 ion-text-center" tabindex="0">{{topic.title}}</h3>
   <div *ngIf="topic.videolink && topic.videolink !=='magiclink'" class="text-center">
     <label class="subtitle-2 gray-2">Video</label>
-    <div class="video-embed" [innerHtml]="iframeHtml"></div>
+    <div *ngIf="iframeHtml" class="video-embed" [innerHtml]="iframeHtml"></div>
+    <video *ngIf="!iframeHtml" class="video-embed topic-video" [ngClass]="{'desktop-view': !utils.isMobile()}" width="100%" controls preload="metadata" [src]="topic.videolink"></video>
   </div>
 
   <ng-container *ngIf="topic.content">
