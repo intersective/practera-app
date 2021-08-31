@@ -46,6 +46,7 @@ export interface Event {
     meetingId: string;
     password: string
   };
+  type?: string;
 }
 
 export interface EventGroup {
@@ -111,6 +112,7 @@ export class EventListService {
           !this.utils.has(event, 'is_booked') ||
           !this.utils.has(event, 'can_book') ||
           !this.utils.has(event, 'single_booking')) {
+        // API respond format inconsistency error
         return this.request.apiResponseFormatError('Event object format error');
       }
       events.push({
@@ -138,7 +140,8 @@ export class EventListService {
           url: event.video_conference.url,
           meetingId: event.video_conference.meeting_id,
           password: event.video_conference.password
-        } : null
+        } : null,
+        type: event.type,
       });
       // set the booked event activity id if it is single booking activity and booked
       if (event.single_booking && event.is_booked) {
