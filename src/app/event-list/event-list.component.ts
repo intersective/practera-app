@@ -368,16 +368,4 @@ export class EventListComponent {
     });
     this.renderEvents(events);
   }
-
-  hasType(type: string): boolean {
-    if (!this.events) {
-      return false;
-    }
-
-    if (this.events.find(event => {
-      return event.type === type;
-    }))
-
-    return false;
-  }
 }
