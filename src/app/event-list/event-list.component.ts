@@ -31,6 +31,10 @@ export class EventListComponent {
   loadingEvents = true;
   goToFirstEvent = true;
 
+  // @TECHDEBT: hasActivitySession flag added as a workaround to the new "Other" event
+  // type from backend - 1 September 2021 [CORE-4787]
+  hasActivitySession = false;
+
   constructor (
     public router: Router,
     private route: ActivatedRoute,
@@ -86,13 +90,28 @@ export class EventListComponent {
       };
       const activityIdsWithEvent = [];
       events.forEach(event => {
+        if (event.type && event.type === 'activity_session') {
+          this.hasActivitySession = true;
+        }
+
         // record the id of activity that has event, so that we can filter the activity list later
         if (!activityIdsWithEvent.includes(event.activityId)) {
           activityIdsWithEvent.push(event.activityId);
         }
         if (!event.isBooked) {
           // group event for 'browse' type
-          [this.eventsCategorised.browse, eventGroupBrowse, compareDateBrowse] = this._groupEvents(event, this.eventsCategorised.browse, eventGroupBrowse, compareDateBrowse, true);
+          [
+            this.eventsCategorised.browse,
+            eventGroupBrowse,
+            compareDateBrowse
+          ] = this._groupEvents(
+            event,
+            this.eventsCategorised.browse,
+            eventGroupBrowse,
+            compareDateBrowse,
+            true
+          );
+
           // if eventId is passed in, go to the tab that contains this event and highlight it
           if (this.eventId === event.id) {
             this.activated = 'browse';
@@ -348,5 +367,17 @@ export class EventListComponent {
       }
     });
     this.renderEvents(events);
+  }
+
+  hasType(type: string): boolean {
+    if (!this.events) {
+      return false;
+    }
+
+    if (this.events.find(event => {
+      return event.type === type;
+    }))
+
+    return false;
   }
 }
