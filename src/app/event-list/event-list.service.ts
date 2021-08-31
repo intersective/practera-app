@@ -77,11 +77,11 @@ export class EventListService {
    * @returns {Observable}
    */
   getEvents(activityId?): Observable<any> {
-    let params: any = {
+    const params: any = {
       types: ['activity_session', 'other']
     };
     if (activityId) {
-      params.activity_id = activityId
+      params.activity_id = activityId;
     }
 
     return this.request.get(api.get.events, {params: params})
