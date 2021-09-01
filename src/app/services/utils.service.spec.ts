@@ -9,8 +9,8 @@ describe('UtilsService', () => {
   moment.updateLocale('en', {
     monthsShort: [
       // customised shortened month to accommodate Intl date format
-      "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-      "Jul", "Aug", "Sept", "Oct", "Nov", "Dec"
+      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+      'Jul', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec'
     ]
   });
   const thisMoment = moment();
