@@ -112,14 +112,16 @@ export class HomeComponent implements OnDestroy, OnInit {
     );
     // only get the number of chats if user has chatroom
     this.chatService.getChatList().subscribe(chats => {
-      this.subscriptions.push(
-        this.homeService.getChatMessage().subscribe(chatMessage => {
-          if (!this.utils.isEmpty(chatMessage)) {
-            this._addChatTodoItem(chatMessage);
-          }
-          this.loadingTodoItems = false;
-        })
-      );
+      if (chats && chats.length > 0) {
+        this.subscriptions.push(
+          this.homeService.getChatMessage().subscribe(chatMessage => {
+            if (!this.utils.isEmpty(chatMessage)) {
+              this._addChatTodoItem(chatMessage);
+            }
+            this.loadingTodoItems = false;
+          })
+        );
+      }
     });
 
     this.subscriptions.push(

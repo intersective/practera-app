@@ -18,6 +18,8 @@ import { NewRelicService } from '@shared/new-relic/new-relic.service';
 import { MockRouter } from '@testing/mocked.service';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { Apollo } from 'apollo-angular';
+import { ChatService } from '@app/chat/chat.service';
+import { ChatsFixture } from '@testing/fixtures';
 
 @Directive({
   selector: '[routerLink], [routerLinkActive]'
@@ -69,6 +71,7 @@ describe('HomeComponent', () => {
   let fastFeedbackServiceSpy: jasmine.SpyObj<FastFeedbackService>;
   let storageServiceSpy: jasmine.SpyObj<BrowserStorageService>;
   let routerSpy: jasmine.SpyObj<Router>;
+  let chatServiceSpy: jasmine.SpyObj<ChatService>;
   let utils: UtilsService;
 
   beforeEach(async(() => {
@@ -120,6 +123,12 @@ describe('HomeComponent', () => {
           })
         },
         {
+          provide: ChatService,
+          useValue: jasmine.createSpyObj('ChatService', {
+            getChatList: of(ChatsFixture)
+          })
+        },
+        {
           provide: Router,
           useClass: MockRouter
         },
@@ -137,6 +146,7 @@ describe('HomeComponent', () => {
     fastFeedbackServiceSpy = TestBed.inject(FastFeedbackService) as jasmine.SpyObj<FastFeedbackService>;
     storageServiceSpy = TestBed.inject(BrowserStorageService) as jasmine.SpyObj<BrowserStorageService>;
     routerSpy = TestBed.inject(Router) as jasmine.SpyObj<Router>;
+    chatServiceSpy = TestBed.inject(ChatService) as jasmine.SpyObj<ChatService>;
     utils = TestBed.inject(UtilsService);
   });
 
@@ -256,7 +266,8 @@ describe('HomeComponent', () => {
       expect(page.todoCards.length).toBe(1, '1 todo card');
     });
 
-    it('should not call getChatMessage if no team id', () => {
+    it('should check for chatroom(s) regardless of team availability', () => {
+      chatServiceSpy.getChatList.and.returnValue(of([])); // no chatrooms available
       storageServiceSpy.getUser.and.returnValue(
         {
           role: 'participant',
@@ -267,6 +278,7 @@ describe('HomeComponent', () => {
         }
       );
       fixture.detectChanges();
+      expect(chatServiceSpy.getChatList).toHaveBeenCalled();
       expect(component.todoItems.length).toEqual(0, 'no todo item');
       expect(homeServiceSpy.getChatMessage.calls.count()).toBe(0, 'no call');
       expect(page.todoCards.length).toBe(1, '1 todo card');
