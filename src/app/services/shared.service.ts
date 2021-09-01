@@ -38,7 +38,7 @@ export class SharedService {
   ) {}
 
   // call this function on every page refresh and after switch program
-  onPageLoad() {
+  onPageLoad(): void {
     this.getIpLocation();
     const {
       timelineId,
@@ -62,14 +62,16 @@ export class SharedService {
     // subscribe to the achievement event if it is not subscribed
     if (!this.achievementEvent) {
       this.achievementEvent = this.utils.getEvent('achievement').subscribe(event => {
-        const { id, name, description, points, badge } = event.meta.Achievement;
-        this.notification.achievementPopUp('notification', {
-          id,
-          name,
-          description,
-          points,
-          image: badge
-        });
+        if (event && event.meta && event.meta.Achievement) {
+          const { id, name, description, points, badge } = event.meta.Achievement;
+          this.notification.achievementPopUp('notification', {
+            id,
+            name,
+            description,
+            points,
+            image: badge
+          });
+        }
       });
     }
   }
