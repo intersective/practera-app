@@ -8,6 +8,7 @@ import { Router, ActivatedRoute, convertToParamMap } from '@angular/router';
 import { MockRouter } from '@testing/mocked.service';
 import { BrowserStorageService } from '@services/storage.service';
 import { Apollo } from 'apollo-angular';
+import { SharedService } from '@app/services/shared.service';
 
 describe('TasksComponent', () => {
   let component: TasksComponent;
@@ -37,6 +38,12 @@ describe('TasksComponent', () => {
           provide: BrowserStorageService,
           useValue: jasmine.createSpyObj('BrowserStorageService', ['getUser', 'get'])
         },
+        {
+          provide: SharedService,
+          useValue: jasmine.createSpyObj('SharedService', [
+            'markTopicStopOnNavigating'
+          ])
+        }
       ]
     })
     .compileComponents();

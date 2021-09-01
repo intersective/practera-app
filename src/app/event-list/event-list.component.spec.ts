@@ -1,7 +1,7 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed, tick, fakeAsync } from '@angular/core/testing';
 import { EventListComponent } from './event-list.component';
-import { EventListService } from './event-list.service';
+import { EventListService, Event } from './event-list.service';
 import { Observable, of, pipe } from 'rxjs';
 import { Router, ActivatedRoute } from '@angular/router';
 import { SharedModule } from '@shared/shared.module';
@@ -83,7 +83,7 @@ describe('EventListComponent', () => {
     testUtils.getDateString(-2, 0) // attended
   ];
   const isBookeds = [false, false, false, false, true, true];
-  const mockEvents = Array.from({length: 6}, (x, i) => {
+  const mockEvents: Event[] = Array.from({length: 6}, (x, i) => {
     return {
       id: i + 1,
       name: 'event' + i,
@@ -145,6 +145,24 @@ describe('EventListComponent', () => {
 
   it('should create', () => {
     expect(component).toBeDefined();
+  });
+
+  describe('onEnter() - simpler', () => {
+    it('should return falsy hasActivitySession', () => {
+      eventsSpy.getEvents.and.returnValue(of(JSON.parse(JSON.stringify(mockEvents))));
+      component.onEnter();
+      expect(component.hasActivitySession).toBeFalsy();
+    });
+
+    it('should return truthy hasActivitySession', () => {
+      const currentEvents = mockEvents.map(event => {
+        event.type = 'activity_session';
+        return event;
+      });
+      eventsSpy.getEvents.and.returnValue(of(JSON.parse(JSON.stringify(currentEvents))));
+      component.onEnter();
+      expect(component.hasActivitySession).toBeTruthy();
+    });
   });
 
   describe('when testing onEnter()', () => {
