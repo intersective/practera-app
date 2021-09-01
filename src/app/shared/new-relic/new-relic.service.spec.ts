@@ -3,6 +3,7 @@ import { NewRelicService } from './new-relic.service';
 import { BrowserStorageService } from '@services/storage.service';
 // import { Mock } from '@testing/mocked.service';
 import { environment } from '@environments/environment';
+import { BrowserStorageServiceMock } from '@testing/mocked.service';
 
 describe('NewRelicService', () => {
   let service: NewRelicService;
@@ -13,7 +14,7 @@ describe('NewRelicService', () => {
       providers: [
         {
           provide: BrowserStorageService,
-          useValue: jasmine.createSpyObj(['getUser'])
+          useClass: BrowserStorageServiceMock,
         }
       ]
     });
