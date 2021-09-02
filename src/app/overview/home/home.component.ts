@@ -51,7 +51,7 @@ export class HomeComponent implements OnDestroy, OnInit {
     public storage: BrowserStorageService,
     public achievementService: AchievementsService,
     private eventsService: EventListService,
-    private newRelic: NewRelicService,
+    readonly newRelic: NewRelicService,
   ) {
     const role = this.storage.getUser().role;
     this.utils.getEvent('notification').subscribe(event => {
