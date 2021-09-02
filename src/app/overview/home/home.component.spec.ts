@@ -268,7 +268,7 @@ describe('HomeComponent', () => {
       );
       fixture.detectChanges();
       expect(component.todoItems.length).toEqual(0, 'no todo item');
-      expect(homeServiceSpy.getChatMessage.calls.count()).toBe(0, 'no call');
+      expect(homeServiceSpy.getChatMessage).toHaveBeenCalled();
       expect(page.todoCards.length).toBe(1, '1 todo card');
     });
 
