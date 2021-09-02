@@ -175,4 +175,15 @@ export class BrowserStorageService {
   set singlePageAccess(val) {
     this.set('singlePageAccess', val);
   }
+
+  // Settings for app (local client access only)
+  set settings({ title, val }) {
+    const result = this.settings;
+    result[title] = val;
+    this.set('app-settings', result);
+  }
+
+  get settings() {
+    return this.get('app-settings') || {};
+  }
 }
