@@ -3,6 +3,7 @@ import { TabsService } from './tabs.service';
 import { UtilsService } from '@services/utils.service';
 import { BrowserStorageService } from '@services/storage.service';
 import { RouterEnter } from '@services/router-enter.service';
+import { SwitcherService } from '../switcher/switcher.service';
 import { ReviewListService } from '@app/review-list/review-list.service';
 import { Router } from '@angular/router';
 import { SharedService } from '@services/shared.service';
@@ -17,6 +18,9 @@ import { ChatService } from '@app/chat/chat.service';
 })
 export class TabsComponent extends RouterEnter {
   routeUrl = '/app';
+  showReview = false;
+  showChat = false;
+  showEvents = false;
   noOfTodoItems = 0;
   noOfChats = 0;
   selectedTab = '';
@@ -24,13 +28,14 @@ export class TabsComponent extends RouterEnter {
   constructor(
     readonly utils: UtilsService,
     readonly storage: BrowserStorageService,
-    readonly chatService: ChatService,
     public router: Router,
     private tabsService: TabsService,
+    private switcherService: SwitcherService,
     private reviewsService: ReviewListService,
     private sharedService: SharedService,
     private eventsService: EventListService,
     private newRelic: NewRelicService,
+    readonly chatService: ChatService,
   ) {
     super(router);
     this.newRelic.setPageViewName('tab');
@@ -59,34 +64,14 @@ export class TabsComponent extends RouterEnter {
     return this.storage.singlePageAccess;
   }
 
-  get showChat() {
-    const settings = this.storage.settings;
-    return settings.showChat;
-  }
-
-  set showChat(val) {
-    this.storage.settings = { val, title: 'showChat' };
-  }
-
-  get showReview() {
-    const settings = this.storage.settings;
-    return settings.showReview;
-  }
-
-  set showReview(val) {
-    this.storage.settings = { val, title: 'showReview' };
-  }
-
-  get showEvents() {
-    const settings = this.storage.settings;
-    return settings.showEvents;
-  }
-
-  set showEvents(val) {
-    this.storage.settings = { val, title: 'showEvents' };
+  private _initialise() {
+    this.showChat = this.showChat || false;
+    this.showReview = this.showReview || false;
+    this.showEvents = this.showEvents || false;
   }
 
   onEnter() {
+    this._initialise();
     this._checkRoute();
     this._stopPlayingVideos();
     this._topicStopReading();
@@ -94,13 +79,7 @@ export class TabsComponent extends RouterEnter {
       this.noOfTodoItems = noOfTodoItems;
     });
 
-    const {
-      chatEnabled,
-      hasReviews,
-      hasEvents,
-    } = this.storage.getUser()
-
-    if (!chatEnabled) { // keep configuration-based value
+    if (!this.storage.getUser().chatEnabled) { // keep configuration-based value
       this.showChat = false;
     } else {
       // [AV2-950]: display chat tab if a user has chatroom available
@@ -118,21 +97,20 @@ export class TabsComponent extends RouterEnter {
       });
     }
 
-    if (hasReviews) {
+    if (this.storage.getUser().hasReviews) {
       this.showReview = true;
     } else {
+      this.showReview = false;
       this.reviewsService.getReviews().subscribe(data => {
         if (data.length) {
           this.showReview = true;
-        } else {
-          this.showReview = false;
         }
       });
     }
-
-    if (hasEvents) {
+    if (this.storage.getUser().hasEvents) {
       this.showEvents = true;
     } else {
+      this.showEvents = false;
       this.eventsService.getEvents().subscribe(events => {
         this.showEvents = !this.utils.isEmpty(events);
       });
