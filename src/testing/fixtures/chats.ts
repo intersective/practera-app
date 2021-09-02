@@ -1,8 +1,10 @@
+const SAMPLE_AVATAR = 'https://cdn.filestackcontent.com/uYQuauwNRdD43PfCQ4iW';
+
 const chats = [
   {
     uuid: '1',
     name: 'Team 1',
-    avatar: 'https://cdn.filestackcontent.com/uYQuauwNRdD43PfCQ4iW',
+    avatar: SAMPLE_AVATAR,
     pusherChannel: 'pusher-channel-name',
     roles: ['participant'],
     isAnnouncement: false,
@@ -16,7 +18,7 @@ const chats = [
   {
     uuid: '2',
     name: 'Team 2',
-    avatar: 'https://cdn.filestackcontent.com/uYQuauwNRdD43PfCQ4iW',
+    avatar: SAMPLE_AVATAR,
     pusherChannel: 'pusher-channel-name',
     roles: ['participant'],
     isAnnouncement: false,
@@ -30,7 +32,7 @@ const chats = [
   {
     uuid: '3',
     name: 'Team 3',
-    avatar: 'https://cdn.filestackcontent.com/uYQuauwNRdD43PfCQ4iW',
+    avatar: SAMPLE_AVATAR,
     pusherChannel: 'pusher-channel-name',
     roles: ['participant'],
     isAnnouncement: false,
@@ -44,7 +46,7 @@ const chats = [
   {
     uuid: '4',
     name: 'Team 4',
-    avatar: 'https://cdn.filestackcontent.com/uYQuauwNRdD43PfCQ4iW',
+    avatar: SAMPLE_AVATAR,
     pusherChannel: 'pusher-channel-name',
     roles: ['participant'],
     isAnnouncement: false,
