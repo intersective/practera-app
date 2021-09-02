@@ -11,6 +11,7 @@ import { NewRelicService } from '@shared/new-relic/new-relic.service';
 import { trigger, state, transition, style, animate, useAnimation } from '@angular/animations';
 import { fadeIn } from '../../animations';
 import { Observable, Subscription } from 'rxjs';
+import { ChatService } from '@app/chat/chat.service';
 
 @Component({
   selector: 'app-home',
@@ -51,7 +52,8 @@ export class HomeComponent implements OnDestroy, OnInit {
     public storage: BrowserStorageService,
     public achievementService: AchievementsService,
     private eventsService: EventListService,
-    private newRelic: NewRelicService
+    private newRelic: NewRelicService,
+    readonly chatService: ChatService,
   ) {
     const role = this.storage.getUser().role;
     this.utils.getEvent('notification').subscribe(event => {
@@ -108,17 +110,20 @@ export class HomeComponent implements OnDestroy, OnInit {
         this.loadingTodoItems = false;
       })
     );
-    // only get the number of chats if user is in team
-    if (this.storage.getUser().teamId) {
-      this.subscriptions.push(
-        this.homeService.getChatMessage().subscribe(chatMessage => {
-          if (!this.utils.isEmpty(chatMessage)) {
-            this._addChatTodoItem(chatMessage);
-          }
-          this.loadingTodoItems = false;
-        })
-      );
-    }
+    // only get the number of chats if user has chatroom
+    this.chatService.getChatList().subscribe(chats => {
+      if (chats && chats.length > 0) {
+        this.subscriptions.push(
+          this.homeService.getChatMessage().subscribe(chatMessage => {
+            if (!this.utils.isEmpty(chatMessage)) {
+              this._addChatTodoItem(chatMessage);
+            }
+            this.loadingTodoItems = false;
+          })
+        );
+      }
+    });
+
     this.subscriptions.push(
       this.homeService.getProgress().subscribe(progress => {
         this.progress = progress;
