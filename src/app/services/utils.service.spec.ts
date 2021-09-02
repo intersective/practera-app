@@ -6,6 +6,14 @@ import * as moment from 'moment';
 import { Apollo } from 'apollo-angular';
 
 describe('UtilsService', () => {
+  moment.updateLocale('en', {
+    monthsShort: [
+      // customised shortened month to accommodate Intl date format
+      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+      'Jul', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec'
+    ]
+  });
+  const thisMoment = moment();
   const NOW = new Date();
   const YESTERDAY = new Date(moment(NOW).subtract(1, 'day').toString());
   const TOMORROW = new Date(moment(NOW).add(1, 'day').toString());
@@ -281,30 +289,30 @@ describe('UtilsService', () => {
 
   describe('timeFormatter()', () => {
     const LOCAL_TIME_TODAY = [
-      `${moment().format('YYYY-MM-DD')} 00:00:00`,
-      `${moment().format('YYYY-MM-DD')} 01:00:00`,
-      `${moment().format('YYYY-MM-DD')} 02:00:00`,
-      `${moment().format('YYYY-MM-DD')} 03:00:00`,
-      `${moment().format('YYYY-MM-DD')} 04:00:00`,
-      `${moment().format('YYYY-MM-DD')} 05:00:00`,
-      `${moment().format('YYYY-MM-DD')} 06:00:00`,
-      `${moment().format('YYYY-MM-DD')} 07:00:00`,
-      `${moment().format('YYYY-MM-DD')} 08:00:00`,
-      `${moment().format('YYYY-MM-DD')} 09:00:00`,
-      `${moment().format('YYYY-MM-DD')} 10:00:00`,
-      `${moment().format('YYYY-MM-DD')} 11:00:00`,
-      `${moment().format('YYYY-MM-DD')} 12:00:00`,
-      `${moment().format('YYYY-MM-DD')} 13:00:00`,
-      `${moment().format('YYYY-MM-DD')} 14:00:00`,
-      `${moment().format('YYYY-MM-DD')} 15:00:00`,
-      `${moment().format('YYYY-MM-DD')} 16:00:00`,
-      `${moment().format('YYYY-MM-DD')} 17:00:00`,
-      `${moment().format('YYYY-MM-DD')} 18:00:00`,
-      `${moment().format('YYYY-MM-DD')} 19:00:00`,
-      `${moment().format('YYYY-MM-DD')} 20:00:00`,
-      `${moment().format('YYYY-MM-DD')} 21:00:00`,
-      `${moment().format('YYYY-MM-DD')} 22:00:00`,
-      `${moment().format('YYYY-MM-DD')} 23:00:00`,
+      `${thisMoment.format('YYYY-MM-DD')} 00:00:00`,
+      `${thisMoment.format('YYYY-MM-DD')} 01:00:00`,
+      `${thisMoment.format('YYYY-MM-DD')} 02:00:00`,
+      `${thisMoment.format('YYYY-MM-DD')} 03:00:00`,
+      `${thisMoment.format('YYYY-MM-DD')} 04:00:00`,
+      `${thisMoment.format('YYYY-MM-DD')} 05:00:00`,
+      `${thisMoment.format('YYYY-MM-DD')} 06:00:00`,
+      `${thisMoment.format('YYYY-MM-DD')} 07:00:00`,
+      `${thisMoment.format('YYYY-MM-DD')} 08:00:00`,
+      `${thisMoment.format('YYYY-MM-DD')} 09:00:00`,
+      `${thisMoment.format('YYYY-MM-DD')} 10:00:00`,
+      `${thisMoment.format('YYYY-MM-DD')} 11:00:00`,
+      `${thisMoment.format('YYYY-MM-DD')} 12:00:00`,
+      `${thisMoment.format('YYYY-MM-DD')} 13:00:00`,
+      `${thisMoment.format('YYYY-MM-DD')} 14:00:00`,
+      `${thisMoment.format('YYYY-MM-DD')} 15:00:00`,
+      `${thisMoment.format('YYYY-MM-DD')} 16:00:00`,
+      `${thisMoment.format('YYYY-MM-DD')} 17:00:00`,
+      `${thisMoment.format('YYYY-MM-DD')} 18:00:00`,
+      `${thisMoment.format('YYYY-MM-DD')} 19:00:00`,
+      `${thisMoment.format('YYYY-MM-DD')} 20:00:00`,
+      `${thisMoment.format('YYYY-MM-DD')} 21:00:00`,
+      `${thisMoment.format('YYYY-MM-DD')} 22:00:00`,
+      `${thisMoment.format('YYYY-MM-DD')} 23:00:00`,
     ];
 
     it('should return empty string if no time provided', () => {
@@ -323,7 +331,7 @@ describe('UtilsService', () => {
     });
 
     it('should standardize date format international format', () => {
-      const onePMUTC = `${moment().format('YYYY-MM-DD')} 13:00:00.000Z`;
+      const onePMUTC = `${thisMoment.format('YYYY-MM-DD')} 13:00:00.000Z`;
       const result = service.timeFormatter(onePMUTC); // follows local GMT
       const formatted = new Intl.DateTimeFormat('en-US', {
         hour12: true,
@@ -343,11 +351,11 @@ describe('UtilsService', () => {
         }).format(new Date(`${timeString} GMT+0000`));
 
         if (result === 'Tomorrow') {
-          expect(moment().utcOffset()).toBeGreaterThan(0);
-          expect(moment.utc(new Date(`${timeString} GMT+0000`)).isAfter(moment().format('YYYY-MM-DD'))).toBeTruthy();
+          expect(thisMoment.utcOffset()).toBeGreaterThan(0);
+          expect(moment.utc(new Date(`${timeString} GMT+0000`)).isAfter(thisMoment.format('YYYY-MM-DD'))).toBeTruthy();
         } else if (result === 'Yesterday') {
-          expect(moment().utcOffset()).toBeLessThan(0);
-          expect(moment.utc(new Date(`${timeString} GMT+0000`)).isBefore(moment().format('YYYY-MM-DD'))).toBeTruthy();
+          expect(thisMoment.utcOffset()).toBeLessThan(0);
+          expect(moment.utc(new Date(`${timeString} GMT+0000`)).isBefore(thisMoment.format('YYYY-MM-DD'))).toBeTruthy();
         } else {
           expect(result).toEqual(formatted);
         }
@@ -360,7 +368,7 @@ describe('UtilsService', () => {
     });
 
     it('should ignore date/month other than today', () => {
-      const NEXT_MONTH = moment().add(1, 'month').toString();
+      const NEXT_MONTH = thisMoment.add(1, 'month').toString();
       const result = service.timeFormatter(NOW, new Date(NEXT_MONTH));
       expect(result).toEqual(moment(NOW).format('D MMM'));
     });

@@ -82,7 +82,8 @@ describe('EventListService', () => {
             single_booking: true,
             can_book: true,
             assessment: null,
-            video_conference: null
+            video_conference: null,
+            type: null,
           };
         })
       };
@@ -103,7 +104,8 @@ describe('EventListService', () => {
           canBook: event.can_book,
           isPast: utils.timeComparer(event.start) < 0,
           assessment: null,
-          videoConference: null
+          videoConference: null,
+          type: null,
         };
       });
       expected = [formatted[2], formatted[1], formatted[3], formatted[4], formatted[0], formatted[5]];
