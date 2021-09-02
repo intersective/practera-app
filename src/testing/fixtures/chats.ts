@@ -1,9 +1,12 @@
+const SAMPLE_AVATAR = 'https://cdn.filestackcontent.com/uYQuauwNRdD43PfCQ4iW';
+const SAMPLE_PUSHER_CHANNEL = 'pusher-channel-name';
+
 const chats = [
   {
     uuid: '1',
     name: 'Team 1',
-    avatar: 'https://cdn.filestackcontent.com/uYQuauwNRdD43PfCQ4iW',
-    pusherChannel: 'pusher-channel-name',
+    avatar: SAMPLE_AVATAR,
+    pusherChannel: SAMPLE_PUSHER_CHANNEL,
     roles: ['participant'],
     isAnnouncement: false,
     isDirectMessage: false,
@@ -16,8 +19,8 @@ const chats = [
   {
     uuid: '2',
     name: 'Team 2',
-    avatar: 'https://cdn.filestackcontent.com/uYQuauwNRdD43PfCQ4iW',
-    pusherChannel: 'pusher-channel-name',
+    avatar: SAMPLE_AVATAR,
+    pusherChannel: SAMPLE_PUSHER_CHANNEL,
     roles: ['participant'],
     isAnnouncement: false,
     isDirectMessage: false,
@@ -30,8 +33,8 @@ const chats = [
   {
     uuid: '3',
     name: 'Team 3',
-    avatar: 'https://cdn.filestackcontent.com/uYQuauwNRdD43PfCQ4iW',
-    pusherChannel: 'pusher-channel-name',
+    avatar: SAMPLE_AVATAR,
+    pusherChannel: SAMPLE_PUSHER_CHANNEL,
     roles: ['participant'],
     isAnnouncement: false,
     isDirectMessage: false,
@@ -44,8 +47,8 @@ const chats = [
   {
     uuid: '4',
     name: 'Team 4',
-    avatar: 'https://cdn.filestackcontent.com/uYQuauwNRdD43PfCQ4iW',
-    pusherChannel: 'pusher-channel-name',
+    avatar: SAMPLE_AVATAR,
+    pusherChannel: SAMPLE_PUSHER_CHANNEL,
     roles: ['participant'],
     isAnnouncement: false,
     isDirectMessage: false,
