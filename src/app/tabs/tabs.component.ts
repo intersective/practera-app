@@ -65,9 +65,9 @@ export class TabsComponent extends RouterEnter {
   }
 
   private _initialise() {
-    this.showChat = false;
-    this.showReview = false;
-    this.showEvents = false;
+    this.showChat = this.showChat || false;
+    this.showReview = this.showReview || false;
+    this.showEvents = this.showEvents || false;
   }
 
   onEnter() {
