@@ -96,7 +96,10 @@ $message-body-size: 60%;
           background: #eaeaea !important;
           line-height: 0;
           padding: 0;
-          display:block;
+          display: flex;
+          flex-direction: column;
+          flex-wrap: wrap;
+          align-items: stretch;
           position:relative;
           cursor: pointer;
           border: 1px #bbbbbb solid;
@@ -107,13 +110,12 @@ $message-body-size: 60%;
             border-radius: inherit;
             min-width: inherit;
             min-height: inherit;
-            position: absolute;
             padding: 0;
             width: 100%;
 
-            p {
+            & p {
               color: var(--ion-color-primary);
-              margin-top: 1.5em;
+              margin-top: 1em;
               text-align: center;
               ion-icon {
                 font-size: 5em !important;
@@ -131,8 +133,10 @@ $message-body-size: 60%;
           }
 
           .label {
-            margin-left: 0.8em;
+            padding: 0 0.5em;
+            margin: 0.3em 0;
             text-shadow: 1px 1px white;
+            width: 100%;
           }
 
           &:hover {
