@@ -256,7 +256,7 @@ describe('HomeComponent', () => {
       expect(page.todoCards.length).toBe(1, '1 todo card');
     });
 
-    it('should not call getChatMessage if no team id', () => {
+    it('should check for chatroom(s) regardless of team availability', () => {
       storageServiceSpy.getUser.and.returnValue(
         {
           role: 'participant',
@@ -268,7 +268,7 @@ describe('HomeComponent', () => {
       );
       fixture.detectChanges();
       expect(component.todoItems.length).toEqual(0, 'no todo item');
-      expect(homeServiceSpy.getChatMessage.calls.count()).toBe(0, 'no call');
+      expect(homeServiceSpy.getChatMessage).toHaveBeenCalled();
       expect(page.todoCards.length).toBe(1, '1 todo card');
     });
 

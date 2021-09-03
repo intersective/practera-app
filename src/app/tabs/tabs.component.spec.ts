@@ -15,6 +15,8 @@ import { TabsComponent } from './tabs.component';
 import { ModalController } from '@ionic/angular';
 import { MockRouter } from '@testing/mocked.service';
 import { Apollo } from 'apollo-angular';
+import { ChatService } from '@app/chat/chat.service';
+import { ChatsFixture } from '@testing/fixtures';
 
 describe('TabsComponent', () => {
   let component: TabsComponent;
@@ -26,6 +28,7 @@ describe('TabsComponent', () => {
   let switcherSpy: jasmine.SpyObj<SwitcherService>;
   let reviewsSpy: jasmine.SpyObj<ReviewListService>;
   let eventsSpy: jasmine.SpyObj<EventListService>;
+  let chatSpy: jasmine.SpyObj<ChatService>;
   let utils: UtilsService;
 
   const preset = {
@@ -81,6 +84,10 @@ describe('TabsComponent', () => {
           useValue: jasmine.createSpyObj('EventListService', ['getEvents'])
         },
         {
+          provide: ChatService,
+          useValue: jasmine.createSpyObj('ChatService', ['getChatList']),
+        },
+        {
           provide: Router,
           useClass: MockRouter
         },
@@ -102,6 +109,7 @@ describe('TabsComponent', () => {
     switcherSpy = TestBed.inject(SwitcherService) as jasmine.SpyObj<SwitcherService>;
     reviewsSpy = TestBed.inject(ReviewListService) as jasmine.SpyObj<ReviewListService>;
     eventsSpy = TestBed.inject(EventListService) as jasmine.SpyObj<EventListService>;
+    chatSpy = TestBed.inject(ChatService) as jasmine.SpyObj<ChatService>;
 
     switcherSpy.getTeamInfo.and.returnValue(of(''));
     reviewsSpy.getReviews.and.returnValue(of(['', '']));
@@ -133,16 +141,34 @@ describe('TabsComponent', () => {
   });
 
   describe('when testing onEnter()', () => {
-    it('should get correct data', () => {
+    it('should get correct data (when chat enabled)', () => {
       storageSpy.get.and.returnValue(0);
       storageSpy.getUser.and.returnValue({
         chatEnabled: true,
         teamId: 'SAMPLE_ID'
       });
+      chatSpy.getChatList.and.returnValue(of(ChatsFixture));
       fixture.detectChanges();
+
       expect(component.noOfTodoItems).toBe(5);
       expect(component.noOfChats).toBe(4);
       expect(component.showChat).toBe(true);
+      expect(component.showReview).toBe(true);
+      expect(component.showEvents).toBe(true);
+    });
+
+    it('should get correct data (when chat disabled)', () => {
+      storageSpy.get.and.returnValue(0);
+      storageSpy.getUser.and.returnValue({
+        chatEnabled: false,
+        teamId: 'SAMPLE_ID'
+      });
+      chatSpy.getChatList.and.returnValue(of([]));
+      fixture.detectChanges();
+
+      expect(component.noOfTodoItems).toBe(5);
+      expect(component.noOfChats).toBe(0);
+      expect(component.showChat).toBe(false);
       expect(component.showReview).toBe(true);
       expect(component.showEvents).toBe(true);
     });

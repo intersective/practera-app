@@ -9,6 +9,7 @@ import { Router } from '@angular/router';
 import { SharedService } from '@services/shared.service';
 import { EventListService } from '@app/event-list/event-list.service';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
+import { ChatService } from '@app/chat/chat.service';
 
 @Component({
   selector: 'app-tabs',
@@ -34,6 +35,7 @@ export class TabsComponent extends RouterEnter {
     private sharedService: SharedService,
     private eventsService: EventListService,
     private newRelic: NewRelicService,
+    readonly chatService: ChatService,
   ) {
     super(router);
     this.newRelic.setPageViewName('tab');
@@ -63,9 +65,9 @@ export class TabsComponent extends RouterEnter {
   }
 
   private _initialise() {
-    this.showChat = false;
-    this.showReview = false;
-    this.showEvents = false;
+    this.showChat = this.showChat || false;
+    this.showReview = this.showReview || false;
+    this.showEvents = this.showEvents || false;
   }
 
   onEnter() {
@@ -76,25 +78,25 @@ export class TabsComponent extends RouterEnter {
     this.tabsService.getNoOfTodoItems().subscribe(noOfTodoItems => {
       this.noOfTodoItems = noOfTodoItems;
     });
-    // only get the number of chats if user is in team
-    if (this.storage.getUser().teamId) {
-      this.tabsService.getNoOfChats().subscribe(noOfChats => {
-        this.noOfChats = noOfChats;
-      });
-    }
-    // display the chat tab if the user is in team
-    if (!this.storage.getUser().chatEnabled) {
+
+    if (!this.storage.getUser().chatEnabled) { // keep configuration-based value
       this.showChat = false;
-    } else if (this.storage.getUser().teamId) {
-      this.showChat = true;
     } else {
-      this.showChat = false;
-      this.switcherService.getTeamInfo().subscribe(data => {
-        if (this.storage.getUser().teamId) {
+      // [AV2-950]: display chat tab if a user has chatroom available
+      this.chatService.getChatList().subscribe(chats => {
+        if (chats && chats.length > 0) {
           this.showChat = true;
+
+          // only get the unread chats when chatroom is available
+          this.tabsService.getNoOfChats().subscribe(noOfChats => {
+            this.noOfChats = noOfChats;
+          });
+        } else {
+          this.showChat = false;
         }
       });
     }
+
     if (this.storage.getUser().hasReviews) {
       this.showReview = true;
     } else {
