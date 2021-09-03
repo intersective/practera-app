@@ -51,7 +51,7 @@ export class HomeComponent implements OnDestroy, OnInit {
     public storage: BrowserStorageService,
     public achievementService: AchievementsService,
     private eventsService: EventListService,
-    private newRelic: NewRelicService
+    readonly newRelic: NewRelicService,
   ) {
     const role = this.storage.getUser().role;
     this.utils.getEvent('notification').subscribe(event => {
@@ -108,17 +108,15 @@ export class HomeComponent implements OnDestroy, OnInit {
         this.loadingTodoItems = false;
       })
     );
-    // only get the number of chats if user is in team
-    if (this.storage.getUser().teamId) {
-      this.subscriptions.push(
-        this.homeService.getChatMessage().subscribe(chatMessage => {
-          if (!this.utils.isEmpty(chatMessage)) {
-            this._addChatTodoItem(chatMessage);
-          }
-          this.loadingTodoItems = false;
-        })
-      );
-    }
+    this.subscriptions.push(
+      this.homeService.getChatMessage().subscribe(chatMessage => {
+        if (!this.utils.isEmpty(chatMessage)) {
+          this._addChatTodoItem(chatMessage);
+        }
+        this.loadingTodoItems = false;
+      })
+    );
+
     this.subscriptions.push(
       this.homeService.getProgress().subscribe(progress => {
         this.progress = progress;
