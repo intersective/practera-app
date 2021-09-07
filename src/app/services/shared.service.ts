@@ -35,8 +35,8 @@ export class SharedService {
     private request: RequestService,
     private http: HttpClient,
     private newrelic: NewRelicService,
-    private topicService: TopicService,
-    private pusherService: PusherService,
+    private readonly topicService: TopicService,
+    private readonly pusherService: PusherService,
   ) {}
 
   // call this function on every page refresh and after switch program
