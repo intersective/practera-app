@@ -27,7 +27,7 @@ jobs:
 ################################################
     env:
       REGION : ap-southeast-2
-      ENV : stage # Valid values are dev,test,live only
+      ENV : test # Valid values are dev,test,live only
       STACK_NAME: p2-stage # Valid values are au,us,uk,p2,lf,nu,p1-sandbox,p1-stage,p2-sandbox,shared only
       ROOTSTACK: app-v2
       CFNS3BucketName: devops-cfn-templates
