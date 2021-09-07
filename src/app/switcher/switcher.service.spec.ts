@@ -38,7 +38,10 @@ describe('SwitcherService', () => {
           EventListService,
           ReviewListService,
           PusherService,
-          SharedService,
+          {
+            provide: SharedService,
+            useValue: jasmine.createSpyObj('SharedService', ['onPageLoad', 'initWebServices']),
+          },
           {
             provide: BrowserStorageService,
             useClass: BrowserStorageServiceMock
@@ -246,7 +249,6 @@ describe('SwitcherService', () => {
       spyOn(service, 'getMyInfo').and.returnValue(of());
       spyOn(service, 'getReviews').and.returnValue(of());
       spyOn(service, 'getEvents').and.returnValue(of());
-      spyOn(sharedSpy, 'onPageLoad').and.returnValue(of());
     });
 
     it('should collect related data based on selected program', () => {
