@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { TestBed } from '@angular/core/testing';
+import { TestBed, tick } from '@angular/core/testing';
 import { NewRelicService } from '@app/shared/new-relic/new-relic.service';
 import { NotificationService } from '@app/shared/notification/notification.service';
 import { RequestService } from '@app/shared/request/request.service';
@@ -10,12 +10,14 @@ import { of } from 'rxjs';
 import { SharedService } from './shared.service';
 import { BrowserStorageService } from './storage.service';
 import { UtilsService } from './utils.service';
+import { PusherService } from '@shared/pusher/pusher.service';
 
 describe('SharedService', () => {
   let service: SharedService;
   let httpSpy: HttpClient;
   let storageSpy: BrowserStorageService;
   let utilsSpy: UtilsService;
+  let pusherServiceSpy: PusherService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -57,12 +59,17 @@ describe('SharedService', () => {
             })
           }),
         },
+        {
+          provide: PusherService,
+          useValue: jasmine.createSpyObj('PusherService', ['initialise']),
+        },
       ]
     });
     service = TestBed.inject(SharedService);
     httpSpy = TestBed.inject(HttpClient);
     storageSpy = TestBed.inject(BrowserStorageService);
     utilsSpy = TestBed.inject(UtilsService);
+    pusherServiceSpy = TestBed.inject(PusherService);
   });
 
   it('should created', () => {

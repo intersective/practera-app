@@ -7,6 +7,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
 import { TopicService } from '../topic/topic.service';
+import { PusherService } from '@shared/pusher/pusher.service';
 
 export interface Profile {
   contact_number: string;
@@ -34,7 +35,8 @@ export class SharedService {
     private request: RequestService,
     private http: HttpClient,
     private newrelic: NewRelicService,
-    private topicService: TopicService
+    private topicService: TopicService,
+    private pusherService: PusherService,
   ) {}
 
   // call this function on every page refresh and after switch program
@@ -146,6 +148,13 @@ export class SharedService {
         }
       );
     }
+  }
+
+  /**
+  * Initialise web services like Pusher
+  */
+  async initWebServices() {
+    await this.pusherService.initialise();
   }
 
 }
