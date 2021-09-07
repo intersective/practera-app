@@ -10,7 +10,7 @@ name: Deploy to p2-stage environment
 on:
   workflow_dispatch:
   push:
-    branches: [ 'trunk' ]
+    branches: [ 'deploy/aus-euk' ]
 
 
 ################################################
@@ -38,7 +38,7 @@ jobs:
       STATUSREPORTS3Bucket: deployment-status.practera.com
       STATUS: DEPLOYED
       ENDPOINT: app.p2-stage.practera.com
-      BRANCH_TAG_NAME: ${{ github.event.inputs.BRANCH_TAG_NAME }}
+      BRANCH_TAG_NAME: trunk
 
 
 
@@ -49,7 +49,7 @@ jobs:
       - uses: actions/checkout@v2
         with:
           fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
-          ref: ${{ github.event.inputs.BRANCH_TAG_NAME }}
+          
 
 
 
@@ -179,17 +179,17 @@ jobs:
           echo "ChatBotSNSTopicARN="$(aws cloudformation list-exports --query "Exports[?Name==\`$STACK_NAME-ChatBotSNSTopicARN-$ENV\`].Value" --no-paginate --output text) >> $GITHUB_ENV
           
         env:
-          CUSTOM_PATH_IMAGE: /appv2/stage/images/
-          CUSTOM_PATH_VIDEO: /appv2/stage/videos/
+          CUSTOM_PATH_IMAGE: /appv2/test/images/
+          CUSTOM_PATH_VIDEO: /appv2/test/videos/
           CUSTOM_GRAPH_QL: https://core-graphql-api.${{ env.PUBLICZONENAME }}
-          CUSTOM_API_ENDPOINT: https://${{ env.PUBLICZONENAME }}/
+          CUSTOM_API_ENDPOINT: https://admin.${{ env.PUBLICZONENAME }}/
           CUSTOM_S3_BUCKET: files.${{ env.PUBLICZONENAME }}
           CUSTOM_ENVIRONMENT: ${{ env.ENV }}
           CUSTOM_CHAT_GRAPH_QL: https://chat-api.${{ env.PUBLICZONENAME }}
           CUSTOM_GLOBAL_LOGIN_URL: https://app.login-stage.practera.com 
           CUSTOM_COUNTRY: AUS #TODO CHECK
           CUSTOMPLAIN_SKIPGLOBALLOGINFLAG: false
-          CUSTOM_PATH_ANY: /appv2/stage/any
+          CUSTOM_PATH_ANY: /appv2/test/any/
           CUSTOM_AWS_REGION: ${{ env.REGION }}
           CUSTOM_JS_ENVIRONEMENT: dev #TODO CHECK
           CUSTOM_LOGIN_API_URL: https://api.login-stage.practera.com

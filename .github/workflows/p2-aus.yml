@@ -191,7 +191,7 @@ jobs:
           CUSTOM_GLOBAL_LOGIN_URL: https://login.practera.com 
           CUSTOM_COUNTRY: AUS #TODO CHECK
           CUSTOMPLAIN_SKIPGLOBALLOGINFLAG: false
-          CUSTOM_PATH_ANY: /appv2/live/any
+          CUSTOM_PATH_ANY: /appv2/live/any/
           CUSTOM_AWS_REGION: ${{ env.REGION }}
           CUSTOM_JS_ENVIRONEMENT: dev #TODO CHECK
           CUSTOM_LOGIN_API_URL: https://login-api.practera.com
