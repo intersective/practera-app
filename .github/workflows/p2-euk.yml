@@ -225,7 +225,7 @@ jobs:
       - name: Cloudformation Export variables
         run: |
           cat >> .env <<EOF
-          CDNSharedACMCertificateArn=$(aws cloudformation list-exports --query "Exports[?Name==\`$STACK_NAME-USEAST1ACMCertificateArn-$ENV\`].Value" --no-paginate --output text)
+          CDNSharedACMCertificateArn=$(aws cloudformation list-exports --query "Exports[?Name==\`$STACK_NAME-CDNSharedACMCertificateArn-$ENV\`].Value" --no-paginate --output text)
           ChatBotSNSTopicARN=$(aws cloudformation list-exports --query "Exports[?Name==\`$STACK_NAME-ChatBotSNSTopicARN-$ENV\`].Value" --no-paginate --output text)
           
           
