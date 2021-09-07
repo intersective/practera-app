@@ -144,6 +144,9 @@ export class SwitcherService {
   }
 
   switchProgram(programObj: ProgramObj): Observable<any> {
+    // initialise Pusher
+    this.sharedService.initWebServices();
+
     const colors = this.extractColors(programObj);
 
     let cardBackgroundImage = '';
