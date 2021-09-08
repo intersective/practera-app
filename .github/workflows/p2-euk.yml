@@ -13,6 +13,14 @@ on:
       BRANCH_TAG_NAME:
         description: 'New tag version based on create-release-tag workflow'     
         required: true
+        default: ''
+      REQUESTOR:
+        description: 'Requestion Name'     
+        required: true
+        default: ''
+      REASON:
+        description: 'Reason for deployment'     
+        required: true
         default: ''  
 
 ################################################
@@ -39,6 +47,8 @@ jobs:
       BUILD_CONFIG: custom
       STATUSREPORTS3Bucket: deployment-status.practera.com
       STATUS: DEPLOYED
+      REQUESTOR: ${{ github.event.inputs.REQUESTOR }}
+      REASON: ${{ github.event.inputs.REASON }}
       ENDPOINT: app.euk.practera.com
       BRANCH_TAG_NAME: ${{ github.event.inputs.BRANCH_TAG_NAME }}
 
