@@ -36,6 +36,8 @@ jobs:
       BUILD_CONFIG: custom
       STATUSREPORTS3Bucket: deployment-status.practera.com
       STATUS: DEPLOYED
+      REQUESTOR: ${{ github.event.inputs.REQUESTOR }}
+      REASON: ${{ github.event.inputs.REASON }}
       ENDPOINT: app.p1-sandbox.practera.com
       BRANCH_TAG_NAME: develop
 
