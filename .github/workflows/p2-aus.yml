@@ -15,7 +15,7 @@ on:
         required: true
         default: ''
       REQUESTOR:
-        description: 'Requestion Name'     
+        description: 'Requestor Name'     
         required: true
         default: ''
       REASON:
