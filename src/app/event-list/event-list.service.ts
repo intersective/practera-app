@@ -80,8 +80,10 @@ export class EventListService {
     const params: any = {
       types: ['activity_session', 'other']
     };
+    // getting events link with activity
     if (activityId) {
       params.activity_id = activityId;
+      params.types = ['activity_session'];
     }
 
     return this.request.get(api.get.events, {params: params})
