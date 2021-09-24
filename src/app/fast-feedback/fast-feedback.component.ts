@@ -74,16 +74,25 @@ export class FastFeedbackComponent implements OnInit {
 
     const nrFastFeedbackSubmissionTracer = this.newRelic.createTracer('fastfeeback submission');
 
-    const submissionResult = await this.fastFeedbackSubmitterService.submit(data, params).toPromise();
-    nrFastFeedbackSubmissionTracer();
+    let submissionResult;
+    try {
+      submissionResult = await this.fastFeedbackSubmitterService.submit(data, params).toPromise();
+      nrFastFeedbackSubmissionTracer();
 
-    this.submissionCompleted = true;
-    return setTimeout(
-      () => {
-        this.newRelicTracer();
-        return this.dismiss(submissionResult);
-      },
-      2000
-    );
+      this.submissionCompleted = true;
+      return setTimeout(
+        () => {
+          this.newRelicTracer();
+          return this.dismiss(submissionResult);
+        },
+        2000
+      );
+    } catch (err) {
+      console.error(err); // output error in devtool
+
+      // set to true to fail gracefully
+      this.submissionCompleted = true;
+      this.dismiss(submissionResult);
+    }
   }
 }
