@@ -32,7 +32,7 @@ export class ReviewRatingComponent implements OnInit {
     private router: Router,
     private utils: UtilsService,
     private notificationService: NotificationService,
-    private newRelic: NewRelicService,
+    readonly newRelic: NewRelicService,
     readonly fastFeedbackService: FastFeedbackService,
   ) {}
 
@@ -72,13 +72,13 @@ export class ReviewRatingComponent implements OnInit {
     );
   }
 
-  private async _closeReviewRating() {
+  private async _closeReviewRating(): Promise<any> {
     this.modalController.dismiss();
     // if this.redirect == false, don't redirect to another page
     if (!this.redirect) {
-      await this.fastFeedbackService.pullFastFeedback().toPromise();
-      return;
+      return await this.fastFeedbackService.pullFastFeedback().toPromise();
     }
+
     if (!this.utils.isMobile()) {
       // go to the desktop view pages
       if (this.redirect.includes('assessment')) {
@@ -105,7 +105,8 @@ export class ReviewRatingComponent implements OnInit {
         ]);
       }
     }
-    this.router.navigate(this.redirect);
+
+    return this.router.navigate(this.redirect);
   }
 
   addOrRemoveTags(tag) {
