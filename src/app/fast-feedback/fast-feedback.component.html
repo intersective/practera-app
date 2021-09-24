@@ -4,11 +4,11 @@
   </ion-toolbar>
 </ion-header>
 <ion-content>
-  <div text-center>
-    <p class="body-1 ion-margin">Before you continue, please spend 10 seconds to answer these questions.</p>
+  <div class="ion-text-center" style="margin: 16px;">
+    <p class="body-1 ion-margin">Please help us to improve your experience.<br>We want to know how are you doing?</p>
   </div>
 
-  <form (ngSubmit)="submit()" [formGroup]="fastFeedbackForm">
+  <form (ngSubmit)="submit()" [formGroup]="fastFeedbackForm" style="margin: 0 1em;">
     <ng-container *ngFor="let question of questions">
       <question [question]="question" [form]="fastFeedbackForm"></question>
     </ng-container>
