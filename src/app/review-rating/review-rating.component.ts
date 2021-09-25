@@ -76,7 +76,7 @@ export class ReviewRatingComponent implements OnInit {
     this.modalController.dismiss();
     // if this.redirect == false, don't redirect to another page
     if (!this.redirect) {
-      return await this.fastFeedbackService.pullFastFeedback().toPromise();
+      return this.fastFeedbackService.pullFastFeedback().toPromise();
     }
 
     if (!this.utils.isMobile()) {
