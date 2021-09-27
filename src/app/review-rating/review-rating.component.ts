@@ -5,6 +5,7 @@ import { ReviewRatingService, ReviewRating } from './review-rating.service';
 import { UtilsService } from '@services/utils.service';
 import { NotificationService } from '../shared/notification/notification.service';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
+import { FastFeedbackService } from '@app/fast-feedback/fast-feedback.service';
 
 @Component({
   selector: 'app-review-rating',
@@ -31,7 +32,8 @@ export class ReviewRatingComponent implements OnInit {
     private router: Router,
     private utils: UtilsService,
     private notificationService: NotificationService,
-    private newRelic: NewRelicService
+    readonly newRelic: NewRelicService,
+    readonly fastFeedbackService: FastFeedbackService,
   ) {}
 
   // Review ID is required if this component is to be used.upon detecting incoming/changes of value, set passed reviewId into local var
@@ -70,12 +72,13 @@ export class ReviewRatingComponent implements OnInit {
     );
   }
 
-  private _closeReviewRating() {
+  private async _closeReviewRating(): Promise<any> {
     this.modalController.dismiss();
     // if this.redirect == false, don't redirect to another page
     if (!this.redirect) {
-      return ;
+      return this.fastFeedbackService.pullFastFeedback().toPromise();
     }
+
     if (!this.utils.isMobile()) {
       // go to the desktop view pages
       if (this.redirect.includes('assessment')) {
@@ -102,7 +105,8 @@ export class ReviewRatingComponent implements OnInit {
         ]);
       }
     }
-    this.router.navigate(this.redirect);
+
+    return this.router.navigate(this.redirect);
   }
 
   addOrRemoveTags(tag) {

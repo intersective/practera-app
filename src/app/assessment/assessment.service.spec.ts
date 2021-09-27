@@ -545,11 +545,11 @@ describe('AssessmentService', () => {
 
   describe('when testing popUpReviewRating()', () => {
     it('should pass the correct data to notification modal', () => {
-      service.popUpReviewRating(1, 'home');
+      service.popUpReviewRating(1, ['home']);
       expect(notificationSpy.modal.calls.count()).toBe(1);
       expect(notificationSpy.modal.calls.first().args[1]).toEqual({
         reviewId: 1,
-        redirect: 'home'
+        redirect: ['home']
       });
     });
   });
