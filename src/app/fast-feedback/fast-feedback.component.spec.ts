@@ -1,5 +1,5 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { async, ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
+import { async, ComponentFixture, TestBed, fakeAsync, tick, flush, flushMicrotasks } from '@angular/core/testing';
 import { Observable, of, pipe } from 'rxjs';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { UtilsService } from '@services/utils.service';
@@ -165,6 +165,20 @@ describe('FastFeedbackComponent', () => {
         expect(fastfeedbackSpy.submit.calls.first().args[1]).toEqual({
           context_id: 1
         });
+      }));
+    });
+
+    describe('submit()', () => {
+      it('should fail submission gracefully', fakeAsync(() => {
+        const THROWN_ERROR = 'ERROR MESSAGE';
+        fastfeedbackSpy.submit.and.throwError(THROWN_ERROR);
+
+        component.ngOnInit();
+        component.submit();
+
+        flushMicrotasks();
+        expect(component.submissionCompleted).toBeTruthy();
+        expect(modalSpy.dismiss).toHaveBeenCalled();
       }));
     });
   });
