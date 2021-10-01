@@ -179,7 +179,7 @@
       <ion-button
         *ngIf="(doAssessment || doReview) && !submitting && !submitted"
         id="btn-submit"
-        [disabled]="questionsForm.invalid"
+        [disabled]="questionsForm.invalid || savingButtonDisabled"
         (click)="submit(false)"
         shape="round"
         fill="clear"
