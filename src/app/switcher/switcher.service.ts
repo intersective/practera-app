@@ -17,7 +17,6 @@ import { environment } from '@environments/environment';
  */
 const api = {
   me: 'api/users.json',
-  teams: 'api/teams.json',
   jwt: 'api/v2/users/jwt/refresh.json'
 };
 
@@ -182,30 +181,11 @@ export class SwitcherService {
     this.sharedService.onPageLoad();
     return forkJoin([
       this.getNewJwt(),
-      this.getTeamInfo(),
+      this.sharedService.getTeamInfo(),
       this.getMyInfo(),
       this.getReviews(),
       this.getEvents()
     ]);
-  }
-
-  getTeamInfo(): Observable<any> {
-    return this.request.get(api.teams)
-      .pipe(map(response => {
-        if (response.success && response.data) {
-          if (!this.utils.has(response.data, 'Teams') ||
-              !Array.isArray(response.data.Teams) ||
-              !this.utils.has(response.data.Teams[0], 'id')
-             ) {
-            return this.storage.setUser({
-              teamId: null
-            });
-          }
-          return this.storage.setUser({
-            teamId: response.data.Teams[0].id
-          });
-        }
-      }));
   }
 
   /**

@@ -6,7 +6,7 @@ import { RequestService } from '@app/shared/request/request.service';
 import { TopicService } from '@app/topic/topic.service';
 import { BrowserStorageServiceMock } from '@testing/mocked.service';
 import { TestUtils } from '@testing/utils';
-import { of } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { SharedService } from './shared.service';
 import { BrowserStorageService } from './storage.service';
 import { UtilsService } from './utils.service';
@@ -15,6 +15,7 @@ import { PusherService } from '@shared/pusher/pusher.service';
 describe('SharedService', () => {
   let service: SharedService;
   let httpSpy: HttpClient;
+  let requestSpy: jasmine.SpyObj<RequestService>;
   let storageSpy: BrowserStorageService;
   let utilsSpy: UtilsService;
   let pusherServiceSpy: PusherService;
@@ -63,17 +64,40 @@ describe('SharedService', () => {
           provide: PusherService,
           useValue: jasmine.createSpyObj('PusherService', ['initialise']),
         },
+        {
+          provide: RequestService,
+          useValue: jasmine.createSpyObj('RequestService', ['post', 'graphQLQuery', 'apiResponseFormatError'])
+        },
       ]
     });
     service = TestBed.inject(SharedService);
     httpSpy = TestBed.inject(HttpClient);
+    requestSpy = TestBed.inject(RequestService) as jasmine.SpyObj<RequestService>;
     storageSpy = TestBed.inject(BrowserStorageService);
     utilsSpy = TestBed.inject(UtilsService);
     pusherServiceSpy = TestBed.inject(PusherService);
+    requestSpy.get = jasmine.createSpy('get').and.returnValue(new Observable());
   });
 
   it('should created', () => {
     expect(service).toBeTruthy();
+  });
+
+
+  describe('getTeamInfo()', () => {
+    it('should make API request to `api/teams.json`', () => {
+      requestSpy.get.and.returnValue(of({
+        success: true,
+        data: {
+          Teams: [
+            { id: 1 }
+          ]
+        }
+      }));
+
+      service.getTeamInfo().subscribe();
+      expect(requestSpy.get).toHaveBeenCalledWith('api/teams.json');
+    });
   });
 
   describe('onPageLoad()', () => {
