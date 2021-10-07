@@ -89,6 +89,7 @@ export class SharedService {
             teamId: response.data.Teams[0].id
           });
         }
+        return;
       }));
   }
 
