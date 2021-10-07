@@ -3,12 +3,12 @@ import { TabsService } from './tabs.service';
 import { UtilsService } from '@services/utils.service';
 import { BrowserStorageService } from '@services/storage.service';
 import { RouterEnter } from '@services/router-enter.service';
-import { SwitcherService } from '../switcher/switcher.service';
 import { ReviewListService } from '@app/review-list/review-list.service';
 import { Router } from '@angular/router';
 import { SharedService } from '@services/shared.service';
 import { EventListService } from '@app/event-list/event-list.service';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
+import { SwitcherService } from '@app/switcher/switcher.service';
 
 @Component({
   selector: 'app-tabs',
@@ -83,7 +83,7 @@ export class TabsComponent extends RouterEnter {
       this.showChat = true;
     } else {
       this.showChat = false;
-      this.switcherService.getTeamInfo().subscribe(data => {
+      this.sharedService.getTeamInfo().subscribe(data => {
         if (this.storage.getUser().teamId) {
           this.showChat = true;
         }

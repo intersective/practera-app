@@ -1,37 +1,5 @@
+import { UtilsService } from '@app/services/utils.service';
 import * as moment from 'moment';
-
-export class TestUtils {
-
-  static createRouterSpy() {
-    return {
-      navigate: jasmine.createSpy('navigate'),
-    };
-  }
-
-  /**
-   * Get a date string
-   * @param day  number of dates after today. if < 0, is number of days before today
-   * @param minute number of minutes after the current minute. if < 0, is number of minutes before current minute
-   *
-   * e.g.
-   * getDateString(1, 0) returns tomorrow at the same time
-   * getDateString(-1, 0) returns yesterday at the same time
-   * getDateString(0, 1) returns today at one minute later
-   * @return {string} UTC date string
-   */
-  getDateString(day: number, minute: number): string {
-    const momentDate = `${moment.utc().add(day, 'days').add(minute, 'minute').format('YYYY-MM-DD hh:mm:ss')}`;
-    return momentDate;
-  }
-
-  /**
-   * add '0' before the number if it is less than 10
-   * @param number the number for checking
-   */
-  numberFormatter(number: number) {
-    return number < 10 ? '0' + number : number;
-  }
-}
 
 export class SpyObject {
   constructor(type?: any) {
@@ -66,3 +34,55 @@ export class SpyObject {
 
 }
 
+export class TestUtils extends SpyObject {
+  isEmpty;
+  isMobile;
+  clearCache;
+  find;
+  getEvent;
+  changeThemeColor;
+  changeCardBackgroundImage;
+  has;
+
+  constructor() {
+    super(UtilsService);
+    this.isEmpty = this.spy('isEmpty');
+    this.isMobile = this.spy('isMobile');
+    this.find = this.spy('find');
+    this.getEvent = this.spy('getEvent').and.returnValue(of(true));
+    this.clearCache = this.spy('clearCache').and.returnValue(true);
+    this.changeThemeColor = this.spy('changeThemeColor').and.returnValue(true);
+    this.changeCardBackgroundImage = this.spy('changeCardBackgroundImage').and.returnValue(true);
+    this.has = this.spy('has').and.returnValue(true);
+  }
+
+  static createRouterSpy() {
+    return {
+      navigate: jasmine.createSpy('navigate'),
+    };
+  }
+
+  /**
+   * Get a date string
+   * @param day  number of dates after today. if < 0, is number of days before today
+   * @param minute number of minutes after the current minute. if < 0, is number of minutes before current minute
+   *
+   * e.g.
+   * getDateString(1, 0) returns tomorrow at the same time
+   * getDateString(-1, 0) returns yesterday at the same time
+   * getDateString(0, 1) returns today at one minute later
+   * @return {string} UTC date string
+   */
+  getDateString(day: number, minute: number): string {
+    const momentDate = `${moment.utc().add(day, 'days').add(minute, 'minute').format('YYYY-MM-DD hh:mm:ss')}`;
+    return momentDate;
+  }
+
+  /**
+   * add '0' before the number if it is less than 10
+   * @param number the number for checking
+   */
+  numberFormatter(number: number) {
+    return number < 10 ? '0' + number : number;
+  }
+}

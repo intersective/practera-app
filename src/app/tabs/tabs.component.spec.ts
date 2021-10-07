@@ -15,6 +15,7 @@ import { TabsComponent } from './tabs.component';
 import { ModalController } from '@ionic/angular';
 import { MockRouter } from '@testing/mocked.service';
 import { Apollo } from 'apollo-angular';
+import { ChatService } from '@app/chat/chat.service';
 
 describe('TabsComponent', () => {
   let component: TabsComponent;
@@ -24,8 +25,10 @@ describe('TabsComponent', () => {
   let storageSpy: jasmine.SpyObj<BrowserStorageService>;
   let newRelicSpy: jasmine.SpyObj<NewRelicService>;
   let switcherSpy: jasmine.SpyObj<SwitcherService>;
+  let sharedSpy: jasmine.SpyObj<SharedService>;
   let reviewsSpy: jasmine.SpyObj<ReviewListService>;
   let eventsSpy: jasmine.SpyObj<EventListService>;
+  let chatSpy: jasmine.SpyObj<ChatService>;
   let utils: UtilsService;
 
   beforeEach(async(() => {
@@ -77,6 +80,18 @@ describe('TabsComponent', () => {
           useValue: jasmine.createSpyObj('EventListService', ['getEvents'])
         },
         {
+          provide: ChatService,
+          useValue: jasmine.createSpyObj('ChatService', ['getChatList']),
+        },
+        {
+          provide: SharedService,
+          useValue: jasmine.createSpyObj('SharedService', [
+            'getTeamInfo',
+            'stopPlayingVideos',
+            'markTopicStopOnNavigating',
+          ])
+        },
+        {
           provide: Router,
           useClass: MockRouter
         },
@@ -96,8 +111,10 @@ describe('TabsComponent', () => {
     switcherSpy = TestBed.inject(SwitcherService) as jasmine.SpyObj<SwitcherService>;
     reviewsSpy = TestBed.inject(ReviewListService) as jasmine.SpyObj<ReviewListService>;
     eventsSpy = TestBed.inject(EventListService) as jasmine.SpyObj<EventListService>;
+    chatSpy = TestBed.inject(ChatService) as jasmine.SpyObj<ChatService>;
+    sharedSpy = TestBed.inject(SharedService) as jasmine.SpyObj<SharedService>;
 
-    switcherSpy.getTeamInfo.and.returnValue(of(''));
+    sharedSpy.getTeamInfo.and.returnValue(of(''));
     reviewsSpy.getReviews.and.returnValue(of(['', '']));
     eventsSpy.getEvents.and.returnValue(of([{id: 1}]));
     tabsSpy.getNoOfChats.and.returnValue(of(4));

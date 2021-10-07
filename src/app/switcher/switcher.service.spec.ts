@@ -38,7 +38,10 @@ describe('SwitcherService', () => {
           EventListService,
           ReviewListService,
           PusherService,
-          SharedService,
+          {
+            provide: SharedService,
+            useValue: jasmine.createSpyObj('SharedService', ['onPageLoad', 'initWebServices', 'getTeamInfo']),
+          },
           {
             provide: BrowserStorageService,
             useClass: BrowserStorageServiceMock
@@ -232,25 +235,22 @@ describe('SwitcherService', () => {
   });
 
   describe('switchProgram()', () => {
+    beforeEach(() => {
+      spyOn(service, 'getNewJwt').and.returnValue(of());
+      spyOn(service, 'getMyInfo').and.returnValue(of());
+      spyOn(service, 'getReviews').and.returnValue(of());
+      spyOn(service, 'getEvents').and.returnValue(of());
+    });
+
     it('should collect related data based on selected program', () => {
-      service.switchProgram(ProgramFixture[0]).subscribe(() => {
-
-        spyOn(utils, 'has');
-        spyOn(service, 'getNewJwt');
-        spyOn(service, 'getTeamInfo');
-        spyOn(service, 'getMyInfo');
-        spyOn(service, 'getReviews');
-        spyOn(service, 'getEvents');
-
-        expect(utils.has).toHaveBeenCalled();
-        expect(storageSpy.setUser).toHaveBeenCalled();
-        expect(sharedSpy.onPageLoad).toHaveBeenCalled();
-        expect(service.getNewJwt).toHaveBeenCalled();
-        expect(service.getTeamInfo).toHaveBeenCalled();
-        expect(service.getMyInfo).toHaveBeenCalled();
-        expect(service.getReviews).toHaveBeenCalled();
-        expect(service.getEvents).toHaveBeenCalled();
-      });
+      service.switchProgram(ProgramFixture[0]).subscribe();
+      expect(storageSpy.setUser).toHaveBeenCalled();
+      expect(sharedSpy.onPageLoad).toHaveBeenCalled();
+      expect(service.getNewJwt).toHaveBeenCalled();
+      expect(sharedSpy.getTeamInfo).toHaveBeenCalled();
+      expect(service.getMyInfo).toHaveBeenCalled();
+      expect(service.getReviews).toHaveBeenCalled();
+      expect(service.getEvents).toHaveBeenCalled();
     });
   });
 
@@ -267,22 +267,6 @@ describe('SwitcherService', () => {
       service.switchProgram(ProgramFixture[3]).subscribe(() => {
         spyOn(utils, 'has');
       });
-    });
-  });
-
-  describe('getTeamInfo()', () => {
-    it('should make API request to `api/teams.json`', () => {
-      requestSpy.get.and.returnValue(of({
-        success: true,
-        data: {
-          Teams: [
-            { id: 1 }
-          ]
-        }
-      }));
-
-      service.getTeamInfo().subscribe();
-      expect(requestSpy.get).toHaveBeenCalledWith('api/teams.json');
     });
   });
 
