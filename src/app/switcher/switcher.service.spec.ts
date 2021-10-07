@@ -48,7 +48,7 @@ describe('SwitcherService', () => {
           },
           {
             provide: RequestService,
-            useValue: jasmine.createSpyObj('RequestService', ['post', 'graphQLQuery', 'apiResponseFormatError'])
+            useValue: jasmine.createSpyObj('RequestService', ['post', 'get', 'graphQLQuery', 'apiResponseFormatError'])
           },
           {
             provide: NotificationService,
@@ -65,8 +65,6 @@ describe('SwitcherService', () => {
     reviewSpy = TestBed.inject(ReviewListService) as jasmine.SpyObj<ReviewListService>;
     pusherSpy = TestBed.inject(PusherService) as jasmine.SpyObj<PusherService>;
     sharedSpy = TestBed.inject(SharedService) as jasmine.SpyObj<SharedService>;
-
-    requestSpy.get = jasmine.createSpy('get').and.returnValue(new Observable());
   });
 
   it('should be created', () => {
@@ -106,7 +104,7 @@ describe('SwitcherService', () => {
 
     it('should return undefined if got empty object ', fakeAsync(() => {
       let result;
-      spyOn(utils, 'isEmpty').and.returnValue(true);
+      utils.isEmpty = jasmine.createSpy('isEmpty').and.returnValue(true);
       service.switchProgramAndNavigate({}).then(data => {
         result = data;
       });
@@ -252,20 +250,16 @@ describe('SwitcherService', () => {
       expect(service.getReviews).toHaveBeenCalled();
       expect(service.getEvents).toHaveBeenCalled();
     });
-  });
 
-  describe('switchProgram() with null experience config', () => {
-    it('should collect related data based on selected program', () => {
-      service.switchProgram(ProgramFixture[2]).subscribe(() => {
-        spyOn(utils, 'has');
+    describe('switchProgram() with null experience config', () => {
+      it('should collect related data based on selected program', () => {
+        service.switchProgram(ProgramFixture[2]).subscribe();
       });
     });
-  });
 
-  describe('switchProgram() with null experience', () => {
-    it('should collect related data based on selected program', () => {
-      service.switchProgram(ProgramFixture[3]).subscribe(() => {
-        spyOn(utils, 'has');
+    describe('switchProgram() with null experience', () => {
+      it('should collect related data based on selected program', () => {
+        service.switchProgram(ProgramFixture[3]).subscribe();
       });
     });
   });
@@ -287,7 +281,7 @@ describe('SwitcherService', () => {
         }
       }));
 
-      service.getMyInfo().subscribe(res => {
+      service.getMyInfo().subscribe(() => {
         expect(requestSpy.get).toHaveBeenCalledWith('api/users.json');
       });
     });
@@ -315,6 +309,8 @@ describe('SwitcherService', () => {
 
   describe('getNewJwt()', () => {
     it('should make api request to `api/v2/users/jwt/refresh.json`', () => {
+      requestSpy.get.and.returnValue(of(true));
+
       service.getNewJwt().subscribe(() => {
         expect(requestSpy.get).toHaveBeenCalledWith('api/v2/users/jwt/refresh.json');
       });

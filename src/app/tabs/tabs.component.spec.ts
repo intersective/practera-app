@@ -94,7 +94,7 @@ describe('TabsComponent', () => {
         {
           provide: Router,
           useClass: MockRouter
-        },
+        }
       ],
     })
     .compileComponents();
