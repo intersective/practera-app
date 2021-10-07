@@ -90,11 +90,11 @@ export class SharedService {
             !Array.isArray(response.data.Teams) ||
             !this.utils.has(response.data.Teams[0], 'id')
           ) {
-            this.storage.setUser({
+            return this.storage.setUser({
               teamId: null
             });
           }
-          this.storage.setUser({
+          return this.storage.setUser({
             teamId: response.data.Teams[0].id
           });
         }
