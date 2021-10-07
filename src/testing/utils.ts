@@ -43,6 +43,7 @@ export class TestUtils extends SpyObject {
   getEvent;
   changeThemeColor;
   changeCardBackgroundImage;
+  has;
 
   constructor() {
     super(UtilsService);
@@ -53,6 +54,7 @@ export class TestUtils extends SpyObject {
     this.clearCache = this.spy('clearCache').and.returnValue(true);
     this.changeThemeColor = this.spy('changeThemeColor').and.returnValue(true);
     this.changeCardBackgroundImage = this.spy('changeCardBackgroundImage').and.returnValue(true);
+    this.has = this.spy('has').and.returnValue(true);
   }
 
   static createRouterSpy() {
