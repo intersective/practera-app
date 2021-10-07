@@ -8,6 +8,7 @@ import { Observable } from 'rxjs';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
 import { TopicService } from '../topic/topic.service';
 import { PusherService } from '@shared/pusher/pusher.service';
+import { map } from 'rxjs/operators';
 
 export interface Profile {
   contact_number: string;
@@ -19,6 +20,9 @@ const api = {
   post: {
     profile: 'api/v2/user/enrolment/edit.json',
   },
+  get: {
+    teams: 'api/teams.json',
+  }
 };
 
 @Injectable({
@@ -76,6 +80,26 @@ export class SharedService {
         }
       });
     }
+  }
+
+  getTeamInfo(): Observable<any> {
+    return this.request.get(api.get.teams)
+      .pipe(map(response => {
+        if (response.success && response.data) {
+          if (!this.utils.has(response.data, 'Teams') ||
+            !Array.isArray(response.data.Teams) ||
+            !this.utils.has(response.data.Teams[0], 'id')
+          ) {
+            return this.storage.setUser({
+              teamId: null
+            });
+          }
+          return this.storage.setUser({
+            teamId: response.data.Teams[0].id
+          });
+        }
+        return response;
+      }));
   }
 
   updateProfile(data: Profile) {
