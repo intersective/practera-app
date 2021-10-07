@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { SharedService } from '@app/services/shared.service';
 import { BrowserStorageService } from '@services/storage.service';
 import { UtilsService } from '@services/utils.service';
 import { combineLatest, Observable, of } from 'rxjs';
@@ -20,12 +21,14 @@ export class OverviewComponent implements OnInit {
     private utils: UtilsService,
     private route: ActivatedRoute,
     private fastFeedbackService: FastFeedbackService,
+    readonly sharedService: SharedService,
   ) {
     this.isMobile = this.utils.isMobile();
   }
 
   ngOnInit() {
-    this.initiator$.subscribe(() => {
+    this.initiator$.subscribe(async () => {
+      await this.sharedService.getTeamInfo().toPromise(); // update team info
       this.programName = this.storage.getUser().programName;
       this.fastFeedbackService.pullFastFeedback().subscribe();
     });
