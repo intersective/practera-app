@@ -1,5 +1,6 @@
 import { UtilsService } from '@app/services/utils.service';
 import * as moment from 'moment';
+import { of } from 'rxjs';
 
 export class SpyObject {
   constructor(type?: any) {
