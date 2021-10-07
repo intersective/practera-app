@@ -90,15 +90,15 @@ export class SharedService {
             !Array.isArray(response.data.Teams) ||
             !this.utils.has(response.data.Teams[0], 'id')
           ) {
-            return this.storage.setUser({
+            this.storage.setUser({
               teamId: null
             });
           }
-          return this.storage.setUser({
+          this.storage.setUser({
             teamId: response.data.Teams[0].id
           });
         }
-        return;
+        return response;
       }));
   }
 
