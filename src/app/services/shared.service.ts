@@ -155,7 +155,7 @@ export class SharedService {
   markTopicStopOnNavigating() {
     if (this.storage.get('startReadTopic')) {
       this.topicService.updateTopicProgress(this.storage.get('startReadTopic'), 'stopped').subscribe(
-        response => {
+        _response => {
           this.storage.remove('startReadTopic');
         },
         err => {
