@@ -19,7 +19,7 @@ describe('ProjectService', () => {
         UtilsService,
         {
           provide: RequestService,
-          useValue: jasmine.createSpyObj('RequestService', ['get', 'post', 'graphQLQuery'])
+          useValue: jasmine.createSpyObj('RequestService', ['get', 'post', 'graphQLWatch'])
         },
         {
           provide: BrowserStorageService,
@@ -82,7 +82,7 @@ describe('ProjectService', () => {
         })
       };
     });
-    requestSpy.graphQLQuery.and.returnValue(of(response));
+    requestSpy.graphQLWatch.and.returnValue(of(response));
     service.getProject().subscribe(milestones => expect(milestones).toEqual(expected));
   });
 });

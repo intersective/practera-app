@@ -37,10 +37,6 @@ describe('SharedService', () => {
           useValue: jasmine.createSpyObj('NotificationService', ['achievementPopUp']),
         },
         {
-          provide: RequestService,
-          useValue: jasmine.createSpyObj('RequestService', ['post']),
-        },
-        {
           provide: HttpClient,
           useValue: jasmine.createSpyObj('HttpClient', {
             get: of(true),
@@ -66,7 +62,12 @@ describe('SharedService', () => {
         },
         {
           provide: RequestService,
-          useValue: jasmine.createSpyObj('RequestService', ['post', 'graphQLQuery', 'apiResponseFormatError'])
+          useValue: jasmine.createSpyObj('RequestService', [
+            'post',
+            'graphQLWatch',
+            'apiResponseFormatError',
+            'graphQLFetch',
+          ])
         },
       ]
     });
@@ -85,9 +86,8 @@ describe('SharedService', () => {
 
 
   describe('getTeamInfo()', () => {
-    it('should make API request to `api/teams.json`', () => {
-      requestSpy.get.and.returnValue(of({
-        success: true,
+    it('should make GraphQL API request to retrieve team info', () => {
+      requestSpy.graphQLFetch.and.returnValue(of({
         data: {
           Teams: [
             { id: 1 }
@@ -96,7 +96,7 @@ describe('SharedService', () => {
       }));
 
       service.getTeamInfo().subscribe();
-      expect(requestSpy.get).toHaveBeenCalledWith('api/teams.json');
+      expect(requestSpy.graphQLFetch).toHaveBeenCalled();
     });
   });
 
