@@ -112,7 +112,7 @@ export class SharedService {
           });
         }
         return this.storage.setUser({
-          teamId: response.data.Teams[0].id
+          teamId: response.data.teams[0].id
         });
       }
       return response;
