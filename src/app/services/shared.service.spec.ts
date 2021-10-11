@@ -6,7 +6,7 @@ import { RequestService } from '@app/shared/request/request.service';
 import { TopicService } from '@app/topic/topic.service';
 import { BrowserStorageServiceMock } from '@testing/mocked.service';
 import { TestUtils } from '@testing/utils';
-import { Observable, of } from 'rxjs';
+import { Observable, of, throwError } from 'rxjs';
 import { SharedService } from './shared.service';
 import { BrowserStorageService } from './storage.service';
 import { UtilsService } from './utils.service';
@@ -126,6 +126,19 @@ describe('SharedService', () => {
       expect(storageSpy.setUser).toHaveBeenCalledWith({
         teamId: null
       });
+    });
+
+    it('should just forward response when no "data" object available in the response', () => {
+      const SAMPLE_RESULT = {
+        nodata: {}
+      };
+      requestSpy.graphQLFetch.and.returnValue(of(SAMPLE_RESULT));
+
+      let result;
+      service.getTeamInfo().subscribe(res => result = res);
+      expect(requestSpy.graphQLFetch).toHaveBeenCalled();
+      expect(storageSpy.setUser).not.toHaveBeenCalled();
+      expect(result).toEqual(SAMPLE_RESULT);
     });
   });
 
