@@ -89,14 +89,43 @@ describe('SharedService', () => {
     it('should make GraphQL API request to retrieve team info', () => {
       requestSpy.graphQLFetch.and.returnValue(of({
         data: {
-          Teams: [
-            { id: 1 }
+          teams: [
+            {
+              id: 1,
+              uuid: 'f310125a-2a7c-11ec-8d3d-0242ac130003',
+              name: 'Team 1',
+            },
+            {
+              id: 2,
+              uuid: '13b937b6-2a7d-11ec-8d3d-0242ac130003',
+              name: 'Team 2',
+            },
+            {
+              id: 3,
+              uuid: '184f5b5c-2a7c-11ec-8d3d-0242ac130003',
+              name: 'Team 3',
+            },
           ]
         }
       }));
 
       service.getTeamInfo().subscribe();
       expect(requestSpy.graphQLFetch).toHaveBeenCalled();
+    });
+
+    it('should set teamId as null when no teams retrieved from API', () => {
+      requestSpy.graphQLFetch.and.returnValue(of({
+        data: {
+          teams: []
+        }
+      }));
+      utilsSpy.has = jasmine.createSpy('has').and.returnValue(false);
+
+      service.getTeamInfo().subscribe();
+      expect(requestSpy.graphQLFetch).toHaveBeenCalled();
+      expect(storageSpy.setUser).toHaveBeenCalledWith({
+        teamId: null
+      });
     });
   });
 
