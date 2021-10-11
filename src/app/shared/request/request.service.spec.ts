@@ -349,7 +349,6 @@ describe('RequestService', () => {
       apolloSpy.query = jasmine.createSpy('query').and.returnValue(throwError('error'));
       service['handleError'] = jasmine.createSpy('handleError');
 
-      let result;
       service.graphQLFetch(SAMPLE_QUERY).subscribe();
       expect(service['handleError']).toHaveBeenCalled();
     });
