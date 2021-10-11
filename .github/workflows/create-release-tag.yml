@@ -18,9 +18,9 @@ on:
   workflow_dispatch:
     inputs:
       RELEASE_BRANCH:
-        description: '# Allowed values are : trunk only'     
+        description: '# Allowed values are : trunk/stable only'     
         required: true
-        default: 'trunk'
+        default: 'stable'
 
 
 ################################################
