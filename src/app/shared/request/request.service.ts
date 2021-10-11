@@ -188,8 +188,7 @@ export class RequestService {
    *
    * @return  {Observable<any>}
    */
-  graphQLFetch(query: string, variables?: any, options?: any): Observable<any> {
-    options = {...{ noCache: false }, ...options};
+  graphQLFetch(query: string, variables?: any): Observable<any> {
     const observable = this.apollo.query({
       query: gql(query),
       variables: variables || {},
