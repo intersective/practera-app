@@ -155,7 +155,7 @@ resources:
     HTTPCode4XXTooHighAlarm:
       Type: 'AWS::CloudWatch::Alarm'
       Properties:
-        AlarmDescription: '${env:CUTIES3BUCKET} - receives 4XX HTTP status codes from CDN'
+        AlarmDescription: '${env:APPV2S3BUCKET} - receives 4XX HTTP status codes from CDN'
         Namespace: 'AWS/CloudFront'
         MetricName: 4xxErrorRate
         Statistic: Average
@@ -169,14 +169,14 @@ resources:
         - Name: Region
           Value: Global
         - Name: DistributionId
-          Value: !Ref CutieCloudFrontDistribution
+          Value: !Ref AppV2CloudFrontDistribution
         TreatMissingData: notBreaching
         Unit: Percent
     
     HTTPCode5XXTooHighAlarm:
       Type: 'AWS::CloudWatch::Alarm'
       Properties:
-        AlarmDescription: '${env:CUTIES3BUCKET} - receives 5XX HTTP status codes from CDN'
+        AlarmDescription: '${env:APPV2S3BUCKET} - receives 5XX HTTP status codes from CDN'
         Namespace: 'AWS/CloudFront'
         MetricName: 5xxErrorRate
         Statistic: Average
@@ -190,14 +190,14 @@ resources:
         - Name: Region
           Value: Global
         - Name: DistributionId
-          Value: !Ref CutieCloudFrontDistribution
+          Value: !Ref AppV2CloudFrontDistribution
         TreatMissingData: notBreaching
         Unit: Percent
 
     HTTPCodeTotalErrorRateTooHighAlarm:
       Type: 'AWS::CloudWatch::Alarm'
       Properties:
-        AlarmDescription: '${env:CUTIES3BUCKET} - receives Total Error Rate HTTP status codes from CDN'
+        AlarmDescription: '${env:APPV2S3BUCKET} - receives Total Error Rate HTTP status codes from CDN'
         Namespace: 'AWS/CloudFront'
         MetricName: TotalErrorRate
         Statistic: Average
@@ -211,7 +211,7 @@ resources:
         - Name: Region
           Value: Global
         - Name: DistributionId
-          Value: !Ref CutieCloudFrontDistribution
+          Value: !Ref AppV2CloudFrontDistribution
         TreatMissingData: notBreaching
         Unit: Percent
 
