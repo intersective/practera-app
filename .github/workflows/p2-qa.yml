@@ -10,7 +10,7 @@ name: Deploy to p2-qa environment
 on:
   workflow_dispatch:
   push:
-    branches: [ 'feature/p2-qa' ]
+    branches: [ 'stable' ]
 
 
 ################################################
