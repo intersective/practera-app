@@ -89,23 +89,22 @@ describe('SharedService', () => {
     it('should make GraphQL API request to retrieve team info', () => {
       requestSpy.graphQLFetch.and.returnValue(of({
         data: {
-          teams: [
-            {
-              id: 1,
-              uuid: 'f310125a-2a7c-11ec-8d3d-0242ac130003',
-              name: 'Team 1',
-            },
-            {
-              id: 2,
-              uuid: '13b937b6-2a7d-11ec-8d3d-0242ac130003',
-              name: 'Team 2',
-            },
-            {
-              id: 3,
-              uuid: '184f5b5c-2a7c-11ec-8d3d-0242ac130003',
-              name: 'Team 3',
-            },
-          ]
+          user: {
+            teams: [
+              {
+                id: 1,
+                name: 'Team 1',
+              },
+              {
+                id: 2,
+                name: 'Team 2',
+              },
+              {
+                id: 3,
+                name: 'Team 3',
+              },
+            ]
+          }
         }
       }));
 
@@ -116,7 +115,9 @@ describe('SharedService', () => {
     it('should set teamId as null when no teams retrieved from API', () => {
       requestSpy.graphQLFetch.and.returnValue(of({
         data: {
-          teams: []
+          user: {
+            teams: []
+          }
         }
       }));
       utilsSpy.has = jasmine.createSpy('has').and.returnValue(false);
@@ -126,6 +127,17 @@ describe('SharedService', () => {
       expect(storageSpy.setUser).toHaveBeenCalledWith({
         teamId: null
       });
+    });
+
+    it('should set teamId as null when wrong response format retrieved from API', () => {
+      requestSpy.graphQLFetch.and.returnValue(of({
+        data: {}
+      }));
+      utilsSpy.has = jasmine.createSpy('has').and.returnValue(false);
+
+      service.getTeamInfo().subscribe();
+      expect(requestSpy.graphQLFetch).toHaveBeenCalled();
+      expect(storageSpy.setUser).not.toHaveBeenCalled();
     });
 
     it('should just forward response when no "data" object available in the response', () => {
