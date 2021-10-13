@@ -93,26 +93,30 @@ export class SharedService {
   getTeamInfo(): Observable<any> {
     return this.request.graphQLFetch(
       `query user {
-        teams {
-          id
-          name
+        user {
+          teams {
+              id
+              name
+          }
         }
       }`,
       {
         noCache: true
       }
     ).pipe(map(response => {
-      if (response.data) {
-        if (!this.utils.has(response.data, 'teams') ||
-          !Array.isArray(response.data.teams) ||
-          !this.utils.has(response.data.teams[0], 'id')
+      if (response.data && response.data.user) {
+        const thisUser = response.data.user;
+
+        if (!this.utils.has(thisUser, 'teams') ||
+          !Array.isArray(thisUser.teams) ||
+          !this.utils.has(thisUser.teams[0], 'id')
         ) {
           return this.storage.setUser({
             teamId: null
           });
         }
         return this.storage.setUser({
-          teamId: response.data.teams[0].id
+          teamId: thisUser.teams[0].id
         });
       }
       return response;
