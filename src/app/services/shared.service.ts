@@ -95,7 +95,6 @@ export class SharedService {
       `query user {
         teams {
           id
-          uuid
           name
         }
       }`,
