@@ -35,7 +35,7 @@
     </ion-button>
   </div>
 
-  <ion-item lines="none" color="light" class="ion-margin-top item-filter">
+  <ion-item lines="none" color="light" class="ion-margin-top item-filter" *ngIf="hasActivitySession">
     <ion-label id="activity-filter" class="subtitle-1" [ngClass]="!events.length ? 'gray-0' : 'gray-2'">Filter by Activity</ion-label>
     <ion-select
       multiple="true"
