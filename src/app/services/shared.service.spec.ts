@@ -6,7 +6,7 @@ import { RequestService } from '@app/shared/request/request.service';
 import { TopicService } from '@app/topic/topic.service';
 import { BrowserStorageServiceMock } from '@testing/mocked.service';
 import { TestUtils } from '@testing/utils';
-import { Observable, of } from 'rxjs';
+import { Observable, of, throwError } from 'rxjs';
 import { SharedService } from './shared.service';
 import { BrowserStorageService } from './storage.service';
 import { UtilsService } from './utils.service';
@@ -37,10 +37,6 @@ describe('SharedService', () => {
           useValue: jasmine.createSpyObj('NotificationService', ['achievementPopUp']),
         },
         {
-          provide: RequestService,
-          useValue: jasmine.createSpyObj('RequestService', ['post']),
-        },
-        {
           provide: HttpClient,
           useValue: jasmine.createSpyObj('HttpClient', {
             get: of(true),
@@ -66,7 +62,12 @@ describe('SharedService', () => {
         },
         {
           provide: RequestService,
-          useValue: jasmine.createSpyObj('RequestService', ['post', 'graphQLQuery', 'apiResponseFormatError'])
+          useValue: jasmine.createSpyObj('RequestService', [
+            'post',
+            'graphQLWatch',
+            'apiResponseFormatError',
+            'graphQLFetch',
+          ])
         },
       ]
     });
@@ -85,18 +86,71 @@ describe('SharedService', () => {
 
 
   describe('getTeamInfo()', () => {
-    it('should make API request to `api/teams.json`', () => {
-      requestSpy.get.and.returnValue(of({
-        success: true,
+    it('should make GraphQL API request to retrieve team info', () => {
+      requestSpy.graphQLFetch.and.returnValue(of({
         data: {
-          Teams: [
-            { id: 1 }
-          ]
+          user: {
+            teams: [
+              {
+                id: 1,
+                name: 'Team 1',
+              },
+              {
+                id: 2,
+                name: 'Team 2',
+              },
+              {
+                id: 3,
+                name: 'Team 3',
+              },
+            ]
+          }
         }
       }));
 
       service.getTeamInfo().subscribe();
-      expect(requestSpy.get).toHaveBeenCalledWith('api/teams.json');
+      expect(requestSpy.graphQLFetch).toHaveBeenCalled();
+    });
+
+    it('should set teamId as null when no teams retrieved from API', () => {
+      requestSpy.graphQLFetch.and.returnValue(of({
+        data: {
+          user: {
+            teams: []
+          }
+        }
+      }));
+      utilsSpy.has = jasmine.createSpy('has').and.returnValue(false);
+
+      service.getTeamInfo().subscribe();
+      expect(requestSpy.graphQLFetch).toHaveBeenCalled();
+      expect(storageSpy.setUser).toHaveBeenCalledWith({
+        teamId: null
+      });
+    });
+
+    it('should set teamId as null when wrong response format retrieved from API', () => {
+      requestSpy.graphQLFetch.and.returnValue(of({
+        data: {}
+      }));
+      utilsSpy.has = jasmine.createSpy('has').and.returnValue(false);
+
+      service.getTeamInfo().subscribe();
+      expect(requestSpy.graphQLFetch).toHaveBeenCalled();
+      expect(storageSpy.setUser).not.toHaveBeenCalled();
+    });
+
+    it('should just forward response when no "data" object available in the response', () => {
+      const SAMPLE_RESULT = {
+        nodata: {}
+      };
+      requestSpy.graphQLFetch.and.returnValue(of(SAMPLE_RESULT));
+
+      let result;
+      service.getTeamInfo().subscribe(res => result = res);
+      expect(requestSpy.graphQLFetch).toHaveBeenCalled();
+      expect(storageSpy.setUser).not.toHaveBeenCalled();
+      expect(result).toEqual(SAMPLE_RESULT);
     });
   });
 
