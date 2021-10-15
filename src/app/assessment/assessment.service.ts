@@ -116,7 +116,7 @@ export class AssessmentService {
   ) {}
 
   getAssessment(id, action, activityId, contextId, submissionId?) {
-    return this.request.graphQLWatch(
+    return this.request.graphQLQuery(
       `query getAssessment($assessmentId: Int!, $reviewer: Boolean!, $activityId: Int!, $contextId: Int!, $submissionId: Int) {
         assessment(id:$assessmentId, reviewer:$reviewer, activityId:$activityId) {
           name type description dueDate isTeam pulseCheck
