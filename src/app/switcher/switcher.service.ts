@@ -272,7 +272,7 @@ export class SwitcherService {
 
       await this.pusherService.initialise({ unsubscribe: true });
       // clear the cached data
-      this.utils.clearCache();
+      await this.utils.clearCache();
       if ((typeof environment.goMobile !== 'undefined' && environment.goMobile === false)
         || /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
           if (this.storage.get('directLinkRoute')) {
