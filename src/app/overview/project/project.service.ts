@@ -36,7 +36,7 @@ export class ProjectService {
   ) { }
 
   public getProject(): Observable<any> {
-    return this.request.graphQLWatch(`
+    return this.request.graphQLQuery(`
       {
         milestones{
           id

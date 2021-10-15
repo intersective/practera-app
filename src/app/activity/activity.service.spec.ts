@@ -28,7 +28,7 @@ describe('ActivityService', () => {
           useValue: jasmine.createSpyObj('RequestService', [
             'get',
             'post',
-            'graphQLWatch'
+            'graphQLQuery'
           ])
         },
         {
@@ -169,7 +169,7 @@ describe('ActivityService', () => {
         }
       ]
     };
-    requestSpy.graphQLWatch.and.returnValue(of(requestResponse));
+    requestSpy.graphQLQuery.and.returnValue(of(requestResponse));
     service.getActivity(1).subscribe(res => expect(res).toEqual(expected));
   });
 
