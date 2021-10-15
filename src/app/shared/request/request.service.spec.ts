@@ -40,6 +40,7 @@ import { Apollo } from 'apollo-angular';
 import { HttpLink } from 'apollo-angular-link-http';
 import { InMemoryCache } from 'apollo-cache-inmemory';
 import gql from 'graphql-tag';
+import { of, throwError } from 'rxjs';
 
 describe('QueryEncoder', () => {
   const encodedTest = 'https://test.com?test=true';
@@ -94,12 +95,21 @@ describe('RequestService', () => {
   let devModeServiceSpy: DevModeService;
   let storageSpy: BrowserStorageService;
   let httpLink: HttpLink;
+  let apolloSpy: Apollo;
 
   beforeEach(async () => {
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule],
       providers: [
-        Apollo,
+        {
+          provide: Apollo,
+          useValue: jasmine.createSpyObj('Apollo', [
+            'query',
+            'watchQuery',
+            'mutate',
+            'use',
+          ])
+        },
         HttpLink,
         RequestService,
         DevModeService,
@@ -127,6 +137,7 @@ describe('RequestService', () => {
     devModeServiceSpy = TestBed.inject(DevModeService);
     storageSpy = TestBed.inject(BrowserStorageService);
     httpLink = TestBed.inject(HttpLink);
+    apolloSpy = TestBed.inject(Apollo);
   });
 
   it('should be created', () => {
@@ -317,6 +328,29 @@ describe('RequestService', () => {
 
       service.apiResponseFormatError('testing error');
       expect(console.error).toHaveBeenCalledWith('API response format error.\ntesting error');
+    });
+  });
+
+  describe('graphQLFetch()', () => {
+    const SAMPLE_QUERY = `query user {
+      teams {
+        sample
+        format
+      }
+    }`;
+
+    it('trigger GraphQL API to fetch record once', () => {
+      apolloSpy.query = jasmine.createSpy('query').and.returnValue(of({ data: true }));
+      service.graphQLFetch(SAMPLE_QUERY).subscribe();
+      expect(apolloSpy.query).toHaveBeenCalled();
+    });
+
+    it('should handle throwed error at error occur', () => {
+      apolloSpy.query = jasmine.createSpy('query').and.returnValue(throwError('error'));
+      service['handleError'] = jasmine.createSpy('handleError');
+
+      service.graphQLFetch(SAMPLE_QUERY).subscribe();
+      expect(service['handleError']).toHaveBeenCalled();
     });
   });
 
