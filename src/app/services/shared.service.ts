@@ -82,45 +82,24 @@ export class SharedService {
     }
   }
 
-  /**
-   * @name getTeamInfo
-   * @description pull team information which belongs to current user
-   *              (determined by header data in the api request)
-   *
-   * @return  {Observable<any>} non-strict return value, we won't use
-   *                            this return value anywhere.
-   */
   getTeamInfo(): Observable<any> {
-    return this.request.graphQLFetch(
-      `query user {
-        user {
-          teams {
-              id
-              name
+    return this.request.get(api.get.teams)
+      .pipe(map(response => {
+        if (response.success && response.data) {
+          if (!this.utils.has(response.data, 'Teams') ||
+            !Array.isArray(response.data.Teams) ||
+            !this.utils.has(response.data.Teams[0], 'id')
+          ) {
+            return this.storage.setUser({
+              teamId: null
+            });
           }
-        }
-      }`,
-      {
-        noCache: true
-      }
-    ).pipe(map(response => {
-      if (response.data && response.data.user) {
-        const thisUser = response.data.user;
-
-        if (!this.utils.has(thisUser, 'teams') ||
-          !Array.isArray(thisUser.teams) ||
-          !this.utils.has(thisUser.teams[0], 'id')
-        ) {
           return this.storage.setUser({
-            teamId: null
+            teamId: response.data.Teams[0].id
           });
         }
-        return this.storage.setUser({
-          teamId: thisUser.teams[0].id
-        });
-      }
-      return response;
-    }));
+        return response;
+      }));
   }
 
   updateProfile(data: Profile) {
