@@ -700,12 +700,14 @@ export class AssessmentComponent extends RouterEnter {
       this.newRelic.actionText('Review feedback read.');
       this.continueBtnLoading = false;
     } catch (err) {
-      const toasted = await this.notificationService.alert({
+      this.continueBtnLoading = false;
+      // @TODO - Removed the popup for now until we implement proper way to handle API error
+      /**const toasted = await this.notificationService.alert({
         header: 'Marking feedback as read failed',
         message: err.msg || JSON.stringify(err)
       });
-      this.continueBtnLoading = false;
       throw new Error(err);
+      **/
     }
 
     // After marking feedback as read, popup review rating modal if
