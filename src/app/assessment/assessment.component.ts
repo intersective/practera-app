@@ -711,9 +711,9 @@ export class AssessmentComponent extends RouterEnter {
     }
 
     // After marking feedback as read, popup review rating modal if
-    // 1. review is successfully marked as read (from above)
+    // 1. review is successfully marked as read (from above) - removing just for now
     // 2. hasReviewRating (activation): program configuration is set to enable review rating
-    if (!result.success || !this.storage.getUser().hasReviewRating) {
+    if (!this.storage.getUser().hasReviewRating) {
       return;
     }
     this.continueBtnLoading = true;
