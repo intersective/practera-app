@@ -214,7 +214,7 @@ export class UtilsService {
 
   // need to clear all Subject for cache
   async clearCache(): Promise<any> {
-    if (this.apollo && typeof this.apollo.getClient == 'function') {
+    if (this.apollo && typeof this.apollo.getClient === 'function') {
       await this.apollo.getClient().clearStore();
     }
     return;
