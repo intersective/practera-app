@@ -262,23 +262,34 @@ describe('UtilsService', () => {
   //   });
   // });
 
-  // xdescribe('clearCache()', () => {
-  //   it('should trigger cache clearing through observables', () => {
-  //     service.activitySubjects = [
-  //       { next: jasmine.createSpy('next') },
-  //       { next: jasmine.createSpy('next') },
-  //       { next: jasmine.createSpy('next') },
-  //     ];
+  describe('clearCache()', () => {
+    // xit('should trigger cache clearing through observables', () => {
+    //   service.activitySubjects = [
+    //     { next: jasmine.createSpy('next') },
+    //     { next: jasmine.createSpy('next') },
+    //     { next: jasmine.createSpy('next') },
+    //   ];
 
-  //     spyOn(service.projectSubject, 'next');
-  //     service.clearCache();
+    //   spyOn(service.projectSubject, 'next');
+    //   service.clearCache();
 
-  //     expect(service.projectSubject.next).toHaveBeenCalledWith(null);
-  //     expect(service.activitySubjects[0].next).toHaveBeenCalledWith(null);
-  //     expect(service.activitySubjects[1].next).toHaveBeenCalledWith(null);
-  //     expect(service.activitySubjects[2].next).toHaveBeenCalledWith(null);
-  //   });
-  // });
+    //   expect(service.projectSubject.next).toHaveBeenCalledWith(null);
+    //   expect(service.activitySubjects[0].next).toHaveBeenCalledWith(null);
+    //   expect(service.activitySubjects[1].next).toHaveBeenCalledWith(null);
+    //   expect(service.activitySubjects[2].next).toHaveBeenCalledWith(null);
+    // });
+
+    it('should clear caches that covered in this function', fakeAsync(() => {
+      service['apollo'].getClient = jasmine.createSpy('getClient').and.returnValue({
+        clearStore: jasmine.createSpy('clearStore').and.returnValue(Promise.resolve(true))
+      });
+
+      service.clearCache();
+      flushMicrotasks();
+      expect(service['apollo'].getClient).toHaveBeenCalled();
+      expect(service['apollo'].getClient().clearStore).toHaveBeenCalled();
+    }));
+  });
 
   describe('urlQueryToObject()', () => {
     it('should turn url query into programmatically useable object', () => {
