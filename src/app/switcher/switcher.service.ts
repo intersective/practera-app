@@ -205,10 +205,7 @@ export class SwitcherService {
           email: apiData.email,
           role: apiData.role,
           image: apiData.image,
-          linkedinConnected: apiData.linkedinConnected,
-          linkedinUrl: apiData.linkedin_url,
           userHash: apiData.userhash,
-          maxAchievablePoints: this.utils.has(apiData, 'max_achievable_points') ? apiData.max_achievable_points : null
         });
       }
       return response;

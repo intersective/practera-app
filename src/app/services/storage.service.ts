@@ -12,8 +12,6 @@ export interface User {
   email?: string;
   role?: string;
   image?: string;
-  linkedinConnected?: boolean;
-  linkedinUrl?: string;
   programId?: number;
   programName?: string;
   programImage?: string;
@@ -22,7 +20,6 @@ export interface User {
   projectId?: number;
   teamId?: number;
   userHash?: string;
-  maxAchievablePoints?: number;
   colors?: Colors;
   activityCardImage?: string;
   hasReviewRating?: boolean;
