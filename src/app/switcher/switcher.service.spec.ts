@@ -48,7 +48,7 @@ describe('SwitcherService', () => {
           },
           {
             provide: RequestService,
-            useValue: jasmine.createSpyObj('RequestService', ['post', 'graphQLWatch', 'apiResponseFormatError'])
+            useValue: jasmine.createSpyObj('RequestService', ['post', 'graphQLWatch', 'apiResponseFormatError', 'graphQLFetch'])
           },
           {
             provide: NotificationService,
@@ -331,7 +331,7 @@ describe('SwitcherService', () => {
 
   describe('getMyInfo()', () => {
     it('should make API request to `api/users.json`', () => {
-      requestSpy.get.and.returnValue(of({
+      requestSpy.graphQLFetch.and.returnValue(of({
         data: {
           User: {
             name: 'name',
@@ -345,7 +345,7 @@ describe('SwitcherService', () => {
       }));
 
       service.getMyInfo().subscribe(res => {
-        expect(requestSpy.get).toHaveBeenCalledWith('api/users.json');
+        expect(requestSpy.graphQLFetch).toHaveBeenCalled();
       });
     });
   });
