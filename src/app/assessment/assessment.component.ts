@@ -200,7 +200,7 @@ export class AssessmentComponent extends RouterEnter {
     this.questionsForm = new FormGroup({});
     this.submitting = false;
     this.submitted = false;
-    this.savingButtonDisabled = true;
+    this.savingButtonDisabled = false;
     this.savingMessage = '';
     this.continueBtnLoading = false;
   }

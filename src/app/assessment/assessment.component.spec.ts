@@ -354,7 +354,7 @@ describe('AssessmentComponent', () => {
         expect(component.submission).toEqual(tmpSubmission);
         expect(component.doAssessment).toBe(false);
         expect(component.doReview).toBe(false);
-        expect(component.savingButtonDisabled).toBe(true);
+        expect(component.savingButtonDisabled).toBe(false);
       };
     });
 
@@ -381,7 +381,7 @@ describe('AssessmentComponent', () => {
         expect(component.review).toEqual(tmpReview);
         expect(component.doAssessment).toBe(false, 'not do assessment');
         expect(component.doReview).toBe(false, 'not do review');
-        expect(component.savingButtonDisabled).toBe(true);
+        expect(component.savingButtonDisabled).toBe(false);
         expect(component.feedbackReviewed).toBe(false);
       };
     });
