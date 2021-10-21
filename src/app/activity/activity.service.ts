@@ -58,7 +58,7 @@ export class ActivityService {
   ) {}
 
   public getActivity(id) {
-    return this.request.graphQLQuery(
+    return this.request.graphQLWatch(
       `query getActivity($id: Int!) {
         activity(id:$id){
           id name description tasks{

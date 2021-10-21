@@ -48,7 +48,7 @@ describe('SwitcherService', () => {
           },
           {
             provide: RequestService,
-            useValue: jasmine.createSpyObj('RequestService', ['post', 'graphQLQuery', 'apiResponseFormatError'])
+            useValue: jasmine.createSpyObj('RequestService', ['post', 'graphQLWatch', 'apiResponseFormatError'])
           },
           {
             provide: NotificationService,
@@ -190,7 +190,7 @@ describe('SwitcherService', () => {
   });
 
   it('getProgresses should return correct value', () => {
-    requestSpy.graphQLQuery.and.returnValue(of({
+    requestSpy.graphQLWatch.and.returnValue(of({
       data: {
         projects: [
           {
