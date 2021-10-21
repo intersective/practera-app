@@ -339,8 +339,6 @@ describe('SwitcherService', () => {
             email: 'email',
             role: 'role',
             image: 'image',
-            linkedinConnected: 'linkedinConnected',
-            linkedinUrl: 'linkedin_url',
             userHash: 'userhash',
           }
         }
