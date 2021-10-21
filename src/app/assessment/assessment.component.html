@@ -176,15 +176,18 @@
       style="width: 100%"
     ></ion-spinner>
     <ng-container *ngIf="!loadingAssessment">
-      <ion-button
+      <img *ngIf="savingButtonDisabled; else submitTmp" class="footer-action" src="/assets/loading.gif" alt="loading">
+      <ng-template #submitTmp>
+        <ion-button
         *ngIf="(doAssessment || doReview) && !submitting && !submitted"
         id="btn-submit"
-        [disabled]="questionsForm.invalid || savingButtonDisabled"
+        [disabled]="questionsForm.invalid"
         (click)="submit(false)"
         shape="round"
         fill="clear"
         class="footer-action"
         >SUBMIT</ion-button>
+      </ng-template>
 
       <ng-container *ngIf="footerText()">
         <span class="footer-text ion-float-left">{{ footerText() }}</span>
