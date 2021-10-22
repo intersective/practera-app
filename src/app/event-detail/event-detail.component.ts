@@ -130,6 +130,9 @@ export class EventDetailComponent implements OnInit {
         if (this.event.singleBooking) {
           this.storage.setBookedEventActivityIds(this.event.activityId);
         }
+        // update event remaining capacity
+        this.event.remainingCapacity -= 1;
+
         this.ctaIsActing = false;
       },
       error => {
@@ -153,6 +156,9 @@ export class EventDetailComponent implements OnInit {
       // for expired event
       if (this.event.isPast) {
         return 'Expired';
+      }
+      if (this.event.remainingCapacity === 0) {
+        return 'Fully Booked';
       }
       if (this.event.remainingCapacity > 0 && this.event.canBook) {
         return 'Book';
