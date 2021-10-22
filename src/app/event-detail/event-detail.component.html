@@ -51,14 +51,14 @@
     <ion-button
       class="btn-cta"
       (click)="confirmed($event)"
-      [disabled]="(event.isPast && !event.isBooked) || ctaIsActing"
+      [disabled]="(event.isPast && !event.isBooked) || event.remainingCapacity === 0 || ctaIsActing"
       shape="round"
-      [color]="event.isPast && !event.isBooked ? 'medium' : 'primary'"
+      [color]="(event.isPast && !event.isBooked) || event.remainingCapacity === 0 ? 'medium' : 'primary'"
       tabindex="0"
       role="button"
       (keydown)="confirmed($event)">
       {{ buttonText() }}
-      
+
     </ion-button>
   </div>
 
