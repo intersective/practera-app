@@ -72,6 +72,7 @@
           [subtitle2]="eventListService.timeDisplayed(event)"
           [eventVideoConference]="event.videoConference"
           [eventExpired]="event.isPast && !event.isBooked"
+          [eventFullyBooked]="event.remainingCapacity === 0"
           [active]="eventId === event.id"
           [lines]="i == eventObj.events.length - 1 ? 'none' : ''"
           (click)="goto(event)"

@@ -23,5 +23,6 @@ export class ListItemComponent {
   @Input() active: boolean;
   @Input() eventExpired: boolean;
   @Input() eventVideoConference: {};
+  @Input() eventFullyBooked: boolean;
 
 }
