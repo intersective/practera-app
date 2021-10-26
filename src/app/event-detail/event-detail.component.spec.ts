@@ -228,12 +228,12 @@ describe('EventDetailComponent', () => {
       });
     });
 
-    it(`should return false if the event capacity is full`, () => {
+    it(`should return 'Fully Booked' if the event capacity is full`, () => {
       tmpEvent.isBooked = false;
       tmpEvent.isPast = false;
       tmpEvent.remainingCapacity = 0;
       tmpEvent.canBook = true;
-      expected = false;
+      expected = 'Fully Booked';
     });
 
     describe(`should return 'Cancel Booking' if the event is booked and is not started`, () => {

@@ -58,4 +58,33 @@ describe('ChatViewComponent', () => {
     });
   });
 
+  describe('when testing goto()', () => {
+    it(`should call chat room onEnter`, fakeAsync(() => {
+      spyOn(component.chatRoom, 'onEnter');
+      const chatChannel = {
+        uuid: '35326928',
+        name: 'Team 1',
+        avatar: 'https://sandbox.practera.com/img/team-white.png',
+        pusherChannel: 'sdb746-93r7dc-5f44eb4f',
+        isAnnouncement: false,
+        isDirectMessage: false,
+        readonly: false,
+        roles: [
+          'participant',
+          'coordinator',
+          'admin'
+        ],
+        unreadMessageCount: 0,
+        lastMessage: null,
+        lastMessageCreated: null,
+        canEdit: false
+      };
+      component.goto(chatChannel);
+      expect(component.loadInfo).toBe(false);
+      expect(component.chatChannel).toEqual(chatChannel);
+      tick();
+      expect(component.chatRoom.onEnter).toHaveBeenCalled();
+    }));
+  });
+
 });

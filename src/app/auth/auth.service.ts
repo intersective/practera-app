@@ -322,7 +322,7 @@ export class AuthService {
    * @return {Observable<string>} UUID in string
    */
   getUUID(): Observable<string> {
-    return this.request.graphQLQuery(
+    return this.request.graphQLWatch(
       `query user {
         user {
           uuid

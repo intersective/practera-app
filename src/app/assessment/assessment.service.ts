@@ -116,7 +116,7 @@ export class AssessmentService {
   ) {}
 
   getAssessment(id, action, activityId, contextId, submissionId?) {
-    return this.request.graphQLQuery(
+    return this.request.graphQLWatch(
       `query getAssessment($assessmentId: Int!, $reviewer: Boolean!, $activityId: Int!, $contextId: Int!, $submissionId: Int) {
         assessment(id:$assessmentId, reviewer:$reviewer, activityId:$activityId) {
           name type description dueDate isTeam pulseCheck
@@ -421,7 +421,16 @@ export class AssessmentService {
     return this.request.post(api.post.todoitem, postData);
   }
 
-  popUpReviewRating(reviewId, redirect): Promise<void> {
+  /**
+   * trigger reviewer rating modal
+   *
+   * @param   {number}          reviewId  submission review record id
+   * @param   {string[]<void>}  redirect  array: routeUrl, boolean: disable
+   *                                      routing (stay at same component)
+   *
+   * @return  {Promise<void>}             deferred ionic modal
+   */
+  popUpReviewRating(reviewId, redirect: string[] | boolean): Promise<void> {
     return this.notification.modal(ReviewRatingComponent, {
       reviewId,
       redirect

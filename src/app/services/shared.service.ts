@@ -7,6 +7,8 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
 import { TopicService } from '../topic/topic.service';
+import { PusherService } from '@shared/pusher/pusher.service';
+import { map } from 'rxjs/operators';
 
 export interface Profile {
   contact_number: string;
@@ -18,6 +20,9 @@ const api = {
   post: {
     profile: 'api/v2/user/enrolment/edit.json',
   },
+  get: {
+    teams: 'api/teams.json',
+  }
 };
 
 @Injectable({
@@ -34,7 +39,8 @@ export class SharedService {
     private request: RequestService,
     private http: HttpClient,
     private newrelic: NewRelicService,
-    private topicService: TopicService
+    private readonly topicService: TopicService,
+    private readonly pusherService: PusherService,
   ) {}
 
   // call this function on every page refresh and after switch program
@@ -74,6 +80,47 @@ export class SharedService {
         }
       });
     }
+  }
+
+  /**
+   * @name getTeamInfo
+   * @description pull team information which belongs to current user
+   *              (determined by header data in the api request)
+   *
+   * @return  {Observable<any>} non-strict return value, we won't use
+   *                            this return value anywhere.
+   */
+  getTeamInfo(): Observable<any> {
+    return this.request.graphQLFetch(
+      `query user {
+        user {
+          teams {
+              id
+              name
+          }
+        }
+      }`,
+      {
+        noCache: true
+      }
+    ).pipe(map(response => {
+      if (response.data && response.data.user) {
+        const thisUser = response.data.user;
+
+        if (!this.utils.has(thisUser, 'teams') ||
+          !Array.isArray(thisUser.teams) ||
+          !this.utils.has(thisUser.teams[0], 'id')
+        ) {
+          return this.storage.setUser({
+            teamId: null
+          });
+        }
+        return this.storage.setUser({
+          teamId: thisUser.teams[0].id
+        });
+      }
+      return response;
+    }));
   }
 
   updateProfile(data: Profile) {
@@ -146,6 +193,13 @@ export class SharedService {
         }
       );
     }
+  }
+
+  /**
+  * Initialise web services like Pusher
+  */
+  async initWebServices() {
+    await this.pusherService.initialise();
   }
 
 }

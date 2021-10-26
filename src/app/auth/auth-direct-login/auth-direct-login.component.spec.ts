@@ -12,6 +12,7 @@ import { BrowserStorageService } from '@services/storage.service';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
 import { BrowserStorageServiceMock } from '@testing/mocked.service';
 import { TestUtils } from '@testing/utils';
+import { SharedService } from '@services/shared.service';
 
 
 describe('AuthDirectLoginComponent', () => {
@@ -24,6 +25,7 @@ describe('AuthDirectLoginComponent', () => {
   let notificationSpy: jasmine.SpyObj<NotificationService>;
   let switcherSpy: jasmine.SpyObj<SwitcherService>;
   let storageSpy: jasmine.SpyObj<BrowserStorageService>;
+  let sharedSpy: jasmine.SpyObj<SharedService>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
@@ -39,6 +41,10 @@ describe('AuthDirectLoginComponent', () => {
         {
           provide: BrowserStorageService,
           useClass: BrowserStorageServiceMock
+        },
+        {
+          provide: SharedService,
+          useValue: jasmine.createSpyObj('SharedService', ['onPageLoad', 'initWebServices']),
         },
         {
           provide: AuthService,
@@ -83,6 +89,7 @@ describe('AuthDirectLoginComponent', () => {
     notificationSpy = TestBed.inject(NotificationService) as jasmine.SpyObj<NotificationService>;
     switcherSpy = TestBed.inject(SwitcherService) as jasmine.SpyObj<SwitcherService>;
     storageSpy = TestBed.inject(BrowserStorageService) as jasmine.SpyObj<BrowserStorageService>;
+    sharedSpy = TestBed.inject(SharedService) as jasmine.SpyObj<SharedService>;
   });
 
   beforeEach(() => {
@@ -165,6 +172,7 @@ describe('AuthDirectLoginComponent', () => {
           expect(storageSpy.setReferrer.calls.count()).toBe(1);
         }
 
+        expect(sharedSpy.initWebServices).toHaveBeenCalled();
         expect(routerSpy.navigate.calls.first().args[0]).toEqual(redirect);
       }));
 

@@ -200,7 +200,7 @@ export class AssessmentComponent extends RouterEnter {
     this.questionsForm = new FormGroup({});
     this.submitting = false;
     this.submitted = false;
-    this.savingButtonDisabled = true;
+    this.savingButtonDisabled = false;
     this.savingMessage = '';
     this.continueBtnLoading = false;
   }
@@ -700,18 +700,20 @@ export class AssessmentComponent extends RouterEnter {
       this.newRelic.actionText('Review feedback read.');
       this.continueBtnLoading = false;
     } catch (err) {
-      const toasted = await this.notificationService.alert({
+      this.continueBtnLoading = false;
+      // @TODO - Removed the popup for now until we implement proper way to handle API error
+      /**const toasted = await this.notificationService.alert({
         header: 'Marking feedback as read failed',
         message: err.msg || JSON.stringify(err)
       });
-      this.continueBtnLoading = false;
       throw new Error(err);
+      **/
     }
 
     // After marking feedback as read, popup review rating modal if
-    // 1. review is successfully marked as read (from above)
+    // 1. review is successfully marked as read (from above) - removing because above @TODO reason
     // 2. hasReviewRating (activation): program configuration is set to enable review rating
-    if (!result.success || !this.storage.getUser().hasReviewRating) {
+    if (!this.storage.getUser().hasReviewRating) {
       return;
     }
     this.continueBtnLoading = true;

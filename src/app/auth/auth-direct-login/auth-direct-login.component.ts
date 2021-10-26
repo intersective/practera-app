@@ -6,6 +6,7 @@ import { SwitcherService } from '../../switcher/switcher.service';
 import { UtilsService } from '@services/utils.service';
 import { BrowserStorageService } from '@services/storage.service';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
+import { SharedService } from '@services/shared.service';
 
 @Component({
   selector: 'app-auth-direct-login',
@@ -21,7 +22,8 @@ export class AuthDirectLoginComponent implements OnInit {
     private switcherService: SwitcherService,
     private storage: BrowserStorageService,
     private ngZone: NgZone,
-    private newRelic: NewRelicService
+    private newRelic: NewRelicService,
+    private sharedService: SharedService
   ) {}
 
   async ngOnInit() {
@@ -71,7 +73,7 @@ export class AuthDirectLoginComponent implements OnInit {
     const timelineId = +this.route.snapshot.paramMap.get('tl');
 
     // clear the cached data
-    this.utils.clearCache();
+    await this.utils.clearCache();
 
     if (!redirect || !timelineId) {
       // if there's no redirection or timeline id
@@ -185,6 +187,13 @@ export class AuthDirectLoginComponent implements OnInit {
     if (save) {
       return this.storage.set('directLinkRoute', route);
     }
+    /**
+    * Initialise Pusher.
+    *
+    * When user use deep link to login to app. user not going through switcher service.
+    * So pusher initialise not calling after user login using using deep link.
+    */
+    this.sharedService.initWebServices();
     return this.navigate(route);
   }
 

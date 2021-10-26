@@ -17,7 +17,6 @@ import { environment } from '@environments/environment';
  */
 const api = {
   me: 'api/users.json',
-  teams: 'api/teams.json',
   jwt: 'api/v2/users/jwt/refresh.json'
 };
 
@@ -100,7 +99,7 @@ export class SwitcherService {
    * @param projectIds Project ids
    */
   getProgresses(projectIds: number[]) {
-    return this.request.graphQLQuery(
+    return this.request.graphQLWatch(
       `query getProjectList($ids: [Int]!) {
         projects(ids: $ids) {
           id
@@ -144,6 +143,9 @@ export class SwitcherService {
   }
 
   switchProgram(programObj: ProgramObj): Observable<any> {
+    // initialise Pusher
+    this.sharedService.initWebServices();
+
     const colors = this.extractColors(programObj);
 
     let cardBackgroundImage = '';
@@ -179,30 +181,11 @@ export class SwitcherService {
     this.sharedService.onPageLoad();
     return forkJoin([
       this.getNewJwt(),
-      this.getTeamInfo(),
+      this.sharedService.getTeamInfo(),
       this.getMyInfo(),
       this.getReviews(),
       this.getEvents()
     ]);
-  }
-
-  getTeamInfo(): Observable<any> {
-    return this.request.get(api.teams)
-      .pipe(map(response => {
-        if (response.success && response.data) {
-          if (!this.utils.has(response.data, 'Teams') ||
-              !Array.isArray(response.data.Teams) ||
-              !this.utils.has(response.data.Teams[0], 'id')
-             ) {
-            return this.storage.setUser({
-              teamId: null
-            });
-          }
-          return this.storage.setUser({
-            teamId: response.data.Teams[0].id
-          });
-        }
-      }));
   }
 
   /**
@@ -289,7 +272,7 @@ export class SwitcherService {
 
       await this.pusherService.initialise({ unsubscribe: true });
       // clear the cached data
-      this.utils.clearCache();
+      await this.utils.clearCache();
       if ((typeof environment.goMobile !== 'undefined' && environment.goMobile === false)
         || /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
           if (this.storage.get('directLinkRoute')) {
