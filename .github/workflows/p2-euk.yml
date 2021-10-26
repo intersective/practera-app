@@ -1,7 +1,7 @@
 ################################################
 #  GITHUB ACTION WORKFLOW NAME
 ################################################
-name: Deploy to p2-usa live environment
+name: Deploy to p2-euk live environment
 
 
 ################################################
@@ -21,15 +21,14 @@ on:
       REASON:
         description: 'Reason for deployment'     
         required: true
-        default: ''
-    
+        default: ''  
 
 ################################################
 #  GITHUB ACTION JOBS
 ################################################
 jobs:
-  deploy-p2-usa-live:
-    name: deploy-p2-usa-live
+  deploy-p2-euk-live:
+    name: deploy-p2-euk-live
     runs-on: ubuntu-latest
 
 
@@ -37,20 +36,20 @@ jobs:
 #  GITHUB ACTIONS GLOBAL ENV VARIABLES  
 ################################################
     env:
-      REGION : us-east-2
+      REGION : eu-west-2
       ENV : live # Valid values are dev,test,live only
-      STACK_NAME: p2-usa # Valid values are au,us,uk,p2,lf,nu,p1-sandbox,p1-stage,p2-sandbox,shared only
+      STACK_NAME: p2-euk # Valid values are au,us,uk,p2,lf,nu,p1-sandbox,p1-stage,p2-sandbox,shared only
       ROOTSTACK: app-v2
       CFNS3BucketName: devops-cfn-templates
       PRIVATES3BucketName: devops-shared-private
-      PUBLICZONENAME: usa.practera.com
-      APPPUBLICZONENAME: usa.practera.app
+      PUBLICZONENAME: euk.practera.com
+      APPPUBLICZONENAME: euk.practera.app
       BUILD_CONFIG: custom
       STATUSREPORTS3Bucket: deployment-status.practera.com
       STATUS: DEPLOYED
       REQUESTOR: ${{ github.event.inputs.REQUESTOR }}
       REASON: ${{ github.event.inputs.REASON }}
-      ENDPOINT: app.usa.practera.com
+      ENDPOINT: app.euk.practera.com
       BRANCH_TAG_NAME: ${{ github.event.inputs.BRANCH_TAG_NAME }}
 
 
@@ -141,13 +140,13 @@ jobs:
           echo "::add-mask::$SLACK_WEBHOOK_URL"
           echo "::set-output name=SLACK_WEBHOOK_URL::$SLACK_WEBHOOK_URL"
     
-          echo "Enable P2 USA ACCOUNT CLI Login"
-          P2_USA_AWS_ACCESS_KEY_ID=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-DEPLOY-$ENV| jq --raw-output '.SecretString' | jq -r .P2_USA_AWS_ACCESS_KEY_ID)
-          P2_USA_AWS_SECRET_ACCESS_KEY=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-DEPLOY-$ENV| jq --raw-output '.SecretString' | jq -r .P2_USA_AWS_SECRET_ACCESS_KEY)
-          echo "::add-mask::$P2_USA_AWS_ACCESS_KEY_ID"
-          echo "::add-mask::$P2_USA_AWS_SECRET_ACCESS_KEY"
-          echo "::set-output name=P2_USA_AWS_ACCESS_KEY_ID::$P2_USA_AWS_ACCESS_KEY_ID"
-          echo "::set-output name=P2_USA_AWS_SECRET_ACCESS_KEY::$P2_USA_AWS_SECRET_ACCESS_KEY"
+          echo "Enable P2 EUK ACCOUNT CLI Login"
+          P2_EUK_AWS_ACCESS_KEY_ID=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-DEPLOY-$ENV| jq --raw-output '.SecretString' | jq -r .P2_EUK_AWS_ACCESS_KEY_ID)
+          P2_EUK_AWS_SECRET_ACCESS_KEY=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-DEPLOY-$ENV| jq --raw-output '.SecretString' | jq -r .P2_EUK_AWS_SECRET_ACCESS_KEY)
+          echo "::add-mask::$P2_EUK_AWS_ACCESS_KEY_ID"
+          echo "::add-mask::$P2_EUK_AWS_SECRET_ACCESS_KEY"
+          echo "::set-output name=P2_EUK_AWS_ACCESS_KEY_ID::$P2_EUK_AWS_ACCESS_KEY_ID"
+          echo "::set-output name=P2_EUK_AWS_SECRET_ACCESS_KEY::$P2_EUK_AWS_SECRET_ACCESS_KEY"
         
         env:  #TODO: Update once manually to new stack accordingly
           STACK_NAME: shared # Valid values are au,us,uk,p2,lf,nu,p1-sandbox,p1-stage,p2-sandbox,shared only
@@ -155,17 +154,17 @@ jobs:
 
 
 ##########################################################
-#  AWS P2 USA ACCOUNT STEPS BELOW
+#  AWS P2 EUK ACCOUNT STEPS BELOW
 ##########################################################
       - name: Configure AWS credentials from $STACK_NAME account in $REGION region
         uses: aws-actions/configure-aws-credentials@v1
         with:
-          aws-access-key-id: ${{ steps.DeploySecret.outputs.P2_USA_AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ steps.DeploySecret.outputs.P2_USA_AWS_SECRET_ACCESS_KEY }}
+          aws-access-key-id: ${{ steps.DeploySecret.outputs.P2_EUK_AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ steps.DeploySecret.outputs.P2_EUK_AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{env.REGION}}
         env:
-          AWS_ACCESS_KEY_ID: ${{ steps.DeploySecret.outputs.P2_USA_AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ steps.DeploySecret.outputs.P2_USA_AWS_SECRET_ACCESS_KEY }}
+          AWS_ACCESS_KEY_ID: ${{ steps.DeploySecret.outputs.P2_EUK_AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ steps.DeploySecret.outputs.P2_EUK_AWS_SECRET_ACCESS_KEY }}
 
 
 ###############################################################
@@ -200,7 +199,7 @@ jobs:
           CUSTOM_ENVIRONMENT: ${{ env.ENV }}
           CUSTOM_CHAT_GRAPH_QL: https://chat-api.${{ env.PUBLICZONENAME }}
           CUSTOM_GLOBAL_LOGIN_URL: https://login.practera.com 
-          CUSTOM_COUNTRY: US #TODO CHECK
+          CUSTOM_COUNTRY: AUS #TODO CHECK
           CUSTOMPLAIN_SKIPGLOBALLOGINFLAG: false
           CUSTOM_PATH_ANY: /appv2/live/any/
           CUSTOM_AWS_REGION: ${{ env.REGION }}
@@ -234,7 +233,7 @@ jobs:
       - name: Cloudformation Export variables
         run: |
           cat >> .env <<EOF
-          CDNSharedACMCertificateArn=$(aws cloudformation list-exports --query "Exports[?Name==\`$STACK_NAME-USEAST1ACMCertificateArn-$ENV\`].Value" --no-paginate --output text)
+          CDNSharedACMCertificateArn=$(aws cloudformation list-exports --query "Exports[?Name==\`$STACK_NAME-CDNSharedACMCertificateArn-$ENV\`].Value" --no-paginate --output text)
           ChatBotSNSTopicARN=$(aws cloudformation list-exports --query "Exports[?Name==\`$STACK_NAME-ChatBotSNSTopicARN-$ENV\`].Value" --no-paginate --output text)
           
           
@@ -292,7 +291,7 @@ jobs:
           author_name: ${{ env.BRANCH_TAG_NAME }} - ${{ env.ROOTSTACK }} deployed to ${{ env.ENV }} environemnt in ${{ env.STACK_NAME }} AWS account
           mention: 'here'
           if_mention: failure,cancelled
-          job_name: deploy-p2-usa-live # Match the name above.
+          job_name: deploy-p2-euk-live # Match the name above.
           fields: repo,commit,eventName,ref,workflow,message,author,job,took
           custom_payload: |
             {

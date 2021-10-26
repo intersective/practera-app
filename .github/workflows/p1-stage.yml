@@ -36,6 +36,8 @@ jobs:
       BUILD_CONFIG: custom
       STATUSREPORTS3Bucket: deployment-status.practera.com
       STATUS: DEPLOYED
+      REQUESTOR: ${{ github.event.inputs.REQUESTOR }}
+      REASON: ${{ github.event.inputs.REASON }}
       ENDPOINT: app.p1-stage.practera.com
       BRANCH_TAG_NAME: trunk
 
@@ -189,7 +191,7 @@ jobs:
           CUSTOM_PATH_ANY: /appv2/test/any/
           CUSTOM_AWS_REGION: ${{ env.REGION }}
           CUSTOM_JS_ENVIRONEMENT: dev #TODO CHECK
-          CUSTOM_NEWRELIC: true
+          CUSTOM_NEWRELIC: false
 
 
 ###############################################################
