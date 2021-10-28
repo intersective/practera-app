@@ -13,6 +13,17 @@
     -webkit-box-orient: vertical;
     margin: 0;
   }
+  &.event-item {
+    p {
+      white-space: normal;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      display: -webkit-box;
+      -webkit-line-clamp: 1;
+      -webkit-box-orient: vertical;
+      margin: 0;
+    }
+  }
 }
 .skeleton-icon {
   width: 30px;
@@ -34,7 +45,6 @@
 }
 .expired-batch {
   font-size: 12px;
-  position: absolute;
   top: 15%;
   right: 0;
   color: var(--ion-color-medium);
@@ -42,10 +52,11 @@
   border: 1px var(--ion-color-medium);
   border-style: solid;
   padding: 1px 10px 1px 10px;
+  width: max-content;
+  margin-top: -25px;
 }
 .video-conference-batch {
   font-size: 12px;
-  position: absolute;
   top: 15%;
   right: 15px;
   color: var(--ion-color-primary);
@@ -53,6 +64,8 @@
   border: 1px var(--ion-color-primary);
   border-style: solid;
   padding: 1px 10px 1px 10px;
+  width: max-content;
+  margin-top: -25px;
 }
 // use for expired event title @extend .gray-2 not working because this is a component scss file.
 .color-gray-2 {
