@@ -65,6 +65,7 @@
         <app-list-item
           *ngFor="let event of eventObj.events; let i = index"
           leadingIcon="calendar-outline"
+          [isEventItem]="true"
           [leadingIconColor]="eventListService.isNotActionable(event) ? 'medium' : 'primary'"
           [title]="event.name"
           [titleColor]="eventListService.isNotActionable(event) ? 'gray-2' : ''"
@@ -76,6 +77,7 @@
           [active]="eventId === event.id"
           [lines]="i == eventObj.events.length - 1 ? 'none' : ''"
           (click)="goto(event)"
+          (keyup.enter)="goto(event)"
         ></app-list-item>
       </ion-list>
     </ion-card>

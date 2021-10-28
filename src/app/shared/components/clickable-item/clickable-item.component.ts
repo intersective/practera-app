@@ -13,5 +13,6 @@ export class ClickableItemComponent {
   @Input() isCustomizedCard?;
   @Input() isChatCard?;
   @Input() isTodoCard?;
+  @Input() isEventItem: boolean;
   constructor() {}
 }
