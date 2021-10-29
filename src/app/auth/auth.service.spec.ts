@@ -193,17 +193,6 @@ describe('AuthService', () => {
     expect(requestSpy.post.calls.count()).toBe(1);
   });
 
-  describe('when testing linkedinAuthenticated()', () => {
-    it('should return true', () => {
-      storageSpy.getUser.and.returnValue({ linkedinConnected: true });
-      expect(service.linkedinAuthenticated()).toBe(true);
-    });
-    it('should return false', () => {
-      storageSpy.getUser.and.returnValue({});
-      expect(service.linkedinAuthenticated()).toBe(false);
-    });
-  });
-
   it('when testing connectToLinkedIn()', () => {
     storageSpy.getUser.and.returnValue({ apikey: 'abc', timelineId: 1 });
     storageSpy.get.and.returnValue('aaa');
