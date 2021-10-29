@@ -48,7 +48,7 @@ describe('SwitcherService', () => {
           },
           {
             provide: RequestService,
-            useValue: jasmine.createSpyObj('RequestService', ['post', 'graphQLWatch', 'apiResponseFormatError'])
+            useValue: jasmine.createSpyObj('RequestService', ['post', 'graphQLWatch', 'apiResponseFormatError', 'graphQLFetch'])
           },
           {
             provide: NotificationService,
@@ -330,34 +330,68 @@ describe('SwitcherService', () => {
   });
 
   describe('getMyInfo()', () => {
-    it('should make API request to `api/users.json`', () => {
-      requestSpy.get.and.returnValue(of({
+    it('should make API request to core grahpql to get user data', () => {
+      requestSpy.graphQLFetch.and.returnValue(of({
         data: {
-          User: {
+          user: {
             name: 'name',
             contactNumber: 'contact_number',
             email: 'email',
             role: 'role',
             image: 'image',
-            linkedinConnected: 'linkedinConnected',
-            linkedinUrl: 'linkedin_url',
             userHash: 'userhash',
           }
         }
       }));
 
       service.getMyInfo().subscribe(res => {
-        expect(requestSpy.get).toHaveBeenCalledWith('api/users.json');
+        expect(requestSpy.graphQLFetch).toHaveBeenCalled();
+        expect(storageSpy.setUser).toHaveBeenCalledWith({
+          name: 'name',
+          contactNumber: 'contact_number',
+          email: 'email',
+          role: 'role',
+          image: 'image',
+          userHash: 'userhash',
+        });
+      });
+    });
+
+    it('should just forward response when no "data" object available in the response', () => {
+      const SAMPLE_RESPONSE = {
+        nodata: {}
+      };
+      requestSpy.graphQLFetch.and.returnValue(of(SAMPLE_RESPONSE));
+
+      service.getMyInfo().subscribe(res => {
+        expect(requestSpy.graphQLFetch).toHaveBeenCalled();
+        expect(storageSpy.setUser).not.toHaveBeenCalled();
+        expect(res).toEqual(SAMPLE_RESPONSE);
+      });
+    });
+
+    it('should just forward response when no "user" object available in the response data', () => {
+      const SAMPLE_RESPONSE = {
+        data: {}
+      };
+      requestSpy.graphQLFetch.and.returnValue(of(SAMPLE_RESPONSE));
+
+      service.getMyInfo().subscribe(res => {
+        expect(requestSpy.graphQLFetch).toHaveBeenCalled();
+        expect(storageSpy.setUser).not.toHaveBeenCalled();
+        expect(res).toEqual(SAMPLE_RESPONSE);
       });
     });
   });
 
   describe('getReviews()', () => {
     it('should get events from API and store in browser cache', () => {
-      spyOn(reviewSpy, 'getReviews').and.returnValue(new Observable());
+      spyOn(reviewSpy, 'getReviews').and.returnValue(of([{}, {}]));
       service.getReviews().subscribe(() => {
         expect(reviewSpy.getReviews).toHaveBeenCalled();
-        expect(storageSpy.setUser).toHaveBeenCalled();
+        expect(storageSpy.setUser).toHaveBeenCalledWith({
+          hasReviews: true
+        });
       });
     });
   });
