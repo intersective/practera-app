@@ -114,17 +114,4 @@ export class ReviewRatingComponent implements OnInit {
     this.ratingData.tags = this.utils.addOrRemove(this.ratingData.tags, tag);
   }
 
-  /**
-   * In review rating slider we have values from 0 to 1.
-   * Sometimes slider (ion-range) component return values like,
-   * - 0.7000000000000001
-   * - 0.30000000000000004
-   * but we need to send to API number bitween 0 and 1.
-   * - 0.2, 0.7, 0.4 etc.
-   * This method will round up reating number every time it change.
-   */
-  roundUpRating() {
-    this.ratingData.rating = Math.round(this.ratingData.rating * 10) / 10;
-  }
-
 }
