@@ -747,7 +747,7 @@ describe('AssessmentComponent', () => {
   });
 
   describe('on onEnter(), team assessment should not allow user stay in the same page', () => {
-    it('should redirect to home, when user is get navigated to same URL', fakeAsync(async () => {
+    beforeEach(() => {
       const mocks = {
         ...mockAssessment, ...{
           isForTeam: true
@@ -761,7 +761,9 @@ describe('AssessmentComponent', () => {
         review: null
       }));
       component['_navigate'] = jasmine.createSpy('_navigate');
+    });
 
+    it('should redirect to home, when user is get navigated to same URL', fakeAsync(async () => {
       // manually assign a value to a read-only property
       Object.defineProperty(routerSpy, 'url', {
         value: '/app/activity/2'
@@ -770,6 +772,37 @@ describe('AssessmentComponent', () => {
       component.onEnter();
       flushMicrotasks();
 
+      await notificationSpy.alert.calls.first().args[0].buttons[0].handler();
+      flushMicrotasks();
+
+      expect(component['_navigate']).toHaveBeenCalledWith(['app', 'home']);
+    }));
+
+    it('should redirect to targeted URL', fakeAsync(async () => {
+      // manually assign a value to a read-only property
+      Object.defineProperty(routerSpy, 'url', {
+        value: '/not-a-same-url'
+      });
+
+      component.onEnter();
+      flushMicrotasks();
+
+      await notificationSpy.alert.calls.first().args[0].buttons[0].handler();
+      flushMicrotasks();
+
+      expect(component['_navigate']).toHaveBeenCalledWith(['app', 'activity', 2]);
+    }));
+
+    it('should redirect to home, when acitvityId is N/A', fakeAsync(async () => {
+      // manually assign a value to a read-only property
+      Object.defineProperty(routerSpy, 'url', {
+        value: '/not-a-same-url'
+      });
+
+      component.onEnter();
+      flushMicrotasks();
+
+      component.activityId = null;
       await notificationSpy.alert.calls.first().args[0].buttons[0].handler();
       flushMicrotasks();
 
