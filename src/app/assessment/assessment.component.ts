@@ -243,7 +243,7 @@ export class AssessmentComponent extends RouterEnter {
     // get assessment structure and populate the question form
     this.assessmentService.getAssessment(this.id, this.action, this.activityId, this.contextId, this.submissionId)
       .subscribe(
-        result => {
+        async result => {
           this.assessment = result.assessment;
           this.newRelic.setPageViewName(`Assessment: ${this.assessment.name} ID: ${this.id}`);
           this.populateQuestionsForm();
@@ -257,18 +257,25 @@ export class AssessmentComponent extends RouterEnter {
                 {
                   text: 'OK',
                   role: 'cancel',
-                  handler: () => {
+                  handler: async () => {
                     if (this.activityId) {
-                      this._navigate(['app', 'activity', this.activityId ]);
+                      let direction = ['app', 'activity', this.activityId];
+
+                      // Due to onSameUrlNavigation: "ignore", unintended same URL navigation is now default to "/app/home".
+                      if (this.router.url === `/${direction.join('/')}`) {
+                        direction = ['app', 'home'];
+                      }
+
+                      await this._navigate(direction);
                     } else {
-                      this._navigate(['app', 'home']);
+                      await this._navigate(['app', 'home']);
                     }
                   }
                 }
               ]
             });
           }
-          this._handleReviewData(result.review);
+          await this._handleReviewData(result.review);
         },
         error => {
           this.newRelic.noticeError(error);

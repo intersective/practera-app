@@ -2,11 +2,12 @@
   [active]="active"
   [lines]="lines"
   [isCustomizedCard]="true"
+  [isEventItem]="isEventItem"
   aria-label="new notification item">
 
   <ion-icon [name]="leadingIcon" slot="start" [color]="leadingIconColor || 'primary'" class="leading-icon" [ngClass]="{'pulsing': leadingIconPulsing}"></ion-icon>
 
-  <div class="item-content ion-padding-vertical" [ngClass]="{'content-expired': eventExpired}">
+  <div class="item-content ion-padding-vertical" [ngClass]="{'event-item': isEventItem, 'content-expired': eventExpired}">
     <p class="item-title subtitle-3" [ngClass]="'color-' + titleColor">{{ title }}</p>
     <p *ngIf="subtitle1" class="item-subtitle-1 caption gray-2" [ngClass]="'color-' + subtitle1Color">{{ subtitle1 }}</p>
     <p *ngIf="subtitle2" class="item-subtitle-2 caption gray-2">{{ subtitle2 }}</p>
@@ -16,11 +17,13 @@
 
   <ion-icon *ngIf="endingIcon" [name]="endingIcon" slot="end" [color]="endingIconColor || 'primary'"></ion-icon>
 
-  <div *ngIf="eventExpired" class="expired-batch gray-2">Expired</div>
-  <!-- Show fully booked label if event is not expired -->
-  <div *ngIf="eventFullyBooked && !eventExpired" class="expired-batch gray-2">Fully Booked</div>
-  <!-- Show video conference label if event is not expired and not fully booked -->
-  <div *ngIf="eventVideoConference && !eventExpired && !eventFullyBooked" class="video-conference-batch ion-text-capitalize">{{ eventVideoConference.provider }}</div>
+  <div *ngIf="isEventItem">
+    <div *ngIf="eventExpired" class="expired-batch gray-2">Expired</div>
+    <!-- Show fully booked label if event is not expired -->
+    <div *ngIf="eventFullyBooked && !eventExpired" class="expired-batch gray-2">Fully Booked</div>
+    <!-- Show video conference label if event is not expired and not fully booked -->
+    <div *ngIf="eventVideoConference && !eventExpired && !eventFullyBooked" class="video-conference-batch ion-text-capitalize">{{ eventVideoConference.provider }}</div>
+  </div>
 
 </clickable-item>
 
