@@ -1,7 +1,7 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { ReactiveFormsModule, FormGroup, FormControl } from '@angular/forms';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { async, ComponentFixture, TestBed, fakeAsync, tick, inject } from '@angular/core/testing';
+import { async, ComponentFixture, TestBed, fakeAsync, tick, inject, flushMicrotasks } from '@angular/core/testing';
 import { QuestionsModule } from '@app/questions/questions.module';
 
 import { Router, ActivatedRoute, convertToParamMap } from '@angular/router';
@@ -744,5 +744,36 @@ describe('AssessmentComponent', () => {
   it('showQuestionInfo() should popup info modal', () => {
     component.showQuestionInfo('abc');
     expect(notificationSpy.popUp.calls.count()).toBe(1);
+  });
+
+  describe('on onEnter(), team assessment should not allow user stay in the same page', () => {
+    it('should redirect to home, when user is get navigated to same URL', fakeAsync(async () => {
+      const mocks = {
+        ...mockAssessment, ...{
+          isForTeam: true
+        }
+      };
+      storageSpy.getUser.and.returnValue(false);
+      component.doAssessment = true;
+      assessmentSpy.getAssessment.and.returnValue(of({
+        assessment: mocks,
+        submission: null,
+        review: null
+      }));
+      component['_navigate'] = jasmine.createSpy('_navigate');
+
+      // manually assign a value to a read-only property
+      Object.defineProperty(routerSpy, 'url', {
+        value: '/app/activity/2'
+      });
+
+      component.onEnter();
+      flushMicrotasks();
+
+      await notificationSpy.alert.calls.first().args[0].buttons[0].handler();
+      flushMicrotasks();
+
+      expect(component['_navigate']).toHaveBeenCalledWith(['app', 'home']);
+    }));
   });
 });

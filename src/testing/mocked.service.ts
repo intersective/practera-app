@@ -50,9 +50,9 @@ export class MockNgZone extends SpyObject {
 }
 
 export class MockRouter extends SpyObject {
-  navigate;
-  events;
-  url;
+  navigate: any;
+  events: Observable<any>;
+  url: string;
 
   constructor() {
     super(Router);
@@ -68,7 +68,7 @@ export class MockRouter extends SpyObject {
       TEST_EVENT.url,
       TEST_EVENT.urlAfterRedirects,
     ));
-    this.url = 'abc';
+    this.url = '/abc';
   }
 }
 
