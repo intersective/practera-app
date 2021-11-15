@@ -732,7 +732,7 @@ export class AssessmentComponent extends RouterEnter {
     } catch (err) {
       const msg = 'Can not get review rating information';
       this.newRelic.noticeError(msg);
-      const toasted = await this.notificationService.alert({
+      await this.notificationService.alert({
         header: msg,
         message: err.msg || JSON.stringify(err)
       });
