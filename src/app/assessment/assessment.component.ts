@@ -258,9 +258,7 @@ export class AssessmentComponent extends RouterEnter {
                   text: 'OK',
                   role: 'cancel',
                   handler: async () => {
-                    console.log('asdasdasd??');
                     if (this.activityId) {
-
                       let direction = ['app', 'activity', this.activityId];
 
                       // Due to onSameUrlNavigation: "ignore", unintended same URL navigation is now default to "/app/home".
