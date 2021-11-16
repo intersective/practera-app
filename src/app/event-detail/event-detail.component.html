@@ -17,11 +17,7 @@
   <ion-list lines="full">
     <ion-item>
       <ion-icon class="leading-icon gray-2" name="calendar-outline"></ion-icon>
-      <div id="date" class="subtitle-1">{{ utils.utcToLocal(event.startTime, 'date') }}</div>
-    </ion-item>
-    <ion-item>
-      <ion-icon class="leading-icon gray-2" name="time-outline"></ion-icon>
-      <div id="time" class="subtitle-1">{{ utils.utcToLocal(event.startTime, 'time') }} - {{ utils.utcToLocal(event.endTime, 'time') }}</div>
+      <div id="date" class="subtitle-1">{{ getEventDate() }}</div>
     </ion-item>
     <ng-container *ngIf="event.videoConference">
       <ion-item *ngIf="!event.isBooked" class="zoom-meeting">

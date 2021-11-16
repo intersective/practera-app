@@ -99,7 +99,8 @@ describe('EventListComponent', () => {
       singleBooking: true,
       canBook: true,
       isPast: false,
-      assessment: null
+      assessment: null,
+      allDay: false
     };
   });
   const mockActivities = [1, 2, 3].map(i => {

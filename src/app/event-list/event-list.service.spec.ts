@@ -84,6 +84,7 @@ describe('EventListService', () => {
             assessment: null,
             video_conference: null,
             type: null,
+            all_day: false
           };
         })
       };
@@ -106,6 +107,7 @@ describe('EventListService', () => {
           assessment: null,
           videoConference: null,
           type: null,
+          allDay: event.all_day
         };
       });
       expected = [formatted[2], formatted[1], formatted[3], formatted[4], formatted[0], formatted[5]];

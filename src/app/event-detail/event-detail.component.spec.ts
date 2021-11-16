@@ -138,7 +138,8 @@ describe('EventDetailComponent', () => {
     singleBooking: true,
     canBook: true,
     isPast: true,
-    assessment: null
+    assessment: null,
+    allDay: false
   };
 
   it('should create', () => {
@@ -164,8 +165,8 @@ describe('EventDetailComponent', () => {
       } else {
         expect(page.expired).toBeFalsy();
       }
-      expect(page.date.innerHTML).toEqual(utils.utcToLocal(tmpEvent.startTime, 'date'));
-      expect(page.time.innerHTML).toEqual(`${utils.utcToLocal(tmpEvent.startTime, 'time')} - ${utils.utcToLocal(tmpEvent.endTime, 'time')}`);
+      expect(page.date.innerHTML).toEqual(`${utils.utcToLocal(tmpEvent.startTime, 'date')}, ${utils.utcToLocal(tmpEvent.startTime, 'time')} - ${utils.utcToLocal(tmpEvent.endTime, 'time')}`);
+      // expect(page.time.innerHTML).toEqual(`${utils.utcToLocal(tmpEvent.startTime, 'time')} - ${utils.utcToLocal(tmpEvent.endTime, 'time')}`);
       expect(page.location.innerHTML).toEqual(tmpEvent.location);
       expect(page.capacity.innerHTML).toEqual(`${tmpEvent.remainingCapacity} Seats Available Out of ${tmpEvent.capacity}`);
       if (expected) {

@@ -164,7 +164,8 @@ describe('ActivityComponent', () => {
       singleBooking: false,
       canBook: true,
       isPast: false,
-      assessment: null
+      assessment: null,
+      allDay: false
     },
     {
       id: 2,
@@ -181,7 +182,8 @@ describe('ActivityComponent', () => {
       singleBooking: false,
       canBook: true,
       isPast: false,
-      assessment: null
+      assessment: null,
+      allDay: true
     },
     {
       id: 3,
@@ -198,7 +200,8 @@ describe('ActivityComponent', () => {
       singleBooking: false,
       canBook: true,
       isPast: false,
-      assessment: null
+      assessment: null,
+      allDay: false
     }
   ];
   beforeEach(() => {
