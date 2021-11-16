@@ -242,7 +242,7 @@ export class EventListService {
       return this.utils.utcToLocal(event.startTime, 'date');
     }
     // otherwise display time only
-    return event.allDay ? 'All Day' : this.utils.utcToLocal(event.startTime, 'time') + ' - ' + this.utils.utcToLocal(event.endTime, 'time');
+    return event.allDay ? 'All Day' : `${this.utils.utcToLocal(event.startTime, 'time')} - ${this.utils.utcToLocal(event.endTime, 'time')}`;
   }
 
   /**
