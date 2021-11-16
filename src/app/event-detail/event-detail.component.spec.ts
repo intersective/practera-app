@@ -325,5 +325,58 @@ describe('EventDetailComponent', () => {
     expect(notificationSpy.alert).not.toHaveBeenCalled();
   });
 
+  describe(`getEventDate()`, () => {
+    let tmpEvent;
+    let expected;
+    beforeEach(() => {
+      tmpEvent = JSON.parse(JSON.stringify(mockEvent));
+    });
+    it(`should return date and 'All Day' as time`, () => {
+      tmpEvent.startTime = testUtils.getDateString(-2, 0);
+      tmpEvent.endTime = testUtils.getDateString(-2, 0);
+      tmpEvent.allDay = true;
+      component.event = tmpEvent;
+      fixture.detectChanges();
+      expected = `${utils.utcToLocal(tmpEvent.startTime, 'date')}, All Day`;
+      const result = component.getEventDate();
+      expect(result).toBe(expected);
+    });
+
+    it(`should return date with start and end time`, () => {
+      tmpEvent.startTime = testUtils.getDateString(-2, 0);
+      tmpEvent.endTime = testUtils.getDateString(-2, 0);
+      tmpEvent.allDay = false;
+      component.event = tmpEvent;
+      fixture.detectChanges();
+      expected = `${utils.utcToLocal(tmpEvent.startTime, 'date')}, ${utils.utcToLocal(tmpEvent.startTime, 'time')} - ${utils.utcToLocal(tmpEvent.endTime, 'time')}`;
+      const result = component.getEventDate();
+      expect(result).toBe(expected);
+    });
+
+    it(`should return start and end date with start and end time`, () => {
+      tmpEvent.startTime = testUtils.getDateString(-2, 0);
+      tmpEvent.endTime = testUtils.getDateString(-4, 0);
+      tmpEvent.allDay = false;
+      component.event = tmpEvent;
+      const startDayTime = `${utils.utcToLocal(tmpEvent.startTime, 'date')}, ${utils.utcToLocal(tmpEvent.startTime, 'time')}`;
+      const endDayTime = `${utils.utcToLocal(tmpEvent.endTime, 'date')}, ${utils.utcToLocal(tmpEvent.endTime, 'time')}`;
+      expected = `${startDayTime} - ${endDayTime}`;
+      fixture.detectChanges();
+      const result = component.getEventDate();
+      expect(result).toBe(expected);
+    });
+
+    it(`should return start and end date with 'All Day' as time`, () => {
+      tmpEvent.startTime = testUtils.getDateString(-2, 0);
+      tmpEvent.endTime = testUtils.getDateString(-4, 0);
+      tmpEvent.allDay = true;
+      component.event = tmpEvent;
+      expected = `${utils.utcToLocal(tmpEvent.startTime, 'date')}, All Day - ${utils.utcToLocal(tmpEvent.endTime, 'date')}, All Day`;
+      fixture.detectChanges();
+      const result = component.getEventDate();
+      expect(result).toBe(expected);
+    });
+  });
+
 });
 
