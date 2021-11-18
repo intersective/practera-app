@@ -157,21 +157,21 @@ resources:
             #   Override: true
             ContentTypeOptions: 
               Override: true
-            FrameOptions: 
-              FrameOption: "SAMEORIGIN"
-              Override: true
-            ReferrerPolicy: 
-              ReferrerPolicy: "strict-origin-when-cross-origin"
-              Override: true
-            StrictTransportSecurity: 
-              AccessControlMaxAgeSec: 31536000
-              IncludeSubdomains: true
-              Override: true
-              Preload: true
-            XSSProtection: 
-              ModeBlock: true
-              Override: true
-              Protection: true
+            # FrameOptions: 
+            #   FrameOption: "SAMEORIGIN"
+            #   Override: true
+            # ReferrerPolicy: 
+            #   ReferrerPolicy: "strict-origin-when-cross-origin"
+            #   Override: true
+            # StrictTransportSecurity: 
+            #   AccessControlMaxAgeSec: 31536000
+            #   IncludeSubdomains: true
+            #   Override: true
+            #   Preload: true
+            # XSSProtection: 
+            #   ModeBlock: true
+            #   Override: true
+            #   Protection: true
           # CustomHeadersConfig: 
           #   Items: 
           #     - 
