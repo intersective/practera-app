@@ -143,32 +143,22 @@ resources:
             SslSupportMethod: 'sni-only'
 
 
-
-
-    ## Specifying the CloudFront Distribution to server your Web Application
+    # Specifying the CloudFront Distribution to server your Web Application
     AppV2CloudFrontSecurityHeaderResponse:
       Type: AWS::CloudFront::ResponseHeadersPolicy
       Properties: 
         ResponseHeadersPolicyConfig: 
-          Name: "Mytest"
-
-
-    ## Specifying the CloudFront Distribution to server your Web Application
-    # AppV2CloudFrontSecurityHeaderResponse:
-    #   Type: AWS::CloudFront::ResponseHeadersPolicy
-    #   Properties: 
-    #     ResponseHeadersPolicyConfig: 
-    #       Comment: "Practera Security Header Response configuration"
-    #       Name: "Practera_Security_Header_Response_FOR_${env:APPV2S3BUCKET}"
-    #       SecurityHeadersConfig: 
+          Comment: "practera"
+          Name: "practera"
+          SecurityHeadersConfig: 
             # ContentSecurityPolicy: 
             #   ContentSecurityPolicy: "img-src 'self' *.practera.com; connect-src 'self' *.practera.com; default-src 'self' *.practera.com; script-src 'self' *.practera.com;style-src 'self' *.practera.com;child-src 'self' *.practera.com;frame-src 'self' *.practera.com;"
             #   Override: true
             # ContentTypeOptions: 
             #   Override: true
-            # FrameOptions: 
-            #   FrameOption: "SAMEORIGIN"
-            #   Override: true
+            FrameOptions: 
+              FrameOption: "SAMEORIGIN"
+              Override: true
             # ReferrerPolicy: 
             #   ReferrerPolicy: "strict-origin-when-cross-origin"
             #   Override: true
