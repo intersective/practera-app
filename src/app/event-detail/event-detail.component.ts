@@ -186,4 +186,22 @@ export class EventDetailComponent implements OnInit {
     window.open(link, '_system');
   }
 
+  /**
+   * Method will check event start date, end date, All Day and create the value need to show as date.
+   * @returns {String} Event Date
+   */
+  getEventDate() {
+    const startDate = this.utils.utcToLocal( this.event.startTime, 'date');
+    const startTime = this.utils.utcToLocal( this.event.startTime, 'time');
+    const endDate = this.utils.utcToLocal( this.event.endTime, 'date');
+    const endTime = this.utils.utcToLocal( this.event.endTime, 'time');
+
+    if (startDate !== endDate) {
+      const startDayTime = this.event.allDay ? `${startDate}, All Day` : `${startDate}, ${startTime}`;
+      const endDayTime = this.event.allDay ? `${endDate}, All Day` : `${endDate}, ${endTime}`;
+      return `${startDayTime} - ${endDayTime}`;
+    }
+    return this.event.allDay ? `${startDate}, All Day` : `${startDate}, ${startTime} - ${endTime}`;
+  }
+
 }

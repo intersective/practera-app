@@ -47,6 +47,7 @@ export interface Event {
     password: string
   };
   type?: string;
+  allDay: boolean;
 }
 
 export interface EventGroup {
@@ -113,7 +114,8 @@ export class EventListService {
           !this.utils.has(event, 'remaining_capacity') ||
           !this.utils.has(event, 'is_booked') ||
           !this.utils.has(event, 'can_book') ||
-          !this.utils.has(event, 'single_booking')) {
+          !this.utils.has(event, 'single_booking') ||
+          !this.utils.has(event, 'all_day')) {
         // API respond format inconsistency error
         return this.request.apiResponseFormatError('Event object format error');
       }
@@ -144,6 +146,7 @@ export class EventListService {
           password: event.video_conference.password
         } : null,
         type: event.type,
+        allDay: event.all_day
       });
       // set the booked event activity id if it is single booking activity and booked
       if (event.single_booking && event.is_booked) {
@@ -239,7 +242,7 @@ export class EventListService {
       return this.utils.utcToLocal(event.startTime, 'date');
     }
     // otherwise display time only
-    return this.utils.utcToLocal(event.startTime, 'time') + ' - ' + this.utils.utcToLocal(event.endTime, 'time');
+    return event.allDay ? 'All Day' : `${this.utils.utcToLocal(event.startTime, 'time')} - ${this.utils.utcToLocal(event.endTime, 'time')}`;
   }
 
   /**

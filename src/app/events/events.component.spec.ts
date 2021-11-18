@@ -80,6 +80,7 @@ describe('EventsComponent', () => {
       isBooked: true,
       singleBooking: true,
       canBook: true,
+      allDay: false
     };
     component.goto(event);
     expect(component.currentEvent).toEqual(event);

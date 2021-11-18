@@ -93,6 +93,7 @@ resources:
 
     ## Specifying the CloudFront Distribution to server your Web Application
     AppV2CloudFrontDistribution:
+      DependsOn: [AppV2CloudFrontSecurityHeaderResponse]
       Type: AWS::CloudFront::Distribution
       Properties:
         DistributionConfig:
@@ -118,6 +119,7 @@ resources:
             MinTTL: 60 # in seconds
             TargetOriginId: ${env:APPV2S3BUCKET}
             ViewerProtocolPolicy: 'redirect-to-https'
+            ResponseHeadersPolicyId: !Ref AppV2CloudFrontSecurityHeaderResponse
           DefaultRootObject: index.html
           CustomErrorResponses:
             - ErrorCode: 404
@@ -139,7 +141,49 @@ resources:
             AcmCertificateArn: '${env:CDNSharedACMCertificateArn}'
             MinimumProtocolVersion: 'TLSv1.2_2021'  # OLD VALUE:'TLSv1.2_2019'
             SslSupportMethod: 'sni-only'
-    
+
+
+    # Specifying the CloudFront Distribution Security Response Header
+    AppV2CloudFrontSecurityHeaderResponse:
+      Type: AWS::CloudFront::ResponseHeadersPolicy
+      Properties: 
+        ResponseHeadersPolicyConfig: 
+          Comment: "practera-security-headers-for-${env:APPV2S3BUCKET}"
+          Name: "practera-security-headers-for-APPv2"
+          SecurityHeadersConfig: 
+            ContentSecurityPolicy: 
+              ContentSecurityPolicy: "img-src 'self' *.practera.com; connect-src 'self' *.practera.com; default-src 'self' *.practera.com; script-src 'self' *.practera.com;style-src 'self' *.practera.com;child-src 'self' *.practera.com;frame-src 'self' *.practera.com;"
+              Override: true
+            ContentTypeOptions: 
+              Override: true
+            FrameOptions: 
+              FrameOption: "SAMEORIGIN"
+              Override: true
+            ReferrerPolicy: 
+              ReferrerPolicy: "strict-origin-when-cross-origin"
+              Override: true
+            StrictTransportSecurity: 
+              AccessControlMaxAgeSec: 31536000
+              IncludeSubdomains: true
+              Override: true
+              Preload: true
+            XSSProtection: 
+              ModeBlock: true
+              Override: true
+              Protection: true
+          CustomHeadersConfig: 
+            Items: 
+              - 
+                Header: "Server"
+                Override: true
+                Value: "Practera"
+              -  
+                Header: "Permissions-Policy"
+                Override: true
+                Value: "accelerometer=(),camera=(),geolocation=(),gyroscope=(),magnetometer=(),microphone=(),payment=(),usb=(),interest-cohort=()"
+
+# Security Header Response CFN END
+
     Route53RecordV2:
       Type: 'AWS::Route53::RecordSetGroup'
       Properties:
