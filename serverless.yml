@@ -148,8 +148,8 @@ resources:
       Type: AWS::CloudFront::ResponseHeadersPolicy
       Properties: 
         ResponseHeadersPolicyConfig: 
-          Comment: "practera-security-headers"
-          Name: "practera-security-headers"
+          Comment: "practera-security-headers-for-${env:APPV2S3BUCKET}"
+          Name: "practera-security-headers-for-${env:APPV2S3BUCKET}"
           SecurityHeadersConfig: 
             ContentSecurityPolicy: 
               ContentSecurityPolicy: "img-src 'self' *.practera.com; connect-src 'self' *.practera.com; default-src 'self' *.practera.com; script-src 'self' *.practera.com;style-src 'self' *.practera.com;child-src 'self' *.practera.com;frame-src 'self' *.practera.com;"
@@ -181,7 +181,6 @@ resources:
                 Header: "Permissions-Policy"
                 Override: true
                 Value: "accelerometer=(),camera=(),geolocation=(),gyroscope=(),magnetometer=(),microphone=(),payment=(),usb=(),interest-cohort=()"
-
 
 # Security Header Response CFN END
 
