@@ -153,22 +153,19 @@ resources:
           Comment: "practera-security-headers-for-${env:APPV2S3BUCKET}"
           Name: "practera-security-headers-for-GlobalAPPv2"
           SecurityHeadersConfig: 
-            ContentSecurityPolicy: 
-              ContentSecurityPolicy: "img-src 'self' *.practera.com; connect-src 'self' *.practera.com; default-src 'self' *.practera.com; script-src 'self' *.practera.com;style-src 'self' *.practera.com;child-src 'self' *.practera.com;frame-src 'self' *.practera.com;"
-              Override: true
-            ContentTypeOptions: 
-              Override: true
-            FrameOptions: 
-              FrameOption: "SAMEORIGIN"
-              Override: true
-            ReferrerPolicy: 
-              ReferrerPolicy: "strict-origin-when-cross-origin"
-              Override: true
             StrictTransportSecurity: 
               AccessControlMaxAgeSec: 31536000
               IncludeSubdomains: true
               Override: true
               Preload: true
+            ContentSecurityPolicy: 
+              ContentSecurityPolicy: "frame-ancestors 'self' https://*.practera.com;"
+              Override: true
+            ContentTypeOptions: 
+              Override: true
+            ReferrerPolicy: 
+              ReferrerPolicy: "strict-origin-when-cross-origin"
+              Override: true
             XSSProtection: 
               ModeBlock: true
               Override: true
@@ -182,7 +179,7 @@ resources:
               -  
                 Header: "Permissions-Policy"
                 Override: true
-                Value: "accelerometer=(),camera=(),geolocation=(),gyroscope=(),magnetometer=(),microphone=(),payment=(),usb=(),interest-cohort=()"
+                Value: "accelerometer=(),camera=(),geolocation=(),gyroscope=(),magnetometer=(),microphone=(),payment=(),usb=()"
 
 # Security Header Response CFN END
 
