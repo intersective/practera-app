@@ -149,7 +149,7 @@ resources:
       Properties: 
         ResponseHeadersPolicyConfig: 
           Comment: "practera-security-headers-for-${env:APPV2S3BUCKET}"
-          Name: "practera-security-headers-for-${env:APPV2S3BUCKET}"
+          Name: "practera-security-headers-for-APPv2"
           SecurityHeadersConfig: 
             ContentSecurityPolicy: 
               ContentSecurityPolicy: "img-src 'self' *.practera.com; connect-src 'self' *.practera.com; default-src 'self' *.practera.com; script-src 'self' *.practera.com;style-src 'self' *.practera.com;child-src 'self' *.practera.com;frame-src 'self' *.practera.com;"
