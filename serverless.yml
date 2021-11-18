@@ -171,16 +171,16 @@ resources:
               ModeBlock: true
               Override: true
               Protection: true
-          # CustomHeadersConfig: 
-          #   Items: 
-          #     - 
-          #       Header: "Server"
-          #       Override: true
-          #       Value: "Server"
-          #     -  
-          #       Header: "Permissions-Policy"
-          #       Override: true
-          #       Value: "accelerometer=(),camera=(),geolocation=(),gyroscope=(),magnetometer=(),microphone=(),payment=(),usb=(),interest-cohort=()"
+          CustomHeadersConfig: 
+            Items: 
+              - 
+                Header: "Server"
+                Override: true
+                Value: "Practera"
+              -  
+                Header: "Permissions-Policy"
+                Override: true
+                Value: "accelerometer=(),camera=(),geolocation=(),gyroscope=(),magnetometer=(),microphone=(),payment=(),usb=(),interest-cohort=()"
 
 
 # Security Header Response CFN END
