@@ -119,7 +119,7 @@ resources:
             MinTTL: 60 # in seconds
             TargetOriginId: ${env:APPV2S3BUCKET}
             ViewerProtocolPolicy: 'redirect-to-https'
-            # ResponseHeadersPolicyId: !Ref AppV2CloudFrontSecurityHeaderResponse
+            ResponseHeadersPolicyId: !Ref AppV2CloudFrontSecurityHeaderResponse
           DefaultRootObject: index.html
           CustomErrorResponses:
             - ErrorCode: 404
@@ -143,7 +143,7 @@ resources:
             SslSupportMethod: 'sni-only'
 
 
-    # Specifying the CloudFront Distribution to server your Web Application
+    # Specifying the CloudFront Distribution Security Response Header
     AppV2CloudFrontSecurityHeaderResponse:
       Type: AWS::CloudFront::ResponseHeadersPolicy
       Properties: 
