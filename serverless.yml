@@ -148,8 +148,8 @@ resources:
       Type: AWS::CloudFront::ResponseHeadersPolicy
       Properties: 
         ResponseHeadersPolicyConfig: 
-          Comment: "practera"
-          Name: "practera"
+          Comment: "practera-security-headers"
+          Name: "practera-security-headers"
           SecurityHeadersConfig: 
             # ContentSecurityPolicy: 
             #   ContentSecurityPolicy: "img-src 'self' *.practera.com; connect-src 'self' *.practera.com; default-src 'self' *.practera.com; script-src 'self' *.practera.com;style-src 'self' *.practera.com;child-src 'self' *.practera.com;frame-src 'self' *.practera.com;"
