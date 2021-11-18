@@ -151,9 +151,9 @@ resources:
           Comment: "practera-security-headers"
           Name: "practera-security-headers"
           SecurityHeadersConfig: 
-            # ContentSecurityPolicy: 
-            #   ContentSecurityPolicy: "img-src 'self' *.practera.com; connect-src 'self' *.practera.com; default-src 'self' *.practera.com; script-src 'self' *.practera.com;style-src 'self' *.practera.com;child-src 'self' *.practera.com;frame-src 'self' *.practera.com;"
-            #   Override: true
+            ContentSecurityPolicy: 
+              ContentSecurityPolicy: "img-src 'self' *.practera.com; connect-src 'self' *.practera.com; default-src 'self' *.practera.com; script-src 'self' *.practera.com;style-src 'self' *.practera.com;child-src 'self' *.practera.com;frame-src 'self' *.practera.com;"
+              Override: true
             ContentTypeOptions: 
               Override: true
             FrameOptions: 
