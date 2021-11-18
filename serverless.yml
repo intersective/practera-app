@@ -150,21 +150,11 @@ resources:
       Properties: 
         ResponseHeadersPolicyConfig: 
           Comment: "Practera Security Header Response configuration"
-          CustomHeadersConfig: 
-            Items: 
-              - 
-                Header: "Server"
-                Override: true
-                Value: "Server"
-              -  
-                Header: "Permissions-Policy"
-                Override: true
-                Value: "accelerometer=(),camera=(),geolocation=(),gyroscope=(),magnetometer=(),microphone=(),payment=(),usb=(),interest-cohort=()"
           Name: "Practera_Security_Header_Response_FOR_${env:APPV2S3BUCKET}"
           SecurityHeadersConfig: 
-            ContentSecurityPolicy: 
-              ContentSecurityPolicy: "img-src 'self' *.practera.com; connect-src 'self' *.practera.com; default-src 'self' *.practera.com; script-src 'self' *.practera.com;style-src 'self' *.practera.com;child-src 'self' *.practera.com;frame-src 'self' *.practera.com;"
-              Override: true
+            # ContentSecurityPolicy: 
+            #   ContentSecurityPolicy: "img-src 'self' *.practera.com; connect-src 'self' *.practera.com; default-src 'self' *.practera.com; script-src 'self' *.practera.com;style-src 'self' *.practera.com;child-src 'self' *.practera.com;frame-src 'self' *.practera.com;"
+            #   Override: true
             ContentTypeOptions: 
               Override: true
             FrameOptions: 
@@ -182,6 +172,17 @@ resources:
               ModeBlock: true
               Override: true
               Protection: true
+          # CustomHeadersConfig: 
+          #   Items: 
+          #     - 
+          #       Header: "Server"
+          #       Override: true
+          #       Value: "Server"
+          #     -  
+          #       Header: "Permissions-Policy"
+          #       Override: true
+          #       Value: "accelerometer=(),camera=(),geolocation=(),gyroscope=(),magnetometer=(),microphone=(),payment=(),usb=(),interest-cohort=()"
+
 
 # Security Header Response CFN END
 
