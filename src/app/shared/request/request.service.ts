@@ -227,13 +227,20 @@ export class RequestService {
    */
   chatGraphQLQuery(query: string, variables?: any, options?: any): Observable<any> {
     options = {...{ noCache: false }, ...options};
-    const watch = this.apollo.use('chat').watchQuery({
+    const watch = this.apollo.use('chat').query({
       query: gql(query),
       variables: variables || {},
-      fetchPolicy: options.noCache ? 'no-cache' : 'cache-and-network'
+      fetchPolicy: 'no-cache'
+    });
+    /* const watch = this.apollo.use('chat').fetchQuery({
+      query: gql(query),
+      variables: variables || {},
+      // fetchPolicy: options.noCache ? 'no-cache' : 'cache-and-network'
     });
     return watch.valueChanges
-      .pipe(map(response => {
+    */
+
+    return watch.pipe(map(response => {
         this._refreshApikey(response);
         return response;
       }))
