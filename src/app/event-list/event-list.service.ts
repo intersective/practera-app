@@ -48,6 +48,12 @@ export interface Event {
   };
   type?: string;
   allDay: boolean;
+  isMultiDay?: boolean;
+  multiDayInfo?: {
+    startTime: string;
+    endTime: string;
+    listTime: string;
+  };
 }
 
 export interface EventGroup {
@@ -99,7 +105,7 @@ export class EventListService {
       this.request.apiResponseFormatError('Event format error');
       return [];
     }
-    const events: Array<Event> = [];
+    let events: Array<Event> = [];
     this.storage.initBookedEventActivityIds();
     data.forEach(event => {
       if (!this.utils.has(event, 'id') ||
@@ -119,35 +125,42 @@ export class EventListService {
         // API respond format inconsistency error
         return this.request.apiResponseFormatError('Event object format error');
       }
-      events.push({
-        id: event.id,
-        name: event.title,
-        description: event.description,
-        location: event.location,
-        activityId: event.activity_id,
-        activityName: event.activity_name,
-        startTime: event.start,
-        endTime: event.end,
-        capacity: event.capacity,
-        remainingCapacity: event.remaining_capacity,
-        isBooked: event.is_booked,
-        singleBooking: event.single_booking,
-        canBook: event.can_book,
-        isPast: this.utils.timeComparer(event.start) < 0,
-        assessment: this.utils.has(event, 'assessment.id') ? {
-          id: event.assessment.id,
-          contextId: event.assessment.context_id,
-          isDone: event.assessment.is_done || false
-        } : null,
-        videoConference: this.utils.has(event, 'video_conference.url') ? {
-          provider: event.video_conference.provider,
-          url: event.video_conference.url,
-          meetingId: event.video_conference.meeting_id,
-          password: event.video_conference.password
-        } : null,
-        type: event.type,
-        allDay: event.all_day
-      });
+      console.log(this._checkIsSingleDay(event), event);
+      if (this._checkIsSingleDay(event)) {
+        events.push({
+          id: event.id,
+          name: event.title,
+          description: event.description,
+          location: event.location,
+          activityId: event.activity_id,
+          activityName: event.activity_name,
+          startTime: event.start,
+          endTime: event.end,
+          capacity: event.capacity,
+          remainingCapacity: event.remaining_capacity,
+          isBooked: event.is_booked,
+          singleBooking: event.single_booking,
+          canBook: event.can_book,
+          isPast: this.utils.timeComparer(event.start) < 0,
+          assessment: this.utils.has(event, 'assessment.id') ? {
+            id: event.assessment.id,
+            contextId: event.assessment.context_id,
+            isDone: event.assessment.is_done || false
+          } : null,
+          videoConference: this.utils.has(event, 'video_conference.url') ? {
+            provider: event.video_conference.provider,
+            url: event.video_conference.url,
+            meetingId: event.video_conference.meeting_id,
+            password: event.video_conference.password
+          } : null,
+          type: event.type,
+          allDay: event.all_day
+        });
+      } else {
+        const multidayEvents = this._handelMultiDayEvent(event);
+        console.log('multidayEvents', multidayEvents);
+        events = events.concat(multidayEvents);
+      }
       // set the booked event activity id if it is single booking activity and booked
       if (event.single_booking && event.is_booked) {
         this.storage.setBookedEventActivityIds(event.activity_id);
@@ -263,5 +276,59 @@ export class EventListService {
       return true;
     }
     return false;
+  }
+
+  private _checkIsSingleDay(event) {
+    return this.utils.utcToLocal(event.start, 'date') === this.utils.utcToLocal(event.end, 'date');
+  }
+
+  private _handelMultiDayEvent(event) {
+    const dateDifference = (this._getDateDifference(event) + 1);
+    const multiDayEvents: Array<Event> = [];
+    console.log('dateDifference', dateDifference);
+    for (let index = 0; index < dateDifference; index++) {
+      multiDayEvents.push({
+        id: event.id,
+        name: event.title,
+        description: event.description,
+        location: event.location,
+        activityId: event.activity_id,
+        activityName: event.activity_name,
+        startTime: event.start,
+        endTime: event.end,
+        capacity: event.capacity,
+        remainingCapacity: event.remaining_capacity,
+        isBooked: event.is_booked,
+        singleBooking: event.single_booking,
+        canBook: event.can_book,
+        isPast: this.utils.timeComparer(event.start) < 0,
+        assessment: this.utils.has(event, 'assessment.id') ? {
+          id: event.assessment.id,
+          contextId: event.assessment.context_id,
+          isDone: event.assessment.is_done || false
+        } : null,
+        videoConference: this.utils.has(event, 'video_conference.url') ? {
+          provider: event.video_conference.provider,
+          url: event.video_conference.url,
+          meetingId: event.video_conference.meeting_id,
+          password: event.video_conference.password
+        } : null,
+        type: event.type,
+        allDay: event.all_day,
+        isMultiDay: true,
+        multiDayInfo: {
+          startTime: event.start,
+          endTime: event.end,
+          listTime: ''
+        }
+      });
+    }
+    return multiDayEvents;
+  }
+
+  private _getDateDifference(event) {
+    const startDate = new Date(this.utils.iso8601Formatter(event.start));
+    const endDate = new Date(this.utils.iso8601Formatter(event.end));
+    return endDate.getDate() - startDate.getDate();
   }
 }
