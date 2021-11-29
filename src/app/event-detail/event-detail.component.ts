@@ -191,8 +191,9 @@ export class EventDetailComponent implements OnInit {
    * @returns {String} Event Date
    */
   getEventDate() {
-    const startDate = this.utils.utcToLocal( this.event.startTime, 'date');
-    const startTime = this.utils.utcToLocal( this.event.startTime, 'time');
+    const eventStartTime = this.event.isMultiDay ? this.event.multiDayInfo.startTime : this.event.startTime;
+    const startDate = this.utils.utcToLocal( eventStartTime, 'date');
+    const startTime = this.utils.utcToLocal( eventStartTime, 'time');
     const endDate = this.utils.utcToLocal( this.event.endTime, 'date');
     const endTime = this.utils.utcToLocal( this.event.endTime, 'time');
 

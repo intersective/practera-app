@@ -16,6 +16,8 @@ export class EventListComponent {
   @Input() activityId;
   // if eventId has value, hightlight this event
   @Input() eventId;
+  // if multiDayId has value, hightlight this event
+  @Input() multiDayId;
   // the current active tab
   activated = 'browse';
   events: Array<EventGroup> = [];
@@ -199,7 +201,7 @@ export class EventListComponent {
       return ;
     }
     let eventsCount = 0, eventGroup;
-    const maxEvents = 7;
+    const maxEvents = 10;
     while (eventsCount < maxEvents) {
       // stop if there's no remaining events
       if (!this.remainingEvents.length) {
@@ -256,7 +258,6 @@ export class EventListComponent {
         date: compareDate,
         events: []
       };
-      console.log('1');
     }
 
     /**
@@ -268,7 +269,6 @@ export class EventListComponent {
      * - if event haven't started, it's bookable
      */
     if (isBrowse && this.utils.timeComparer(event.startTime) < 0) {
-      console.log('2');
       // group all past events as one group named "Expired"
       if (compareDate !== 'Expired') {
         compareDate = 'Expired';
@@ -282,11 +282,9 @@ export class EventListComponent {
       }
       eventGroup.events.push(event);
     } else if (date === compareDate) {
-      console.log('3');
       // this event belongs to the same group as previous one
       eventGroup.events.push(event);
     } else {
-      console.log('4');
       // create a new group for this date
       if (!this.utils.isEmpty(eventGroup.events)) {
         events.push(eventGroup);
