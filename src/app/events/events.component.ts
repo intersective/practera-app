@@ -17,7 +17,7 @@ export class EventsComponent extends RouterEnter {
   // Event id. Used to highlight the event in the list
   eventId: number;
   // multi day id. Used to highlight the event in the list if event is multiday event
-  multiDayId: number;
+  multiDayId: string;
   // The object of current event. Used to display the event detail
   currentEvent: Event;
   // check-in assessment id. If null, don't display assessment component
