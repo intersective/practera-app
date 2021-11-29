@@ -54,6 +54,8 @@ export interface Event {
   multiDayInfo?: {
     startTime: string;
     endTime: string;
+    dayCount: string;
+    id: string;
   };
 }
 
@@ -126,8 +128,10 @@ export class EventListService {
         // API respond format inconsistency error
         return this.request.apiResponseFormatError('Event object format error');
       }
-      console.log(this._checkIsSingleDay(event), event);
-      if (this._checkIsSingleDay(event)) {
+      if (!this._checkIsSingleDay(event) && !(this.utils.timeComparer(event.start) < 0)) {
+        const multidayEvents = this._getMultiDayEvent(event);
+        events = events.concat(multidayEvents);
+      } else {
         events.push({
           id: event.id,
           name: event.title,
@@ -157,9 +161,6 @@ export class EventListService {
           type: event.type,
           allDay: event.all_day
         });
-      } else {
-        const multidayEvents = this._handelMultiDayEvent(event);
-        events = events.concat(multidayEvents);
       }
       // set the booked event activity id if it is single booking activity and booked
       if (event.single_booking && event.is_booked) {
@@ -183,8 +184,8 @@ export class EventListService {
 
   private _sortEvent(events) {
     return events.sort((a, b) => {
-      const dateA = new Date(a.startTime + 'Z');
-      const dateB = new Date(b.startTime + 'Z');
+      const dateA = new Date((a.isMultiDay ? a.multiDayInfo.startTime : a.startTime) + 'Z');
+      const dateB = new Date((b.isMultiDay ? b.multiDayInfo.startTime : b.startTime) + 'Z');
       const now = new Date();
       if (dateA.getTime() === dateB.getTime()) {
         return 0;
@@ -291,7 +292,7 @@ export class EventListService {
     return this.utils.utcToLocal(event.start, 'date') === this.utils.utcToLocal(event.end, 'date');
   }
 
-  private _handelMultiDayEvent(event) {
+  private _getMultiDayEvent(event) {
     const dateDifference = this.utils.getDateDifference(event.start, event.end);
     const multiDayEvents: Array<Event> = [];
     let eventObj = null;
@@ -328,7 +329,9 @@ export class EventListService {
         isMultiDay: true,
         multiDayInfo: {
           startTime: startTime.clone().add(index, 'day').format('YYYY-MM-DD hh:mm:ss'),
-          endTime: event.end
+          endTime: event.end,
+          dayCount: `(Day ${index}/${dateDifference})`,
+          id: `E${event.id}${index}`
         }
       };
       if (index === 1) {
