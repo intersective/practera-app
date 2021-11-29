@@ -248,7 +248,7 @@ export class EventListComponent {
    * @param {Boolean} isBrowse     If this is for browse (will group all past events in "Expired")
    */
   private _groupEvents(event, events, eventGroup, compareDate, isBrowse = false) {
-    const date = this.utils.utcToLocal(event.startTime, 'date');
+    const date = event.isMultiDay ? this.utils.utcToLocal(event.multiDayInfo.startTime, 'date') : this.utils.utcToLocal(event.startTime, 'date');
     // initialise compareDate & eventGroup
     if (!compareDate) {
       compareDate = date;
@@ -256,6 +256,7 @@ export class EventListComponent {
         date: compareDate,
         events: []
       };
+      console.log('1');
     }
 
     /**
@@ -267,6 +268,7 @@ export class EventListComponent {
      * - if event haven't started, it's bookable
      */
     if (isBrowse && this.utils.timeComparer(event.startTime) < 0) {
+      console.log('2');
       // group all past events as one group named "Expired"
       if (compareDate !== 'Expired') {
         compareDate = 'Expired';
@@ -280,14 +282,16 @@ export class EventListComponent {
       }
       eventGroup.events.push(event);
     } else if (date === compareDate) {
+      console.log('3');
       // this event belongs to the same group as previous one
       eventGroup.events.push(event);
     } else {
+      console.log('4');
       // create a new group for this date
       if (!this.utils.isEmpty(eventGroup.events)) {
         events.push(eventGroup);
       }
-      compareDate = this.utils.utcToLocal(event.startTime, 'date');
+      compareDate = event.isMultiDay ? this.utils.utcToLocal(event.multiDayInfo.startTime, 'date') : this.utils.utcToLocal(event.startTime, 'date');
       eventGroup = {
         date: compareDate,
         events: [event]

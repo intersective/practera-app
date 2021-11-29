@@ -7,6 +7,8 @@ import { BrowserStorageService } from '@services/storage.service';
 import { NotificationService } from '@shared/notification/notification.service';
 import { EventDetailComponent } from '@app/event-detail/event-detail.component';
 
+import * as moment from 'moment';
+
 /**
  * @name api
  * @description list of api endpoint involved in this service
@@ -52,7 +54,6 @@ export interface Event {
   multiDayInfo?: {
     startTime: string;
     endTime: string;
-    listTime: string;
   };
 }
 
@@ -158,7 +159,6 @@ export class EventListService {
         });
       } else {
         const multidayEvents = this._handelMultiDayEvent(event);
-        console.log('multidayEvents', multidayEvents);
         events = events.concat(multidayEvents);
       }
       // set the booked event activity id if it is single booking activity and booked
@@ -254,6 +254,15 @@ export class EventListService {
     if (this.utils.timeComparer(event.startTime) < 0 && !event.isBooked) {
       return this.utils.utcToLocal(event.startTime, 'date');
     }
+    if (event.allDay) {
+      return 'All Day';
+    }
+    if (event.isMultiDay && (this.utils.utcToLocal(event.startTime, 'date') === this.utils.utcToLocal(event.multiDayInfo.startTime, 'date'))) {
+      return this.utils.utcToLocal(event.startTime, 'time');
+    }
+    if (event.isMultiDay && (this.utils.utcToLocal(event.endTime, 'date') === this.utils.utcToLocal(event.multiDayInfo.startTime, 'date'))) {
+      return `Until ${this.utils.utcToLocal(event.endTime, 'time')}`;
+    }
     // otherwise display time only
     return event.allDay ? 'All Day' : `${this.utils.utcToLocal(event.startTime, 'time')} - ${this.utils.utcToLocal(event.endTime, 'time')}`;
   }
@@ -283,11 +292,12 @@ export class EventListService {
   }
 
   private _handelMultiDayEvent(event) {
-    const dateDifference = (this._getDateDifference(event) + 1);
+    const dateDifference = this.utils.getDateDifference(event.start, event.end);
     const multiDayEvents: Array<Event> = [];
-    console.log('dateDifference', dateDifference);
-    for (let index = 0; index < dateDifference; index++) {
-      multiDayEvents.push({
+    let eventObj = null;
+    for (let index = 1; index <= dateDifference; index++) {
+      const startTime = moment(event.start);
+      eventObj = {
         id: event.id,
         name: event.title,
         description: event.description,
@@ -314,21 +324,22 @@ export class EventListService {
           password: event.video_conference.password
         } : null,
         type: event.type,
-        allDay: event.all_day,
+        allDay: true,
         isMultiDay: true,
         multiDayInfo: {
-          startTime: event.start,
-          endTime: event.end,
-          listTime: ''
+          startTime: startTime.clone().add(index, 'day').format('YYYY-MM-DD hh:mm:ss'),
+          endTime: event.end
         }
-      });
+      };
+      if (index === 1) {
+        eventObj.multiDayInfo.startTime = event.start;
+        eventObj.allDay = event.all_day;
+      }
+      if (index === dateDifference) {
+        eventObj.allDay = event.all_day;
+      }
+      multiDayEvents.push(eventObj);
     }
     return multiDayEvents;
-  }
-
-  private _getDateDifference(event) {
-    const startDate = new Date(this.utils.iso8601Formatter(event.start));
-    const endDate = new Date(this.utils.iso8601Formatter(event.end));
-    return endDate.getDate() - startDate.getDate();
   }
 }

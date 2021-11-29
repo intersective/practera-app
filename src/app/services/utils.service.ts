@@ -435,4 +435,10 @@ export class UtilsService {
     const slugs = crypto.getRandomValues(new Uint32Array(1));
     return slugs[0];
   }
+
+  getDateDifference(dateOne: string, datetwo: string) {
+    const startDate = moment(new Date(this.iso8601Formatter(dateOne)), 'DD-MM-YYYY');
+    const endDate = moment(new Date(this.iso8601Formatter(datetwo)), 'DD-MM-YYYY');
+    return endDate.diff(startDate, 'days');
+  }
 }
