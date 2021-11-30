@@ -152,7 +152,7 @@ describe('EventListService', () => {
       service.getEvents(2).subscribe(res => expect(res).toEqual(expected));
     });
 
-    it('should get correct multi day data', () => {
+    it('should get correct multi day events', () => {
       const multiDayEvent = {
         id: 7,
         title: 'event' + 6,
@@ -173,63 +173,48 @@ describe('EventListService', () => {
         all_day: false
       };
       requestResponse.data[7] = multiDayEvent;
-      expected[7] = expected[5];
-      expected[6] = expected[4];
-      expected[5] = expected[3];
-      expected[4] = {
-        activityId: 2,
-        activityName: 'activity2',
-        allDay: false,
-        assessment: null,
-        canBook: true,
-        capacity: 10,
-        description: 'des6',
-        endTime: multiDayEvent.end,
-        id: 7,
-        isBooked: false,
-        isMultiDay: true,
-        isPast: false,
-        location: 'location6',
-        multiDayInfo: {
-          dayCount: '(Day 2/2)',
+      const dateDifference = (utils.getDateDifference(multiDayEvent.start, multiDayEvent.end) + 1);
+      const multiDayEvents: Array<Event> = [];
+      let eventObj = null;
+      for (let index = 0; index < dateDifference; index++) {
+        const startTime = moment(multiDayEvent.start);
+        eventObj = {
+          id: multiDayEvent.id,
+          name: multiDayEvent.title,
+          description: multiDayEvent.description,
+          location: multiDayEvent.location,
+          activityId: multiDayEvent.activity_id,
+          activityName: multiDayEvent.activity_name,
+          startTime: multiDayEvent.start,
           endTime: multiDayEvent.end,
-          id: 'E72',
-          startTime: multiDayEvent.end
-        },
-        name: 'event6',
-        remainingCapacity: 1,
-        singleBooking: true,
-        startTime: multiDayEvent.start,
-        type: null,
-        videoConference: null,
-      };
-      expected[3] = {
-        activityId: 2,
-        activityName: 'activity2',
-        allDay: false,
-        assessment: null,
-        canBook: true,
-        capacity: 10,
-        description: 'des6',
-        endTime: multiDayEvent.end,
-        id: 7,
-        isBooked: false,
-        isMultiDay: true,
-        isPast: false,
-        location: 'location6',
-        multiDayInfo: {
-          dayCount: '(Day 1/2)',
-          endTime: multiDayEvent.end,
-          id: 'E71',
-          startTime: multiDayEvent.start
-        },
-        name: 'event6',
-        remainingCapacity: 1,
-        singleBooking: true,
-        startTime: multiDayEvent.start,
-        type: null,
-        videoConference: null,
-      };
+          capacity: multiDayEvent.capacity,
+          remainingCapacity: multiDayEvent.remaining_capacity,
+          isBooked: multiDayEvent.is_booked,
+          singleBooking: multiDayEvent.single_booking,
+          canBook: multiDayEvent.can_book,
+          isPast: utils.timeComparer(multiDayEvent.start) < 0,
+          assessment: multiDayEvent.assessment,
+          videoConference: multiDayEvent.video_conference,
+          type: multiDayEvent.type,
+          allDay: true,
+          isMultiDay: true,
+          multiDayInfo: {
+            startTime: startTime.clone().add(index, 'day').format('YYYY-MM-DD hh:mm:ss'),
+            endTime: multiDayEvent.end,
+            dayCount: `(Day ${index + 1}/${dateDifference})`,
+            id: `E${multiDayEvent.id}${index + 1}`
+          }
+        };
+        if (index === 0) {
+          eventObj.multiDayInfo.startTime = multiDayEvent.start;
+          eventObj.allDay = multiDayEvent.all_day;
+        }
+        if (index === dateDifference) {
+          eventObj.allDay = multiDayEvent.all_day;
+        }
+        multiDayEvents.push(eventObj);
+      }
+      expected = [formatted[2], formatted[1], formatted[3], multiDayEvents[0], multiDayEvents[1], multiDayEvents[2], formatted[4], formatted[0], formatted[5]];
       requestSpy.get.and.returnValue(of(requestResponse));
       service.getEvents(2).subscribe(res => {
         expect(res).toEqual(expected);
