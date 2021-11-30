@@ -7,13 +7,22 @@ import { NotificationService } from '@shared/notification/notification.service';
 import { TestUtils } from '@testing/utils';
 import { BrowserStorageService } from '@services/storage.service';
 import { Apollo } from 'apollo-angular';
+import * as moment from 'moment';
 
 describe('EventListService', () => {
+  moment.updateLocale('en', {
+    monthsShort: [
+      // customised shortened month to accommodate Intl date format
+      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+      'Jul', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec'
+    ]
+  });
   let service: EventListService;
   let requestSpy: jasmine.SpyObj<RequestService>;
   let notificationSpy: jasmine.SpyObj<NotificationService>;
   let utils: UtilsService;
   const testUtils = new TestUtils();
+  const thisMoment = moment();
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -141,6 +150,90 @@ describe('EventListService', () => {
     it('should get correct data', () => {
       requestSpy.get.and.returnValue(of(requestResponse));
       service.getEvents(2).subscribe(res => expect(res).toEqual(expected));
+    });
+
+    it('should get correct multi day data', () => {
+      const multiDayEvent = {
+        id: 7,
+        title: 'event' + 6,
+        description: 'des' + 6,
+        location: 'location' + 6,
+        activity_id: 2,
+        activity_name: 'activity2',
+        start: testUtils.getDateString(2, 1),
+        end: testUtils.getDateString(4, 1),
+        capacity: 10,
+        remaining_capacity: 1,
+        is_booked: false,
+        single_booking: true,
+        can_book: true,
+        assessment: null,
+        video_conference: null,
+        type: null,
+        all_day: false
+      };
+      requestResponse.data[7] = multiDayEvent;
+      expected[7] = expected[5];
+      expected[6] = expected[4];
+      expected[5] = expected[3];
+      expected[4] = {
+        activityId: 2,
+        activityName: 'activity2',
+        allDay: false,
+        assessment: null,
+        canBook: true,
+        capacity: 10,
+        description: 'des6',
+        endTime: multiDayEvent.end,
+        id: 7,
+        isBooked: false,
+        isMultiDay: true,
+        isPast: false,
+        location: 'location6',
+        multiDayInfo: {
+          dayCount: '(Day 2/2)',
+          endTime: multiDayEvent.end,
+          id: 'E72',
+          startTime: multiDayEvent.end
+        },
+        name: 'event6',
+        remainingCapacity: 1,
+        singleBooking: true,
+        startTime: multiDayEvent.start,
+        type: null,
+        videoConference: null,
+      };
+      expected[3] = {
+        activityId: 2,
+        activityName: 'activity2',
+        allDay: false,
+        assessment: null,
+        canBook: true,
+        capacity: 10,
+        description: 'des6',
+        endTime: multiDayEvent.end,
+        id: 7,
+        isBooked: false,
+        isMultiDay: true,
+        isPast: false,
+        location: 'location6',
+        multiDayInfo: {
+          dayCount: '(Day 1/2)',
+          endTime: multiDayEvent.end,
+          id: 'E71',
+          startTime: multiDayEvent.start
+        },
+        name: 'event6',
+        remainingCapacity: 1,
+        singleBooking: true,
+        startTime: multiDayEvent.start,
+        type: null,
+        videoConference: null,
+      };
+      requestSpy.get.and.returnValue(of(requestResponse));
+      service.getEvents(2).subscribe(res => {
+        expect(res).toEqual(expected);
+      });
     });
   });
 
