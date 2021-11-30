@@ -128,39 +128,40 @@ export class EventListService {
         // API respond format inconsistency error
         return this.request.apiResponseFormatError('Event object format error');
       }
-      if (!this._checkIsSingleDay(event) && !(this.utils.timeComparer(event.start) < 0)) {
-        const multidayEvents = this._getMultiDayEvent(event);
+      const eventObj = {
+        id: event.id,
+        name: event.title,
+        description: event.description,
+        location: event.location,
+        activityId: event.activity_id,
+        activityName: event.activity_name,
+        startTime: event.start,
+        endTime: event.end,
+        capacity: event.capacity,
+        remainingCapacity: event.remaining_capacity,
+        isBooked: event.is_booked,
+        singleBooking: event.single_booking,
+        canBook: event.can_book,
+        isPast: this.utils.timeComparer(event.start) < 0,
+        assessment: this.utils.has(event, 'assessment.id') ? {
+          id: event.assessment.id,
+          contextId: event.assessment.context_id,
+          isDone: event.assessment.is_done || false
+        } : null,
+        videoConference: this.utils.has(event, 'video_conference.url') ? {
+          provider: event.video_conference.provider,
+          url: event.video_conference.url,
+          meetingId: event.video_conference.meeting_id,
+          password: event.video_conference.password
+        } : null,
+        type: event.type,
+        allDay: event.all_day
+      };
+      if (!this._checkIsSingleDay(eventObj) && !(this.utils.timeComparer(eventObj.startTime) < 0)) {
+        const multidayEvents = this._getMultiDayEvent(eventObj);
         events = events.concat(multidayEvents);
       } else {
-        events.push({
-          id: event.id,
-          name: event.title,
-          description: event.description,
-          location: event.location,
-          activityId: event.activity_id,
-          activityName: event.activity_name,
-          startTime: event.start,
-          endTime: event.end,
-          capacity: event.capacity,
-          remainingCapacity: event.remaining_capacity,
-          isBooked: event.is_booked,
-          singleBooking: event.single_booking,
-          canBook: event.can_book,
-          isPast: this.utils.timeComparer(event.start) < 0,
-          assessment: this.utils.has(event, 'assessment.id') ? {
-            id: event.assessment.id,
-            contextId: event.assessment.context_id,
-            isDone: event.assessment.is_done || false
-          } : null,
-          videoConference: this.utils.has(event, 'video_conference.url') ? {
-            provider: event.video_conference.provider,
-            url: event.video_conference.url,
-            meetingId: event.video_conference.meeting_id,
-            password: event.video_conference.password
-          } : null,
-          type: event.type,
-          allDay: event.all_day
-        });
+        events.push(eventObj);
       }
       // set the booked event activity id if it is single booking activity and booked
       if (event.single_booking && event.is_booked) {
@@ -288,58 +289,59 @@ export class EventListService {
     return false;
   }
 
+  /**
+   * method checking is event single day or multi day.
+   * @param event Formated event object
+   * @returns {boolean} is event single day or not
+   */
   private _checkIsSingleDay(event) {
-    return this.utils.utcToLocal(event.start, 'date') === this.utils.utcToLocal(event.end, 'date');
+    return this.utils.utcToLocal(event.startTime, 'date') === this.utils.utcToLocal(event.endTime, 'date');
   }
 
+  /**
+   * methos will create duplicate event objects to show in each day for multi day events.
+   * @param event Formated event object
+   * @returns {Array} multi day event object array
+   */
   private _getMultiDayEvent(event) {
-    const dateDifference = this.utils.getDateDifference(event.start, event.end);
+    const dateDifference = (this.utils.getDateDifference(event.startTime, event.endTime) + 1);
     const multiDayEvents: Array<Event> = [];
     let eventObj = null;
-    for (let index = 1; index <= dateDifference; index++) {
-      const startTime = moment(event.start);
+    for (let index = 0; index < dateDifference; index++) {
+      const startTime = moment(event.startTime);
       eventObj = {
         id: event.id,
-        name: event.title,
+        name: event.name,
         description: event.description,
         location: event.location,
-        activityId: event.activity_id,
-        activityName: event.activity_name,
-        startTime: event.start,
-        endTime: event.end,
+        activityId: event.activityId,
+        activityName: event.activityName,
+        startTime: event.startTime,
+        endTime: event.endTime,
         capacity: event.capacity,
-        remainingCapacity: event.remaining_capacity,
-        isBooked: event.is_booked,
-        singleBooking: event.single_booking,
-        canBook: event.can_book,
-        isPast: this.utils.timeComparer(event.start) < 0,
-        assessment: this.utils.has(event, 'assessment.id') ? {
-          id: event.assessment.id,
-          contextId: event.assessment.context_id,
-          isDone: event.assessment.is_done || false
-        } : null,
-        videoConference: this.utils.has(event, 'video_conference.url') ? {
-          provider: event.video_conference.provider,
-          url: event.video_conference.url,
-          meetingId: event.video_conference.meeting_id,
-          password: event.video_conference.password
-        } : null,
+        remainingCapacity: event.remainingCapacity,
+        isBooked: event.isBooked,
+        singleBooking: event.singleBooking,
+        canBook: event.canBook,
+        isPast: event.isPast,
+        assessment: event.assessment,
+        videoConference: event.videoConference,
         type: event.type,
         allDay: true,
         isMultiDay: true,
         multiDayInfo: {
           startTime: startTime.clone().add(index, 'day').format('YYYY-MM-DD hh:mm:ss'),
-          endTime: event.end,
-          dayCount: `(Day ${index}/${dateDifference})`,
-          id: `E${event.id}${index}`
+          endTime: event.endTime,
+          dayCount: `(Day ${index + 1}/${dateDifference})`,
+          id: `E${event.id}${index + 1}`
         }
       };
-      if (index === 1) {
-        eventObj.multiDayInfo.startTime = event.start;
-        eventObj.allDay = event.all_day;
+      if (index === 0) {
+        eventObj.multiDayInfo.startTime = event.startTime;
+        eventObj.allDay = event.allDay;
       }
       if (index === dateDifference) {
-        eventObj.allDay = event.all_day;
+        eventObj.allDay = event.allDay;
       }
       multiDayEvents.push(eventObj);
     }
