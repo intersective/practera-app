@@ -297,4 +297,70 @@ describe('EventListService', () => {
     service.eventDetailPopUp(null);
     expect(notificationSpy.modal.calls.count()).toBe(1);
   });
+
+  describe('when testing timeDisplayed()', () => {
+    const tmpEvent = {
+      activityId: 2,
+      activityName: 'activity2',
+      allDay: false,
+      assessment: null,
+      canBook: true,
+      capacity: 10,
+      description: 'des6',
+      endTime: testUtils.getDateString(5, 1),
+      id: 7,
+      isBooked: false,
+      isMultiDay: true,
+      isPast: false,
+      location: 'location6',
+      multiDayInfo: {
+        dayCount: '(Day 1/2)',
+        endTime: testUtils.getDateString(5, 1),
+        id: 'E71',
+        startTime: testUtils.getDateString(2, 1)
+      },
+      name: 'event6',
+      remainingCapacity: 1,
+      singleBooking: true,
+      startTime: testUtils.getDateString(2, 1),
+      type: null,
+      videoConference: null,
+    };
+
+    afterEach(() => {
+      tmpEvent.startTime = testUtils.getDateString(2, 1);
+      tmpEvent.multiDayInfo.startTime = testUtils.getDateString(2, 1);
+      tmpEvent.allDay = false;
+    });
+
+    it('should return date if event expired', () => {
+      tmpEvent.startTime = testUtils.getDateString(-2, 1);
+      const time = service.timeDisplayed(tmpEvent);
+      expect(time).toEqual(utils.utcToLocal(tmpEvent.startTime, 'date'));
+    });
+
+    it(`should return 'All Day' if event mark as all day`, () => {
+      tmpEvent.allDay = true;
+      const time = service.timeDisplayed(tmpEvent);
+      expect(time).toEqual('All Day');
+    });
+
+    it(`should return time if event is multiday, start time and multi day start time same`, () => {
+      const time = service.timeDisplayed(tmpEvent);
+      expect(time).toEqual(utils.utcToLocal(tmpEvent.startTime, 'time'));
+    });
+
+    it(`should return 'Until time' if event is multiday, end time and multi day start time same`, () => {
+      tmpEvent.startTime = testUtils.getDateString(1, 1);
+      tmpEvent.multiDayInfo.startTime = testUtils.getDateString(5, 1);
+      const time = service.timeDisplayed(tmpEvent);
+      expect(time).toEqual(`Until ${utils.utcToLocal(tmpEvent.startTime, 'time')}`);
+    });
+
+    it(`should return time if event is not multiday`, () => {
+      tmpEvent.startTime = testUtils.getDateString(1, 1);
+      const time = service.timeDisplayed(tmpEvent);
+      expect(time).toEqual(`${utils.utcToLocal(tmpEvent.startTime, 'time')} - ${utils.utcToLocal(tmpEvent.endTime, 'time')}`);
+    });
+  });
 });
