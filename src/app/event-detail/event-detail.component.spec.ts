@@ -376,6 +376,26 @@ describe('EventDetailComponent', () => {
       const result = component.getEventDate();
       expect(result).toBe(expected);
     });
+
+    it(`should use 'multiDayInfo' data if event is multiday event`, () => {
+      tmpEvent.isMultiDay = true;
+      tmpEvent.multiDayInfo = {
+        startTime: testUtils.getDateString(-4, 0),
+        endTime: '',
+        dayCount: '',
+        id: ''
+      };
+      tmpEvent.startTime = testUtils.getDateString(-2, 0);
+      tmpEvent.endTime = testUtils.getDateString(-2, 0);
+      tmpEvent.allDay = false;
+      component.event = tmpEvent;
+      fixture.detectChanges();
+      const startDayTime = `${utils.utcToLocal(tmpEvent.multiDayInfo.startTime, 'date')}, ${utils.utcToLocal(tmpEvent.multiDayInfo.startTime, 'time')}`;
+      const endDayTime = `${utils.utcToLocal(tmpEvent.endTime, 'date')}, ${utils.utcToLocal(tmpEvent.endTime, 'time')}`;
+      expected = `${startDayTime} - ${endDayTime}`;
+      const result = component.getEventDate();
+      expect(result).toBe(expected);
+    });
   });
 
 });
