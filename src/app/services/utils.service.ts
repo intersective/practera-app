@@ -437,8 +437,9 @@ export class UtilsService {
   }
 
   getDateDifference(dateOne: string, datetwo: string) {
-    const startDate = moment(new Date(this.iso8601Formatter(dateOne)), 'DD-MM-YYYY');
-    const endDate = moment(new Date(this.iso8601Formatter(datetwo)), 'DD-MM-YYYY');
-    return endDate.diff(startDate, 'days');
+    const dt1 = new Date(this.iso8601Formatter(dateOne));
+    const dt2 = new Date(this.iso8601Formatter(datetwo));
+    const diff = Date.UTC(dt2.getFullYear(), dt2.getMonth(), dt2.getDate()) - Date.UTC(dt1.getFullYear(), dt1.getMonth(), dt1.getDate());
+    return Math.floor(diff / (1000 * 60 * 60 * 24));
   }
 }

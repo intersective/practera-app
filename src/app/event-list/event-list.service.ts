@@ -256,6 +256,20 @@ export class EventListService {
     if (this.utils.timeComparer(event.startTime) < 0 && !event.isBooked) {
       return this.utils.utcToLocal(event.startTime, 'date');
     }
+    /**
+     * According to requirements.
+     * 1. we are not showing time for multi day event that marked as all day.
+     *  example: event start at 25th and end in 30th.
+     *  - we show time for 25th event item and 30th day event item.
+     *  - we are not showing time for 26th, 27th, 28th, 29th days event items.
+     * 2. If event is all day but not multiday we show 'All Day'.
+     * 3. If event is multiday and it's the starting day we only showing starting time.
+     * 4. If event is multiday and it's the ending day we showing 'Until [end time]'.
+     * 5. For any other condition show both starting time and end time.
+     */
+    if (event.allDay && event.isMultiDay) {
+      return '';
+    }
     if (event.allDay) {
       return 'All Day';
     }
@@ -266,7 +280,7 @@ export class EventListService {
       return `Until ${this.utils.utcToLocal(event.endTime, 'time')}`;
     }
     // otherwise display time only
-    return event.allDay ? 'All Day' : `${this.utils.utcToLocal(event.startTime, 'time')} - ${this.utils.utcToLocal(event.endTime, 'time')}`;
+    return `${this.utils.utcToLocal(event.startTime, 'time')} - ${this.utils.utcToLocal(event.endTime, 'time')}`;
   }
 
   /**
@@ -340,7 +354,7 @@ export class EventListService {
         eventObj.multiDayInfo.startTime = event.startTime;
         eventObj.allDay = event.allDay;
       }
-      if (index === dateDifference) {
+      if (index === (dateDifference - 1)) {
         eventObj.allDay = event.allDay;
       }
       multiDayEvents.push(eventObj);

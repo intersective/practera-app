@@ -209,7 +209,7 @@ describe('EventListService', () => {
           eventObj.multiDayInfo.startTime = multiDayEvent.start;
           eventObj.allDay = multiDayEvent.all_day;
         }
-        if (index === dateDifference) {
+        if (index === (dateDifference - 1)) {
           eventObj.allDay = multiDayEvent.all_day;
         }
         multiDayEvents.push(eventObj);
@@ -217,6 +217,8 @@ describe('EventListService', () => {
       expected = [formatted[2], formatted[1], formatted[3], multiDayEvents[0], multiDayEvents[1], multiDayEvents[2], formatted[4], formatted[0], formatted[5]];
       requestSpy.get.and.returnValue(of(requestResponse));
       service.getEvents(2).subscribe(res => {
+        console.log('res', res);
+        console.log('expected', expected);
         expect(res).toEqual(expected);
       });
     });
@@ -316,6 +318,7 @@ describe('EventListService', () => {
       tmpEvent.startTime = testUtils.getDateString(2, 1);
       tmpEvent.multiDayInfo.startTime = testUtils.getDateString(2, 1);
       tmpEvent.allDay = false;
+      tmpEvent.isMultiDay = true;
     });
 
     it('should return date if event expired', () => {
@@ -324,10 +327,17 @@ describe('EventListService', () => {
       expect(time).toEqual(utils.utcToLocal(tmpEvent.startTime, 'date'));
     });
 
-    it(`should return 'All Day' if event mark as all day`, () => {
+    it(`should return 'All Day' if event mark as all day and multi day is false`, () => {
       tmpEvent.allDay = true;
+      tmpEvent.isMultiDay = false;
       const time = service.timeDisplayed(tmpEvent);
       expect(time).toEqual('All Day');
+    });
+
+    it(`should return '' if event mark as all day and multi day is true`, () => {
+      tmpEvent.allDay = true;
+      const time = service.timeDisplayed(tmpEvent);
+      expect(time).toEqual('');
     });
 
     it(`should return time if event is multiday, start time and multi day start time same`, () => {

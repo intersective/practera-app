@@ -191,16 +191,42 @@ export class EventDetailComponent implements OnInit {
    * @returns {String} Event Date
    */
   getEventDate() {
-    const eventStartTime = this.event.isMultiDay ? this.event.multiDayInfo.startTime : this.event.startTime;
-    const startDate = this.utils.utcToLocal( eventStartTime, 'date');
-    const startTime = this.utils.utcToLocal( eventStartTime, 'time');
+    let startDate = null;
+    let startTime = null;
     const endDate = this.utils.utcToLocal( this.event.endTime, 'date');
     const endTime = this.utils.utcToLocal( this.event.endTime, 'time');
 
+    /**
+     * According to requirements.
+     * For multi day events details we are not showing 'Today', 'Tomorrow'.
+     * - So if event is multi day event date will formated in here without send to util service,
+     * because utill service convert date to 'Today', 'Tomorrow'.
+     * - If the event is not multi day we need to show 'Today', Tomorrow'. because of that we pass it to utill service.
+     */
+    if (this.event.isMultiDay) {
+      const dateObj = new Date(this.utils.iso8601Formatter(this.event.startTime));
+      startTime = new Intl.DateTimeFormat('en-US', {
+        hour12: true,
+        hour: 'numeric',
+        minute: 'numeric'
+      }).format(dateObj);
+      startDate = new Intl.DateTimeFormat('en-GB', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric'
+      }).format(dateObj);
+    } else {
+      startDate = this.utils.utcToLocal( this.event.startTime, 'date');
+      startTime = this.utils.utcToLocal( this.event.startTime, 'time');
+    }
+
+    /**
+     * According to requirements.
+     * For multi day events detils we are not showing 'All day' as time.
+     * So we are only showing 'All Day' if event is not multiday (single day).
+     */
     if (startDate !== endDate) {
-      const startDayTime = this.event.allDay ? `${startDate}, All Day` : `${startDate}, ${startTime}`;
-      const endDayTime = this.event.allDay ? `${endDate}, All Day` : `${endDate}, ${endTime}`;
-      return `${startDayTime} - ${endDayTime}`;
+      return `${startDate}, ${startTime} - ${endDate}, ${endTime}`;
     }
     return this.event.allDay ? `${startDate}, All Day` : `${startDate}, ${startTime} - ${endTime}`;
   }
