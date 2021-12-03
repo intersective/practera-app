@@ -442,4 +442,9 @@ export class UtilsService {
     const diff = Date.UTC(dt2.getFullYear(), dt2.getMonth(), dt2.getDate()) - Date.UTC(dt1.getFullYear(), dt1.getMonth(), dt1.getDate());
     return Math.floor(diff / (1000 * 60 * 60 * 24));
   }
+
+  getFutureDated(date: string, dayCount: number) {
+    const currentDate = moment(date);
+    return currentDate.clone().add(dayCount, 'day').format('YYYY-MM-DD hh:mm:ss');
+  }
 }
