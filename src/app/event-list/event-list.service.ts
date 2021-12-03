@@ -121,8 +121,7 @@ export class EventListService {
           !this.utils.has(event, 'remaining_capacity') ||
           !this.utils.has(event, 'is_booked') ||
           !this.utils.has(event, 'can_book') ||
-          !this.utils.has(event, 'single_booking') ||
-          !this.utils.has(event, 'all_day')) {
+          !this.utils.has(event, 'single_booking')) {
         // API respond format inconsistency error
         return this.request.apiResponseFormatError('Event object format error');
       }
@@ -153,7 +152,7 @@ export class EventListService {
           password: event.video_conference.password
         } : null,
         type: event.type,
-        allDay: event.all_day
+        allDay: event.all_day ? event.all_day : false
       };
       if (!this._checkIsSingleDay(eventObj) && (this.utils.timeComparer(eventObj.startTime) >= 0)) {
         events = events.concat(this._getMultiDayEvent(eventObj));
