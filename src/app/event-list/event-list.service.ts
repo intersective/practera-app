@@ -7,8 +7,6 @@ import { BrowserStorageService } from '@services/storage.service';
 import { NotificationService } from '@shared/notification/notification.service';
 import { EventDetailComponent } from '@app/event-detail/event-detail.component';
 
-import * as moment from 'moment';
-
 /**
  * @name api
  * @description list of api endpoint involved in this service
@@ -157,9 +155,8 @@ export class EventListService {
         type: event.type,
         allDay: event.all_day
       };
-      if (!this._checkIsSingleDay(eventObj) && !(this.utils.timeComparer(eventObj.startTime) < 0)) {
-        const multidayEvents = this._getMultiDayEvent(eventObj);
-        events = events.concat(multidayEvents);
+      if (!this._checkIsSingleDay(eventObj) && (this.utils.timeComparer(eventObj.startTime) >= 0)) {
+        events = events.concat(this._getMultiDayEvent(eventObj));
       } else {
         events.push(eventObj);
       }
@@ -322,7 +319,6 @@ export class EventListService {
     const multiDayEvents: Array<Event> = [];
     let eventObj = null;
     for (let index = 0; index < dateDifference; index++) {
-      const startTime = moment(event.startTime);
       eventObj = {
         id: event.id,
         name: event.name,
@@ -344,7 +340,7 @@ export class EventListService {
         allDay: true,
         isMultiDay: true,
         multiDayInfo: {
-          startTime: startTime.clone().add(index, 'day').format('YYYY-MM-DD hh:mm:ss'),
+          startTime: this.utils.getFutureDated(event.startTime, index),
           endTime: event.endTime,
           dayCount: `(Day ${index + 1}/${dateDifference})`,
           id: `E${event.id}${index + 1}`

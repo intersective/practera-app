@@ -528,4 +528,11 @@ describe('UtilsService', () => {
       expect(difference).toEqual(3);
     });
   });
+
+  describe('getFutureDated()', () => {
+    it('should return future date from the date it get', () => {
+      const date = service.getFutureDated('2021-11-25 05:18:00', 2);
+      expect(date).toEqual('2021-11-27 05:18:00');
+    });
+  });
 });
