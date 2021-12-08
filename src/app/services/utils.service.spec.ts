@@ -521,4 +521,18 @@ describe('UtilsService', () => {
       expect(typeof randomNumber === 'number').toBeTruthy();
     });
   });
+
+  describe('getDateDifference()', () => {
+    it('should return difference between two dates', () => {
+      const difference = service.getDateDifference('2021-11-25 05:18:00', '2021-11-28 05:18:00');
+      expect(difference).toEqual(3);
+    });
+  });
+
+  describe('getFutureDated()', () => {
+    it('should return future date from the date it get', () => {
+      const date = service.getFutureDated('2021-11-25 05:18:00', 2);
+      expect(date).toEqual('2021-11-27 05:18:00');
+    });
+  });
 });

@@ -365,17 +365,6 @@ describe('EventDetailComponent', () => {
       const result = component.getEventDate();
       expect(result).toBe(expected);
     });
-
-    it(`should return start and end date with 'All Day' as time`, () => {
-      tmpEvent.startTime = testUtils.getDateString(-2, 0);
-      tmpEvent.endTime = testUtils.getDateString(-4, 0);
-      tmpEvent.allDay = true;
-      component.event = tmpEvent;
-      expected = `${utils.utcToLocal(tmpEvent.startTime, 'date')}, All Day - ${utils.utcToLocal(tmpEvent.endTime, 'date')}, All Day`;
-      fixture.detectChanges();
-      const result = component.getEventDate();
-      expect(result).toBe(expected);
-    });
   });
 
 });
