@@ -16,6 +16,8 @@ export class EventsComponent extends RouterEnter {
   activityId: number;
   // Event id. Used to highlight the event in the list
   eventId: number;
+  // multi day id. Used to highlight the event in the list if event is multiday event
+  multiDayId: string;
   // The object of current event. Used to display the event detail
   currentEvent: Event;
   // check-in assessment id. If null, don't display assessment component
@@ -53,6 +55,7 @@ export class EventsComponent extends RouterEnter {
   goto(event) {
     this.currentEvent = event;
     this.eventId = event ? event.id : 0;
+    this.multiDayId = event && event.isMultiDay ? event.multiDayInfo.id : 0;
     // not displaying the check-in assessment
     this.assessmentId = null;
     this.contextId = null;
