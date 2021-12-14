@@ -222,11 +222,16 @@ export class EventDetailComponent implements OnInit {
 
     /**
      * According to requirements.
-     * For multi day events detils we are not showing 'All day' as time.
-     * So we are only showing 'All Day' if event is not multiday (single day).
+     * For multi day events detils.
+     *  - If in main event details is All day we show "All Day".
+     *  - If the event is just middle day of multi day event we are not puting "All Day"
+     *  - for other multiday events we show start date and end date with start time and end time.
+     * For single day event details.
+     *  - If the event is All day we show "All Day".
+     *  - If the event is not All day we show date with start and end time.
      */
     if (startDate !== endDate) {
-      return `${startDate}, ${startTime} - ${endDate}, ${endTime}`;
+      return this.event.allDay ? `${startDate}, All Day - ${endDate}, All Day` : `${startDate}, ${startTime} - ${endDate}, ${endTime}`;
     }
     return this.event.allDay ? `${startDate}, All Day` : `${startDate}, ${startTime} - ${endTime}`;
   }
