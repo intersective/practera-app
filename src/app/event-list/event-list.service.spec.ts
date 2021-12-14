@@ -177,7 +177,7 @@ describe('EventListService', () => {
       const multiDayEvents: Array<Event> = [];
       let eventObj = null;
       for (let index = 0; index < dateDifference; index++) {
-        const startTime = moment(multiDayEvent.start);
+        const startTime = moment(utils.iso8601Formatter(multiDayEvent.start));
         eventObj = {
           id: multiDayEvent.id,
           name: multiDayEvent.title,
@@ -202,15 +202,18 @@ describe('EventListService', () => {
             startTime: startTime.clone().add(index, 'day').format('YYYY-MM-DD hh:mm:ss'),
             endTime: multiDayEvent.end,
             dayCount: `(Day ${index + 1}/${dateDifference})`,
-            id: `E${multiDayEvent.id}${index + 1}`
+            id: `E${multiDayEvent.id}${index + 1}`,
+            isMiddleDay: true
           }
         };
         if (index === 0) {
           eventObj.multiDayInfo.startTime = multiDayEvent.start;
+          eventObj.multiDayInfo.isMiddleDay = false;
           eventObj.allDay = multiDayEvent.all_day;
         }
         if (index === (dateDifference - 1)) {
           eventObj.allDay = multiDayEvent.all_day;
+          eventObj.multiDayInfo.isMiddleDay = false;
         }
         multiDayEvents.push(eventObj);
       }
@@ -304,7 +307,8 @@ describe('EventListService', () => {
         dayCount: '(Day 1/2)',
         endTime: testUtils.getDateString(5, 1),
         id: 'E71',
-        startTime: testUtils.getDateString(2, 1)
+        startTime: testUtils.getDateString(2, 1),
+        isMiddleDay: false
       },
       name: 'event6',
       remainingCapacity: 1,
@@ -319,6 +323,7 @@ describe('EventListService', () => {
       tmpEvent.multiDayInfo.startTime = testUtils.getDateString(2, 1);
       tmpEvent.allDay = false;
       tmpEvent.isMultiDay = true;
+      tmpEvent.multiDayInfo.isMiddleDay = false;
     });
 
     it('should return date if event expired', () => {
@@ -334,8 +339,8 @@ describe('EventListService', () => {
       expect(time).toEqual('All Day');
     });
 
-    it(`should return '' if event mark as all day and multi day is true`, () => {
-      tmpEvent.allDay = true;
+    it(`should return '' if event mark as middle day and multi day is true`, () => {
+      tmpEvent.multiDayInfo.isMiddleDay = true;
       const time = service.timeDisplayed(tmpEvent);
       expect(time).toEqual('');
     });

@@ -444,7 +444,7 @@ export class UtilsService {
   }
 
   getFutureDated(date: string, dayCount: number) {
-    const currentDate = moment(date);
+    const currentDate = moment(this.iso8601Formatter(date));
     return currentDate.clone().add(dayCount, 'day').format('YYYY-MM-DD hh:mm:ss');
   }
 }
