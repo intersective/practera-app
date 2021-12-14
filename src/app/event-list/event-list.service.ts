@@ -54,6 +54,7 @@ export interface Event {
     endTime: string;
     dayCount: string;
     id: string;
+    isMiddleDay: boolean;
   };
 }
 
@@ -254,7 +255,7 @@ export class EventListService {
     }
     /**
      * According to requirements.
-     * 1. we are not showing time for multi day event that marked as all day.
+     * 1. we are not showing time for multi day event that are middle days (isMiddleDay is true).
      *  example: event start at 25th and end in 30th.
      *  - we show time for 25th event item and 30th day event item.
      *  - we are not showing time for 26th, 27th, 28th, 29th days event items.
@@ -263,7 +264,7 @@ export class EventListService {
      * 4. If event is multiday and it's the ending day we showing 'Until [end time]'.
      * 5. For any other condition show both starting time and end time.
      */
-    if (event.allDay && event.isMultiDay) {
+    if (event.isMultiDay && event.multiDayInfo && event.multiDayInfo.isMiddleDay) {
       return '';
     }
     if (event.allDay) {
@@ -342,15 +343,18 @@ export class EventListService {
           startTime: this.utils.getFutureDated(event.startTime, index),
           endTime: event.endTime,
           dayCount: `(Day ${index + 1}/${dateDifference})`,
-          id: `E${event.id}${index + 1}`
+          id: `E${event.id}${index + 1}`,
+          isMiddleDay: true
         }
       };
       if (index === 0) {
         eventObj.multiDayInfo.startTime = event.startTime;
+        eventObj.multiDayInfo.isMiddleDay = false;
         eventObj.allDay = event.allDay;
       }
       if (index === (dateDifference - 1)) {
         eventObj.allDay = event.allDay;
+        eventObj.multiDayInfo.isMiddleDay = false;
       }
       multiDayEvents.push(eventObj);
     }

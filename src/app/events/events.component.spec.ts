@@ -110,7 +110,8 @@ describe('EventsComponent', () => {
         startTime: '',
         endTime: '',
         dayCount: '',
-        id: 'E12345'
+        id: 'E12345',
+        isMiddleDay: false
       }
     };
     component.goto(event);
