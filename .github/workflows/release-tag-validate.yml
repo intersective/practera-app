@@ -116,7 +116,7 @@ jobs:
           MATRIX_CONTEXT: ${{ toJson(matrix) }} # required
         with:
           status: ${{ job.status }}
-          author_name: New tag creation failed; package/composer.json version id ${{env.NEW_TAG_VERSION}}; git latest tag id ${{env.CURRENT_TAG_VERSION}}  mismatch - ${{ env.ERR_MSG }}
+          author_name: New tag creation failed; package.json version id ${{env.NEW_TAG_VERSION}}; git latest tag id ${{env.CURRENT_TAG_VERSION}}  mismatch - ${{ env.ERR_MSG }}
           mention: 'here'
           if_mention: failure,cancelled
           job_name: release-tag-validate-pr # Match the name above.
