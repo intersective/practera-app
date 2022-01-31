@@ -185,7 +185,7 @@ jobs:
 # #  STATUS VARIABLE UPDATE
 # ################################################ 
       - name: Deployment status variable update
-        if: ${{ failure() }}
+        # if: ${{ failure() }}
         run: |
           echo "STATUS=FAILURE" >> $GITHUB_ENV
           echo "PR commit message is : "$(git log -1 --format=%s)
