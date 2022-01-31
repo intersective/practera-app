@@ -18,9 +18,9 @@ on:
   workflow_dispatch:
     inputs:
       RELEASE_BRANCH:
-        description: '# Allowed values are : trunk/stable only'     
+        description: '# Allowed values are : trunk,stable only'     
         required: true
-        default: 'stable'
+        default: 'trunk'
 
 
 ################################################
@@ -157,7 +157,7 @@ jobs:
           MATRIX_CONTEXT: ${{ toJson(matrix) }} # required
         with:
           status: ${{ job.status }}
-          author_name: create tag failed; package/composer.json version id ${{env.NEW_TAG_VERSION}}; git latest tag id ${{env.CURRENT_TAG_VERSION}}  mismatch - ${{ env.ERR_MSG }}
+          author_name: create tag failed; package.json version id ${{env.NEW_TAG_VERSION}}; git latest tag id ${{env.CURRENT_TAG_VERSION}}  mismatch - ${{ env.ERR_MSG }}
           mention: 'here'
           if_mention: failure,cancelled
           job_name: create-release-tag # Match the name above.
