@@ -188,8 +188,8 @@ jobs:
         # if: ${{ failure() }}
         run: |
           echo "STATUS=FAILURE" >> $GITHUB_ENV
-          echo "PR commit message is : "$(git log -1 --format=%s)
-          echo "Github PR actor is : ${{ github.actor }}
+          echo "PR commit message is : "$(git log -2 --format=%s)
+          echo "Github PR actor is ": ${{ github.actor }}
 
 # # ################################################
 # # #  DEVOPS-DEPLOYMENT REPORT
