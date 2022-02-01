@@ -14,14 +14,6 @@ on:
         description: 'New tag version based on create-release-tag workflow'     
         required: true
         default: ''
-      REQUESTOR:
-        description: 'Requestor Name'     
-        required: true
-        default: ''
-      REASON:
-        description: 'Reason for deployment'     
-        required: true
-        default: ''
 
 
 ################################################
@@ -31,6 +23,7 @@ jobs:
   deploy-p1-us-live:
     name: release-us
     runs-on: ubuntu-latest
+    timeout-minutes: 15
 
 ################################################
 #  GITHUB ACTIONS GLOBAL ENV VARIABLES  
@@ -271,8 +264,13 @@ jobs:
         run: |
           pip install --upgrade pip
           pip install --upgrade csvtotable
+          export REASON=$(git log -2 --format=%s | sed -n 2p)
+          export REQUESTOR=${{ github.actor }}
+
           aws s3 cp s3://$STATUSREPORTS3Bucket/deploy-reporting.sh deploy-reporting.sh
           chmod +x deploy-reporting.sh && ./deploy-reporting.sh
           echo "LINK="${GITHUB_REPOSITORY##*/}.html >> $GITHUB_ENV
+          echo $REASON
+          echo $REQUESTOR
         env:
           STACK_NAME: p1-us
