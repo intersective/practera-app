@@ -5,11 +5,13 @@ enableLocalInstallationFallback: true
 
 
 provider:
+  logRetentionInDays: 90 # Set the default RetentionInDays for a CloudWatch LogGroup
   name: aws
   runtime: nodejs14.x
   region: ${env:REGION}
   stage: ${env:ENV}
   deploymentBucket:
+    maxPreviousDeploymentArtifacts: 10 # On every deployment the framework prunes the bucket to remove artifacts older than this limit. The default is 5
     blockPublicAccess: true 
     serverSideEncryption: AES256 
     tags: 
@@ -24,8 +26,6 @@ provider:
     StackName: ${env:STACK_NAME}
     Env: ${env:ENV}
     RootStack: ${env:ROOTSTACK}
-  notificationArns:
-    - ${env:ChatBotSNSTopicARN}
 
 
 resources:
@@ -37,15 +37,16 @@ resources:
     HasVersioning: !Equals [ '${env:S3VERSIONING}', true]
     HadVersioning: !Equals [ '${env:S3VERSIONING}', 'false-but-was-true']
     HasNoncurrentVersionExpirationInDays: !Not [!Equals [ '${env:NONCURRENTVERSION_EXPIREINDAYS}', 0]]
-   
-    
+    LiveServerOnly: !Equals [ '${env:ENV}', 'live']
+  
+
   Resources:
     AppV2S3Bucket:
       Type: AWS::S3::Bucket
       Properties:
         BucketName: !If [HasAPPv2BucketName, '${env:APPV2S3BUCKET}', !Ref 'AWS::NoValue']
-        BucketEncryption: 
-          ServerSideEncryptionConfiguration: 
+        BucketEncryption:
+          ServerSideEncryptionConfiguration:
           - ServerSideEncryptionByDefault:
               SSEAlgorithm: AES256
         LifecycleConfiguration:
@@ -72,7 +73,7 @@ resources:
             Effect: Allow
             Resource: !Sub 'arn:aws:s3:::${AppV2S3Bucket}/*'
             Principal:
-              CanonicalUser: !GetAtt AppV2CloudFrontOriginAccessIdentity.S3CanonicalUserId 
+              CanonicalUser: !GetAtt AppV2CloudFrontOriginAccessIdentity.S3CanonicalUserId
           - Sid: AllowSSLRequestsOnly # AWS Foundational Security Best Practices v1.0.0 S3.5
             Effect: Deny
             Principal: '*'
@@ -142,41 +143,38 @@ resources:
             MinimumProtocolVersion: 'TLSv1.2_2021'  # OLD VALUE:'TLSv1.2_2019'
             SslSupportMethod: 'sni-only'
 
-
-
-
     # Specifying the CloudFront Distribution Security Response Header
     GlobalAppV2CloudFrontSecurityHeaderResponse:
       Type: AWS::CloudFront::ResponseHeadersPolicy
-      Properties: 
-        ResponseHeadersPolicyConfig: 
+      Properties:
+        ResponseHeadersPolicyConfig:
           Comment: "practera-security-headers-for-${env:APPV2S3BUCKET}"
           Name: "practera-security-headers-for-GlobalAPPv2"
-          SecurityHeadersConfig: 
-            StrictTransportSecurity: 
+          SecurityHeadersConfig:
+            StrictTransportSecurity:
               AccessControlMaxAgeSec: 31536000
               IncludeSubdomains: true
               Override: true
               Preload: true
-            ContentSecurityPolicy: 
+            ContentSecurityPolicy:
               ContentSecurityPolicy: "frame-ancestors 'self' https://*.practera.com;"
               Override: true
-            ContentTypeOptions: 
+            ContentTypeOptions:
               Override: true
-            ReferrerPolicy: 
+            ReferrerPolicy:
               ReferrerPolicy: "strict-origin-when-cross-origin"
               Override: true
-            XSSProtection: 
+            XSSProtection:
               ModeBlock: true
               Override: true
               Protection: true
-          CustomHeadersConfig: 
-            Items: 
-              - 
+          CustomHeadersConfig:
+            Items:
+              -
                 Header: "Server"
                 Override: true
-                Value: "Practera"
-              -  
+                Value: "Server"
+              -
                 Header: "Permissions-Policy"
                 Override: true
                 Value: "accelerometer=(),camera=(),geolocation=(),gyroscope=(),magnetometer=(),microphone=(),payment=(),usb=()"
@@ -197,6 +195,7 @@ resources:
 
 
     HTTPCode4XXTooHighAlarm:
+      Condition: LiveServerOnly
       Type: 'AWS::CloudWatch::Alarm'
       Properties:
         AlarmDescription: '${env:APPV2S3BUCKET} - receives 4XX HTTP status codes from CDN'
@@ -216,8 +215,9 @@ resources:
           Value: !Ref AppV2CloudFrontDistribution
         TreatMissingData: notBreaching
         Unit: Percent
-    
+
     HTTPCode5XXTooHighAlarm:
+      Condition: LiveServerOnly
       Type: 'AWS::CloudWatch::Alarm'
       Properties:
         AlarmDescription: '${env:APPV2S3BUCKET} - receives 5XX HTTP status codes from CDN'
@@ -239,6 +239,7 @@ resources:
         Unit: Percent
 
     HTTPCodeTotalErrorRateTooHighAlarm:
+      Condition: LiveServerOnly
       Type: 'AWS::CloudWatch::Alarm'
       Properties:
         AlarmDescription: '${env:APPV2S3BUCKET} - receives Total Error Rate HTTP status codes from CDN'
@@ -260,14 +261,14 @@ resources:
         Unit: Percent
 
 
-  # FILE storage Bucket 
+  # FILE storage Bucket
     FileV2S3Bucket:
       Condition: HasFilev2BucketAlreadyExist
       Type: AWS::S3::Bucket
       Properties:
         BucketName: !If [HasFilev2BucketName, '${env:FILESS3BUCKET}', !Ref 'AWS::NoValue']
-        BucketEncryption: 
-          ServerSideEncryptionConfiguration: 
+        BucketEncryption:
+          ServerSideEncryptionConfiguration:
           - ServerSideEncryptionByDefault:
               SSEAlgorithm: AES256
         LifecycleConfiguration:
@@ -281,25 +282,25 @@ resources:
         CorsConfiguration:
           CorsRules:
             -
-              AllowedOrigins: 
+              AllowedOrigins:
                 - 'https://*.practera.app'
-              AllowedMethods: 
+              AllowedMethods:
                 - POST
                 - GET
                 - PUT
-              AllowedHeaders: 
+              AllowedHeaders:
                 - '*'
               Id: CORSRule1
               MaxAge: 3000
               ExposedHeaders: [ETag]
             -
-              AllowedOrigins: 
+              AllowedOrigins:
                 - 'https://*.practera.com'
-              AllowedMethods: 
+              AllowedMethods:
                 - POST
                 - GET
                 - PUT
-              AllowedHeaders: 
+              AllowedHeaders:
                 - '*'
               Id: CORSRule2
               MaxAge: 3000
@@ -314,30 +315,30 @@ resources:
         PolicyDocument:
           Statement:
           - Sid: S3-Bucket-Accesible to filestack uploads
-            Action: 
+            Action:
               - 's3:PutObjectAcl'
               - 's3:PutObject'
               - 's3:GetObject'
             Effect: Allow
-            Resource: 
+            Resource:
             - !Sub 'arn:aws:s3:::${FileV2S3Bucket}'
             - !Sub 'arn:aws:s3:::${FileV2S3Bucket}/*'
             Principal:
-              AWS: 
+              AWS:
                 - 'arn:aws:iam::${env:FILESTACKAWSID}:user/filestack-uploads'
           - Sid: S3-Bucket-Accesible to main practera account
-            Action: 
+            Action:
               - 's3:PutObjectAcl'
               - 's3:PutObject'
               - 's3:GetObject'
             Effect: Allow
-            Resource: 
+            Resource:
             - !Sub 'arn:aws:s3:::${FileV2S3Bucket}'
             - !Sub 'arn:aws:s3:::${FileV2S3Bucket}/*'
             Principal:
-              AWS: 
+              AWS:
                 - 'arn:aws:iam::${env:P1STACKAWSID}:user/practera'
-          
+
 
   Outputs:
     AppV2CloudFrontDistributionOutput:
@@ -345,7 +346,7 @@ resources:
         'Fn::GetAtt': [ AppV2CloudFrontDistribution, DomainName ]
       Export:
         Name: ${env:STACK_NAME}-GlobalAppV2CloudFrontDistributionOutput-${env:ENV}
-    
+
     AppV2S3Bucket:
       Description: 'Name of the S3 bucket storing the static files.'
       Value: !Ref AppV2S3Bucket
