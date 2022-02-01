@@ -5,11 +5,13 @@ enableLocalInstallationFallback: true
 
 
 provider:
+  logRetentionInDays: 90 # Set the default RetentionInDays for a CloudWatch LogGroup
   name: aws
   runtime: nodejs14.x
   region: ${env:REGION}
   stage: ${env:ENV}
   deploymentBucket:
+    maxPreviousDeploymentArtifacts: 10 # On every deployment the framework prunes the bucket to remove artifacts older than this limit. The default is 5
     blockPublicAccess: true 
     serverSideEncryption: AES256 
     tags: 
@@ -24,8 +26,6 @@ provider:
     StackName: ${env:STACK_NAME}
     Env: ${env:ENV}
     RootStack: ${env:ROOTSTACK}
-  notificationArns:
-    - ${env:ChatBotSNSTopicARN}
 
 
 resources:
@@ -37,7 +37,8 @@ resources:
     HasVersioning: !Equals [ '${env:S3VERSIONING}', true]
     HadVersioning: !Equals [ '${env:S3VERSIONING}', 'false-but-was-true']
     HasNoncurrentVersionExpirationInDays: !Not [!Equals [ '${env:NONCURRENTVERSION_EXPIREINDAYS}', 0]]
-   
+    LiveServerOnly: !Equals [ '${env:ENV}', 'live']
+  
     
   Resources:
     AppV2S3Bucket:
@@ -173,7 +174,7 @@ resources:
               - 
                 Header: "Server"
                 Override: true
-                Value: "Practera"
+                Value: "Server"
               -  
                 Header: "Permissions-Policy"
                 Override: true
@@ -194,6 +195,7 @@ resources:
 
 
     HTTPCode4XXTooHighAlarm:
+      Condition: LiveServerOnly
       Type: 'AWS::CloudWatch::Alarm'
       Properties:
         AlarmDescription: '${env:APPV2S3BUCKET} - receives 4XX HTTP status codes from CDN'
@@ -215,6 +217,7 @@ resources:
         Unit: Percent
     
     HTTPCode5XXTooHighAlarm:
+      Condition: LiveServerOnly
       Type: 'AWS::CloudWatch::Alarm'
       Properties:
         AlarmDescription: '${env:APPV2S3BUCKET} - receives 5XX HTTP status codes from CDN'
@@ -236,6 +239,7 @@ resources:
         Unit: Percent
 
     HTTPCodeTotalErrorRateTooHighAlarm:
+      Condition: LiveServerOnly
       Type: 'AWS::CloudWatch::Alarm'
       Properties:
         AlarmDescription: '${env:APPV2S3BUCKET} - receives Total Error Rate HTTP status codes from CDN'
