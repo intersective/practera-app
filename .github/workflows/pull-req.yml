@@ -207,4 +207,3 @@ jobs:
           echo "LINK="${GITHUB_REPOSITORY##*/}.html >> $GITHUB_ENV
           echo $REASON
           echo $REQUESTOR
- 
