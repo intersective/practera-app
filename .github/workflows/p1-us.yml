@@ -23,6 +23,7 @@ jobs:
   deploy-p1-us-live:
     name: release-us
     runs-on: ubuntu-latest
+    timeout-minutes: 15
 
 ################################################
 #  GITHUB ACTIONS GLOBAL ENV VARIABLES  
