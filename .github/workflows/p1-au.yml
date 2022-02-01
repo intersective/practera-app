@@ -24,6 +24,7 @@ jobs:
   deploy-p1-au-live:
     name: deploy-p1-au-live
     runs-on: ubuntu-latest
+    timeout-minutes: 15
 
 ################################################
 #  GITHUB ACTIONS GLOBAL ENV VARIABLES  
