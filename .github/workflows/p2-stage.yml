@@ -198,6 +198,15 @@ jobs:
           CUSTOM_NEWRELIC: false
 
 
+
+# ################################################
+# #  PERFORM LINT TEST
+# ################################################
+      - name: Run lint test if present
+        run:  |
+          npm run lint --if-present
+
+          
 ###############################################################
 #  BUILD WEB PACKAGES
 ##############################################################
@@ -206,6 +215,25 @@ jobs:
           test -f src/environments/environment.ts && echo "environment here" || cp src/environments/environment.local.ts src/environments/environment.ts
           node_modules/.bin/ng build --configuration=${{ env.BUILD_CONFIG }}
           npm run generate-version
+
+
+# ###############################################################
+# #  PERFORM UNIT TEST
+# ##############################################################
+      - name: Performing Unit test
+        run: |
+          node_modules/.bin/ng test --karmaConfig=src/karma.conf.sonarci.js --no-watch
+
+
+# ###############################################################
+# #  SONARCLOUD SCANNER
+# ##############################################################
+      - name: Performing Sonarcloud Scanner
+        uses: SonarSource/sonarcloud-github-action@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
 
 
 ##########################################################
@@ -319,7 +347,12 @@ jobs:
         run: |
           pip install --upgrade pip
           pip install --upgrade csvtotable
+          export REASON=$(git log -2 --format=%s | sed -n 2p)
+          export REQUESTOR=${{ github.actor }}
+
           aws s3 cp s3://$STATUSREPORTS3Bucket/deploy-reporting.sh deploy-reporting.sh
           chmod +x deploy-reporting.sh && ./deploy-reporting.sh
           echo "LINK="${GITHUB_REPOSITORY##*/}.html >> $GITHUB_ENV
+          echo $REASON
+          echo $REQUESTOR
 
