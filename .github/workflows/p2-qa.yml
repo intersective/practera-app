@@ -318,6 +318,11 @@ jobs:
         run: |
           pip install --upgrade pip
           pip install --upgrade csvtotable
+          export REASON=$(git log -2 --format=%s | sed -n 2p)
+          export REQUESTOR=${{ github.actor }}
+
           aws s3 cp s3://$STATUSREPORTS3Bucket/deploy-reporting.sh deploy-reporting.sh
           chmod +x deploy-reporting.sh && ./deploy-reporting.sh
           echo "LINK="${GITHUB_REPOSITORY##*/}.html >> $GITHUB_ENV
+          echo $REASON
+          echo $REQUESTOR
