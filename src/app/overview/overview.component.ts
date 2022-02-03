@@ -5,6 +5,7 @@ import { BrowserStorageService } from '@services/storage.service';
 import { UtilsService } from '@services/utils.service';
 import { combineLatest, Observable, of } from 'rxjs';
 import { FastFeedbackService } from '../fast-feedback/fast-feedback.service';
+import { OverviewService } from './overview.service';
 
 @Component({
   selector: 'app-overview',
@@ -22,6 +23,7 @@ export class OverviewComponent implements OnInit {
     private route: ActivatedRoute,
     private fastFeedbackService: FastFeedbackService,
     readonly sharedService: SharedService,
+    private overviewService: OverviewService
   ) {
     this.isMobile = this.utils.isMobile();
   }
@@ -31,6 +33,7 @@ export class OverviewComponent implements OnInit {
       await this.sharedService.getTeamInfo().toPromise(); // update team info
       this.programName = this.storage.getUser().programName;
       this.fastFeedbackService.pullFastFeedback().subscribe();
+      this.overviewService.getProgress().subscribe();
     });
   }
 }
