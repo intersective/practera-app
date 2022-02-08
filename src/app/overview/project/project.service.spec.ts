@@ -50,14 +50,12 @@ describe('ProjectService', () => {
             name: 'm' + i,
             description: 'des' + i,
             isLocked: false,
-            progress: (i + 1) / 10,
             activities: Array.from({length: 3}, (y, j) => {
               return {
                 id: i * 10 + j + 1,
                 name: 'activity name' + j,
                 isLocked: false,
-                leadImage: '',
-                progress: (i * 10 + j + 1) / 100,
+                leadImage: ''
               };
             })
           };
@@ -70,14 +68,12 @@ describe('ProjectService', () => {
         name: 'm' + i,
         description: 'des' + i,
         isLocked: false,
-        progress: (i + 1) / 10,
         Activity: Array.from({length: 3}, (y, j) => {
           return {
             id: i * 10 + j + 1,
             name: 'activity name' + j,
             isLocked: false,
-            leadImage: '',
-            progress: (i * 10 + j + 1) / 100,
+            leadImage: ''
           };
         })
       };
