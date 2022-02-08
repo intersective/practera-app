@@ -116,7 +116,8 @@ describe('HomeComponent', () => {
               name: 'Test User',
               email: 'user@test.com',
               id: 1
-            }
+            },
+            'get': {}
           })
         },
         {
@@ -144,11 +145,14 @@ describe('HomeComponent', () => {
     component.refresh = of(true);
     homeServiceSpy.getTodoItems.and.returnValue(of([]));
     homeServiceSpy.getChatMessage.and.returnValue(of([]));
-    // homeServiceSpy.getProgramName.and.returnValue(of('Test Program'));
-    homeServiceSpy.getProgress.and.returnValue(of(10));
     achieventsServiceSpy.getAchievements.and.returnValue(of([]));
     eventsServiceSpy.getEvents.and.returnValue(of([]));
     fastFeedbackServiceSpy.pullFastFeedback.and.returnValue(of({}));
+    storageServiceSpy.get.and.returnValue({
+      project: {
+        progress: 0.10
+      }
+    });
   });
 
   it('should create', () => {
@@ -206,6 +210,15 @@ describe('HomeComponent', () => {
       expect(homeServiceSpy.getReminderEvent.calls.count()).toBe(1, '1 service call');
       expect(component.eventReminders.length).toEqual(1, '1 event reminder');
       expect(page.todoCards.length).toBe(5);
+
+      utils.broadcastEvent('progress:update', {
+        project: {
+          progress: 0.15
+        }
+      });
+      // fixture.detectChanges();
+      expect(component.progressConfig).toEqual({percent: 15});
+      expect(component.loadingProgress).toBe(false, 'progress loaded');
     });
   });
 
@@ -270,13 +283,6 @@ describe('HomeComponent', () => {
       expect(component.todoItems.length).toEqual(0, 'no todo item');
       expect(homeServiceSpy.getChatMessage).toHaveBeenCalled();
       expect(page.todoCards.length).toBe(1, '1 todo card');
-    });
-
-    it('should get the correct progress', () => {
-      fixture.detectChanges();
-      expect(component.progressConfig).toEqual({percent: 10});
-      expect(homeServiceSpy.getProgress.calls.count()).toBe(1, 'one call');
-      expect(component.loadingProgress).toBe(false, 'progress loaded');
     });
 
     it('should not display achievement if there\'s no achievement', () => {
@@ -566,6 +572,35 @@ describe('HomeComponent', () => {
       spyOn(utils, 'isMobile').and.returnValue(false);
       component.showEventDetail({id: 1234});
       expect(routerSpy.navigate.calls.first().args[0]).toEqual(['app', 'events', {event_id: 1234}]);
+    });
+  });
+
+  describe('when testing updateProgress()', () => {
+    it('should get the progress data from local stroage if no data pass to method', () => {
+      storageServiceSpy.get.and.returnValue({
+        project: {
+          progress: 0.10
+        }
+      });
+      component.updateProgress();
+      expect(component.progress).toEqual(10);
+      expect(component.progressConfig).toEqual({percent: 10});
+      expect(component.loadingProgress).toBe(false, 'progress loaded');
+    });
+    it('should get the progress data from passed data if data pass to method', () => {
+      storageServiceSpy.get.and.returnValue({
+        project: {
+          progress: 0.10
+        }
+      });
+      component.updateProgress({
+        project: {
+          progress: 0.15
+        }
+      });
+      expect(component.progress).toEqual(15);
+      expect(component.progressConfig).toEqual({percent: 15});
+      expect(component.loadingProgress).toBe(false, 'progress loaded');
     });
   });
 

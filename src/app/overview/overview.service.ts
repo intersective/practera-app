@@ -28,7 +28,7 @@ export class OverviewService {
     private utils: UtilsService,
   ) { }
 
-  public getProgress() {
+  getProgress(): Observable<any> {
     return this.request.graphQLWatch(
     `query {
         project {
@@ -42,28 +42,16 @@ export class OverviewService {
           }
         }
       }`,
-    ).pipe(map(res => {
-      this._normaliseProgress(res.data);
-    }));
+    ).pipe(map(res => this._normaliseProgress(res.data)));
   }
 
-  private _normaliseProgress(data) {
+  private _normaliseProgress(data): Array<Milestone> {
     if (data) {
-      (data.project.milestones || []).map(m => {
-        return {
-          id: m.id,
-          progress: m.progress,
-          Activity: (m.activities === null ? [] : m.activities).map(a => {
-            return {
-              id: a.id,
-              progress: a.progress,
-            };
-          })
-        };
-      });
       this.storage.set('progress', data);
       this.utils.broadcastEvent('progress:update', data);
+      return data;
     }
+    return null;
   }
 
 }

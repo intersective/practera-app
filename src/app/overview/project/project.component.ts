@@ -175,8 +175,9 @@ export class ProjectComponent implements OnInit {
     if (!data) {
       fullProgressData = this.storage.get('progress') ? this.storage.get('progress') : {};
     }
-    const milestonesProgress = fullProgressData.project.milestones;
-    milestonesProgress.forEach(mp => {
+    if (fullProgressData.project) {
+      const milestonesProgress = fullProgressData.project.milestones;
+      milestonesProgress.forEach(mp => {
       this.milestones.map(m => {
         if (m.id === mp.id) {
           m.progress = mp.progress;
@@ -193,6 +194,7 @@ export class ProjectComponent implements OnInit {
         }
       });
     });
+    }
   }
 
 }

@@ -274,11 +274,13 @@ export class HomeComponent implements OnDestroy, OnInit {
     if (!data) {
       fullProgressData = this.storage.get('progress') ? this.storage.get('progress') : {};
     }
-    if (fullProgressData.project.progress > 1) {
-      fullProgressData.project.progress = 1;
+    if (fullProgressData.project) {
+      if (fullProgressData.project.progress > 1) {
+        fullProgressData.project.progress = 1;
+      }
+      this.progress = Math.round(fullProgressData.project.progress * 100);
+      this.progressConfig = {percent: Math.round(fullProgressData.project.progress * 100)};
+      this.loadingProgress = false;
     }
-    this.progress = Math.round(fullProgressData.project.progress * 100);
-    this.progressConfig = {percent: Math.round(fullProgressData.project.progress * 100)};
-    this.loadingProgress = false;
   }
 }
