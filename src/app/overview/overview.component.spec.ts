@@ -21,7 +21,8 @@ describe('OverviewComponent', () => {
   let utils: UtilsService;
   let fastfeedbackSpy: jasmine.SpyObj<FastFeedbackService>;
   let sharedSpy: jasmine.SpyObj<SharedService>;
-  let overviewSpy: OverviewService;
+  let overviewSpy: jasmine.SpyObj<OverviewService>;
+  let storageSpy: jasmine.SpyObj<BrowserStorageService>;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -35,7 +36,8 @@ describe('OverviewComponent', () => {
           useValue: jasmine.createSpyObj('BrowserStorageService', {
             getUser: {
               programName: PROGRAM_NAME,
-            }
+            },
+            set: true
           })
         },
         {
@@ -72,7 +74,9 @@ describe('OverviewComponent', () => {
     sharedSpy = TestBed.inject(SharedService) as jasmine.SpyObj<SharedService>;
     utils = TestBed.inject(UtilsService);
     fastfeedbackSpy = TestBed.inject(FastFeedbackService) as jasmine.SpyObj<FastFeedbackService>;
-    fastfeedbackSpy.pullFastFeedback.and.returnValue(of(true));
+    storageSpy = TestBed.inject(BrowserStorageService) as jasmine.SpyObj<BrowserStorageService>;
+    fastfeedbackSpy.pullFastFeedback.and.returnValue(of({}));
+    overviewSpy.getProgress.and.returnValue(of({}));
     component.initiator$ = of({});
   });
 
@@ -82,6 +86,7 @@ describe('OverviewComponent', () => {
 
   describe('ngOnInit', () => {
     it('should get program name and pull fastfeedback', fakeAsync(() => {
+      spyOn(utils, 'broadcastEvent');
       component.ngOnInit();
 
       flushMicrotasks();
