@@ -171,6 +171,8 @@ export class FilestackService {
         'local_file_system',
         'googledrive',
         'dropbox',
+        'onedrive',
+        'box',
         'gmail',
         'video'
       ],
