@@ -75,6 +75,9 @@ export class HomeComponent implements OnDestroy, OnInit {
         }
       });
     });
+    this.utils.getEvent('progress:update').subscribe(event => {
+      this.updateProgress(event);
+    });
   }
 
   ngOnInit() {
@@ -102,6 +105,7 @@ export class HomeComponent implements OnDestroy, OnInit {
       image: this.storage.getUser().programImage,
       name: this.storage.getUser().programName
     };
+    this.updateProgress();
     this.subscriptions.push(
       this.homeService.getTodoItems().subscribe(todoItems => {
         this.todoItems = this.todoItems.concat(todoItems);
@@ -114,14 +118,6 @@ export class HomeComponent implements OnDestroy, OnInit {
           this._addChatTodoItem(chatMessage);
         }
         this.loadingTodoItems = false;
-      })
-    );
-
-    this.subscriptions.push(
-      this.homeService.getProgress().subscribe(progress => {
-        this.progress = progress;
-        this.progressConfig = {percent: progress};
-        this.loadingProgress = false;
       })
     );
 
@@ -270,6 +266,21 @@ export class HomeComponent implements OnDestroy, OnInit {
     if (['Enter', 'Space'].indexOf(event.code) !== -1) {
 
        this.router.navigate(['achievements']);
+    }
+  }
+
+  updateProgress(data?) {
+    let fullProgressData = data;
+    if (!data) {
+      fullProgressData = this.storage.get('progress') ? this.storage.get('progress') : {};
+    }
+    if (fullProgressData.project) {
+      if (fullProgressData.project.progress > 1) {
+        fullProgressData.project.progress = 1;
+      }
+      this.progress = Math.round(fullProgressData.project.progress * 100);
+      this.progressConfig = {percent: Math.round(fullProgressData.project.progress * 100)};
+      this.loadingProgress = false;
     }
   }
 }
