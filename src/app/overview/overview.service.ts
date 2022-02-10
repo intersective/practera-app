@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Observable, BehaviorSubject } from 'rxjs';
+import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 import { BrowserStorageService } from '@services/storage.service';
@@ -23,9 +23,9 @@ export interface Milestone {
 export class OverviewService {
 
   constructor(
-    private storage: BrowserStorageService,
-    private request: RequestService,
-    private utils: UtilsService,
+    private readonly storage: BrowserStorageService,
+    private readonly request: RequestService,
+    private readonly utils: UtilsService,
   ) { }
 
   getProgress(): Observable<any> {
