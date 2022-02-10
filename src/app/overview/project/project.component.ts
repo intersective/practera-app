@@ -178,14 +178,14 @@ export class ProjectComponent implements OnInit {
     if (fullProgressData.project) {
       const milestonesProgress = fullProgressData.project.milestones;
       milestonesProgress.forEach(mp => {
-      this.milestones.map(m => {
+      this.milestones.forEach(m => {
         if (m.id === mp.id) {
           m.progress = mp.progress;
           if (m.progress !== 1) {
             this.showingMilestones.push(m);
           }
           mp.activities.forEach(ap => {
-            m.Activity.map(a => {
+            m.Activity.forEach(a => {
               if (a.id === ap.id) {
                 a.progress = ap.progress;
               }
