@@ -253,35 +253,6 @@ export class HomeService {
     return todoItem;
   }
 
-  getProgress() {
-    return this.request.get(api.get.progress, {
-        params: {
-          model: 'project',
-          model_id: this.storage.getUser().projectId,
-          scope: 'activity'
-        }
-      })
-      .pipe(map(response => {
-        if (response.success && response.data) {
-          return this._normaliseProgress(response.data);
-        }
-      }));
-  }
-
-  private _normaliseProgress(data) {
-    if (!this.utils.has(data, 'Project.progress') ||
-        !this.utils.has(data, 'Project.Milestone') ||
-        !Array.isArray(data.Project.Milestone)) {
-      this.request.apiResponseFormatError('Progress format error');
-      return 0;
-    }
-
-    if (data.Project.progress > 1) {
-      data.Project.progress = 1;
-    }
-    return Math.round(data.Project.progress * 100);
-  }
-
   /**
    * When we get a notification event from Pusher, normalise the data to todo item and return it.
    * @param  {Obj}   event [The event data get from Pusher]
