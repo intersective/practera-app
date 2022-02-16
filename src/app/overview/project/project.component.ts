@@ -67,7 +67,7 @@ export class ProjectComponent implements OnInit {
     this.isMobile = this.utils.isMobile();
 
     this.utils.getEvent('progress:update').subscribe(event => {
-      //this.updateProgress(event);
+      this.updateProgress(event);
     });
   }
 
@@ -99,7 +99,7 @@ export class ProjectComponent implements OnInit {
           return;
         }
         this.milestones = milestones;
-        //this.updateProgress();
+        this.updateProgress();
         this.loadingMilestone = false;
         // scroll to highlighted activity if has one
         if (this.highlightedActivityId) {

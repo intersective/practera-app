@@ -20,7 +20,7 @@ export class ChatListComponent {
   @Output() chatListReady = new EventEmitter();
   @Input() currentChat: ChatChannel;
   chatList: ChatChannel[];
-  loadingChatList = false;
+  loadingChatList = true;
 
   constructor(
     private chatService: ChatService,
@@ -56,9 +56,9 @@ export class ChatListComponent {
     * @returns nothing
     */
   onEnter() {
-    // this._initialise();
-    // this._checkAndSubscribePusherChannels();
-    // this._loadChatData();
+    this._initialise();
+    this._checkAndSubscribePusherChannels();
+    this._loadChatData();
     this.fastFeedbackService.pullFastFeedback().subscribe();
   }
 
