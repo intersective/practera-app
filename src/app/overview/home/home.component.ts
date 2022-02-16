@@ -105,21 +105,21 @@ export class HomeComponent implements OnDestroy, OnInit {
       image: this.storage.getUser().programImage,
       name: this.storage.getUser().programName
     };
-    this.updateProgress();
+    // this.updateProgress();
     this.subscriptions.push(
       this.homeService.getTodoItems().subscribe(todoItems => {
         this.todoItems = this.todoItems.concat(todoItems);
         this.loadingTodoItems = false;
       })
     );
-    this.subscriptions.push(
-      this.homeService.getChatMessage().subscribe(chatMessage => {
-        if (!this.utils.isEmpty(chatMessage)) {
-          this._addChatTodoItem(chatMessage);
-        }
-        this.loadingTodoItems = false;
-      })
-    );
+    // this.subscriptions.push(
+    //   this.homeService.getChatMessage().subscribe(chatMessage => {
+    //     if (!this.utils.isEmpty(chatMessage)) {
+    //       this._addChatTodoItem(chatMessage);
+    //     }
+    //     this.loadingTodoItems = false;
+    //   })
+    // );
 
     this.subscriptions.push(
       this.achievementService.getAchievements('desc').subscribe(achievements => {
