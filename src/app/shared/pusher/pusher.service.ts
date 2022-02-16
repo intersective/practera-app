@@ -171,7 +171,7 @@ export class PusherService {
    */
   async getChannels() {
     await this.getNotificationChannel().toPromise();
-    await this.getChatChannels().toPromise();
+    // await this.getChatChannels().toPromise();
   }
 
   getNotificationChannel(): Observable<any> {
