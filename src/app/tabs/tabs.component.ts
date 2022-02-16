@@ -81,18 +81,18 @@ export class TabsComponent extends RouterEnter {
       this.showChat = false;
     } else {
       // [AV2-950]: display chat tab if a user has chatroom available
-      this.chatService.getChatList().subscribe(chats => {
-        if (chats && chats.length > 0) {
-          this.showChat = true;
+      //this.chatService.getChatList().subscribe(chats => {
+      //  if (chats && chats.length > 0) {
+      //    this.showChat = true;
 
           // only get the unread chats when chatroom is available
-          this.tabsService.getNoOfChats().subscribe(noOfChats => {
-            this.noOfChats = noOfChats;
-          });
-        } else {
-          this.showChat = false;
-        }
-      });
+      //    this.tabsService.getNoOfChats().subscribe(noOfChats => {
+      //      this.noOfChats = noOfChats;
+      //    });
+      //  } else {
+      //    this.showChat = false;
+      //  }
+     // });
     }
 
     if (this.storage.getUser().hasReviews) {
