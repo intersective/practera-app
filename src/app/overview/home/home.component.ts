@@ -76,7 +76,7 @@ export class HomeComponent implements OnDestroy, OnInit {
       });
     });
     this.utils.getEvent('progress:update').subscribe(event => {
-      this.updateProgress(event);
+      //this.updateProgress(event);
     });
   }
 
