@@ -42,7 +42,7 @@ jobs:
       REQUESTOR: ${{ github.event.inputs.REQUESTOR }}
       REASON: ${{ github.event.inputs.REASON }}
       ENDPOINT: https://us.practera.app
-      BRANCH_TAG_NAME: release/disablechat
+      BRANCH_TAG_NAME: ${{ github.event.inputs.BRANCH_TAG_NAME }}
 
 
 
