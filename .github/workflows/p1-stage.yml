@@ -10,7 +10,7 @@ name: Deploy to p1-stage environment
 on:
   workflow_dispatch:
   push:
-    branches: [ 'trunk' ]
+    branches: [ 'v2.7.23' ]
     
 
 ################################################
