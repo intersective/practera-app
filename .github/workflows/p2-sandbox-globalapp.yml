@@ -10,7 +10,7 @@ name: Deploy to p2-sandbox-global-app environment
 on:
   workflow_dispatch:
   push:
-    branches: [ 'global-appv2-ng12' ]
+    branches: [ 'global-appv2-ionic6' ]
 
 ################################################
 #  GITHUB ACTION JOBS
@@ -312,7 +312,7 @@ jobs:
 
 # ################################################
 # #  DEVOPS-DEPLOYMENT REPORT
-# ################################################ 
+# ################################################
       - name: DevOps Deployment Reporting
         if: always()
         run: |
