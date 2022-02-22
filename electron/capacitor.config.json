@@ -1,7 +1,0 @@
-{
-  "appId": "app.practera",
-  "appName": "Practera App",
-  "bundledWebRuntime": false,
-  "npmClient": "npm",
-  "webDir": "www"
-}
