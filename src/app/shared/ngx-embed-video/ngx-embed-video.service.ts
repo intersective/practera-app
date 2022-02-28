@@ -1,0 +1,228 @@
+import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
+import { map } from 'rxjs/operators';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class EmbedVideoService {
+  private validYouTubeOptions = [
+    'default',
+    'mqdefault',
+    'hqdefault',
+    'sddefault',
+    'maxresdefault'
+  ];
+  private validVimeoOptions = [
+    'thumbnail_small',
+    'thumbnail_medium',
+    'thumbnail_large'
+  ];
+  private validDailyMotionOptions = [
+    'thumbnail_60_url',
+    'thumbnail_120_url',
+    'thumbnail_180_url',
+    'thumbnail_240_url',
+    'thumbnail_360_url',
+    'thumbnail_480_url',
+    'thumbnail_720_url',
+    'thumbnail_1080_url'
+  ];
+
+  constructor(
+    private http: HttpClient,
+    private sanitizer: DomSanitizer
+  ) { }
+
+  public embed(url: any, options?: any): SafeHtml | void {
+    let id: string;
+    url = new URL(url);
+    id = this.detectYoutube(url);
+    if (id) {
+      return this.embed_youtube(id, options);
+    }
+
+    id = this.detectVimeo(url);
+    if (id) {
+      return this.embed_vimeo(id, options);
+    }
+
+    id = this.detectDailymotion(url);
+    if (id) {
+      return this.embed_dailymotion(id, options);
+    }
+
+    return;
+  }
+
+  public embed_youtube(id: string, options?: any): SafeHtml {
+    options = this.parseOptions(options);
+
+    return this.sanitize_iframe(`<iframe src="https://www.youtube.com/embed/${id}${options.query}"${options.attr} frameborder="0" allowfullscreen></iframe>`);
+  }
+
+  public embed_vimeo(id: string, options?: any): SafeHtml {
+    options = this.parseOptions(options);
+
+    return this.sanitize_iframe(`<iframe src="https://player.vimeo.com/video/${id}${options.query}"${options.attr} frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>`);
+  }
+
+  public embed_dailymotion(id: string, options?: any): SafeHtml {
+    options = this.parseOptions(options);
+
+    return this.sanitize_iframe(`<iframe src="https://www.dailymotion.com/embed/video/${id}${options.query}"${options.attr} frameborder="0" allowfullscreen></iframe>`);
+  }
+
+  public embed_image(url: any, options?: any): Promise<{
+    link: string;
+    html: string;
+  }> {
+    let id: string;
+
+    url = new URL(url);
+    id = this.detectYoutube(url);
+    if (id) {
+      return this.embed_youtube_image(id, options);
+    }
+
+    id = this.detectVimeo(url);
+    if (id) {
+      return this.embed_vimeo_image(id, options);
+    }
+
+    id = this.detectDailymotion(url);
+    if (id) {
+      return this.embed_dailymotion_image(id, options);
+    }
+
+    throw 'No id provided.';
+  }
+
+  private embed_youtube_image(id: string, options?: any): Promise<any> {
+    if (typeof options === 'function') {
+      options = {};
+    }
+    options = options || {};
+
+    options.image = this.validYouTubeOptions.indexOf(options.image) > 0 ? options.image : 'default';
+
+    let src = 'https://img.youtube.com/vi/' + id + '/' + options.image + '.jpg';
+
+    let result = {
+      link: src,
+      html: '<img src="' + src + '"/>'
+    };
+
+    return new Promise((resolve) => {
+      resolve(result);
+    });
+  }
+
+  private embed_vimeo_image(id: string, options?: any): Promise<any> {
+    if (typeof options === 'function') {
+      options = {};
+    }
+
+    options = options || {};
+
+    options.image = this.validVimeoOptions.indexOf(options.image) >= 0 ? options.image : 'thumbnail_large';
+
+    return this.http.get('https://vimeo.com/api/v2/video/' + id + '.json').pipe(
+      map((res: any) => {
+        return {
+          'link': res[0][options.image],
+          'html': '<img src="' + res[0][options.image] + '"/>'
+        };
+      })
+    ).toPromise()
+      .catch(error => console.log(error));
+  }
+
+  private embed_dailymotion_image(id: string, options?: any): Promise<any> {
+    if (typeof options === 'function') {
+      options = {};
+    }
+
+    options = options || {};
+
+    options.image = this.validDailyMotionOptions.indexOf(options.image) >= 0 ? options.image : 'thumbnail_480_url';
+
+    return this.http.get('https://api.dailymotion.com/video/' + id + '?fields=' + options.image)
+      .pipe(map((res: any) => {
+        return {
+          'link': res[options.image],
+          'html': '<img src="' + res[options.image] + '"/>'
+        };
+      }))
+      .toPromise()
+      .catch(error => console.log(error));
+  }
+
+  private parseOptions(options: any): any {
+    let queryString = '',
+      attributes = '';
+
+    if (options && options.hasOwnProperty('query')) {
+      queryString = '?' + this.serializeQuery(options.query);
+    }
+
+    if (options && options.hasOwnProperty('attr')) {
+      let temp = <any>[];
+
+      Object.keys(options.attr).forEach(function (key) {
+        temp.push(key + '="' + (options.attr[key]) + '"');
+      });
+
+      attributes = ' ' + temp.join(' ');
+    }
+    return {
+      query: queryString,
+      attr: attributes
+    };
+  }
+
+  private serializeQuery(query: any): any {
+    let queryString: any = [];
+
+    for (let p in query) {
+      if (query.hasOwnProperty(p)) {
+        queryString.push(encodeURIComponent(p) + '=' + encodeURIComponent(query[p]));
+      }
+    }
+
+    return queryString.join('&');
+  }
+
+  private sanitize_iframe(iframe: string): SafeHtml {
+    return this.sanitizer.bypassSecurityTrustHtml(iframe);
+  }
+
+  private detectVimeo(url: any): string {
+    return (url.hostname === 'vimeo.com') ? url.pathname.split('/')[1] : null;
+  }
+
+  private detectYoutube(url: any): string {
+    if (url.hostname.indexOf('youtube.com') > -1) {
+      return url.search.split('=')[1];
+    }
+
+    if (url.hostname === 'youtu.be') {
+      return url.pathname.split('/')[1];
+    }
+
+    return '';
+  }
+
+  private detectDailymotion(url: any): string {
+    if (url.hostname.indexOf('dailymotion.com') > -1) {
+      return url.pathname.split('/')[2].split('_')[0];
+    }
+
+    if (url.hostname === 'dai.ly') {
+      return url.pathname.split('/')[1];
+    }
+
+    return '';
+  }
+}
