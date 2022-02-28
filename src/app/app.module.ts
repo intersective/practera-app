@@ -25,6 +25,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { UnlockingComponent } from '@components/unlocking/unlocking.component';
 import { DeviceInfoComponent } from './device-info/device-info.component';
 import { ApolloModule } from './shared/apollo/apollo.module';
+import { EmbedVideoModule } from './shared/ngx-embed-video/ngx-embed-video.module';
 
 
 @NgModule({
@@ -47,6 +48,7 @@ import { ApolloModule } from './shared/apollo/apollo.module';
     IonicModule.forRoot(),
     AppRoutingModule,
     NewRelicModule.forRoot(),
+    EmbedVideoModule.forRoot(),
     NotificationModule,
     FastFeedbackModule,
     GoMobileModule,
