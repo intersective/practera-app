@@ -2,10 +2,7 @@ import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouteReuseStrategy } from '@angular/router';
 import { IonicModule, IonicRouteStrategy } from '@ionic/angular';
-import { HttpClientModule, HttpHeaders } from '@angular/common/http';
-import { ApolloModule, APOLLO_OPTIONS, Apollo } from 'apollo-angular';
-import { HttpLinkModule, HttpLink } from 'apollo-angular-link-http';
-import { InMemoryCache, defaultDataIdFromObject } from 'apollo-cache-inmemory';
+import { HttpClientModule } from '@angular/common/http';
 
 import { AppRoutingModule } from './app-routing.module';
 import { RequestModule } from '@shared/request/request.module';
@@ -21,13 +18,13 @@ import { AppComponent } from './app.component';
 import { UtilsService } from './services/utils.service';
 import { VersionCheckService } from './services/version-check.service';
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
-import { EmbedVideo } from 'ngx-embed-video';
 import { environment } from '@environments/environment';
 import { IntercomModule } from 'ng-intercom';
 import { PusherModule } from '@shared/pusher/pusher.module';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { UnlockingComponent } from '@components/unlocking/unlocking.component';
 import { DeviceInfoComponent } from './device-info/device-info.component';
+import { ApolloModule } from './shared/apollo/apollo.module';
 
 
 @NgModule({
@@ -38,19 +35,17 @@ import { DeviceInfoComponent } from './device-info/device-info.component';
     DeviceInfoComponent,
   ],
   imports: [
-    BrowserModule,
-    BrowserAnimationsModule,
-    HttpClientModule,
-    ApolloModule,
-    HttpLinkModule,
-    IonicModule.forRoot(),
-    AuthModule,
     RequestModule.forRoot({
       appkey: environment.appkey,
       prefixUrl: environment.APIEndpoint,
     }),
+    ApolloModule,
+    AuthModule,
+    BrowserModule,
+    BrowserAnimationsModule,
+    HttpClientModule,
+    IonicModule.forRoot(),
     AppRoutingModule,
-    EmbedVideo.forRoot(),
     NewRelicModule.forRoot(),
     NotificationModule,
     FastFeedbackModule,
@@ -63,31 +58,11 @@ import { DeviceInfoComponent } from './device-info/device-info.component';
     }),
     IntercomModule.forRoot({
       appId: environment.intercomAppId,
-      updateOnRouterChange: true // will automatically run `update` on router event changes. Default: `false`
+      updateOnRouterChange: true,
+      // will automatically run `update` on router event changes. Default: `false`
     })
   ],
   providers: [
-    {
-      provide: APOLLO_OPTIONS,
-      useFactory: (httpLink: HttpLink) => {
-        return {
-          cache: new InMemoryCache({
-            dataIdFromObject: object => {
-              switch (object.__typename) {
-                case 'Task':
-                  return `Task:${object['type']}${object.id}`;
-                default:
-                  return defaultDataIdFromObject(object);
-              }
-            }
-          }),
-          link: httpLink.create({
-            uri: environment.graphQL
-          })
-        };
-      },
-      deps: [HttpLink]
-    },
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
     // Custom
     UtilsService,
@@ -95,18 +70,4 @@ import { DeviceInfoComponent } from './device-info/device-info.component';
   ],
   bootstrap: [AppComponent],
 })
-export class AppModule {
-  constructor(
-    private apollo: Apollo,
-    httpLink: HttpLink
-  ) {
-    this.apollo.create(
-      {
-        link: httpLink.create({
-          uri: environment.chatGraphQL
-        }),
-        cache: new InMemoryCache(),
-      },
-      'chat');
-  }
-}
+export class AppModule {}
