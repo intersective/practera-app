@@ -92,7 +92,10 @@ export class TopicService {
       model_id: id,
       state: state
     };
-    return this.request.post(api.post.updateProgress, postData);
+    return this.request.post({
+      endPoint: api.post.updateProgress,
+      data: postData,
+    });
   }
 
   getTopicProgress(activityId, topicId): Observable<any> {
