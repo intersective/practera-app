@@ -306,14 +306,6 @@ describe('RequestService', () => {
     });
   });
 
-  describe('getPrefixUrl()', () => {
-    it('should return prefixUrl from RequestConfig class', () => {
-      const result = service.getPrefixUrl();
-      expect(result).toEqual(PREFIX_URL);
-      expect(result).toEqual(requestConfigSpy.prefixUrl);
-    });
-  });
-
   describe('getAppkey()', () => {
     it('should return appkey from RequestConfig class', () => {
       const result = service.getAppkey();
