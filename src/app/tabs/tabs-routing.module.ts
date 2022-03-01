@@ -15,7 +15,7 @@ const routes: Routes = [
         children: [
           {
             path: '',
-            loadChildren: '../overview/overview.module#OverviewModule',
+            loadChildren: () => import('../overview/overview.module').then(m => m.OverviewModule),
           }
         ]
       },
@@ -24,7 +24,7 @@ const routes: Routes = [
         children: [
           {
             path: '',
-            loadChildren: '../events/events.module#EventsModule',
+            loadChildren: () => import('../events/events.module').then(m => m.EventsModule),
           }
         ]
       },
@@ -33,7 +33,7 @@ const routes: Routes = [
         children: [
           {
             path: '',
-            loadChildren: '../tasks/tasks.module#TasksModule'
+            loadChildren: () => import('../tasks/tasks.module').then(m => m.TasksModule),
           }
         ]
       },
@@ -42,7 +42,7 @@ const routes: Routes = [
         children: [
           {
             path: '',
-            loadChildren: '../reviews/reviews.module#ReviewsModule'
+            loadChildren: () => import('../reviews/reviews.module').then(m => m.ReviewsModule),
           }
         ]
       },
@@ -51,7 +51,7 @@ const routes: Routes = [
         children: [
           {
             path: '',
-            loadChildren: '../chat/chat.module#ChatModule',
+            loadChildren: () => import('../chat/chat.module').then(m => m.ChatModule),
           }
         ]
       },
@@ -60,7 +60,7 @@ const routes: Routes = [
         children: [
           {
             path: '',
-            loadChildren: '../settings/settings.module#SettingsModule'
+            loadChildren: () => import('../settings/settings.module').then(m => m.SettingsModule),
           }
         ],
         canDeactivate: [SinglePageDeactivateGuard]
@@ -80,7 +80,7 @@ const routes: Routes = [
 ];
 
 @NgModule({
-  imports: [ RouterModule.forChild(routes) ],
-  exports: [ RouterModule ]
+  imports: [RouterModule.forChild(routes)],
+  exports: [RouterModule]
 })
-export class TabsRoutingModule {}
+export class TabsRoutingModule { }
