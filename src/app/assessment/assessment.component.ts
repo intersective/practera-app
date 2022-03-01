@@ -203,6 +203,10 @@ export class AssessmentComponent extends RouterEnter {
     this.savingButtonDisabled = false;
     this.savingMessage = '';
     this.continueBtnLoading = false;
+    this.id = null;
+    this.activityId = null;
+    this.contextId = null;
+    this.submissionId = null;
   }
 
   onEnter() {
@@ -243,32 +247,32 @@ export class AssessmentComponent extends RouterEnter {
     // get assessment structure and populate the question form
     this.assessmentService.getAssessment(this.id, this.action, this.activityId, this.contextId, this.submissionId)
       .subscribe(
-        result => {
+        async result => {
           this.assessment = result.assessment;
           this.newRelic.setPageViewName(`Assessment: ${this.assessment.name} ID: ${this.id}`);
           this.populateQuestionsForm();
           this.loadingAssessment = false;
           this._handleSubmissionData(result.submission);
-          // display pop up if it is team assessment and user is not in team
+          /**
+           * display pop up if it is team assessment and user is not in team.
+           * after user clicks 'Ok' button. take user to next task.
+           * if there any other tasks will navigate to that. if not navigate to home page.
+           */
           if (this.doAssessment && this.assessment.isForTeam && !this.storage.getUser().teamId) {
             return this.notificationService.alert({
-              message: 'To do this assessment, you have to be in a team.',
+              message: 'Currently you are not in a team, please reach out to your Administrator or Coordinator to proceed with next steps.',
               buttons: [
                 {
                   text: 'OK',
                   role: 'cancel',
-                  handler: () => {
-                    if (this.activityId) {
-                      this._navigate(['app', 'activity', this.activityId ]);
-                    } else {
-                      this._navigate(['app', 'home']);
-                    }
+                  handler: async () => {
+                    await this.goToNextTask();
                   }
                 }
               ]
             });
           }
-          this._handleReviewData(result.review);
+          await this._handleReviewData(result.review);
         },
         error => {
           this.newRelic.noticeError(error);
