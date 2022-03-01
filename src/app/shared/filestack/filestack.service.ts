@@ -32,8 +32,8 @@ const FS_MULTIPART_CONCURRENCY = 5;
 @Injectable()
 export class FilestackService {
   private filestack: any;
-  private chunksConcurrency = FS_MULTIPART_CONCURRENCY;
-  private intelligent: boolean = FS_INTELLIGENT;
+  readonly chunksConcurrency = FS_MULTIPART_CONCURRENCY;
+  readonly intelligent: boolean = FS_INTELLIGENT;
 
   // file types that allowed to upload
   public fileTypes = {

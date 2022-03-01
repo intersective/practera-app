@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Output, Input } from '@angular/core';
 import { FilestackService } from './filestack.service';
 import { UtilsService } from '@services/utils.service';
-import { PickerDropPaneOptions, PickerOptions } from 'filestack-js/build/main/lib/picker';
+import { PickerOptions } from 'filestack-js/build/main/lib/picker';
 
 export interface FilestackUploaded {
   handle: string;
