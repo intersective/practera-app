@@ -194,7 +194,6 @@ describe('FilestackService', () => {
         result = res;
       });
       flushMicrotasks();
-
       expect(service.getFileTypes).toHaveBeenCalled();
       expect(service.getS3Config).toHaveBeenCalled();
       expect(result).toBeTruthy();
@@ -284,6 +283,28 @@ describe('FilestackService', () => {
 
       flushMicrotasks();
       expect(result).toEqual([]);
+    }));
+  });
+
+  describe('onFileSelectedRename()', () => {
+    it('should rename file with spacing', fakeAsync(() => {
+      let result: any;
+      const currentFile = {
+        filename: 'a b c',
+        handle: 'a-b-c',
+        mimetype: 'mimetype',
+        originalPath: 'here',
+        size: 1,
+        source: 'earth',
+        uploadId: '12345',
+        url: 'https://test.com',
+      };
+      service['onFileSelectedRename'](currentFile).then(res => {
+        result = res.filename;
+      });
+
+      flushMicrotasks();
+      expect(result).toEqual('a_b_c');
     }));
   });
 });
