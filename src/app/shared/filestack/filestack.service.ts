@@ -168,6 +168,12 @@ export class FilestackService {
     return this.httpClient.get(api.metadata.replace('HANDLE', handle[0])).toPromise();
   }
 
+  private onFileSelectedRename(file: filestack.PickerFileMetadata) : Promise<any> {
+    // replace space with underscore '_' in file name
+    const filename = file.filename.replace(/ /g, '_');
+    return Promise.resolve({ ...file, filename });
+  }
+
   async open(options = {}, onSuccess = res => res, onError = err => err): Promise<any> {
     const pickerOptions: filestack.PickerOptions = {
       dropPane: {},
@@ -185,11 +191,7 @@ export class FilestackService {
         intelligent: this.intelligent,
       },
       storeTo: this.getS3Config(this.getFileTypes()),
-      onFileSelected: (file: filestack.PickerFileMetadata)  => {
-        // replace space with underscore '_' in file name
-        const filename = file.filename.replace(/ /g, '_');
-        return Promise.resolve({...file, filename});
-      },
+      onFileSelected: this.onFileSelectedRename,
       onFileUploadFailed: onError,
       onFileUploadFinished: function(res) {
         return onSuccess(res);
