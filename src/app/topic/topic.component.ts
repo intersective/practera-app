@@ -1,7 +1,7 @@
 import { TopicService, Topic } from './topic.service';
 import { Component, NgZone, Input, Output, EventEmitter, Inject } from '@angular/core';
 import { DOCUMENT } from '@angular/common';
-import { EmbedVideoService } from 'ngx-embed-video';
+import { EmbedVideoService } from '@shared/ngx-embed-video/ngx-embed-video.service';
 import { Router, ActivatedRoute } from '@angular/router';
 import { FilestackService } from '@shared/filestack/filestack.service';
 import { RouterEnter } from '@services/router-enter.service';
