@@ -5,7 +5,7 @@ import { Router, ActivatedRoute, convertToParamMap } from '@angular/router';
 import { TopicComponent } from './topic.component';
 import { TopicService } from './topic.service';
 import { FilestackService } from '@shared/filestack/filestack.service';
-import { EmbedVideoService } from 'ngx-embed-video';
+import { EmbedVideoService } from '@shared/ngx-embed-video/ngx-embed-video.service';
 import { ActivatedRouteStub } from '@testing/activated-route-stub';
 import { NotificationService } from '@shared/notification/notification.service';
 import { BrowserStorageService } from '@services/storage.service';

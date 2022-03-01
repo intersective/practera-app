@@ -4,6 +4,7 @@ import { InMemoryCache, defaultDataIdFromObject } from '@apollo/client/core';
 import { Injectable } from '@angular/core';
 import { BrowserStorageService } from '@services/storage.service';
 import { Observable } from 'rxjs';
+import { environment } from '@environments/environment';
 
 enum ClientType {
   core = 'CORE',
@@ -27,7 +28,7 @@ export class ApolloService {
   ) {}
 
   initiateCoreClient(): Apollo {
-    if (this._hasInitiated(this.storage.stackConfig.coreGraphQLApi, ClientType.core)) {
+    if (this._hasInitiated(environment.graphQL, ClientType.core)) {
       return this.apolloInstance;
     }
 
@@ -43,7 +44,7 @@ export class ApolloService {
         }
       }),
       link: this.httpLink.create({
-        uri: this.storage.stackConfig.coreGraphQLApi
+        uri: environment.graphQL
       }),
       headers: {
         'Access-Control-Allow-Origin': '*',
@@ -51,7 +52,7 @@ export class ApolloService {
     });
 
     this.apolloInstance = this.apollo;
-    this._url.core = this.storage.stackConfig.coreGraphQLApi;
+    this._url.core = environment.graphQL;
 
     return this.apolloInstance;
   }
@@ -69,31 +70,31 @@ export class ApolloService {
   private _hasInitiated(url: string, type: ClientType = ClientType.core): boolean {
     if (type === ClientType.core
       && this.apollo.client
-      && this._url.core === this.storage.stackConfig.coreGraphQLApi) {
+      && this._url.core === environment.graphQL) {
       return true;
     } else if (type === ClientType.chat
       && this.apollo.use('chat')
-      && this._url.chat === this.storage.stackConfig.chatApi) {
+      && this._url.chat === environment.graphQL) {
         return true;
     }
     return false;
   }
 
   initiateChatClient() {
-    if (this._hasInitiated(this.storage.stackConfig.chatApi, ClientType.chat)) {
+    if (this._hasInitiated(environment.graphQL, ClientType.chat)) {
       return;
     }
 
     this.apollo.create(
       {
         link: this.httpLink.create({
-          uri: this.storage.stackConfig.chatApi
+          uri: environment.graphQL
         }),
         cache: new InMemoryCache(),
       },
       'chat');
 
-    this._url.chat = this.storage.stackConfig.chatApi;
+    this._url.chat = environment.graphQL;
   }
 
   getClient() {

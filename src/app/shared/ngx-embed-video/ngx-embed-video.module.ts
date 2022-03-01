@@ -22,7 +22,7 @@ export class EmbedVideoModule {
   static forRoot(): ModuleWithProviders<EmbedVideoModule> {
     return {
       ngModule: EmbedVideoModule,
-      // providers: [ EmbedVideoService ],
+      providers: [ EmbedVideoService ],
     };
   }
 }
