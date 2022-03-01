@@ -168,7 +168,7 @@ export class FilestackService {
     return this.httpClient.get(api.metadata.replace('HANDLE', handle[0])).toPromise();
   }
 
-  private onFileSelectedRename(file: filestack.PickerFileMetadata) : Promise<any> {
+  private onFileSelectedRename(file: filestack.PickerFileMetadata): Promise<any> {
     // replace space with underscore '_' in file name
     const filename = file.filename.replace(/ /g, '_');
     return Promise.resolve({ ...file, filename });
