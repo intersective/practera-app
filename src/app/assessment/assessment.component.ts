@@ -91,6 +91,8 @@ export class AssessmentComponent extends RouterEnter {
 
   elIdentities = {}; // virtual element id for accessibility "aria-describedby" purpose
 
+  isNotInATeam = false; // to hide assessment content if user not is a team.
+
   constructor (
     public router: Router,
     private route: ActivatedRoute,
@@ -207,6 +209,7 @@ export class AssessmentComponent extends RouterEnter {
     this.activityId = null;
     this.contextId = null;
     this.submissionId = null;
+    this.isNotInATeam = false;
   }
 
   onEnter() {
@@ -247,32 +250,34 @@ export class AssessmentComponent extends RouterEnter {
     // get assessment structure and populate the question form
     this.assessmentService.getAssessment(this.id, this.action, this.activityId, this.contextId, this.submissionId)
       .subscribe(
-        async result => {
+        result => {
           this.assessment = result.assessment;
           this.newRelic.setPageViewName(`Assessment: ${this.assessment.name} ID: ${this.id}`);
           this.populateQuestionsForm();
           this.loadingAssessment = false;
           this._handleSubmissionData(result.submission);
-          /**
-           * display pop up if it is team assessment and user is not in team.
-           * after user clicks 'Ok' button. take user to next task.
-           * if there any other tasks will navigate to that. if not navigate to home page.
-           */
+          // display pop up if it is team assessment and user is not in team
           if (this.doAssessment && this.assessment.isForTeam && !this.storage.getUser().teamId) {
+            this.isNotInATeam = true;
             return this.notificationService.alert({
               message: 'Currently you are not in a team, please reach out to your Administrator or Coordinator to proceed with next steps.',
               buttons: [
                 {
                   text: 'OK',
                   role: 'cancel',
-                  handler: async () => {
-                    await this.goToNextTask();
+                  handler: () => {
+                    if (this.activityId) {
+                      this._navigate(['app', 'activity', this.activityId ]);
+                    } else {
+                      this._navigate(['app', 'home']);
+                    }
                   }
                 }
               ]
             });
           }
-          await this._handleReviewData(result.review);
+          this.isNotInATeam = false;
+          this._handleReviewData(result.review);
         },
         error => {
           this.newRelic.noticeError(error);
