@@ -266,11 +266,7 @@ export class AssessmentComponent extends RouterEnter {
                   text: 'OK',
                   role: 'cancel',
                   handler: () => {
-                    if (this.activityId) {
-                      this._navigate(['app', 'activity', this.activityId ]);
-                    } else {
-                      this._navigate(['app', 'home']);
-                    }
+                    this.goToNextTask();
                   }
                 }
               ]
