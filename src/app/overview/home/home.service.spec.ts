@@ -388,7 +388,22 @@ describe('HomeService', () => {
       const eventResponse = [
         {
           // should call postEventReminder()
-          isPast: true
+          isPast: true,
+
+          name: 'name',
+          id: 1,
+          description: 'sample',
+          location: 'sample',
+          activityId: 1,
+          activityName: 'sample',
+          startTime: 'sample',
+          endTime: 'sample',
+          capacity: 1,
+          remainingCapacity: 1,
+          isBooked: false,
+          singleBooking: true,
+          canBook: true,
+          allDay: true,
         }
       ];
       requestSpy.get.and.returnValue(of(requestResponse));
@@ -412,7 +427,20 @@ describe('HomeService', () => {
       const eventResponse = [
         {
           isPast: false,
-          name: 'name'
+          name: 'name',
+          id: 1,
+          description: 'sample',
+          location: 'sample',
+          activityId: 1,
+          activityName: 'sample',
+          startTime: 'sample',
+          endTime: 'sample',
+          capacity: 1,
+          remainingCapacity: 1,
+          isBooked: false,
+          singleBooking: true,
+          canBook: true,
+          allDay: true,
         }
       ];
       requestSpy.get.and.returnValue(of(requestResponse));

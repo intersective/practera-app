@@ -34,6 +34,7 @@ export interface Event {
   isBooked: boolean;
   singleBooking: boolean;
   canBook: boolean;
+  allDay: boolean;
   isPast?: boolean;
   assessment?: {
     id: number;
@@ -47,7 +48,6 @@ export interface Event {
     password: string
   };
   type?: string;
-  allDay: boolean;
   isMultiDay?: boolean;
   multiDayInfo?: {
     startTime: string;

@@ -13,8 +13,8 @@ import { BrowserStorageService } from '@services/storage.service';
 import { AuthService } from '../auth/auth.service';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
 import { MockRouter } from '@testing/mocked.service';
-import { Apollo } from 'apollo-angular';
-
+import { TestUtils } from '@testing/utils';
+import { NotificationService } from '@app/shared/notification/notification.service';
 
 describe('SettingsComponent', () => {
   let component: SettingsComponent;
@@ -30,11 +30,10 @@ describe('SettingsComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [ SharedModule, HttpClientModule ],
-      declarations: [ SettingsComponent ],
-      schemas: [ CUSTOM_ELEMENTS_SCHEMA ],
+      imports: [SharedModule, HttpClientModule],
+      declarations: [SettingsComponent],
+      schemas: [CUSTOM_ELEMENTS_SCHEMA],
       providers: [
-        Apollo,
         {
           provide: ActivatedRoute,
           useValue: {
@@ -45,7 +44,10 @@ describe('SettingsComponent', () => {
             }
           }
         },
-        UtilsService,
+        {
+          provide: UtilsService,
+          useClass: TestUtils,
+        },
         FilestackService,
         {
           provide: SettingService,
@@ -71,9 +73,13 @@ describe('SettingsComponent', () => {
           provide: Router,
           useClass: MockRouter
         },
+        {
+          provide: NotificationService,
+          useValue: jasmine.createSpyObj('NotificationService', ['alert'])
+        }
       ],
     })
-    .compileComponents();
+      .compileComponents();
   }));
 
   beforeEach(() => {
@@ -129,10 +135,9 @@ describe('SettingsComponent', () => {
   });
 
   it('should navigate to outside url', () => {
-    const redirectToUrlSpy = spyOn(utils, 'redirectToUrl');
     component.returnLtiUrl = 'https://test.practera.com';
     component.switchProgram('Enter');
-    expect(redirectToUrlSpy).toHaveBeenCalled();
+    expect(utils.redirectToUrl).toHaveBeenCalled();
   });
 
   it('should allow access to T&C file', () => {
@@ -171,7 +176,7 @@ describe('SettingsComponent', () => {
 
   it('when testing logout(), it should call auth service logout', () => {
     component.logout('Enter');
-    authSpy.logout.and.returnValue({});
+    authSpy.logout.and.returnValue(Promise.resolve(true));
     expect(authSpy.logout.calls.count()).toBe(1);
   });
 
@@ -185,18 +190,18 @@ describe('SettingsComponent', () => {
   describe('when testing uploadProfileImage()', () => {
     it('should upload image successfully', () => {
       settingsSpy.updateProfileImage.and.returnValue(of({}));
-      component.uploadProfileImage({success: true, data: {url: 'abc'}});
+      component.uploadProfileImage({ success: true, data: { url: 'abc' } });
       expect(settingsSpy.updateProfileImage.calls.count()).toBe(1);
     });
 
     it('should return error pop up #1', () => {
       settingsSpy.updateProfileImage.and.returnValue(of({}));
-      component.uploadProfileImage({success: false, data: {url: 'abc'}});
+      component.uploadProfileImage({ success: false, data: { url: 'abc' } });
     });
 
     it('should return error pop up #2', () => {
       settingsSpy.updateProfileImage.and.returnValue(throwError(''));
-      component.uploadProfileImage({success: true, data: {url: 'abc'}});
+      component.uploadProfileImage({ success: true, data: { url: 'abc' } });
     });
   });
 });
