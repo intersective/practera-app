@@ -85,8 +85,8 @@ describe('AuthService', () => {
 
     service.login({ email: 'test@test.com', password: '123' }).subscribe();
     expect(requestSpy.post.calls.count()).toBe(1);
-    expect(requestSpy.post.calls.first().args[1]).toContain('test%40test.com');
-    expect(requestSpy.post.calls.first().args[1]).toContain('123');
+    expect(requestSpy.post.calls.first().args[0].data).toContain('test%40test.com');
+    expect(requestSpy.post.calls.first().args[0].data).toContain('123');
     expect(storageSpy.setUser.calls.first().args[0]).toEqual({ apikey: '123456' });
   });
 
