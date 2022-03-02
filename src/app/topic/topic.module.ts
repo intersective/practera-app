@@ -1,5 +1,5 @@
 import { NgModule } from '@angular/core';
-import { TopicComponent} from './topic.component';
+import { TopicComponent } from './topic.component';
 import { TopicService } from './topic.service';
 import { TopicRoutingModule } from './topic-routing.module';
 import { FilestackModule } from '@shared/filestack/filestack.module';
@@ -26,4 +26,4 @@ import { ActivityModule } from '../activity/activity.module';
     TopicComponent,
   ]
 })
-export class TopicModule {}
+export class TopicModule { }

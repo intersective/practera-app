@@ -1,5 +1,5 @@
 {
-  "$schema": "./node_modules/@angular-devkit/core/src/workspace/workspace-schema.json",
+  "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
   "version": 1,
   "defaultProject": "app",
   "newProjectRoot": "projects",
@@ -37,19 +37,21 @@
               }
             ],
             "styles": [
-              {
-                "input": "src/theme/variables.scss"
-              },
-              {
-                "input": "src/global.scss"
-              },
-              {
-                "input": "src/styles.scss"
-              }
+              "src/theme/variables.scss",
+              "src/global.scss",
+              "src/styles.scss"
             ],
             "scripts": [
-              "./node_modules/pusher-js/dist/web/pusher.min.js"
-            ]
+              "./node_modules/pusher-js/dist/web/pusher.min.js",
+              "./src/assets/newrelic.js"
+            ],
+            "aot": false,
+            "vendorChunk": true,
+            "extractLicenses": false,
+            "buildOptimizer": false,
+            "sourceMap": true,
+            "optimization": false,
+            "namedChunks": true
           },
           "configurations": {
             "trial": {
@@ -57,16 +59,11 @@
                 {
                   "replace": "src/environments/environment.ts",
                   "with": "src/environments/environment.trial.ts"
-                },
-                {
-                  "replace": "src/index.html",
-                  "with": "src/index.prod.html"
                 }
               ],
               "optimization": true,
               "outputHashing": "all",
               "sourceMap": false,
-              "extractCss": true,
               "namedChunks": false,
               "aot": true,
               "extractLicenses": true,
@@ -78,16 +75,11 @@
                 {
                   "replace": "src/environments/environment.ts",
                   "with": "src/environments/environment.us.ts"
-                },
-                {
-                  "replace": "src/index.html",
-                  "with": "src/index.prod.html"
                 }
               ],
               "optimization": true,
               "outputHashing": "all",
               "sourceMap": false,
-              "extractCss": true,
               "namedChunks": false,
               "aot": true,
               "extractLicenses": true,
@@ -99,16 +91,11 @@
                 {
                   "replace": "src/environments/environment.ts",
                   "with": "src/environments/environment.custom.ts"
-                },
-                {
-                  "replace": "src/assets/newrelic.js",
-                  "with": "src/scripts/newrelic.js.<CUSTOM_JS_ENVIRONEMENT>"
                 }
               ],
               "optimization": true,
               "outputHashing": "all",
               "sourceMap": false,
-              "extractCss": true,
               "namedChunks": false,
               "aot": true,
               "extractLicenses": true,
@@ -185,15 +172,27 @@
           }
         },
         "lint": {
-          "builder": "@angular-devkit/build-angular:tslint",
+          "builder": "@angular-eslint/builder:lint",
           "options": {
-            "tsConfig": [
-              "src/tsconfig.app.json",
-              "src/tsconfig.spec.json"
-            ],
-            "exclude": [
-              "**/node_modules/**"
+            "lintFilePatterns": [
+              "src/**/*.ts",
+              "src/**/*.html"
             ]
+          }
+        },
+        "e2e": {
+          "builder": "@angular-devkit/build-angular:protractor",
+          "options": {
+            "protractorConfig": "e2e/protractor.conf.js",
+            "devServerTarget": "app:serve"
+          },
+          "configurations": {
+            "production": {
+              "devServerTarget": "app:serve:production"
+            },
+            "ci": {
+              "devServerTarget": "app:serve:ci"
+            }
           }
         },
         "ionic-cordova-build": {
@@ -250,12 +249,146 @@
           }
         },
         "lint": {
-          "builder": "@angular-devkit/build-angular:tslint",
+          "builder": "@angular-devkit/build-angular:lint",
           "options": {
             "tsConfig": "e2e/tsconfig.e2e.json",
             "exclude": [
               "**/node_modules/**"
             ]
+          }
+        }
+      }
+    },
+    "v3": {
+      "projectType": "application",
+      "schematics": {
+        "@schematics/angular:component": {
+          "style": "scss"
+        },
+        "@schematics/angular:application": {
+          "strict": true
+        }
+      },
+      "root": "projects/v3",
+      "sourceRoot": "projects/v3/src",
+      "prefix": "app",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:browser",
+          "options": {
+            "outputPath": "dist/v3",
+            "index": "projects/v3/src/index.html",
+            "main": "projects/v3/src/main.ts",
+            "polyfills": "projects/v3/src/polyfills.ts",
+            "tsConfig": "projects/v3/tsconfig.app.json",
+            "inlineStyleLanguage": "scss",
+            "assets": [
+              "projects/v3/src/favicon.ico",
+              "projects/v3/src/assets"
+            ],
+            "styles": [
+              "projects/v3/src/styles.scss"
+            ],
+            "scripts": []
+          },
+          "configurations": {
+            "production": {
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "500kb",
+                  "maximumError": "1mb"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "2kb",
+                  "maximumError": "4kb"
+                }
+              ],
+              "fileReplacements": [
+                {
+                  "replace": "projects/v3/src/environments/environment.ts",
+                  "with": "projects/v3/src/environments/environment.prod.ts"
+                }
+              ],
+              "outputHashing": "all"
+            },
+            "development": {
+              "buildOptimizer": false,
+              "optimization": false,
+              "vendorChunk": true,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "namedChunks": true
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "serve": {
+          "builder": "@angular-devkit/build-angular:dev-server",
+          "configurations": {
+            "production": {
+              "browserTarget": "v3:build:production"
+            },
+            "development": {
+              "browserTarget": "v3:build:development"
+            }
+          },
+          "defaultConfiguration": "development"
+        },
+        "extract-i18n": {
+          "builder": "@angular-devkit/build-angular:extract-i18n",
+          "options": {
+            "browserTarget": "v3:build"
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "projects/v3/src/test.ts",
+            "polyfills": "projects/v3/src/polyfills.ts",
+            "tsConfig": "projects/v3/tsconfig.spec.json",
+            "karmaConfig": "projects/v3/karma.conf.js",
+            "inlineStyleLanguage": "scss",
+            "assets": [
+              "projects/v3/src/favicon.ico",
+              "projects/v3/src/assets"
+            ],
+            "styles": [
+              "projects/v3/src/styles.scss"
+            ],
+            "scripts": []
+          }
+        }
+      }
+    },
+    "ngx-embed-video": {
+      "projectType": "library",
+      "root": "projects/ngx-embed-video",
+      "sourceRoot": "projects/ngx-embed-video/src",
+      "prefix": "lib",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:ng-packagr",
+          "options": {
+            "project": "projects/ngx-embed-video/ng-package.json"
+          },
+          "configurations": {
+            "production": {
+              "tsConfig": "projects/ngx-embed-video/tsconfig.lib.prod.json"
+            },
+            "development": {
+              "tsConfig": "projects/ngx-embed-video/tsconfig.lib.json"
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "projects/ngx-embed-video/src/test.ts",
+            "tsConfig": "projects/ngx-embed-video/tsconfig.spec.json",
+            "karmaConfig": "projects/ngx-embed-video/karma.conf.js"
           }
         }
       }

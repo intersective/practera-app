@@ -29,7 +29,7 @@ export class RequestModule {
     }
   }
 
-  static forRoot(config: RequestConfig): ModuleWithProviders {
+  static forRoot(config: RequestConfig): ModuleWithProviders<RequestModule> {
     return {
       ngModule: RequestModule,
       providers: [
