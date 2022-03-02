@@ -1,4 +1,4 @@
-<ion-header mode="ios">
+<ion-header mode="ios" *ngIf="!isNotInATeam">
   <ion-toolbar [ngClass]="{'ion-toolbar-absolute': !isMobile}">
     <ion-buttons slot="start" *ngIf="!restrictedAccess && isMobile">
       <ion-button (click)="back()" id="btn-back">
@@ -18,7 +18,7 @@
 <ion-content class="ion-padding ion-text-center" color="light" [ngClass]="{
   'ion-content-absolute-with-footer': hasFooter(),
   'ion-content-absolute': !hasFooter()
-}" appFloat>
+}" appFloat *ngIf="!isNotInATeam">
   <h1 class="headline-4" [attr.aria-describedby]="randomCode(assessment.name)" role="title" tabindex="0">{{ assessment.name }}</h1>
   <ion-text class="ion-text-left">
     <app-description [name]="randomCode(assessment.name)" *ngIf="assessment.description" [content]="assessment.description" id="asmt-des" class="body-1 black"></app-description>
@@ -167,7 +167,7 @@
 <ion-footer
   color="light"
   class="ion-footer-absolute"
-  *ngIf="hasFooter()">
+  *ngIf="hasFooter() && !isNotInATeam">
   <ion-toolbar class="ion-text-center" style="height: 100%">
     <ion-spinner
       *ngIf="loadingAssessment"
@@ -205,3 +205,7 @@
 
   </ion-toolbar>
 </ion-footer>
+
+<div class="not-team ion-padding ion-text-center" *ngIf="isNotInATeam">
+  <p class="black subtitle-1">Currently you are not in a team, please reach out to your Administrator or Coordinator to proceed with next steps.</p>
+</div>
