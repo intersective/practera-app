@@ -1,6 +1,6 @@
-import { async, ComponentFixture, TestBed, fakeAsync, tick, flushMicrotasks } from '@angular/core/testing';
+import { TestBed, fakeAsync, flushMicrotasks } from '@angular/core/testing';
 import { SwitcherService } from './switcher.service';
-import { of, Observable, pipe } from 'rxjs';
+import { of, Observable } from 'rxjs';
 import { RequestService } from '@shared/request/request.service';
 import { SharedService } from '@services/shared.service';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
@@ -14,7 +14,6 @@ import { ReviewListService } from '@app/review-list/review-list.service';
 import { environment } from '@environments/environment';
 import { ProgramFixture } from '@testing/fixtures/programs';
 import { PusherService } from '@shared/pusher/pusher.service';
-import { Apollo } from 'apollo-angular';
 
 describe('SwitcherService', () => {
   let service: SwitcherService;
@@ -26,35 +25,36 @@ describe('SwitcherService', () => {
   let pusherSpy: jasmine.SpyObj<PusherService>;
   let sharedSpy: jasmine.SpyObj<SharedService>;
   let utils: UtilsService;
-  const testUtils = new TestUtils();
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-        imports: [ HttpClientTestingModule ],
-        providers: [
-          Apollo,
-          SwitcherService,
-          UtilsService,
-          EventListService,
-          ReviewListService,
-          PusherService,
-          {
-            provide: SharedService,
-            useValue: jasmine.createSpyObj('SharedService', ['onPageLoad', 'initWebServices', 'getTeamInfo']),
-          },
-          {
-            provide: BrowserStorageService,
-            useClass: BrowserStorageServiceMock
-          },
-          {
-            provide: RequestService,
-            useValue: jasmine.createSpyObj('RequestService', ['post', 'graphQLWatch', 'apiResponseFormatError', 'graphQLFetch'])
-          },
-          {
-            provide: NotificationService,
-            useValue: jasmine.createSpyObj('NotificationService', ['modal'])
-          },
-        ]
+      imports: [HttpClientTestingModule],
+      providers: [
+        SwitcherService,
+        EventListService,
+        ReviewListService,
+        PusherService,
+        {
+          provide: SharedService,
+          useValue: jasmine.createSpyObj('SharedService', ['onPageLoad', 'initWebServices', 'getTeamInfo']),
+        },
+        {
+          provide: UtilsService,
+          useClass: TestUtils,
+        },
+        {
+          provide: BrowserStorageService,
+          useClass: BrowserStorageServiceMock
+        },
+        {
+          provide: RequestService,
+          useValue: jasmine.createSpyObj('RequestService', ['post', 'graphQLWatch', 'apiResponseFormatError', 'graphQLFetch'])
+        },
+        {
+          provide: NotificationService,
+          useValue: jasmine.createSpyObj('NotificationService', ['modal'])
+        },
+      ]
     });
     service = TestBed.inject(SwitcherService);
     requestSpy = TestBed.inject(RequestService) as jasmine.SpyObj<RequestService>;
@@ -70,13 +70,13 @@ describe('SwitcherService', () => {
   });
 
   it('should be created', () => {
-      expect(service).toBeTruthy();
+    expect(service).toBeTruthy();
   });
 
   describe('getPrograms()', () => {
     it('should get program list from storage/cache', fakeAsync(() => {
       storageSpy.get.and.returnValue([
-        {program: {}, timeline: {}, project: {lead_image: 'https://www.filepicker.io/api/file/DAsMaIUcQcSM3IFqalPN'}, enrolment: {}}
+        { program: {}, timeline: {}, project: { lead_image: 'https://www.filepicker.io/api/file/DAsMaIUcQcSM3IFqalPN' }, enrolment: {} }
       ]);
       service.getPrograms().subscribe(programs => {
         expect(programs[0].project.lead_image).toContain('https://cdn.filestackcontent.com/resize=fit:crop,width:');
@@ -87,12 +87,12 @@ describe('SwitcherService', () => {
 
   describe('when testing checkIsOneProgram()', () => {
     it('should return true if got Array with one program object ', () => {
-        spyOn(utils, 'isEmpty').and.returnValue(false);
-        expect(service.checkIsOneProgram([{}])).toBe(true);
+      spyOn(utils, 'isEmpty').and.returnValue(false);
+      expect(service.checkIsOneProgram([{}])).toBe(true);
     });
     it('should return false if got Array multiple program objects ', () => {
-        spyOn(utils, 'isEmpty').and.returnValue(false);
-        expect(service.checkIsOneProgram([{}, {}, {}])).toBe(false);
+      spyOn(utils, 'isEmpty').and.returnValue(false);
+      expect(service.checkIsOneProgram([{}, {}, {}])).toBe(false);
     });
     it('should get cached program when programs params is empty', () => {
       const SAMPLE = [{}];
@@ -106,7 +106,6 @@ describe('SwitcherService', () => {
   describe('when testing switchProgramAndNavigate()', () => {
     beforeEach(() => {
       spyOn(pusherSpy, 'initialise');
-      spyOn(utils, 'clearCache');
       // by default test normal flow (non-direct link)
       storageSpy.get = jasmine.createSpy('get').and.returnValue(false);
     });
@@ -122,14 +121,14 @@ describe('SwitcherService', () => {
     }));
 
     it('should return [switcher] if programs is Array with multiple program objects ', fakeAsync(() => {
-        let result;
-        spyOn(service, 'checkIsOneProgram').and.returnValue(false);
-        spyOn(Array, 'isArray').and.returnValue(true);
-        service.switchProgramAndNavigate(ProgramFixture).then(data => {
-          result = data;
-        });
-        flushMicrotasks();
-        expect(result).toEqual(['switcher', 'switcher-program']);
+      let result;
+      spyOn(service, 'checkIsOneProgram').and.returnValue(false);
+      spyOn(Array, 'isArray').and.returnValue(true);
+      service.switchProgramAndNavigate(ProgramFixture).then(data => {
+        result = data;
+      });
+      flushMicrotasks();
+      expect(result).toEqual(['switcher', 'switcher-program']);
     }));
 
     it('should return [app, home] if programs is Array with multiple program objects', fakeAsync(() => {
@@ -137,9 +136,7 @@ describe('SwitcherService', () => {
       const [firstProgram] = ProgramFixture;
       spyOn(service, 'checkIsOneProgram').and.returnValue(true);
       spyOn(Array, 'isArray').and.returnValue(true);
-      spyOn(service, 'switchProgram').and.returnValue({
-        toPromise: () => new Promise(res => res(true))
-      });
+      spyOn(service, 'switchProgram').and.returnValue(of(true));
 
       let result;
       service.switchProgramAndNavigate([firstProgram]).then(data => {
@@ -151,41 +148,41 @@ describe('SwitcherService', () => {
     }));
 
     it('should return [app, home] if programs is not an Array and got one program object (direct link)', fakeAsync(() => {
-        spyOn(utils, 'isEmpty').and.returnValue(false);
-        spyOn(Array, 'isArray').and.returnValue(false);
-        spyOn(service, 'switchProgram').and.returnValue(of({}));
+      spyOn(utils, 'isEmpty').and.returnValue(false);
+      spyOn(Array, 'isArray').and.returnValue(false);
+      spyOn(service, 'switchProgram').and.returnValue(of({}));
 
-        // simulate direct-link
-        storageSpy.get = jasmine.createSpy('get').and.returnValue(true);
-        environment.goMobile = false;
+      // simulate direct-link
+      storageSpy.get = jasmine.createSpy('get').and.returnValue(true);
+      environment.goMobile = false;
 
-        let result;
-        service.switchProgramAndNavigate(ProgramFixture[0]).then(data => {
-          result = data;
-        });
-        flushMicrotasks();
-        expect(storageSpy.get).toHaveBeenCalledWith('directLinkRoute');
-        expect(storageSpy.remove).toHaveBeenCalledWith('directLinkRoute');
-        expect(result).toEqual(true);
+      let result;
+      service.switchProgramAndNavigate(ProgramFixture[0]).then(data => {
+        result = data;
+      });
+      flushMicrotasks();
+      expect(storageSpy.get).toHaveBeenCalledWith('directLinkRoute');
+      expect(storageSpy.remove).toHaveBeenCalledWith('directLinkRoute');
+      expect(result).toEqual(true);
     }));
 
     it('should return [app, home] if programs is not an Array and got one program object (not direct link)', fakeAsync(() => {
-        spyOn(utils, 'isEmpty').and.returnValue(false);
-        spyOn(Array, 'isArray').and.returnValue(false);
-        spyOn(service, 'switchProgram').and.returnValue(of({}));
+      spyOn(utils, 'isEmpty').and.returnValue(false);
+      spyOn(Array, 'isArray').and.returnValue(false);
+      spyOn(service, 'switchProgram').and.returnValue(of({}));
 
-        // disable direct-link
-        storageSpy.get = jasmine.createSpy('get').and.returnValue(false);
-        environment.goMobile = false;
+      // disable direct-link
+      storageSpy.get = jasmine.createSpy('get').and.returnValue(false);
+      environment.goMobile = false;
 
-        let result;
-        service.switchProgramAndNavigate({}).then(data => {
-          result = data;
-        });
-        flushMicrotasks();
-        expect(storageSpy.get).toHaveBeenCalledWith('directLinkRoute');
-        expect(storageSpy.remove).not.toHaveBeenCalledWith('directLinkRoute');
-        expect(result).toEqual(['app', 'home']);
+      let result;
+      service.switchProgramAndNavigate({}).then(data => {
+        result = data;
+      });
+      flushMicrotasks();
+      expect(storageSpy.get).toHaveBeenCalledWith('directLinkRoute');
+      expect(storageSpy.remove).not.toHaveBeenCalledWith('directLinkRoute');
+      expect(result).toEqual(['app', 'home']);
     }));
   });
 
@@ -264,6 +261,7 @@ describe('SwitcherService', () => {
     it('should set the correct user data (1)', () => {
       const programObj = ProgramFixture[3];
       delete programObj.program.config.theme_color;
+
       service.switchProgram(programObj).subscribe();
       expect(storageSpy.setUser).toHaveBeenCalledWith({
         programId: ProgramFixture[3].program.id,
