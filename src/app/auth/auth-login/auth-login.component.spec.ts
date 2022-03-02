@@ -113,7 +113,10 @@ describe('AuthLoginComponent', () => {
       expect(component.isLoggingIn).toBe(true);
       expect(notificationSpy.alert.calls.count()).toBe(1);
       expect(notificationSpy.alert.calls.first().args[0].message).toContain('password is incorrect');
-      notificationSpy.alert.calls.first().args[0].buttons[0].handler();
+
+      const button = notificationSpy.alert.calls.first().args[0].buttons[0];
+      (typeof button == 'string') ? button : button.handler(true);
+
       expect(component.isLoggingIn).toBe(false);
     }));
   });
