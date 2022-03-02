@@ -16,7 +16,6 @@ describe('AuthService', () => {
   let storageSpy: jasmine.SpyObj<BrowserStorageService>;
   let pusherSpy: jasmine.SpyObj<PusherService>;
   let utilsSpy: jasmine.SpyObj<UtilsService>;
-  const testUtils = new TestUtils();
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -25,7 +24,7 @@ describe('AuthService', () => {
         AuthService,
         {
           provide: RequestService,
-          useValue: jasmine.createSpyObj('RequestService', ['delete', 'post', 'get', 'graphQLWatch'])
+          useValue: jasmine.createSpyObj('RequestService', ['delete', 'post', 'get', 'put', 'graphQLFetch', 'graphQLWatch'])
         },
         {
           provide: Router,
@@ -60,6 +59,7 @@ describe('AuthService', () => {
     expect(service).toBeTruthy();
   });
 
+
   it('when testing login(), it should pass the correct data to API', () => {
     requestSpy.post.and.returnValue(of({
       success: true,
@@ -82,11 +82,12 @@ describe('AuthService', () => {
     }));
     storageSpy.getConfig.and.returnValue(true);
     utilsSpy.has.and.returnValue(true);
+
     service.login({ email: 'test@test.com', password: '123' }).subscribe();
     expect(requestSpy.post.calls.count()).toBe(1);
     expect(requestSpy.post.calls.first().args[1]).toContain('test%40test.com');
     expect(requestSpy.post.calls.first().args[1]).toContain('123');
-    expect(storageSpy.setUser.calls.first().args[0]).toEqual({apikey: '123456'});
+    expect(storageSpy.setUser.calls.first().args[0]).toEqual({ apikey: '123456' });
   });
 
   it('when testing directLogin(), it should pass the correct data to API', () => {
@@ -112,8 +113,8 @@ describe('AuthService', () => {
     storageSpy.getConfig.and.returnValue(true);
     service.directLogin({ authToken: 'abcd' }).subscribe();
     expect(requestSpy.post.calls.count()).toBe(1);
-    expect(requestSpy.post.calls.first().args[1]).toContain('abcd');
-    expect(storageSpy.setUser.calls.first().args[0]).toEqual({apikey: '123456'});
+    expect(requestSpy.post.calls.first().args[0].data).toContain('abcd');
+    expect(storageSpy.setUser.calls.first().args[0]).toEqual({ apikey: '123456' });
   });
 
   it('when testing globalLogin(), it should pass the correct data to API', () => {
@@ -139,8 +140,8 @@ describe('AuthService', () => {
     storageSpy.getConfig.and.returnValue(true);
     service.globalLogin({ apikey: 'abcd', service: 'LOGIN' }).subscribe();
     expect(requestSpy.post.calls.count()).toBe(1);
-    expect(requestSpy.post.calls.first().args[1]).toContain('abcd');
-    expect(storageSpy.setUser.calls.first().args[0]).toEqual({apikey: '123456'});
+    expect(requestSpy.post.calls.first().args[0].data).toContain('abcd');
+    expect(storageSpy.setUser.calls.first().args[0]).toEqual({ apikey: '123456' });
   });
 
   describe('when testing isAuthenticated()', () => {
@@ -156,7 +157,7 @@ describe('AuthService', () => {
 
   describe('when testing logout()', () => {
     it('should navigate to login by default', () => {
-      storageSpy.getConfig.and.returnValue({color: ''});
+      storageSpy.getConfig.and.returnValue({ color: '' });
       service.logout({});
       expect(pusherSpy.unsubscribeChannels.calls.count()).toBe(1);
       expect(pusherSpy.disconnect.calls.count()).toBe(1);
@@ -164,17 +165,16 @@ describe('AuthService', () => {
       expect(routerSpy.navigate.calls.first().args[0]).toEqual(['login']);
     });
     it('should pass navigation data', () => {
-      storageSpy.getConfig.and.returnValue({color: ''});
-      service.logout({data: 'data'});
+      storageSpy.getConfig.and.returnValue({ color: '' });
+      service.logout({ data: 'data' });
       expect(pusherSpy.unsubscribeChannels.calls.count()).toBe(1);
       expect(pusherSpy.disconnect.calls.count()).toBe(1);
       expect(storageSpy.clear.calls.count()).toBe(1);
-      expect(routerSpy.navigate.calls.first().args[0]).toEqual(['login']);
-      expect(routerSpy.navigate.calls.first().args[1]).toEqual({data: 'data'});
+      expect(routerSpy.navigate.calls.first().args[0]).toEqual(['login'], { data: 'data' });
     });
 
     it('should not navigate to login when it is called with redirect = false', () => {
-      storageSpy.getConfig.and.returnValue({color: ''});
+      storageSpy.getConfig.and.returnValue({ color: '' });
       service.logout({}, false);
       expect(routerSpy.navigate.calls.count()).toBe(0);
     });
@@ -184,13 +184,13 @@ describe('AuthService', () => {
     requestSpy.post.and.returnValue(of(''));
     service.forgotPassword('test@test.com').subscribe();
     expect(requestSpy.post.calls.count()).toBe(1);
-    expect(requestSpy.post.calls.first().args[1].email).toEqual('test@test.com');
+    expect(requestSpy.post.calls.first().args[0].data.email).toEqual('test@test.com');
   });
 
   it('when testing resetPassword()', () => {
-    requestSpy.post.and.returnValue(of(''));
-    service.resetPassword({}).subscribe();
-    expect(requestSpy.post.calls.count()).toBe(1);
+    requestSpy.put.and.returnValue(of(''));
+    service.resetPassword({ password: 'abc' }).subscribe();
+    expect(requestSpy.put.calls.count()).toBe(1);
   });
 
   it('when testing connectToLinkedIn()', () => {
@@ -224,7 +224,7 @@ describe('AuthService', () => {
 
   it('when testing checkDomain()', () => {
     requestSpy.get.and.returnValue(of(''));
-    service.checkDomain({domain: 'localhost'}).subscribe();
+    service.checkDomain({ domain: 'localhost' }).subscribe();
     expect(requestSpy.get.calls.count()).toBe(1);
   });
 
