@@ -41,19 +41,21 @@ export class AchievementsService {
     private request: RequestService,
     private utils: UtilsService,
     private storage: BrowserStorageService,
-  ) {}
+  ) { }
 
   getAchievements(order?): Observable<any> {
     if (!order) {
       order = 'asc';
     }
-    return this.request.get(api.get.achievements, {params: {
+    return this.request.get(api.get.achievements, {
+      params: {
         order: order
-      }})
+      }
+    })
       .pipe(map(response => {
         return this._normaliseAchievements(response.data);
       })
-    );
+      );
   }
 
   private _normaliseAchievements(data) {
@@ -66,12 +68,12 @@ export class AchievementsService {
     const achievements: Array<Achievement> = [];
     data.forEach(achievement => {
       if (!this.utils.has(achievement, 'id') ||
-          !this.utils.has(achievement, 'name') ||
-          !this.utils.has(achievement, 'description') ||
-          !this.utils.has(achievement, 'badge') ||
-          !this.utils.has(achievement, 'points') ||
-          !this.utils.has(achievement, 'isEarned') ||
-          !this.utils.has(achievement, 'earnedDate')) {
+        !this.utils.has(achievement, 'name') ||
+        !this.utils.has(achievement, 'description') ||
+        !this.utils.has(achievement, 'badge') ||
+        !this.utils.has(achievement, 'points') ||
+        !this.utils.has(achievement, 'isEarned') ||
+        !this.utils.has(achievement, 'earnedDate')) {
         return this.request.apiResponseFormatError('Achievement object format error');
       }
       achievements.push({
@@ -112,6 +114,11 @@ export class AchievementsService {
       identifier: 'Achievement-' + achievementId,
       is_done: true
     };
-    return this.request.post(api.post.todoItem, postData).subscribe();
+    return this.request.post(
+      {
+        endPoint: api.post.todoItem,
+        data: postData
+      }
+    ).subscribe();
   }
 }

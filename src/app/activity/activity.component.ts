@@ -1,17 +1,15 @@
 import { Component, Input, NgZone, Output, EventEmitter } from '@angular/core';
 import { Router } from '@angular/router';
-import { Observable, of, forkJoin, Subscription } from 'rxjs';
-import { catchError } from 'rxjs/operators';
-import { ActivityService, Activity, Task } from './activity.service';
+import { Subscription } from 'rxjs';
+import { ActivityService, Activity } from './activity.service';
 import { UtilsService } from '../services/utils.service';
 import { NotificationService } from '@shared/notification/notification.service';
 import { BrowserStorageService } from '@services/storage.service';
 import { Event, EventListService } from '@app/event-list/event-list.service';
-import { SharedService } from '@services/shared.service';
 import { FastFeedbackService } from '../fast-feedback/fast-feedback.service';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
-import { Apollo } from 'apollo-angular';
-import gql from 'graphql-tag';
+import { ApolloService } from '@shared/apollo/apollo.service';
+import { SharedService } from '@app/services/shared.service';
 
 @Component({
   selector: 'app-activity',
@@ -40,15 +38,15 @@ export class ActivityComponent {
   constructor(
     public router: Router,
     private activityService: ActivityService,
-    public utils: UtilsService,
     private notificationService: NotificationService,
     public storage: BrowserStorageService,
     public eventListService: EventListService,
-    public sharedService: SharedService,
     public fastFeedbackService: FastFeedbackService,
     private newRelic: NewRelicService,
     private ngZone: NgZone,
-    private apollo: Apollo
+    private apolloService: ApolloService,
+    readonly sharedService: SharedService,
+    readonly utils: UtilsService,
   ) {
 
     // update event list after book/cancel an event
@@ -93,6 +91,10 @@ export class ActivityComponent {
     }
   }
 
+  dueDateFormatter(dueDate) {
+    return this.utils.dueDateFormatter(dueDate);
+  }
+
   onEnter() {
     this.newRelic.setPageViewName('activity components');
     this.activity = {
@@ -113,7 +115,7 @@ export class ActivityComponent {
         activity => {
           if (!activity) {
             // activity is null by default
-            return ;
+            return;
           }
           this.activity = activity;
           this.loadingActivity = false;
@@ -147,9 +149,9 @@ export class ActivityComponent {
     if (this.utils.has(referrer, 'url') && referrer.route === 'activity-task') {
       this.newRelic.actionText('Navigating to external return URL from Activity');
       this.utils.redirectToUrl(referrer.url);
-      return ;
+      return;
     }
-    this._navigate([ 'app', 'home' ]);
+    this._navigate(['app', 'home']);
     this.newRelic.actionText('Back button pressed on Activities Page.');
   }
 
@@ -159,7 +161,7 @@ export class ActivityComponent {
     switch (task.type) {
       case 'Assessment':
         if (task.isForTeam && !this.storage.getUser().teamId) {
-          this.notificationService.popUp('shortMessage', {message: 'To do this assessment, you have to be in a team.'});
+          this.notificationService.popUp('shortMessage', { message: 'To do this assessment, you have to be in a team.' });
           break;
         }
         // check if assessment is locked by other team members
@@ -171,19 +173,19 @@ export class ActivityComponent {
             },
             data => {
               if (data.data) {
-                this._navigate(['assessment', 'assessment', this.id , task.contextId, task.id]);
+                this._navigate(['assessment', 'assessment', this.id, task.contextId, task.id]);
               }
             }
           );
-          return ;
+          return;
         }
-        this._navigate(['assessment', 'assessment', this.id , task.contextId, task.id]);
+        this._navigate(['assessment', 'assessment', this.id, task.contextId, task.id]);
         break;
       case 'Topic':
         this._navigate(['topic', this.id, task.id]);
         break;
       case 'Locked':
-        this.notificationService.popUp('shortMessage', {message: 'This part of the app is still locked. You can unlock the features by engaging with the app and completing all tasks.'});
+        this.notificationService.popUp('shortMessage', { message: 'This part of the app is still locked. You can unlock the features by engaging with the app and completing all tasks.' });
         break;
     }
   }
@@ -191,14 +193,14 @@ export class ActivityComponent {
   gotoEvent(event?) {
     // go to the event page without choosing any event
     if (!event) {
-      return this.router.navigate(['app', 'events', {activity_id: this.id}]);
+      return this.router.navigate(['app', 'events', { activity_id: this.id }]);
     }
     // display the event pop up for mobile
     if (this.utils.isMobile()) {
       return this.eventListService.eventDetailPopUp(event);
     }
     // go to the event page with an event selected
-    return this.router.navigate(['app', 'events', {activity_id: this.id, event_id: event.id}]);
+    return this.router.navigate(['app', 'events', { activity_id: this.id, event_id: event.id }]);
   }
 
   /**
@@ -214,9 +216,9 @@ export class ActivityComponent {
     }
     this.activity.tasks[index].status = status;
     // update the cache
-    this.apollo.getClient().writeFragment({
+    this.apolloService.writeFragment({
       id: `Task:${this.activity.tasks[index].type.toLowerCase()}${this.activity.tasks[index].id}`,
-      fragment: gql`
+      fragment: `
         fragment task on Task {
           status {
             status

@@ -1,10 +1,10 @@
 import { Injectable, Inject } from '@angular/core';
-import * as _ from 'lodash';
 import { DOCUMENT } from '@angular/common';
 import { Observable, Subject } from 'rxjs';
 import { map, filter } from 'rxjs/operators';
 import { Platform } from '@ionic/angular';
-import { Apollo } from 'apollo-angular';
+import { ApolloService } from '@shared/apollo/apollo.service';
+import * as _ from 'lodash';
 import * as moment from 'moment';
 import { Colors } from '@services/storage.service';
 
@@ -22,7 +22,7 @@ declare var window: any;
 export class UtilsService {
   private lodash;
   // this Subject is used to broadcast an event to the app
-  protected _eventsSubject = new Subject<{key: string, value: any}>();
+  protected _eventsSubject = new Subject<{ key: string, value: any }>();
   // -- Not in used anymore, leave them commented in case we need later --
   // // this Subject is used in project.service to cache the project data
   // public projectSubject = new BehaviorSubject(null);
@@ -33,7 +33,7 @@ export class UtilsService {
   constructor(
     @Inject(DOCUMENT) private document: Document,
     private platform: Platform,
-    private apollo: Apollo
+    private apolloService: ApolloService
   ) {
     if (_) {
       this.lodash = _;
@@ -94,7 +94,7 @@ export class UtilsService {
     return this.lodash.flatten(array);
   }
 
-  indexOf(array, value, fromIndex= 0) {
+  indexOf(array, value, fromIndex = 0) {
     return this.lodash.indexOf(array, value, fromIndex);
   }
 
@@ -103,7 +103,7 @@ export class UtilsService {
   }
 
   openUrl(url, options?: { target: String }) {
-    options = options || {target: '_self' };
+    options = options || { target: '_self' };
     return window.open(url, options.target);
   }
 
@@ -214,14 +214,16 @@ export class UtilsService {
 
   // need to clear all Subject for cache
   async clearCache(): Promise<void> {
-    if (this.apollo && typeof this.apollo.getClient === 'function') {
-      await this.apollo.getClient().clearStore();
+    const apolloClient = this.apolloService.getClient();
+    // clear cache before initialised
+    if (apolloClient) {
+      await apolloClient.clearStore();
     }
-  //   // initialise the Subject for caches
-  //   this.projectSubject.next(null);
-  //   this.each(this.activitySubjects, (subject, key) => {
-  //     this.activitySubjects[key].next(null);
-  //   });
+    //   // initialise the Subject for caches
+    //   this.projectSubject.next(null);
+    //   this.each(this.activitySubjects, (subject, key) => {
+    //     this.activitySubjects[key].next(null);
+    //   });
   }
 
   // transfer url query string to an object
@@ -293,7 +295,7 @@ export class UtilsService {
         return formattedTime;
 
       default:
-      return this.dateFormatter(date) + ' ' + formattedTime;
+        return this.dateFormatter(date) + ' ' + formattedTime;
     }
   }
 
@@ -345,8 +347,8 @@ export class UtilsService {
       compared = new Date(this.iso8601Formatter(comparedString));
     }
     if (compareDate && (time.getDate() === compared.getDate() &&
-    time.getMonth() === compared.getMonth() &&
-    time.getFullYear() === compared.getFullYear())) {
+      time.getMonth() === compared.getMonth() &&
+      time.getFullYear() === compared.getFullYear())) {
       return 0;
     }
     if (time.getTime() < compared.getTime()) {
@@ -423,7 +425,7 @@ export class UtilsService {
   }
 
   redirectToUrl(url: string) {
-    window.location.href = `${ url.match(/^https*:\/\//) ? '' : 'https://' }${ url }`;
+    window.location.href = `${url.match(/^https*:\/\//) ? '' : 'https://'}${url}`;
   }
 
   /**
@@ -434,6 +436,64 @@ export class UtilsService {
     const { crypto } = window;
     const slugs = crypto.getRandomValues(new Uint32Array(1));
     return slugs[0];
+  }
+
+  /**
+   * Given a domain and endpoint string, return a correctly formatted url string
+   * e.g.
+   * test.practera.com - login => https://test.practera.com/login
+   *
+   */
+  urlFormatter(domain: string, endpoint?: string) {
+    // always need http as prefix
+    let theDomain = !domain.match(/^http/) ? `https://${domain}` : domain;
+    // remove / in suffix
+    theDomain = theDomain.replace(/\/$/, '');
+    if (!endpoint) {
+      return theDomain;
+    }
+    // always have / in prefix
+    let theEndpoint = !endpoint.match(/^\//) ? `/${endpoint}` : endpoint;
+    // remove / in suffix
+    theEndpoint = theEndpoint.replace(/\/$/, '');
+    return `${theDomain}${theEndpoint}`;
+  }
+
+  /* extra query parameters from URL (window.location)
+   *
+   * @return  {URLSearchParams}
+   */
+  getQueryParams(): URLSearchParams {
+    let queryString = '';
+    if (window.location.search) {
+      queryString = window.location.search.substring(1);
+    } else if (window.location.hash) {
+      queryString = window.location.hash.substring(2);
+    } else if (window.location.href.includes(';')) {
+      const url = window.location.href;
+      window.location.href = url.replace(/;/, '?').replace(/;/g, '&');
+    }
+    return new URLSearchParams(queryString);
+  }
+
+  /**
+   * This method check due dates of assessment or activity.
+   * - Check due date is today, tomorrow, upcoming date or overdue date.
+   * - If due date is upcoming one this will returns 'Due (date)' ex: 'Due 06-30-2019'.
+   * - If due date is overdue one this will returns 'Overdue (date)' ex: 'Overdue 01-10-2019'.
+   * - If due date is today this will return 'Due Today'.
+   * - If due date is tomorrow this will return 'Due Tomorrow'.
+   * @param dueDate - due date of assessment or activity.
+   */
+  dueDateFormatter(dueDate: string) {
+    if (!dueDate) {
+      return '';
+    }
+    const difference = this.timeComparer(dueDate);
+    if (difference < 0) {
+      return 'Overdue ' + this.utcToLocal(dueDate);
+    }
+    return 'Due ' + this.utcToLocal(dueDate);
   }
 
   getDateDifference(dateOne: string, datetwo: string) {

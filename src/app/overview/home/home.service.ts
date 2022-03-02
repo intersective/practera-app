@@ -4,11 +4,8 @@ import { map } from 'rxjs/operators';
 import { RequestService } from '@shared/request/request.service';
 import { UtilsService } from '@services/utils.service';
 import { BrowserStorageService } from '@services/storage.service';
-import { Activity } from '../project/project.service';
-import { Question, Meta} from '../../fast-feedback/fast-feedback.service';
 import { NotificationService } from '@shared/notification/notification.service';
 import { Event, EventListService } from '@app/event-list/event-list.service';
-import { SharedService } from '@services/shared.service';
 
 /**
  * @name api
@@ -57,15 +54,14 @@ export class HomeService {
     private utils: UtilsService,
     private notification: NotificationService,
     private eventsService: EventListService,
-    public sharedService: SharedService
-  ) {}
+  ) { }
 
-  getTodoItems() {
+  getTodoItems(): Observable<any> {
     return this.request.get(api.get.todoItem, {
-        params: {
-          project_id: this.storage.getUser().projectId
-        }
-      })
+      params: {
+        project_id: this.storage.getUser().projectId
+      }
+    })
       .pipe(map(response => {
         if (response.success && response.data) {
           return this._normaliseTodoItems(response.data);
@@ -81,12 +77,12 @@ export class HomeService {
     }
     data.forEach(todoItem => {
       if (!this.utils.has(todoItem, 'identifier') ||
-          !this.utils.has(todoItem, 'is_done') ||
-          !this.utils.has(todoItem, 'meta')) {
+        !this.utils.has(todoItem, 'is_done') ||
+        !this.utils.has(todoItem, 'meta')) {
         return this.request.apiResponseFormatError('TodoItem format error');
       }
       if (todoItem.is_done) {
-        return ;
+        return;
       }
 
       // todo item for user to see the feedback
@@ -136,8 +132,8 @@ export class HomeService {
     };
     item.type = 'feedback_available';
     if (!this.utils.has(todoItem, 'meta.assessment_name') ||
-        !this.utils.has(todoItem, 'meta.reviewer_name') ||
-        !this.utils.has(todoItem, 'created')) {
+      !this.utils.has(todoItem, 'meta.reviewer_name') ||
+      !this.utils.has(todoItem, 'created')) {
       this.request.apiResponseFormatError('TodoItem meta format error');
       return todoItems;
     }
@@ -159,7 +155,7 @@ export class HomeService {
     };
     item.type = 'review_submission';
     if (!this.utils.has(todoItem, 'meta.assessment_name') ||
-        !this.utils.has(todoItem, 'created')) {
+      !this.utils.has(todoItem, 'created')) {
       this.request.apiResponseFormatError('TodoItem meta format error');
       return todoItems;
     }
@@ -181,15 +177,15 @@ export class HomeService {
     };
     item.type = 'assessment_submission_reminder';
     if (!this.utils.has(todoItem, 'meta.assessment_name') ||
-        !this.utils.has(todoItem, 'meta.context_id') ||
-        !this.utils.has(todoItem, 'meta.activity_id') ||
-        !this.utils.has(todoItem, 'meta.assessment_id') ||
-        !this.utils.has(todoItem, 'meta.due_date')) {
+      !this.utils.has(todoItem, 'meta.context_id') ||
+      !this.utils.has(todoItem, 'meta.activity_id') ||
+      !this.utils.has(todoItem, 'meta.assessment_id') ||
+      !this.utils.has(todoItem, 'meta.due_date')) {
       this.request.apiResponseFormatError('TodoItem meta format error');
       return todoItems;
     }
     item.name = todoItem.meta.assessment_name;
-    item.description = this.sharedService.dueDateFormatter(todoItem.meta.due_date);
+    item.description = this.utils.dueDateFormatter(todoItem.meta.due_date);
     item.time = this.utils.timeFormatter(todoItem.created);
     item.meta = todoItem.meta;
     todoItems.push(item);
@@ -208,11 +204,11 @@ export class HomeService {
         noCache: true
       }
     )
-    .pipe(map(response => {
-      if (response.data) {
-        return this._normaliseChatMessage(response.data);
-      }
-    }));
+      .pipe(map(response => {
+        if (response.data) {
+          return this._normaliseChatMessage(response.data);
+        }
+      }));
   }
 
   private _normaliseChatMessage(data): TodoItem {
@@ -226,9 +222,9 @@ export class HomeService {
     let todoItem: TodoItem;
     result.forEach(message => {
       if (!this.utils.has(message, 'unreadMessageCount') ||
-          !this.utils.has(message, 'name') ||
-          !this.utils.has(message, 'lastMessage') ||
-          !this.utils.has(message, 'lastMessageCreated')) {
+        !this.utils.has(message, 'name') ||
+        !this.utils.has(message, 'lastMessage') ||
+        !this.utils.has(message, 'lastMessageCreated')) {
         return this.request.apiResponseFormatError('Chat object format error');
       }
       if (message.unreadMessageCount > 0) {
@@ -239,7 +235,7 @@ export class HomeService {
           time: '',
         };
         unreadMessages += message.unreadMessageCount;
-        noOfChats ++;
+        noOfChats++;
         todoItem.name = message.name;
         todoItem.description = message.lastMessage;
         todoItem.time = this.utils.timeFormatter(message.lastMessageCreated);
@@ -267,12 +263,12 @@ export class HomeService {
       // This is a feedback available event
       case 'assessment_review_published':
         if (!this.utils.has(event, 'meta.AssessmentReview.assessment_name') ||
-            !this.utils.has(event, 'meta.AssessmentReview.reviewer_name') ||
-            !this.utils.has(event, 'meta.AssessmentReview.published_date') ||
-            !this.utils.has(event, 'meta.AssessmentReview.assessment_id') ||
-            !this.utils.has(event, 'meta.AssessmentReview.activity_id') ||
-            !this.utils.has(event, 'meta.AssessmentReview.context_id')
-          ) {
+          !this.utils.has(event, 'meta.AssessmentReview.reviewer_name') ||
+          !this.utils.has(event, 'meta.AssessmentReview.published_date') ||
+          !this.utils.has(event, 'meta.AssessmentReview.assessment_id') ||
+          !this.utils.has(event, 'meta.AssessmentReview.activity_id') ||
+          !this.utils.has(event, 'meta.AssessmentReview.context_id')
+        ) {
           this.request.apiResponseFormatError('Pusher notification event meta format error');
           return {};
         }
@@ -293,11 +289,11 @@ export class HomeService {
       // This is a submission ready for review event
       case 'assessment_review_assigned':
         if (!this.utils.has(event, 'meta.AssessmentReview.assessment_name') ||
-            !this.utils.has(event, 'meta.AssessmentReview.assigned_date') ||
-            !this.utils.has(event, 'meta.AssessmentReview.assessment_id') ||
-            !this.utils.has(event, 'meta.AssessmentReview.context_id') ||
-            !this.utils.has(event, 'meta.AssessmentReview.assessment_submission_id')
-          ) {
+          !this.utils.has(event, 'meta.AssessmentReview.assigned_date') ||
+          !this.utils.has(event, 'meta.AssessmentReview.assessment_id') ||
+          !this.utils.has(event, 'meta.AssessmentReview.context_id') ||
+          !this.utils.has(event, 'meta.AssessmentReview.assessment_submission_id')
+        ) {
           this.request.apiResponseFormatError('Pusher notification event meta format error');
           return {};
         }
@@ -316,19 +312,19 @@ export class HomeService {
 
       case 'assessment_submission_reminder':
         if (!this.utils.has(event, 'meta.AssessmentSubmissionReminder.assessment_name') ||
-            !this.utils.has(event, 'meta.AssessmentSubmissionReminder.context_id') ||
-            !this.utils.has(event, 'meta.AssessmentSubmissionReminder.activity_id') ||
-            !this.utils.has(event, 'meta.AssessmentSubmissionReminder.assessment_id') ||
-            !this.utils.has(event, 'meta.AssessmentSubmissionReminder.due_date') ||
-            !this.utils.has(event, 'meta.AssessmentSubmissionReminder.reminded_date')
-          ) {
+          !this.utils.has(event, 'meta.AssessmentSubmissionReminder.context_id') ||
+          !this.utils.has(event, 'meta.AssessmentSubmissionReminder.activity_id') ||
+          !this.utils.has(event, 'meta.AssessmentSubmissionReminder.assessment_id') ||
+          !this.utils.has(event, 'meta.AssessmentSubmissionReminder.due_date') ||
+          !this.utils.has(event, 'meta.AssessmentSubmissionReminder.reminded_date')
+        ) {
           this.request.apiResponseFormatError('TodoItem meta format error');
           return {};
         }
         return {
           type: 'assessment_submission_reminder',
           name: event.meta.AssessmentSubmissionReminder.assessment_name,
-          description: this.sharedService.dueDateFormatter(event.meta.AssessmentSubmissionReminder.due_date),
+          description: this.utils.dueDateFormatter(event.meta.AssessmentSubmissionReminder.due_date),
           time: this.utils.timeFormatter(event.meta.AssessmentSubmissionReminder.reminded_date),
           meta: {
             context_id: event.meta.AssessmentSubmissionReminder.context_id,
@@ -351,11 +347,11 @@ export class HomeService {
       return of(null);
     }
     return this.request.get(api.get.events, {
-        params: {
-          type: 'activity_session',
-          id: data.meta.id
-        }
-      })
+      params: {
+        type: 'activity_session',
+        id: data.meta.id
+      }
+    })
       .pipe(map(response => {
         if (this.utils.isEmpty(response.data)) {
           return null;
@@ -371,11 +367,15 @@ export class HomeService {
   }
 
   postEventReminder(event) {
-    return this.request.post(api.post.todoItem, {
-      project_id: this.storage.getUser().projectId,
-      identifier: 'EventReminder-' + event.id,
-      is_done: true
-    }).subscribe();
+    return this.request.post(
+      {
+        endPoint: api.post.todoItem,
+        data: {
+          project_id: this.storage.getUser().projectId,
+          identifier: 'EventReminder-' + event.id,
+          is_done: true
+        }
+      }).subscribe();
   }
 
 }

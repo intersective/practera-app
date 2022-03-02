@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Observable, of } from 'rxjs';
+import { of } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { RequestService } from '@shared/request/request.service';
 import { UtilsService } from '@services/utils.service';
@@ -113,7 +113,7 @@ export class AssessmentService {
     private storage: BrowserStorageService,
     private notification: NotificationService,
     public sanitizer: DomSanitizer,
-  ) {}
+  ) { }
 
   getAssessment(id, action, activityId, contextId, submissionId?) {
     return this.request.graphQLWatch(
@@ -161,13 +161,13 @@ export class AssessmentService {
         noCache: true
       }
     )
-    .pipe(map(res => {
-      return {
-        assessment: this._normaliseAssessment(res.data, action),
-        submission: this._normaliseSubmission(res.data),
-        review: this._normaliseReview(res.data, action)
-      };
-    }));
+      .pipe(map(res => {
+        return {
+          assessment: this._normaliseAssessment(res.data, action),
+          submission: this._normaliseSubmission(res.data),
+          review: this._normaliseReview(res.data, action)
+        };
+      }));
   }
 
   private _normaliseAssessment(data, action): Assessment {
@@ -396,7 +396,7 @@ export class AssessmentService {
       { key: 'submissionId', type: 'Int' },
       { key: 'contextId', type: 'Int!' },
       { key: 'reviewId', type: 'Int' },
-      { key: 'unlock', type: 'Boolean'}
+      { key: 'unlock', type: 'Boolean' }
     ].forEach(item => {
       if (assessment[item.key]) {
         paramsFormat += `, $${item.key}: ${item.type}`;
@@ -418,7 +418,11 @@ export class AssessmentService {
       identifier: 'AssessmentSubmission-' + submissionId,
       is_done: true
     };
-    return this.request.post(api.post.todoitem, postData);
+    return this.request.post(
+      {
+        endPoint: api.post.todoitem,
+        data: postData
+      });
   }
 
   /**

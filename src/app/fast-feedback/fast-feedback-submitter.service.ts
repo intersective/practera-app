@@ -10,10 +10,15 @@ const api = {
 export class FastFeedbackSubmitterService {
   constructor(
     private request: RequestService
-  ) {}
+  ) { }
 
   submit(data, params) {
-    return this.request.post(api.submit, data, { params });
+    return this.request.post(
+      {
+        endPoint: api.submit,
+        data,
+        httpOptions: { params }
+      });
   }
 
 }
