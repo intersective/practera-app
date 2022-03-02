@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { RequestService, QueryEncoder } from '@shared/request/request.service';
+import { QueryEncoder, RequestService } from '@shared/request/request.service';
 import { HttpParams } from '@angular/common/http';
 import { map } from 'rxjs/operators';
 import { Observable, of } from 'rxjs';
@@ -13,7 +13,7 @@ import { PusherService } from '@shared/pusher/pusher.service';
  * @description list of api endpoint involved in this service
  * @type {Object}
  */
-const api = {
+const API = {
   getConfig: 'api/v2/plan/experience/list',
   login: 'api/auths.json',
   setProfile: 'api/v2/user/enrolment/edit.json',
@@ -80,13 +80,23 @@ export class AuthService {
     const headers = {
       'Content-Type': 'application/x-www-form-urlencoded',
       service: serviceHeader
-     };
+    };
     if (!serviceHeader) {
       delete headers.service;
     }
-    return this.request.post(api.login, body.toString(), {
-      headers
-    }).pipe(map(res => this._handleLoginResponse(res)));
+    return this.request.post({
+      endPoint: API.login,
+      data: body.toString(),
+      httpOptions: {
+        headers
+      },
+      customErrorHandler: (err: any) => {
+        console.log('catchError::', err);
+        return of(err);
+      }
+    }).pipe(
+      map(res => this._handleLoginResponse(res)),
+    );
   }
 
   /**
@@ -97,8 +107,8 @@ export class AuthService {
    */
   login({ email, password }): Observable<any> {
     const body = new HttpParams({
-        encoder: new QueryEncoder()
-      })
+      encoder: new QueryEncoder()
+    })
       .set('data[User][email]', email)
       .set('data[User][password]', password)
       .set('domain', this.getDomain());
@@ -134,7 +144,7 @@ export class AuthService {
 
   private _handleLoginResponse(response): Observable<any> {
     const norm = this._normaliseAuth(response);
-    this.storage.setUser({apikey: norm.apikey});
+    this.storage.setUser({ apikey: norm.apikey });
     this.storage.set('programs', norm.programs);
     this.storage.set('isLoggedIn', true);
     return norm;
@@ -188,23 +198,29 @@ export class AuthService {
     this.pusherService.unsubscribeChannels();
     this.pusherService.disconnect();
     const config = this.storage.getConfig();
+
     this.storage.clear();
     // still store config info even logout
     this.storage.setConfig(config);
+
     if (redirect) {
       return this.router.navigate(['login'], navigationParams);
     }
   }
-   /**
+
+  /**
    * @name forgotPassword
    * @description make request to server to send out email with reset password url
    * @param  {string}}        email [user's email which will receive reset password url]
    * @return {Observable<any>}      [description]
    */
-  forgotPassword(email: string): Observable<any>  {
-    return this.request.post(api.forgotPassword, {
-      email: email,
-      domain: this.getDomain()
+  forgotPassword(email: string): Observable<any> {
+    return this.request.post({
+      endPoint: API.forgotPassword,
+      data: {
+        email: email,
+        domain: this.getDomain(),
+      }
     });
   }
 
@@ -212,7 +228,7 @@ export class AuthService {
     let domain = window.location.hostname;
     domain =
       domain.indexOf('127.0.0.1') !== -1 ||
-      domain.indexOf('localhost') !== -1
+        domain.indexOf('localhost') !== -1
         ? 'dev.app-v2.practera.com'
         : domain;
     return domain;
@@ -225,12 +241,14 @@ export class AuthService {
    * @return {Observable<any>}      [description]
    */
   resetPassword(data): Observable<any> {
-    return this.request.post(api.resetPassword, data);
+    return this.request.post({
+      endPoint: API.resetPassword, data
+    });
   }
 
   // Activity ID is no longer used as a parameter,
   // but needs to be there so just pass in a 1
-  connectToLinkedIn () {
+  connectToLinkedIn() {
     const url = '/api/auth_linkedin.json?apikey=' + this.storage.getUser().apikey + '&appkey=' + this.storage.get('appkey') + '&timeline_id=' + this.storage.getUser().timelineId;
 
     this.utils.openUrl(url);
@@ -244,22 +262,26 @@ export class AuthService {
    * @return {Observable<any>}      [description]
    */
   contactNumberLogin(data: { contactNumber: string }): Observable<any> {
-    return this.request.post(api.login, {
-      contact_number: data.contactNumber, // API accepts contact_numebr
-    }).pipe(map(response => {
-      if (response.data) {
-        this.storage.setUser({apikey: response.data.apikey});
-        this.storage.set('tutorial', response.data.tutorial);
-        this.storage.set('programs', response.data.timelines);
-      }
+    return this.request.post(
+      {
+        endPoint: API.login,
+        data: {
+          contact_number: data.contactNumber,
+        }
+      }).pipe(map(response => {
+        if (response.data) {
+          this.storage.setUser({ apikey: response.data.apikey });
+          this.storage.set('tutorial', response.data.tutorial);
+          this.storage.set('programs', response.data.timelines);
+        }
 
-      // @TODO: verify if safari browser localStorage store data above properly
-      return response;
-    }));
+        // @TODO: verify if safari browser localStorage store data above properly
+        return response;
+      }));
   }
 
-  getConfig(data: ConfigParams): Observable<{data: ExperienceConfig[]}> {
-    return this.request.get(api.getConfig, {
+  getConfig(data: ConfigParams): Observable<{ data: ExperienceConfig[] }> {
+    return this.request.get(API.getConfig, {
       params: data
     });
   }
@@ -278,21 +300,34 @@ export class AuthService {
   }
 
   updateProfile(data: UserProfile): Observable<any> {
-    return this.request.post(api.setProfile, data);
+    return this.request.post(
+      {
+        endPoint: API.setProfile,
+        data
+      }
+    );
   }
 
   saveRegistration(data: RegisterData): Observable<any> {
-    return this.request
-    .post(api.register, data, {
-      headers: { 'Content-Type': 'application/json' }
-    });
+    return this.request.post(
+      {
+        endPoint: API.register,
+        data,
+        httpOptions: {
+          headers: { 'Content-Type': 'application/json' }
+        }
+      });
   }
 
   verifyRegistration(data: VerifyParams): Observable<any> {
-    return this.request
-    .post(api.verifyRegistration, data, {
-      headers: { 'Content-Type': 'application/json' }
-    });
+    return this.request.post(
+      {
+        endPoint: API.verifyRegistration,
+        data,
+        httpOptions: {
+          headers: { 'Content-Type': 'application/json' }
+        }
+      });
   }
 
   /**
@@ -302,9 +337,12 @@ export class AuthService {
    * @return {Observable<any>}      [description]
   */
   verifyResetPassword(data: VerifyParams): Observable<any> {
-    return this.request
-    .post(api.verifyResetPassword, data, {
-      headers: { 'Content-Type': 'application/json' }
+    return this.request.post({
+      endPoint: API.verifyResetPassword,
+      data,
+      httpOptions: {
+        headers: { 'Content-Type': 'application/json' }
+      }
     });
   }
 
@@ -320,9 +358,8 @@ export class AuthService {
           uuid
         }
       }`
-    )
-    .pipe(map(res => {
-      if (res.data) {
+    ).pipe(map(res => {
+      if (res && res.data) {
         return res.data.user.uuid;
       }
       return null;

@@ -10,7 +10,6 @@ import { BrowserStorageService } from '@services/storage.service';
   addRelease,
 } from 'new-relic-browser';*/
 
-import * as NewRelic from 'new-relic-browser';
 // import * as NewRelic from 'newrelic';
 import { environment } from '@environments/environment';
 

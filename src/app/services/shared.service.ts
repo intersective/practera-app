@@ -7,6 +7,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
 import { TopicService } from '../topic/topic.service';
+import { ApolloService } from '@shared/apollo/apollo.service';
 import { PusherService } from '@shared/pusher/pusher.service';
 import { map } from 'rxjs/operators';
 
@@ -39,9 +40,10 @@ export class SharedService {
     private request: RequestService,
     private http: HttpClient,
     private newrelic: NewRelicService,
-    private readonly topicService: TopicService,
-    private readonly pusherService: PusherService,
-  ) {}
+    private topicService: TopicService,
+    private apolloService: ApolloService,
+    private pusherService: PusherService
+  ) { }
 
   // call this function on every page refresh and after switch program
   onPageLoad(): void {
@@ -99,10 +101,7 @@ export class SharedService {
               name
           }
         }
-      }`,
-      {
-        noCache: true
-      }
+      }`
     ).pipe(map(response => {
       if (response.data && response.data.user) {
         const thisUser = response.data.user;
@@ -121,10 +120,6 @@ export class SharedService {
       }
       return response;
     }));
-  }
-
-  updateProfile(data: Profile) {
-    return this.request.post(api.post.profile, data);
   }
 
   /**
@@ -147,18 +142,25 @@ export class SharedService {
     return 'Due ' + this.utils.utcToLocal(dueDate);
   }
 
+  updateProfile(data: Profile) {
+    return this.request.post({
+      endPoint: api.post.profile,
+      data
+    });
+  }
+
   /**
    * This method get all iframe and videos from documents and stop playing videos.
    */
   stopPlayingVideos() {
-    const iframes = Array.from(document.querySelectorAll( 'iframe'));
-    const videos = Array.from(document.querySelectorAll( 'video' ));
-    if ( iframes ) {
+    const iframes = Array.from(document.querySelectorAll('iframe'));
+    const videos = Array.from(document.querySelectorAll('video'));
+    if (iframes) {
       iframes.forEach(frame => {
         frame.src = null;
       });
     }
-    if ( videos ) {
+    if (videos) {
       videos.forEach(video => {
         video.pause();
       });
@@ -196,10 +198,12 @@ export class SharedService {
   }
 
   /**
-  * Initialise web services like Pusher
-  */
-  async initWebServices() {
+   * Initialise web services like Pusher/ apollo if there stack info in storage
+   */
+  async initWebServices(): Promise<void> {
     await this.pusherService.initialise();
+    this.apolloService.initiateCoreClient();
+    this.apolloService.initiateChatClient();
   }
 
 }

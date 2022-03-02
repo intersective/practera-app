@@ -19,20 +19,7 @@ export class AuthResetPasswordComponent implements OnInit {
   isResetting = false;
   showPassword = false;
 
-  resetPasswordForm = new FormGroup(
-    {
-      email: new FormControl(
-        {
-          value: this.email,
-          disabled: true,
-        },
-        [ Validators.email ]
-      ),
-      password: new FormControl('', [Validators.required]),
-      confirmPassword: new FormControl(''),
-    },
-    { validators: this.checkPasswordMatching }
-  );
+  resetPasswordForm: FormGroup;
 
   constructor(
     private route: ActivatedRoute,
@@ -41,7 +28,22 @@ export class AuthResetPasswordComponent implements OnInit {
     private authService: AuthService,
     private utils: UtilsService,
     private newRelic: NewRelicService
-  ) { }
+  ) {
+    this.resetPasswordForm = new FormGroup(
+      {
+        email: new FormControl(
+          {
+            value: this.email,
+            disabled: true,
+          },
+          [Validators.email]
+        ),
+        password: new FormControl('', [Validators.required]),
+        confirmPassword: new FormControl(''),
+      },
+      { validators: this.checkPasswordMatching }
+    );
+  }
 
   ngOnInit() {
     this.key = this.route.snapshot.paramMap.get('key');
