@@ -1,9 +1,8 @@
 import { CUSTOM_ELEMENTS_SCHEMA, ElementRef } from '@angular/core';
 import { async, ComponentFixture, TestBed, tick, fakeAsync } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
-import { Apollo } from 'apollo-angular';
 import { ChatRoomComponent } from './chat-room.component';
-import { ChatService } from '../chat.service';
+import { ChannelMembers, ChatService } from '../chat.service';
 import { of } from 'rxjs';
 import { BrowserStorageService } from '@services/storage.service';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
@@ -13,6 +12,8 @@ import { FilestackService } from '@shared/filestack/filestack.service';
 import { MockRouter } from '@testing/mocked.service';
 import { Router, ActivatedRoute, convertToParamMap } from '@angular/router';
 import { IonContent, ModalController } from '@ionic/angular';
+import { TestUtils } from '@testing/utils';
+import { mockMembers } from '@testing/fixtures';
 
 export class MockElementRef extends ElementRef {
   constructor() { super(null); }
@@ -31,7 +32,7 @@ describe('ChatRoomComponent', () => {
   let routeStub: Partial<ActivatedRoute>;
   let MockIoncontent: IonContent;
   const modalSpy = jasmine.createSpyObj('Modal', ['present', 'onDidDismiss']);
-  modalSpy.onDidDismiss.and.returnValue(new Promise(() => {}));
+  modalSpy.onDidDismiss.and.returnValue(new Promise(() => { }));
   const modalCtrlSpy = jasmine.createSpyObj('ModalController', ['dismiss', 'create']);
   modalCtrlSpy.create.and.returnValue(modalSpy);
 
@@ -41,8 +42,10 @@ describe('ChatRoomComponent', () => {
       declarations: [ChatRoomComponent],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
       providers: [
-        Apollo,
-        UtilsService,
+        {
+          provide: UtilsService,
+          useClass: TestUtils,
+        },
         NewRelicService,
         {
           provide: ElementRef,
@@ -130,27 +133,6 @@ describe('ChatRoomComponent', () => {
     ]
   };
 
-  const mockMembers = [
-    {
-      uuid: '1',
-      name: 'student+01',
-      role: 'participant',
-      avatar: 'https://www.gravatar.com/avatar/21b7427270a606e8a3c4413a13bb47c6?d=https://sandbox.practera.com/img/user-512.png&s=50'
-    },
-    {
-      uuid: '2',
-      name: 'student1',
-      role: 'participant',
-      avatar: 'https://www.gravatar.com/avatar/21b7427270a606e8a3c4413a13bb47c6?d=https://sandbox.practera.com/img/user-512.png&s=50'
-    },
-    {
-      uuid: '3',
-      name: 'student2',
-      role: 'participant',
-      avatar: 'https://www.gravatar.com/avatar/21b7427270a606e8a3c4413a13bb47c6?d=https://sandbox.practera.com/img/user-512.png&s=50'
-    }
-  ];
-
   it('should create', () => {
     expect(component).toBeTruthy();
   });
@@ -182,6 +164,67 @@ describe('ChatRoomComponent', () => {
       component.onEnter();
       expect(chatServiceSpy.getMessageList.calls.count()).toBe(1);
       expect(chatServiceSpy.getChatMembers.calls.count()).toBe(1);
+    });
+
+    it('should stop loading if no response got', () => {
+      component.chatChannel = {
+        uuid: '35326928',
+        name: 'Team 1',
+        avatar: 'https://sandbox.practera.com/img/team-white.png',
+        pusherChannel: 'sdb746-93r7dc-5f44eb4f',
+        isAnnouncement: false,
+        isDirectMessage: false,
+        readonly: false,
+        roles: [
+          'participant',
+          'coordinator',
+          'admin'
+        ],
+        unreadMessageCount: 0,
+        lastMessage: null,
+        lastMessageCreated: null,
+        canEdit: false
+      };
+      component.loadingChatMessages = false;
+      chatServiceSpy.getMessageList.and.returnValue(of(null));
+      chatServiceSpy.getChatMembers.and.returnValue(of(mockMembers));
+      chatServiceSpy.markMessagesAsSeen.and.returnValue(of({}));
+      component.onEnter();
+      expect(chatServiceSpy.getMessageList.calls.count()).toBe(1);
+      expect(component.messagePageCursor).toEqual('');
+      expect(component.loadingChatMessages).toEqual(false);
+    });
+
+    it('should stop loading if no messages got', () => {
+      component.chatChannel = {
+        uuid: '35326928',
+        name: 'Team 1',
+        avatar: 'https://sandbox.practera.com/img/team-white.png',
+        pusherChannel: 'sdb746-93r7dc-5f44eb4f',
+        isAnnouncement: false,
+        isDirectMessage: false,
+        readonly: false,
+        roles: [
+          'participant',
+          'coordinator',
+          'admin'
+        ],
+        unreadMessageCount: 0,
+        lastMessage: null,
+        lastMessageCreated: null,
+        canEdit: false
+      };
+      component.loadingChatMessages = false;
+      chatServiceSpy.getMessageList.and.returnValue(of({
+        cursor: '32as4d654asd',
+        messages: []
+      }));
+      chatServiceSpy.getChatMembers.and.returnValue(of(mockMembers));
+      chatServiceSpy.markMessagesAsSeen.and.returnValue(of({}));
+      component.onEnter();
+      expect(chatServiceSpy.getMessageList.calls.count()).toBe(1);
+      expect(component.messagePageCursor).toEqual('');
+      expect(component.loadingChatMessages).toEqual(false);
     });
   });
 
@@ -217,7 +260,7 @@ describe('ChatRoomComponent', () => {
 
   describe('when testing sendMessage()', () => {
     it('should call correctly', () => {
-      component.message = 'testing message';
+      component.typingMessage = 'testing message';
       component.channelUuid = '05';
       const saveMessageRes = {
         uuid: '0403b4d9',
@@ -232,7 +275,7 @@ describe('ChatRoomComponent', () => {
       };
       chatServiceSpy.postNewMessage.and.returnValue(of(saveMessageRes));
       chatServiceSpy.getMessageList.and.returnValue(of(mockChatMessages));
-      pusherSpy.triggerSendMessage.and.returnValue(of(true));
+      pusherSpy.triggerSendMessage.and.returnValue();
       component.messageList = mockChatMessages.messages;
       spyOn(component.element.nativeElement, 'querySelector').and.returnValue(
         document.createElement('textarea')
@@ -316,7 +359,7 @@ describe('ChatRoomComponent', () => {
     it(`should trigger Typing of pusher service with correst channel name`, () => {
       spyOn(utils, 'isEmpty').and.returnValue(true);
       component.chatChannel.pusherChannel = '123';
-      pusherSpy.triggerTyping.and.returnValue(of(true));
+      pusherSpy.triggerTyping.and.returnValue();
       component.typing();
       expect(pusherSpy.triggerTyping.calls.count()).toBe(1);
       expect(pusherSpy.triggerTyping.calls.first().args[0]).toEqual('123');
@@ -331,7 +374,7 @@ describe('ChatRoomComponent', () => {
         url: 'https://cdn.filestackcontent.com/X8Cj0Y4QS2AmDUZX6LSq',
         status: 'Stored'
       };
-      filestackSpy.previewFile.and.returnValue({});
+      filestackSpy.previewFile.and.returnValue(Promise.resolve({}));
       component.preview(file);
       expect(filestackSpy.previewFile.calls.count()).toBe(1);
     });
@@ -435,9 +478,53 @@ describe('ChatRoomComponent', () => {
 
   describe('when testing openChatInfo()', () => {
     it(`should call modal controller if app in mobile view`, () => {
-      spyOn(utils, 'isMobile').and.returnValue(true);
+      utils.isMobile = jasmine.createSpy('utils.isMobile').and.returnValue(true);
       component.openChatInfo();
       expect(modalCtrlSpy.create.calls.count()).toBe(2);
+    });
+  });
+
+  describe('when testing back()', () => {
+    it(`should navigate to 'chat' page`, () => {
+      component.back();
+      expect(routerSpy.navigate).toHaveBeenCalledWith(['app', 'chat']);
+    });
+  });
+
+  describe('when testing loadMoreMessages()', () => {
+    it(`should call loadMessages if scroll position in 0`, () => {
+      component.chatChannel = {
+        uuid: '35326928',
+        name: 'Team 1',
+        avatar: 'https://sandbox.practera.com/img/team-white.png',
+        pusherChannel: 'sdb746-93r7dc-5f44eb4f',
+        isAnnouncement: false,
+        isDirectMessage: false,
+        readonly: false,
+        roles: [
+          'participant',
+          'coordinator',
+          'admin'
+        ],
+        unreadMessageCount: 0,
+        lastMessage: null,
+        lastMessageCreated: null,
+        canEdit: false
+      };
+      component.loadingChatMessages = false;
+      chatServiceSpy.getMessageList.and.returnValue(of(mockChatMessages));
+      chatServiceSpy.getChatMembers.and.returnValue(of(mockMembers));
+      chatServiceSpy.markMessagesAsSeen.and.returnValue(of({}));
+      component.loadMoreMessages({ detail: { scrollTop: 0 } });
+      expect(chatServiceSpy.getMessageList.calls.count()).toBe(1);
+    });
+  });
+
+  describe('when testing isLastMessage()', () => {
+    it(`should assign correct value for 'noAvatar' variable`, () => {
+      component.messageList = mockChatMessages.messages;
+      component.isLastMessage(mockChatMessages.messages[1]);
+      expect(component.messageList[1].noAvatar).toEqual(false);
     });
   });
 

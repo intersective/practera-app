@@ -1,4 +1,4 @@
-import { Component, Input, ViewChild, NgZone, AfterContentInit, AfterViewInit, ElementRef, Output, EventEmitter } from '@angular/core';
+import { Component, Input, ViewChild, NgZone, ElementRef, Output, EventEmitter } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { IonContent, ModalController } from '@ionic/angular';
 import { BrowserStorageService } from '@services/storage.service';
@@ -41,7 +41,7 @@ export class ChatRoomComponent extends RouterEnter {
   // channel member list
   memberList: ChannelMembers[] = [];
   // the message that the current user is typing
-  message: string;
+  typingMessage: string;
   messagePageCursor = '';
   messagePageSize = 20;
   loadingChatMessages = false;
@@ -55,7 +55,6 @@ export class ChatRoomComponent extends RouterEnter {
     private chatService: ChatService,
     public router: Router,
     public storage: BrowserStorageService,
-    private route: ActivatedRoute,
     public utils: UtilsService,
     public pusherService: PusherService,
     private filestackService: FilestackService,
@@ -98,7 +97,7 @@ export class ChatRoomComponent extends RouterEnter {
   }
 
   private _initialise() {
-    this.message = '';
+    this.typingMessage = '';
     this.messageList = [];
     this.loadingChatMessages = false;
     this.messagePageCursor = '';
@@ -109,7 +108,7 @@ export class ChatRoomComponent extends RouterEnter {
   }
 
   private _subscribeToTypingEvent() {
-    if ( this.utils.isMobile() ) {
+    if (this.utils.isMobile()) {
       this.chatChannel = this.storage.getCurrentChatChannel();
     }
     this.channelUuid = this.chatChannel.uuid;
@@ -208,10 +207,10 @@ export class ChatRoomComponent extends RouterEnter {
   }
 
   sendMessage() {
-    if (!this.message) {
+    if (!this.typingMessage) {
       return;
     }
-    const message = this.message;
+    const message = this.typingMessage;
     this._beforeSenMessages();
     this.chatService.postNewMessage({
       channelUuid: this.channelUuid,
@@ -263,7 +262,7 @@ export class ChatRoomComponent extends RouterEnter {
   private _beforeSenMessages() {
     this.sendingMessage = true;
     // remove typed message from text area and shrink text area.
-    this.message = '';
+    this.typingMessage = '';
     this.element.nativeElement.querySelector('textarea').style.height = 'auto';
   }
 
@@ -278,19 +277,19 @@ export class ChatRoomComponent extends RouterEnter {
      */
     if (this.messageList.length > 0 && this.utils.isEmpty(this.messagePageCursor)) {
       this.chatService
-      .getMessageList({
-        channelUuid: this.channelUuid,
-        cursor: this.messagePageCursor,
-        size: this.messagePageSize
-      })
-      .subscribe((messageListResult: MessageListResult) => {
-        const messages = messageListResult.messages;
-        if (messages.length === 0) {
-          this.messagePageCursor = '';
-          return;
-        }
-        this.messagePageCursor = messageListResult.cursor;
-      });
+        .getMessageList({
+          channelUuid: this.channelUuid,
+          cursor: this.messagePageCursor,
+          size: this.messagePageSize
+        })
+        .subscribe((messageListResult: MessageListResult) => {
+          const messages = messageListResult.messages;
+          if (messages.length === 0) {
+            this.messagePageCursor = '';
+            return;
+          }
+          this.messagePageCursor = messageListResult.cursor;
+        });
     }
   }
 
@@ -299,7 +298,7 @@ export class ChatRoomComponent extends RouterEnter {
     const messageIds = this.messageList.map(m => m.uuid);
     this.chatService
       .markMessagesAsSeen(messageIds)
-      .subscribe (
+      .subscribe(
         res => {
           if (!this.utils.isMobile()) {
             this.utils.broadcastEvent('chat-badge-update', {
@@ -308,7 +307,7 @@ export class ChatRoomComponent extends RouterEnter {
             });
           }
         },
-        err => {}
+        err => { }
       );
   }
 
@@ -341,7 +340,7 @@ export class ChatRoomComponent extends RouterEnter {
    */
   isLastMessage(message) {
     // const index = this.messageList.indexOf(message);
-    const index = this.messageList.findIndex(function(msg, i) {
+    const index = this.messageList.findIndex(function (msg, i) {
       return msg.uuid === message.uuid;
     });
     if (index === -1) {
@@ -395,7 +394,7 @@ export class ChatRoomComponent extends RouterEnter {
    * @param {int} message
    */
   checkToShowMessageTime(message) {
-    const index = this.messageList.findIndex(function(msg, i) {
+    const index = this.messageList.findIndex(function (msg, i) {
       return msg.uuid === message.uuid;
     });
     if (index <= -1) {
@@ -435,7 +434,7 @@ export class ChatRoomComponent extends RouterEnter {
    * Trigger typing event when user is typing
    */
   typing() {
-    if (!this.utils.isEmpty(this.message)) {
+    if (!this.utils.isEmpty(this.typingMessage)) {
       this.showBottomAttachmentButtons = true;
       this._scrollToBottom();
     } else {
@@ -509,7 +508,7 @@ export class ChatRoomComponent extends RouterEnter {
     this.sendingMessage = true;
     this.chatService.postAttachmentMessage({
       channelUuid: this.channelUuid,
-      message: this.message,
+      message: this.typingMessage,
       file: JSON.stringify(file)
     }).subscribe(
       response => {
@@ -567,7 +566,7 @@ export class ChatRoomComponent extends RouterEnter {
     if (zip.indexOf(mimetype) >= 0) {
       result = 'Zip';
 
-    // set icon to different document type (excel, word, powerpoint, audio, video)
+      // set icon to different document type (excel, word, powerpoint, audio, video)
     } else if (mimetype.indexOf('audio/') >= 0) {
       result = 'Audio';
     } else if (mimetype.indexOf('image/') >= 0) {
@@ -678,7 +677,7 @@ export class ChatRoomComponent extends RouterEnter {
   // @Deprecated in case we need it later
   createThumb(video, w, h) {
     const c = document.createElement('canvas'),    // create a canvas
-        ctx = c.getContext('2d');                // get context
+      ctx = c.getContext('2d');                // get context
     c.width = w;                                 // set size = thumb
     c.height = h;
     ctx.drawImage(video, 0, 0, w, h);            // draw in frame
