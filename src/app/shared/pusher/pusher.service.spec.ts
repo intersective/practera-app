@@ -11,7 +11,7 @@ import { RequestService } from '@shared/request/request.service';
 import { environment } from '@environments/environment';
 import { Channel } from 'pusher-js';
 import * as Pusher from 'pusher-js';
-import { Apollo } from 'apollo-angular';
+import { TestUtils } from '@testing/utils';
 
 class PusherLib extends Pusher {
   connection;
@@ -51,7 +51,6 @@ describe('PusherConfig', () => {
 
   it('should have pusherKey & apiurl', () => {
     expect(config.pusherKey).toEqual('');
-    expect(config.apiurl).toEqual('');
   });
 });
 
@@ -59,7 +58,7 @@ describe('PusherService', async () => {
   const PUSHER_APIURL = 'APIURL';
   const PUSHERKEY = 'pusherKey';
   const APIURL = 'api/v2/message/notify/channels.json';
-  const libConfig =  {
+  const libConfig = {
     cluster: 'mt1',
     forceTLS: true,
     authEndpoint: `${'apiurl'}${APIURL}`,
@@ -85,11 +84,13 @@ describe('PusherService', async () => {
     // pusherLibSpy = new PusherLib(this.pusherKey, libConfig);
 
     TestBed.configureTestingModule({
-      imports: [ HttpClientTestingModule ],
+      imports: [HttpClientTestingModule],
       providers: [
-        Apollo,
         PusherService,
-        UtilsService,
+        {
+          provide: UtilsService,
+          useClass: TestUtils,
+        },
         /*{
           provide: UtilsService,
           useValue: jasmine.createSpyObj('UtilsService', [
@@ -116,8 +117,7 @@ describe('PusherService', async () => {
         {
           provide: PusherConfig,
           useValue: {
-            pusherKey: PUSHERKEY,
-            apiurl: PUSHER_APIURL
+            pusherKey: PUSHERKEY
           }
         },
         {
@@ -154,12 +154,12 @@ describe('PusherService', async () => {
     data: {
       channels: [
         {
-            pusherChannel: 'fgv34fg-34-8472354eb'
+          pusherChannel: 'fgv34fg-34-8472354eb'
         },
         {
-            pusherChannel: 'k76i865-jyj-5f44eb4f'
+          pusherChannel: 'k76i865-jyj-5f44eb4f'
         }
-    ]
+      ]
     }
   };
 
@@ -218,6 +218,14 @@ describe('PusherService', async () => {
       // spyOn(service, 'initialise').and.returnValue(Promise.resolve(service['pusher']));
       const subscribed = [];
 
+      /* MockInstance(Pusher, () => ({
+        subscribe: name => {
+          subscribed.push(name);
+          return binder;
+        },
+        method1: jasmine.createSpy(),
+        method2: jasmine.createSpy(),
+      })); */
       function subscribedEvent(title) {
 
         return jasmine.createSpy('bind').and.returnValue(true);
@@ -235,7 +243,7 @@ describe('PusherService', async () => {
         });
       };
 
-      spyOn(service['pusher'], 'subscribe').and.callFake(name => {
+      service['pusher'].subscribe = jasmine.createSpy().and.callFake(name => {
         subscribed.push(name);
         return binder;
       });
@@ -276,7 +284,6 @@ describe('PusherService', async () => {
 
     it('should initialise pusher', fakeAsync(() => {
       expect(service['pusher']).not.toBeTruthy();
-      expect(service['apiurl']).toBe(PUSHER_APIURL);
 
       service.initialise().then();
       flushMicrotasks();
@@ -285,7 +292,7 @@ describe('PusherService', async () => {
 
     it('should unsubscribe with option {unsubscribe: true}', fakeAsync(() => {
       spyOn(service, 'unsubscribeChannels');
-      service.initialise({unsubscribe: true}).then();
+      service.initialise({ unsubscribe: true }).then();
       flushMicrotasks();
 
       expect(service.unsubscribeChannels).toHaveBeenCalled();

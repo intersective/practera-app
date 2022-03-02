@@ -1,7 +1,5 @@
 import { TestBed, fakeAsync, flushMicrotasks } from '@angular/core/testing';
 
-import { MockBackend } from '@angular/http/testing';
-
 import {
   HttpTestingController,
   HttpClientTestingModule
@@ -14,7 +12,7 @@ import { BrowserStorageServiceMock } from '@testing/mocked.service';
 import { environment } from '@environments/environment';
 import { ModalController, IonicModule } from '@ionic/angular';
 import * as filestack from 'filestack-js';
-import { Apollo } from 'apollo-angular';
+import { TestUtils } from '@testing/utils';
 
 describe('FilestackService', () => {
   let service: FilestackService;
@@ -23,24 +21,37 @@ describe('FilestackService', () => {
   let utils: UtilsService;
   let mockBackend: HttpTestingController;
   let modalctrlSpy: jasmine.SpyObj<ModalController>;
+  const MODAL_SAMPLE = 'test';
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-        imports: [ HttpClientTestingModule, IonicModule ],
-        providers: [
-          Apollo,
-          FilestackService,
-          UtilsService,
-          ModalController,
-          {
-            provide: BrowserStorageService,
-            useClass: BrowserStorageServiceMock
-          },
-          {
-            provide: NotificationService,
-            useValue: jasmine.createSpyObj('NotificationService', ['modal', 'alert'])
-          },
-        ]
+      imports: [HttpClientTestingModule, IonicModule],
+      providers: [
+        FilestackService,
+        {
+          provide: ModalController,
+          useValue: jasmine.createSpyObj('ModalController', {
+            create: Promise.resolve({
+              present: () => new Promise(res => {
+                res(MODAL_SAMPLE);
+              }),
+              dismiss: () => new Promise(res => res(true)),
+            })
+          })
+        },
+        {
+          provide: UtilsService,
+          useClass: TestUtils,
+        },
+        {
+          provide: BrowserStorageService,
+          useClass: BrowserStorageServiceMock
+        },
+        {
+          provide: NotificationService,
+          useValue: jasmine.createSpyObj('NotificationService', ['modal', 'alert'])
+        },
+      ]
     });
     service = TestBed.inject(FilestackService);
     utils = TestBed.inject(UtilsService);
@@ -107,7 +118,7 @@ describe('FilestackService', () => {
 
   describe('previewFile()', () => {
     beforeEach(() => {
-      spyOn(service, 'previewModal').and.returnValue(Promise.resolve(true));
+      spyOn(service, 'previewModal').and.returnValue(Promise.resolve());
     });
 
     afterEach(() => {
@@ -115,7 +126,7 @@ describe('FilestackService', () => {
     });
 
     it('should popup file preview', fakeAsync(() => {
-      spyOn(service, 'metadata').and.returnValue({ mimetype: 'testing/format' });
+      spyOn(service, 'metadata').and.returnValue(Promise.resolve({ mimetype: 'testing/format' }));
       service.previewFile({
         handle: 'testingHandleValue'
       }).then();
@@ -124,7 +135,7 @@ describe('FilestackService', () => {
     }));
 
     it('should popup file preview (support older URL format)', fakeAsync(() => {
-      spyOn(service, 'metadata').and.returnValue({ mimetype: 'testing/format' });
+      spyOn(service, 'metadata').and.returnValue(Promise.resolve({ mimetype: 'testing/format' }));
       service.previewFile({
         url: 'www.filepicker.io/api/file',
         handle: 'testingHandleValue'
@@ -134,7 +145,7 @@ describe('FilestackService', () => {
     }));
 
     it('should popup file preview (support older URL format 2)', fakeAsync(() => {
-      spyOn(service, 'metadata').and.returnValue({ mimetype: 'testing/format' });
+      spyOn(service, 'metadata').and.returnValue(Promise.resolve({ mimetype: 'testing/format' }));
       service.previewFile({
         url: 'filestackcontent.com',
         handle: 'testingHandleValue'
@@ -144,10 +155,10 @@ describe('FilestackService', () => {
     }));
 
     it('should alert instead of popup preview when file size too large', fakeAsync(() => {
-      spyOn(service, 'metadata').and.returnValue({
+      spyOn(service, 'metadata').and.returnValue(Promise.resolve({
         mimetype: 'application/testType',
         size: 11 * 1000 * 1000 // 11mb
-      });
+      }));
 
       service.previewFile({
         url: 'filestackcontent.com',
@@ -172,7 +183,7 @@ describe('FilestackService', () => {
         url: `https://www.filestackapi.com/api/file/${handle}/metadata`,
         method: 'GET',
       });
-      req.flush({body: true});
+      req.flush({ body: true });
 
       mockBackend.verify();
     }));
@@ -184,7 +195,7 @@ describe('FilestackService', () => {
         open: () => Promise.resolve(true)
       });
       spyOn(service, 'getFileTypes');
-      spyOn(service, 'getS3Config').and.returnValue(true);
+      spyOn(service, 'getS3Config');
     });
 
     it('should instantiate filestack and trigger open fileupload popup', fakeAsync(() => {
@@ -216,8 +227,8 @@ describe('FilestackService', () => {
       service.open({
         testOnly: true,
       },
-                   res => res,
-                   res => res
+        res => res,
+        res => res
       ).then(res => {
         result = res;
       });
@@ -229,19 +240,14 @@ describe('FilestackService', () => {
 
   describe('previewModal()', () => {
     it('should pop up modal for provided filestack link', fakeAsync(() => {
-      const apiRes = { passed: true };
       let result;
-      spyOn(modalctrlSpy, 'create').and.returnValue({
-        present: () => Promise.resolve(apiRes),
-      });
-
       service.previewModal('test.com').then(res => {
         result = res;
       });
       flushMicrotasks();
 
       expect(modalctrlSpy.create).toHaveBeenCalled();
-      expect(result).toEqual(apiRes);
+      expect(result).toEqual(MODAL_SAMPLE);
     }));
   });
 
@@ -249,7 +255,7 @@ describe('FilestackService', () => {
     const workflowId = 'test_workflow_id';
     const policy = 'test_policy';
     const signature = 'test_signature';
-    const workflows = { virusDetection : workflowId };
+    const workflows = { virusDetection: workflowId };
 
     beforeEach(() => {
       environment.filestack = Object.assign(environment.filestack, {
@@ -261,14 +267,14 @@ describe('FilestackService', () => {
 
     it('should get status of provided workflow info', fakeAsync(() => {
       // spyOn(utils, 'each');
-      let result = [{body: true}];
+      let result = [{ body: true }];
       service.getWorkflowStatus({
         test_workflow_id: [workflows.virusDetection]
       }).then(res => {
         result = res;
       });
 
-      const req = mockBackend.expectOne({method: 'GET'});
+      const req = mockBackend.expectOne({ method: 'GET' });
       req.flush(result);
 
       expect(req.request.url).toEqual(`https://cdn.filestackcontent.com/${environment.filestack.key}/security=p:${policy},s:${signature}/workflow_status=job_id:${workflowId}`);

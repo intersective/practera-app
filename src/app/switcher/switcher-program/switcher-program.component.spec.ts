@@ -1,19 +1,21 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { async, ComponentFixture, TestBed, fakeAsync, flushMicrotasks, tick } from '@angular/core/testing';
-import { Observable, of, pipe, throwError } from 'rxjs';
-import { HttpTestingController, HttpClientTestingModule } from '@angular/common/http/testing';
+import { ComponentFixture, TestBed, fakeAsync, flushMicrotasks } from '@angular/core/testing';
+import { of } from 'rxjs';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
 import { SwitcherProgramComponent } from './switcher-program.component';
 import { SwitcherService } from '../switcher.service';
 import { MockSwitcherService, MockRouter, MockNewRelicService } from '@testing/mocked.service';
 import { ProgramFixture } from '@testing/fixtures/programs';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { PusherService } from '@shared/pusher/pusher.service';
 import { NotificationService } from '@shared/notification/notification.service';
 import { UtilsService } from '@services/utils.service';
 import { SharedModule } from '@shared/shared.module';
 import { LoadingController } from '@ionic/angular';
-import { Apollo } from 'apollo-angular';
+import { TestUtils } from '@testing/utils';
+import { BrowserStorageService } from '@app/services/storage.service';
+import { AuthService } from '@app/auth/auth.service';
 
 describe('SwitcherProgramComponent', () => {
   let component: SwitcherProgramComponent;
@@ -21,20 +23,35 @@ describe('SwitcherProgramComponent', () => {
   let newrelicSpy: jasmine.SpyObj<NewRelicService>;
   let switcherSpy: jasmine.SpyObj<SwitcherService>;
   let routerSpy: jasmine.SpyObj<Router>;
-  let loadingSpy: jasmine.SpyObj<LoadingController>;
   let notifySpy: jasmine.SpyObj<NotificationService>;
+  let authSpy: jasmine.SpyObj<AuthService>;
 
-  beforeEach(async(() => {
+  beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [SharedModule, HttpClientTestingModule],
       declarations: [SwitcherProgramComponent],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
       providers: [
-        Apollo,
         PusherService,
-        NotificationService,
-        UtilsService,
-        LoadingController,
+        {
+          provide: LoadingController,
+          useValue: jasmine.createSpyObj('LoadingController', {
+            create: Promise.resolve({
+              present: () => new Promise(res => {
+                res('test');
+              }),
+              dismiss: () => new Promise(res => res(true)),
+            })
+          })
+        },
+        {
+          provide: NotificationService,
+          useValue: jasmine.createSpyObj('NotificationService', ['alert'])
+        },
+        {
+          provide: UtilsService,
+          useClass: TestUtils,
+        },
         {
           provide: NewRelicService,
           useClass: MockNewRelicService
@@ -46,6 +63,24 @@ describe('SwitcherProgramComponent', () => {
         {
           provide: SwitcherService,
           useClass: MockSwitcherService,
+        },
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            data: of(true)
+          }
+        },
+        {
+          provide: AuthService,
+          useValue: jasmine.createSpyObj('AuthService', ['logout']),
+        },
+        {
+          provide: BrowserStorageService,
+          useValue: jasmine.createSpyObj('BrowserStorageService', [
+            'stackConfig',
+            'setUser',
+            'set'
+          ]),
         }
       ]
     }).compileComponents();
@@ -55,9 +90,9 @@ describe('SwitcherProgramComponent', () => {
     newrelicSpy = TestBed.inject(NewRelicService) as jasmine.SpyObj<NewRelicService>;
     switcherSpy = TestBed.inject(SwitcherService) as jasmine.SpyObj<SwitcherService>;
     routerSpy = TestBed.inject(Router) as jasmine.SpyObj<Router>;
-    loadingSpy = TestBed.inject(LoadingController) as jasmine.SpyObj<LoadingController>;
     notifySpy = TestBed.inject(NotificationService) as jasmine.SpyObj<NotificationService>;
-  }));
+    authSpy = TestBed.inject(AuthService) as jasmine.SpyObj<AuthService>;
+  });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(SwitcherProgramComponent);
@@ -74,7 +109,7 @@ describe('SwitcherProgramComponent', () => {
       const programs = ProgramFixture;
       programs.forEach((p, i) => {
         programs[i].progress = (i + 1) / 10,
-        programs[i].todoItems = (i + 1);
+          programs[i].todoItems = (i + 1);
       });
       switcherSpy.getPrograms.and.returnValue(of(programs));
       component.onEnter();
@@ -87,25 +122,21 @@ describe('SwitcherProgramComponent', () => {
 
   describe('switch()', () => {
     const testRoute = ['test', 'path'];
-    const programIndex = 0;
+    const index = 0;
 
     beforeEach(() => {
       component.programs = ProgramFixture; // load fixture
-      spyOn(loadingSpy, 'create').and.returnValue({
-        present: () => new Promise(res => res('test')),
-        dismiss: () => new Promise(res => res(true))
-      });
     });
 
     it('should switch to selected program based on provided programmatic index', fakeAsync(() => {
       switcherSpy.switchProgramAndNavigate = jasmine.createSpy('switchProgramAndNavigate').and.returnValue(new Promise(res => res(testRoute)));
 
-      component.switch(programIndex);
+      component.switch(index);
       flushMicrotasks();
 
       expect(newrelicSpy.createTracer).toHaveBeenCalled();
       expect(newrelicSpy.actionText).toHaveBeenCalled();
-      expect(switcherSpy.switchProgramAndNavigate).toHaveBeenCalledWith(ProgramFixture[programIndex]);
+      expect(switcherSpy.switchProgramAndNavigate).toHaveBeenCalledWith(ProgramFixture[index]);
       expect(routerSpy.navigate).toHaveBeenCalledWith(testRoute);
     }));
 
@@ -115,14 +146,13 @@ describe('SwitcherProgramComponent', () => {
       };
       switcherSpy.switchProgramAndNavigate = jasmine.createSpy('switchProgramAndNavigate').and.returnValue(new Promise((res, reject) => reject(error)
       ));
-      spyOn(notifySpy, 'alert');
 
-      component.switch(programIndex);
+      component.switch(index);
       flushMicrotasks();
 
       expect(newrelicSpy.createTracer).toHaveBeenCalled();
       expect(newrelicSpy.actionText).toHaveBeenCalled();
-      expect(switcherSpy.switchProgramAndNavigate).toHaveBeenCalledWith(ProgramFixture[programIndex]);
+      expect(switcherSpy.switchProgramAndNavigate).toHaveBeenCalledWith(ProgramFixture[index]);
       expect(routerSpy.navigate).not.toHaveBeenCalled();
       expect(notifySpy.alert).toHaveBeenCalledWith({
         header: 'Error switching program',
@@ -137,14 +167,13 @@ describe('SwitcherProgramComponent', () => {
       };
       switcherSpy.switchProgramAndNavigate = jasmine.createSpy('switchProgramAndNavigate').and.returnValue(new Promise((res, reject) => reject(error)
       ));
-      spyOn(notifySpy, 'alert');
 
-      component.switch(programIndex);
+      component.switch(index);
       flushMicrotasks();
 
       expect(newrelicSpy.createTracer).toHaveBeenCalled();
       expect(newrelicSpy.actionText).toHaveBeenCalled();
-      expect(switcherSpy.switchProgramAndNavigate).toHaveBeenCalledWith(ProgramFixture[programIndex]);
+      expect(switcherSpy.switchProgramAndNavigate).toHaveBeenCalledWith(ProgramFixture[index]);
       expect(routerSpy.navigate).not.toHaveBeenCalled();
       expect(notifySpy.alert).toHaveBeenCalledWith({
         header: 'Error switching program',
