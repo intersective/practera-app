@@ -1,8 +1,7 @@
-import { HttpLink } from 'apollo-angular/http';
 import { gql, Apollo } from 'apollo-angular';
+import { HttpLink } from 'apollo-angular/http';
 import { InMemoryCache, defaultDataIdFromObject } from '@apollo/client/core';
 import { Injectable } from '@angular/core';
-import { BrowserStorageService } from '@services/storage.service';
 import { Observable } from 'rxjs';
 import { environment } from '@environments/environment';
 
@@ -22,7 +21,6 @@ export class ApolloService {
   };
 
   constructor(
-    private storage: BrowserStorageService,
     private apollo: Apollo,
     private httpLink: HttpLink,
   ) {}
@@ -32,6 +30,7 @@ export class ApolloService {
       return this.apolloInstance;
     }
 
+    // create default client
     this.apollo.create({
       cache: new InMemoryCache({
         dataIdFromObject: object => {
@@ -85,14 +84,12 @@ export class ApolloService {
       return;
     }
 
-    this.apollo.create(
-      {
-        link: this.httpLink.create({
-          uri: environment.graphQL
-        }),
-        cache: new InMemoryCache(),
-      },
-      'chat');
+    this.apollo.create({
+      link: this.httpLink.create({
+        uri: environment.graphQL
+      }),
+      cache: new InMemoryCache(),
+    }, 'chat');
 
     this._url.chat = environment.graphQL;
   }
