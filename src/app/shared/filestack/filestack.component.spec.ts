@@ -4,7 +4,8 @@ import { IonicModule } from '@ionic/angular';
 import { TestBed, async, ComponentFixture, fakeAsync, flushMicrotasks } from '@angular/core/testing';
 import { FilestackComponent } from './filestack.component';
 import { FilestackService } from './filestack.service';
-import { Apollo } from 'apollo-angular';
+import { UtilsService } from '@app/services/utils.service';
+import { TestUtils } from '@testing/utils';
 
 describe('FilestackComponent', () => {
   let component: FilestackComponent;
@@ -13,11 +14,14 @@ describe('FilestackComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [ IonicModule ],
+      imports: [IonicModule],
       declarations: [FilestackComponent],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
       providers: [
-        Apollo,
+        {
+          provide: UtilsService,
+          useClass: TestUtils,
+        },
         {
           provide: FilestackService,
           useValue: jasmine.createSpyObj(['open', 'getS3Config'])

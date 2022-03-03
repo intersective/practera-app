@@ -1,138 +1,155 @@
-import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { async, ComponentFixture, TestBed, tick, fakeAsync } from '@angular/core/testing';
-import { AchievementsComponent } from './achievements.component';
+import { TestBed } from '@angular/core/testing';
 import { AchievementsService } from './achievements.service';
-import { Observable, of, pipe } from 'rxjs';
-import { Router, NavigationEnd } from '@angular/router';
-import { SharedModule } from '@shared/shared.module';
-import {
-  HttpTestingController,
-  HttpClientTestingModule
-} from '@angular/common/http/testing';
-import { NewRelicService } from '@shared/new-relic/new-relic.service';
-import { Apollo } from 'apollo-angular';
+import { of } from 'rxjs';
+import { RequestService } from '@shared/request/request.service';
+import { BrowserStorageService } from '@services/storage.service';
+import { UtilsService } from '@app/services/utils.service';
+import { TestUtils } from '@testing/utils';
 
-class Page {
-  get totalPoints() {
-    return this.query<HTMLElement>('.points');
-  }
-  get achievementBadges() {
-    return this.queryAll<HTMLElement>('achievement-badge');
-  }
-  fixture: ComponentFixture<AchievementsComponent>;
+describe('AchievementsService', () => {
+  let service: AchievementsService;
+  let requestSpy: jasmine.SpyObj<RequestService>;
 
-  constructor(fixture: ComponentFixture<AchievementsComponent>) {
-    this.fixture = fixture;
-  }
-  //// query helpers ////
-  private query<T>(selector: string): T {
-    return this.fixture.nativeElement.querySelector(selector);
-  }
-  private queryAll<T>(selector: string): T[] {
-    return this.fixture.nativeElement.querySelectorAll(selector);
-  }
-}
-
-describe('AchievementsComponent', () => {
-  let component: AchievementsComponent;
-  let fixture: ComponentFixture<AchievementsComponent>;
-  let page: Page;
-  let achievementsSpy: jasmine.SpyObj<AchievementsService>;
-  let routerSpy: jasmine.SpyObj<Router>;
-  const testEvent: NavigationEnd = {
-    id: 1,
-    url: '/achievements',
-    urlAfterRedirects: 'test/test',
-  };
-
-  beforeEach(async(() => {
+  beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [SharedModule, HttpClientTestingModule],
-      declarations: [ AchievementsComponent ],
-      schemas: [ CUSTOM_ELEMENTS_SCHEMA ],
       providers: [
-        Apollo,
-        NewRelicService,
         {
-          provide: AchievementsService,
-          useValue: jasmine.createSpyObj('AchievementsService', [
-            'getAchievements',
-            'getIsPointsConfigured',
-            'getEarnedPoints'
-          ])
+          provide: UtilsService,
+          useClass: TestUtils,
+        },
+        AchievementsService,
+        {
+          provide: RequestService,
+          useValue: jasmine.createSpyObj('RequestService', ['get', 'post', 'apiResponseFormatError'])
         },
         {
-          provide: Router,
-          useValue: {
-            navigate: jasmine.createSpy('navigate'),
-            events: of(new NavigationEnd(testEvent.id, testEvent.url, testEvent.urlAfterRedirects)),
-          },
+          provide: BrowserStorageService,
+          useValue: jasmine.createSpyObj('BrowserStorageService', {
+            getUser: {
+              projectId: 1
+            }
+          })
+        },
+      ]
+    });
+    service = TestBed.inject(AchievementsService) as jasmine.SpyObj<AchievementsService>;
+    requestSpy = TestBed.inject(RequestService) as jasmine.SpyObj<RequestService>;
+  });
+
+  it('should be created', () => {
+    expect(service).toBeTruthy();
+  });
+
+  describe('when testing getAchievements()', () => {
+    const requestResponse = {
+      success: true,
+      data: [
+        {
+          id: 1,
+          name: 'achieve 1',
+          description: 'des',
+          badge: '',
+          points: 100,
+          isEarned: true,
+          earnedDate: '2019-02-02'
+        },
+        {
+          id: 2,
+          name: 'achieve 2',
+          description: 'des',
+          badge: '',
+          points: 200,
+          isEarned: false,
+          earnedDate: '2019-02-02'
+        },
+        {
+          id: 3,
+          name: 'achieve 3',
+          description: 'des',
+          badge: '',
+          points: 300,
+          isEarned: true,
+          earnedDate: '2019-02-02'
+        },
+        {
+          id: 4,
+          name: 'achieve 4',
+          description: 'des',
+          badge: '',
+          points: null,
+          isEarned: true,
+          earnedDate: '2019-02-02'
         }
-      ],
-    })
-    .compileComponents();
-  }));
-
-  beforeEach(() => {
-    fixture = TestBed.createComponent(AchievementsComponent);
-    component = fixture.componentInstance;
-    page = new Page(fixture);
-    achievementsSpy = TestBed.inject(AchievementsService) as jasmine.SpyObj<AchievementsService>;
-    routerSpy = TestBed.inject(Router) as jasmine.SpyObj<Router>;
-  });
-
-  const mockAchievements = [
-    {
-      id: 1,
-      name: 'achieve 1',
-      description: 'des'
-    },
-    {
-      id: 2,
-      name: 'achieve 2',
-      description: 'des'
-    },
-    {
-      id: 3,
-      name: 'achieve 3',
-      description: 'des'
-    }
-  ];
-  beforeEach(() => {
-    achievementsSpy.getAchievements.and.returnValue(of(mockAchievements));
-    achievementsSpy.getIsPointsConfigured.and.returnValue(true);
-    achievementsSpy.getEarnedPoints.and.returnValue(100);
-    component.routeUrl = '/achievements';
-  });
-
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
-
-  describe('when testing onEnter()', () => {
-    it(`should run AchievementComponent's onEnter() method`, () => {
-      spyOn(component, 'onEnter');
-      component.ngOnInit(); // inherited from RouterEnterService
-      expect(component.onEnter).toHaveBeenCalledTimes(1);
+      ]
+    };
+    const achievements = requestResponse.data[0];
+    const expected = JSON.parse(JSON.stringify(requestResponse.data)).map(res => {
+      return {
+        id: res.id,
+        name: res.name,
+        description: res.description,
+        image: res.badge,
+        points: res.points,
+        isEarned: res.isEarned,
+        earnedDate: res.earnedDate
+      };
     });
 
-    it(`should get correct achievements`, fakeAsync(() => {
-      spyOn(component.storage, 'get').and.returnValue({});
-      fixture.detectChanges();
-      fixture.whenStable().then(() => {
-        expect(component.loadingAchievements).toBe(false);
-        expect(achievementsSpy.getAchievements.calls.count()).toBe(1);
-        expect(component.achievements).toEqual(mockAchievements);
+    describe('should throw error', () => {
+      let tmpRes;
+      let errMsg;
+      beforeEach(() => {
+        tmpRes = JSON.parse(JSON.stringify(requestResponse));
       });
-    }));
+      afterEach(() => {
+        requestSpy.get.and.returnValue(of(tmpRes));
+        service.getAchievements().subscribe();
+        expect(requestSpy.apiResponseFormatError.calls.count()).toBe(1);
+        expect(requestSpy.apiResponseFormatError.calls.first().args[0]).toEqual(errMsg);
+      });
+      it('Achievement format error', () => {
+        tmpRes.data = {};
+        errMsg = 'Achievement format error';
+      });
+      it('Achievement object format error', () => {
+        tmpRes.data[0] = {};
+        errMsg = 'Achievement object format error';
+      });
+    });
+
+    it('should get the correct data', () => {
+      requestSpy.get.and.returnValue(of(requestResponse));
+      service.getAchievements().subscribe(res => expect(res).toEqual(expected));
+      expect(service.totalPoints).toBe(600);
+      expect(service.earnedPoints).toBe(400);
+      expect(service.isPointsConfigured).toBe(true);
+    });
   });
 
-  describe('when testing back()', () => {
-    it(`should navigate to the correct page`, () => {
-      component.back();
-      expect(routerSpy.navigate.calls.first().args[0]).toEqual(['app', 'home']);
+  it('should get the correct earned points', () => {
+    service.earnedPoints = 123;
+    expect(service.getEarnedPoints()).toBe(123);
+  });
+
+  it('should get the correct total points', () => {
+    service.totalPoints = 123;
+    expect(service.getTotalPoints()).toBe(123);
+  });
+
+  it(`should get the correct 'is point configured'`, () => {
+    service.isPointsConfigured = true;
+    expect(service.getIsPointsConfigured()).toBe(true);
+  });
+
+  it(`should post the correct data when marking achievement as seen`, () => {
+    requestSpy.post.and.returnValue(of({}));
+    service.markAchievementAsSeen(11);
+    expect(requestSpy.post.calls.count()).toBe(1);
+    expect(requestSpy.post.calls.first().args[0].data).toEqual({
+      project_id: 1,
+      identifier: 'Achievement-11',
+      is_done: true
     });
   });
 
 });
-

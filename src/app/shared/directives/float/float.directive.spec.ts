@@ -1,10 +1,10 @@
 import { By } from '@angular/platform-browser';
 import { IonicModule } from '@ionic/angular';
 import { TestBed, ComponentFixture, async } from '@angular/core/testing';
-import { ElementRef, Component, DebugElement } from '@angular/core';
+import { ElementRef, Component, DebugElement, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { UtilsService } from '@services/utils.service';
 import { FloatDirective } from './float.directive';
-import { Apollo } from 'apollo-angular';
+import { TestUtils } from '@testing/utils';
 
 // @NOTE: keep this for future elements debugging (unit testing purpose only)
 function cardListingHelper(debugElement) {
@@ -28,7 +28,7 @@ function cardListingHelper(debugElement) {
     <ion-card style="height: 500px;">4</ion-card>
   </ion-content>`
 })
-class TestAppFloatIsActivityCardComponent {}
+class TestAppFloatIsActivityCardComponent { }
 
 @Component({
   template: `
@@ -106,16 +106,20 @@ describe('FloatDirective', () => {
   describe('without "isActivityCard"', () => {
     beforeEach(() => {
       TestBed.configureTestingModule({
-        imports: [ IonicModule ],
-        declarations: [ TestScrollComponent, FloatDirective ],
+        imports: [IonicModule],
+        declarations: [TestScrollComponent, FloatDirective],
+        schemas: [CUSTOM_ELEMENTS_SCHEMA],
         providers: [
-          Apollo,
-          UtilsService,
+          {
+            provide: UtilsService,
+            useClass: TestUtils,
+          },
           // ElementRef
         ]
       });
 
       fixture = TestBed.createComponent(TestScrollComponent);
+      fixture.detectChanges(); // initial binding
       component = fixture.componentInstance;
       debugElement = fixture.debugElement.query(By.css('ion-content'));
     });
@@ -156,11 +160,13 @@ describe('FloatDirective', () => {
   describe('with "isActivityCard"', () => {
     beforeEach(async () => {
       TestBed.configureTestingModule({
-        imports: [ IonicModule ],
-        declarations: [ FloatDirective, TestAppFloatIsActivityCardComponent ],
+        imports: [IonicModule],
+        declarations: [FloatDirective, TestAppFloatIsActivityCardComponent],
         providers: [
-          Apollo,
-          UtilsService,
+          {
+            provide: UtilsService,
+            useClass: TestUtils
+          },
         ]
       });
 

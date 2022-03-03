@@ -1,9 +1,9 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { LockTeamAssessmentPopUpComponent } from './lock-team-assessment-pop-up.component';
-import { Observable, of, pipe } from 'rxjs';
 import { ModalController } from '@ionic/angular';
-import { Apollo } from 'apollo-angular';
+import { UtilsService } from '@app/services/utils.service';
+import { TestUtils } from '@testing/utils';
 
 describe('LockTeamAssessmentPopUpComponent', () => {
   let component: LockTeamAssessmentPopUpComponent;
@@ -12,17 +12,20 @@ describe('LockTeamAssessmentPopUpComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ LockTeamAssessmentPopUpComponent ],
-      schemas: [ CUSTOM_ELEMENTS_SCHEMA ],
+      declarations: [LockTeamAssessmentPopUpComponent],
+      schemas: [CUSTOM_ELEMENTS_SCHEMA],
       providers: [
-        Apollo,
+        {
+          provide: UtilsService,
+          useClass: TestUtils,
+        },
         {
           provide: ModalController,
           useValue: modalCtrlSpy
         }
       ],
     })
-    .compileComponents();
+      .compileComponents();
   }));
 
   beforeEach(() => {
