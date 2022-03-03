@@ -5,7 +5,7 @@ import { RequestService } from '@shared/request/request.service';
 import { TestUtils } from '@testing/utils';
 import { NotificationService } from '@shared/notification/notification.service';
 import { BrowserStorageService } from '@services/storage.service';
-import { Apollo } from 'apollo-angular';
+import { UtilsService } from '@app/services/utils.service';
 
 describe('FastFeedbackService', () => {
   let service: FastFeedbackService;
@@ -17,8 +17,11 @@ describe('FastFeedbackService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
-        Apollo,
         FastFeedbackService,
+        {
+          provide: UtilsService,
+          useClass: TestUtils,
+        },
         {
           provide: RequestService,
           useValue: jasmine.createSpyObj('RequestService', ['get', 'post'])
@@ -114,7 +117,7 @@ describe('FastFeedbackService', () => {
       requestSpy.get.and.returnValue(of({
         data: {
           slider: [],
-          meta: { hasValue: true},
+          meta: { hasValue: true },
         }
       }));
 

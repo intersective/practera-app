@@ -8,7 +8,7 @@ import { HomeService } from './home.service';
 import { NotificationService } from '@shared/notification/notification.service';
 import { EventListService } from '@app/event-list/event-list.service';
 import * as moment from 'moment';
-import { Apollo } from 'apollo-angular';
+import { TestUtils } from '@testing/utils';
 
 describe('HomeService', () => {
   let service: HomeService;
@@ -19,11 +19,13 @@ describe('HomeService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [ HttpClientTestingModule ],
+      imports: [HttpClientTestingModule],
       providers: [
-        Apollo,
         HomeService,
-        UtilsService,
+        {
+          provide: UtilsService,
+          useClass: TestUtils,
+        },
         {
           provide: NotificationService,
           useValue: jasmine.createSpyObj('NotificationService', ['achievementPopUp'])
@@ -59,7 +61,7 @@ describe('HomeService', () => {
   });
 
   describe('when testing getTodoItems()', () => {
-    it('should get correct todoItems', async() => {
+    it('should get correct todoItems', () => {
       const requestResponse = {
         success: true,
         data: [
@@ -159,7 +161,7 @@ describe('HomeService', () => {
       requestSpy.get.and.returnValue(of(requestResponse));
 
       utils.getEvent('event-reminder').subscribe(
-        event => expect(event).toEqual({meta: requestResponse.data[4].meta})
+        event => expect(event).toEqual({ meta: requestResponse.data[4].meta })
       );
       service.getTodoItems().subscribe(
         todoItems => expect(todoItems).toEqual(expected)
@@ -170,15 +172,15 @@ describe('HomeService', () => {
   });
 
   describe('when testing getChatMessage()', () => {
-    it('should get correct 1 chat message', async() => {
+    it('should get correct 1 chat message', async () => {
       const requestResponse = {
         data: {
           channels: [
             {
-                name: 'Team 1',
-                unreadMessageCount: 1,
-                lastMessage: 'last',
-                lastMessageCreated: '2019-02-02'
+              name: 'Team 1',
+              unreadMessageCount: 1,
+              lastMessage: 'last',
+              lastMessageCreated: '2019-02-02'
             }
           ]
         }
@@ -196,7 +198,7 @@ describe('HomeService', () => {
       expect(requestSpy.chatGraphQLQuery.calls.count()).toBe(1);
     });
 
-    it('should get correct multiple chat messages', async() => {
+    it('should get correct multiple chat messages', async () => {
       const requestResponse = {
         data: {
           channels: [
@@ -231,14 +233,14 @@ describe('HomeService', () => {
   });
 
   describe('when testing getTodoItemFromEvent()', () => {
-    it('should get correct todo item from event #1', async() => {
+    it('should get correct todo item from event #1', async () => {
       const event = {};
       const expected = {};
       expect(service.getTodoItemFromEvent(event)).toEqual(expected);
       expect(requestSpy.apiResponseFormatError.calls.count()).toBe(1);
     });
 
-    it('should get correct todo item from event #2', async() => {
+    it('should get correct todo item from event #2', async () => {
       const event = {
         type: 'assessment_review_published',
         meta: {
@@ -250,7 +252,7 @@ describe('HomeService', () => {
       expect(requestSpy.apiResponseFormatError.calls.count()).toBe(1);
     });
 
-    it('should get correct todo item from event #3', async() => {
+    it('should get correct todo item from event #3', async () => {
       const event = {
         type: 'assessment_review_published',
         meta: {
@@ -280,7 +282,7 @@ describe('HomeService', () => {
       expect(service.getTodoItemFromEvent(event)).toEqual(expected);
     });
 
-    it('should get correct todo item from event #4', async() => {
+    it('should get correct todo item from event #4', async () => {
       const event = {
         type: 'assessment_review_assigned',
         meta: {
@@ -292,7 +294,7 @@ describe('HomeService', () => {
       expect(requestSpy.apiResponseFormatError.calls.count()).toBe(1);
     });
 
-    it('should get correct todo item from event #5', async() => {
+    it('should get correct todo item from event #5', async () => {
       const event = {
         type: 'assessment_review_assigned',
         meta: {
@@ -320,7 +322,7 @@ describe('HomeService', () => {
       expect(service.getTodoItemFromEvent(event)).toEqual(expected);
     });
 
-    it('should get correct todo item from event #6', async() => {
+    it('should get correct todo item from event #6', async () => {
       const event = {
         type: 'assessment_submission_reminder',
         meta: {
@@ -332,7 +334,7 @@ describe('HomeService', () => {
       expect(requestSpy.apiResponseFormatError.calls.count()).toBe(1);
     });
 
-    it('should get correct todo item from event #7', async() => {
+    it('should get correct todo item from event #7', async () => {
       const event = {
         type: 'assessment_submission_reminder',
         meta: {
@@ -350,10 +352,10 @@ describe('HomeService', () => {
         type: 'assessment_submission_reminder',
         name: event.meta.AssessmentSubmissionReminder.assessment_name,
         description: 'Overdue 2 Feb 2019 ' + new Intl.DateTimeFormat('en-US', {
-            hour12: true,
-            hour: 'numeric',
-            minute: 'numeric'
-          }).format(new Date(event.meta.AssessmentSubmissionReminder.due_date + 'Z')),
+          hour12: true,
+          hour: 'numeric',
+          minute: 'numeric'
+        }).format(new Date(event.meta.AssessmentSubmissionReminder.due_date + 'Z')),
         time: '3 Feb',
         meta: {
           context_id: event.meta.AssessmentSubmissionReminder.context_id,
@@ -368,7 +370,7 @@ describe('HomeService', () => {
   });
 
   describe('when testing getReminderEvent()', () => {
-    it('should get correct reminder event #1', async() => {
+    it('should get correct reminder event #1', async () => {
       const data = {
         meta: {}
       };
@@ -376,9 +378,9 @@ describe('HomeService', () => {
       expect(requestSpy.apiResponseFormatError.calls.count()).toBe(1);
     });
 
-    it('should get correct reminder event #2', async() => {
+    it('should get correct reminder event #2', async () => {
       const data = {
-        meta: {id: 1}
+        meta: { id: 1 }
       };
       const requestResponse = {
         data: {
@@ -389,7 +391,6 @@ describe('HomeService', () => {
         {
           // should call postEventReminder()
           isPast: true,
-
           name: 'name',
           id: 1,
           description: 'sample',
@@ -415,9 +416,9 @@ describe('HomeService', () => {
       expect(requestSpy.post.calls.count()).toBe(1);
     });
 
-    it('should get correct reminder event #3', async() => {
+    it('should get correct reminder event #3', async () => {
       const data = {
-        meta: {id: 1}
+        meta: { id: 1 }
       };
       const requestResponse = {
         data: {
