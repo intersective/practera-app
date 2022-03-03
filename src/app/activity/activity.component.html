@@ -45,7 +45,7 @@
           [leadingIcon]="taskLeadingIcon(task)"
           [leadingIconPulsing]="assessmentNotSubmitted(task) && task.isDueToday"
           [title]="task.name"
-          [subtitle1]="assessmentNotSubmitted(task) ? sharedService.dueDateFormatter(task.dueDate) : ''"
+          [subtitle1]="assessmentNotSubmitted(task) ? utils.dueDateFormatter(task.dueDate) : ''"
           [subtitle1Color]="task.isOverdue ? 'danger' : ''"
           [subtitle2]="taskSubtitle2(task)"
           [endingIcon]="taskEndingIcon(task)"

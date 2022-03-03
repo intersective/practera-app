@@ -108,13 +108,12 @@ export class RequestService {
   }
 
   private getEndpointUrl(endpoint: string): string {
-    let newURL = this.prefixUrl + endpoint;
     // if full, then skip
-    if (endpoint.includes('https://') || endpoint.includes('http://')) {
+    if (endpoint && (endpoint.includes('https://') || endpoint.includes('http://'))) {
       return endpoint;
     }
 
-    return newURL;
+    return this.prefixUrl + endpoint;
   }
 
   /**
