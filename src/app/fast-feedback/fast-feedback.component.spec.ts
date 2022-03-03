@@ -12,7 +12,7 @@ import { QuestionComponent } from './question/question.component';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
 import { MockNewRelicService } from '@testing/mocked.service';
-import { Apollo } from 'apollo-angular';
+import { TestUtils } from '@testing/utils';
 
 class Page {
   get questions() {
@@ -41,16 +41,18 @@ describe('FastFeedbackComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [ FormsModule, ReactiveFormsModule ],
-      declarations: [ FastFeedbackComponent, QuestionComponent ],
-      schemas: [ CUSTOM_ELEMENTS_SCHEMA ],
+      imports: [FormsModule, ReactiveFormsModule],
+      declarations: [FastFeedbackComponent, QuestionComponent],
+      schemas: [CUSTOM_ELEMENTS_SCHEMA],
       providers: [
-        Apollo,
         {
           provide: FastFeedbackSubmitterService,
           useValue: jasmine.createSpyObj('FastFeedbackSubmitterService', ['submit'])
         },
-        UtilsService,
+        {
+          provide: UtilsService,
+          useClass: TestUtils,
+        },
         {
           provide: NotificationService,
           useValue: jasmine.createSpyObj('NotificationService', ['alert'])
@@ -71,7 +73,7 @@ describe('FastFeedbackComponent', () => {
         }
       ],
     })
-    .compileComponents();
+      .compileComponents();
   }));
 
   beforeEach(() => {
@@ -88,7 +90,7 @@ describe('FastFeedbackComponent', () => {
   });
 
   it('when testing ngOnInit(), it should get the correct data', () => {
-    component.questions = Array.from({length: 5}, (x, i) => {
+    component.questions = Array.from({ length: 5 }, (x, i) => {
       return {
         id: i + 1
       };
@@ -112,7 +114,7 @@ describe('FastFeedbackComponent', () => {
         3: new FormControl(''),
         4: new FormControl('')
       });
-      component.fastFeedbackForm.setValue(Array.from({length: 5}, (x, i) => {
+      component.fastFeedbackForm.setValue(Array.from({ length: 5 }, (x, i) => {
         return {
           answer: i + 2,
           questionId: i + 1

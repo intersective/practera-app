@@ -3,11 +3,10 @@ import { EventsComponent } from './events.component';
 import { EventListModule } from '../event-list/event-list.module';
 import { EventDetailModule } from '../event-detail/event-detail.module';
 import { AssessmentModule } from '../assessment/assessment.module';
-import { Observable, of, pipe } from 'rxjs';
 import { Router, ActivatedRoute, convertToParamMap } from '@angular/router';
-import { ActivatedRouteStub } from '@testing/activated-route-stub';
 import { MockRouter } from '@testing/mocked.service';
-import { Apollo } from 'apollo-angular';
+import { UtilsService } from '@app/services/utils.service';
+import { TestUtils } from '@testing/utils';
 
 describe('EventsComponent', () => {
   let component: EventsComponent;
@@ -16,10 +15,13 @@ describe('EventsComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [ EventListModule, EventDetailModule, AssessmentModule ],
-      declarations: [ EventsComponent ],
+      imports: [EventListModule, EventDetailModule, AssessmentModule],
+      declarations: [EventsComponent],
       providers: [
-        Apollo,
+        {
+          provide: UtilsService,
+          useClass: TestUtils,
+        },
         {
           provide: Router,
           useClass: MockRouter
@@ -34,7 +36,7 @@ describe('EventsComponent', () => {
         },
       ]
     })
-    .compileComponents();
+      .compileComponents();
   }));
 
   beforeEach(() => {
@@ -42,11 +44,11 @@ describe('EventsComponent', () => {
     component = fixture.componentInstance;
     routeSpy = TestBed.inject(ActivatedRoute);
     // mock the activity object
-    component.eventList = { onEnter() {} };
+    component.eventList = { onEnter() { } };
     // spy on the onEnter function
     spyOn(component.eventList, 'onEnter');
     // mock the assessment object
-    component.assessment = { onEnter() {} };
+    component.assessment = { onEnter() { } };
     // spy on the onEnter function
     spyOn(component.assessment, 'onEnter');
   });
