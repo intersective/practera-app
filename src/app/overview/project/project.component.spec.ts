@@ -2,19 +2,17 @@ import { CUSTOM_ELEMENTS_SCHEMA, ElementRef, QueryList } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { ProjectComponent } from './project.component';
 import { ProjectService } from './project.service';
-import { Observable, of, pipe } from 'rxjs';
+import { of } from 'rxjs';
 import { Router, ActivatedRoute, convertToParamMap } from '@angular/router';
 import { SharedModule } from '@shared/shared.module';
 import { UtilsService } from '@services/utils.service';
 import { HomeService } from '../home/home.service';
 import { TestUtils } from '@testing/utils';
-import { DOCUMENT } from '@angular/common';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { FastFeedbackService } from '../../fast-feedback/fast-feedback.service';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
 import { MockRouter } from '@testing/mocked.service';
-import { Apollo } from 'apollo-angular';
+import { NotificationService } from '@app/shared/notification/notification.service';
 import { BrowserStorageService } from '@services/storage.service';
 
 export class MockElementRef extends ElementRef {
@@ -44,7 +42,7 @@ class Page {
   }
 }
 
-class MockDocument {}
+class MockDocument { }
 
 describe('ProjectComponent', () => {
   let component: ProjectComponent;
@@ -64,12 +62,14 @@ describe('ProjectComponent', () => {
         HttpClientTestingModule,
         NoopAnimationsModule
       ],
-      declarations: [ ProjectComponent ],
-      schemas: [ CUSTOM_ELEMENTS_SCHEMA ],
+      declarations: [ProjectComponent],
+      schemas: [CUSTOM_ELEMENTS_SCHEMA],
       providers: [
-        Apollo,
-        UtilsService,
         NewRelicService,
+        {
+          provide: UtilsService,
+          useClass: TestUtils,
+        },
         {
           provide: ElementRef,
           useClass: MockElementRef
@@ -100,21 +100,25 @@ describe('ProjectComponent', () => {
           useClass: MockDocument
         },
         {
+          provide: NotificationService,
+          useValue: jasmine.createSpyObj('NotificationService', ['presentToast'])
+        },
+        {
           provide: BrowserStorageService,
           useValue: jasmine.createSpyObj('BrowserStorageService', ['get', 'getUser'])
         }
       ],
     })
-    .compileComponents();
+      .compileComponents();
   }));
 
-  const milestones = Array.from({length: 5}, (x, i) => {
+  const milestones = Array.from({ length: 5 }, (x, i) => {
     return {
       id: i + 1,
       name: 'm' + i,
       description: 'des' + i,
       isLocked: false,
-      Activity: Array.from({length: 3}, (y, j) => {
+      Activity: Array.from({ length: 3 }, (y, j) => {
         return {
           id: i * 10 + j + 1,
           name: 'activity name' + j,
@@ -125,11 +129,11 @@ describe('ProjectComponent', () => {
     };
   });
 
-  const milestoneProgressLocal = Array.from({length: 5}, (x, i) => {
+  const milestoneProgressLocal = Array.from({ length: 5 }, (x, i) => {
     return {
       id: i + 1,
       progress: 0.27,
-      activities: Array.from({length: 3}, (y, j) => {
+      activities: Array.from({ length: 3 }, (y, j) => {
         return {
           id: i * 10 + j + 1,
           progress: 0.45,
@@ -138,11 +142,11 @@ describe('ProjectComponent', () => {
     };
   });
 
-  const milestoneProgress = Array.from({length: 5}, (x, i) => {
+  const milestoneProgress = Array.from({ length: 5 }, (x, i) => {
     return {
       id: i + 1,
       progress: 0.13,
-      activities: Array.from({length: 3}, (y, j) => {
+      activities: Array.from({ length: 3 }, (y, j) => {
         return {
           id: i * 10 + j + 1,
           progress: 0.55,

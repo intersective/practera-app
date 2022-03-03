@@ -5,7 +5,6 @@ import { FilestackService } from '@shared/filestack/filestack.service';
 import { Observable, of, pipe } from 'rxjs';
 import { SharedModule } from '@shared/shared.module';
 import { ReactiveFormsModule, FormControl } from '@angular/forms';
-import { Apollo } from 'apollo-angular';
 
 describe('FileComponent', () => {
   let component: FileComponent;
@@ -14,18 +13,17 @@ describe('FileComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [ SharedModule, ReactiveFormsModule ],
-      declarations: [ FileComponent ],
-      schemas: [ CUSTOM_ELEMENTS_SCHEMA ],
+      imports: [SharedModule, ReactiveFormsModule],
+      declarations: [FileComponent],
+      schemas: [CUSTOM_ELEMENTS_SCHEMA],
       providers: [
-        Apollo,
         {
           provide: FilestackService,
           useValue: jasmine.createSpyObj('FilestackService', ['getFileTypes'])
         },
       ],
     })
-    .compileComponents();
+      .compileComponents();
   });
 
   beforeEach(() => {
@@ -46,7 +44,7 @@ describe('FileComponent', () => {
     it('should get correct data for in progress submission', () => {
       component.submissionStatus = 'in progress';
       component.doAssessment = true;
-      component.submission = {answer: 'abc'};
+      component.submission = { answer: 'abc' };
       component.reviewStatus = 'not started';
       component.doReview = false;
       component.review = {};
@@ -59,12 +57,12 @@ describe('FileComponent', () => {
     it('should get correct data for in progress review', () => {
       component.submissionStatus = 'pending review';
       component.doAssessment = false;
-      component.submission = {answer: 'abc'};
+      component.submission = { answer: 'abc' };
       component.reviewStatus = 'in progress';
       component.doReview = true;
       component.review = {
         comment: 'asdf',
-        answer: {name: 'abc'}
+        answer: { name: 'abc' }
       };
       component.control = new FormControl('');
       fixture.detectChanges();
@@ -76,32 +74,32 @@ describe('FileComponent', () => {
 
   describe('when testing onFileUploadCompleted()', () => {
     it('should get error if file upload fail', () => {
-      component.onFileUploadCompleted({success: false, data: {}}, 'a');
+      component.onFileUploadCompleted({ success: false, data: {} }, 'a');
       expect(component.errors.length).toBe(1);
     });
     it('should get correct data if file upload success when doing submission', () => {
       component.onFileUploadCompleted({
         success: true,
-        data: {filename: 'abc.png'}
+        data: { filename: 'abc.png' }
       });
       expect(component.errors.length).toBe(0);
-      expect(component.uploadedFile).toEqual({filename: 'abc.png'});
-      expect(component.innerValue).toEqual({filename: 'abc.png'});
+      expect(component.uploadedFile).toEqual({ filename: 'abc.png' });
+      expect(component.innerValue).toEqual({ filename: 'abc.png' });
     });
   });
 
   describe('when testing onChange()', () => {
     it('should get correct data when writing review answer', () => {
-      component.uploadedFile = {filename: 'abc.png'};
+      component.uploadedFile = { filename: 'abc.png' };
       component.onChange('data', 'answer');
       expect(component.errors.length).toBe(0);
-      expect(component.innerValue).toEqual({answer: {filename: 'abc.png'}, comment: ''});
+      expect(component.innerValue).toEqual({ answer: { filename: 'abc.png' }, comment: '' });
     });
     it('should get correct data when writing review comment', () => {
-      component.innerValue = {answer: {}, comment: ''};
+      component.innerValue = { answer: {}, comment: '' };
       component.onChange('data', 'comment');
       expect(component.errors.length).toBe(0);
-      expect(component.innerValue).toEqual({answer: {}, comment: 'data'});
+      expect(component.innerValue).toEqual({ answer: {}, comment: 'data' });
     });
   });
 

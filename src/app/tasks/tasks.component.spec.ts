@@ -3,11 +3,11 @@ import { TasksComponent } from './tasks.component';
 import { ActivityModule } from '../activity/activity.module';
 import { TopicModule } from '../topic/topic.module';
 import { AssessmentModule } from '../assessment/assessment.module';
-import { Observable, of, pipe } from 'rxjs';
 import { Router, ActivatedRoute, convertToParamMap } from '@angular/router';
 import { MockRouter } from '@testing/mocked.service';
 import { BrowserStorageService } from '@services/storage.service';
-import { Apollo } from 'apollo-angular';
+import { UtilsService } from '@app/services/utils.service';
+import { TestUtils } from '@testing/utils';
 import { SharedService } from '@app/services/shared.service';
 
 describe('TasksComponent', () => {
@@ -18,10 +18,17 @@ describe('TasksComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [ ActivityModule, TopicModule, AssessmentModule ],
-      declarations: [ TasksComponent ],
+      imports: [ActivityModule, TopicModule, AssessmentModule],
+      declarations: [TasksComponent],
       providers: [
-        Apollo,
+        {
+          provide: SharedService,
+          useValue: jasmine.createSpyObj('SharedService', ['markTopicStopOnNavigating'])
+        },
+        {
+          provide: UtilsService,
+          useClass: TestUtils,
+        },
         {
           provide: Router,
           useClass: MockRouter
@@ -46,7 +53,7 @@ describe('TasksComponent', () => {
         }
       ]
     })
-    .compileComponents();
+      .compileComponents();
   }));
 
   beforeEach(() => {
@@ -55,11 +62,11 @@ describe('TasksComponent', () => {
     routeSpy = TestBed.inject(ActivatedRoute);
     storageSpy = TestBed.inject(BrowserStorageService) as jasmine.SpyObj<BrowserStorageService>;
     // mock the activity object
-    component.activity = { onEnter() {} };
+    component.activity = { onEnter() { } };
     // mock the topic object
-    component.topic = { onEnter() {} };
+    component.topic = { onEnter() { } };
     // mock the assessment object
-    component.assessment = { onEnter() {} };
+    component.assessment = { onEnter() { } };
   });
 
   it('should create', () => {

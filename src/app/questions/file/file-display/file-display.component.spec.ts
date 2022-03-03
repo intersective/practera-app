@@ -6,7 +6,7 @@ import { Observable, of, pipe } from 'rxjs';
 import { SharedModule } from '@shared/shared.module';
 import { ReactiveFormsModule, FormControl } from '@angular/forms';
 import { UtilsService } from '@services/utils.service';
-import { Apollo } from 'apollo-angular';
+import { TestUtils } from '@testing/utils';
 
 class OnChangedValues extends SimpleChange {
   constructor(older, latest) {
@@ -21,12 +21,14 @@ describe('FileDisplayComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [ SharedModule, ReactiveFormsModule ],
-      declarations: [ FileDisplayComponent ],
-      schemas: [ CUSTOM_ELEMENTS_SCHEMA ],
+      imports: [SharedModule, ReactiveFormsModule],
+      declarations: [FileDisplayComponent],
+      schemas: [CUSTOM_ELEMENTS_SCHEMA],
       providers: [
-        Apollo,
-        UtilsService,
+        {
+          provide: UtilsService,
+          useClass: TestUtils,
+        },
         {
           provide: FilestackService,
           useValue: jasmine.createSpyObj('FilestackService', [
@@ -36,7 +38,7 @@ describe('FileDisplayComponent', () => {
         },
       ],
     })
-    .compileComponents();
+      .compileComponents();
   }));
 
   beforeEach(() => {
@@ -132,11 +134,13 @@ describe('FileDisplayComponent', () => {
   describe('ngOnChanges', () => {
     it('should track fileupload json changes', () => {
       component.updateWorkflowStatus = jasmine.createSpy('updateWorkflowStatus');
-      const jsonData = {just: 'first test'};
-      const newJsonData = {jsonData, ...{
-        and: 'second test',
-        without: 'workflow',
-      }};
+      const jsonData = { just: 'first test' };
+      const newJsonData = {
+        jsonData, ...{
+          and: 'second test',
+          without: 'workflow',
+        }
+      };
 
       component.ngOnChanges({
         file: new OnChangedValues(jsonData, newJsonData),
@@ -147,11 +151,13 @@ describe('FileDisplayComponent', () => {
 
     it('should not track fileupload changes if workflow is not available', () => {
       component.updateWorkflowStatus = jasmine.createSpy('updateWorkflowStatus');
-      const jsonData = {just: 'first test'};
-      const newJsonData = {jsonData, ...{
-        and: 'second test',
-        without: 'workflows',
-      }};
+      const jsonData = { just: 'first test' };
+      const newJsonData = {
+        jsonData, ...{
+          and: 'second test',
+          without: 'workflows',
+        }
+      };
 
       component.ngOnChanges({
         file: new OnChangedValues(jsonData, newJsonData),
@@ -179,10 +185,12 @@ describe('FileDisplayComponent', () => {
       component.updateWorkflowStatus = jasmine.createSpy('updateWorkflowStatus');
 
       const jsonData = { just: 'first test' };
-      const newJsonData = {...jsonData, ...{
-        and: 'second test',
-        workflows: true,
-      }};
+      const newJsonData = {
+        ...jsonData, ...{
+          and: 'second test',
+          workflows: true,
+        }
+      };
       component.videoEle = {
         nativeElement: {
           load: () => jasmine.createSpy()

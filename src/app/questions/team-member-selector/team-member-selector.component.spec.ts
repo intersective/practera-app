@@ -5,7 +5,7 @@ import { Observable, of, pipe } from 'rxjs';
 import { SharedModule } from '@shared/shared.module';
 import { ReactiveFormsModule, FormControl } from '@angular/forms';
 import { UtilsService } from '@services/utils.service';
-import { Apollo } from 'apollo-angular';
+import { TestUtils } from '@testing/utils';
 
 describe('TeamMemberSelectorComponent', () => {
   let component: TeamMemberSelectorComponent;
@@ -13,15 +13,17 @@ describe('TeamMemberSelectorComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [ SharedModule, ReactiveFormsModule ],
-      declarations: [ TeamMemberSelectorComponent ],
-      schemas: [ CUSTOM_ELEMENTS_SCHEMA ],
+      imports: [SharedModule, ReactiveFormsModule],
+      declarations: [TeamMemberSelectorComponent],
+      schemas: [CUSTOM_ELEMENTS_SCHEMA],
       providers: [
-        Apollo,
-        UtilsService
+        {
+          provide: UtilsService,
+          useClass: TestUtils,
+        },
       ],
     })
-    .compileComponents();
+      .compileComponents();
   }));
 
   beforeEach(() => {
@@ -44,7 +46,7 @@ describe('TeamMemberSelectorComponent', () => {
       };
       component.submissionStatus = 'in progress';
       component.doAssessment = true;
-      component.submission = {answer: 'abc'};
+      component.submission = { answer: 'abc' };
       component.reviewStatus = 'not started';
       component.doReview = false;
       component.review = {};
@@ -64,12 +66,12 @@ describe('TeamMemberSelectorComponent', () => {
       };
       component.submissionStatus = 'pending review';
       component.doAssessment = false;
-      component.submission = {answer: 'abc'};
+      component.submission = { answer: 'abc' };
       component.reviewStatus = 'in progress';
       component.doReview = true;
       component.review = {
         comment: 'asdf',
-        answer: {name: 'abc'}
+        answer: { name: 'abc' }
       };
       component.control = new FormControl('');
       fixture.detectChanges();
@@ -111,21 +113,21 @@ describe('TeamMemberSelectorComponent', () => {
       expect(component.innerValue).toEqual(4);
     });
     it('should get correct data when writing review answer', () => {
-      component.innerValue = {answer: 1, comment: ''};
+      component.innerValue = { answer: 1, comment: '' };
       component.onChange(2, 'answer');
       expect(component.errors.length).toBe(0);
-      expect(component.innerValue).toEqual({answer: 2, comment: ''});
+      expect(component.innerValue).toEqual({ answer: 2, comment: '' });
     });
     it('should get correct data when writing review comment', () => {
       component.onChange('data', 'comment');
       expect(component.errors.length).toBe(0);
-      expect(component.innerValue).toEqual({answer: '', comment: 'data'});
+      expect(component.innerValue).toEqual({ answer: '', comment: 'data' });
     });
   });
 
   it('when testing writeValue(), it should pass data correctly', () => {
-    component.writeValue({data: 'data'});
-    expect(component.innerValue).toEqual({data: 'data'});
+    component.writeValue({ data: 'data' });
+    expect(component.innerValue).toEqual({ data: 'data' });
     component.writeValue(null);
   });
   it('when testing registerOnChange()', () => {
