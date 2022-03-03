@@ -10,7 +10,6 @@ import { ActivatedRouteStub } from '@testing/activated-route-stub';
 import { TestUtils } from '@testing/utils';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
 import { MockRouter } from '@testing/mocked.service';
-import { Apollo } from 'apollo-angular';
 
 class Page {
   get eventItems() {
@@ -41,11 +40,13 @@ describe('EventListComponent', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       imports: [SharedModule],
-      declarations: [ EventListComponent ],
-      schemas: [ CUSTOM_ELEMENTS_SCHEMA ],
+      declarations: [EventListComponent],
+      schemas: [CUSTOM_ELEMENTS_SCHEMA],
       providers: [
-        Apollo,
-        UtilsService,
+        {
+          provide: UtilsService,
+          useClass: TestUtils,
+        },
         NewRelicService,
         {
           provide: EventListService,
@@ -61,7 +62,7 @@ describe('EventListComponent', () => {
         }
       ],
     })
-    .compileComponents();
+      .compileComponents();
   }));
 
   beforeEach(() => {
@@ -83,7 +84,7 @@ describe('EventListComponent', () => {
     testUtils.getDateString(-2, 0) // attended
   ];
   const isBookeds = [false, false, false, false, true, true];
-  const mockEvents: Event[] = Array.from({length: 6}, (x, i) => {
+  const mockEvents: Event[] = Array.from({ length: 6 }, (x, i) => {
     return {
       id: i + 1,
       name: 'event' + i,
@@ -177,7 +178,7 @@ describe('EventListComponent', () => {
       tmpEvents = JSON.parse(JSON.stringify(mockEvents));
       tmpActivities = JSON.parse(JSON.stringify(mockActivities));
       component.eventId = null;
-      functionAfterOnEnter = () => {};
+      functionAfterOnEnter = () => { };
       expectedEvents = browse;
       expectedCategorised = {
         browse: browse,
@@ -201,7 +202,7 @@ describe('EventListComponent', () => {
       expect(component.activities).toEqual(tmpActivities);
     }));
 
-    it(`should get correct full events grouped and activities`, () => {});
+    it(`should get correct full events grouped and activities`, () => { });
 
     it(`should get correct events grouped without browse`, () => {
       tmpEvents.splice(0, 4);

@@ -6,7 +6,7 @@ import { Observable, of } from 'rxjs';
 import { UtilsService } from '@services/utils.service';
 import { PusherService } from '@shared/pusher/pusher.service';
 import { environment } from '@environments/environment';
-import { Apollo } from 'apollo-angular';
+import { TestUtils } from '@testing/utils';
 
 describe('ChatService', () => {
   let service: ChatService;
@@ -17,9 +17,11 @@ describe('ChatService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
-        Apollo,
         ChatService,
-        UtilsService,
+        {
+          provide: UtilsService,
+          useClass: TestUtils,
+        },
         {
           provide: PusherService,
           useValue: jasmine.createSpyObj('PusherService', ['getMyPresenceChannelId'])
@@ -244,16 +246,16 @@ describe('ChatService', () => {
           channel: {
             members: [
               {
-                  uuid: '8bee29d0-bf45-af7d-0927-19a73a7e1840',
-                  name: 'student+02',
-                  role: 'participant',
-                  avatar: 'https://www.gravatar.com/avatar/db30b12260b2c589b1394b26390eab50?d=https://sandbox.practera.com/img/user-512.png&s=50'
+                uuid: '8bee29d0-bf45-af7d-0927-19a73a7e1840',
+                name: 'student+02',
+                role: 'participant',
+                avatar: 'https://www.gravatar.com/avatar/db30b12260b2c589b1394b26390eab50?d=https://sandbox.practera.com/img/user-512.png&s=50'
               },
               {
-                  uuid: '8d1f3cdf-d697-e957-7120-b5568159a978',
-                  name: 'student+01',
-                  role: 'participant',
-                  avatar: 'https://www.gravatar.com/avatar/21b7427270a606e8a3c4413a13bb47c6?d=https://sandbox.practera.com/img/user-512.png&s=50'
+                uuid: '8d1f3cdf-d697-e957-7120-b5568159a978',
+                name: 'student+01',
+                role: 'participant',
+                avatar: 'https://www.gravatar.com/avatar/21b7427270a606e8a3c4413a13bb47c6?d=https://sandbox.practera.com/img/user-512.png&s=50'
               }
             ]
           }
@@ -285,12 +287,12 @@ describe('ChatService', () => {
         data: {
           channels: [
             {
-                pusherChannel: 'fgv34fg-34-8472354eb'
+              pusherChannel: 'fgv34fg-34-8472354eb'
             },
             {
-                pusherChannel: 'k76i865-jyj-5f44eb4f'
+              pusherChannel: 'k76i865-jyj-5f44eb4f'
             }
-        ]
+          ]
         }
       };
     });
@@ -339,7 +341,7 @@ describe('ChatService', () => {
         {
           message: 'test message',
           channelUuid: '10',
-          file : undefined
+          file: undefined
         }
       ));
     });
@@ -348,7 +350,7 @@ describe('ChatService', () => {
       const attachmentMessageParam = {
         message: 'test message',
         channelUuid: '10',
-        file : JSON.stringify({
+        file: JSON.stringify({
           filename: 'unnamed.jpg',
           mimetype: 'image/jpeg',
           url: 'https://cdn.filestackcontent.com/X8Cj0Y4QS2AmDUZX6LSq',
@@ -357,24 +359,24 @@ describe('ChatService', () => {
       };
       const newMessageRes = {
         data: {
-            createChatLog: {
-                uuid: '1',
-                isSender: true,
-                message: '',
-                file: JSON.stringify({
-                  filename: 'unnamed.jpg',
-                  mimetype: 'image/jpeg',
-                  url: 'https://cdn.filestackcontent.com/X8Cj0Y4QS2AmDUZX6LSq',
-                  status: 'Stored'
-                }),
-                created: '2020-10-22 12:34:16',
-                sender: {
-                  uuid: '1',
-                  name: 'user 1',
-                  role: 'admin',
-                  avatar: 'https://cdn.filestackcontent.com/X8Cj0Y4QS2AmDUZX6LSq'
-                }
+          createChatLog: {
+            uuid: '1',
+            isSender: true,
+            message: '',
+            file: JSON.stringify({
+              filename: 'unnamed.jpg',
+              mimetype: 'image/jpeg',
+              url: 'https://cdn.filestackcontent.com/X8Cj0Y4QS2AmDUZX6LSq',
+              status: 'Stored'
+            }),
+            created: '2020-10-22 12:34:16',
+            sender: {
+              uuid: '1',
+              name: 'user 1',
+              role: 'admin',
+              avatar: 'https://cdn.filestackcontent.com/X8Cj0Y4QS2AmDUZX6LSq'
             }
+          }
         }
       };
       const fileJson = {
@@ -404,7 +406,7 @@ describe('ChatService', () => {
         {
           message: 'test message',
           channelUuid: '10',
-          file : JSON.stringify({
+          file: JSON.stringify({
             filename: 'unnamed.jpg',
             mimetype: 'image/jpeg',
             url: 'https://cdn.filestackcontent.com/X8Cj0Y4QS2AmDUZX6LSq',
