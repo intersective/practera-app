@@ -5,7 +5,6 @@ import { RequestService } from '@shared/request/request.service';
 import { UtilsService } from '@services/utils.service';
 import { BrowserStorageService } from '@services/storage.service';
 import { TestUtils } from '@testing/utils';
-import { Apollo } from 'apollo-angular';
 
 describe('ProjectService', () => {
   let service: ProjectService;
@@ -15,8 +14,10 @@ describe('ProjectService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
-        Apollo,
-        UtilsService,
+        {
+          provide: UtilsService,
+          useClass: TestUtils,
+        },
         {
           provide: RequestService,
           useValue: jasmine.createSpyObj('RequestService', ['get', 'post', 'graphQLWatch'])
@@ -44,13 +45,13 @@ describe('ProjectService', () => {
     const response = {
       success: true,
       data: {
-        milestones: Array.from({length: 5}, (x, i) => {
+        milestones: Array.from({ length: 5 }, (x, i) => {
           return {
             id: i + 1,
             name: 'm' + i,
             description: 'des' + i,
             isLocked: false,
-            activities: Array.from({length: 3}, (y, j) => {
+            activities: Array.from({ length: 3 }, (y, j) => {
               return {
                 id: i * 10 + j + 1,
                 name: 'activity name' + j,
@@ -62,13 +63,13 @@ describe('ProjectService', () => {
         })
       }
     };
-    const expected = Array.from({length: 5}, (x, i) => {
+    const expected = Array.from({ length: 5 }, (x, i) => {
       return {
         id: i + 1,
         name: 'm' + i,
         description: 'des' + i,
         isLocked: false,
-        Activity: Array.from({length: 3}, (y, j) => {
+        Activity: Array.from({ length: 3 }, (y, j) => {
           return {
             id: i * 10 + j + 1,
             name: 'activity name' + j,

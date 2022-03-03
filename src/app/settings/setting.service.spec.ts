@@ -3,7 +3,6 @@ import { of } from 'rxjs';
 import { RequestService } from '@shared/request/request.service';
 import { SettingService } from './setting.service';
 import { SharedService } from '@services/shared.service';
-import { Apollo } from 'apollo-angular';
 
 describe('SettingService', () => {
   let service: SettingService;
@@ -13,7 +12,6 @@ describe('SettingService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
-        Apollo,
         SettingService,
         {
           provide: SharedService,
@@ -36,18 +34,18 @@ describe('SettingService', () => {
 
   it('should upload profile', () => {
     sharedSpy.updateProfile.and.returnValue(of({}));
-    service.updateProfile({contact_number: '231'});
+    service.updateProfile({ contact_number: '231' });
     expect(sharedSpy.updateProfile.calls.count()).toBe(1);
   });
 
   it('should update profile image #1', () => {
-    requestSpy.post.and.returnValue(of({success: true, data: 'asdf'}));
+    requestSpy.post.and.returnValue(of({ success: true, data: 'asdf' }));
     service.updateProfileImage({}).subscribe();
     expect(requestSpy.post.calls.count()).toBe(1);
   });
 
   it('should update profile image #2', () => {
-    requestSpy.post.and.returnValue(of({success: false, data: 'asdf'}));
+    requestSpy.post.and.returnValue(of({ success: false, data: 'asdf' }));
     service.updateProfileImage({}).subscribe();
     expect(requestSpy.post.calls.count()).toBe(1);
   });

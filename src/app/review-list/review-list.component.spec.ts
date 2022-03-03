@@ -13,7 +13,7 @@ import {
 } from '@angular/common/http/testing';
 import { NotificationService } from '@shared/notification/notification.service';
 import { MockRouter } from '@testing/mocked.service';
-import { Apollo } from 'apollo-angular';
+import { TestUtils } from '@testing/utils';
 
 describe('ReviewListComponent', () => {
   let component: ReviewListComponent;
@@ -25,13 +25,18 @@ describe('ReviewListComponent', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       imports: [SharedModule, HttpClientTestingModule],
-      declarations: [ ReviewListComponent ],
-      schemas: [ CUSTOM_ELEMENTS_SCHEMA ],
+      declarations: [ReviewListComponent],
+      schemas: [CUSTOM_ELEMENTS_SCHEMA],
       providers: [
-        Apollo,
-        UtilsService,
         NewRelicService,
-        NotificationService,
+        {
+          provide: NotificationService,
+          useValue: jasmine.createSpyObj('NotificationService', ['alert']),
+        },
+        {
+          provide: UtilsService,
+          useClass: TestUtils,
+        },
         {
           provide: ReviewListService,
           useValue: jasmine.createSpyObj('ReviewListService', ['getReviews'])
@@ -42,7 +47,7 @@ describe('ReviewListComponent', () => {
         },
       ],
     })
-    .compileComponents();
+      .compileComponents();
   }));
 
   beforeEach(() => {
@@ -54,14 +59,14 @@ describe('ReviewListComponent', () => {
   });
 
   it('should get the correct data onEnter()', () => {
-    const reviews = Array.from({length: 5}, (x, i) => {
+    const reviews = Array.from({ length: 5 }, (x, i) => {
       return {
         assessmentId: i + 1,
         submissionId: i + 2,
         isDone: i > 3,
         name: 'Assessment' + i,
         submitterName: 'Submitter' + i,
-        date: utils.timeFormatter('2019-02-01'),
+        date: UtilsService.prototype.timeFormatter('2019-02-01'),
         teamName: '',
         contextId: i + 3
       };
@@ -77,12 +82,12 @@ describe('ReviewListComponent', () => {
     });
   });
 
-  it ('should emit navigate event (desktop)', () => {
+  it('should emit navigate event (desktop)', () => {
     const contextId = 1;
     const assessmentId = 2;
     const submissionId = 3;
 
-    spyOn(utils, 'isMobile').and.returnValue(false);
+    utils.isMobile = jasmine.createSpy('utils.isMobile').and.returnValue(false);
     spyOn(component.navigate, 'emit');
     component.gotoReview(contextId, assessmentId, submissionId);
 
@@ -91,17 +96,17 @@ describe('ReviewListComponent', () => {
       submissionId,
       contextId,
     });
-      // ['assessment', 'review', 1, 2, 3, {from: 'reviews'}]);
+    // ['assessment', 'review', 1, 2, 3, {from: 'reviews'}]);
   });
 
   it('should navigate to the correct page gotoReview() (mobile)', () => {
-    spyOn(utils, 'isMobile').and.returnValue(true);
+    utils.isMobile = jasmine.createSpy('utils.isMobile').and.returnValue(true);
     component.gotoReview(1, 2, 3);
-    expect(routerSpy.navigate).toHaveBeenCalledWith(['assessment', 'review', 1, 2, 3, {from: 'reviews'}]);
+    expect(routerSpy.navigate).toHaveBeenCalledWith(['assessment', 'review', 1, 2, 3, { from: 'reviews' }]);
   });
 
   it('should return false if showing done, noReviewsToDo()', () => {
-    serviceSpy.getReviews.and.returnValue(of(Array.from({length: 5}, (x, i) => {
+    serviceSpy.getReviews.and.returnValue(of(Array.from({ length: 5 }, (x, i) => {
       return {
         assessmentId: i + 1,
         submissionId: i + 2,
@@ -118,7 +123,7 @@ describe('ReviewListComponent', () => {
   });
 
   it('should return false if showing done, noReviewsDone()', () => {
-    serviceSpy.getReviews.and.returnValue(of(Array.from({length: 5}, (x, i) => {
+    serviceSpy.getReviews.and.returnValue(of(Array.from({ length: 5 }, (x, i) => {
       return {
         assessmentId: i + 1,
         submissionId: i + 2,

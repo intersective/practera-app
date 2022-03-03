@@ -2,7 +2,7 @@ import { CUSTOM_ELEMENTS_SCHEMA, Directive, SimpleChange } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { SlidableComponent } from './slidable.component';
 import { UtilsService } from '@services/utils.service';
-import { Apollo } from 'apollo-angular';
+import { TestUtils } from '@testing/utils';
 
 describe('SlidableComponent', () => {
   let component: SlidableComponent;
@@ -10,11 +10,16 @@ describe('SlidableComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ SlidableComponent ],
+      declarations: [SlidableComponent],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
-      providers: [ Apollo, UtilsService ]
+      providers: [
+        {
+          provide: UtilsService,
+          useClass: TestUtils,
+        }
+      ]
     })
-    .compileComponents();
+      .compileComponents();
   }));
 
   beforeEach(() => {
