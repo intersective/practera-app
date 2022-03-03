@@ -63,8 +63,7 @@ describe('RequestConfig', () => {
 
 describe('RequestService', () => {
   const PREFIX_URL = 'test.com';
-  const SCHEME_DOMAIN = 'https://test.com';
-  const LOGINAPI = 'login.com';
+  const SCHEME_DOMAIN = `https://${PREFIX_URL}`;
   const APPKEY = 'TESTAPPKEY';
   const routerSpy = TestUtils.createRouterSpy();
 
@@ -487,7 +486,7 @@ describe('RequestService', () => {
       mockBackend.verify();
     });
 
-    it('should throw error if static file retrival fail', fakeAsync(() => {
+    it('should throw error if static file retrival fail', () => {
       request = service.get().subscribe(
         _res => _res,
         _err => {
@@ -498,6 +497,6 @@ describe('RequestService', () => {
       mockBackend.expectOne({ method: 'GET' }).flush('<!DOCTYPE html>', err);
       expect(errRes.message).toEqual('Http failure response for https://test.com: 400 Bad Request');
       mockBackend.verify();
-    }));
+    });
   });
 });
