@@ -27,7 +27,7 @@ describe('AuthGlobalLoginComponent', () => {
         NewRelicService,
         {
           provide: AuthService,
-          useValue: jasmine.createSpyObj('AuthService', ['directLoginWithApikey'])
+          useValue: jasmine.createSpyObj('AuthService', ['globalLogin'])
         },
         {
           provide: SwitcherService,
@@ -69,7 +69,7 @@ describe('AuthGlobalLoginComponent', () => {
   });
 
   beforeEach(() => {
-    serviceSpy.directLoginWithApikey.and.returnValue(of({}));
+    serviceSpy.globalLogin.and.returnValue(of({}));
     switcherSpy.getMyInfo.and.returnValue(of({}));
   });
 
@@ -87,7 +87,7 @@ describe('AuthGlobalLoginComponent', () => {
     it('should pop up alert if direct login service throw error', fakeAsync(() => {
       const params = { apikey: 'abc' };
       routeSpy.snapshot.paramMap.get = jasmine.createSpy().and.callFake(key => params[key]);
-      serviceSpy.directLoginWithApikey.and.throwError('');
+      serviceSpy.globalLogin.and.throwError('');
       fixture.detectChanges();
       tick(50);
       fixture.detectChanges();
@@ -110,7 +110,7 @@ describe('AuthGlobalLoginComponent', () => {
         fixture.detectChanges();
         tick(50);
         fixture.detectChanges();
-        expect(serviceSpy.directLoginWithApikey.calls.count()).toBe(1);
+        expect(serviceSpy.globalLogin.calls.count()).toBe(1);
         expect(switcherSpy.getMyInfo.calls.count()).toBe(1);
       }));
     });

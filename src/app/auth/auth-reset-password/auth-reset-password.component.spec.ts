@@ -113,8 +113,9 @@ describe('AuthResetPasswordComponent', () => {
 
   describe('when testing resetPassword()', () => {
     beforeEach(() => {
-      component.apikey = 'abc';
-      component.resetPasswordForm.setValue({ password: 'aaa', confirmPassword: 'aaa' });
+      component.key = 'abc';
+      component.email = 'abc@test.com',
+      component.resetPasswordForm.setValue({ email: 'abc@test.com', password: 'aaa', confirmPassword: 'aaa' });
     });
     it('should pop up success and redirect', () => {
       component.resetPassword();
@@ -126,16 +127,17 @@ describe('AuthResetPasswordComponent', () => {
 
       expect(routerSpy.navigate.calls.first().args[0]).toEqual(['login']);
     });
+
     it('should pop up alert if password compromised', fakeAsync(() => {
       serviceSpy.resetPassword.and.returnValue(throwError({
-        status: 400,
-        error: { passwordCompromised: true }
+        data: { type: 'password_compromised' }
       }));
       component.resetPassword();
       tick();
       expect(notificationSpy.alert.calls.count()).toBe(1);
       expect(notificationSpy.alert.calls.first().args[0].message).toContain('insecure passwords');
     }));
+
     it('should pop up alert if reset password failed', () => {
       serviceSpy.resetPassword.and.returnValue(throwError(''));
       component.resetPassword();
@@ -144,11 +146,11 @@ describe('AuthResetPasswordComponent', () => {
   });
   describe('when testing checkPasswordMatching()', () => {
     it('should return true if password match', () => {
-      component.resetPasswordForm.setValue({ password: 'aaa', confirmPassword: 'aaa' });
+      component.resetPasswordForm.setValue({ email: 'abc@test.com', password: 'aaa', confirmPassword: 'aaa' });
       expect(component.checkPasswordMatching(component.resetPasswordForm)).toBe(null);
     });
     it('should return false if password not match', () => {
-      component.resetPasswordForm.setValue({ password: 'aaa', confirmPassword: 'aaaa' });
+      component.resetPasswordForm.setValue({ email: 'abc@test.com', password: 'aaa', confirmPassword: 'aaaa' });
       expect(component.checkPasswordMatching(component.resetPasswordForm)).toEqual({ notMatching: true });
     });
   });

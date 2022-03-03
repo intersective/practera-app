@@ -11,7 +11,7 @@ import { BrowserStorageService } from '@services/storage.service';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
 import { MockNewRelicService } from '@testing/mocked.service';
-import { Apollo } from 'apollo-angular';
+import { TestUtils } from '@testing/utils';
 
 describe('AuthForgotPasswordComponent', () => {
   let component: AuthForgotPasswordComponent;
@@ -24,11 +24,13 @@ describe('AuthForgotPasswordComponent', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       imports: [SharedModule, RouterTestingModule, HttpClientTestingModule],
-      declarations: [ AuthForgotPasswordComponent ],
-      schemas: [ CUSTOM_ELEMENTS_SCHEMA ],
+      declarations: [AuthForgotPasswordComponent],
+      schemas: [CUSTOM_ELEMENTS_SCHEMA],
       providers: [
-        Apollo,
-        UtilsService,
+        {
+          provide: UtilsService,
+          useClass: TestUtils,
+        },
         {
           provide: AuthService,
           useValue: jasmine.createSpyObj('AuthService', ['forgotPassword'])
@@ -47,7 +49,7 @@ describe('AuthForgotPasswordComponent', () => {
         }
       ],
     })
-    .compileComponents();
+      .compileComponents();
   }));
 
   beforeEach(() => {
@@ -57,7 +59,7 @@ describe('AuthForgotPasswordComponent', () => {
     utils = TestBed.inject(UtilsService);
     notificationSpy = TestBed.inject(NotificationService) as jasmine.SpyObj<NotificationService>;
     storageSpy = TestBed.inject(BrowserStorageService) as jasmine.SpyObj<BrowserStorageService>;
-    storageSpy.getConfig.and.returnValue({logo: null});
+    storageSpy.getConfig.and.returnValue({ logo: null });
   });
 
   it('should create', () => {
@@ -71,7 +73,7 @@ describe('AuthForgotPasswordComponent', () => {
     });
 
     it('should pop up toast message if email is empty', fakeAsync(() => {
-      notificationSpy.presentToast.and.returnValue(true);
+      notificationSpy.presentToast.and.returnValue(Promise.resolve());
       component.email = '';
       component.send();
       expect(notificationSpy.presentToast.calls.count()).toBe(1);
@@ -84,7 +86,7 @@ describe('AuthForgotPasswordComponent', () => {
 
       expect(component.isSending).toBe(false);
       expect(notificationSpy.popUp.calls.count()).toBe(1);
-      expect(notificationSpy.popUp.calls.first().args[1]).toEqual({email: component.email});
+      expect(notificationSpy.popUp.calls.first().args[1]).toEqual({ email: component.email });
     }));
 
     it('should pop up reset too frequently alert if forgot password failed', fakeAsync(() => {
