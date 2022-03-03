@@ -75,15 +75,18 @@ describe('AuthLoginComponent', () => {
   describe('when testing login()', () => {
     it('should pop up alert if email is empty', () => {
       component.loginForm.setValue({email: '', password: 'abc'});
-      notificationSpy.alert.and.returnValue(true);
+      notificationSpy.alert.and.returnValue(Promise.resolve());
       component.login();
       expect(notificationSpy.alert.calls.count()).toBe(1);
-      notificationSpy.alert.calls.first().args[0].buttons[0].handler();
+
+      const button = notificationSpy.alert.calls.first().args[0].buttons[0];
+      (typeof button == 'string') ? button : button.handler(true);
+
       expect(component.isLoggingIn).toBe(false);
     });
 
     it('should navigate to dashboard if have one program after successfully login', fakeAsync(() => {
-      switcherServiceSpy.switchProgramAndNavigate.and.returnValue(['app', 'home']);
+      switcherServiceSpy.switchProgramAndNavigate.and.returnValue(Promise.resolve(['app', 'home']));
       component.loginForm.setValue({email: 'test@test.com', password: 'abc'});
       serviceSpy.login.and.returnValue(of({}));
       component.login();
