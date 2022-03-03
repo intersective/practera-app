@@ -179,11 +179,11 @@ export class ProjectComponent implements OnInit {
       const milestonesProgress = fullProgressData.project.milestones;
       milestonesProgress.forEach(mp => {
       this.milestones.forEach(m => {
+        if (m.progress !== 1) {
+          this.showingMilestones.push(m);
+        }
         if (m.id === mp.id) {
           m.progress = mp.progress;
-          if (m.progress !== 1) {
-            this.showingMilestones.push(m);
-          }
           mp.activities.forEach(ap => {
             m.Activity.forEach(a => {
               if (a.id === ap.id) {
