@@ -5,7 +5,7 @@ import { Router } from '@angular/router';
 import { ChatViewComponent } from './chat-view.component';
 import { UtilsService } from '@services/utils.service';
 import { MockRouter } from '@testing/mocked.service';
-import { Apollo } from 'apollo-angular';
+import { TestUtils } from '@testing/utils';
 
 describe('ChatViewComponent', () => {
   let component: ChatViewComponent;
@@ -15,18 +15,20 @@ describe('ChatViewComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ ChatViewComponent],
+      declarations: [ChatViewComponent],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
       providers: [
-        Apollo,
-        UtilsService,
+        {
+          provide: UtilsService,
+          useClass: TestUtils,
+        },
         {
           provide: Router,
           useClass: MockRouter
         }
       ]
     })
-    .compileComponents();
+      .compileComponents();
   }));
 
   beforeEach(() => {
@@ -34,13 +36,57 @@ describe('ChatViewComponent', () => {
     component = fixture.componentInstance;
     routerSpy = TestBed.inject(Router) as jasmine.SpyObj<Router>;
     utils = TestBed.inject(UtilsService);
-    component.chatList = { onEnter() {} };
-    component.chatRoom = { onEnter() {} };
+    component.chatList = { onEnter() { } };
+    component.chatRoom = { onEnter() { } };
   });
 
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  const mockChats = {
+    data: {
+      channels: [
+        {
+          uuid: '35326928',
+          name: 'Team 1',
+          avatar: 'https://sandbox.practera.com/img/team-white.png',
+          pusherChannel: 'sdb746-93r7dc-5f44eb4f',
+          isAnnouncement: false,
+          isDirectMessage: false,
+          readonly: false,
+          roles: [
+            'participant',
+            'coordinator',
+            'admin'
+          ],
+          unreadMessageCount: 0,
+          lastMessage: null,
+          lastMessageCreated: null,
+          canEdit: false
+        },
+        {
+          uuid: 'ced963c1',
+          name: 'Team 1 + Mentor',
+          avatar: 'https://sandbox.practera.com/img/team-white.png',
+          pusherChannel: 'kb5gt-9nfbj-5f45eb4g',
+          isAnnouncement: false,
+          isDirectMessage: false,
+          readonly: false,
+          roles: [
+            'participant',
+            'mentor',
+            'coordinator',
+            'admin'
+          ],
+          unreadMessageCount: 0,
+          lastMessage: null,
+          lastMessageCreated: null,
+          canEdit: false
+        }
+      ]
+    }
+  };
 
   it('should get correct activity id', fakeAsync(() => {
     spyOn(component.chatList, 'onEnter');
@@ -56,6 +102,18 @@ describe('ChatViewComponent', () => {
       component.loadchannelInfo(null);
       expect(component.loadInfo).toBe(true);
     });
+  });
+
+  describe('when testing selectFirstChat()', () => {
+    it(`should load chat room`, fakeAsync(() => {
+      spyOn(component.chatRoom, 'onEnter');
+      component.chatChannel = null;
+      component.selectFirstChat(mockChats.data.channels);
+      expect(component.loadInfo).toBe(false);
+      expect(component.chatChannel).toBe(mockChats.data.channels[0]);
+      tick();
+      expect(component.chatRoom.onEnter).toHaveBeenCalled();
+    }));
   });
 
   describe('when testing goto()', () => {

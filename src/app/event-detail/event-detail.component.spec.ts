@@ -2,7 +2,7 @@ import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { EventDetailComponent } from './event-detail.component';
 import { EventDetailService } from './event-detail.service';
-import { Observable, of, pipe } from 'rxjs';
+import { of } from 'rxjs';
 import { Router } from '@angular/router';
 import { SharedModule } from '@shared/shared.module';
 import { UtilsService } from '@services/utils.service';
@@ -11,7 +11,6 @@ import { TestUtils } from '@testing/utils';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ModalController } from '@ionic/angular';
 import { BrowserStorageService } from '@services/storage.service';
-import { Apollo } from 'apollo-angular';
 
 class Page {
   get eventName() {
@@ -66,11 +65,13 @@ describe('EventDetailComponent', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       imports: [SharedModule, BrowserAnimationsModule],
-      declarations: [ EventDetailComponent ],
-      schemas: [ CUSTOM_ELEMENTS_SCHEMA ],
+      declarations: [EventDetailComponent],
+      schemas: [CUSTOM_ELEMENTS_SCHEMA],
       providers: [
-        Apollo,
-        UtilsService,
+        {
+          provide: UtilsService,
+          useClass: TestUtils,
+        },
         {
           provide: EventDetailService,
           useValue: jasmine.createSpyObj('EventDetailService', ['cancelEvent', 'bookEvent'])
@@ -88,8 +89,8 @@ describe('EventDetailComponent', () => {
             getUser: {
               truncateDescription: true
             },
-            setBookedEventActivityIds: () => {},
-            removeBookedEventActivityIds: () => {}
+            setBookedEventActivityIds: () => { },
+            removeBookedEventActivityIds: () => { }
           })
         },
         {
@@ -104,7 +105,7 @@ describe('EventDetailComponent', () => {
         },
       ],
     })
-    .compileComponents();
+      .compileComponents();
   }));
 
   beforeEach(() => {
@@ -120,7 +121,7 @@ describe('EventDetailComponent', () => {
 
   beforeEach(() => {
     serviceSpy.bookEvent.and.returnValue(of({}));
-    serviceSpy.cancelEvent.and.returnValue(of({success: true}));
+    serviceSpy.cancelEvent.and.returnValue(of({ success: true }));
   });
 
   const mockEvent = {
@@ -189,7 +190,7 @@ describe('EventDetailComponent', () => {
         expected = 'Book';
       });
 
-      it(`should display Book as the button text`, () => {});
+      it(`should display Book as the button text`, () => { });
 
       it(`should pop up alert if it is single booking`, () => {
         tmpEvent.singleBooking = true;
@@ -247,7 +248,7 @@ describe('EventDetailComponent', () => {
         expected = 'Cancel Booking';
       });
 
-      it(`should display 'Cancel Booking' before confirm`, () => {});
+      it(`should display 'Cancel Booking' before confirm`, () => { });
 
       it(`should cancel booking if confirmed`, () => {
         component.event = tmpEvent;
