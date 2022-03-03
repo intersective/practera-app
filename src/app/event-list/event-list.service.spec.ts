@@ -6,7 +6,6 @@ import { UtilsService } from '@services/utils.service';
 import { NotificationService } from '@shared/notification/notification.service';
 import { TestUtils } from '@testing/utils';
 import { BrowserStorageService } from '@services/storage.service';
-import { Apollo } from 'apollo-angular';
 import * as moment from 'moment';
 
 describe('EventListService', () => {
@@ -27,9 +26,11 @@ describe('EventListService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
-        Apollo,
         EventListService,
-        UtilsService,
+        {
+          provide: UtilsService,
+          useClass: TestUtils,
+        },
         {
           provide: RequestService,
           useValue: jasmine.createSpyObj('RequestService', ['get', 'post', 'apiResponseFormatError'])
@@ -41,9 +42,9 @@ describe('EventListService', () => {
         {
           provide: BrowserStorageService,
           useValue: jasmine.createSpyObj('BrowserStorageService', {
-            setBookedEventActivityIds: () => {},
-            removeBookedEventActivityIds: () => {},
-            initBookedEventActivityIds: () => {}
+            setBookedEventActivityIds: () => { },
+            removeBookedEventActivityIds: () => { },
+            initBookedEventActivityIds: () => { }
           })
         },
       ]
@@ -75,7 +76,7 @@ describe('EventListService', () => {
       ];
       requestResponse = {
         success: true,
-        data: Array.from({length: startTimes.length}, (x, i) => {
+        data: Array.from({ length: startTimes.length }, (x, i) => {
           return {
             id: i + 1,
             title: 'event' + i,
@@ -142,7 +143,7 @@ describe('EventListService', () => {
         errMsg = 'Event format error';
       });
       it('Event object format error', () => {
-        tmpRes.data[0] = {id: 11};
+        tmpRes.data[0] = { id: 11 };
         errMsg = 'Event object format error';
       });
     });
@@ -217,7 +218,17 @@ describe('EventListService', () => {
         }
         multiDayEvents.push(eventObj);
       }
-      expected = [formatted[2], formatted[1], formatted[3], multiDayEvents[0], multiDayEvents[1], multiDayEvents[2], formatted[4], formatted[0], formatted[5]];
+      expected = [
+        formatted[2],
+        formatted[1],
+        formatted[3],
+        multiDayEvents[0],
+        multiDayEvents[1],
+        multiDayEvents[2],
+        formatted[4],
+        formatted[0],
+        formatted[5],
+      ];
       requestSpy.get.and.returnValue(of(requestResponse));
       service.getEvents(2).subscribe(res => {
         console.log('res', res);
@@ -236,7 +247,7 @@ describe('EventListService', () => {
     });
 
     it(`should return true if there's submission`, () => {
-      requestResponse = {data: {id: 1}};
+      requestResponse = { data: { id: 1 } };
       expected = true;
     });
 
@@ -249,7 +260,7 @@ describe('EventListService', () => {
   describe('when testing getActivities()', () => {
     const requestResponse = {
       success: true,
-      data: Array.from({length: 4}, (x, i) => {
+      data: Array.from({ length: 4 }, (x, i) => {
         return {
           id: i + 1,
           name: 'activity' + i
