@@ -24,7 +24,7 @@
     <app-description [name]="randomCode(assessment.name)" *ngIf="assessment.description" [content]="assessment.description" id="asmt-des" class="body-1 black"></app-description>
   </ion-text>
   <p class="due-date assessment subtitle-1 gray-2 ion-text-center" [ngClass]="{'over': assessment.isOverdue}" *ngIf="doAssessment">
-    {{ this.sharedService.dueDateFormatter(assessment.dueDate) }}
+    {{ this.utils.dueDateFormatter(assessment.dueDate) }}
   </p>
   <div *ngIf="!doAssessment && submission && submission.submitterName && !submission.isLocked" class="review-submitter ion-text-left">
     <p class="subtitle-1">

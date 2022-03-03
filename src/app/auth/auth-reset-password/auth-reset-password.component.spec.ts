@@ -11,6 +11,8 @@ import { NotificationService } from '@shared/notification/notification.service';
 import { BrowserStorageService } from '@services/storage.service';
 import { ReactiveFormsModule } from '@angular/forms';
 import { BrowserStorageServiceMock } from '@testing/mocked.service';
+import { UtilsService } from '@app/services/utils.service';
+import { TestUtils } from '@testing/utils';
 
 describe('AuthResetPasswordComponent', () => {
   let component: AuthResetPasswordComponent;
@@ -55,6 +57,10 @@ describe('AuthResetPasswordComponent', () => {
         {
           provide: ActivatedRoute,
           useValue: new ActivatedRouteStub({ apikey: 'abc' })
+        },
+        {
+          provide: UtilsService,
+          useClass: TestUtils,
         }
       ],
     }).compileComponents();
