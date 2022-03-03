@@ -1,7 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { NewRelicService } from './new-relic.service';
 import { BrowserStorageService } from '@services/storage.service';
-// import { Mock } from '@testing/mocked.service';
 import { environment } from '@environments/environment';
 import { BrowserStorageServiceMock } from '@testing/mocked.service';
 
@@ -10,8 +9,13 @@ describe('NewRelicService', () => {
   let storageSpy: BrowserStorageService;
 
   beforeEach(() => {
+    /* newrelic = jasmine.createSpyObj('newrelic', {
+      onEnd:
+    }); */
+
     TestBed.configureTestingModule({
       providers: [
+        NewRelicService,
         {
           provide: BrowserStorageService,
           useClass: BrowserStorageServiceMock,
@@ -75,7 +79,8 @@ describe('NewRelicService', () => {
     };
 
     beforeEach(() => {
-      spyOn(service, 'setAttribute');
+      service.setAttribute = jasmine.createSpy();
+      service.setCustomAttribute = jasmine.createSpy();
     });
 
     it('should get custom attributes from storage', () => {
@@ -83,8 +88,8 @@ describe('NewRelicService', () => {
       service.noticeError('dummyvalue');
 
       expect(storageSpy.getUser).toHaveBeenCalled();
-      expect(service.setAttribute).toHaveBeenCalledWith('user hash', TEST1.userHash);
-      expect(service.setAttribute).toHaveBeenCalledWith('enrolment ID', TEST1.enrolment.id);
+      expect(service.setCustomAttribute).toHaveBeenCalledWith('user hash', TEST1.userHash);
+      expect(service.setCustomAttribute).toHaveBeenCalledWith('enrolment ID', TEST1.enrolment.id);
     });
 
     it('should skip custom attribute if storage doesn\'t has specified value(s)', () => {
@@ -92,8 +97,8 @@ describe('NewRelicService', () => {
       service.noticeError('dummyvalue');
 
       expect(storageSpy.getUser).toHaveBeenCalled();
-      expect(service.setAttribute).toHaveBeenCalledWith('user hash', TEST2.userHash);
-      expect(service.setAttribute).not.toHaveBeenCalledWith('enrolment ID', TEST1.enrolment.id);
+      expect(service.setCustomAttribute).toHaveBeenCalledWith('user hash', TEST2.userHash);
+      expect(service.setCustomAttribute).not.toHaveBeenCalledWith('enrolment ID', TEST1.enrolment.id);
     });
   });
 });

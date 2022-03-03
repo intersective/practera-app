@@ -2,7 +2,8 @@ import { TestBed } from '@angular/core/testing';
 import { of } from 'rxjs';
 import { RequestService } from '@shared/request/request.service';
 import { TabsService } from './tabs.service';
-import { Apollo } from 'apollo-angular';
+import { UtilsService } from '@app/services/utils.service';
+import { TestUtils } from '@testing/utils';
 
 describe('TabsService', () => {
   let service: TabsService;
@@ -11,8 +12,11 @@ describe('TabsService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
-        Apollo,
         TabsService,
+        {
+          provide: UtilsService,
+          useClass: TestUtils,
+        },
         {
           provide: RequestService,
           useValue: jasmine.createSpyObj('RequestService', ['get', 'post', 'apiResponseFormatError', 'chatGraphQLQuery'])
@@ -37,40 +41,42 @@ describe('TabsService', () => {
       }
     });
     it('should throw error #1', () => {
-       response = {
-         success: true,
-         data: {}
-       };
-       error = true;
+      response = {
+        success: true,
+        data: {}
+      };
+      error = true;
+      expected = 0;
     });
     it('should throw error #2', () => {
-       response = {
-         success: true,
-         data: [{}]
-       };
-       error = true;
+      response = {
+        success: true,
+        data: [{}]
+      };
+      error = true;
+      expected = 0;
     });
     it('should get correct data', () => {
       response = {
-         success: true,
-         data: [
-           {
-             is_done: true
-           },
-           {
-             is_done: false,
-             identifier: 'abc'
-           },
-           {
-             is_done: false,
-             identifier: 'AssessmentReview'
-           },
-           {
-             is_done: false,
-             identifier: 'AssessmentSubmission'
-           }
-         ]
-       };
+        success: true,
+        data: [
+          {
+            is_done: true
+          },
+          {
+            is_done: false,
+            identifier: 'abc'
+          },
+          {
+            is_done: false,
+            identifier: 'AssessmentReview'
+          },
+          {
+            is_done: false,
+            identifier: 'AssessmentSubmission'
+          }
+        ]
+      };
       error = false;
       expected = 2;
     });
@@ -86,16 +92,17 @@ describe('TabsService', () => {
       }
     });
     it('should throw error', () => {
-       response = {
-         data: {
-           channels: {}
-         }
-       };
-       error = true;
+      response = {
+        data: {
+          channels: {}
+        }
+      };
+      error = true;
+      expected = 0;
     });
     it('should get correct data', () => {
       response = {
-         data: {
+        data: {
           channels: [
             {
               unreadMessageCount: 1
@@ -104,8 +111,8 @@ describe('TabsService', () => {
               unreadMessageCount: 1
             }
           ]
-         }
-       };
+        }
+      };
       error = false;
       expected = 2;
     });

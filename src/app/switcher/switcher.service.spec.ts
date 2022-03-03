@@ -396,7 +396,7 @@ describe('SwitcherService', () => {
 
   describe('getEvents()', () => {
     it('should get events from API and store in browser cache', () => {
-      spyOn(eventSpy, 'getEvents').and.returnValue(new Observable());
+      spyOn(eventSpy, 'getEvents').and.returnValue(of());
       service.getEvents().subscribe(() => {
         expect(eventSpy.getEvents).toHaveBeenCalled();
         expect(storageSpy.setUser).toHaveBeenCalled();
