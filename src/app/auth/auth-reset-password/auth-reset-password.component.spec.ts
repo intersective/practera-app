@@ -17,7 +17,7 @@ import { TestUtils } from '@testing/utils';
 describe('AuthResetPasswordComponent', () => {
   let component: AuthResetPasswordComponent;
   let fixture: ComponentFixture<AuthResetPasswordComponent>;
-  let serviceSpy: jasmine.SpyObj<AuthService>;
+  let authServiceSpy: jasmine.SpyObj<AuthService>;
   let notificationSpy: jasmine.SpyObj<NotificationService>;
   let routerSpy: jasmine.SpyObj<Router>;
   let routeSpy: ActivatedRoute;
@@ -37,7 +37,7 @@ describe('AuthResetPasswordComponent', () => {
         UrlSerializer,
         {
           provide: AuthService,
-          useValue: jasmine.createSpyObj('AuthService', ['resetPassword'])
+          useValue: jasmine.createSpyObj('AuthService', ['resetPassword', 'verifyResetPassword'])
         },
         {
           provide: BrowserStorageService,
@@ -69,11 +69,11 @@ describe('AuthResetPasswordComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(AuthResetPasswordComponent);
     component = fixture.componentInstance;
-    serviceSpy = TestBed.inject(AuthService) as jasmine.SpyObj<AuthService>;
+    authServiceSpy = TestBed.inject(AuthService) as jasmine.SpyObj<AuthService>;
     notificationSpy = TestBed.inject(NotificationService) as jasmine.SpyObj<NotificationService>;
     routerSpy = TestBed.inject(Router) as jasmine.SpyObj<Router>;
     routeSpy = TestBed.inject(ActivatedRoute);
-    serviceSpy.resetPassword.and.returnValue(of({}));
+    authServiceSpy.resetPassword.and.returnValue(of({}));
   });
 
   it('should create', () => {
@@ -103,7 +103,7 @@ describe('AuthResetPasswordComponent', () => {
       });
     });
     it('should pop up alert and redirect if verify resetpassword failed', () => {
-      serviceSpy.verifyResetPassword.and.returnValue(throwError(''));
+      authServiceSpy.verifyResetPassword.and.returnValue(throwError(''));
       fixture.detectChanges();
       fixture.whenStable().then(() => {
         expect(notificationSpy.alert.calls.count()).toBe(1);
@@ -135,7 +135,7 @@ describe('AuthResetPasswordComponent', () => {
     });
 
     it('should pop up alert if password compromised', fakeAsync(() => {
-      serviceSpy.resetPassword.and.returnValue(throwError({
+      authServiceSpy.resetPassword.and.returnValue(throwError({
         data: { type: 'password_compromised' }
       }));
       component.resetPassword();
@@ -145,7 +145,7 @@ describe('AuthResetPasswordComponent', () => {
     }));
 
     it('should pop up alert if reset password failed', () => {
-      serviceSpy.resetPassword.and.returnValue(throwError(''));
+      authServiceSpy.resetPassword.and.returnValue(throwError(''));
       component.resetPassword();
       expect(notificationSpy.presentToast.calls.count()).toBe(1);
     });
