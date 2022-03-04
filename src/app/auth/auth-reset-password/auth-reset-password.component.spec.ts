@@ -74,6 +74,7 @@ describe('AuthResetPasswordComponent', () => {
     routerSpy = TestBed.inject(Router) as jasmine.SpyObj<Router>;
     routeSpy = TestBed.inject(ActivatedRoute);
     authServiceSpy.resetPassword.and.returnValue(of({}));
+    authServiceSpy.verifyResetPassword.and.returnValue(of({}));
   });
 
   it('should create', () => {
@@ -96,12 +97,20 @@ describe('AuthResetPasswordComponent', () => {
 
       expect(routerSpy.navigate.calls.first().args[0]).toEqual(['login']);
     });
+
     it('should verify success', () => {
+      const params = {
+        key: 'key-is-available',
+        email: 'abc@test.com'
+      };
+      routeSpy.snapshot.paramMap.get = jasmine.createSpy().and.callFake(key => params[key]);
+      // component.ngOnInit();
       fixture.detectChanges();
       fixture.whenStable().then(() => {
         expect(component.verifySuccess).toBe(true);
       });
     });
+
     it('should pop up alert and redirect if verify resetpassword failed', () => {
       authServiceSpy.verifyResetPassword.and.returnValue(throwError(''));
       fixture.detectChanges();
