@@ -188,9 +188,9 @@ describe('AuthService', () => {
   });
 
   it('when testing resetPassword()', () => {
-    requestSpy.put.and.returnValue(of(''));
+    requestSpy.post.and.returnValue(of(''));
     service.resetPassword({ password: 'abc' }).subscribe();
-    expect(requestSpy.put.calls.count()).toBe(1);
+    expect(requestSpy.post.calls.count()).toBe(1);
   });
 
   it('when testing connectToLinkedIn()', () => {

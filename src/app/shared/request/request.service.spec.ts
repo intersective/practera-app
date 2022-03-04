@@ -63,7 +63,7 @@ describe('RequestConfig', () => {
 
 describe('RequestService', () => {
   const PREFIX_URL = 'test.com';
-  const SCHEME_DOMAIN = `https://${PREFIX_URL}`;
+  const SCHEME_DOMAIN = `https://${PREFIX_URL}/`;
   const APPKEY = 'TESTAPPKEY';
   const routerSpy = TestUtils.createRouterSpy();
 
@@ -98,7 +98,7 @@ describe('RequestService', () => {
           provide: RequestConfig,
           useValue: {
             appkey: APPKEY,
-            prefixUrl: PREFIX_URL,
+            prefixUrl: SCHEME_DOMAIN,
           }
         },
         {
@@ -255,7 +255,7 @@ describe('RequestService', () => {
           errRes = _err;
         }
       );
-      const req = mockBackend.expectOne({ url: `https://${PREFIX_URL}/${testURL}`, method: 'POST' }).flush(ERR_MESSAGE, err);
+      const req = mockBackend.expectOne({ url: testURL, method: 'POST' }).flush(ERR_MESSAGE, err);
 
       expect(res).toBeUndefined();
       // expect(errRes.error).toEqual(ERR_MESSAGE);
@@ -345,7 +345,7 @@ describe('RequestService', () => {
       tick();
 
       const { body } = res;
-      expect(req.request.url).toBe(`${SCHEME_DOMAIN}/${testURL}`);
+      expect(req.request.url).toBe(`${SCHEME_DOMAIN}${testURL}`);
       expect(body).toBe(true);
 
       mockBackend.verify();
@@ -367,7 +367,7 @@ describe('RequestService', () => {
           errRes = _err;
         }
       );
-      const req = mockBackend.expectOne({ url: `${SCHEME_DOMAIN}/${testURL}`, method: 'DELETE' }).flush(ERR_MESSAGE, err);
+      const req = mockBackend.expectOne({ url: `${SCHEME_DOMAIN}${testURL}`, method: 'DELETE' }).flush(ERR_MESSAGE, err);
 
       expect(res).toBeUndefined();
       expect(console.error).not.toHaveBeenCalled();
@@ -432,16 +432,15 @@ describe('RequestService', () => {
     const ERR_MESSAGE = 'Invalid request';
     const err = { success: false, status: 400, statusText: 'Bad Request' };
     let errRes: any;
-    let request: any;
 
     it('should only run console.error on dev mode', () => {
-      service.get(null, { params: { justFor: 'test' } }).subscribe(
+      service.get('', { params: { justFor: 'test' } }).subscribe(
         _res => {
           expect(_res).toBeFalsy();
         },
         _err => {
           errRes = _err;
-          expect(errRes.error).toEqual(ERR_MESSAGE);
+          expect(errRes).toEqual(ERR_MESSAGE);
         }
       );
 
