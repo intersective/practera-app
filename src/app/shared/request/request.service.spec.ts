@@ -176,7 +176,6 @@ describe('RequestService', () => {
 
       expect(res).toBeUndefined();
       expect(errRes).toEqual(ERR_MESSAGE);
-      // expect(errRes.error).toEqual(ERR_MESSAGE);
       mockBackend.verify();
 
     }));
@@ -258,7 +257,6 @@ describe('RequestService', () => {
       const req = mockBackend.expectOne({ url: testURL, method: 'POST' }).flush(ERR_MESSAGE, err);
 
       expect(res).toBeUndefined();
-      // expect(errRes.error).toEqual(ERR_MESSAGE);
       mockBackend.verify();
     }));
   });
@@ -432,6 +430,7 @@ describe('RequestService', () => {
     const ERR_MESSAGE = 'Invalid request';
     const err = { success: false, status: 400, statusText: 'Bad Request' };
     let errRes: any;
+    let request: any;
 
     it('should only run console.error on dev mode', () => {
       service.get('', { params: { justFor: 'test' } }).subscribe(
@@ -455,7 +454,7 @@ describe('RequestService', () => {
         _res => _res,
         _err => {
           errRes = _err;
-          expect(errRes.error.message).toEqual(badKey);
+          expect(errRes.message).toEqual(badKey);
         }
       );
 
