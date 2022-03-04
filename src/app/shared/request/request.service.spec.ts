@@ -417,12 +417,13 @@ describe('RequestService', () => {
     });
 
     it('should handle throwed error at error occur', () => {
-      apolloServiceSpy.graphQLFetch = jasmine.createSpy('graphQLFetch').and.returnValue(throwError('error'));
+      apolloServiceSpy.graphQLFetch = jasmine.createSpy('graphQLFetch').and.callFake(() => {
+        return throwError('error');
+      })
       service['handleError'] = jasmine.createSpy('handleError');
 
       service.graphQLFetch(SAMPLE_QUERY).subscribe();
       expect(service['handleError']).toHaveBeenCalled();
-      mockBackend.verify();
     });
   });
 
