@@ -1,18 +1,16 @@
-<ion-header>
-  <ion-toolbar>
-    <ion-title>home</ion-title>
-  </ion-toolbar>
-</ion-header>
-
 <ion-content>
   <ion-grid>
     <ion-row>
-      <ion-col size-md="5">
+      <ion-col size="12" size-md="5">
         <ng-container *ngIf="(experience$ | async ) as experience">
           <img [src]="experience.image" />
+          <h1 class="headline-2">{{ experience.name }}</h1>
+          <ion-text class="subtitle-3" color="medium">{{ experience.progress * 100 }}% Progress</ion-text>
+          <p *ngIf="!isMobile" class="body-2" [innerHTML]="experience.description"></p>
+          <app-description *ngIf="isMobile" [content]="experience.description"></app-description>
         </ng-container>
       </ion-col>
-      <ion-col size-md="7">
+      <ion-col size="12" size-md="7">
         SAMPLE HOME
       </ion-col>
     </ion-row>

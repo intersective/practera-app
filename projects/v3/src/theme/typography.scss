@@ -1,0 +1,55 @@
+.normal {
+  font-family: Roboto;
+  font-style: normal;
+  font-weight: bold;
+}
+.headline-1 {
+  @extend .normal;
+  font-size: 34px;
+  line-height: 140%;
+}
+.headline-2 {
+  @extend .normal;
+  font-size: 24px;
+  line-height: 120%;
+}
+.headline-3 {
+  @extend .normal;
+  font-size: 20px;
+  line-height: 120%;
+}
+.headline-4 {
+  @extend .normal;
+  font-size: 14px;
+  line-height: 140%;
+}
+.subtitle-1 {
+  @extend .normal;
+  font-size: 14px;
+  line-height: 140%;
+}
+.subtitle-2 {
+  @extend .normal;
+  font-size: 12px;
+  line-height: 120%;
+}
+.subtitle-3 {
+  @extend .normal;
+  font-size: 12px;
+  line-height: 140%;
+}
+.body-2 {
+  @extend .normal;
+  font-size: 14px;
+  line-height: 140%;
+}
+.body-3 {
+  @extend .normal;
+  font-size: 12px;
+  line-height: 140%;
+}
+.button {
+  @extend .normal;
+  font-size: 14px;
+  line-height: 140%;
+}
