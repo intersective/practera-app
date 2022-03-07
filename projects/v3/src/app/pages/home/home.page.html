@@ -1,0 +1,20 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>home</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-grid>
+    <ion-row>
+      <ion-col size-md="5">
+        <ng-container *ngIf="(experience$ | async ) as experience">
+          <img [src]="experience.image" />
+        </ng-container>
+      </ion-col>
+      <ion-col size-md="7">
+        SAMPLE HOME
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+</ion-content>
