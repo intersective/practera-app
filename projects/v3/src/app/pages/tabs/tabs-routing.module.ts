@@ -39,7 +39,7 @@ const routes: Routes = [
       },
       {
         path: 'activities',
-        loadChildren: () => import('../activities/activities.module').then(m => m.ActivitiesPageModule)
+        loadChildren: () => import('../activity-list/activity-list.module').then(m => m.ActivityListPageModule)
       },
       {
         path: 'events',
