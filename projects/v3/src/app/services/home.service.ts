@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
-import { environment } from '../../environments/environment';
+import { environment } from '@v3/environments/environment';
 import { DemoService } from './demo.service';
 
 export interface Experience {
