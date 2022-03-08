@@ -11,6 +11,16 @@
             </ion-label>
           </ion-item>
         </ion-menu-toggle>
+
+        <ion-item (click)="presentModal()">
+          <ion-icon slot="start" name="settings-outline"></ion-icon>
+          <ion-label>Settings</ion-label>
+        </ion-item>
+
+        <ion-item routerLink="/experiences" routerDirection="root" detail="false">
+          <ion-icon slot="start" name="home"></ion-icon>
+          <ion-label>My Experiences</ion-label>
+        </ion-item>
       </ion-list>
     </ion-content>
   </ion-menu>

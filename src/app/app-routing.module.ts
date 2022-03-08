@@ -70,6 +70,10 @@ const routes: Routes = [
     canLoad: [AuthGuard]
   },
   { path: '**', component: PageNotFoundComponent },
+  {
+    path: 'settings-slide',
+    loadChildren: () => import('./pages/settings-slide/settings-slide.module').then( m => m.SettingsSlidePageModule)
+  },
 ];
 @NgModule({
   imports: [
