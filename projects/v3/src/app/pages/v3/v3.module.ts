@@ -7,13 +7,15 @@ import { IonicModule } from '@ionic/angular';
 import { V3PageRoutingModule } from './v3-routing.module';
 
 import { V3Page } from './v3.page';
+import { SettingsSlidePageModule } from '../settings-slide/settings-slide.module';
 
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
     IonicModule,
-    V3PageRoutingModule
+    V3PageRoutingModule,
+    SettingsSlidePageModule
   ],
   declarations: [V3Page]
 })

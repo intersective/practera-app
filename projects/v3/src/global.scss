@@ -19,3 +19,9 @@
 
  // custom video player styles
  @import '~plyr/src/sass/plyr';
+
+.abcd {
+  --height: 100% !important;
+  justify-content: right !important;
+}
+
