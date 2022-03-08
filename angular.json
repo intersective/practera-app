@@ -283,11 +283,22 @@
             "tsConfig": "projects/v3/tsconfig.app.json",
             "inlineStyleLanguage": "scss",
             "assets": [
-              "projects/v3/src/favicon.ico",
-              "projects/v3/src/assets"
+              {
+                "glob": "**/*",
+                "input": "projects/v3/src/assets",
+                "output": "assets"
+              },
+              {
+                "glob": "**/*.svg",
+                "input": "node_modules/ionicons/dist/ionicons/svg",
+                "output": "./svg"
+              }
             ],
             "styles": [
-              "projects/v3/src/styles.scss",
+              {
+                "input": "projects/v3/src/styles.scss",
+                "inject": true
+              },
               {
                 "input": "projects/v3/src/theme/variables.scss",
                 "inject": true
