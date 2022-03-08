@@ -1,0 +1,15 @@
+{
+  "name": "Practera AppV3",
+  "short_name": "AppV3",
+  "start_url": "index.html",
+  "display": "standalone",
+  "icons": [
+    {
+      "src": "assets/icon/favicon.ico",
+      "sizes": "140x150",
+      "type": "image/png"
+    }
+  ],
+  "background_color": "#2bbfd4",
+  "theme_color": "#2bbfd4"
+}
