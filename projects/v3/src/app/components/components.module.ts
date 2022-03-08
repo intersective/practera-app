@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
 import { FormsModule } from '@angular/forms';
 import { DescriptionComponent } from './description/description.component';
+import { ListItemComponent } from './list-item/list-item.component';
 
 @NgModule({
   imports: [
@@ -12,9 +13,11 @@ import { DescriptionComponent } from './description/description.component';
   ],
   declarations: [
     DescriptionComponent,
+    ListItemComponent,
   ],
   exports: [
     DescriptionComponent,
+    ListItemComponent,
     IonicModule,
     CommonModule,
     FormsModule,
