@@ -308,7 +308,13 @@
                 "inject": true
               }
             ],
-            "scripts": []
+            "scripts": [],
+            "vendorChunk": true,
+            "extractLicenses": false,
+            "buildOptimizer": false,
+            "sourceMap": true,
+            "optimization": false,
+            "namedChunks": true
           },
           "configurations": {
             "production": {
@@ -383,7 +389,7 @@
     }
   },
   "cli": {
-    "defaultCollection": "@angular-eslint/schematics",
+    "defaultCollection": "@ionic/angular-toolkit",
     "analytics": false
   },
   "schematics": {
