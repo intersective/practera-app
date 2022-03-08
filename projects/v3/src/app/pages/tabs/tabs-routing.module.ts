@@ -17,10 +17,6 @@ const routes: Routes = [
         loadChildren: () => import('../home/home.module').then(m => m.HomePageModule)
       },
       {
-        path: 'experiences',
-        loadChildren: () => import('../experiences/experiences.module').then(m => m.ExperiencesPageModule)
-      },
-      {
         path: 'messages',
         loadChildren: () => import('../messages/messages.module').then(m => m.MessagesPageModule)
       },
@@ -30,6 +26,10 @@ const routes: Routes = [
           {
             path: '',
             loadChildren: () => import('../settings/settings.module').then(m => m.SettingsPageModule)
+          },
+          {
+            path: 'slide',
+            loadChildren: () => import('../settings-slide/settings-slide.module').then(m => m.SettingsSlidePageModule)
           }
         ]
       },
