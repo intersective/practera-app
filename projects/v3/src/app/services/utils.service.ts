@@ -3,7 +3,7 @@ import { DOCUMENT } from '@angular/common';
 import { Observable, Subject } from 'rxjs';
 import { map, filter } from 'rxjs/operators';
 import { Platform } from '@ionic/angular';
-import { ApolloService } from '@shared/apollo/apollo.service';
+// import { ApolloService } from '@shared/apollo/apollo.service';
 import * as _ from 'lodash';
 import * as moment from 'moment';
 import { Colors } from '@services/storage.service';
@@ -33,7 +33,7 @@ export class UtilsService {
   constructor(
     @Inject(DOCUMENT) private document: Document,
     private platform: Platform,
-    private apolloService: ApolloService
+    // private apolloService: ApolloService
   ) {
     if (_) {
       this.lodash = _;
@@ -213,6 +213,7 @@ export class UtilsService {
   // }
 
   // need to clear all Subject for cache
+  /* [TODO] Comment out for now. Will recover soon
   async clearCache(): Promise<void> {
     const apolloClient = this.apolloService.getClient();
     // clear cache before initialised
@@ -225,6 +226,7 @@ export class UtilsService {
     //     this.activitySubjects[key].next(null);
     //   });
   }
+  */
 
   // transfer url query string to an object
   urlQueryToObject(query: string) {
