@@ -287,8 +287,15 @@
               "projects/v3/src/assets"
             ],
             "styles": [
-              "projects/v3/src/global.scss",
-              "projects/v3/src/styles.scss"
+              "projects/v3/src/styles.scss",
+              {
+                "input": "projects/v3/src/theme/variables.scss",
+                "inject": true
+              },
+              {
+                "input": "projects/v3/src/global.scss",
+                "inject": true
+              }
             ],
             "scripts": []
           },
