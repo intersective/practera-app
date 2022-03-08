@@ -4,16 +4,16 @@ import { RouterModule, Routes } from '@angular/router';
 const routes: Routes = [
   {
     path: '',
-    redirectTo: '/app/home',
+    redirectTo: '/v3/home',
     pathMatch: 'full'
-  },
-  {
-    path: 'app',
-    loadChildren: () => import('./pages/tabs/tabs.module').then( m => m.TabsPageModule)
   },
   {
     path: 'notifications',
     loadChildren: () => import('./pages/notifications/notifications.module').then( m => m.NotificationsPageModule)
+  },
+  {
+    path: 'v3',
+    loadChildren: () => import('./pages/v3/v3.module').then( m => m.V3PageModule)
   }
 ];
 
