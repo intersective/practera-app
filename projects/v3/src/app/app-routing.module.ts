@@ -4,16 +4,28 @@ import { RouterModule, Routes } from '@angular/router';
 const routes: Routes = [
   {
     path: '',
-    redirectTo: '/home',
+    redirectTo: '/v3/home',
     pathMatch: 'full'
   },
   {
-    path: 'dashboard',
-    loadChildren: () => import('./pages/dashboard/dashboard.module').then( m => m.DashboardPageModule)
+    path: 'notifications',
+    loadChildren: () => import('./pages/notifications/notifications.module').then( m => m.NotificationsPageModule)
   },
   {
-    path: 'home',
-    loadChildren: () => import('./pages/home/home.module').then( m => m.HomePageModule)
+    path: 'experiences',
+    loadChildren: () => import('./pages/experiences/experiences.module').then(m => m.ExperiencesPageModule)
+  },
+  {
+    path: 'v3',
+    loadChildren: () => import('./pages/v3/v3.module').then( m => m.V3PageModule)
+  },
+  {
+    path: 'activity-list',
+    loadChildren: () => import('./pages/activity-list/activity-list.module').then( m => m.ActivityListPageModule)
+  },
+  {
+    path: 'activity-detail',
+    loadChildren: () => import('./pages/activity-detail/activity-detail.module').then( m => m.ActivityDetailPageModule)
   }
 ];
 

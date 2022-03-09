@@ -6,7 +6,7 @@ import { SinglePageDeactivateGuard } from '../single-page-deactivate.guard';
 
 const routes: Routes = [
   {
-    path: 'app',
+    path: '',
     component: TabsComponent,
     canActivate: [AuthGuard],
     children: [

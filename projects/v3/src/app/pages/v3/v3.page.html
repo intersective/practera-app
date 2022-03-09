@@ -1,0 +1,31 @@
+<ion-split-pane contentId="main-content">
+
+  <ion-menu contentId="main-content">
+    <ion-content>
+      <ion-list lines="none">
+        <ion-menu-toggle autoHide="false" *ngFor="let p of appPages; let i = index">
+          <ion-item [routerLink]="p.url" routerLinkActive="selected" routerDirection="root" detail="false">
+            <ion-icon slot="start" [name]="p.icon + '-outline'"></ion-icon>
+            <ion-label>
+              {{p.title}}
+            </ion-label>
+          </ion-item>
+        </ion-menu-toggle>
+
+        <ion-item (click)="presentModal()">
+          <ion-icon slot="start" name="settings-outline"></ion-icon>
+          <ion-label>Settings</ion-label>
+        </ion-item>
+
+        <ion-item-divider mode="md"></ion-item-divider>
+
+        <ion-item routerLink="/experiences" routerDirection="root" detail="false">
+          <ion-icon slot="start" name="home"></ion-icon>
+          <ion-label>My Experiences</ion-label>
+        </ion-item>
+      </ion-list>
+    </ion-content>
+  </ion-menu>
+
+  <ion-router-outlet id="main-content"></ion-router-outlet>
+</ion-split-pane>
