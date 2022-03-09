@@ -119,20 +119,23 @@ jobs:
         run:  |
           npm run lint --if-present
 
-
-# ###############################################################
-# #  PERFORM BUILD TEST
-# ##############################################################
-      - name: Performing Building Web packages
+          
+###############################################################
+#  BUILD WEB PACKAGES
+##############################################################
+      - name: Build Web Packages
         run: |
-          npm run build --if-present
+          test -f src/environments/environment.ts && echo "environment here" || cp src/environments/environment.local.ts src/environments/environment.ts
+          node_modules/.bin/ng build --configuration=${{ env.BUILD_CONFIG }}
+          npm run generate-version
+
 
 # ###############################################################
 # #  PERFORM UNIT TEST
 # ##############################################################
       - name: Performing Unit test
         run: |
-          npm run test --if-present
+          node_modules/.bin/ng test --karmaConfig=src/karma.conf.sonarci.js --no-watch
 
 
 # ###############################################################
