@@ -1,0 +1,12 @@
+{
+  "name": "request",
+  "version": "0.0.1",
+  "peerDependencies": {
+    "@angular/common": "^13.2.0",
+    "@angular/core": "^13.2.0"
+  },
+  "dependencies": {
+    "lodash": "^4.17.21",
+    "tslib": "^2.3.0"
+  }
+}
