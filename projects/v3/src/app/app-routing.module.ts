@@ -26,6 +26,10 @@ const routes: Routes = [
   {
     path: 'activity-detail',
     loadChildren: () => import('./pages/activity-detail/activity-detail.module').then( m => m.ActivityDetailPageModule)
+  },
+  {
+    path: 'notifications-slide',
+    loadChildren: () => import('./pages/notifications-slide/notifications-slide.module').then( m => m.NotificationsSlidePageModule)
   }
 ];
 
