@@ -159,7 +159,9 @@ export class ActivityComponent {
     switch (task.type) {
       case 'Assessment':
         if (task.isForTeam && !this.storage.getUser().teamId) {
-          this.notificationService.popUp('shortMessage', {message: 'To do this assessment, you have to be in a team.'});
+          this.notificationService.popUp('shortMessage', {
+            message: 'Currently you are not in a team, please reach out to your Administrator or Coordinator to proceed with next steps.'
+          });
           break;
         }
         // check if assessment is locked by other team members
