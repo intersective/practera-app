@@ -6,7 +6,7 @@ import { DemoService } from './demo.service';
   providedIn: 'root'
 })
 export class NotificationsService {
-  notifications$: Subject;
+  // notifications$: Subject;
 
   constructor(demo: DemoService) { }
 }
