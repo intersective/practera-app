@@ -104,13 +104,6 @@ jobs:
           aws-region: ap-southeast-2
 
 
-# ################################################
-# #  CREATING .ENV FORMAT
-# ################################################
-      - name: Preparing .env format
-        run:  |
-          cp .env.example .env
-
 
 # ################################################
 # #  PERFORM LINT TEST
