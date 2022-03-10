@@ -8,10 +8,6 @@ const routes: Routes = [
     pathMatch: 'full'
   },
   {
-    path: 'notifications',
-    loadChildren: () => import('./pages/notifications/notifications.module').then( m => m.NotificationsPageModule)
-  },
-  {
     path: 'experiences',
     loadChildren: () => import('./pages/experiences/experiences.module').then(m => m.ExperiencesPageModule)
   },
@@ -19,14 +15,6 @@ const routes: Routes = [
     path: 'v3',
     loadChildren: () => import('./pages/v3/v3.module').then( m => m.V3PageModule)
   },
-  {
-    path: 'activity-list',
-    loadChildren: () => import('./pages/activity-list/activity-list.module').then( m => m.ActivityListPageModule)
-  },
-  {
-    path: 'activity-detail',
-    loadChildren: () => import('./pages/activity-detail/activity-detail.module').then( m => m.ActivityDetailPageModule)
-  }
 ];
 
 @NgModule({
