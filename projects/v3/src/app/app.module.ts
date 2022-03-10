@@ -1,5 +1,7 @@
+import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
+import { RequestInterceptor } from '@app/shared/request/request.interceptor';
 import { IonicModule } from '@ionic/angular';
 import { environment } from '@v3/environments/environment';
 import { RequestModule } from 'request';
@@ -20,9 +22,15 @@ import { ComponentsModule } from './components/components.module';
     RequestModule.forRoot({
       appkey: environment.appkey,
       prefixUrl: environment.APIEndpoint,
-    })
+    }),
   ],
-  providers: [],
+  providers: [
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: RequestInterceptor,
+      multi: true,
+    },
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
