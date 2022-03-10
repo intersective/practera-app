@@ -13,12 +13,12 @@
 @import "~@ionic/angular/css/text-transformation.css";
 @import "~@ionic/angular/css/flex-utils.css";
 
+// PFAS
+@import './theme/variables.scss';
+@import './theme/typography.scss';
 
- // PFAS
- @import './theme/typography.scss';
-
- // custom video player styles
- @import '~plyr/src/sass/plyr';
+// custom video player styles
+@import '~plyr/src/sass/plyr';
 
 .abcd {
   --height: 100% !important;

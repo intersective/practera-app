@@ -13,8 +13,7 @@ export class DemoService {
     return {
       image: 'https://images.app.goo.gl/aoQNwRxnqn2Ktv2s6',
       name: 'Welcome to the Global Trade Accelerator',
-      description: this.description,
-      progress: 0.63
+      description: this.description
     }
   }
 
