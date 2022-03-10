@@ -5,7 +5,6 @@ import { PreviewComponent } from './preview/preview.component';
 import { environment } from '@environments/environment';
 import { BrowserStorageService } from '@services/storage.service';
 import { HttpClient } from '@angular/common/http'; // added to make one and only API call to filestack server
-import { Observable } from 'rxjs/Observable';
 import { forkJoin } from 'rxjs';
 import { NotificationService } from '@shared/notification/notification.service';
 import { UtilsService } from '@services/utils.service';
@@ -27,9 +26,14 @@ const api = {
   metadata: `https://www.filestackapi.com/api/file/HANDLE/metadata`
 };
 
+const FS_INTELLIGENT = true;
+const FS_MULTIPART_CONCURRENCY = 5;
+
 @Injectable()
 export class FilestackService {
   private filestack: any;
+  readonly chunksConcurrency = FS_MULTIPART_CONCURRENCY;
+  readonly intelligent: boolean = FS_INTELLIGENT;
 
   // file types that allowed to upload
   public fileTypes = {
@@ -164,35 +168,46 @@ export class FilestackService {
     return this.httpClient.get(api.metadata.replace('HANDLE', handle[0])).toPromise();
   }
 
+  private onFileSelectedRename(file: filestack.PickerFileMetadata): Promise<any> {
+    // replace space with underscore '_' in file name
+    const filename = file.filename.replace(/ /g, '_');
+    return Promise.resolve({ ...file, filename });
+  }
+
   async open(options = {}, onSuccess = res => res, onError = err => err): Promise<any> {
-    const pickerOptions: any = {
+    const pickerOptions: filestack.PickerOptions = {
       dropPane: {},
       fromSources: [
         'local_file_system',
         'googledrive',
         'dropbox',
+        'onedrive',
+        'box',
         'gmail',
         'video'
       ],
-      storeTo: this.getS3Config(this.getFileTypes()),
-      onFileSelected: data => {
-        // replace space with underscore '_' in file name
-        data.filename = data.filename.replace(/ /g, '_');
-        return data;
+      uploadConfig: {
+        concurrency: this.chunksConcurrency,
+        intelligent: this.intelligent,
       },
+      storeTo: this.getS3Config(this.getFileTypes()),
+      onFileSelected: this.onFileSelectedRename,
       onFileUploadFailed: onError,
       onFileUploadFinished: function(res) {
         return onSuccess(res);
       },
-      onUploadDone: (res) => res
+      onUploadDone: (res) => res,
     };
 
     return await this.filestack.picker(Object.assign(pickerOptions, options)).open();
   }
 
+  // Note: added similar functionality as this.open() to support drag and drop feature, please check FilestackComponent for how this is being used.
   async upload(file, uploadOptions, path, uploadToken): Promise<any> {
-    const option = {
-      onProgress: uploadOptions.onProgress
+    const option: filestack.UploadOptions = {
+      onProgress: uploadOptions.onProgress,
+      concurrency: this.chunksConcurrency,
+      intelligent: this.intelligent, // multipart upload
     };
 
     if (!path) {

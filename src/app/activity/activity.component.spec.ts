@@ -321,7 +321,7 @@ describe('ActivityComponent', () => {
         isLocked: false
       });
       expect(notificationSpy.popUp.calls.count()).toBe(1);
-      expect(notificationSpy.popUp.calls.first().args[1]).toEqual({message: 'To do this assessment, you have to be in a team.'});
+      expect(notificationSpy.popUp.calls.first().args[1]).toEqual({message: 'Currently you are not in a team, please reach out to your Administrator or Coordinator to proceed with next steps.'});
       expect(routerSpy.navigate.calls.count()).toBe(0);
     });
 
