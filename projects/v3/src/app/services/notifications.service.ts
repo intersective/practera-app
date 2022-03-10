@@ -9,6 +9,4 @@ export class NotificationsService {
   notifications$: Subject;
 
   constructor(demo: DemoService) { }
-
-  notifications
 }
