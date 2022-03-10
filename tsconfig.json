@@ -52,6 +52,10 @@
       "@v3/environments/*": [
         "projects/v3/src/environments/*"
       ],
+      "request": [
+        "dist/request/request",
+        "dist/request"
+      ],
     },
     "allowSyntheticDefaultImports": true,
     "skipLibCheck": true
