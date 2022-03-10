@@ -111,4 +111,13 @@ export class DemoService {
       ]
     }
   }
+
+  get notifications() {
+    return [
+      {
+        id: 1,
+        title: 'notification 1',
+      },
+    ]
+  }
 }

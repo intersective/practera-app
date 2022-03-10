@@ -20,7 +20,9 @@
 // custom video player styles
 @import '~plyr/src/sass/plyr';
 
-.abcd {
+// Slide-in Modal
+// affix modal to right position of screen
+.right-affixed {
   --height: 100% !important;
   justify-content: right !important;
 }
