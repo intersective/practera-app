@@ -9,7 +9,6 @@ import { RequestModule } from 'request';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { ComponentsModule } from './components/components.module';
 
 @NgModule({
   declarations: [
@@ -19,7 +18,6 @@ import { ComponentsModule } from './components/components.module';
     BrowserModule,
     AppRoutingModule,
     IonicModule.forRoot(),
-    ComponentsModule,
     ApolloModule.forRoot({
       endpoint: environment.graphQL
     }),

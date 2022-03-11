@@ -43,7 +43,7 @@ export class FilestackComponent {
 
   constructor(
     private filestackService: FilestackService,
-    readonly utils: UtilsService
+    private utils: UtilsService
   ) { }
 
   async uploadFile() {
