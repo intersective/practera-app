@@ -6,7 +6,7 @@ import { Platform } from '@ionic/angular';
 // import { ApolloService } from '@shared/apollo/apollo.service';
 import * as _ from 'lodash';
 import * as moment from 'moment';
-import { Colors } from '@services/storage.service';
+import { Colors } from './storage.service';
 
 export enum ThemeColor {
   primary = 'primary',

@@ -2,7 +2,7 @@ import { Injectable, Optional } from '@angular/core';
 import { HttpEvent, HttpHeaders, HttpInterceptor, HttpHandler, HttpRequest, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs/Observable';
 import { RequestConfig } from 'request';
-import { BrowserStorageService } from '@services/storage.service';
+import { BrowserStorageService } from './storage.service';
 
 @Injectable()
 export class RequestInterceptor implements HttpInterceptor {

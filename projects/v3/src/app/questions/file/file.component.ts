@@ -1,6 +1,6 @@
 import { Component, OnInit, Input, Output, EventEmitter, forwardRef, ViewChild, ElementRef } from '@angular/core';
 import { NG_VALUE_ACCESSOR, ControlValueAccessor, FormControl } from '@angular/forms';
-import { FilestackService } from '@shared/filestack/filestack.service';
+import { FilestackService } from 'filestack';
 
 @Component({
   selector: 'app-file',
