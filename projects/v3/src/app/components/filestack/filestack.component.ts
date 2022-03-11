@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Output, Input } from '@angular/core';
 import { FilestackService } from './filestack.service';
-import { UtilsService } from '@services/utils.service';
+import { UtilsService } from '@v3/services/utils.service';
 import { PickerOptions } from 'filestack-js/build/main/lib/picker';
 
 export interface FilestackUploaded {
@@ -43,7 +43,7 @@ export class FilestackComponent {
 
   constructor(
     private filestackService: FilestackService,
-    private utils: UtilsService
+    readonly utils: UtilsService
   ) { }
 
   async uploadFile() {

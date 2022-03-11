@@ -6,6 +6,7 @@ import { PreviewComponent } from './preview/preview.component';
 import { HttpClientModule } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
+import { DragAndDropDirective } from '@v3/app/directives/drag-and-drop/drag-and-drop.directive';
 
 
 @NgModule({
@@ -20,10 +21,12 @@ import { IonicModule } from '@ionic/angular';
   declarations: [
     FilestackComponent,
     PreviewComponent,
+    DragAndDropDirective
   ],
   exports: [
     FilestackComponent,
     HttpClientModule,
+    DragAndDropDirective
   ],
 })
 
