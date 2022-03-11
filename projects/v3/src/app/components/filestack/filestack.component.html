@@ -10,7 +10,7 @@
       <ion-button size="small" class="upload-button" shape="round" (click)="uploadFile()" [disabled]="disabled">UPLOAD FILE</ion-button>
     </ng-container>
     <ng-container *ngIf="!utils.isMobile()">
-      <div appDragAndDrop
+      <appDragAndDrop
         class="drop-zone"
         *ngIf="!isDroped"
         (fileDropped)="dragAndDropUpload($event)"
@@ -20,7 +20,7 @@
           <ion-icon name="cloud-upload-outline"></ion-icon> Drag and drop file here or
           <ion-button size="small" class="upload-button" shape="round" (click)="uploadFile()" [disabled]="disabled">UPLOAD FILE</ion-button>
         </p>
-      </div>
+      </appDragAndDrop>
       <div *ngIf="isDroped" class="upload-progress">
         <ion-grid>
           <ion-row>

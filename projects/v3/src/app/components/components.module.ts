@@ -5,7 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { DescriptionComponent } from './description/description.component';
 import { ListItemComponent } from './list-item/list-item.component';
 import { ImgComponent } from './img/img.component';
-import { FilestackModule } from './filestack/filestack.module';
+// import { FilestackModule } from './filestack/filestack.module';
 import { DragAndDropDirective } from '../directives/drag-and-drop/drag-and-drop.directive';
 import { AutoresizeDirective } from '../directives/autoresize/autoresize.directive';
 import { FloatDirective } from '../directives/float/float.directive';
@@ -15,7 +15,7 @@ import { FloatDirective } from '../directives/float/float.directive';
     IonicModule,
     CommonModule,
     FormsModule,
-    FilestackModule
+    // FilestackModule
   ],
   declarations: [
     DescriptionComponent,
