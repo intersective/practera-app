@@ -417,6 +417,37 @@
           }
         }
       }
+    },
+    "filestack": {
+      "projectType": "library",
+      "root": "projects/filestack",
+      "sourceRoot": "projects/filestack/src",
+      "prefix": "lib",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:ng-packagr",
+          "options": {
+            "project": "projects/filestack/ng-package.json"
+          },
+          "configurations": {
+            "production": {
+              "tsConfig": "projects/filestack/tsconfig.lib.prod.json"
+            },
+            "development": {
+              "tsConfig": "projects/filestack/tsconfig.lib.json"
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "projects/filestack/src/test.ts",
+            "tsConfig": "projects/filestack/tsconfig.spec.json",
+            "karmaConfig": "projects/filestack/karma.conf.js"
+          }
+        }
+      }
     }
   },
   "cli": {
