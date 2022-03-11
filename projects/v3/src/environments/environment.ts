@@ -7,6 +7,7 @@ export const environment = {
   demo: true,
   appkey: 'b11e7c189b',
   APIEndpoint: 'https://admin.p2-sandbox.practera.com/',
+  graphQL: 'https://core-graphql-api.p2-sandbox.practera.com/',
 };
 
 /*
