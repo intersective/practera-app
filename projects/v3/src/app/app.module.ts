@@ -4,6 +4,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { RequestInterceptor } from '@app/shared/request/request.interceptor';
 import { IonicModule } from '@ionic/angular';
 import { environment } from '@v3/environments/environment';
+import { ApolloModule } from 'apollo';
 import { RequestModule } from 'request';
 
 import { AppRoutingModule } from './app-routing.module';
@@ -19,6 +20,9 @@ import { ComponentsModule } from './components/components.module';
     AppRoutingModule,
     IonicModule.forRoot(),
     ComponentsModule,
+    ApolloModule.forRoot({
+      endpoint: environment.graphQL
+    }),
     RequestModule.forRoot({
       appkey: environment.appkey,
       prefixUrl: environment.APIEndpoint,
