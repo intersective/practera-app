@@ -56,10 +56,6 @@
         "dist/apollo/apollo",
         "dist/apollo"
       ],
-      "filestack": [
-        "dist/filestack/filestack",
-        "dist/filestack"
-      ],
       "request": [
         "dist/request/request",
         "dist/request"
