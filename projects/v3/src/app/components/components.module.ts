@@ -4,6 +4,7 @@ import { IonicModule } from '@ionic/angular';
 import { FormsModule } from '@angular/forms';
 import { DescriptionComponent } from './description/description.component';
 import { ListItemComponent } from './list-item/list-item.component';
+import { ImgComponent } from './img/img.component';
 
 @NgModule({
   imports: [
@@ -14,6 +15,7 @@ import { ListItemComponent } from './list-item/list-item.component';
   declarations: [
     DescriptionComponent,
     ListItemComponent,
+    ImgComponent,
   ],
   exports: [
     DescriptionComponent,
@@ -21,6 +23,7 @@ import { ListItemComponent } from './list-item/list-item.component';
     IonicModule,
     CommonModule,
     FormsModule,
+    ImgComponent,
   ],
 })
 export class ComponentsModule {}
