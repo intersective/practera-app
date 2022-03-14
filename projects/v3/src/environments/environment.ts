@@ -5,6 +5,7 @@
 export const environment = {
   production: false,
   demo: true,
+  env: 'sandbox',
   appkey: 'b11e7c189b',
   APIEndpoint: 'https://admin.p2-sandbox.practera.com/',
   graphQL: 'https://core-graphql-api.p2-sandbox.practera.com/',
