@@ -13,6 +13,8 @@ import { AchievementPopUpComponent } from './achievement-pop-up/achievement-pop-
 import { PopUpComponent } from './pop-up/pop-up.component';
 import { LockTeamAssessmentPopUpComponent } from './lock-team-assessment-pop-up/lock-team-assessment-pop-up.component';
 import { ActivityCompletePopUpComponent } from './activity-complete-pop-up/activity-complete-pop-up.component';
+import { FastFeedbackComponent } from './fast-feedback/fast-feedback.component';
+import { ReviewRatingComponent } from './review-rating/review-rating.component';
 
 @NgModule({
   imports: [
@@ -33,6 +35,8 @@ import { ActivityCompletePopUpComponent } from './activity-complete-pop-up/activ
     LockTeamAssessmentPopUpComponent,
     AchievementPopUpComponent,
     ActivityCompletePopUpComponent,
+    FastFeedbackComponent,
+    ReviewRatingComponent,
   ],
   exports: [
     DescriptionComponent,
@@ -49,6 +53,8 @@ import { ActivityCompletePopUpComponent } from './activity-complete-pop-up/activ
     LockTeamAssessmentPopUpComponent,
     AchievementPopUpComponent,
     ActivityCompletePopUpComponent,
+    FastFeedbackComponent,
+    ReviewRatingComponent,
   ],
 })
 export class ComponentsModule {}

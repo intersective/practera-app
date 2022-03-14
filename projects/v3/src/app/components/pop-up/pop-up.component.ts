@@ -10,7 +10,13 @@ import { ModalController } from '@ionic/angular';
 export class PopUpComponent {
   type = '';
   redirect = ['/'];
-  data = {};
+  data: {
+    email: string;
+    message: string;
+  } = {
+    email: '',
+    message: '',
+  };
 
   constructor(
     private router: Router,
