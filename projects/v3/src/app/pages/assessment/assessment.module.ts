@@ -7,7 +7,7 @@ import { IonicModule } from '@ionic/angular';
 import { AssessmentPageRoutingModule } from './assessment-routing.module';
 
 import { AssessmentPage } from './assessment.page';
-// import { QuestionsModule } from '@v3/app/questions/questions.module';
+import { QuestionsModule } from '../../questions/questions.module';
 
 @NgModule({
   imports: [
@@ -15,7 +15,7 @@ import { AssessmentPage } from './assessment.page';
     FormsModule,
     IonicModule,
     AssessmentPageRoutingModule,
-    // QuestionsModule,
+    QuestionsModule,
   ],
   declarations: [AssessmentPage]
 })
