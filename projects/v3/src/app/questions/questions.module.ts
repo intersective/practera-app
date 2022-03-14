@@ -15,7 +15,7 @@ import { FilestackModule } from '../components/filestack/filestack.module';
     IonicModule,
     CommonModule,
     ReactiveFormsModule,
-    FilestackModule,
+    // FilestackModule,
   ],
   declarations: [
     TextComponent,
