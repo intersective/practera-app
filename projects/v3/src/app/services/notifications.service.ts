@@ -1,11 +1,11 @@
 import { Injectable } from '@angular/core';
 import { ModalController, AlertController, ToastController, LoadingController } from '@ionic/angular';
 import { AlertOptions, ToastOptions, ModalOptions, LoadingOptions } from '@ionic/core';
-// import { PopUpComponent } from '../components/pop-up/pop-up.component';
-// import { AchievementPopUpComponent } from '../components/achievement-pop-up/achievement-pop-up.component';
+import { PopUpComponent } from '../components/pop-up/pop-up.component';
+import { AchievementPopUpComponent } from '../components/achievement-pop-up/achievement-pop-up.component';
 // import { LockTeamAssessmentPopUpComponent } from '../components/lock-team-assessment-pop-up/lock-team-assessment-pop-up.component';
-// import { ActivityCompletePopUpComponent } from '../components/activity-complete-pop-up/activity-complete-pop-up.component';
-import { AchievementsService } from '@app/achievements/achievements.service';
+import { ActivityCompletePopUpComponent } from '../components/activity-complete-pop-up/activity-complete-pop-up.component';
+import { Achievement, AchievementsService } from './achievements.service';
 import { UtilsService } from '@v3/services/utils.service';
 import { ReviewRatingComponent } from '../components/review-rating/review-rating.component';
 
@@ -109,7 +109,7 @@ export class NotificationsService {
    *    description: "qwert yuiop asdfg asdff"
    * });
    */
-/*   async achievementPopUp(type: string, achievement: Achievement, options?) {
+  async achievementPopUp(type: string, achievement: Achievement, options?) {
     const component = AchievementPopUpComponent;
     const componentProps = {
       type,
@@ -130,7 +130,7 @@ export class NotificationsService {
       });
 
     return modal;
-  } */
+  }
 
   /**
    * pop up to show user click on locked team assessment.
@@ -141,7 +141,7 @@ export class NotificationsService {
    *    name: "Alice"
    * });
    */
-/*   async lockTeamAssessmentPopUp(data, event) {
+  async lockTeamAssessmentPopUp(data, event) {
     const componentProps = {
       name: data.name,
       image: data.image
@@ -155,7 +155,7 @@ export class NotificationsService {
       event
     );
     return modal;
-  } */
+  }
 
   /**
    * pop up activity complete notification and detail
@@ -163,7 +163,7 @@ export class NotificationsService {
    * sample call for activity complete popup
    * NotificationService.activityCompletePopUp(3);
    */
-/*   async activityCompletePopUp(activityId: number, activityCompleted: boolean): Promise<void> {
+  async activityCompletePopUp(activityId: number, activityCompleted: boolean): Promise<void> {
     let cssClass = 'practera-popup activity-complete-popup';
     if (this.utils.isMobile()) {
       cssClass += ' mobile-view';
@@ -177,7 +177,7 @@ export class NotificationsService {
         backdropDismiss: false
       }
     );
-  } */
+  }
 
   async loading(opts?: LoadingOptions): Promise<void> {
     const loading = await this.loadingController.create(opts || {

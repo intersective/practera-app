@@ -21,7 +21,9 @@ export class FileComponent implements ControlValueAccessor, OnInit {
     description: '',
     isRequired: false,
     fileType: 'any',
-    audience: []
+    audience: [],
+    canAnswer: false,
+    canComment: false,
   };
   @Input() submission;
   @Input() review;

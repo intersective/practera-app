@@ -38,7 +38,6 @@ export class SharedService {
     private notification: NotificationsService,
     private request: RequestService,
     private http: HttpClient,
-    private newrelic: NewRelicService,
     private topicService: TopicService,
     private apolloService: ApolloService,
     private pusherService: PusherService
@@ -172,7 +171,7 @@ export class SharedService {
   getIpLocation() {
     this._ipAPI().subscribe(
       res => this.storage.setCountry(res.country_name),
-      err => this.newrelic.noticeError(err)
+      err => console.log(err)
     );
   }
 

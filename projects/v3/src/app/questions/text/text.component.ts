@@ -52,7 +52,7 @@ export class TextComponent implements ControlValueAccessor, OnInit {
   propagateChange = (_: any) => {};
 
   // fix IE/Edge text reversal issue
-  onFocus(event) {
+  public onFocus(event) {
     const isIEOrEdge = /msie\s|trident\/|edge\//i.test(window.navigator.userAgent);
     if (isIEOrEdge) {
       const textarea: HTMLTextAreaElement = event.target.firstChild;

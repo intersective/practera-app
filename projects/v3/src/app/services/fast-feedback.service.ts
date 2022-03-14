@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
 import { FastFeedbackComponent } from '../components/fast-feedback/fast-feedback.component';
 import { RequestService } from 'request';
-import { NotificationService } from '@shared/notification/notification.service';
-import { BrowserStorageService } from '@services/storage.service';
-import { UtilsService } from '@services/utils.service';
+import { NotificationsService } from './notifications.service';
+import { BrowserStorageService } from '@v3/services/storage.service';
+import { UtilsService } from '@v3/services/utils.service';
 import { of, from, Observable } from 'rxjs';
 import { switchMap, delay, take, retryWhen } from 'rxjs/operators';
 
@@ -27,6 +27,7 @@ export interface Meta {
 
 const api = {
   fastFeedback: 'api/v2/observation/slider/list.json',
+  submit: 'api/v2/observation/slider/create.json',
 };
 
 @Injectable({
@@ -35,7 +36,7 @@ const api = {
 export class FastFeedbackService {
   constructor(
     private request: RequestService,
-    private notificationService: NotificationService,
+    private notificationsService: NotificationsService,
     private storage: BrowserStorageService,
     private utils: UtilsService,
   ) {}
@@ -55,13 +56,13 @@ export class FastFeedbackService {
     modalOnly: boolean = false
   ): Promise<HTMLIonModalElement | void> {
     if (modalOnly) {
-      return this.notificationService.modalOnly(FastFeedbackComponent, props, {
+      return this.notificationsService.modalOnly(FastFeedbackComponent, props, {
         backdropDismiss: false,
         showBackdrop: false,
       });
     }
 
-    return this.notificationService.modal(FastFeedbackComponent, props, {
+    return this.notificationsService.modal(FastFeedbackComponent, props, {
       backdropDismiss: false,
       showBackdrop: false,
     });
@@ -102,5 +103,14 @@ export class FastFeedbackService {
         return errors.pipe(delay(1000), take(3));
       })
     );
+  }
+
+  submit(data, params) {
+    return this.request.post(
+      {
+        endPoint: api.submit,
+        data,
+        httpOptions: { params }
+      });
   }
 }
