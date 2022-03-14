@@ -9,6 +9,7 @@ import { RequestModule } from 'request';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
+import { ApolloService } from './services/apollo.service';
 
 @NgModule({
   declarations: [
@@ -18,9 +19,6 @@ import { AppComponent } from './app.component';
     BrowserModule,
     AppRoutingModule,
     IonicModule.forRoot(),
-    ApolloModule.forRoot({
-      endpoint: environment.graphQL
-    }),
     RequestModule.forRoot({
       appkey: environment.appkey,
       prefixUrl: environment.APIEndpoint,
@@ -32,6 +30,7 @@ import { AppComponent } from './app.component';
       useClass: RequestInterceptor,
       multi: true,
     },
+    ApolloService,
   ],
   bootstrap: [AppComponent]
 })
