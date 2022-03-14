@@ -3,6 +3,7 @@ import { HttpEvent, HttpHeaders, HttpInterceptor, HttpHandler, HttpRequest, Http
 import { Observable } from 'rxjs/Observable';
 import { RequestConfig } from 'request';
 import { BrowserStorageService } from './storage.service';
+import { UtilsService } from './utils.service';
 
 @Injectable()
 export class RequestInterceptor implements HttpInterceptor {
@@ -10,6 +11,7 @@ export class RequestInterceptor implements HttpInterceptor {
   constructor(
     private storage: BrowserStorageService,
     @Optional() config: RequestConfig,
+    private readonly utils: UtilsService,
   ) {
     this.currenConfig = config;
   }
@@ -51,6 +53,20 @@ export class RequestInterceptor implements HttpInterceptor {
     return next.handle(req.clone({
       headers: new HttpHeaders(headers),
       params: paramsInject,
-    }));
+    })).pipe(response => {
+      this._refreshApikey(response);
+      return response;
+    });
+  }
+
+  /**
+   * Refresh the apikey (JWT token) if API returns it
+   *
+   */
+  private _refreshApikey(response) {
+    console.log('before refresh apikey');
+    if (response && response.apikey) {
+      this.storage.setUser({ apikey: response.apikey });
+    }
   }
 }

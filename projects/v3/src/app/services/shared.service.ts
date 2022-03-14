@@ -91,7 +91,7 @@ export class SharedService {
    *                            this return value anywhere.
    */
   getTeamInfo(): Observable<any> {
-    return this.request.graphQLFetch(
+    return this.apolloService.graphQLFetch(
       `query user {
         user {
           teams {

@@ -1,10 +1,9 @@
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-import { RequestInterceptor } from '@app/shared/request/request.interceptor';
+import { RequestInterceptor } from '@v3/services/request.interceptor';
 import { IonicModule } from '@ionic/angular';
 import { environment } from '@v3/environments/environment';
-import { ApolloModule } from 'apollo';
 import { RequestModule } from 'request';
 
 import { AppRoutingModule } from './app-routing.module';
@@ -23,6 +22,7 @@ import { ApolloService } from './services/apollo.service';
       appkey: environment.appkey,
       prefixUrl: environment.APIEndpoint,
     }),
+
   ],
   providers: [
     {

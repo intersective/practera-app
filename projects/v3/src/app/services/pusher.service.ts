@@ -8,6 +8,7 @@ import { UtilsService } from '@v3/services/utils.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { Pusher, Config, Channel } from 'pusher-js';
 import * as PusherLib from 'pusher-js';
+import { ApolloService } from './apollo.service';
 
 const api = {
   pusherAuth: 'api/v2/message/notify/pusher_auth.json',
@@ -59,7 +60,8 @@ export class PusherService {
     private request: RequestService,
     private utils: UtilsService,
     public storage: BrowserStorageService,
-    private ngZone: NgZone
+    private ngZone: NgZone,
+    private apolloService: ApolloService,
   ) {
     if (config) {
       this.pusherKey = config.pusherKey;
@@ -193,7 +195,7 @@ export class PusherService {
   }
 
   getChatChannels(): Observable<any> {
-    return this.request.chatGraphQLQuery(
+    return this.apolloService.chatGraphQLQuery(
       `query getPusherChannels {
         channels {
           pusherChannel
