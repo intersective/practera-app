@@ -8,6 +8,7 @@ import { ActivityCompletePopUpComponent } from '../components/activity-complete-
 import { Achievement, AchievementsService } from './achievements.service';
 import { UtilsService } from '@v3/services/utils.service';
 import { ReviewRatingComponent } from '../components/review-rating/review-rating.component';
+import { LockTeamAssessmentPopUpComponent } from '../components/lock-team-assessment-pop-up/lock-team-assessment-pop-up.component';
 
 export interface CustomTostOptions {
   message: string;
@@ -50,7 +51,7 @@ export class NotificationsService {
   // show pop up message
   // this is using pop-up.component.ts as the view
   // put redirect = false if don't need to redirect
-/*   async popUp(type, data, redirect: any = false) {
+  async popUp(type, data, redirect: any = false) {
     const component = PopUpComponent;
     const componentProps = {
       type,
@@ -59,7 +60,7 @@ export class NotificationsService {
     };
     const modal = await this.modal(component, componentProps);
     return modal;
-  } */
+  }
 
   async modal(component, componentProps, options?, event?): Promise<void> {
     const modal = await this.modalOnly(component, componentProps, options, event);

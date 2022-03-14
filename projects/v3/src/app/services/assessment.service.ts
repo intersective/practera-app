@@ -6,6 +6,8 @@ import { UtilsService } from '@v3/services/utils.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { NotificationsService } from '@v3/services/notifications.service';
 import { DomSanitizer } from '@angular/platform-browser';
+import { ApolloService } from './apollo.service';
+import { ReviewRatingComponent } from '../components/review-rating/review-rating.component';
 
 /**
  * @name api
@@ -112,10 +114,11 @@ export class AssessmentService {
     private storage: BrowserStorageService,
     private notification: NotificationsService,
     public sanitizer: DomSanitizer,
+    private apolloService: ApolloService,
   ) { }
 
   getAssessment(id, action, activityId, contextId, submissionId?) {
-    return this.request.graphQLWatch(
+    return this.apolloService.graphQLWatch(
       `query getAssessment($assessmentId: Int!, $reviewer: Boolean!, $activityId: Int!, $contextId: Int!, $submissionId: Int) {
         assessment(id:$assessmentId, reviewer:$reviewer, activityId:$activityId) {
           name type description dueDate isTeam pulseCheck
@@ -403,7 +406,7 @@ export class AssessmentService {
         variables[item.key] = assessment[item.key];
       }
     });
-    return this.request.graphQLMutate(
+    return this.apolloService.graphQLMutate(
       `mutation saveAnswers(${paramsFormat}){
         ` + (action === 'assessment' ? `submitAssessment` : `submitReview`) + `(${params})
       }`,
@@ -424,6 +427,21 @@ export class AssessmentService {
       });
   }
 
+  /**
+   * trigger reviewer rating modal
+   *
+   * @param   {number}          reviewId  submission review record id
+   * @param   {string[]<void>}  redirect  array: routeUrl, boolean: disable
+   *                                      routing (stay at same component)
+   *
+   * @return  {Promise<void>}             deferred ionic modal
+   */
+  popUpReviewRating(reviewId, redirect: string[] | boolean): Promise<void> {
+    return this.notification.modal(ReviewRatingComponent, {
+      reviewId,
+      redirect
+    });
+  }
 
   checkReviewer(reviewer): string {
     if (!reviewer) {

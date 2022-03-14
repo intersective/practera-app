@@ -231,7 +231,7 @@ export class RequestService {
     return;
   }
 
-  private handleError(error: HttpErrorResponse | any) {
+  public handleError(error: HttpErrorResponse | any) {
     if (this.devMode.isDevMode()) {
       console.error(error); // log to console instead
     }

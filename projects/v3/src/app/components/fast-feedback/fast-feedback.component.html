@@ -10,7 +10,7 @@
 
   <form (ngSubmit)="submit()" [formGroup]="fastFeedbackForm" style="margin: 0 1em;">
     <ng-container *ngFor="let question of questions">
-      <question [question]="question" [form]="fastFeedbackForm"></question>
+      <app-questions [question]="question" [form]="fastFeedbackForm"></app-questions>
     </ng-container>
 
     <div class="ion-text-center">

@@ -2,10 +2,10 @@ import { gql, Apollo } from 'apollo-angular';
 import { HttpLink } from 'apollo-angular/http';
 import { InMemoryCache, defaultDataIdFromObject } from '@apollo/client/core';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { environment } from '@v3/environments/environment';
 import { RequestService } from 'request';
-import { catchError, map } from 'rxjs/operators';
+import { catchError, concatMap, map } from 'rxjs/operators';
 
 enum ClientType {
   core = 'CORE',
@@ -130,7 +130,6 @@ export class ApolloService {
     });
     return watch.valueChanges
       .pipe(map(response => {
-        this.requestService._refreshApikey(response);
         return response;
       }))
       .pipe(
@@ -154,7 +153,13 @@ export class ApolloService {
       variables: variables || {},
       fetchPolicy: 'no-cache'
     });
-    return watch;
+    return watch
+      .pipe(map(response => {
+        return response;
+      }))
+      .pipe(
+        catchError((error) => this.requestService.handleError(error))
+      );
   }
 
   /**
@@ -164,7 +169,12 @@ export class ApolloService {
     return this.apollo.mutate({
       mutation: gql(query),
       variables: variables
-    });
+    }).pipe(
+      concatMap(response => {
+        return of(response);
+      }),
+      catchError((error) => this.requestService.handleError(error))
+    );
   }
 
   /**
@@ -178,14 +188,24 @@ export class ApolloService {
       variables: variables || {},
       fetchPolicy: options.noCache ? 'no-cache' : 'cache-and-network'
     });
-    return watch;
+    return watch.valueChanges.pipe(
+      concatMap(response => {
+        return of(response);
+      }),
+      catchError((error) => this.requestService.handleError(error))
+    );
   }
 
   chatGraphQLMutate(query: string, variables = {}): Observable<any> {
     return this.apollo.use('chat').mutate({
       mutation: gql(query),
       variables: variables
-    });
+    }).pipe(
+      concatMap(response => {
+        return of(response);
+      }),
+      catchError((error) => this.requestService.handleError(error))
+    );
   }
 
   writeFragment({ id, fragment, data }) {

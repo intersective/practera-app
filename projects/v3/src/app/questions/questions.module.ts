@@ -8,7 +8,6 @@ import { TeamMemberSelectorComponent } from './team-member-selector/team-member-
 import { FileDisplayComponent } from './file/file-display/file-display.component';
 import { IonicModule } from '@ionic/angular';
 import { CommonModule } from '@angular/common';
-import { ComponentsModule } from '../components/components.module';
 import { FilestackModule } from '../components/filestack/filestack.module';
 
 @NgModule({
@@ -17,7 +16,6 @@ import { FilestackModule } from '../components/filestack/filestack.module';
     CommonModule,
     ReactiveFormsModule,
     FilestackModule,
-    ComponentsModule,
   ],
   declarations: [
     TextComponent,
