@@ -3,7 +3,7 @@ import { HttpLink } from 'apollo-angular/http';
 import { InMemoryCache, defaultDataIdFromObject } from '@apollo/client/core';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { environment } from '@environments/environment';
+import { environment } from '@v3/environments/environment';
 
 enum ClientType {
   core = 'CORE',
