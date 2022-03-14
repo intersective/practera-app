@@ -4,6 +4,8 @@ import { InMemoryCache, defaultDataIdFromObject } from '@apollo/client/core';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '@v3/environments/environment';
+import { RequestService } from 'request';
+import { catchError, map } from 'rxjs/operators';
 
 enum ClientType {
   core = 'CORE',
@@ -23,6 +25,7 @@ export class ApolloService {
   constructor(
     private apollo: Apollo,
     private httpLink: HttpLink,
+    private requestService: RequestService,
   ) {}
 
   initiateCoreClient(): Apollo {
@@ -118,14 +121,21 @@ export class ApolloService {
    * Valid options:
    * noCache: Boolean default false. If set to false, will not cache the result
    */
-  graphQLWatch(query: string, variables?: any, options?: any) {
+  graphQLWatch(query: string, variables?: any, options?: any): Observable<any> {
     options = { ...{ noCache: false }, ...options };
     const watch = this.apollo.watchQuery({
       query: gql(query),
       variables: variables || {},
       fetchPolicy: options.noCache ? 'no-cache' : 'cache-and-network'
     });
-    return watch;
+    return watch.valueChanges
+      .pipe(map(response => {
+        this.requestService._refreshApikey(response);
+        return response;
+      }))
+      .pipe(
+        catchError((error) => this.requestService.handleError(error))
+      );
   }
 
   /**
