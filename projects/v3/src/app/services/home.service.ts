@@ -45,6 +45,9 @@ export class HomeService {
   private _experienceProgress$ = new BehaviorSubject<number>(null);
   experienceProgress$ = this._experienceProgress$.asObservable();
 
+  private _activityCount$ = new BehaviorSubject<number>(null);
+  activityCount$ = this._activityCount$.asObservable();
+
   private _milestones$ = new BehaviorSubject<Milestone[]>([]);
   milestones$ = this._milestones$.asObservable();
 
@@ -95,7 +98,19 @@ export class HomeService {
 
   getMilestones() {
     if (environment.demo) {
-      setTimeout(() => this._milestones$.next(this.demo.milestones), 1000 * (Math.random() + 1));
+      setTimeout(
+        () => {
+          let activityCount = 0;
+          this.demo.milestones.forEach(m => {
+            if (m.activities && m.activities.length) {
+              activityCount += m.activities.length;
+            }
+          });
+          this._activityCount$.next(activityCount);
+          this._milestones$.next(this.demo.milestones);
+        },
+        1000 * (Math.random() + 1)
+      );
     }
   }
 
