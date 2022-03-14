@@ -1,7 +1,7 @@
 import { Component, Input, Output, OnInit, OnChanges, SimpleChanges , ViewChild, ElementRef, EventEmitter} from '@angular/core';
-import { FilestackService } from '@shared/filestack/filestack.service';
-import { UtilsService } from '@services/utils.service';
-import { environment } from '@environments/environment';
+import { FilestackService } from '@v3/components/filestack/filestack.service';
+import { UtilsService } from '@v3/services/utils.service';
+import { environment } from '@v3/environments/environment';
 
 @Component({
   selector: 'app-file-display',

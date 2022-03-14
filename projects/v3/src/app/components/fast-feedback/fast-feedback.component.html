@@ -8,25 +8,6 @@
     <p class="body-1 ion-margin">Please help us to improve your experience.<br>We want to know how are you doing?</p>
   </div>
 
-  <form (ngSubmit)="submit()" [formGroup]="fastFeedbackForm" style="margin: 0 1em;">
-    <ng-container *ngFor="let question of questions">
-      <app-questions [question]="question" [form]="fastFeedbackForm"></app-questions>
-    </ng-container>
-
-    <div class="ion-text-center">
-      <ion-button type="submit"
-        [disabled]="fastFeedbackForm.invalid || loading"
-        shape="round"
-        class="btn-cta">
-        <ng-container *ngIf="!loading">Submit</ng-container>
-        <ng-container *ngIf="loading && !submissionCompleted">
-          <ion-spinner name="dots"></ion-spinner>
-        </ng-container>
-        <ng-container *ngIf="loading && submissionCompleted">
-          <ion-icon src="/assets/checkmark.svg"></ion-icon>
-        </ng-container>
-      </ion-button>
-    </div>
-  </form>
+  test
 
 </ion-content>

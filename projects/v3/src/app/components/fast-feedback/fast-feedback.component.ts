@@ -5,7 +5,6 @@ import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { UtilsService } from '@v3/services/utils.service';
 import { NotificationsService } from '@v3/services/notifications.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
-import { NewRelicService } from '@shared/new-relic/new-relic.service';
 
 @Component({
   selector: 'app-fast-feedback',
@@ -26,12 +25,9 @@ export class FastFeedbackComponent implements OnInit {
     private notification: NotificationsService,
     private fastFeedbackService: FastFeedbackService,
     public storage: BrowserStorageService,
-    private newRelic: NewRelicService
   ) {}
 
   ngOnInit() {
-    this.newRelicTracer = this.newRelic.createTracer('fastfeedback shown');
-    this.newRelic.setPageViewName('Fast feedback popup');
     const group: any = {};
     this.questions.forEach(question => {
       group[question.id] = new FormControl('', Validators.required);
@@ -70,12 +66,10 @@ export class FastFeedbackComponent implements OnInit {
       params['target_user_id'] = this.meta.target_user_id;
     }
 
-    const nrFastFeedbackSubmissionTracer = this.newRelic.createTracer('fastfeeback submission');
 
     let submissionResult;
     try {
       submissionResult = await this.fastFeedbackService.submit(data, params).toPromise();
-      nrFastFeedbackSubmissionTracer();
 
       this.submissionCompleted = true;
       return setTimeout(
