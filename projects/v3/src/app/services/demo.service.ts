@@ -4,6 +4,7 @@ import { Injectable } from '@angular/core';
   providedIn: 'root'
 })
 export class DemoService {
+  image = 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=2252&q=80';
 
   description = `Practera is the leading platform to power high quality experiential learning programs.<br/><br/>Deliver experiential learning programs at larger scale and lower cost<br/>Customisable platform to author, launch & manage programs<br/>Connect students to industry projects, internships & experiences<br/>Expert course design, configuration and deployment services<br/><br/>Deliver experiential learning programs at larger scale and lower cost<br/>Customisable platform to author, launch & manage programs<br/>Connect students to industry projects, internships & experiences<br/>Expert course design, configuration and deployment services<br/><br/>Deliver experiential learning programs at larger scale and lower cost<br/>Customisable platform to author, launch & manage programs<br/>Connect students to industry projects, internships & experiences<br/>Expert course design, configuration and deployment services<br/><br/>Deliver experiential learning programs at larger scale and lower cost<br/>Customisable platform to author, launch & manage programs<br/>Connect students to industry projects, internships & experiences<br/>Expert course design, configuration and deployment services`;
 
@@ -11,7 +12,7 @@ export class DemoService {
 
   get experience() {
     return {
-      image: 'https://images.app.goo.gl/aoQNwRxnqn2Ktv2s6',
+      image: this.image,
       name: 'Welcome to the Global Trade Accelerator',
       description: this.description
     }
@@ -29,19 +30,19 @@ export class DemoService {
             id: 11,
             name: 'Welcome to the Global Trade Accelerator',
             isLocked: false,
-            leadImage: ''
+            leadImage: this.image
           },
           {
             id: 12,
             name: 'Introduction to Experiential Learning',
             isLocked: false,
-            leadImage: ''
+            leadImage: this.image
           },
           {
             id: 13,
             name: 'The First Client Meeting',
             isLocked: false,
-            leadImage: ''
+            leadImage: this.image
           }
         ]
       },
@@ -55,13 +56,13 @@ export class DemoService {
             id: 21,
             name: 'The Second Client Meeting',
             isLocked: false,
-            leadImage: ''
+            leadImage: this.image
           },
           {
             id: 22,
             name: 'This is a locked activity',
             isLocked: true,
-            leadImage: ''
+            leadImage: this.image
           }
         ]
       },

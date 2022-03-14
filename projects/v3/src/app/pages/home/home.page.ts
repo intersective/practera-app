@@ -10,6 +10,7 @@ import { UtilsService } from '@v3/services/utils.service';
 })
 export class HomePage implements OnInit {
   experience$ = this.service.experience$;
+  activityCount$ = this.service.activityCount$;
   experienceProgress$ = this.service.experienceProgress$;
   milestones$ = this.service.milestonesWithProgress$;
 
@@ -29,6 +30,10 @@ export class HomePage implements OnInit {
 
   get isMobile() {
     return this.utils.isMobile();
+  }
+
+  gotoActivity(id: number) {
+    console.log(id);
   }
 
 }

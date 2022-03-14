@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 
 @Component({
   selector: 'app-list-item',
@@ -11,6 +11,7 @@ export class ListItemComponent {
   @Input() leadingIcon: string;
   @Input() leadingIconColor: string;
   @Input() leadingIconPulsing: boolean;
+  @Input() leadImage: string;
   @Input() title: string;
   @Input() titleColor: string;
   @Input() subtitle1: string;
