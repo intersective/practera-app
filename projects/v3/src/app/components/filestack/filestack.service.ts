@@ -2,11 +2,11 @@ import * as filestack from 'filestack-js';
 import { Injectable } from '@angular/core';
 import { ModalController } from '@ionic/angular';
 import { PreviewComponent } from './preview/preview.component';
-import { environment } from '@environments/environment';
-import { BrowserStorageService } from '@services/storage.service';
+import { environment } from '@v3/environments/environment';
+import { BrowserStorageService } from '@v3/services/storage.service';
 import { HttpClient } from '@angular/common/http'; // added to make one and only API call to filestack server
 import { forkJoin } from 'rxjs';
-import { NotificationService } from '@shared/notification/notification.service';
+import { NotificationsService } from '@v3/services/notifications.service';
 import { UtilsService } from '@v3/services/utils.service';
 
 export interface Metadata {
@@ -46,7 +46,7 @@ export class FilestackService {
     private modalController: ModalController,
     private storage: BrowserStorageService,
     private httpClient: HttpClient,
-    private notificationService: NotificationService,
+    private notificationsService: NotificationsService,
     private utils: UtilsService
   ) {
     const { policy, signature } = environment.filestack;
@@ -127,7 +127,7 @@ export class FilestackService {
     try {
       metadata = await this.metadata(file);
     } catch (e) {
-      return this.notificationService.alert({
+      return this.notificationsService.alert({
         subHeader: 'Inaccessible file',
         message: 'The uploaded file is suspicious and being scanned for potential risk. Please try again later.',
       });
@@ -136,7 +136,7 @@ export class FilestackService {
     if (metadata.mimetype && metadata.mimetype.includes('application/')) {
       const megabyte = (metadata && metadata.size) ? metadata.size / 1000 / 1000 : 0;
       if (megabyte > 10) {
-        return this.notificationService.alert({
+        return this.notificationsService.alert({
           subHeader: 'File size too large',
           message: `Attachment size has exceeded the size of ${Math.floor(megabyte)}mb please consider downloading the file for better reading experience.`,
           buttons: [

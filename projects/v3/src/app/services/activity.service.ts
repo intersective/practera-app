@@ -1,11 +1,12 @@
 import { Injectable } from '@angular/core';
 import { Observable, of, forkJoin } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { RequestService } from '@shared/request/request.service';
+import { RequestService } from 'request';
 import { UtilsService } from '@v3/services/utils.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { NotificationsService } from '@v3/services/notifications.service';
 import { Router } from '@angular/router';
+import { ApolloService } from '@v3/services/apollo.service';
 
 /**
  * @name api
@@ -52,11 +53,12 @@ export class ActivityService {
     private utils: UtilsService,
     public storage: BrowserStorageService,
     private router: Router,
-    private notification: NotificationsService
+    private notification: NotificationsService,
+    private apolloService: ApolloService,
   ) {}
 
   public getActivity(id) {
-    return this.request.graphQLWatch(
+    return this.apolloService.graphQLWatch(
       `query getActivity($id: Int!) {
         activity(id:$id){
           id name description tasks{

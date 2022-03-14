@@ -9,7 +9,6 @@ import { SharedService } from '@v3/services/shared.service';
 import { ActivityService } from '@v3/services/activity.service';
 import { FastFeedbackService } from '@v3/services/fast-feedback.service';
 import { interval, timer, Subscription } from 'rxjs';
-import { NewRelicService } from '@shared/new-relic/new-relic.service';
 
 const SAVE_PROGRESS_TIMEOUT = 10000;
 
@@ -104,7 +103,6 @@ export class AssessmentPage {
     private activityService: ActivityService,
     private fastFeedbackService: FastFeedbackService,
     private ngZone: NgZone,
-    private newRelic: NewRelicService,
   ) { }
 
   get isMobile() {
@@ -250,7 +248,6 @@ export class AssessmentPage {
       .subscribe(
         result => {
           this.assessment = result.assessment;
-          this.newRelic.setPageViewName(`Assessment: ${this.assessment.name} ID: ${this.id}`);
           this.populateQuestionsForm();
           this.loadingAssessment = false;
           this._handleSubmissionData(result.submission);
@@ -274,7 +271,7 @@ export class AssessmentPage {
           this._handleReviewData(result.review);
         },
         error => {
-          this.newRelic.noticeError(error);
+          console.log(error);
         }
       );
   }
@@ -391,7 +388,6 @@ export class AssessmentPage {
   navigateBack(): Promise<boolean> {
     const referrer = this.storage.getReferrer();
     if (this.utils.has(referrer, 'url') && referrer.route === 'assessment') {
-      this.newRelic.actionText('Navigating to external return URL from Assessment');
       this.utils.redirectToUrl(referrer.url);
       return Promise.resolve(true);
     }
@@ -411,7 +407,6 @@ export class AssessmentPage {
    * When user click on the back button
    */
   back(): Promise<boolean | void> {
-    this.newRelic.actionText('Back to previous page.');
 
     if (this.action === 'assessment'
       && this.submission
@@ -488,7 +483,6 @@ export class AssessmentPage {
       return this.navigateBack();
     }
 
-    this.newRelic.actionText('Navigate to next task.');
     this.continueBtnLoading = true;
     this.activityService.gotoNextTask(this.activityId, 'assessment', this.id, this.submitted).then(redirect => {
       this.continueBtnLoading = false;
@@ -636,12 +630,10 @@ export class AssessmentPage {
     ).subscribe(
       result => {
         if (saveInProgress) {
-          this.newRelic.actionText('Saved progress.');
           // display message for successfull saved answers
           this.savingMessage = 'Last saved ' + this._getCurrentTime();
           this.savingButtonDisabled = false;
         } else {
-          this.newRelic.actionText('Assessment Submitted.');
           this.submitting = false;
           this.submitted = true;
           this.changeStatus.emit({
@@ -654,7 +646,6 @@ export class AssessmentPage {
         }
       },
       (err: { msg?: string, message?: string }) => {
-        this.newRelic.noticeError(JSON.stringify(err));
 
         this.submitting = false;
         this.savingButtonDisabled = false;
@@ -695,12 +686,10 @@ export class AssessmentPage {
     }
     this.continueBtnLoading = true;
     let result;
-    this.newRelic.actionText('Waiting for review feedback read.');
     // Mark feedback as read
     try {
       result = await this.assessmentService.saveFeedbackReviewed(this.submission.id).toPromise();
       this.feedbackReviewed = true;
-      this.newRelic.actionText('Review feedback read.');
       this.continueBtnLoading = false;
     } catch (err) {
       this.continueBtnLoading = false;
@@ -720,14 +709,12 @@ export class AssessmentPage {
       return;
     }
     this.continueBtnLoading = true;
-    this.newRelic.actionText('Waiting for review rating API response.');
     try {
       // display review rating modal
       await this.assessmentService.popUpReviewRating(this.review.id, false);
       this.continueBtnLoading = false;
     } catch (err) {
       const msg = 'Can not get review rating information';
-      this.newRelic.noticeError(msg);
       const toasted = await this.notificationsService.alert({
         header: msg,
         message: err.msg || JSON.stringify(err)
@@ -738,7 +725,6 @@ export class AssessmentPage {
   }
 
   showQuestionInfo(info) {
-    this.newRelic.actionText('Read question info.');
     this.notificationsService.popUp('shortMessage', { message: info });
   }
 
