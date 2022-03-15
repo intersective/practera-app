@@ -1,7 +1,6 @@
 import { Component, Input, ViewChild, ElementRef, AfterViewInit, OnChanges, SimpleChange } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
-import { trigger, state, transition, style, animate } from '@angular/animations';
-import { BrowserStorageService } from '@services/storage.service';
+import { BrowserStorageService } from '@v3/services/storage.service';
 
 @Component({
   selector: 'app-description',
