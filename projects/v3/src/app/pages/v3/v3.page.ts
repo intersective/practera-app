@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { ModalController, PopoverController, createAnimation } from '@ionic/angular';
+import { ModalController, PopoverController } from '@ionic/angular';
+import { AnimationsService } from '@v3/app/services/animations.service';
 import { SettingsSlidePage } from '../settings-slide/settings-slide.page';
 
 @Component({
@@ -17,57 +18,34 @@ export class V3Page implements OnInit {
     {
       title: 'Events',
       url: '/v3/events',
-      icon: 'event'
+      icon: 'calendar'
     },
     {
       title: 'Reviews',
       url: '/v3/reviews',
-      icon: 'reviews'
+      icon: 'eye'
     },
     {
       title: 'Messages',
       url: '/v3/messages',
-      icon: 'messages'
+      icon: 'mail'
     }
   ];
   constructor(
     private modalController: ModalController,
     private popoverController: PopoverController,
+    private animationService: AnimationsService
   ) { }
 
   ngOnInit() {
   }
 
-  private enterAnimation(baseElement) {
-    const root = baseElement.shadowRoot;
-    const backdropAnimation = createAnimation()
-      .addElement(root.querySelector('ion-backdrop'))
-      .fromTo('opacity', '0.01', '0.4');
-
-    const wrapperAnimation = createAnimation()
-      .addElement(root.querySelector('.modal-wrapper'))
-      .keyframes([
-        { offset: 0, opacity: '0', transform: 'translateX(200%)' },
-        { offset: 1, opacity: '0.99', transform: 'translateX(0)' }
-      ]);
-
-    return createAnimation()
-      .addElement(baseElement)
-      .easing('ease-out')
-      .duration(300)
-      .addAnimation([backdropAnimation, wrapperAnimation]);
-  }
-
-  private leaveAnimation(baseElement) {
-    return createAnimation(baseElement).direction('reverse');
-  }
-
   async presentModal() {
     const modal = await this.modalController.create({
       component: SettingsSlidePage,
-      enterAnimation: this.enterAnimation,
-      leaveAnimation: this.leaveAnimation,
-      cssClass: 'abcd'
+      enterAnimation: this.animationService.enterAnimation,
+      leaveAnimation: this.animationService.leaveAnimation,
+      cssClass: 'right-affixed'
     });
     return await modal.present();
   }

@@ -124,4 +124,13 @@ export class DemoService {
       earnedDate: '2021-10-04 05:44:49'
     }));
   }
+
+  get notifications() {
+    return [
+      {
+        id: 1,
+        title: 'notification 1',
+      },
+    ];
+  }
 }
