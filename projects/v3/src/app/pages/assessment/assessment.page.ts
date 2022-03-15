@@ -12,6 +12,16 @@ import { interval, timer, Subscription } from 'rxjs';
 
 const SAVE_PROGRESS_TIMEOUT = 10000;
 
+interface QuestionsForm {
+  name: string;
+  type: string;
+  description: string;
+  isForTeam: boolean;
+  dueDate: string;
+  isOverdue: boolean;
+  groups: FormControl[];
+  pulseCheck: boolean;
+};
 
 @Component({
   selector: 'app-assessment',
@@ -79,7 +89,8 @@ export class AssessmentPage {
 
   feedbackReviewed = false;
   loadingAssessment = true;
-  questionsForm = new FormGroup({});
+  formModel: {[propKey: string]: FormControl} = {};
+  questionsForm: FormGroup = new FormGroup(this.formModel);
   submitting: boolean;
   submitted: boolean;
   savingButtonDisabled = true;
@@ -103,7 +114,9 @@ export class AssessmentPage {
     private activityService: ActivityService,
     private fastFeedbackService: FastFeedbackService,
     private ngZone: NgZone,
-  ) { }
+  ) {
+    this.questionsForm = new FormGroup(this.formModel);
+  }
 
   get isMobile() {
     return this.utils.isMobile();

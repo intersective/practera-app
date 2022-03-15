@@ -1,6 +1,6 @@
 import { Component, OnInit, Input, Output, EventEmitter, forwardRef, ViewChild, ElementRef } from '@angular/core';
-import { NG_VALUE_ACCESSOR, ControlValueAccessor, FormControl } from '@angular/forms';
-import { FilestackService } from '@v3/app/components/filestack/filestack.service';
+import { NG_VALUE_ACCESSOR, ControlValueAccessor, FormControl, AbstractControl } from '@angular/forms';
+import { FilestackService } from '@v3/services/filestack.service';
 
 @Component({
   selector: 'app-file',
@@ -36,7 +36,7 @@ export class FileComponent implements ControlValueAccessor, OnInit {
   // this is for doing review or not
   @Input() doReview: Boolean;
   // FormControl that is passed in from parent component
-  @Input() control: FormControl;
+  @Input() control: AbstractControl;
   // answer field for submitter & reviewer
   @ViewChild('answer') answerRef: ElementRef;
   // comment field for reviewer

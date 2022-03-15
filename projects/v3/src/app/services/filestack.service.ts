@@ -1,13 +1,14 @@
 import * as filestack from 'filestack-js';
 import { Injectable } from '@angular/core';
 import { ModalController } from '@ionic/angular';
-import { PreviewComponent } from './preview/preview.component';
+// import { PreviewComponent } from './preview/preview.component';
 import { environment } from '@v3/environments/environment';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { HttpClient } from '@angular/common/http'; // added to make one and only API call to filestack server
 import { forkJoin } from 'rxjs';
 import { NotificationsService } from '@v3/services/notifications.service';
 import { UtilsService } from '@v3/services/utils.service';
+import { FilestackPreviewComponent } from '../components/filestack-preview/filestack-preview.component';
 
 export interface Metadata {
   mimetype?: string;
@@ -231,7 +232,7 @@ export class FilestackService {
 
   async previewModal(url, filestackUploadedResponse?): Promise<void> {
     const modal = await this.modalController.create({
-      component: PreviewComponent,
+      component: FilestackPreviewComponent,
       componentProps: {
         url: url,
         file: filestackUploadedResponse, // for whole object reference

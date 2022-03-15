@@ -1,5 +1,5 @@
 import { Component, Input, Output, EventEmitter, forwardRef, ViewChild, ElementRef, OnInit } from '@angular/core';
-import { NG_VALUE_ACCESSOR, ControlValueAccessor, FormControl } from '@angular/forms';
+import { NG_VALUE_ACCESSOR, ControlValueAccessor, FormControl, AbstractControl } from '@angular/forms';
 
 @Component({
   selector: 'app-team-member-selector',
@@ -27,7 +27,7 @@ export class TeamMemberSelectorComponent implements ControlValueAccessor, OnInit
   // this is for doing review or not
   @Input() doReview: Boolean;
   // FormControl that is passed in from parent component
-  @Input() control: FormControl;
+  @Input() control: AbstractControl;
   // answer field for submitter & reviewer
   @ViewChild('answerEle') answerRef: ElementRef;
   // comment field for reviewer
@@ -51,7 +51,7 @@ export class TeamMemberSelectorComponent implements ControlValueAccessor, OnInit
 
   // event fired when radio is selected. propagate the change up to the form control using the custom value accessor interface
   // if 'type' is set, it means it comes from reviewer doing review, otherwise it comes from submitter doing assessment
-  onChange(value, type) {
+  onChange(value, type?: string) {
     // set changed value (answer or comment)
     if (type) {
       // initialise innerValue if not set

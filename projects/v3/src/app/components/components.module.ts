@@ -5,7 +5,6 @@ import { FormsModule } from '@angular/forms';
 import { DescriptionComponent } from './description/description.component';
 import { ListItemComponent } from './list-item/list-item.component';
 import { ImgComponent } from './img/img.component';
-// import { FilestackModule } from './filestack/filestack.module';
 import { DragAndDropDirective } from '../directives/drag-and-drop/drag-and-drop.directive';
 import { AutoresizeDirective } from '../directives/autoresize/autoresize.directive';
 import { FloatDirective } from '../directives/float/float.directive';
@@ -18,7 +17,8 @@ import { ReviewRatingComponent } from './review-rating/review-rating.component';
 import { PersonalisedHeaderComponent } from './personalised-header/personalised-header.component';
 import { CircleProgressComponent } from './circle-progress/circle-progress.component';
 import { NgCircleProgressModule } from 'ng-circle-progress';
-// import { QuestionsModule } from '../questions/questions.module';
+import { FilestackComponent } from './filestack/filestack.component';
+import { FilestackPreviewComponent } from './filestack-preview/filestack-preview.component';
 
 const largeCircleDefaultConfig = {
   backgroundColor: 'var(--ion-color-light)',
@@ -43,13 +43,12 @@ const largeCircleDefaultConfig = {
     FormsModule,
     NgCircleProgressModule.forRoot(largeCircleDefaultConfig),
     // QuestionsModule,
-    // FilestackModule,
   ],
   declarations: [
+    DragAndDropDirective,
     DescriptionComponent,
     ListItemComponent,
     ImgComponent,
-    DragAndDropDirective,
     AutoresizeDirective,
     FloatDirective,
     AchievementPopUpComponent,
@@ -61,15 +60,17 @@ const largeCircleDefaultConfig = {
     ReviewRatingComponent,
     PersonalisedHeaderComponent,
     CircleProgressComponent,
+    FilestackComponent,
+    FilestackPreviewComponent,
   ],
   exports: [
+    DragAndDropDirective,
     DescriptionComponent,
     ListItemComponent,
     IonicModule,
     CommonModule,
     FormsModule,
     ImgComponent,
-    DragAndDropDirective,
     AutoresizeDirective,
     FloatDirective,
     AchievementPopUpComponent,
@@ -81,6 +82,11 @@ const largeCircleDefaultConfig = {
     ReviewRatingComponent,
     PersonalisedHeaderComponent,
     CircleProgressComponent,
+    IonicModule,
+    CommonModule,
+    FormsModule,
+    FilestackComponent,
+    FilestackPreviewComponent,
   ],
 })
 export class ComponentsModule {}
