@@ -20,6 +20,7 @@ export class ListItemComponent {
   @Input() endingText: string | number;
   @Input() endingIcon: string;
   @Input() endingIconColor: string;
+  @Input() endingProgress: number;
   // whether hightlight the background or not
   @Input() active: boolean;
   @Input() isEventItem: boolean;

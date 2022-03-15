@@ -1,6 +1,10 @@
 img {
   width: 100%;
 }
+ion-segment {
+  --background: var(--ion-color-light);
+  padding: 10px;
+}
 .milestone-name {
   --color: var(--ion-color-primary);
   --background: var(--ion-color-primary-tint);

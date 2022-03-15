@@ -36,17 +36,28 @@
       </ion-col>
 
       <ion-col size="12" size-md="7">
-        <ng-container *ngIf="(milestones$ | async ) as milestones">
+
+        <ion-segment (ionChange)="switchContent($event)" [value]="display" color="light">
+          <ion-segment-button value="activities" mode="ios">
+            <ion-label>Activities</ion-label>
+          </ion-segment-button>
+          <ion-segment-button value="badges" mode="ios">
+            <ion-label>Badegs</ion-label>
+          </ion-segment-button>
+        </ion-segment>
+
+        <ng-container *ngIf="display === 'activities' && (milestones$ | async ) as milestones">
           <ng-container *ngFor="let milestone of milestones">
             <ion-item class="headline-4 milestone-name" lines="none">{{ milestone.name }}</ion-item>
             <ion-item class="body-3 milestone-des" color="light" lines="none">{{ milestone.description }}</ion-item>
             <app-list-item *ngFor="let activity of milestone.activities; let i = index"
               [title]="activity.name"
               [leadImage]="activity.leadImage"
-              [endingText]="activity.progress"
               [lines]="i < milestone.activities.length - 1 ? 'full' : 'none'"
               (click)="gotoActivity(activity.id)"
-              [endingIcon]="activity.progress ? '' : 'chevron-forward-outline'"
+              [endingIcon]="endingIcon(activity.progress)"
+              [endingIconColor]="endingIconColor(activity.progress)"
+              [endingProgress]="endingProgress(activity.progress)"
             ></app-list-item>
           </ng-container>
         </ng-container>
