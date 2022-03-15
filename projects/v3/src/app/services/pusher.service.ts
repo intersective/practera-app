@@ -1,7 +1,7 @@
 import { Injectable, Optional, NgZone } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { map, tap } from 'rxjs/operators';
 import { RequestService } from 'request';
 import { environment } from '@v3/environments/environment';
 import { UtilsService } from '@v3/services/utils.service';
@@ -205,7 +205,7 @@ export class PusherService {
       {
         noCache: true
       }
-    ).pipe(map(response => {
+    ).pipe(tap(response => {
       if (response.data && response.data.channels) {
         const result = JSON.parse(JSON.stringify(response.data.channels));
         result.forEach(element => {
