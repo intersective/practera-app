@@ -1,55 +1,101 @@
+/**
+This scss file generate css classes for the font styles like font size, font family etc.
+font style css class exmple
+  - headline-1
+  - subtitle-2
+  - body-1
+  - button
+**/
+
+:root {
+  --font-weight-thin: 100;
+  --font-weight-light: 300;
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-bold: 700;
+  --font-weight-black: 900;
+}
+
 .normal {
-  font-family: Roboto;
-  font-style: normal;
-  font-weight: bold;
+  font-family: Roboto !important;
+  font-style: normal !important;
+  font-weight: bold !important;
 }
-.headline-1 {
-  @extend .normal;
-  font-size: 34px;
-  line-height: 140%;
+
+$font-styles: (
+  headline-1: (
+    font-size: 34px,
+    line-height: 48px,
+    font-weight: var(--font-weight-bold)
+  ),
+  headline-2: (
+    font-size: 24px,
+    line-height: 29px,
+    font-weight: var(--font-weight-bold)
+  ),
+  headline-3: (
+    font-size: 20px,
+    line-height: 24px,
+    font-weight: var(--font-weight-bold)
+  ),
+  headline-4: (
+    font-size: 14px,
+    line-height: 20px,
+    font-weight: var(--font-weight-bold)
+  ),
+  subtitle-1: (
+    font-size: 14px,
+    line-height: 20px,
+    font-weight: var(--font-weight-regular)
+  ),
+  subtitle-2: (
+    font-size: 12px,
+    line-height: 14px,
+    font-weight: var(--font-weight-regular)
+  ),
+  subtitle-3: (
+    font-size: 12px,
+    line-height: 17px,
+    font-weight: var(--font-weight-bold)
+  ),
+  body-1: (
+    font-size: 16px,
+    line-height: 22px,
+    font-weight: var(--font-weight-regular)
+  ),
+  body-2: (
+    font-size: 14px,
+    line-height: 20px,
+    font-weight: var(--font-weight-regular)
+  ),
+  body-3: (
+    font-size: 12px,
+    line-height: 17px,
+    font-weight: var(--font-weight-regular)
+  ),
+  button: (
+    font-size: 14px,
+    line-height: 20px,
+    font-weight: var(--font-weight-bold)
+  ),
+  caption: (
+    font-size: 12px,
+    line-height: 17px,
+    font-weight: var(--font-weight-regular)
+  )
+);
+
+@mixin get-font-style($class-name) {
+  $value: map-get($font-styles, $class-name);
+
+  font-size: map-get($value, font-size) !important;
+  line-height: map-get($value, line-height) !important;
+  font-weight: map-get($value, font-weight) !important;
 }
-.headline-2 {
-  @extend .normal;
-  font-size: 24px;
-  line-height: 120%;
-}
-.headline-3 {
-  @extend .normal;
-  font-size: 20px;
-  line-height: 120%;
-}
-.headline-4 {
-  @extend .normal;
-  font-size: 14px;
-  line-height: 140%;
-}
-.subtitle-1 {
-  @extend .normal;
-  font-size: 14px;
-  line-height: 140%;
-}
-.subtitle-2 {
-  @extend .normal;
-  font-size: 12px;
-  line-height: 120%;
-}
-.subtitle-3 {
-  @extend .normal;
-  font-size: 12px;
-  line-height: 140%;
-}
-.body-2 {
-  @extend .normal;
-  font-size: 14px;
-  line-height: 140%;
-}
-.body-3 {
-  @extend .normal;
-  font-size: 12px;
-  line-height: 140%;
-}
-.button {
-  @extend .normal;
-  font-size: 14px;
-  line-height: 140%;
+
+@each $class-name, $value in $font-styles {
+  .#{$class-name} {
+    @extend .normal;
+    @include get-font-style($class-name);
+  }
 }
