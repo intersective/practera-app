@@ -115,7 +115,6 @@ export class AssessmentPage {
     private fastFeedbackService: FastFeedbackService,
     private ngZone: NgZone,
   ) {
-    this.questionsForm = new FormGroup(this.formModel);
   }
 
   get isMobile() {
