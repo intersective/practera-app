@@ -1,9 +1,11 @@
 import { Injectable } from '@angular/core';
-import { Observable, of } from 'rxjs';
+import { BehaviorSubject, Observable, of } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { RequestService } from 'request';
 import { UtilsService } from '@v3/services/utils.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
+import { DemoService } from './demo.service';
+import { environment } from '@v3/environments/environment';
 
 /**
  * @name api
@@ -33,7 +35,10 @@ export interface Achievement {
   providedIn: 'root'
 })
 
-export class AchievementsService {
+export class AchievementService {
+  private _achievements$ = new BehaviorSubject<Achievement>(null);
+  achievements$ = this._achievements$.asObservable();
+
   earnedPoints = 0;
   totalPoints = 0;
   isPointsConfigured = false;
@@ -41,6 +46,7 @@ export class AchievementsService {
     private request: RequestService,
     private utils: UtilsService,
     private storage: BrowserStorageService,
+    private demo: DemoService
   ) { }
 
   getAchievements(order?): Observable<any> {
@@ -52,7 +58,7 @@ export class AchievementsService {
         order: order
       }
     })
-      .pipe(map(response => {
+      .pipe(map((response: any) => {
         return this._normaliseAchievements(response.data);
       })
       );
@@ -70,7 +76,7 @@ export class AchievementsService {
       if (!this.utils.has(achievement, 'id') ||
         !this.utils.has(achievement, 'name') ||
         !this.utils.has(achievement, 'description') ||
-        !this.utils.has(achievement, 'badge') ||
+        !this.utils.has(achievement, 'achievement') ||
         !this.utils.has(achievement, 'points') ||
         !this.utils.has(achievement, 'isEarned') ||
         !this.utils.has(achievement, 'earnedDate')) {
@@ -81,7 +87,7 @@ export class AchievementsService {
         name: achievement.name,
         description: achievement.description,
         points: achievement.points,
-        image: achievement.badge,
+        image: achievement.achievement,
         isEarned: achievement.isEarned,
         earnedDate: achievement.earnedDate,
       });
