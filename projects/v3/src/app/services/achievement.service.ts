@@ -36,7 +36,7 @@ export interface Achievement {
 })
 
 export class AchievementService {
-  private _achievements$ = new BehaviorSubject<Achievement>(null);
+  private _achievements$ = new BehaviorSubject<Achievement[]>([]);
   achievements$ = this._achievements$.asObservable();
 
   earnedPoints = 0;
@@ -49,7 +49,10 @@ export class AchievementService {
     private demo: DemoService
   ) { }
 
-  getAchievements(order?): Observable<any> {
+  getAchievements(order?) {
+    if (environment.demo) {
+      return setTimeout(() => this._achievements$.next(this.demo.achievements), 1000);
+    }
     if (!order) {
       order = 'asc';
     }
@@ -58,48 +61,44 @@ export class AchievementService {
         order: order
       }
     })
-      .pipe(map((response: any) => {
-        return this._normaliseAchievements(response.data);
-      })
-      );
-  }
-
-  private _normaliseAchievements(data) {
-    if (!Array.isArray(data)) {
-      return this.request.apiResponseFormatError('Achievement format error');
-    }
-    this.earnedPoints = 0;
-    this.totalPoints = 0;
-    this.isPointsConfigured = false;
-    const achievements: Array<Achievement> = [];
-    data.forEach(achievement => {
-      if (!this.utils.has(achievement, 'id') ||
-        !this.utils.has(achievement, 'name') ||
-        !this.utils.has(achievement, 'description') ||
-        !this.utils.has(achievement, 'achievement') ||
-        !this.utils.has(achievement, 'points') ||
-        !this.utils.has(achievement, 'isEarned') ||
-        !this.utils.has(achievement, 'earnedDate')) {
-        return this.request.apiResponseFormatError('Achievement object format error');
-      }
-      achievements.push({
-        id: achievement.id,
-        name: achievement.name,
-        description: achievement.description,
-        points: achievement.points,
-        image: achievement.achievement,
-        isEarned: achievement.isEarned,
-        earnedDate: achievement.earnedDate,
-      });
-      if (achievement.points) {
-        this.totalPoints += +achievement.points;
-        this.isPointsConfigured = true;
-        if (achievement.isEarned) {
-          this.earnedPoints += +achievement.points;
+      .pipe(map((data: any) => {
+        if (!Array.isArray(data)) {
+          return this.request.apiResponseFormatError('Achievement format error');
         }
-      }
-    });
-    return achievements;
+        this.earnedPoints = 0;
+        this.totalPoints = 0;
+        this.isPointsConfigured = false;
+        const achievements: Array<Achievement> = [];
+        data.forEach(achievement => {
+          if (!this.utils.has(achievement, 'id') ||
+            !this.utils.has(achievement, 'name') ||
+            !this.utils.has(achievement, 'description') ||
+            !this.utils.has(achievement, 'achievement') ||
+            !this.utils.has(achievement, 'points') ||
+            !this.utils.has(achievement, 'isEarned') ||
+            !this.utils.has(achievement, 'earnedDate')) {
+            return this.request.apiResponseFormatError('Achievement object format error');
+          }
+          achievements.push({
+            id: achievement.id,
+            name: achievement.name,
+            description: achievement.description,
+            points: achievement.points,
+            image: achievement.achievement,
+            isEarned: achievement.isEarned,
+            earnedDate: achievement.earnedDate,
+          });
+          if (achievement.points) {
+            this.totalPoints += +achievement.points;
+            this.isPointsConfigured = true;
+            if (achievement.isEarned) {
+              this.earnedPoints += +achievement.points;
+            }
+          }
+        });
+        this._achievements$.next(achievements);
+      })
+      ).subscribe();
   }
 
   getEarnedPoints() {

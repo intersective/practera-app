@@ -113,7 +113,7 @@ export class DemoService {
     }
   }
 
-  get badges() {
+  get achievements() {
     return Array(5).fill(1).map((v, i) => ({
       id: i + 1,
       name: `Badge${ i + 1 }`,
