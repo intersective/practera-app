@@ -18,17 +18,17 @@ export class V3Page implements OnInit {
     {
       title: 'Events',
       url: '/v3/events',
-      icon: 'event'
+      icon: 'calendar'
     },
     {
       title: 'Reviews',
       url: '/v3/reviews',
-      icon: 'reviews'
+      icon: 'eye'
     },
     {
       title: 'Messages',
       url: '/v3/messages',
-      icon: 'messages'
+      icon: 'mail'
     }
   ];
   constructor(

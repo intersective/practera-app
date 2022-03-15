@@ -5,12 +5,18 @@ import { ModalController } from '@ionic/angular';
 @Component({
   selector: 'app-pop-up',
   templateUrl: 'pop-up.component.html',
-  styleUrls: ['pop-up.component.css']
+  styleUrls: ['./pop-up.component.css']
 })
 export class PopUpComponent {
   type = '';
   redirect = ['/'];
-  data = {};
+  data : {
+    email: string;
+    message: string;
+  } = {
+    email: '',
+    message: '',
+  };
 
   constructor(
     private router: Router,
