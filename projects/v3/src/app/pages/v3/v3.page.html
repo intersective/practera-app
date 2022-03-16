@@ -4,8 +4,11 @@
 
 <ion-split-pane contentId="main-content">
 
-  <ion-menu contentId="main-content">
+  <ion-menu contentId="main-content" id="menu" [ngClass]="{'collapsed': !openMenu}">
     <ion-content>
+      <ng-container *ngIf="isDesktop">
+        <ion-item detail="false" (click)="openMenu = !openMenu"> open/close</ion-item>
+      </ng-container>
       <ion-list lines="none">
         <ion-menu-toggle autoHide="false" *ngFor="let p of appPages; let i = index">
           <ion-item [routerLink]="p.url" routerLinkActive="selected" routerDirection="root" detail="false">

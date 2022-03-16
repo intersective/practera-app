@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ModalController, PopoverController } from '@ionic/angular';
+import { ModalController, Platform, PopoverController } from '@ionic/angular';
 import { AnimationsService } from '@v3/app/services/animations.service';
 import { SettingsSlidePage } from '../settings-slide/settings-slide.page';
 
@@ -9,6 +9,7 @@ import { SettingsSlidePage } from '../settings-slide/settings-slide.page';
   styleUrls: ['./v3.page.scss'],
 })
 export class V3Page implements OnInit {
+  openMenu = true;
   appPages = [
     {
       title: 'Home',
@@ -34,10 +35,15 @@ export class V3Page implements OnInit {
   constructor(
     private modalController: ModalController,
     private popoverController: PopoverController,
-    private animationService: AnimationsService
+    private animationService: AnimationsService,
+    private platform: Platform,
   ) { }
 
   ngOnInit() {
+  }
+
+  get isDesktop() {
+    return this.platform.is('desktop');
   }
 
   async presentModal() {
