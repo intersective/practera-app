@@ -12,24 +12,12 @@ import { interval, timer, Subscription } from 'rxjs';
 
 const SAVE_PROGRESS_TIMEOUT = 10000;
 
-interface QuestionsForm {
-  name: string;
-  type: string;
-  description: string;
-  isForTeam: boolean;
-  dueDate: string;
-  isOverdue: boolean;
-  groups: FormControl[];
-  pulseCheck: boolean;
-};
-
 @Component({
   selector: 'app-assessment',
   templateUrl: './assessment.page.html',
   styleUrls: ['./assessment.page.scss'],
 })
 export class AssessmentPage {
-
   @Input() inputId: number;
   @Input() inputActivityId: number;
   @Input() inputSubmissionId: number;
@@ -104,17 +92,21 @@ export class AssessmentPage {
   isNotInATeam = false; // to hide assessment content if user not is a team.
 
   constructor(
-    public router: Router,
+    private router: Router,
     private route: ActivatedRoute,
     private assessmentService: AssessmentService,
     readonly utils: UtilsService,
     private notificationsService: NotificationsService,
-    public storage: BrowserStorageService,
-    public sharedService: SharedService,
+    private storage: BrowserStorageService,
+    private sharedService: SharedService,
     private activityService: ActivityService,
     private fastFeedbackService: FastFeedbackService,
     private ngZone: NgZone,
   ) {
+    this.route.queryParams.subscribe(params => {
+      console.log({params});
+      this.onEnter();
+    })
   }
 
   get isMobile() {
