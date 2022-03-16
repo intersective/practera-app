@@ -1,13 +1,13 @@
 import { TestBed } from '@angular/core/testing';
-import { AchievementsService } from './achievements.service';
+import { AchievementService } from './achievement.service';
 import { of } from 'rxjs';
 import { RequestService } from '@shared/request/request.service';
 import { BrowserStorageService } from '@services/storage.service';
 import { UtilsService } from '@app/services/utils.service';
 import { TestUtils } from '@testing/utils';
 
-describe('AchievementsService', () => {
-  let service: AchievementsService;
+describe('AchievementService', () => {
+  let service: AchievementService;
   let requestSpy: jasmine.SpyObj<RequestService>;
 
   beforeEach(() => {
@@ -17,7 +17,7 @@ describe('AchievementsService', () => {
           provide: UtilsService,
           useClass: TestUtils,
         },
-        AchievementsService,
+        AchievementService,
         {
           provide: RequestService,
           useValue: jasmine.createSpyObj('RequestService', ['get', 'post', 'apiResponseFormatError'])
@@ -32,7 +32,7 @@ describe('AchievementsService', () => {
         },
       ]
     });
-    service = TestBed.inject(AchievementsService) as jasmine.SpyObj<AchievementsService>;
+    service = TestBed.inject(AchievementService) as jasmine.SpyObj<AchievementService>;
     requestSpy = TestBed.inject(RequestService) as jasmine.SpyObj<RequestService>;
   });
 

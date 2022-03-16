@@ -1,6 +1,6 @@
 import { Component, ViewChild } from '@angular/core';
 import { ModalController } from '@ionic/angular';
-import { Achievement } from '@v3/services/achievements.service';
+import { Achievement } from '@v3/services/achievement.service';
 import { UtilsService } from '@v3/services/utils.service';
 
 @Component({

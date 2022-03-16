@@ -45,7 +45,7 @@
             <ion-label>Activities</ion-label>
           </ion-segment-button>
           <ion-segment-button value="badges" mode="ios">
-            <ion-label>Badegs</ion-label>
+            <ion-label>Badges</ion-label>
           </ion-segment-button>
         </ion-segment>
 
@@ -64,6 +64,20 @@
             ></app-list-item>
           </ng-container>
         </ng-container>
+
+        <ng-container *ngIf="display === 'badges' && (achievements$ | async ) as achievements">
+          <app-list-item *ngFor="let achievement of achievements"
+            [title]="achievement.name"
+            [subtitle1]="achievement.points + ' Pts'"
+            subtitle1Color="light"
+            [leadImage]="achievement.image"
+            lines="full"
+            (click)="achievePopup(achievement)"
+            [endingIcon]="achievement.isEarned ? 'checkmark-circle' : 'lock-closed'"
+            [endingIconColor]="achievement.isEarned ? 'success' : 'medium'"
+          ></app-list-item>
+        </ng-container>
+
       </ion-col>
 
     </ion-row>
