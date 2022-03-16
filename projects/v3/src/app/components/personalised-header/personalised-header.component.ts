@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ModalController } from '@ionic/angular';
-import { AnimationsService } from '@v3/app/services/animations.service';
+import { AnimationsService } from '@v3/services/animations.service';
 import { NotificationsComponent } from '../notifications/notifications.component';
 
 @Component({

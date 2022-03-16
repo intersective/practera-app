@@ -1,6 +1,10 @@
 <ion-item *ngIf="!loading" [lines]="lines">
 
-  <ion-icon [name]="leadingIcon" slot="start" [color]="leadingIconColor || 'primary'" class="leading-icon" [ngClass]="{'pulsing': leadingIconPulsing}"></ion-icon>
+  <ion-icon *ngIf="leadingIcon" [name]="leadingIcon" slot="start" [color]="leadingIconColor || 'primary'" class="leading-icon" [ngClass]="{'pulsing': leadingIconPulsing}"></ion-icon>
+
+  <ion-avatar *ngIf="leadImage" slot="start">
+    <img [src]="leadImage">
+  </ion-avatar>
 
   <div class="item-content ion-padding-vertical" [ngClass]="{'event-item': isEventItem, 'content-expired': eventExpired}">
     <div *ngIf="isEventItem" style="display: flex; flex-wrap: nowrap; flex-direction: row; align-items: center;">
@@ -16,6 +20,10 @@
   <ion-text *ngIf="endingText" class="item-ending-text caption gray-2" slot="end">{{ endingText }}</ion-text>
 
   <ion-icon *ngIf="endingIcon" [name]="endingIcon" slot="end" [color]="endingIconColor || 'primary'"></ion-icon>
+
+  <ion-avatar *ngIf="endingProgress" slot="end">
+    <app-circle-progress [data]='{ percent: endingProgress * 100 }'></app-circle-progress>
+  </ion-avatar>
 
   <div *ngIf="isEventItem">
     <div *ngIf="eventExpired" class="expired-batch gray-2">Expired</div>

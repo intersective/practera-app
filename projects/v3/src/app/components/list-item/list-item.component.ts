@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 
 @Component({
   selector: 'app-list-item',
@@ -11,6 +11,7 @@ export class ListItemComponent {
   @Input() leadingIcon: string;
   @Input() leadingIconColor: string;
   @Input() leadingIconPulsing: boolean;
+  @Input() leadImage: string;
   @Input() title: string;
   @Input() titleColor: string;
   @Input() subtitle1: string;
@@ -19,11 +20,14 @@ export class ListItemComponent {
   @Input() endingText: string | number;
   @Input() endingIcon: string;
   @Input() endingIconColor: string;
+  @Input() endingProgress: number;
   // whether hightlight the background or not
   @Input() active: boolean;
   @Input() isEventItem: boolean;
   @Input() eventExpired: boolean;
-  @Input() eventVideoConference: any;
+  @Input() eventVideoConference: {
+    provider: string;
+  };
   @Input() eventFullyBooked: boolean;
   @Input() eventDayCount: string;
 

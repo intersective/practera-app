@@ -1,0 +1,114 @@
+/**
+This scss file generate css classes for the font colors and background colors.
+And setting practera branding colors as ionic theme colors.
+font color css class exmple
+  - surface
+  - grey-75
+  - ocean-100
+  - ocean-75
+  - ocean-50
+  - violet-100
+  - violet-75
+  - violet-50
+background color css class exmple
+  - bg-grey-75
+  - bg-ocean-100
+  - bg-ocean-75
+  - bg-ocean-50
+  - bg-violet-100
+  - bg-violet-75
+  - bg-violet-50
+**/
+$colors: (
+  surface: var(--practera-surface),
+  surface-light: var(--practera-surface-light),
+  black: black,
+  arctic-100: var(--practera-arctic-100),
+  arctic-75: var(--practera-arctic-75),
+  arctic-50: var(--practera-arctic-50),
+  arctic-25: var(--practera-arctic-25),
+  lime-100: var(--practera-lime-100),
+  lime-75: var(--practera-lime-75),
+  lime-50: var(--practera-lime-50),
+  lime-25: var(--practera-lime-25),
+  violet-100: var(--practera-violet-100),
+  violet-75: var(--practera-violet-75),
+  violet-50: var(--practera-violet-50),
+  violet-25: var(--practera-violet-25),
+  ocean-100: var(--practera-ocean-100),
+  ocean-75: var(--practera-ocean-75),
+  ocean-50: var(--practera-ocean-50),
+  ocean-25: var(--practera-ocean-25),
+  dark-blue-100: var(--practera-dark-blue-100),
+  dark-blue-75: var(--practera-dark-blue-75),
+  dark-blue-50: var(--practera-dark-blue-50),
+  dark-blue-25: var(--practera-dark-blue-25),
+  grey-100: var(--practera-grey-100),
+  grey-75: var(--practera-grey-75),
+  grey-50: var(--practera-grey-50),
+  grey-25: var(--practera-grey-25),
+  light-grey-100: var(--practera-light-grey-100),
+  light-grey-75: var(--practera-light-grey-75),
+  light-grey-50: var(--practera-light-grey-50),
+  light-grey-25: var(--practera-light-grey-25)
+);
+
+@mixin get-font-color-style($class-name) {
+  $value: map-get($colors, $class-name);
+
+  color: $value !important;
+}
+
+@mixin get-bg-color-style($class-name) {
+  $value: map-get($colors, $class-name);
+
+  background-color: $value !important;
+  --background: $value !important;
+}
+
+@each $class-name, $value in $colors {
+  .#{""+$class-name} {
+    @include get-font-color-style($class-name);
+  }
+  .bg-#{""+$class-name} {
+    @include get-bg-color-style($class-name);
+  }
+}
+
+/** setting branding colors as Ionic theme **/
+
+.ion-color-arctic {
+	--ion-color-base: var(--ion-color-arctic);
+	--ion-color-base-rgb: var(--ion-color-arctic-rgb);
+	--ion-color-contrast: var(--ion-color-arctic-contrast);
+	--ion-color-contrast-rgb: var(--ion-color-arctic-contrast-rgb);
+	--ion-color-shade: var(--ion-color-arctic-shade);
+	--ion-color-tint: var(--ion-color-arctic-tint);
+}
+
+.ion-color-lime {
+	--ion-color-base: var(--ion-color-lime);
+	--ion-color-base-rgb: var(--ion-color-lime-rgb);
+	--ion-color-contrast: var(--ion-color-lime-contrast);
+	--ion-color-contrast-rgb: var(--ion-color-lime-contrast-rgb);
+	--ion-color-shade: var(--ion-color-lime-shade);
+	--ion-color-tint: var(--ion-color-lime-tint);
+}
+
+.ion-color-violet {
+	--ion-color-base: var(--ion-color-violet);
+	--ion-color-base-rgb: var(--ion-color-violet-rgb);
+	--ion-color-contrast: var(--ion-color-violet-contrast);
+	--ion-color-contrast-rgb: var(--ion-color-violet-contrast-rgb);
+	--ion-color-shade: var(--ion-color-violet-shade);
+	--ion-color-tint: var(--ion-color-violet-tint);
+}
+
+.ion-color-ocean {
+	--ion-color-base: var(--ion-color-ocean);
+	--ion-color-base-rgb: var(--ion-color-ocean-rgb);
+	--ion-color-contrast: var(--ion-color-ocean-contrast);
+	--ion-color-contrast-rgb: var(--ion-color-ocean-contrast-rgb);
+	--ion-color-shade: var(--ion-color-ocean-shade);
+	--ion-color-tint: var(--ion-color-ocean-tint);
+}

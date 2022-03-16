@@ -36,28 +36,28 @@
   --ion-color-tertiary-tint: #7e57ff;
 
   /** success **/
-  --ion-color-success: #10dc60;
-  --ion-color-success-rgb: 16,220,96;
-  --ion-color-success-contrast: #ffffff;
-  --ion-color-success-contrast-rgb: 255,255,255;
-  --ion-color-success-shade: #0ec254;
-  --ion-color-success-tint: #10dc6033;
+	--ion-color-success: #138914;
+	--ion-color-success-rgb: 19,137,20;
+	--ion-color-success-contrast: #ffffff;
+	--ion-color-success-contrast-rgb: 255,255,255;
+	--ion-color-success-shade: #117912;
+	--ion-color-success-tint: #2b952c;
 
   /** warning **/
-  --ion-color-warning: #ffce00;
-  --ion-color-warning-rgb: 255,206,0;
-  --ion-color-warning-contrast: #ffffff;
-  --ion-color-warning-contrast-rgb: 255,255,255;
-  --ion-color-warning-shade: #e0b500;
-  --ion-color-warning-tint: #ffce0033;
+	--ion-color-warning: #FFBE15;
+	--ion-color-warning-rgb: 255,190,21;
+	--ion-color-warning-contrast: #000000;
+	--ion-color-warning-contrast-rgb: 0,0,0;
+	--ion-color-warning-shade: #e0a712;
+	--ion-color-warning-tint: #ffc52c;
 
   /** danger **/
-  --ion-color-danger: #f04141;
-  --ion-color-danger-rgb: 245,61,61;
-  --ion-color-danger-contrast: #ffffff;
-  --ion-color-danger-contrast-rgb: 255,255,255;
-  --ion-color-danger-shade: #d33939;
-  --ion-color-danger-tint: #f0414133;
+	--ion-color-danger: #E20010;
+	--ion-color-danger-rgb: 226,0,16;
+	--ion-color-danger-contrast: #ffffff;
+	--ion-color-danger-contrast-rgb: 255,255,255;
+	--ion-color-danger-shade: #c7000e;
+	--ion-color-danger-tint: #e51a28;
 
   /** dark **/
   --ion-color-dark: #222428;
@@ -68,20 +68,90 @@
   --ion-color-dark-tint: #383a3e;
 
   /** medium **/
-  --ion-color-medium: #989aa2;
-  --ion-color-medium-rgb: 152,154,162;
-  --ion-color-medium-contrast: #ffffff;
-  --ion-color-medium-contrast-rgb: 255,255,255;
-  --ion-color-medium-shade: #86888f;
-  --ion-color-medium-tint: #989aa233;
+	--ion-color-medium: #CCCCCC;
+	--ion-color-medium-rgb: 204,204,204;
+	--ion-color-medium-contrast: #000000;
+	--ion-color-medium-contrast-rgb: 0,0,0;
+	--ion-color-medium-shade: #b4b4b4;
+	--ion-color-medium-tint: #d1d1d1;
 
   /** light **/
-  --ion-color-light: #f4f5f8;
-  --ion-color-light-rgb: 244,244,244;
-  --ion-color-light-contrast: #000000;
-  --ion-color-light-contrast-rgb: 0,0,0;
-  --ion-color-light-shade: #d7d8da;
-  --ion-color-light-tint: #f4f5f833;
+	--ion-color-light: #F7F7F9;
+	--ion-color-light-rgb: 247,247,249;
+	--ion-color-light-contrast: #000000;
+	--ion-color-light-contrast-rgb: 0,0,0;
+	--ion-color-light-shade: #d9d9db;
+	--ion-color-light-tint: #f8f8fa;
+
+  /** Pratera New branding colors **/
+  --practera-arctic-100: rgba(43, 193, 217, 1);
+  --practera-arctic-75: rgba(69, 161, 175, 1);
+  --practera-arctic-50: rgba(130, 193, 202, 1);
+  --practera-arctic-25: rgba(192, 223, 227, 1);
+
+  --practera-lime-100: rgba(173, 248, 45, 1);
+  --practera-lime-75: rgba(195, 248, 108, 1);
+  --practera-lime-50: rgba(215, 250, 155, 1);
+  --practera-lime-25: rgba(234, 252, 204, 1);
+
+  --practera-violet-100: rgba(106, 61, 224, 1);
+  --practera-violet-75: rgba(143, 114, 229, 1);
+  --practera-violet-50: rgba(181, 160, 238, 1);
+  --practera-violet-25: rgba(217, 207, 246, 1);
+
+  --practera-ocean-100: rgba(0, 130, 150, 1);
+  --practera-ocean-75: rgba(69, 161, 175, 1);
+  --practera-ocean-50: rgba(130, 193, 202, 1);
+  --practera-ocean-25: rgba(192, 223, 227, 1);
+
+  --practera-dark-blue-100: rgba(18, 59, 121, 1);
+  --practera-dark-blue-75: rgba(78, 109, 153, 1);
+  --practera-dark-blue-50: rgba(138, 159, 188, 1);
+  --practera-dark-blue-25: rgba(195, 206, 220, 1);
+
+  --practera-grey-100: rgba(51, 51, 51, 1);
+  --practera-grey-75: rgba(102, 102, 102, 1);
+  --practera-grey-50: rgba(153, 153, 153, 1);
+  --practera-grey-25: rgba(204, 204, 204, 1);
+
+  --practera-light-grey-100: rgba(223, 223, 232, 1);
+  --practera-light-grey-75: rgba(231, 231, 238, 1);
+  --practera-light-grey-50: rgba(239, 239, 244, 1);
+  --practera-light-grey-25: rgba(247, 247, 249, 1);
+
+  /** Practera Branding colors as Ionic theme color variables **/
+
+  /** Arctic **/
+  --ion-color-arctic: #2BC1D9;
+  --ion-color-arctic-rgb: 43,193,217;
+  --ion-color-arctic-contrast: #000000;
+  --ion-color-arctic-contrast-rgb: 0,0,0;
+  --ion-color-arctic-shade: #26aabf;
+  --ion-color-arctic-tint: #40c7dd;
+
+  /** Lime **/
+  --ion-color-lime: #ADF82D;
+  --ion-color-lime-rgb: 173,248,45;
+  --ion-color-lime-contrast: #000000;
+  --ion-color-lime-contrast-rgb: 0,0,0;
+  --ion-color-lime-shade: #98da28;
+  --ion-color-lime-tint: #b5f942;
+
+  /** Violet **/
+  --ion-color-violet: #6A3DE0;
+  --ion-color-violet-rgb: 106,61,224;
+  --ion-color-violet-contrast: #ffffff;
+  --ion-color-violet-contrast-rgb: 255,255,255;
+  --ion-color-violet-shade: #5d36c5;
+  --ion-color-violet-tint: #7950e3;
+
+  /** Ocean **/
+  --ion-color-ocean: #008296;
+  --ion-color-ocean-rgb: 0,130,150;
+  --ion-color-ocean-contrast: #ffffff;
+  --ion-color-ocean-contrast-rgb: 255,255,255;
+  --ion-color-ocean-shade: #007284;
+  --ion-color-ocean-tint: #1a8fa1;
 
   /** Colors for chat **/
   --practera-chat-color-time-text-color:#AFB5D2;
@@ -121,4 +191,5 @@
 
   /** Review Page **/
   --practera-review-border-color: #008296;
+
 }

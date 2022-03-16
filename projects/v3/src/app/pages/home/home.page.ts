@@ -9,7 +9,10 @@ import { UtilsService } from '@v3/services/utils.service';
   styleUrls: ['./home.page.scss'],
 })
 export class HomePage implements OnInit {
+  display = 'activities';
+
   experience$ = this.service.experience$;
+  activityCount$ = this.service.activityCount$;
   experienceProgress$ = this.service.experienceProgress$;
   milestones$ = this.service.milestonesWithProgress$;
 
@@ -27,8 +30,43 @@ export class HomePage implements OnInit {
     });
   }
 
+  switchContent(event) {
+    this.display = event.detail.value;
+  }
+
   get isMobile() {
     return this.utils.isMobile();
+  }
+
+  endingIcon(progress) {
+    if (!progress) {
+      return 'chevron-forward';
+    }
+    if (progress === 1) {
+      return 'checkmark-circle';
+    }
+    return '';
+  }
+
+  endingIconColor(progress) {
+    if (!progress) {
+      return 'medium';
+    }
+    if (progress === 1) {
+      return 'success';
+    }
+    return '';
+  }
+
+  endingProgress(progress) {
+    if (!progress || progress === 1) {
+      return '';
+    }
+    return progress;
+  }
+
+  gotoActivity(id: number) {
+    console.log(id);
   }
 
 }
