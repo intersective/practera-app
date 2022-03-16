@@ -1,5 +1,6 @@
 /**
 This scss file generate css classes for the font colors and background colors.
+And setting practera branding colors as ionic theme colors.
 font color css class exmple
   - surface
   - grey-75
@@ -72,4 +73,42 @@ $colors: (
   .bg-#{""+$class-name} {
     @include get-bg-color-style($class-name);
   }
+}
+
+/** setting branding colors as Ionic theme **/
+
+.ion-color-arctic {
+	--ion-color-base: var(--ion-color-arctic);
+	--ion-color-base-rgb: var(--ion-color-arctic-rgb);
+	--ion-color-contrast: var(--ion-color-arctic-contrast);
+	--ion-color-contrast-rgb: var(--ion-color-arctic-contrast-rgb);
+	--ion-color-shade: var(--ion-color-arctic-shade);
+	--ion-color-tint: var(--ion-color-arctic-tint);
+}
+
+.ion-color-lime {
+	--ion-color-base: var(--ion-color-lime);
+	--ion-color-base-rgb: var(--ion-color-lime-rgb);
+	--ion-color-contrast: var(--ion-color-lime-contrast);
+	--ion-color-contrast-rgb: var(--ion-color-lime-contrast-rgb);
+	--ion-color-shade: var(--ion-color-lime-shade);
+	--ion-color-tint: var(--ion-color-lime-tint);
+}
+
+.ion-color-violet {
+	--ion-color-base: var(--ion-color-violet);
+	--ion-color-base-rgb: var(--ion-color-violet-rgb);
+	--ion-color-contrast: var(--ion-color-violet-contrast);
+	--ion-color-contrast-rgb: var(--ion-color-violet-contrast-rgb);
+	--ion-color-shade: var(--ion-color-violet-shade);
+	--ion-color-tint: var(--ion-color-violet-tint);
+}
+
+.ion-color-ocean {
+	--ion-color-base: var(--ion-color-ocean);
+	--ion-color-base-rgb: var(--ion-color-ocean-rgb);
+	--ion-color-contrast: var(--ion-color-ocean-contrast);
+	--ion-color-contrast-rgb: var(--ion-color-ocean-contrast-rgb);
+	--ion-color-shade: var(--ion-color-ocean-shade);
+	--ion-color-tint: var(--ion-color-ocean-tint);
 }
