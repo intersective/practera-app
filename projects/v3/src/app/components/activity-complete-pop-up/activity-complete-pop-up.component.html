@@ -1,0 +1,11 @@
+<ion-content class="ion-text-center" [ngClass]="{'desktop-view': !utils.isMobile()}">
+  <p class="ion-margin">
+    You have remaining tasks in the current activity. Would you like to review them before progressing?
+  </p>
+
+  <div class="fixed-bottom">
+    <ion-button (click)="confirmed(false)" fill="clear" color="primary" expand="full">REVIEW TASKS</ion-button>
+    <hr>
+    <ion-button (click)="confirmed(true)" fill="clear" color="primary" expand="full">CONTINUE</ion-button>
+  </div>
+</ion-content>

@@ -1,3 +1,105 @@
-<p>
-  multiple works!
-</p>
+<ng-container *ngIf="submissionStatus !== 'in progress' && submission.answer">
+  <div class="ion-padding-horizontal ion-padding-bottom">
+    <ion-list class="no-bg">
+      <ng-container *ngFor="let choice of question.choices; let i = index">
+        <ng-container *ngIf="submission.answer.includes(choice.id)">
+          <ion-item [lines]="i == submission.answer.length - 1 ||
+           (choice.explanation && choice.explanation.changingThisBreaksApplicationSecurity) ? 'none' : ''">
+            <ion-label class="white-space-normal body-2 gray-3">{{ choice.name }}</ion-label>
+            <ion-checkbox [checked]="submission.answer.includes(choice.id)" disabled mode="md"></ion-checkbox>
+          </ion-item>
+          <ng-container *ngIf="choice.explanation && choice.explanation.changingThisBreaksApplicationSecurity">
+            <div class="white-space-normal explanation"
+            [ngClass]="{ 'explanation-container': i !== question.choices.length - 1 }">
+              <p class="subtitle-2 title">Explanation</p>
+              <p class="white-space-normal body-2 gray-3" [innerHtml]="choice.explanation"></p>
+            </div>
+          </ng-container>
+        </ng-container>
+      </ng-container>
+    </ion-list>
+  </div>
+</ng-container>
+
+<div *ngIf="reviewStatus !== 'in progress' && (review.answer || review.comment)" class="ion-padding-horizontal ion-padding-bottom"
+[ngClass]="{ 'audience-mentor': audienceContainReviewer()}">
+  <ion-label *ngIf="audienceContainReviewer()" class="q-title subtitle-2 black ion-padding-vertical">Reviewer’s feedback</ion-label>
+  <ng-container *ngIf="review.answer">
+    <ion-list class="no-bg">
+      <ng-container *ngFor="let choice of question.choices; let i = index">
+        <ng-container *ngIf="audienceContainReviewer(); else showAllAnswers">
+          <ng-container *ngIf="review.answer.includes(choice.id)">
+            <ion-item [lines]="i == review.answer.length - 1 ? 'none' : ''">
+              <ion-label class="white-space-normal body-2 gray-3">{{ choice.name }}</ion-label>
+              <ion-checkbox checked disabled mode="md"></ion-checkbox>
+            </ion-item>
+          </ng-container>
+        </ng-container>
+        <ng-template #showAllAnswers>
+          <ion-item>
+            <ion-label class="white-space-normal body-2 gray-3">{{ choice.name }}</ion-label>
+            <ion-checkbox [checked]="review.answer.includes(choice.id)" disabled mode="md"></ion-checkbox>
+          </ion-item>
+        </ng-template>
+      </ng-container>
+    </ion-list>
+  </ng-container>
+  <ng-container *ngIf="review.comment">
+    <p class="paragraph body-2 gray-3">{{ review.comment }}</p>
+  </ng-container>
+</div>
+
+<ng-container *ngIf="doAssessment">
+  <div class="ion-padding-horizontal ion-padding-bottom">
+    <ion-list class="no-bg">
+      <ng-container *ngFor="let choice of question.choices; let i = index">
+        <ion-item class="choice-item" [lines]="i == question.choices.length - 1 ? 'none' : '' || checkInnerValue(choice.id) ? 'none': ''">
+          <ion-label class="white-space-normal body-2 black">{{ choice.name }}</ion-label>
+          <ion-checkbox [checked]="submission.answer ? submission.answer.includes(choice.id) : false"
+            [value]="choice.id" mode="md"
+            (ionChange)="onChange(choice.id)"
+            [disabled]="control.disabled"></ion-checkbox>
+        </ion-item>
+        <ng-container
+        *ngIf="control.disabled && choice.explanation && choice.explanation.changingThisBreaksApplicationSecurity && checkInnerValue(choice.id)">
+          <div class="white-space-normal explanation" [ngClass]="{ 'explanation-container': i !== question.choices.length - 1}">
+            <p class="subtitle-2 title">Explanation</p>
+            <p class="white-space-normal body-2 gray-3" [innerHtml]="choice.explanation"></p>
+          </div>
+        </ng-container>
+      </ng-container>
+    </ion-list>
+    <ion-text *ngFor="let error of errors" color="danger">
+      <p>{{error}}</p>
+    </ion-text>
+  </div>
+</ng-container>
+
+<ng-container *ngIf="doReview">
+  <div class="ion-padding-horizontal ion-padding-bottom" [ngClass]="{ 'audience-mentor': audienceContainReviewer()}">
+    <ion-list class="no-bg" *ngIf="question.canAnswer">
+      <ion-list-header class="ion-no-padding" *ngIf="!question.reviewerOnly">
+        <ion-label class="subtitle-2 black">Your Answer is</ion-label>
+      </ion-list-header>
+      <ion-item class="choice-item no-bg" *ngFor="let choice of question.choices; let i = index" [lines]="i == question.choices.length - 1 ? 'none' : ''">
+        <ion-label class="white-space-normal body-2 black">{{ choice.name }}</ion-label>
+        <ion-checkbox
+          [checked]="review.answer ? review.answer.includes(choice.id) : false"
+          [value]="choice.id"
+          mode="md"
+          (ionChange)="onChange(choice.id, 'answer')"
+          [disabled]="control.disabled"></ion-checkbox>
+      </ion-item>
+    </ion-list>
+    <ion-textarea
+      *ngIf="question.canComment && submission.answer"
+      class="textarea"
+      #commentEle
+      margin-top
+      rows="4"
+      [(ngModel)]="comment"
+      (ngModelChange)="onChange(comment, 'comment')"
+      placeholder="Please put your feedback here"
+      [disabled]="control.disabled"></ion-textarea>
+  </div>
+</ng-container>
