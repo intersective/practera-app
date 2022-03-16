@@ -68,9 +68,9 @@
         <ng-container *ngIf="display === 'badges' && (achievements$ | async ) as achievements">
           <app-list-item *ngFor="let achievement of achievements"
             [title]="achievement.name"
-            [subtitle1]="achievement.points + 'Pts'"
+            [subtitle1]="achievement.points + ' Pts'"
             subtitle1Color="light"
-            [leadImage]="achievement.badge"
+            [leadImage]="achievement.image"
             lines="full"
             (click)="achievePopup(achievement)"
             [endingIcon]="achievement.isEarned ? 'checkmark-circle' : 'lock-closed'"
