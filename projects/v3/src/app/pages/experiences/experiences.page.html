@@ -1,50 +1,32 @@
 <ion-content class="experience-page">
+  <ng-container *ngIf="(programs$ | async ) as programs">
+    <ion-grid class="ion-no-padding ion-no-margin">
+      <ion-row class="ion-justify-content-center ion-align-items-center ion-no-padding ion-no-margin">
+        <ion-col class="ion-no-padding ion-no-margin">
 
-  <ion-grid class="ion-no-padding ion-no-margin">
-    <ion-row class="ion-justify-content-center ion-align-items-center ion-no-padding ion-no-margin">
-      <ion-col class="ion-no-padding ion-no-margin">
-
-        <div class="exp-card-container">
-          <h1 class="headline-1 m-0">Welcome to Experience</h1>
-          <p class="subtitle-1 m-0">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
-          <div class="cards">
-            <ion-card class="exp-card ion-no-margin">
-              <img src="https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg">
-              <ion-card-content>
-                <p class="m-0 headline-3 exp-title">Global Trade Accelerator</p>
-                <div class="exp-info subtitle-3">
-                  <p class="m-0 subtitle-3">5 Activies</p> |
-                  <p class="m-0 subtitle-3">65% Progress</p>
-                </div>
-              </ion-card-content>
-            </ion-card>
-
-            <ion-card class="exp-card ion-no-margin">
-              <img src="https://cdn.pixabay.com/photo/2021/08/25/20/42/field-6574455__340.jpg">
-              <ion-card-content>
-                <p class="m-0 headline-3 exp-title">Global Trade Accelerator</p>
-                <div class="exp-info subtitle-3">
-                  <p class="m-0 subtitle-3">5 Activies</p> |
-                  <p class="m-0 subtitle-3">65% Progress</p>
-                </div>
-              </ion-card-content>
-            </ion-card>
-
-            <ion-card class="exp-card ion-no-margin">
-              <img src="https://love-shayari.co/wp-content/uploads/2021/10/sun-rise.jpg">
-              <ion-card-content>
-                <p class="m-0 headline-3 exp-title">Global Trade Accelerator</p>
-                <div class="exp-info subtitle-3">
-                  <p class="m-0 subtitle-3">5 Activies</p> |
-                  <p class="m-0 subtitle-3">65% Progress</p>
-                </div>
-              </ion-card-content>
-            </ion-card>
+          <div class="exp-card-container">
+            <h1 class="headline-1 m-0 black">Welcome to Experience</h1>
+            <p class="subtitle-1 m-0 grey-75">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+            <div class="cards">
+              <ng-container *ngFor="let program of programs">
+                <ion-card class="exp-card ion-no-margin" [attr.aria-label]="program.program.name">
+                  <img [src]="program.project.lead_image ? program.project.lead_image : '../../../assets/default-experience-image.svg'" alt="{{ program.program.name }}">
+                  <ion-card-content>
+                    <p class="m-0 headline-3 exp-title black">{{ program.program.name }}</p>
+                    <div class="exp-info subtitle-3 grey-50">
+                      <!-- <p class="m-0 subtitle-3 grey-50">5 Activies</p> | -->
+                      <p class="m-0 subtitle-3 grey-50">{{program.progress}}% Progress</p>
+                    </div>
+                  </ion-card-content>
+                </ion-card>
+              </ng-container>
+            </div>
           </div>
-        </div>
-      </ion-col>
-    </ion-row>
-  </ion-grid>
+
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </ng-container>
   <ion-item routerLink="/v3/home">
     Go home!
   </ion-item>
