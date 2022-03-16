@@ -64,6 +64,7 @@ interface ExperienceConfig {
   providedIn: 'root'
 })
 export class AuthService {
+
   constructor(
     private request: RequestService,
     private storage: BrowserStorageService,
