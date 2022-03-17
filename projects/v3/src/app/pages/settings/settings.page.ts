@@ -41,30 +41,40 @@ export class SettingsPage {
     public router: Router,
     private readonly route: ActivatedRoute,
     private authService: AuthService,
-    public storage: BrowserStorageService,
-    public utils: UtilsService,
+    private storage: BrowserStorageService,
+    readonly utils: UtilsService,
     private notificationsService: NotificationsService,
     private filestackService: FilestackService,
-    public fastFeedbackService: FastFeedbackService,
+    private fastFeedbackService: FastFeedbackService,
   ) {
+    this.route.queryParams.subscribe(() => {
+      this.onEnter();
+    });
   }
 
   onEnter() {
     this.mode = this.route.snapshot.data.mode;
+
+    const user = this.storage.getUser();
+    const {
+      email,
+      contactNumber,
+      image,
+      name,
+      programName,
+      LtiReturnUrl,
+    } = user;
     // get contact number and email from local storage
-    this.profile.email = this.storage.getUser().email;
-    this.profile.contactNumber = this.storage.getUser().contactNumber;
-    this.profile.image = this.storage.getUser().image ? this.storage.getUser().image : 'https://my.practera.com/img/user-512.png';
-    this.profile.name = this.storage.getUser().name;
+    this.profile.email = email;
+    this.profile.contactNumber = contactNumber;
+    this.profile.image = image ? image : 'https://my.practera.com/img/user-512.png';
+    this.profile.name = name;
+    this.currentProgramName = programName;
+    this.returnLtiUrl = LtiReturnUrl;
+
     this.acceptFileTypes = this.filestackService.getFileTypes('image');
-    // also get program name
-    this.currentProgramName = this.storage.getUser().programName;
     this.currentProgramImage = this._getCurrentProgramImage();
     this.fastFeedbackService.pullFastFeedback().subscribe();
-    this.returnLtiUrl = this.storage.getUser().LtiReturnUrl;
-    if (this.storage.get('hasMultipleStacks')) {
-      this.hasMultipleStacks = this.storage.get('hasMultipleStacks');
-    }
   }
 
   // loading pragram image to settings page by resizing it depend on device.
@@ -126,7 +136,7 @@ export class SettingsPage {
       this.authService.updateProfileImage({
         image: file.data.url
       }).subscribe(
-        success => {
+        () => {
           this.imageUpdating = false;
           this.profile.image = file.data.url;
           this.storage.setUser({
@@ -142,7 +152,7 @@ export class SettingsPage {
             ]
           });
         },
-        err => {
+        () => {
           this.imageUpdating = false;
           return this.notificationsService.alert({
             message: 'File upload failed, please try again later.',

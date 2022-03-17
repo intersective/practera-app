@@ -11,6 +11,9 @@ import { ComponentsModule } from '@v3/app/components/components.module';
 
 @NgModule({
   imports: [
+    CommonModule,
+    FormsModule,
+    IonicModule,
     ComponentsModule,
     SettingsPageRoutingModule,
   ],

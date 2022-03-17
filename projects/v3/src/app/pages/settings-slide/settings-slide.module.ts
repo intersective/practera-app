@@ -8,12 +8,14 @@ import { SettingsSlidePageRoutingModule } from './settings-slide-routing.module'
 
 import { SettingsSlidePage } from './settings-slide.page';
 import { SettingsPageModule } from '../settings/settings.module';
+import { ComponentsModule } from '@v3/app/components/components.module';
 
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
     IonicModule,
+    ComponentsModule,
     SettingsSlidePageRoutingModule,
     SettingsPageModule,
   ],

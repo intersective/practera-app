@@ -30,7 +30,9 @@ const api = {
 const FS_INTELLIGENT = true;
 const FS_MULTIPART_CONCURRENCY = 5;
 
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
 export class FilestackService {
   private filestack: any;
   readonly chunksConcurrency = FS_MULTIPART_CONCURRENCY;
