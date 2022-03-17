@@ -7,13 +7,12 @@ import { IonicModule } from '@ionic/angular';
 import { SettingsPageRoutingModule } from './settings-routing.module';
 
 import { SettingsPage } from './settings.page';
+import { ComponentsModule } from '@v3/app/components/components.module';
 
 @NgModule({
   imports: [
-    CommonModule,
-    FormsModule,
-    IonicModule,
-    SettingsPageRoutingModule
+    ComponentsModule,
+    SettingsPageRoutingModule,
   ],
   declarations: [SettingsPage],
   exports: [SettingsPage]
