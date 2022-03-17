@@ -14,7 +14,7 @@ import { LockTeamAssessmentPopUpComponent } from './lock-team-assessment-pop-up/
 import { ActivityCompletePopUpComponent } from './activity-complete-pop-up/activity-complete-pop-up.component';
 import { FastFeedbackComponent } from './fast-feedback/fast-feedback.component';
 import { ReviewRatingComponent } from './review-rating/review-rating.component';
-import { PersonalisedHeaderComponent } from './personalised-header/personalised-header.component';
+import { PersonalisedHeaderComponent } from '../personalised-header/personalised-header.component';
 import { CircleProgressComponent } from './circle-progress/circle-progress.component';
 import { NgCircleProgressModule } from 'ng-circle-progress';
 import { FilestackComponent } from './filestack/filestack.component';
@@ -63,7 +63,6 @@ const largeCircleDefaultConfig = {
     ImgComponent,
     ListItemComponent,
     LockTeamAssessmentPopUpComponent,
-    PersonalisedHeaderComponent,
     PopUpComponent,
     ReviewRatingComponent,
   ],
@@ -90,7 +89,6 @@ const largeCircleDefaultConfig = {
     IonicModule,
     ListItemComponent,
     LockTeamAssessmentPopUpComponent,
-    PersonalisedHeaderComponent,
     PopUpComponent,
     ReviewRatingComponent,
   ],

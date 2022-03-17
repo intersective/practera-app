@@ -1,17 +1,15 @@
 import { NgModule } from '@angular/core';
 
-import { IonicModule } from '@ionic/angular';
-
 import { HomePageRoutingModule } from './home-routing.module';
 
 import { HomePage } from './home.page';
 import { ComponentsModule } from '../../components/components.module';
+import { PersonalisedHeaderModule } from '@v3/app/personalised-header/personalised-header.module';
 
 @NgModule({
   imports: [
-    IonicModule,
     ComponentsModule,
-    HomePageRoutingModule
+    HomePageRoutingModule,
   ],
   declarations: [HomePage]
 })

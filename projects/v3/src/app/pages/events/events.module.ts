@@ -4,11 +4,13 @@ import { EventsPageRoutingModule } from './events-routing.module';
 
 import { EventsPage } from './events.page';
 import { ComponentsModule } from '@v3/app/components/components.module';
+import { PersonalisedHeaderModule } from '@v3/app/personalised-header/personalised-header.module';
 
 @NgModule({
   imports: [
     ComponentsModule,
-    EventsPageRoutingModule
+    EventsPageRoutingModule,
+    PersonalisedHeaderModule
   ],
   declarations: [EventsPage]
 })
