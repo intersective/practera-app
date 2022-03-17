@@ -1,1 +1,39 @@
 /* You can add global styles to this file, and also import other style files */
+
+/*******************
+  Practera popup styles
+*******************/
+
+.practera-popup {
+  --max-height: 480px;
+  --width: 280px;
+  --border-radius: 12px;
+  --box-shadow: none;
+  &.desktop-view {
+    margin-top: 0;
+    margin-bottom: 0;
+    &.achievement-popup {
+      --width: 320px;
+    }
+  }
+  &.achievement-popup {
+    --height: 360px;
+  }
+  &.activity-complete-popup {
+    --height: auto;
+    --width: auto;
+    min-height: 200px;
+  }
+  &.mobile-view {
+    position: fixed;
+    bottom: 0;
+    max-width: none;
+    width: 100%;
+    border-radius: 0;
+    margin: 0;
+  }
+
+  &.lock-assessment-popup{
+    --height: 280px;
+  }
+}

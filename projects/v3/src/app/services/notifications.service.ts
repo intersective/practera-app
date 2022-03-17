@@ -120,7 +120,7 @@ export class NotificationsService {
       this.achievementService.markAchievementAsSeen(achievement.id);
     }
     const modal = await this.modal(component, componentProps, {
-      cssClass: this.utils.isMobile() ? 'practera-popup' : 'practera-popup desktop-view',
+      cssClass: this.utils.isMobile() ? 'practera-popup achievement-popup mobile-view' : 'practera-popup achievement-popup desktop-view',
       keyboardClose: false,
       backdropDismiss: false
     },
