@@ -19,12 +19,9 @@ const routes: Routes = [
       },
       {
         path: 'settings',
-        loadChildren: () => import('../settings/settings.module').then(m => m.SettingsPageModule)
+        loadChildren: () => import('../settings/settings.module').then(m => m.SettingsPageModule),
+        outlet: 'settings'
       },
-      /* {
-        path: 'notifications',
-        loadChildren: () => import('../assessment/assessment.module').then(m => m.AssessmentPageModule)
-      } */
     ]
   }
 ];
