@@ -143,7 +143,7 @@ export class ActivityService {
     // go to next task
     if (!res.isLast) {
       // go to the next task
-      let route = ['app', 'home'];
+      let route = ['v3', 'home'];
       switch (res.task.type) {
         case 'assessment':
           route = ['assessment', 'assessment', activityId.toString(), res.task.contextId.toString(), res.task.id.toString()];
@@ -172,10 +172,10 @@ export class ActivityService {
     // go back to home page, and scroll to the activity
     if (justFinished) {
       // and display the toast
-      this.router.navigate(['app', 'home'], { queryParams: { activityId: activityId, activityCompleted: true } });
+      this.router.navigate(['v3', 'home'], { queryParams: { activityId: activityId, activityCompleted: true } });
     } else {
       // and don't display the toast
-      this.router.navigate(['app', 'home'], { queryParams: { activityId: activityId } });
+      this.router.navigate(['v3', 'home'], { queryParams: { activityId: activityId } });
     }
   }
 

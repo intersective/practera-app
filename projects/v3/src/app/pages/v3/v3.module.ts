@@ -15,7 +15,6 @@ import { SettingsSlidePageModule } from '../settings-slide/settings-slide.module
     FormsModule,
     IonicModule,
     V3PageRoutingModule,
-    SettingsSlidePageModule
   ],
   declarations: [V3Page]
 })

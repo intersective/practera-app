@@ -337,7 +337,7 @@ export class AssessmentPage {
             text: 'OK',
             role: 'cancel',
             handler: () => {
-              this._navigate(['app', 'home']);
+              this._navigate(['v3', 'home']);
             }
           }
         ]
@@ -397,15 +397,15 @@ export class AssessmentPage {
       return Promise.resolve(true);
     }
     if (this.fromPage && this.fromPage === 'reviews') {
-      return this._navigate(['app', 'reviews']);
+      return this._navigate(['v3', 'reviews']);
     }
     if (this.fromPage && this.fromPage === 'events') {
-      return this._navigate(['app', 'events']);
+      return this._navigate(['v3', 'events']);
     }
     if (this.activityId) {
-      return this._navigate(['app', 'activity', this.activityId]);
+      return this._navigate(['v3', 'activity', this.activityId]);
     }
-    return this._navigate(['app', 'home']);
+    return this._navigate(['v3', 'home']);
   }
 
   /**

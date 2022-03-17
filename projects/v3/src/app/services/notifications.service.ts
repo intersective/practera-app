@@ -8,12 +8,34 @@ import { Achievement, AchievementService } from './achievement.service';
 import { UtilsService } from '@v3/services/utils.service';
 import { ReviewRatingComponent } from '../components/review-rating/review-rating.component';
 import { LockTeamAssessmentPopUpComponent } from '../components/lock-team-assessment-pop-up/lock-team-assessment-pop-up.component';
+import { FastFeedbackComponent } from '../components/fast-feedback/fast-feedback.component';
 
 export interface CustomTostOptions {
   message: string;
   icon: string;
   duration?: string;
 }
+
+export interface Choice {
+  id: number;
+  title: string;
+}
+
+export interface Question {
+  id: number;
+  title: string;
+  description: string;
+  choices: Array<Choice>;
+}
+
+export interface Meta {
+  context_id: number;
+  team_id: number;
+  target_user_id: number;
+  team_name: string;
+  assessment_name: string;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -201,6 +223,29 @@ export class NotificationsService {
     return this.modal(ReviewRatingComponent, {
       reviewId,
       redirect
+    });
+  }
+
+  /**
+   * Pop up the fast feedback modal window
+   */
+  fastFeedbackModal(
+    props: {
+      questions?: Array<Question>;
+      meta?: Meta | Object;
+    },
+    modalOnly: boolean = false
+  ): Promise<HTMLIonModalElement | void> {
+    if (modalOnly) {
+      return this.modalOnly(FastFeedbackComponent, props, {
+        backdropDismiss: false,
+        showBackdrop: false,
+      });
+    }
+
+    return this.modal(FastFeedbackComponent, props, {
+      backdropDismiss: false,
+      showBackdrop: false,
     });
   }
 }

@@ -1,6 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { ModalController, PopoverController } from '@ionic/angular';
-import { AnimationsService } from '@v3/app/services/animations.service';
+import { AnimationsService } from '@v3/services/animations.service';
 import { SettingsSlidePage } from '../settings-slide/settings-slide.page';
 
 @Component({
@@ -8,7 +8,7 @@ import { SettingsSlidePage } from '../settings-slide/settings-slide.page';
   templateUrl: './v3.page.html',
   styleUrls: ['./v3.page.scss'],
 })
-export class V3Page implements OnInit {
+export class V3Page {
   appPages = [
     {
       title: 'Home',
@@ -36,9 +36,6 @@ export class V3Page implements OnInit {
     private popoverController: PopoverController,
     private animationService: AnimationsService
   ) { }
-
-  ngOnInit() {
-  }
 
   async presentModal() {
     const modal = await this.modalController.create({
