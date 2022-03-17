@@ -121,9 +121,9 @@ export class DemoService {
       id: i + 1,
       name: `Badge${ i + 1 }`,
       description: `Badge description${ i + 1 }`,
-      image: 'https://www.filepicker.io/api/file/4fzFeANTFC007LdAGOa',
+      image: 'https://www.filepicker.io/api/file/Pt5V84aSTvyYEil1bttc',
       points: Math.floor(Math.random() * 1000),
-      isEarned: Math.random() > 0.5,
+      isEarned: i < 3,
       earnedDate: '2021-10-04 05:44:49'
     }));
   }
