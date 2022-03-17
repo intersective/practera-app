@@ -38,7 +38,7 @@ export class TopicService {
 
   getTopic(id: number): Observable<any> {
     return this.request.get(api.get.stories, {params: { model_id: id }})
-      .pipe(map(response => {
+      .pipe(map((response: any) => {
         if (response.success && response.data) {
           return this._normaliseTopic(response.data);
         }
@@ -104,7 +104,7 @@ export class TopicService {
       model_id: activityId,
       scope: 'Task'
     }})
-    .pipe(map(response => {
+    .pipe(map((response: any) => {
       if (response.success && !this.utils.isEmpty(response.data)) {
         const progress = response.data.Activity.Topic.find(function (topic) {
             return topic.id === topicId;

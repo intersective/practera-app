@@ -1,6 +1,6 @@
 import { Component, Input, Inject } from '@angular/core';
 import { DOCUMENT } from '@angular/common';
-import { AchievementsService, Achievement } from '@v3/services/achievements.service';
+import { AchievementService, Achievement } from '@v3/app/services/achievement.service';
 import { NotificationService } from '@shared/notification/notification.service';
 import { UtilsService } from '@services/utils.service';
 
