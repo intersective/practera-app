@@ -16,7 +16,11 @@ const routes: Routes = [
       {
         path: 'assessment',
         loadChildren: () => import('../assessment/assessment.module').then(m => m.AssessmentPageModule)
-      }
+      },
+      /* {
+        path: 'notifications',
+        loadChildren: () => import('../assessment/assessment.module').then(m => m.AssessmentPageModule)
+      } */
     ]
   }
 ];

@@ -1,0 +1,55 @@
+ion-card {
+  box-shadow: none;
+  ion-select {
+    padding-left: 0px;
+    padding-right: 10px;
+  }
+  ion-select:after {
+    content: "";
+    position: absolute;
+    right: 5px;
+    width: 1px;
+    background-color: var(--practera-color-card-border);
+    height: 80%;
+    top: 10%;
+  }
+  margin: 16px 0 10px;
+  &.desktop-view {
+    max-width: 342px !important;
+  }
+}
+
+.contact-input {
+  margin-top: 8px;
+  width: 100%;
+  border: none;
+  &:focus {
+    outline: none;
+  }
+}
+
+.text-field {
+  ion-col {
+    padding-top: 0px;
+    padding-left: 0;
+    padding-right: 0;
+    text-align: center;
+
+    p {
+      &.country-code {
+        margin-bottom: 0;
+        margin-top: 10px;
+        font-weight: bold;
+      }
+    }
+
+    &.contact-details {
+      padding-bottom: 0;
+      padding-left: 0;
+    }
+  }
+}
+
+ion-select {
+  max-width: 100%;
+}

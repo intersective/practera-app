@@ -9,7 +9,6 @@ import { FileDisplayComponent } from './file/file-display/file-display.component
 import { IonicModule } from '@ionic/angular';
 import { CommonModule } from '@angular/common';
 import { ComponentsModule } from '../components/components.module';
-// import { FilestackModule } from '../filestack/filestack.module';
 
 @NgModule({
   imports: [

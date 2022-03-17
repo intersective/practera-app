@@ -3,7 +3,6 @@ import { ModalController, AlertController, ToastController, LoadingController } 
 import { AlertOptions, ToastOptions, ModalOptions, LoadingOptions } from '@ionic/core';
 import { PopUpComponent } from '../components/pop-up/pop-up.component';
 import { AchievementPopUpComponent } from '../components/achievement-pop-up/achievement-pop-up.component';
-// import { LockTeamAssessmentPopUpComponent } from '../components/lock-team-assessment-pop-up/lock-team-assessment-pop-up.component';
 import { ActivityCompletePopUpComponent } from '../components/activity-complete-pop-up/activity-complete-pop-up.component';
 import { Achievement, AchievementsService } from './achievements.service';
 import { UtilsService } from '@v3/services/utils.service';

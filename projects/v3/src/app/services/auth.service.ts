@@ -22,7 +22,8 @@ const API = {
   register: 'api/registration_details.json',
   forgotPassword: 'api/auths.json?action=forgot_password',
   verifyResetPassword: 'api/auths.json?action=verify_reset_password',
-  resetPassword: 'api/auths.json?action=reset_password'
+  resetPassword: 'api/auths.json?action=reset_password',
+  profileImageUpload: 'api/v2/user/account/edit',
 };
 
 interface VerifyParams {
@@ -43,7 +44,9 @@ interface ConfigParams {
 }
 
 interface UserProfile {
-  contactNumber: string;
+  contact_number: string;
+  email?: string;
+  sendsms?: boolean;
 }
 
 interface ExperienceConfig {
@@ -366,5 +369,21 @@ export class AuthService {
       }
       return null;
     }));
+  }
+
+  updateProfileImage(data) {
+    return this.request.post(
+      {
+        endPoint: API.profileImageUpload,
+        data
+      })
+      .pipe(map(response => {
+        if (response.success && response.data) {
+          return response.data;
+        } else {
+          return [];
+        }
+      })
+    );
   }
 }

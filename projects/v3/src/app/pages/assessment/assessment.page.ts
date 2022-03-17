@@ -9,6 +9,7 @@ import { SharedService } from '@v3/services/shared.service';
 import { ActivityService } from '@v3/services/activity.service';
 import { FastFeedbackService } from '@v3/services/fast-feedback.service';
 import { interval, timer, Subscription } from 'rxjs';
+import { DemoService } from '@v3/app/services/demo.service';
 
 const SAVE_PROGRESS_TIMEOUT = 10000;
 
@@ -102,6 +103,7 @@ export class AssessmentPage {
     private activityService: ActivityService,
     private fastFeedbackService: FastFeedbackService,
     private ngZone: NgZone,
+    private demoService: DemoService,
   ) {
     this.route.queryParams.subscribe(params => {
       console.log({params});
@@ -248,36 +250,35 @@ export class AssessmentPage {
     }
 
     // get assessment structure and populate the question form
-    this.assessmentService.getAssessment(this.id, this.action, this.activityId, this.contextId, this.submissionId)
-      .subscribe(
-        result => {
-          this.assessment = result.assessment;
-          this.populateQuestionsForm();
-          this.loadingAssessment = false;
-          this._handleSubmissionData(result.submission);
-          // display pop up if it is team assessment and user is not in team
-          if (this.doAssessment && this.assessment.isForTeam && !this.storage.getUser().teamId) {
-            this.isNotInATeam = true;
-            return this.notificationsService.alert({
-              message: 'Currently you are not in a team, please reach out to your Administrator or Coordinator to proceed with next steps.',
-              buttons: [
-                {
-                  text: 'OK',
-                  role: 'cancel',
-                  handler: () => {
-                    this.goToNextTask();
-                  }
+    this.assessmentService.getAssessment().subscribe(
+      result => {
+        this.assessment = result.assessment;
+        this.populateQuestionsForm();
+        this.loadingAssessment = false;
+        this._handleSubmissionData(result.submission);
+        // display pop up if it is team assessment and user is not in team
+        if (this.doAssessment && this.assessment.isForTeam && !this.storage.getUser().teamId) {
+          this.isNotInATeam = true;
+          return this.notificationsService.alert({
+            message: 'Currently you are not in a team, please reach out to your Administrator or Coordinator to proceed with next steps.',
+            buttons: [
+              {
+                text: 'OK',
+                role: 'cancel',
+                handler: () => {
+                  this.goToNextTask();
                 }
-              ]
-            });
-          }
-          this.isNotInATeam = false;
-          this._handleReviewData(result.review);
-        },
-        error => {
-          console.log(error);
+              }
+            ]
+          });
         }
-      );
+        this.isNotInATeam = false;
+        this._handleReviewData(result.review);
+      },
+      error => {
+        console.log(error);
+      }
+    );
   }
 
   private _handleSubmissionData(submission) {

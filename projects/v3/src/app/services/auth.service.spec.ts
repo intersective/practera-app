@@ -228,12 +228,6 @@ describe('AuthService', () => {
     expect(requestSpy.get.calls.count()).toBe(1);
   });
 
-  it('when testing updateProfile()', () => {
-    requestSpy.post.and.returnValue(of(''));
-    service.updateProfile({ contactNumber: '124' }).subscribe();
-    expect(requestSpy.post.calls.count()).toBe(1);
-  });
-
   it('when testing saveRegistration()', () => {
     requestSpy.post.and.returnValue(of(''));
     service.saveRegistration({ user_id: 1, password: '123', key: 'key' }).subscribe();
@@ -274,6 +268,26 @@ describe('AuthService', () => {
       service.getUUID().subscribe(result => {
         expect(result).toBeNull();
       });
+    });
+  });
+
+  describe('updateProfile()', () => {
+    it('should upload profile', () => {
+      requestSpy.post.and.returnValue(of({}));
+      service.updateProfile({ contact_number: '231' });
+      expect(requestSpy.post.calls.count()).toBe(1);
+    });
+
+    it('should update profile image #1', () => {
+      requestSpy.post.and.returnValue(of({ success: true, data: 'asdf' }));
+      service.updateProfileImage({}).subscribe();
+      expect(requestSpy.post.calls.count()).toBe(1);
+    });
+
+    it('should update profile image #2', () => {
+      requestSpy.post.and.returnValue(of({ success: false, data: 'asdf' }));
+      service.updateProfileImage({}).subscribe();
+      expect(requestSpy.post.calls.count()).toBe(1);
     });
   });
 });
