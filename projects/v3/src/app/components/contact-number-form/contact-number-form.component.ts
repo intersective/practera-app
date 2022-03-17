@@ -2,8 +2,8 @@ import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { UtilsService } from '@v3/services/utils.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { environment } from '@v3/environments/environment';
-import { SettingService } from '@v3/services/setting.service';
 import { NotificationsService } from '@v3/services/notifications.service';
+import { AuthService } from '@v3/app/services/auth.service';
 
 @Component({
   selector: 'app-contact-number-form',
@@ -93,7 +93,7 @@ export class ContactNumberFormComponent implements OnInit {
   constructor(
     public storage: BrowserStorageService,
     public utils: UtilsService,
-    private settingService: SettingService,
+    private readonly authService: AuthService,
     private notificationsService: NotificationsService
   ) { }
 
@@ -249,7 +249,7 @@ export class ContactNumberFormComponent implements OnInit {
         {
           text: 'Okay',
           handler: () => {
-            this.settingService.updateProfile({
+            this.authService.updateProfile({
               contact_number: this.profile.contactNumber,
             }).subscribe(result => {
               this.updating = false;
