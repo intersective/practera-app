@@ -5,11 +5,11 @@
         <ion-col class="ion-no-padding ion-no-margin">
 
           <div class="exp-card-container">
-            <h1 class="headline-1 m-0 black">Welcome to Experience</h1>
+            <h1 class="headline-1 m-0 black">Welcome to Experience !</h1>
             <p class="subtitle-1 m-0 grey-75">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
-            <div class="cards">
+            <div class="cards" [ngClass]="programs.length > 1 ? 'left' : 'center'">
               <ng-container *ngFor="let program of programs">
-                <ion-card class="exp-card ion-no-margin" [attr.aria-label]="program.program.name">
+                <ion-card class="exp-card ion-no-margin" [attr.aria-label]="program.program.name" (click)="switchProgram(program)">
                   <img [src]="program.project.lead_image ? program.project.lead_image : '../../../assets/default-experience-image.svg'" alt="{{ program.program.name }}">
                   <ion-card-content>
                     <p class="m-0 headline-3 exp-title black">{{ program.program.name }}</p>
@@ -27,7 +27,4 @@
       </ion-row>
     </ion-grid>
   </ng-container>
-  <ion-item routerLink="/v3/home">
-    Go home!
-  </ion-item>
 </ion-content>

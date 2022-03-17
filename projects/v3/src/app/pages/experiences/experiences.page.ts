@@ -1,7 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
-import { ExperienceService } from '@v3/services/experience.service';
+import { Router } from '@angular/router';
+import { ExperienceService, ProgramObj } from '@v3/services/experience.service';
 import { UtilsService } from '@v3/services/utils.service';
+import { LoadingController } from '@ionic/angular';
+import { NotificationsService } from '@v3/services/notifications.service';
 
 @Component({
   selector: 'app-experiences',
@@ -10,16 +12,37 @@ import { UtilsService } from '@v3/services/utils.service';
 })
 export class ExperiencesPage implements OnInit {
 
-  programs$ = this.service.programs$;
+  programs$ = this.service.programsWithProgress$;
 
   constructor(
-    private route: ActivatedRoute,
+    private router: Router,
     private service: ExperienceService,
-    private utils: UtilsService
+    public loadingController: LoadingController,
+    private notificationsService: NotificationsService
   ) { }
 
   ngOnInit() {
     this.service.getPrograms();
+  }
+
+  async switchProgram(program: ProgramObj) {
+    const loading = await this.loadingController.create({
+      message: 'loading...'
+    });
+    await loading.present();
+
+    try {
+      const route = await this.service.switchProgramAndNavigate(program);
+      loading.dismiss().then(() => {
+        this.router.navigate(route);
+      });
+    } catch (err) {
+      await this.notificationsService.alert({
+        header: 'Error switching program',
+        message: err.msg || JSON.stringify(err)
+      });
+    }
+    return this.router.navigate(['v3','home']);
   }
 
 }

@@ -31,8 +31,15 @@
       flex-wrap: wrap;
       flex-direction: row;
       align-content: center;
-      justify-content: center;
       align-items: center;
+
+      &.center {
+        justify-content: center;
+      }
+
+      &.left {
+        justify-content: flex-start;
+      }
 
       .exp-card {
         width: 300px;
@@ -42,6 +49,7 @@
         border-radius: 8px;
         box-shadow: none;
         margin: 10px;
+        cursor: pointer;
 
         img {
           height: 140px;
