@@ -1,17 +1,11 @@
-<ion-content color="light" class="pop-up-content" [ngClass]="{'desktop-view': !utils.isMobile()}"
-  text-center
-  role="dialog"
-  aria-modal="true"
-  aria-hidden="false"
-  #achievementBadgePopup>
 
   <div class="image-content">
-    <div class="image">
-        <img alt="{{achievement.name}}"
-          [src]="achievement.image ? achievement.image : '/assets/achievement-popup-default.svg'"
-          id="achievement-image"
-          tabindex="0"
-          #badgeImage>
+    <div class="image ion-text-center">
+      <img alt="{{achievement.name}}"
+        [src]="achievement.image ? achievement.image : '/assets/achievement-popup-default.svg'"
+        id="achievement-image"
+        tabindex="0"
+        #badgeImage>
     </div>
   </div>
 
@@ -35,5 +29,3 @@
       <ion-button (click)="confirmed($event)" shape="round" color="primary" expand="full" tabindex="0" id="confirm" role="button" (keydown)=confirmed($event) aria-label="confirm" #dismissButton>OK</ion-button>
     </div>
   </div>
-
-</ion-content>

@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Achievement, AchievementService } from '@v3/app/services/achievement.service';
+import { NotificationsService } from '@v3/app/services/notifications.service';
 import { HomeService } from '@v3/services/home.service';
 import { UtilsService } from '@v3/services/utils.service';
 
@@ -22,7 +23,8 @@ export class HomePage implements OnInit {
     private route: ActivatedRoute,
     private service: HomeService,
     private achievementService: AchievementService,
-    private utils: UtilsService
+    private utils: UtilsService,
+    private notification: NotificationsService
   ) { }
 
   ngOnInit() {
@@ -74,6 +76,6 @@ export class HomePage implements OnInit {
   }
 
   achievePopup(achievement: Achievement) {
-    console.log(achievement);
+    this.notification.achievementPopUp('', achievement);
   }
 }
