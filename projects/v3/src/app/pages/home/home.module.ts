@@ -10,6 +10,7 @@ import { PersonalisedHeaderModule } from '@v3/app/personalised-header/personalis
   imports: [
     ComponentsModule,
     HomePageRoutingModule,
+    PersonalisedHeaderModule,
   ],
   declarations: [HomePage]
 })
