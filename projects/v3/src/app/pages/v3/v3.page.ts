@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { ModalController, PopoverController } from '@ionic/angular';
 import { AnimationsService } from '@v3/services/animations.service';
-import { SettingsSlidePage } from '../settings-slide/settings-slide.page';
+import { SettingsPage } from '../settings/settings.page';
 
 @Component({
   selector: 'app-v3',
@@ -39,7 +39,7 @@ export class V3Page {
 
   async presentModal() {
     const modal = await this.modalController.create({
-      component: SettingsSlidePage,
+      component: SettingsPage,
       enterAnimation: this.animationService.enterAnimation,
       leaveAnimation: this.animationService.leaveAnimation,
       cssClass: 'right-affixed'
@@ -49,7 +49,7 @@ export class V3Page {
 
   async presentPopover() {
     const popover = await this.popoverController.create({
-      component: SettingsSlidePage,
+      component: SettingsPage,
       size: 'cover',
       side: 'right',
       alignment: 'end',
