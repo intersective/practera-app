@@ -1,29 +1,10 @@
 import { Injectable } from '@angular/core';
-import { FastFeedbackComponent } from '../components/fast-feedback/fast-feedback.component';
 import { RequestService } from 'request';
 import { NotificationsService } from './notifications.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { UtilsService } from '@v3/services/utils.service';
 import { of, from, Observable } from 'rxjs';
 import { switchMap, delay, take, retryWhen } from 'rxjs/operators';
-
-export interface Choice {
-  id: number;
-  title: string;
-}
-export interface Question {
-  id: number;
-  title: string;
-  description: string;
-  choices: Array<Choice>;
-}
-export interface Meta {
-  context_id: number;
-  team_id: number;
-  target_user_id: number;
-  team_name: string;
-  assessment_name: string;
-}
 
 const api = {
   fastFeedback: 'api/v2/observation/slider/list.json',
@@ -43,29 +24,6 @@ export class FastFeedbackService {
 
   getFastFeedback() {
     return this.request.get(api.fastFeedback);
-  }
-
-  /**
-   * Pop up the fast feedback modal window
-   */
-  fastFeedbackModal(
-    props: {
-      questions?: Array<Question>;
-      meta?: Meta | Object;
-    },
-    modalOnly: boolean = false
-  ): Promise<HTMLIonModalElement | void> {
-    if (modalOnly) {
-      return this.notificationsService.modalOnly(FastFeedbackComponent, props, {
-        backdropDismiss: false,
-        showBackdrop: false,
-      });
-    }
-
-    return this.notificationsService.modal(FastFeedbackComponent, props, {
-      backdropDismiss: false,
-      showBackdrop: false,
-    });
   }
 
   pullFastFeedback(options= {
@@ -88,7 +46,7 @@ export class FastFeedbackService {
           // add a flag to indicate that a fast feedback pop up is opening
           this.storage.set('fastFeedbackOpening', true);
 
-          return from(this.fastFeedbackModal(
+          return from(this.notificationsService.fastFeedbackModal(
             {
               questions: res.data.slider,
               meta: res.data.meta

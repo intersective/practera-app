@@ -10,16 +10,7 @@ import { ApolloService } from '@v3/services/apollo.service';
 import { PusherService } from '@v3/services/pusher.service';
 import { map } from 'rxjs/operators';
 
-export interface Profile {
-  contact_number: string;
-  email?: string;
-  sendsms?: boolean;
-}
-
 const api = {
-  post: {
-    profile: 'api/v2/user/enrolment/edit.json',
-  },
   get: {
     teams: 'api/teams.json',
   }
@@ -138,13 +129,6 @@ export class SharedService {
       return 'Overdue ' + this.utils.utcToLocal(dueDate);
     }
     return 'Due ' + this.utils.utcToLocal(dueDate);
-  }
-
-  updateProfile(data: Profile) {
-    return this.request.post({
-      endPoint: api.post.profile,
-      data
-    });
   }
 
   /**
