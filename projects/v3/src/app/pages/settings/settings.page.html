@@ -7,133 +7,64 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content fullscreen="true" class="ion-padding" color="light">
+<ion-content fullscreen="true">
   <ion-header collapse="condense">
     <ion-toolbar>
       <ion-title size="large">Settings</ion-title>
     </ion-toolbar>
   </ion-header>
 
-  <ng-container *ngIf="utils.isMobile() || mode === 'embed'">
-    <ion-item class="profile-info no-bg" lines="none" tabindex="0">
-      <ion-avatar class="profile-image" slot="start">
-        <img *ngIf="!imageUpdating" [src]="profile.image" alt="Profile Image">
-        <p *ngIf="imageUpdating" class="loading-icon">
-          <ion-spinner name="bubbles"></ion-spinner>
-        </p>
-        <file-stack [accept]="acceptFileTypes" [fileType]="'image'" [type]="'profileImage'"
-          (complete)="uploadProfileImage($event)"></file-stack>
-      </ion-avatar>
-      <ion-label>
-        <ion-label class="headline-6" *ngIf="profile.name">
-          {{profile.name}}
-        </ion-label>
-        <ion-label class="subtitle-1 gray-2" *ngIf="profile.email">
-          {{profile.email}}
-        </ion-label>
-      </ion-label>
-    </ion-item>
-    <app-contact-number-form [page]="'settings'"></app-contact-number-form>
-
-    <ng-container *ngIf="mode !== 'embed'">
-      <ion-item *ngIf="isInMultiplePrograms()" lines="none" class="exp-switch" tabindex="0">
-        <ion-label class="subtitle-2 gray-2">Switch to another experience</ion-label>
-        <ion-button class="practera-btn mobile-btn" slot="end" (click)="switchProgram($event)" role="button"
-          (keydown)="switchProgram($event)">SWITCH</ion-button>
+  <ion-list lines="full" class="ion-no-margin ion-no-padding">
+    <ion-item-group>
+      <ion-item-divider lines="none">
+        <ion-label color="primary">Your Details</ion-label>
+      </ion-item-divider>
+      <ion-item>
+        <div class="avatar-and-profile">
+          <ion-avatar>
+            <img *ngIf="!imageUpdating" [src]="profile.image" alt="Profile Image">
+          </ion-avatar>
+          <ion-button fill="outline" expand="block">
+            Upload Profile Image
+          </ion-button>
+        </div>
       </ion-item>
-
-      <div class="ion-margin-top support-mobile subtitle-1">
-        <ng-container *ngTemplateOutlet="supportContentTpl"></ng-container>
+      <ion-item>
+        <ion-label>Name</ion-label>
+        <ion-input slot="end" placeholder="John Doe" [disabled]="true"></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label>Email</ion-label>
+        <ion-input slot="end" placeholder="john@doe.university.com" [disabled]="true"></ion-input>
+      </ion-item>
+      <ion-item-divider>
+        <ion-note class="helper">If you need to update your name or email please contact the experience administrator.</ion-note>
+      </ion-item-divider>
+      <ion-item>
+        <ion-label>Mobile Number</ion-label>
+        <ion-input slot="end" placeholder="john@doe.university.com"></ion-input>
+      </ion-item>
+      <ion-item-divider>
+        <ion-note class="helper">Your mobile number is important to get SMS notifications.</ion-note>
+      </ion-item-divider>
+      <ion-item>
+        <div class="xc">
+          <ion-button fill="outline" expand="block">Update Profile</ion-button>
+        </div>
+        </ion-item>
+      <ion-item-divider>
+        <ion-label color="primary">Support</ion-label>
+      </ion-item-divider>
+      <ion-item detail="true">Contact support</ion-item>
+      <ion-item detail="true">Terms and Conditions</ion-item>
+    </ion-item-group>
+    <ion-item lines="none">
+      <div class="xc">
+        <ion-button size="large" fill="outline" expand="block">Log Out</ion-button>
       </div>
-    </ng-container>
-  </ng-container>
-
-  <ng-container *ngIf="!utils.isMobile() && mode !== 'embed'">
-    <ion-grid>
-      <ion-row>
-        <ion-col size="3" class="support">
-          <div class="profile-info" tabindex="0">
-            <ion-avatar class="profile-image" slot="start">
-              <img *ngIf="!imageUpdating" [src]="profile.image" alt="Profile Image">
-              <p *ngIf="imageUpdating" class="loading-icon">
-                <ion-spinner name="bubbles"></ion-spinner>
-              </p>
-              <file-stack [accept]="acceptFileTypes" [fileType]="'image'" [type]="'profileImage'"
-                (complete)="uploadProfileImage($event)"></file-stack>
-            </ion-avatar>
-            <ion-label class="headline-6" *ngIf="profile.name">
-              {{profile.name}}
-            </ion-label>
-            <ion-label class="subtitle-1 gray-2" *ngIf="profile.email">
-              {{profile.email}}
-            </ion-label>
-          </div>
-          <div class="ion-margin-top subtitle-1 support-wrapper">
-            <ng-container *ngTemplateOutlet="supportContentTpl"></ng-container>
-          </div>
-        </ion-col>
-        <ion-col class="content">
-          <app-contact-number-form [page]="'settings'"></app-contact-number-form>
-          <ion-item lines="none" class="no-bg">
-            <ion-label *ngIf="isInMultiplePrograms()" class="subtitle-2 gray-2">Switch to another experience</ion-label>
-            <ion-label *ngIf="!isInMultiplePrograms()" class="subtitle-2 gray-2">Your experience</ion-label>
-          </ion-item>
-          <ion-row class="experience-content">
-            <ion-col size="7" class="ion-no-padding experience-card-container">
-              <ion-card class="practera-card experience-card no-box-shadow">
-                <div class="image-container">
-                  <img [src]="currentProgramImage ? currentProgramImage : '/assets/default-experience-image.svg'"
-                    [alt]="currentProgramName" />
-                </div>
-                <ion-card-content>
-                  <ion-item lines="none" class="switcher-card-item subtitle-1">
-                    <ion-label>{{ currentProgramName }}</ion-label>
-                  </ion-item>
-                </ion-card-content>
-              </ion-card>
-            </ion-col>
-            <ion-col size="5" *ngIf="isInMultiplePrograms() || returnLtiUrl"
-              class="ion-no-padding switch-card-container">
-              <ion-card class="practera-card experience-card" (click)="switchProgram($event)" tabindex="0" role="button"
-                (keydown)="switchProgram($event)">
-                <div class="div-icon-swap">
-                  <ion-icon name="swap-horizontal" color="primary"></ion-icon>
-                </div>
-                <ion-card-content>
-                  <clickable-item color="light" [lines]="'none'" [isSwitcherCard]="true">
-                    <ion-label class="subtitle-1">Switch Experience</ion-label>
-                  </clickable-item>
-                </ion-card-content>
-              </ion-card>
-            </ion-col>
-          </ion-row>
-        </ion-col>
-      </ion-row>
-    </ion-grid>
-  </ng-container>
+    </ion-item>
+  </ion-list>
 </ion-content>
-
-<ng-template #supportContentTpl>
-  <ion-label class="subtitle-2 gray-2">Support</ion-label>
-  <ion-button class="accessible-btn" role="button" aria-label="Email help" tabindex="0" (click)="mailTo($event)"
-    (keydown)="mailTo($event)">
-    <ion-icon class="ion-padding-end" color="primary" name="mail-outline"></ion-icon>
-    <ion-label class="subtitle-1"> Email Help </ion-label>
-  </ion-button>
-  <ion-button class="accessible-btn" role="button" aria-label="Terms of use" (click)="openLink($event)"
-    (keydown)="openLink($event)" tabindex="0">
-    <ion-icon class="ion-padding-end" color="primary" name="clipboard-outline"></ion-icon>
-    <ion-label class="subtitle-1">Terms of Use</ion-label>
-  </ion-button>
-  <ion-button class="accessible-btn" role="button"
-    [attr.aria-label]="hasMultipleStacks ? 'Logout or Switch Environment' : 'logout'" (click)="logout($event)"
-    (keydown)="logout($event)" tabindex="0">
-    <ion-icon class="ion-padding-end" color="primary" name="log-out-outline"></ion-icon>
-    <ion-label *ngIf="hasMultipleStacks" class="subtitle-1">Logout or Switch Environment</ion-label>
-    <ion-label *ngIf="!hasMultipleStacks" class="subtitle-1">Logout</ion-label>
-  </ion-button>
-</ng-template>
-
 
 
 
