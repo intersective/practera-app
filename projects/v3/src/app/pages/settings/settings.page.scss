@@ -1,3 +1,24 @@
+.avatar-and-profile {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  ion-avatar {
+    margin-right: 0.5em;
+  }
+  ion-button {
+    margin-left: 0.5em;
+  }
+}
+
 ion-text {
   background: var(--practera-light-grey-50);
+}
+
+ion-note.helper {
+  padding: 1em;
+}
+
+ion-button {
+  width: 20em;
 }
