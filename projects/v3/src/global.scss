@@ -28,3 +28,29 @@
   justify-content: right !important;
 }
 
+ion-item-divider {
+  --background: var(--practera-light-grey-50);
+}
+
+.fullheight {
+  height: 100%;
+}
+
+.xc {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+.vcs {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.hcs {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
