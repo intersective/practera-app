@@ -14,40 +14,44 @@
     </ion-toolbar>
   </ion-header>
 
-  <ion-list lines="none" [style]="{'padding': '0px'}">
+  <ion-list lines="full" class="ion-no-margin ion-no-padding">
     <ion-item-group>
       <ion-item-divider lines="none">
         <ion-label color="primary">Your Details</ion-label>
       </ion-item-divider>
-      <ion-item lines="none">
-        <ion-avatar>
-          <img *ngIf="!imageUpdating" [src]="profile.image" alt="Profile Image">
-        </ion-avatar>
-        <ion-button fill="outline" >
-          Upload Profile Image
-        </ion-button>
+      <ion-item>
+        <div class="avatar-and-profile">
+          <ion-avatar>
+            <img *ngIf="!imageUpdating" [src]="profile.image" alt="Profile Image">
+          </ion-avatar>
+          <ion-button fill="outline" expand="block">
+            Upload Profile Image
+          </ion-button>
+        </div>
       </ion-item>
       <ion-item>
         <ion-label>Name</ion-label>
-        <ion-input placeholder="John Doe"></ion-input>
+        <ion-input slot="end" placeholder="John Doe" [disabled]="true"></ion-input>
       </ion-item>
       <ion-item>
         <ion-label>Email</ion-label>
-        <ion-input placeholder="john@doe.university.com"></ion-input>
+        <ion-input slot="end" placeholder="john@doe.university.com" [disabled]="true"></ion-input>
       </ion-item>
       <ion-item-divider>
-        <ion-note>If you need to update your name or email please contact the experience administrator.</ion-note>
+        <ion-note class="helper">If you need to update your name or email please contact the experience administrator.</ion-note>
       </ion-item-divider>
       <ion-item>
         <ion-label>Mobile Number</ion-label>
-        <ion-input placeholder="john@doe.university.com"></ion-input>
+        <ion-input slot="end" placeholder="john@doe.university.com"></ion-input>
       </ion-item>
       <ion-item-divider>
-        <ion-note>Your mobile number is important to get SMS notifications.</ion-note>
+        <ion-note class="helper">Your mobile number is important to get SMS notifications.</ion-note>
       </ion-item-divider>
       <ion-item>
-        <ion-button fill="outline">Update Profile</ion-button>
-      </ion-item>
+        <div class="xc">
+          <ion-button fill="outline" expand="block">Update Profile</ion-button>
+        </div>
+        </ion-item>
       <ion-item-divider>
         <ion-label color="primary">Support</ion-label>
       </ion-item-divider>
@@ -55,7 +59,9 @@
       <ion-item detail="true">Terms and Conditions</ion-item>
     </ion-item-group>
     <ion-item lines="none">
-      <ion-button fill="outline">Log Out</ion-button>
+      <div class="xc">
+        <ion-button size="large" fill="outline" expand="block">Log Out</ion-button>
+      </div>
     </ion-item>
   </ion-list>
 </ion-content>
