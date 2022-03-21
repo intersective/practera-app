@@ -1,6 +1,9 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { UtilsService } from '@v3/services/utils.service';
+import { random } from 'lodash';
+import { BehaviorSubject, interval, Observable, of, timer } from 'rxjs';
+import { take } from 'rxjs/operators';
 
 @Component({
   selector: 'app-reviews',
@@ -14,6 +17,9 @@ export class ReviewsPage implements OnInit {
   contextId: number;
   @ViewChild('reviewList') reviewList;
   @ViewChild('assessment') assessment;
+
+  currentReview$ = new BehaviorSubject<any>({});
+
   constructor(
     readonly utils: UtilsService,
     public router: Router,
@@ -23,6 +29,13 @@ export class ReviewsPage implements OnInit {
 
   ngOnInit() {
     this.onEnter();
+    interval(1000).pipe(take(10)).subscribe(x => {
+      const result = parseFloat((Math.random() * x * 100).toFixed(0));
+      this.currentReview$.next({
+        something: (result % 2 == 0) ? true : false,
+        value: result
+      });
+    })
   }
 
   get isMobile() {
