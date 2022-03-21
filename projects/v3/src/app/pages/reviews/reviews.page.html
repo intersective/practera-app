@@ -14,4 +14,28 @@
     </ion-toolbar>
   </ion-header>
 
+  <ion-grid contentId="main-reviews" when="xs">
+    <ion-row>
+      <ion-col size="12" size-lg>
+        <app-review-list
+          #reviewList
+          [submissionId]="submissionId"
+          (navigate)="goto($event)"
+          [review$]="currentReview$"
+        ></app-review-list>
+      </ion-col>
+      <ion-col size="12" size-lg>
+        <app-assessment
+          #assessment
+          [assessment$]="currentReview$"
+          [inputId]="assessmentId"
+          [inputSubmissionId]="submissionId"
+          [inputContextId]="contextId"
+          inputAction="review"
+          fromPage="reviews"
+        ></app-assessment>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
 </ion-content>
+

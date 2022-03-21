@@ -1,4 +1,4 @@
-import { Component, Input, NgZone, Output, EventEmitter } from '@angular/core';
+import { Component, Input, NgZone, Output, EventEmitter, OnInit } from '@angular/core';
 import { Router, ActivatedRoute, ParamMap } from '@angular/router';
 import { AssessmentService, Assessment, Submission, Review, AssessmentSubmitParams } from '@v3/services/assessment.service';
 import { UtilsService } from '@v3/services/utils.service';
@@ -8,7 +8,7 @@ import { BrowserStorageService } from '@v3/services/storage.service';
 import { SharedService } from '@v3/services/shared.service';
 import { ActivityService } from '@v3/services/activity.service';
 import { FastFeedbackService } from '@v3/services/fast-feedback.service';
-import { interval, timer, Subscription } from 'rxjs';
+import { interval, timer, Subscription, Subject } from 'rxjs';
 import { DemoService } from '@v3/app/services/demo.service';
 
 const SAVE_PROGRESS_TIMEOUT = 10000;
@@ -18,7 +18,7 @@ const SAVE_PROGRESS_TIMEOUT = 10000;
   templateUrl: './assessment.page.html',
   styleUrls: ['./assessment.page.scss'],
 })
-export class AssessmentPage {
+export class AssessmentPage implements OnInit {
   @Input() inputId: number;
   @Input() inputActivityId: number;
   @Input() inputSubmissionId: number;
@@ -27,9 +27,10 @@ export class AssessmentPage {
   @Input() fromPage = '';
   @Output() navigate = new EventEmitter();
   @Output() changeStatus = new EventEmitter();
+  @Input() assessment$: Subject<any>;
   getAssessment: Subscription;
   getSubmission: Subscription;
-  routeUrl = '/assessment/';
+
   // assessment id
   id: number;
   // activity id
@@ -113,6 +114,12 @@ export class AssessmentPage {
 
   get isMobile() {
     return this.utils.isMobile();
+  }
+
+  ngOnInit() {
+    this.assessment$.subscribe(assessment => {
+      console.log('current assessment::', assessment);
+    });
   }
 
   /**
@@ -250,7 +257,7 @@ export class AssessmentPage {
     }
 
     // get assessment structure and populate the question form
-    this.assessmentService.getAssessment().subscribe(
+    /* this.assessmentService.getAssessment().subscribe(
       result => {
         this.assessment = result.assessment;
         this.populateQuestionsForm();
@@ -278,7 +285,7 @@ export class AssessmentPage {
       error => {
         console.log(error);
       }
-    );
+    ); */
   }
 
   private _handleSubmissionData(submission) {
@@ -348,7 +355,6 @@ export class AssessmentPage {
       this.savingButtonDisabled = false;
     }
   }
-
 
   ionViewWillLeave() {
     this.sharedService.stopPlayingVideos();
