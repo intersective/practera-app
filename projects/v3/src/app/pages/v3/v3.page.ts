@@ -1,14 +1,14 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { ModalController, PopoverController } from '@ionic/angular';
-import { AnimationsService } from '@v3/app/services/animations.service';
-import { SettingsSlidePage } from '../settings-slide/settings-slide.page';
+import { AnimationsService } from '@v3/services/animations.service';
+import { SettingsPage } from '../settings/settings.page';
 
 @Component({
   selector: 'app-v3',
   templateUrl: './v3.page.html',
   styleUrls: ['./v3.page.scss'],
 })
-export class V3Page implements OnInit {
+export class V3Page {
   appPages = [
     {
       title: 'Home',
@@ -37,12 +37,9 @@ export class V3Page implements OnInit {
     private animationService: AnimationsService
   ) { }
 
-  ngOnInit() {
-  }
-
   async presentModal() {
     const modal = await this.modalController.create({
-      component: SettingsSlidePage,
+      component: SettingsPage,
       enterAnimation: this.animationService.enterAnimation,
       leaveAnimation: this.animationService.leaveAnimation,
       cssClass: 'right-affixed'
@@ -52,7 +49,7 @@ export class V3Page implements OnInit {
 
   async presentPopover() {
     const popover = await this.popoverController.create({
-      component: SettingsSlidePage,
+      component: SettingsPage,
       size: 'cover',
       side: 'right',
       alignment: 'end',
