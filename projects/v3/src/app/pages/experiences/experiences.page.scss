@@ -54,7 +54,7 @@
         img {
           height: 140px;
           width: -webkit-fill-available;
-          object-fit: fill;
+          object-fit: cover;
         }
 
         ion-card-content {
@@ -86,4 +86,34 @@
       }
     }
   }
+
+  &.mobile {
+    --background: #ffffff !important;
+    .exp-card-container{
+      border-radius: 0;
+      padding: 20px;
+      min-width: auto;
+      max-height: -webkit-fill-available;
+      height: -webkit-fill-available;
+      box-shadow: none;
+
+      .cards {
+        justify-content: center;
+        margin-top: 0;
+
+        .exp-card {
+          width: -webkit-fill-available;
+          margin: 0;
+          margin-bottom: 20px;
+        }
+      }
+    }
+  }
+
+  .experiences-block {
+    --color: var(--ion-color-primary);
+    --background: var(--ion-color-primary-tint);
+    height: 40px;
+  }
+
 }
