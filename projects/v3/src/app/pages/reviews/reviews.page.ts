@@ -33,9 +33,9 @@ export class ReviewsPage implements OnInit {
   onEnter(): void {
     this.submissionId = +this.route.snapshot.paramMap.get('submissionId');
     // trigger onEnter after the element get generated
-    setTimeout(() => {
+    /* setTimeout(() => {
       this.reviewList.onEnter();
-    });
+    }); */
   }
 
   // display the review content in the right pane, and highlight on the left pane

@@ -7,7 +7,7 @@ import { IonicModule } from '@ionic/angular';
 import { ReviewsPageRoutingModule } from './reviews-routing.module';
 
 import { ReviewsPage } from './reviews.page';
-import { AssessmentModule } from '@app/assessment/assessment.module';
+import { AssessmentPageModule } from '@v3/pages/assessment/assessment.module';
 import { ReviewListPageModule } from '../review-list/review-list.module';
 
 @NgModule({
@@ -16,7 +16,7 @@ import { ReviewListPageModule } from '../review-list/review-list.module';
     FormsModule,
     IonicModule,
     ReviewsPageRoutingModule,
-    AssessmentModule,
+    AssessmentPageModule,
     ReviewListPageModule,
   ],
   declarations: [ReviewsPage]
