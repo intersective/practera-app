@@ -14,6 +14,9 @@ import { QuestionsModule } from '@v3/app/questions/questions.module';
     ComponentsModule,
     QuestionsModule,
   ],
-  declarations: [AssessmentPage]
+  declarations: [AssessmentPage],
+  exports: [
+    AssessmentPage,
+  ]
 })
 export class AssessmentPageModule {}

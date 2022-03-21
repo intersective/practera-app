@@ -1,10 +1,9 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { Router } from '@angular/router';
-import { Review, ReviewListService } from '@app/review-list/review-list.service';
-import { BrowserStorageService } from '@app/services/storage.service';
-import { UtilsService } from '@app/services/utils.service';
-import { NewRelicService } from '@app/shared/new-relic/new-relic.service';
-import { NotificationService } from '@app/shared/notification/notification.service';
+import { Review, ReviewListService } from '@v3/services/review-list.service';
+import { BrowserStorageService } from '@v3/services/storage.service';
+import { UtilsService } from '@v3/services/utils.service';
+import { NotificationsService } from '@v3/services/notifications.service';
 
 @Component({
   selector: 'app-review-list',
@@ -24,8 +23,7 @@ export class ReviewListPage implements OnInit {
     public router: Router,
     public utils: UtilsService,
     public storage: BrowserStorageService,
-    private newRelic: NewRelicService,
-    private notificationService: NotificationService,
+    private notificationsService: NotificationsService,
   ) { }
 
   ngOnInit() {
@@ -43,8 +41,7 @@ export class ReviewListPage implements OnInit {
           this.gotoFirstReview();
         },
         err => {
-          this.newRelic.noticeError('get reviews fail', JSON.stringify(err));
-          const toasted = this.notificationService.alert({
+          const toasted = this.notificationsService.alert({
             header: 'Error retrieving latest reviews',
             message: err.msg || JSON.stringify(err)
           });
