@@ -17,7 +17,6 @@ export class FastFeedbackComponent implements OnInit {
   meta: Meta;
   loading = false;
   submissionCompleted: Boolean;
-  newRelicTracer: any;
 
   constructor(
     public modalController: ModalController,
@@ -73,7 +72,6 @@ export class FastFeedbackComponent implements OnInit {
       this.submissionCompleted = true;
       return setTimeout(
         () => {
-          this.newRelicTracer();
           return this.dismiss(submissionResult);
         },
         2000
