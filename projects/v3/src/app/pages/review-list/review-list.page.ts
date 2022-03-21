@@ -4,6 +4,7 @@ import { Review, ReviewListService } from '@v3/services/review-list.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { UtilsService } from '@v3/services/utils.service';
 import { NotificationsService } from '@v3/services/notifications.service';
+import { Subject } from 'rxjs';
 
 @Component({
   selector: 'app-review-list',
@@ -11,12 +12,12 @@ import { NotificationsService } from '@v3/services/notifications.service';
   styleUrls: ['./review-list.page.scss'],
 })
 export class ReviewListPage implements OnInit {
-
   public reviews: Array<Review> = [];
   public showDone = false;
   public loadingReviews = true;
   @Input() submissionId: number;
   @Output() navigate = new EventEmitter();
+  @Input() review$: Subject<any>;
 
   constructor(
     public reviewsService: ReviewListService,
@@ -28,6 +29,9 @@ export class ReviewListPage implements OnInit {
 
   ngOnInit() {
     this.onEnter();
+    this.review$.subscribe(review => {
+      console.log('ReviewListPage::current', review);
+    });
   }
 
   onEnter() {
