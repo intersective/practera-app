@@ -14,7 +14,7 @@
     </ion-toolbar>
   </ion-header>
 
-  <ion-grid *ngIf="!isMobile" contentId="main-reviews" when="xs">
+  <ion-grid contentId="main-reviews" when="xs">
     <ion-row>
       <ion-col>
         <app-review-list  #reviewList [submissionId]="submissionId" (navigate)="goto($event)"></app-review-list>

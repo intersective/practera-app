@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
-import { UtilsService } from '@app/services/utils.service';
+import { UtilsService } from '@v3/services/utils.service';
 
 @Component({
   selector: 'app-reviews',
@@ -8,7 +8,6 @@ import { UtilsService } from '@app/services/utils.service';
   styleUrls: ['./reviews.page.scss'],
 })
 export class ReviewsPage implements OnInit {
-
   routeUrl = '/app/reviews';
   assessmentId: number;
   submissionId: number;
@@ -48,9 +47,9 @@ export class ReviewsPage implements OnInit {
     this.submissionId = +event.submissionId;
     this.contextId = +event.contextId;
     // trigger onEnter after the element get generated
-    setTimeout(() => {
+    /* setTimeout(() => {
       this.assessment.onEnter();
-    });
+    }); */
   }
 
 }

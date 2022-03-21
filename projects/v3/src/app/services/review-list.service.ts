@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { RequestService } from '@shared/request/request.service';
+import { RequestService } from 'request';
 import { UtilsService } from '@services/utils.service';
 
 const api = {
