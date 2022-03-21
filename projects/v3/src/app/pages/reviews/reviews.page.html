@@ -16,10 +16,10 @@
 
   <ion-grid contentId="main-reviews" when="xs">
     <ion-row>
-      <ion-col>
+      <ion-col size="12" size-lg>
         <app-review-list  #reviewList [submissionId]="submissionId" (navigate)="goto($event)"></app-review-list>
       </ion-col>
-      <ion-col>
+      <ion-col size="12" size-lg>
         <app-assessment #assessment *ngIf="submissionId" [inputId]="assessmentId" [inputSubmissionId]="submissionId"
         [inputContextId]="contextId" inputAction="review" fromPage="reviews"
         (navigate)="submissionId = null; reviewList.onEnter()"></app-assessment>
