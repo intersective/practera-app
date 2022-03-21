@@ -14,4 +14,17 @@
     </ion-toolbar>
   </ion-header>
 
+  <ion-grid *ngIf="!isMobile" contentId="main-reviews" when="xs">
+    <ion-row>
+      <ion-col>
+        <app-review-list  #reviewList [submissionId]="submissionId" (navigate)="goto($event)"></app-review-list>
+      </ion-col>
+      <ion-col>
+        <app-assessment #assessment *ngIf="submissionId" [inputId]="assessmentId" [inputSubmissionId]="submissionId"
+        [inputContextId]="contextId" inputAction="review" fromPage="reviews"
+        (navigate)="submissionId = null; reviewList.onEnter()"></app-assessment>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
 </ion-content>
+
