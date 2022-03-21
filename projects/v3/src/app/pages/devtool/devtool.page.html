@@ -1,0 +1,15 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>devtool</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-button routerLink="/v3">Go /</ion-button>
+  <ion-button (click)="login()">Login</ion-button>
+
+  <ion-text *ngIf="doneLogin">
+    <p>{{ user | json }}</p>
+  </ion-text>
+
+</ion-content>

@@ -6,7 +6,6 @@ import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { UtilsService } from '@services/utils.service';
 import { NotificationService } from '@shared/notification/notification.service';
 import { BrowserStorageService } from '@services/storage.service';
-import { Subscription } from 'rxjs';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
 
 @Component({

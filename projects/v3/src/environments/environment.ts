@@ -4,6 +4,7 @@
 
 export const environment = {
   production: false,
+  defaultCountryModel: 'AUS',
   demo: true,
   env: 'sandbox',
   appkey: 'b11e7c189b',

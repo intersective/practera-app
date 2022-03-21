@@ -9,9 +9,9 @@ import { SharedService } from '@v3/services/shared.service';
 import { ActivityService } from '@v3/services/activity.service';
 import { FastFeedbackService } from '@v3/services/fast-feedback.service';
 import { interval, timer, Subscription } from 'rxjs';
+import { DemoService } from '@v3/app/services/demo.service';
 
 const SAVE_PROGRESS_TIMEOUT = 10000;
-
 
 @Component({
   selector: 'app-assessment',
@@ -19,7 +19,6 @@ const SAVE_PROGRESS_TIMEOUT = 10000;
   styleUrls: ['./assessment.page.scss'],
 })
 export class AssessmentPage {
-
   @Input() inputId: number;
   @Input() inputActivityId: number;
   @Input() inputSubmissionId: number;
@@ -79,7 +78,8 @@ export class AssessmentPage {
 
   feedbackReviewed = false;
   loadingAssessment = true;
-  questionsForm = new FormGroup({});
+  formModel: {[propKey: string]: FormControl} = {};
+  questionsForm: FormGroup = new FormGroup(this.formModel);
   submitting: boolean;
   submitted: boolean;
   savingButtonDisabled = true;
@@ -93,17 +93,23 @@ export class AssessmentPage {
   isNotInATeam = false; // to hide assessment content if user not is a team.
 
   constructor(
-    public router: Router,
+    private router: Router,
     private route: ActivatedRoute,
     private assessmentService: AssessmentService,
     readonly utils: UtilsService,
     private notificationsService: NotificationsService,
-    public storage: BrowserStorageService,
-    public sharedService: SharedService,
+    private storage: BrowserStorageService,
+    private sharedService: SharedService,
     private activityService: ActivityService,
     private fastFeedbackService: FastFeedbackService,
     private ngZone: NgZone,
-  ) { }
+    private demoService: DemoService,
+  ) {
+    this.route.queryParams.subscribe(params => {
+      console.log({params});
+      this.onEnter();
+    })
+  }
 
   get isMobile() {
     return this.utils.isMobile();
@@ -244,36 +250,35 @@ export class AssessmentPage {
     }
 
     // get assessment structure and populate the question form
-    this.assessmentService.getAssessment(this.id, this.action, this.activityId, this.contextId, this.submissionId)
-      .subscribe(
-        result => {
-          this.assessment = result.assessment;
-          this.populateQuestionsForm();
-          this.loadingAssessment = false;
-          this._handleSubmissionData(result.submission);
-          // display pop up if it is team assessment and user is not in team
-          if (this.doAssessment && this.assessment.isForTeam && !this.storage.getUser().teamId) {
-            this.isNotInATeam = true;
-            return this.notificationsService.alert({
-              message: 'Currently you are not in a team, please reach out to your Administrator or Coordinator to proceed with next steps.',
-              buttons: [
-                {
-                  text: 'OK',
-                  role: 'cancel',
-                  handler: () => {
-                    this.goToNextTask();
-                  }
+    this.assessmentService.getAssessment().subscribe(
+      result => {
+        this.assessment = result.assessment;
+        this.populateQuestionsForm();
+        this.loadingAssessment = false;
+        this._handleSubmissionData(result.submission);
+        // display pop up if it is team assessment and user is not in team
+        if (this.doAssessment && this.assessment.isForTeam && !this.storage.getUser().teamId) {
+          this.isNotInATeam = true;
+          return this.notificationsService.alert({
+            message: 'Currently you are not in a team, please reach out to your Administrator or Coordinator to proceed with next steps.',
+            buttons: [
+              {
+                text: 'OK',
+                role: 'cancel',
+                handler: () => {
+                  this.goToNextTask();
                 }
-              ]
-            });
-          }
-          this.isNotInATeam = false;
-          this._handleReviewData(result.review);
-        },
-        error => {
-          console.log(error);
+              }
+            ]
+          });
         }
-      );
+        this.isNotInATeam = false;
+        this._handleReviewData(result.review);
+      },
+      error => {
+        console.log(error);
+      }
+    );
   }
 
   private _handleSubmissionData(submission) {
@@ -332,7 +337,7 @@ export class AssessmentPage {
             text: 'OK',
             role: 'cancel',
             handler: () => {
-              this._navigate(['app', 'home']);
+              this._navigate(['v3', 'home']);
             }
           }
         ]
@@ -392,15 +397,15 @@ export class AssessmentPage {
       return Promise.resolve(true);
     }
     if (this.fromPage && this.fromPage === 'reviews') {
-      return this._navigate(['app', 'reviews']);
+      return this._navigate(['v3', 'reviews']);
     }
     if (this.fromPage && this.fromPage === 'events') {
-      return this._navigate(['app', 'events']);
+      return this._navigate(['v3', 'events']);
     }
     if (this.activityId) {
-      return this._navigate(['app', 'activity', this.activityId]);
+      return this._navigate(['v3', 'activity', this.activityId]);
     }
-    return this._navigate(['app', 'home']);
+    return this._navigate(['v3', 'home']);
   }
 
   /**

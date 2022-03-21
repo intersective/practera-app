@@ -4,18 +4,17 @@ import { FormsModule } from '@angular/forms';
 
 import { IonicModule } from '@ionic/angular';
 
-import { V3PageRoutingModule } from './v3-routing.module';
+import { DevtoolPageRoutingModule } from './devtool-routing.module';
 
-import { V3Page } from './v3.page';
-import { SettingsSlidePageModule } from '../settings-slide/settings-slide.module';
+import { DevtoolPage } from './devtool.page';
 
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
     IonicModule,
-    V3PageRoutingModule,
+    DevtoolPageRoutingModule
   ],
-  declarations: [V3Page]
+  declarations: [DevtoolPage]
 })
-export class V3PageModule {}
+export class DevtoolPageModule {}

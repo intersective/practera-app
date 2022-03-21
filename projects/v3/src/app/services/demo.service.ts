@@ -1,9 +1,12 @@
 import { Injectable } from '@angular/core';
+import { of } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class DemoService {
+
+
   image = 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=2252&q=80';
 
   description = `Practera is the leading platform to power high quality experiential learning programs.<br/><br/>Deliver experiential learning programs at larger scale and lower cost<br/>Customisable platform to author, launch & manage programs<br/>Connect students to industry projects, internships & experiences<br/>Expert course design, configuration and deployment services<br/><br/>Deliver experiential learning programs at larger scale and lower cost<br/>Customisable platform to author, launch & manage programs<br/>Connect students to industry projects, internships & experiences<br/>Expert course design, configuration and deployment services<br/><br/>Deliver experiential learning programs at larger scale and lower cost<br/>Customisable platform to author, launch & manage programs<br/>Connect students to industry projects, internships & experiences<br/>Expert course design, configuration and deployment services<br/><br/>Deliver experiential learning programs at larger scale and lower cost<br/>Customisable platform to author, launch & manage programs<br/>Connect students to industry projects, internships & experiences<br/>Expert course design, configuration and deployment services`;
@@ -132,5 +135,84 @@ export class DemoService {
         title: 'notification 1',
       },
     ];
+  }
+
+  assessment() {
+    return of({
+      "data": {
+        "assessment": {
+          "name": "Here is a sample feedback loop - automated from start to finish",
+          "type": "moderated",
+          "description": "Enrol a test expert and a learner user, put them into a team and see the magic happen! Login as the learner, submit the assessment and complete the feedback loop by impersonating the expert!",
+          "dueDate": null,
+          "isTeam": true,
+          "pulseCheck": true,
+          "groups": [
+            {
+              "name": "Question group 1",
+              "description": "",
+              "questions": [
+                {
+                  "id": 89437,
+                  "name": "Multiple choice example",
+                  "description": "",
+                  "type": "oneof",
+                  "isRequired": false,
+                  "hasComment": false,
+                  "audience": [
+                    "reviewer",
+                    "submitter"
+                  ],
+                  "fileType": null,
+                  "choices": [
+                    {
+                      "id": 285795,
+                      "name": "Choice 1",
+                      "explanation": null,
+                      "description": "",
+                      "__typename": "AssessmentChoice"
+                    },
+                    {
+                      "id": 285796,
+                      "name": "Choice 2",
+                      "explanation": null,
+                      "description": "",
+                      "__typename": "AssessmentChoice"
+                    },
+                    {
+                      "id": 285797,
+                      "name": "Choice 3",
+                      "explanation": null,
+                      "description": "",
+                      "__typename": "AssessmentChoice"
+                    }
+                  ],
+                  "teamMembers": null,
+                  "__typename": "AssessmentQuestion"
+                },
+                {
+                  "id": 89438,
+                  "name": "upload any file here to test the loop",
+                  "description": "",
+                  "type": "file",
+                  "isRequired": true,
+                  "hasComment": false,
+                  "audience": [
+                    "submitter"
+                  ],
+                  "fileType": "any",
+                  "choices": null,
+                  "teamMembers": null,
+                  "__typename": "AssessmentQuestion"
+                }
+              ],
+              "__typename": "AssessmentGroup"
+            }
+          ],
+          "submissions": [],
+          "__typename": "Assessment"
+        }
+      }
+    });
   }
 }

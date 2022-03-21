@@ -1,5 +1,5 @@
 import { Component, Input, Output, OnInit, OnChanges, SimpleChanges , ViewChild, ElementRef, EventEmitter} from '@angular/core';
-import { FilestackService } from '@v3/components/filestack/filestack.service';
+import { FilestackService } from '@v3/services/filestack.service';
 import { UtilsService } from '@v3/services/utils.service';
 import { environment } from '@v3/environments/environment';
 
