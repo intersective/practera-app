@@ -54,7 +54,7 @@
       <ion-spinner></ion-spinner>
     </ng-container>
     <ng-container *ngFor="let group of assessment.groups">
-      <h3 class="headline-6" tabindex="0" [aria-describedby]="randomCode(group.name)">{{ group.name }}</h3>
+      <h3 class="headline-6" tabindex="0" [attr.aria-describedby]="randomCode(group.name)">{{ group.name }}</h3>
       <ion-text color="dark" class="ion-text-left">
         <app-description [name]="randomCode(group.name)" class="g-description" *ngIf="group.description" [content]="group.description"></app-description>
       </ion-text>
