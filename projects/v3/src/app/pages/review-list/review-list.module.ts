@@ -7,13 +7,15 @@ import { IonicModule } from '@ionic/angular';
 import { ReviewListPageRoutingModule } from './review-list-routing.module';
 
 import { ReviewListPage } from './review-list.page';
+import { ComponentsModule } from '@v3/app/components/components.module';
 
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
     IonicModule,
-    ReviewListPageRoutingModule
+    ReviewListPageRoutingModule,
+    ComponentsModule,
   ],
   declarations: [ReviewListPage],
   exports: [ReviewListPage],
