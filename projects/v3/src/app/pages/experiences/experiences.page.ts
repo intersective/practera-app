@@ -18,11 +18,15 @@ export class ExperiencesPage implements OnInit {
     private router: Router,
     private service: ExperienceService,
     public loadingController: LoadingController,
-    private notificationsService: NotificationsService
+    private notificationsService: NotificationsService,
+    private utils: UtilsService
   ) { }
 
   ngOnInit() {
     this.service.getPrograms();
+  }
+  get isMobile() {
+    return this.utils.isMobile();
   }
 
   async switchProgram(program: ProgramObj) {

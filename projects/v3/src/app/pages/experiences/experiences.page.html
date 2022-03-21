@@ -1,12 +1,15 @@
-<ion-content class="experience-page">
+<ion-content class="experience-page" [class]="{'mobile': isMobile}">
   <ng-container *ngIf="(programs$ | async ) as programs">
+
     <ion-grid class="ion-no-padding ion-no-margin">
       <ion-row class="ion-justify-content-center ion-align-items-center ion-no-padding ion-no-margin">
         <ion-col class="ion-no-padding ion-no-margin">
 
+          <ion-item class="headline-4 experiences-block" lines="none">Experiences</ion-item>
+
           <div class="exp-card-container">
-            <h1 class="headline-1 m-0 black">Welcome to Experience !</h1>
-            <p class="subtitle-1 m-0 grey-75">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+            <h1 class="headline-1 m-0 black ion-hide-sm-down">Welcome to Experience !</h1>
+            <p class="subtitle-1 m-0 grey-75 ion-hide-sm-down">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
             <div class="cards" [ngClass]="programs.length > 1 ? 'left' : 'center'">
               <ng-container *ngFor="let program of programs">
                 <ion-card class="exp-card ion-no-margin" [attr.aria-label]="program.program.name" (click)="switchProgram(program)">
@@ -26,5 +29,6 @@
         </ion-col>
       </ion-row>
     </ion-grid>
+
   </ng-container>
 </ion-content>

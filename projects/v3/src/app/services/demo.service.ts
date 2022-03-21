@@ -190,7 +190,7 @@ export class DemoService {
         },
         project: {
           id: 2,
-          lead_image: 'https://www.filepicker.io/api/file/ASbKEZs7R0yt4sGEfSMs'
+          lead_image: null
         },
         timeline: {
           id: 1
