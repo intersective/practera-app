@@ -21,12 +21,12 @@ export class ActivityCompletePopUpComponent {
   confirmed(continueToActivity: boolean) {
     this.modalController.dismiss();
     if (!continueToActivity) {
-      this.router.navigate(['app', 'activity', this.activityId]);
+      this.router.navigate(['v3', 'activity', this.activityId]);
     } else {
       if (this.activityCompleted) {
-        this.router.navigate(['app', 'home'], { queryParams: { activityId: this.activityId, activityCompleted: this.activityCompleted } });
+        this.router.navigate(['v3', 'home'], { queryParams: { activityId: this.activityId, activityCompleted: this.activityCompleted } });
       } else {
-        this.router.navigate(['app', 'home'], { queryParams: { activityId: this.activityId } });
+        this.router.navigate(['v3', 'home'], { queryParams: { activityId: this.activityId } });
       }
     }
   }

@@ -5,7 +5,6 @@ import { FormsModule } from '@angular/forms';
 import { DescriptionComponent } from './description/description.component';
 import { ListItemComponent } from './list-item/list-item.component';
 import { ImgComponent } from './img/img.component';
-// import { FilestackModule } from './filestack/filestack.module';
 import { DragAndDropDirective } from '../directives/drag-and-drop/drag-and-drop.directive';
 import { AutoresizeDirective } from '../directives/autoresize/autoresize.directive';
 import { FloatDirective } from '../directives/float/float.directive';
@@ -15,10 +14,13 @@ import { LockTeamAssessmentPopUpComponent } from './lock-team-assessment-pop-up/
 import { ActivityCompletePopUpComponent } from './activity-complete-pop-up/activity-complete-pop-up.component';
 import { FastFeedbackComponent } from './fast-feedback/fast-feedback.component';
 import { ReviewRatingComponent } from './review-rating/review-rating.component';
-import { PersonalisedHeaderComponent } from './personalised-header/personalised-header.component';
+import { PersonalisedHeaderComponent } from '../personalised-header/personalised-header.component';
 import { CircleProgressComponent } from './circle-progress/circle-progress.component';
 import { NgCircleProgressModule } from 'ng-circle-progress';
-// import { QuestionsModule } from '../questions/questions.module';
+import { FilestackComponent } from './filestack/filestack.component';
+import { FilestackPreviewComponent } from './filestack-preview/filestack-preview.component';
+import { ContactNumberFormComponent } from './contact-number-form/contact-number-form.component';
+import { ClickableItemComponent } from './clickable-item/clickable-item.component';
 
 const largeCircleDefaultConfig = {
   backgroundColor: 'var(--ion-color-light)',
@@ -43,44 +45,52 @@ const largeCircleDefaultConfig = {
     FormsModule,
     NgCircleProgressModule.forRoot(largeCircleDefaultConfig),
     // QuestionsModule,
-    // FilestackModule,
   ],
   declarations: [
-    DescriptionComponent,
-    ListItemComponent,
-    ImgComponent,
-    DragAndDropDirective,
-    AutoresizeDirective,
-    FloatDirective,
     AchievementPopUpComponent,
-    PopUpComponent,
-    LockTeamAssessmentPopUpComponent,
     AchievementPopUpComponent,
     ActivityCompletePopUpComponent,
-    FastFeedbackComponent,
-    ReviewRatingComponent,
-    PersonalisedHeaderComponent,
+    AutoresizeDirective,
     CircleProgressComponent,
+    ClickableItemComponent,
+    ContactNumberFormComponent,
+    DescriptionComponent,
+    DragAndDropDirective,
+    FastFeedbackComponent,
+    FilestackComponent,
+    FilestackPreviewComponent,
+    FloatDirective,
+    ImgComponent,
+    ListItemComponent,
+    LockTeamAssessmentPopUpComponent,
+    PopUpComponent,
+    ReviewRatingComponent,
   ],
   exports: [
-    DescriptionComponent,
-    ListItemComponent,
-    IonicModule,
-    CommonModule,
-    FormsModule,
-    ImgComponent,
-    DragAndDropDirective,
-    AutoresizeDirective,
-    FloatDirective,
     AchievementPopUpComponent,
-    PopUpComponent,
-    LockTeamAssessmentPopUpComponent,
     AchievementPopUpComponent,
     ActivityCompletePopUpComponent,
-    FastFeedbackComponent,
-    ReviewRatingComponent,
-    PersonalisedHeaderComponent,
+    AutoresizeDirective,
     CircleProgressComponent,
+    ClickableItemComponent,
+    CommonModule,
+    CommonModule,
+    ContactNumberFormComponent,
+    DescriptionComponent,
+    DragAndDropDirective,
+    FastFeedbackComponent,
+    FilestackComponent,
+    FilestackPreviewComponent,
+    FloatDirective,
+    FormsModule,
+    FormsModule,
+    ImgComponent,
+    IonicModule,
+    IonicModule,
+    ListItemComponent,
+    LockTeamAssessmentPopUpComponent,
+    PopUpComponent,
+    ReviewRatingComponent,
   ],
 })
 export class ComponentsModule {}

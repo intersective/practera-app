@@ -15,6 +15,14 @@ const routes: Routes = [
     path: 'v3',
     loadChildren: () => import('./pages/v3/v3.module').then( m => m.V3PageModule)
   },
+  {
+    path: 'devtool',
+    loadChildren: () => import('./pages/devtool/devtool.module').then( m => m.DevtoolPageModule)
+  },
+  {
+    path: 'review-list',
+    loadChildren: () => import('./pages/review-list/review-list.module').then( m => m.ReviewListPageModule)
+  },
 ];
 
 @NgModule({

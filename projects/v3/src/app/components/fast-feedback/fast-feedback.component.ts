@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { ModalController } from '@ionic/angular';
-import { Meta, FastFeedbackService } from '@v3/services/fast-feedback.service';
+import { FastFeedbackService } from '@v3/services/fast-feedback.service';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { UtilsService } from '@v3/services/utils.service';
-import { NotificationsService } from '@v3/services/notifications.service';
+import { Meta } from '@v3/services/notifications.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
 
 @Component({
@@ -17,12 +17,10 @@ export class FastFeedbackComponent implements OnInit {
   meta: Meta;
   loading = false;
   submissionCompleted: Boolean;
-  newRelicTracer: any;
 
   constructor(
     public modalController: ModalController,
     private utils: UtilsService,
-    private notification: NotificationsService,
     private fastFeedbackService: FastFeedbackService,
     public storage: BrowserStorageService,
   ) {}
@@ -74,7 +72,6 @@ export class FastFeedbackComponent implements OnInit {
       this.submissionCompleted = true;
       return setTimeout(
         () => {
-          this.newRelicTracer();
           return this.dismiss(submissionResult);
         },
         2000

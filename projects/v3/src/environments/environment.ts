@@ -4,6 +4,7 @@
 
 export const environment = {
   production: false,
+  defaultCountryModel: 'AUS',
   demo: true,
   goMobile: false,
   env: 'sandbox',
