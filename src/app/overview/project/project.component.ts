@@ -186,7 +186,7 @@ export class ProjectComponent implements OnInit {
         }
         if (m.id === mp.id) {
           m.progress = mp.progress;
-          if (!m.isLocked) {
+          if (m.Activity && mp.activities) {
             mp.activities.forEach(ap => {
               m.Activity.forEach(a => {
                 if (a.id === ap.id) {
