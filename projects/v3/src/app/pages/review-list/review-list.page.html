@@ -1,23 +1,26 @@
 <ion-content>
-  <ion-segment>
-    <ion-segment-button value="friends">
+  <ion-segment (ionChange)="statusUpdate($event)" value="pending">
+    <ion-segment-button value="pending">
       <ion-label>Pending</ion-label>
     </ion-segment-button>
-    <ion-segment-button value="enemies">
+    <ion-segment-button value="completed">
       <ion-label>Completed</ion-label>
     </ion-segment-button>
   </ion-segment>
 
-  <div class="btn-filter ion-text-center">
-    <ion-button class="btn-left-half" [ngClass]="{'btn-activated': !showDone}" (click)="clickToDo()">
-      <ion-ripple-effect type="unbounded"></ion-ripple-effect>
-      To do
-    </ion-button>
-    <ion-button class="btn-right-half" [ngClass]="{'btn-activated': showDone}" (click)="clickDone()">
-      <ion-ripple-effect type="unbounded"></ion-ripple-effect>
-      Done
-    </ion-button>
-  </div>
+  <ion-list>
+    <ng-container *ngFor="let item of (reviews$ | async) as reviews">
+      <ion-item *ngIf="item.status === status">
+        <ion-icon [name]="item.icon" slot="start" size="large"></ion-icon>
+        <ion-label>
+          <h2>{{ item.title }}</h2>
+          <p>{{ item.submitter }}</p>
+          <p>{{ item.team }}</p>
+        </ion-label>
+      </ion-item>
+    </ng-container>
+  </ion-list>
+
   <ion-card *ngIf="loadingReviews; else reviewsTmpl" class="practera-card">
     <ion-list>
       <app-list-item [loading]="true"></app-list-item>
@@ -26,14 +29,6 @@
   </ion-card>
   <ng-template #reviewsTmpl>
 
-    <ion-card *ngIf="noReviewsToDo()" class="practera-card list-empty-message">
-      <p class="subtitle-1 gray-3">You have no new submissions to review.</p>
-      <span class="body-2 gray-1">To do reviews show up here, so you can easily view them here later.</span>
-    </ion-card>
-    <ion-card *ngIf="noReviewsDone()" class="practera-card list-empty-message">
-      <p class="subtitle-1 gray-3">You have not reviewed any submissions.</p>
-      <span class="body-2 gray-1">Done reviews show up here, so you can easily view them here later.</span>
-    </ion-card>
 
     <ng-container *ngIf="!noReviewsToDo() && !noReviewsDone()">
       <ion-card class="practera-card">

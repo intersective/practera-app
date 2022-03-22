@@ -9,10 +9,12 @@ import { RequestModule } from 'request';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { ApolloService } from './services/apollo.service';
+import { FilterPipe } from './pipes/filter.pipe';
 
 @NgModule({
   declarations: [
     AppComponent,
+    FilterPipe,
   ],
   imports: [
     BrowserModule,

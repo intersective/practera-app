@@ -19,7 +19,59 @@ export class ReviewsPage implements OnInit {
   @ViewChild('assessment') assessment;
 
   currentReview$ = new BehaviorSubject<any>({});
+  reviews$ = new BehaviorSubject<any[]>([]);
 
+  reviews = [
+    {
+      title: 'Final Report',
+      icon: 'cog',
+      submitter: 'John Doe',
+      team: 'Team 1',
+      status: 'pending',
+    },
+    {
+      title: 'Final Report',
+      icon: 'cog',
+      submitter: 'Alys Harwood',
+      team: 'Team 1',
+      status: 'pending',
+    },
+    {
+      title: 'Team Survey',
+      icon: 'cog',
+      submitter: 'John Doe',
+      team: 'Team 1',
+      status: 'pending',
+    },
+    {
+      title: 'Feedback Loop',
+      icon: 'cog',
+      submitter: 'Tyreese Castillo',
+      team: 'Team 3',
+      status: 'pending',
+    },
+    {
+      title: 'Test 1',
+      icon: 'cog',
+      submitter: 'submitter 1',
+      team: 'Team 1',
+      status: 'pending',
+    },
+    {
+      title: 'Test 2',
+      icon: 'cog',
+      submitter: 'submitter 2',
+      team: 'Team 2',
+      status: 'pending',
+    },
+    {
+      title: 'Test 3',
+      icon: 'cog',
+      submitter: 'submitter 3',
+      team: 'Team 3',
+      status: 'completed'
+    },
+  ];
   constructor(
     readonly utils: UtilsService,
     public router: Router,
@@ -35,7 +87,8 @@ export class ReviewsPage implements OnInit {
         something: (result % 2 == 0) ? true : false,
         value: result
       });
-    })
+    });
+    this.reviews$.next(this.reviews);
   }
 
   get isMobile() {

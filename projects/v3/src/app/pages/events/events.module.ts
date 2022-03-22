@@ -10,7 +10,7 @@ import { PersonalisedHeaderModule } from '@v3/app/personalised-header/personalis
   imports: [
     ComponentsModule,
     EventsPageRoutingModule,
-    PersonalisedHeaderModule
+    PersonalisedHeaderModule,
   ],
   declarations: [EventsPage]
 })
