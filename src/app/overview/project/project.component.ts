@@ -177,7 +177,7 @@ export class ProjectComponent implements OnInit {
       fullProgressData = this.storage.get('progress') ? this.storage.get('progress') : {};
     }
 
-    if (fullProgressData.project && this.milestones.length > 0) {
+    if (fullProgressData.project && fullProgressData.project.milestones && this.milestones.length > 0) {
       const milestonesProgress = fullProgressData.project.milestones;
       milestonesProgress.forEach(mp => {
       this.milestones.forEach(m => {
@@ -186,13 +186,15 @@ export class ProjectComponent implements OnInit {
         }
         if (m.id === mp.id) {
           m.progress = mp.progress;
-          mp.activities.forEach(ap => {
-            m.Activity.forEach(a => {
-              if (a.id === ap.id) {
-                a.progress = ap.progress;
-              }
+          if (m.Activity && mp.activities) {
+            mp.activities.forEach(ap => {
+              m.Activity.forEach(a => {
+                if (a.id === ap.id) {
+                  a.progress = ap.progress;
+                }
+              });
             });
-          });
+          }
         }
       });
     });
