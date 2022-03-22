@@ -20,6 +20,7 @@ import { FilestackComponent } from './filestack/filestack.component';
 import { FilestackPreviewComponent } from './filestack-preview/filestack-preview.component';
 import { ContactNumberFormComponent } from './contact-number-form/contact-number-form.component';
 import { ClickableItemComponent } from './clickable-item/clickable-item.component';
+import { AssessmentComponent } from './assessment/assessment.component';
 
 const largeCircleDefaultConfig = {
   backgroundColor: 'var(--ion-color-light)',
@@ -49,6 +50,7 @@ const largeCircleDefaultConfig = {
     AchievementPopUpComponent,
     AchievementPopUpComponent,
     ActivityCompletePopUpComponent,
+    AssessmentComponent,
     AutoresizeDirective,
     CircleProgressComponent,
     ClickableItemComponent,
@@ -69,6 +71,7 @@ const largeCircleDefaultConfig = {
     AchievementPopUpComponent,
     AchievementPopUpComponent,
     ActivityCompletePopUpComponent,
+    AssessmentComponent,
     AutoresizeDirective,
     CircleProgressComponent,
     ClickableItemComponent,

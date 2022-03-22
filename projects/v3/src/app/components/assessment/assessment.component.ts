@@ -15,10 +15,10 @@ const SAVE_PROGRESS_TIMEOUT = 10000;
 
 @Component({
   selector: 'app-assessment',
-  templateUrl: './assessment.page.html',
-  styleUrls: ['./assessment.page.scss'],
+  templateUrl: './assessment.component.html',
+  styleUrls: ['./assessment.component.scss'],
 })
-export class AssessmentPage implements OnInit {
+export class AssessmentComponent implements OnInit {
   @Input() inputId: number;
   @Input() inputActivityId: number;
   @Input() inputSubmissionId: number;
