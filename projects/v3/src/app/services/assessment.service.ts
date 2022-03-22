@@ -8,6 +8,7 @@ import { NotificationsService } from '@v3/services/notifications.service';
 import { DomSanitizer } from '@angular/platform-browser';
 import { ApolloService } from './apollo.service';
 import { ReviewRatingComponent } from '../components/review-rating/review-rating.component';
+import { DemoService } from './demo.service';
 
 /**
  * @name api
@@ -115,9 +116,20 @@ export class AssessmentService {
     private notification: NotificationsService,
     public sanitizer: DomSanitizer,
     private apolloService: ApolloService,
+    private demoService: DemoService,
   ) { }
 
-  getAssessment(id, action, activityId, contextId, submissionId?) {
+  getAssessment() {
+    return this.demoService.assessment().pipe(map(res => {
+      return {
+        assessment: this._normaliseAssessment(res.data, 'assessment'),
+        submission: this._normaliseSubmission(res.data),
+        review: this._normaliseReview(res.data, 'assessment')
+      };
+    }));
+  }
+
+  /* getAssessment(id, action, activityId, contextId, submissionId?) {
     return this.apolloService.graphQLWatch(
       `query getAssessment($assessmentId: Int!, $reviewer: Boolean!, $activityId: Int!, $contextId: Int!, $submissionId: Int) {
         assessment(id:$assessmentId, reviewer:$reviewer, activityId:$activityId) {
@@ -170,7 +182,7 @@ export class AssessmentService {
           review: this._normaliseReview(res.data, action)
         };
       }));
-  }
+  } */
 
   private _normaliseAssessment(data, action): Assessment {
     if (!data.assessment) {

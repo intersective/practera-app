@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Output, Input } from '@angular/core';
-import { FilestackService } from './filestack.service';
+import { FilestackService } from '@v3/services/filestack.service';
 import { UtilsService } from '@v3/services/utils.service';
 import { PickerOptions } from 'filestack-js/build/main/lib/picker';
 
