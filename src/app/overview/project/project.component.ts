@@ -186,13 +186,15 @@ export class ProjectComponent implements OnInit {
         }
         if (m.id === mp.id) {
           m.progress = mp.progress;
-          mp.activities.forEach(ap => {
-            m.Activity.forEach(a => {
-              if (a.id === ap.id) {
-                a.progress = ap.progress;
-              }
+          if (!m.isLocked) {
+            mp.activities.forEach(ap => {
+              m.Activity.forEach(a => {
+                if (a.id === ap.id) {
+                  a.progress = ap.progress;
+                }
+              });
             });
-          });
+          }
         }
       });
     });
