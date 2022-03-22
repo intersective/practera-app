@@ -5,6 +5,14 @@
   ion-row {
     height: -webkit-fill-available;
   }
+  .institute-logo-container {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    img {
+      height: 88px;
+    }
+  }
 
   .exp-card-container {
     text-align: center;
@@ -89,6 +97,16 @@
 
   &.mobile {
     --background: #ffffff !important;
+    .institute-logo-container {
+      position: relative;
+      top: auto;
+      left: auto;
+      margin: 20px;
+      text-align: left;
+      img {
+        height: 76px;
+      }
+    }
     .exp-card-container{
       border-radius: 0;
       padding: 20px;
