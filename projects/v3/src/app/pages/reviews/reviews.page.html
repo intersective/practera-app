@@ -25,16 +25,34 @@
           [reviews$]="reviews$"
         ></app-review-list>
       </ion-col>
+
       <ion-col size="12" size-lg>
-        <app-assessment
-          #assessment
-          [assessment$]="currentReview$"
-          [inputId]="assessmentId"
-          [inputSubmissionId]="submissionId"
-          [inputContextId]="contextId"
-          inputAction="review"
-          fromPage="reviews"
-        ></app-assessment>
+        <ion-list class="ion-no-margin ion-no-padding">
+          <ion-item-group>
+            <ion-item-divider>
+              <ion-label color="primary">Submission Details</ion-label>
+            </ion-item-divider>
+            <ion-item>
+              <ion-grid>
+                <ion-row size="12">
+                  <ion-col size="6">Learner</ion-col>
+                  <ion-col size="6">John Doe</ion-col>
+                </ion-row>
+              </ion-grid>
+            </ion-item>
+            <ion-item>
+              <ion-grid>
+                <ion-row size="12">
+                  <ion-col size="6">Team</ion-col>
+                  <ion-col size="6">Team 1</ion-col>
+                </ion-row>
+              </ion-grid>
+            </ion-item>
+          </ion-item-group>
+        </ion-list>
+
+        <app-assessment #assessment [assessment$]="currentReview$" [inputId]="assessmentId" [inputSubmissionId]="submissionId"
+          [inputContextId]="contextId" inputAction="review" fromPage="reviews"></app-assessment>
       </ion-col>
     </ion-row>
   </ion-grid>
