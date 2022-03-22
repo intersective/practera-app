@@ -4,6 +4,7 @@ import { ExperienceService, ProgramObj } from '@v3/services/experience.service';
 import { UtilsService } from '@v3/services/utils.service';
 import { LoadingController } from '@ionic/angular';
 import { NotificationsService } from '@v3/services/notifications.service';
+import { BrowserStorageService } from '@v3/services/storage.service';
 
 @Component({
   selector: 'app-experiences',
@@ -19,7 +20,8 @@ export class ExperiencesPage implements OnInit {
     private service: ExperienceService,
     public loadingController: LoadingController,
     private notificationsService: NotificationsService,
-    private utils: UtilsService
+    private utils: UtilsService,
+    public storage: BrowserStorageService
   ) { }
 
   ngOnInit() {
