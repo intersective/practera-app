@@ -177,7 +177,7 @@ export class ProjectComponent implements OnInit {
       fullProgressData = this.storage.get('progress') ? this.storage.get('progress') : {};
     }
 
-    if (fullProgressData.project && this.milestones.length > 0) {
+    if (fullProgressData.project && fullProgressData.project.milestones && this.milestones.length > 0) {
       const milestonesProgress = fullProgressData.project.milestones;
       milestonesProgress.forEach(mp => {
       this.milestones.forEach(m => {
