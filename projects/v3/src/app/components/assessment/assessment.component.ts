@@ -25,24 +25,15 @@ export class AssessmentComponent implements OnInit {
   @Input() inputContextId: number;
   @Input() inputAction: string;
   @Input() fromPage = '';
+  @Input() assessment: Assessment;
+  @Output() assessmentChange = new EventEmitter<Assessment>();
+  @Input() assessment$: Subject<any>;
+
   @Output() navigate = new EventEmitter();
   @Output() changeStatus = new EventEmitter();
 
-  @Input() assessment$: Subject<any>;
-  @Output() currentAssessment = new EventEmitter <Assessment>();
-  @Input() assessment: Assessment = {
-    name: '',
-    type: '',
-    description: '',
-    isForTeam: false,
-    dueDate: '',
-    isOverdue: false,
-    groups: [],
-    pulseCheck: false,
-  };
-
-  getAssessment: Subscription;
-  getSubmission: Subscription;
+  // getAssessment: Subscription;
+  // getSubmission: Subscription;
 
   // assessment id
   id: number;
@@ -51,17 +42,8 @@ export class AssessmentComponent implements OnInit {
   // context id
   contextId: number;
   submissionId: number;
-  submission: Submission = {
-    id: 0,
-    status: '',
-    answers: {},
-    submitterName: '',
-    modified: '',
-    isLocked: false,
-    completed: false,
-    submitterImage: '',
-    reviewerName: ''
-  };
+  @Input() submission: Submission;;
+
   review: Review = {
     id: 0,
     answers: {},
@@ -120,9 +102,9 @@ export class AssessmentComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.assessment$.subscribe(assessment => {
+    /* this.assessment$.subscribe(assessment => {
       console.log('current assessment::', assessment);
-    });
+    }); */
   }
 
   /**
@@ -179,16 +161,6 @@ export class AssessmentComponent implements OnInit {
   }
 
   private _initialise() {
-    this.assessment = {
-      name: '',
-      type: '',
-      description: '',
-      isForTeam: false,
-      dueDate: '',
-      isOverdue: false,
-      groups: [],
-      pulseCheck: false,
-    };
     this.submission = {
       id: 0,
       status: '',
@@ -259,8 +231,8 @@ export class AssessmentComponent implements OnInit {
       this.submissionId = +this.route.snapshot.paramMap.get('submissionId');
     }
 
-    // get assessment structure and populate the question form
-    /* this.assessmentService.getAssessment().subscribe(
+    /* // get assessment structure and populate the question form
+    this.assessmentService.getAssessment().subscribe(
       result => {
         this.assessment = result.assessment;
         this.populateQuestionsForm();

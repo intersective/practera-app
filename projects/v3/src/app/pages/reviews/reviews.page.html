@@ -52,10 +52,10 @@
 
         <app-assessment
           [assessment$]="currentReview$"
-          [(assessment)]="currentAssessment"
           [inputId]="assessmentId"
           [inputSubmissionId]="submissionId"
           [inputContextId]="contextId"
+          [(assessment)]="currentAssessment"
           inputAction="review"
           fromPage="reviews"
         ></app-assessment>
