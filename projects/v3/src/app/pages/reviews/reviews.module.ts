@@ -15,9 +15,9 @@ import { ComponentsModule } from '@v3/app/components/components.module';
     CommonModule,
     FormsModule,
     IonicModule,
+    ComponentsModule,
     ReviewsPageRoutingModule,
     ReviewListPageModule,
-    ComponentsModule,
   ],
   declarations: [ReviewsPage]
 })

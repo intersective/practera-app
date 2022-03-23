@@ -1,8 +1,9 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
+import { Assessment, AssessmentService, Submission } from '@v3/app/services/assessment.service';
+import { BrowserStorageService } from '@v3/app/services/storage.service';
 import { UtilsService } from '@v3/services/utils.service';
-import { random } from 'lodash';
-import { BehaviorSubject, interval, Observable, of, timer } from 'rxjs';
+import { BehaviorSubject, interval } from 'rxjs';
 import { take } from 'rxjs/operators';
 
 @Component({
@@ -16,10 +17,22 @@ export class ReviewsPage implements OnInit {
   submissionId: number;
   contextId: number;
 
-  currentAssessment: any;
-  assessment: any;
   currentReview$ = new BehaviorSubject<any>({});
   reviews$ = new BehaviorSubject<any[]>([]);
+
+  currentAssessment: Assessment;
+
+  submission: Submission = {
+    id: 0,
+    status: '',
+    answers: {},
+    submitterName: '',
+    modified: '',
+    isLocked: false,
+    completed: false,
+    submitterImage: '',
+    reviewerName: ''
+  };
 
   reviews = [
     {
@@ -79,11 +92,24 @@ export class ReviewsPage implements OnInit {
       date: 'Feb',
     },
   ];
+
   constructor(
     readonly utils: UtilsService,
     public router: Router,
     private route: ActivatedRoute,
+    private assessmentService: AssessmentService,
+    private storage: BrowserStorageService,
   ) {
+    this.currentAssessment = {
+      name: '',
+      type: '',
+      description: '',
+      isForTeam: false,
+      dueDate: '',
+      isOverdue: false,
+      groups: [],
+      pulseCheck: false,
+    };
   }
 
   ngOnInit() {
@@ -96,6 +122,10 @@ export class ReviewsPage implements OnInit {
       });
     });
     this.reviews$.next(this.reviews);
+
+    this.route.queryParams.subscribe(params => {
+      console.log('ReviewsPageParams::', params);
+    });
   }
 
   get isMobile() {
@@ -103,11 +133,35 @@ export class ReviewsPage implements OnInit {
   }
 
   onEnter(): void {
+    this.currentAssessment = {
+      name: '',
+      type: '',
+      description: '',
+      isForTeam: false,
+      dueDate: '',
+      isOverdue: false,
+      groups: [],
+      pulseCheck: false,
+    };
     this.submissionId = +this.route.snapshot.paramMap.get('submissionId');
-    // trigger onEnter after the element get generated
-    /* setTimeout(() => {
-      this.reviewList.onEnter();
-    }); */
+
+    // get assessment structure and populate the question form
+    this.assessmentService.getAssessment().subscribe(
+      result => {
+        this.currentAssessment = result.assessment;
+        this._handleSubmissionData(result.submission);
+        // display pop up if it is team assessment and user is not in team
+        // if (this.doAssessment && this.assessment.isForTeam && !this.storage.getUser().teamId) {
+        //   this.isNotInATeam = true;
+        //   return;
+        // }
+        // this.isNotInATeam = false;
+        this._handleReviewData(result.review);
+      },
+      error => {
+        console.log(error);
+      }
+    );
   }
 
   // display the review content in the right pane, and highlight on the left pane
@@ -125,4 +179,71 @@ export class ReviewsPage implements OnInit {
     }); */
   }
 
+  private _handleSubmissionData(submission) {
+    this.submission = submission;
+    // If team assessment is locked, set the page to readonly mode.
+    // set doAssessment, doReview to false - when assessment is locked, user can't do both.
+    // set submission status to done - we need to show readonly answers in question components.
+    if (this.submission && this.submission.isLocked) {
+      // this.doAssessment = false;
+      // this.doReview = false;
+      // this.savingButtonDisabled = true;
+      this.submission.status = 'done';
+      return;
+    }
+
+    // this component become a page for doing assessment if
+    // - submission is empty or
+    // - submission.status is 'in progress'
+    if (this.utils.isEmpty(this.submission) || this.submission.status === 'in progress') {
+      // this.pageTitle = 'Submit your work';
+      // this.doAssessment = true;
+      // this.doReview = false;
+      // if (this.submission && this.submission.status === 'in progress') {
+      //   this.savingMessage = 'Last saved ' + this.utils.timeFormatter(this.submission.modified);
+      //   this.savingButtonDisabled = false;
+      // }
+      return;
+    }
+
+    // this.pageTitle = 'View submission';
+
+    if (this.currentAssessment.type === 'moderated') {
+      // this component become a page for doing review, if
+      // - the submission status is 'pending review' and
+      // - this.action is review
+      // if (this.submission.status === 'pending review' && this.action === 'review') {
+      //   this.pageTitle = 'Provide feedback';
+      //   this.doReview = true;
+      // }
+
+      // if (this.submission.status === 'published') {
+      //   this.pageTitle = 'View feedback';
+      // }
+    }
+
+    // this.feedbackReviewed = this.submission.completed;
+  }
+
+  private _handleReviewData(review) {
+    // this.review = review;
+    // if (!review && this.action === 'review' && !this.doReview) {
+    //   return this.notificationsService.alert({
+    //     message: 'There are no assessments to review.',
+    //     buttons: [
+    //       {
+    //         text: 'OK',
+    //         role: 'cancel',
+    //         handler: () => {
+    //           this._navigate(['v3', 'home']);
+    //         }
+    //       }
+    //     ]
+    //   });
+    // }
+    // if (this.doReview && review.status === 'in progress') {
+    //   this.savingMessage = 'Last saved ' + this.utils.timeFormatter(review.modified);
+    //   this.savingButtonDisabled = false;
+    // }
+  }
 }
