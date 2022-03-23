@@ -18,7 +18,6 @@
     <ion-row>
       <ion-col size="12" size-lg class="border-right">
         <app-review-list
-          #reviewList
           [submissionId]="submissionId"
           (navigate)="goto($event)"
           [review$]="currentReview$"
@@ -51,8 +50,15 @@
           </ion-item-group>
         </ion-list>
 
-        <app-assessment #assessment [assessment$]="currentReview$" [inputId]="assessmentId" [inputSubmissionId]="submissionId"
-          [inputContextId]="contextId" inputAction="review" fromPage="reviews"></app-assessment>
+        <app-assessment
+          [assessment$]="currentReview$"
+          [(assessment)]="currentAssessment"
+          [inputId]="assessmentId"
+          [inputSubmissionId]="submissionId"
+          [inputContextId]="contextId"
+          inputAction="review"
+          fromPage="reviews"
+        ></app-assessment>
       </ion-col>
     </ion-row>
   </ion-grid>

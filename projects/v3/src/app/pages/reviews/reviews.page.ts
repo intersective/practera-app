@@ -15,9 +15,9 @@ export class ReviewsPage implements OnInit {
   assessmentId: number;
   submissionId: number;
   contextId: number;
-  @ViewChild('reviewList') reviewList;
-  @ViewChild('assessment') assessment;
 
+  currentAssessment: any;
+  assessment: any;
   currentReview$ = new BehaviorSubject<any>({});
   reviews$ = new BehaviorSubject<any[]>([]);
 

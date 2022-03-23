@@ -27,7 +27,20 @@ export class AssessmentComponent implements OnInit {
   @Input() fromPage = '';
   @Output() navigate = new EventEmitter();
   @Output() changeStatus = new EventEmitter();
+
   @Input() assessment$: Subject<any>;
+  @Output() currentAssessment = new EventEmitter <Assessment>();
+  @Input() assessment: Assessment = {
+    name: '',
+    type: '',
+    description: '',
+    isForTeam: false,
+    dueDate: '',
+    isOverdue: false,
+    groups: [],
+    pulseCheck: false,
+  };
+
   getAssessment: Subscription;
   getSubmission: Subscription;
 
@@ -38,16 +51,6 @@ export class AssessmentComponent implements OnInit {
   // context id
   contextId: number;
   submissionId: number;
-  assessment: Assessment = {
-    name: '',
-    type: '',
-    description: '',
-    isForTeam: false,
-    dueDate: '',
-    isOverdue: false,
-    groups: [],
-    pulseCheck: false,
-  };
   submission: Submission = {
     id: 0,
     status: '',

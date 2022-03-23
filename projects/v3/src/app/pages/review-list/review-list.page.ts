@@ -24,6 +24,7 @@ export class ReviewListPage implements OnInit {
   @Output() navigate = new EventEmitter();
   @Input() review$: Subject<any>;
   @Input() reviews$: Subject<any>;
+  selectedReview: any = {};
 
   public status: string = STATUSES.PENDING;
 
@@ -65,6 +66,11 @@ export class ReviewListPage implements OnInit {
   statusUpdate(event) {
     console.log(event);
     this.status = event.detail.value;
+  }
+
+  // open a review in detailed page
+  read(review: Review) {
+    console.log('REVIEW::', review);
   }
 
   /**
