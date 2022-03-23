@@ -1,0 +1,137 @@
+.experience-page {
+  --background: #f7f7f9 !important;
+
+  ion-grid,
+  ion-row {
+    height: -webkit-fill-available;
+  }
+  .institute-logo-container {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    img {
+      height: 88px;
+    }
+  }
+
+  .exp-card-container {
+    text-align: center;
+    width: fit-content;
+    margin: auto;
+    background: #ffffff;
+    box-shadow: 0px 2px 12px rgba(0, 0, 0, 0.24);
+    border-radius: 8px;
+    padding: 43px 18px;
+    min-width: 576px;
+    min-height: 675px;
+    max-width: 1016px;
+    max-height: 724px;
+
+    h1 {
+      margin-bottom: 6px;
+    }
+
+    .cards {
+      margin-top: 57px;
+      width: -webkit-fill-available;
+      height: -webkit-fill-available;
+      display: flex;
+      flex-wrap: wrap;
+      flex-direction: row;
+      align-content: center;
+      align-items: center;
+
+      &.center {
+        justify-content: center;
+      }
+
+      &.left {
+        justify-content: flex-start;
+      }
+
+      .exp-card {
+        width: 300px;
+        height: 240px;
+        border: 1px solid #e7e7ee;
+        box-sizing: border-box;
+        border-radius: 8px;
+        box-shadow: none;
+        margin: 10px;
+        cursor: pointer;
+
+        img {
+          height: 140px;
+          width: -webkit-fill-available;
+          object-fit: cover;
+        }
+
+        ion-card-content {
+          height: 100px;
+          text-align: start;
+
+          .exp-title {
+            margin-bottom: 8px !important;
+          }
+
+          .exp-info {
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            align-content: center;
+            flex-wrap: nowrap;
+            flex-direction: row;
+
+            p {
+              &:nth-child(1) {
+                margin-right: 10px !important;
+              }
+              &:nth-child(2) {
+                margin-left: 10px !important;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  &.mobile {
+    --background: #ffffff !important;
+    .institute-logo-container {
+      position: relative;
+      top: auto;
+      left: auto;
+      margin: 20px;
+      text-align: left;
+      img {
+        height: 76px;
+      }
+    }
+    .exp-card-container{
+      border-radius: 0;
+      padding: 20px;
+      min-width: auto;
+      max-height: -webkit-fill-available;
+      height: -webkit-fill-available;
+      box-shadow: none;
+
+      .cards {
+        justify-content: center;
+        margin-top: 0;
+
+        .exp-card {
+          width: -webkit-fill-available;
+          margin: 0;
+          margin-bottom: 20px;
+        }
+      }
+    }
+  }
+
+  .experiences-block {
+    --color: var(--ion-color-primary);
+    --background: var(--ion-color-primary-tint);
+    height: 40px;
+  }
+
+}

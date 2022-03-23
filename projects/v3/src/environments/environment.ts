@@ -6,6 +6,7 @@ export const environment = {
   production: false,
   defaultCountryModel: 'AUS',
   demo: true,
+  goMobile: false,
   env: 'sandbox',
   appkey: 'b11e7c189b',
   APIEndpoint: 'https://admin.p2-sandbox.practera.com/',
