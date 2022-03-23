@@ -6,7 +6,6 @@ import { of } from 'rxjs';
 })
 export class DemoService {
 
-
   image = 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=2252&q=80';
 
   description = `Practera is the leading platform to power high quality experiential learning programs.<br/><br/>Deliver experiential learning programs at larger scale and lower cost<br/>Customisable platform to author, launch & manage programs<br/>Connect students to industry projects, internships & experiences<br/>Expert course design, configuration and deployment services<br/><br/>Deliver experiential learning programs at larger scale and lower cost<br/>Customisable platform to author, launch & manage programs<br/>Connect students to industry projects, internships & experiences<br/>Expert course design, configuration and deployment services<br/><br/>Deliver experiential learning programs at larger scale and lower cost<br/>Customisable platform to author, launch & manage programs<br/>Connect students to industry projects, internships & experiences<br/>Expert course design, configuration and deployment services<br/><br/>Deliver experiential learning programs at larger scale and lower cost<br/>Customisable platform to author, launch & manage programs<br/>Connect students to industry projects, internships & experiences<br/>Expert course design, configuration and deployment services`;
@@ -135,6 +134,117 @@ export class DemoService {
         title: 'notification 1',
       },
     ];
+  }
+
+  get activity() {
+    return {
+      id: 1,
+      name: "This is the activity name",
+      description: 'This is the description of the activity',
+      tasks: [
+        {
+          id: 1,
+          name: "1st topic",
+          type: "topic",
+          status: "done",
+        },
+        {
+          id: 2,
+          name: "2nd topic",
+          type: "topic",
+          status: "",
+        },
+        {
+          id: 21,
+          name: "in progress feedback",
+          type: "assessment",
+          isLocked: false,
+          isForTeam: true,
+          isOverdue: false,
+          isDueToday: false,
+          dueDate: null,
+          contextId: 16881,
+          status: "in progress",
+        },
+        {
+          id: 22,
+          name: "duedate feedback",
+          type: "assessment",
+          isLocked: false,
+          isForTeam: true,
+          isOverdue: false,
+          isDueToday: false,
+          dueDate: '2022-03-05 15:00:00',
+          contextId: 16881,
+          status: "",
+        },
+        {
+          id: 23,
+          name: "due today feedback",
+          type: "assessment",
+          isLocked: false,
+          isForTeam: true,
+          isOverdue: false,
+          isDueToday: true,
+          dueDate: '2022-03-05 15:00:00',
+          contextId: 16881,
+          status: "",
+        },
+        {
+          id: 24,
+          name: "overdue feedback",
+          type: "assessment",
+          isLocked: false,
+          isForTeam: true,
+          isOverdue: true,
+          isDueToday: false,
+          dueDate: '2022-03-05 15:00:00',
+          contextId: 16881,
+          status: "",
+        },
+        {
+          id: 31,
+          name: "pending review feedback",
+          type: "assessment",
+          isLocked: false,
+          isForTeam: true,
+          isOverdue: false,
+          isDueToday: true,
+          dueDate: '2022-03-03 15:00:00',
+          contextId: 16881,
+          status: "pending review",
+        },
+        {
+          id: 32,
+          name: "feedback available feedback",
+          type: "assessment",
+          isLocked: false,
+          isForTeam: true,
+          isOverdue: false,
+          isDueToday: false,
+          dueDate: '2022-03-05 15:00:00',
+          contextId: 16881,
+          status: "feedback available",
+        },
+        {
+          id: 33,
+          name: "done feedback",
+          type: "assessment",
+          isLocked: false,
+          isForTeam: true,
+          isOverdue: false,
+          isDueToday: false,
+          dueDate: '2022-03-05 15:00:00',
+          contextId: 16881,
+          status: "done",
+        },
+        {
+          id: 4,
+          type: 'Locked',
+          name: 'Locked'
+        }
+      ]
+    };
   }
 
   assessment() {

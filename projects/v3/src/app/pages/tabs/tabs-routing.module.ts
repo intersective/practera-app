@@ -34,12 +34,12 @@ const routes: Routes = [
         loadChildren: () => import('../reviews/reviews.module').then(m => m.ReviewsPageModule)
       },
       {
-        path: 'activities',
-        loadChildren: () => import('../activity-list/activity-list.module').then(m => m.ActivityListPageModule)
-      },
-      {
         path: 'events',
         loadChildren: () => import('../events/events.module').then(m => m.EventsPageModule)
+      },
+      {
+        path: 'activity-desktop',
+        loadChildren: () => import('../activity-desktop/activity-desktop.module').then(m => m.ActivityDesktopPageModule)
       },
     ]
   },

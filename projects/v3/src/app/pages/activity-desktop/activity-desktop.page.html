@@ -9,3 +9,15 @@
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
+
+<ion-content>
+
+  <ion-grid>
+    <ion-row>
+
+      <ion-col size="12" size-md="5">
+        <app-activity *ngIf="(activity$ | async ) as activity" [activity]="activity"></app-activity>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+</ion-content>
