@@ -1,12 +1,37 @@
-<ion-header>
-  <ion-toolbar>
-    <ion-title>experiences</ion-title>
-  </ion-toolbar>
-</ion-header>
+<ion-content class="experience-page" [class]="{'mobile': isMobile}">
+  <ng-container *ngIf="(programs$ | async ) as programs">
 
-<ion-content>
-  <p class="bg-black arctic-100">asasas</p>
-  <ion-item color="lime" routerLink="/v3/home">
-    Go home!
-  </ion-item>
+    <div class="institute-logo-container">
+      <img [src]="storage.getConfig().instituteLogo || '/assets/logo.svg'" width="100%" [attr.alt]="'branding logo'">
+    </div>
+
+    <ion-grid class="ion-no-padding ion-no-margin">
+      <ion-row class="ion-justify-content-center ion-align-items-center ion-no-padding ion-no-margin">
+        <ion-col class="ion-no-padding ion-no-margin">
+
+          <ion-item class="headline-4 experiences-block ion-hide-sm-up" lines="none">Experiences</ion-item>
+
+          <div class="exp-card-container">
+            <h1 class="headline-1 m-0 black ion-hide-sm-down">Welcome to Experience !</h1>
+            <p class="subtitle-1 m-0 grey-75 ion-hide-sm-down">Access and check the progress of your experiences below</p>
+            <div class="cards" [ngClass]="programs.length > 1 ? 'left' : 'center'">
+              <ng-container *ngFor="let program of programs">
+                <ion-card class="exp-card ion-no-margin" [attr.aria-label]="program.program.name" (click)="switchProgram(program)">
+                  <img [src]="program.project.lead_image ? program.project.lead_image : '../../../assets/default-experience-image.svg'" alt="{{ program.program.name }}">
+                  <ion-card-content>
+                    <p class="m-0 headline-3 exp-title black">{{ program.program.name }}</p>
+                    <div class="exp-info subtitle-3 grey-50">
+                      <p class="m-0 subtitle-3 grey-50">{{program.progress}}% Progress</p>
+                    </div>
+                  </ion-card-content>
+                </ion-card>
+              </ng-container>
+            </div>
+          </div>
+
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+
+  </ng-container>
 </ion-content>
