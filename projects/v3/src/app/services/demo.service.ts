@@ -145,19 +145,19 @@ export class DemoService {
         {
           id: 1,
           name: "1st topic",
-          type: "topic",
+          type: 'Topic',
           status: "done",
         },
         {
           id: 2,
           name: "2nd topic",
-          type: "topic",
+          type: 'Topic',
           status: "",
         },
         {
           id: 21,
           name: "in progress feedback",
-          type: "assessment",
+          type: 'Assessment',
           isLocked: false,
           isForTeam: true,
           isOverdue: false,
@@ -169,7 +169,7 @@ export class DemoService {
         {
           id: 22,
           name: "duedate feedback",
-          type: "assessment",
+          type: 'Assessment',
           isLocked: false,
           isForTeam: true,
           isOverdue: false,
@@ -181,7 +181,7 @@ export class DemoService {
         {
           id: 23,
           name: "due today feedback",
-          type: "assessment",
+          type: 'Assessment',
           isLocked: false,
           isForTeam: true,
           isOverdue: false,
@@ -193,7 +193,7 @@ export class DemoService {
         {
           id: 24,
           name: "overdue feedback",
-          type: "assessment",
+          type: 'Assessment',
           isLocked: false,
           isForTeam: true,
           isOverdue: true,
@@ -205,7 +205,7 @@ export class DemoService {
         {
           id: 31,
           name: "pending review feedback",
-          type: "assessment",
+          type: 'Assessment',
           isLocked: false,
           isForTeam: true,
           isOverdue: false,
@@ -217,7 +217,7 @@ export class DemoService {
         {
           id: 32,
           name: "feedback available feedback",
-          type: "assessment",
+          type: 'Assessment',
           isLocked: false,
           isForTeam: true,
           isOverdue: false,
@@ -229,7 +229,7 @@ export class DemoService {
         {
           id: 33,
           name: "done feedback",
-          type: "assessment",
+          type: 'Assessment',
           isLocked: false,
           isForTeam: true,
           isOverdue: false,

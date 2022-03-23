@@ -1,5 +1,6 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { Activity, Task } from '@v3/app/services/activity.service';
+import { UtilsService } from '@v3/app/services/utils.service';
 
 @Component({
   selector: 'app-activity',
@@ -10,7 +11,9 @@ export class ActivityComponent implements OnInit {
   @Input() activity: Activity;
   @Input() currentTask: Task;
   @Output() navigate = new EventEmitter();
-  constructor() { }
+  constructor(
+    private utils: UtilsService
+  ) { }
 
   ngOnInit() {}
 
@@ -21,8 +24,15 @@ export class ActivityComponent implements OnInit {
       case 'Topic':
         return 'reader';
       case 'Assessment':
-        return 'bar-chart';
+        return 'eye';
     }
+  }
+
+  dueDateText(dueDate: string) {
+    if (!dueDate) {
+      return '';
+    }
+    return `Due Data: ${ this.utils.utcToLocal(dueDate) }`;
   }
 
   endingIcon(task: Task) {
@@ -31,7 +41,7 @@ export class ActivityComponent implements OnInit {
     }
     switch (task.status) {
       case 'done':
-        return 'checkmark';
+        return 'checkmark-circle';
       default:
         return 'arrow-forward';
     }
