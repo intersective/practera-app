@@ -10,12 +10,13 @@
 <ion-content fullscreen="true" class="ion-padding" color="light" [ngClass]="{
   'ion-content-absolute-with-footer': hasFooter(),
   'ion-content-absolute': !hasFooter()
-}" appFloat *ngIf="!isNotInATeam">
+}" appFloat>
   <ion-header collapse="condense">
     <ion-toolbar>
       <ion-title size="large">Assessment</ion-title>
     </ion-toolbar>
   </ion-header>
+
 
   <h1 class="headline-4">
     How much do you know about NSW?
@@ -25,9 +26,8 @@
   </p>
   <ion-text>
     <app-description content="New South Wales is Australia's oldest state. It was named in 1770 by Captain James Cook who, after falsely proclaiming that the land was uninhabited."></app-description>
+    <pre>{{ assessment$ | async | json }}</pre>
   </ion-text>
-
-
 </ion-content>
 
 <ion-footer color="light" class="ion-footer-absolute" *ngIf="hasFooter() && !isNotInATeam">
