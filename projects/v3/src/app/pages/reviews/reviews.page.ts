@@ -28,6 +28,7 @@ export class ReviewsPage implements OnInit {
       submitter: 'John Doe',
       team: 'Team 1',
       status: 'pending',
+      date: 'Feb',
     },
     {
       title: 'Final Report',
@@ -35,6 +36,7 @@ export class ReviewsPage implements OnInit {
       submitter: 'Alys Harwood',
       team: 'Team 1',
       status: 'pending',
+      date: 'Feb',
     },
     {
       title: 'Team Survey',
@@ -42,6 +44,7 @@ export class ReviewsPage implements OnInit {
       submitter: 'John Doe',
       team: 'Team 1',
       status: 'pending',
+      date: 'Feb',
     },
     {
       title: 'Feedback Loop',
@@ -49,6 +52,7 @@ export class ReviewsPage implements OnInit {
       submitter: 'Tyreese Castillo',
       team: 'Team 3',
       status: 'pending',
+      date: 'Feb',
     },
     {
       title: 'Test 1',
@@ -56,6 +60,7 @@ export class ReviewsPage implements OnInit {
       submitter: 'submitter 1',
       team: 'Team 1',
       status: 'pending',
+      date: 'Feb',
     },
     {
       title: 'Test 2',
@@ -63,13 +68,15 @@ export class ReviewsPage implements OnInit {
       submitter: 'submitter 2',
       team: 'Team 2',
       status: 'pending',
+      date: 'Feb',
     },
     {
       title: 'Test 3',
       icon: 'cog',
       submitter: 'submitter 3',
       team: 'Team 3',
-      status: 'completed'
+      status: 'completed',
+      date: 'Feb',
     },
   ];
   constructor(
