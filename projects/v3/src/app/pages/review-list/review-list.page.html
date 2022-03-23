@@ -17,6 +17,7 @@
           <p>{{ item.submitter }}</p>
           <p>{{ item.team }}</p>
         </ion-label>
+        <ion-note slot="end">{{ item.date }}</ion-note>
       </ion-item>
     </ng-container>
   </ion-list>
@@ -27,9 +28,8 @@
       <app-list-item [loading]="true" lines="none"></app-list-item>
     </ion-list>
   </ion-card>
+
   <ng-template #reviewsTmpl>
-
-
     <ng-container *ngIf="!noReviewsToDo() && !noReviewsDone()">
       <ion-card class="practera-card">
         <ion-list>
