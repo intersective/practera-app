@@ -21,6 +21,7 @@ import { FilestackComponent } from './filestack/filestack.component';
 import { FilestackPreviewComponent } from './filestack-preview/filestack-preview.component';
 import { ContactNumberFormComponent } from './contact-number-form/contact-number-form.component';
 import { ClickableItemComponent } from './clickable-item/clickable-item.component';
+import { ActivityComponent } from './activity/activity.component';
 
 const largeCircleDefaultConfig = {
   backgroundColor: 'var(--ion-color-light)',
@@ -65,6 +66,7 @@ const largeCircleDefaultConfig = {
     LockTeamAssessmentPopUpComponent,
     PopUpComponent,
     ReviewRatingComponent,
+    ActivityComponent
   ],
   exports: [
     AchievementPopUpComponent,
@@ -91,6 +93,7 @@ const largeCircleDefaultConfig = {
     LockTeamAssessmentPopUpComponent,
     PopUpComponent,
     ReviewRatingComponent,
+    ActivityComponent
   ],
 })
 export class ComponentsModule {}

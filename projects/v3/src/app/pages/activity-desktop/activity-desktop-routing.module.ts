@@ -5,7 +5,7 @@ import { ActivityDesktopPage } from './activity-desktop.page';
 
 const routes: Routes = [
   {
-    path: '',
+    path: ':id',
     component: ActivityDesktopPage
   }
 ];
