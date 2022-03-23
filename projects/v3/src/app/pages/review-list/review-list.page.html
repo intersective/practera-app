@@ -10,7 +10,7 @@
 
   <ion-list>
     <ng-container *ngFor="let item of (reviews$ | async) as reviews">
-      <ion-item *ngIf="item.status === status">
+      <ion-item button *ngIf="item.status === status" (click)="read(item)">
         <ion-icon [name]="item.icon" slot="start" size="large"></ion-icon>
         <ion-label>
           <h2>{{ item.title }}</h2>
