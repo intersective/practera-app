@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Observable, of, forkJoin } from 'rxjs';
+import { Observable, of, forkJoin, BehaviorSubject } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { RequestService } from 'request';
 import { UtilsService } from '@v3/services/utils.service';
@@ -7,6 +7,8 @@ import { BrowserStorageService } from '@v3/services/storage.service';
 import { NotificationsService } from '@v3/services/notifications.service';
 import { Router } from '@angular/router';
 import { ApolloService } from '@v3/services/apollo.service';
+import { DemoService } from './demo.service';
+import { environment } from '@v3/environments/environment';
 
 /**
  * @name api
@@ -46,10 +48,15 @@ export interface Task {
 })
 
 export class ActivityService {
+
+  private _activity$ = new BehaviorSubject<Activity>(null);
+  activity$ = this._activity$.asObservable();
+
   public tasks: Array<any>;
 
   constructor(
     private request: RequestService,
+    private demo: DemoService,
     private utils: UtilsService,
     public storage: BrowserStorageService,
     private router: Router,
@@ -58,6 +65,9 @@ export class ActivityService {
   ) {}
 
   public getActivity(id) {
+    if (environment.demo) {
+      this._activity$.next(this.demo.activity);
+    }
     return this.apolloService.graphQLWatch(
       `query getActivity($id: Int!) {
         activity(id:$id){
@@ -71,7 +81,7 @@ export class ActivityService {
       {
         id: id
       }
-    ).pipe(map(res => this._normaliseActivity(res.data)));
+    ).pipe(map(res => this._normaliseActivity(res.data))).subscribe();
   }
 
   private _normaliseActivity(data): Activity {
@@ -123,6 +133,7 @@ export class ActivityService {
           };
       }
     });
+    this._activity$.next(result);
     return result;
   }
 

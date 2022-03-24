@@ -54,3 +54,50 @@
     --height: 280px;
   }
 }
+
+// styles use for due dates and pulsing animation
+.due-date {
+  margin-bottom: 0;
+  color: var(--ion-color-primary);
+  // use in assessment page to show due dates
+  &.assessment {
+    ion-icon {
+      vertical-align: bottom;
+    }
+  }
+  // use to show overdue dates
+  &.over {
+    color: var(--practera-ovderdue-color) !important;
+  }
+}
+
+.pulsing {
+  -webkit-animation: pulse 2s infinite;
+  animation: pulse 2s infinite;
+}
+
+@-webkit-keyframes pulse {
+  0% {
+    -webkit-box-shadow: 0 0 0 0 rgba(var(--ion-color-primary-rgb), 0.5);
+  }
+  70% {
+    -webkit-box-shadow: 0 0 0 15px rgba(var(--ion-color-primary-rgb), 0);
+  }
+  100% {
+    -webkit-box-shadow: 0 0 0 0 rgba(var(--ion-color-primary-rgb), 0);
+  }
+}
+@keyframes pulse {
+  0% {
+    -moz-box-shadow: 0 0 0 0 rgba(var(--ion-color-primary-rgb), 0.5);
+    box-shadow: 0 0 0 0 rgba(var(--ion-color-primary-rgb), 0.5);
+  }
+  70% {
+    -moz-box-shadow: 0 0 0 15px rgba(var(--ion-color-primary-rgb), 0);
+    box-shadow: 0 0 0 15px rgba(var(--ion-color-primary-rgb), 0);
+  }
+  100% {
+    -moz-box-shadow: 0 0 0 0 rgba(var(--ion-color-primary-rgb), 0);
+    box-shadow: 0 0 0 0 rgba(var(--ion-color-primary-rgb), 0);
+  }
+}
