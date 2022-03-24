@@ -3,7 +3,7 @@ import { Router, ActivatedRoute, ParamMap } from '@angular/router';
 import { AssessmentService, Assessment, Submission, Review, AssessmentSubmitParams } from '@v3/services/assessment.service';
 import { UtilsService } from '@v3/services/utils.service';
 import { NotificationsService } from '@v3/services/notifications.service';
-import { FormGroup, FormControl, Validators } from '@angular/forms';
+import { FormGroup, FormControl, Validators, FormBuilder } from '@angular/forms';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { SharedService } from '@v3/services/shared.service';
 import { ActivityService } from '@v3/services/activity.service';
@@ -15,21 +15,25 @@ const SAVE_PROGRESS_TIMEOUT = 10000;
 
 @Component({
   selector: 'app-assessment',
-  templateUrl: './assessment.page.html',
-  styleUrls: ['./assessment.page.scss'],
+  templateUrl: './assessment.component.html',
+  styleUrls: ['./assessment.component.scss'],
 })
-export class AssessmentPage implements OnInit {
+export class AssessmentComponent implements OnInit {
   @Input() inputId: number;
   @Input() inputActivityId: number;
   @Input() inputSubmissionId: number;
   @Input() inputContextId: number;
   @Input() inputAction: string;
   @Input() fromPage = '';
+  @Input() assessment: Assessment;
+  @Output() assessmentChange = new EventEmitter<Assessment>();
+  @Input() assessment$: Subject<any>;
+
   @Output() navigate = new EventEmitter();
   @Output() changeStatus = new EventEmitter();
-  @Input() assessment$: Subject<any>;
-  getAssessment: Subscription;
-  getSubmission: Subscription;
+
+  // getAssessment: Subscription;
+  // getSubmission: Subscription;
 
   // assessment id
   id: number;
@@ -38,27 +42,8 @@ export class AssessmentPage implements OnInit {
   // context id
   contextId: number;
   submissionId: number;
-  assessment: Assessment = {
-    name: '',
-    type: '',
-    description: '',
-    isForTeam: false,
-    dueDate: '',
-    isOverdue: false,
-    groups: [],
-    pulseCheck: false,
-  };
-  submission: Submission = {
-    id: 0,
-    status: '',
-    answers: {},
-    submitterName: '',
-    modified: '',
-    isLocked: false,
-    completed: false,
-    submitterImage: '',
-    reviewerName: ''
-  };
+  @Input() submission: Submission;;
+
   review: Review = {
     id: 0,
     answers: {},
@@ -78,9 +63,10 @@ export class AssessmentPage implements OnInit {
   doReview = false;
 
   feedbackReviewed = false;
-  loadingAssessment = true;
+  @Input() loadingAssessment = true;
   formModel: {[propKey: string]: FormControl} = {};
-  questionsForm: FormGroup = new FormGroup(this.formModel);
+  questionsForm: FormGroup;
+  // questionsForm: FormGroup = new FormGroup(this.formModel);
   submitting: boolean;
   submitted: boolean;
   savingButtonDisabled = true;
@@ -105,11 +91,13 @@ export class AssessmentPage implements OnInit {
     private fastFeedbackService: FastFeedbackService,
     private ngZone: NgZone,
     private demoService: DemoService,
+    private fb: FormBuilder,
   ) {
     this.route.queryParams.subscribe(params => {
       console.log({params});
       this.onEnter();
-    })
+    });
+    this.questionsForm = this.fb.group({});
   }
 
   get isMobile() {
@@ -117,9 +105,9 @@ export class AssessmentPage implements OnInit {
   }
 
   ngOnInit() {
-    this.assessment$.subscribe(assessment => {
+    /* this.assessment$.subscribe(assessment => {
       console.log('current assessment::', assessment);
-    });
+    }); */
   }
 
   /**
@@ -176,16 +164,6 @@ export class AssessmentPage implements OnInit {
   }
 
   private _initialise() {
-    this.assessment = {
-      name: '',
-      type: '',
-      description: '',
-      isForTeam: false,
-      dueDate: '',
-      isOverdue: false,
-      groups: [],
-      pulseCheck: false,
-    };
     this.submission = {
       id: 0,
       status: '',
@@ -203,7 +181,6 @@ export class AssessmentPage implements OnInit {
       status: '',
       modified: ''
     };
-    this.loadingAssessment = true;
     this.saving = false;
     this.doAssessment = false;
     this.doReview = false;
@@ -256,36 +233,7 @@ export class AssessmentPage implements OnInit {
       this.submissionId = +this.route.snapshot.paramMap.get('submissionId');
     }
 
-    // get assessment structure and populate the question form
-    /* this.assessmentService.getAssessment().subscribe(
-      result => {
-        this.assessment = result.assessment;
-        this.populateQuestionsForm();
-        this.loadingAssessment = false;
-        this._handleSubmissionData(result.submission);
-        // display pop up if it is team assessment and user is not in team
-        if (this.doAssessment && this.assessment.isForTeam && !this.storage.getUser().teamId) {
-          this.isNotInATeam = true;
-          return this.notificationsService.alert({
-            message: 'Currently you are not in a team, please reach out to your Administrator or Coordinator to proceed with next steps.',
-            buttons: [
-              {
-                text: 'OK',
-                role: 'cancel',
-                handler: () => {
-                  this.goToNextTask();
-                }
-              }
-            ]
-          });
-        }
-        this.isNotInATeam = false;
-        this._handleReviewData(result.review);
-      },
-      error => {
-        console.log(error);
-      }
-    ); */
+    this.populateQuestionsForm();
   }
 
   private _handleSubmissionData(submission) {

@@ -14,10 +14,6 @@ const routes: Routes = [
         loadChildren: () => import('../tabs/tabs.module').then( m => m.TabsPageModule ),
       },
       {
-        path: 'assessment',
-        loadChildren: () => import('../assessment/assessment.module').then(m => m.AssessmentPageModule)
-      },
-      {
         path: 'settings',
         loadChildren: () => import('../settings/settings.module').then(m => m.SettingsPageModule),
         outlet: 'settings'

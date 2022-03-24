@@ -38,12 +38,14 @@ export class TextComponent implements ControlValueAccessor, OnInit {
 
   // the value of answer &| comment
   innerValue: any;
-  answer = '';
+  answer: FormControl;
   comment: FormControl;
   // validation errors array
   errors: Array<any> = [];
 
-  constructor() {}
+  constructor() {
+    this.answer.setValue(''); // default value
+  }
 
   ngOnInit() {
     this._showSavedAnswers();
