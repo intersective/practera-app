@@ -87,10 +87,10 @@
               <ion-spinner></ion-spinner>
             </div>
           </ion-item>
-
         </ion-list>
-        <ion-card class="ion-no-margin ion-text-left" [ngClass]="{
-            'audience-mentor-question-card': question.reviewerOnly}">
+
+        <ion-card class="ion-no-margin ion-text-left"
+          [ngClass]="{'audience-mentor-question-card': question.reviewerOnly}">
 
           <ng-template #submissionTpl>
             <ion-card-content [ngSwitch]="question.type" class="q-content ion-margin-top ion-no-padding" color="light">

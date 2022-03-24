@@ -21,6 +21,7 @@ export class ReviewsPage implements OnInit {
   reviews$ = new BehaviorSubject<any[]>([]);
 
   currentAssessment: Assessment;
+  loadingAssessment: boolean = true;
 
   submission: Submission = {
     id: 0,
@@ -149,6 +150,7 @@ export class ReviewsPage implements OnInit {
     this.assessmentService.getAssessment().subscribe(
       result => {
         this.currentAssessment = result.assessment;
+        this.loadingAssessment = false;
         this._handleSubmissionData(result.submission);
         // display pop up if it is team assessment and user is not in team
         // if (this.doAssessment && this.assessment.isForTeam && !this.storage.getUser().teamId) {
