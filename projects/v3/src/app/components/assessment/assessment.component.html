@@ -114,7 +114,7 @@
 
               <app-oneof *ngSwitchCase="'oneof'"
                 [question]="question"
-                [doAssessment]="doAssessment"
+                [doAssessment]="true"
                 [doReview]="doReview"
                 [submission]="submission?.answers[question.id] || {}"
                 [review]="review?.answers[question.id] || {}"

@@ -22,6 +22,18 @@ export class AssessmentComponent implements OnInit {
   @Input() inputActivityId: number;
   @Input() inputSubmissionId: number;
   @Input() inputContextId: number;
+
+  /**
+   * -- action --
+   * Options: assessment/review
+   *
+   * 'assessment' is for user to do assessment, including
+   * reading a submission or feedback. This actually
+   * means the current user is the user who should "do" this assessment
+   *
+   * 'reivew' is for user to do review for this assessment. This means the
+   * current user is the user who should "review" this assessment
+   */
   @Input() action: string;
   @Input() fromPage: string = '';
   @Output() assessmentChange = new EventEmitter<Assessment>();
@@ -46,13 +58,10 @@ export class AssessmentComponent implements OnInit {
   @Input() review: Review;
 
 
-  // action == 'assessment' is for user to do assessment, including seeing the submission or seeing the feedback. This actually means the current user is the user who should "do" this assessment
-  // action == 'reivew' is for user to do review for this assessment. This means the current user is the user who should "review" this assessment
-  action: string;
-
   // if doAssessment is true, it means this user is actually doing assessment, meaning it is not started or in progress
   // if action == 'assessment' and doAssessment is false, it means this user is reading the submission or feedback
   doAssessment = false;
+
   // if doReview is true, it means this user is actually doing review, meaning this assessment is pending review
   // if action == 'review' and doReview is false, it means the review is done and this user is reading the submission and review
   doReview = false;
