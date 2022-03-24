@@ -63,7 +63,7 @@ export class AssessmentComponent implements OnInit {
   doReview = false;
 
   feedbackReviewed = false;
-  loadingAssessment = true;
+  @Input() loadingAssessment = true;
   formModel: {[propKey: string]: FormControl} = {};
   questionsForm: FormGroup;
   // questionsForm: FormGroup = new FormGroup(this.formModel);
@@ -181,7 +181,6 @@ export class AssessmentComponent implements OnInit {
       status: '',
       modified: ''
     };
-    this.loadingAssessment = true;
     this.saving = false;
     this.doAssessment = false;
     this.doReview = false;
@@ -234,36 +233,7 @@ export class AssessmentComponent implements OnInit {
       this.submissionId = +this.route.snapshot.paramMap.get('submissionId');
     }
 
-    /* // get assessment structure and populate the question form
-    this.assessmentService.getAssessment().subscribe(
-      result => {
-        this.assessment = result.assessment;
-        this.populateQuestionsForm();
-        this.loadingAssessment = false;
-        this._handleSubmissionData(result.submission);
-        // display pop up if it is team assessment and user is not in team
-        if (this.doAssessment && this.assessment.isForTeam && !this.storage.getUser().teamId) {
-          this.isNotInATeam = true;
-          return this.notificationsService.alert({
-            message: 'Currently you are not in a team, please reach out to your Administrator or Coordinator to proceed with next steps.',
-            buttons: [
-              {
-                text: 'OK',
-                role: 'cancel',
-                handler: () => {
-                  this.goToNextTask();
-                }
-              }
-            ]
-          });
-        }
-        this.isNotInATeam = false;
-        this._handleReviewData(result.review);
-      },
-      error => {
-        console.log(error);
-      }
-    ); */
+    this.populateQuestionsForm();
   }
 
   private _handleSubmissionData(submission) {
