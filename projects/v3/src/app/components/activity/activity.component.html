@@ -10,7 +10,10 @@
 <ng-container *ngIf="activity.tasks">
   <app-list-item *ngFor="let task of activity.tasks; let i = index"
     [title]="task.name"
-    [subtitle1]="dueDateText(task.dueDate)"
+    [subtitle1]="subtitle(task)"
+    subtitle1Color="medium"
+    [label]="label(task)"
+    [labelColor]="labelColor(task)"
     [leadingIconPulsing]="assessmentNotSubmitted(task) && task.isDueToday"
     [leadingIcon]="leadIcon(task)"
     [active]="currentTask && currentTask.type == task.type && currentTask.id == task.id"
