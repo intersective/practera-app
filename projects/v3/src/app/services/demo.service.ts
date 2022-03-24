@@ -228,7 +228,7 @@ export class DemoService {
         },
         {
           id: 33,
-          name: "done feedback",
+          name: "done assessment",
           type: 'Assessment',
           isLocked: false,
           isForTeam: true,
@@ -237,6 +237,22 @@ export class DemoService {
           dueDate: '2022-03-05 15:00:00',
           contextId: 16881,
           status: "done",
+        },
+        {
+          id: 34,
+          name: "team assessment",
+          type: 'Assessment',
+          isLocked: true,
+          isForTeam: true,
+          isOverdue: false,
+          isDueToday: false,
+          dueDate: '2022-03-05 15:00:00',
+          contextId: 16881,
+          status: "in progress",
+          submitter: {
+            name: 'James Bond',
+            image: ''
+          }
         },
         {
           id: 4,
