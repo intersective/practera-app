@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Achievement, AchievementService } from '@v3/app/services/achievement.service';
 import { NotificationsService } from '@v3/app/services/notifications.service';
 import { HomeService } from '@v3/services/home.service';
@@ -21,6 +21,7 @@ export class HomePage implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
+    private router: Router,
     private service: HomeService,
     private achievementService: AchievementService,
     private utils: UtilsService,
@@ -72,7 +73,7 @@ export class HomePage implements OnInit {
   }
 
   gotoActivity(id: number) {
-    console.log(id);
+    this.router.navigate(['v3', 'activity-desktop', id]);
   }
 
   achievePopup(achievement: Achievement) {
