@@ -25,7 +25,7 @@
 
   <ng-container *ngIf="doAssessment">
     <div class="ion-padding-horizontal ion-padding-bottom">
-        <file-stack *ngIf="!uploadedFile && !submission.answer"
+      <file-stack *ngIf="!uploadedFile && !submission.answer"
         [accept]="fileTypes"
         [fileType]="question.fileType"
         (complete)="onFileUploadCompleted($event)"

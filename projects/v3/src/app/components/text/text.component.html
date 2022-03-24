@@ -19,7 +19,7 @@
     <div class="ion-padding-horizontal ion-padding-bottom">
         <ion-textarea
         class="background-white ion-margin-top textarea"
-        [(ngModel)]="answer"
+        [formControl]="answer"
         #answerEle
         rows="4"
         (ionFocus)="onFocus($event)"
@@ -37,16 +37,17 @@
         *ngIf="question.canAnswer"
         class="textarea"
         rows="4"
-        [(ngModel)]="answer"
+        [formControl]="answer"
         #answerEle
         (ionFocus)="onFocus($event)"
         (ionChange)="onChange('answer')"
         placeholder="Please put your answer here"
         [disabled]="control.disabled"></ion-textarea>
+
       <ion-textarea
         *ngIf="question.canComment && submission.answer"
         class="textarea"
-        [(ngModel)]="comment"
+        [formControl]="comment"
         #commentEle
         rows="4"
         (ionFocus)="onFocus($event)"

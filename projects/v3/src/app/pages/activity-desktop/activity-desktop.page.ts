@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { ActivityService } from '@v3/app/services/activity.service';
+import { ActivityService, Task } from '@v3/app/services/activity.service';
 
 @Component({
   selector: 'app-activity-desktop',
@@ -9,6 +9,7 @@ import { ActivityService } from '@v3/app/services/activity.service';
 })
 export class ActivityDesktopPage implements OnInit {
   activity$ = this.service.activity$;
+  currentTask: Task;
 
   constructor(
     private route: ActivatedRoute,
