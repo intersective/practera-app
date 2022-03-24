@@ -3,7 +3,7 @@ import { Router, ActivatedRoute, ParamMap } from '@angular/router';
 import { AssessmentService, Assessment, Submission, Review, AssessmentSubmitParams } from '@v3/services/assessment.service';
 import { UtilsService } from '@v3/services/utils.service';
 import { NotificationsService } from '@v3/services/notifications.service';
-import { FormGroup, FormControl, Validators } from '@angular/forms';
+import { FormGroup, FormControl, Validators, FormBuilder } from '@angular/forms';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { SharedService } from '@v3/services/shared.service';
 import { ActivityService } from '@v3/services/activity.service';
@@ -65,7 +65,8 @@ export class AssessmentComponent implements OnInit {
   feedbackReviewed = false;
   loadingAssessment = true;
   formModel: {[propKey: string]: FormControl} = {};
-  questionsForm: FormGroup = new FormGroup(this.formModel);
+  questionsForm: FormGroup;
+  // questionsForm: FormGroup = new FormGroup(this.formModel);
   submitting: boolean;
   submitted: boolean;
   savingButtonDisabled = true;
@@ -90,11 +91,13 @@ export class AssessmentComponent implements OnInit {
     private fastFeedbackService: FastFeedbackService,
     private ngZone: NgZone,
     private demoService: DemoService,
+    private fb: FormBuilder,
   ) {
     this.route.queryParams.subscribe(params => {
       console.log({params});
       this.onEnter();
-    })
+    });
+    this.questionsForm = this.fb.group({});
   }
 
   get isMobile() {
