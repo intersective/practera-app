@@ -26,7 +26,7 @@ import { TeamMemberSelectorComponent } from './team-member-selector/team-member-
 import { FileComponent } from './file/file.component';
 import { MultipleComponent } from './multiple/multiple.component';
 import { OneofComponent } from './oneof/oneof.component';
-import { FileDisplayComponent } from './file/file-display/file-display.component';
+import { FileDisplayComponent } from './file-display/file-display.component';
 import { ActivityComponent } from './activity/activity.component';
 
 const largeCircleDefaultConfig = {
