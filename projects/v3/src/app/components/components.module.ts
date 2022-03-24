@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { DescriptionComponent } from './description/description.component';
 import { ListItemComponent } from './list-item/list-item.component';
 import { ImgComponent } from './img/img.component';
@@ -21,6 +21,12 @@ import { FilestackPreviewComponent } from './filestack-preview/filestack-preview
 import { ContactNumberFormComponent } from './contact-number-form/contact-number-form.component';
 import { ClickableItemComponent } from './clickable-item/clickable-item.component';
 import { AssessmentComponent } from './assessment/assessment.component';
+import { TextComponent } from './text/text.component';
+import { TeamMemberSelectorComponent } from './team-member-selector/team-member-selector.component';
+import { FileComponent } from './file/file.component';
+import { MultipleComponent } from './multiple/multiple.component';
+import { OneofComponent } from './oneof/oneof.component';
+import { FileDisplayComponent } from './file-display/file-display.component';
 
 const largeCircleDefaultConfig = {
   backgroundColor: 'var(--ion-color-light)',
@@ -43,8 +49,8 @@ const largeCircleDefaultConfig = {
     IonicModule,
     CommonModule,
     FormsModule,
+    ReactiveFormsModule,
     NgCircleProgressModule.forRoot(largeCircleDefaultConfig),
-    // QuestionsModule,
   ],
   declarations: [
     AchievementPopUpComponent,
@@ -66,6 +72,12 @@ const largeCircleDefaultConfig = {
     LockTeamAssessmentPopUpComponent,
     PopUpComponent,
     ReviewRatingComponent,
+    TextComponent,
+    TeamMemberSelectorComponent,
+    FileComponent,
+    MultipleComponent,
+    OneofComponent,
+    FileDisplayComponent,
   ],
   exports: [
     AchievementPopUpComponent,
@@ -84,8 +96,6 @@ const largeCircleDefaultConfig = {
     FilestackComponent,
     FilestackPreviewComponent,
     FloatDirective,
-    FormsModule,
-    FormsModule,
     ImgComponent,
     IonicModule,
     IonicModule,
@@ -93,6 +103,12 @@ const largeCircleDefaultConfig = {
     LockTeamAssessmentPopUpComponent,
     PopUpComponent,
     ReviewRatingComponent,
+    TextComponent,
+    TeamMemberSelectorComponent,
+    FileComponent,
+    MultipleComponent,
+    OneofComponent,
+    FileDisplayComponent,
   ],
 })
 export class ComponentsModule {}
