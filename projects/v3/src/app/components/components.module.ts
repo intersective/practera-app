@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { DescriptionComponent } from './description/description.component';
 import { ListItemComponent } from './list-item/list-item.component';
 import { ImgComponent } from './img/img.component';
@@ -14,13 +14,19 @@ import { LockTeamAssessmentPopUpComponent } from './lock-team-assessment-pop-up/
 import { ActivityCompletePopUpComponent } from './activity-complete-pop-up/activity-complete-pop-up.component';
 import { FastFeedbackComponent } from './fast-feedback/fast-feedback.component';
 import { ReviewRatingComponent } from './review-rating/review-rating.component';
-import { PersonalisedHeaderComponent } from '../personalised-header/personalised-header.component';
 import { CircleProgressComponent } from './circle-progress/circle-progress.component';
 import { NgCircleProgressModule } from 'ng-circle-progress';
 import { FilestackComponent } from './filestack/filestack.component';
 import { FilestackPreviewComponent } from './filestack-preview/filestack-preview.component';
 import { ContactNumberFormComponent } from './contact-number-form/contact-number-form.component';
 import { ClickableItemComponent } from './clickable-item/clickable-item.component';
+import { AssessmentComponent } from './assessment/assessment.component';
+import { TextComponent } from './text/text.component';
+import { TeamMemberSelectorComponent } from './team-member-selector/team-member-selector.component';
+import { FileComponent } from './file/file.component';
+import { MultipleComponent } from './multiple/multiple.component';
+import { OneofComponent } from './oneof/oneof.component';
+import { FileDisplayComponent } from './file-display/file-display.component';
 import { ActivityComponent } from './activity/activity.component';
 
 const largeCircleDefaultConfig = {
@@ -44,13 +50,15 @@ const largeCircleDefaultConfig = {
     IonicModule,
     CommonModule,
     FormsModule,
+    ReactiveFormsModule,
     NgCircleProgressModule.forRoot(largeCircleDefaultConfig),
-    // QuestionsModule,
   ],
   declarations: [
     AchievementPopUpComponent,
     AchievementPopUpComponent,
     ActivityCompletePopUpComponent,
+    ActivityComponent,
+    AssessmentComponent,
     AutoresizeDirective,
     CircleProgressComponent,
     ClickableItemComponent,
@@ -58,20 +66,27 @@ const largeCircleDefaultConfig = {
     DescriptionComponent,
     DragAndDropDirective,
     FastFeedbackComponent,
+    FileComponent,
+    FileDisplayComponent,
     FilestackComponent,
     FilestackPreviewComponent,
     FloatDirective,
     ImgComponent,
     ListItemComponent,
     LockTeamAssessmentPopUpComponent,
+    MultipleComponent,
+    OneofComponent,
     PopUpComponent,
     ReviewRatingComponent,
-    ActivityComponent
+    TeamMemberSelectorComponent,
+    TextComponent,
   ],
   exports: [
     AchievementPopUpComponent,
     AchievementPopUpComponent,
     ActivityCompletePopUpComponent,
+    ActivityComponent,
+    AssessmentComponent,
     AutoresizeDirective,
     CircleProgressComponent,
     ClickableItemComponent,
@@ -81,19 +96,22 @@ const largeCircleDefaultConfig = {
     DescriptionComponent,
     DragAndDropDirective,
     FastFeedbackComponent,
+    FileComponent,
+    FileDisplayComponent,
     FilestackComponent,
     FilestackPreviewComponent,
     FloatDirective,
-    FormsModule,
-    FormsModule,
     ImgComponent,
     IonicModule,
     IonicModule,
     ListItemComponent,
     LockTeamAssessmentPopUpComponent,
+    MultipleComponent,
+    OneofComponent,
     PopUpComponent,
     ReviewRatingComponent,
-    ActivityComponent
+    TeamMemberSelectorComponent,
+    TextComponent,
   ],
 })
 export class ComponentsModule {}

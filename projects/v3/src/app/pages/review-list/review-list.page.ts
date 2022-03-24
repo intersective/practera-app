@@ -6,6 +6,11 @@ import { UtilsService } from '@v3/services/utils.service';
 import { NotificationsService } from '@v3/services/notifications.service';
 import { Subject } from 'rxjs';
 
+enum STATUSES {
+  PENDING = 'pending',
+  COMPLETED = 'completed'
+}
+
 @Component({
   selector: 'app-review-list',
   templateUrl: './review-list.page.html',
@@ -18,6 +23,10 @@ export class ReviewListPage implements OnInit {
   @Input() submissionId: number;
   @Output() navigate = new EventEmitter();
   @Input() review$: Subject<any>;
+  @Input() reviews$: Subject<any>;
+  selectedReview: any = {};
+
+  public status: string = STATUSES.PENDING;
 
   constructor(
     public reviewsService: ReviewListService,
@@ -52,6 +61,16 @@ export class ReviewListPage implements OnInit {
           throw new Error(err);
         }
       );
+  }
+
+  statusUpdate(event) {
+    console.log(event);
+    this.status = event.detail.value;
+  }
+
+  // open a review in detailed page
+  read(review: Review) {
+    console.log('REVIEW::', review);
   }
 
   /**

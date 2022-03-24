@@ -7,7 +7,6 @@ import { IonicModule } from '@ionic/angular';
 import { ReviewsPageRoutingModule } from './reviews-routing.module';
 
 import { ReviewsPage } from './reviews.page';
-import { AssessmentPageModule } from '@v3/pages/assessment/assessment.module';
 import { ReviewListPageModule } from '../review-list/review-list.module';
 import { ComponentsModule } from '@v3/app/components/components.module';
 
@@ -16,10 +15,9 @@ import { ComponentsModule } from '@v3/app/components/components.module';
     CommonModule,
     FormsModule,
     IonicModule,
-    ReviewsPageRoutingModule,
-    AssessmentPageModule,
-    ReviewListPageModule,
     ComponentsModule,
+    ReviewsPageRoutingModule,
+    ReviewListPageModule,
   ],
   declarations: [ReviewsPage]
 })
