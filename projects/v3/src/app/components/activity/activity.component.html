@@ -11,7 +11,7 @@
   <app-list-item *ngFor="let task of activity.tasks; let i = index"
     [title]="task.name"
     [subtitle1]="subtitle(task)"
-    subtitle1Color="medium"
+    subtitle1Color="grey-50"
     [label]="label(task)"
     [labelColor]="labelColor(task)"
     [leadingIconPulsing]="assessmentNotSubmitted(task) && task.isDueToday"

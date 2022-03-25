@@ -105,7 +105,7 @@ export class ActivityComponent implements OnInit {
     if (task.status === 'done') {
       return 'success';
     }
-    return 'medium';
+    return 'grey-75';
   }
 
   assessmentNotSubmitted(task) {
