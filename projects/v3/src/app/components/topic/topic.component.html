@@ -45,3 +45,10 @@
     </ion-toolbar>
   </ion-footer>
 </ng-container>
+
+<ng-container *ngIf="!topic">
+  <ion-skeleton-text animated class="skeleton-header"></ion-skeleton-text>
+  <ion-skeleton-text animated style="width: 50%"></ion-skeleton-text>
+  <ion-skeleton-text animated style="width: 70%"></ion-skeleton-text>
+  <ion-skeleton-text animated style="width: 90%"></ion-skeleton-text>
+</ng-container>

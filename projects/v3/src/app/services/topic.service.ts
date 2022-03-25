@@ -41,10 +41,11 @@ export class TopicService {
   ) { }
 
   getTopic(id: number) {
+    this._topic$.next(null);
     if (environment.demo) {
       setTimeout(
         () => {
-          this._topic$.next(this.demo.topic);
+          this._topic$.next(this.demo.topic(id));
         },
         1000 * (Math.random() + 1)
       );

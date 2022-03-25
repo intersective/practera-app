@@ -25,4 +25,8 @@ export class ActivityDesktopPage implements OnInit {
     });
   }
 
+  goToTask(task: Task) {
+    this.service.goToTask(task);
+  }
+
 }
