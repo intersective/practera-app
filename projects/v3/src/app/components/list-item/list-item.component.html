@@ -1,6 +1,6 @@
-<ion-item *ngIf="!loading" [lines]="lines">
+<ion-item *ngIf="!loading" [ngClass]="{'active': active}" [lines]="lines">
 
-  <ion-icon *ngIf="leadingIcon" [name]="leadingIcon" slot="start" [color]="leadingIconColor || 'primary'" class="leading-icon" [ngClass]="{'pulsing': leadingIconPulsing}"></ion-icon>
+  <ion-icon *ngIf="leadingIcon" [name]="leadingIcon" slot="start" class="leading-icon" [ngClass]="{'pulsing': leadingIconPulsing}"></ion-icon>
 
   <ion-avatar *ngIf="leadImage" slot="start">
     <img [src]="leadImage">
