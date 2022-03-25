@@ -1,4 +1,4 @@
-<ion-header>
+<ion-header class="ion-no-border header-border">
   <ion-toolbar>
     <ion-buttons slot="start">
       <ion-menu-button></ion-menu-button>
@@ -15,18 +15,22 @@
   <ion-grid>
     <ion-row *ngIf="(activity$ | async ) as activity">
       <ion-col size="12" size-md="5">
-        <app-activity
-          [activity]="activity"
-          [(currentTask)]="currentTask"></app-activity>
+        <app-activity [activity]="activity" [currentTask]="currentTask$ | async"></app-activity>
       </ion-col>
-      <ion-col size="12">
-        <app-assessment
-          *ngIf="currentTask"
-          [inputId]="currentTask.id"
-          [inputActivityId]="activity.id"
-          [inputContextId]="currentTask.contextId"
-          inputAction="assessment"
-        ></app-assessment>
+      <ion-col size="12" size-md="7" class="border-left">
+        <ng-container *ngIf="(currentTask$ | async ) as currentTask">
+          <app-assessment
+            *ngIf="currentTask.type === 'Assessment'"
+            [inputId]="currentTask.id"
+            [inputActivityId]="activity.id"
+            [inputContextId]="currentTask.contextId"
+            inputAction="assessment"
+          ></app-assessment>
+          <app-topic
+            *ngIf="currentTask.type === 'Topic'"
+            [topic]="topic$ | async"
+          ></app-topic>
+        </ng-container>
       </ion-col>
     </ion-row>
   </ion-grid>

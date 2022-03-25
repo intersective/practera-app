@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { ActivityService, Task } from '@v3/app/services/activity.service';
+import { TopicService } from '@v3/app/services/topic.service';
 
 @Component({
   selector: 'app-activity-desktop',
@@ -9,16 +10,18 @@ import { ActivityService, Task } from '@v3/app/services/activity.service';
 })
 export class ActivityDesktopPage implements OnInit {
   activity$ = this.service.activity$;
-  currentTask: Task;
+  currentTask$ = this.service.currentTask$;
+  topic$ = this.topicService.topic$;
 
   constructor(
     private route: ActivatedRoute,
     private service: ActivityService,
+    private topicService: TopicService
   ) { }
 
   ngOnInit() {
     this.route.params.subscribe(params => {
-      this.service.getActivity(params.id);
+      this.service.getActivity(params.id, true);
     });
   }
 
