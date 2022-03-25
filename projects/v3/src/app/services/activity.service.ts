@@ -156,7 +156,6 @@ export class ActivityService {
    * Go to the first unfinished task inside this activity
    */
    goToFirstTask(tasks) {
-    this._currentTask$.next(null);
     // find the first task that is not done or pending review
     // and is allowed to access for this user
     let firstTask = tasks.find(task => {
@@ -168,12 +167,16 @@ export class ActivityService {
     if (!firstTask) {
       firstTask = tasks[0];
     }
-    this._currentTask$.next(firstTask);
-    switch (firstTask.type) {
+    this.goToTask(firstTask);
+  }
+
+  goToTask(task: Task) {
+    this._currentTask$.next(task);
+    switch (task.type) {
       case 'Assessment':
         break;
       case 'Topic':
-        this.topic.getTopic(firstTask.id);
+        this.topic.getTopic(task.id);
         break;
     }
   }

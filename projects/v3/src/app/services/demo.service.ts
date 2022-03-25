@@ -489,10 +489,10 @@ export class DemoService {
     });
   }
 
-  get topic() {
+  topic(id) {
     return {
       id: 1,
-      title: 'Introduction of Practera',
+      title: `Introduction of Practera ${ id }`,
       content: this.description,
       videolink: '',
       files: [],
