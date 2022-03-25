@@ -159,7 +159,7 @@ export class DemoService {
           name: "in progress feedback",
           type: 'Assessment',
           isLocked: false,
-          isForTeam: true,
+          isForTeam: false,
           isOverdue: false,
           isDueToday: false,
           dueDate: null,
@@ -171,7 +171,7 @@ export class DemoService {
           name: "duedate feedback",
           type: 'Assessment',
           isLocked: false,
-          isForTeam: true,
+          isForTeam: false,
           isOverdue: false,
           isDueToday: false,
           dueDate: '2022-03-05 15:00:00',
@@ -183,7 +183,7 @@ export class DemoService {
           name: "due today feedback",
           type: 'Assessment',
           isLocked: false,
-          isForTeam: true,
+          isForTeam: false,
           isOverdue: false,
           isDueToday: true,
           dueDate: '2022-03-05 15:00:00',
@@ -195,7 +195,7 @@ export class DemoService {
           name: "overdue feedback",
           type: 'Assessment',
           isLocked: false,
-          isForTeam: true,
+          isForTeam: false,
           isOverdue: true,
           isDueToday: false,
           dueDate: '2022-03-05 15:00:00',
@@ -207,7 +207,7 @@ export class DemoService {
           name: "pending review feedback",
           type: 'Assessment',
           isLocked: false,
-          isForTeam: true,
+          isForTeam: false,
           isOverdue: false,
           isDueToday: true,
           dueDate: '2022-03-03 15:00:00',
@@ -219,7 +219,7 @@ export class DemoService {
           name: "feedback available feedback",
           type: 'Assessment',
           isLocked: false,
-          isForTeam: true,
+          isForTeam: false,
           isOverdue: false,
           isDueToday: false,
           dueDate: '2022-03-05 15:00:00',
@@ -231,7 +231,7 @@ export class DemoService {
           name: "done assessment",
           type: 'Assessment',
           isLocked: false,
-          isForTeam: true,
+          isForTeam: false,
           isOverdue: false,
           isDueToday: false,
           dueDate: '2022-03-05 15:00:00',
@@ -487,5 +487,15 @@ export class DemoService {
         }
       }
     });
+  }
+
+  get topic() {
+    return {
+      id: 1,
+      title: 'Introduction of Practera',
+      content: this.description,
+      videolink: '',
+      files: [],
+    };
   }
 }

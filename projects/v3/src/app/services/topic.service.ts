@@ -1,17 +1,18 @@
 import { Injectable } from '@angular/core';
-import { Observable, of } from 'rxjs';
+import { BehaviorSubject, Observable, of } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { RequestService } from 'request';
 import { UtilsService } from '@v3/services/utils.service';
 import { DomSanitizer } from '@angular/platform-browser';
+import { environment } from '@v3/environments/environment';
+import { DemoService } from './demo.service';
 
 export interface Topic {
   id: number;
   title: string;
   content: any;
   videolink?: string;
-  files: Array<object>;
-  hasComments: boolean;
+  files: Array<any>;
 }
 
 const api = {
@@ -29,21 +30,32 @@ const api = {
 })
 
 export class TopicService {
+  private _topic$ = new BehaviorSubject<Topic>(null);
+  topic$ = this._topic$.asObservable();
 
   constructor(
     private request: RequestService,
     private utils: UtilsService,
     public sanitizer: DomSanitizer,
+    private demo: DemoService
   ) { }
 
-  getTopic(id: number): Observable<any> {
+  getTopic(id: number) {
+    if (environment.demo) {
+      setTimeout(
+        () => {
+          this._topic$.next(this.demo.topic);
+        },
+        1000 * (Math.random() + 1)
+      );
+    }
     return this.request.get(api.get.stories, {params: { model_id: id }})
       .pipe(map((response: any) => {
         if (response.success && response.data) {
           return this._normaliseTopic(response.data);
         }
       })
-    );
+    ).subscribe();
   }
 
   private _normaliseTopic(data: any) {
@@ -59,7 +71,6 @@ export class TopicService {
       title: '',
       content: '',
       videolink: '',
-      hasComments: false,
       files: []
     };
     const thisTopic = data[0];
@@ -80,7 +91,6 @@ export class TopicService {
     if (this.utils.has(thisTopic.Story, 'videolink')) {
       topic.videolink = thisTopic.Story.videolink;
     }
-    topic.hasComments = thisTopic.Story.has_comments;
     topic.files = thisTopic.Filestore.map(item => ({url: item.slug , name: item.name}));
 
     return topic;
