@@ -17,6 +17,8 @@ export class ListItemComponent {
   @Input() subtitle1: string;
   @Input() subtitle1Color: string;
   @Input() subtitle2: string;
+  @Input() label: string;
+  @Input() labelColor: string;
   @Input() endingText: string | number;
   @Input() endingIcon: string;
   @Input() endingIconColor: string;

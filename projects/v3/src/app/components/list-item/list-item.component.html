@@ -1,6 +1,6 @@
-<ion-item *ngIf="!loading" [lines]="lines">
+<ion-item *ngIf="!loading" [ngClass]="{'active': active}" [lines]="lines">
 
-  <ion-icon *ngIf="leadingIcon" [name]="leadingIcon" slot="start" [color]="leadingIconColor || 'primary'" class="leading-icon" [ngClass]="{'pulsing': leadingIconPulsing}"></ion-icon>
+  <ion-icon *ngIf="leadingIcon" [name]="leadingIcon" slot="start" class="leading-icon" [ngClass]="{'pulsing': leadingIconPulsing}"></ion-icon>
 
   <ion-avatar *ngIf="leadImage" slot="start">
     <img [src]="leadImage">
@@ -8,13 +8,20 @@
 
   <div class="item-content ion-padding-vertical" [ngClass]="{'event-item': isEventItem, 'content-expired': eventExpired}">
     <div *ngIf="isEventItem" style="display: flex; flex-wrap: nowrap; flex-direction: row; align-items: center;">
-      <p class="item-title subtitle-3" [ngClass]="'color-' + titleColor">{{ title }}</p>
+      <ion-text class="item-title body-2" [color]="titleColor">{{ title }}</ion-text>
       &nbsp; <!-- this is to add some space between two elements -->
       <span style="white-space: nowrap;" class="item-title subtitle-3" [ngClass]="'color-' + titleColor"> {{ eventDayCount }}</span>
     </div>
-    <p *ngIf="!isEventItem" class="item-title subtitle-3" [ngClass]="'color-' + titleColor">{{ title }}</p>
-    <p *ngIf="subtitle1" class="item-subtitle-1 caption gray-2" [ngClass]="'color-' + subtitle1Color">{{ subtitle1 }}</p>
-    <p *ngIf="subtitle2" class="item-subtitle-2 caption gray-2">{{ subtitle2 }}</p>
+    <ion-text *ngIf="!isEventItem" class="item-title body-2" [color]="titleColor">{{ title }}</ion-text>
+    <ng-container *ngIf="subtitle1">
+      <br/><ion-text class="item-subtitle-1 subtitle-2" [color]="subtitle1Color">{{ subtitle1 }}</ion-text>
+    </ng-container>
+    <ng-container *ngIf="subtitle2">
+      <br/><ion-text class="item-subtitle-2 caption gray-2">{{ subtitle2 }}</ion-text>
+    </ng-container>
+    <ng-container *ngIf="label">
+      <br/><span class="label body-3" [ngClass]="'bg-color-' + labelColor">{{ label }}</span>
+    </ng-container>
   </div>
 
   <ion-text *ngIf="endingText" class="item-ending-text caption gray-2" slot="end">{{ endingText }}</ion-text>

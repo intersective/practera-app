@@ -10,7 +10,6 @@ import { UtilsService } from '@v3/app/services/utils.service';
 export class ActivityComponent implements OnInit {
   @Input() activity: Activity;
   @Input() currentTask: Task;
-  @Output() currentTaskChange = new EventEmitter<Task>();
   @Output() navigate = new EventEmitter();
   constructor(
     private utils: UtilsService
@@ -29,22 +28,75 @@ export class ActivityComponent implements OnInit {
     }
   }
 
-  dueDateText(dueDate: string) {
-    if (!dueDate) {
+  subtitle(task: Task) {
+    if (this._noSubtitleLabel(task) || !this.assessmentNotSubmitted(task)) {
       return '';
     }
-    return `Due Data: ${ this.utils.utcToLocal(dueDate) }`;
+    // for locked team assessment
+    if (task.isForTeam && task.isLocked) {
+      return `${ task.submitter.name } is working on this`;
+    }
+    // due date
+    if (!task.dueDate) {
+      return '';
+    }
+    // overdue shows the label only
+    if (task.isOverdue) {
+      return '';
+    }
+    return `Due Data: ${ this.utils.utcToLocal(task.dueDate) }`;
+  }
+
+  label(task: Task) {
+    if (this._noSubtitleLabel(task)) {
+      return '';
+    }
+    // for locked team assessment
+    if (task.isForTeam && task.isLocked) {
+      return 'in progress';
+    }
+    if (!task.status || task.status === 'in progress') {
+      if (task.isOverdue) {
+        return 'overdue';
+      }
+      return '';
+    }
+    return task.status;
+  }
+
+  labelColor(task: Task) {
+    if (this._noSubtitleLabel(task)) {
+      return '';
+    }
+    // for locked team assessment
+    if (task.isForTeam && task.isLocked) {
+      return 'dark-blue';
+    }
+    switch (task.status) {
+      case 'pending review':
+        return 'warning';
+      case 'feedback available':
+        return 'success';
+    }
+    if ((!task.status || task.status === 'in progress') && task.isOverdue) {
+      return 'danger';
+    }
+    return '';
+  }
+
+  _noSubtitleLabel(task: Task) {
+    return task.type !== 'Assessment' || task.status === 'done';
   }
 
   endingIcon(task: Task) {
-    if (task.isLocked) {
+    if (task.isLocked || task.type === 'Locked') {
       return 'lock-closed';
     }
     switch (task.status) {
       case 'done':
         return 'checkmark-circle';
       default:
-        return 'arrow-forward';
+        return 'chevron-forward';
     }
   }
 
@@ -52,10 +104,7 @@ export class ActivityComponent implements OnInit {
     if (task.status === 'done') {
       return 'success';
     }
-    if (task.isLocked) {
-      return 'medium';
-    }
-    return 'light';
+    return 'grey-75';
   }
 
   assessmentNotSubmitted(task) {
@@ -63,7 +112,6 @@ export class ActivityComponent implements OnInit {
   }
 
   goto(task: Task) {
-    this.currentTaskChange.emit(task);
     this.navigate.emit(task);
   }
 }
