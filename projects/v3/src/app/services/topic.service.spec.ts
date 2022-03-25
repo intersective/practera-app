@@ -54,7 +54,6 @@ describe('TopicService', () => {
         expect(res).toEqual({
           id: 1,
           title: 'story',
-          hasComments: true,
           files: [{
             url: 'abc',
             name: 'file'
