@@ -84,74 +84,73 @@
 	--ion-color-light-tint: #f8f8fa;
 
   /** Pratera New branding colors **/
-  --practera-arctic-100: rgba(43, 193, 217, 1);
+  /** Practera Branding colors as Ionic theme color variables **/
+
+  /** Arctic **/
+  --practera-arctic-100: #2BC1D9;
+  --practera-arctic-100-rgb: 43,193,217;
+  --practera-arctic-100-contrast: #000000;
+  --practera-arctic-100-contrast-rgb: 0,0,0;
+  --practera-arctic-100-shade: #26aabf;
+  --practera-arctic-100-tint: #40c7dd;
+
   --practera-arctic-75: rgba(69, 161, 175, 1);
   --practera-arctic-50: rgba(130, 193, 202, 1);
   --practera-arctic-25: rgba(192, 223, 227, 1);
 
-  --practera-lime-100: rgba(173, 248, 45, 1);
+  /** Lime **/
+  --practera-lime-100: #ADF82D;
+  --practera-lime-100-rgb: 173,248,45;
+  --practera-lime-100-contrast: #000000;
+  --practera-lime-100-contrast-rgb: 0,0,0;
+  --practera-lime-100-shade: #98da28;
+  --practera-lime-100-tint: #b5f942;
+
   --practera-lime-75: rgba(195, 248, 108, 1);
   --practera-lime-50: rgba(215, 250, 155, 1);
   --practera-lime-25: rgba(234, 252, 204, 1);
 
-  --practera-violet-100: rgba(106, 61, 224, 1);
+  /** Violet **/
+  --practera-violet-100: #6A3DE0;
+  --practera-violet-100-rgb: 106,61,224;
+  --practera-violet-100-contrast: #ffffff;
+  --practera-violet-100-contrast-rgb: 255,255,255;
+  --practera-violet-100-shade: #5d36c5;
+  --practera-violet-100-tint: #7950e3;
+
   --practera-violet-75: rgba(143, 114, 229, 1);
   --practera-violet-50: rgba(181, 160, 238, 1);
   --practera-violet-25: rgba(217, 207, 246, 1);
 
-  --practera-ocean-100: rgba(0, 130, 150, 1);
+  /** Ocean **/
+  --practera-ocean-100: #008296;
+  --practera-ocean-100-rgb: 0,130,150;
+  --practera-ocean-100-contrast: #ffffff;
+  --practera-ocean-100-contrast-rgb: 255,255,255;
+  --practera-ocean-100-shade: #007284;
+  --practera-ocean-100-tint: #1a8fa1;
+
   --practera-ocean-75: rgba(69, 161, 175, 1);
   --practera-ocean-50: rgba(130, 193, 202, 1);
   --practera-ocean-25: rgba(192, 223, 227, 1);
 
+  /** Dark blue **/
   --practera-dark-blue-100: rgba(18, 59, 121, 1);
   --practera-dark-blue-75: rgba(78, 109, 153, 1);
   --practera-dark-blue-50: rgba(138, 159, 188, 1);
   --practera-dark-blue-25: rgba(195, 206, 220, 1);
 
+  /** Grey **/
   --practera-grey-100: rgba(51, 51, 51, 1);
   --practera-grey-75: rgba(102, 102, 102, 1);
   --practera-grey-50: rgba(153, 153, 153, 1);
   --practera-grey-25: rgba(204, 204, 204, 1);
 
+  /** Light Grey **/
   --practera-light-grey-100: rgba(223, 223, 232, 1);
   --practera-light-grey-75: rgba(231, 231, 238, 1);
   --practera-light-grey-50: rgba(239, 239, 244, 1);
   --practera-light-grey-25: rgba(247, 247, 249, 1);
-
-  /** Practera Branding colors as Ionic theme color variables **/
-
-  /** Arctic **/
-  --ion-color-arctic: #2BC1D9;
-  --ion-color-arctic-rgb: 43,193,217;
-  --ion-color-arctic-contrast: #000000;
-  --ion-color-arctic-contrast-rgb: 0,0,0;
-  --ion-color-arctic-shade: #26aabf;
-  --ion-color-arctic-tint: #40c7dd;
-
-  /** Lime **/
-  --ion-color-lime: #ADF82D;
-  --ion-color-lime-rgb: 173,248,45;
-  --ion-color-lime-contrast: #000000;
-  --ion-color-lime-contrast-rgb: 0,0,0;
-  --ion-color-lime-shade: #98da28;
-  --ion-color-lime-tint: #b5f942;
-
-  /** Violet **/
-  --ion-color-violet: #6A3DE0;
-  --ion-color-violet-rgb: 106,61,224;
-  --ion-color-violet-contrast: #ffffff;
-  --ion-color-violet-contrast-rgb: 255,255,255;
-  --ion-color-violet-shade: #5d36c5;
-  --ion-color-violet-tint: #7950e3;
-
-  /** Ocean **/
-  --ion-color-ocean: #008296;
-  --ion-color-ocean-rgb: 0,130,150;
-  --ion-color-ocean-contrast: #ffffff;
-  --ion-color-ocean-contrast-rgb: 255,255,255;
-  --ion-color-ocean-shade: #007284;
-  --ion-color-ocean-tint: #1a8fa1;
 
   /** Colors for chat **/
   --practera-chat-color-time-text-color:#AFB5D2;
