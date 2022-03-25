@@ -2,3 +2,104 @@
   background: var(--ion-color-primary);
   color: var(--ion-color-primary-contrast);
 }
+
+app-oneof {
+  width: 100%;
+}
+
+.text-right {
+  text-align: right;
+}
+.icon-info {
+  font-size: 20px;
+}
+.icon-backward {
+  font-size: 20px !important;
+}
+
+.review-submitter {
+  p {
+    margin-top: 16px;
+    margin-bottom: 16px;
+  }
+}
+
+.sub-title {
+  &.title-ios {
+    margin-top: 30px;
+    height: 16px;
+  }
+}
+.text-button {
+  text-transform: capitalize;
+}
+
+ion-header ion-toolbar {
+  min-height: 56px;
+  .saving-msg {
+    margin-top: 30px;
+    margin-left: 60px;
+  }
+}
+
+.member-detail-container {
+  margin-bottom: 0px;
+  margin-top: 15px;
+  ion-item {
+    height: 64px;
+    --background: transparent;
+    --padding-start: 0px;
+  }
+  ion-avatar {
+    height: 48px;
+    width: 48px;
+  }
+  ion-label {
+    h4 {
+      font-size: 16px;
+    }
+    p {
+      font-size: 12px;
+      color: var(--ion-color-medium-shade);
+    }
+  }
+}
+ion-footer {
+  .footer-text {
+    margin: 20px;
+    text-transform: capitalize;
+  }
+  .footer-action {
+    height: 40px;
+    margin: 10px 20px;
+  }
+}
+
+.audience-mentor-question-card {
+  border: 2px solid var(--practera-review-border-color);
+  ion-card-subtitle {
+    text-transform: none !important;
+  }
+  ion-card-content {
+    margin-top: 0 !important;
+    padding-top: 16px !important;
+  }
+}
+.question-card {
+  ion-card-header {
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--ion-color-light-shade);
+  }
+}
+
+.not-team {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  align-content: center;
+  flex-wrap: nowrap;
+  flex-direction: row;
+  margin: auto;
+  height: 100%;
+}
+
