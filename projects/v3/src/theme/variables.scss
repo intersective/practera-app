@@ -68,20 +68,20 @@
   --ion-color-dark-tint: #383a3e;
 
   /** medium **/
-	--ion-color-medium: #CCCCCC;
-	--ion-color-medium-rgb: 204,204,204;
+	--ion-color-medium: #92949c;
+	--ion-color-medium-rgb: 146,148,156;
 	--ion-color-medium-contrast: #000000;
 	--ion-color-medium-contrast-rgb: 0,0,0;
-	--ion-color-medium-shade: #b4b4b4;
-	--ion-color-medium-tint: #d1d1d1;
+	--ion-color-medium-shade: #808289;
+	--ion-color-medium-tint: #9d9fa6;
 
   /** light **/
-	--ion-color-light: #F7F7F9;
-	--ion-color-light-rgb: 247,247,249;
+	--ion-color-light: #f4f5f8;
+	--ion-color-light-rgb: 244,245,248;
 	--ion-color-light-contrast: #000000;
 	--ion-color-light-contrast-rgb: 0,0,0;
-	--ion-color-light-shade: #d9d9db;
-	--ion-color-light-tint: #f8f8fa;
+	--ion-color-light-shade: #d7d8da;
+	--ion-color-light-tint: #f5f6f9;
 
   /** Pratera New branding colors **/
   /** Practera Branding colors as Ionic theme color variables **/
@@ -93,6 +93,7 @@
   --practera-arctic-100-contrast-rgb: 0,0,0;
   --practera-arctic-100-shade: #26aabf;
   --practera-arctic-100-tint: #40c7dd;
+  --practera-arctic-100-rgba: rgba(43, 193, 217, 1);
 
   --practera-arctic-75: rgba(69, 161, 175, 1);
   --practera-arctic-50: rgba(130, 193, 202, 1);
@@ -105,6 +106,7 @@
   --practera-lime-100-contrast-rgb: 0,0,0;
   --practera-lime-100-shade: #98da28;
   --practera-lime-100-tint: #b5f942;
+  --practera-lime-100-rgba: rgba(173, 248, 45, 1);
 
   --practera-lime-75: rgba(195, 248, 108, 1);
   --practera-lime-50: rgba(215, 250, 155, 1);
@@ -117,6 +119,7 @@
   --practera-violet-100-contrast-rgb: 255,255,255;
   --practera-violet-100-shade: #5d36c5;
   --practera-violet-100-tint: #7950e3;
+  --practera-violet-100-rgba: rgba(106, 61, 224, 1);
 
   --practera-violet-75: rgba(143, 114, 229, 1);
   --practera-violet-50: rgba(181, 160, 238, 1);
@@ -129,28 +132,90 @@
   --practera-ocean-100-contrast-rgb: 255,255,255;
   --practera-ocean-100-shade: #007284;
   --practera-ocean-100-tint: #1a8fa1;
+  --practera-ocean-100-rgba: rgba(0, 130, 150, 1);
 
   --practera-ocean-75: rgba(69, 161, 175, 1);
   --practera-ocean-50: rgba(130, 193, 202, 1);
   --practera-ocean-25: rgba(192, 223, 227, 1);
 
   /** Dark blue **/
-  --practera-dark-blue-100: rgba(18, 59, 121, 1);
+  --practera-dark-blue-100: #123B79;
+  --practera-dark-blue-100-rgb: 18,59,121;
+  --practera-dark-blue-100-contrast: #ffffff;
+  --practera-dark-blue-100-contrast-rgb: 255,255,255;
+  --practera-dark-blue-100-shade: #10346a;
+  --practera-dark-blue-100-tint: #2a4f86;
+  --practera-dark-blue-100-rgba: rgba(18, 59, 121, 1);
+
   --practera-dark-blue-75: rgba(78, 109, 153, 1);
   --practera-dark-blue-50: rgba(138, 159, 188, 1);
   --practera-dark-blue-25: rgba(195, 206, 220, 1);
 
   /** Grey **/
-  --practera-grey-100: rgba(51, 51, 51, 1);
-  --practera-grey-75: rgba(102, 102, 102, 1);
-  --practera-grey-50: rgba(153, 153, 153, 1);
-  --practera-grey-25: rgba(204, 204, 204, 1);
+  --practera-grey-100: #333333;
+	--practera-grey-100-rgb: 51,51,51;
+	--practera-grey-100-contrast: #ffffff;
+	--practera-grey-100-contrast-rgb: 255,255,255;
+	--practera-grey-100-shade: #2d2d2d;
+	--practera-grey-100-tint: #474747;
+  --practera-grey-100-rgba: rgba(51, 51, 51, 1);
+
+	--practera-grey-75: #666666;
+	--practera-grey-75-rgb: 102,102,102;
+	--practera-grey-75-contrast: #ffffff;
+	--practera-grey-75-contrast-rgb: 255,255,255;
+	--practera-grey-75-shade: #5a5a5a;
+	--practera-grey-75-tint: #757575;
+  --practera-grey-75-rgba: rgba(102, 102, 102, 1);
+
+  --practera-grey-50: #999999;
+	--practera-grey-50-rgb: 153,153,153;
+	--practera-grey-50-contrast: #000000;
+	--practera-grey-50-contrast-rgb: 0,0,0;
+	--practera-grey-50-shade: #878787;
+	--practera-grey-50-tint: #a3a3a3;
+  --practera-grey-50-rgba: rgba(153, 153, 153, 1);
+
+  --practera-grey-25: #CCCCCC;
+	--practera-grey-25-rgb: 204,204,204;
+	--practera-grey-25-contrast: #000000;
+	--practera-grey-25-contrast-rgb: 0,0,0;
+	--practera-grey-25-shade: #b4b4b4;
+	--practera-grey-25-tint: #d1d1d1;
+  --practera-grey-25-rgba: rgba(204, 204, 204, 1);
 
   /** Light Grey **/
-  --practera-light-grey-100: rgba(223, 223, 232, 1);
-  --practera-light-grey-75: rgba(231, 231, 238, 1);
-  --practera-light-grey-50: rgba(239, 239, 244, 1);
-  --practera-light-grey-25: rgba(247, 247, 249, 1);
+	--practera-light-grey-100: #DFDFE8;
+	--practera-light-grey-100-rgb: 223,223,232;
+	--practera-light-grey-100-contrast: #000000;
+	--practera-light-grey-100-contrast-rgb: 0,0,0;
+	--practera-light-grey-100-shade: #c4c4cc;
+	--practera-light-grey-100-tint: #e2e2ea;
+  --practera-light-grey-100-rgba: rgba(223, 223, 232, 1);
+
+  --practera-light-grey-75: #E7E7EE;
+	--practera-light-grey-75-rgb: 231,231,238;
+	--practera-light-grey-75-contrast: #000000;
+	--practera-light-grey-75-contrast-rgb: 0,0,0;
+	--practera-light-grey-75-shade: #cbcbd1;
+	--practera-light-grey-75-tint: #e9e9f0;
+  --practera-light-grey-75-rgba: rgba(231, 231, 238, 1);
+
+	--practera-light-grey-50: #EFEFF4;
+	--practera-light-grey-50-rgb: 239,239,244;
+	--practera-light-grey-50-contrast: #000000;
+	--practera-light-grey-50-contrast-rgb: 0,0,0;
+	--practera-light-grey-50-shade: #d2d2d7;
+	--practera-light-grey-50-tint: #f1f1f5;
+  --practera-light-grey-50-rgba: rgba(239, 239, 244, 1);
+
+	--practera-light-grey-25: #F7F7F9;
+	--practera-light-grey-25-rgb: 247,247,249;
+	--practera-light-grey-25-contrast: #000000;
+	--practera-light-grey-25-contrast-rgb: 0,0,0;
+	--practera-light-grey-25-shade: #d9d9db;
+	--practera-light-grey-25-tint: #f8f8fa;
+  --practera-light-grey-25-rgba: rgba(247, 247, 249, 1);
 
   /** Colors for chat **/
   --practera-chat-color-time-text-color:#AFB5D2;
