@@ -15,7 +15,11 @@
   <ion-grid>
     <ion-row *ngIf="(activity$ | async ) as activity">
       <ion-col size="12" size-md="5">
-        <app-activity [activity]="activity" [currentTask]="currentTask$ | async" (navigate)="goToTask($event)"></app-activity>
+        <app-activity
+          [activity]="activity"
+          [currentTask]="currentTask$ | async"
+          (navigate)="goToTask($event)"
+        ></app-activity>
       </ion-col>
       <ion-col size="12" size-md="7" class="border-left">
         <ng-container *ngIf="(currentTask$ | async ) as currentTask">
