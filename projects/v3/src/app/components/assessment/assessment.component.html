@@ -7,7 +7,6 @@
   </p>
   <ion-text>
     <app-description content="New South Wales is Australia's oldest state. It was named in 1770 by Captain James Cook who, after falsely proclaiming that the land was uninhabited."></app-description>
-    <pre>{{ assessment | json }}</pre>
   </ion-text>
 
   <hr>
@@ -74,77 +73,102 @@
             <ion-text class="required-indicator" color="danger" *ngIf="question.isRequired">&nbsp;*</ion-text>
           </ion-list-header>
 
-          <ion-item>
-            <ion-icon *ngIf="question.info" color="primary" class="icon-info vertical-middle"
-              (click)="showQuestionInfo(question.info)" name="information-circle-outline"></ion-icon>
+          <ion-item lines="none" *ngIf="question.info || question.description">
+            <ion-icon *ngIf="question.info"
+              color="primary"
+              class="icon-info vertical-middle"
+              (click)="showQuestionInfo(question.info)" name="information-circle-outline"
+            ></ion-icon>
 
             <ion-text class="paragraph ion-text-left gray-2">
-              <app-description [name]="randomCode('reviewer-' + question.name)" class="q-description" *ngIf="question.description"
-                [content]="question.description"></app-description>
+              <app-description
+                [name]="randomCode('reviewer-' + question.name)"
+                class="q-description"
+                *ngIf="question.description"
+                [content]="question.description"
+              ></app-description>
             </ion-text>
+          </ion-item>
 
-            <div class="ion-text-center ion-margin-bottom" *ngIf="loadingAssessment; else submissionTpl">
+          <ng-template *ngIf="loadingAssessment; else submissionTpl">
+            <div class="ion-text-center ion-no-margin">
               <ion-spinner></ion-spinner>
             </div>
-          </ion-item>
+          </ng-template>
         </ion-list>
 
-        <ion-card class="ion-no-margin ion-text-left"
-          [ngClass]="{'audience-mentor-question-card': question.reviewerOnly}">
+        <ng-template #submissionTpl [ngSwitch]="question.type">
+          <p class="ion-padding" *ngIf="!doAssessment && (
+            (!question.reviewerOnly && submission && !submission.answers[question.id]) ||
+            (!doReview && question.reviewerOnly && review && !review.answers[question.id])
+          )"><i>No Answer Submitted</i></p>
 
-          <ng-template #submissionTpl>
-            <ion-card-content [ngSwitch]="question.type" class="q-content ion-margin-top ion-no-padding" color="light">
-              <p class="ion-padding" *ngIf="!doAssessment && (
-                (!question.reviewerOnly && submission && !submission.answers[question.id]) ||
-                (!doReview && question.reviewerOnly && review && !review.answers[question.id])
-              )"><i>No Answer Submitted</i></p>
+          <app-text *ngSwitchCase="'text'"
+            [question]="question"
+            [doAssessment]="doAssessment" [doReview]="doReview"
+            [submission]="submission?.answers[question.id] || {}"
+            [review]="review?.answers[question.id] || {}"
+            [reviewStatus]="review ? review.status : ''"
+            [submissionStatus]="submission ? submission.status : ''"
+            formControlName="'q-' + question.id"
+            [control]="questionsForm.controls['q-' + question.id]"
+            (saveProgress)="submit(true)"></app-text>
 
-              <app-text *ngSwitchCase="'text'"
-                [question]="question"
-                [doAssessment]="doAssessment" [doReview]="doReview"
-                [submission]="(submission && submission.answers && submission.answers[question.id]) ? submission.answers[question.id] : {}"
-                [review]="(review && review.answers && review.answers[question.id]) ? review.answers[question.id] : {}"
-                [reviewStatus]="review ? review.status : ''" [submissionStatus]="submission ? submission.status : ''"
-                formControlName="'q-' + question.id" [control]="questionsForm.controls['q-' + question.id]"
-                (saveProgress)="submit(true)"></app-text>
+          <app-oneof *ngSwitchCase="'oneof'"
+            [question]="question"
+            [doAssessment]="true"
+            [doReview]="doReview"
+            [submission]="submission?.answers[question.id] || {}"
+            [review]="review?.answers[question.id] || {}"
+            [reviewStatus]="review ? review.status : ''"
+            [submissionStatus]="submission ? submission.status : ''"
+            formControlName="'q-' + question.id"
+            [control]="questionsForm.controls['q-' + question.id]"
+            (saveProgress)="submit(true)"></app-oneof>
 
-              <app-oneof *ngSwitchCase="'oneof'" [question]="question" [doAssessment]="doAssessment" [doReview]="doReview"
-                [submission]="(submission && submission.answers && submission.answers[question.id]) ? submission.answers[question.id] : {}"
-                [review]="(review && review.answers && review.answers[question.id]) ? review.answers[question.id] : {}"
-                [reviewStatus]="review ? review.status : ''" [submissionStatus]="submission ? submission.status : ''"
-                formControlName="'q-' + question.id" [control]="questionsForm.controls['q-' + question.id]"
-                (saveProgress)="submit(true)"></app-oneof>
+          <app-multiple *ngSwitchCase="'multiple'"
+            [question]="question"
+            [doAssessment]="doAssessment"
+            [doReview]="doReview"
+            [submission]="submission?.answers[question.id] || {}"
+            [review]="review?.answers[question.id] || {}"
+            [reviewStatus]="review ? review.status : ''"
+            [submissionStatus]="submission ? submission.status : ''"
+            formControlName="'q-' + question.id"
+            [control]="questionsForm.controls['q-' + question.id]"
+            (saveProgress)="submit(true)"></app-multiple>
 
-              <app-multiple *ngSwitchCase="'multiple'" [question]="question" [doAssessment]="doAssessment"
-                [doReview]="doReview"
-                [submission]="(submission && submission.answers && submission.answers[question.id]) ? submission.answers[question.id] : {}"
-                [review]="(review && review.answers && review.answers[question.id]) ? review.answers[question.id] : {}"
-                [reviewStatus]="review ? review.status : ''" [submissionStatus]="submission ? submission.status : ''"
-                formControlName="'q-' + question.id" [control]="questionsForm.controls['q-' + question.id]"
-                (saveProgress)="submit(true)"></app-multiple>
+          <app-file *ngSwitchCase="'file'"
+            [question]="question"
+            [doAssessment]="doAssessment"
+            [doReview]="doReview"
+            [submission]="submission?.answers[question.id] || {}"
+            [review]="review?.answers[question.id] || {}"
+            [reviewStatus]="review ? review.status : ''"
+            [submissionStatus]="submission ? submission.status : ''"
+            formControlName="'q-' + question.id"
+            [control]="questionsForm.controls['q-' + question.id]"
+            (saveProgress)="submit(true)"></app-file>
 
-              <app-file *ngSwitchCase="'file'" [question]="question" [doAssessment]="doAssessment" [doReview]="doReview"
-                [submission]="(submission && submission.answers && submission.answers[question.id]) ? submission.answers[question.id] : {}"
-                [review]="(review && review.answers && review.answers[question.id]) ? review.answers[question.id] : {}"
-                [reviewStatus]="review ? review.status : ''" [submissionStatus]="submission ? submission.status : ''"
-                formControlName="'q-' + question.id" [control]="questionsForm.controls['q-' + question.id]"
-                (saveProgress)="submit(true)"></app-file>
-
-              <app-team-member-selector *ngSwitchCase="'team member selector'" [question]="question"
-                [doAssessment]="doAssessment" [doReview]="doReview"
-                [submission]="(submission && submission.answers && submission.answers[question.id]) ? submission.answers[question.id] : {}"
-                [review]="(review && review.answers && review.answers[question.id]) ? review.answers[question.id] : {}"
-                [reviewStatus]="review ? review.status : ''" [submissionStatus]="submission ? submission.status : ''"
-                formControlName="'q-' + question.id" [control]="questionsForm.controls['q-' + question.id]"
-                (saveProgress)="submit(true)"></app-team-member-selector>
-
-            </ion-card-content>
-          </ng-template>
-        </ion-card>
+          <app-team-member-selector *ngSwitchCase="'team member selector'"
+            [question]="question"
+            [doAssessment]="doAssessment"
+            [doReview]="doReview"
+            [submission]="submission?.answers[question.id] || {}"
+            [review]="review?.answers[question.id] || {}"
+            [reviewStatus]="review ? review.status : ''"
+            [submissionStatus]="submission ? submission.status : ''"
+            formControlName="'q-' + question.id"
+            [control]="questionsForm.controls['q-' + question.id]"
+            (saveProgress)="submit(true)"></app-team-member-selector>
+        </ng-template>
       </ng-container>
     </ng-container>
-
   </form>
+
+
+  <pre>{{ assessment | json }}</pre>
+
 </div>
 
 <ion-footer color="light" class="ion-footer-absolute">

@@ -8,8 +8,7 @@ import { BrowserStorageService } from '@v3/services/storage.service';
 import { SharedService } from '@v3/services/shared.service';
 import { ActivityService } from '@v3/services/activity.service';
 import { FastFeedbackService } from '@v3/services/fast-feedback.service';
-import { interval, timer, Subscription, Subject } from 'rxjs';
-import { DemoService } from '@v3/app/services/demo.service';
+import { Subject } from 'rxjs';
 
 const SAVE_PROGRESS_TIMEOUT = 10000;
 
@@ -19,13 +18,24 @@ const SAVE_PROGRESS_TIMEOUT = 10000;
   styleUrls: ['./assessment.component.scss'],
 })
 export class AssessmentComponent implements OnInit {
-  @Input() inputId: number;
+  @Input() inputId: number; // assessment id
   @Input() inputActivityId: number;
   @Input() inputSubmissionId: number;
   @Input() inputContextId: number;
-  @Input() inputAction: string;
-  @Input() fromPage = '';
-  @Input() assessment: Assessment;
+
+  /**
+   * -- action --
+   * Options: assessment/review
+   *
+   * 'assessment' is for user to do assessment, including
+   * reading a submission or feedback. This actually
+   * means the current user is the user who should "do" this assessment
+   *
+   * 'reivew' is for user to do review for this assessment. This means the
+   * current user is the user who should "review" this assessment
+   */
+  @Input() action: string;
+  @Input() fromPage: string = '';
   @Output() assessmentChange = new EventEmitter<Assessment>();
   @Input() assessment$: Subject<any>;
 
@@ -42,31 +52,23 @@ export class AssessmentComponent implements OnInit {
   // context id
   contextId: number;
   submissionId: number;
-  @Input() submission: Submission;;
 
-  review: Review = {
-    id: 0,
-    answers: {},
-    status: '',
-    modified: ''
-  };
-  pageTitle = 'Assessment';
-  // action == 'assessment' is for user to do assessment, including seeing the submission or seeing the feedback. This actually means the current user is the user who should "do" this assessment
-  // action == 'reivew' is for user to do review for this assessment. This means the current user is the user who should "review" this assessment
-  action: string;
+  @Input() assessment: Assessment;
+  @Input() submission: Submission;;
+  @Input() review: Review;
+
 
   // if doAssessment is true, it means this user is actually doing assessment, meaning it is not started or in progress
   // if action == 'assessment' and doAssessment is false, it means this user is reading the submission or feedback
   doAssessment = false;
+
   // if doReview is true, it means this user is actually doing review, meaning this assessment is pending review
   // if action == 'review' and doReview is false, it means the review is done and this user is reading the submission and review
   doReview = false;
 
   feedbackReviewed = false;
   @Input() loadingAssessment = true;
-  formModel: {[propKey: string]: FormControl} = {};
   questionsForm: FormGroup;
-  // questionsForm: FormGroup = new FormGroup(this.formModel);
   submitting: boolean;
   submitted: boolean;
   savingButtonDisabled = true;
@@ -90,7 +92,6 @@ export class AssessmentComponent implements OnInit {
     private activityService: ActivityService,
     private fastFeedbackService: FastFeedbackService,
     private ngZone: NgZone,
-    private demoService: DemoService,
     private fb: FormBuilder,
   ) {
     this.route.queryParams.subscribe(params => {
@@ -201,37 +202,13 @@ export class AssessmentComponent implements OnInit {
   onEnter() {
     this._initialise();
 
-    if (this.inputAction) {
-      this.action = this.inputAction;
-    } else {
-      this.action = this.route.snapshot.data.action;
-    }
-    if (!this.fromPage) {
-      this.fromPage = this.route.snapshot.paramMap.get('from');
-    }
-    if (!this.fromPage) {
-      this.fromPage = this.route.snapshot.data.from;
-    }
-    if (this.inputId) {
-      this.id = +this.inputId;
-    } else {
-      this.id = +this.route.snapshot.paramMap.get('id');
-    }
-    if (this.inputActivityId) {
-      this.activityId = +this.inputActivityId;
-    } else {
-      this.activityId = +this.route.snapshot.paramMap.get('activityId');
-    }
-    if (this.inputContextId) {
-      this.contextId = +this.inputContextId;
-    } else {
-      this.contextId = +this.route.snapshot.paramMap.get('contextId');
-    }
-    if (this.inputSubmissionId) {
-      this.submissionId = +this.inputSubmissionId;
-    } else {
-      this.submissionId = +this.route.snapshot.paramMap.get('submissionId');
-    }
+    this.id = (this.inputId) ? +this.inputId : +this.route.snapshot.paramMap.get('id');
+
+    this.activityId = (this.inputActivityId) ? +this.inputActivityId : +this.route.snapshot.paramMap.get('activityId');
+
+    this.contextId = (this.inputContextId) ? +this.inputContextId : +this.route.snapshot.paramMap.get('contextId');
+
+    this.submissionId = (this.inputSubmissionId) ? +this.inputSubmissionId : +this.route.snapshot.paramMap.get('submissionId');
 
     this.populateQuestionsForm();
   }
@@ -253,7 +230,6 @@ export class AssessmentComponent implements OnInit {
     // - submission is empty or
     // - submission.status is 'in progress'
     if (this.utils.isEmpty(this.submission) || this.submission.status === 'in progress') {
-      this.pageTitle = 'Submit your work';
       this.doAssessment = true;
       this.doReview = false;
       if (this.submission && this.submission.status === 'in progress') {
@@ -263,19 +239,16 @@ export class AssessmentComponent implements OnInit {
       return;
     }
 
-    this.pageTitle = 'View submission';
 
     if (this.assessment.type === 'moderated') {
       // this component become a page for doing review, if
       // - the submission status is 'pending review' and
       // - this.action is review
       if (this.submission.status === 'pending review' && this.action === 'review') {
-        this.pageTitle = 'Provide feedback';
         this.doReview = true;
       }
 
       if (this.submission.status === 'published') {
-        this.pageTitle = 'View feedback';
       }
     }
 

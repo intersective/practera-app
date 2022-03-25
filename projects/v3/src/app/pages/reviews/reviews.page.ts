@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
-import { Assessment, AssessmentService, Submission } from '@v3/app/services/assessment.service';
+import { Assessment, AssessmentService, Review, Submission } from '@v3/app/services/assessment.service';
 import { BrowserStorageService } from '@v3/app/services/storage.service';
 import { UtilsService } from '@v3/services/utils.service';
 import { BehaviorSubject, interval } from 'rxjs';
@@ -33,6 +33,12 @@ export class ReviewsPage implements OnInit {
     completed: false,
     submitterImage: '',
     reviewerName: ''
+  };
+  currentReview: Review = {
+    id: 0,
+    answers: {},
+    status: '',
+    modified: ''
   };
 
   reviews = [
@@ -198,7 +204,6 @@ export class ReviewsPage implements OnInit {
     // - submission is empty or
     // - submission.status is 'in progress'
     if (this.utils.isEmpty(this.submission) || this.submission.status === 'in progress') {
-      // this.pageTitle = 'Submit your work';
       // this.doAssessment = true;
       // this.doReview = false;
       // if (this.submission && this.submission.status === 'in progress') {
@@ -208,19 +213,13 @@ export class ReviewsPage implements OnInit {
       return;
     }
 
-    // this.pageTitle = 'View submission';
 
     if (this.currentAssessment.type === 'moderated') {
       // this component become a page for doing review, if
       // - the submission status is 'pending review' and
       // - this.action is review
       // if (this.submission.status === 'pending review' && this.action === 'review') {
-      //   this.pageTitle = 'Provide feedback';
       //   this.doReview = true;
-      // }
-
-      // if (this.submission.status === 'published') {
-      //   this.pageTitle = 'View feedback';
       // }
     }
 
