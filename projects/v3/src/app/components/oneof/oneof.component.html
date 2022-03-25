@@ -52,7 +52,7 @@
 </div>
 
 <ng-container *ngIf="doAssessment">
-  <div class="ion-padding-horizontal ion-padding-bottom">
+  <div class="ion-no-padding">
     <ion-list class="no-bg">
       <ion-radio-group [value]="submission.answer" #answerEle (ionChange)="onChange(answerEle.value)">
         <ng-container *ngFor="let choice of question.choices; let i = index">
@@ -74,7 +74,7 @@
 </ng-container>
 
 <ng-container *ngIf="doReview">
-  <div class="ion-padding-horizontal ion-padding-bottom" [ngClass]="{ 'audience-mentor': audienceContainReviewer()}">
+  <div class="ion-no-padding" [ngClass]="{ 'audience-mentor': audienceContainReviewer()}">
     <ion-list class="no-bg" *ngIf="question.canAnswer">
       <ion-radio-group #answerEle [value]="review.answer" (ionChange)="onChange(answerEle.value, 'answer')">
         <ion-list-header class="ion-no-padding" *ngIf="!question.reviewerOnly">
