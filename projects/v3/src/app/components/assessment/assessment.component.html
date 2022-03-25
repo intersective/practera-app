@@ -110,7 +110,7 @@
             [review]="review?.answers[question.id] || {}"
             [reviewStatus]="review ? review.status : ''"
             [submissionStatus]="submission ? submission.status : ''"
-            formControlName="'q-' + question.id"
+            [formControlName]="'q-' + question.id"
             [control]="questionsForm.controls['q-' + question.id]"
             (saveProgress)="submit(true)"></app-text>
 
@@ -122,7 +122,7 @@
             [review]="review?.answers[question.id] || {}"
             [reviewStatus]="review ? review.status : ''"
             [submissionStatus]="submission ? submission.status : ''"
-            formControlName="'q-' + question.id"
+            [formControlName]="'q-' + question.id"
             [control]="questionsForm.controls['q-' + question.id]"
             (saveProgress)="submit(true)"></app-oneof>
 
