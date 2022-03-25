@@ -1,12 +1,19 @@
 ion-item {
   cursor: pointer;
 }
+.active {
+  --background: var(--ion-color-primary-tint);
+}
 ion-avatar {
   --border-radius: 8px;
 }
 .leading-icon {
   margin-right: 20px;
   font-size: 24px  !important;
+  border-radius: 6px;
+  padding: 8px 8px;
+  color: white;
+  background: var(--ion-color-primary);
 }
 .item-content {
   width: 100%;
