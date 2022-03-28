@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { ActivityService, Task } from '@v3/app/services/activity.service';
-import { TopicService } from '@v3/app/services/topic.service';
+import { Topic, TopicService } from '@v3/app/services/topic.service';
 
 @Component({
   selector: 'app-activity-desktop',
@@ -27,6 +27,10 @@ export class ActivityDesktopPage implements OnInit {
 
   goToTask(task: Task) {
     this.service.goToTask(task);
+  }
+
+  topicComplete(topic: Topic) {
+
   }
 
 }

@@ -43,7 +43,7 @@ export class TopicService {
   getTopic(id: number) {
     this._topic$.next(null);
     if (environment.demo) {
-      setTimeout(
+      return setTimeout(
         () => {
           this._topic$.next(this.demo.topic(id));
         },

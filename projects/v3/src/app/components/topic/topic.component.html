@@ -3,8 +3,15 @@
   <div *ngIf="topic.videolink && topic.videolink !=='magiclink'" class="text-center">
     <label class="subtitle-2 gray-2">Video</label>
     <div *ngIf="iframeHtml" class="video-embed" [innerHtml]="iframeHtml"></div>
-    <video *ngIf="!iframeHtml" class="video-embed topic-video" [ngClass]="{'desktop-view': !utils.isMobile()}"
-      width="100%" controls preload="metadata" [src]="topic.videolink"></video>
+    <video
+      *ngIf="!iframeHtml"
+      class="video-embed topic-video"
+      [ngClass]="{'desktop-view': !utils.isMobile()}"
+      width="100%"
+      controls
+      preload="metadata"
+      [src]="topic.videolink">
+    </video>
   </div>
 
   <div *ngIf="topic.content" class="ion-padding" [innerHtml]="topic.content"></div>
@@ -32,23 +39,16 @@
     </div>
   </div>
 
-  <ion-footer color="light" [ngClass]="{'ion-footer-absolute': !utils.isMobile()}">
-    <ion-toolbar class="ion-text-center" style="height: 100%">
-
-      <img *ngIf="continuing" class="footer-action" src="/assets/loading.gif" alt="loading" />
-
-      <ion-button *ngIf="!continuing" (click)="continue.emit()" shape="round"
-        fill="clear">
-        <ion-icon *ngIf="btnToggleTopicIsDone" color="primary" slot="start" name="checkmark"></ion-icon>
-        <ion-text>CONTINUE</ion-text>
-      </ion-button>
-    </ion-toolbar>
-  </ion-footer>
+  <div class="ion-text-center">
+    <ion-button [disabled]="continuing" (click)="continue.emit(topic)" shape="round"
+      fill="clear">Mark as complete and continue
+    </ion-button>
+  </div>
 </ng-container>
 
-<ng-container *ngIf="!topic">
+<div *ngIf="!topic" class="ion-padding">
   <ion-skeleton-text animated class="skeleton-header"></ion-skeleton-text>
   <ion-skeleton-text animated style="width: 50%"></ion-skeleton-text>
   <ion-skeleton-text animated style="width: 70%"></ion-skeleton-text>
   <ion-skeleton-text animated style="width: 90%"></ion-skeleton-text>
-</ng-container>
+</div>
