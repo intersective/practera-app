@@ -18,7 +18,7 @@ import { NotificationsService } from '@v3/app/services/notifications.service';
 })
 export class TopicComponent {
   @Input() topic: Topic;
-  @Input() continuing: boolean;
+  continuing: boolean;
   @Output() continue = new EventEmitter();
 
   iframeHtml = '' as SafeHtml;
@@ -37,6 +37,7 @@ export class TopicComponent {
   ) { }
 
   ngOnChanges(): void {
+    this.continuing = false;
     if (this.topic && this.topic.videolink) {
       this._setVideoUrlElelemts();
     }
