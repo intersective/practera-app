@@ -11,8 +11,7 @@
 </ion-header>
 
 <ion-content>
-
-  <ion-grid>
+  <ion-grid class="ion-no-padding">
     <ion-row *ngIf="(activity$ | async ) as activity">
       <ion-col size="12" size-md="5">
         <app-activity
@@ -33,6 +32,7 @@
           <app-topic
             *ngIf="currentTask.type === 'Topic'"
             [topic]="topic$ | async"
+            (continue)="topicComplete($event)"
           ></app-topic>
         </ng-container>
       </ion-col>

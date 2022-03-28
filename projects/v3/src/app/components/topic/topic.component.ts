@@ -1,5 +1,5 @@
 import { Topic } from '@v3/services/topic.service';
-import { Component, NgZone, Input, Output, EventEmitter, Inject, OnInit } from '@angular/core';
+import { Component, NgZone, Input, Output, EventEmitter, Inject, SimpleChange } from '@angular/core';
 import { DOCUMENT } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { UtilsService } from '@v3/services/utils.service';
@@ -9,13 +9,14 @@ import * as Plyr from 'plyr';
 import { EmbedVideoService } from '@shared/ngx-embed-video/ngx-embed-video.service';
 import { SafeHtml } from '@angular/platform-browser';
 import { FilestackService } from '@v3/app/services/filestack.service';
+import { NotificationsService } from '@v3/app/services/notifications.service';
 
 @Component({
   selector: 'app-topic',
   templateUrl: './topic.component.html',
   styleUrls: ['./topic.component.scss']
 })
-export class TopicComponent implements OnInit {
+export class TopicComponent {
   @Input() topic: Topic;
   @Input() continuing: boolean;
   @Output() continue = new EventEmitter();
@@ -27,7 +28,7 @@ export class TopicComponent implements OnInit {
 
   constructor(
     private embedService: EmbedVideoService,
-    private route: ActivatedRoute,
+    private notification: NotificationsService,
     public storage: BrowserStorageService,
     public utils: UtilsService,
     private sharedService: SharedService,
@@ -35,15 +36,13 @@ export class TopicComponent implements OnInit {
     @Inject(DOCUMENT) private readonly document: Document
   ) { }
 
-  ngOnInit(): void {
-    this.route.params.subscribe(params => {
-      if (this.topic && this.topic.videolink) {
-        this._setVideoUrlElelemts();
-      }
-      // mark topic as started after topic load
-      // this._markAsStartStop('started');
-      this._initVideoPlayer();
-    });
+  ngOnChanges(): void {
+    if (this.topic && this.topic.videolink) {
+      this._setVideoUrlElelemts();
+    }
+    // mark topic as started after topic load
+    // this._markAsStartStop('started');
+    this._initVideoPlayer();
   }
 
   ionViewWillLeave() {
@@ -104,13 +103,12 @@ export class TopicComponent implements OnInit {
         this.isLoadingPreview = false;
         return filestack;
       } catch (err) {
-        // const toasted = await this.notificationService.alert({
-        //   header: 'Error Previewing file',
-        //   message: err.msg || JSON.stringify(err)
-        // });
-        // this.loadingTopic = false;
+        const toasted = await this.notification.alert({
+          header: 'Error Previewing file',
+          message: err.msg || JSON.stringify(err)
+        });
         // this.newRelic.noticeError(`${JSON.stringify(err)}`);
-        // return toasted;
+        return toasted;
       }
     }
   }
