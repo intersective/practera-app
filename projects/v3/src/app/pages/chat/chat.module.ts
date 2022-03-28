@@ -1,6 +1,5 @@
 import { RouterModule } from '@angular/router';
 import { NgModule } from '@angular/core';
-import { SharedModule } from '@shared/shared.module';
 import { ChatPage } from './chat.page';
 import { ChatListComponent } from './chat-list/chat-list.component';
 import { ChatRoomComponent } from './chat-room/chat-room.component';
@@ -11,10 +10,11 @@ import { FilestackService } from '@v3/services/filestack.service';
 import { FastFeedbackService } from '@v3/services/fast-feedback.service';
 import { ChatViewComponent } from './chat-view/chat-view.component';
 import { ChatInfoComponent } from './chat-info/chat-info.component';
+import { ComponentsModule } from '../../components/components.module';
 
 @NgModule({
   imports: [
-    SharedModule,
+    ComponentsModule,
     ChatRoutingModule
   ],
   declarations: [
@@ -26,9 +26,8 @@ import { ChatInfoComponent } from './chat-info/chat-info.component';
     ChatInfoComponent
   ],
   entryComponents: [ChatPreviewComponent, ChatInfoComponent],
-  providers: [ChatService, FilestackService, FastFeedbackService],
+  providers: [],
   exports: [
-    SharedModule,
     ChatRoomComponent,
   ]
 })
