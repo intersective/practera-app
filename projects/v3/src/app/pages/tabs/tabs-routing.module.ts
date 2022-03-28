@@ -13,8 +13,8 @@ const routes: Routes = [
         loadChildren: () => import('../home/home.module').then(m => m.HomePageModule)
       },
       {
-        path: 'messages',
-        loadChildren: () => import('../messages/messages.module').then(m => m.MessagesPageModule)
+        path: 'chat',
+        loadChildren: () => import('../chat/chat.module').then(m => m.ChatModule)
       },
       {
         path: 'settings',
