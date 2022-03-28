@@ -10,7 +10,6 @@ import { UtilsService } from '@v3/app/services/utils.service';
 export class ActivityComponent implements OnInit {
   @Input() activity: Activity;
   @Input() currentTask: Task;
-  @Output() currentTaskChange = new EventEmitter<Task>();
   @Output() navigate = new EventEmitter();
   constructor(
     private utils: UtilsService
@@ -105,7 +104,7 @@ export class ActivityComponent implements OnInit {
     if (task.status === 'done') {
       return 'success';
     }
-    return 'medium';
+    return 'grey-75';
   }
 
   assessmentNotSubmitted(task) {
@@ -113,7 +112,6 @@ export class ActivityComponent implements OnInit {
   }
 
   goto(task: Task) {
-    this.currentTaskChange.emit(task);
     this.navigate.emit(task);
   }
 }

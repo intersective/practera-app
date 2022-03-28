@@ -1,12 +1,19 @@
 ion-item {
   cursor: pointer;
 }
+.active {
+  --background: var(--practera-light-grey-25);
+}
 ion-avatar {
   --border-radius: 8px;
 }
 .leading-icon {
   margin-right: 20px;
   font-size: 24px  !important;
+  border-radius: 6px;
+  padding: 8px 8px;
+  color: white;
+  background: var(--ion-color-primary);
 }
 .item-content {
   width: 100%;
@@ -41,15 +48,7 @@ ion-avatar {
   height: 30px;
   min-width: 30px;
 }
-.color-medium {
-  color: var(--ion-color-medium) !important;
-}
-.color-light {
-  color: var(--ion-color-light) !important;
-}
-.color-danger {
-  color: var(--ion-color-danger) !important;
-}
+
 .bg-color-danger {
   color: white;
   background: var(--ion-color-danger) !important;

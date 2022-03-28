@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { of } from 'rxjs';
+import { delay } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -136,131 +137,147 @@ export class DemoService {
     ];
   }
 
-  get activity() {
-    return {
-      id: 1,
-      name: "This is the activity name",
-      description: 'This is the description of the activity',
-      tasks: [
-        {
+  activity(taskId?: number) {
+    return of({
+      data: {
+        activity: {
           id: 1,
-          name: "1st topic",
-          type: 'Topic',
-          status: "done",
-        },
-        {
-          id: 2,
-          name: "2nd topic",
-          type: 'Topic',
-          status: "",
-        },
-        {
-          id: 21,
-          name: "in progress feedback",
-          type: 'Assessment',
-          isLocked: false,
-          isForTeam: true,
-          isOverdue: false,
-          isDueToday: false,
-          dueDate: null,
-          contextId: 16881,
-          status: "in progress",
-        },
-        {
-          id: 22,
-          name: "duedate feedback",
-          type: 'Assessment',
-          isLocked: false,
-          isForTeam: true,
-          isOverdue: false,
-          isDueToday: false,
-          dueDate: '2022-03-05 15:00:00',
-          contextId: 16881,
-          status: "",
-        },
-        {
-          id: 23,
-          name: "due today feedback",
-          type: 'Assessment',
-          isLocked: false,
-          isForTeam: true,
-          isOverdue: false,
-          isDueToday: true,
-          dueDate: '2022-03-05 15:00:00',
-          contextId: 16881,
-          status: "",
-        },
-        {
-          id: 24,
-          name: "overdue feedback",
-          type: 'Assessment',
-          isLocked: false,
-          isForTeam: true,
-          isOverdue: true,
-          isDueToday: false,
-          dueDate: '2022-03-05 15:00:00',
-          contextId: 16881,
-          status: "",
-        },
-        {
-          id: 31,
-          name: "pending review feedback",
-          type: 'Assessment',
-          isLocked: false,
-          isForTeam: true,
-          isOverdue: false,
-          isDueToday: true,
-          dueDate: '2022-03-03 15:00:00',
-          contextId: 16881,
-          status: "pending review",
-        },
-        {
-          id: 32,
-          name: "feedback available feedback",
-          type: 'Assessment',
-          isLocked: false,
-          isForTeam: true,
-          isOverdue: false,
-          isDueToday: false,
-          dueDate: '2022-03-05 15:00:00',
-          contextId: 16881,
-          status: "feedback available",
-        },
-        {
-          id: 33,
-          name: "done assessment",
-          type: 'Assessment',
-          isLocked: false,
-          isForTeam: true,
-          isOverdue: false,
-          isDueToday: false,
-          dueDate: '2022-03-05 15:00:00',
-          contextId: 16881,
-          status: "done",
-        },
-        {
-          id: 34,
-          name: "team assessment",
-          type: 'Assessment',
-          isLocked: true,
-          isForTeam: true,
-          isOverdue: false,
-          isDueToday: false,
-          dueDate: '2022-03-05 15:00:00',
-          contextId: 16881,
-          status: "in progress",
-          submitter: {
-            name: 'James Bond',
-            image: ''
-          }
-        },
-        {
-          id: 4,
-          type: 'Locked',
-          name: 'Locked'
+          name: "This is the activity name",
+          description: 'This is the description of the activity',
+          tasks: [
+            {
+              id: 1,
+              name: "1st topic",
+              type: 'Topic',
+              status: {
+                status: "done"
+              },
+            },
+            {
+              id: 2,
+              name: "2nd topic",
+              type: 'Topic',
+              status: {
+                status: taskId === 2 ? 'done' : ""
+              },
+            },
+            {
+              id: 3,
+              name: "3nd topic",
+              type: 'Topic',
+              status: {
+                status: taskId === 3 ? 'done' : ""
+              },
+            },
+            {
+              id: 21,
+              name: "in progress feedback",
+              type: 'Assessment',
+              isLocked: false,
+              isTeam: false,
+              deadline: null,
+              contextId: 16881,
+              status: {
+                stauts: taskId === 21 ? 'done' : "in progress"
+              },
+            },
+            {
+              id: 22,
+              name: "duedate feedback",
+              type: 'Assessment',
+              isLocked: false,
+              isTeam: false,
+              deadline: '2022-03-05 15:00:00',
+              contextId: 16881,
+              status: {
+                stauts: taskId === 22 ? 'done' : ""
+              },
+            },
+            {
+              id: 23,
+              name: "due today feedback",
+              type: 'Assessment',
+              isLocked: false,
+              isTeam: false,
+              deadline: '2022-03-05 15:00:00',
+              contextId: 16881,
+              status: {
+                stauts: taskId === 23 ? 'done' : ""
+              },
+            },
+            {
+              id: 24,
+              name: "overdue feedback",
+              type: 'Assessment',
+              isLocked: false,
+              isTeam: false,
+              deadline: '2022-03-05 15:00:00',
+              contextId: 16881,
+              status: {
+                stauts: taskId === 24 ? 'done' : ""
+              },
+            },
+            {
+              id: 31,
+              name: "pending review feedback",
+              type: 'Assessment',
+              isLocked: false,
+              isTeam: false,
+              deadline: '2022-03-03 15:00:00',
+              contextId: 16881,
+              status: {
+                stauts: "pending review"
+              },
+            },
+            {
+              id: 32,
+              name: "feedback available feedback",
+              type: 'Assessment',
+              isLocked: false,
+              isTeam: false,
+              deadline: '2022-03-05 15:00:00',
+              contextId: 16881,
+              status: {
+                stauts: "feedback available"
+              },
+            },
+            {
+              id: 33,
+              name: "done assessment",
+              type: 'Assessment',
+              isLocked: false,
+              isTeam: false,
+              deadline: '2022-03-05 15:00:00',
+              contextId: 16881,
+              status: {
+                stauts: "done"
+              },
+            },
+            {
+              id: 34,
+              name: "team assessment",
+              type: 'Assessment',
+              isLocked: false,
+              isTeam: true,
+              deadline: '2022-03-05 15:00:00',
+              contextId: 16881,
+              status: {
+                isLocked: true,
+                status: "in progress",
+                submitterName: 'James Bond',
+                submitterImage: ''
+              }
+            },
+            {
+              id: 4,
+              type: 'Locked',
+              name: 'Locked',
+              isLocked: true,
+            }
+          ]
         }
-      ]
-    };
+      }
+    }).pipe(delay(1000));
   }
 
   get programs() {
@@ -487,5 +504,19 @@ export class DemoService {
         }
       }
     });
+  }
+
+  topic(id) {
+    return {
+      id,
+      title: `Introduction of Practera ${ id }`,
+      content: this.description,
+      videolink: '',
+      files: [],
+    };
+  }
+
+  normalResponse() {
+    return of({}).pipe(delay(1000));
   }
 }
