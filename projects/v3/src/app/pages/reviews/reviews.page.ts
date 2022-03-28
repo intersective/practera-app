@@ -117,22 +117,22 @@ export class ReviewsPage implements OnInit {
       groups: [],
       pulseCheck: false,
     };
+
+    this.route.queryParams.subscribe(params => {
+      console.log('ReviewsPageParams::', params);
+      this.onEnter();
+    });
   }
 
   ngOnInit() {
-    this.onEnter();
-    interval(1000).pipe(take(10)).subscribe(x => {
+    /* interval(1000).pipe(take(10)).subscribe(x => {
       const result = parseFloat((Math.random() * x * 100).toFixed(0));
       this.currentReview$.next({
         something: (result % 2 == 0) ? true : false,
         value: result
       });
-    });
+    }); */
     this.reviews$.next(this.reviews);
-
-    this.route.queryParams.subscribe(params => {
-      console.log('ReviewsPageParams::', params);
-    });
   }
 
   get isMobile() {
@@ -140,7 +140,7 @@ export class ReviewsPage implements OnInit {
   }
 
   onEnter(): void {
-    this.currentAssessment = {
+    this.currentReview$.next({
       name: '',
       type: '',
       description: '',
@@ -149,7 +149,7 @@ export class ReviewsPage implements OnInit {
       isOverdue: false,
       groups: [],
       pulseCheck: false,
-    };
+    });
     this.submissionId = +this.route.snapshot.paramMap.get('submissionId');
 
     // get assessment structure and populate the question form
@@ -165,6 +165,7 @@ export class ReviewsPage implements OnInit {
         // }
         // this.isNotInATeam = false;
         this._handleReviewData(result.review);
+        this.currentReview$.next(result.assessment);
       },
       error => {
         console.log(error);
