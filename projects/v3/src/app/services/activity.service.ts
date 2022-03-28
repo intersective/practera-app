@@ -9,6 +9,7 @@ import { Router } from '@angular/router';
 import { ApolloService } from '@v3/services/apollo.service';
 import { DemoService } from './demo.service';
 import { environment } from '@v3/environments/environment';
+import { TopicService } from './topic.service';
 
 /**
  * @name api
@@ -51,6 +52,8 @@ export class ActivityService {
 
   private _activity$ = new BehaviorSubject<Activity>(null);
   activity$ = this._activity$.asObservable();
+  private _currentTask$ = new BehaviorSubject<Task>(null);
+  currentTask$ = this._currentTask$.asObservable();
 
   public tasks: Array<any>;
 
@@ -62,11 +65,13 @@ export class ActivityService {
     private router: Router,
     private notification: NotificationsService,
     private apolloService: ApolloService,
+    private topic: TopicService
   ) {}
 
-  public getActivity(id) {
+  public getActivity(id: number, goToFirstTask = false, afterTask?: Task) {
     if (environment.demo) {
-      this._activity$.next(this.demo.activity);
+      const taskId = afterTask ? afterTask.id : 0;
+      return this.demo.activity(taskId).pipe(map(res => this._normaliseActivity(res.data, goToFirstTask, afterTask))).subscribe();
     }
     return this.apolloService.graphQLWatch(
       `query getActivity($id: Int!) {
@@ -81,10 +86,17 @@ export class ActivityService {
       {
         id: id
       }
-    ).pipe(map(res => this._normaliseActivity(res.data))).subscribe();
+    ).pipe(map(res => this._normaliseActivity(res.data, goToFirstTask, afterTask))).subscribe();
   }
 
-  private _normaliseActivity(data): Activity {
+  /**
+   * Handle the activity response data
+   * @param data The activity response data
+   * @param goToFirstTask Whether need to go to the first task (true for desktop view)
+   * @param afterTask [Optional] Go to the first task after this task (only used along when goToFirstTask is true)
+   * @returns
+   */
+  private _normaliseActivity(data: any, goToFirstTask: boolean, afterTask?: Task): Activity {
     if (!data) {
       return null;
     }
@@ -134,7 +146,51 @@ export class ActivityService {
       }
     });
     this._activity$.next(result);
+    if (goToFirstTask) {
+      this.goToFirstTask(result.tasks, afterTask);
+    }
     return result;
+  }
+
+  /**
+   * Go to the first unfinished task inside this activity, (optional) after a task
+   */
+   goToFirstTask(tasks: Task[], afterTask?: Task) {
+    // find the first task that is not done or pending review
+    // and is allowed to access for this user
+    let skipTask = !!afterTask;
+    let firstTask: Task;
+    for (const task of tasks) {
+      // if we need to find the first task after a specific task,
+      // loop through the tasks array until we find this specific task
+      if (skipTask && afterTask.id === task.id && afterTask.type === task.type) {
+        skipTask = false;
+        continue;
+      }
+      // find the first unfinished task
+      if (!['done', 'pending review'].includes(task.status) &&
+        task.type !== 'Locked' &&
+        !(task.isForTeam && !this.storage.getUser().teamId) &&
+        !task.isLocked) {
+        firstTask = task;
+        break;
+      }
+    }
+    if (!firstTask) {
+      firstTask = tasks[0];
+    }
+    this.goToTask(firstTask);
+  }
+
+  goToTask(task: Task) {
+    this._currentTask$.next(task);
+    switch (task.type) {
+      case 'Assessment':
+        break;
+      case 'Topic':
+        this.topic.getTopic(task.id);
+        break;
+    }
   }
 
   /**

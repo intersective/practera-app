@@ -1,0 +1,54 @@
+<ng-container *ngIf="topic">
+  <h3 class="headline-2 ion-text-center">{{topic.title}}</h3>
+  <div *ngIf="topic.videolink && topic.videolink !=='magiclink'" class="text-center">
+    <label class="subtitle-2 gray-2">Video</label>
+    <div *ngIf="iframeHtml" class="video-embed" [innerHtml]="iframeHtml"></div>
+    <video
+      *ngIf="!iframeHtml"
+      class="video-embed topic-video"
+      [ngClass]="{'desktop-view': !utils.isMobile()}"
+      width="100%"
+      controls
+      preload="metadata"
+      [src]="topic.videolink">
+    </video>
+  </div>
+
+  <div *ngIf="topic.content" class="ion-padding" [innerHtml]="topic.content"></div>
+
+  <div *ngIf="topic.files && topic.files.length > 0" color="light">
+    <label class="subtitle-2 gray-2">Supporting Downloads</label>
+
+    <div *ngFor="let file of topic.files" class="supporting-files">
+      <ion-grid>
+        <ion-row>
+          <ion-col size="10" class="file-name-view">
+            <p class="vertical-middle black">
+              <ion-icon name="document" class="vertical-middle" color="primary"></ion-icon>&nbsp;{{file.name}}
+            </p>
+          </ion-col>
+          <ion-col size="2">
+            <ion-icon class="vertical-middle hover-pointer" *ngIf="file.url.length > 0" name="search"
+              (click)="previewFile(file)" color="primary"></ion-icon>
+            <a *ngIf="file.url.length > 0" [href]="file.url" download class="text-right" target="_blank">
+              <ion-icon name="download-outline" class="float-right"></ion-icon>
+            </a>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    </div>
+  </div>
+
+  <div class="ion-text-center">
+    <ion-button [disabled]="continuing" (click)="continuing = true;continue.emit(topic)" shape="round"
+      fill="clear">Mark as complete and continue
+    </ion-button>
+  </div>
+</ng-container>
+
+<div *ngIf="!topic" class="ion-padding">
+  <ion-skeleton-text animated class="skeleton-header"></ion-skeleton-text>
+  <ion-skeleton-text animated style="width: 50%"></ion-skeleton-text>
+  <ion-skeleton-text animated style="width: 70%"></ion-skeleton-text>
+  <ion-skeleton-text animated style="width: 90%"></ion-skeleton-text>
+</div>
