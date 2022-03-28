@@ -96,7 +96,6 @@ export class AssessmentComponent implements OnInit {
   ) {
     this.route.queryParams.subscribe(params => {
       console.log({params});
-      this.onEnter();
     });
     this.questionsForm = this.fb.group({});
   }
@@ -106,9 +105,11 @@ export class AssessmentComponent implements OnInit {
   }
 
   ngOnInit() {
-    /* this.assessment$.subscribe(assessment => {
+    this.assessment$.subscribe(assessment => {
       console.log('current assessment::', assessment);
-    }); */
+      this.assessment = assessment;
+      this.populateQuestionsForm();
+    });
   }
 
   /**
