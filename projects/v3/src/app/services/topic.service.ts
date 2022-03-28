@@ -98,6 +98,10 @@ export class TopicService {
   }
 
   updateTopicProgress(id, state) {
+    if (environment.demo) {
+      console.log('mark topic as ', state);
+      return this.demo.normalResponse();
+    }
     const postData = {
       model: 'topic',
       model_id: id,

@@ -162,6 +162,14 @@ export class DemoService {
               },
             },
             {
+              id: 3,
+              name: "3nd topic",
+              type: 'Topic',
+              status: {
+                status: taskId === 3 ? 'done' : ""
+              },
+            },
+            {
               id: 21,
               name: "in progress feedback",
               type: 'Assessment',
@@ -500,11 +508,15 @@ export class DemoService {
 
   topic(id) {
     return {
-      id: 1,
+      id,
       title: `Introduction of Practera ${ id }`,
       content: this.description,
       videolink: '',
       files: [],
     };
+  }
+
+  normalResponse() {
+    return of({}).pipe(delay(1000));
   }
 }
