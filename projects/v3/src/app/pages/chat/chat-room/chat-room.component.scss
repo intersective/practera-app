@@ -1,0 +1,295 @@
+$message-body-size: 60%;
+
+.not-started-empty-status {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%,-50%);
+  .head-text {
+    margin-bottom: 0px;
+    margin-top: 0px;
+    &.desktop {
+      margin-top: 24px;
+    }
+  }
+  .sub-text {
+    margin-top: 5px;
+  }
+  .image {
+    min-width: 96px;
+    min-height: 96px;
+    max-width: 96px;
+    max-height: 96px;
+    &.desktop {
+      min-width: 120px;
+      min-height: 120px;
+      max-width: 120px;
+      max-height: 120px;
+    }
+  }
+}
+
+.chat-list {
+  background-color: transparent !important;
+  ion-item {
+    ion-avatar {
+      width: 32px;
+      height: 32px;
+      margin: 0 12px 2px 0 !important;
+      margin-left: -8px !important;
+      &.no-time {
+        margin-top: 8% !important;
+      }
+      &.no-time-team {
+        margin-top: -8% !important;
+      }
+    }
+
+    ion-label {
+      .time {
+        width: 100%;
+        text-align: center;
+        margin-bottom: 8px;
+      }
+
+      .message-body {
+        padding: 8px 16px;
+        min-width: 48px;
+        max-width: $message-body-size;
+        border-radius: 25px;
+        width: fit-content;
+
+        &.image {
+          line-height: 0;
+          cursor: pointer;
+
+          img {
+            border-radius: 25px;
+          }
+        }
+
+        // consistent colour to make attachment standout
+        .general-attachment {
+          background: white;
+          --background: white;
+          cursor: pointer;
+        }
+
+        p {
+          &.seen-text {
+            &:nth-child(1) {
+              padding: 0 !important;
+              font-weight: 500;
+            }
+          }
+        }
+
+        p, .message-text {
+          color: black;
+          margin: 0;
+          text-align: left;
+          user-select: all !important;
+          white-space: pre-wrap !important;
+        }
+
+        &.video-attachment-container {
+          min-height: 125px;
+          background: #eaeaea !important;
+          line-height: 0;
+          padding: 0;
+          display: flex;
+          flex-direction: column;
+          flex-wrap: wrap;
+          align-items: stretch;
+          position:relative;
+          cursor: pointer;
+          border: 1px #bbbbbb solid;
+          padding-left: 10px;
+          padding-right: 10px;
+
+          #inner-box {
+            border-radius: inherit;
+            min-width: inherit;
+            min-height: inherit;
+            padding: 0;
+            width: 100%;
+
+            & p {
+              color: var(--ion-color-primary);
+              margin-top: 1em;
+              text-align: center;
+              ion-icon {
+                font-size: 5em !important;
+              }
+            }
+          }
+
+          .video {
+            padding: inherit;
+            min-width: 100%;
+            max-width: inherit;
+            min-height: 100%;
+            max-height: inherit;
+            border-radius: inherit;
+          }
+
+          .label {
+            padding: 0 0.5em;
+            margin: 0.3em 0;
+            text-shadow: 1px 1px white;
+            width: 100%;
+          }
+
+          &:hover {
+            background: #bbbbbb !important;
+            opacity: 0.9;
+            transition: 0.5s opacity, 0.5s background;
+          }
+        }
+      }
+
+      .seen-text {
+        padding-bottom: 8px;
+      }
+
+      &.received-messages {
+        text-align: left;
+
+        .message-body {
+          background-color: white;
+        }
+
+        .time {
+          margin-left: -14% !important;
+          width: -webkit-fill-available !important;
+        }
+
+        &.no-avatar {
+          margin-left: 12%;
+        }
+      }
+
+      &.send-messages {
+        text-align: right;
+        margin-right: 0;
+
+        .message-body {
+          background-color: var(--ion-color-primary);
+
+          // consistent colour to make attachment standout
+          .general-attachment {
+            background: transparent;
+            --background: transparent;
+            cursor: pointer;
+            ion-icon, ion-note, ion-label {
+              color: white !important;
+            }
+          }
+
+          // margin-left: calc(100% - 150px) !important;
+          float: right;
+
+          .message-text {
+            color: white !important;
+          }
+        }
+      }
+    }
+  }
+
+  &.desktop-view {
+    ion-item {
+      ion-avatar {
+        margin-left: 0 !important;
+        margin-top: 3% !important;
+        &.no-time {
+          margin-top: 0 !important;
+        }
+        &.no-time-team {
+          margin-top: -3% !important;
+        }
+        &.with-time-team {
+          margin-top: 0 !important;
+        }
+      }
+      ion-label {
+        .time {
+          margin-left: 2.5% !important;
+        }
+        &.received-messages {
+          .time {
+            margin-left: 0 !important;
+          }
+          &.no-avatar {
+            margin-left: 44px !important;
+          }
+        }
+      }
+    }
+  }
+}
+
+.message-sending-loading {
+  width: 100% !important;
+  text-align: right !important;
+}
+
+.message-typing {
+  width: 100% !important;
+  text-align: left !important;
+}
+.ion-content-absolute-with-footer {
+  height: calc(100% - 155px);
+}
+
+.footer {
+  min-height: 48px;
+  padding: 0;
+
+  &.ion-footer-absolute {
+    height: 96px;
+    ion-grid {
+      padding: 0;
+      min-height: 96px;
+    }
+  }
+
+  &.focus {
+    min-height: 96px;
+    ion-grid {
+      padding: 0;
+      min-height: 96px;
+    }
+  }
+
+  ion-grid {
+    background-color: white;
+    min-height: 48px;
+    ion-row {
+      min-height: 48px;
+      ion-col {
+        min-height: 48px;
+        ion-button {
+          padding-top: 6px;
+          min-height: 24px;
+          max-height: 100px;
+          height: auto;
+          ion-icon {
+            font-size: 24px;
+          }
+        }
+        ion-textarea {
+          --padding-top: 0;
+          --padding-end: 0;
+          --padding-bottom: 0;
+          --padding-start: 0;
+          margin-top: 8px;
+        }
+      }
+    }
+  }
+}
+
+ion-toolbar {
+  --min-height: 60px;
+}
