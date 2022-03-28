@@ -105,7 +105,8 @@
 
           <app-text *ngSwitchCase="'text'"
             [question]="question"
-            [doAssessment]="doAssessment" [doReview]="doReview"
+            [doAssessment]="true"
+            [doReview]="doReview"
             [submission]="submission?.answers[question.id] || {}"
             [review]="review?.answers[question.id] || {}"
             [reviewStatus]="review ? review.status : ''"

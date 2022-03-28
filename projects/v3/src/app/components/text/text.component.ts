@@ -43,9 +43,7 @@ export class TextComponent implements ControlValueAccessor, OnInit {
   // validation errors array
   errors: Array<any> = [];
 
-  constructor() {
-    this.answer.setValue(''); // default value
-  }
+  constructor() {}
 
   ngOnInit() {
     this._showSavedAnswers();
