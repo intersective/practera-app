@@ -52,8 +52,8 @@ export class AssessmentComponent implements OnInit {
   // context id
   contextId: number;
   submissionId: number;
+  assessment: Assessment;
 
-  @Input() assessment: Assessment;
   @Input() submission: Submission;;
   @Input() review: Review;
 

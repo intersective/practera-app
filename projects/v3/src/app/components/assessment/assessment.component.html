@@ -134,7 +134,7 @@
             [review]="review?.answers[question.id] || {}"
             [reviewStatus]="review ? review.status : ''"
             [submissionStatus]="submission ? submission.status : ''"
-            formControlName="'q-' + question.id"
+            [formControlName]="'q-' + question.id"
             [control]="questionsForm.controls['q-' + question.id]"
             (saveProgress)="submit(true)"></app-multiple>
 
@@ -146,7 +146,7 @@
             [review]="review?.answers[question.id] || {}"
             [reviewStatus]="review ? review.status : ''"
             [submissionStatus]="submission ? submission.status : ''"
-            formControlName="'q-' + question.id"
+            [formControlName]="'q-' + question.id"
             [control]="questionsForm.controls['q-' + question.id]"
             (saveProgress)="submit(true)"></app-file>
 
@@ -158,7 +158,7 @@
             [review]="review?.answers[question.id] || {}"
             [reviewStatus]="review ? review.status : ''"
             [submissionStatus]="submission ? submission.status : ''"
-            formControlName="'q-' + question.id"
+            [formControlName]="'q-' + question.id"
             [control]="questionsForm.controls['q-' + question.id]"
             (saveProgress)="submit(true)"></app-team-member-selector>
         </ng-template>
