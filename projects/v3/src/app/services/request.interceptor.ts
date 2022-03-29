@@ -64,7 +64,6 @@ export class RequestInterceptor implements HttpInterceptor {
    *
    */
   private _refreshApikey(response) {
-    console.log('before refresh apikey');
     if (response && response.apikey) {
       this.storage.setUser({ apikey: response.apikey });
     }
