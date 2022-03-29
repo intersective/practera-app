@@ -51,14 +51,13 @@
         </ion-list>
 
         <app-assessment
-          [doAssessment]="doAssessment"
           [assessment$]="currentReview$"
+          [submission]="submission"
           [inputId]="assessmentId"
           [inputSubmissionId]="submissionId"
           [inputContextId]="contextId"
           [loadingAssessment]="loadingAssessment"
           [review]="currentReview"
-          [submission]="submission"
           action="review"
           fromPage="reviews"
         ></app-assessment>

@@ -5,6 +5,7 @@ import { BrowserStorageService } from '@v3/services/storage.service';
 import { UtilsService } from '@v3/services/utils.service';
 import { NotificationsService } from '@v3/services/notifications.service';
 import { Subject } from 'rxjs';
+import { DemoService } from '@v3/app/services/demo.service';
 
 enum STATUSES {
   PENDING = 'pending',
@@ -28,12 +29,15 @@ export class ReviewListPage implements OnInit {
 
   public status: string = STATUSES.PENDING;
 
+  testBoolean = 0;
+
   constructor(
     public reviewsService: ReviewListService,
     public router: Router,
     public utils: UtilsService,
     public storage: BrowserStorageService,
     private notificationsService: NotificationsService,
+    private demoService: DemoService,
   ) { }
 
   ngOnInit() {
@@ -54,7 +58,7 @@ export class ReviewListPage implements OnInit {
           this.gotoFirstReview();
         },
         err => {
-          const toasted = this.notificationsService.alert({
+          this.notificationsService.alert({
             header: 'Error retrieving latest reviews',
             message: err.msg || JSON.stringify(err)
           });
@@ -71,6 +75,10 @@ export class ReviewListPage implements OnInit {
   // open a review in detailed page
   read(review: Review) {
     console.log('REVIEW::', review);
+    this.testBoolean = this.testBoolean === 0 ? 1 : 0;
+    this.demoService.getAssessmentReviewed(this.testBoolean).subscribe(asmt => {
+      this.review$.next(asmt.data);
+    });
   }
 
   /**
