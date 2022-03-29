@@ -54,7 +54,7 @@ export class AssessmentComponent implements OnInit {
   submissionId: number;
   assessment: Assessment;
 
-  @Input() submission: Submission;;
+  @Input() submission: Submission;
   @Input() review: Review;
 
 
@@ -68,7 +68,7 @@ export class AssessmentComponent implements OnInit {
 
   feedbackReviewed = false;
   @Input() loadingAssessment = true;
-  questionsForm: FormGroup;
+  questionsForm: FormGroup = new FormGroup({});
   submitting: boolean;
   submitted: boolean;
   savingButtonDisabled = true;
@@ -92,12 +92,10 @@ export class AssessmentComponent implements OnInit {
     private activityService: ActivityService,
     private fastFeedbackService: FastFeedbackService,
     private ngZone: NgZone,
-    private fb: FormBuilder,
   ) {
-    this.route.queryParams.subscribe(params => {
-      console.log({params});
+    this.route.queryParams.subscribe(() => {
+      // this.onEnter();
     });
-    this.questionsForm = this.fb.group({});
   }
 
   get isMobile() {
@@ -105,9 +103,9 @@ export class AssessmentComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.assessment$.subscribe(assessment => {
-      console.log('current assessment::', assessment);
-      this.assessment = assessment;
+    this.assessment$.subscribe(result => {
+      this.assessment = result.assessment;
+      this.submission = result.submission;
       this.populateQuestionsForm();
     });
   }
@@ -166,17 +164,6 @@ export class AssessmentComponent implements OnInit {
   }
 
   private _initialise() {
-    this.submission = {
-      id: 0,
-      status: '',
-      answers: {},
-      submitterName: '',
-      modified: '',
-      isLocked: false,
-      completed: false,
-      submitterImage: '',
-      reviewerName: ''
-    };
     this.review = {
       id: 0,
       answers: {},
@@ -202,7 +189,6 @@ export class AssessmentComponent implements OnInit {
 
   onEnter() {
     this._initialise();
-
     this.id = (this.inputId) ? +this.inputId : +this.route.snapshot.paramMap.get('id');
 
     this.activityId = (this.inputActivityId) ? +this.inputActivityId : +this.route.snapshot.paramMap.get('activityId');
@@ -211,70 +197,8 @@ export class AssessmentComponent implements OnInit {
 
     this.submissionId = (this.inputSubmissionId) ? +this.inputSubmissionId : +this.route.snapshot.paramMap.get('submissionId');
 
-    this.populateQuestionsForm();
-  }
-
-  private _handleSubmissionData(submission) {
-    this.submission = submission;
-    // If team assessment is locked, set the page to readonly mode.
-    // set doAssessment, doReview to false - when assessment is locked, user can't do both.
-    // set submission status to done - we need to show readonly answers in question components.
-    if (this.submission && this.submission.isLocked) {
-      this.doAssessment = false;
-      this.doReview = false;
-      this.savingButtonDisabled = true;
-      this.submission.status = 'done';
-      return;
-    }
-
-    // this component become a page for doing assessment if
-    // - submission is empty or
-    // - submission.status is 'in progress'
-    if (this.utils.isEmpty(this.submission) || this.submission.status === 'in progress') {
-      this.doAssessment = true;
-      this.doReview = false;
-      if (this.submission && this.submission.status === 'in progress') {
-        this.savingMessage = 'Last saved ' + this.utils.timeFormatter(this.submission.modified);
-        this.savingButtonDisabled = false;
-      }
-      return;
-    }
-
-
-    if (this.assessment.type === 'moderated') {
-      // this component become a page for doing review, if
-      // - the submission status is 'pending review' and
-      // - this.action is review
-      if (this.submission.status === 'pending review' && this.action === 'review') {
-        this.doReview = true;
-      }
-
-      if (this.submission.status === 'published') {
-      }
-    }
-
-    this.feedbackReviewed = this.submission.completed;
-  }
-
-  private _handleReviewData(review) {
-    this.review = review;
-    if (!review && this.action === 'review' && !this.doReview) {
-      return this.notificationsService.alert({
-        message: 'There are no assessments to review.',
-        buttons: [
-          {
-            text: 'OK',
-            role: 'cancel',
-            handler: () => {
-              this._navigate(['v3', 'home']);
-            }
-          }
-        ]
-      });
-    }
-    if (this.doReview && review.status === 'in progress') {
-      this.savingMessage = 'Last saved ' + this.utils.timeFormatter(review.modified);
-      this.savingButtonDisabled = false;
+    if (this.assessment) {
+      this.populateQuestionsForm();
     }
   }
 
