@@ -120,7 +120,7 @@ export class AssessmentService {
   ) { }
 
   getAssessment() {
-    return this.demoService.assessment().pipe(map(res => {
+    return this.demoService.getAssessmentReviewed().pipe(map(res => {
       return {
         assessment: this._normaliseAssessment(res.data, 'assessment'),
         submission: this._normaliseSubmission(res.data),

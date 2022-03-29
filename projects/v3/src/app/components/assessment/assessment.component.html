@@ -1,7 +1,9 @@
 <div class="ion-padding">
-  <h1 class="headline-4">
-    How much do you know about NSW?
-  </h1>
+  <h1 class="headline-4"
+    [attr.aria-describedby]="randomCode(assessment.name)"
+    role="title"
+    tabindex="0">{{ assessment.name }}</h1>
+  <ion-label color="green">Waiting Feedback</ion-label>
   <p class="due-date assessment subtitle-1 gray-2">
     Due date: 22 September 2023
   </p>
@@ -10,9 +12,6 @@
   </ion-text>
 
   <hr>
-
-  <h1 class="headline-4" [attr.aria-describedby]="randomCode(assessment.name)" role="title" tabindex="0">{{
-    assessment.name }}</h1>
 
   <ion-text class="ion-text-left">
     <app-description [name]="randomCode(assessment.name)" *ngIf="assessment.description"
@@ -105,7 +104,7 @@
 
           <app-text *ngSwitchCase="'text'"
             [question]="question"
-            [doAssessment]="doAssessment"
+            [doAssessment]="true"
             [doReview]="doReview"
             [submission]="submission?.answers[question.id] || {}"
             [review]="review?.answers[question.id] || {}"
@@ -117,7 +116,7 @@
 
           <app-oneof *ngSwitchCase="'oneof'"
             [question]="question"
-            [doAssessment]="doAssessment"
+            [doAssessment]="true"
             [doReview]="doReview"
             [submission]="submission?.answers[question.id] || {}"
             [review]="review?.answers[question.id] || {}"
@@ -129,7 +128,7 @@
 
           <app-multiple *ngSwitchCase="'multiple'"
             [question]="question"
-            [doAssessment]="doAssessment"
+            [doAssessment]="true"
             [doReview]="doReview"
             [submission]="submission?.answers[question.id] || {}"
             [review]="review?.answers[question.id] || {}"
@@ -141,7 +140,7 @@
 
           <app-file *ngSwitchCase="'file'"
             [question]="question"
-            [doAssessment]="doAssessment"
+            [doAssessment]="true"
             [doReview]="doReview"
             [submission]="submission?.answers[question.id] || {}"
             [review]="review?.answers[question.id] || {}"
@@ -153,7 +152,7 @@
 
           <app-team-member-selector *ngSwitchCase="'team member selector'"
             [question]="question"
-            [doAssessment]="doAssessment"
+            [doAssessment]="true"
             [doReview]="doReview"
             [submission]="submission?.answers[question.id] || {}"
             [review]="review?.answers[question.id] || {}"
@@ -166,10 +165,6 @@
       </ng-container>
     </ng-container>
   </form>
-
-
-  <pre>{{ assessment | json }}</pre>
-
 </div>
 
 <ion-footer color="light" class="ion-footer-absolute">
