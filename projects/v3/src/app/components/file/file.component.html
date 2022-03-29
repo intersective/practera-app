@@ -1,5 +1,5 @@
 <ng-container *ngIf="submissionStatus !== 'in progress' && submission && submission.answer">
-  <div class="ion-padding-horizontal ion-padding-bottom">
+  <div class="">
       <app-file-display
       [file]="submission.answer"
       [fileType]="question.fileType"
@@ -8,7 +8,7 @@
   </div>
   </ng-container>
 
-  <div *ngIf="reviewStatus !== 'in progress' && review && (review.answer || review.comment)" class="ion-padding-horizontal ion-padding-bottom"
+  <div *ngIf="reviewStatus !== 'in progress' && review && (review.answer || review.comment)" class=""
   [ngClass]="{ 'audience-mentor': audienceContainReviewer()}">
     <ion-label *ngIf="audienceContainReviewer()" class="q-title subtitle-2 black ion-padding-vertical">Reviewer’s feedback</ion-label>
     <ng-container *ngIf="review.answer">
@@ -24,7 +24,7 @@
   </div>
 
   <ng-container *ngIf="doAssessment">
-    <div class="ion-padding-horizontal ion-padding-bottom">
+    <div class="">
       <file-stack *ngIf="!uploadedFile && !submission.answer"
         [accept]="fileTypes"
         [fileType]="question.fileType"
@@ -46,7 +46,7 @@
   </ng-container>
 
   <ng-container *ngIf="doReview">
-    <div class="ion-padding-horizontal ion-padding-bottom" [ngClass]="{ 'audience-mentor': audienceContainReviewer()}">
+    <div class="" [ngClass]="{ 'audience-mentor': audienceContainReviewer()}">
         <ng-container *ngIf="question.canAnswer">
             <file-stack *ngIf="!uploadedFile && !review.answer"
               [accept]="fileTypes"
