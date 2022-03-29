@@ -60,7 +60,7 @@ export class AssessmentComponent implements OnInit {
 
   // if doAssessment is true, it means this user is actually doing assessment, meaning it is not started or in progress
   // if action == 'assessment' and doAssessment is false, it means this user is reading the submission or feedback
-  doAssessment = false;
+  @Input() doAssessment: boolean;
 
   // if doReview is true, it means this user is actually doing review, meaning this assessment is pending review
   // if action == 'review' and doReview is false, it means the review is done and this user is reading the submission and review
