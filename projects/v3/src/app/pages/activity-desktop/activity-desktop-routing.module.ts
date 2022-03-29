@@ -7,7 +7,7 @@ const routes: Routes = [
   {
     path: ':id',
     component: ActivityDesktopPage
-  }
+  },
 ];
 
 @NgModule({
