@@ -105,7 +105,7 @@
 
           <app-text *ngSwitchCase="'text'"
             [question]="question"
-            [doAssessment]="true"
+            [doAssessment]="doAssessment"
             [doReview]="doReview"
             [submission]="submission?.answers[question.id] || {}"
             [review]="review?.answers[question.id] || {}"
@@ -117,7 +117,7 @@
 
           <app-oneof *ngSwitchCase="'oneof'"
             [question]="question"
-            [doAssessment]="true"
+            [doAssessment]="doAssessment"
             [doReview]="doReview"
             [submission]="submission?.answers[question.id] || {}"
             [review]="review?.answers[question.id] || {}"
