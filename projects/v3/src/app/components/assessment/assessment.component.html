@@ -104,7 +104,7 @@
 
           <app-text *ngSwitchCase="'text'"
             [question]="question"
-            [doAssessment]="true"
+            [doAssessment]="doAssessment"
             [doReview]="doReview"
             [submission]="submission?.answers[question.id] || {}"
             [review]="review?.answers[question.id] || {}"
@@ -116,7 +116,7 @@
 
           <app-oneof *ngSwitchCase="'oneof'"
             [question]="question"
-            [doAssessment]="true"
+            [doAssessment]="doAssessment"
             [doReview]="doReview"
             [submission]="submission?.answers[question.id] || {}"
             [review]="review?.answers[question.id] || {}"
@@ -128,7 +128,7 @@
 
           <app-multiple *ngSwitchCase="'multiple'"
             [question]="question"
-            [doAssessment]="true"
+            [doAssessment]="doAssessment"
             [doReview]="doReview"
             [submission]="submission?.answers[question.id] || {}"
             [review]="review?.answers[question.id] || {}"
@@ -140,7 +140,7 @@
 
           <app-file *ngSwitchCase="'file'"
             [question]="question"
-            [doAssessment]="true"
+            [doAssessment]="doAssessment"
             [doReview]="doReview"
             [submission]="submission?.answers[question.id] || {}"
             [review]="review?.answers[question.id] || {}"
@@ -152,7 +152,7 @@
 
           <app-team-member-selector *ngSwitchCase="'team member selector'"
             [question]="question"
-            [doAssessment]="true"
+            [doAssessment]="doAssessment"
             [doReview]="doReview"
             [submission]="submission?.answers[question.id] || {}"
             [review]="review?.answers[question.id] || {}"

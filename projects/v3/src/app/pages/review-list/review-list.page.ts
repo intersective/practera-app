@@ -5,7 +5,7 @@ import { BrowserStorageService } from '@v3/services/storage.service';
 import { UtilsService } from '@v3/services/utils.service';
 import { NotificationsService } from '@v3/services/notifications.service';
 import { Subject } from 'rxjs';
-import { DemoService } from '@v3/app/services/demo.service';
+import { AssessmentService } from '@v3/app/services/assessment.service';
 
 enum STATUSES {
   PENDING = 'pending',
@@ -37,7 +37,7 @@ export class ReviewListPage implements OnInit {
     public utils: UtilsService,
     public storage: BrowserStorageService,
     private notificationsService: NotificationsService,
-    private demoService: DemoService,
+    private assessmentService: AssessmentService,
   ) { }
 
   ngOnInit() {
@@ -76,9 +76,15 @@ export class ReviewListPage implements OnInit {
   read(review: Review) {
     console.log('REVIEW::', review);
     this.testBoolean = this.testBoolean === 0 ? 1 : 0;
-    this.demoService.getAssessmentReviewed(this.testBoolean).subscribe(asmt => {
-      this.review$.next(asmt.data);
-    });
+
+    this.assessmentService.getAssessment(this.testBoolean).subscribe(
+      result => {
+        this.review$.next(result);
+      },
+      error => {
+        console.log(error);
+      }
+    );
   }
 
   /**
