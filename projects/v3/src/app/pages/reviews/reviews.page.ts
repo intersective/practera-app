@@ -40,6 +40,7 @@ export class ReviewsPage implements OnInit {
     status: '',
     modified: ''
   };
+  doAssessment = true;
 
   reviews = [
     {
