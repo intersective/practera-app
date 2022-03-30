@@ -189,7 +189,6 @@ export class AssessmentService {
     this._assessment$.next(assessment);
     this._submission$.next(submission);
     this._review$.next(review);
-    console.log(assessment);
     return {
       assessment,
       submission,
@@ -410,6 +409,10 @@ export class AssessmentService {
   }
 
   saveAnswers(assessment: AssessmentSubmitParams, answers: Answer[], action: string) {
+    if (environment.demo) {
+      console.log('save answers', assessment, answers, action);
+      return of(true);
+    }
     if (!['assessment', 'review'].includes(action)) {
       return of(false);
     }
@@ -441,6 +444,10 @@ export class AssessmentService {
   }
 
   saveFeedbackReviewed(submissionId) {
+    if (environment.demo) {
+      console.log('feedback reviewed', submissionId);
+      return of(true);
+    }
     const postData = {
       project_id: this.storage.getUser().projectId,
       identifier: 'AssessmentSubmission-' + submissionId,
