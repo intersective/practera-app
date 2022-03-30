@@ -12,7 +12,6 @@ import { take } from 'rxjs/operators';
   styleUrls: ['./reviews.page.scss'],
 })
 export class ReviewsPage implements OnInit {
-  routeUrl = '/app/reviews';
   assessmentId: number;
   submissionId: number;
   contextId: number;
@@ -40,7 +39,7 @@ export class ReviewsPage implements OnInit {
     status: '',
     modified: ''
   };
-  doAssessment = true;
+  doAssessment = false;
 
   reviews = [
     {
@@ -119,6 +118,18 @@ export class ReviewsPage implements OnInit {
       pulseCheck: false,
     };
 
+    this.submission = {
+      id: 0,
+      status: '',
+      answers: {},
+      submitterName: '',
+      modified: '',
+      isLocked: false,
+      completed: false,
+      submitterImage: '',
+      reviewerName: ''
+    };
+
     this.route.queryParams.subscribe(params => {
       console.log('ReviewsPageParams::', params);
       this.onEnter();
@@ -142,31 +153,38 @@ export class ReviewsPage implements OnInit {
 
   onEnter(): void {
     this.currentReview$.next({
-      name: '',
-      type: '',
-      description: '',
-      isForTeam: false,
-      dueDate: '',
-      isOverdue: false,
-      groups: [],
-      pulseCheck: false,
+      assessment: {
+        name: '',
+        type: '',
+        description: '',
+        isForTeam: false,
+        dueDate: '',
+        isOverdue: false,
+        groups: [],
+        pulseCheck: false,
+      }
     });
     this.submissionId = +this.route.snapshot.paramMap.get('submissionId');
+
+
+    this.currentReview$.subscribe(result => {
+      this.currentAssessment = result.assessment;
+      this.loadingAssessment = false;
+      this.submission = result.submission;
+      this._handleSubmissionData(result.submission);
+      // display pop up if it is team assessment and user is not in team
+      // if (this.doAssessment && this.assessment.isForTeam && !this.storage.getUser().teamId) {
+      //   this.isNotInATeam = true;
+      //   return;
+      // }
+      // this.isNotInATeam = false;
+      this._handleReviewData(result.review);
+    });
 
     // get assessment structure and populate the question form
     this.assessmentService.getAssessment().subscribe(
       result => {
-        this.currentAssessment = result.assessment;
-        this.loadingAssessment = false;
-        this._handleSubmissionData(result.submission);
-        // display pop up if it is team assessment and user is not in team
-        // if (this.doAssessment && this.assessment.isForTeam && !this.storage.getUser().teamId) {
-        //   this.isNotInATeam = true;
-        //   return;
-        // }
-        // this.isNotInATeam = false;
-        this._handleReviewData(result.review);
-        this.currentReview$.next(result.assessment);
+        this.currentReview$.next(result);
       },
       error => {
         console.log(error);
@@ -214,7 +232,6 @@ export class ReviewsPage implements OnInit {
       // }
       return;
     }
-
 
     if (this.currentAssessment.type === 'moderated') {
       // this component become a page for doing review, if
