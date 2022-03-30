@@ -130,6 +130,7 @@ export class AssessmentService {
   ) { }
 
   getAssessment(id, action, activityId, contextId, submissionId?) {
+    this._assessment$.next(null);
     if (environment.demo) {
       return this.demo.assessment(id).pipe(map(res => this._handleAssessmentResponse(res, action))).subscribe();
     }
