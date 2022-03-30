@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { of } from 'rxjs';
+import { BehaviorSubject, of } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { RequestService } from 'request';
 import { UtilsService } from '@v3/services/utils.service';
@@ -9,6 +9,7 @@ import { DomSanitizer } from '@angular/platform-browser';
 import { ApolloService } from './apollo.service';
 import { ReviewRatingComponent } from '../components/review-rating/review-rating.component';
 import { DemoService } from './demo.service';
+import { environment } from '@v3/environments/environment';
 
 /**
  * @name api
@@ -33,6 +34,7 @@ export interface AssessmentSubmitParams {
 }
 
 export interface Assessment {
+  id: number;
   name: string;
   type: string;
   description: string;
@@ -107,6 +109,14 @@ export interface Review {
 })
 
 export class AssessmentService {
+
+  private _assessment$ = new BehaviorSubject<Assessment>(null);
+  assessment$ = this._assessment$.asObservable();
+  private _submission$ = new BehaviorSubject<Submission>(null);
+  submission$ = this._submission$.asObservable();
+  private _review$ = new BehaviorSubject<Review>(null);
+  review$ = this._review$.asObservable();
+
   questions = {};
 
   constructor(
@@ -116,24 +126,17 @@ export class AssessmentService {
     private notification: NotificationsService,
     public sanitizer: DomSanitizer,
     private apolloService: ApolloService,
-    private demoService: DemoService,
+    private demo: DemoService,
   ) { }
 
-  getAssessment(index?) {
-    return this.demoService.getAssessmentReviewed(index).pipe(map(res => {
-      return {
-        assessment: this._normaliseAssessment(res.data, 'assessment'),
-        submission: this._normaliseSubmission(res.data),
-        review: this._normaliseReview(res.data, 'assessment')
-      };
-    }));
-  }
-
-  /* getAssessment(id, action, activityId, contextId, submissionId?) {
+  getAssessment(id, action, activityId, contextId, submissionId?) {
+    if (environment.demo) {
+      return this.demo.assessment(id).pipe(map(res => this._handleAssessmentResponse(res, action))).subscribe();
+    }
     return this.apolloService.graphQLWatch(
       `query getAssessment($assessmentId: Int!, $reviewer: Boolean!, $activityId: Int!, $contextId: Int!, $submissionId: Int) {
         assessment(id:$assessmentId, reviewer:$reviewer, activityId:$activityId) {
-          name type description dueDate isTeam pulseCheck
+          id name type description dueDate isTeam pulseCheck
           groups{
             name description
             questions{
@@ -175,20 +178,30 @@ export class AssessmentService {
         noCache: true
       }
     )
-      .pipe(map(res => {
-        return {
-          assessment: this._normaliseAssessment(res.data, action),
-          submission: this._normaliseSubmission(res.data),
-          review: this._normaliseReview(res.data, action)
-        };
-      }));
-  } */
+      .pipe(map(res => this._handleAssessmentResponse(res, action))).subscribe();
+  }
+
+  private _handleAssessmentResponse(res, action) {
+    const assessment = this._normaliseAssessment(res.data, action);
+    const submission = this._normaliseSubmission(res.data);
+    const review = this._normaliseReview(res.data, action);
+    this._assessment$.next(assessment);
+    this._submission$.next(submission);
+    this._review$.next(review);
+    console.log(assessment);
+    return {
+      assessment,
+      submission,
+      review
+    };
+  }
 
   private _normaliseAssessment(data, action): Assessment {
     if (!data.assessment) {
       return null;
     }
     const assessment = {
+      id: data.assessment.id,
       name: data.assessment.name,
       type: data.assessment.type,
       description: data.assessment.description,

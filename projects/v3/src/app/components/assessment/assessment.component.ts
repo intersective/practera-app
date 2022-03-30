@@ -10,7 +10,7 @@ import { ActivityService } from '@v3/services/activity.service';
 import { FastFeedbackService } from '@v3/services/fast-feedback.service';
 import { Subject } from 'rxjs';
 
-const SAVE_PROGRESS_TIMEOUT = 10000;
+const SAVE_PROGRESS_TIMEOUT = 5000;
 
 @Component({
   selector: 'app-assessment',
@@ -31,11 +31,10 @@ export class AssessmentComponent {
    */
   @Input() action: string;
   @Input() assessment: Assessment;
+  @Input() contextId: number;
   @Input() submission: Submission;
   @Input() review: Review;
 
-  // save the submission in progress
-  @Output() save = new EventEmitter();
   // submit the assessment/review
   @Output() submit = new EventEmitter();
   // mark the feedback as read
@@ -51,15 +50,14 @@ export class AssessmentComponent {
   // if action == 'review' and doReview is false, it means the review is done and this user is reading the submission and review
   doReview = false;
 
-  feedbackReviewed = false;
   questionsForm: FormGroup;
-  submitting: boolean;
-  submitted: boolean;
-  savingButtonDisabled = true;
+
+  // whether the learner has seen the feedback
+  feedbackReviewed = false;
+  // whether the bottom button(and the save button) is disabled
+  btnDisabled: boolean;
+  // the text of when the submission get saved last time
   savingMessage: string;
-  // used to prevent manual & automate saving happen at the same time
-  saving: boolean;
-  continueBtnLoading: boolean;
 
   elIdentities = {}; // virtual element id for accessibility "aria-describedby" purpose
 
@@ -85,40 +83,45 @@ export class AssessmentComponent {
     this._initialise();
     this._populateQuestionsForm();
     this._handleSubmissionData();
+    this._validateTeamAssessment();
     this._handleReviewData();
   }
 
-  /**
-   * status of access restriction
-   *
-   * @return  {boolean}  cached singlePageAccess in localstorage
-   */
-  get restrictedAccess() {
-    return this.storage.singlePageAccess;
-  }
-
-  randomCode(type) {
-    if (!this.elIdentities[type]) {
-      this.elIdentities[type] = this.utils.randomNumber();
-    }
-    return this.elIdentities[type];
-  }
-
   private _initialise() {
-    this.saving = false;
     this.doAssessment = false;
     this.doReview = false;
     this.feedbackReviewed = false;
     this.questionsForm = new FormGroup({});
-    // this.questionsForm = this.fb.group({});
-    this.submitting = false;
-    this.submitted = false;
-    this.savingButtonDisabled = false;
+    this.btnDisabled = false;
     this.savingMessage = '';
-    this.continueBtnLoading = false;
     this.isNotInATeam = false;
   }
 
+  // Populate the question form with FormControls.
+  // The name of form control is like 'q-2' (2 is an example of question id)
+  private _populateQuestionsForm() {
+    let validator = [];
+    this.assessment.groups.forEach(group => {
+      group.questions.forEach(question => {
+        // check if the compulsory is mean for current user's role
+        if (this._isRequired(question)) {
+          // put 'required' validator in FormControl
+          validator = [Validators.required];
+        } else {
+          validator = [];
+        }
+
+        this.questionsForm.addControl('q-' + question.id, new FormControl('', validator));
+      });
+    });
+  }
+
+  /**
+   * Use the submission data to determine if user is trying to
+   * 1. do the assessment
+   * 2. see the submission
+   * 3. do the review
+   */
   private _handleSubmissionData() {
     // If team assessment is locked, set the page to readonly mode.
     // set doAssessment, doReview to false - when assessment is locked, user can't do both.
@@ -126,39 +129,36 @@ export class AssessmentComponent {
     if (this.submission && this.submission.isLocked) {
       this.doAssessment = false;
       this.doReview = false;
-      this.savingButtonDisabled = true;
       this.submission.status = 'done';
       return;
     }
 
-    // this component become a page for doing assessment if
-    // - submission is empty or
-    // - submission.status is 'in progress'
+    // user is trying to do the assessment if
+    // - there is no submission or
+    // - submission is in progress
     if (this.utils.isEmpty(this.submission) || this.submission.status === 'in progress') {
       this.doAssessment = true;
       this.doReview = false;
-      if (this.submission && this.submission.status === 'in progress') {
+      if (this.submission) {
         this.savingMessage = 'Last saved ' + this.utils.timeFormatter(this.submission.modified);
-        this.savingButtonDisabled = false;
       }
       return;
     }
 
-
     if (this.assessment.type === 'moderated') {
-      // this component become a page for doing review, if
-      // - the submission status is 'pending review' and
+      // user is trying to do the review, if
+      // - the submission is pending review and
       // - this.action is review
       if (this.submission.status === 'pending review' && this.action === 'review') {
         this.doReview = true;
       }
-
-      if (this.submission.status === 'published') {
-      }
+      return;
     }
 
     this.feedbackReviewed = this.submission.completed;
+  }
 
+  private _validateTeamAssessment() {
     // display pop up if it is team assessment and user is not in team
     if (this.doAssessment && this.assessment.isForTeam && !this.storage.getUser().teamId) {
       this.isNotInATeam = true;
@@ -180,7 +180,7 @@ export class AssessmentComponent {
   private _handleReviewData() {
     if (!this.review && this.action === 'review' && !this.doReview) {
       return this.notifications.alert({
-        message: 'There are no assessments to review.',
+        message: 'There is no assessment to review.',
         buttons: [
           {
             text: 'OK',
@@ -194,7 +194,6 @@ export class AssessmentComponent {
     }
     if (this.doReview && this.review.status === 'in progress') {
       this.savingMessage = 'Last saved ' + this.utils.timeFormatter(this.review.modified);
-      this.savingButtonDisabled = false;
     }
   }
 
@@ -206,7 +205,7 @@ export class AssessmentComponent {
    * a consistent comparison logic to ensure mandatory status
    * @param {question} question
    */
-  private isRequired(question) {
+  private _isRequired(question) {
     let role = 'submitter';
 
     if (this.action === 'review') {
@@ -216,84 +215,45 @@ export class AssessmentComponent {
     return (question.isRequired && question.audience.includes(role));
   }
 
-  // Populate the question form with FormControls.
-  // The name of form control is like 'q-2' (2 is an example of question id)
-  _populateQuestionsForm() {
-    let validator = [];
-    this.assessment.groups.forEach(group => {
-      group.questions.forEach(question => {
-        // check if the compulsory is mean for current user's role
-        if (this.isRequired(question)) {
-          // put 'required' validator in FormControl
-          validator = [Validators.required];
-        } else {
-          validator = [];
-        }
-
-        this.questionsForm.addControl('q-' + question.id, new FormControl('', validator));
-      });
-    });
-  }
-
-  /**
-   * Navigate back to the previous page
-   */
-  navigateBack(): Promise<boolean> {
-    const referrer = this.storage.getReferrer();
-    if (this.utils.has(referrer, 'url') && referrer.route === 'assessment') {
-      this.utils.redirectToUrl(referrer.url);
-      return Promise.resolve(true);
-    }
-    if (this.fromPage && this.fromPage === 'reviews') {
-      return this._navigate(['v3', 'reviews']);
-    }
-    if (this.fromPage && this.fromPage === 'events') {
-      return this._navigate(['v3', 'events']);
-    }
-    if (this.activityId) {
-      return this._navigate(['v3', 'activity', this.activityId]);
-    }
-    return this._navigate(['v3', 'home']);
-  }
 
   /**
    * When user click on the back button
    */
-  goBack(): Promise<boolean | void> {
+  // goBack(): Promise<boolean | void> {
 
-    if (this.action === 'assessment'
-      && this.submission
-      && this.submission.status === 'published'
-      && !this.feedbackReviewed) {
-      return this.notifications.alert({
-        header: `Mark feedback as read?`,
-        message: 'Would you like to mark the feedback as read?',
-        buttons: [
-          {
-            text: 'No',
-            handler: () => this.navigateBack(),
-          },
-          {
-            text: 'Yes',
-            handler: () => this.markReviewFeedbackAsRead().then(() => {
-              return this.navigateBack();
-            })
-          }
-        ]
-      });
-    } else {
-      // force saving progress
-      this.submit(true, true, true);
-      return this.navigateBack();
-    }
-  }
+  //   if (this.action === 'assessment'
+  //     && this.submission
+  //     && this.submission.status === 'published'
+  //     && !this.feedbackReviewed) {
+  //     return this.notifications.alert({
+  //       header: `Mark feedback as read?`,
+  //       message: 'Would you like to mark the feedback as read?',
+  //       buttons: [
+  //         {
+  //           text: 'No',
+  //           handler: () => this.navigateBack(),
+  //         },
+  //         {
+  //           text: 'Yes',
+  //           handler: () => this.markReviewFeedbackAsRead().then(() => {
+  //             return this.navigateBack();
+  //           })
+  //         }
+  //       ]
+  //     });
+  //   } else {
+  //     // force saving progress
+  //     this.submit(true, true, true);
+  //     return this.navigateBack();
+  //   }
+  // }
 
   /**
-   * @name compulsoryQuestionsAnswered
+   * @name _compulsoryQuestionsAnswered
    * @description to check if every compulsory question has been answered
    * @param {Object[]} answers a list of answer object (in submission-based format)
    */
-  compulsoryQuestionsAnswered(answers): object[] {
+  private _compulsoryQuestionsAnswered(answers): object[] {
     const missing = [];
     const answered = {};
     this.utils.each(answers, answer => {
@@ -302,7 +262,7 @@ export class AssessmentComponent {
 
     this.assessment.groups.forEach(group => {
       group.questions.forEach(question => {
-        if (this.isRequired(question)) {
+        if (this._isRequired(question)) {
           if (this.utils.isEmpty(answered[question.id]) || this.utils.isEmpty(answered[question.id].answer)) {
             missing.push(question);
           }
@@ -314,50 +274,63 @@ export class AssessmentComponent {
   }
 
   /**
-   * When user click the continue button
+   * When user click the bottom button
    */
-  async clickBtnContinue() {
-    if (this.submission && this.submission.status === 'published' && !this.feedbackReviewed) {
-      await this.markReviewFeedbackAsRead();
+  btnClicked() {
+    switch (this.btnAction) {
+      case 'submit':
+        return this._submit();
+      case 'readFeedback':
+        return this.readFeedback.emit(this.submission.id);
+      default:
+        return this.continue.emit();
     }
-    this.continue.emit();
+  }
+
+  // When user click the save button
+  btnSaveClicked() {
+    return this._submit(true);
+  }
+
+  // When user click the back tutton
+  btnBackClicked() {
+    return this._submit(true, true);
   }
 
   /**
    * - check if fastfeedback is available
    * - show next sequence if submission successful
    */
-  private async pullFastFeedback() {
-    this.continueBtnLoading = true;
-    // check if this assessment have plus check turn on, if it's on show plus check and toast message
-    if (!this.assessment.pulseCheck) {
-      this.continueBtnLoading = false;
-      return;
-    }
-    try {
-      const modal = await this.fastFeedbackService.pullFastFeedback({ modalOnly: true }).toPromise();
-      if (modal && modal.present) {
-        await modal.present();
-        await modal.onDidDismiss();
-      }
-      this.continueBtnLoading = false;
-    } catch (err) {
-      const toasted = await this.notifications.alert({
-        header: 'Error retrieving pulse check data',
-        message: err.msg || JSON.stringify(err)
-      });
-      this.continueBtnLoading = false;
-      throw new Error(err);
-    }
-  }
+  // private async pullFastFeedback() {
+  //   this.continueBtnLoading = true;
+  //   // check if this assessment have plus check turn on, if it's on show plus check and toast message
+  //   if (!this.assessment.pulseCheck) {
+  //     this.continueBtnLoading = false;
+  //     return;
+  //   }
+  //   try {
+  //     const modal = await this.fastFeedbackService.pullFastFeedback({ modalOnly: true }).toPromise();
+  //     if (modal && modal.present) {
+  //       await modal.present();
+  //       await modal.onDidDismiss();
+  //     }
+  //     this.continueBtnLoading = false;
+  //   } catch (err) {
+  //     const toasted = await this.notifications.alert({
+  //       header: 'Error retrieving pulse check data',
+  //       message: err.msg || JSON.stringify(err)
+  //     });
+  //     this.continueBtnLoading = false;
+  //     throw new Error(err);
+  //   }
+  // }
 
   /**
    * handle submission and autosave
-   * @param saveInProgress set true for autosaving or it treat the action as final submision
+   * @param saveInProgress whether it is for save in progress or submit
    * @param goBack use to unlock team assessment when leave assessment by clicking back button
-   * @param isManualSave use to detect manual progress save
    */
-  async submit(saveInProgress: boolean, goBack?: boolean, isManualSave?: boolean): Promise<any> {
+  _submit(saveInProgress = false, goBack = false) {
 
     /**
      * checking if this is a submission or progress save
@@ -372,24 +345,20 @@ export class AssessmentComponent {
      *    - if this is not manual save or there is one save in progress
      *      - do nothing
      */
+    this.btnDisabled = true;
+    // allow submitting/saving after 10 seconds
+    setTimeout(() => this.btnDisabled = false, SAVE_PROGRESS_TIMEOUT);
+
     if (saveInProgress) {
-      if (isManualSave || !this.saving) {
-        this.savingMessage = 'Saving...';
-        this.savingButtonDisabled = true;
-      } else {
-        return;
-      }
-    } else {
-      this.submitting = true;
+      this.savingMessage = 'Saving...';
     }
-    this.saving = true;
 
     const answers = [];
     let questionId = 0;
     let assessment: AssessmentSubmitParams;
 
     assessment = {
-      id: this.id
+      id: this.assessment.id
     };
     if (saveInProgress) {
       assessment.inProgress = true;
@@ -444,116 +413,71 @@ export class AssessmentComponent {
     }
 
     // check if all required questions have answer when assessment done
-    const requiredQuestions = this.compulsoryQuestionsAnswered(answers);
+    const requiredQuestions = this._compulsoryQuestionsAnswered(answers);
     if (!saveInProgress && requiredQuestions.length > 0) {
-      this.submitting = false;
+      this.btnDisabled = false;
       // display a pop up if required question not answered
       return this.notifications.popUp('shortMessage', {
         message: 'Required question answer missing!'
       });
     }
 
-    // save the submission/feedback
-    this.assessmentService.saveAnswers(
+    this.submit.emit({
       assessment,
       answers,
-      this.action
-    ).subscribe(
-      result => {
-        if (saveInProgress) {
-          // display message for successfull saved answers
-          this.savingMessage = 'Last saved ' + this._getCurrentTime();
-          this.savingButtonDisabled = false;
-        } else {
-          this.submitting = false;
-          this.submitted = true;
-          this.changeStatus.emit({
-            id: +this.id,
-            status: this.assessment.type === 'moderated' ? 'pending review' : 'done'
-          });
-          // disabled all forms controls
-          Object.keys(this.questionsForm.controls).forEach(key => this.questionsForm.controls[key].disable());
-          return this.pullFastFeedback();
-        }
-      },
-      (err: { msg?: string, message?: string }) => {
+      action: this.action
+    });
 
-        this.submitting = false;
-        this.savingButtonDisabled = false;
-        if (saveInProgress) {
-          // display message when saving answers failed
-          this.savingMessage = 'Auto save unavailable';
-        } else {
-          // display a pop up if submission failed
-          this.notifications.alert({
-            header: 'Submission failed',
-            message: 'Please refresh the page and try it again later',
-            buttons: [
-              {
-                text: 'OK',
-                role: 'cancel'
-              }
-            ]
-          });
-          throw new Error(err.msg || err.message || JSON.stringify(err));
-        }
-      }
-    );
-    // if saveInProgress and isManualSave true renabling save without wait 10 second
-    if (saveInProgress && isManualSave) {
-      this.saving = false;
-    }
-    // if timeout, reset this.saving flag to false, to enable saving again
-    setTimeout(() => this.saving = false, SAVE_PROGRESS_TIMEOUT);
+    this.savingMessage = 'Last saved ' + this._getCurrentTime();
   }
 
-  /**
-   * Mark review feedback as read
-   */
-  async markReviewFeedbackAsRead(): Promise<void> {
-    // do nothing if feedback is already mark as read
-    if (this.feedbackReviewed) {
-      return;
-    }
-    this.continueBtnLoading = true;
-    let result;
-    // Mark feedback as read
-    try {
-      result = await this.assessmentService.saveFeedbackReviewed(this.submission.id).toPromise();
-      this.feedbackReviewed = true;
-      this.continueBtnLoading = false;
-    } catch (err) {
-      this.continueBtnLoading = false;
-      // @TODO - Removed the popup for now until we implement proper way to handle API error
-      /**const toasted = await this.notifications.alert({
-        header: 'Marking feedback as read failed',
-        message: err.msg || JSON.stringify(err)
-      });
-      throw new Error(err);
-      **/
-    }
+  // /**
+  //  * Mark review feedback as read
+  //  */
+  // async markReviewFeedbackAsRead(): Promise<void> {
+  //   // do nothing if feedback is already mark as read
+  //   if (this.feedbackReviewed) {
+  //     return;
+  //   }
+  //   this.continueBtnLoading = true;
+  //   let result;
+  //   // Mark feedback as read
+  //   try {
+  //     result = await this.assessmentService.saveFeedbackReviewed(this.submission.id).toPromise();
+  //     this.feedbackReviewed = true;
+  //     this.continueBtnLoading = false;
+  //   } catch (err) {
+  //     this.continueBtnLoading = false;
+  //     // @TODO - Removed the popup for now until we implement proper way to handle API error
+  //     /**const toasted = await this.notifications.alert({
+  //       header: 'Marking feedback as read failed',
+  //       message: err.msg || JSON.stringify(err)
+  //     });
+  //     throw new Error(err);
+  //     **/
+  //   }
 
-    // After marking feedback as read, popup review rating modal if
-    // 1. review is successfully marked as read (from above) - removing because above @TODO reason
-    // 2. hasReviewRating (activation): program configuration is set to enable review rating
-    if (!this.storage.getUser().hasReviewRating) {
-      return;
-    }
-    this.continueBtnLoading = true;
-    try {
-      // display review rating modal
-      await this.assessmentService.popUpReviewRating(this.review.id, false);
-      this.continueBtnLoading = false;
-    } catch (err) {
-      const msg = 'Can not get review rating information';
-      const toasted = await this.notifications.alert({
-        header: msg,
-        message: err.msg || JSON.stringify(err)
-      });
-      this.continueBtnLoading = false;
-      throw new Error(err);
-    }
-  }
+  //   // After marking feedback as read, popup review rating modal if
+  //   // 1. review is successfully marked as read (from above) - removing because above @TODO reason
+  //   // 2. hasReviewRating (activation): program configuration is set to enable review rating
+  //   if (!this.storage.getUser().hasReviewRating) {
+  //     return;
+  //   }
+  //   this.continueBtnLoading = true;
+  //   try {
+  //     // display review rating modal
+  //     await this.assessmentService.popUpReviewRating(this.review.id, false);
+  //     this.continueBtnLoading = false;
+  //   } catch (err) {
+  //     const msg = 'Can not get review rating information';
+  //     const toasted = await this.notifications.alert({
+  //       header: msg,
+  //       message: err.msg || JSON.stringify(err)
+  //     });
+  //     this.continueBtnLoading = false;
+  //     throw new Error(err);
+  //   }
+  // }
 
   showQuestionInfo(info) {
     this.notifications.popUp('shortMessage', { message: info });
@@ -567,6 +491,7 @@ export class AssessmentComponent {
     }).format(new Date());
   }
 
+  // the action that the button does
   get btnAction() {
     if (this.doAssessment || this.doReview) {
       return 'submit';
@@ -577,6 +502,7 @@ export class AssessmentComponent {
     return 'continue';
   }
 
+  // the text of the button
   get btnText() {
     switch (this.btnAction) {
       case 'submit':
@@ -586,6 +512,22 @@ export class AssessmentComponent {
       default:
         return 'continue';
     }
+  }
+
+  /**
+   * status of access restriction
+   *
+   * @return  {boolean}  cached singlePageAccess in localstorage
+   */
+  get restrictedAccess() {
+    return this.storage.singlePageAccess;
+  }
+
+  randomCode(type) {
+    if (!this.elIdentities[type]) {
+      this.elIdentities[type] = this.utils.randomNumber();
+    }
+    return this.elIdentities[type];
   }
 
 }

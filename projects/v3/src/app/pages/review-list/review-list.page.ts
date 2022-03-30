@@ -77,14 +77,14 @@ export class ReviewListPage implements OnInit {
     console.log('REVIEW::', review);
     this.testBoolean = this.testBoolean === 0 ? 1 : 0;
 
-    this.assessmentService.getAssessment(this.testBoolean).subscribe(
-      result => {
-        this.review$.next(result);
-      },
-      error => {
-        console.log(error);
-      }
-    );
+    // this.assessmentService.getAssessment(this.testBoolean).subscribe(
+    //   result => {
+    //     this.review$.next(result);
+    //   },
+    //   error => {
+    //     console.log(error);
+    //   }
+    // );
   }
 
   /**
