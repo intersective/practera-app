@@ -1,7 +1,9 @@
 <div class="ion-padding">
-  <h1 class="headline-4">
-    How much do you know about NSW?
-  </h1>
+  <h1 class="headline-4"
+    [attr.aria-describedby]="randomCode(assessment.name)"
+    role="title"
+    tabindex="0">{{ assessment.name }}</h1>
+  <ion-label color="green">Waiting Feedback</ion-label>
   <p class="due-date assessment subtitle-1 gray-2">
     Due date: 22 September 2023
   </p>
@@ -10,9 +12,6 @@
   </ion-text>
 
   <hr>
-
-  <h1 class="headline-4" [attr.aria-describedby]="randomCode(assessment.name)" role="title" tabindex="0">{{
-    assessment.name }}</h1>
 
   <ion-text class="ion-text-left">
     <app-description [name]="randomCode(assessment.name)" *ngIf="assessment.description"
@@ -166,10 +165,6 @@
       </ng-container>
     </ng-container>
   </form>
-
-
-  <pre>{{ assessment | json }}</pre>
-
 </div>
 
 <ion-footer color="light" class="ion-footer-absolute">

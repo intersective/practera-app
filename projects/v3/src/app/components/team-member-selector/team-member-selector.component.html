@@ -37,14 +37,14 @@
 
 <ng-container *ngIf="doAssessment">
   <ion-list class="no-bg">
-      <ion-radio-group [value]="submission.answer" #answerEle (ionChange)="onChange(answerEle.value)">
-        <ion-item class="choice-item" *ngFor="let teamMember of question.teamMembers;let i = index"
-          [lines]="i == question.teamMembers.length - 1 ? 'none' : ''">
-          <ion-label class="white-space-normal body-2 black">{{ teamMember.userName }}</ion-label>
-          <ion-radio [value]="teamMember.key" mode="md" [disabled]="control.disabled"></ion-radio>
-        </ion-item>
-      </ion-radio-group>
-    </ion-list>
+    <ion-radio-group [value]="submission.answer" #answerEle (ionChange)="onChange(answerEle.value)">
+      <ion-item class="choice-item" *ngFor="let teamMember of question.teamMembers;let i = index"
+        [lines]="i == question.teamMembers.length - 1 ? 'none' : ''">
+        <ion-label class="white-space-normal body-2 black">{{ teamMember.userName }}</ion-label>
+        <ion-radio [value]="teamMember.key" mode="md" [disabled]="control.disabled"></ion-radio>
+      </ion-item>
+    </ion-radio-group>
+  </ion-list>
 </ng-container>
 
 <ng-container *ngIf="doReview">
