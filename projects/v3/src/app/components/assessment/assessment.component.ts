@@ -17,12 +17,7 @@ const SAVE_PROGRESS_TIMEOUT = 10000;
   templateUrl: './assessment.component.html',
   styleUrls: ['./assessment.component.scss'],
 })
-export class AssessmentComponent implements OnInit {
-  @Input() inputId: number; // assessment id
-  @Input() inputActivityId: number;
-  @Input() inputSubmissionId: number;
-  @Input() inputContextId: number;
-
+export class AssessmentComponent {
   /**
    * -- action --
    * Options: assessment/review
@@ -35,39 +30,28 @@ export class AssessmentComponent implements OnInit {
    * current user is the user who should "review" this assessment
    */
   @Input() action: string;
-  @Input() fromPage: string = '';
-  @Output() assessmentChange = new EventEmitter<Assessment>();
-  @Input() assessment$: Subject<any>;
-
-  @Output() navigate = new EventEmitter();
-  @Output() changeStatus = new EventEmitter();
-
-  // getAssessment: Subscription;
-  // getSubmission: Subscription;
-
-  // assessment id
-  id: number;
-  // activity id
-  activityId: number;
-  // context id
-  contextId: number;
-  submissionId: number;
-  assessment: Assessment;
-
-  @Input() submission: Submission;;
+  @Input() assessment: Assessment;
+  @Input() submission: Submission;
   @Input() review: Review;
 
+  // save the submission in progress
+  @Output() save = new EventEmitter();
+  // submit the assessment/review
+  @Output() submit = new EventEmitter();
+  // mark the feedback as read
+  @Output() readFeedback = new EventEmitter();
+  // continue to the next task
+  @Output() continue = new EventEmitter();
 
-  // if doAssessment is true, it means this user is actually doing assessment, meaning it is not started or in progress
+  // if doAssessment is true, it means this user is actually doing assessment, meaning it is not started or is in progress
   // if action == 'assessment' and doAssessment is false, it means this user is reading the submission or feedback
-  @Input() doAssessment: boolean;
+  doAssessment: boolean;
 
   // if doReview is true, it means this user is actually doing review, meaning this assessment is pending review
   // if action == 'review' and doReview is false, it means the review is done and this user is reading the submission and review
   doReview = false;
 
   feedbackReviewed = false;
-  @Input() loadingAssessment = true;
   questionsForm: FormGroup;
   submitting: boolean;
   submitted: boolean;
@@ -83,33 +67,25 @@ export class AssessmentComponent implements OnInit {
 
   constructor(
     private router: Router,
-    private route: ActivatedRoute,
     private assessmentService: AssessmentService,
     readonly utils: UtilsService,
-    private notificationsService: NotificationsService,
+    private notifications: NotificationsService,
     private storage: BrowserStorageService,
     private sharedService: SharedService,
     private activityService: ActivityService,
     private fastFeedbackService: FastFeedbackService,
     private ngZone: NgZone,
     private fb: FormBuilder,
-  ) {
-    this.route.queryParams.subscribe(params => {
-      console.log({params});
-    });
-    this.questionsForm = this.fb.group({});
-  }
+  ) {}
 
-  get isMobile() {
-    return this.utils.isMobile();
-  }
-
-  ngOnInit() {
-    this.assessment$.subscribe(assessment => {
-      console.log('current assessment::', assessment);
-      this.assessment = assessment;
-      this.populateQuestionsForm();
-    });
+  ngOnChanges() {
+    if (!this.assessment) {
+      return;
+    }
+    this._initialise();
+    this._populateQuestionsForm();
+    this._handleSubmissionData();
+    this._handleReviewData();
   }
 
   /**
@@ -125,97 +101,25 @@ export class AssessmentComponent implements OnInit {
     if (!this.elIdentities[type]) {
       this.elIdentities[type] = this.utils.randomNumber();
     }
-
     return this.elIdentities[type];
   }
 
-  // force every navigation happen under radar of angular
-  private _navigate(direction, params?): Promise<boolean> {
-    if (this.utils.isMobile()) {
-      // redirect to topic/assessment page for mobile
-      return this.ngZone.run(() => {
-        return this.router.navigate(direction, params);
-      });
-    } else {
-      // emit to parent component(events component)
-      if (['events', 'reviews'].includes(direction[1])) {
-        this.navigate.emit();
-        return;
-      }
-      // emit event to parent component(task component)
-      switch (direction[0]) {
-        case 'topic':
-          this.navigate.emit({
-            type: 'topic',
-            topicId: direction[2]
-          });
-          break;
-        case 'assessment':
-          this.navigate.emit({
-            type: 'assessment',
-            contextId: direction[3],
-            assessmentId: direction[4]
-          });
-          break;
-        default:
-          return this.ngZone.run(() => {
-            return this.router.navigate(direction, params);
-          });
-      }
-    }
-  }
-
   private _initialise() {
-    this.submission = {
-      id: 0,
-      status: '',
-      answers: {},
-      submitterName: '',
-      modified: '',
-      isLocked: false,
-      completed: false,
-      submitterImage: '',
-      reviewerName: ''
-    };
-    this.review = {
-      id: 0,
-      answers: {},
-      status: '',
-      modified: ''
-    };
     this.saving = false;
     this.doAssessment = false;
     this.doReview = false;
     this.feedbackReviewed = false;
     this.questionsForm = new FormGroup({});
+    // this.questionsForm = this.fb.group({});
     this.submitting = false;
     this.submitted = false;
     this.savingButtonDisabled = false;
     this.savingMessage = '';
     this.continueBtnLoading = false;
-    this.id = null;
-    this.activityId = null;
-    this.contextId = null;
-    this.submissionId = null;
     this.isNotInATeam = false;
   }
 
-  onEnter() {
-    this._initialise();
-
-    this.id = (this.inputId) ? +this.inputId : +this.route.snapshot.paramMap.get('id');
-
-    this.activityId = (this.inputActivityId) ? +this.inputActivityId : +this.route.snapshot.paramMap.get('activityId');
-
-    this.contextId = (this.inputContextId) ? +this.inputContextId : +this.route.snapshot.paramMap.get('contextId');
-
-    this.submissionId = (this.inputSubmissionId) ? +this.inputSubmissionId : +this.route.snapshot.paramMap.get('submissionId');
-
-    this.populateQuestionsForm();
-  }
-
-  private _handleSubmissionData(submission) {
-    this.submission = submission;
+  private _handleSubmissionData() {
     // If team assessment is locked, set the page to readonly mode.
     // set doAssessment, doReview to false - when assessment is locked, user can't do both.
     // set submission status to done - we need to show readonly answers in question components.
@@ -254,26 +158,42 @@ export class AssessmentComponent implements OnInit {
     }
 
     this.feedbackReviewed = this.submission.completed;
+
+    // display pop up if it is team assessment and user is not in team
+    if (this.doAssessment && this.assessment.isForTeam && !this.storage.getUser().teamId) {
+      this.isNotInATeam = true;
+      return this.notifications.alert({
+        message: 'Currently you are not in a team, please reach out to your Administrator or Coordinator to proceed with next steps.',
+        buttons: [
+          {
+            text: 'OK',
+            role: 'cancel',
+            handler: () => {
+              this.continue.emit();
+            }
+          }
+        ]
+      });
+    }
   }
 
-  private _handleReviewData(review) {
-    this.review = review;
-    if (!review && this.action === 'review' && !this.doReview) {
-      return this.notificationsService.alert({
+  private _handleReviewData() {
+    if (!this.review && this.action === 'review' && !this.doReview) {
+      return this.notifications.alert({
         message: 'There are no assessments to review.',
         buttons: [
           {
             text: 'OK',
             role: 'cancel',
             handler: () => {
-              this._navigate(['v3', 'home']);
+              this.continue.emit();
             }
           }
         ]
       });
     }
-    if (this.doReview && review.status === 'in progress') {
-      this.savingMessage = 'Last saved ' + this.utils.timeFormatter(review.modified);
+    if (this.doReview && this.review.status === 'in progress') {
+      this.savingMessage = 'Last saved ' + this.utils.timeFormatter(this.review.modified);
       this.savingButtonDisabled = false;
     }
   }
@@ -298,7 +218,7 @@ export class AssessmentComponent implements OnInit {
 
   // Populate the question form with FormControls.
   // The name of form control is like 'q-2' (2 is an example of question id)
-  populateQuestionsForm() {
+  _populateQuestionsForm() {
     let validator = [];
     this.assessment.groups.forEach(group => {
       group.questions.forEach(question => {
@@ -339,13 +259,13 @@ export class AssessmentComponent implements OnInit {
   /**
    * When user click on the back button
    */
-  back(): Promise<boolean | void> {
+  goBack(): Promise<boolean | void> {
 
     if (this.action === 'assessment'
       && this.submission
       && this.submission.status === 'published'
       && !this.feedbackReviewed) {
-      return this.notificationsService.alert({
+      return this.notifications.alert({
         header: `Mark feedback as read?`,
         message: 'Would you like to mark the feedback as read?',
         buttons: [
@@ -400,29 +320,7 @@ export class AssessmentComponent implements OnInit {
     if (this.submission && this.submission.status === 'published' && !this.feedbackReviewed) {
       await this.markReviewFeedbackAsRead();
     }
-    this.goToNextTask();
-  }
-
-  /**
-   * Go to the next task
-   */
-  goToNextTask() {
-    // skip "continue workflow" && instant redirect user, when:
-    // - review action (this.action == 'review')
-    // - fromPage = events (check AssessmentRoutingModule)
-    if (this.action === 'review' ||
-      (this.action === 'assessment' && this.fromPage === 'events')
-    ) {
-      return this.navigateBack();
-    }
-
-    this.continueBtnLoading = true;
-    this.activityService.gotoNextTask(this.activityId, 'assessment', this.id, this.submitted).then(redirect => {
-      this.continueBtnLoading = false;
-      if (redirect) {
-        this._navigate(redirect);
-      }
-    });
+    this.continue.emit();
   }
 
   /**
@@ -444,7 +342,7 @@ export class AssessmentComponent implements OnInit {
       }
       this.continueBtnLoading = false;
     } catch (err) {
-      const toasted = await this.notificationsService.alert({
+      const toasted = await this.notifications.alert({
         header: 'Error retrieving pulse check data',
         message: err.msg || JSON.stringify(err)
       });
@@ -550,7 +448,7 @@ export class AssessmentComponent implements OnInit {
     if (!saveInProgress && requiredQuestions.length > 0) {
       this.submitting = false;
       // display a pop up if required question not answered
-      return this.notificationsService.popUp('shortMessage', {
+      return this.notifications.popUp('shortMessage', {
         message: 'Required question answer missing!'
       });
     }
@@ -587,7 +485,7 @@ export class AssessmentComponent implements OnInit {
           this.savingMessage = 'Auto save unavailable';
         } else {
           // display a pop up if submission failed
-          this.notificationsService.alert({
+          this.notifications.alert({
             header: 'Submission failed',
             message: 'Please refresh the page and try it again later',
             buttons: [
@@ -627,7 +525,7 @@ export class AssessmentComponent implements OnInit {
     } catch (err) {
       this.continueBtnLoading = false;
       // @TODO - Removed the popup for now until we implement proper way to handle API error
-      /**const toasted = await this.notificationsService.alert({
+      /**const toasted = await this.notifications.alert({
         header: 'Marking feedback as read failed',
         message: err.msg || JSON.stringify(err)
       });
@@ -648,7 +546,7 @@ export class AssessmentComponent implements OnInit {
       this.continueBtnLoading = false;
     } catch (err) {
       const msg = 'Can not get review rating information';
-      const toasted = await this.notificationsService.alert({
+      const toasted = await this.notifications.alert({
         header: msg,
         message: err.msg || JSON.stringify(err)
       });
@@ -658,7 +556,7 @@ export class AssessmentComponent implements OnInit {
   }
 
   showQuestionInfo(info) {
-    this.notificationsService.popUp('shortMessage', { message: info });
+    this.notifications.popUp('shortMessage', { message: info });
   }
 
   private _getCurrentTime() {
@@ -669,56 +567,27 @@ export class AssessmentComponent implements OnInit {
     }).format(new Date());
   }
 
-  hasFooter() {
-    return this.doAssessment || this.doReview || this.footerText();
-  }
-
-  submissionStatus() {
-    switch (this.submission.status) {
-      case 'published':
-        if (this.feedbackReviewed) {
-          return 'done';
-        }
-        return 'feedback available';
-      case 'pending approval':
-        return 'pending review';
-      default:
-        return this.submission.status;
-    }
-  }
-
-  doAssessmentDoReviewStatus() {
-    if (this.submitting) {
-      return 'submitting';
-    }
-
-    if (this.submitted) {
-      if (this.assessment.type === 'moderated') {
-        if (this.doAssessment) {
-          return 'pending review';
-        }
-        return 'review submitted';
-      }
-      return 'submitted';
-    }
-    // display the submit button, don't need the text in the footer
-    return false;
-  }
-
-  /**
-   * Get the text on the left of the footer.
-   * Return false if it shouldn't be displayed
-   */
-  footerText(): string | boolean {
-    // if it is to do assessment or do review
+  get btnAction() {
     if (this.doAssessment || this.doReview) {
-      return this.doAssessmentDoReviewStatus();
-    } else if (this.action === 'review' || !this.submission) {
-      return false;
-    } else {
-      return this.submissionStatus();
+      return 'submit';
+    }
+    if (this.submission && this.submission.status === 'published' && !this.feedbackReviewed) {
+      return 'readFeedback';
+    }
+    return 'continue';
+  }
+
+  get btnText() {
+    switch (this.btnAction) {
+      case 'submit':
+        return 'submit answers';
+      case 'readFeedback':
+        return 'mark feedback as reviewed';
+      default:
+        return 'continue';
     }
   }
+
 }
 
 
