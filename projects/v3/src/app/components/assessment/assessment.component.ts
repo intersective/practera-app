@@ -277,7 +277,7 @@ export class AssessmentComponent {
    * When user click the bottom button
    */
   btnClicked() {
-    switch (this.btnAction) {
+    switch (this._btnAction) {
       case 'submit':
         return this._submit();
       case 'readFeedback':
@@ -492,7 +492,7 @@ export class AssessmentComponent {
   }
 
   // the action that the button does
-  get btnAction() {
+  private get _btnAction() {
     if (this.doAssessment || this.doReview) {
       return 'submit';
     }
@@ -504,7 +504,7 @@ export class AssessmentComponent {
 
   // the text of the button
   get btnText() {
-    switch (this.btnAction) {
+    switch (this._btnAction) {
       case 'submit':
         return 'submit answers';
       case 'readFeedback':
