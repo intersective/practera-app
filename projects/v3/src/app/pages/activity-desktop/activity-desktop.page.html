@@ -13,7 +13,7 @@
 <ion-content>
   <ion-grid class="ion-no-padding">
     <ion-row *ngIf="(activity$ | async ) as activity">
-      <ion-col size="12" size-md="5">
+      <ion-col size="12" size-md="5" size-lg>
         <app-activity
           [activity]="activity"
           [currentTask]="currentTask$ | async"

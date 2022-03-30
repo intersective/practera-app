@@ -1,14 +1,10 @@
-import { Component, Input, NgZone, Output, EventEmitter, OnInit } from '@angular/core';
-import { Router, ActivatedRoute, ParamMap } from '@angular/router';
-import { AssessmentService, Assessment, Submission, Review, AssessmentSubmitParams } from '@v3/services/assessment.service';
+import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
+import { Assessment, Submission, Review, AssessmentSubmitParams } from '@v3/services/assessment.service';
 import { UtilsService } from '@v3/services/utils.service';
 import { NotificationsService } from '@v3/services/notifications.service';
-import { FormGroup, FormControl, Validators, FormBuilder } from '@angular/forms';
+import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { SharedService } from '@v3/services/shared.service';
-import { ActivityService } from '@v3/services/activity.service';
-import { FastFeedbackService } from '@v3/services/fast-feedback.service';
-import { Subject } from 'rxjs';
 
 const SAVE_PROGRESS_TIMEOUT = 5000;
 
@@ -50,30 +46,29 @@ export class AssessmentComponent {
   // if action == 'review' and doReview is false, it means the review is done and this user is reading the submission and review
   doReview = false;
 
-  questionsForm: FormGroup;
-
   // whether the learner has seen the feedback
   feedbackReviewed = false;
+
   // whether the bottom button(and the save button) is disabled
   btnDisabled: boolean;
+
   // the text of when the submission get saved last time
   savingMessage: string;
 
-  elIdentities = {}; // virtual element id for accessibility "aria-describedby" purpose
+  // virtual element id for accessibility "aria-describedby" purpose
+  elIdentities = {};
 
-  isNotInATeam = false; // to hide assessment content if user not is a team.
+  // to hide assessment content if user not is a team.
+  isNotInATeam = false;
+
+  questionsForm: FormGroup;
+
 
   constructor(
-    private router: Router,
-    private assessmentService: AssessmentService,
     readonly utils: UtilsService,
     private notifications: NotificationsService,
     private storage: BrowserStorageService,
     private sharedService: SharedService,
-    private activityService: ActivityService,
-    private fastFeedbackService: FastFeedbackService,
-    private ngZone: NgZone,
-    private fb: FormBuilder,
   ) {}
 
   ngOnChanges() {
@@ -214,39 +209,6 @@ export class AssessmentComponent {
 
     return (question.isRequired && question.audience.includes(role));
   }
-
-
-  /**
-   * When user click on the back button
-   */
-  // goBack(): Promise<boolean | void> {
-
-  //   if (this.action === 'assessment'
-  //     && this.submission
-  //     && this.submission.status === 'published'
-  //     && !this.feedbackReviewed) {
-  //     return this.notifications.alert({
-  //       header: `Mark feedback as read?`,
-  //       message: 'Would you like to mark the feedback as read?',
-  //       buttons: [
-  //         {
-  //           text: 'No',
-  //           handler: () => this.navigateBack(),
-  //         },
-  //         {
-  //           text: 'Yes',
-  //           handler: () => this.markReviewFeedbackAsRead().then(() => {
-  //             return this.navigateBack();
-  //           })
-  //         }
-  //       ]
-  //     });
-  //   } else {
-  //     // force saving progress
-  //     this.submit(true, true, true);
-  //     return this.navigateBack();
-  //   }
-  // }
 
   /**
    * @name _compulsoryQuestionsAnswered
@@ -529,6 +491,38 @@ export class AssessmentComponent {
     }
     return this.elIdentities[type];
   }
+
+  /**
+   * When user click on the back button
+   */
+  // goBack(): Promise<boolean | void> {
+
+  //   if (this.action === 'assessment'
+  //     && this.submission
+  //     && this.submission.status === 'published'
+  //     && !this.feedbackReviewed) {
+  //     return this.notifications.alert({
+  //       header: `Mark feedback as read?`,
+  //       message: 'Would you like to mark the feedback as read?',
+  //       buttons: [
+  //         {
+  //           text: 'No',
+  //           handler: () => this.navigateBack(),
+  //         },
+  //         {
+  //           text: 'Yes',
+  //           handler: () => this.markReviewFeedbackAsRead().then(() => {
+  //             return this.navigateBack();
+  //           })
+  //         }
+  //       ]
+  //     });
+  //   } else {
+  //     // force saving progress
+  //     this.submit(true, true, true);
+  //     return this.navigateBack();
+  //   }
+  // }
 
 }
 
