@@ -10,6 +10,7 @@ import { ApolloService } from '@v3/services/apollo.service';
 import { DemoService } from './demo.service';
 import { environment } from '@v3/environments/environment';
 import { TopicService } from './topic.service';
+import { AssessmentService } from './assessment.service';
 
 /**
  * @name api
@@ -55,6 +56,7 @@ export class ActivityService {
   private _currentTask$ = new BehaviorSubject<Task>(null);
   currentTask$ = this._currentTask$.asObservable();
 
+  activity: Activity;
   public tasks: Array<any>;
 
   constructor(
@@ -65,7 +67,8 @@ export class ActivityService {
     private router: Router,
     private notification: NotificationsService,
     private apolloService: ApolloService,
-    private topic: TopicService
+    private topic: TopicService,
+    private assessment: AssessmentService
   ) {}
 
   public getActivity(id: number, goToFirstTask = false, afterTask?: Task) {
@@ -146,6 +149,7 @@ export class ActivityService {
       }
     });
     this._activity$.next(result);
+    this.activity = result;
     if (goToFirstTask) {
       this.goToFirstTask(result.tasks, afterTask);
     }
@@ -153,7 +157,7 @@ export class ActivityService {
   }
 
   /**
-   * Go to the first unfinished task inside this activity, (optional) after a task
+   * Go to the first unfinished task inside this activity, (optional) after a specific task
    */
    goToFirstTask(tasks: Task[], afterTask?: Task) {
     // find the first task that is not done or pending review
@@ -186,6 +190,7 @@ export class ActivityService {
     this._currentTask$.next(task);
     switch (task.type) {
       case 'Assessment':
+        this.assessment.getAssessment(task.id, 'assessment', this.activity.id, task.contextId);
         break;
       case 'Topic':
         this.topic.getTopic(task.id);

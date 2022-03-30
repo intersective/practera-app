@@ -1,7 +1,6 @@
 import { Topic } from '@v3/services/topic.service';
 import { Component, NgZone, Input, Output, EventEmitter, Inject, SimpleChange } from '@angular/core';
 import { DOCUMENT } from '@angular/common';
-import { ActivatedRoute } from '@angular/router';
 import { UtilsService } from '@v3/services/utils.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { SharedService } from '@v3/services/shared.service';

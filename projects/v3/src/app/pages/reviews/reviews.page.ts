@@ -108,6 +108,7 @@ export class ReviewsPage implements OnInit {
     private storage: BrowserStorageService,
   ) {
     this.currentAssessment = {
+      id: 0,
       name: '',
       type: '',
       description: '',
@@ -182,14 +183,14 @@ export class ReviewsPage implements OnInit {
     });
 
     // get assessment structure and populate the question form
-    this.assessmentService.getAssessment().subscribe(
-      result => {
-        this.currentReview$.next(result);
-      },
-      error => {
-        console.log(error);
-      }
-    );
+    // this.assessmentService.getAssessment().subscribe(
+    //   result => {
+    //     this.currentReview$.next(result);
+    //   },
+    //   error => {
+    //     console.log(error);
+    //   }
+    // );
   }
 
   // display the review content in the right pane, and highlight on the left pane

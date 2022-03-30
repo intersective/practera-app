@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { ActivityService, Task, Activity } from '@v3/app/services/activity.service';
+import { AssessmentService } from '@v3/app/services/assessment.service';
 import { Topic, TopicService } from '@v3/app/services/topic.service';
 
 @Component({
@@ -12,13 +13,17 @@ export class ActivityDesktopPage implements OnInit {
   activity$ = this.service.activity$;
   currentTask$ = this.service.currentTask$;
   topic$ = this.topicService.topic$;
+  assessment$ = this.assessmentService.assessment$;
+  submission$ = this.assessmentService.submission$;
+  review$ = this.assessmentService.review$;
 
   activity: Activity;
 
   constructor(
     private route: ActivatedRoute,
     private service: ActivityService,
-    private topicService: TopicService
+    private topicService: TopicService,
+    private assessmentService: AssessmentService
   ) { }
 
   ngOnInit() {

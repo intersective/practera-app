@@ -24,10 +24,10 @@
         <ng-container *ngIf="(currentTask$ | async ) as currentTask">
           <app-assessment
             *ngIf="currentTask.type === 'Assessment'"
-            [inputId]="currentTask.id"
-            [inputActivityId]="activity.id"
-            [inputContextId]="currentTask.contextId"
-            inputAction="assessment"
+            [assessment]="assessment$ | async"
+            [submission]="submission$ | async"
+            [review]="review$ | async"
+            [contextId]="currentTask.contextId"
           ></app-assessment>
           <app-topic
             *ngIf="currentTask.type === 'Topic'"
