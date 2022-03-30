@@ -14,10 +14,10 @@ enum STATUSES {
 
 @Component({
   selector: 'app-review-list',
-  templateUrl: './review-list.page.html',
-  styleUrls: ['./review-list.page.scss'],
+  templateUrl: './review-list.component.html',
+  styleUrls: ['./review-list.component.scss'],
 })
-export class ReviewListPage implements OnInit {
+export class ReviewListComponent implements OnInit {
   public reviews: Array<Review> = [];
   public showDone = false;
   public loadingReviews = true;

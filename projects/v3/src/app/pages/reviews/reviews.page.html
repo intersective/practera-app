@@ -21,7 +21,7 @@
           [submissionId]="submissionId"
           (navigate)="goto($event)"
           [review$]="currentReview$"
-          [reviews$]="reviews$"
+          [reviews]="reviews$"
         ></app-review-list>
       </ion-col>
 
@@ -50,17 +50,14 @@
           </ion-item-group>
         </ion-list>
 
-        <!-- <app-assessment
-          [assessment$]="currentReview$"
-          [submission]="submission"
-          [inputId]="assessmentId"
-          [inputSubmissionId]="submissionId"
-          [inputContextId]="contextId"
-          [loadingAssessment]="loadingAssessment"
-          [review]="currentReview"
+        <app-assessment
+          [assessment]="currentReview$ | async"
+          [submission]="submission$ | async"
+          [review]="review$ | async"
+          [contextId]="currentTask.contextId"
           action="review"
           fromPage="reviews"
-        ></app-assessment> -->
+        ></app-assessment>
       </ion-col>
     </ion-row>
   </ion-grid>
