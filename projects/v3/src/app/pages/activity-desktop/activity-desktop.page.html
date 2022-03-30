@@ -29,6 +29,7 @@
             [review]="review$ | async"
             [contextId]="currentTask.contextId"
           ></app-assessment>
+
           <app-topic
             *ngIf="currentTask.type === 'Topic'"
             [topic]="topic$ | async"

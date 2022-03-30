@@ -17,22 +17,13 @@ export class ReviewsPage implements OnInit {
   contextId: number;
 
   currentReview$ = new BehaviorSubject<any>({});
-  reviews$ = new BehaviorSubject<any[]>([]);
+  reviews$ = this.assessmentService.review$;
+  submission$ = this.assessmentService.submission$;
 
   currentAssessment: Assessment;
   loadingAssessment: boolean = true;
 
-  submission: Submission = {
-    id: 0,
-    status: '',
-    answers: {},
-    submitterName: '',
-    modified: '',
-    isLocked: false,
-    completed: false,
-    submitterImage: '',
-    reviewerName: ''
-  };
+
   currentReview: Review = {
     id: 0,
     answers: {},

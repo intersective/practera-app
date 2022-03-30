@@ -29,6 +29,7 @@ import { OneofComponent } from './oneof/oneof.component';
 import { FileDisplayComponent } from './file-display/file-display.component';
 import { ActivityComponent } from './activity/activity.component';
 import { TopicComponent } from './topic/topic.component';
+import { ReviewListComponent } from './review-list/review-list.component';
 
 const largeCircleDefaultConfig = {
   backgroundColor: 'var(--ion-color-light)',
@@ -78,6 +79,7 @@ const largeCircleDefaultConfig = {
     MultipleComponent,
     OneofComponent,
     PopUpComponent,
+    ReviewListComponent,
     ReviewRatingComponent,
     TeamMemberSelectorComponent,
     TextComponent,
@@ -111,6 +113,7 @@ const largeCircleDefaultConfig = {
     MultipleComponent,
     OneofComponent,
     PopUpComponent,
+    ReviewListComponent,
     ReviewRatingComponent,
     TeamMemberSelectorComponent,
     TextComponent,
