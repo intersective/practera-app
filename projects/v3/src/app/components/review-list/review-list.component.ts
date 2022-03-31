@@ -1,11 +1,9 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { Router } from '@angular/router';
-import { Review, ReviewListService } from '@v3/services/review-list.service';
+import { Review } from '@v3/services/review-list.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { UtilsService } from '@v3/services/utils.service';
-import { NotificationsService } from '@v3/services/notifications.service';
 import { Subject } from 'rxjs';
-import { AssessmentService } from '@v3/app/services/assessment.service';
 
 enum STATUSES {
   PENDING = 'pending',
@@ -18,7 +16,7 @@ enum STATUSES {
   styleUrls: ['./review-list.component.scss'],
 })
 export class ReviewListComponent implements OnInit {
-  public reviews: Array<Review> = [];
+  @Input() reviews: Review[];
   public showDone = false;
   public loadingReviews = true;
   @Input() submissionId: number;
@@ -32,39 +30,18 @@ export class ReviewListComponent implements OnInit {
   testBoolean = 0;
 
   constructor(
-    public reviewsService: ReviewListService,
     public router: Router,
     public utils: UtilsService,
     public storage: BrowserStorageService,
-    private notificationsService: NotificationsService,
-    private assessmentService: AssessmentService,
   ) { }
 
   ngOnInit() {
     this.onEnter();
-    this.review$.subscribe(review => {
-      console.log('ReviewListPage::current', review);
-    });
   }
 
   onEnter() {
     this.loadingReviews = true;
     this.showDone = false;
-    this.reviewsService.getReviews()
-      .subscribe(
-        reviews => {
-          this.reviews = reviews;
-          this.loadingReviews = false;
-          this.gotoFirstReview();
-        },
-        err => {
-          this.notificationsService.alert({
-            header: 'Error retrieving latest reviews',
-            message: err.msg || JSON.stringify(err)
-          });
-          throw new Error(err);
-        }
-      );
   }
 
   statusUpdate(event) {
