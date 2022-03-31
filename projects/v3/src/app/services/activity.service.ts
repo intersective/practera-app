@@ -158,12 +158,14 @@ export class ActivityService {
 
   /**
    * Go to the first unfinished task inside this activity, (optional) after a specific task
+   * @param tasks The list of tasks
+   * @param afterTask Find the next task after this task
    */
-   goToNextTask(tasks: Task[], afterTask?: Task) {
+  goToNextTask(tasks: Task[], afterTask?: Task) {
     // find the first task that is not done or pending review
     // and is allowed to access for this user
     let skipTask = !!afterTask;
-    let firstTask: Task;
+    let nextTask: Task;
     for (const task of tasks) {
       // if we need to find the first task after a specific task,
       // loop through the tasks array until we find this specific task
@@ -178,14 +180,30 @@ export class ActivityService {
         task.type !== 'Locked' &&
         !(task.isForTeam && !this.storage.getUser().teamId) &&
         !task.isLocked) {
-        firstTask = task;
+        nextTask = task;
         break;
       }
     }
-    if (!firstTask) {
-      firstTask = tasks[0];
+    // if there is no unfinished task
+    if (!nextTask) {
+      if (afterTask) {
+        return this._goBack();
+      }
+      nextTask = tasks[0];
     }
-    this.goToTask(firstTask);
+    this.goToTask(nextTask);
+  }
+
+  private _goBack() {
+    // check if we need to redirect user to external url
+    const referrer = this.storage.getReferrer();
+    if (this.utils.has(referrer, 'activityTaskUrl')) {
+      this.utils.redirectToUrl(referrer.activityTaskUrl);
+      return ;
+    }
+    // pop up activity completed modal
+    this.notification.activityCompletePopUp(this.activity.id, false);
+    this.router.navigate(['v3', 'home']);
   }
 
   goToTask(task: Task) {
