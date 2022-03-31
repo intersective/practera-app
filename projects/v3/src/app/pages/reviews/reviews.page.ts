@@ -18,7 +18,6 @@ export class ReviewsPage implements OnInit {
 
   currentReview$ = new BehaviorSubject<any>({});
   reviews$ = this.reviewsService.reviews$;
-  // reviews$ = this.assessmentService.review$;
   submission$ = this.assessmentService.submission$;
 
   currentAssessment: Assessment;
@@ -113,6 +112,7 @@ export class ReviewsPage implements OnInit {
 
     this.route.queryParams.subscribe(params => {
       console.log('ReviewsPageParams::', params);
+      // this.submissionId = params.submissionId;
       this.onEnter();
     });
   }
@@ -133,7 +133,8 @@ export class ReviewsPage implements OnInit {
   }
 
   onEnter(): void {
-    this.currentReview$.next({
+    this.reviewsService.getReviews().subscribe();
+    /* this.currentReview$.next({
       assessment: {
         name: '',
         type: '',
@@ -144,8 +145,7 @@ export class ReviewsPage implements OnInit {
         groups: [],
         pulseCheck: false,
       }
-    });
-    this.submissionId = +this.route.snapshot.paramMap.get('submissionId');
+    }); */
     this.loadingAssessment = false;
   }
 }

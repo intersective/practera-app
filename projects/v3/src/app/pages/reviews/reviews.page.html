@@ -25,7 +25,7 @@
       </ion-col>
 
       <ion-col size="12" size-lg>
-        <ion-list class="ion-no-margin ion-no-padding">
+        <ion-list class="ion-no-margin ion-no-padding" *ngIf="submission$ | async as submission">
           <ion-item-group>
             <ion-item-divider>
               <ion-label color="primary">Submission Details</ion-label>
@@ -34,7 +34,7 @@
               <ion-grid>
                 <ion-row size="12">
                   <ion-col size="6">Learner</ion-col>
-                  <ion-col size="6">John Doe</ion-col>
+                  <ion-col size="6">{{ submission.submitterName }}</ion-col>
                 </ion-row>
               </ion-grid>
             </ion-item>

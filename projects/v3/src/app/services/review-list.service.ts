@@ -3,6 +3,8 @@ import { BehaviorSubject, Observable, of } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { RequestService } from 'request';
 import { UtilsService } from '@v3/services/utils.service';
+import { DemoService } from './demo.service';
+import { environment } from '@v3/environments/environment';
 
 const api = {
   reviews: 'api/reviews.json',
@@ -34,9 +36,14 @@ export class ReviewListService {
   constructor(
     private request: RequestService,
     private utils: UtilsService,
+    private demoService: DemoService,
   ) { }
 
   getReviews(): Observable<any> {
+    if (environment.demo) {
+      return this.demoService.assessment(99).pipe(map(res => this._normaliseReviews(res)));
+    }
+
     return this.request.get(api.reviews)
       .pipe(map(response => {
         if (response.success && response.data) {
