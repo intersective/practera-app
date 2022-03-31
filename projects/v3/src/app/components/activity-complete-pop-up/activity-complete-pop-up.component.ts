@@ -21,7 +21,8 @@ export class ActivityCompletePopUpComponent {
   confirmed(continueToActivity: boolean) {
     this.modalController.dismiss();
     if (!continueToActivity) {
-      this.router.navigate(['v3', 'activity', this.activityId]);
+      const route = this.utils.isMobile() ? ['v3', 'activity-mobile', this.activityId] : ['v3', 'activity-desktop', this.activityId]
+      this.router.navigate(route);
     } else {
       if (this.activityCompleted) {
         this.router.navigate(['v3', 'home'], { queryParams: { activityId: this.activityId, activityCompleted: this.activityCompleted } });
