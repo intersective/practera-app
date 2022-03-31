@@ -308,7 +308,7 @@ export class AssessmentComponent {
      *      - do nothing
      */
     this.btnDisabled = true;
-    // allow submitting/saving after 10 seconds
+    // allow submitting/saving after a few seconds
     setTimeout(() => this.btnDisabled = false, SAVE_PROGRESS_TIMEOUT);
 
     if (saveInProgress) {

@@ -28,12 +28,15 @@
             [submission]="submission$ | async"
             [review]="review$ | async"
             [contextId]="currentTask.contextId"
+            (submit)="submitAssessment($event, currentTask)"
+            (readFeedback)="readFeedback($event, currentTask)"
+            (continue)="nextTask(currentTask)"
           ></app-assessment>
 
           <app-topic
             *ngIf="currentTask.type === 'Topic'"
             [topic]="topic$ | async"
-            (continue)="topicComplete($event)"
+            (continue)="topicComplete(currentTask)"
           ></app-topic>
         </ng-container>
       </ion-col>
