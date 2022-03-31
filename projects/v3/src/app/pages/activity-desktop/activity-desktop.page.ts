@@ -10,8 +10,8 @@ import { Topic, TopicService } from '@v3/app/services/topic.service';
   styleUrls: ['./activity-desktop.page.scss'],
 })
 export class ActivityDesktopPage implements OnInit {
-  activity$ = this.service.activity$;
-  currentTask$ = this.service.currentTask$;
+  activity$ = this.activityService.activity$;
+  currentTask$ = this.activityService.currentTask$;
   topic$ = this.topicService.topic$;
   assessment$ = this.assessmentService.assessment$;
   submission$ = this.assessmentService.submission$;
@@ -21,7 +21,7 @@ export class ActivityDesktopPage implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
-    private service: ActivityService,
+    private activityService: ActivityService,
     private topicService: TopicService,
     private assessmentService: AssessmentService
   ) { }
@@ -29,12 +29,12 @@ export class ActivityDesktopPage implements OnInit {
   ngOnInit() {
     this.activity$.subscribe(res => this.activity = res);
     this.route.params.subscribe(params => {
-      this.service.getActivity(params.id, true);
+      this.activityService.getActivity(params.id, true);
     });
   }
 
   goToTask(task: Task) {
-    this.service.goToTask(task);
+    this.activityService.goToTask(task);
   }
 
   async topicComplete(topic: Topic) {
@@ -44,7 +44,7 @@ export class ActivityDesktopPage implements OnInit {
       await this.topicService.updateTopicProgress(topic.id, 'completed').subscribe();
     }
     // get the latest activity tasks and navigate to the next task
-    this.service.getActivity(this.activity.id, true, task);
+    this.activityService.getActivity(this.activity.id, true, task);
   }
 
 }

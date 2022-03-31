@@ -1,5 +1,6 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { Router } from '@angular/router';
+import { AssessmentReview } from '@v3/app/services/assessment.service';
 import { Review } from '@v3/services/review-list.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { UtilsService } from '@v3/services/utils.service';
@@ -18,11 +19,9 @@ enum STATUSES {
 export class ReviewListComponent implements OnInit {
   @Input() reviews: Review[];
   public showDone = false;
-  public loadingReviews = true;
+  @Input() loadingReviews: boolean;
   @Input() submissionId: number;
   @Output() navigate = new EventEmitter();
-  @Input() review$: Subject<any>;
-  @Input() reviews$: Subject<any>;
   selectedReview: any = {};
 
   public status: string = STATUSES.PENDING;
@@ -40,7 +39,6 @@ export class ReviewListComponent implements OnInit {
   }
 
   onEnter() {
-    this.loadingReviews = true;
     this.showDone = false;
   }
 
