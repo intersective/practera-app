@@ -1,5 +1,5 @@
 import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
-import { Assessment, Submission, Review, AssessmentSubmitParams } from '@v3/services/assessment.service';
+import { Assessment, Submission, AssessmentReview, AssessmentSubmitParams } from '@v3/services/assessment.service';
 import { UtilsService } from '@v3/services/utils.service';
 import { NotificationsService } from '@v3/services/notifications.service';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
@@ -29,7 +29,7 @@ export class AssessmentComponent {
   @Input() assessment: Assessment;
   @Input() contextId: number;
   @Input() submission: Submission;
-  @Input() review: Review;
+  @Input() review: AssessmentReview;
 
   // submit the assessment/review
   @Output() submit = new EventEmitter();

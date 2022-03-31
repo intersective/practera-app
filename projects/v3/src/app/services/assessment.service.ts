@@ -97,7 +97,7 @@ export interface Answer {
   comment?: string;
 }
 
-export interface Review {
+export interface AssessmentReview {
   id: number;
   answers: any;
   status: string;
@@ -114,7 +114,7 @@ export class AssessmentService {
   assessment$ = this._assessment$.asObservable();
   private _submission$ = new BehaviorSubject<Submission>(null);
   submission$ = this._submission$.asObservable();
-  private _review$ = new BehaviorSubject<Review>(null);
+  private _review$ = new BehaviorSubject<AssessmentReview>(null);
   review$ = this._review$.asObservable();
 
   questions = {};
@@ -309,7 +309,7 @@ export class AssessmentService {
     return submission;
   }
 
-  private _normaliseReview(data, action): Review {
+  private _normaliseReview(data, action): AssessmentReview {
     if (!this.utils.has(data, 'assessment.submissions') || data.assessment.submissions.length < 1) {
       return null;
     }
@@ -318,7 +318,7 @@ export class AssessmentService {
     if (!firstSubmissionReview) {
       return null;
     }
-    const review: Review = {
+    const review: AssessmentReview = {
       id: firstSubmissionReview.id,
       status: firstSubmissionReview.status,
       modified: firstSubmissionReview.modified,

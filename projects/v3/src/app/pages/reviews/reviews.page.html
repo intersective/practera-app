@@ -20,8 +20,7 @@
         <app-review-list
           [submissionId]="submissionId"
           (navigate)="goto($event)"
-          [review$]="currentReview$"
-          [reviews]="reviews$"
+          [reviews]="reviews$ | async"
         ></app-review-list>
       </ion-col>
 

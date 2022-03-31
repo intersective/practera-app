@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
-import { Assessment, AssessmentService, Review, Submission } from '@v3/app/services/assessment.service';
+import { Assessment, AssessmentService, AssessmentReview, Submission } from '@v3/app/services/assessment.service';
+import { ReviewListService } from '@v3/app/services/review-list.service';
 import { BrowserStorageService } from '@v3/app/services/storage.service';
 import { UtilsService } from '@v3/services/utils.service';
 import { BehaviorSubject, interval } from 'rxjs';
@@ -24,7 +25,7 @@ export class ReviewsPage implements OnInit {
   loadingAssessment: boolean = true;
 
 
-  currentReview: Review = {
+  currentReview: AssessmentReview = {
     id: 0,
     answers: {},
     status: '',
@@ -97,6 +98,7 @@ export class ReviewsPage implements OnInit {
     private route: ActivatedRoute,
     private assessmentService: AssessmentService,
     private storage: BrowserStorageService,
+    private reviewsService: ReviewListService,
   ) {
     this.currentAssessment = {
       id: 0,
@@ -108,18 +110,6 @@ export class ReviewsPage implements OnInit {
       isOverdue: false,
       groups: [],
       pulseCheck: false,
-    };
-
-    this.submission = {
-      id: 0,
-      status: '',
-      answers: {},
-      submitterName: '',
-      modified: '',
-      isLocked: false,
-      completed: false,
-      submitterImage: '',
-      reviewerName: ''
     };
 
     this.route.queryParams.subscribe(params => {
@@ -136,7 +126,7 @@ export class ReviewsPage implements OnInit {
         value: result
       });
     }); */
-    this.reviews$.next(this.reviews);
+    // this.reviews$.next(this.reviews);
   }
 
   get isMobile() {
@@ -159,10 +149,9 @@ export class ReviewsPage implements OnInit {
     this.submissionId = +this.route.snapshot.paramMap.get('submissionId');
 
 
-    this.currentReview$.subscribe(result => {
+    /* this.currentReview$.subscribe(result => {
       this.currentAssessment = result.assessment;
       this.loadingAssessment = false;
-      this.submission = result.submission;
       this._handleSubmissionData(result.submission);
       // display pop up if it is team assessment and user is not in team
       // if (this.doAssessment && this.assessment.isForTeam && !this.storage.getUser().teamId) {
@@ -171,7 +160,7 @@ export class ReviewsPage implements OnInit {
       // }
       // this.isNotInATeam = false;
       this._handleReviewData(result.review);
-    });
+    }); */
 
     // get assessment structure and populate the question form
     // this.assessmentService.getAssessment().subscribe(
@@ -182,6 +171,22 @@ export class ReviewsPage implements OnInit {
     //     console.log(error);
     //   }
     // );
+
+    this.reviewsService.getReviews()
+      .subscribe(
+        reviews => {
+          this.reviews = reviews;
+          this.loadingReviews = false;
+          this.gotoFirstReview();
+        },
+        err => {
+          this.notificationsService.alert({
+            header: 'Error retrieving latest reviews',
+            message: err.msg || JSON.stringify(err)
+          });
+          throw new Error(err);
+        }
+      );
   }
 
   // display the review content in the right pane, and highlight on the left pane
