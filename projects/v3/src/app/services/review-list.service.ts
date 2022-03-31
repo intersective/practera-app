@@ -17,6 +17,11 @@ export interface Review {
   date?: string;
   teamName?: string;
   contextId: number;
+  status: string;
+  icon: string;
+  title: string;
+  submitter: string;
+  team: string;
 }
 
 @Injectable({
@@ -35,7 +40,7 @@ export class ReviewListService {
     return this.request.get(api.reviews)
       .pipe(map(response => {
         if (response.success && response.data) {
-          return this._normaliseReviews(response.data);
+          return this._reviews$.next(this._normaliseReviews(response.data));
         } else {
           return [];
         }
@@ -43,10 +48,11 @@ export class ReviewListService {
     );
   }
 
-  private _normaliseReviews(data) {
+  private _normaliseReviews(data): Review[] {
     if (!Array.isArray(data)) {
-      return this.request.apiResponseFormatError('Reviews format error');
+      throw this.request.apiResponseFormatError('Reviews format error');
     }
+
     const reviews = [];
     data.forEach(review => {
       if (!this.utils.has(review, 'Assessment.id') ||

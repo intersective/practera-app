@@ -19,8 +19,8 @@
       <ion-col size="12" size-lg class="border-right">
         <app-review-list
           [submissionId]="submissionId"
-          (navigate)="goto($event)"
           [reviews]="reviews$ | async"
+          [loadingReviews]="loadingAssessment"
         ></app-review-list>
       </ion-col>
 
@@ -52,10 +52,8 @@
         <app-assessment
           [assessment]="currentReview$ | async"
           [submission]="submission$ | async"
-          [review]="review$ | async"
-          [contextId]="currentTask.contextId"
+          [review]="currentReview$ | async"
           action="review"
-          fromPage="reviews"
         ></app-assessment>
       </ion-col>
     </ion-row>

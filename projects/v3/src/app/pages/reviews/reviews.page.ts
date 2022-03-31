@@ -1,11 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { Router, ActivatedRoute } from '@angular/router';
-import { Assessment, AssessmentService, AssessmentReview, Submission } from '@v3/app/services/assessment.service';
+import { ActivatedRoute } from '@angular/router';
+import { Assessment, AssessmentService, AssessmentReview } from '@v3/app/services/assessment.service';
 import { ReviewListService } from '@v3/app/services/review-list.service';
 import { BrowserStorageService } from '@v3/app/services/storage.service';
 import { UtilsService } from '@v3/services/utils.service';
-import { BehaviorSubject, interval } from 'rxjs';
-import { take } from 'rxjs/operators';
+import { BehaviorSubject } from 'rxjs';
 
 @Component({
   selector: 'app-reviews',
@@ -18,7 +17,8 @@ export class ReviewsPage implements OnInit {
   contextId: number;
 
   currentReview$ = new BehaviorSubject<any>({});
-  reviews$ = this.assessmentService.review$;
+  reviews$ = this.reviewsService.reviews$;
+  // reviews$ = this.assessmentService.review$;
   submission$ = this.assessmentService.submission$;
 
   currentAssessment: Assessment;
@@ -29,7 +29,7 @@ export class ReviewsPage implements OnInit {
     id: 0,
     answers: {},
     status: '',
-    modified: ''
+    modified: '',
   };
   doAssessment = false;
 
@@ -94,7 +94,6 @@ export class ReviewsPage implements OnInit {
 
   constructor(
     readonly utils: UtilsService,
-    public router: Router,
     private route: ActivatedRoute,
     private assessmentService: AssessmentService,
     private storage: BrowserStorageService,
@@ -147,120 +146,6 @@ export class ReviewsPage implements OnInit {
       }
     });
     this.submissionId = +this.route.snapshot.paramMap.get('submissionId');
-
-
-    /* this.currentReview$.subscribe(result => {
-      this.currentAssessment = result.assessment;
-      this.loadingAssessment = false;
-      this._handleSubmissionData(result.submission);
-      // display pop up if it is team assessment and user is not in team
-      // if (this.doAssessment && this.assessment.isForTeam && !this.storage.getUser().teamId) {
-      //   this.isNotInATeam = true;
-      //   return;
-      // }
-      // this.isNotInATeam = false;
-      this._handleReviewData(result.review);
-    }); */
-
-    // get assessment structure and populate the question form
-    // this.assessmentService.getAssessment().subscribe(
-    //   result => {
-    //     this.currentReview$.next(result);
-    //   },
-    //   error => {
-    //     console.log(error);
-    //   }
-    // );
-
-    this.reviewsService.getReviews()
-      .subscribe(
-        reviews => {
-          this.reviews = reviews;
-          this.loadingReviews = false;
-          this.gotoFirstReview();
-        },
-        err => {
-          this.notificationsService.alert({
-            header: 'Error retrieving latest reviews',
-            message: err.msg || JSON.stringify(err)
-          });
-          throw new Error(err);
-        }
-      );
-  }
-
-  // display the review content in the right pane, and highlight on the left pane
-  goto(event) {
-    if (!event) {
-      this.submissionId = null;
-      return;
-    }
-    this.assessmentId = +event.assessmentId;
-    this.submissionId = +event.submissionId;
-    this.contextId = +event.contextId;
-    // trigger onEnter after the element get generated
-    /* setTimeout(() => {
-      this.assessment.onEnter();
-    }); */
-  }
-
-  private _handleSubmissionData(submission) {
-    this.submission = submission;
-    // If team assessment is locked, set the page to readonly mode.
-    // set doAssessment, doReview to false - when assessment is locked, user can't do both.
-    // set submission status to done - we need to show readonly answers in question components.
-    if (this.submission && this.submission.isLocked) {
-      // this.doAssessment = false;
-      // this.doReview = false;
-      // this.savingButtonDisabled = true;
-      this.submission.status = 'done';
-      return;
-    }
-
-    // this component become a page for doing assessment if
-    // - submission is empty or
-    // - submission.status is 'in progress'
-    if (this.utils.isEmpty(this.submission) || this.submission.status === 'in progress') {
-      // this.doAssessment = true;
-      // this.doReview = false;
-      // if (this.submission && this.submission.status === 'in progress') {
-      //   this.savingMessage = 'Last saved ' + this.utils.timeFormatter(this.submission.modified);
-      //   this.savingButtonDisabled = false;
-      // }
-      return;
-    }
-
-    if (this.currentAssessment.type === 'moderated') {
-      // this component become a page for doing review, if
-      // - the submission status is 'pending review' and
-      // - this.action is review
-      // if (this.submission.status === 'pending review' && this.action === 'review') {
-      //   this.doReview = true;
-      // }
-    }
-
-    // this.feedbackReviewed = this.submission.completed;
-  }
-
-  private _handleReviewData(review) {
-    // this.review = review;
-    // if (!review && this.action === 'review' && !this.doReview) {
-    //   return this.notificationsService.alert({
-    //     message: 'There are no assessments to review.',
-    //     buttons: [
-    //       {
-    //         text: 'OK',
-    //         role: 'cancel',
-    //         handler: () => {
-    //           this._navigate(['v3', 'home']);
-    //         }
-    //       }
-    //     ]
-    //   });
-    // }
-    // if (this.doReview && review.status === 'in progress') {
-    //   this.savingMessage = 'Last saved ' + this.utils.timeFormatter(review.modified);
-    //   this.savingButtonDisabled = false;
-    // }
+    this.loadingAssessment = false;
   }
 }

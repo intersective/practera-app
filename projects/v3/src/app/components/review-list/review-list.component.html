@@ -9,7 +9,7 @@
   </ion-segment>
 
   <ion-list>
-    <ng-container *ngFor="let item of (reviews$ | async) as reviews">
+    <ng-container *ngFor="let item of reviews">
       <ion-item button *ngIf="item.status === status" (click)="read(item)">
         <ion-icon [name]="item.icon" slot="start" size="large"></ion-icon>
         <ion-label>
@@ -45,7 +45,4 @@
     </ng-container>
 
   </ng-template>
-  <ion-text>
-    <pre>{{ review$ | async | json }}</pre>
-  </ion-text>
 </ion-content>
