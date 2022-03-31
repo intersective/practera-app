@@ -133,7 +133,7 @@ export class ReviewsPage implements OnInit {
   }
 
   onEnter(): void {
-    this.reviewsService.getReviews().subscribe();
+    this.reviewsService.getReviews();
     /* this.currentReview$.next({
       assessment: {
         name: '',

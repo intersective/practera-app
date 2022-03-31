@@ -39,9 +39,15 @@ export class ReviewListService {
     private demoService: DemoService,
   ) { }
 
-  getReviews(): Observable<any> {
+  getReviews() {
     if (environment.demo) {
-      return this.demoService.assessment(99).pipe(map(res => this._normaliseReviews(res)));
+      return this.demoService.getReviews().pipe(map(response => {
+        if (response.success && response.data) {
+          return this._reviews$.next(this._normaliseReviews(response.data));
+        } else {
+          return [];
+        }
+      })).subscribe();
     }
 
     return this.request.get(api.reviews)
