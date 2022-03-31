@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
-import { Observable, of } from 'rxjs';
+import { BehaviorSubject, Observable, of } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { RequestService } from 'request';
-import { UtilsService } from '@services/utils.service';
+import { UtilsService } from '@v3/services/utils.service';
 
 const api = {
   reviews: 'api/reviews.json',
@@ -23,6 +23,8 @@ export interface Review {
   providedIn: 'root',
 })
 export class ReviewListService {
+  private _reviews$ = new BehaviorSubject<Review[]>([]);
+  reviews$ = this._reviews$.asObservable();
 
   constructor(
     private request: RequestService,
