@@ -148,4 +148,9 @@ export class ReviewsPage implements OnInit {
     }); */
     this.loadingAssessment = false;
   }
+
+  goto(currentReview) {
+    console.log('currentReview::', currentReview);
+    this.currentReview$.next(currentReview);
+  }
 }
