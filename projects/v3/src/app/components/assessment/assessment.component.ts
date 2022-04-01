@@ -1,14 +1,10 @@
-import { Component, Input, NgZone, Output, EventEmitter, OnInit } from '@angular/core';
-import { Router, ActivatedRoute, ParamMap } from '@angular/router';
-import { AssessmentService, Assessment, Submission, Review, AssessmentSubmitParams } from '@v3/services/assessment.service';
+import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Assessment, Submission, Review, AssessmentSubmitParams } from '@v3/services/assessment.service';
 import { UtilsService } from '@v3/services/utils.service';
 import { NotificationsService } from '@v3/services/notifications.service';
-import { FormGroup, FormControl, Validators, FormBuilder } from '@angular/forms';
+import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { SharedService } from '@v3/services/shared.service';
-import { ActivityService } from '@v3/services/activity.service';
-import { FastFeedbackService } from '@v3/services/fast-feedback.service';
-import { Subject } from 'rxjs';
 
 const SAVE_PROGRESS_TIMEOUT = 5000;
 
@@ -64,16 +60,10 @@ export class AssessmentComponent {
   isNotInATeam = false; // to hide assessment content if user not is a team.
 
   constructor(
-    private router: Router,
-    private assessmentService: AssessmentService,
     readonly utils: UtilsService,
     private notifications: NotificationsService,
     private storage: BrowserStorageService,
     private sharedService: SharedService,
-    private activityService: ActivityService,
-    private fastFeedbackService: FastFeedbackService,
-    private ngZone: NgZone,
-    private fb: FormBuilder,
   ) {}
 
   ngOnChanges() {
@@ -296,34 +286,6 @@ export class AssessmentComponent {
   btnBackClicked() {
     return this._submit(true, true);
   }
-
-  /**
-   * - check if fastfeedback is available
-   * - show next sequence if submission successful
-   */
-  // private async pullFastFeedback() {
-  //   this.continueBtnLoading = true;
-  //   // check if this assessment have plus check turn on, if it's on show plus check and toast message
-  //   if (!this.assessment.pulseCheck) {
-  //     this.continueBtnLoading = false;
-  //     return;
-  //   }
-  //   try {
-  //     const modal = await this.fastFeedbackService.pullFastFeedback({ modalOnly: true }).toPromise();
-  //     if (modal && modal.present) {
-  //       await modal.present();
-  //       await modal.onDidDismiss();
-  //     }
-  //     this.continueBtnLoading = false;
-  //   } catch (err) {
-  //     const toasted = await this.notifications.alert({
-  //       header: 'Error retrieving pulse check data',
-  //       message: err.msg || JSON.stringify(err)
-  //     });
-  //     this.continueBtnLoading = false;
-  //     throw new Error(err);
-  //   }
-  // }
 
   /**
    * handle submission and autosave
