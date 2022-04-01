@@ -1,16 +1,10 @@
-<ion-header mode="ios">
-  <ion-toolbar [ngClass]="{'ion-toolbar-absolute': !utils.isMobile()}">
-    <ion-title tabindex="0">Chat</ion-title>
-  </ion-toolbar>
-</ion-header>
-
-<ion-content color="light" [ngClass]="{'ion-content-absolute': !utils.isMobile()}">
+<ion-content>
   <ng-container *ngIf="loadingChatList">
     <div class="ion-text-center">
       <ion-spinner></ion-spinner>
     </div>
   </ng-container>
-  <ion-list [ngClass]="{'desktop-view': !utils.isMobile()}">
+  <ion-list class="ion-no-padding" [ngClass]="{'desktop-view': !utils.isMobile()}">
     <clickable-item
       *ngFor="let chat of chatList; let i = index"
       (click)="goToChatRoom(chat)"

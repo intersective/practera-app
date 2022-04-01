@@ -13,7 +13,7 @@ const routes: Routes = [
         loadChildren: () => import('../home/home.module').then(m => m.HomePageModule)
       },
       {
-        path: 'chat',
+        path: 'messages',
         loadChildren: () => import('../chat/chat.module').then(m => m.ChatModule)
       },
       {

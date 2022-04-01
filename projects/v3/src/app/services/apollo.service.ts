@@ -76,25 +76,23 @@ export class ApolloService {
       return true;
     } else if (type === ClientType.chat
       && this.apollo.use('chat')
-      && this._url.chat === environment.graphQL) {
+      && this._url.chat === environment.chatGraphQL) {
         return true;
     }
     return false;
   }
 
   initiateChatClient() {
-    if (this._hasInitiated(environment.graphQL, ClientType.chat)) {
+    if (this._hasInitiated(environment.chatGraphQL, ClientType.chat)) {
       return;
     }
-
     this.apollo.create({
       link: this.httpLink.create({
-        uri: environment.graphQL
+        uri: environment.chatGraphQL
       }),
       cache: new InMemoryCache(),
     }, 'chat');
-
-    this._url.chat = environment.graphQL;
+    this._url.chat = environment.chatGraphQL;
   }
 
   getClient() {

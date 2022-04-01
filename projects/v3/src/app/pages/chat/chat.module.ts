@@ -11,11 +11,13 @@ import { FastFeedbackService } from '@v3/services/fast-feedback.service';
 import { ChatViewComponent } from './chat-view/chat-view.component';
 import { ChatInfoComponent } from './chat-info/chat-info.component';
 import { ComponentsModule } from '../../components/components.module';
+import { PersonalisedHeaderModule } from '@v3/app/personalised-header/personalised-header.module';
 
 @NgModule({
   imports: [
     ComponentsModule,
-    ChatRoutingModule
+    ChatRoutingModule,
+    PersonalisedHeaderModule,
   ],
   declarations: [
     ChatPage,

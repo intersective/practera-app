@@ -6,3 +6,10 @@
     overflow-y: hidden;
   }
 }
+
+ion-grid {
+  height: -webkit-fill-available;
+  ion-row {
+    height: -webkit-fill-available;
+  }
+}
