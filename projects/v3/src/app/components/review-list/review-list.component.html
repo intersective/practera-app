@@ -9,7 +9,6 @@
 
 <ion-list>
   <ng-container *ngFor="let item of reviews">
-    <pre>{{item | json}}</pre>
     <ion-item button *ngIf="item.status === status" (click)="read(item)">
       <ion-icon [name]="item.icon" slot="start" size="large"></ion-icon>
       <ion-label>

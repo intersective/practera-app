@@ -42,11 +42,6 @@ const routes: Routes = [
         loadChildren: () => import('../activity-desktop/activity-desktop.module').then(m => m.ActivityDesktopPageModule)
       },
     ]
-  },
-  {
-    path: '',
-    redirectTo: '/app/home',
-    pathMatch: 'full'
   }
 ];
 
