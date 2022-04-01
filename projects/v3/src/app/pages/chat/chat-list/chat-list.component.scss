@@ -1,0 +1,94 @@
+.ion-toolbar-absolute {
+  text-align: center;
+}
+ion-avatar {
+  text-align: center;
+  background-color: var(--ion-color-primary);
+}
+
+clickable-item {
+  .bold {
+    font-weight: bold;
+  }
+  .item-inner {
+    border: none !important;
+  }
+
+  ion-label {
+    margin: 10px 0 10px 0 !important;
+
+    .chat-name-container {
+      display: inline-flex !important;
+      flex-wrap: wrap;
+      text-overflow: inherit;
+      overflow: inherit;
+      width: 100% !important;
+
+      span {
+        border: 1px solid var(--ion-color-primary);
+        padding: 1px 5px 0 5px;
+        border-radius: 10px;
+        vertical-align: baseline;
+        text-align: center;
+        white-space: nowrap;
+        max-width: 70% !important;
+        text-overflow: inherit;
+        overflow: inherit;
+        color: var(--ion-color-primary);
+      }
+
+      .chat-name {
+        text-overflow: inherit;
+        overflow: inherit;
+        max-width: 90%;
+        width: fit-content;
+        margin-right: 3px;
+
+        &.team-channel {
+          margin-right: 3px;
+          max-width: -webkit-fill-available !important;
+          width: auto !important;
+          .chat-name-container {
+            display: block !important;
+          }
+        }
+      }
+
+    }
+  }
+
+  .time-container {
+    width: 22% !important;
+    display: grid;
+    justify-items: end;
+    margin-left: 4px !important;
+
+    ion-badge {
+      margin-top: 2px;
+      max-width: 43px !important;
+      max-height: 20px;
+      min-width: 20px;
+      min-height: 20px;
+      border-radius: 8px !important;
+      width: fit-content;
+    }
+
+  }
+}
+.desktop-view {
+  .time-container {
+    width: auto !important;
+    height: 100%;
+    padding-bottom: 10px;
+    padding-top: 10px;
+  }
+  clickable-item {
+    ion-label {
+      .chat-name-container {
+        span {
+          max-width: none !important;
+        }
+      }
+    }
+  }
+}

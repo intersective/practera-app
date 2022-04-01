@@ -108,7 +108,28 @@
 
 ion-button {
   text-transform: capitalize;
-  --color: white;
-  --background: var(--ion-color-primary);
   --border-radius: 8px;
+}
+
+// used for desktop view
+.ion-toolbar-absolute {
+  height: 60px;
+}
+.ion-content-absolute {
+  position: absolute;
+  top: 60px;
+  z-index: 20;
+  height: calc(100% - 60px);
+}
+.ion-content-absolute-with-footer {
+  position: absolute;
+  top: 60px;
+  z-index: 20;
+  height: calc(100% - 120px);
+}
+.ion-footer-absolute {
+  position: absolute;
+  height: 60px;
+  bottom: 0;
+  z-index: 30;
 }

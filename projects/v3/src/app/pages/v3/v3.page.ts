@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { ModalController, PopoverController } from '@ionic/angular';
 import { AnimationsService } from '@v3/services/animations.service';
 import { SettingsPage } from '../settings/settings.page';
+import { ApolloService } from '@v3/services/apollo.service';
 
 @Component({
   selector: 'app-v3',
@@ -34,8 +35,12 @@ export class V3Page {
   constructor(
     private modalController: ModalController,
     private popoverController: PopoverController,
-    private animationService: AnimationsService
-  ) { }
+    private animationService: AnimationsService,
+    private apolloService: ApolloService
+  ) {
+    this.apolloService.initiateCoreClient();
+    this.apolloService.initiateChatClient();
+  }
 
   async presentModal() {
     const modal = await this.modalController.create({
