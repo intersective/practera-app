@@ -21,6 +21,7 @@
           [submissionId]="submissionId"
           [reviews]="reviews$ | async"
           [loadingReviews]="loadingAssessment"
+          (navigate)="goto($event)"
         ></app-review-list>
       </ion-col>
 
