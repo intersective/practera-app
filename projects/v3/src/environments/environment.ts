@@ -11,6 +11,7 @@ export const environment = {
   appkey: 'b11e7c189b',
   APIEndpoint: 'https://admin.p2-sandbox.practera.com/',
   graphQL: 'https://core-graphql-api.p2-sandbox.practera.com/',
+  chatGraphQL: 'https://chat-api.p2-sandbox.practera.com/',
   filestack: {
     key: 'AO6F4C72uTPGRywaEijdLz',
     s3Config: {

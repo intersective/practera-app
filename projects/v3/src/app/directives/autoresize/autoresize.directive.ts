@@ -6,7 +6,7 @@ import { Directive, ElementRef, Input, HostListener, OnInit } from '@angular/cor
 export class AutoresizeDirective implements OnInit {
 
   // tslint:disable-next-line:no-input-rename
-  @Input('appAutoresize') maxHeight: number;
+  @Input('appAutoresize') maxHeight;
 
   @HostListener('input', ['$event.target'])
   onInput(textArea: HTMLTextAreaElement): void {
@@ -35,7 +35,8 @@ export class AutoresizeDirective implements OnInit {
       ta.style.overflow = 'auto';
       ta.style.height = 'auto';
       if (this.maxHeight) {
-      newHeight = Math.min(ta.scrollHeight, this.maxHeight);
+        this.maxHeight = Number(this.maxHeight);
+        newHeight = Math.min(ta.scrollHeight, this.maxHeight);
       } else {
         newHeight = ta.scrollHeight;
       }
