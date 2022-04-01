@@ -1,26 +1,32 @@
-<ion-split-pane *ngIf="!utils.isMobile()" contentId="main" when="xs">
-  <app-chat-list
-    #chatList
-    style="display: flex"
-    [currentChat]="chatChannel"
-    (navigate)="goto($event)"
-    (chatListReady)="selectFirstChat($event)">
-  </app-chat-list>
-  <ion-content color="light" id="main" [class]="{'info-page': loadInfo}">
-    <app-chat-room
-      #chatRoom
-      *ngIf="chatChannel && !loadInfo"
-      [chatChannel]="chatChannel"
-      (loadInfo)="loadchannelInfo($event)"
-    ></app-chat-room>
-    <app-chat-info
-      *ngIf="loadInfo"
-      [selectedChat]="chatChannel"
-      (navigate)="goto($event)"
-    ></app-chat-info>
-  </ion-content>
-</ion-split-pane>
+<ion-header class="ion-no-border header-border">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>Messages</ion-title>
+    <ion-buttons slot="end">
+      <app-personalised-header></app-personalised-header>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
 
-<ion-content *ngIf="utils.isMobile()">
-  <app-chat-list #chatList></app-chat-list>
+<ion-content>
+  <ion-grid *ngIf="!utils.isMobile()" class="ion-no-padding">
+    <ion-row>
+      <ion-col size="12" size-md="5">
+        <app-chat-list #chatList [currentChat]="chatChannel" (navigate)="goto($event)"
+          (chatListReady)="selectFirstChat($event)">
+        </app-chat-list>
+      </ion-col>
+      <ion-col size="12" size-md="7" class="border-left" [class]="{'info-page': loadInfo}">
+        <app-chat-room #chatRoom *ngIf="chatChannel && !loadInfo" [chatChannel]="chatChannel"
+          (loadInfo)="loadchannelInfo($event)"></app-chat-room>
+        <app-chat-info *ngIf="loadInfo" [selectedChat]="chatChannel" (navigate)="goto($event)"></app-chat-info>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+
+  <ng-container *ngIf="utils.isMobile()">
+    <app-chat-list #chatList></app-chat-list>
+  </ng-container>
 </ion-content>

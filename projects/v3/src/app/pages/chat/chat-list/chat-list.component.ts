@@ -98,7 +98,7 @@ export class ChatListComponent {
   goToChatRoom(chat: ChatChannel) {
     this._navigate(
       [
-        'chat',
+        'messages',
         'chat-room'
       ],
       chat
