@@ -16,11 +16,11 @@ export class ReviewsPage implements OnInit {
   submissionId: number;
   contextId: number;
 
-  currentReview$ = new BehaviorSubject<any>({});
+  currentReview$ = this.assessmentService.review$;
   reviews$ = this.reviewsService.reviews$;
   submission$ = this.assessmentService.submission$;
 
-  currentAssessment: Assessment;
+  currentAssessment$ = this.assessmentService.assessment$;
   loadingAssessment: boolean = true;
 
 
@@ -98,7 +98,7 @@ export class ReviewsPage implements OnInit {
     private storage: BrowserStorageService,
     private reviewsService: ReviewListService,
   ) {
-    this.currentAssessment = {
+    /* this.currentAssessment = {
       id: 0,
       name: '',
       type: '',
@@ -108,7 +108,7 @@ export class ReviewsPage implements OnInit {
       isOverdue: false,
       groups: [],
       pulseCheck: false,
-    };
+    }; */
 
     this.route.queryParams.subscribe(params => {
       console.log('ReviewsPageParams::', params);
@@ -151,6 +151,6 @@ export class ReviewsPage implements OnInit {
 
   goto(currentReview) {
     console.log('currentReview::', currentReview);
-    this.currentReview$.next(currentReview);
+    this.assessmentService.getAssessment(11150, 'review', 1, 1);
   }
 }
