@@ -1,0 +1,15 @@
+.info-page {
+  --overflow: hidden;
+  overflow-y: hidden;
+
+  .scroll-y {
+    overflow-y: hidden;
+  }
+}
+
+ion-grid {
+  height: -webkit-fill-available;
+  ion-row {
+    height: -webkit-fill-available;
+  }
+}

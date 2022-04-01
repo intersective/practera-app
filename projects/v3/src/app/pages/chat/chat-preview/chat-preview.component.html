@@ -1,0 +1,39 @@
+<ion-header mode="ios">
+  <ion-toolbar>
+    <ion-icon *ngIf="file.url"
+      name="download"
+      (click)="download()"
+      color="primary"
+      size="large"
+      slot="end"
+      margin-start
+    ></ion-icon>
+
+    <ion-icon name="close-circle-outline"
+      (click)="close()"
+      color="primary"
+      size="large"
+      slot="end"
+      margin-start
+    ></ion-icon>
+  </ion-toolbar>
+</ion-header>
+<ion-content text-center>
+  <div class="wrapper">
+    <ng-container *ngIf="file && file.mimetype.includes('image')">
+      <img [src]="file.url" alt="uploaded attachment url">
+    </ng-container>
+
+    <ng-container *ngIf="file && file.mimetype.includes('video')">
+        <video controls>
+          <ng-container *ngIf="file.transcoded">
+            <source [src]="file.transcoded + '.mp4#t=0.5'" type="video/mp4">
+            <source [src]="file.transcoded + '.webm'" type="video/webm">
+            <source [src]="file.transcoded + '.ts'">
+          </ng-container>
+          <source [src]="file.url" [type]="file.mimetype">
+          {{ file.url }}
+        </video>
+    </ng-container>
+  </div>
+</ion-content>
