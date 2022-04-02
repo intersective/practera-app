@@ -12,15 +12,6 @@ import { environment } from '@v3/environments/environment';
 import { TopicService } from './topic.service';
 import { AssessmentService } from './assessment.service';
 
-/**
- * @name api
- * @description list of api endpoint involved in this service
- * @type {Object}
- */
-const api = {
-  nextTask: 'api/v2/plans/activity/next_task'
-};
-
 export interface Activity {
   id: number;
   name: string;
@@ -57,7 +48,6 @@ export class ActivityService {
   currentTask$ = this._currentTask$.asObservable();
 
   activity: Activity;
-  public tasks: Array<any>;
 
   constructor(
     private request: RequestService,
@@ -72,6 +62,7 @@ export class ActivityService {
   ) {}
 
   public getActivity(id: number, goToNextTask = false, afterTask?: Task) {
+    this._activity$.next(null);
     if (environment.demo) {
       const taskId = afterTask ? afterTask.id : 0;
       return this.demo.activity(taskId).pipe(map(res => this._normaliseActivity(res.data, goToNextTask, afterTask))).subscribe();
@@ -162,7 +153,10 @@ export class ActivityService {
    * @param tasks The list of tasks
    * @param afterTask Find the next task after this task
    */
-  goToNextTask(tasks: Task[], afterTask?: Task) {
+  goToNextTask(tasks?: Task[], afterTask?: Task) {
+    if (!tasks) {
+      tasks = this.activity.tasks;
+    }
     // find the first task that is not done or pending review
     // and is allowed to access for this user
     let skipTask = !!afterTask;
@@ -212,8 +206,11 @@ export class ActivityService {
     this.router.navigate(['v3', 'home']);
   }
 
-  goToTask(task: Task) {
+  goToTask(task: Task, getData = true) {
     this._currentTask$.next(task);
+    if (!getData) {
+      return ;
+    }
     switch (task.type) {
       case 'Assessment':
         this.assessment.getAssessment(task.id, 'assessment', this.activity.id, task.contextId);
@@ -224,83 +221,4 @@ export class ActivityService {
     }
   }
 
-  /**
-   * Go to the next task within the same activity, or go back to former layer
-   * Logic:
-   *  - If current task is not the last task in the activity, go to the next task
-   *  - If current task is the last task in the activity and there's no unfinished task before the current task, go to the home page
-   *  - If current task is the last task in the activity and there is unfinished task before the current task, show a pop up for user to choose whether go to the activity page or home page
-   *
-   * @param activityId Activity id
-   * @param taskType   Current task type ('assessment'/'topic')
-   * @param taskId     Current task id
-   * @param justFinished Whether the current task is just finished or not
-   */
-  // async gotoNextTask(activityId: number, taskType: string, taskId: number, justFinished = true): Promise<string[]> {
-  //   const res = await this.getNextTask(activityId, taskType, taskId).toPromise();
-  //   // go to next task
-  //   if (!res.isLast) {
-  //     // go to the next task
-  //     let route = ['v3', 'home'];
-  //     switch (res.task.type) {
-  //       case 'assessment':
-  //         route = ['assessment', 'assessment', activityId.toString(), res.task.contextId.toString(), res.task.id.toString()];
-  //         break;
-
-  //       case 'topic':
-  //         route = ['topic', activityId.toString(), res.task.id.toString()];
-  //         break;
-  //     }
-  //     return route;
-  //   }
-
-  //   // check if we need to redirect user to external url
-  //   const referrer = this.storage.getReferrer();
-  //   if (this.utils.has(referrer, 'activityTaskUrl')) {
-  //     this.utils.redirectToUrl(referrer.activityTaskUrl);
-  //     return ;
-  //   }
-
-  //   if (res.task) {
-  //     // pop up activity completed modal
-  //     this.notification.activityCompletePopUp(activityId, justFinished);
-  //     return ;
-  //   }
-
-  //   // go back to home page, and scroll to the activity
-  //   if (justFinished) {
-  //     // and display the toast
-  //     this.router.navigate(['v3', 'home'], { queryParams: { activityId: activityId, activityCompleted: true } });
-  //   } else {
-  //     // and don't display the toast
-  //     this.router.navigate(['v3', 'home'], { queryParams: { activityId: activityId } });
-  //   }
-  // }
-
-  /**
-   * Get the data needed to find next task
-   * @param activityId      The id of current activity
-   * @param currentTaskType The type of current task
-   * @param currentTaskId   The id of current task
-   */
-  // getNextTask(activityId: number, currentTaskType: string, currentTaskId: number): Observable <{ isLast: boolean; task: Task; }> {
-  //   return this.request.get(api.nextTask, {
-  //       params: {
-  //         activity_id: activityId,
-  //         task_type: currentTaskType.toLowerCase(),
-  //         task_id: currentTaskId
-  //       }
-  //     }).pipe(map(res => {
-  //       return {
-  //         isLast: res.data.is_last,
-  //         task: !this.utils.isEmpty(res.data.task) ? {
-  //           id: res.data.task.id,
-  //           name: res.data.task.name,
-  //           type: res.data.task.type,
-  //           contextId: res.data.task.context_id || null
-  //         } : null
-  //       };
-  //     })
-  //   );
-  // }
 }

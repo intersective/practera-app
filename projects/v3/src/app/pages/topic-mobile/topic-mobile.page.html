@@ -1,0 +1,20 @@
+<ion-header class="ion-no-border header-border">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="goBack()">
+        <ion-icon slot="icon-only" name="arrow-back-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>Task</ion-title>
+    <ion-buttons slot="end">
+      <app-personalised-header></app-personalised-header>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <app-topic
+    [topic]="topic$ | async"
+    (continue)="continue()"
+  ></app-topic>
+</ion-content>
