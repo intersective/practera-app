@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { ActivityService, Task, Activity } from '@v3/app/services/activity.service';
-import { Assessment, AssessmentService, AssessmentSubmitParams } from '@v3/app/services/assessment.service';
-import { Topic, TopicService } from '@v3/app/services/topic.service';
+import { Assessment, AssessmentService } from '@v3/app/services/assessment.service';
+import { TopicService } from '@v3/app/services/topic.service';
 
 @Component({
   selector: 'app-activity-desktop',

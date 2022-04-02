@@ -73,7 +73,10 @@ export class HomePage implements OnInit {
   }
 
   gotoActivity(id: number) {
-    this.router.navigate(['v3', 'activity-desktop', id]);
+    if (!this.utils.isMobile()) {
+      return this.router.navigate(['v3', 'activity-desktop', id]);
+    }
+    return this.router.navigate(['v3', 'activity-mobile', id]);
   }
 
   achievePopup(achievement: Achievement) {
