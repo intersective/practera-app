@@ -157,7 +157,8 @@ export class ActivityService {
   }
 
   /**
-   * Go to the first unfinished task inside this activity, (optional) after a specific task
+   * Go to the first unfinished task inside this activity,
+   * or go to the next task after a specific task
    * @param tasks The list of tasks
    * @param afterTask Find the next task after this task
    */
@@ -175,6 +176,11 @@ export class ActivityService {
         }
         continue;
       }
+      // get the next task after a specific task
+      if (afterTask) {
+        nextTask = task;
+        break;
+      }
       // find the first unfinished task
       if (!['done', 'pending review'].includes(task.status) &&
         task.type !== 'Locked' &&
@@ -184,7 +190,7 @@ export class ActivityService {
         break;
       }
     }
-    // if there is no unfinished task
+    // if there is no next task
     if (!nextTask) {
       if (afterTask) {
         return this._goBack();

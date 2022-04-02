@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { ActivityService, Task, Activity } from '@v3/app/services/activity.service';
-import { AssessmentService, AssessmentSubmitParams } from '@v3/app/services/assessment.service';
+import { Assessment, AssessmentService, AssessmentSubmitParams } from '@v3/app/services/assessment.service';
 import { Topic, TopicService } from '@v3/app/services/topic.service';
 
 @Component({
@@ -18,6 +18,7 @@ export class ActivityDesktopPage implements OnInit {
   review$ = this.assessmentService.review$;
 
   activity: Activity;
+  assessment: Assessment;
 
   constructor(
     private route: ActivatedRoute,
@@ -28,6 +29,7 @@ export class ActivityDesktopPage implements OnInit {
 
   ngOnInit() {
     this.activity$.subscribe(res => this.activity = res);
+    this.assessment$.subscribe(res => this.assessment = res);
     this.route.params.subscribe(params => {
       this.activityService.getActivity(params.id, true);
     });
@@ -49,7 +51,7 @@ export class ActivityDesktopPage implements OnInit {
   }
 
   async submitAssessment(event, task: Task) {
-    await this.assessmentService.saveAnswers(event.assessment, event.answers, event.action).subscribe();
+    await this.assessmentService.saveAnswers(event.assessment, event.answers, event.action, this.assessment.pulseCheck).subscribe();
     if (!event.assessment.inProgress) {
       // get the latest activity tasks and navigate to the next task
       return this.activityService.getActivity(this.activity.id, true, task);
