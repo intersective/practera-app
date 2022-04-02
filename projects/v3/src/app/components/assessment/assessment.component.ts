@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
+import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { Assessment, Submission, AssessmentReview, AssessmentSubmitParams } from '@v3/services/assessment.service';
 import { UtilsService } from '@v3/services/utils.service';
 import { NotificationsService } from '@v3/services/notifications.service';
@@ -258,34 +258,6 @@ export class AssessmentComponent {
   btnBackClicked() {
     return this._submit(true, true);
   }
-
-  /**
-   * - check if fastfeedback is available
-   * - show next sequence if submission successful
-   */
-  // private async pullFastFeedback() {
-  //   this.continueBtnLoading = true;
-  //   // check if this assessment have plus check turn on, if it's on show plus check and toast message
-  //   if (!this.assessment.pulseCheck) {
-  //     this.continueBtnLoading = false;
-  //     return;
-  //   }
-  //   try {
-  //     const modal = await this.fastFeedbackService.pullFastFeedback({ modalOnly: true }).toPromise();
-  //     if (modal && modal.present) {
-  //       await modal.present();
-  //       await modal.onDidDismiss();
-  //     }
-  //     this.continueBtnLoading = false;
-  //   } catch (err) {
-  //     const toasted = await this.notifications.alert({
-  //       header: 'Error retrieving pulse check data',
-  //       message: err.msg || JSON.stringify(err)
-  //     });
-  //     this.continueBtnLoading = false;
-  //     throw new Error(err);
-  //   }
-  // }
 
   /**
    * handle submission and autosave

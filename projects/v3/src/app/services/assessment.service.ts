@@ -10,6 +10,7 @@ import { ApolloService } from './apollo.service';
 import { ReviewRatingComponent } from '../components/review-rating/review-rating.component';
 import { DemoService } from './demo.service';
 import { environment } from '@v3/environments/environment';
+import { FastFeedbackService } from './fast-feedback.service';
 
 /**
  * @name api
@@ -117,17 +118,21 @@ export class AssessmentService {
   private _review$ = new BehaviorSubject<AssessmentReview>(null);
   review$ = this._review$.asObservable();
 
+  assessment: Assessment;
   questions = {};
 
   constructor(
     private request: RequestService,
     private utils: UtilsService,
     private storage: BrowserStorageService,
-    private notification: NotificationsService,
+    private notificationService: NotificationsService,
+    private fastFeedbackService: FastFeedbackService,
     public sanitizer: DomSanitizer,
     private apolloService: ApolloService,
     private demo: DemoService,
-  ) { }
+  ) {
+    this.assessment$.subscribe(res => this.assessment = res);
+  }
 
   getAssessment(id, action, activityId, contextId, submissionId?) {
     this._assessment$.next(null);
@@ -408,7 +413,7 @@ export class AssessmentService {
     return answer;
   }
 
-  saveAnswers(assessment: AssessmentSubmitParams, answers: Answer[], action: string) {
+  saveAnswers(assessment: AssessmentSubmitParams, answers: Answer[], action: string, hasPulseCheck: boolean) {
     if (environment.demo) {
       console.log('save answers', assessment, answers, action);
       return of(true);
@@ -440,7 +445,32 @@ export class AssessmentService {
         ` + (action === 'assessment' ? `submitAssessment` : `submitReview`) + `(${params})
       }`,
       variables
-    );
+    ).pipe(map(res => {
+      if (hasPulseCheck) {
+        this.pullFastFeedback();
+      }
+      return res;
+    }));
+  }
+
+  /**
+   * - check if fastfeedback is available
+   * - show next sequence if submission successful
+   */
+   private async pullFastFeedback() {
+    try {
+      const modal = await this.fastFeedbackService.pullFastFeedback({ modalOnly: true }).toPromise();
+      if (modal && modal.present) {
+        await modal.present();
+        await modal.onDidDismiss();
+      }
+    } catch (err) {
+      const toasted = await this.notificationService.alert({
+        header: 'Error retrieving pulse check data',
+        message: err.msg || JSON.stringify(err)
+      });
+      throw new Error(err);
+    }
   }
 
   saveFeedbackReviewed(submissionId) {
@@ -470,7 +500,7 @@ export class AssessmentService {
    * @return  {Promise<void>}             deferred ionic modal
    */
   popUpReviewRating(reviewId, redirect: string[] | boolean): Promise<void> {
-    return this.notification.modal(ReviewRatingComponent, {
+    return this.notificationService.modal(ReviewRatingComponent, {
       reviewId,
       redirect
     });
