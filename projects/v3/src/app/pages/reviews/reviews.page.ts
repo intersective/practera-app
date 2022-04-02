@@ -18,10 +18,8 @@ export class ReviewsPage {
   currentReview$ = this.assessmentService.review$;
   reviews$ = this.reviewsService.reviews$;
   submission$ = this.assessmentService.submission$;
-
-  currentAssessment$ = this.assessmentService.assessment$;
+  assessment$ = this.assessmentService.assessment$;
   loadingAssessment: boolean = true;
-
 
   currentReview: AssessmentReview = {
     id: 0,
@@ -38,18 +36,6 @@ export class ReviewsPage {
     private storage: BrowserStorageService,
     private reviewsService: ReviewListService,
   ) {
-    /* this.currentAssessment = {
-      id: 0,
-      name: '',
-      type: '',
-      description: '',
-      isForTeam: false,
-      dueDate: '',
-      isOverdue: false,
-      groups: [],
-      pulseCheck: false,
-    }; */
-
     this.route.queryParams.subscribe(params => {
       console.log('ReviewsPageParams::', params);
       // this.submissionId = params.submissionId;
@@ -67,7 +53,6 @@ export class ReviewsPage {
   }
 
   goto(currentReview) {
-    console.log('currentReview::', currentReview);
     this.assessmentService.getAssessment(11150, 'review', 1, 1);
   }
 }
