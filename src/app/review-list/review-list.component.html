@@ -27,8 +27,8 @@
   </div>
   <ion-card *ngIf="loadingReviews; else reviewsTmpl" class="practera-card">
     <ion-list>
-      <app-list-item loading="true"></app-list-item>
-      <app-list-item loading="true" lines="none"></app-list-item>
+      <app-list-item [loading]="true"></app-list-item>
+      <app-list-item [loading]="true" lines="none"></app-list-item>
     </ion-list>
   </ion-card>
   <ng-template #reviewsTmpl>
