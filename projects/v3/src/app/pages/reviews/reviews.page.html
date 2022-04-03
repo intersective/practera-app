@@ -14,19 +14,19 @@
     </ion-toolbar>
   </ion-header>
 
-  <ion-grid contentId="main-reviews" when="xs">
+  <ion-grid when="xs">
     <ion-row>
       <ion-col size="12" size-lg class="border-right">
         <app-review-list
           [submissionId]="submissionId"
+          [reviews]="reviews$ | async"
+          [loadingReviews]="loadingAssessment"
           (navigate)="goto($event)"
-          [review$]="currentReview$"
-          [reviews$]="reviews$"
         ></app-review-list>
       </ion-col>
 
       <ion-col size="12" size-lg>
-        <ion-list class="ion-no-margin ion-no-padding">
+        <ion-list class="ion-no-margin ion-no-padding" *ngIf="submission$ | async as submission">
           <ion-item-group>
             <ion-item-divider>
               <ion-label color="primary">Submission Details</ion-label>
@@ -35,7 +35,7 @@
               <ion-grid>
                 <ion-row size="12">
                   <ion-col size="6">Learner</ion-col>
-                  <ion-col size="6">John Doe</ion-col>
+                  <ion-col size="6">{{ submission.submitterName }}</ion-col>
                 </ion-row>
               </ion-grid>
             </ion-item>
@@ -50,17 +50,12 @@
           </ion-item-group>
         </ion-list>
 
-        <!-- <app-assessment
-          [assessment$]="currentReview$"
-          [submission]="submission"
-          [inputId]="assessmentId"
-          [inputSubmissionId]="submissionId"
-          [inputContextId]="contextId"
-          [loadingAssessment]="loadingAssessment"
-          [review]="currentReview"
+        <app-assessment
+          [assessment]="assessment$ | async"
+          [submission]="submission$ | async"
+          [review]="currentReview$ | async"
           action="review"
-          fromPage="reviews"
-        ></app-assessment> -->
+        ></app-assessment>
       </ion-col>
     </ion-row>
   </ion-grid>

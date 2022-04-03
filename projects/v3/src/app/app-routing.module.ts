@@ -3,11 +3,6 @@ import { RouterModule, Routes } from '@angular/router';
 
 const routes: Routes = [
   {
-    path: '',
-    redirectTo: '/v3/home',
-    pathMatch: 'full'
-  },
-  {
     path: 'experiences',
     loadChildren: () => import('./pages/experiences/experiences.module').then(m => m.ExperiencesPageModule)
   },
@@ -20,8 +15,13 @@ const routes: Routes = [
     loadChildren: () => import('./pages/devtool/devtool.module').then( m => m.DevtoolPageModule)
   },
   {
-    path: 'review-list',
-    loadChildren: () => import('./pages/review-list/review-list.module').then( m => m.ReviewListPageModule)
+    path: '',
+    redirectTo: '/v3/home',
+    pathMatch: 'full'
+  },
+  {
+    path: '**',
+    loadChildren: () => import('./pages/page-not-found/page-not-found.module').then(m => m.PageNotFoundModule)
   },
 ];
 

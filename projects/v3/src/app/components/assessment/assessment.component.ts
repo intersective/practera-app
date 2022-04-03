@@ -1,5 +1,5 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
-import { Assessment, Submission, Review, AssessmentSubmitParams } from '@v3/services/assessment.service';
+import { Assessment, Submission, AssessmentReview, AssessmentSubmitParams } from '@v3/services/assessment.service';
 import { UtilsService } from '@v3/services/utils.service';
 import { NotificationsService } from '@v3/services/notifications.service';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
@@ -29,7 +29,7 @@ export class AssessmentComponent {
   @Input() assessment: Assessment;
   @Input() contextId: number;
   @Input() submission: Submission;
-  @Input() review: Review;
+  @Input() review: AssessmentReview;
 
   // submit the assessment/review
   @Output() submit = new EventEmitter();
@@ -42,22 +42,27 @@ export class AssessmentComponent {
   // if action == 'assessment' and doAssessment is false, it means this user is reading the submission or feedback
   doAssessment: boolean;
 
-  // if doReview is true, it means this user is actually doing review, meaning this assessment is pending review
-  // if action == 'review' and doReview is false, it means the review is done and this user is reading the submission and review
-  doReview = false;
-
-  questionsForm: FormGroup;
+  // if isPendingReview is true, it means this user is actually doing review, meaning this assessment is pending review
+  // if action == 'review' and isPendingReview is false, it means the review is done and this user is reading the submission and review
+  isPendingReview = false;
 
   // whether the learner has seen the feedback
   feedbackReviewed = false;
+
   // whether the bottom button(and the save button) is disabled
   btnDisabled: boolean;
+
   // the text of when the submission get saved last time
   savingMessage: string;
 
-  elIdentities = {}; // virtual element id for accessibility "aria-describedby" purpose
+  // virtual element id for accessibility "aria-describedby" purpose
+  elIdentities = {};
 
-  isNotInATeam = false; // to hide assessment content if user not is a team.
+  // to hide assessment content if user not is a team.
+  isNotInATeam = false;
+
+  questionsForm: FormGroup;
+
 
   constructor(
     readonly utils: UtilsService,
@@ -79,7 +84,6 @@ export class AssessmentComponent {
 
   private _initialise() {
     this.doAssessment = false;
-    this.doReview = false;
     this.feedbackReviewed = false;
     this.questionsForm = new FormGroup({});
     this.btnDisabled = false;
@@ -114,11 +118,10 @@ export class AssessmentComponent {
    */
   private _handleSubmissionData() {
     // If team assessment is locked, set the page to readonly mode.
-    // set doAssessment, doReview to false - when assessment is locked, user can't do both.
+    // set doAssessment, isPendingReview to false - when assessment is locked, user can't do both.
     // set submission status to done - we need to show readonly answers in question components.
     if (this.submission && this.submission.isLocked) {
       this.doAssessment = false;
-      this.doReview = false;
       this.submission.status = 'done';
       return;
     }
@@ -128,7 +131,6 @@ export class AssessmentComponent {
     // - submission is in progress
     if (this.utils.isEmpty(this.submission) || this.submission.status === 'in progress') {
       this.doAssessment = true;
-      this.doReview = false;
       if (this.submission) {
         this.savingMessage = 'Last saved ' + this.utils.timeFormatter(this.submission.modified);
       }
@@ -140,7 +142,7 @@ export class AssessmentComponent {
       // - the submission is pending review and
       // - this.action is review
       if (this.submission.status === 'pending review' && this.action === 'review') {
-        this.doReview = true;
+        this.isPendingReview = true;
       }
       return;
     }
@@ -168,7 +170,7 @@ export class AssessmentComponent {
   }
 
   private _handleReviewData() {
-    if (!this.review && this.action === 'review' && !this.doReview) {
+    if (!this.review && this.action === 'review' && !this.isPendingReview) {
       return this.notifications.alert({
         message: 'There is no assessment to review.',
         buttons: [
@@ -182,7 +184,7 @@ export class AssessmentComponent {
         ]
       });
     }
-    if (this.doReview && this.review.status === 'in progress') {
+    if (this.isPendingReview && this.review.status === 'in progress') {
       this.savingMessage = 'Last saved ' + this.utils.timeFormatter(this.review.modified);
     }
   }
@@ -204,39 +206,6 @@ export class AssessmentComponent {
 
     return (question.isRequired && question.audience.includes(role));
   }
-
-
-  /**
-   * When user click on the back button
-   */
-  // goBack(): Promise<boolean | void> {
-
-  //   if (this.action === 'assessment'
-  //     && this.submission
-  //     && this.submission.status === 'published'
-  //     && !this.feedbackReviewed) {
-  //     return this.notifications.alert({
-  //       header: `Mark feedback as read?`,
-  //       message: 'Would you like to mark the feedback as read?',
-  //       buttons: [
-  //         {
-  //           text: 'No',
-  //           handler: () => this.navigateBack(),
-  //         },
-  //         {
-  //           text: 'Yes',
-  //           handler: () => this.markReviewFeedbackAsRead().then(() => {
-  //             return this.navigateBack();
-  //           })
-  //         }
-  //       ]
-  //     });
-  //   } else {
-  //     // force saving progress
-  //     this.submit(true, true, true);
-  //     return this.navigateBack();
-  //   }
-  // }
 
   /**
    * @name _compulsoryQuestionsAnswered
@@ -361,7 +330,7 @@ export class AssessmentComponent {
     }
 
     // form feedback answers
-    if (this.doReview) {
+    if (this.isPendingReview) {
       assessment = Object.assign(assessment, {
         reviewId: this.review.id
       });
@@ -455,7 +424,7 @@ export class AssessmentComponent {
 
   // the action that the button does
   private get _btnAction() {
-    if (this.doAssessment || this.doReview) {
+    if (this.doAssessment || this.isPendingReview) {
       return 'submit';
     }
     if (this.submission && this.submission.status === 'published' && !this.feedbackReviewed) {
@@ -491,6 +460,38 @@ export class AssessmentComponent {
     }
     return this.elIdentities[type];
   }
+
+  /**
+   * When user click on the back button
+   */
+  // goBack(): Promise<boolean | void> {
+
+  //   if (this.action === 'assessment'
+  //     && this.submission
+  //     && this.submission.status === 'published'
+  //     && !this.feedbackReviewed) {
+  //     return this.notifications.alert({
+  //       header: `Mark feedback as read?`,
+  //       message: 'Would you like to mark the feedback as read?',
+  //       buttons: [
+  //         {
+  //           text: 'No',
+  //           handler: () => this.navigateBack(),
+  //         },
+  //         {
+  //           text: 'Yes',
+  //           handler: () => this.markReviewFeedbackAsRead().then(() => {
+  //             return this.navigateBack();
+  //           })
+  //         }
+  //       ]
+  //     });
+  //   } else {
+  //     // force saving progress
+  //     this.submit(true, true, true);
+  //     return this.navigateBack();
+  //   }
+  // }
 
 }
 
