@@ -108,7 +108,6 @@ export class AssessmentComponent {
         this.questionsForm.addControl('q-' + question.id, new FormControl('', validator));
       });
     });
-    console.log('questionsForm::', this.questionsForm);
   }
 
   /**
