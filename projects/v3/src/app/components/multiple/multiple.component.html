@@ -5,7 +5,11 @@
         <ion-item [lines]="i == submission.answer.length - 1 ||
           (choice.explanation && choice.explanation.changingThisBreaksApplicationSecurity) ? 'none' : ''">
           <ion-label class="white-space-normal body-2 gray-3">{{ choice.name }}</ion-label>
-          <ion-checkbox [checked]="submission.answer.includes(choice.id)" disabled mode="md"></ion-checkbox>
+          <ion-checkbox
+            [checked]="submission.answer.includes(choice.id)"
+            disabled
+            slot="start"
+          ></ion-checkbox>
         </ion-item>
         <ng-container *ngIf="choice.explanation && choice.explanation.changingThisBreaksApplicationSecurity">
           <div class="white-space-normal explanation"
@@ -29,14 +33,14 @@
           <ng-container *ngIf="review.answer.includes(choice.id)">
             <ion-item [lines]="i == review.answer.length - 1 ? 'none' : ''">
               <ion-label class="white-space-normal body-2 gray-3">{{ choice.name }}</ion-label>
-              <ion-checkbox checked disabled mode="md"></ion-checkbox>
+              <ion-checkbox checked disabled slot="start"></ion-checkbox>
             </ion-item>
           </ng-container>
         </ng-container>
         <ng-template #showAllAnswers>
           <ion-item>
             <ion-label class="white-space-normal body-2 gray-3">{{ choice.name }}</ion-label>
-            <ion-checkbox [checked]="review.answer.includes(choice.id)" disabled mode="md"></ion-checkbox>
+            <ion-checkbox [checked]="review.answer.includes(choice.id)" disabled slot="start"></ion-checkbox>
           </ion-item>
         </ng-template>
       </ng-container>
@@ -54,7 +58,8 @@
         <ion-item class="choice-item" [lines]="i == question.choices.length - 1 ? 'none' : '' || checkInnerValue(choice.id) ? 'none': ''">
           <ion-label class="white-space-normal body-2 black">{{ choice.name }}</ion-label>
           <ion-checkbox [checked]="submission.answer ? submission.answer.includes(choice.id) : false"
-            [value]="choice.id" mode="md"
+            [value]="choice.id"
+            slot="start"
             (ionChange)="onChange(choice.id)"
             [disabled]="control.disabled"></ion-checkbox>
         </ion-item>
@@ -84,7 +89,7 @@
         <ion-checkbox
           [checked]="review.answer ? review.answer.includes(choice.id) : false"
           [value]="choice.id"
-          mode="md"
+          slot="start"
           (ionChange)="onChange(choice.id, 'answer')"
           [disabled]="control.disabled"></ion-checkbox>
       </ion-item>
