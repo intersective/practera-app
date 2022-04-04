@@ -4,12 +4,16 @@
 
 ## Requirements
 
-- Ionic 4
-- Angular 7
+- Ionic v6
+- Angular v13
 
 ## Development Notes
 
 Run `npm install` to install necessary packages
+
+Run `npm run lint` to lint appv2 codebase
+
+Run `npm run lintv3` to lint code in project appv3
 
 ### Starting a development server calling the stage environment
 
@@ -18,7 +22,9 @@ Run `npm run start` to start a development server on your local, and calling sta
 
 ### Starting a development server on the local environment
 
-Run `npm run local` to start a development server on your local, and calling 127.0.0.1:8080 for API
+Run `npm run local` to serve appv2 on localhost and calling 127.0.0.1:8080 for API
+
+Run `npm run v3` to serve appv3 on localhost
 
 ### Release Processes
 
