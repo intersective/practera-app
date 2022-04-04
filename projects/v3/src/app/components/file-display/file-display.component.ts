@@ -16,12 +16,15 @@ export class FileDisplayComponent implements OnInit, OnChanges {
 
   @Input() fileType = 'any';
   @Input() file: any;
-  @Input() isFileComponent?: boolean;
+  @Input() isFileComponent?: boolean; // flag parent component is FileComponent
   @ViewChild('videoEle') videoEle: ElementRef;
   @Output() removeFile?: EventEmitter<any> = new EventEmitter();
   @Input() disabled?: boolean;
 
-  constructor(private filestackService: FilestackService, private utils: UtilsService) { }
+  constructor(
+    private filestackService: FilestackService,
+    private utils: UtilsService
+  ) { }
 
   ngOnInit() {
     if (this.file && this.file.workflows) {
