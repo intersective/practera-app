@@ -13,12 +13,12 @@ const routes: Routes = [
       {
         path: '',
         component: ChatViewComponent,
+      },
+      {
+        path: 'chat-room',
+        component: ChatRoomComponent,
       }
     ]
-  },
-  {
-    path: 'chat-room',
-    component: ChatRoomComponent,
   }
 ];
 

@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { ModalController, PopoverController } from '@ionic/angular';
 import { AnimationsService } from '@v3/services/animations.service';
 import { SettingsPage } from '../settings/settings.page';
-import { ApolloService } from '@v3/services/apollo.service';
+import { SharedService } from '@v3/services/shared.service';
 
 @Component({
   selector: 'app-v3',
@@ -36,10 +36,10 @@ export class V3Page {
     private modalController: ModalController,
     private popoverController: PopoverController,
     private animationService: AnimationsService,
-    private apolloService: ApolloService
+    private sharedService: SharedService
   ) {
-    this.apolloService.initiateCoreClient();
-    this.apolloService.initiateChatClient();
+    // TODO need to move to experience page to call before navigate to experience
+    this.sharedService.initWebServices();
   }
 
   async presentModal() {
