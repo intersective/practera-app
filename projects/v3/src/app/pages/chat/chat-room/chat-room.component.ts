@@ -62,10 +62,10 @@ export class ChatRoomComponent implements OnInit {
     private route: ActivatedRoute,
   ) {
     this.utils.getEvent('chat:new-message').subscribe(event => {
-      if (!this.utils.isMobile() && (this.router.url !== '/app/chat')) {
+      if (!this.utils.isMobile() && (this.router.url !== '/v3/messages')) {
         return;
       }
-      if (this.utils.isMobile() && (this.router.url !== '/chat/chat-room')) {
+      if (this.utils.isMobile() && (this.router.url !== '/v3/messages/chat-room')) {
         return;
       }
       const receivedMessage = this.getMessageFromEvent(event);
@@ -206,7 +206,7 @@ export class ChatRoomComponent implements OnInit {
   }
 
   back() {
-    return this.ngZone.run(() => this.router.navigate(['app', 'chat']));
+    return this.ngZone.run(() => this.router.navigate(['v3', 'messages']));
   }
 
   sendMessage() {
