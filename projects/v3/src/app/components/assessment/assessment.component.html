@@ -3,10 +3,12 @@
     <h1 class="headline-4" [attr.aria-describedby]="randomCode(assessment.name)" role="title" tabindex="0">{{
       assessment.name }}</h1>
 
-    <app-label *ngIf="task" [task]="task"></app-label>
+    <ion-chip color="success" *ngIf="submission.status">
+      <ion-label>{{submission.status | titlecase}}</ion-label>
+    </ion-chip>
 
-    <p class="due-date assessment subtitle-1 gray-2">
-      Due date: {{ task.dueDate | date : 'd MMMM y' }}
+    <p class="due-date assessment subtitle-1 gray-2" *ngIf="assessment.dueDate">
+      Due date: {{ assessment.dueDate | date : 'd MMMM y' }}
     </p>
 
     <ion-text class="ion-text-left">
@@ -18,20 +20,6 @@
       *ngIf="doAssessment">
       {{ this.utils.dueDateFormatter(assessment.dueDate) }}
     </p>
-
-    <div *ngIf="!doAssessment && submission && submission.submitterName && !submission.isLocked"
-      class="review-submitter ion-text-left">
-      <p class="subtitle-1">
-        Submitted by {{ submission.submitterName }}
-      </p>
-    </div>
-
-    <div *ngIf="submission && submission.reviewerName && review && submission.status === 'published'"
-      class="review-submitter ion-text-left">
-      <p class="subtitle-1 gray-3">
-        Reviewed by {{ submission.reviewerName }}
-      </p>
-    </div>
 
     <ion-list *ngIf="submission && submission.isLocked" class="member-detail-container no-bg" lines="none">
       <ion-item lines="none">
