@@ -49,8 +49,7 @@
         [fileType]="question.fileType"
         (complete)="onFileUploadCompleted($event, 'answer')"
         [disabled]="control.disabled"
-      >
-      </file-stack>
+      ></file-stack>
       <app-file-display
         [file]="uploadedFile ? uploadedFile : review.answer"
         [fileType]="question.fileType"

@@ -38,7 +38,7 @@
             </ng-container>
           </ng-container>
           <ng-template #showAllAnswers>
-            <ion-item [lines]="i == review.answer.length - 1 ? 'none' : ''">
+            <ion-item [ngClass]="{'item-bottom-border': i != review.answer.length - 1}" lines="none">
               <ion-label class="white-space-normal body-2 gray-3">{{ choice.name }}</ion-label>
               <ion-radio [value]="choice.id" disabled slot="start"></ion-radio>
             </ion-item>
@@ -83,7 +83,11 @@
         </ion-list-header>
         <ion-item class="choice-item no-bg" *ngFor="let choice of question.choices; let i = index" [lines]="i == question.choices.length - 1 ? 'none' : ''">
           <ion-label class="white-space-normal body-2 black">{{ choice.name }}</ion-label>
-          <ion-radio [value]="choice.id" [disabled]="control.disabled" slot="start"></ion-radio>
+          <ion-radio
+            [value]="choice.id"
+            [disabled]="control.disabled"
+            slot="start"
+          ></ion-radio>
         </ion-item>
       </ion-radio-group>
     </ion-list>
