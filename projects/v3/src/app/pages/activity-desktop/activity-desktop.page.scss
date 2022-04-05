@@ -1,16 +1,3 @@
 .border-left {
   border-left: 1px solid var(--practera-grey-25);
 }
-
-ion-grid, ion-row, ion-col {
-  padding: 0px;
-  overflow: hidden;
-  height: 100%;
-  ion-row {
-    height: 100%;
-    ion-col {
-      overflow-y: auto;
-      height: 100%;
-    }
-  }
-}
