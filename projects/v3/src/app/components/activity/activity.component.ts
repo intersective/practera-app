@@ -45,43 +45,6 @@ export class ActivityComponent {
     return `Due Data: ${ this.utils.utcToLocal(task.dueDate) }`;
   }
 
-  label(task: Task) {
-    if (this._noSubtitleLabel(task)) {
-      return '';
-    }
-    // for locked team assessment
-    if (task.isForTeam && task.isLocked) {
-      return 'in progress';
-    }
-    if (!task.status || task.status === 'in progress') {
-      if (task.isOverdue) {
-        return 'overdue';
-      }
-      return '';
-    }
-    return task.status;
-  }
-
-  labelColor(task: Task) {
-    if (this._noSubtitleLabel(task)) {
-      return '';
-    }
-    // for locked team assessment
-    if (task.isForTeam && task.isLocked) {
-      return 'dark-blue';
-    }
-    switch (task.status) {
-      case 'pending review':
-        return 'warning';
-      case 'feedback available':
-        return 'success';
-    }
-    if ((!task.status || task.status === 'in progress') && task.isOverdue) {
-      return 'danger';
-    }
-    return '';
-  }
-
   _noSubtitleLabel(task: Task) {
     return task.type !== 'Assessment' || task.status === 'done';
   }
