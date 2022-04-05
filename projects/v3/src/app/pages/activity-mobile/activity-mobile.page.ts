@@ -21,7 +21,7 @@ export class ActivityMobilePage implements OnInit {
   ngOnInit() {
     this.activity$.subscribe(res => this.activity = res);
     this.route.params.subscribe(params => {
-      this.activityService.getActivity(params.id, true);
+      this.activityService.getActivity(params.id, false);
     });
   }
 
@@ -29,10 +29,10 @@ export class ActivityMobilePage implements OnInit {
     this.activityService.goToTask(task, false);
     switch (task.type) {
       case 'Assessment':
-        this.router.navigate(['v3', 'assessment-mobile', 'assessment', this.activity.id, task.contextId, task.id]);
+        this.router.navigate(['assessment-mobile', 'assessment', this.activity.id, task.contextId, task.id]);
         break;
       case 'Topic':
-        this.router.navigate(['v3', 'topic-mobile', this.activity.id, task.id]);
+        this.router.navigate(['topic-mobile', this.activity.id, task.id]);
         break;
     }
   }

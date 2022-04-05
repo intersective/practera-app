@@ -18,6 +18,7 @@
     [submission]="submission$ | async"
     [review]="review$ | async"
     [contextId]="contextId"
+    [action]="action"
     (save)="saveAssessment($event)"
     (readFeedback)="readFeedback($event)"
     (continue)="nextTask()"
