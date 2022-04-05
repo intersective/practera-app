@@ -22,6 +22,7 @@
     "lint": "ng lint",
     "lint-fix": "ng lint --fix",
     "lintv3": "ng lint v3",
+    "lintv3-fix": "ng lint v3 --fix",
     "e2e": "ng e2e --port 4300",
     "e2e-dev": "ng e2e -c dev --port 4300",
     "e2e-sandbox": "ng e2e -c sandbox",

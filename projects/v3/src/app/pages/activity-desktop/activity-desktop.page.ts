@@ -50,7 +50,7 @@ export class ActivityDesktopPage implements OnInit {
     return this.activityService.getActivity(this.activity.id, true, task);
   }
 
-  async submitAssessment(event, task: Task) {
+  async saveAssessment(event, task: Task) {
     await this.assessmentService.saveAnswers(event.assessment, event.answers, event.action, this.assessment.pulseCheck).subscribe();
     if (!event.assessment.inProgress) {
       // get the latest activity tasks and navigate to the next task
