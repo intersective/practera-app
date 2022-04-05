@@ -1,20 +1,18 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
 
-import { ReviewsPageRoutingModule } from './reviews-routing.module';
-import { ReviewsPage } from './reviews.page';
 import { ComponentsModule } from '@v3/app/components/components.module';
+import { PageNotFoundPage } from './page-not-found.page';
+import { PageNotFoundRoutingModule } from './page-not-found-routing.module';
 
 @NgModule({
   imports: [
     CommonModule,
-    FormsModule,
     IonicModule,
     ComponentsModule,
-    ReviewsPageRoutingModule,
+    PageNotFoundRoutingModule
   ],
-  declarations: [ReviewsPage]
+  declarations: [PageNotFoundPage]
 })
-export class ReviewsPageModule {}
+export class PageNotFoundModule { }

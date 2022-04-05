@@ -46,11 +46,6 @@ const routes: Routes = [
         loadChildren: () => import('../activity-mobile/activity-mobile.module').then(m => m.ActivityMobilePageModule)
       },
     ]
-  },
-  {
-    path: '',
-    redirectTo: '/app/home',
-    pathMatch: 'full'
   }
 ];
 

@@ -1,11 +1,10 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { Router } from '@angular/router';
-import { Review, ReviewListService } from '@v3/services/review-list.service';
+import { AssessmentReview } from '@v3/app/services/assessment.service';
+import { Review } from '@v3/services/review-list.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { UtilsService } from '@v3/services/utils.service';
-import { NotificationsService } from '@v3/services/notifications.service';
 import { Subject } from 'rxjs';
-import { AssessmentService } from '@v3/app/services/assessment.service';
 
 enum STATUSES {
   PENDING = 'pending',
@@ -14,17 +13,15 @@ enum STATUSES {
 
 @Component({
   selector: 'app-review-list',
-  templateUrl: './review-list.page.html',
-  styleUrls: ['./review-list.page.scss'],
+  templateUrl: './review-list.component.html',
+  styleUrls: ['./review-list.component.scss'],
 })
-export class ReviewListPage implements OnInit {
-  public reviews: Array<Review> = [];
+export class ReviewListComponent implements OnInit {
+  @Input() reviews: Review[];
   public showDone = false;
-  public loadingReviews = true;
+  @Input() loadingReviews: boolean;
   @Input() submissionId: number;
   @Output() navigate = new EventEmitter();
-  @Input() review$: Subject<any>;
-  @Input() reviews$: Subject<any>;
   selectedReview: any = {};
 
   public status: string = STATUSES.PENDING;
@@ -32,39 +29,17 @@ export class ReviewListPage implements OnInit {
   testBoolean = 0;
 
   constructor(
-    public reviewsService: ReviewListService,
     public router: Router,
     public utils: UtilsService,
     public storage: BrowserStorageService,
-    private notificationsService: NotificationsService,
-    private assessmentService: AssessmentService,
   ) { }
 
   ngOnInit() {
     this.onEnter();
-    this.review$.subscribe(review => {
-      console.log('ReviewListPage::current', review);
-    });
   }
 
   onEnter() {
-    this.loadingReviews = true;
     this.showDone = false;
-    this.reviewsService.getReviews()
-      .subscribe(
-        reviews => {
-          this.reviews = reviews;
-          this.loadingReviews = false;
-          this.gotoFirstReview();
-        },
-        err => {
-          this.notificationsService.alert({
-            header: 'Error retrieving latest reviews',
-            message: err.msg || JSON.stringify(err)
-          });
-          throw new Error(err);
-        }
-      );
   }
 
   statusUpdate(event) {
@@ -76,15 +51,7 @@ export class ReviewListPage implements OnInit {
   read(review: Review) {
     console.log('REVIEW::', review);
     this.testBoolean = this.testBoolean === 0 ? 1 : 0;
-
-    // this.assessmentService.getAssessment(this.testBoolean).subscribe(
-    //   result => {
-    //     this.review$.next(result);
-    //   },
-    //   error => {
-    //     console.log(error);
-    //   }
-    // );
+    this.navigate.emit(review);
   }
 
   /**

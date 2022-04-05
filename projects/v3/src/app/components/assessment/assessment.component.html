@@ -81,16 +81,16 @@
             </ion-text>
           </ion-item>
 
-          <ng-template [ngSwitch]="question.type">
+          <ng-container [ngSwitch]="question.type">
             <p class="ion-padding" *ngIf="!doAssessment && (
               (!question.reviewerOnly && submission && !submission.answers[question.id]) ||
-              (!doReview && question.reviewerOnly && review && !review.answers[question.id])
+              (!(isPendingReview) && question.reviewerOnly && review && !review.answers[question.id])
             )"><i>No Answer Submitted</i></p>
 
             <app-text *ngSwitchCase="'text'"
               [question]="question"
               [doAssessment]="doAssessment"
-              [doReview]="doReview"
+              [doReview]="isPendingReview"
               [submission]="submission?.answers[question.id] || {}"
               [review]="review?.answers[question.id] || {}"
               [reviewStatus]="review ? review.status : ''"
@@ -102,7 +102,7 @@
             <app-oneof *ngSwitchCase="'oneof'"
               [question]="question"
               [doAssessment]="doAssessment"
-              [doReview]="doReview"
+              [doReview]="isPendingReview"
               [submission]="submission?.answers[question.id] || {}"
               [review]="review?.answers[question.id] || {}"
               [reviewStatus]="review ? review.status : ''"
@@ -114,7 +114,7 @@
             <app-multiple *ngSwitchCase="'multiple'"
               [question]="question"
               [doAssessment]="doAssessment"
-              [doReview]="doReview"
+              [doReview]="isPendingReview"
               [submission]="submission?.answers[question.id] || {}"
               [review]="review?.answers[question.id] || {}"
               [reviewStatus]="review ? review.status : ''"
@@ -126,7 +126,7 @@
             <app-file *ngSwitchCase="'file'"
               [question]="question"
               [doAssessment]="doAssessment"
-              [doReview]="doReview"
+              [doReview]="isPendingReview"
               [submission]="submission?.answers[question.id] || {}"
               [review]="review?.answers[question.id] || {}"
               [reviewStatus]="review ? review.status : ''"
@@ -138,7 +138,7 @@
             <app-team-member-selector *ngSwitchCase="'team member selector'"
               [question]="question"
               [doAssessment]="doAssessment"
-              [doReview]="doReview"
+              [doReview]="isPendingReview"
               [submission]="submission?.answers[question.id] || {}"
               [review]="review?.answers[question.id] || {}"
               [reviewStatus]="review ? review.status : ''"
@@ -146,8 +146,8 @@
               [formControlName]="'q-' + question.id"
               [control]="questionsForm.controls['q-' + question.id]"
               (saveProgress)="btnSaveClicked()"></app-team-member-selector>
-          </ng-template>
-
+            <div *ngSwitchDefault>no question type found</div>
+          </ng-container>
         </ion-list>
       </ng-container>
     </ng-container>
