@@ -236,6 +236,7 @@ export class AssessmentComponent implements OnChanges {
    * When user click the bottom button
    */
   btnClicked() {
+    this.btnDisabled = true;
     switch (this._btnAction) {
       case 'submit':
         return this._submit();
@@ -276,7 +277,6 @@ export class AssessmentComponent implements OnChanges {
      *    - if this is not manual save or there is one save in progress
      *      - do nothing
      */
-    this.btnDisabled = true;
     // allow submitting/saving after a few seconds
     setTimeout(() => this.btnDisabled = false, SAVE_PROGRESS_TIMEOUT);
 
@@ -348,8 +348,14 @@ export class AssessmentComponent implements OnChanges {
     if (!saveInProgress && requiredQuestions.length > 0) {
       this.btnDisabled = false;
       // display a pop up if required question not answered
-      return this.notifications.popUp('shortMessage', {
-        message: 'Required question answer missing!'
+      return this.notifications.alert({
+        message: 'Required question answer missing!',
+        buttons: [
+          {
+            text: 'OK',
+            role: 'cancel'
+          }
+        ]
       });
     }
 
