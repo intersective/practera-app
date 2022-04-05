@@ -1,19 +1,19 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { IonicModule } from '@ionic/angular';
 
-import { BadgePopupComponent } from './badge-popup.component';
+import { TopicMobilePage } from './topic-mobile.page';
 
-describe('BadgePopupComponent', () => {
-  let component: BadgePopupComponent;
-  let fixture: ComponentFixture<BadgePopupComponent>;
+describe('TopicMobilePage', () => {
+  let component: TopicMobilePage;
+  let fixture: ComponentFixture<TopicMobilePage>;
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ BadgePopupComponent ],
+      declarations: [ TopicMobilePage ],
       imports: [IonicModule.forRoot()]
     }).compileComponents();
 
-    fixture = TestBed.createComponent(BadgePopupComponent);
+    fixture = TestBed.createComponent(TopicMobilePage);
     component = fixture.componentInstance;
     fixture.detectChanges();
   }));

@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnChanges } from '@angular/core';
 import { Assessment, Submission, AssessmentReview, AssessmentSubmitParams } from '@v3/services/assessment.service';
 import { UtilsService } from '@v3/services/utils.service';
 import { NotificationsService } from '@v3/services/notifications.service';
@@ -13,7 +13,7 @@ const SAVE_PROGRESS_TIMEOUT = 5000;
   templateUrl: './assessment.component.html',
   styleUrls: ['./assessment.component.scss'],
 })
-export class AssessmentComponent {
+export class AssessmentComponent implements OnChanges {
   /**
    * -- action --
    * Options: assessment/review
@@ -31,8 +31,8 @@ export class AssessmentComponent {
   @Input() submission: Submission;
   @Input() review: AssessmentReview;
 
-  // submit the assessment/review
-  @Output() submit = new EventEmitter();
+  // save the assessment/review answers
+  @Output() save = new EventEmitter();
   // mark the feedback as read
   @Output() readFeedback = new EventEmitter();
   // continue to the next task
@@ -353,7 +353,7 @@ export class AssessmentComponent {
       });
     }
 
-    this.submit.emit({
+    this.save.emit({
       assessment,
       answers,
       action: this.action

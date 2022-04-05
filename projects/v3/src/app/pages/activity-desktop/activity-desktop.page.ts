@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { ActivityService, Task, Activity } from '@v3/app/services/activity.service';
-import { Assessment, AssessmentService, AssessmentSubmitParams } from '@v3/app/services/assessment.service';
-import { Topic, TopicService } from '@v3/app/services/topic.service';
+import { Assessment, AssessmentService } from '@v3/app/services/assessment.service';
+import { TopicService } from '@v3/app/services/topic.service';
 
 @Component({
   selector: 'app-activity-desktop',
@@ -50,7 +50,7 @@ export class ActivityDesktopPage implements OnInit {
     return this.activityService.getActivity(this.activity.id, true, task);
   }
 
-  async submitAssessment(event, task: Task) {
+  async saveAssessment(event, task: Task) {
     await this.assessmentService.saveAnswers(event.assessment, event.answers, event.action, this.assessment.pulseCheck).subscribe();
     if (!event.assessment.inProgress) {
       // get the latest activity tasks and navigate to the next task

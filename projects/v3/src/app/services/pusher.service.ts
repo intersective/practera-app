@@ -73,6 +73,10 @@ export class PusherService {
   async initialise(options?: {
     unsubscribe?: boolean;
   }) {
+    if (environment.demo) {
+      return ;
+    }
+
     // make sure pusher is connected
     if (!this.pusher) {
       this.pusher = await this.initialisePusher();
